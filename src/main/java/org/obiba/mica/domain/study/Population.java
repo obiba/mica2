@@ -18,19 +18,75 @@ public class Population implements Serializable {
 
   private Recruitment recruitment;
 
+  private SelectionCriteria selectionCriteria;
+
   private NumberOfParticipants numberOfParticipants;
 
-  private SelectionCriteria selectionCriteria;
+  private String infos;
+
+  private List<DataCollectionEvent> dataCollectionEvents;
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public Recruitment getRecruitment() {
+    return recruitment;
+  }
+
+  public void setRecruitment(Recruitment recruitment) {
+    this.recruitment = recruitment;
+  }
+
+  public SelectionCriteria getSelectionCriteria() {
+    return selectionCriteria;
+  }
+
+  public void setSelectionCriteria(SelectionCriteria selectionCriteria) {
+    this.selectionCriteria = selectionCriteria;
+  }
+
+  public NumberOfParticipants getNumberOfParticipants() {
+    return numberOfParticipants;
+  }
+
+  public void setNumberOfParticipants(NumberOfParticipants numberOfParticipants) {
+    this.numberOfParticipants = numberOfParticipants;
+  }
+
+  public String getInfos() {
+    return infos;
+  }
+
+  public void setInfos(String infos) {
+    this.infos = infos;
+  }
+
+  public List<DataCollectionEvent> getDataCollectionEvents() {
+    return dataCollectionEvents;
+  }
+
+  public void setDataCollectionEvents(List<DataCollectionEvent> dataCollectionEvents) {
+    this.dataCollectionEvents = dataCollectionEvents;
+  }
 
   public static class Recruitment implements Serializable {
 
     private static final long serialVersionUID = 7949265355598902080L;
 
     private List<String> sources;
-
-    private List<String> generalPopulation;
-
-    private List<String> specificPopulation;
 
     private List<String> studies;
 
@@ -42,22 +98,6 @@ public class Population implements Serializable {
 
     public void setSources(List<String> sources) {
       this.sources = sources;
-    }
-
-    public List<String> getGeneralPopulation() {
-      return generalPopulation;
-    }
-
-    public void setGeneralPopulation(List<String> generalPopulation) {
-      this.generalPopulation = generalPopulation;
-    }
-
-    public List<String> getSpecificPopulation() {
-      return specificPopulation;
-    }
-
-    public void setSpecificPopulation(List<String> specificPopulation) {
-      this.specificPopulation = specificPopulation;
     }
 
     public List<String> getStudies() {

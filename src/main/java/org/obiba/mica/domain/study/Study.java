@@ -7,6 +7,7 @@ import java.util.Objects;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.hibernate.validator.constraints.URL;
 import org.obiba.mica.domain.AbstractTimestampedDocument;
+import org.obiba.mica.domain.Attachment;
 import org.obiba.mica.domain.Authorization;
 import org.obiba.mica.domain.Contact;
 import org.springframework.data.annotation.Id;
@@ -61,15 +62,7 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
   //TODO add pubmedId validator
   private String pubmedId;
 
-  /**
-   * GridFs ID
-   */
-  private String logo;
-
-  /**
-   * List of GridFs ID
-   */
-  private List<String> documents;
+  private List<Attachment> attachments;
 
   private String infos;
 
@@ -211,20 +204,12 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
     this.pubmedId = pubmedId;
   }
 
-  public String getLogo() {
-    return logo;
+  public List<Attachment> getAttachments() {
+    return attachments;
   }
 
-  public void setLogo(String logo) {
-    this.logo = logo;
-  }
-
-  public List<String> getDocuments() {
-    return documents;
-  }
-
-  public void setDocuments(List<String> documents) {
-    this.documents = documents;
+  public void setAttachments(List<Attachment> attachments) {
+    this.attachments = attachments;
   }
 
   public String getInfos() {
