@@ -3,12 +3,12 @@
 micaApp.controller('StudyController', ['$scope', 'resolvedStudy', 'Study',
   function ($scope, resolvedStudy, Study) {
 
-    $scope.studys = resolvedStudy;
+    $scope.studies = resolvedStudy;
 
     $scope.create = function () {
       Study.save($scope.study,
         function () {
-          $scope.studys = Study.query();
+          $scope.studies = Study.query();
           $('#saveStudyModal').modal('hide');
           $scope.clear();
         });
@@ -22,7 +22,7 @@ micaApp.controller('StudyController', ['$scope', 'resolvedStudy', 'Study',
     $scope.delete = function (id) {
       Study.delete({id: id},
         function () {
-          $scope.studys = Study.query();
+          $scope.studies = Study.query();
         });
     };
 

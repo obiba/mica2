@@ -30,9 +30,9 @@ public class StudyResource {
   private StudyRepository studyRepository;
 
   /**
-   * POST  /rest/studys -> Create a new study.
+   * POST  /rest/studies -> Create a new study.
    */
-  @RequestMapping(value = "/rest/studys",
+  @RequestMapping(value = "/rest/studies",
       method = RequestMethod.POST,
       produces = "application/json")
   @Timed
@@ -42,9 +42,9 @@ public class StudyResource {
   }
 
   /**
-   * GET  /rest/studys -> get all the studys.
+   * GET  /rest/studies -> get all the studies.
    */
-  @RequestMapping(value = "/rest/studys",
+  @RequestMapping(value = "/rest/studies",
       method = RequestMethod.GET,
       produces = "application/json")
   @Timed
@@ -54,9 +54,9 @@ public class StudyResource {
   }
 
   /**
-   * GET  /rest/studys/:id -> get the "id" study.
+   * GET  /rest/studies/:id -> get the "id" study.
    */
-  @RequestMapping(value = "/rest/studys/{id}",
+  @RequestMapping(value = "/rest/studies/{id}",
       method = RequestMethod.GET,
       produces = "application/json")
   @Timed
@@ -70,9 +70,9 @@ public class StudyResource {
   }
 
   /**
-   * DELETE  /rest/studys/:id -> delete the "id" study.
+   * DELETE  /rest/studies/:id -> delete the "id" study.
    */
-  @RequestMapping(value = "/rest/studys/{id}",
+  @RequestMapping(value = "/rest/studies/{id}",
       method = RequestMethod.DELETE,
       produces = "application/json")
   @Timed
