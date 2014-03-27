@@ -1,0 +1,8 @@
+{
+  "generator-jhipster": {
+    "baseName": "mica",
+    "packageName": "org.obiba.mica",
+    "packageFolder": "org/obiba/mica",
+    "hibernateCache": "ehcache"
+  }
+}

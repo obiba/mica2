@@ -1,0 +1,154 @@
+<!doctype html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>mica</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+        <!-- build:css(.tmp) styles/main.css -->
+        <link rel="stylesheet" href="styles/bootstrap.css">
+        <link rel="stylesheet" href="styles/main.css">
+        <link rel="stylesheet" href="styles/famfamfam-flags.css">
+        <!-- endbuild -->
+    </head>
+    <body ng-app="micaApp" ng-controller="MainController">
+        <!--[if lt IE 10]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        <div class="development"></div>
+        <div class="container">
+            <div class="header" ng-switch="authenticated">
+                <ul class="nav nav-pills pull-right">
+                    <li>
+                        <a href="#">
+                            <span class="glyphicon glyphicon-home"></span>
+                            <span translate="global.menu.home">Home</span>
+                        </a>
+                    </li>
+                    <li class="dropdown pointer">
+                        <a class="dropdown-toggle" data-toggle="dropdown">
+                            <span>
+                                <span class="glyphicon glyphicon-user"></span>
+                                <span class="hidden-tablet" translate="global.menu.account.main">
+                                    Account
+                                </span>
+                                <b class="caret"></b>
+                            </span>
+                        </a>
+                        <ul class="dropdown-menu" ng-controller="MenuController">
+                            <li ng-switch-when="true"><a href="#/settings"><span class="glyphicon glyphicon-wrench"></span>
+                                &nbsp;<span translate="global.menu.account.settings">Settings</span></a></li>
+                            <li ng-switch-when="true"><a href="#/password"><span class="glyphicon glyphicon-lock"></span>
+                                &nbsp;<span translate="global.menu.account.password">Password</span></a></li>
+                            <li ng-switch-when="true"><a href="#/sessions"><span class="glyphicon glyphicon-cloud"></span>
+                                &nbsp;<span translate="global.menu.account.sessions">Sessions</span></a></li>
+                            <li ng-switch-when="true"><a href="#/logout"><span class="glyphicon glyphicon-log-out"></span>
+                                &nbsp;<span translate="global.menu.account.logout">Log out</span></a></li>
+                            <li ng-switch-when="false"><a href="#/login"><span class="glyphicon glyphicon-log-in"></span>
+                                &nbsp;<span translate="global.menu.account.login">Authenticate</span></a></li>
+                        </ul>
+                    </li>
+                    <li ng-switch-when="true" ng-show="isAuthorized(userRoles.admin)" class="dropdown pointer" ng-controller="AdminController">
+                        <a class="dropdown-toggle" data-toggle="dropdown">
+                            <span>
+                                <span class="glyphicon glyphicon-tower"></span>
+                                <span class="hidden-tablet" translate="global.menu.admin">Admin</span>
+                                <b class="caret"></b>
+                            </span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#/metrics"><span class="glyphicon glyphicon-dashboard"></span>
+                                &nbsp;<span translate="global.menu.account.metrics">Metrics</span></a></li>
+                            <li><a href="#/audits"><span class="glyphicon glyphicon-bell"></span>
+                                &nbsp;<span translate="global.menu.account.audits">Audits</span></a></li>
+                            <li><a href="#/logs"><span class="glyphicon glyphicon-tasks"></span>
+                                &nbsp;<span translate="global.menu.account.logs">Logs</span></a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown pointer" ng-controller="LanguageController">
+                        <a class="dropdown-toggle" data-toggle="dropdown">
+                            <span>
+                                <span class="glyphicon glyphicon-flag"></span>
+                                <span class="hidden-tablet" translate="global.menu.language">Language</span>
+                                <b class="caret"></b>
+                            </span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li active-menu="en">
+                                <a href="#" ng-click="changeLanguage(&apos;en&apos;)"><span class="famfamfam-flag-gb"></span>
+                                    &nbsp;<span translate="global.language.en">English</span></a>
+                            </li>
+                            <li active-menu="fr">
+                                <a href="#" ng-click="changeLanguage(&apos;fr&apos;)"><span class="famfamfam-flag-fr"></span>
+                                    &nbsp;<span translate="global.language.fr">French</span></a>
+                            </li>
+                            <li active-menu="de">
+                                <a href="#" ng-click="changeLanguage(&apos;de&apos;)"><span class="famfamfam-flag-de"></span>
+                                    &nbsp;<span translate="global.language.de">German</span></a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                <h3 class="text-muted">JHipster</h3>
+            </div>
+
+            <div class="well" ng-view=""></div>
+
+            <div class="footer">
+                <p translate="footer">This is your footer</p>
+            </div>
+        </div>
+
+        <!-- Google Analytics: uncomment and change UA-XXXXX-X to be your site's ID.
+        <script>
+            (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+            function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+            e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+            e.src='//www.google-analytics.com/analytics.js';
+            r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+            ga('create','UA-XXXXX-X');ga('send','pageview');
+        </script>-->
+
+        <!-- build:js scripts/scripts.js -->
+        <script src="bower_components/modernizr/modernizr.js"></script>
+        <script src="bower_components/jquery/jquery.js"></script>
+        <script src="bower_components/angular/angular.js"></script>
+        <script src="bower_components/angular-route/angular-route.js"></script>
+        <script src="bower_components/angular-resource/angular-resource.js"></script>
+        <script src="bower_components/angular-cookies/angular-cookies.js"></script>
+        <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
+        <script src="bower_components/angular-translate/angular-translate.js"></script>
+        <script src="bower_components/angular-translate-storage-cookie/angular-translate-storage-cookie.js"></script>
+        <script src="bower_components/angular-translate-loader-static-files/angular-translate-loader-static-files.js"></script>
+        <script src="bower_components/angular-dynamic-locale/src/tmhDinamicLocale.js"></script>
+        <script src="scripts/http-auth-interceptor.js"></script>
+        <script src="scripts/app.js"></script>
+        <script src="scripts/controllers.js"></script>
+        <script src="scripts/services.js"></script>
+        <script src="scripts/directives.js"></script>
+        <script src="bower_components/bootstrap-sass/vendor/assets/javascripts/bootstrap/affix.js"></script>
+        <script src="bower_components/bootstrap-sass/vendor/assets/javascripts/bootstrap/alert.js"></script>
+        <script src="bower_components/bootstrap-sass/vendor/assets/javascripts/bootstrap/dropdown.js"></script>
+        <script src="bower_components/bootstrap-sass/vendor/assets/javascripts/bootstrap/tooltip.js"></script>
+        <script src="bower_components/bootstrap-sass/vendor/assets/javascripts/bootstrap/modal.js"></script>
+        <script src="bower_components/bootstrap-sass/vendor/assets/javascripts/bootstrap/transition.js"></script>
+        <script src="bower_components/bootstrap-sass/vendor/assets/javascripts/bootstrap/button.js"></script>
+        <script src="bower_components/bootstrap-sass/vendor/assets/javascripts/bootstrap/popover.js"></script>
+        <script src="bower_components/bootstrap-sass/vendor/assets/javascripts/bootstrap/carousel.js"></script>
+        <script src="bower_components/bootstrap-sass/vendor/assets/javascripts/bootstrap/scrollspy.js"></script>
+        <script src="bower_components/bootstrap-sass/vendor/assets/javascripts/bootstrap/collapse.js"></script>
+        <script src="bower_components/bootstrap-sass/vendor/assets/javascripts/bootstrap/tab.js"></script>
+        <script src="scripts/study/router.js"></script>
+        <script src="scripts/study/controller.js"></script>
+        <script src="scripts/study/service.js"></script>
+        <script src="scripts/network/router.js"></script>
+        <script src="scripts/network/controller.js"></script>
+        <script src="scripts/network/service.js"></script>
+        <!-- endbuild -->
+</body>
+</html>
