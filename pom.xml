@@ -160,6 +160,10 @@
       <groupId>com.codahale.metrics</groupId>
       <artifactId>metrics-servlet</artifactId>
       <version>${codahale-metrics.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.codahale.metrics</groupId>
+      <artifactId>metrics-servlets</artifactId>
       <exclusions>
         <exclusion>
           <groupId>com.codahale.metrics</groupId>
