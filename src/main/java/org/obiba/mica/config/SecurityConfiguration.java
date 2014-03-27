@@ -1,6 +1,12 @@
 package org.obiba.mica.config;
 
-import org.obiba.mica.security.*;
+import javax.inject.Inject;
+
+import org.obiba.mica.security.AjaxAuthenticationFailureHandler;
+import org.obiba.mica.security.AjaxAuthenticationSuccessHandler;
+import org.obiba.mica.security.AjaxLogoutSuccessHandler;
+import org.obiba.mica.security.AuthoritiesConstants;
+import org.obiba.mica.security.Http401UnauthorizedEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -16,112 +22,74 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.StandardPasswordEncoder;
 import org.springframework.security.web.authentication.RememberMeServices;
 
-import javax.inject.Inject;
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Inject
-    private Environment env;
+  @Inject
+  private Environment env;
 
-    @Inject
-    private AjaxAuthenticationSuccessHandler ajaxAuthenticationSuccessHandler;
+  @Inject
+  private AjaxAuthenticationSuccessHandler ajaxAuthenticationSuccessHandler;
 
-    @Inject
-    private AjaxAuthenticationFailureHandler ajaxAuthenticationFailureHandler;
+  @Inject
+  private AjaxAuthenticationFailureHandler ajaxAuthenticationFailureHandler;
 
-    @Inject
-    private AjaxLogoutSuccessHandler ajaxLogoutSuccessHandler;
+  @Inject
+  private AjaxLogoutSuccessHandler ajaxLogoutSuccessHandler;
 
-    @Inject
-    private Http401UnauthorizedEntryPoint authenticationEntryPoint;
+  @Inject
+  private Http401UnauthorizedEntryPoint authenticationEntryPoint;
 
-    @Inject
-    private UserDetailsService userDetailsService;
+  @Inject
+  private UserDetailsService userDetailsService;
 
-    @Inject
-    private RememberMeServices rememberMeServices;
+  @Inject
+  private RememberMeServices rememberMeServices;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new StandardPasswordEncoder();
-    }
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new StandardPasswordEncoder();
+  }
 
-    @Inject
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-            .userDetailsService(userDetailsService)
-                .passwordEncoder(passwordEncoder());
-    }
+  @Inject
+  public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+    auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+  }
 
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        web.ignoring()
-            .antMatchers("/bower_components/**")
-            .antMatchers("/fonts/**")
-            .antMatchers("/images/**")
-            .antMatchers("/scripts/**")
-            .antMatchers("/styles/**")
-            .antMatchers("/view/**")
-            .antMatchers("/console/**");
-    }
+  @Override
+  public void configure(WebSecurity web) throws Exception {
+    web.ignoring().antMatchers("/bower_components/**").antMatchers("/fonts/**").antMatchers("/images/**")
+        .antMatchers("/scripts/**").antMatchers("/styles/**").antMatchers("/view/**").antMatchers("/console/**");
+  }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-            .exceptionHandling()
-                .authenticationEntryPoint(authenticationEntryPoint)
-                .and()
-            .rememberMe()
-                .rememberMeServices(rememberMeServices)
-                .key(env.getProperty("jhipster.security.rememberme.key"))
-                .and()
-            .formLogin()
-                .loginProcessingUrl("/app/authentication")
-                .successHandler(ajaxAuthenticationSuccessHandler)
-                .failureHandler(ajaxAuthenticationFailureHandler)
-                .usernameParameter("j_username")
-                .passwordParameter("j_password")
-                .permitAll()
-                .and()
-            .logout()
-                .logoutUrl("/app/logout")
-                .logoutSuccessHandler(ajaxLogoutSuccessHandler)
-                .deleteCookies("JSESSIONID")
-                .permitAll()
-                .and()
-            .csrf()
-                .disable()
-            .authorizeRequests()
-                .antMatchers("/app/rest/authenticate").permitAll()
-                .antMatchers("/app/rest/logs/**").hasAuthority(AuthoritiesConstants.ADMIN)
-                .antMatchers("/app/**").authenticated()
-                .antMatchers("/websocket/tracker").hasAuthority(AuthoritiesConstants.ADMIN)
-                .antMatchers("/websocket/**").permitAll()
-                .antMatchers("/metrics*").hasAuthority(AuthoritiesConstants.ADMIN)
-                .antMatchers("/metrics/**").hasAuthority(AuthoritiesConstants.ADMIN)
-                .antMatchers("/health*").hasAuthority(AuthoritiesConstants.ADMIN)
-                .antMatchers("/health/**").hasAuthority(AuthoritiesConstants.ADMIN)
-                .antMatchers("/trace*").hasAuthority(AuthoritiesConstants.ADMIN)
-                .antMatchers("/trace/**").hasAuthority(AuthoritiesConstants.ADMIN)
-                .antMatchers("/dump*").hasAuthority(AuthoritiesConstants.ADMIN)
-                .antMatchers("/dump/**").hasAuthority(AuthoritiesConstants.ADMIN)
-                .antMatchers("/shutdown*").hasAuthority(AuthoritiesConstants.ADMIN)
-                .antMatchers("/shutdown/**").hasAuthority(AuthoritiesConstants.ADMIN)
-                .antMatchers("/beans*").hasAuthority(AuthoritiesConstants.ADMIN)
-                .antMatchers("/beans/**").hasAuthority(AuthoritiesConstants.ADMIN)
-                .antMatchers("/info*").hasAuthority(AuthoritiesConstants.ADMIN)
-                .antMatchers("/info/**").hasAuthority(AuthoritiesConstants.ADMIN)
-                .antMatchers("/autoconfig*").hasAuthority(AuthoritiesConstants.ADMIN)
-                .antMatchers("/autoconfig/**").hasAuthority(AuthoritiesConstants.ADMIN)
-                .antMatchers("/env*").hasAuthority(AuthoritiesConstants.ADMIN)
-                .antMatchers("/env/**").hasAuthority(AuthoritiesConstants.ADMIN)
-                .antMatchers("/trace*").hasAuthority(AuthoritiesConstants.ADMIN)
-                .antMatchers("/trace/**").hasAuthority(AuthoritiesConstants.ADMIN);
-    }
+  @Override
+  protected void configure(HttpSecurity http) throws Exception {
+    http.exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).and().rememberMe()
+        .rememberMeServices(rememberMeServices).key(env.getProperty("jhipster.security.rememberme.key")).and()
+        .formLogin().loginProcessingUrl("/app/authentication").successHandler(ajaxAuthenticationSuccessHandler)
+        .failureHandler(ajaxAuthenticationFailureHandler).usernameParameter("j_username")
+        .passwordParameter("j_password").permitAll().and().logout().logoutUrl("/app/logout")
+        .logoutSuccessHandler(ajaxLogoutSuccessHandler).deleteCookies("JSESSIONID").permitAll().and().csrf().disable()
+        .authorizeRequests().antMatchers("/app/rest/authenticate").permitAll().antMatchers("/app/rest/logs/**")
+        .hasAuthority(AuthoritiesConstants.ADMIN).antMatchers("/app/**").authenticated()
+        .antMatchers("/websocket/tracker").hasAuthority(AuthoritiesConstants.ADMIN).antMatchers("/websocket/**")
+        .permitAll().antMatchers("/metrics*").hasAuthority(AuthoritiesConstants.ADMIN).antMatchers("/metrics/**")
+        .hasAuthority(AuthoritiesConstants.ADMIN).antMatchers("/health*").hasAuthority(AuthoritiesConstants.ADMIN)
+        .antMatchers("/health/**").hasAuthority(AuthoritiesConstants.ADMIN).antMatchers("/trace*")
+        .hasAuthority(AuthoritiesConstants.ADMIN).antMatchers("/trace/**").hasAuthority(AuthoritiesConstants.ADMIN)
+        .antMatchers("/dump*").hasAuthority(AuthoritiesConstants.ADMIN).antMatchers("/dump/**")
+        .hasAuthority(AuthoritiesConstants.ADMIN).antMatchers("/shutdown*").hasAuthority(AuthoritiesConstants.ADMIN)
+        .antMatchers("/shutdown/**").hasAuthority(AuthoritiesConstants.ADMIN).antMatchers("/beans*")
+        .hasAuthority(AuthoritiesConstants.ADMIN).antMatchers("/beans/**").hasAuthority(AuthoritiesConstants.ADMIN)
+        .antMatchers("/info*").hasAuthority(AuthoritiesConstants.ADMIN).antMatchers("/info/**")
+        .hasAuthority(AuthoritiesConstants.ADMIN).antMatchers("/autoconfig*").hasAuthority(AuthoritiesConstants.ADMIN)
+        .antMatchers("/autoconfig/**").hasAuthority(AuthoritiesConstants.ADMIN).antMatchers("/env*")
+        .hasAuthority(AuthoritiesConstants.ADMIN).antMatchers("/env/**").hasAuthority(AuthoritiesConstants.ADMIN)
+        .antMatchers("/trace*").hasAuthority(AuthoritiesConstants.ADMIN).antMatchers("/trace/**")
+        .hasAuthority(AuthoritiesConstants.ADMIN);
+  }
 
-    @EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true)
-    private static class GlobalSecurityConfiguration extends GlobalMethodSecurityConfiguration {
-    }
+  @EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true)
+  private static class GlobalSecurityConfiguration extends GlobalMethodSecurityConfiguration {}
 }

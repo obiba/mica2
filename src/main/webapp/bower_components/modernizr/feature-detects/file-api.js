@@ -8,5 +8,5 @@
  *   defined FileReader object
  */
 Modernizr.addTest('filereader', function () {
-    return !!(window.File && window.FileList && window.FileReader);
+  return !!(window.File && window.FileList && window.FileReader);
 });

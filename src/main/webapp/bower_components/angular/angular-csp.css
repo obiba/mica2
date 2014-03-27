@@ -13,6 +13,6 @@ ng\:form {
 }
 
 .ng-animate-block-transitions {
-  transition:0s all!important;
-  -webkit-transition:0s all!important;
+  transition: 0s all !important;
+  -webkit-transition: 0s all !important;
 }

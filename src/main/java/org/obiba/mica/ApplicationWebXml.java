@@ -11,30 +11,28 @@ import org.springframework.boot.context.web.SpringBootServletInitializer;
  */
 public class ApplicationWebXml extends SpringBootServletInitializer {
 
-    private final Logger log = LoggerFactory.getLogger(ApplicationWebXml.class);
+  private final Logger log = LoggerFactory.getLogger(ApplicationWebXml.class);
 
-    @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.profiles(addDefaultProfile())
-                .showBanner(false)
-                .sources(Application.class);
+  @Override
+  protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+    return application.profiles(addDefaultProfile()).showBanner(false).sources(Application.class);
+  }
+
+  /**
+   * Set a default profile if it has not been set.
+   * <p/>
+   * <p>
+   * Please use -Dspring.active.profile=dev
+   * </p>
+   */
+  private String addDefaultProfile() {
+    String profile = System.getProperty("spring.active.profile");
+    if(profile != null) {
+      log.info("Running with Spring profile(s) : {}", profile);
+      return profile;
     }
 
-    /**
-     * Set a default profile if it has not been set.
-     * <p/>
-     * <p>
-     * Please use -Dspring.active.profile=dev
-     * </p>
-     */
-    private String addDefaultProfile() {
-        String profile = System.getProperty("spring.active.profile");
-        if (profile != null) {
-            log.info("Running with Spring profile(s) : {}", profile);
-            return profile;
-        }
-
-        log.warn("No Spring profile configured, running with default configuration");
-        return Constants.SPRING_PROFILE_DEVELOPMENT;
-    }
+    log.warn("No Spring profile configured, running with default configuration");
+    return Constants.SPRING_PROFILE_DEVELOPMENT;
+  }
 }

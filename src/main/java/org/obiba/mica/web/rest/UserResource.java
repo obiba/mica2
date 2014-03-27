@@ -1,6 +1,9 @@
 package org.obiba.mica.web.rest;
 
-import com.codahale.metrics.annotation.Timed;
+import javax.annotation.security.RolesAllowed;
+import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
+
 import org.obiba.mica.domain.User;
 import org.obiba.mica.repository.UserRepository;
 import org.obiba.mica.security.AuthoritiesConstants;
@@ -11,9 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.security.RolesAllowed;
-import javax.inject.Inject;
-import javax.servlet.http.HttpServletResponse;
+import com.codahale.metrics.annotation.Timed;
 
 /**
  * REST controller for managing users.
@@ -22,25 +23,25 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping("/app")
 public class UserResource {
 
-    private final Logger log = LoggerFactory.getLogger(UserResource.class);
+  private final Logger log = LoggerFactory.getLogger(UserResource.class);
 
-    @Inject
-    private UserRepository userRepository;
+  @Inject
+  private UserRepository userRepository;
 
-    /**
-     * GET  /rest/users/:login -> get the "login" user.
-     */
-    @RequestMapping(value = "/rest/users/{login}",
-            method = RequestMethod.GET,
-            produces = "application/json")
-    @Timed
-    @RolesAllowed(AuthoritiesConstants.ADMIN)
-    public User getUser(@PathVariable String login, HttpServletResponse response) {
-        log.debug("REST request to get User : {}", login);
-        User user = userRepository.findOne(login);
-        if (user == null) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        }
-        return user;
+  /**
+   * GET  /rest/users/:login -> get the "login" user.
+   */
+  @RequestMapping(value = "/rest/users/{login}",
+      method = RequestMethod.GET,
+      produces = "application/json")
+  @Timed
+  @RolesAllowed(AuthoritiesConstants.ADMIN)
+  public User getUser(@PathVariable String login, HttpServletResponse response) {
+    log.debug("REST request to get User : {}", login);
+    User user = userRepository.findOne(login);
+    if(user == null) {
+      response.setStatus(HttpServletResponse.SC_NOT_FOUND);
     }
+    return user;
+  }
 }

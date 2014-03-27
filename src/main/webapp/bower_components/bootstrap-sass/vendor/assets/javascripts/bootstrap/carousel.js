@@ -14,14 +14,14 @@
   // =========================
 
   var Carousel = function (element, options) {
-    this.$element    = $(element)
+    this.$element = $(element)
     this.$indicators = this.$element.find('.carousel-indicators')
-    this.options     = options
-    this.paused      =
-    this.sliding     =
-    this.interval    =
-    this.$active     =
-    this.$items      = null
+    this.options = options
+    this.paused =
+      this.sliding =
+        this.interval =
+          this.$active =
+            this.$items = null
 
     this.options.pause == 'hover' && this.$element
       .on('mouseenter', $.proxy(this.pause, this))
@@ -34,32 +34,34 @@
     wrap: true
   }
 
-  Carousel.prototype.cycle =  function (e) {
+  Carousel.prototype.cycle = function (e) {
     e || (this.paused = false)
 
     this.interval && clearInterval(this.interval)
 
     this.options.interval
-      && !this.paused
-      && (this.interval = setInterval($.proxy(this.next, this), this.options.interval))
+    && !this.paused
+    && (this.interval = setInterval($.proxy(this.next, this), this.options.interval))
 
     return this
   }
 
   Carousel.prototype.getActiveIndex = function () {
     this.$active = this.$element.find('.item.active')
-    this.$items  = this.$active.parent().children()
+    this.$items = this.$active.parent().children()
 
     return this.$items.index(this.$active)
   }
 
   Carousel.prototype.to = function (pos) {
-    var that        = this
+    var that = this
     var activeIndex = this.getActiveIndex()
 
     if (pos > (this.$items.length - 1) || pos < 0) return
 
-    if (this.sliding)       return this.$element.one('slid.bs.carousel', function () { that.to(pos) })
+    if (this.sliding)       return this.$element.one('slid.bs.carousel', function () {
+      that.to(pos)
+    })
     if (activeIndex == pos) return this.pause().cycle()
 
     return this.slide(pos > activeIndex ? 'next' : 'prev', $(this.$items[pos]))
@@ -89,12 +91,12 @@
   }
 
   Carousel.prototype.slide = function (type, next) {
-    var $active   = this.$element.find('.item.active')
-    var $next     = next || $active[type]()
+    var $active = this.$element.find('.item.active')
+    var $next = next || $active[type]()
     var isCycling = this.interval
     var direction = type == 'next' ? 'left' : 'right'
-    var fallback  = type == 'next' ? 'first' : 'last'
-    var that      = this
+    var fallback = type == 'next' ? 'first' : 'last'
+    var that = this
 
     if (!$next.length) {
       if (!this.options.wrap) return
@@ -129,7 +131,9 @@
           $next.removeClass([type, direction].join(' ')).addClass('active')
           $active.removeClass(['active', direction].join(' '))
           that.sliding = false
-          setTimeout(function () { that.$element.trigger('slid.bs.carousel') }, 0)
+          setTimeout(function () {
+            that.$element.trigger('slid.bs.carousel')
+          }, 0)
         })
         .emulateTransitionEnd($active.css('transition-duration').slice(0, -1) * 1000)
     } else {
@@ -152,10 +156,10 @@
 
   $.fn.carousel = function (option) {
     return this.each(function () {
-      var $this   = $(this)
-      var data    = $this.data('bs.carousel')
+      var $this = $(this)
+      var data = $this.data('bs.carousel')
       var options = $.extend({}, Carousel.DEFAULTS, $this.data(), typeof option == 'object' && option)
-      var action  = typeof option == 'string' ? option : options.slide
+      var action = typeof option == 'string' ? option : options.slide
 
       if (!data) $this.data('bs.carousel', (data = new Carousel(this, options)))
       if (typeof option == 'number') data.to(option)
@@ -180,7 +184,7 @@
   // =================
 
   $(document).on('click.bs.carousel.data-api', '[data-slide], [data-slide-to]', function (e) {
-    var $this   = $(this), href
+    var $this = $(this), href
     var $target = $($this.attr('data-target') || (href = $this.attr('href')) && href.replace(/.*(?=#[^\s]+$)/, '')) //strip for ie7
     var options = $.extend({}, $target.data(), $this.data())
     var slideIndex = $this.attr('data-slide-to')

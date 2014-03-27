@@ -14,8 +14,8 @@
   // ==============================
 
   var Button = function (element, options) {
-    this.$element  = $(element)
-    this.options   = $.extend({}, Button.DEFAULTS, options)
+    this.$element = $(element)
+    this.options = $.extend({}, Button.DEFAULTS, options)
     this.isLoading = false
   }
 
@@ -24,9 +24,9 @@
   }
 
   Button.prototype.setState = function (state) {
-    var d    = 'disabled'
-    var $el  = this.$element
-    var val  = $el.is('input') ? 'val' : 'html'
+    var d = 'disabled'
+    var $el = this.$element
+    var val = $el.is('input') ? 'val' : 'html'
     var data = $el.data()
 
     state = state + 'Text'
@@ -71,8 +71,8 @@
 
   $.fn.button = function (option) {
     return this.each(function () {
-      var $this   = $(this)
-      var data    = $this.data('bs.button')
+      var $this = $(this)
+      var data = $this.data('bs.button')
       var options = typeof option == 'object' && option
 
       if (!data) $this.data('bs.button', (data = new Button(this, options)))

@@ -18,8 +18,8 @@
   }
 
   Tab.prototype.show = function () {
-    var $this    = this.element
-    var $ul      = $this.closest('ul:not(.dropdown-menu)')
+    var $this = this.element
+    var $ul = $this.closest('ul:not(.dropdown-menu)')
     var selector = $this.data('target')
 
     if (!selector) {
@@ -30,7 +30,7 @@
     if ($this.parent('li').hasClass('active')) return
 
     var previous = $ul.find('.active:last a')[0]
-    var e        = $.Event('show.bs.tab', {
+    var e = $.Event('show.bs.tab', {
       relatedTarget: previous
     })
 
@@ -50,7 +50,7 @@
   }
 
   Tab.prototype.activate = function (element, container, callback) {
-    var $active    = container.find('> .active')
+    var $active = container.find('> .active')
     var transition = callback
       && $.support.transition
       && $active.hasClass('fade')
@@ -92,10 +92,10 @@
 
   var old = $.fn.tab
 
-  $.fn.tab = function ( option ) {
+  $.fn.tab = function (option) {
     return this.each(function () {
       var $this = $(this)
-      var data  = $this.data('bs.tab')
+      var data = $this.data('bs.tab')
 
       if (!data) $this.data('bs.tab', (data = new Tab(this)))
       if (typeof option == 'string') data[option]()

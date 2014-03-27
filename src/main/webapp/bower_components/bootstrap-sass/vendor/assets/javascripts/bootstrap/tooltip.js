@@ -15,12 +15,12 @@
   // ===============================
 
   var Tooltip = function (element, options) {
-    this.type       =
-    this.options    =
-    this.enabled    =
-    this.timeout    =
-    this.hoverState =
-    this.$element   = null
+    this.type =
+      this.options =
+        this.enabled =
+          this.timeout =
+            this.hoverState =
+              this.$element = null
 
     this.init('tooltip', element, options)
   }
@@ -38,10 +38,10 @@
   }
 
   Tooltip.prototype.init = function (type, element, options) {
-    this.enabled  = true
-    this.type     = type
+    this.enabled = true
+    this.type = type
     this.$element = $(element)
-    this.options  = this.getOptions(options)
+    this.options = this.getOptions(options)
 
     var triggers = this.options.trigger.split(' ')
 
@@ -51,10 +51,10 @@
       if (trigger == 'click') {
         this.$element.on('click.' + this.type, this.options.selector, $.proxy(this.toggle, this))
       } else if (trigger != 'manual') {
-        var eventIn  = trigger == 'hover' ? 'mouseenter' : 'focusin'
+        var eventIn = trigger == 'hover' ? 'mouseenter' : 'focusin'
         var eventOut = trigger == 'hover' ? 'mouseleave' : 'focusout'
 
-        this.$element.on(eventIn  + '.' + this.type, this.options.selector, $.proxy(this.enter, this))
+        this.$element.on(eventIn + '.' + this.type, this.options.selector, $.proxy(this.enter, this))
         this.$element.on(eventOut + '.' + this.type, this.options.selector, $.proxy(this.leave, this))
       }
     }
@@ -82,7 +82,7 @@
   }
 
   Tooltip.prototype.getDelegateOptions = function () {
-    var options  = {}
+    var options = {}
     var defaults = this.getDefaults()
 
     this._options && $.each(this._options, function (key, value) {
@@ -152,24 +152,24 @@
 
       this.options.container ? $tip.appendTo(this.options.container) : $tip.insertAfter(this.$element)
 
-      var pos          = this.getPosition()
-      var actualWidth  = $tip[0].offsetWidth
+      var pos = this.getPosition()
+      var actualWidth = $tip[0].offsetWidth
       var actualHeight = $tip[0].offsetHeight
 
       if (autoPlace) {
         var $parent = this.$element.parent()
 
         var orgPlacement = placement
-        var docScroll    = document.documentElement.scrollTop || document.body.scrollTop
-        var parentWidth  = this.options.container == 'body' ? window.innerWidth  : $parent.outerWidth()
+        var docScroll = document.documentElement.scrollTop || document.body.scrollTop
+        var parentWidth = this.options.container == 'body' ? window.innerWidth : $parent.outerWidth()
         var parentHeight = this.options.container == 'body' ? window.innerHeight : $parent.outerHeight()
-        var parentLeft   = this.options.container == 'body' ? 0 : $parent.offset().left
+        var parentLeft = this.options.container == 'body' ? 0 : $parent.offset().left
 
-        placement = placement == 'bottom' && pos.top   + pos.height  + actualHeight - docScroll > parentHeight  ? 'top'    :
-                    placement == 'top'    && pos.top   - docScroll   - actualHeight < 0                         ? 'bottom' :
-                    placement == 'right'  && pos.right + actualWidth > parentWidth                              ? 'left'   :
-                    placement == 'left'   && pos.left  - actualWidth < parentLeft                               ? 'right'  :
-                    placement
+        placement = placement == 'bottom' && pos.top + pos.height + actualHeight - docScroll > parentHeight ? 'top' :
+            placement == 'top' && pos.top - docScroll - actualHeight < 0 ? 'bottom' :
+            placement == 'right' && pos.right + actualWidth > parentWidth ? 'left' :
+            placement == 'left' && pos.left - actualWidth < parentLeft ? 'right' :
+          placement
 
         $tip
           .removeClass(orgPlacement)
@@ -181,7 +181,7 @@
       this.applyPlacement(calculatedOffset, placement)
       this.hoverState = null
 
-      var complete = function() {
+      var complete = function () {
         that.$element.trigger('shown.bs.' + that.type)
       }
 
@@ -195,8 +195,8 @@
 
   Tooltip.prototype.applyPlacement = function (offset, placement) {
     var replace
-    var $tip   = this.tip()
-    var width  = $tip[0].offsetWidth
+    var $tip = this.tip()
+    var width = $tip[0].offsetWidth
     var height = $tip[0].offsetHeight
 
     // manually read margins because getBoundingClientRect includes difference
@@ -204,10 +204,10 @@
     var marginLeft = parseInt($tip.css('margin-left'), 10)
 
     // we must check for NaN for ie 8/9
-    if (isNaN(marginTop))  marginTop  = 0
+    if (isNaN(marginTop))  marginTop = 0
     if (isNaN(marginLeft)) marginLeft = 0
 
-    offset.top  = offset.top  + marginTop
+    offset.top = offset.top + marginTop
     offset.left = offset.left + marginLeft
 
     // $.fn.offset doesn't round pixel values
@@ -224,7 +224,7 @@
     $tip.addClass('in')
 
     // check to see if placing tip in new offset caused the tip to resize itself
-    var actualWidth  = $tip[0].offsetWidth
+    var actualWidth = $tip[0].offsetWidth
     var actualHeight = $tip[0].offsetHeight
 
     if (placement == 'top' && actualHeight != height) {
@@ -236,12 +236,12 @@
       var delta = 0
 
       if (offset.left < 0) {
-        delta       = offset.left * -2
+        delta = offset.left * -2
         offset.left = 0
 
         $tip.offset(offset)
 
-        actualWidth  = $tip[0].offsetWidth
+        actualWidth = $tip[0].offsetWidth
         actualHeight = $tip[0].offsetHeight
       }
 
@@ -258,7 +258,7 @@
   }
 
   Tooltip.prototype.setContent = function () {
-    var $tip  = this.tip()
+    var $tip = this.tip()
     var title = this.getTitle()
 
     $tip.find('.tooltip-inner')[this.options.html ? 'html' : 'text'](title)
@@ -268,7 +268,7 @@
   Tooltip.prototype.hide = function () {
     var that = this
     var $tip = this.tip()
-    var e    = $.Event('hide.bs.' + this.type)
+    var e = $.Event('hide.bs.' + this.type)
 
     function complete() {
       if (that.hoverState != 'in') $tip.detach()
@@ -312,19 +312,19 @@
   }
 
   Tooltip.prototype.getCalculatedOffset = function (placement, pos, actualWidth, actualHeight) {
-    return placement == 'bottom' ? { top: pos.top + pos.height,   left: pos.left + pos.width / 2 - actualWidth / 2  } :
-           placement == 'top'    ? { top: pos.top - actualHeight, left: pos.left + pos.width / 2 - actualWidth / 2  } :
-           placement == 'left'   ? { top: pos.top + pos.height / 2 - actualHeight / 2, left: pos.left - actualWidth } :
-        /* placement == 'right' */ { top: pos.top + pos.height / 2 - actualHeight / 2, left: pos.left + pos.width   }
+    return placement == 'bottom' ? { top: pos.top + pos.height, left: pos.left + pos.width / 2 - actualWidth / 2  } :
+        placement == 'top' ? { top: pos.top - actualHeight, left: pos.left + pos.width / 2 - actualWidth / 2  } :
+        placement == 'left' ? { top: pos.top + pos.height / 2 - actualHeight / 2, left: pos.left - actualWidth } :
+      /* placement == 'right' */ { top: pos.top + pos.height / 2 - actualHeight / 2, left: pos.left + pos.width   }
   }
 
   Tooltip.prototype.getTitle = function () {
     var title
     var $e = this.$element
-    var o  = this.options
+    var o = this.options
 
     title = $e.attr('data-original-title')
-      || (typeof o.title == 'function' ? o.title.call($e[0]) :  o.title)
+      || (typeof o.title == 'function' ? o.title.call($e[0]) : o.title)
 
     return title
   }
@@ -341,7 +341,7 @@
     if (!this.$element[0].parentNode) {
       this.hide()
       this.$element = null
-      this.options  = null
+      this.options = null
     }
   }
 
@@ -375,8 +375,8 @@
 
   $.fn.tooltip = function (option) {
     return this.each(function () {
-      var $this   = $(this)
-      var data    = $this.data('bs.tooltip')
+      var $this = $(this)
+      var data = $this.data('bs.tooltip')
       var options = typeof option == 'object' && option
 
       if (!data && option == 'destroy') return

@@ -14,10 +14,10 @@
   // ======================
 
   var Modal = function (element, options) {
-    this.options   = options
-    this.$element  = $(element)
+    this.options = options
+    this.$element = $(element)
     this.$backdrop =
-    this.isShown   = null
+      this.isShown = null
 
     if (this.options.remote) {
       this.$element
@@ -40,7 +40,7 @@
 
   Modal.prototype.show = function (_relatedTarget) {
     var that = this
-    var e    = $.Event('show.bs.modal', { relatedTarget: _relatedTarget })
+    var e = $.Event('show.bs.modal', { relatedTarget: _relatedTarget })
 
     this.$element.trigger(e)
 
@@ -196,8 +196,8 @@
 
   $.fn.modal = function (option, _relatedTarget) {
     return this.each(function () {
-      var $this   = $(this)
-      var data    = $this.data('bs.modal')
+      var $this = $(this)
+      var data = $this.data('bs.modal')
       var options = $.extend({}, Modal.DEFAULTS, $this.data(), typeof option == 'object' && option)
 
       if (!data) $this.data('bs.modal', (data = new Modal(this, options)))
@@ -222,10 +222,10 @@
   // ==============
 
   $(document).on('click.bs.modal.data-api', '[data-toggle="modal"]', function (e) {
-    var $this   = $(this)
-    var href    = $this.attr('href')
+    var $this = $(this)
+    var href = $this.attr('href')
     var $target = $($this.attr('data-target') || (href && href.replace(/.*(?=#[^\s]+$)/, ''))) //strip for ie7
-    var option  = $target.data('bs.modal') ? 'toggle' : $.extend({ remote: !/#/.test(href) && href }, $target.data(), $this.data())
+    var option = $target.data('bs.modal') ? 'toggle' : $.extend({ remote: !/#/.test(href) && href }, $target.data(), $this.data())
 
     if ($this.is('a')) e.preventDefault()
 
@@ -237,7 +237,11 @@
   })
 
   $(document)
-    .on('show.bs.modal', '.modal', function () { $(document.body).addClass('modal-open') })
-    .on('hidden.bs.modal', '.modal', function () { $(document.body).removeClass('modal-open') })
+    .on('show.bs.modal', '.modal', function () {
+      $(document.body).addClass('modal-open')
+    })
+    .on('hidden.bs.modal', '.modal', function () {
+      $(document.body).removeClass('modal-open')
+    })
 
 }(jQuery);

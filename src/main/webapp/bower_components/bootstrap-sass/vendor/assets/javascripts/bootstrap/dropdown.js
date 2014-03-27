@@ -14,7 +14,7 @@
   // =========================
 
   var backdrop = '.dropdown-backdrop'
-  var toggle   = '[data-toggle=dropdown]'
+  var toggle = '[data-toggle=dropdown]'
   var Dropdown = function (element) {
     $(element).on('click.bs.dropdown', this.toggle)
   }
@@ -24,7 +24,7 @@
 
     if ($this.is('.disabled, :disabled')) return
 
-    var $parent  = getParent($this)
+    var $parent = getParent($this)
     var isActive = $parent.hasClass('open')
 
     clearMenus()
@@ -60,7 +60,7 @@
 
     if ($this.is('.disabled, :disabled')) return
 
-    var $parent  = getParent($this)
+    var $parent = getParent($this)
     var isActive = $parent.hasClass('open')
 
     if (!isActive || (isActive && e.keyCode == 27)) {
@@ -116,7 +116,7 @@
   $.fn.dropdown = function (option) {
     return this.each(function () {
       var $this = $(this)
-      var data  = $this.data('bs.dropdown')
+      var data = $this.data('bs.dropdown')
 
       if (!data) $this.data('bs.dropdown', (data = new Dropdown(this)))
       if (typeof option == 'string') data[option].call($this)
@@ -140,7 +140,9 @@
 
   $(document)
     .on('click.bs.dropdown.data-api', clearMenus)
-    .on('click.bs.dropdown.data-api', '.dropdown form', function (e) { e.stopPropagation() })
+    .on('click.bs.dropdown.data-api', '.dropdown form', function (e) {
+      e.stopPropagation()
+    })
     .on('click.bs.dropdown.data-api', toggle, Dropdown.prototype.toggle)
     .on('keydown.bs.dropdown.data-api', toggle + ', [role=menu], [role=listbox]', Dropdown.prototype.keydown)
 

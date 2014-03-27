@@ -14,8 +14,8 @@
   // ================================
 
   var Collapse = function (element, options) {
-    this.$element      = $(element)
-    this.options       = $.extend({}, Collapse.DEFAULTS, options)
+    this.$element = $(element)
+    this.options = $.extend({}, Collapse.DEFAULTS, options)
     this.transitioning = null
 
     if (this.options.parent) this.$parent = $(this.options.parent)
@@ -123,8 +123,8 @@
 
   $.fn.collapse = function (option) {
     return this.each(function () {
-      var $this   = $(this)
-      var data    = $this.data('bs.collapse')
+      var $this = $(this)
+      var data = $this.data('bs.collapse')
       var options = $.extend({}, Collapse.DEFAULTS, $this.data(), typeof option == 'object' && option)
 
       if (!data && options.toggle && option == 'show') option = !option
@@ -149,14 +149,14 @@
   // =================
 
   $(document).on('click.bs.collapse.data-api', '[data-toggle=collapse]', function (e) {
-    var $this   = $(this), href
-    var target  = $this.attr('data-target')
-        || e.preventDefault()
-        || (href = $this.attr('href')) && href.replace(/.*(?=#[^\s]+$)/, '') //strip for ie7
+    var $this = $(this), href
+    var target = $this.attr('data-target')
+      || e.preventDefault()
+      || (href = $this.attr('href')) && href.replace(/.*(?=#[^\s]+$)/, '') //strip for ie7
     var $target = $(target)
-    var data    = $target.data('bs.collapse')
-    var option  = data ? 'toggle' : $this.data()
-    var parent  = $this.attr('data-parent')
+    var data = $target.data('bs.collapse')
+    var option = data ? 'toggle' : $this.data()
+    var parent = $this.attr('data-parent')
     var $parent = parent && $(parent)
 
     if (!data || !data.transitioning) {

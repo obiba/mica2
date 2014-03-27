@@ -1,5 +1,10 @@
 package org.obiba.mica.security;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+import javax.inject.Inject;
+
 import org.obiba.mica.domain.Authority;
 import org.obiba.mica.domain.User;
 import org.obiba.mica.repository.UserRepository;
@@ -12,39 +17,35 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collection;
-
 /**
  * Authenticate a user from the database.
  */
 @Component("userDetailsService")
 public class UserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService {
 
-    private final Logger log = LoggerFactory.getLogger(UserDetailsService.class);
+  private final Logger log = LoggerFactory.getLogger(UserDetailsService.class);
 
-    @Inject
-    private UserRepository userRepository;
+  @Inject
+  private UserRepository userRepository;
 
-    @Override
-    @Transactional
-    public UserDetails loadUserByUsername(final String login) {
-        log.debug("Authenticating {}", login);
-        String lowercaseLogin = login.toLowerCase();
+  @Override
+  @Transactional
+  public UserDetails loadUserByUsername(final String login) {
+    log.debug("Authenticating {}", login);
+    String lowercaseLogin = login.toLowerCase();
 
-        User userFromDatabase = userRepository.findOne(login);
-        if (userFromDatabase == null) {
-            throw new UsernameNotFoundException("User " + lowercaseLogin + " was not found in the database");
-        }
-
-        Collection<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
-        for (Authority authority : userFromDatabase.getAuthorities()) {
-            GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(authority.getName());
-            grantedAuthorities.add(grantedAuthority);
-        }
-
-        return new org.springframework.security.core.userdetails.User(lowercaseLogin, userFromDatabase.getPassword(),
-                grantedAuthorities);
+    User userFromDatabase = userRepository.findOne(login);
+    if(userFromDatabase == null) {
+      throw new UsernameNotFoundException("User " + lowercaseLogin + " was not found in the database");
     }
+
+    Collection<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
+    for(Authority authority : userFromDatabase.getAuthorities()) {
+      GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(authority.getName());
+      grantedAuthorities.add(grantedAuthority);
+    }
+
+    return new org.springframework.security.core.userdetails.User(lowercaseLogin, userFromDatabase.getPassword(),
+        grantedAuthorities);
+  }
 }
