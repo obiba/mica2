@@ -12,9 +12,7 @@ public class Address implements Serializable {
 
   private String zip;
 
-  private LocalizableString state;
-
-  private LocalizableString country;
+  private String state;
 
   private String countryIso;
 
@@ -42,20 +40,12 @@ public class Address implements Serializable {
     this.zip = zip;
   }
 
-  public LocalizableString getState() {
+  public String getState() {
     return state;
   }
 
-  public void setState(LocalizableString state) {
+  public void setState(String state) {
     this.state = state;
-  }
-
-  public LocalizableString getCountry() {
-    return country;
-  }
-
-  public void setCountry(LocalizableString country) {
-    this.country = country;
   }
 
   public String getCountryIso() {

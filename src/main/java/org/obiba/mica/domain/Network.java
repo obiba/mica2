@@ -19,7 +19,7 @@ public class Network extends AbstractTimestampedDocument implements Serializable
   private String id;
 
   @Version
-  private long version;
+  private Long version;
 
   public String getId() {
     return id;

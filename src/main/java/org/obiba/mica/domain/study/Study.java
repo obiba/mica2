@@ -1,6 +1,7 @@
 package org.obiba.mica.domain.study;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -28,7 +29,7 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
   private String id;
 
   @Version
-  private long version;
+  private Long version;
 
   @NotNull
   private LocalizableString name;
@@ -78,11 +79,11 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
     this.id = id;
   }
 
-  public long getVersion() {
+  public Long getVersion() {
     return version;
   }
 
-  public void setVersion(long version) {
+  public void setVersion(Long version) {
     this.version = version;
   }
 
@@ -102,16 +103,18 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
     this.acronym = acronym;
   }
 
+  @NotNull
   public List<Contact> getInvestigators() {
-    return investigators;
+    return investigators == null ? (investigators = new ArrayList<>()) : investigators;
   }
 
   public void setInvestigators(List<Contact> investigators) {
     this.investigators = investigators;
   }
 
+  @NotNull
   public List<Contact> getContacts() {
-    return contacts;
+    return contacts == null ? (contacts = new ArrayList<>()) : contacts;
   }
 
   public void setContacts(List<Contact> contacts) {
@@ -183,7 +186,7 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
   }
 
   public List<String> getAccess() {
-    return access;
+    return access == null ? (access = new ArrayList<>()) : access;
   }
 
   public void setAccess(List<String> access) {
@@ -252,6 +255,14 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
 
     private static final long serialVersionUID = 5984119393358199672L;
 
+    public enum Design {
+      case_control, case_only, clinical_trial, cohort_study, cross_sectional, other
+    }
+
+    public enum RecruitmentTarget {
+      individuals, families, other
+    }
+
     private List<String> designs;
 
     private LocalizableString otherDesign;
@@ -265,7 +276,7 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
     private LocalizableString infos;
 
     public List<String> getDesigns() {
-      return designs;
+      return designs == null ? (designs = new ArrayList<>()) : designs;
     }
 
     public void setDesigns(List<String> designs) {
@@ -289,7 +300,7 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
     }
 
     public List<String> getRecruitments() {
-      return recruitments;
+      return recruitments == null ? (recruitments = new ArrayList<>()) : recruitments;
     }
 
     public void setRecruitments(List<String> recruitments) {

@@ -11,8 +11,12 @@ public class Contact implements Serializable {
 
   private static final long serialVersionUID = -3098622168836970902L;
 
+  private String title;
+
+  private String firstName;
+
   @NotBlank
-  private String name;
+  private String lastName;
 
   @Email
   private String email;
@@ -23,12 +27,28 @@ public class Contact implements Serializable {
 
   private Institution institution;
 
-  public String getName() {
-    return name;
+  public String getTitle() {
+    return title;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
+  public String getFirstName() {
+    return firstName;
+  }
+
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
+  }
+
+  public String getLastName() {
+    return lastName;
+  }
+
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
   }
 
   public String getEmail() {
