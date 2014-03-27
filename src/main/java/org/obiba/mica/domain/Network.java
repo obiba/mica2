@@ -29,6 +29,8 @@ import com.fasterxml.jackson.datatype.joda.deser.LocalDateDeserializer;
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Network implements Serializable {
 
+  private static final long serialVersionUID = -4271967393906681773L;
+
   @Id
   @GeneratedValue(strategy = GenerationType.TABLE)
   private long id;
@@ -88,7 +90,7 @@ public class Network implements Serializable {
 
   @Override
   public int hashCode() {
-    return (int) (id ^ (id >>> 32));
+    return (int) (id ^ id >>> 32);
   }
 
   @Override

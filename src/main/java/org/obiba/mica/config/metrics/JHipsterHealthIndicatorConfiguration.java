@@ -21,22 +21,19 @@ public class JHipsterHealthIndicatorConfiguration implements InitializingBean {
   @Inject
   private DataSource dataSource;
 
-  private JavaMailHealthCheckIndicator javaMailHealthCheckIndicator = new JavaMailHealthCheckIndicator();
+  private final JavaMailHealthCheckIndicator javaMailHealthCheckIndicator = new JavaMailHealthCheckIndicator();
 
-  private DatabaseHealthCheckIndicator databaseHealthCheckIndicator = new DatabaseHealthCheckIndicator();
+  private final DatabaseHealthCheckIndicator databaseHealthCheckIndicator = new DatabaseHealthCheckIndicator();
 
   @Bean
   public HealthIndicator healthIndicator() {
-    return new HealthIndicator() {
-      @Override
-      public Object health() {
-        Map<String, HealthCheckIndicator.Result> healths = new LinkedHashMap<>();
+    return () -> {
+      Map<String, HealthCheckIndicator.Result> healths = new LinkedHashMap<>();
 
-        healths.putAll(javaMailHealthCheckIndicator.health());
-        healths.putAll(databaseHealthCheckIndicator.health());
+      healths.putAll(javaMailHealthCheckIndicator.health());
+      healths.putAll(databaseHealthCheckIndicator.health());
 
-        return healths;
-      }
+      return healths;
     };
   }
 

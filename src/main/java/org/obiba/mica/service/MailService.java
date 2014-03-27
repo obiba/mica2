@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class MailService {
 
-  private final Logger log = LoggerFactory.getLogger(MailService.class);
+  private static final Logger log = LoggerFactory.getLogger(MailService.class);
 
   @Inject
   private Environment env;
@@ -37,7 +37,7 @@ public class MailService {
 
   @PostConstruct
   public void init() {
-    this.from = env.getProperty("spring.mail.from");
+    from = env.getProperty("spring.mail.from");
   }
 
   @Async

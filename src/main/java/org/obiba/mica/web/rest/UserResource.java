@@ -23,7 +23,7 @@ import com.codahale.metrics.annotation.Timed;
 @RequestMapping("/app")
 public class UserResource {
 
-  private final Logger log = LoggerFactory.getLogger(UserResource.class);
+  private static final Logger log = LoggerFactory.getLogger(UserResource.class);
 
   @Inject
   private UserRepository userRepository;

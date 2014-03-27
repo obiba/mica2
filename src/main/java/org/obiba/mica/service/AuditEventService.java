@@ -34,8 +34,7 @@ public class AuditEventService {
   }
 
   public List<AuditEvent> findByDates(LocalDateTime fromDate, LocalDateTime toDate) {
-    final List<PersistentAuditEvent> persistentAuditEvents = persistenceAuditEventRepository
-        .findByDates(fromDate, toDate);
+    List<PersistentAuditEvent> persistentAuditEvents = persistenceAuditEventRepository.findByDates(fromDate, toDate);
 
     return auditEventConverter.convertToAuditEvent(persistentAuditEvents);
   }

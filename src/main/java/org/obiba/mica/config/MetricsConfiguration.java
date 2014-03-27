@@ -55,7 +55,7 @@ public class MetricsConfiguration extends MetricsConfigurerAdapter implements En
 
   private static final String PROP_METRIC_REG_JVM_BUFFERS = "jvm.buffers";
 
-  private final Logger log = LoggerFactory.getLogger(MetricsConfiguration.class);
+  private static final Logger log = LoggerFactory.getLogger(MetricsConfiguration.class);
 
   private static final MetricRegistry METRIC_REGISTRY = new MetricRegistry();
 
@@ -65,7 +65,7 @@ public class MetricsConfiguration extends MetricsConfigurerAdapter implements En
 
   @Override
   public void setEnvironment(Environment environment) {
-    this.propertyResolver = new RelaxedPropertyResolver(environment, ENV_METRICS);
+    propertyResolver = new RelaxedPropertyResolver(environment, ENV_METRICS);
   }
 
   @Override
@@ -91,7 +91,7 @@ public class MetricsConfiguration extends MetricsConfigurerAdapter implements En
         .register(PROP_METRIC_REG_JVM_BUFFERS, new BufferPoolMetricSet(ManagementFactory.getPlatformMBeanServer()));
     if(propertyResolver.getProperty(PROP_JMX_ENABLED, Boolean.class, false)) {
       log.info("Initializing Metrics JMX reporting");
-      final JmxReporter jmxReporter = JmxReporter.forRegistry(METRIC_REGISTRY).build();
+      JmxReporter jmxReporter = JmxReporter.forRegistry(METRIC_REGISTRY).build();
       jmxReporter.start();
     }
   }
@@ -109,7 +109,7 @@ public class MetricsConfiguration extends MetricsConfigurerAdapter implements En
 
     @Override
     public void setEnvironment(Environment environment) {
-      this.propertyResolver = new RelaxedPropertyResolver(environment, ENV_METRICS_GRAPHITE);
+      propertyResolver = new RelaxedPropertyResolver(environment, ENV_METRICS_GRAPHITE);
     }
 
     @PostConstruct

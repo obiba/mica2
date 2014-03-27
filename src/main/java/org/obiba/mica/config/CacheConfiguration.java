@@ -9,6 +9,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.metamodel.EntityType;
 
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.Ehcache;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -28,7 +31,7 @@ import com.codahale.metrics.ehcache.InstrumentedEhcache;
 @AutoConfigureAfter(value = { MetricsConfiguration.class, DatabaseConfiguration.class })
 public class CacheConfiguration {
 
-  private final Logger log = LoggerFactory.getLogger(CacheConfiguration.class);
+  private static final Logger log = LoggerFactory.getLogger(CacheConfiguration.class);
 
   @PersistenceContext
   private EntityManager entityManager;
@@ -45,9 +48,7 @@ public class CacheConfiguration {
   public void destroy() {
     log.info("Remove Cache Manager metrics");
     SortedSet<String> names = metricRegistry.getNames();
-    for(String name : names) {
-      metricRegistry.remove(name);
-    }
+    names.forEach(metricRegistry::remove);
     log.info("Closing Cache Manager");
     cacheManager.shutdown();
   }
@@ -68,11 +69,11 @@ public class CacheConfiguration {
       }
       Assert.notNull(name, "entity cannot exist without a identifier");
 
-      net.sf.ehcache.Cache cache = cacheManager.getCache(name);
+      Cache cache = cacheManager.getCache(name);
       if(cache != null) {
         cache.getCacheConfiguration()
             .setTimeToLiveSeconds(env.getProperty("cache.timeToLiveSeconds", Integer.class, 3600));
-        net.sf.ehcache.Ehcache decoratedCache = InstrumentedEhcache.instrument(metricRegistry, cache);
+        Ehcache decoratedCache = InstrumentedEhcache.instrument(metricRegistry, cache);
         cacheManager.replaceCacheWithDecoratedCache(cache, decoratedCache);
       }
     }

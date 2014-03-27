@@ -31,7 +31,7 @@ public class CustomAuditEventRepository {
 
       @Override
       public List<AuditEvent> find(String principal, Date after) {
-        final List<PersistentAuditEvent> persistentAuditEvents;
+        List<PersistentAuditEvent> persistentAuditEvents;
         if(principal == null && after == null) {
           persistentAuditEvents = persistenceAuditEventRepository.findAll();
         } else if(after == null) {

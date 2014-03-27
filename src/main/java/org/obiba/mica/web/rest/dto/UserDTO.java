@@ -44,7 +44,7 @@ public class UserDTO {
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("UserDTO{");
+    StringBuilder sb = new StringBuilder("UserDTO{");
     sb.append("login='").append(login).append('\'');
     sb.append(", firstName='").append(firstName).append('\'');
     sb.append(", lastName='").append(lastName).append('\'');

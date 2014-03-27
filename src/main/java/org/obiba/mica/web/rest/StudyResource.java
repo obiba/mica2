@@ -24,7 +24,7 @@ import com.codahale.metrics.annotation.Timed;
 @RequestMapping("/app")
 public class StudyResource {
 
-  private final Logger log = LoggerFactory.getLogger(StudyResource.class);
+  private static final Logger log = LoggerFactory.getLogger(StudyResource.class);
 
   @Inject
   private StudyRepository studyRepository;

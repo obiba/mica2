@@ -23,14 +23,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Component("userDetailsService")
 public class UserDetailsService implements org.springframework.security.core.userdetails.UserDetailsService {
 
-  private final Logger log = LoggerFactory.getLogger(UserDetailsService.class);
+  private static final Logger log = LoggerFactory.getLogger(UserDetailsService.class);
 
   @Inject
   private UserRepository userRepository;
 
   @Override
   @Transactional
-  public UserDetails loadUserByUsername(final String login) {
+  public UserDetails loadUserByUsername(String login) {
     log.debug("Authenticating {}", login);
     String lowercaseLogin = login.toLowerCase();
 
@@ -39,7 +39,7 @@ public class UserDetailsService implements org.springframework.security.core.use
       throw new UsernameNotFoundException("User " + lowercaseLogin + " was not found in the database");
     }
 
-    Collection<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>();
+    Collection<GrantedAuthority> grantedAuthorities = new ArrayList<>();
     for(Authority authority : userFromDatabase.getAuthorities()) {
       GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(authority.getName());
       grantedAuthorities.add(grantedAuthority);

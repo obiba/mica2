@@ -1,7 +1,6 @@
 package org.obiba.mica.config.metrics;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,8 +8,6 @@ import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.StringUtils;
 
@@ -21,9 +18,9 @@ public class DatabaseHealthCheckIndicator extends HealthCheckIndicator {
 
   public static final String DATABASE_HEALTH_INDICATOR = "database";
 
-  private final Logger log = LoggerFactory.getLogger(DatabaseHealthCheckIndicator.class);
+  private static final Logger log = LoggerFactory.getLogger(DatabaseHealthCheckIndicator.class);
 
-  private static Map<String, String> queries = new HashMap<>();
+  private static final Map<String, String> queries = new HashMap<>();
 
   static {
     queries.put("HSQL Database Engine", "SELECT COUNT(*) FROM INFORMATION_SCHEMA.SYSTEM_USERS");
@@ -34,8 +31,6 @@ public class DatabaseHealthCheckIndicator extends HealthCheckIndicator {
     queries.put("Microsoft SQL Server", "SELECT 1");
   }
 
-  private static String DEFAULT_QUERY = "SELECT 'Hello'";
-
   private JdbcTemplate jdbcTemplate;
 
   private String query = null;
@@ -44,7 +39,7 @@ public class DatabaseHealthCheckIndicator extends HealthCheckIndicator {
   }
 
   public void setDataSource(DataSource dataSource) {
-    this.jdbcTemplate = new JdbcTemplate(dataSource);
+    jdbcTemplate = new JdbcTemplate(dataSource);
   }
 
   @Override
@@ -53,15 +48,11 @@ public class DatabaseHealthCheckIndicator extends HealthCheckIndicator {
   }
 
   @Override
-  protected Result check() throws Exception {
+  protected Result check() {
     log.debug("Initializing Database health indicator");
     try {
-      String dataBaseProductName = jdbcTemplate.execute(new ConnectionCallback<String>() {
-        @Override
-        public String doInConnection(Connection connection) throws SQLException, DataAccessException {
-          return connection.getMetaData().getDatabaseProductName();
-        }
-      });
+      String dataBaseProductName = jdbcTemplate
+          .execute((Connection connection) -> connection.getMetaData().getDatabaseProductName());
       query = detectQuery(dataBaseProductName);
       return healthy();
     } catch(Exception e) {
@@ -76,6 +67,7 @@ public class DatabaseHealthCheckIndicator extends HealthCheckIndicator {
       query = queries.get(product);
     }
     if(!StringUtils.hasText(query)) {
+      String DEFAULT_QUERY = "SELECT 'Hello'";
       query = DEFAULT_QUERY;
     }
     return query;

@@ -3,8 +3,8 @@ package org.obiba.mica.web.rest;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -37,7 +37,7 @@ import com.codahale.metrics.annotation.Timed;
 @RequestMapping("/app")
 public class AccountResource {
 
-  private final Logger log = LoggerFactory.getLogger(AccountResource.class);
+  private static final Logger log = LoggerFactory.getLogger(AccountResource.class);
 
   @Inject
   private UserRepository userRepository;
@@ -73,10 +73,7 @@ public class AccountResource {
       response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
       return null;
     }
-    List<String> roles = new ArrayList<>();
-    for(Authority authority : user.getAuthorities()) {
-      roles.add(authority.getName());
-    }
+    List<String> roles = user.getAuthorities().stream().map(Authority::getName).collect(Collectors.toList());
     return new UserDTO(user.getLogin(), user.getFirstName(), user.getLastName(), user.getEmail(), roles);
   }
 
@@ -99,7 +96,7 @@ public class AccountResource {
       produces = "application/json")
   @Timed
   public void changePassword(@RequestBody String password, HttpServletResponse response) throws IOException {
-    if(password == null || password.equals("")) {
+    if(password == null || "".equals(password)) {
       response.sendError(HttpServletResponse.SC_FORBIDDEN, "Password should not be empty");
     } else {
       userService.changePassword(password);
@@ -134,14 +131,13 @@ public class AccountResource {
     // Check if the session to invalidate if the current user session.
     // If so, the security session will be invalidated too
     User user = userRepository.findOne(SecurityUtils.getCurrentLogin());
-    final List<PersistentToken> persistentTokens = persistentTokenRepository.findByUser(user);
+    List<PersistentToken> persistentTokens = persistentTokenRepository.findByUser(user);
 
-    for(PersistentToken persistentToken : persistentTokens) {
-      if(StringUtils.equals(persistentToken.getSeries(), decodedSeries)) {
-        request.getSession().invalidate();
-        SecurityContextHolder.clearContext();
-      }
-    }
+    persistentTokens.stream().filter(persistentToken -> StringUtils.equals(persistentToken.getSeries(), decodedSeries))
+        .forEach(persistentToken -> {
+          request.getSession().invalidate();
+          SecurityContextHolder.clearContext();
+        });
 
     persistentTokenRepository.delete(decodedSeries);
   }

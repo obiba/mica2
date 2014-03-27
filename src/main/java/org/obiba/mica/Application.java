@@ -21,7 +21,7 @@ import org.springframework.core.env.SimpleCommandLinePropertySource;
 @EnableAutoConfiguration(exclude = { MetricFilterAutoConfiguration.class, MetricRepositoryAutoConfiguration.class })
 public class Application {
 
-  private final Logger log = LoggerFactory.getLogger(Application.class);
+  private static final Logger log = LoggerFactory.getLogger(Application.class);
 
   @Inject
   private Environment env;
@@ -47,7 +47,7 @@ public class Application {
    * To run the application with hot reload enabled, add the following arguments to your JVM:
    * "-javaagent:spring_loaded/springloaded-jhipster.jar -noverify -Dspringloaded=plugins=io.github.jhipster.loaded.instrument.JHipsterLoadtimeInstrumentationPlugin"
    */
-  public static void main(String[] args) {
+  public static void main(String... args) {
     SpringApplication app = new SpringApplication(Application.class);
     app.setShowBanner(false);
 

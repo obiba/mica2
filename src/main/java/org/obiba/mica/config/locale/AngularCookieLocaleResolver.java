@@ -70,7 +70,7 @@ public class AngularCookieLocaleResolver extends CookieLocaleResolver {
           localePart = value.substring(0, spaceIndex);
           timeZonePart = value.substring(spaceIndex + 1);
         }
-        locale = (!"-".equals(localePart) ? StringUtils.parseLocaleString(localePart) : null);
+        locale = "-".equals(localePart) ? null : StringUtils.parseLocaleString(localePart);
         if(timeZonePart != null) {
           timeZone = StringUtils.parseTimeZoneString(timeZonePart);
         }
@@ -79,10 +79,10 @@ public class AngularCookieLocaleResolver extends CookieLocaleResolver {
               "'" + (timeZone != null ? " and time zone '" + timeZone.getID() + "'" : ""));
         }
       }
-      request.setAttribute(LOCALE_REQUEST_ATTRIBUTE_NAME, (locale != null ? locale : determineDefaultLocale(request)));
+      request.setAttribute(LOCALE_REQUEST_ATTRIBUTE_NAME, locale != null ? locale : determineDefaultLocale(request));
 
       request.setAttribute(TIME_ZONE_REQUEST_ATTRIBUTE_NAME,
-          (timeZone != null ? timeZone : determineDefaultTimeZone(request)));
+          timeZone != null ? timeZone : determineDefaultTimeZone(request));
     }
   }
 }

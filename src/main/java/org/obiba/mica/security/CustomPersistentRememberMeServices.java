@@ -18,6 +18,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.codec.Base64;
 import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
 import org.springframework.security.web.authentication.rememberme.CookieTheftException;
@@ -53,7 +54,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class CustomPersistentRememberMeServices extends AbstractRememberMeServices {
 
-  private final Logger log = LoggerFactory.getLogger(CustomPersistentRememberMeServices.class);
+  private static final Logger log = LoggerFactory.getLogger(CustomPersistentRememberMeServices.class);
 
   // Token is valid for one month
   private static final int TOKEN_VALIDITY_DAYS = 31;
@@ -64,7 +65,7 @@ public class CustomPersistentRememberMeServices extends AbstractRememberMeServic
 
   private static final int DEFAULT_TOKEN_LENGTH = 16;
 
-  private SecureRandom random;
+  private final SecureRandom random;
 
   @Inject
   private PersistentTokenRepository persistentTokenRepository;
@@ -73,8 +74,7 @@ public class CustomPersistentRememberMeServices extends AbstractRememberMeServic
   private UserRepository userRepository;
 
   @Inject
-  public CustomPersistentRememberMeServices(Environment env,
-      org.springframework.security.core.userdetails.UserDetailsService userDetailsService) {
+  public CustomPersistentRememberMeServices(Environment env, UserDetailsService userDetailsService) {
 
     super(env.getProperty("jhipster.security.rememberme.key"), userDetailsService);
     random = new SecureRandom();
@@ -154,14 +154,14 @@ public class CustomPersistentRememberMeServices extends AbstractRememberMeServic
   /**
    * Validate the token and return it.
    */
-  private PersistentToken getPersistentToken(String[] cookieTokens) {
+  private PersistentToken getPersistentToken(String... cookieTokens) {
     if(cookieTokens.length != 2) {
       throw new InvalidCookieException("Cookie token did not contain " + 2 +
           " tokens, but contained '" + Arrays.asList(cookieTokens) + "'");
     }
 
-    final String presentedSeries = cookieTokens[0];
-    final String presentedToken = cookieTokens[1];
+    String presentedSeries = cookieTokens[0];
+    String presentedToken = cookieTokens[1];
 
     PersistentToken token = persistentTokenRepository.findOne(presentedSeries);
 

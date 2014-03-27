@@ -28,7 +28,7 @@ import liquibase.integration.spring.SpringLiquibase;
 @EnableTransactionManagement
 public class DatabaseConfiguration implements EnvironmentAware {
 
-  private final Logger log = LoggerFactory.getLogger(DatabaseConfiguration.class);
+  private static final Logger log = LoggerFactory.getLogger(DatabaseConfiguration.class);
 
   private RelaxedPropertyResolver propertyResolver;
 
@@ -37,7 +37,7 @@ public class DatabaseConfiguration implements EnvironmentAware {
 
   @Override
   public void setEnvironment(Environment environment) {
-    this.propertyResolver = new RelaxedPropertyResolver(environment, "spring.datasource.");
+    propertyResolver = new RelaxedPropertyResolver(environment, "spring.datasource.");
   }
 
   @Bean

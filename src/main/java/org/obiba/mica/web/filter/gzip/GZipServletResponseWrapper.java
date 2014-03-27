@@ -17,7 +17,7 @@ class GZipServletResponseWrapper extends HttpServletResponseWrapper {
 
   private boolean disableFlushBuffer = false;
 
-  public GZipServletResponseWrapper(HttpServletResponse response, GZIPOutputStream gzout) throws IOException {
+  GZipServletResponseWrapper(HttpServletResponse response, GZIPOutputStream gzout) throws IOException {
     super(response);
     gzipOutputStream = new GZipServletOutputStream(gzout);
   }
@@ -26,12 +26,12 @@ class GZipServletResponseWrapper extends HttpServletResponseWrapper {
 
     //PrintWriter.close does not throw exceptions. Thus, the call does not need
     //be inside a try-catch block.
-    if(this.printWriter != null) {
-      this.printWriter.close();
+    if(printWriter != null) {
+      printWriter.close();
     }
 
-    if(this.gzipOutputStream != null) {
-      this.gzipOutputStream.close();
+    if(gzipOutputStream != null) {
+      gzipOutputStream.close();
     }
   }
 
@@ -44,12 +44,12 @@ class GZipServletResponseWrapper extends HttpServletResponseWrapper {
   public void flushBuffer() throws IOException {
 
     //PrintWriter.flush() does not throw exception
-    if(this.printWriter != null) {
-      this.printWriter.flush();
+    if(printWriter != null) {
+      printWriter.flush();
     }
 
-    if(this.gzipOutputStream != null) {
-      this.gzipOutputStream.flush();
+    if(gzipOutputStream != null) {
+      gzipOutputStream.flush();
     }
 
     // doing this might leads to response already committed exception
@@ -64,23 +64,23 @@ class GZipServletResponseWrapper extends HttpServletResponseWrapper {
 
   @Override
   public ServletOutputStream getOutputStream() throws IOException {
-    if(this.printWriter != null) {
+    if(printWriter != null) {
       throw new IllegalStateException("PrintWriter obtained already - cannot get OutputStream");
     }
 
-    return this.gzipOutputStream;
+    return gzipOutputStream;
   }
 
   @Override
   public PrintWriter getWriter() throws IOException {
-    if(this.printWriter == null) {
-      this.gzipOutputStream = new GZipServletOutputStream(getResponse().getOutputStream());
+    if(printWriter == null) {
+      gzipOutputStream = new GZipServletOutputStream(getResponse().getOutputStream());
 
-      this.printWriter = new PrintWriter(
-          new OutputStreamWriter(this.gzipOutputStream, getResponse().getCharacterEncoding()), true);
+      printWriter = new PrintWriter(new OutputStreamWriter(gzipOutputStream, getResponse().getCharacterEncoding()),
+          true);
     }
 
-    return this.printWriter;
+    return printWriter;
   }
 
   @Override

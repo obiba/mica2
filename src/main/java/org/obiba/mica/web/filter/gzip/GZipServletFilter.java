@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 public class GZipServletFilter implements Filter {
 
-  private Logger log = LoggerFactory.getLogger(GZipServletFilter.class);
+  private static final Logger log = LoggerFactory.getLogger(GZipServletFilter.class);
 
   @Override
   public void init(FilterConfig filterConfig) throws ServletException {
@@ -44,11 +44,11 @@ public class GZipServletFilter implements Filter {
       }
 
       // Create a gzip stream
-      final ByteArrayOutputStream compressed = new ByteArrayOutputStream();
-      final GZIPOutputStream gzout = new GZIPOutputStream(compressed);
+      ByteArrayOutputStream compressed = new ByteArrayOutputStream();
+      GZIPOutputStream gzout = new GZIPOutputStream(compressed);
 
       // Handle the request
-      final GZipServletResponseWrapper wrapper = new GZipServletResponseWrapper(httpResponse, gzout);
+      GZipServletResponseWrapper wrapper = new GZipServletResponseWrapper(httpResponse, gzout);
       wrapper.setDisableFlushBuffer(true);
       chain.doFilter(request, wrapper);
       wrapper.flush();
@@ -101,9 +101,9 @@ public class GZipServletFilter implements Filter {
   /**
    * Checks if the request uri is an include. These cannot be gzipped.
    */
-  private boolean isIncluded(final HttpServletRequest request) {
-    final String uri = (String) request.getAttribute("javax.servlet.include.request_uri");
-    final boolean includeRequest = !(uri == null);
+  private boolean isIncluded(HttpServletRequest request) {
+    String uri = (String) request.getAttribute("javax.servlet.include.request_uri");
+    boolean includeRequest = !(uri == null);
 
     if(includeRequest && log.isDebugEnabled()) {
       log.debug("{} resulted in an include request. This is unusable, because" +

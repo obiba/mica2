@@ -6,35 +6,35 @@ import java.io.OutputStream;
 import javax.servlet.ServletOutputStream;
 
 class GZipServletOutputStream extends ServletOutputStream {
-  private OutputStream stream;
+  private final OutputStream stream;
 
-  public GZipServletOutputStream(OutputStream output) throws IOException {
+  GZipServletOutputStream(OutputStream output) {
     super();
-    this.stream = output;
+    stream = output;
   }
 
   @Override
   public void close() throws IOException {
-    this.stream.close();
+    stream.close();
   }
 
   @Override
   public void flush() throws IOException {
-    this.stream.flush();
+    stream.flush();
   }
 
   @Override
   public void write(byte b[]) throws IOException {
-    this.stream.write(b);
+    stream.write(b);
   }
 
   @Override
   public void write(byte b[], int off, int len) throws IOException {
-    this.stream.write(b, off, len);
+    stream.write(b, off, len);
   }
 
   @Override
   public void write(int b) throws IOException {
-    this.stream.write(b);
+    stream.write(b);
   }
 }

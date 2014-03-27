@@ -26,7 +26,7 @@ public abstract class HealthCheckIndicator implements HealthIndicator<Map<String
    * @throws Exception if there is an unhandled error during the health check; this will result in
    * a failed health check
    */
-  protected abstract Result check() throws Exception;
+  protected abstract Result check();
 
   @Override
   final public Map<String, Result> health() {
@@ -83,7 +83,7 @@ public abstract class HealthCheckIndicator implements HealthIndicator<Map<String
    * The result of a HealthCheckIndicator
    */
   public static class Result {
-    private boolean healthy;
+    private final boolean healthy;
 
     private String message;
 

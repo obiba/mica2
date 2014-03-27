@@ -13,7 +13,7 @@ public class JavaMailHealthCheckIndicator extends HealthCheckIndicator {
 
   public static final String EMAIL_HEALTH_INDICATOR = "email";
 
-  private final Logger log = LoggerFactory.getLogger(JavaMailHealthCheckIndicator.class);
+  private static final Logger log = LoggerFactory.getLogger(JavaMailHealthCheckIndicator.class);
 
   private JavaMailSenderImpl javaMailSender;
 
@@ -30,7 +30,7 @@ public class JavaMailHealthCheckIndicator extends HealthCheckIndicator {
   }
 
   @Override
-  protected Result check() throws Exception {
+  protected Result check() {
     log.debug("Initializing JavaMail health indicator");
 
     try {

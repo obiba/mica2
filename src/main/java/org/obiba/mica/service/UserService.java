@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class UserService {
 
-  private final Logger log = LoggerFactory.getLogger(UserService.class);
+  private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
   @Inject
   private PasswordEncoder passwordEncoder;

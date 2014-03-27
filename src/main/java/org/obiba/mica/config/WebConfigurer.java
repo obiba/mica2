@@ -12,6 +12,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
+import org.h2.server.web.WebServlet;
 import org.obiba.mica.web.filter.CachingHttpHeadersFilter;
 import org.obiba.mica.web.filter.StaticResourcesProductionFilter;
 import org.obiba.mica.web.filter.gzip.GZipServletFilter;
@@ -33,7 +34,7 @@ import com.codahale.metrics.servlets.MetricsServlet;
 @AutoConfigureAfter(CacheConfiguration.class)
 public class WebConfigurer implements ServletContextInitializer {
 
-  private final Logger log = LoggerFactory.getLogger(WebConfigurer.class);
+  private static final Logger log = LoggerFactory.getLogger(WebConfigurer.class);
 
   @Inject
   private Environment env;
@@ -140,8 +141,7 @@ public class WebConfigurer implements ServletContextInitializer {
    */
   private void initH2Console(ServletContext servletContext) {
     log.debug("Initialize H2 console");
-    ServletRegistration.Dynamic h2ConsoleServlet = servletContext
-        .addServlet("H2Console", new org.h2.server.web.WebServlet());
+    ServletRegistration.Dynamic h2ConsoleServlet = servletContext.addServlet("H2Console", new WebServlet());
     h2ConsoleServlet.addMapping("/console/*");
     h2ConsoleServlet.setLoadOnStartup(1);
   }

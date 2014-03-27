@@ -40,7 +40,7 @@ public class MailConfiguration implements EnvironmentAware {
 
   private static final String PROP_TRANSPORT_PROTO = "mail.transport.protocol";
 
-  private final Logger log = LoggerFactory.getLogger(MailConfiguration.class);
+  private static final Logger log = LoggerFactory.getLogger(MailConfiguration.class);
 
   private RelaxedPropertyResolver propertyResolver;
 
@@ -49,7 +49,7 @@ public class MailConfiguration implements EnvironmentAware {
 
   @Override
   public void setEnvironment(Environment environment) {
-    this.propertyResolver = new RelaxedPropertyResolver(environment, ENV_SPRING_MAIL);
+    propertyResolver = new RelaxedPropertyResolver(environment, ENV_SPRING_MAIL);
   }
 
   @Bean

@@ -24,7 +24,7 @@ import com.codahale.metrics.annotation.Timed;
 @RequestMapping("/app")
 public class NetworkResource {
 
-  private final Logger log = LoggerFactory.getLogger(NetworkResource.class);
+  private static final Logger log = LoggerFactory.getLogger(NetworkResource.class);
 
   @Inject
   private NetworkRepository networkRepository;

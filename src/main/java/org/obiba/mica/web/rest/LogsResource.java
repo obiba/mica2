@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.codahale.metrics.annotation.Timed;
 
 import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 
 /**
@@ -31,8 +32,8 @@ public class LogsResource {
   public List<LoggerDTO> getList() {
     LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
 
-    List<LoggerDTO> loggers = new ArrayList<LoggerDTO>();
-    for(ch.qos.logback.classic.Logger logger : context.getLoggerList()) {
+    List<LoggerDTO> loggers = new ArrayList<>();
+    for(Logger logger : context.getLoggerList()) {
       loggers.add(new LoggerDTO(logger));
     }
     return loggers;

@@ -34,6 +34,8 @@ public class PersistentToken implements Serializable {
 
   private static final int MAX_USER_AGENT_LEN = 255;
 
+  private static final long serialVersionUID = 6642184065846753129L;
+
   @Id
   private String series;
 
@@ -85,7 +87,7 @@ public class PersistentToken implements Serializable {
 
   @JsonGetter
   public String getFormattedTokenDate() {
-    return DATE_TIME_FORMATTER.print(this.tokenDate);
+    return DATE_TIME_FORMATTER.print(tokenDate);
   }
 
   public String getIpAddress() {

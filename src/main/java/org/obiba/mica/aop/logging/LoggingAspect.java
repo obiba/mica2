@@ -16,7 +16,8 @@ import org.slf4j.LoggerFactory;
 @Aspect
 public class LoggingAspect {
 
-  private Logger logger = LoggerFactory.getLogger(this.getClass());
+  @SuppressWarnings("NonConstantLogger")
+  private final Logger logger = LoggerFactory.getLogger(getClass());
 
   private static final String WITHIN_EXPR = "within(org.obiba.mica.repository..*) || within(org.obiba.mica.service..*)";
 
