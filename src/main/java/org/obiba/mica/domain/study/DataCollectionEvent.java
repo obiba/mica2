@@ -1,6 +1,7 @@
 package org.obiba.mica.domain.study;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.constraints.Max;
@@ -13,6 +14,18 @@ import org.obiba.mica.domain.LocalizableString;
 public class DataCollectionEvent implements Serializable {
 
   private static final long serialVersionUID = 6559914069652243954L;
+
+  public enum DataSources {
+    questionnaires, physical_measures, biological_samples, administratives_databases, others
+  }
+
+  public enum BioSamples {
+    blood, cord_blood, buccal_cells, tissues, saliva, urine, hair, nail, others
+  }
+
+  public enum AdministrativeDatabases {
+    health_databases, vital_statisctics_databases, socioeconomic_databases, environmental_databases
+  }
 
   @NotNull
   private LocalizableString name;
@@ -94,7 +107,7 @@ public class DataCollectionEvent implements Serializable {
   }
 
   public List<String> getDataSources() {
-    return dataSources;
+    return dataSources == null ? (dataSources = new ArrayList<>()) : dataSources;
   }
 
   public void setDataSources(List<String> dataSources) {
@@ -102,7 +115,7 @@ public class DataCollectionEvent implements Serializable {
   }
 
   public List<String> getAdministrativeDatabases() {
-    return administrativeDatabases;
+    return administrativeDatabases == null ? (administrativeDatabases = new ArrayList<>()) : administrativeDatabases;
   }
 
   public void setAdministrativeDatabases(List<String> administrativeDatabases) {
@@ -118,7 +131,7 @@ public class DataCollectionEvent implements Serializable {
   }
 
   public List<String> getBioSamples() {
-    return bioSamples;
+    return bioSamples == null ? (bioSamples = new ArrayList<>()) : bioSamples;
   }
 
   public void setBioSamples(List<String> bioSamples) {
@@ -142,7 +155,7 @@ public class DataCollectionEvent implements Serializable {
   }
 
   public List<Attachment> getAttachments() {
-    return attachments;
+    return attachments == null ? (attachments = new ArrayList<>()) : attachments;
   }
 
   public void setAttachments(List<Attachment> attachments) {

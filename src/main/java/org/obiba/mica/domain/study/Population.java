@@ -1,6 +1,7 @@
 package org.obiba.mica.domain.study;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.constraints.Min;
@@ -76,7 +77,7 @@ public class Population implements Serializable {
   }
 
   public List<DataCollectionEvent> getDataCollectionEvents() {
-    return dataCollectionEvents;
+    return dataCollectionEvents == null ? (dataCollectionEvents = new ArrayList<>()) : dataCollectionEvents;
   }
 
   public void setDataCollectionEvents(List<DataCollectionEvent> dataCollectionEvents) {
@@ -86,6 +87,18 @@ public class Population implements Serializable {
   public static class Recruitment implements Serializable {
 
     private static final long serialVersionUID = 7949265355598902080L;
+
+    public enum SourcesOfRecruitment {
+      general, exist_studies, specific_population, other
+    }
+
+    public enum GeneralPopulation {
+      volunteer, selected_samples, random
+    }
+
+    public enum SpecificPopulation {
+      clinic_patients, specific_association, other
+    }
 
     private List<String> sources;
 
@@ -102,7 +115,7 @@ public class Population implements Serializable {
     private LocalizableString infos;
 
     public List<String> getSources() {
-      return sources;
+      return sources == null ? (sources = new ArrayList<>()) : sources;
     }
 
     public void setSources(List<String> sources) {
@@ -110,7 +123,9 @@ public class Population implements Serializable {
     }
 
     public List<String> getGeneralPopulationSources() {
-      return generalPopulationSources;
+      return generalPopulationSources == null
+          ? (generalPopulationSources = new ArrayList<>())
+          : generalPopulationSources;
     }
 
     public void setGeneralPopulationSources(List<String> generalPopulationSources) {
@@ -118,7 +133,9 @@ public class Population implements Serializable {
     }
 
     public List<String> getSpecificPopulationSources() {
-      return specificPopulationSources;
+      return specificPopulationSources == null
+          ? (specificPopulationSources = new ArrayList<>())
+          : specificPopulationSources;
     }
 
     public void setSpecificPopulationSources(List<String> specificPopulationSources) {
@@ -134,7 +151,7 @@ public class Population implements Serializable {
     }
 
     public List<LocalizableString> getStudies() {
-      return studies;
+      return studies == null ? (studies = new ArrayList<>()) : studies;
     }
 
     public void setStudies(List<LocalizableString> studies) {
@@ -163,7 +180,7 @@ public class Population implements Serializable {
     private static final long serialVersionUID = 310808673856023033L;
 
     public enum Gender {
-      MEN, WOMEN
+      men, women
     }
 
     private Gender gender;
@@ -213,7 +230,7 @@ public class Population implements Serializable {
     }
 
     public List<String> getCountriesIso() {
-      return countriesIso;
+      return countriesIso == null ? (countriesIso = new ArrayList<>()) : countriesIso;
     }
 
     public void setCountriesIso(List<String> countriesIso) {
@@ -237,7 +254,7 @@ public class Population implements Serializable {
     }
 
     public List<LocalizableString> getEthnicOrigin() {
-      return ethnicOrigin;
+      return ethnicOrigin == null ? (ethnicOrigin = new ArrayList<>()) : ethnicOrigin;
     }
 
     public void setEthnicOrigin(List<LocalizableString> ethnicOrigin) {
@@ -245,7 +262,7 @@ public class Population implements Serializable {
     }
 
     public List<LocalizableString> getHealthStatus() {
-      return healthStatus;
+      return healthStatus == null ? (healthStatus = new ArrayList<>()) : healthStatus;
     }
 
     public void setHealthStatus(List<LocalizableString> healthStatus) {

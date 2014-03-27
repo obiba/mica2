@@ -25,6 +25,18 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
 
   private static final long serialVersionUID = 6559914069652243954L;
 
+  public LocalizableString getOtherAccess() {
+    return otherAccess;
+  }
+
+  public void setOtherAccess(LocalizableString otherAccess) {
+    this.otherAccess = otherAccess;
+  }
+
+  public enum Access {
+    data, bio_samples, other
+  }
+
   @Id
   private String id;
 
@@ -59,6 +71,8 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
   private Integer endYear;
 
   private List<String> access;
+
+  private LocalizableString otherAccess;
 
   private String markerPaper;
 
@@ -210,7 +224,8 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
   }
 
   public List<Attachment> getAttachments() {
-    return attachments;
+    return attachments == null ? (attachments = new ArrayList<>()) : attachments;
+
   }
 
   public void setAttachments(List<Attachment> attachments) {
@@ -226,7 +241,7 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
   }
 
   public List<Population> getPopulations() {
-    return populations;
+    return populations == null ? (populations = new ArrayList<>()) : populations;
   }
 
   public void setPopulations(List<Population> populations) {
