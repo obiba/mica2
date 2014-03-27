@@ -12,10 +12,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.codahale.metrics.annotation.Timed;
+
+import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
  * REST controller for managing Study.
@@ -32,9 +35,7 @@ public class StudyResource {
   /**
    * POST  /rest/studies -> Create a new study.
    */
-  @RequestMapping(value = "/rest/studies",
-      method = RequestMethod.POST,
-      produces = "application/json")
+  @RequestMapping(value = "/rest/studies", method = POST, produces = "application/json")
   @Timed
   public void create(@RequestBody Study study) {
     log.debug("REST request to save Study : {}", study);
@@ -44,21 +45,17 @@ public class StudyResource {
   /**
    * GET  /rest/studies -> get all the studies.
    */
-  @RequestMapping(value = "/rest/studies",
-      method = RequestMethod.GET,
-      produces = "application/json")
+  @RequestMapping(value = "/rest/studies", method = GET, produces = "application/json")
   @Timed
   public List<Study> getAll() {
-    log.debug("REST request to get all Studys");
+    log.debug("REST request to get all Studies");
     return studyRepository.findAll();
   }
 
   /**
    * GET  /rest/studies/:id -> get the "id" study.
    */
-  @RequestMapping(value = "/rest/studies/{id}",
-      method = RequestMethod.GET,
-      produces = "application/json")
+  @RequestMapping(value = "/rest/studies/{id}", method = GET, produces = "application/json")
   @Timed
   public Study get(@PathVariable Long id, HttpServletResponse response) {
     log.debug("REST request to get Study : {}", id);
@@ -72,9 +69,7 @@ public class StudyResource {
   /**
    * DELETE  /rest/studies/:id -> delete the "id" study.
    */
-  @RequestMapping(value = "/rest/studies/{id}",
-      method = RequestMethod.DELETE,
-      produces = "application/json")
+  @RequestMapping(value = "/rest/studies/{id}", method = DELETE, produces = "application/json")
   @Timed
   public void delete(@PathVariable Long id, HttpServletResponse response) {
     log.debug("REST request to delete Study : {}", id);
