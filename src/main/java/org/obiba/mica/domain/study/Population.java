@@ -4,17 +4,18 @@ import java.io.Serializable;
 import java.util.List;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import org.obiba.mica.domain.LocalizableString;
 
 public class Population implements Serializable {
 
   private static final long serialVersionUID = 6559914069652243954L;
 
-  @NotEmpty
-  private String name;
+  @NotNull
+  private LocalizableString name;
 
-  private String description;
+  private LocalizableString description;
 
   private Recruitment recruitment;
 
@@ -22,23 +23,23 @@ public class Population implements Serializable {
 
   private NumberOfParticipants numberOfParticipants;
 
-  private String infos;
+  private LocalizableString infos;
 
   private List<DataCollectionEvent> dataCollectionEvents;
 
-  public String getName() {
+  public LocalizableString getName() {
     return name;
   }
 
-  public void setName(String name) {
+  public void setName(LocalizableString name) {
     this.name = name;
   }
 
-  public String getDescription() {
+  public LocalizableString getDescription() {
     return description;
   }
 
-  public void setDescription(String description) {
+  public void setDescription(LocalizableString description) {
     this.description = description;
   }
 
@@ -66,11 +67,11 @@ public class Population implements Serializable {
     this.numberOfParticipants = numberOfParticipants;
   }
 
-  public String getInfos() {
+  public LocalizableString getInfos() {
     return infos;
   }
 
-  public void setInfos(String infos) {
+  public void setInfos(LocalizableString infos) {
     this.infos = infos;
   }
 
@@ -88,9 +89,17 @@ public class Population implements Serializable {
 
     private List<String> sources;
 
-    private List<String> studies;
+    private List<String> generalPopulationSources;
 
-    private String infos;
+    private List<String> specificPopulationSources;
+
+    private LocalizableString otherSpecificPopulationSource;
+
+    private List<LocalizableString> studies;
+
+    private LocalizableString otherSource;
+
+    private LocalizableString infos;
 
     public List<String> getSources() {
       return sources;
@@ -100,19 +109,51 @@ public class Population implements Serializable {
       this.sources = sources;
     }
 
-    public List<String> getStudies() {
+    public List<String> getGeneralPopulationSources() {
+      return generalPopulationSources;
+    }
+
+    public void setGeneralPopulationSources(List<String> generalPopulationSources) {
+      this.generalPopulationSources = generalPopulationSources;
+    }
+
+    public List<String> getSpecificPopulationSources() {
+      return specificPopulationSources;
+    }
+
+    public void setSpecificPopulationSources(List<String> specificPopulationSources) {
+      this.specificPopulationSources = specificPopulationSources;
+    }
+
+    public LocalizableString getOtherSpecificPopulationSource() {
+      return otherSpecificPopulationSource;
+    }
+
+    public void setOtherSpecificPopulationSource(LocalizableString otherSpecificPopulationSource) {
+      this.otherSpecificPopulationSource = otherSpecificPopulationSource;
+    }
+
+    public List<LocalizableString> getStudies() {
       return studies;
     }
 
-    public void setStudies(List<String> studies) {
+    public void setStudies(List<LocalizableString> studies) {
       this.studies = studies;
     }
 
-    public String getInfos() {
+    public LocalizableString getOtherSource() {
+      return otherSource;
+    }
+
+    public void setOtherSource(LocalizableString otherSource) {
+      this.otherSource = otherSource;
+    }
+
+    public LocalizableString getInfos() {
       return infos;
     }
 
-    public void setInfos(String infos) {
+    public void setInfos(LocalizableString infos) {
       this.infos = infos;
     }
   }
@@ -133,17 +174,19 @@ public class Population implements Serializable {
     @Min(0)
     private Integer ageMax;
 
-    private String country;
+    private List<String> countriesIso;
 
-    private String territory;
+    private LocalizableString territory;
 
     private List<String> criteria;
 
-    private List<String> ethnicOrigin;
+    private List<LocalizableString> ethnicOrigin;
 
-    private List<String> healthStatus;
+    private List<LocalizableString> healthStatus;
 
-    private String infos;
+    private LocalizableString otherCriteria;
+
+    private LocalizableString infos;
 
     public Gender getGender() {
       return gender;
@@ -169,19 +212,19 @@ public class Population implements Serializable {
       this.ageMax = ageMax;
     }
 
-    public String getCountry() {
-      return country;
+    public List<String> getCountriesIso() {
+      return countriesIso;
     }
 
-    public void setCountry(String country) {
-      this.country = country;
+    public void setCountriesIso(List<String> countriesIso) {
+      this.countriesIso = countriesIso;
     }
 
-    public String getTerritory() {
+    public LocalizableString getTerritory() {
       return territory;
     }
 
-    public void setTerritory(String territory) {
+    public void setTerritory(LocalizableString territory) {
       this.territory = territory;
     }
 
@@ -193,27 +236,35 @@ public class Population implements Serializable {
       this.criteria = criteria;
     }
 
-    public List<String> getEthnicOrigin() {
+    public List<LocalizableString> getEthnicOrigin() {
       return ethnicOrigin;
     }
 
-    public void setEthnicOrigin(List<String> ethnicOrigin) {
+    public void setEthnicOrigin(List<LocalizableString> ethnicOrigin) {
       this.ethnicOrigin = ethnicOrigin;
     }
 
-    public List<String> getHealthStatus() {
+    public List<LocalizableString> getHealthStatus() {
       return healthStatus;
     }
 
-    public void setHealthStatus(List<String> healthStatus) {
+    public void setHealthStatus(List<LocalizableString> healthStatus) {
       this.healthStatus = healthStatus;
     }
 
-    public String getInfos() {
+    public LocalizableString getOtherCriteria() {
+      return otherCriteria;
+    }
+
+    public void setOtherCriteria(LocalizableString otherCriteria) {
+      this.otherCriteria = otherCriteria;
+    }
+
+    public LocalizableString getInfos() {
       return infos;
     }
 
-    public void setInfos(String infos) {
+    public void setInfos(LocalizableString infos) {
       this.infos = infos;
     }
   }

@@ -2,6 +2,8 @@ package org.obiba.mica.domain.study;
 
 import java.io.Serializable;
 
+import org.obiba.mica.domain.LocalizableString;
+
 public class NumberOfParticipants implements Serializable {
 
   private static final long serialVersionUID = -9146572889284008519L;
@@ -10,7 +12,7 @@ public class NumberOfParticipants implements Serializable {
 
   private TargetNumber sample;
 
-  private String infos;
+  private LocalizableString infos;
 
   public TargetNumber getParticipant() {
     return participant;
@@ -28,11 +30,11 @@ public class NumberOfParticipants implements Serializable {
     this.sample = sample;
   }
 
-  public String getInfos() {
+  public LocalizableString getInfos() {
     return infos;
   }
 
-  public void setInfos(String infos) {
+  public void setInfos(LocalizableString infos) {
     this.infos = infos;
   }
 
@@ -42,7 +44,7 @@ public class NumberOfParticipants implements Serializable {
 
     private boolean noLimit;
 
-    private int number;
+    private Integer number;
 
     public boolean isNoLimit() {
       return noLimit;
@@ -52,13 +54,14 @@ public class NumberOfParticipants implements Serializable {
       this.noLimit = noLimit;
     }
 
-    public int getNumber() {
+    public Integer getNumber() {
       return number;
     }
 
-    public void setNumber(int number) {
+    public void setNumber(Integer number) {
       this.number = number;
     }
+
   }
 
 }

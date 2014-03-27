@@ -4,12 +4,14 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-import org.hibernate.validator.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 import org.hibernate.validator.constraints.URL;
 import org.obiba.mica.domain.AbstractTimestampedDocument;
 import org.obiba.mica.domain.Attachment;
 import org.obiba.mica.domain.Authorization;
 import org.obiba.mica.domain.Contact;
+import org.obiba.mica.domain.LocalizableString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -28,17 +30,17 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
   @Version
   private long version;
 
-  @NotEmpty
-  private String name;
+  @NotNull
+  private LocalizableString name;
 
-  private String acronym;
+  private LocalizableString acronym;
 
   private List<Contact> investigators;
 
   private List<Contact> contacts;
 
-  @NotEmpty
-  private String objectives;
+  @NotNull
+  private LocalizableString objectives;
 
   @URL
   private String website;
@@ -64,7 +66,7 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
 
   private List<Attachment> attachments;
 
-  private String infos;
+  private LocalizableString infos;
 
   private List<Population> populations;
 
@@ -84,19 +86,19 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
     this.version = version;
   }
 
-  public String getName() {
+  public LocalizableString getName() {
     return name;
   }
 
-  public void setName(String name) {
+  public void setName(LocalizableString name) {
     this.name = name;
   }
 
-  public String getAcronym() {
+  public LocalizableString getAcronym() {
     return acronym;
   }
 
-  public void setAcronym(String acronym) {
+  public void setAcronym(LocalizableString acronym) {
     this.acronym = acronym;
   }
 
@@ -116,11 +118,11 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
     this.contacts = contacts;
   }
 
-  public String getObjectives() {
+  public LocalizableString getObjectives() {
     return objectives;
   }
 
-  public void setObjectives(String objectives) {
+  public void setObjectives(LocalizableString objectives) {
     this.objectives = objectives;
   }
 
@@ -212,11 +214,11 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
     this.attachments = attachments;
   }
 
-  public String getInfos() {
+  public LocalizableString getInfos() {
     return infos;
   }
 
-  public void setInfos(String infos) {
+  public void setInfos(LocalizableString infos) {
     this.infos = infos;
   }
 
@@ -252,11 +254,15 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
 
     private List<String> designs;
 
-    private String followUp;
+    private LocalizableString otherDesign;
+
+    private LocalizableString followUpInfos;
 
     private List<String> recruitments;
 
-    private String infos;
+    private LocalizableString otherRecruitments;
+
+    private LocalizableString infos;
 
     public List<String> getDesigns() {
       return designs;
@@ -266,12 +272,20 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
       this.designs = designs;
     }
 
-    public String getFollowUp() {
-      return followUp;
+    public LocalizableString getOtherDesign() {
+      return otherDesign;
     }
 
-    public void setFollowUp(String followUp) {
-      this.followUp = followUp;
+    public void setOtherDesign(LocalizableString otherDesign) {
+      this.otherDesign = otherDesign;
+    }
+
+    public LocalizableString getFollowUpInfos() {
+      return followUpInfos;
+    }
+
+    public void setFollowUpInfos(LocalizableString followUpInfos) {
+      this.followUpInfos = followUpInfos;
     }
 
     public List<String> getRecruitments() {
@@ -282,11 +296,19 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
       this.recruitments = recruitments;
     }
 
-    public String getInfos() {
+    public LocalizableString getOtherRecruitments() {
+      return otherRecruitments;
+    }
+
+    public void setOtherRecruitments(LocalizableString otherRecruitments) {
+      this.otherRecruitments = otherRecruitments;
+    }
+
+    public LocalizableString getInfos() {
       return infos;
     }
 
-    public void setInfos(String infos) {
+    public void setInfos(LocalizableString infos) {
       this.infos = infos;
     }
   }

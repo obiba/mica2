@@ -10,6 +10,8 @@ public class Attachment implements Serializable {
 
   private String type;
 
+  private LocalizableString description;
+
   @NotNull
   private String gridFsId;
 
@@ -19,6 +21,14 @@ public class Attachment implements Serializable {
 
   public void setType(String type) {
     this.type = type;
+  }
+
+  public LocalizableString getDescription() {
+    return description;
+  }
+
+  public void setDescription(LocalizableString description) {
+    this.description = description;
   }
 
   public String getGridFsId() {
