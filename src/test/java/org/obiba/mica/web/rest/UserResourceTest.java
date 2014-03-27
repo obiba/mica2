@@ -48,8 +48,10 @@ public class UserResourceTest {
 
   @Test
   public void testGetExistingUser() throws Exception {
-    restUserMockMvc.perform(get("/app/rest/users/admin").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-        .andExpect(content().contentType("application/json")).andExpect(jsonPath("$.lastName").value("Administrator"));
+    restUserMockMvc.perform(get("/app/rest/users/admin").accept(MediaType.APPLICATION_JSON)) //
+        .andExpect(status().isOk()) //
+        .andExpect(content().contentType("application/json")) //
+        .andExpect(jsonPath("$.lastName").value("Administrator"));
   }
 
   @Test

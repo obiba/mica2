@@ -8,8 +8,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.obiba.mica.Application;
-import org.obiba.mica.jpa.domain.Network;
-import org.obiba.mica.jpa.repository.NetworkRepository;
+import org.obiba.mica.domain.Network;
+import org.obiba.mica.repository.NetworkRepository;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -43,7 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("dev")
 public class NetworkResourceTest {
 
-  private static final Long DEFAULT_ID = new Long(1L);
+  private static final String DEFAULT_ID = "1";
 
   private static final LocalDate DEFAULT_SAMPLE_DATE_ATTR = new LocalDate(0L);
 
@@ -66,12 +66,12 @@ public class NetworkResourceTest {
     NetworkResource networkResource = new NetworkResource();
     ReflectionTestUtils.setField(networkResource, "networkRepository", networkRepository);
 
-    this.restNetworkMockMvc = MockMvcBuilders.standaloneSetup(networkResource).build();
+    restNetworkMockMvc = MockMvcBuilders.standaloneSetup(networkResource).build();
 
     network = new Network();
     network.setId(DEFAULT_ID);
-    network.setSampleDateAttribute(DEFAULT_SAMPLE_DATE_ATTR);
-    network.setSampleTextAttribute(DEFAULT_SAMPLE_TEXT_ATTR);
+//    network.setSampleDateAttribute(DEFAULT_SAMPLE_DATE_ATTR);
+//    network.setSampleTextAttribute(DEFAULT_SAMPLE_TEXT_ATTR);
   }
 
   @Test
@@ -82,24 +82,26 @@ public class NetworkResourceTest {
         .content(TestUtil.convertObjectToJsonBytes(network))).andExpect(status().isOk());
 
     // Read Network
-    restNetworkMockMvc.perform(get("/app/rest/networks/{id}", DEFAULT_ID)).andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.id").value(DEFAULT_ID.intValue()))
-        .andExpect(jsonPath("$.sampleDateAttribute").value(DEFAULT_SAMPLE_DATE_ATTR.toString()))
+    restNetworkMockMvc.perform(get("/app/rest/networks/{id}", DEFAULT_ID)) //
+        .andExpect(status().isOk()) //
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON)) //
+        .andExpect(jsonPath("$.id").value(DEFAULT_ID)) //
+        .andExpect(jsonPath("$.sampleDateAttribute").value(DEFAULT_SAMPLE_DATE_ATTR.toString())) //
         .andExpect(jsonPath("$.sampleTextAttribute").value(DEFAULT_SAMPLE_TEXT_ATTR));
 
     // Update Network
-    network.setSampleDateAttribute(UPD_SAMPLE_DATE_ATTR);
-    network.setSampleTextAttribute(UPD_SAMPLE_TEXT_ATTR);
+//    network.setSampleDateAttribute(UPD_SAMPLE_DATE_ATTR);
+//    network.setSampleTextAttribute(UPD_SAMPLE_TEXT_ATTR);
 
     restNetworkMockMvc.perform(post("/app/rest/networks").contentType(TestUtil.APPLICATION_JSON_UTF8)
         .content(TestUtil.convertObjectToJsonBytes(network))).andExpect(status().isOk());
 
     // Read updated Network
-    restNetworkMockMvc.perform(get("/app/rest/networks/{id}", DEFAULT_ID)).andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.id").value(DEFAULT_ID.intValue()))
-        .andExpect(jsonPath("$.sampleDateAttribute").value(UPD_SAMPLE_DATE_ATTR.toString()))
+    restNetworkMockMvc.perform(get("/app/rest/networks/{id}", DEFAULT_ID)) //
+        .andExpect(status().isOk()) //
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON)) //
+        .andExpect(jsonPath("$.id").value(DEFAULT_ID)) //
+        .andExpect(jsonPath("$.sampleDateAttribute").value(UPD_SAMPLE_DATE_ATTR.toString())) //
         .andExpect(jsonPath("$.sampleTextAttribute").value(UPD_SAMPLE_TEXT_ATTR));
 
     // Delete Network

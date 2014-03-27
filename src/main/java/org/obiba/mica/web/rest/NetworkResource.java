@@ -5,8 +5,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
-import org.obiba.mica.jpa.domain.Network;
-import org.obiba.mica.jpa.repository.NetworkRepository;
+import org.obiba.mica.domain.Network;
+import org.obiba.mica.repository.NetworkRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PathVariable;

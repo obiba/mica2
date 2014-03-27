@@ -12,6 +12,12 @@ spring:
         username: root
         password:
 
+    mongodb:
+        url: localhost:27017
+        databaseName: mica
+        username:
+        password:
+
     jpa:
         database-platform: org.hibernate.dialect.MySQLInnoDBDialect
         database: MYSQL

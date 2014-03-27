@@ -8,8 +8,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.obiba.mica.Application;
-import org.obiba.mica.jpa.domain.Study;
-import org.obiba.mica.jpa.repository.StudyRepository;
+import org.obiba.mica.domain.Study;
+import org.obiba.mica.repository.StudyRepository;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -43,7 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("dev")
 public class StudyResourceTest {
 
-  private static final Long DEFAULT_ID = new Long(1L);
+  private static final String DEFAULT_ID = "1";
 
   private static final LocalDate DEFAULT_SAMPLE_DATE_ATTR = new LocalDate(0L);
 
@@ -66,12 +66,12 @@ public class StudyResourceTest {
     StudyResource studyResource = new StudyResource();
     ReflectionTestUtils.setField(studyResource, "studyRepository", studyRepository);
 
-    this.restStudyMockMvc = MockMvcBuilders.standaloneSetup(studyResource).build();
+    restStudyMockMvc = MockMvcBuilders.standaloneSetup(studyResource).build();
 
     study = new Study();
     study.setId(DEFAULT_ID);
-    study.setSampleDateAttribute(DEFAULT_SAMPLE_DATE_ATTR);
-    study.setSampleTextAttribute(DEFAULT_SAMPLE_TEXT_ATTR);
+//    study.setSampleDateAttribute(DEFAULT_SAMPLE_DATE_ATTR);
+//    study.setSampleTextAttribute(DEFAULT_SAMPLE_TEXT_ATTR);
   }
 
   @Test
@@ -82,24 +82,25 @@ public class StudyResourceTest {
         .content(TestUtil.convertObjectToJsonBytes(study))).andExpect(status().isOk());
 
     // Read Study
-    restStudyMockMvc.perform(get("/app/rest/studys/{id}", DEFAULT_ID)).andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.id").value(DEFAULT_ID.intValue()))
-        .andExpect(jsonPath("$.sampleDateAttribute").value(DEFAULT_SAMPLE_DATE_ATTR.toString()))
+    restStudyMockMvc.perform(get("/app/rest/studys/{id}", DEFAULT_ID)).andExpect(status().isOk()) //
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON)) //
+        .andExpect(jsonPath("$.id").value(DEFAULT_ID)) //
+        .andExpect(jsonPath("$.sampleDateAttribute").value(DEFAULT_SAMPLE_DATE_ATTR.toString())) //
         .andExpect(jsonPath("$.sampleTextAttribute").value(DEFAULT_SAMPLE_TEXT_ATTR));
 
     // Update Study
-    study.setSampleDateAttribute(UPD_SAMPLE_DATE_ATTR);
-    study.setSampleTextAttribute(UPD_SAMPLE_TEXT_ATTR);
+//    study.setSampleDateAttribute(UPD_SAMPLE_DATE_ATTR);
+//    study.setSampleTextAttribute(UPD_SAMPLE_TEXT_ATTR);
 
     restStudyMockMvc.perform(post("/app/rest/studys").contentType(TestUtil.APPLICATION_JSON_UTF8)
         .content(TestUtil.convertObjectToJsonBytes(study))).andExpect(status().isOk());
 
     // Read updated Study
-    restStudyMockMvc.perform(get("/app/rest/studys/{id}", DEFAULT_ID)).andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.id").value(DEFAULT_ID.intValue()))
-        .andExpect(jsonPath("$.sampleDateAttribute").value(UPD_SAMPLE_DATE_ATTR.toString()))
+    restStudyMockMvc.perform(get("/app/rest/studys/{id}", DEFAULT_ID)) //
+        .andExpect(status().isOk()) //
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON)) //
+        .andExpect(jsonPath("$.id").value(DEFAULT_ID)) //
+        .andExpect(jsonPath("$.sampleDateAttribute").value(UPD_SAMPLE_DATE_ATTR.toString())) //
         .andExpect(jsonPath("$.sampleTextAttribute").value(UPD_SAMPLE_TEXT_ATTR));
 
     // Delete Study
