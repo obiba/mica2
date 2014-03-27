@@ -1,14 +1,14 @@
 package org.obiba.mica.domain;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.validation.constraints.NotNull;
 
 public interface Timestamped {
 
   @NotNull
-  Date getCreated();
+  LocalDateTime getCreated();
 
-  Date getUpdated();
+  LocalDateTime getUpdated();
 
 }

@@ -1,6 +1,6 @@
 package org.obiba.mica.repository;
 
-import org.obiba.mica.domain.Study;
+import org.obiba.mica.domain.study.Study;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**

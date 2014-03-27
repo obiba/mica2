@@ -1,6 +1,6 @@
 package org.obiba.mica.domain;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.validation.constraints.NotNull;
 
@@ -12,27 +12,27 @@ public abstract class AbstractTimestampedDocument implements Timestamped {
 
   @NotNull
   @CreatedDate
-  private Date created = new Date();
+  private LocalDateTime created = LocalDateTime.now();
 
   @LastModifiedDate
-  private Date updated;
+  private LocalDateTime updated;
 
   @Override
   @NotNull
-  public Date getCreated() {
+  public LocalDateTime getCreated() {
     return created;
   }
 
-  public void setCreated(@NotNull Date created) {
+  public void setCreated(@NotNull LocalDateTime created) {
     this.created = created;
   }
 
   @Override
-  public Date getUpdated() {
+  public LocalDateTime getUpdated() {
     return updated;
   }
 
-  public void setUpdated(@NotNull Date updated) {
+  public void setUpdated(@NotNull LocalDateTime updated) {
     this.updated = updated;
   }
 

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
@@ -16,6 +17,9 @@ public class Network extends AbstractTimestampedDocument implements Serializable
 
   @Id
   private String id;
+
+  @Version
+  private long version;
 
   public String getId() {
     return id;
