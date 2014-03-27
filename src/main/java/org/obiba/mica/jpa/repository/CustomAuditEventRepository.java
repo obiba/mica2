@@ -1,4 +1,4 @@
-package org.obiba.mica.repository;
+package org.obiba.mica.jpa.repository;
 
 import java.util.Date;
 import java.util.List;
@@ -7,7 +7,7 @@ import javax.inject.Inject;
 
 import org.joda.time.LocalDateTime;
 import org.obiba.mica.config.audit.AuditEventConverter;
-import org.obiba.mica.domain.PersistentAuditEvent;
+import org.obiba.mica.jpa.domain.PersistentAuditEvent;
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.context.annotation.Bean;

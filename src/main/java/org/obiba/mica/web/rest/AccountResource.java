@@ -11,11 +11,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.obiba.mica.domain.Authority;
-import org.obiba.mica.domain.PersistentToken;
-import org.obiba.mica.domain.User;
-import org.obiba.mica.repository.PersistentTokenRepository;
-import org.obiba.mica.repository.UserRepository;
+import org.obiba.mica.jpa.domain.Authority;
+import org.obiba.mica.jpa.domain.PersistentToken;
+import org.obiba.mica.jpa.domain.User;
+import org.obiba.mica.jpa.repository.PersistentTokenRepository;
+import org.obiba.mica.jpa.repository.UserRepository;
 import org.obiba.mica.security.SecurityUtils;
 import org.obiba.mica.service.UserService;
 import org.obiba.mica.web.rest.dto.UserDTO;

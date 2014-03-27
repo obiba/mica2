@@ -1,4 +1,4 @@
-package org.obiba.mica.domain.util;
+package org.obiba.mica.jpa.domain.util;
 
 import java.io.IOException;
 

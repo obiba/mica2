@@ -1,10 +1,10 @@
-package org.obiba.mica.repository;
+package org.obiba.mica.jpa.repository;
 
 import java.util.List;
 
 import org.joda.time.LocalDate;
-import org.obiba.mica.domain.PersistentToken;
-import org.obiba.mica.domain.User;
+import org.obiba.mica.jpa.domain.PersistentToken;
+import org.obiba.mica.jpa.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

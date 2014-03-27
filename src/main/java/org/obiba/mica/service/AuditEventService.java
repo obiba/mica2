@@ -6,8 +6,8 @@ import javax.inject.Inject;
 
 import org.joda.time.LocalDateTime;
 import org.obiba.mica.config.audit.AuditEventConverter;
-import org.obiba.mica.domain.PersistentAuditEvent;
-import org.obiba.mica.repository.PersistenceAuditEventRepository;
+import org.obiba.mica.jpa.domain.PersistentAuditEvent;
+import org.obiba.mica.jpa.repository.PersistenceAuditEventRepository;
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

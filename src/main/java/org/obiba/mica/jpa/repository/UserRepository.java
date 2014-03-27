@@ -1,6 +1,6 @@
-package org.obiba.mica.repository;
+package org.obiba.mica.jpa.repository;
 
-import org.obiba.mica.domain.User;
+import org.obiba.mica.jpa.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**

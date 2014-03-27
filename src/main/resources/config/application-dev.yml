@@ -49,7 +49,7 @@ hotReload:
     enabled: true
     package:
       project: org.obiba.mica
-      domain: org.obiba.mica.domain
+      domain: org.obiba.mica.jpa.domain
       restdto: org.obiba.mica.web.rest.dto
     liquibase:
       defaultCatalogName: 

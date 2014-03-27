@@ -24,7 +24,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import liquibase.integration.spring.SpringLiquibase;
 
 @Configuration
-@EnableJpaRepositories("org.obiba.mica.repository")
+@EnableJpaRepositories("org.obiba.mica.jpa.repository")
 @EnableTransactionManagement
 public class DatabaseConfiguration implements EnvironmentAware {
 
@@ -67,7 +67,7 @@ public class DatabaseConfiguration implements EnvironmentAware {
   @Bean(name = { "org.springframework.boot.autoconfigure.AutoConfigurationUtils.basePackages" })
   public List<String> getBasePackages() {
     List<String> basePackages = new ArrayList<>();
-    basePackages.add("org.obiba.mica.domain");
+    basePackages.add("org.obiba.mica.jpa.domain");
     return basePackages;
   }
 

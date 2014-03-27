@@ -8,10 +8,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.joda.time.LocalDate;
-import org.obiba.mica.domain.PersistentToken;
-import org.obiba.mica.domain.User;
-import org.obiba.mica.repository.PersistentTokenRepository;
-import org.obiba.mica.repository.UserRepository;
+import org.obiba.mica.jpa.domain.PersistentToken;
+import org.obiba.mica.jpa.domain.User;
+import org.obiba.mica.jpa.repository.PersistentTokenRepository;
+import org.obiba.mica.jpa.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;

@@ -12,23 +12,23 @@
       overflowToDisk="false"
       />
 
-  <cache name="org.obiba.mica.domain.User"
+  <cache name="org.obiba.mica.jpa.domain.User"
       timeToLiveSeconds="3600">
   </cache>
 
-  <cache name="org.obiba.mica.domain.Authority"
+  <cache name="org.obiba.mica.jpa.domain.Authority"
       timeToLiveSeconds="3600">
   </cache>
 
-  <cache name="org.obiba.mica.domain.User.authorities"
+  <cache name="org.obiba.mica.jpa.domain.User.authorities"
       timeToLiveSeconds="3600">
   </cache>
 
-  <cache name="org.obiba.mica.domain.PersistentToken"
+  <cache name="org.obiba.mica.jpa.domain.PersistentToken"
       timeToLiveSeconds="3600">
   </cache>
 
-  <cache name="org.obiba.mica.domain.User.persistentTokens"
+  <cache name="org.obiba.mica.jpa.domain.User.persistentTokens"
       timeToLiveSeconds="3600">
   </cache>
 

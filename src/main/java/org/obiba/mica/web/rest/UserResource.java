@@ -4,8 +4,8 @@ import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
 
-import org.obiba.mica.domain.User;
-import org.obiba.mica.repository.UserRepository;
+import org.obiba.mica.jpa.domain.User;
+import org.obiba.mica.jpa.repository.UserRepository;
 import org.obiba.mica.security.AuthoritiesConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

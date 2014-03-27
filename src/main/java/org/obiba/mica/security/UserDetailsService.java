@@ -5,9 +5,9 @@ import java.util.Collection;
 
 import javax.inject.Inject;
 
-import org.obiba.mica.domain.Authority;
-import org.obiba.mica.domain.User;
-import org.obiba.mica.repository.UserRepository;
+import org.obiba.mica.jpa.domain.Authority;
+import org.obiba.mica.jpa.domain.User;
+import org.obiba.mica.jpa.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;

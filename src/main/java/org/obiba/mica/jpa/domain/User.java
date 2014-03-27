@@ -1,4 +1,4 @@
-package org.obiba.mica.domain;
+package org.obiba.mica.jpa.domain;
 
 import java.io.Serializable;
 import java.util.Set;

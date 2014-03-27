@@ -19,7 +19,8 @@ public class LoggingAspect {
   @SuppressWarnings("NonConstantLogger")
   private final Logger logger = LoggerFactory.getLogger(getClass());
 
-  private static final String WITHIN_EXPR = "within(org.obiba.mica.repository..*) || within(org.obiba.mica.service..*)";
+  private static final String WITHIN_EXPR
+      = "within(org.obiba.mica.jpa.repository..*) || within(org.obiba.mica.service..*)";
 
   @AfterThrowing(pointcut = WITHIN_EXPR, throwing = "e")
   public void logAfterThrowing(JoinPoint joinPoint, Throwable e) {

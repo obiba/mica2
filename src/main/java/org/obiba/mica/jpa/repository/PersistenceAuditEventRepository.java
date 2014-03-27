@@ -1,9 +1,9 @@
-package org.obiba.mica.repository;
+package org.obiba.mica.jpa.repository;
 
 import java.util.List;
 
 import org.joda.time.LocalDateTime;
-import org.obiba.mica.domain.PersistentAuditEvent;
+import org.obiba.mica.jpa.domain.PersistentAuditEvent;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
