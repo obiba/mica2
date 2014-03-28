@@ -12,7 +12,7 @@ import org.obiba.mica.domain.AbstractTimestampedDocument;
 import org.obiba.mica.domain.Attachment;
 import org.obiba.mica.domain.Authorization;
 import org.obiba.mica.domain.Contact;
-import org.obiba.mica.domain.LocalizableString;
+import org.obiba.mica.domain.LocalizedString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -32,16 +32,16 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
   private Long version;
 
   @NotNull
-  private LocalizableString name;
+  private LocalizedString name;
 
-  private LocalizableString acronym;
+  private LocalizedString acronym;
 
   private List<Contact> investigators;
 
   private List<Contact> contacts;
 
   @NotNull
-  private LocalizableString objectives;
+  private LocalizedString objectives;
 
   @URL
   private String website;
@@ -60,7 +60,7 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
 
   private List<String> access;
 
-  private LocalizableString otherAccess;
+  private LocalizedString otherAccess;
 
   private String markerPaper;
 
@@ -69,9 +69,11 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
 
   private List<Attachment> attachments;
 
-  private LocalizableString infos;
+  private LocalizedString infos;
 
   private List<Population> populations;
+
+  private List<NetworkRelation> networks;
 
   public String getId() {
     return id;
@@ -89,19 +91,19 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
     this.version = version;
   }
 
-  public LocalizableString getName() {
+  public LocalizedString getName() {
     return name;
   }
 
-  public void setName(LocalizableString name) {
+  public void setName(LocalizedString name) {
     this.name = name;
   }
 
-  public LocalizableString getAcronym() {
+  public LocalizedString getAcronym() {
     return acronym;
   }
 
-  public void setAcronym(LocalizableString acronym) {
+  public void setAcronym(LocalizedString acronym) {
     this.acronym = acronym;
   }
 
@@ -123,11 +125,11 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
     this.contacts = contacts;
   }
 
-  public LocalizableString getObjectives() {
+  public LocalizedString getObjectives() {
     return objectives;
   }
 
-  public void setObjectives(LocalizableString objectives) {
+  public void setObjectives(LocalizedString objectives) {
     this.objectives = objectives;
   }
 
@@ -195,11 +197,11 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
     this.access = access;
   }
 
-  public LocalizableString getOtherAccess() {
+  public LocalizedString getOtherAccess() {
     return otherAccess;
   }
 
-  public void setOtherAccess(LocalizableString otherAccess) {
+  public void setOtherAccess(LocalizedString otherAccess) {
     this.otherAccess = otherAccess;
   }
 
@@ -227,11 +229,11 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
     this.attachments = attachments;
   }
 
-  public LocalizableString getInfos() {
+  public LocalizedString getInfos() {
     return infos;
   }
 
-  public void setInfos(LocalizableString infos) {
+  public void setInfos(LocalizedString infos) {
     this.infos = infos;
   }
 
@@ -261,21 +263,29 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
     return com.google.common.base.Objects.toStringHelper(this).add("id", id).add("name", name).toString();
   }
 
+  public List<NetworkRelation> getNetworks() {
+    return networks;
+  }
+
+  public void setNetworks(List<NetworkRelation> networks) {
+    this.networks = networks;
+  }
+
   public static class StudyMethods implements Serializable {
 
     private static final long serialVersionUID = 5984119393358199672L;
 
     private List<String> designs;
 
-    private LocalizableString otherDesign;
+    private LocalizedString otherDesign;
 
-    private LocalizableString followUpInfos;
+    private LocalizedString followUpInfos;
 
     private List<String> recruitments;
 
-    private LocalizableString otherRecruitments;
+    private LocalizedString otherRecruitments;
 
-    private LocalizableString infos;
+    private LocalizedString infos;
 
     public List<String> getDesigns() {
       return designs == null ? (designs = new ArrayList<>()) : designs;
@@ -285,19 +295,19 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
       this.designs = designs;
     }
 
-    public LocalizableString getOtherDesign() {
+    public LocalizedString getOtherDesign() {
       return otherDesign;
     }
 
-    public void setOtherDesign(LocalizableString otherDesign) {
+    public void setOtherDesign(LocalizedString otherDesign) {
       this.otherDesign = otherDesign;
     }
 
-    public LocalizableString getFollowUpInfos() {
+    public LocalizedString getFollowUpInfos() {
       return followUpInfos;
     }
 
-    public void setFollowUpInfos(LocalizableString followUpInfos) {
+    public void setFollowUpInfos(LocalizedString followUpInfos) {
       this.followUpInfos = followUpInfos;
     }
 
@@ -309,20 +319,45 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
       this.recruitments = recruitments;
     }
 
-    public LocalizableString getOtherRecruitments() {
+    public LocalizedString getOtherRecruitments() {
       return otherRecruitments;
     }
 
-    public void setOtherRecruitments(LocalizableString otherRecruitments) {
+    public void setOtherRecruitments(LocalizedString otherRecruitments) {
       this.otherRecruitments = otherRecruitments;
     }
 
-    public LocalizableString getInfos() {
+    public LocalizedString getInfos() {
       return infos;
     }
 
-    public void setInfos(LocalizableString infos) {
+    public void setInfos(LocalizedString infos) {
       this.infos = infos;
+    }
+  }
+
+  public static class NetworkRelation implements Serializable {
+
+    private static final long serialVersionUID = -3544564801184477575L;
+
+    private String networkId;
+
+    private String networkName;
+
+    public String getNetworkId() {
+      return networkId;
+    }
+
+    public void setNetworkId(String networkId) {
+      this.networkId = networkId;
+    }
+
+    public String getNetworkName() {
+      return networkName;
+    }
+
+    public void setNetworkName(String networkName) {
+      this.networkName = networkName;
     }
   }
 }

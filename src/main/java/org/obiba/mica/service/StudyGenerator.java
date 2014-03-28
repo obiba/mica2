@@ -14,7 +14,7 @@ import org.obiba.mica.domain.study.Study;
 import org.obiba.mica.repository.StudyRepository;
 import org.springframework.stereotype.Component;
 
-import static org.obiba.mica.domain.LocalizableString.en;
+import static org.obiba.mica.domain.LocalizedString.en;
 import static org.obiba.mica.domain.study.NumberOfParticipants.TargetNumber;
 import static org.obiba.mica.domain.study.Population.SelectionCriteria.Gender;
 import static org.obiba.mica.domain.study.Study.StudyMethods;

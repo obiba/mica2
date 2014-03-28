@@ -9,16 +9,16 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.domain.Attachment;
-import org.obiba.mica.domain.LocalizableString;
+import org.obiba.mica.domain.LocalizedString;
 
 public class DataCollectionEvent implements Serializable {
 
   private static final long serialVersionUID = 6559914069652243954L;
 
   @NotNull
-  private LocalizableString name;
+  private LocalizedString name;
 
-  private LocalizableString description;
+  private LocalizedString description;
 
   private Integer startYear;
 
@@ -36,29 +36,29 @@ public class DataCollectionEvent implements Serializable {
 
   private List<String> administrativeDatabases;
 
-  private LocalizableString otherDataSources;
+  private LocalizedString otherDataSources;
 
   private List<String> bioSamples;
 
-  private LocalizableString tissueTypes;
+  private LocalizedString tissueTypes;
 
-  private LocalizableString otherBioSamples;
+  private LocalizedString otherBioSamples;
 
   private List<Attachment> attachments;
 
-  public LocalizableString getName() {
+  public LocalizedString getName() {
     return name;
   }
 
-  public void setName(LocalizableString name) {
+  public void setName(LocalizedString name) {
     this.name = name;
   }
 
-  public LocalizableString getDescription() {
+  public LocalizedString getDescription() {
     return description;
   }
 
-  public void setDescription(LocalizableString description) {
+  public void setDescription(LocalizedString description) {
     this.description = description;
   }
 
@@ -110,11 +110,11 @@ public class DataCollectionEvent implements Serializable {
     this.administrativeDatabases = administrativeDatabases;
   }
 
-  public LocalizableString getOtherDataSources() {
+  public LocalizedString getOtherDataSources() {
     return otherDataSources;
   }
 
-  public void setOtherDataSources(LocalizableString otherDataSources) {
+  public void setOtherDataSources(LocalizedString otherDataSources) {
     this.otherDataSources = otherDataSources;
   }
 
@@ -126,19 +126,19 @@ public class DataCollectionEvent implements Serializable {
     this.bioSamples = bioSamples;
   }
 
-  public LocalizableString getTissueTypes() {
+  public LocalizedString getTissueTypes() {
     return tissueTypes;
   }
 
-  public void setTissueTypes(LocalizableString tissueTypes) {
+  public void setTissueTypes(LocalizedString tissueTypes) {
     this.tissueTypes = tissueTypes;
   }
 
-  public LocalizableString getOtherBioSamples() {
+  public LocalizedString getOtherBioSamples() {
     return otherBioSamples;
   }
 
-  public void setOtherBioSamples(LocalizableString otherBioSamples) {
+  public void setOtherBioSamples(LocalizedString otherBioSamples) {
     this.otherBioSamples = otherBioSamples;
   }
 

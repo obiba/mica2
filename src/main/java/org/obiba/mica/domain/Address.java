@@ -6,9 +6,9 @@ public class Address implements Serializable {
 
   private static final long serialVersionUID = 8869937335553092873L;
 
-  private LocalizableString street;
+  private LocalizedString street;
 
-  private LocalizableString city;
+  private LocalizedString city;
 
   private String zip;
 
@@ -16,19 +16,19 @@ public class Address implements Serializable {
 
   private String countryIso;
 
-  public LocalizableString getStreet() {
+  public LocalizedString getStreet() {
     return street;
   }
 
-  public void setStreet(LocalizableString street) {
+  public void setStreet(LocalizedString street) {
     this.street = street;
   }
 
-  public LocalizableString getCity() {
+  public LocalizedString getCity() {
     return city;
   }
 
-  public void setCity(LocalizableString city) {
+  public void setCity(LocalizedString city) {
     this.city = city;
   }
 

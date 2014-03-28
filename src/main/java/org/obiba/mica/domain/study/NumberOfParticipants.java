@@ -2,7 +2,7 @@ package org.obiba.mica.domain.study;
 
 import java.io.Serializable;
 
-import org.obiba.mica.domain.LocalizableString;
+import org.obiba.mica.domain.LocalizedString;
 
 public class NumberOfParticipants implements Serializable {
 
@@ -12,7 +12,7 @@ public class NumberOfParticipants implements Serializable {
 
   private TargetNumber sample;
 
-  private LocalizableString infos;
+  private LocalizedString infos;
 
   public TargetNumber getParticipant() {
     return participant;
@@ -30,11 +30,11 @@ public class NumberOfParticipants implements Serializable {
     this.sample = sample;
   }
 
-  public LocalizableString getInfos() {
+  public LocalizedString getInfos() {
     return infos;
   }
 
-  public void setInfos(LocalizableString infos) {
+  public void setInfos(LocalizedString infos) {
     this.infos = infos;
   }
 

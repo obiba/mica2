@@ -88,25 +88,25 @@ public class Contact implements Serializable {
     private static final long serialVersionUID = -3098622168836970902L;
 
     @NotNull
-    private LocalizableString name;
+    private LocalizedString name;
 
-    private LocalizableString department;
+    private LocalizedString department;
 
     private Address address;
 
-    public LocalizableString getName() {
+    public LocalizedString getName() {
       return name;
     }
 
-    public void setName(LocalizableString name) {
+    public void setName(LocalizedString name) {
       this.name = name;
     }
 
-    public LocalizableString getDepartment() {
+    public LocalizedString getDepartment() {
       return department;
     }
 
-    public void setDepartment(LocalizableString department) {
+    public void setDepartment(LocalizedString department) {
       this.department = department;
     }
 
