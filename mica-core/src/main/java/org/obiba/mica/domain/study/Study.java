@@ -342,7 +342,7 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
 
     private String networkId;
 
-    private String networkName;
+    private LocalizedString networkName;
 
     public String getNetworkId() {
       return networkId;
@@ -352,11 +352,11 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
       this.networkId = networkId;
     }
 
-    public String getNetworkName() {
+    public LocalizedString getNetworkName() {
       return networkName;
     }
 
-    public void setNetworkName(String networkName) {
+    public void setNetworkName(LocalizedString networkName) {
       this.networkName = networkName;
     }
   }

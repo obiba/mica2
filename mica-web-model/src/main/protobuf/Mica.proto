@@ -22,7 +22,7 @@ message StudyDto {
   optional string pubmedId = 17;
   //repeated AttachmentDto attachments = 18;
   repeated LocalizedStringDto infos = 19;
-  repeated PopulationDto populations = 20;
+  //repeated PopulationDto populations = 20;
   repeated NetworkRelationDto networks = 20;
 
   message StudyMethodsDto {
@@ -42,6 +42,11 @@ message StudyDto {
       optional bool noLimit = 1;
       optional int32 number = 2;
     }
+  }
+
+  message NetworkRelationDto {
+    optional string networkId = 1;
+    repeated LocalizedStringDto networkName = 2;
   }
 }
 
@@ -73,7 +78,7 @@ message AuthorizationDto {
 
 message AddressDto {
   repeated LocalizedStringDto street = 1;
-  repeated LocalizedStringDto city = 1;
+  repeated LocalizedStringDto city = 2;
   optional string zip = 3;
   optional string state = 4;
   optional string countryIso = 5;
