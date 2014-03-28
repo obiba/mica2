@@ -18,20 +18,27 @@ import static org.obiba.mica.web.model.Mica.StudyDto;
 @SuppressWarnings("MagicNumber")
 public class StudyDtosTest {
 
-  @Test
-  public void testAsDto() throws Exception {
+  private final Dtos dtos = new Dtos();
 
-    Dtos dtos = new Dtos();
+  @Test
+  public void test_required_only_dto() throws Exception {
+    Study study = new Study();
+    study.setId("study_1");
+    study.setName(en("Canadian Longitudinal Study on Aging"));
+    study.setObjectives(en("The Canadian Longitudinal Study on Aging (CLSA) is a large, national, long-term study"));
+    StudyDto dto = dtos.asDto(study);
+
+    Study fromDto = dtos.fromDto(dto);
+    assertThat(fromDto).isEqualTo(study);
+  }
+
+  @Test
+  public void test_full_dto() throws Exception {
 
     Study study = createStudy();
     StudyDto dto = dtos.asDto(study);
 
     assertThat(dtos.fromDto(dto)).isEqualTo(study);
-  }
-
-  @Test
-  public void testFromDto() throws Exception {
-
   }
 
   private Study createStudy() {
