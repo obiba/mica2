@@ -120,6 +120,7 @@
     <springloaded.version>1.2.0.BUILD-20140214.165636-1</springloaded.version>
     <usertype.core.version>3.1.0.CR10</usertype.core.version>
 
+    <maven-assertj-generator-plugin.version>1.2.0</maven-assertj-generator-plugin.version>
     <maven-dependency-plugin.version>2.1</maven-dependency-plugin.version>
     <maven-enforcer-plugin.version>1.3.1</maven-enforcer-plugin.version>
     <maven-sonar-plugin.version>2.2</maven-sonar-plugin.version>
@@ -158,6 +159,12 @@
         <groupId>org.obiba.mica</groupId>
         <artifactId>mica-core</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.obiba.mica</groupId>
+        <artifactId>mica-core</artifactId>
+        <version>${project.version}</version>
+        <classifier>tests</classifier>
       </dependency>
       <dependency>
         <groupId>org.obiba.mica</groupId>
@@ -382,6 +389,16 @@
   </dependencies>
 
   <build>
+
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.assertj</groupId>
+          <artifactId>assertj-assertions-generator-maven-plugin</artifactId>
+          <version>${maven-assertj-generator-plugin.version}</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
 
     <plugins>
       <plugin>

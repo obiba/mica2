@@ -21,10 +21,12 @@ public class StudyDtosTest {
   @Test
   public void testAsDto() throws Exception {
 
-    Study study = createStudy();
-    StudyDto dto = new Dtos().asDto(study);
+    Dtos dtos = new Dtos();
 
-    assertThat(dto.getId()).isEqualTo(study.getId());
+    Study study = createStudy();
+    StudyDto dto = dtos.asDto(study);
+
+    assertThat(dtos.fromDto(dto)).isEqualTo(study);
   }
 
   @Test
