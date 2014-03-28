@@ -448,18 +448,6 @@
         <version>${maven-sonar-plugin.version}</version>
       </plugin>
 
-      <!--
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-        <configuration>
-          <arguments>
-            <argument>\-\-spring.profiles.active=dev</argument>
-          </arguments>
-        </configuration>
-      </plugin>
-      -->
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>

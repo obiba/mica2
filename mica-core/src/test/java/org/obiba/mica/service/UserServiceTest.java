@@ -5,7 +5,7 @@ import javax.inject.Inject;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.obiba.mica.Application;
+import org.obiba.mica.TestApplication;
 import org.obiba.mica.jpa.domain.PersistentToken;
 import org.obiba.mica.jpa.domain.User;
 import org.obiba.mica.jpa.repository.PersistentTokenRepository;
@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @see UserService
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
+@SpringApplicationConfiguration(classes = TestApplication.class)
 @WebAppConfiguration
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 @ActiveProfiles("dev")
