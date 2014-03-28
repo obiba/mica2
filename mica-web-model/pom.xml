@@ -14,6 +14,10 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.obiba.mica</groupId>
+      <artifactId>mica-core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
     </dependency>

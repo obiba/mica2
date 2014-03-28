@@ -12,5 +12,27 @@
 
   <artifactId>mica-server</artifactId>
 
+  <dependencies>
+
+    <dependency>
+      <groupId>org.obiba.mica</groupId>
+      <artifactId>mica-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.obiba.mica</groupId>
+      <artifactId>mica-web-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.obiba.mica</groupId>
+      <artifactId>mica-rest</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.obiba.mica</groupId>
+      <artifactId>mica-angularjs-client</artifactId>
+      <type>war</type>
+    </dependency>
+
+  </dependencies>
+
 
 </project>
