@@ -9,6 +9,7 @@
     <version>1.0-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
+  <packaging>war</packaging>
 
   <artifactId>mica-server</artifactId>
 
@@ -36,6 +37,7 @@
 
   <build>
     <plugins>
+
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
@@ -45,6 +47,38 @@
           </arguments>
         </configuration>
       </plugin>
+
+      <!--<plugin>-->
+      <!--<artifactId>maven-assembly-plugin</artifactId>-->
+      <!--<configuration>-->
+      <!--<descriptors>-->
+      <!--<descriptor>src/main/assembly/mica-server.xml</descriptor>-->
+      <!--</descriptors>-->
+      <!--</configuration>-->
+      <!--<executions>-->
+      <!--<execution>-->
+      <!--<id>make-assembly</id>-->
+      <!--<phase>package</phase>-->
+      <!--<goals>-->
+      <!--<goal>single</goal>-->
+      <!--</goals>-->
+      <!--</execution>-->
+      <!--</executions>-->
+      <!--</plugin>-->
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <overlays>
+            <overlay>
+              <groupId>org.obiba.mica</groupId>
+              <artifactId>mica-angularjs-client</artifactId>
+            </overlay>
+          </overlays>
+        </configuration>
+      </plugin>
+
     </plugins>
   </build>
 
