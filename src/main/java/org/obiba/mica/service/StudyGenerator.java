@@ -37,6 +37,8 @@ public class StudyGenerator {
 
     Study study = createStudy();
 
+    //TODO test GridFS
+
     studyRepository.save(study);
   }
 
@@ -124,9 +126,9 @@ public class StudyGenerator {
             "</ul>"));
 
     population.setRecruitment(new Population.Recruitment());
-    population.getRecruitment().getSources().add(DataSources.questionnaires.toString());
-    population.getRecruitment().getSources().add(DataSources.administratives_databases.toString());
-    population.getRecruitment().getSources().add(DataSources.others.toString());
+    population.getRecruitment().getDataSources().add(DataSources.questionnaires.toString());
+    population.getRecruitment().getDataSources().add(DataSources.administratives_databases.toString());
+    population.getRecruitment().getDataSources().add(DataSources.others.toString());
     population.getRecruitment().setOtherSource(en("Other source of recruitment"));
 
     population.getRecruitment().getGeneralPopulationSources().add(GeneralPopulation.selected_samples.toString());

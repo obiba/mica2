@@ -6,6 +6,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 /**
  * Spring Data MongoDB repository for the Network entity.
  */
-public interface NetworkRepository extends MongoRepository<Network, Long> {
+public interface NetworkRepository extends MongoRepository<Network, String> {
 
 }
