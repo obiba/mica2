@@ -100,7 +100,7 @@ public class Population implements Serializable {
       clinic_patients, specific_association, other
     }
 
-    private List<String> sources;
+    private List<String> dataSources;
 
     private List<String> generalPopulationSources;
 
@@ -114,12 +114,12 @@ public class Population implements Serializable {
 
     private LocalizableString infos;
 
-    public List<String> getSources() {
-      return sources == null ? (sources = new ArrayList<>()) : sources;
+    public List<String> getDataSources() {
+      return dataSources == null ? (dataSources = new ArrayList<>()) : dataSources;
     }
 
-    public void setSources(List<String> sources) {
-      this.sources = sources;
+    public void setDataSources(List<String> dataSources) {
+      this.dataSources = dataSources;
     }
 
     public List<String> getGeneralPopulationSources() {

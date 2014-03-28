@@ -1,0 +1,74 @@
+study:
+
+  access:
+    - data
+    - bio_samples
+    - other
+
+  design:
+    - case_control
+    - case_only
+    - clinical_trial
+    - cohort_study
+    - cross_sectional
+    - other
+
+  recruitmentTarget:
+    - individuals
+    - families
+    - other
+
+  population:
+
+    sourcesOfRecruitment:
+      - general
+      - exist_studies
+      - specific_population
+      - other
+
+    generalPopulationSources:
+      - volunteer
+      - selected_samples
+      - random
+
+    specificPopulationSources:
+      - clinic_patients
+      - specific_association
+      - other
+
+    selectionCriteria:
+      - gender
+      - age
+      - gravidity
+      - newborn
+      - twin
+      - residence
+      - ethnic_origin
+      - health_status
+      - other
+
+    dataCollectionEvent:
+
+      dataSources:
+        - questionnaires
+        - physical_measures
+        - biological_samples
+        - administratives_databases
+        - others
+
+      administrativeDatabases:
+        - health_databases
+        - vital_statisctics_databases
+        - socioeconomic_databases
+        - environmental_databases
+
+      bioSamples:
+        - blood
+        - cord_blood
+        - buccal_cells
+        - tissues
+        - saliva
+        - urine
+        - hair
+        - nail
+        - others
