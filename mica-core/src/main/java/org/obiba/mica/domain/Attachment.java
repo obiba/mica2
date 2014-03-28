@@ -1,6 +1,7 @@
 package org.obiba.mica.domain;
 
 import java.io.Serializable;
+import java.util.Locale;
 
 import javax.validation.constraints.NotNull;
 
@@ -11,6 +12,8 @@ public class Attachment implements Serializable {
   private String type;
 
   private LocalizedString description;
+
+  private Locale locale;
 
   @NotNull
   private String gridFsId;
@@ -37,5 +40,13 @@ public class Attachment implements Serializable {
 
   public void setGridFsId(String gridFsId) {
     this.gridFsId = gridFsId;
+  }
+
+  public Locale getLocale() {
+    return locale;
+  }
+
+  public void setLocale(Locale locale) {
+    this.locale = locale;
   }
 }

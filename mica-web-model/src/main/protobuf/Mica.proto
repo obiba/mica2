@@ -20,7 +20,7 @@ message StudyDto {
   repeated LocalizedStringDto otherAccess = 15;
   optional string markerPaper = 16;
   optional string pubmedId = 17;
-  //repeated AttachmentDto attachments = 18;
+  repeated AttachmentDto attachments = 18;
   repeated LocalizedStringDto infos = 19;
   repeated PopulationDto populations = 20;
   repeated NetworkRelationDto networks = 21;
@@ -97,7 +97,7 @@ message StudyDto {
       repeated string bioSamples = 10;
       repeated LocalizedStringDto tissueTypes = 11;
       repeated LocalizedStringDto otherBioSamples = 12;
-      //repeated AttachmentDto attachments = 13;
+      repeated AttachmentDto attachments = 13;
     }
   }
 }
@@ -138,4 +138,11 @@ message AddressDto {
   optional string zip = 3;
   optional string state = 4;
   optional string countryIso = 5;
+}
+
+message AttachmentDto {
+  optional string type = 1;
+  repeated LocalizedStringDto description = 2;
+  optional string lang = 3;
+  required string url = 4;
 }
