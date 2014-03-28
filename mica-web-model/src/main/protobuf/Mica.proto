@@ -4,13 +4,77 @@ option java_package = "org.obiba.mica.web.model";
 
 message StudyDto {
   required string id = 1;
-  required string name = 2;
+  repeated LocalizedStringDto name = 2;
+  repeated LocalizedStringDto acronym = 3;
+  repeated ContactDto investigators = 4;
+  repeated ContactDto contacts = 5;
+  repeated LocalizedStringDto objectives = 6;
+  optional string website = 7;
+  optional AuthorizationDto specificAuthorization = 8;
+  optional AuthorizationDto maelstromAuthorization = 9;
+  optional StudyMethodsDto methods = 10;
+  optional NumberOfParticipantsDto numberOfParticipants = 11;
+  optional int32 startYear = 12;
+  optional int32 endYear = 13;
+  repeated string access = 14;
+  repeated LocalizedStringDto otherAccess = 15;
+  optional string markerPaper = 16;
+  optional string pubmedId = 17;
+  //repeated AttachmentDto attachments = 18;
+  repeated LocalizedStringDto infos = 19;
+  repeated PopulationDto populations = 20;
+  repeated NetworkRelationDto networks = 20;
 
+  message StudyMethodsDto {
+    repeated string designs = 1;
+    repeated LocalizedStringDto otherDesign = 2;
+    repeated LocalizedStringDto followUpInfos = 3;
+    repeated string recruitments = 4;
+    repeated LocalizedStringDto otherRecruitments = 5;
+    repeated LocalizedStringDto infos = 6;
+  }
 
-
-  optional string firstName = 2;
-  optional string lastName = 3;
-  optional string email = 4;
-  repeated string roles = 5;
+  message NumberOfParticipantsDto {
+    optional TargetNumberDto participant = 1;
+    optional TargetNumberDto sample = 2;
+    repeated LocalizedStringDto infos = 3;
+    message TargetNumberDto {
+      optional bool noLimit = 1;
+      optional int32 number = 2;
+    }
+  }
 }
 
+message LocalizedStringDto {
+  required string lang = 1;
+  required string value = 2;
+}
+
+message ContactDto {
+  optional string title = 1;
+  optional string firstName = 2;
+  required string lastName = 3;
+  optional string email = 4;
+  optional string phone = 5;
+  optional bool dataAccessCommitteeMember = 6;
+  optional InstitutionDto institution = 7;
+  message InstitutionDto {
+    repeated LocalizedStringDto name = 1;
+    repeated LocalizedStringDto department = 2;
+    optional AddressDto address = 3;
+  }
+}
+
+message AuthorizationDto {
+  optional bool authorized = 1;
+  optional string authorizer = 2;
+  optional string date = 3;
+}
+
+message AddressDto {
+  repeated LocalizedStringDto street = 1;
+  repeated LocalizedStringDto city = 1;
+  optional string zip = 3;
+  optional string state = 4;
+  optional string countryIso = 5;
+}
