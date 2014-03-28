@@ -1,0 +1,117 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.obiba.mica</groupId>
+    <artifactId>mica</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <relativePath>../</relativePath>
+  </parent>
+
+  <artifactId>mica-web-model</artifactId>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+
+    <plugins>
+
+      <!-- Add generated sources to the build path -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>add-source</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>add-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>${project.build.directory}/generated-sources/protobuf-java</source>
+                <source>${project.build.directory}/generated-sources/protobuf-python</source>
+                <source>${project.build.directory}/generated-sources/protobuf-php</source>
+              </sources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-sources</id>
+            <phase>generate-sources</phase>
+            <configuration>
+              <tasks>
+                <!-- Determine which protoc binary we can use -->
+                <condition property="os.protoc" value="${protobuf.version}-linux-x86_64">
+                  <or>
+                    <os name="linux" arch="amd64"/>
+                    <os name="linux" arch="x86_64"/>
+                  </or>
+                </condition>
+                <condition property="os.protoc" value="${protobuf.version}-linux-x86_32">
+                  <or>
+                    <os name="linux" arch="x86"/>
+                    <os name="linux" arch="i386"/>
+                  </or>
+                </condition>
+                <condition property="os.protoc" value="${protobuf.version}-win32">
+                  <os family="windows"/>
+                </condition>
+
+                <fail message="No protoc binary for your OS: ${os.name} ${os.arch}." unless="os.protoc"/>
+
+                <path id="protofiles">
+                  <fileset dir="src/main/protobuf">
+                    <include name="*.proto"/>
+                  </fileset>
+                </path>
+                <pathconvert pathsep=" " property="protofilesList" refid="protofiles">
+                  <map from="${basedir}/" to=""/>
+                </pathconvert>
+
+                <!-- Compile our .proto file -->
+                <!-- Java -->
+                <mkdir dir="target/generated-sources/protobuf-java"/>
+                <!--suppress MavenModelInspection -->
+                <exec dir="${basedir}" executable="${basedir}/tools/protobuf/protoc-${os.protoc}" failonerror="true">
+                  <arg value="--java_out=target/generated-sources/protobuf-java"/>
+                  <!--suppress MavenModelInspection -->
+                  <arg line="${protofilesList}"/>
+                  <arg line="-Isrc/main/protobuf"/>
+                </exec>
+
+                <!-- Python -->
+                <mkdir dir="target/generated-sources/protobuf-python"/>
+                <!--suppress MavenModelInspection -->
+                <exec dir="${basedir}" executable="${basedir}/tools/protobuf/protoc-${os.protoc}" failonerror="true">
+                  <arg value="--python_out=target/generated-sources/protobuf-python"/>
+                  <!--suppress MavenModelInspection -->
+                  <arg line="${protofilesList}"/>
+                  <arg line="-Isrc/main/protobuf"/>
+                </exec>
+
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+  </build>
+
+</project>

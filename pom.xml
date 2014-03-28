@@ -12,6 +12,10 @@
     <version>1.0.0.RC4</version>
   </parent>
 
+  <modules>
+    <module>mica-web-model</module>
+  </modules>
+
   <profiles>
 
     <profile>
@@ -107,6 +111,8 @@
     <jsr305.version>2.0.3</jsr305.version>
     <metrics-spring.version>3.0.0-RC4</metrics-spring.version>
     <mongeez.version>0.9.4</mongeez.version>
+    <protobuf.version>2.5.0</protobuf.version>
+    <protobuf-java-format.version>1.2.1-obiba</protobuf-java-format.version>
     <springloaded.version>1.2.0.BUILD-20140214.165636-1</springloaded.version>
     <usertype.core.version>3.1.0.CR10</usertype.core.version>
 
@@ -139,6 +145,25 @@
   <prerequisites>
     <maven>3.0.0</maven>
   </prerequisites>
+
+  <dependencyManagement>
+    <dependencies>
+
+      <dependency>
+        <groupId>com.google.protobuf</groupId>
+        <artifactId>protobuf-java</artifactId>
+        <version>${protobuf.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.googlecode.protobuf-java-format</groupId>
+        <artifactId>protobuf-java-format</artifactId>
+        <version>${protobuf-java-format.version}</version>
+      </dependency>
+
+    </dependencies>
+
+  </dependencyManagement>
 
   <dependencies>
     <dependency>
