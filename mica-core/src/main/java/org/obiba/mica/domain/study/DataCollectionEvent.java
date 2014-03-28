@@ -20,6 +20,7 @@ public class DataCollectionEvent implements Serializable {
 
   private LocalizedString description;
 
+  @NotNull
   private Integer startYear;
 
   @Min(1)

@@ -22,8 +22,8 @@ message StudyDto {
   optional string pubmedId = 17;
   //repeated AttachmentDto attachments = 18;
   repeated LocalizedStringDto infos = 19;
-  //repeated PopulationDto populations = 20;
-  repeated NetworkRelationDto networks = 20;
+  repeated PopulationDto populations = 20;
+  repeated NetworkRelationDto networks = 21;
 
   message StudyMethodsDto {
     repeated string designs = 1;
@@ -48,11 +48,67 @@ message StudyDto {
     optional string networkId = 1;
     repeated LocalizedStringDto networkName = 2;
   }
+
+  message PopulationDto {
+    repeated LocalizedStringDto name = 1;
+    repeated LocalizedStringDto description = 2;
+    optional RecruitmentDto recruitment = 3;
+    optional SelectionCriteriaDto selectionCriteria = 4;
+    optional NumberOfParticipantsDto numberOfParticipants = 5;
+    repeated LocalizedStringDto infos = 6;
+    repeated DataCollectionEventDto dataCollectionEvents = 7;
+
+    message RecruitmentDto {
+      repeated string dataSources = 1;
+      repeated string generalPopulationSources = 2;
+      repeated string specificPopulationSources = 3;
+      repeated LocalizedStringDto otherSpecificPopulationSource = 4;
+      repeated string studies = 5;
+      repeated LocalizedStringDto otherSource = 6;
+      repeated LocalizedStringDto infos = 7;
+    }
+    message SelectionCriteriaDto {
+      enum Gender {
+        men = 0;
+        women = 1;
+      }
+      optional Gender gender = 1;
+      optional int32 ageMin = 2;
+      optional int32 ageMax = 3;
+      repeated string countriesIso = 4;
+      repeated LocalizedStringDto territory = 5;
+      repeated string criteria = 6;
+      repeated LocalizedStringDtos ethnicOrigin = 7;
+      repeated LocalizedStringDtos healthStatus = 8;
+      repeated LocalizedStringDto otherCriteria = 9;
+      repeated LocalizedStringDto infos = 10;
+    }
+
+    message DataCollectionEventDto {
+      repeated LocalizedStringDto name = 1;
+      repeated LocalizedStringDto description = 2;
+      required int32 startYear = 3;
+      optional int32 startMonth = 4;
+      optional int32 endYear = 5;
+      optional int32 endMonth = 6;
+      repeated string dataSources = 7;
+      repeated string administrativeDatabases = 8;
+      repeated LocalizedStringDto otherDataSources = 9;
+      repeated string bioSamples = 10;
+      repeated LocalizedStringDto tissueTypes = 11;
+      repeated LocalizedStringDto otherBioSamples = 12;
+      //repeated AttachmentDto attachments = 13;
+    }
+  }
 }
 
 message LocalizedStringDto {
   required string lang = 1;
   required string value = 2;
+}
+
+message LocalizedStringDtos {
+  repeated LocalizedStringDto localizedStrings = 1;
 }
 
 message ContactDto {
