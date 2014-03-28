@@ -2,18 +2,21 @@ package org.obiba.mica.web.model;
 
 import java.util.Locale;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.obiba.mica.domain.Address;
 import org.obiba.mica.domain.Contact;
+import org.obiba.mica.domain.Timestamped;
 import org.obiba.mica.domain.study.DataCollectionEvent;
 import org.obiba.mica.domain.study.NumberOfParticipants;
 import org.obiba.mica.domain.study.Population;
 import org.obiba.mica.domain.study.Study;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.obiba.mica.domain.LocalizedString.en;
+import static org.obiba.mica.domain.study.Assertions.assertThat;
 import static org.obiba.mica.domain.study.Study.StudyMethods;
 import static org.obiba.mica.web.model.Mica.StudyDto;
+import static org.obiba.mica.web.model.Mica.StudyDtoOrBuilder;
 
 @SuppressWarnings("MagicNumber")
 public class StudyDtosTest {
@@ -26,19 +29,38 @@ public class StudyDtosTest {
     study.setId("study_1");
     study.setName(en("Canadian Longitudinal Study on Aging"));
     study.setObjectives(en("The Canadian Longitudinal Study on Aging (CLSA) is a large, national, long-term study"));
-    StudyDto dto = dtos.asDto(study);
 
+    StudyDto dto = dtos.asDto(study);
     Study fromDto = dtos.fromDto(dto);
-    assertThat(fromDto).isEqualTo(study);
+    assertTimestamps(study, dto);
+    assertStudy(fromDto, study);
   }
 
   @Test
   public void test_full_dto() throws Exception {
-
     Study study = createStudy();
     StudyDto dto = dtos.asDto(study);
+    Study fromDto = dtos.fromDto(dto);
+    assertTimestamps(study, dto);
+    assertStudy(fromDto, study);
+  }
 
-    assertThat(dtos.fromDto(dto)).isEqualTo(study);
+  private void assertTimestamps(Timestamped study, StudyDtoOrBuilder dto) {
+    Assertions.assertThat(dto.getTimestamps().getCreated()).isEqualTo(study.getCreated().toString());
+    Assertions.assertThat(dto.getTimestamps().getLastUpdate())
+        .isEqualTo(study.getUpdated() == null ? "" : study.getUpdated().toString());
+  }
+
+  private void assertStudy(Study actual, Study expected) {
+    assertThat(actual) //
+        .isEqualTo(expected) //
+        .hasName(expected.getName()) //
+        .hasAcronym(expected.getAcronym()) //
+            // TODO
+//        .hasInvestigators(expected.getInvestigators()) //
+//        .hasContacts(expected.getContacts()) //
+        .hasObjectives(expected.getObjectives()) //
+        .hasWebsite(expected.getWebsite());
   }
 
   private Study createStudy() {

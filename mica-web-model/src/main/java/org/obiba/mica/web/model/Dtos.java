@@ -1,6 +1,6 @@
 package org.obiba.mica.web.model;
 
-import java.util.Collections;
+import java.util.Collection;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 import org.obiba.mica.domain.Address;
 import org.obiba.mica.domain.Contact;
 import org.obiba.mica.domain.LocalizedString;
+import org.obiba.mica.domain.Timestamped;
 import org.obiba.mica.domain.study.Study;
 import org.springframework.stereotype.Component;
 
@@ -24,19 +25,27 @@ import static org.obiba.mica.web.model.Mica.ContactDtoOrBuilder;
 import static org.obiba.mica.web.model.Mica.LocalizedStringDto;
 import static org.obiba.mica.web.model.Mica.StudyDto;
 import static org.obiba.mica.web.model.Mica.StudyDtoOrBuilder;
+import static org.obiba.mica.web.model.Mica.TimestampsDto;
 
 @Component
+@SuppressWarnings("OverlyCoupledClass")
 public class Dtos {
 
   @NotNull
   public StudyDto asDto(@NotNull Study study) {
     StudyDto.Builder builder = StudyDto.newBuilder();
     builder.setId(study.getId()) //
+        .setTimestamps(asDto((Timestamped) study)) //
         .addAllName(asDtos(study.getName())) //
-        .addAllAcronym(asDtos(study.getAcronym())) //
-        .addAllInvestigators(study.getInvestigators().stream().map(this::asDto).collect(Collectors.toList())) //
-        .addAllContacts(study.getContacts().stream().map(this::asDto).collect(Collectors.toList())) //
         .addAllObjectives(asDtos(study.getObjectives()));
+
+    if(study.getAcronym() != null) builder.addAllAcronym(asDtos(study.getAcronym()));
+    if(study.getInvestigators() != null) {
+      builder.addAllInvestigators(study.getInvestigators().stream().map(this::asDto).collect(Collectors.toList()));
+    }
+    if(study.getContacts() != null) {
+      builder.addAllContacts(study.getContacts().stream().map(this::asDto).collect(Collectors.toList()));
+    }
     if(!isNullOrEmpty(study.getWebsite())) builder.setWebsite(study.getWebsite());
 
     //TODO continue
@@ -60,18 +69,23 @@ public class Dtos {
     return study;
   }
 
-  private Iterable<LocalizedStringDto> asDtos(@SuppressWarnings("TypeMayBeWeakened") LocalizedString localizedString) {
-    return localizedString == null
-        ? Collections.emptyList()
-        : localizedString.entrySet().stream().map(
-            entry -> LocalizedStringDto.newBuilder().setLang(entry.getKey().getLanguage()).setValue(entry.getValue())
-                .build()
-        ).collect(Collectors.toList());
+  private TimestampsDto asDto(Timestamped timestamped) {
+    TimestampsDto.Builder builder = TimestampsDto.newBuilder().setCreated(timestamped.getCreated().toString());
+    if(timestamped.getUpdated() != null) builder.setLastUpdate(timestamped.getUpdated().toString());
+    return builder.build();
   }
 
-  private LocalizedString fromDto(@Nullable Iterable<LocalizedStringDto> dtos) {
+  private Iterable<LocalizedStringDto> asDtos(@SuppressWarnings("TypeMayBeWeakened") LocalizedString localizedString) {
+    return localizedString.entrySet().stream().map(
+        entry -> LocalizedStringDto.newBuilder().setLang(entry.getKey().getLanguage()).setValue(entry.getValue())
+            .build()
+    ).collect(Collectors.toList());
+  }
+
+  private LocalizedString fromDto(@Nullable Collection<LocalizedStringDto> dtos) {
+    if(dtos == null || dtos.isEmpty()) return null;
     LocalizedString localizedString = new LocalizedString();
-    if(dtos != null) dtos.forEach(dto -> localizedString.put(new Locale(dto.getLang()), dto.getValue()));
+    dtos.forEach(dto -> localizedString.put(new Locale(dto.getLang()), dto.getValue()));
     return localizedString;
   }
 
@@ -97,9 +111,9 @@ public class Dtos {
   }
 
   private InstitutionDto asDto(Institution institution) {
-    InstitutionDto.Builder builder = InstitutionDto.newBuilder() //
-        .addAllName(asDtos(institution.getName())) //
-        .addAllDepartment(asDtos(institution.getDepartment()));
+    InstitutionDto.Builder builder = InstitutionDto.newBuilder();
+    if(institution.getName() != null) builder.addAllName(asDtos(institution.getName()));
+    if(institution.getDepartment() != null) builder.addAllDepartment(asDtos(institution.getDepartment()));
     if(institution.getAddress() != null) builder.setAddress(asDto(institution.getAddress()));
     return builder.build();
   }
@@ -113,9 +127,9 @@ public class Dtos {
   }
 
   private AddressDto asDto(Address address) {
-    AddressDto.Builder builder = AddressDto.newBuilder() //
-        .addAllStreet(asDtos(address.getStreet())) //
-        .addAllCity(asDtos(address.getCity()));
+    AddressDto.Builder builder = AddressDto.newBuilder();
+    if(address.getStreet() != null) builder.addAllStreet(asDtos(address.getStreet()));
+    if(address.getCity() != null) builder.addAllCity(asDtos(address.getCity()));
     if(!isNullOrEmpty(address.getZip())) builder.setZip(address.getZip());
     if(!isNullOrEmpty(address.getState())) builder.setState(address.getState());
     if(!isNullOrEmpty(address.getCountryIso())) builder.setCountryIso(address.getCountryIso());

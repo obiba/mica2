@@ -24,6 +24,7 @@ message StudyDto {
   repeated LocalizedStringDto infos = 19;
   repeated PopulationDto populations = 20;
   repeated NetworkRelationDto networks = 21;
+  optional TimestampsDto timestamps = 22;
 
   message StudyMethodsDto {
     repeated string designs = 1;
@@ -100,6 +101,11 @@ message StudyDto {
       repeated AttachmentDto attachments = 13;
     }
   }
+}
+
+message TimestampsDto {
+  optional string created = 1;
+  optional string lastUpdate = 2;
 }
 
 message LocalizedStringDto {
