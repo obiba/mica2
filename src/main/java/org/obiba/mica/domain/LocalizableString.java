@@ -21,6 +21,19 @@ public class LocalizableString extends HashMap<Locale, String> {
     super(m);
   }
 
+  public LocalizableString forLocale(@NotNull Locale locale, @NotNull String str) {
+    put(locale, str);
+    return this;
+  }
+
+  public LocalizableString forEn(@NotNull String str) {
+    return forLocale(Locale.ENGLISH, str);
+  }
+
+  public LocalizableString forFr(@NotNull String str) {
+    return forLocale(Locale.FRENCH, str);
+  }
+
   public static LocalizableString en(@NotNull String str) {
     return new LocalizableString(Locale.ENGLISH, str);
   }

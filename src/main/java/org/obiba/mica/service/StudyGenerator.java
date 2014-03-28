@@ -15,15 +15,9 @@ import org.obiba.mica.repository.StudyRepository;
 import org.springframework.stereotype.Component;
 
 import static org.obiba.mica.domain.LocalizableString.en;
-import static org.obiba.mica.domain.study.DataCollectionEvent.DataSources;
 import static org.obiba.mica.domain.study.NumberOfParticipants.TargetNumber;
-import static org.obiba.mica.domain.study.Population.Recruitment.GeneralPopulation;
-import static org.obiba.mica.domain.study.Population.Recruitment.SpecificPopulation;
 import static org.obiba.mica.domain.study.Population.SelectionCriteria.Gender;
-import static org.obiba.mica.domain.study.Study.Access;
 import static org.obiba.mica.domain.study.Study.StudyMethods;
-import static org.obiba.mica.domain.study.Study.StudyMethods.Design;
-import static org.obiba.mica.domain.study.Study.StudyMethods.RecruitmentTarget;
 
 @SuppressWarnings({ "MagicNumber", "OverlyLongMethod" })
 @Component
@@ -44,10 +38,14 @@ public class StudyGenerator {
 
   private Study createStudy() {
     Study study = new Study();
-    study.setName(en("Canadian Longitudinal Study on Aging"));
+    study.setName(
+        en("Canadian Longitudinal Study on Aging").forFr("Étude longitudinale canadienne sur le vieillissement"));
     study.setAcronym(en("CLSA"));
     study.setObjectives(
-        en("The Canadian Longitudinal Study on Aging (CLSA) is a large, national, long-term study that will follow approximately 50,000 men and women between the ages of 45 and 85 for at least 20 years. The study will collect information on the changing biological, medical, psychological, social, lifestyle and economic aspects of people’s lives. These factors will be studied in order to understand how, individually and in combination, they have an impact in both maintaining health and in the development of disease and disability as people age."));
+        en("The Canadian Longitudinal Study on Aging (CLSA) is a large, national, long-term study that will follow approximately 50,000 men and women between the ages of 45 and 85 for at least 20 years. The study will collect information on the changing biological, medical, psychological, social, lifestyle and economic aspects of people’s lives. These factors will be studied in order to understand how, individually and in combination, they have an impact in both maintaining health and in the development of disease and disability as people age.")
+            .forFr(
+                "L’Étude longitudinale canadienne sur le vieillissement (ÉLCV) est une vaste étude nationale à long terme qui permettra de suivre environ 50 000 Canadiennes et Canadiens âgé(e)s de 45 à 85 ans pendant une période d’au moins 20 ans. L’ÉLCV recueillera des renseignements sur les changements biologiques, médicaux, psychologiques, sociaux et sur les habitudes de vie qui se produisent chez les gens. On étudiera ces facteurs pour comprendre la façon dont ils influencent, individuellement et collectivement, le maintien en santé et le développement de maladies et d’incapacités au fur et à mesure que les gens vieillissent. L’ÉLCV sera l’une des études les plus complètes du genre entreprises jusqu’à ce jour, non seulement au Canada, mais aussi au niveau international.")
+    );
     study.setWebsite("http://www.clsa-elcv.ca");
 
     Contact contact = createContact();
@@ -57,13 +55,13 @@ public class StudyGenerator {
     study.setStartYear(2002);
 
     study.setMethods(new StudyMethods());
-    study.getMethods().getDesigns().add(Design.case_control.toString());
-    study.getMethods().getDesigns().add(Design.clinical_trial.toString());
-    study.getMethods().getDesigns().add(Design.other.toString());
+    study.getMethods().getDesigns().add("case_control");
+    study.getMethods().getDesigns().add("clinical_trial");
+    study.getMethods().getDesigns().add("other");
     study.getMethods().setOtherDesign(en("Cross-sectional prevalence study"));
 
-    study.getMethods().getRecruitments().add(RecruitmentTarget.individuals.toString());
-    study.getMethods().getRecruitments().add(RecruitmentTarget.other.toString());
+    study.getMethods().getRecruitments().add("individuals");
+    study.getMethods().getRecruitments().add("other");
     study.getMethods().setOtherRecruitments(en("Specific individuals"));
     study.getMethods().setFollowUpInfos(en("General Information on Follow Up (profile and frequency)"));
     study.getMethods().setInfos(en("Supplementary information about study design"));
@@ -74,9 +72,9 @@ public class StudyGenerator {
     study.getNumberOfParticipants().setSample(new TargetNumber());
     study.getNumberOfParticipants().getSample().setNumber(30_000);
 
-    study.getAccess().add(Access.data.toString());
-    study.getAccess().add(Access.bio_samples.toString());
-    study.getAccess().add(Access.other.toString());
+    study.getAccess().add("data");
+    study.getAccess().add("bio_samples");
+    study.getAccess().add("other");
     study.setOtherAccess(en("Other access"));
 
     study.setMarkerPaper(
@@ -126,15 +124,15 @@ public class StudyGenerator {
             "</ul>"));
 
     population.setRecruitment(new Population.Recruitment());
-    population.getRecruitment().getDataSources().add(DataSources.questionnaires.toString());
-    population.getRecruitment().getDataSources().add(DataSources.administratives_databases.toString());
-    population.getRecruitment().getDataSources().add(DataSources.others.toString());
+    population.getRecruitment().getDataSources().add("questionnaires");
+    population.getRecruitment().getDataSources().add("administratives_databases");
+    population.getRecruitment().getDataSources().add("others");
     population.getRecruitment().setOtherSource(en("Other source of recruitment"));
 
-    population.getRecruitment().getGeneralPopulationSources().add(GeneralPopulation.selected_samples.toString());
+    population.getRecruitment().getGeneralPopulationSources().add("selected_samples");
 
-    population.getRecruitment().getSpecificPopulationSources().add(SpecificPopulation.clinic_patients.toString());
-    population.getRecruitment().getSpecificPopulationSources().add(SpecificPopulation.other.toString());
+    population.getRecruitment().getSpecificPopulationSources().add("clinic_patients");
+    population.getRecruitment().getSpecificPopulationSources().add("other");
     population.getRecruitment().setOtherSpecificPopulationSource(en("Other specific population"));
 
     population.getRecruitment().getStudies().add(en("Canadian Community Health Survey (CCHS) – Healthy Aging"));
@@ -152,12 +150,12 @@ public class StudyGenerator {
     event.setDescription(en("Baseline data collection"));
     event.setStartYear(2010);
     event.setEndYear(2015);
-    event.getDataSources().add(DataSources.questionnaires.toString());
-    event.getDataSources().add(DataSources.physical_measures.toString());
-    event.getDataSources().add(DataSources.biological_samples.toString());
-    event.getBioSamples().add(DataCollectionEvent.BioSamples.blood.toString());
-    event.getBioSamples().add(DataCollectionEvent.BioSamples.urine.toString());
-    event.getBioSamples().add(DataCollectionEvent.BioSamples.others.toString());
+    event.getDataSources().add("questionnaires");
+    event.getDataSources().add("physical_measures");
+    event.getDataSources().add("biological_samples");
+    event.getBioSamples().add("BioSamples.blood");
+    event.getBioSamples().add("BioSamples.urine");
+    event.getBioSamples().add("BioSamples.others");
     event.setOtherBioSamples(en("Other biological sample"));
     return event;
   }
@@ -168,10 +166,10 @@ public class StudyGenerator {
     event.setDescription(en("First follow-up from baseline data collection"));
     event.setStartYear(2014);
     event.setEndYear(2018);
-    event.getDataSources().add(DataSources.questionnaires.toString());
-    event.getDataSources().add(DataSources.physical_measures.toString());
-    event.getDataSources().add(DataSources.administratives_databases.toString());
-    event.getDataSources().add(DataSources.others.toString());
+    event.getDataSources().add("questionnaires");
+    event.getDataSources().add("physical_measures");
+    event.getDataSources().add("administratives_databases");
+    event.getDataSources().add("others");
     event.setOtherDataSources(en("Other data sources"));
     return event;
   }

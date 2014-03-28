@@ -57,7 +57,7 @@ public class StudyResource {
    */
   @RequestMapping(value = "/rest/studies/{id}", method = GET, produces = "application/json")
   @Timed
-  public Study get(@PathVariable Long id, HttpServletResponse response) {
+  public Study get(@PathVariable String id, HttpServletResponse response) {
     log.debug("REST request to get Study : {}", id);
     Study study = studyRepository.findOne(id);
     if(study == null) {
@@ -71,7 +71,7 @@ public class StudyResource {
    */
   @RequestMapping(value = "/rest/studies/{id}", method = DELETE, produces = "application/json")
   @Timed
-  public void delete(@PathVariable Long id, HttpServletResponse response) {
+  public void delete(@PathVariable String id, HttpServletResponse response) {
     log.debug("REST request to delete Study : {}", id);
     studyRepository.delete(id);
   }

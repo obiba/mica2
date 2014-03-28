@@ -25,10 +25,6 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
 
   private static final long serialVersionUID = 6559914069652243954L;
 
-  public enum Access {
-    data, bio_samples, other
-  }
-
   @Id
   private String id;
 
@@ -268,14 +264,6 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
   public static class StudyMethods implements Serializable {
 
     private static final long serialVersionUID = 5984119393358199672L;
-
-    public enum Design {
-      case_control, case_only, clinical_trial, cohort_study, cross_sectional, other
-    }
-
-    public enum RecruitmentTarget {
-      individuals, families, other
-    }
 
     private List<String> designs;
 

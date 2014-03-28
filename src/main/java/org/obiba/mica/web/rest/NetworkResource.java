@@ -60,7 +60,7 @@ public class NetworkResource {
       method = RequestMethod.GET,
       produces = "application/json")
   @Timed
-  public Network get(@PathVariable Long id, HttpServletResponse response) {
+  public Network get(@PathVariable String id, HttpServletResponse response) {
     log.debug("REST request to get Network : {}", id);
     Network network = networkRepository.findOne(id);
     if(network == null) {
@@ -76,7 +76,7 @@ public class NetworkResource {
       method = RequestMethod.DELETE,
       produces = "application/json")
   @Timed
-  public void delete(@PathVariable Long id, HttpServletResponse response) {
+  public void delete(@PathVariable String id, HttpServletResponse response) {
     log.debug("REST request to delete Network : {}", id);
     networkRepository.delete(id);
   }

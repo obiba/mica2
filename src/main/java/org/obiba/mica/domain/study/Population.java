@@ -88,18 +88,6 @@ public class Population implements Serializable {
 
     private static final long serialVersionUID = 7949265355598902080L;
 
-    public enum SourcesOfRecruitment {
-      general, exist_studies, specific_population, other
-    }
-
-    public enum GeneralPopulation {
-      volunteer, selected_samples, random
-    }
-
-    public enum SpecificPopulation {
-      clinic_patients, specific_association, other
-    }
-
     private List<String> dataSources;
 
     private List<String> generalPopulationSources;

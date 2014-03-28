@@ -15,18 +15,6 @@ public class DataCollectionEvent implements Serializable {
 
   private static final long serialVersionUID = 6559914069652243954L;
 
-  public enum DataSources {
-    questionnaires, physical_measures, biological_samples, administratives_databases, others
-  }
-
-  public enum BioSamples {
-    blood, cord_blood, buccal_cells, tissues, saliva, urine, hair, nail, others
-  }
-
-  public enum AdministrativeDatabases {
-    health_databases, vital_statisctics_databases, socioeconomic_databases, environmental_databases
-  }
-
   @NotNull
   private LocalizableString name;
 
