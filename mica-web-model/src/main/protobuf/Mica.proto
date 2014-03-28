@@ -141,8 +141,8 @@ message AddressDto {
 }
 
 message AttachmentDto {
-  optional string type = 1;
-  repeated LocalizedStringDto description = 2;
-  optional string lang = 3;
-  required string url = 4;
+  required string uri = 1;
+  optional string type = 2;
+  repeated LocalizedStringDto description = 3;
+  optional string lang = 4;
 }

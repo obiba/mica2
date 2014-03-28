@@ -9,14 +9,22 @@ public class Attachment implements Serializable {
 
   private static final long serialVersionUID = 7881381748865114007L;
 
+  @NotNull
+  private String gridFsId;
+
   private String type;
 
   private LocalizedString description;
 
   private Locale locale;
 
-  @NotNull
-  private String gridFsId;
+  public String getGridFsId() {
+    return gridFsId;
+  }
+
+  public void setGridFsId(String gridFsId) {
+    this.gridFsId = gridFsId;
+  }
 
   public String getType() {
     return type;
@@ -32,14 +40,6 @@ public class Attachment implements Serializable {
 
   public void setDescription(LocalizedString description) {
     this.description = description;
-  }
-
-  public String getGridFsId() {
-    return gridFsId;
-  }
-
-  public void setGridFsId(String gridFsId) {
-    this.gridFsId = gridFsId;
   }
 
   public Locale getLocale() {
