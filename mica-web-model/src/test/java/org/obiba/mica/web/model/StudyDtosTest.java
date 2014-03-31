@@ -6,15 +6,15 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.obiba.mica.domain.Address;
 import org.obiba.mica.domain.Contact;
+import org.obiba.mica.domain.DataCollectionEvent;
+import org.obiba.mica.domain.NumberOfParticipants;
+import org.obiba.mica.domain.Population;
+import org.obiba.mica.domain.Study;
 import org.obiba.mica.domain.Timestamped;
-import org.obiba.mica.domain.study.DataCollectionEvent;
-import org.obiba.mica.domain.study.NumberOfParticipants;
-import org.obiba.mica.domain.study.Population;
-import org.obiba.mica.domain.study.Study;
 
 import static org.obiba.mica.domain.LocalizedString.en;
+import static org.obiba.mica.domain.Study.StudyMethods;
 import static org.obiba.mica.domain.study.Assertions.assertThat;
-import static org.obiba.mica.domain.study.Study.StudyMethods;
 import static org.obiba.mica.web.model.Mica.StudyDto;
 import static org.obiba.mica.web.model.Mica.StudyDtoOrBuilder;
 

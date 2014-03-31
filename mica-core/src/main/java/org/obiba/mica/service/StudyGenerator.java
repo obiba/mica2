@@ -7,17 +7,17 @@ import javax.inject.Inject;
 
 import org.obiba.mica.domain.Address;
 import org.obiba.mica.domain.Contact;
-import org.obiba.mica.domain.study.DataCollectionEvent;
-import org.obiba.mica.domain.study.NumberOfParticipants;
-import org.obiba.mica.domain.study.Population;
-import org.obiba.mica.domain.study.Study;
+import org.obiba.mica.domain.DataCollectionEvent;
+import org.obiba.mica.domain.NumberOfParticipants;
+import org.obiba.mica.domain.Population;
+import org.obiba.mica.domain.Study;
 import org.obiba.mica.repository.StudyRepository;
 import org.springframework.stereotype.Component;
 
 import static org.obiba.mica.domain.LocalizedString.en;
-import static org.obiba.mica.domain.study.NumberOfParticipants.TargetNumber;
-import static org.obiba.mica.domain.study.Population.SelectionCriteria.Gender;
-import static org.obiba.mica.domain.study.Study.StudyMethods;
+import static org.obiba.mica.domain.NumberOfParticipants.TargetNumber;
+import static org.obiba.mica.domain.Population.SelectionCriteria.Gender;
+import static org.obiba.mica.domain.Study.StudyMethods;
 
 @SuppressWarnings({ "MagicNumber", "OverlyLongMethod" })
 @Component

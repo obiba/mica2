@@ -1,8 +1,6 @@
-package org.obiba.mica.domain.study;
+package org.obiba.mica.domain;
 
 import java.io.Serializable;
-
-import org.obiba.mica.domain.LocalizedString;
 
 public class NumberOfParticipants implements Serializable {
 

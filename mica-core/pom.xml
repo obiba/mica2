@@ -213,7 +213,7 @@
         </executions>
         <configuration>
           <classes>
-            <param>org.obiba.mica.domain.study.Study</param>
+            <param>org.obiba.mica.domain.Study</param>
           </classes>
         </configuration>
       </plugin>

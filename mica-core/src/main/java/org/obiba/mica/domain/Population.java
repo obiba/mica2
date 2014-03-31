@@ -1,4 +1,4 @@
-package org.obiba.mica.domain.study;
+package org.obiba.mica.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -6,8 +6,6 @@ import java.util.List;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-
-import org.obiba.mica.domain.LocalizedString;
 
 public class Population implements Serializable {
 

@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.obiba.mica.TestApplication;
-import org.obiba.mica.domain.study.Study;
+import org.obiba.mica.domain.Study;
 import org.obiba.mica.repository.StudyRepository;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;

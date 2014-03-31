@@ -1,4 +1,4 @@
-package org.obiba.mica.domain.study;
+package org.obiba.mica.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -8,11 +8,6 @@ import java.util.Objects;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.URL;
-import org.obiba.mica.domain.AbstractTimestampedDocument;
-import org.obiba.mica.domain.Attachment;
-import org.obiba.mica.domain.Authorization;
-import org.obiba.mica.domain.Contact;
-import org.obiba.mica.domain.LocalizedString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.Document;

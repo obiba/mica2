@@ -10,8 +10,8 @@ import javax.validation.constraints.NotNull;
 import org.obiba.mica.domain.Address;
 import org.obiba.mica.domain.Contact;
 import org.obiba.mica.domain.LocalizedString;
+import org.obiba.mica.domain.Study;
 import org.obiba.mica.domain.Timestamped;
-import org.obiba.mica.domain.study.Study;
 import org.springframework.stereotype.Component;
 
 import static com.google.common.base.Strings.isNullOrEmpty;

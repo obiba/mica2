@@ -3,7 +3,7 @@ package org.obiba.mica.service;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.domain.study.Study;
+import org.obiba.mica.domain.Study;
 import org.obiba.mica.repository.StudyRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
