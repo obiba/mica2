@@ -8,22 +8,21 @@
     </encoder>
   </appender>
   <logger name="org.obiba.mica" level="${logback.loglevel}"/>
-  <logger name="ch.qos.logback" level="WARN"/>
-  <logger name="com.codahale.metrics" level="WARN"/>
-  <logger name="com.ryantenney" level="WARN"/>
-  <logger name="com.zaxxer" level="WARN"/>
-  <logger name="net.sf.ehcache" level="WARN"/>
-  <logger name="org.apache" level="WARN"/>
-  <logger name="org.apache.catalina.startup.DigesterFactory" level="OFF"/>
-  <logger name="org.hibernate.validator" level="WARN"/>
-  <logger name="org.hibernate" level="WARN"/>
-  <logger name="org.hibernate.ejb.HibernatePersistence" level="OFF"/>
-  <logger name="org.atmosphere" level="WARN"/>
-  <logger name="org.springframework" level="WARN"/>
-  <logger name="org.springframework.web" level="WARN"/>
-  <logger name="org.springframework.security" level="WARN"/>
-  <logger name="org.springframework.cache" level="WARN"/>
-  <logger name="org.thymeleaf" level="WARN"/>
+  <logger name="ch.qos.logback" level="warn"/>
+  <logger name="com.codahale.metrics" level="warn"/>
+  <logger name="com.ryantenney" level="warn"/>
+  <logger name="com.zaxxer" level="warn"/>
+  <logger name="net.sf.ehcache" level="warn"/>
+  <logger name="org.apache" level="warn"/>
+  <logger name="org.apache.tomcat.util.descriptor.DigesterFactory" level="OFF"/>
+  <logger name="org.hibernate.validator" level="warn"/>
+  <logger name="org.hibernate" level="warn"/>
+  <logger name="org.hibernate.jpa.HibernatePersistenceProvider" level="OFF"/>
+  <logger name="org.atmosphere" level="warn"/>
+  <logger name="org.thymeleaf" level="warn"/>
+  <logger name="org.springframework" level="info"/>
+  <logger name="org.springframework.boot" level="debug"/>
+  <logger name="org.springframework.web" level="debug"/>
 
   <root level="${logback.loglevel}">
     <appender-ref ref="CONSOLE"/>
