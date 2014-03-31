@@ -58,7 +58,7 @@ echo ">> Install Yeoman"
 npm install -g yo
 
 echo ">> Install Jhipster"
-npm install -g generator-jhipster@0.11.0
+npm install -g generator-jhipster@0.12.0
 
 echo ">> Install Compass"
 curl -L get.rvm.io | bash -s stable
