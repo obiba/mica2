@@ -245,6 +245,14 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
     this.populations = populations;
   }
 
+  public List<NetworkRelation> getNetworks() {
+    return networks == null ? (networks = new ArrayList<>()) : networks;
+  }
+
+  public void setNetworks(List<NetworkRelation> networks) {
+    this.networks = networks;
+  }
+
   @Override
   public int hashCode() {
     return Objects.hash(id);
@@ -261,14 +269,6 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
   @Override
   public String toString() {
     return com.google.common.base.Objects.toStringHelper(this).add("id", id).add("name", name).toString();
-  }
-
-  public List<NetworkRelation> getNetworks() {
-    return networks;
-  }
-
-  public void setNetworks(List<NetworkRelation> networks) {
-    this.networks = networks;
   }
 
   public static class StudyMethods implements Serializable {

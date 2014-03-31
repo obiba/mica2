@@ -103,6 +103,26 @@ message StudyDto {
   }
 }
 
+message NetworkDto {
+  required string id = 1;
+  repeated LocalizedStringDto name = 2;
+  repeated LocalizedStringDto acronym = 3;
+  repeated ContactDto investigators = 4;
+  repeated ContactDto contacts = 5;
+  repeated LocalizedStringDto description = 6;
+  optional string website = 7;
+  optional AuthorizationDto maelstromAuthorization = 8;
+  repeated AttachmentDto attachments = 9;
+  repeated LocalizedStringDto infos = 10;
+  repeated StudyRelationDto studies = 11;
+  optional TimestampsDto timestamps = 12;
+
+  message StudyRelationDto {
+    optional string studyId = 1;
+    repeated LocalizedStringDto studyName = 2;
+  }
+}
+
 message TimestampsDto {
   optional string created = 1;
   optional string lastUpdate = 2;

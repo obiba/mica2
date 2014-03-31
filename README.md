@@ -1,4 +1,4 @@
-README for mica
+Mica-Server
 ==========================
 
 To run:
