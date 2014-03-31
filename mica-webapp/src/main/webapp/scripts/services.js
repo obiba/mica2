@@ -4,19 +4,19 @@
 
 micaApp.factory('Account', ['$resource',
   function ($resource) {
-    return $resource('app/rest/account', {}, {
+    return $resource('ws/account', {}, {
     });
   }]);
 
 micaApp.factory('Password', ['$resource',
   function ($resource) {
-    return $resource('app/rest/account/change_password', {}, {
+    return $resource('ws/account/change_password', {}, {
     });
   }]);
 
 micaApp.factory('Sessions', ['$resource',
   function ($resource) {
-    return $resource('app/rest/account/sessions/:series', {}, {
+    return $resource('ws/account/sessions/:series', {}, {
       'get': { method: 'GET', isArray: true}
     });
   }]);
@@ -54,7 +54,7 @@ micaApp.factory('HealthCheckService', ['$rootScope', '$http',
 
 micaApp.factory('LogsService', ['$resource',
   function ($resource) {
-    return $resource('app/rest/logs', {}, {
+    return $resource('ws/logs', {}, {
       'findAll': { method: 'GET', isArray: true},
       'changeLevel': { method: 'PUT'}
     });
@@ -64,13 +64,13 @@ micaApp.factory('AuditsService', ['$http',
   function ($http) {
     return {
       findAll: function () {
-        var promise = $http.get('app/rest/audits/all').then(function (response) {
+        var promise = $http.get('ws/audits/all').then(function (response) {
           return response.data;
         });
         return promise;
       },
       findByDates: function (fromDate, toDate) {
-        var promise = $http.get('app/rest/audits/byDates', {params: {fromDate: fromDate, toDate: toDate}}).then(function (response) {
+        var promise = $http.get('ws/audits/byDates', {params: {fromDate: fromDate, toDate: toDate}}).then(function (response) {
           return response.data;
         });
         return promise;
@@ -109,7 +109,7 @@ micaApp.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieS
     return {
       login: function (param) {
         var data = "j_username=" + param.username + "&j_password=" + param.password + "&_spring_security_remember_me=" + param.rememberMe + "&submit=Login";
-        $http.post('app/authentication', data, {
+        $http.post('ws/authentication', data, {
           headers: {
             "Content-Type": "application/x-www-form-urlencoded"
           },
@@ -160,7 +160,7 @@ micaApp.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieS
       },
       logout: function () {
         $rootScope.authenticationError = false;
-        $http.get('app/logout')
+        $http.get('ws/logout')
           .success(function (data, status, headers, config) {
             Session.destroy();
             authService.loginCancelled();

@@ -24,7 +24,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
  * REST controller for managing Study.
  */
 @RestController
-@RequestMapping("/app")
+@RequestMapping("/ws/studies")
 public class StudyResource {
 
   private static final Logger log = LoggerFactory.getLogger(StudyResource.class);
@@ -35,7 +35,7 @@ public class StudyResource {
   /**
    * POST  /rest/studies -> Create a new study.
    */
-  @RequestMapping(value = "/rest/studies", method = POST, produces = "application/json")
+  @RequestMapping(method = POST, produces = "application/json")
   @Timed
   public void create(@RequestBody Study study) {
     log.debug("REST request to save Study : {}", study);
@@ -45,7 +45,7 @@ public class StudyResource {
   /**
    * GET  /rest/studies -> get all the studies.
    */
-  @RequestMapping(value = "/rest/studies", method = GET, produces = "application/json")
+  @RequestMapping(method = GET, produces = "application/json")
   @Timed
   public List<Study> getAll() {
     log.debug("REST request to get all Studies");
@@ -55,7 +55,7 @@ public class StudyResource {
   /**
    * GET  /rest/studies/:id -> get the "id" study.
    */
-  @RequestMapping(value = "/rest/studies/{id}", method = GET, produces = "application/json")
+  @RequestMapping(value = "/{id}", method = GET, produces = "application/json")
   @Timed
   public Study get(@PathVariable String id, HttpServletResponse response) {
     log.debug("REST request to get Study : {}", id);
@@ -69,7 +69,7 @@ public class StudyResource {
   /**
    * DELETE  /rest/studies/:id -> delete the "id" study.
    */
-  @RequestMapping(value = "/rest/studies/{id}", method = DELETE, produces = "application/json")
+  @RequestMapping(value = "/{id}", method = DELETE, produces = "application/json")
   @Timed
   public void delete(@PathVariable String id, HttpServletResponse response) {
     log.debug("REST request to delete Study : {}", id);

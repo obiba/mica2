@@ -12,16 +12,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.codahale.metrics.annotation.Timed;
+
+import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
  * REST controller for managing Network.
  */
 @RestController
-@RequestMapping("/app")
+@RequestMapping("/ws/networks")
 public class NetworkResource {
 
   private static final Logger log = LoggerFactory.getLogger(NetworkResource.class);
@@ -32,9 +35,7 @@ public class NetworkResource {
   /**
    * POST  /rest/networks -> Create a new network.
    */
-  @RequestMapping(value = "/rest/networks",
-      method = RequestMethod.POST,
-      produces = "application/json")
+  @RequestMapping(method = POST, produces = "application/json")
   @Timed
   public void create(@RequestBody Network network) {
     log.debug("REST request to save Network : {}", network);
@@ -44,9 +45,7 @@ public class NetworkResource {
   /**
    * GET  /rest/networks -> get all the networks.
    */
-  @RequestMapping(value = "/rest/networks",
-      method = RequestMethod.GET,
-      produces = "application/json")
+  @RequestMapping(method = GET, produces = "application/json")
   @Timed
   public List<Network> getAll() {
     log.debug("REST request to get all Networks");
@@ -56,9 +55,7 @@ public class NetworkResource {
   /**
    * GET  /rest/networks/:id -> get the "id" network.
    */
-  @RequestMapping(value = "/rest/networks/{id}",
-      method = RequestMethod.GET,
-      produces = "application/json")
+  @RequestMapping(value = "/{id}", method = GET, produces = "application/json")
   @Timed
   public Network get(@PathVariable String id, HttpServletResponse response) {
     log.debug("REST request to get Network : {}", id);
@@ -72,9 +69,7 @@ public class NetworkResource {
   /**
    * DELETE  /rest/networks/:id -> delete the "id" network.
    */
-  @RequestMapping(value = "/rest/networks/{id}",
-      method = RequestMethod.DELETE,
-      produces = "application/json")
+  @RequestMapping(value = "/{id}", method = DELETE, produces = "application/json")
   @Timed
   public void delete(@PathVariable String id, HttpServletResponse response) {
     log.debug("REST request to delete Network : {}", id);

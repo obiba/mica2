@@ -14,7 +14,7 @@ import org.obiba.mica.domain.Timestamped;
 
 import static org.obiba.mica.domain.LocalizedString.en;
 import static org.obiba.mica.domain.Study.StudyMethods;
-import static org.obiba.mica.domain.study.Assertions.assertThat;
+import static org.obiba.mica.domain.Assertions.assertThat;
 import static org.obiba.mica.web.model.Mica.StudyDto;
 import static org.obiba.mica.web.model.Mica.StudyDtoOrBuilder;
 

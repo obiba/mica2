@@ -80,11 +80,11 @@ public class NetworkResourceTest {
   public void testCRUDNetwork() throws Exception {
 
     // Create Network
-    restNetworkMockMvc.perform(post("/app/rest/networks").contentType(TestUtil.APPLICATION_JSON_UTF8)
+    restNetworkMockMvc.perform(post("/ws/networks").contentType(TestUtil.APPLICATION_JSON_UTF8)
         .content(TestUtil.convertObjectToJsonBytes(network))).andExpect(status().isOk());
 
     // Read Network
-    restNetworkMockMvc.perform(get("/app/rest/networks/{id}", DEFAULT_ID)) //
+    restNetworkMockMvc.perform(get("/ws/networks/{id}", DEFAULT_ID)) //
         .andExpect(status().isOk()) //
         .andExpect(content().contentType(MediaType.APPLICATION_JSON)) //
         .andExpect(jsonPath("$.id").value(DEFAULT_ID)) //
@@ -95,11 +95,11 @@ public class NetworkResourceTest {
 //    network.setSampleDateAttribute(UPD_SAMPLE_DATE_ATTR);
 //    network.setSampleTextAttribute(UPD_SAMPLE_TEXT_ATTR);
 
-    restNetworkMockMvc.perform(post("/app/rest/networks").contentType(TestUtil.APPLICATION_JSON_UTF8)
+    restNetworkMockMvc.perform(post("/ws/networks").contentType(TestUtil.APPLICATION_JSON_UTF8)
         .content(TestUtil.convertObjectToJsonBytes(network))).andExpect(status().isOk());
 
     // Read updated Network
-    restNetworkMockMvc.perform(get("/app/rest/networks/{id}", DEFAULT_ID)) //
+    restNetworkMockMvc.perform(get("/ws/networks/{id}", DEFAULT_ID)) //
         .andExpect(status().isOk()) //
         .andExpect(content().contentType(MediaType.APPLICATION_JSON)) //
         .andExpect(jsonPath("$.id").value(DEFAULT_ID)) //
@@ -107,11 +107,11 @@ public class NetworkResourceTest {
         .andExpect(jsonPath("$.sampleTextAttribute").value(UPD_SAMPLE_TEXT_ATTR));
 
     // Delete Network
-    restNetworkMockMvc.perform(delete("/app/rest/networks/{id}", DEFAULT_ID).accept(TestUtil.APPLICATION_JSON_UTF8))
+    restNetworkMockMvc.perform(delete("/ws/networks/{id}", DEFAULT_ID).accept(TestUtil.APPLICATION_JSON_UTF8))
         .andExpect(status().isOk());
 
     // Read nonexisting Network
-    restNetworkMockMvc.perform(get("/app/rest/networks/{id}", DEFAULT_ID).accept(TestUtil.APPLICATION_JSON_UTF8))
+    restNetworkMockMvc.perform(get("/ws/networks/{id}", DEFAULT_ID).accept(TestUtil.APPLICATION_JSON_UTF8))
         .andExpect(status().isNotFound());
 
   }

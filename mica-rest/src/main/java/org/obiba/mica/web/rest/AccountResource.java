@@ -25,16 +25,19 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.codahale.metrics.annotation.Timed;
+
+import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
  * REST controller for managing the current user's account.
  */
 @RestController
-@RequestMapping("/app")
+@RequestMapping("/ws")
 public class AccountResource {
 
   private static final Logger log = LoggerFactory.getLogger(AccountResource.class);
@@ -51,9 +54,7 @@ public class AccountResource {
   /**
    * GET  /rest/authenticate -> check if the user is authenticated, and return its login.
    */
-  @RequestMapping(value = "/rest/authenticate",
-      method = RequestMethod.GET,
-      produces = "application/json")
+  @RequestMapping(value = "/authenticate", method = GET, produces = "application/json")
   @Timed
   public String isAuthenticated(HttpServletRequest request) {
     log.debug("REST request to check if the current user is authenticated");
@@ -63,9 +64,7 @@ public class AccountResource {
   /**
    * GET  /rest/account -> get the current user.
    */
-  @RequestMapping(value = "/rest/account",
-      method = RequestMethod.GET,
-      produces = "application/json")
+  @RequestMapping(value = "/account", method = GET, produces = "application/json")
   @Timed
   public UserDTO getAccount(HttpServletResponse response) {
     User user = userService.getUserWithAuthorities();
@@ -80,9 +79,7 @@ public class AccountResource {
   /**
    * POST  /rest/account -> update the current user information.
    */
-  @RequestMapping(value = "/rest/account",
-      method = RequestMethod.POST,
-      produces = "application/json")
+  @RequestMapping(value = "/account", method = POST, produces = "application/json")
   @Timed
   public void saveAccount(@RequestBody UserDTO userDTO) throws IOException {
     userService.updateUserInformation(userDTO.getFirstName(), userDTO.getLastName(), userDTO.getEmail());
@@ -91,9 +88,7 @@ public class AccountResource {
   /**
    * POST  /rest/change_password -> changes the current user's password
    */
-  @RequestMapping(value = "/rest/account/change_password",
-      method = RequestMethod.POST,
-      produces = "application/json")
+  @RequestMapping(value = "/account/change_password", method = POST, produces = "application/json")
   @Timed
   public void changePassword(@RequestBody String password, HttpServletResponse response) throws IOException {
     if(password == null || "".equals(password)) {
@@ -106,9 +101,7 @@ public class AccountResource {
   /**
    * GET  /rest/account/sessions -> get the current open sessions.
    */
-  @RequestMapping(value = "/rest/account/sessions",
-      method = RequestMethod.GET,
-      produces = "application/json")
+  @RequestMapping(value = "/account/sessions", method = GET, produces = "application/json")
   @Timed
   public List<PersistentToken> getCurrentSessions(HttpServletResponse response) {
     User user = userRepository.findOne(SecurityUtils.getCurrentLogin());
@@ -121,8 +114,7 @@ public class AccountResource {
   /**
    * DELETE  /rest/account/sessions?series={series} -> invalidate an existing session.
    */
-  @RequestMapping(value = "/rest/account/sessions/{series}",
-      method = RequestMethod.DELETE)
+  @RequestMapping(value = "/account/sessions/{series}", method = DELETE)
   @Timed
   public void invalidateSession(@PathVariable String series, HttpServletRequest request)
       throws UnsupportedEncodingException {

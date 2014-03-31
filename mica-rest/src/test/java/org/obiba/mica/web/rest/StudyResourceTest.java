@@ -80,11 +80,11 @@ public class StudyResourceTest {
   public void testCRUDStudy() throws Exception {
 
     // Create Study
-    restStudyMockMvc.perform(post("/app/rest/studies").contentType(TestUtil.APPLICATION_JSON_UTF8)
+    restStudyMockMvc.perform(post("/ws/studies").contentType(TestUtil.APPLICATION_JSON_UTF8)
         .content(TestUtil.convertObjectToJsonBytes(study))).andExpect(status().isOk());
 
     // Read Study
-    restStudyMockMvc.perform(get("/app/rest/studies/{id}", DEFAULT_ID)).andExpect(status().isOk()) //
+    restStudyMockMvc.perform(get("/ws/studies/{id}", DEFAULT_ID)).andExpect(status().isOk()) //
         .andExpect(content().contentType(MediaType.APPLICATION_JSON)) //
         .andExpect(jsonPath("$.id").value(DEFAULT_ID)) //
         .andExpect(jsonPath("$.sampleDateAttribute").value(DEFAULT_SAMPLE_DATE_ATTR.toString())) //
@@ -94,11 +94,11 @@ public class StudyResourceTest {
 //    study.setSampleDateAttribute(UPD_SAMPLE_DATE_ATTR);
 //    study.setSampleTextAttribute(UPD_SAMPLE_TEXT_ATTR);
 
-    restStudyMockMvc.perform(post("/app/rest/studies").contentType(TestUtil.APPLICATION_JSON_UTF8)
+    restStudyMockMvc.perform(post("/ws/studies").contentType(TestUtil.APPLICATION_JSON_UTF8)
         .content(TestUtil.convertObjectToJsonBytes(study))).andExpect(status().isOk());
 
     // Read updated Study
-    restStudyMockMvc.perform(get("/app/rest/studies/{id}", DEFAULT_ID)) //
+    restStudyMockMvc.perform(get("/ws/studies/{id}", DEFAULT_ID)) //
         .andExpect(status().isOk()) //
         .andExpect(content().contentType(MediaType.APPLICATION_JSON)) //
         .andExpect(jsonPath("$.id").value(DEFAULT_ID)) //
@@ -106,11 +106,11 @@ public class StudyResourceTest {
         .andExpect(jsonPath("$.sampleTextAttribute").value(UPD_SAMPLE_TEXT_ATTR));
 
     // Delete Study
-    restStudyMockMvc.perform(delete("/app/rest/studies/{id}", DEFAULT_ID).accept(TestUtil.APPLICATION_JSON_UTF8))
+    restStudyMockMvc.perform(delete("/ws/studies/{id}", DEFAULT_ID).accept(TestUtil.APPLICATION_JSON_UTF8))
         .andExpect(status().isOk());
 
     // Read nonexisting Study
-    restStudyMockMvc.perform(get("/app/rest/studies/{id}", DEFAULT_ID).accept(TestUtil.APPLICATION_JSON_UTF8))
+    restStudyMockMvc.perform(get("/ws/studies/{id}", DEFAULT_ID).accept(TestUtil.APPLICATION_JSON_UTF8))
         .andExpect(status().isNotFound());
 
   }

@@ -60,8 +60,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
   @Override
   public void configure(WebSecurity web) throws Exception {
-    web.ignoring().antMatchers("/bower_components/**").antMatchers("/fonts/**").antMatchers("/images/**")
-        .antMatchers("/scripts/**").antMatchers("/styles/**").antMatchers("/view/**").antMatchers("/console/**");
+    web.ignoring() //
+        .antMatchers("/bower_components/**") //
+        .antMatchers("/fonts/**") //
+        .antMatchers("/images/**") //
+        .antMatchers("/scripts/**") //
+        .antMatchers("/styles/**") //
+        .antMatchers("/view/**") //
+        .antMatchers("/console/**");
   }
 
   @Override
@@ -72,19 +78,19 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         .rememberMe().rememberMeServices(rememberMeServices)
         .key(env.getProperty("jhipster.security.rememberme.key")).and() //
 
-        .formLogin().loginProcessingUrl("/app/authentication").successHandler(ajaxAuthenticationSuccessHandler)
+        .formLogin().loginProcessingUrl("/ws/authentication").successHandler(ajaxAuthenticationSuccessHandler)
         .failureHandler(ajaxAuthenticationFailureHandler).usernameParameter("j_username")
         .passwordParameter("j_password").permitAll().and() //
 
-        .logout().logoutUrl("/app/logout").logoutSuccessHandler(ajaxLogoutSuccessHandler).deleteCookies("JSESSIONID")
+        .logout().logoutUrl("/ws/logout").logoutSuccessHandler(ajaxLogoutSuccessHandler).deleteCookies("JSESSIONID")
         .permitAll().and() //
 
         .csrf().disable() //
 
         .authorizeRequests() //
-        .antMatchers("/app/rest/authenticate").permitAll() //
-        .antMatchers("/app/rest/logs/**").hasAuthority(ADMIN) //
-        .antMatchers("/app/**").authenticated() //
+        .antMatchers("/ws/authenticate").permitAll() //
+        .antMatchers("/ws/logs/**").hasAuthority(ADMIN) //
+        .antMatchers("/ws/**").authenticated() //
         .antMatchers("/websocket/tracker").hasAuthority(ADMIN) //
         .antMatchers("/websocket/**").permitAll() //
         .antMatchers("/metrics*").hasAuthority(ADMIN) //

@@ -48,7 +48,7 @@ public class UserResourceTest {
 
   @Test
   public void testGetExistingUser() throws Exception {
-    restUserMockMvc.perform(get("/app/rest/users/admin").accept(MediaType.APPLICATION_JSON)) //
+    restUserMockMvc.perform(get("/ws/users/admin").accept(MediaType.APPLICATION_JSON)) //
         .andExpect(status().isOk()) //
         .andExpect(content().contentType("application/json")) //
         .andExpect(jsonPath("$.lastName").value("Administrator"));
@@ -56,7 +56,7 @@ public class UserResourceTest {
 
   @Test
   public void testGetUnknownUser() throws Exception {
-    restUserMockMvc.perform(get("/app/rest/users/unknown").accept(MediaType.APPLICATION_JSON))
+    restUserMockMvc.perform(get("/ws/users/unknown").accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
   }
 }

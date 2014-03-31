@@ -21,6 +21,12 @@ spring:
     username:
     password:
 
+  mongodb:
+      url: localhost:27017
+      databaseName: mica
+      username:
+      password:
+
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     database: H2

@@ -73,7 +73,7 @@ public class WebConfigurer implements ServletContextInitializer {
     compressingFilter.addMappingForUrlPatterns(disps, true, "*.json");
     compressingFilter.addMappingForUrlPatterns(disps, true, "*.html");
     compressingFilter.addMappingForUrlPatterns(disps, true, "*.js");
-    compressingFilter.addMappingForUrlPatterns(disps, true, "/app/rest/*");
+    compressingFilter.addMappingForUrlPatterns(disps, true, "/ws/*");
     compressingFilter.addMappingForUrlPatterns(disps, true, "/metrics/*");
 
     compressingFilter.setAsyncSupported(true);

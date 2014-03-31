@@ -65,7 +65,7 @@ public class AccountResourceTest {
 
   @Test
   public void testNonAuthenticatedUser() throws Exception {
-    restUserMockMvc.perform(get("/app/rest/authenticate").accept(MediaType.APPLICATION_JSON)) //
+    restUserMockMvc.perform(get("/ws/authenticate").accept(MediaType.APPLICATION_JSON)) //
         .andExpect(status().isOk()) //
         .andExpect(content().string(""));
 
@@ -73,7 +73,7 @@ public class AccountResourceTest {
 
   @Test
   public void testAuthenticatedUser() throws Exception {
-    restUserMockMvc.perform(get("/app/rest/authenticate").with(new RequestPostProcessor() {
+    restUserMockMvc.perform(get("/ws/authenticate").with(new RequestPostProcessor() {
       public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
         request.setRemoteUser("test");
         return request;
@@ -98,7 +98,7 @@ public class AccountResourceTest {
     user.setAuthorities(authorities);
     when(userService.getUserWithAuthorities()).thenReturn(user);
 
-    restUserMockMvc.perform(get("/app/rest/account").accept(MediaType.APPLICATION_JSON)) //
+    restUserMockMvc.perform(get("/ws/account").accept(MediaType.APPLICATION_JSON)) //
         .andExpect(status().isOk()) //
         .andExpect(content().contentType(MediaType.APPLICATION_JSON)) //
         .andExpect(jsonPath("$.login").value("test")) //
@@ -112,7 +112,7 @@ public class AccountResourceTest {
   public void testGetUnknownAccount() throws Exception {
     when(userService.getUserWithAuthorities()).thenReturn(null);
 
-    restUserMockMvc.perform(get("/app/rest/account").accept(MediaType.APPLICATION_JSON))
+    restUserMockMvc.perform(get("/ws/account").accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isInternalServerError());
   }
 }
