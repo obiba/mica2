@@ -1,4 +1,4 @@
-package org.obiba.mica.web.rest.provider;
+package org.obiba.mica.web.rest.provider.protobuf;
 
 import java.io.IOException;
 import java.util.ArrayList;
