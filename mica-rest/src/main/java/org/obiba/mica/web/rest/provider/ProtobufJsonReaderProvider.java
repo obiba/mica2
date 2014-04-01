@@ -31,7 +31,7 @@ import com.googlecode.protobuf.format.JsonFormat;
 
 @Component
 @Provider
-@Consumes({ "application/x-protobuf+json", "application/json" })
+@Consumes({ "application/json" })
 public class ProtobufJsonReaderProvider extends AbstractProtobufProvider implements MessageBodyReader<Object> {
 
   @Override

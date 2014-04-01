@@ -29,7 +29,7 @@ import com.googlecode.protobuf.format.JsonFormat;
 
 @Component
 @Provider
-@Produces({ "application/x-protobuf+json", "application/json" })
+@Produces({ "application/json" })
 public class ProtobufJsonWriterProvider extends AbstractProtobufProvider implements MessageBodyWriter<Object> {
 
   @Override

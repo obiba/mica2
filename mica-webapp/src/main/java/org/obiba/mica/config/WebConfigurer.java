@@ -13,15 +13,21 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
 import org.h2.server.web.WebServlet;
+import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
+import org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap;
+import org.jboss.resteasy.plugins.spring.SpringContextLoaderSupport;
 import org.obiba.mica.web.filter.CachingHttpHeadersFilter;
 import org.obiba.mica.web.filter.StaticResourcesProductionFilter;
 import org.obiba.mica.web.filter.gzip.GZipServletFilter;
+import org.obiba.mica.web.rest.RestConfigurer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.web.context.ConfigurableWebApplicationContext;
+import org.springframework.web.context.ContextLoaderListener;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.servlet.InstrumentedFilter;
@@ -45,8 +51,10 @@ public class WebConfigurer implements ServletContextInitializer {
   @Override
   public void onStartup(ServletContext servletContext) throws ServletException {
     log.info("Web application configuration, using profiles: {}", Arrays.toString(env.getActiveProfiles()));
-    EnumSet<DispatcherType> disps = EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ASYNC);
 
+    initRestEasy(servletContext);
+
+    EnumSet<DispatcherType> disps = EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ASYNC);
     initMetrics(servletContext, disps);
     if(env.acceptsProfiles(Constants.SPRING_PROFILE_PRODUCTION)) {
       initStaticResourcesProductionFilter(servletContext, disps);
@@ -56,6 +64,17 @@ public class WebConfigurer implements ServletContextInitializer {
     initH2Console(servletContext);
 
     log.info("Web application fully configured");
+  }
+
+  private void initRestEasy(ServletContext servletContext) {
+
+    servletContext.setInitParameter("resteasy.servlet.mapping.prefix", RestConfigurer.WS_ROOT);
+
+    servletContext.addListener(ResteasyBootstrap.class.getName());
+    servletContext.addListener(Spring4ContextLoaderListener.class.getName());
+
+    ServletRegistration.Dynamic resteasyServlet = servletContext.addServlet("resteasy", HttpServletDispatcher.class);
+    resteasyServlet.addMapping(RestConfigurer.WS_ROOT + "/*");
   }
 
   /**
@@ -85,32 +104,32 @@ public class WebConfigurer implements ServletContextInitializer {
   private void initStaticResourcesProductionFilter(ServletContext servletContext, EnumSet<DispatcherType> disps) {
 
     log.debug("Registering static resources production Filter");
-    FilterRegistration.Dynamic staticResourcesProductionFilter = servletContext
+    FilterRegistration.Dynamic resourcesFilter = servletContext
         .addFilter("staticResourcesProductionFilter", new StaticResourcesProductionFilter());
 
-    staticResourcesProductionFilter.addMappingForUrlPatterns(disps, true, "/");
-    staticResourcesProductionFilter.addMappingForUrlPatterns(disps, true, "/index.html");
-    staticResourcesProductionFilter.addMappingForUrlPatterns(disps, true, "/images/*");
-    staticResourcesProductionFilter.addMappingForUrlPatterns(disps, true, "/fonts/*");
-    staticResourcesProductionFilter.addMappingForUrlPatterns(disps, true, "/scripts/*");
-    staticResourcesProductionFilter.addMappingForUrlPatterns(disps, true, "/styles/*");
-    staticResourcesProductionFilter.addMappingForUrlPatterns(disps, true, "/views/*");
-    staticResourcesProductionFilter.setAsyncSupported(true);
+    resourcesFilter.addMappingForUrlPatterns(disps, true, "/");
+    resourcesFilter.addMappingForUrlPatterns(disps, true, "/index.html");
+    resourcesFilter.addMappingForUrlPatterns(disps, true, "/images/*");
+    resourcesFilter.addMappingForUrlPatterns(disps, true, "/fonts/*");
+    resourcesFilter.addMappingForUrlPatterns(disps, true, "/scripts/*");
+    resourcesFilter.addMappingForUrlPatterns(disps, true, "/styles/*");
+    resourcesFilter.addMappingForUrlPatterns(disps, true, "/views/*");
+    resourcesFilter.setAsyncSupported(true);
   }
 
   /**
    * Initializes the cachig HTTP Headers Filter.
    */
   private void initCachingHttpHeadersFilter(ServletContext servletContext, EnumSet<DispatcherType> disps) {
-    log.debug("Registering Cachig HTTP Headers Filter");
-    FilterRegistration.Dynamic cachingHttpHeadersFilter = servletContext
+    log.debug("Registering Caching HTTP Headers Filter");
+    FilterRegistration.Dynamic cachingFilter = servletContext
         .addFilter("cachingHttpHeadersFilter", new CachingHttpHeadersFilter());
 
-    cachingHttpHeadersFilter.addMappingForUrlPatterns(disps, true, "/images/*");
-    cachingHttpHeadersFilter.addMappingForUrlPatterns(disps, true, "/fonts/*");
-    cachingHttpHeadersFilter.addMappingForUrlPatterns(disps, true, "/scripts/*");
-    cachingHttpHeadersFilter.addMappingForUrlPatterns(disps, true, "/styles/*");
-    cachingHttpHeadersFilter.setAsyncSupported(true);
+    cachingFilter.addMappingForUrlPatterns(disps, true, "/images/*");
+    cachingFilter.addMappingForUrlPatterns(disps, true, "/fonts/*");
+    cachingFilter.addMappingForUrlPatterns(disps, true, "/scripts/*");
+    cachingFilter.addMappingForUrlPatterns(disps, true, "/styles/*");
+    cachingFilter.setAsyncSupported(true);
   }
 
   /**
@@ -144,6 +163,19 @@ public class WebConfigurer implements ServletContextInitializer {
     ServletRegistration.Dynamic h2ConsoleServlet = servletContext.addServlet("H2Console", new WebServlet());
     h2ConsoleServlet.addMapping("/console/*");
     h2ConsoleServlet.setLoadOnStartup(1);
+  }
+
+  // https://issues.jboss.org/browse/RESTEASY-1012
+  public static class Spring4ContextLoaderListener extends ContextLoaderListener {
+
+    private final SpringContextLoaderSupport springContextLoaderSupport = new SpringContextLoaderSupport();
+
+    @Override
+    protected void customizeContext(ServletContext servletContext,
+        ConfigurableWebApplicationContext configurableWebApplicationContext) {
+      super.customizeContext(servletContext, configurableWebApplicationContext);
+      springContextLoaderSupport.customizeContext(servletContext, configurableWebApplicationContext);
+    }
   }
 
 }
