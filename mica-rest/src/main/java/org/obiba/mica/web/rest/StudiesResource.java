@@ -35,7 +35,7 @@ public class StudiesResource {
    */
   @POST
   @Timed
-  public void create(Mica.StudyDto studyDto) {
+  public void create(Mica.StudyDtoOrBuilder studyDto) {
     Study study = dtos.fromDto(studyDto);
     studyService.save(study);
   }

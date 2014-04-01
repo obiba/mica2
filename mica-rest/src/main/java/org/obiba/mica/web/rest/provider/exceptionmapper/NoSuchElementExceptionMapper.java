@@ -7,7 +7,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.obiba.mica.web.rest.provider.mapper;
+package org.obiba.mica.web.rest.provider.exceptionmapper;
 
 import java.util.NoSuchElementException;
 

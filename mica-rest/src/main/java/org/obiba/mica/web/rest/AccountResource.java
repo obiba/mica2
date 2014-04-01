@@ -9,6 +9,11 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
 import org.apache.commons.lang.StringUtils;
 import org.obiba.mica.jpa.domain.Authority;
@@ -22,22 +27,14 @@ import org.obiba.mica.web.rest.dto.UserDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Component;
 
 import com.codahale.metrics.annotation.Timed;
-
-import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
  * REST controller for managing the current user's account.
  */
-@RestController
-@RequestMapping("/ws")
+@Component
 public class AccountResource {
 
   private static final Logger log = LoggerFactory.getLogger(AccountResource.class);
@@ -54,7 +51,8 @@ public class AccountResource {
   /**
    * GET  /rest/authenticate -> check if the user is authenticated, and return its login.
    */
-  @RequestMapping(value = "/authenticate", method = GET, produces = "application/json")
+  @GET
+  @Path("/authenticate")
   @Timed
   public String isAuthenticated(HttpServletRequest request) {
     log.debug("REST request to check if the current user is authenticated");
@@ -64,7 +62,8 @@ public class AccountResource {
   /**
    * GET  /rest/account -> get the current user.
    */
-  @RequestMapping(value = "/account", method = GET, produces = "application/json")
+  @GET
+  @Path("/account")
   @Timed
   public UserDTO getAccount(HttpServletResponse response) {
     User user = userService.getUserWithAuthorities();
@@ -79,18 +78,20 @@ public class AccountResource {
   /**
    * POST  /rest/account -> update the current user information.
    */
-  @RequestMapping(value = "/account", method = POST, produces = "application/json")
+  @POST
+  @Path("/account")
   @Timed
-  public void saveAccount(@RequestBody UserDTO userDTO) throws IOException {
+  public void saveAccount(UserDTO userDTO) throws IOException {
     userService.updateUserInformation(userDTO.getFirstName(), userDTO.getLastName(), userDTO.getEmail());
   }
 
   /**
    * POST  /rest/change_password -> changes the current user's password
    */
-  @RequestMapping(value = "/account/change_password", method = POST, produces = "application/json")
+  @POST
+  @Path("/account/change_password")
   @Timed
-  public void changePassword(@RequestBody String password, HttpServletResponse response) throws IOException {
+  public void changePassword(String password, HttpServletResponse response) throws IOException {
     if(password == null || "".equals(password)) {
       response.sendError(HttpServletResponse.SC_FORBIDDEN, "Password should not be empty");
     } else {
@@ -101,7 +102,8 @@ public class AccountResource {
   /**
    * GET  /rest/account/sessions -> get the current open sessions.
    */
-  @RequestMapping(value = "/account/sessions", method = GET, produces = "application/json")
+  @GET
+  @Path("/account/sessions")
   @Timed
   public List<PersistentToken> getCurrentSessions(HttpServletResponse response) {
     User user = userRepository.findOne(SecurityUtils.getCurrentLogin());
@@ -114,9 +116,10 @@ public class AccountResource {
   /**
    * DELETE  /rest/account/sessions?series={series} -> invalidate an existing session.
    */
-  @RequestMapping(value = "/account/sessions/{series}", method = DELETE)
+  @DELETE
+  @Path("/account/sessions/{series}")
   @Timed
-  public void invalidateSession(@PathVariable String series, HttpServletRequest request)
+  public void invalidateSession(@PathParam("series") String series, HttpServletRequest request)
       throws UnsupportedEncodingException {
     String decodedSeries = URLDecoder.decode(series, "UTF-8");
 
