@@ -1,16 +1,20 @@
 <!doctype html>
 <!--[if lt IE 7]>
-<html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<html class="no-js lt-ie9 lt-ie8 lt-ie7">
+<![endif]-->
 <!--[if IE 7]>
-<html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<html class="no-js lt-ie9 lt-ie8">
+<![endif]-->
 <!--[if IE 8]>
-<html class="no-js lt-ie9"> <![endif]-->
+<html class="no-js lt-ie9">
+<![endif]-->
 <!--[if gt IE 8]><!-->
-<html class="no-js"> <!--<![endif]-->
+<html class="no-js">
+<!--<![endif]-->
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>mica</title>
+  <title>jhipster</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width">
   <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
@@ -37,13 +41,13 @@
       </li>
       <li class="dropdown pointer">
         <a class="dropdown-toggle" data-toggle="dropdown">
-                            <span>
-                                <span class="glyphicon glyphicon-user"></span>
-                                <span class="hidden-tablet" translate="global.menu.account.main">
-                                    Account
-                                </span>
-                                <b class="caret"></b>
-                            </span>
+          <span>
+            <span class="glyphicon glyphicon-user"></span>
+            <span class="hidden-tablet" translate="global.menu.account.main">
+                Account
+            </span>
+            <b class="caret"></b>
+          </span>
         </a>
         <ul class="dropdown-menu" ng-controller="MenuController">
           <li ng-switch-when="true"><a href="#/settings"><span class="glyphicon glyphicon-wrench"></span>
@@ -61,11 +65,11 @@
       <li ng-switch-when="true" ng-show="isAuthorized(userRoles.admin)" class="dropdown pointer"
           ng-controller="AdminController">
         <a class="dropdown-toggle" data-toggle="dropdown">
-                            <span>
-                                <span class="glyphicon glyphicon-tower"></span>
-                                <span class="hidden-tablet" translate="global.menu.admin">Admin</span>
-                                <b class="caret"></b>
-                            </span>
+        <span>
+          <span class="glyphicon glyphicon-tower"></span>
+          <span class="hidden-tablet" translate="global.menu.admin">Admin</span>
+          <b class="caret"></b>
+        </span>
         </a>
         <ul class="dropdown-menu">
           <li><a href="#/metrics"><span class="glyphicon glyphicon-dashboard"></span>
@@ -74,15 +78,17 @@
             &nbsp;<span translate="global.menu.account.audits">Audits</span></a></li>
           <li><a href="#/logs"><span class="glyphicon glyphicon-tasks"></span>
             &nbsp;<span translate="global.menu.account.logs">Logs</span></a></li>
+          <li><a href="#/docs"><span class="glyphicon glyphicon-book"></span>
+            &nbsp;<span translate="global.menu.account.apidocs">API Docs</span></a></li>
         </ul>
       </li>
       <li class="dropdown pointer" ng-controller="LanguageController">
         <a class="dropdown-toggle" data-toggle="dropdown">
-                            <span>
-                                <span class="glyphicon glyphicon-flag"></span>
-                                <span class="hidden-tablet" translate="global.menu.language">Language</span>
-                                <b class="caret"></b>
-                            </span>
+        <span>
+          <span class="glyphicon glyphicon-flag"></span>
+          <span class="hidden-tablet" translate="global.menu.language">Language</span>
+          <b class="caret"></b>
+        </span>
         </a>
         <ul class="dropdown-menu">
           <li active-menu="en">
@@ -96,6 +102,10 @@
           <li active-menu="de">
             <a href="#" ng-click="changeLanguage(&apos;de&apos;)"><span class="famfamfam-flag-de"></span>
               &nbsp;<span translate="global.language.de">German</span></a>
+          </li>
+          <li active-menu="pl">
+            <a href="#" ng-click="changeLanguage(&apos;pl&apos;)"><span class="famfamfam-flag-pl"></span>
+              &nbsp;<span translate="global.language.pl">Polish</span></a>
           </li>
         </ul>
       </li>

@@ -101,10 +101,9 @@ angular.module('micaApp')
             return { idx: idx + 1, col: this.colors[idx] };
           }
         };
-        scope.$watch(attr.passwordToCheck, function () {
-          var passwordToCheck = scope[attr.passwordToCheck];
-          if (passwordToCheck) {
-            var c = strength.getColor(strength.mesureStrength(passwordToCheck));
+        scope.$watch(attr.passwordToCheck, function (password) {
+          if (password) {
+            var c = strength.getColor(strength.mesureStrength(password));
             iElement.removeClass('ng-hide');
             iElement.find('ul').children('li')
               .css({ "background": "#DDD" })
