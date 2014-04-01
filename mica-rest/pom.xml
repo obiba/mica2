@@ -37,9 +37,13 @@
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-spring</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.googlecode.protobuf-java-format</groupId>
+      <artifactId>protobuf-java-format</artifactId>
+    </dependency>
 
     <dependency>
-    <groupId>com.jayway.awaitility</groupId>
+      <groupId>com.jayway.awaitility</groupId>
       <artifactId>awaitility</artifactId>
       <scope>test</scope>
     </dependency>
