@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Test class for the StudyResource REST controller.
  *
- * @see StudyResource
+ * @see StudiesResource
  */
 @Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -43,7 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
     TransactionalTestExecutionListener.class })
 @ActiveProfiles("dev")
-public class StudyResourceTest {
+public class StudiesResourceTest {
 
   private static final String DEFAULT_ID = "1";
 
@@ -65,7 +65,7 @@ public class StudyResourceTest {
   @Before
   public void setup() {
     MockitoAnnotations.initMocks(this);
-    StudyResource studyResource = new StudyResource();
+    StudiesResource studyResource = new StudiesResource();
     ReflectionTestUtils.setField(studyResource, "studyRepository", studyRepository);
 
     restStudyMockMvc = MockMvcBuilders.standaloneSetup(studyResource).build();
