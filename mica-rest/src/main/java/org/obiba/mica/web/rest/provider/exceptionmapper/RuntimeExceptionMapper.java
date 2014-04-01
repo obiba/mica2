@@ -9,21 +9,23 @@
  ******************************************************************************/
 package org.obiba.mica.web.rest.provider.exceptionmapper;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import org.obiba.mica.service.NoSuchStudyException;
 import org.springframework.stereotype.Component;
 
 @Component
 @Provider
-public class NoSuchStudyExceptionMapper implements ExceptionMapper<NoSuchStudyException> {
+public class RuntimeExceptionMapper implements ExceptionMapper<RuntimeException> {
+
+  //TODO use ErrorDto
 
   @Override
-  public Response toResponse(NoSuchStudyException exception) {
-    return Response.status(Status.NOT_FOUND).build();
+  public Response toResponse(RuntimeException exception) {
+    return Response.status(Status.NOT_FOUND).type(MediaType.TEXT_PLAIN).entity(exception.getMessage()).build();
   }
 
 }

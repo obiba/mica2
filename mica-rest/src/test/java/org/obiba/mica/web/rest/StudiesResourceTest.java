@@ -11,6 +11,7 @@ import org.mockito.MockitoAnnotations;
 import org.obiba.mica.TestApplication;
 import org.obiba.mica.domain.Study;
 import org.obiba.mica.repository.StudyRepository;
+import org.obiba.mica.web.rest.study.StudiesResource;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -34,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Test class for the StudyResource REST controller.
  *
- * @see StudiesResource
+ * @see org.obiba.mica.web.rest.study.StudiesResource
  */
 @Ignore
 @RunWith(SpringJUnit4ClassRunner.class)

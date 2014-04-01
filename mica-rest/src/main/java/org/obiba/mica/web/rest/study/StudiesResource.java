@@ -1,13 +1,15 @@
-package org.obiba.mica.web.rest;
+package org.obiba.mica.web.rest.study;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.obiba.mica.domain.Study;
 import org.obiba.mica.service.StudyService;
@@ -31,41 +33,23 @@ public class StudiesResource {
   private Dtos dtos;
 
   /**
-   * POST  /rest/studies -> Create a new study.
+   * POST  /ws/studies -> Create a new study.
    */
   @POST
   @Timed
-  public void create(Mica.StudyDtoOrBuilder studyDto) {
+  public Response create(@SuppressWarnings("TypeMayBeWeakened") Mica.StudyDto studyDto, @Context UriInfo uriInfo) {
     Study study = dtos.fromDto(studyDto);
     studyService.save(study);
+    return Response.created(uriInfo.getBaseUriBuilder().path(StudyResource.class, "get").build(study.getId())).build();
   }
 
   /**
-   * GET  /rest/studies -> get all the studies.
+   * GET  /ws/studies -> get all the studies.
    */
   @GET
   @Timed
-  public List<Study> getAll() {
-    return studyService.findAll();
+  public List<Mica.StudyDto> list() {
+    return studyService.findAll().stream().map(dtos::asDto).collect(Collectors.toList());
   }
 
-  /**
-   * GET  /rest/studies/:id -> get the "id" study.
-   */
-  @GET
-  @Path("/{id}")
-  @Timed
-  public Study get(@PathParam("id") String id) {
-    return studyService.findById(id);
-  }
-
-  /**
-   * DELETE  /rest/studies/:id -> delete the "id" study.
-   */
-  @DELETE
-  @Path("/{id}")
-  @Timed
-  public void delete(@PathParam("id") String id) {
-    studyService.delete(id);
-  }
 }
