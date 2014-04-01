@@ -117,6 +117,7 @@
     <mongeez.version>0.9.4</mongeez.version>
     <protobuf.version>2.5.0</protobuf.version>
     <protobuf-java-format.version>1.2.1-obiba</protobuf-java-format.version>
+    <resteasy.version>3.0.7.Final</resteasy.version>
     <!-- Bug fix spring security issue (https://github.com/spring-projects/spring-security/issues/78) -
       will be removed once a new version of spring boot will be released-->
     <spring-security.version>3.2.3.RELEASE</spring-security.version>
@@ -353,6 +354,24 @@
         <version>${protobuf-java-format.version}</version>
       </dependency>
 
+      <!-- RESTEasy dependencies -->
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-jaxrs</artifactId>
+        <version>${resteasy.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-spring</artifactId>
+        <version>${resteasy.version}</version>
+      </dependency>
+
     </dependencies>
 
   </dependencyManagement>
@@ -380,6 +399,16 @@
       <groupId>com.google.code.findbugs</groupId>
       <artifactId>jsr305</artifactId>
       <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>jcl-over-slf4j</artifactId>
+      <scope>runtime</scope>
     </dependency>
 
   </dependencies>
