@@ -12,6 +12,8 @@ import org.obiba.mica.domain.NumberOfParticipants;
 import org.obiba.mica.domain.Population;
 import org.obiba.mica.domain.Study;
 import org.obiba.mica.repository.StudyRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import static org.obiba.mica.domain.LocalizedString.en;
@@ -22,6 +24,8 @@ import static org.obiba.mica.domain.Study.StudyMethods;
 @SuppressWarnings({ "MagicNumber", "OverlyLongMethod" })
 @Component
 public class StudyGenerator {
+
+  private static final Logger log = LoggerFactory.getLogger(StudyGenerator.class);
 
   @Inject
   private StudyRepository studyRepository;
@@ -34,6 +38,8 @@ public class StudyGenerator {
     //TODO test GridFS
 
     studyRepository.save(study);
+
+    studyRepository.findAll().forEach(s -> log.info(">> {}", s));
   }
 
   private Study createStudy() {
@@ -53,6 +59,7 @@ public class StudyGenerator {
     study.getInvestigators().add(contact);
 
     study.setStartYear(2002);
+    study.setEndYear(2050);
 
     study.setMethods(new StudyMethods());
     study.getMethods().getDesigns().add("case_control");
