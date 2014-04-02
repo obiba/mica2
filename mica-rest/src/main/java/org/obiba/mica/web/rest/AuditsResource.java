@@ -6,9 +6,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
 
-import org.joda.time.LocalDateTime;
 import org.obiba.mica.security.AuthoritiesConstants;
 import org.obiba.mica.service.AuditEventService;
 import org.springframework.boot.actuate.audit.AuditEvent;
@@ -33,11 +31,11 @@ public class AuditsResource {
     return auditEventService.findAll();
   }
 
-  @GET
-  @Path("/byDates")
-  @RolesAllowed(AuthoritiesConstants.ADMIN)
-  public List<AuditEvent> findByDates(@QueryParam("fromDate") LocalDateTime fromDate,
-      @QueryParam("toDate") LocalDateTime toDate) {
-    return auditEventService.findByDates(fromDate, toDate);
-  }
+//  @GET
+//  @Path("/byDates")
+//  @RolesAllowed(AuthoritiesConstants.ADMIN)
+//  public List<AuditEvent> findByDates(@QueryParam("fromDate") LocalDateTime fromDate,
+//      @QueryParam("toDate") LocalDateTime toDate) {
+//    return auditEventService.findByDates(fromDate, toDate);
+//  }
 }
