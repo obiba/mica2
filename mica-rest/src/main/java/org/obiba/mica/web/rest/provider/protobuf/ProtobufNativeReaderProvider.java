@@ -16,6 +16,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -35,7 +36,10 @@ import com.google.protobuf.Message.Builder;
 @Component
 @Provider
 @Consumes("application/x-protobuf")
-public class ProtobufNativeReaderProvider extends AbstractProtobufProvider implements MessageBodyReader<Object> {
+public class ProtobufNativeReaderProvider implements MessageBodyReader<Object> {
+
+  @Inject
+  protected ProtobufProviderHelper helper;
 
   private final int messageSizeLimit;
 
@@ -46,17 +50,17 @@ public class ProtobufNativeReaderProvider extends AbstractProtobufProvider imple
 
   @Override
   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-    return Message.class.isAssignableFrom(type) || isWrapped(type, genericType, annotations, mediaType);
+    return Message.class.isAssignableFrom(type) || helper.isWrapped(type, genericType);
   }
 
   @Override
   public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType,
       MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
       throws IOException, WebApplicationException {
-    Class<Message> messageType = extractMessageType(type, genericType, annotations, mediaType);
-    ExtensionRegistry extensionRegistry = protobuf().extensions().forMessage(messageType);
-    Builder builder = protobuf().builders().forMessage(messageType);
-    if(isWrapped(type, genericType, annotations, mediaType)) {
+    Class<Message> messageType = helper.extractMessageType(type, genericType);
+    ExtensionRegistry extensionRegistry = helper.extensions().forMessage(messageType);
+    Builder builder = helper.builders().forMessage(messageType);
+    if(helper.isWrapped(type, genericType)) {
       Collection<Message> msgs = new ArrayList<>();
       Builder b = builder.clone();
       while(b.mergeDelimitedFrom(entityStream, extensionRegistry)) {

@@ -11,6 +11,7 @@ package org.obiba.mica.web.rest.provider.protobuf;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,6 +50,19 @@ public class ProtobufProviderHelper {
 
   public DescriptorFactory descriptors() {
     return descriptorFactory;
+  }
+
+  @SuppressWarnings("unchecked")
+  public Class<Message> extractMessageType(Class<?> type, Type genericType) {
+    return isWrapped(type, genericType) ? Types.getCollectionBaseType(type, genericType) : (Class<Message>) type;
+  }
+
+  public boolean isWrapped(Class<?> type, Type genericType) {
+    if((Iterable.class.isAssignableFrom(type) || type.isArray()) && genericType != null) {
+      Class<?> baseType = Types.getCollectionBaseType(type, genericType);
+      return baseType != null && Message.class.isAssignableFrom(baseType);
+    }
+    return false;
   }
 
   protected static final class DescriptorFactory {

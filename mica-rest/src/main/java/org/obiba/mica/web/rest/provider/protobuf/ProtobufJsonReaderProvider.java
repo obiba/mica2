@@ -15,6 +15,7 @@ import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -32,24 +33,27 @@ import com.googlecode.protobuf.format.JsonFormat;
 @Component
 @Provider
 @Consumes({ "application/json" })
-public class ProtobufJsonReaderProvider extends AbstractProtobufProvider implements MessageBodyReader<Object> {
+public class ProtobufJsonReaderProvider implements MessageBodyReader<Object> {
+
+  @Inject
+  protected ProtobufProviderHelper helper;
 
   @Override
   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-    return Message.class.isAssignableFrom(type) || isWrapped(type, genericType, annotations, mediaType);
+    return Message.class.isAssignableFrom(type) || helper.isWrapped(type, genericType);
   }
 
   @Override
   public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType,
       MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
       throws IOException, WebApplicationException {
-    Class<Message> messageType = extractMessageType(type, genericType, annotations, mediaType);
+    Class<Message> messageType = helper.extractMessageType(type, genericType);
 
-    ExtensionRegistry extensionRegistry = protobuf().extensions().forMessage(messageType);
-    Builder builder = protobuf().builders().forMessage(messageType);
+    ExtensionRegistry extensionRegistry = helper.extensions().forMessage(messageType);
+    Builder builder = helper.builders().forMessage(messageType);
 
     Readable input = new InputStreamReader(entityStream, "UTF-8");
-    if(isWrapped(type, genericType, annotations, mediaType)) {
+    if(helper.isWrapped(type, genericType)) {
       // JsonFormat does not provide a mergeCollection method
       return JsonIoUtil.mergeCollection(input, extensionRegistry, builder);
     }

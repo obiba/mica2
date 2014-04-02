@@ -14,6 +14,7 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import javax.inject.Inject;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -29,11 +30,14 @@ import com.google.protobuf.MessageLite;
 @Component
 @Provider
 @Produces({ "application/x-protobuf" })
-public class ProtobufNativeWriterProvider extends AbstractProtobufProvider implements MessageBodyWriter<Object> {
+public class ProtobufNativeWriterProvider implements MessageBodyWriter<Object> {
+
+  @Inject
+  protected ProtobufProviderHelper helper;
 
   @Override
   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-    return Message.class.isAssignableFrom(type) || isWrapped(type, genericType, annotations, mediaType);
+    return Message.class.isAssignableFrom(type) || helper.isWrapped(type, genericType);
   }
 
   @Override
@@ -46,9 +50,8 @@ public class ProtobufNativeWriterProvider extends AbstractProtobufProvider imple
   public void writeTo(Object obj, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
       MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
       throws IOException, WebApplicationException {
-    if(isWrapped(type, genericType, annotations, mediaType)) {
-      Class<Message> messageType = extractMessageType(type, genericType, annotations, mediaType);
-      for(Message message : sort(messageType, (Iterable<Message>) obj)) {
+    if(helper.isWrapped(type, genericType)) {
+      for(MessageLite message : (Iterable<Message>) obj) {
         message.writeDelimitedTo(entityStream);
       }
     } else {

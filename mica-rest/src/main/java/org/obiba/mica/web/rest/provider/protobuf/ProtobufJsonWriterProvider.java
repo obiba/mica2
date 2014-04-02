@@ -15,6 +15,7 @@ import java.io.OutputStreamWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import javax.inject.Inject;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -30,11 +31,14 @@ import com.googlecode.protobuf.format.JsonFormat;
 @Component
 @Provider
 @Produces({ "application/json" })
-public class ProtobufJsonWriterProvider extends AbstractProtobufProvider implements MessageBodyWriter<Object> {
+public class ProtobufJsonWriterProvider implements MessageBodyWriter<Object> {
+
+  @Inject
+  protected ProtobufProviderHelper helper;
 
   @Override
   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-    return Message.class.isAssignableFrom(type) || isWrapped(type, genericType, annotations, mediaType);
+    return Message.class.isAssignableFrom(type) || helper.isWrapped(type, genericType);
   }
 
   @Override
@@ -44,17 +48,15 @@ public class ProtobufJsonWriterProvider extends AbstractProtobufProvider impleme
 
   @Override
   @SuppressWarnings({ "unchecked", "PMD.ExcessiveParameterList" })
-  public void writeTo(Object t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
+  public void writeTo(Object obj, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
       MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
       throws IOException, WebApplicationException {
     try(OutputStreamWriter output = new OutputStreamWriter(entityStream, "UTF-8")) {
-      if(isWrapped(type, genericType, annotations, mediaType)) {
+      if(helper.isWrapped(type, genericType)) {
         // JsonFormat does not provide a printList method
-        JsonIoUtil
-            .printCollection(sort(extractMessageType(type, genericType, annotations, mediaType), (Iterable<Message>) t),
-                output);
+        JsonIoUtil.printCollection((Iterable<Message>) obj, output);
       } else {
-        JsonFormat.print((Message) t, output);
+        JsonFormat.print((Message) obj, output);
       }
       output.flush();
     }
