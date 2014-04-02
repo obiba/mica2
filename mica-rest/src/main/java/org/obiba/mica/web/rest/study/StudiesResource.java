@@ -40,7 +40,7 @@ public class StudiesResource {
   public Response create(@SuppressWarnings("TypeMayBeWeakened") Mica.StudyDto studyDto, @Context UriInfo uriInfo) {
     Study study = dtos.fromDto(studyDto);
     studyService.save(study);
-    return Response.created(uriInfo.getBaseUriBuilder().path(StudyResource.class, "get").build(study.getId())).build();
+    return Response.created(uriInfo.getBaseUriBuilder().path(StudyResource.class).build(study.getId())).build();
   }
 
   /**

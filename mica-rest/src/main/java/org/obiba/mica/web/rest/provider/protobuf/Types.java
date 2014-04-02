@@ -11,6 +11,7 @@ import java.util.Map;
 
 /**
  * Copied from resteasy-jaxrs-3.0.7.Final.jar!/org/jboss/resteasy/util/Types.class
+ * <p>
  * Type conversions and generic type manipulations
  *
  * @author <a href="mailto:bill@burkecentral.com">Bill Burke</a>
@@ -18,6 +19,9 @@ import java.util.Map;
  */
 @SuppressWarnings({ "rawtypes", "unchecked", "OverlyLongMethod" })
 public class Types {
+
+  private Types() {}
+
   /**
    * Is the genericType of a certain class?
    */

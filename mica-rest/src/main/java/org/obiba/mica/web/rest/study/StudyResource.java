@@ -12,7 +12,6 @@ import org.obiba.mica.domain.Study;
 import org.obiba.mica.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.codahale.metrics.annotation.Timed;
@@ -21,7 +20,6 @@ import com.codahale.metrics.annotation.Timed;
  * REST controller for managing Study.
  */
 @Component
-@Scope("request")
 @Path("/studies/{id}")
 public class StudyResource {
 
