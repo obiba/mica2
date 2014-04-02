@@ -2,7 +2,6 @@ package org.obiba.mica.web.model;
 
 import java.util.Locale;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.obiba.mica.domain.Address;
 import org.obiba.mica.domain.Contact;
@@ -12,9 +11,9 @@ import org.obiba.mica.domain.Population;
 import org.obiba.mica.domain.Study;
 import org.obiba.mica.domain.Timestamped;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.obiba.mica.domain.LocalizedString.en;
 import static org.obiba.mica.domain.Study.StudyMethods;
-import static org.obiba.mica.domain.Assertions.assertThat;
 import static org.obiba.mica.web.model.Mica.StudyDto;
 import static org.obiba.mica.web.model.Mica.StudyDtoOrBuilder;
 
@@ -46,21 +45,19 @@ public class StudyDtosTest {
   }
 
   private void assertTimestamps(Timestamped study, StudyDtoOrBuilder dto) {
-    Assertions.assertThat(dto.getTimestamps().getCreated()).isEqualTo(study.getCreated().toString());
-    Assertions.assertThat(dto.getTimestamps().getLastUpdate())
+    assertThat(dto.getTimestamps().getCreated()).isEqualTo(study.getCreated().toString());
+    assertThat(dto.getTimestamps().getLastUpdate())
         .isEqualTo(study.getUpdated() == null ? "" : study.getUpdated().toString());
   }
 
   private void assertStudy(Study actual, Study expected) {
-    assertThat(actual) //
-        .isEqualTo(expected) //
-        .hasName(expected.getName()) //
-        .hasAcronym(expected.getAcronym()) //
-            // TODO
-//        .hasInvestigators(expected.getInvestigators()) //
-//        .hasContacts(expected.getContacts()) //
-        .hasObjectives(expected.getObjectives()) //
-        .hasWebsite(expected.getWebsite());
+    assertThat(actual.getName()).isEqualTo(expected.getName());
+    assertThat(actual.getAcronym()).isEqualTo(expected.getAcronym());
+    // TODO
+//    assertThat(actual.getContacts()).isEqualTo(expected.getContacts());
+//    assertThat(actual.getInvestigators()).isEqualTo(expected.getInvestigators());
+    assertThat(actual.getObjectives()).isEqualTo(expected.getObjectives());
+    assertThat(actual.getWebsite()).isEqualTo(expected.getWebsite());
   }
 
   private Study createStudy() {

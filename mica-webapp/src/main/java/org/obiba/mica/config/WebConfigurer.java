@@ -13,21 +13,15 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
 import org.h2.server.web.WebServlet;
-import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
-import org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap;
-import org.jboss.resteasy.plugins.spring.SpringContextLoaderSupport;
 import org.obiba.mica.web.filter.CachingHttpHeadersFilter;
 import org.obiba.mica.web.filter.StaticResourcesProductionFilter;
 import org.obiba.mica.web.filter.gzip.GZipServletFilter;
-import org.obiba.mica.web.rest.RestConfigurer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.web.context.ConfigurableWebApplicationContext;
-import org.springframework.web.context.ContextLoaderListener;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.servlet.InstrumentedFilter;
@@ -52,8 +46,6 @@ public class WebConfigurer implements ServletContextInitializer {
   public void onStartup(ServletContext servletContext) throws ServletException {
     log.info("Web application configuration, using profiles: {}", Arrays.toString(env.getActiveProfiles()));
 
-    initRestEasy(servletContext);
-
     EnumSet<DispatcherType> disps = EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ASYNC);
     initMetrics(servletContext, disps);
     if(env.acceptsProfiles(Constants.SPRING_PROFILE_PRODUCTION)) {
@@ -64,17 +56,6 @@ public class WebConfigurer implements ServletContextInitializer {
     initH2Console(servletContext);
 
     log.info("Web application fully configured");
-  }
-
-  private void initRestEasy(ServletContext servletContext) {
-
-    servletContext.setInitParameter("resteasy.servlet.mapping.prefix", RestConfigurer.WS_ROOT);
-
-    servletContext.addListener(ResteasyBootstrap.class.getName());
-    servletContext.addListener(Spring4ContextLoaderListener.class.getName());
-
-    ServletRegistration.Dynamic resteasyServlet = servletContext.addServlet("resteasy", HttpServletDispatcher.class);
-    resteasyServlet.addMapping(RestConfigurer.WS_ROOT + "/*");
   }
 
   /**
@@ -163,19 +144,6 @@ public class WebConfigurer implements ServletContextInitializer {
     ServletRegistration.Dynamic h2ConsoleServlet = servletContext.addServlet("H2Console", new WebServlet());
     h2ConsoleServlet.addMapping("/console/*");
     h2ConsoleServlet.setLoadOnStartup(1);
-  }
-
-  // https://issues.jboss.org/browse/RESTEASY-1012
-  public static class Spring4ContextLoaderListener extends ContextLoaderListener {
-
-    private final SpringContextLoaderSupport springContextLoaderSupport = new SpringContextLoaderSupport();
-
-    @Override
-    protected void customizeContext(ServletContext servletContext,
-        ConfigurableWebApplicationContext configurableWebApplicationContext) {
-      super.customizeContext(servletContext, configurableWebApplicationContext);
-      springContextLoaderSupport.customizeContext(servletContext, configurableWebApplicationContext);
-    }
   }
 
 }

@@ -200,25 +200,6 @@
     <plugins>
 
       <plugin>
-        <groupId>org.assertj</groupId>
-        <artifactId>assertj-assertions-generator-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>generate-sources</id>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>generate-assertions</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <classes>
-            <param>org.obiba.mica.domain.Study</param>
-          </classes>
-        </configuration>
-      </plugin>
-
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <executions>

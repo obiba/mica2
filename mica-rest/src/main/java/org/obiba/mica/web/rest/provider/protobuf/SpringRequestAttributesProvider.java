@@ -13,8 +13,7 @@ import java.net.URI;
 
 import javax.ws.rs.core.UriInfo;
 
-import org.jboss.resteasy.plugins.server.servlet.ServletUtil;
-import org.obiba.mica.web.rest.RestConfigurer;
+import org.obiba.mica.web.rest.config.JerseyConfig;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -34,12 +33,14 @@ public class SpringRequestAttributesProvider implements RequestAttributesProvide
 
   @Override
   public UriInfo getUriInfo() {
-    return ServletUtil.extractUriInfo(currentRequestAttributes().getRequest(), RestConfigurer.WS_ROOT);
+//    return ServletUtil.extractUriInfo(currentRequestAttributes().getRequest(), RestConfigurer.WS_ROOT);
+    //TODO getUriInfo
+    return null;
   }
 
   @Override
   public String getResourcePath(URI uri) {
-    return uri.getPath().replaceFirst(RestConfigurer.WS_ROOT, "");
+    return uri.getPath().replaceFirst(JerseyConfig.WS_ROOT, "");
   }
 
 }

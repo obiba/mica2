@@ -16,8 +16,6 @@ import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 
-import org.jboss.resteasy.plugins.providers.jaxb.IgnoredMediaTypes;
-import org.jboss.resteasy.util.Types;
 import org.obiba.mica.web.rest.SortDir;
 import org.springframework.stereotype.Component;
 
@@ -53,8 +51,7 @@ public abstract class AbstractProtobufProvider {
   protected boolean isWrapped(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
     if((Iterable.class.isAssignableFrom(type) || type.isArray()) && genericType != null) {
       Class<?> baseType = Types.getCollectionBaseType(type, genericType);
-      return baseType != null && Message.class.isAssignableFrom(baseType) &&
-          !IgnoredMediaTypes.ignored(baseType, annotations, mediaType);
+      return baseType != null && Message.class.isAssignableFrom(baseType);
     }
     return false;
   }
