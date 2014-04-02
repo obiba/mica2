@@ -28,9 +28,11 @@ import org.springframework.stereotype.Component;
 import com.google.protobuf.Message;
 import com.googlecode.protobuf.format.JsonFormat;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+
 @Component
 @Provider
-@Produces({ "application/json" })
+@Produces(APPLICATION_JSON)
 public class ProtobufJsonWriterProvider implements MessageBodyWriter<Object> {
 
   @Inject

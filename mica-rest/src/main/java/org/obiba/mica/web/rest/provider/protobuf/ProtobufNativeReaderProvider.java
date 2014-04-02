@@ -24,11 +24,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.google.protobuf.CodedInputStream;
 import com.google.protobuf.ExtensionRegistry;
 import com.google.protobuf.Message;
 import com.google.protobuf.Message.Builder;
@@ -40,13 +37,6 @@ public class ProtobufNativeReaderProvider implements MessageBodyReader<Object> {
 
   @Inject
   protected ProtobufProviderHelper helper;
-
-  private final int messageSizeLimit;
-
-  @Autowired
-  public ProtobufNativeReaderProvider(@Value("${org.obiba.opal.ws.messageSizeLimit}") int messageSizeLimit) {
-    this.messageSizeLimit = messageSizeLimit;
-  }
 
   @Override
   public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
@@ -62,15 +52,13 @@ public class ProtobufNativeReaderProvider implements MessageBodyReader<Object> {
     Builder builder = helper.builders().forMessage(messageType);
     if(helper.isWrapped(type, genericType)) {
       Collection<Message> msgs = new ArrayList<>();
-      Builder b = builder.clone();
-      while(b.mergeDelimitedFrom(entityStream, extensionRegistry)) {
-        msgs.add(b.build());
-        b = builder.clone();
+      Builder builderClone = builder.clone();
+      while(builderClone.mergeDelimitedFrom(entityStream, extensionRegistry)) {
+        msgs.add(builderClone.build());
+        builderClone = builder.clone();
       }
       return msgs;
     }
-    CodedInputStream cis = CodedInputStream.newInstance(entityStream);
-    cis.setSizeLimit(messageSizeLimit);
-    return builder.mergeFrom(cis, extensionRegistry).build();
+    return builder.mergeFrom(entityStream, extensionRegistry).build();
   }
 }

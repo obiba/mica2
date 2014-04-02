@@ -30,9 +30,11 @@ import com.google.protobuf.Message;
 import com.google.protobuf.Message.Builder;
 import com.googlecode.protobuf.format.JsonFormat;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+
 @Component
 @Provider
-@Consumes({ "application/json" })
+@Consumes(APPLICATION_JSON)
 public class ProtobufJsonReaderProvider implements MessageBodyReader<Object> {
 
   @Inject
