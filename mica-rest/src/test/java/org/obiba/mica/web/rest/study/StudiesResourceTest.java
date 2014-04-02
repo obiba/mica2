@@ -1,4 +1,4 @@
-package org.obiba.mica.web.rest;
+package org.obiba.mica.web.rest.study;
 
 import javax.inject.Inject;
 
@@ -11,7 +11,7 @@ import org.mockito.MockitoAnnotations;
 import org.obiba.mica.TestApplication;
 import org.obiba.mica.domain.Study;
 import org.obiba.mica.repository.StudyRepository;
-import org.obiba.mica.web.rest.study.StudiesResource;
+import org.obiba.mica.web.rest.TestUtil;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
