@@ -38,6 +38,7 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 /**
  * REST controller for managing the current user's account.
  */
+@Path("/")
 @Component
 public class AccountResource {
 
