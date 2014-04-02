@@ -6,11 +6,14 @@ import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 
 import org.obiba.mica.security.AuthoritiesConstants;
 import org.obiba.mica.service.AuditEventService;
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.stereotype.Component;
+
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 /**
  * REST controller for getting the audit events.
@@ -26,6 +29,7 @@ public class AuditsResource {
 
   @GET
   @Path("/all")
+  @Produces(APPLICATION_JSON)
   @RolesAllowed(AuthoritiesConstants.ADMIN)
   public List<AuditEvent> findAll() {
     return auditEventService.findAll();

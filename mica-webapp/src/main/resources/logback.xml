@@ -9,16 +9,16 @@
   <logger name="com.zaxxer" level="warn"/>
   <logger name="net.sf.ehcache" level="warn"/>
   <logger name="org.apache" level="warn"/>
-  <logger name="org.apache.tomcat.util.descriptor.DigesterFactory" level="OFF"/>
+  <!--<logger name="org.apache.tomcat.util.descriptor.DigesterFactory" level="OFF"/>-->
   <logger name="org.hibernate.validator" level="warn"/>
   <logger name="org.hibernate" level="warn"/>
-  <logger name="org.hibernate.jpa.HibernatePersistenceProvider" level="OFF"/>
+  <!--<logger name="org.hibernate.jpa.HibernatePersistenceProvider" level="OFF"/>-->
   <logger name="org.atmosphere" level="warn"/>
   <logger name="org.thymeleaf" level="warn"/>
   <logger name="org.springframework" level="info"/>
   <logger name="org.springframework.data.mongodb" level="debug"/>
   <!--<logger name="org.springframework.boot" level="info"/>-->
-  <!--<logger name="org.springframework.web" level="info"/>-->
+  <logger name="org.glassfish.jersey" level="debug"/>
 
   <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>

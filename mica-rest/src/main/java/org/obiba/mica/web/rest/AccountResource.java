@@ -8,12 +8,14 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
 import org.obiba.mica.jpa.domain.Authority;
@@ -30,6 +32,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import com.codahale.metrics.annotation.Timed;
+
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 /**
  * REST controller for managing the current user's account.
@@ -54,8 +58,8 @@ public class AccountResource {
   @GET
   @Path("/authenticate")
   @Timed
-  public String isAuthenticated(HttpServletRequest request) {
-    log.debug("REST request to check if the current user is authenticated");
+  public String isAuthenticated(@Context HttpServletRequest request) {
+    log.info(">> REST request to check if the current user is authenticated: {}", request.getRemoteUser());
     return request.getRemoteUser();
   }
 
@@ -64,15 +68,15 @@ public class AccountResource {
    */
   @GET
   @Path("/account")
+  @Produces(APPLICATION_JSON)
   @Timed
-  public UserDTO getAccount(HttpServletResponse response) {
+  public UserDTO getAccount() {
+    log.info(">> get the current user");
     User user = userService.getUserWithAuthorities();
-    if(user == null) {
-      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-      return null;
-    }
     List<String> roles = user.getAuthorities().stream().map(Authority::getName).collect(Collectors.toList());
-    return new UserDTO(user.getLogin(), user.getFirstName(), user.getLastName(), user.getEmail(), roles);
+    UserDTO userDTO = new UserDTO(user.getLogin(), user.getFirstName(), user.getLastName(), user.getEmail(), roles);
+    log.info(">> current userDTO: {}", userDTO);
+    return userDTO;
   }
 
   /**
@@ -81,8 +85,9 @@ public class AccountResource {
   @POST
   @Path("/account")
   @Timed
-  public void saveAccount(UserDTO userDTO) throws IOException {
+  public Response saveAccount(UserDTO userDTO) throws IOException {
     userService.updateUserInformation(userDTO.getFirstName(), userDTO.getLastName(), userDTO.getEmail());
+    return Response.noContent().build();
   }
 
   /**
@@ -91,12 +96,12 @@ public class AccountResource {
   @POST
   @Path("/account/change_password")
   @Timed
-  public void changePassword(String password, HttpServletResponse response) throws IOException {
+  public Response changePassword(String password) throws IOException {
     if(password == null || "".equals(password)) {
-      response.sendError(HttpServletResponse.SC_FORBIDDEN, "Password should not be empty");
-    } else {
-      userService.changePassword(password);
+      return Response.status(Response.Status.FORBIDDEN).entity("Password should not be empty").build();
     }
+    userService.changePassword(password);
+    return Response.noContent().build();
   }
 
   /**
@@ -104,12 +109,10 @@ public class AccountResource {
    */
   @GET
   @Path("/account/sessions")
+  @Produces(APPLICATION_JSON)
   @Timed
-  public List<PersistentToken> getCurrentSessions(HttpServletResponse response) {
+  public List<PersistentToken> getCurrentSessions() {
     User user = userRepository.findOne(SecurityUtils.getCurrentLogin());
-    if(user == null) {
-      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-    }
     return persistentTokenRepository.findByUser(user);
   }
 
@@ -119,7 +122,7 @@ public class AccountResource {
   @DELETE
   @Path("/account/sessions/{series}")
   @Timed
-  public void invalidateSession(@PathParam("series") String series, HttpServletRequest request)
+  public Response invalidateSession(@PathParam("series") String series, @Context HttpServletRequest request)
       throws UnsupportedEncodingException {
     String decodedSeries = URLDecoder.decode(series, "UTF-8");
 
@@ -135,5 +138,6 @@ public class AccountResource {
         });
 
     persistentTokenRepository.delete(decodedSeries);
+    return Response.noContent().build();
   }
 }

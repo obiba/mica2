@@ -25,6 +25,7 @@ import javax.ws.rs.ext.Provider;
 
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Charsets;
 import com.google.protobuf.ExtensionRegistry;
 import com.google.protobuf.Message;
 import com.google.protobuf.Message.Builder;
@@ -54,7 +55,7 @@ public class ProtobufJsonReaderProvider implements MessageBodyReader<Object> {
     ExtensionRegistry extensionRegistry = helper.extensions().forMessage(messageType);
     Builder builder = helper.builders().forMessage(messageType);
 
-    Readable input = new InputStreamReader(entityStream, "UTF-8");
+    Readable input = new InputStreamReader(entityStream, Charsets.UTF_8);
     if(helper.isWrapped(type, genericType)) {
       // JsonFormat does not provide a mergeCollection method
       return JsonIoUtil.mergeCollection(input, extensionRegistry, builder);

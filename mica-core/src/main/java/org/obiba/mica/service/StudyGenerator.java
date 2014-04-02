@@ -2,7 +2,6 @@ package org.obiba.mica.service;
 
 import java.util.Locale;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.obiba.mica.domain.Address;
@@ -30,7 +29,7 @@ public class StudyGenerator {
   @Inject
   private StudyRepository studyRepository;
 
-  @PostConstruct
+  //  @PostConstruct
   public void init() {
 
     Study study = createStudy();

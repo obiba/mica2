@@ -23,8 +23,11 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Charsets;
 import com.google.protobuf.Message;
 import com.googlecode.protobuf.format.JsonFormat;
 
@@ -35,11 +38,14 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Produces(APPLICATION_JSON)
 public class ProtobufJsonWriterProvider implements MessageBodyWriter<Object> {
 
+  private static final Logger log = LoggerFactory.getLogger(ProtobufJsonWriterProvider.class);
+
   @Inject
   protected ProtobufProviderHelper helper;
 
   @Override
   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
+    log.debug(">> Evaluate {}", type);
     return Message.class.isAssignableFrom(type) || helper.isWrapped(type, genericType);
   }
 
@@ -53,7 +59,9 @@ public class ProtobufJsonWriterProvider implements MessageBodyWriter<Object> {
   public void writeTo(Object obj, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType,
       MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
       throws IOException, WebApplicationException {
-    try(OutputStreamWriter output = new OutputStreamWriter(entityStream, "UTF-8")) {
+
+    log.debug(">> Write message {}", obj);
+    try(OutputStreamWriter output = new OutputStreamWriter(entityStream, Charsets.UTF_8)) {
       if(helper.isWrapped(type, genericType)) {
         // JsonFormat does not provide a printList method
         JsonIoUtil.printCollection((Iterable<Message>) obj, output);

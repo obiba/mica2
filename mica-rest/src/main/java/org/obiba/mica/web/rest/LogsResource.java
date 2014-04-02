@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 
 import org.obiba.mica.web.rest.dto.LoggerDTO;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,8 @@ import com.codahale.metrics.annotation.Timed;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+
 /**
  * Controller for view and managing Log Level at runtime.
  */
@@ -25,6 +28,7 @@ import ch.qos.logback.classic.LoggerContext;
 public class LogsResource {
 
   @GET
+  @Produces(APPLICATION_JSON)
   @Timed
   public List<LoggerDTO> getList() {
     LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
@@ -34,6 +38,7 @@ public class LogsResource {
   @PUT
   @Timed
   public HttpStatus changeLevel(LoggerDTO jsonLogger) {
+    @SuppressWarnings("TypeMayBeWeakened")
     LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
     context.getLogger(jsonLogger.getName()).setLevel(Level.valueOf(jsonLogger.getLevel()));
     return HttpStatus.NO_CONTENT;
