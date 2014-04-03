@@ -1,3 +1,3 @@
-Vagrant setup for developing Mica Server.
+# Vagrant setup for developing Mica Server.
 
 Run `vagrant up`
