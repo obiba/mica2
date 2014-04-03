@@ -27,9 +27,6 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Charsets;
 import com.google.protobuf.ExtensionRegistry;
 import com.google.protobuf.Message;
@@ -42,8 +39,6 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 @Consumes(APPLICATION_JSON)
 @Produces(APPLICATION_JSON)
 public class ProtobufJsonProvider implements MessageBodyReader<Object>, MessageBodyWriter<Object> {
-
-  private static final Logger log = LoggerFactory.getLogger(ProtobufJsonProvider.class);
 
   @Inject
   protected ProtobufProviderHelper helper;
@@ -73,7 +68,6 @@ public class ProtobufJsonProvider implements MessageBodyReader<Object>, MessageB
 
   @Override
   public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
-    log.debug(">> Evaluate {}", type);
     return Message.class.isAssignableFrom(type) || helper.isWrapped(type, genericType);
   }
 
@@ -88,7 +82,6 @@ public class ProtobufJsonProvider implements MessageBodyReader<Object>, MessageB
       MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream)
       throws IOException, WebApplicationException {
 
-    log.debug(">> Write message {}", obj);
     try(OutputStreamWriter output = new OutputStreamWriter(entityStream, Charsets.UTF_8)) {
       if(helper.isWrapped(type, genericType)) {
         // JsonFormat does not provide a printList method

@@ -24,7 +24,7 @@ public class JerseyConfig extends ResourceConfig {
   public static class JerseyServletConfig extends ResourceConfig {
     public JerseyServletConfig() {
       register(RequestContextFilter.class);
-      packages("org.obiba.mica.web");
+      packages("org.obiba.mica.web", "com.fasterxml.jackson");
       register(LoggingFilter.class);
     }
   }
