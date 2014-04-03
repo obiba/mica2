@@ -15,8 +15,7 @@
   <logger name="org.atmosphere" level="warn"/>
   <logger name="org.thymeleaf" level="warn"/>
   <logger name="org.springframework" level="warn"/>
-  <!--<logger name="org.springframework.data.mongodb" level="debug"/>-->
-  <!--<logger name="org.springframework.boot" level="info"/>-->
+  <logger name="liquibase" level="warn"/>
   <logger name="org.glassfish" level="trace"/>
 
   <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
