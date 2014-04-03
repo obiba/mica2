@@ -8,6 +8,7 @@
   <logger name="com.zaxxer" level="warn"/>
   <logger name="net.sf.ehcache" level="warn"/>
   <logger name="org.apache" level="warn"/>
+  <logger name="javax" level="warn"/>
   <logger name="org.apache.tomcat.util.descriptor.DigesterFactory" level="OFF"/>
   <logger name="org.hibernate.validator" level="warn"/>
   <logger name="org.hibernate" level="warn"/>
@@ -15,8 +16,10 @@
   <logger name="org.atmosphere" level="warn"/>
   <logger name="org.thymeleaf" level="warn"/>
   <logger name="org.springframework" level="warn"/>
+  <logger name="org.bson" level="warn"/>
   <logger name="liquibase" level="warn"/>
   <logger name="org.glassfish" level="trace"/>
+
 
   <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
@@ -38,6 +41,10 @@
       <pattern>%date [%thread] %-5level %logger - %message%n</pattern>
     </encoder>
   </appender>
+
+  <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+    <resetJUL>true</resetJUL>
+  </contextListener>
 
   <root level="${logback.loglevel}">
     <appender-ref ref="console"/>
