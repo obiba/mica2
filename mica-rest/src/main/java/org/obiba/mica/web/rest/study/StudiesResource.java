@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -15,14 +16,13 @@ import org.obiba.mica.domain.Study;
 import org.obiba.mica.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
-import org.springframework.stereotype.Component;
+import org.springframework.context.ApplicationContext;
 
 import com.codahale.metrics.annotation.Timed;
 
 /**
  * REST controller for managing Study.
  */
-@Component
 @Path("/studies")
 public class StudiesResource {
 
@@ -31,6 +31,9 @@ public class StudiesResource {
 
   @Inject
   private Dtos dtos;
+
+  @Inject
+  private ApplicationContext applicationContext;
 
   /**
    * POST  /ws/studies -> Create a new study.
@@ -50,6 +53,13 @@ public class StudiesResource {
   @Timed
   public List<Mica.StudyDto> list() {
     return studyService.findAll().stream().map(dtos::asDto).collect(Collectors.toList());
+  }
+
+  @Path("/{id}")
+  public StudyResource study(@PathParam("id") String id) {
+    StudyResource studyResource = applicationContext.getBean(StudyResource.class);
+    studyResource.setId(id);
+    return studyResource;
   }
 
 }
