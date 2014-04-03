@@ -26,10 +26,10 @@
     </encoder>
   </appender>
 
-  <appender name="rollingFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <file>${MICA_LOG}/mica.log</file>
+  <appender name="mica.log" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${logback.logDir}/mica.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-      <fileNamePattern>${MICA_LOG}/mica-%i.log</fileNamePattern>
+      <fileNamePattern>${logback.logDir}/mica-%i.log</fileNamePattern>
       <maxIndex>10</maxIndex>
     </rollingPolicy>
     <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
@@ -42,7 +42,7 @@
 
   <root level="${logback.loglevel}">
     <appender-ref ref="console"/>
-    <appender-ref ref="rollingFile"/>
+    <appender-ref ref="mica.log"/>
   </root>
 
 </configuration>

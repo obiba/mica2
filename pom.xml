@@ -31,7 +31,7 @@
         <spring.profiles.active>dev</spring.profiles.active>
         <!-- log configuration -->
         <logback.loglevel>DEBUG</logback.loglevel>
-        <MICA_LOG>logs/</MICA_LOG>
+        <logback.logDir>${project.build.directory}/logs</logback.logDir>
       </properties>
     </profile>
 
@@ -43,7 +43,7 @@
         <!-- log configuration -->
         <logback.loglevel>INFO</logback.loglevel>
         <logback.appender>CONSOLE</logback.appender>
-        <MICA_LOG>logs/</MICA_LOG>
+        <logback.logDir>/var/logs/mica-server</logback.logDir>
       </properties>
       <build>
         <plugins>
@@ -339,8 +339,13 @@
         <groupId>org.mongeez</groupId>
         <artifactId>mongeez</artifactId>
         <version>${mongeez.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
-
 
       <dependency>
         <groupId>com.google.protobuf</groupId>
@@ -398,7 +403,6 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>jcl-over-slf4j</artifactId>
-      <scope>runtime</scope>
     </dependency>
 
   </dependencies>
