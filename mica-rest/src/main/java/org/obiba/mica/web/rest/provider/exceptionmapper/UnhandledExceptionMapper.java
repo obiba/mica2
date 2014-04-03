@@ -15,12 +15,10 @@ import javax.ws.rs.ext.Provider;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
-@Component
 @Provider
 public class UnhandledExceptionMapper implements ExceptionMapper<Exception> {
 
@@ -29,7 +27,7 @@ public class UnhandledExceptionMapper implements ExceptionMapper<Exception> {
   @Override
   public Response toResponse(Exception exception) {
     //TODO use ErrorDto
-    log.error("Exception", exception);
+    log.error("UnhandledException", exception);
     return Response.status(INTERNAL_SERVER_ERROR).type(TEXT_PLAIN).entity(exception.getMessage()).build();
   }
 

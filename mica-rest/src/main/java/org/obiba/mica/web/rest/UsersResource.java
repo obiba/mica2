@@ -14,7 +14,6 @@ import org.obiba.mica.jpa.repository.UserRepository;
 import org.obiba.mica.security.AuthoritiesConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import com.codahale.metrics.annotation.Timed;
 
@@ -23,7 +22,6 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 /**
  * REST controller for managing users.
  */
-@Component
 @Path("/users")
 public class UsersResource {
 

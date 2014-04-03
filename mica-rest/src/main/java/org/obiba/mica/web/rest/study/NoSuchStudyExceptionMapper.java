@@ -15,9 +15,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 import org.obiba.mica.service.NoSuchStudyException;
-import org.springframework.stereotype.Component;
 
-@Component
 @Provider
 public class NoSuchStudyExceptionMapper implements ExceptionMapper<NoSuchStudyException> {
 

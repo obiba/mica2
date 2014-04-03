@@ -11,7 +11,6 @@ import javax.ws.rs.Produces;
 import org.obiba.mica.web.rest.dto.LoggerDTO;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
 
 import com.codahale.metrics.annotation.Timed;
 
@@ -23,7 +22,6 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 /**
  * Controller for view and managing Log Level at runtime.
  */
-@Component
 @Path("/logs")
 public class LogsResource {
 

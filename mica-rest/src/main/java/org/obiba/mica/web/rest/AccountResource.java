@@ -29,7 +29,6 @@ import org.obiba.mica.web.rest.dto.UserDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 
 import com.codahale.metrics.annotation.Timed;
 
@@ -39,7 +38,6 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
  * REST controller for managing the current user's account.
  */
 @Path("/")
-@Component
 public class AccountResource {
 
   private static final Logger log = LoggerFactory.getLogger(AccountResource.class);
