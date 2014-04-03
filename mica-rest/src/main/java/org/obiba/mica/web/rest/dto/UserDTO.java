@@ -2,17 +2,22 @@ package org.obiba.mica.web.rest.dto;
 
 import java.util.List;
 
+import com.google.common.base.Objects;
+
 public class UserDTO {
 
-  private final String login;
+  private String login;
 
-  private final String firstName;
+  private String firstName;
 
-  private final String lastName;
+  private String lastName;
 
-  private final String email;
+  private String email;
 
-  private final List<String> roles;
+  private List<String> roles;
+
+  public UserDTO() {
+  }
 
   public UserDTO(String login, String firstName, String lastName, String email, List<String> roles) {
     this.login = login;
@@ -26,31 +31,45 @@ public class UserDTO {
     return login;
   }
 
+  public void setLogin(String login) {
+    this.login = login;
+  }
+
   public String getFirstName() {
     return firstName;
+  }
+
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
   }
 
   public String getLastName() {
     return lastName;
   }
 
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
+  }
+
   public String getEmail() {
     return email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
   }
 
   public List<String> getRoles() {
     return roles;
   }
 
+  public void setRoles(List<String> roles) {
+    this.roles = roles;
+  }
+
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("UserDTO{");
-    sb.append("login='").append(login).append('\'');
-    sb.append(", firstName='").append(firstName).append('\'');
-    sb.append(", lastName='").append(lastName).append('\'');
-    sb.append(", email='").append(email).append('\'');
-    sb.append(", roles=").append(roles);
-    sb.append('}');
-    return sb.toString();
+    return Objects.toStringHelper(this).add("login", login).add("firstName", firstName).add("lastName", lastName)
+        .add("email", email).add("roles", roles).toString();
   }
 }

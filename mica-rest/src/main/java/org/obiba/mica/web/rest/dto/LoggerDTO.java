@@ -1,6 +1,7 @@
 package org.obiba.mica.web.rest.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.google.common.base.Objects;
 
 import ch.qos.logback.classic.Logger;
 
@@ -37,9 +38,6 @@ public class LoggerDTO {
 
   @Override
   public String toString() {
-    return "LoggerDTO{" +
-        "name='" + name + '\'' +
-        ", level='" + level + '\'' +
-        '}';
+    return Objects.toStringHelper(this).add("name", name).add("level", level).toString();
   }
 }
