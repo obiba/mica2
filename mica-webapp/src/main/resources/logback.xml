@@ -15,7 +15,7 @@
   <logger name="org.hibernate.jpa.HibernatePersistenceProvider" level="OFF"/>
   <logger name="org.atmosphere" level="warn"/>
   <logger name="org.thymeleaf" level="warn"/>
-  <logger name="org.springframework" level="debug"/>
+  <logger name="org.springframework" level="info"/>
   <logger name="org.bson" level="warn"/>
   <logger name="liquibase" level="warn"/>
   <logger name="org.glassfish" level="info"/>
@@ -24,7 +24,8 @@
   <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
       <charset>utf-8</charset>
-      <Pattern>%date [%thread] %-5level %logger - %message%n</Pattern>
+      <!--<Pattern>%date [%thread] %-5level %logger - %message%n</Pattern>-->
+      <Pattern>%date %-5level %logger - %message%n</Pattern>
     </encoder>
   </appender>
 
@@ -40,7 +41,8 @@
       <maxFileSize>10MB</maxFileSize>
     </triggeringPolicy>
     <encoder>
-      <pattern>%date [%thread] %-5level %logger - %message%n</pattern>
+      <!--<pattern>%date [%thread] %-5level %logger - %message%n</pattern>-->
+      <pattern>%date %-5level %logger - %message%n</pattern>
     </encoder>
   </appender>
 

@@ -1,8 +1,8 @@
 package org.obiba.mica.config;
 
 import java.util.Set;
-import java.util.SortedSet;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -18,6 +18,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
+import org.springframework.cache.ehcache.EhCacheManagerFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -42,27 +43,14 @@ public class CacheConfiguration {
   @Inject
   private MetricRegistry metricRegistry;
 
+  @Inject
   private net.sf.ehcache.CacheManager cacheManager;
 
-  @PreDestroy
-  public void destroy() {
-    log.info("Remove Cache Manager metrics");
-    SortedSet<String> names = metricRegistry.getNames();
-    names.forEach(metricRegistry::remove);
-    log.info("Closing Cache Manager");
-    cacheManager.shutdown();
-  }
-
-  @Bean
-  public CacheManager cacheManager() {
-    log.debug("Starting Ehcache");
-    cacheManager = net.sf.ehcache.CacheManager.create();
-    cacheManager.getConfiguration()
-        .setMaxBytesLocalHeap(env.getProperty("cache.ehcache.maxBytesLocalHeap", String.class, "16M"));
+  @PostConstruct
+  public void init() {
     log.debug("Registering Ehcache Metrics gauges");
     Set<EntityType<?>> entities = entityManager.getMetamodel().getEntities();
     for(EntityType<?> entity : entities) {
-
       String name = entity.getName();
       if(name == null) {
         name = entity.getJavaType().getName();
@@ -77,6 +65,25 @@ public class CacheConfiguration {
         cacheManager.replaceCacheWithDecoratedCache(cache, decoratedCache);
       }
     }
+  }
+
+  @PreDestroy
+  public void destroy() {
+    log.info("Remove Cache Manager metrics");
+    metricRegistry.getNames().forEach(metricRegistry::remove);
+  }
+
+  @Bean
+  public EhCacheManagerFactoryBean cacheManager() {
+    log.debug("Starting Ehcache");
+    EhCacheManagerFactoryBean factoryBean = new EhCacheManagerFactoryBean();
+    factoryBean.setCacheManagerName("mica");
+    return factoryBean;
+  }
+
+  @Bean
+  public CacheManager springCacheManager() {
+    log.debug("Starting Spring Cache");
     EhCacheCacheManager ehCacheManager = new EhCacheCacheManager();
     ehCacheManager.setCacheManager(cacheManager);
     return ehCacheManager;

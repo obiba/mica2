@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class JerseyConfig extends ResourceConfig {
+public class JerseyConfiguration extends ResourceConfig {
 
   public static final String WS_ROOT = "/ws";
 

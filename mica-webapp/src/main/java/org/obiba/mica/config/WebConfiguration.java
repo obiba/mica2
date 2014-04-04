@@ -33,18 +33,18 @@ import static javax.servlet.DispatcherType.ERROR;
 import static javax.servlet.DispatcherType.FORWARD;
 import static javax.servlet.DispatcherType.INCLUDE;
 import static javax.servlet.DispatcherType.REQUEST;
-import static org.obiba.mica.web.rest.config.JerseyConfig.WS_ROOT;
+import static org.obiba.mica.web.rest.config.JerseyConfiguration.WS_ROOT;
 
 /**
  * Configuration of web application with Servlet 3.0 APIs.
  */
 @Configuration
-@ComponentScan({ "org.obiba.mica", "org.obiba.shiro.web" })
+@ComponentScan({ "org.obiba.mica", "org.obiba.shiro" })
 @PropertySource("classpath:mica-webapp.properties")
-@AutoConfigureAfter(CacheConfiguration.class)
-public class WebConfigurer implements ServletContextInitializer {
+@AutoConfigureAfter(SecurityConfiguration.class)
+public class WebConfiguration implements ServletContextInitializer {
 
-  private static final Logger log = LoggerFactory.getLogger(WebConfigurer.class);
+  private static final Logger log = LoggerFactory.getLogger(WebConfiguration.class);
 
   @Inject
   private Environment env;
