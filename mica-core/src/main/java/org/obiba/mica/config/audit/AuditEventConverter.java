@@ -9,7 +9,6 @@ import java.util.Map;
 import org.obiba.mica.jpa.domain.PersistentAuditEvent;
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
 @Configuration
 public class AuditEventConverter {
@@ -20,7 +19,7 @@ public class AuditEventConverter {
    * @param persistentAuditEvents the list to convert
    * @return the converted list.
    */
-  public List<AuditEvent> convertToAuditEvent(List<PersistentAuditEvent> persistentAuditEvents) {
+  public List<AuditEvent> convertToAuditEvent(Iterable<PersistentAuditEvent> persistentAuditEvents) {
     if(persistentAuditEvents == null) {
       return Collections.emptyList();
     }
@@ -70,13 +69,14 @@ public class AuditEventConverter {
         Object object = data.get(key);
 
         // Extract the data that will be saved.
-        if(object instanceof WebAuthenticationDetails) {
-          WebAuthenticationDetails authenticationDetails = (WebAuthenticationDetails) object;
-          results.put("remoteAddress", authenticationDetails.getRemoteAddress());
-          results.put("sessionId", authenticationDetails.getSessionId());
-        } else {
-          results.put(key, object.toString());
-        }
+//        if(object instanceof WebAuthenticationDetails) {
+        // TODO extract authentication info
+//          WebAuthenticationDetails authenticationDetails = (WebAuthenticationDetails) object;
+//          results.put("remoteAddress", authenticationDetails.getRemoteAddress());
+//          results.put("sessionId", authenticationDetails.getSessionId());
+//        } else {
+        results.put(key, object.toString());
+//        }
       }
     }
 

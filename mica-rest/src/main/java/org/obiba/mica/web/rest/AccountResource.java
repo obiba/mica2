@@ -18,17 +18,17 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.session.InvalidSessionException;
 import org.obiba.mica.jpa.domain.Authority;
 import org.obiba.mica.jpa.domain.PersistentToken;
 import org.obiba.mica.jpa.domain.User;
 import org.obiba.mica.jpa.repository.PersistentTokenRepository;
 import org.obiba.mica.jpa.repository.UserRepository;
-import org.obiba.mica.security.SecurityUtils;
 import org.obiba.mica.service.UserService;
 import org.obiba.mica.web.rest.dto.UserDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.codahale.metrics.annotation.Timed;
 
@@ -89,19 +89,19 @@ public class AccountResource {
     return Response.noContent().build();
   }
 
-  /**
-   * POST  /rest/change_password -> changes the current user's password
-   */
-  @POST
-  @Path("/account/change_password")
-  @Timed
-  public Response changePassword(String password) throws IOException {
-    if(password == null || "".equals(password)) {
-      return Response.status(Response.Status.FORBIDDEN).entity("Password should not be empty").build();
-    }
-    userService.changePassword(password);
-    return Response.noContent().build();
-  }
+//  /**
+//   * POST  /rest/change_password -> changes the current user's password
+//   */
+//  @POST
+//  @Path("/account/change_password")
+//  @Timed
+//  public Response changePassword(String password) throws IOException {
+//    if(password == null || "".equals(password)) {
+//      return Response.status(Response.Status.FORBIDDEN).entity("Password should not be empty").build();
+//    }
+//    userService.changePassword(password);
+//    return Response.noContent().build();
+//  }
 
   /**
    * GET  /rest/account/sessions -> get the current open sessions.
@@ -111,7 +111,7 @@ public class AccountResource {
   @Produces(APPLICATION_JSON)
   @Timed
   public List<PersistentToken> getCurrentSessions() {
-    User user = userRepository.findOne(SecurityUtils.getCurrentLogin());
+    User user = userRepository.findOne(SecurityUtils.getSubject().getPrincipal().toString());
     return persistentTokenRepository.findByUser(user);
   }
 
@@ -127,13 +127,18 @@ public class AccountResource {
 
     // Check if the session to invalidate if the current user session.
     // If so, the security session will be invalidated too
-    User user = userRepository.findOne(SecurityUtils.getCurrentLogin());
+    User user = userRepository.findOne(SecurityUtils.getSubject().getPrincipal().toString());
     List<PersistentToken> persistentTokens = persistentTokenRepository.findByUser(user);
 
     persistentTokens.stream().filter(persistentToken -> StringUtils.equals(persistentToken.getSeries(), decodedSeries))
         .forEach(persistentToken -> {
           request.getSession().invalidate();
-          SecurityContextHolder.clearContext();
+          // Delete the Shiro session
+          try {
+            SecurityUtils.getSubject().logout();
+          } catch(InvalidSessionException e) {
+            // Ignore
+          }
         });
 
     persistentTokenRepository.delete(decodedSeries);

@@ -4,16 +4,15 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.shiro.SecurityUtils;
 import org.joda.time.LocalDate;
 import org.obiba.mica.jpa.domain.PersistentToken;
 import org.obiba.mica.jpa.domain.User;
 import org.obiba.mica.jpa.repository.PersistentTokenRepository;
 import org.obiba.mica.jpa.repository.UserRepository;
-import org.obiba.mica.security.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,16 +26,13 @@ public class UserService {
   private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
   @Inject
-  private PasswordEncoder passwordEncoder;
-
-  @Inject
   private UserRepository userRepository;
 
   @Inject
   private PersistentTokenRepository persistentTokenRepository;
 
   public void updateUserInformation(String firstName, String lastName, String email) {
-    User currentUser = userRepository.findOne(SecurityUtils.getCurrentLogin());
+    User currentUser = userRepository.findOne(SecurityUtils.getSubject().getPrincipal().toString());
     currentUser.setFirstName(firstName);
     currentUser.setLastName(lastName);
     currentUser.setEmail(email);
@@ -44,17 +40,9 @@ public class UserService {
     log.debug("Changed Information for User: {}", currentUser);
   }
 
-  public void changePassword(String password) {
-    User currentUser = userRepository.findOne(SecurityUtils.getCurrentLogin());
-    String encryptedPassword = passwordEncoder.encode(password);
-    currentUser.setPassword(encryptedPassword);
-    userRepository.save(currentUser);
-    log.debug("Changed password for User: {}", currentUser);
-  }
-
   @Transactional(readOnly = true)
   public User getUserWithAuthorities() {
-    User currentUser = userRepository.findOne(SecurityUtils.getCurrentLogin());
+    User currentUser = userRepository.findOne(SecurityUtils.getSubject().getPrincipal().toString());
     currentUser.getAuthorities().size(); // eagerly load the association
     return currentUser;
   }
