@@ -19,7 +19,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
 import com.codahale.metrics.MetricRegistry;
@@ -37,7 +39,9 @@ import static org.obiba.mica.web.rest.config.JerseyConfig.WS_ROOT;
  * Configuration of web application with Servlet 3.0 APIs.
  */
 @Configuration
-@AutoConfigureAfter({ CacheConfiguration.class, WebSecurityConfigurer.class })
+@ComponentScan("org.obiba.shiro.web")
+@PropertySource("classpath:mica-webapp.properties")
+@AutoConfigureAfter(CacheConfiguration.class)
 public class WebConfigurer implements ServletContextInitializer {
 
   private static final Logger log = LoggerFactory.getLogger(WebConfigurer.class);
