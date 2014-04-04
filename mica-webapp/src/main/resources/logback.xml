@@ -15,10 +15,10 @@
   <logger name="org.hibernate.jpa.HibernatePersistenceProvider" level="OFF"/>
   <logger name="org.atmosphere" level="warn"/>
   <logger name="org.thymeleaf" level="warn"/>
-  <logger name="org.springframework" level="warn"/>
+  <logger name="org.springframework" level="debug"/>
   <logger name="org.bson" level="warn"/>
   <logger name="liquibase" level="warn"/>
-  <logger name="org.glassfish" level="trace"/>
+  <logger name="org.glassfish" level="info"/>
 
 
   <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
@@ -29,9 +29,11 @@
   </appender>
 
   <appender name="mica.log" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <file>${logback.logDir}/mica.log</file>
+    <!--<file>${logback.logDir}/mica.log</file>-->
+    <file>target/mica.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-      <fileNamePattern>${logback.logDir}/mica-%i.log</fileNamePattern>
+      <!--<fileNamePattern>${logback.logDir}/mica-%i.log</fileNamePattern>-->
+      <fileNamePattern>target/mica-%i.log</fileNamePattern>
       <maxIndex>10</maxIndex>
     </rollingPolicy>
     <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">

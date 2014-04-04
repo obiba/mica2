@@ -47,8 +47,7 @@ public class AngularCookieLocaleResolver extends CookieLocaleResolver {
   @Override
   public void addCookie(HttpServletResponse response, String cookieValue) {
     // Mandatory cookie modification for angular to support the locale switching on the server side.
-    cookieValue = "%22" + cookieValue + "%22";
-    super.addCookie(response, cookieValue);
+    super.addCookie(response, "%22" + cookieValue + "%22");
   }
 
   private void parseLocaleCookieIfNecessary(HttpServletRequest request) {
@@ -79,10 +78,9 @@ public class AngularCookieLocaleResolver extends CookieLocaleResolver {
               "'" + (timeZone != null ? " and time zone '" + timeZone.getID() + "'" : ""));
         }
       }
-      request.setAttribute(LOCALE_REQUEST_ATTRIBUTE_NAME, locale != null ? locale : determineDefaultLocale(request));
-
+      request.setAttribute(LOCALE_REQUEST_ATTRIBUTE_NAME, locale == null ? determineDefaultLocale(request) : locale);
       request.setAttribute(TIME_ZONE_REQUEST_ATTRIBUTE_NAME,
-          timeZone != null ? timeZone : determineDefaultTimeZone(request));
+          timeZone == null ? determineDefaultTimeZone(request) : timeZone);
     }
   }
 }

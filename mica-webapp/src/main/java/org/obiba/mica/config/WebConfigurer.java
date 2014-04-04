@@ -39,7 +39,7 @@ import static org.obiba.mica.web.rest.config.JerseyConfig.WS_ROOT;
  * Configuration of web application with Servlet 3.0 APIs.
  */
 @Configuration
-@ComponentScan("org.obiba.shiro.web")
+@ComponentScan({ "org.obiba.mica", "org.obiba.shiro.web" })
 @PropertySource("classpath:mica-webapp.properties")
 @AutoConfigureAfter(CacheConfiguration.class)
 public class WebConfigurer implements ServletContextInitializer {

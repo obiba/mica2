@@ -19,14 +19,10 @@ import javax.inject.Inject;
 import net.sf.ehcache.CacheManager;
 
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.AbstractAuthenticator;
-import org.apache.shiro.authc.AuthenticationListener;
 import org.apache.shiro.authc.credential.PasswordMatcher;
 import org.apache.shiro.authz.ModularRealmAuthorizer;
 import org.apache.shiro.authz.permission.PermissionResolver;
 import org.apache.shiro.authz.permission.PermissionResolverAware;
-import org.apache.shiro.authz.permission.RolePermissionResolver;
-import org.apache.shiro.authz.permission.RolePermissionResolverAware;
 import org.apache.shiro.cache.ehcache.EhCacheManager;
 import org.apache.shiro.config.Ini;
 import org.apache.shiro.config.IniSecurityManagerFactory;
@@ -35,7 +31,6 @@ import org.apache.shiro.mgt.DefaultSubjectDAO;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.realm.text.IniRealm;
-import org.apache.shiro.session.SessionListener;
 import org.apache.shiro.session.mgt.DefaultSessionManager;
 import org.apache.shiro.session.mgt.ExecutorServiceSessionValidationScheduler;
 import org.apache.shiro.session.mgt.SessionValidationScheduler;
@@ -65,14 +60,14 @@ public class SecurityManagerFactory implements FactoryBean<SecurityManager> {
   @Inject
   private Set<Realm> realms;
 
-  @Inject
-  private Set<SessionListener> sessionListeners;
+//  @Inject
+//  private Set<SessionListener> sessionListeners;
 
-  @Inject
-  private Set<AuthenticationListener> authenticationListeners;
+//  @Inject
+//  private Set<AuthenticationListener> authenticationListeners;
 
-  @Inject
-  private RolePermissionResolver rolePermissionResolver;
+//  @Inject
+//  private RolePermissionResolver rolePermissionResolver;
 
   @Inject
   private CacheManager cacheManager;
@@ -137,7 +132,7 @@ public class SecurityManagerFactory implements FactoryBean<SecurityManager> {
       initializeSubjectDAO(dsm);
       initializeAuthorizer(dsm);
 
-      ((AbstractAuthenticator) dsm.getAuthenticator()).setAuthenticationListeners(authenticationListeners);
+//      ((AbstractAuthenticator) dsm.getAuthenticator()).setAuthenticationListeners(authenticationListeners);
 
       return dsm;
     }
@@ -153,7 +148,7 @@ public class SecurityManagerFactory implements FactoryBean<SecurityManager> {
     private void initializeSessionManager(DefaultSecurityManager dsm) {
       if(dsm.getSessionManager() instanceof DefaultSessionManager) {
         DefaultSessionManager sessionManager = (DefaultSessionManager) dsm.getSessionManager();
-        sessionManager.setSessionListeners(sessionListeners);
+//        sessionManager.setSessionListeners(sessionListeners);
         sessionManager.setSessionDAO(new EnterpriseCacheSessionDAO());
         SessionValidationScheduler sessionValidationScheduler = new ExecutorServiceSessionValidationScheduler();
         sessionValidationScheduler.enableSessionValidation();
@@ -170,7 +165,7 @@ public class SecurityManagerFactory implements FactoryBean<SecurityManager> {
 
     private void initializeAuthorizer(DefaultSecurityManager dsm) {
       if(dsm.getAuthorizer() instanceof ModularRealmAuthorizer) {
-        ((RolePermissionResolverAware) dsm.getAuthorizer()).setRolePermissionResolver(rolePermissionResolver);
+//        ((RolePermissionResolverAware) dsm.getAuthorizer()).setRolePermissionResolver(rolePermissionResolver);
         ((PermissionResolverAware) dsm.getAuthorizer()).setPermissionResolver(permissionResolver);
       }
     }
@@ -188,7 +183,7 @@ public class SecurityManagerFactory implements FactoryBean<SecurityManager> {
       // are applied by the ModularRealmAuthorizer
       IniRealm realm = new IniRealm();
       realm.setName(INI_REALM);
-      realm.setRolePermissionResolver(rolePermissionResolver);
+//      realm.setRolePermissionResolver(rolePermissionResolver);
       realm.setPermissionResolver(permissionResolver);
       realm.setResourcePath(getShiroIniPath());
       realm.setCredentialsMatcher(new PasswordMatcher());

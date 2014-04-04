@@ -37,6 +37,11 @@ spring:
         mode: XHTML
         cache: false
 
+security:
+  password:
+    nbHashIterations: 10000
+    salt: mica
+
 metrics:
     jmx.enabled: true
     graphite:
