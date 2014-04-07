@@ -37,14 +37,12 @@ import org.obiba.mica.jpa.domain.User;
 import org.obiba.mica.jpa.repository.UserRepository;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Realm for users defined in opal's own users database.
  */
-@Component
-@Transactional
+//@Component
+//@Transactional
 public class MicaUserRealm extends AuthorizingRealm {
 
   public static final String MICA_REALM = "mica-user-realm";
