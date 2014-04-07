@@ -53,6 +53,13 @@
           <include>**/*</include>
         </includes>
       </resource>
+      <resource>
+        <directory>src/main/config</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </resource>
     </resources>
 
     <plugins>
