@@ -71,7 +71,7 @@ public class MicaUserRealm extends AuthorizingRealm {
     credentialsMatcher.setHashIterations(nbHashIterations);
     setCredentialsMatcher(credentialsMatcher);
 
-    RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(env, "security.password.");
+    RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(env, "shiro.password.");
     nbHashIterations = propertyResolver.getProperty("nbHashIterations", Integer.class);
     salt = propertyResolver.getProperty("salt");
   }

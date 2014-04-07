@@ -3,8 +3,7 @@
     xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd"
     name="CM1"
     updateCheck="false"
-    maxBytesLocalHeap="128M"
-    maxBytesLocalOffHeap="512G">
+    maxBytesLocalHeap="128M">
 
   <!--
     This is a default configuration, it is re-configured by the CacheConfiguration Spring Bean, using the

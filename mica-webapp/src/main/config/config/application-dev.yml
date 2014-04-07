@@ -37,7 +37,7 @@ spring:
         mode: XHTML
         cache: false
 
-security:
+shiro:
   password:
     nbHashIterations: 10000
     salt: mica
