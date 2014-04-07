@@ -110,7 +110,7 @@ public class SecurityManagerFactory implements FactoryBean<SecurityManager> {
 
   private String getShiroIniPath() {
     try {
-      return new DefaultResourceLoader().getResource("classpath:/config/shiro.ini").getFile().getAbsolutePath();
+      return new DefaultResourceLoader().getResource("classpath:/shiro.ini").getFile().getAbsolutePath();
     } catch(IOException e) {
       throw new RuntimeException("Cannot load shiro.ini", e);
     }
@@ -187,7 +187,10 @@ public class SecurityManagerFactory implements FactoryBean<SecurityManager> {
       realm.setPermissionResolver(permissionResolver);
       realm.setResourcePath(getShiroIniPath());
       realm.setCredentialsMatcher(new PasswordMatcher());
-      configureUrl(realm.getIni().getSection("urls"));
+      realm.setIni(ini);
+      configureUrl(realm.getIni().getSection("urls") == null
+          ? realm.getIni().addSection("urls")
+          : realm.getIni().getSection("urls"));
       return realm;
     }
 
