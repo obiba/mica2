@@ -8,8 +8,10 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.ImportResource;
 
 @Configuration
+@ImportResource("classpath:context.xml")
 @AutoConfigureAfter(CacheConfiguration.class)
 public class SecurityConfiguration {
 
@@ -26,7 +28,9 @@ public class SecurityConfiguration {
   @Bean
   @DependsOn("lifecycleBeanPostProcessor")
   public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator() {
-    return new DefaultAdvisorAutoProxyCreator();
+    DefaultAdvisorAutoProxyCreator proxyCreator = new DefaultAdvisorAutoProxyCreator();
+    proxyCreator.setProxyTargetClass(true);
+    return proxyCreator;
   }
 
   @Bean

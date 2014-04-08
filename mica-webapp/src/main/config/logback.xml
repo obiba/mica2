@@ -2,7 +2,7 @@
 
 <configuration scan="true">
 
-  <logger name="org.obiba.mica" level="${logback.loglevel}"/>
+  <logger name="org.obiba" level="debug"/>
   <logger name="com.codahale.metrics" level="warn"/>
   <logger name="com.ryantenney" level="warn"/>
   <logger name="com.zaxxer" level="warn"/>
@@ -16,12 +16,10 @@
   <logger name="org.atmosphere" level="warn"/>
   <logger name="org.thymeleaf" level="warn"/>
   <logger name="org.springframework" level="info"/>
-  <!--<logger name="org.springframework.boot" level="debug"/>-->
   <logger name="org.bson" level="warn"/>
   <logger name="liquibase" level="warn"/>
   <logger name="org.glassfish" level="info"/>
   <logger name="org.apache.shiro" level="debug"/>
-
 
   <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
