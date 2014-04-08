@@ -2,8 +2,8 @@
 
 /* App Module */
 
-var micaApp = angular.module('micaApp', ['http-auth-interceptor', 'tmh.dynamicLocale',
-  'ngResource', 'ngRoute', 'ngCookies', 'pascalprecht.translate']);
+var micaApp = angular.module('micaApp',
+  ['http-auth-interceptor', 'tmh.dynamicLocale', 'ngResource', 'ngRoute', 'ngCookies', 'pascalprecht.translate']);
 
 micaApp
   .config(['$routeProvider', '$httpProvider', '$translateProvider', 'tmhDynamicLocaleProvider', 'USER_ROLES',

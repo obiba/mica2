@@ -56,13 +56,19 @@
       <tbody>
       <tr ng-repeat="study in studies">
         <td>{{study.id}}</td>
-        <td>{{study.name}}</td>
+        <td>
+          <ul class="list-unstyled">
+            <li ng-repeat="localizedName in study.name">
+              <span class="badge">{{localizedName.lang}}</span> {{localizedName.value}}
+            </li>
+          </ul>
+        </td>
         <td>
           <button type="submit" ng-click="update(study.id)" class="btn">
-          <span class="glyphicon glyphicon-pencil"></span> Edit
+            <span class="glyphicon glyphicon-pencil"></span> Edit
           </button>
           <button type="submit" ng-click="delete(study.id)" class="btn btn-danger">
-          <span class="glyphicon glyphicon-remove-circle"></span> Delete
+            <span class="glyphicon glyphicon-remove-circle"></span> Delete
           </button>
         </td>
       </tr>

@@ -12,7 +12,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.domain.Study;
 import org.obiba.mica.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
@@ -52,7 +51,6 @@ public class StudiesResource {
    */
   @GET
   @Timed
-  @RequiresRoles("admin")
   public List<Mica.StudyDto> list() {
     return studyService.findAll().stream().map(dtos::asDto).collect(Collectors.toList());
   }
