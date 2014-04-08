@@ -52,7 +52,7 @@ module.exports = function (grunt) {
     connect: {
       proxies: [
         {
-          context: '/app',
+          context: '/ws',
           host: 'localhost',
           port: 8080,
           https: false,
