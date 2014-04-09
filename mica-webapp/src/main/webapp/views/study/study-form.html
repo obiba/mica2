@@ -1,0 +1,42 @@
+<div>
+
+  <h2>Edit Study</h2>
+
+  <form name="form" role="form" novalidate class="ng-scope ng-invalid ng-invalid-required ng-dirty ng-valid-minlength"
+      ng-submit="create()">
+
+    <div class="form-group">
+      <label>ID</label>
+      <input type="text" class="form-control" name="id" ng-model="study.id" readonly>
+    </div>
+
+    <table class="table table-striped">
+      <tr>
+        <th>Language</th>
+        <th>Name</th>
+      </tr>
+    </table>
+
+    <div class="form-group">
+      <label>Name</label>
+
+
+      <div ng-repeat="name in study.name">
+        <span class="badge">{{name.lang}}</span> {{name.value}}
+        <input type="text" class="form-control" name="test" ng-model="study.name" ng-minlength=1 ng-maxlength=50
+            required>
+
+      </div>
+
+    </div>
+
+    <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="clear()">
+      <span class="glyphicon glyphicon-ban-circle"></span> Cancel
+    </button>
+    <button type="submit" ng-disabled="form.$invalid" class="btn btn-primary">
+      <span class="glyphicon glyphicon-save"></span> Save
+    </button>
+
+  </form>
+
+</div>

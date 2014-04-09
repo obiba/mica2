@@ -5,7 +5,7 @@ micaApp
     function ($routeProvider, $httpProvider, $translateProvider) {
       $routeProvider
         .when('/study', {
-          templateUrl: 'views/studies.html',
+          templateUrl: 'views/study/studies.html',
           controller: 'StudyController',
           resolve: {
             resolvedStudy: ['Study', function (Study) {
