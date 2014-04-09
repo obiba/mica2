@@ -10,7 +10,7 @@ public class Attachment implements Serializable {
   private static final long serialVersionUID = 7881381748865114007L;
 
   @NotNull
-  private String gridFsId;
+  private String name;
 
   private String type;
 
@@ -18,12 +18,13 @@ public class Attachment implements Serializable {
 
   private Locale locale;
 
-  public String getGridFsId() {
-    return gridFsId;
+  @NotNull
+  public String getName() {
+    return name;
   }
 
-  public void setGridFsId(String gridFsId) {
-    this.gridFsId = gridFsId;
+  public void setName(@NotNull String name) {
+    this.name = name;
   }
 
   public String getType() {
