@@ -55,7 +55,6 @@ public class EventBusConfiguration {
       }
       return bean;
     }
-
   }
 
 }

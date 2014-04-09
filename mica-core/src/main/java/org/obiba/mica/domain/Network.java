@@ -1,6 +1,5 @@
 package org.obiba.mica.domain;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -8,24 +7,15 @@ import java.util.Objects;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.URL;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Version;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * A Network.
  */
-@Document
-public class Network extends AbstractTimestampedDocument implements Serializable {
+public class Network implements Entity {
 
   private static final long serialVersionUID = -4271967393906681773L;
 
-  @Id
   private String id;
-
-  @Version
-  private Long version;
 
   @NotNull
   private LocalizedString name;
@@ -45,25 +35,19 @@ public class Network extends AbstractTimestampedDocument implements Serializable
 
   private LocalizedString infos;
 
-  @DBRef
-  private List<Study> studies;
+  private List<String> studyIds;
+
+  private transient List<Study> studies;
 
   private Authorization maelstromAuthorization;
 
+  @Override
   public String getId() {
     return id;
   }
 
   public void setId(String id) {
     this.id = id;
-  }
-
-  public Long getVersion() {
-    return version;
-  }
-
-  public void setVersion(Long version) {
-    this.version = version;
   }
 
   public LocalizedString getName() {
@@ -131,6 +115,15 @@ public class Network extends AbstractTimestampedDocument implements Serializable
 
   public void setInfos(LocalizedString infos) {
     this.infos = infos;
+  }
+
+  @NotNull
+  public List<String> getStudyIds() {
+    return studyIds == null ? (studyIds = new ArrayList<>()) : studyIds;
+  }
+
+  public void setStudyIds(List<String> studyIds) {
+    this.studyIds = studyIds;
   }
 
   @NotNull

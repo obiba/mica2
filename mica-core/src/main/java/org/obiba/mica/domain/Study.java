@@ -12,7 +12,7 @@ import org.hibernate.validator.constraints.URL;
 /**
  * A Study.
  */
-public class Study implements Serializable {
+public class Study implements Entity {
 
   private static final long serialVersionUID = 6559914069652243954L;
 

@@ -7,10 +7,13 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.domain.Study;
 import org.obiba.mica.domain.StudyState;
+import org.obiba.mica.event.StudyUpdatedEvent;
 import org.obiba.mica.repository.StudyStateRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import com.google.common.eventbus.EventBus;
 
 @Service
 public class StudyService {
@@ -23,12 +26,17 @@ public class StudyService {
   @Inject
   private GitService gitService;
 
+  @Inject
+  private EventBus eventBus;
+
   public void save(@NotNull Study study) {
     StudyState studyState = findStudyState(study);
     gitService.save(studyState.getId(), study);
 
     studyState.setName(study.getName());
     studyStateRepository.save(studyState);
+
+    eventBus.post(new StudyUpdatedEvent(study));
   }
 
   @NotNull
