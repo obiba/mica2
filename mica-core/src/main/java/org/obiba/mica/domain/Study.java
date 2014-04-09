@@ -35,7 +35,6 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
 
   private List<Contact> contacts;
 
-  @NotNull
   private LocalizedString objectives;
 
   @URL
@@ -67,8 +66,6 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
   private LocalizedString infos;
 
   private List<Population> populations;
-
-  private List<NetworkRelation> networks;
 
   public String getId() {
     return id;
@@ -240,14 +237,6 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
     this.populations = populations;
   }
 
-  public List<NetworkRelation> getNetworks() {
-    return networks == null ? (networks = new ArrayList<>()) : networks;
-  }
-
-  public void setNetworks(List<NetworkRelation> networks) {
-    this.networks = networks;
-  }
-
   @Override
   public int hashCode() {
     return Objects.hash(id);
@@ -331,28 +320,4 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
     }
   }
 
-  public static class NetworkRelation implements Serializable {
-
-    private static final long serialVersionUID = -3544564801184477575L;
-
-    private String networkId;
-
-    private LocalizedString networkName;
-
-    public String getNetworkId() {
-      return networkId;
-    }
-
-    public void setNetworkId(String networkId) {
-      this.networkId = networkId;
-    }
-
-    public LocalizedString getNetworkName() {
-      return networkName;
-    }
-
-    public void setNetworkName(LocalizedString networkName) {
-      this.networkName = networkName;
-    }
-  }
 }

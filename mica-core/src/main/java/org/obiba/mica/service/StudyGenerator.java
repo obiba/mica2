@@ -2,14 +2,17 @@ package org.obiba.mica.service;
 
 import java.util.Locale;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.obiba.mica.domain.Address;
 import org.obiba.mica.domain.Contact;
 import org.obiba.mica.domain.DataCollectionEvent;
+import org.obiba.mica.domain.Network;
 import org.obiba.mica.domain.NumberOfParticipants;
 import org.obiba.mica.domain.Population;
 import org.obiba.mica.domain.Study;
+import org.obiba.mica.repository.NetworkRepository;
 import org.obiba.mica.repository.StudyRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +32,10 @@ public class StudyGenerator {
   @Inject
   private StudyRepository studyRepository;
 
-  //  @PostConstruct
+  @Inject
+  private NetworkRepository networkRepository;
+
+  @PostConstruct
   public void init() {
 
     Study study = createStudy();
@@ -38,7 +44,12 @@ public class StudyGenerator {
 
     studyRepository.save(study);
 
+    Network network = createNetwork();
+    network.getStudies().add(study);
+    networkRepository.save(network);
+
     studyRepository.findAll().forEach(s -> log.info(">> {}", s));
+    networkRepository.findAll().forEach(s -> log.info(">> {}", s));
   }
 
   private Study createStudy() {
@@ -180,4 +191,9 @@ public class StudyGenerator {
     return event;
   }
 
+  private Network createNetwork() {
+    Network network = new Network();
+    network.setName(en("Biobanking and Biomolecular Resources Research Infrastructure"));
+    return network;
+  }
 }

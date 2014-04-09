@@ -7,9 +7,15 @@ import java.util.List;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+
 public class Population implements Serializable {
 
   private static final long serialVersionUID = 6559914069652243954L;
+
+  @Id
+  private String id = new ObjectId().toString();
 
   @NotNull
   private LocalizedString name;
@@ -25,6 +31,14 @@ public class Population implements Serializable {
   private LocalizedString infos;
 
   private List<DataCollectionEvent> dataCollectionEvents;
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
 
   public LocalizedString getName() {
     return name;

@@ -8,9 +8,15 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
+
 public class DataCollectionEvent implements Serializable {
 
   private static final long serialVersionUID = 6559914069652243954L;
+
+  @Id
+  private String id = new ObjectId().toString();
 
   @NotNull
   private LocalizedString name;
@@ -43,6 +49,14 @@ public class DataCollectionEvent implements Serializable {
   private LocalizedString otherBioSamples;
 
   private List<Attachment> attachments;
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
 
   public LocalizedString getName() {
     return name;
@@ -147,4 +161,5 @@ public class DataCollectionEvent implements Serializable {
   public void setAttachments(List<Attachment> attachments) {
     this.attachments = attachments;
   }
+
 }

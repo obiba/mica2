@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.URL;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
@@ -35,7 +36,6 @@ public class Network extends AbstractTimestampedDocument implements Serializable
 
   private List<Contact> contacts;
 
-  @NotNull
   private LocalizedString description;
 
   @URL
@@ -45,7 +45,8 @@ public class Network extends AbstractTimestampedDocument implements Serializable
 
   private LocalizedString infos;
 
-  private List<StudyRelation> studies;
+  @DBRef
+  private List<Study> studies;
 
   private Authorization maelstromAuthorization;
 
@@ -133,11 +134,11 @@ public class Network extends AbstractTimestampedDocument implements Serializable
   }
 
   @NotNull
-  public List<StudyRelation> getStudies() {
+  public List<Study> getStudies() {
     return studies == null ? (studies = new ArrayList<>()) : studies;
   }
 
-  public void setStudies(List<StudyRelation> studies) {
+  public void setStudies(List<Study> studies) {
     this.studies = studies;
   }
 
@@ -165,28 +166,4 @@ public class Network extends AbstractTimestampedDocument implements Serializable
     return com.google.common.base.Objects.toStringHelper(this).add("id", id).add("name", name).toString();
   }
 
-  public static class StudyRelation implements Serializable {
-
-    private static final long serialVersionUID = -3544564801184477575L;
-
-    private String studyId;
-
-    private LocalizedString studyName;
-
-    public String getStudyId() {
-      return studyId;
-    }
-
-    public void setStudyId(String studyId) {
-      this.studyId = studyId;
-    }
-
-    public LocalizedString getStudyName() {
-      return studyName;
-    }
-
-    public void setStudyName(LocalizedString studyName) {
-      this.studyName = studyName;
-    }
-  }
 }
