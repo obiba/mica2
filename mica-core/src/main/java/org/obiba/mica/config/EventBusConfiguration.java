@@ -25,11 +25,11 @@ public class EventBusConfiguration {
   }
 
   @Bean
-  public EventBusPostProcessor eventBusPostProcessor() {
-    return new EventBusPostProcessor();
+  public BeanPostProcessor eventBusPostProcessor() {
+    return new EventBusSubscriberPostProcessor();
   }
 
-  private static class EventBusPostProcessor implements BeanPostProcessor {
+  private static class EventBusSubscriberPostProcessor implements BeanPostProcessor {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
