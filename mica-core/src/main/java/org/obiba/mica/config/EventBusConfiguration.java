@@ -17,9 +17,6 @@ import com.google.common.eventbus.Subscribe;
 @Configuration
 public class EventBusConfiguration {
 
-  @Inject
-  private EventBus eventBus;
-
   @Bean
   public EventBus eventBus() {
     return new EventBus();
@@ -30,9 +27,12 @@ public class EventBusConfiguration {
     return new EventBusPostProcessor();
   }
 
-  private class EventBusPostProcessor implements BeanPostProcessor {
+  private static class EventBusPostProcessor implements BeanPostProcessor {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
+
+    @Inject
+    private EventBus eventBus;
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
@@ -46,13 +46,11 @@ public class EventBusConfiguration {
         if(method.isAnnotationPresent(Subscribe.class)) {
           // register it with the event bus
           eventBus.register(bean);
-          log.trace("Bean {} () containing method {} was subscribed to {}", beanName, bean.getClass().getName(),
-              method.getName(), EventBus.class.getCanonicalName());
-          // we only need to register once
-          return bean;
+          log.debug("Register bean {} ({}) containing method {} to EventBus", beanName, bean.getClass().getName(),
+              method.getName());
+          return bean; // we only need to register once
         }
       }
-
       return bean;
     }
 
