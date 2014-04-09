@@ -215,6 +215,11 @@
       <artifactId>gson</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>com.github.fakemongo</groupId>
+      <artifactId>fongo</artifactId>
+    </dependency>
+
   </dependencies>
 
   <build>

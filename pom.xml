@@ -106,6 +106,7 @@
     <commons-io.version>2.4</commons-io.version>
     <commons-lang.version>2.6</commons-lang.version>
     <ehcache-core.version>2.6.8</ehcache-core.version>
+    <fongo.version>1.4.3</fongo.version>
     <guava.version>16.0.1</guava.version>
     <geronimo-javamail_1.4_mail.version>1.8.3</geronimo-javamail_1.4_mail.version>
     <gson.version>2.2.4</gson.version>
@@ -459,6 +460,13 @@
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
         <version>${gson.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.github.fakemongo</groupId>
+        <artifactId>fongo</artifactId>
+        <version>${fongo.version}</version>
+        <scope>test</scope>
       </dependency>
 
     </dependencies>
