@@ -9,13 +9,11 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
 
 public class DataCollectionEvent implements Serializable {
 
   private static final long serialVersionUID = 6559914069652243954L;
 
-  @Id
   private String id = new ObjectId().toString();
 
   @NotNull

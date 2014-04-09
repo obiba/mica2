@@ -8,23 +8,15 @@ import java.util.Objects;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.URL;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Version;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  * A Study.
  */
-@Document
-public class Study extends AbstractTimestampedDocument implements Serializable {
+public class Study implements Serializable {
 
   private static final long serialVersionUID = 6559914069652243954L;
 
-  @Id
   private String id;
-
-  @Version
-  private Long version;
 
   @NotNull
   private LocalizedString name;
@@ -73,14 +65,6 @@ public class Study extends AbstractTimestampedDocument implements Serializable {
 
   public void setId(String id) {
     this.id = id;
-  }
-
-  public Long getVersion() {
-    return version;
-  }
-
-  public void setVersion(Long version) {
-    this.version = version;
   }
 
   public LocalizedString getName() {

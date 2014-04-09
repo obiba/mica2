@@ -12,8 +12,6 @@ import org.obiba.mica.domain.Network;
 import org.obiba.mica.domain.NumberOfParticipants;
 import org.obiba.mica.domain.Population;
 import org.obiba.mica.domain.Study;
-import org.obiba.mica.repository.NetworkRepository;
-import org.obiba.mica.repository.StudyRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -30,10 +28,10 @@ public class StudyGenerator {
   private static final Logger log = LoggerFactory.getLogger(StudyGenerator.class);
 
   @Inject
-  private StudyRepository studyRepository;
+  private StudyService studyService;
 
-  @Inject
-  private NetworkRepository networkRepository;
+//  @Inject
+//  private NetworkRepository networkRepository;
 
   @PostConstruct
   public void init() {
@@ -42,14 +40,14 @@ public class StudyGenerator {
 
     //TODO test GridFS
 
-    studyRepository.save(study);
+    studyService.save(study);
 
-    Network network = createNetwork();
-    network.getStudies().add(study);
-    networkRepository.save(network);
-
-    studyRepository.findAll().forEach(s -> log.info(">> {}", s));
-    networkRepository.findAll().forEach(s -> log.info(">> {}", s));
+//    Network network = createNetwork();
+//    network.getStudies().add(study);
+//    networkRepository.save(network);
+//
+//    studyRepository.findAll().forEach(s -> log.info(">> {}", s));
+//    networkRepository.findAll().forEach(s -> log.info(">> {}", s));
   }
 
   private Study createStudy() {

@@ -1,7 +1,6 @@
 package org.obiba.mica.web.rest.study;
 
 import javax.inject.Inject;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.core.Response;
@@ -57,11 +56,11 @@ public class StudyResource {
   /**
    * DELETE  /ws/studies/:id -> delete the "id" study.
    */
-  @DELETE
-  @Timed
-  public Response delete() {
-    studyService.delete(id);
-    return Response.noContent().build();
-  }
+//  @DELETE
+//  @Timed
+//  public Response delete() {
+//    studyService.delete(id);
+//    return Response.noContent().build();
+//  }
 
 }

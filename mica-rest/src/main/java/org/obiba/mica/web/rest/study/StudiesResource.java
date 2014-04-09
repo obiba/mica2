@@ -20,6 +20,8 @@ import org.springframework.context.ApplicationContext;
 
 import com.codahale.metrics.annotation.Timed;
 
+import static org.obiba.mica.web.model.Mica.StudySummaryDto;
+
 /**
  * REST controller for managing Study.
  */
@@ -51,8 +53,8 @@ public class StudiesResource {
    */
   @GET
   @Timed
-  public List<Mica.StudyDto> list() {
-    return studyService.findAll().stream().map(dtos::asDto).collect(Collectors.toList());
+  public List<StudySummaryDto> list() {
+    return studyService.findAllStates().stream().map(dtos::asDto).collect(Collectors.toList());
   }
 
   @Path("/{id}")

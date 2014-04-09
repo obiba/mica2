@@ -2,6 +2,12 @@ package obiba.mica;
 
 option java_package = "org.obiba.mica.web.model";
 
+message StudySummaryDto {
+  required string id = 1;
+  repeated LocalizedStringDto name = 2;
+  optional TimestampsDto timestamps = 3;
+}
+
 message StudyDto {
   required string id = 1;
   repeated LocalizedStringDto name = 2;

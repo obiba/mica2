@@ -14,8 +14,4 @@ public class NoSuchStudyException extends NoSuchElementException {
     return new NoSuchStudyException("Study with id '" + id + "' does not exist");
   }
 
-  public static NoSuchStudyException withName(String name) {
-    return new NoSuchStudyException("Study with name '" + name + "' does not exist");
-  }
-
 }

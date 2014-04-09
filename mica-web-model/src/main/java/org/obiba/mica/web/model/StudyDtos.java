@@ -17,10 +17,10 @@ class StudyDtos {
   private StudyDtos() {}
 
   @NotNull
-  static Mica.StudyDto asDto(@NotNull Study study) {
+  static Mica.StudyDto asDto(@NotNull Study study, Timestamped studyState) {
     Mica.StudyDto.Builder builder = Mica.StudyDto.newBuilder();
     builder.setId(study.getId()) //
-        .setTimestamps(TimestampsDtos.asDto((Timestamped) study)) //
+        .setTimestamps(TimestampsDtos.asDto(studyState)) //
         .addAllName(LocalizedStringDtos.asDtos(study.getName())) //
         .addAllObjectives(LocalizedStringDtos.asDtos(study.getObjectives()));
 

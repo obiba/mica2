@@ -3,10 +3,14 @@ package org.obiba.mica.domain;
 import java.io.Serializable;
 import java.util.Objects;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.google.common.base.Strings;
 
 @Document
 public class StudyState extends AbstractTimestampedDocument implements Serializable {
@@ -21,6 +25,9 @@ public class StudyState extends AbstractTimestampedDocument implements Serializa
 
   @Indexed
   private String publishedTag;
+
+  @NotNull
+  private LocalizedString name;
 
   public String getId() {
     return id;
@@ -44,6 +51,18 @@ public class StudyState extends AbstractTimestampedDocument implements Serializa
 
   public void setPublishedTag(String publishedTag) {
     this.publishedTag = publishedTag;
+  }
+
+  public boolean isPublished() {
+    return !Strings.isNullOrEmpty(publishedTag);
+  }
+
+  public LocalizedString getName() {
+    return name;
+  }
+
+  public void setName(LocalizedString name) {
+    this.name = name;
   }
 
   @Override
