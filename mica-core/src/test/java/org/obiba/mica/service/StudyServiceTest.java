@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.obiba.mica.domain.Study;
 import org.obiba.mica.domain.StudyState;
+import org.obiba.mica.event.StudyUpdatedEvent;
 import org.obiba.mica.repository.StudyStateRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,10 @@ import com.google.common.io.Files;
 import com.mongodb.Mongo;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.obiba.mica.domain.LocalizedString.en;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -48,8 +52,11 @@ public class StudyServiceTest {
   @Inject
   private StudyStateRepository studyStateRepository;
 
+  @Inject
+  private EventBus eventBus;
+
   @Test
-  public void test_save_new_study() throws Exception {
+  public void test_create_and_load_new_study() throws Exception {
 
     Study study = new Study();
     study.setName(en("name en").forFr("name fr"));
@@ -62,10 +69,41 @@ public class StudyServiceTest {
     assertThat(studyState.getId()) //
         .isNotEmpty() //
         .isEqualTo(study.getId());
-
     assertThat(studyState.getName()).isEqualTo(study.getName());
-
     assertThat(new File(new File(Config.BASE_REPO, study.getId()), "Study.json")).exists().isFile();
+
+    verify(eventBus).post(any(StudyUpdatedEvent.class));
+
+    Study retrievedStudy = studyService.findById(study.getId());
+    assertThat(retrievedStudy).isEqualTo(study);
+    assertThat(retrievedStudy.getName()).isEqualTo(study.getName());
+  }
+
+  @Test
+  public void test_update_study() throws Exception {
+
+    Study study = new Study();
+    study.setName(en("name en").forFr("name fr"));
+    studyService.save(study);
+
+    study.setName(en("new name en").forFr("new name fr"));
+    studyService.save(study);
+
+    List<StudyState> studyStates = studyStateRepository.findAll();
+    assertThat(studyStates).hasSize(1);
+
+    StudyState studyState = studyStates.get(0);
+    assertThat(studyState.getId()) //
+        .isNotEmpty() //
+        .isEqualTo(study.getId());
+    assertThat(studyState.getName()).isEqualTo(study.getName());
+    assertThat(new File(new File(Config.BASE_REPO, study.getId()), "Study.json")).exists().isFile();
+
+    verify(eventBus, times(2)).post(any(StudyUpdatedEvent.class));
+
+    Study retrievedStudy = studyService.findById(study.getId());
+    assertThat(retrievedStudy).isEqualTo(study);
+    assertThat(retrievedStudy.getName()).isEqualTo(study.getName());
   }
 
   @Configuration

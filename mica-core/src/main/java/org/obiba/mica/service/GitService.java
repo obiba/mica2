@@ -43,7 +43,7 @@ public class GitService {
         gson.toJson(obj, obj.getClass(), writer);
       }
     } catch(IOException e) {
-      throw new RuntimeException("Cannot persist " + obj + " to " + id + " repo");
+      throw new RuntimeException("Cannot persist " + obj + " to " + id + " repo", e);
     }
   }
 
@@ -54,7 +54,7 @@ public class GitService {
         return gson.fromJson(reader, clazz);
       }
     } catch(IOException e) {
-      throw new RuntimeException("Cannot read " + clazz.getName() + " from " + id + " repo");
+      throw new RuntimeException("Cannot read " + clazz.getName() + " from " + id + " repo", e);
     }
   }
 
@@ -62,11 +62,11 @@ public class GitService {
     return new File(getRepo(id), clazz.getSimpleName() + ".json");
   }
 
+  @SuppressWarnings("ResultOfMethodCallIgnored")
   private File getRepo(String id) {
     File dir = new File(baseRepo, id);
-    if(!dir.mkdirs()) {
-      throw new RuntimeException("Cannot create repo " + dir.getAbsolutePath());
-    }
+    // don't check return status here as if folder already exists it will return false
+    dir.mkdirs();
     return dir;
   }
 
