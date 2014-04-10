@@ -1,7 +1,7 @@
 package org.obiba.mica.config;
 
 import java.lang.reflect.Method;
-import java.util.concurrent.Executors;
+import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
 
@@ -19,9 +19,13 @@ import com.google.common.eventbus.Subscribe;
 @Configuration
 public class EventBusConfiguration {
 
+  // defined in AsyncConfiguration
+  @Inject
+  private Executor executor;
+
   @Bean
   public EventBus eventBus() {
-    return new AsyncEventBus(Executors.newCachedThreadPool());
+    return new AsyncEventBus(executor);
   }
 
   @Bean

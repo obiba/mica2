@@ -21,6 +21,12 @@ public class AsyncConfiguration implements AsyncConfigurer, EnvironmentAware {
 
   private static final Logger log = LoggerFactory.getLogger(AsyncConfiguration.class);
 
+  private static final int DEFAULT_MAX_POOL_SIZE = 50;
+
+  private static final int DEFAULT_QUEUE_CAPACITY = 10000;
+
+  private static final int DEFAULT_POOL_SIZE = 2;
+
   private RelaxedPropertyResolver propertyResolver;
 
   @Override
@@ -33,10 +39,10 @@ public class AsyncConfiguration implements AsyncConfigurer, EnvironmentAware {
   public Executor getAsyncExecutor() {
     log.debug("Creating Async Task Executor");
     ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-    executor.setCorePoolSize(propertyResolver.getProperty("corePoolSize", Integer.class, 2));
-    executor.setMaxPoolSize(propertyResolver.getProperty("corePoolSize", Integer.class, 50));
-    executor.setQueueCapacity(propertyResolver.getProperty("corePoolSize", Integer.class, 10000));
-    executor.setThreadNamePrefix("jhipster-Executor-");
+    executor.setCorePoolSize(propertyResolver.getProperty("corePoolSize", Integer.class, DEFAULT_POOL_SIZE));
+    executor.setMaxPoolSize(propertyResolver.getProperty("maxPoolSize", Integer.class, DEFAULT_MAX_POOL_SIZE));
+    executor.setQueueCapacity(propertyResolver.getProperty("queueCapacity", Integer.class, DEFAULT_QUEUE_CAPACITY));
+    executor.setThreadNamePrefix("mica-executor-");
     return executor;
   }
 }
