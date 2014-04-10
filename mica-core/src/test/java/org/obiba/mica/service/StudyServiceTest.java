@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.obiba.mica.domain.Study;
@@ -20,21 +19,21 @@ import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import com.github.fakemongo.Fongo;
 import com.google.common.eventbus.EventBus;
 import com.google.common.io.Files;
-import com.lordofthejars.nosqlunit.mongodb.MongoDbRule;
 import com.mongodb.Mongo;
 
-import static com.lordofthejars.nosqlunit.mongodb.MongoDbRule.MongoDbRuleBuilder.newMongoDbRule;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.obiba.mica.domain.LocalizedString.en;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-//@TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
+@TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
 @ContextConfiguration(classes = StudyServiceTest.Config.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class StudyServiceTest {
@@ -42,9 +41,6 @@ public class StudyServiceTest {
   private static final Logger log = LoggerFactory.getLogger(StudyServiceTest.class);
 
   private static final String DATABASE_NAME = "mica";
-
-  @Rule
-  public MongoDbRule mongoDbRule = newMongoDbRule().defaultSpringMongoDb(DATABASE_NAME);
 
   @Inject
   private StudyService studyService;
@@ -56,19 +52,31 @@ public class StudyServiceTest {
   public void test_save_new_study() throws Exception {
 
     Study study = new Study();
-    study.setName(en("english name").forFr("nom français"));
+    study.setName(en("name en").forFr("name fr"));
     studyService.save(study);
 
     List<StudyState> studyStates = studyStateRepository.findAll();
     assertThat(studyStates).hasSize(1);
 
-    log.debug("state: {}", studyStates.get(0));
+    StudyState studyState = studyStates.get(0);
+    assertThat(studyState.getId()) //
+        .isNotEmpty() //
+        .isEqualTo(study.getId());
 
+    assertThat(studyState.getName()).isEqualTo(study.getName());
+
+    assertThat(new File(new File(Config.BASE_REPO, study.getId()), "Study.json")).exists().isFile();
   }
 
   @Configuration
   @EnableMongoRepositories("org.obiba.mica.repository")
   static class Config extends AbstractMongoConfiguration {
+
+    static final File BASE_REPO = Files.createTempDir();
+
+    static {
+      BASE_REPO.deleteOnExit();
+    }
 
     @Bean
     public StudyService studyService() {
@@ -77,9 +85,7 @@ public class StudyServiceTest {
 
     @Bean
     public GitService gitService() throws IOException {
-      File baseRepo = Files.createTempDir();
-      baseRepo.deleteOnExit();
-      return new GitService(baseRepo);
+      return new GitService(BASE_REPO);
     }
 
     @Bean

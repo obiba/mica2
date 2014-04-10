@@ -80,8 +80,8 @@ public class StudyState extends AbstractTimestampedDocument implements Serializa
 
   @Override
   public String toString() {
-    return com.google.common.base.Objects.toStringHelper(this).add("id", id).add("publishedTag", publishedTag)
-        .toString();
+    return com.google.common.base.Objects.toStringHelper(this).add("id", id).add("name", name)
+        .add("publishedTag", publishedTag).toString();
   }
 
 }

@@ -219,10 +219,6 @@
       <groupId>com.github.fakemongo</groupId>
       <artifactId>fongo</artifactId>
     </dependency>
-    <dependency>
-      <groupId>com.lordofthejars</groupId>
-      <artifactId>nosqlunit-mongodb</artifactId>
-    </dependency>
 
   </dependencies>
 

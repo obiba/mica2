@@ -470,13 +470,6 @@
         <scope>test</scope>
       </dependency>
 
-      <dependency>
-        <groupId>com.lordofthejars</groupId>
-        <artifactId>nosqlunit-mongodb</artifactId>
-        <version>${nosqlunit.version}</version>
-        <scope>test</scope>
-      </dependency>
-
     </dependencies>
 
   </dependencyManagement>
