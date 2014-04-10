@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.obiba.mica.domain.Study;
@@ -32,6 +33,7 @@ import com.mongodb.Mongo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.obiba.mica.domain.LocalizedString.en;
@@ -39,7 +41,7 @@ import static org.obiba.mica.domain.LocalizedString.en;
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
 @ContextConfiguration(classes = StudyServiceTest.Config.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class StudyServiceTest {
 
   private static final Logger log = LoggerFactory.getLogger(StudyServiceTest.class);
@@ -55,6 +57,14 @@ public class StudyServiceTest {
   @Inject
   private EventBus eventBus;
 
+  @Inject
+  private Fongo fongo;
+
+  @Before
+  public void clearDatabase() {
+    fongo.dropDatabase(DATABASE_NAME);
+  }
+
   @Test
   public void test_create_and_load_new_study() throws Exception {
 
@@ -63,6 +73,7 @@ public class StudyServiceTest {
     studyService.save(study);
 
     List<StudyState> studyStates = studyStateRepository.findAll();
+    log.info(">>> studyStates: {}", studyStates);
     assertThat(studyStates).hasSize(1);
 
     StudyState studyState = studyStates.get(0);
@@ -73,17 +84,18 @@ public class StudyServiceTest {
     assertThat(new File(new File(Config.BASE_REPO, study.getId()), "Study.json")).exists().isFile();
 
     verify(eventBus).post(any(StudyUpdatedEvent.class));
+    reset(eventBus);
 
     Study retrievedStudy = studyService.findById(study.getId());
     assertThat(retrievedStudy).isEqualTo(study);
-    assertThat(retrievedStudy.getName()).isEqualTo(study.getName());
+    assertThat(retrievedStudy).isEqualToComparingFieldByField(retrievedStudy);
   }
 
   @Test
   public void test_update_study() throws Exception {
 
     Study study = new Study();
-    study.setName(en("name en").forFr("name fr"));
+    study.setName(en("name en to update").forFr("name fr to update"));
     studyService.save(study);
 
     study.setName(en("new name en").forFr("new name fr"));
@@ -100,10 +112,11 @@ public class StudyServiceTest {
     assertThat(new File(new File(Config.BASE_REPO, study.getId()), "Study.json")).exists().isFile();
 
     verify(eventBus, times(2)).post(any(StudyUpdatedEvent.class));
+    reset(eventBus);
 
     Study retrievedStudy = studyService.findById(study.getId());
     assertThat(retrievedStudy).isEqualTo(study);
-    assertThat(retrievedStudy.getName()).isEqualTo(study.getName());
+    assertThat(retrievedStudy).isEqualToComparingFieldByField(retrievedStudy);
   }
 
   @Configuration
@@ -116,6 +129,9 @@ public class StudyServiceTest {
       BASE_REPO.deleteOnExit();
     }
 
+    @Inject
+    private Fongo fongo;
+
     @Bean
     public StudyService studyService() {
       return new StudyService();
@@ -124,6 +140,11 @@ public class StudyServiceTest {
     @Bean
     public GitService gitService() throws IOException {
       return new GitService(BASE_REPO);
+    }
+
+    @Bean
+    public Fongo fongo() throws IOException {
+      return new Fongo("mica-test");
     }
 
     @Bean
@@ -138,7 +159,7 @@ public class StudyServiceTest {
 
     @Override
     public Mongo mongo() {
-      return new Fongo("mica-test").getMongo();
+      return fongo.getMongo();
     }
 
     @Override
