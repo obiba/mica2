@@ -9,6 +9,7 @@ import java.io.OutputStreamWriter;
 
 import org.springframework.stereotype.Component;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
@@ -19,9 +20,20 @@ import static com.google.common.base.Charsets.UTF_8;
 @Component
 public class GitService {
 
-  private static final File REPO_PATH = new File("target/repo");
+  private static final String DEFAULT_BASE_REPO_PATH = "target/repo";
 
   private final Gson gson = new GsonBuilder().create();
+
+  private final File baseRepo;
+
+  public GitService() {
+    this(new File(DEFAULT_BASE_REPO_PATH));
+  }
+
+  @VisibleForTesting
+  GitService(File baseRepo) {
+    this.baseRepo = baseRepo;
+  }
 
   public void save(String id, Object obj) {
     try {
@@ -51,7 +63,7 @@ public class GitService {
   }
 
   private File getRepo(String id) {
-    File dir = new File(REPO_PATH, id);
+    File dir = new File(baseRepo, id);
     if(!dir.mkdirs()) {
       throw new RuntimeException("Cannot create repo " + dir.getAbsolutePath());
     }

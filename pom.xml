@@ -120,6 +120,7 @@
     <liquibase-slf4j.version>1.2.1</liquibase-slf4j.version>
     <metrics-spring.version>3.0.0-RC4</metrics-spring.version>
     <mongeez.version>0.9.4</mongeez.version>
+    <nosqlunit.version>0.7.9</nosqlunit.version>
     <obiba-commons.version>1.6-SNAPSHOT</obiba-commons.version>
     <protobuf.version>2.5.0</protobuf.version>
     <protobuf-java-format.version>1.2.1-obiba</protobuf-java-format.version>
@@ -466,6 +467,13 @@
         <groupId>com.github.fakemongo</groupId>
         <artifactId>fongo</artifactId>
         <version>${fongo.version}</version>
+        <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>com.lordofthejars</groupId>
+        <artifactId>nosqlunit-mongodb</artifactId>
+        <version>${nosqlunit.version}</version>
         <scope>test</scope>
       </dependency>
 
