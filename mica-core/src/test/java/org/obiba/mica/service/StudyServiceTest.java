@@ -30,12 +30,12 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.io.Files;
 import com.mongodb.Mongo;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.obiba.mica.assertj.Assertions.assertThat;
 import static org.obiba.mica.domain.LocalizedString.en;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -87,8 +87,7 @@ public class StudyServiceTest {
     reset(eventBus);
 
     Study retrievedStudy = studyService.findById(study.getId());
-    assertThat(retrievedStudy).isEqualTo(study);
-    assertThat(retrievedStudy).isEqualToComparingFieldByField(retrievedStudy);
+    assertThat(retrievedStudy).areFieldsEqualToEachOther(study);
   }
 
   @Test
@@ -115,8 +114,7 @@ public class StudyServiceTest {
     reset(eventBus);
 
     Study retrievedStudy = studyService.findById(study.getId());
-    assertThat(retrievedStudy).isEqualTo(study);
-    assertThat(retrievedStudy).isEqualToComparingFieldByField(retrievedStudy);
+    assertThat(retrievedStudy).areFieldsEqualToEachOther(study);
   }
 
   @Configuration

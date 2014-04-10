@@ -18,8 +18,8 @@ import org.obiba.mica.domain.StudyState;
 import org.obiba.mica.domain.Timestamped;
 import org.obiba.mica.service.StudyService;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
+import static org.obiba.mica.assertj.Assertions.assertThat;
 import static org.obiba.mica.domain.LocalizedString.en;
 import static org.obiba.mica.domain.Study.StudyMethods;
 
@@ -48,7 +48,7 @@ public class StudyDtosTest {
     Mica.StudyDto dto = dtos.asDto(study);
     Study fromDto = dtos.fromDto(dto);
     assertTimestamps(studyState, dto);
-    assertStudy(fromDto, study);
+    assertThat(fromDto).areFieldsEqualToEachOther(study);
   }
 
   @Ignore
@@ -62,21 +62,13 @@ public class StudyDtosTest {
     Mica.StudyDto dto = dtos.asDto(study);
     Study fromDto = dtos.fromDto(dto);
     assertTimestamps(studyState, dto);
-    assertStudy(fromDto, study);
+    assertThat(fromDto).areFieldsEqualToEachOther(study);
   }
 
   private void assertTimestamps(Timestamped study, Mica.StudyDtoOrBuilder dto) {
     assertThat(dto.getTimestamps().getCreated()).isEqualTo(study.getCreated().toString());
     assertThat(dto.getTimestamps().getLastUpdate())
         .isEqualTo(study.getUpdated() == null ? "" : study.getUpdated().toString());
-  }
-
-  private void assertStudy(Study actual, Study expected) {
-    assertThat(actual).isEqualToComparingFieldByField(expected);
-    //TODO assert contact
-    //TODO assert investigators
-    //TODO assert populations
-    //TODO assert data collection events
   }
 
   private Study createStudy() {
