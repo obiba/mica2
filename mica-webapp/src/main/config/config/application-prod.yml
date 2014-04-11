@@ -43,6 +43,9 @@ shiro:
     nbHashIterations: 10000
     salt: mica
 
+git:
+  repo-path: ${MICA_HOME}/git-repo
+
 metrics:
     jmx.enabled: true
     graphite:

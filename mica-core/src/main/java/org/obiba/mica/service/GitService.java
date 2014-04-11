@@ -4,12 +4,21 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
+import org.obiba.git.command.AddFilesCommand;
+import org.obiba.git.command.GitCommandHandler;
+import org.obiba.git.command.ReadFileCommand;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
@@ -18,30 +27,52 @@ import com.google.gson.stream.JsonWriter;
 import static com.google.common.base.Charsets.UTF_8;
 
 @Component
-public class GitService {
+public class GitService implements EnvironmentAware {
 
-  private static final String DEFAULT_BASE_REPO_PATH = "target/repo";
+  @Inject
+  private GitCommandHandler gitCommandHandler;
+
+  private RelaxedPropertyResolver propertyResolver;
+
+  private File repositoriesRoot;
 
   private final Gson gson = new GsonBuilder().create();
 
-  private final File baseRepo;
-
-  public GitService() {
-    this(new File(DEFAULT_BASE_REPO_PATH));
+  @PostConstruct
+  public void init() {
+    repositoriesRoot = new File(propertyResolver.getProperty("repo-path"));
   }
 
-  @VisibleForTesting
-  GitService(File baseRepo) {
-    this.baseRepo = baseRepo;
+  @Override
+  public void setEnvironment(Environment environment) {
+    propertyResolver = new RelaxedPropertyResolver(environment, "git.");
   }
 
   public void save(String id, Object obj) {
     try {
-      try(FileOutputStream out = new FileOutputStream(getJsonFile(id, obj.getClass()));
+
+      File jsonFile = File.createTempFile("mica", "json");
+      jsonFile.deleteOnExit();
+      String jsonFileName = getJsonFileName(obj.getClass());
+
+      // write Object to temp JSON file
+      try(FileOutputStream out = new FileOutputStream(jsonFile);
           JsonWriter writer = new JsonWriter(new OutputStreamWriter(out, UTF_8))) {
         writer.setIndent("  ");
         gson.toJson(obj, obj.getClass(), writer);
       }
+
+      // add this temp JSON file to GIT
+      try(InputStream input = new FileInputStream(jsonFile)) {
+        gitCommandHandler.execute(
+            new AddFilesCommand.Builder(getRepositoryPath(id), "Update " + jsonFileName).addFile(jsonFileName, input)
+                .build()
+        );
+      }
+
+      //noinspection ResultOfMethodCallIgnored
+      jsonFile.delete();
+
     } catch(IOException e) {
       throw new RuntimeException("Cannot persist " + obj + " to " + id + " repo", e);
     }
@@ -49,25 +80,21 @@ public class GitService {
 
   public <T> T read(String id, Class<T> clazz) {
     try {
-      try(FileInputStream in = new FileInputStream(getJsonFile(id, clazz));
-          JsonReader reader = new JsonReader(new InputStreamReader(in, UTF_8))) {
+      try(InputStream inputStream = gitCommandHandler
+          .execute(new ReadFileCommand.Builder(getRepositoryPath(id), getJsonFileName(clazz)).build());
+          JsonReader reader = new JsonReader(new InputStreamReader(inputStream, UTF_8))) {
         return gson.fromJson(reader, clazz);
       }
-    } catch(IOException e) {
+    } catch(Exception e) {
       throw new RuntimeException("Cannot read " + clazz.getName() + " from " + id + " repo", e);
     }
   }
 
-  private File getJsonFile(String id, Class<?> clazz) {
-    return new File(getRepo(id), clazz.getSimpleName() + ".json");
+  private File getRepositoryPath(String id) {
+    return new File(repositoriesRoot, id + ".git");
   }
 
-  @SuppressWarnings("ResultOfMethodCallIgnored")
-  private File getRepo(String id) {
-    File dir = new File(baseRepo, id);
-    // don't check return status here as if folder already exists it will return false
-    dir.mkdirs();
-    return dir;
+  private String getJsonFileName(Class<?> clazz) {
+    return clazz.getSimpleName() + ".json";
   }
-
 }
