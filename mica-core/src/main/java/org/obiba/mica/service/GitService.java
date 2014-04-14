@@ -40,12 +40,16 @@ public class GitService implements EnvironmentAware {
 
   @PostConstruct
   public void init() {
-    repositoriesRoot = new File(propertyResolver.getProperty("repo-path"));
+    if(repositoriesRoot == null) repositoriesRoot = new File(propertyResolver.getProperty("repo-path"));
   }
 
   @Override
   public void setEnvironment(Environment environment) {
     propertyResolver = new RelaxedPropertyResolver(environment, "git.");
+  }
+
+  public void setRepositoriesRoot(File repositoriesRoot) {
+    this.repositoriesRoot = repositoriesRoot;
   }
 
   public void save(String id, Object obj) {

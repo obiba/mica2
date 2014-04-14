@@ -6,9 +6,13 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.obiba.git.command.GitCommandHandler;
 import org.obiba.mica.domain.Study;
 import org.obiba.mica.domain.StudyState;
 import org.obiba.mica.event.StudyUpdatedEvent;
@@ -60,6 +64,11 @@ public class StudyServiceTest {
   @Inject
   private Fongo fongo;
 
+  @BeforeClass
+  public static void init() {
+    SecurityUtils.setSecurityManager(new DefaultSecurityManager());
+  }
+
   @Before
   public void clearDatabase() {
     fongo.dropDatabase(DATABASE_NAME);
@@ -81,7 +90,6 @@ public class StudyServiceTest {
         .isNotEmpty() //
         .isEqualTo(study.getId());
     assertThat(studyState.getName()).isEqualTo(study.getName());
-    assertThat(new File(new File(Config.BASE_REPO, study.getId()), "Study.json")).exists().isFile();
 
     verify(eventBus).post(any(StudyUpdatedEvent.class));
     reset(eventBus);
@@ -108,7 +116,6 @@ public class StudyServiceTest {
         .isNotEmpty() //
         .isEqualTo(study.getId());
     assertThat(studyState.getName()).isEqualTo(study.getName());
-    assertThat(new File(new File(Config.BASE_REPO, study.getId()), "Study.json")).exists().isFile();
 
     verify(eventBus, times(2)).post(any(StudyUpdatedEvent.class));
     reset(eventBus);
@@ -137,7 +144,14 @@ public class StudyServiceTest {
 
     @Bean
     public GitService gitService() throws IOException {
-      return new GitService(BASE_REPO);
+      GitService gitService = new GitService();
+      gitService.setRepositoriesRoot(BASE_REPO);
+      return gitService;
+    }
+
+    @Bean
+    public GitCommandHandler gitCommandHandler() throws IOException {
+      return new GitCommandHandler();
     }
 
     @Bean
