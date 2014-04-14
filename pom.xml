@@ -15,6 +15,7 @@
   <modules>
     <module>mica-core</module>
     <module>mica-rest</module>
+    <module>mica-search</module>
     <module>mica-web-model</module>
     <module>mica-webapp</module>
   </modules>
