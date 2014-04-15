@@ -39,7 +39,7 @@ then
 fi
 
 echo ">> Install Oracle Java 8"
-echo oracle-java7-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections
+echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections
 sudo apt-get install -y oracle-java8-installer
 sudo update-java-alternatives -s java-8-oracle
 echo "export JAVA_HOME=/usr/lib/jvm/java-8-oracle" >> ~/.bashrc
