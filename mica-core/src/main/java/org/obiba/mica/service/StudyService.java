@@ -65,18 +65,41 @@ public class StudyService {
   }
 
   @NotNull
-  public Study findById(@NotNull String id) throws NoSuchStudyException {
+  public Study findDraftStudy(@NotNull String id) throws NoSuchStudyException {
     // ensure study exists
     findStateById(id);
-    return gitService.read(id, Study.class);
+    return gitService.readHead(id, Study.class);
+  }
+
+  @NotNull
+  public Study findPublishedStudy(@NotNull String id) throws NoSuchStudyException {
+    StudyState studyState = findStateById(id);
+    return gitService.readFromTag(id, studyState.getPublishedTag(), Study.class);
   }
 
   public List<StudyState> findAllStates() {
     return studyStateRepository.findAll();
   }
 
+  public List<StudyState> findPublishedStates() {
+    return studyStateRepository.findByPublishedTagNotNull();
+  }
+
 //  public void delete(@NotNull String id) {
 //    studyRepository.delete(id);
 //  }
 
+  /**
+   * Publish current revision
+   *
+   * @param id
+   * @return
+   * @throws NoSuchStudyException
+   */
+  public StudyState publish(@NotNull String id) throws NoSuchStudyException {
+    StudyState studyState = findStateById(id);
+    studyState.setPublishedTag(gitService.tag(id));
+    studyStateRepository.save(studyState);
+    return studyState;
+  }
 }

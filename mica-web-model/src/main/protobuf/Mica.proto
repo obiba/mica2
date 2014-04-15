@@ -173,8 +173,10 @@ message AddressDto {
 }
 
 message AttachmentDto {
-  required string uri = 1;
+  required string fileName = 1;
   optional string type = 2;
   repeated LocalizedStringDto description = 3;
   optional string lang = 4;
+  optional int32 size = 5;
+  optional string md5 = 6;
 }

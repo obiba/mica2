@@ -42,6 +42,8 @@ public class StudyGenerator {
 
     studyService.save(study);
 
+    studyService.publish(study.getId());
+
 //    Network network = createNetwork();
 //    network.getStudies().add(study);
 //    networkRepository.save(network);

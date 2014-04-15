@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Test class for the StudyResource REST controller.
  *
- * @see org.obiba.mica.web.rest.study.StudiesResource
+ * @see StudiesResource
  */
 @Ignore
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -44,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestExecutionListeners({ DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
     TransactionalTestExecutionListener.class })
 @ActiveProfiles("dev")
-public class StudiesResourceTest {
+public class PublishedStudiesResourceTest {
 
   private static final String DEFAULT_ID = "1";
 
@@ -66,10 +66,10 @@ public class StudiesResourceTest {
   @Before
   public void setup() {
     MockitoAnnotations.initMocks(this);
-    StudiesResource studyResource = new StudiesResource();
-    ReflectionTestUtils.setField(studyResource, "studyRepository", studyService);
+    PublishedStudiesResource publishedStudiesResource = new PublishedStudiesResource();
+    ReflectionTestUtils.setField(publishedStudiesResource, "studyRepository", studyService);
 
-    restStudyMockMvc = MockMvcBuilders.standaloneSetup(studyResource).build();
+    restStudyMockMvc = MockMvcBuilders.standaloneSetup(publishedStudiesResource).build();
 
     study = new Study();
     study.setId(DEFAULT_ID);

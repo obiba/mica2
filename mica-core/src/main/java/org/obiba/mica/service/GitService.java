@@ -7,10 +7,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.PersonIdent;
+import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.transport.PushResult;
+import org.obiba.git.GitException;
+import org.obiba.git.command.AbstractGitWriteCommand;
 import org.obiba.git.command.AddFilesCommand;
 import org.obiba.git.command.GitCommandHandler;
 import org.obiba.git.command.ReadFileCommand;
@@ -82,16 +92,30 @@ public class GitService implements EnvironmentAware {
     }
   }
 
-  public <T> T read(String id, Class<T> clazz) {
+  public <T> T readHead(String id, Class<T> clazz) {
+    return read(id, null, clazz);
+  }
+
+  public <T> T readFromTag(String id, String tag, Class<T> clazz) {
+    return read(id, tag, clazz);
+  }
+
+  private <T> T read(String id, @Nullable String tag, Class<T> clazz) {
     try {
       try(InputStream inputStream = gitCommandHandler
-          .execute(new ReadFileCommand.Builder(getRepositoryPath(id), getJsonFileName(clazz)).build());
+          .execute(new ReadFileCommand.Builder(getRepositoryPath(id), getJsonFileName(clazz)).tag(tag).build());
           JsonReader reader = new JsonReader(new InputStreamReader(inputStream, UTF_8))) {
         return gson.fromJson(reader, clazz);
       }
-    } catch(Exception e) {
+    } catch(IOException e) {
       throw new RuntimeException("Cannot read " + clazz.getName() + " from " + id + " repo", e);
     }
+  }
+
+  public String tag(String id) {
+    IncrementTagCommand command = new IncrementTagCommand(getRepositoryPath(id));
+    gitCommandHandler.execute(command);
+    return String.valueOf(command.getNewTag());
   }
 
   private File getRepositoryPath(String id) {
@@ -100,5 +124,35 @@ public class GitService implements EnvironmentAware {
 
   private String getJsonFileName(Class<?> clazz) {
     return clazz.getSimpleName() + ".json";
+  }
+
+  private static class IncrementTagCommand extends AbstractGitWriteCommand {
+
+    private int newTag = 1;
+
+    private IncrementTagCommand(@NotNull File repositoryPath) {
+      super(repositoryPath, null);
+    }
+
+    @Override
+    public Iterable<PushResult> execute(Git git) {
+      try {
+        List<Ref> refs = git.tagList().call();
+        if(!refs.isEmpty()) {
+          Ref lastRef = refs.get(refs.size() - 1);
+          String name = lastRef.getName();
+          newTag = Integer.valueOf(name.substring(name.lastIndexOf('/') + 1, name.length())) + 1;
+        }
+        git.tag().setMessage("Create tag " + newTag).setName(String.valueOf(newTag))
+            .setTagger(new PersonIdent(getAuthorName(), getAuthorEmail())).call();
+        return git.push().setPushTags().setRemote("origin").call();
+      } catch(GitAPIException e) {
+        throw new GitException(e);
+      }
+    }
+
+    public int getNewTag() {
+      return newTag;
+    }
   }
 }

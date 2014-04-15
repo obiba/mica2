@@ -94,7 +94,7 @@ public class StudyServiceTest {
     verify(eventBus).post(any(StudyUpdatedEvent.class));
     reset(eventBus);
 
-    Study retrievedStudy = studyService.findById(study.getId());
+    Study retrievedStudy = studyService.findDraftStudy(study.getId());
     assertThat(retrievedStudy).areFieldsEqualToEachOther(study);
   }
 
@@ -120,7 +120,7 @@ public class StudyServiceTest {
     verify(eventBus, times(2)).post(any(StudyUpdatedEvent.class));
     reset(eventBus);
 
-    Study retrievedStudy = studyService.findById(study.getId());
+    Study retrievedStudy = studyService.findDraftStudy(study.getId());
     assertThat(retrievedStudy).areFieldsEqualToEachOther(study);
   }
 
