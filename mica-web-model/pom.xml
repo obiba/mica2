@@ -111,16 +111,18 @@
                   <arg line="${protofilesList}"/>
                   <arg line="-Isrc/main/protobuf"/>
                 </exec>
+
                 <!-- PHP -->
-                <copy file="${basedir}/tools/protobuf-php/template/wrapper.proto" todir="${basedir}/src/main/protobuf"/>
+                <copy file="${basedir}/tools/protobuf/php/template/wrapper.proto" todir="${basedir}/src/main/protobuf"/>
                 <replace file="${basedir}/src/main/protobuf/wrapper.proto" token="__PROTO_FILE__" value="Mica"/>
                 <mkdir dir="target/generated-sources/protobuf-php"/>
+                <!--suppress MavenModelInspection -->
                 <exec dir="${basedir}" executable="${basedir}/tools/protobuf/protoc-${os.protoc}" failonerror="true">
                   <arg value="--php_out=target/generated-sources/protobuf-php"/>
-                  <arg line="--plugin=${basedir}/tools/protobuf-php/protoc-gen-php"/>
-                  <arg line="-I${basedir}/tools/protobuf-php/library/DrSlump/Protobuf/Compiler/protos"/>
+                  <arg line="--plugin=${basedir}/tools/protobuf/php/protoc-gen-php"/>
+                  <arg line="-I${basedir}/tools/protobuf/php/library/DrSlump/Protobuf/Compiler/protos"/>
                   <arg line="-Isrc/main/protobuf"/>
-                  <arg line="-I${basedir}/tools/protobuf-php/template"/>
+                  <arg line="-I${basedir}/tools/protobuf/php/template"/>
                   <arg line="--proto_path=${basedir}"/>
                   <arg line="${basedir}/src/main/protobuf/wrapper.proto"/>
                 </exec>
