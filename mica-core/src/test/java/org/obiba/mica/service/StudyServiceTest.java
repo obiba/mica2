@@ -128,7 +128,7 @@ public class StudyServiceTest {
   public void test_publish_current() throws Exception {
 
     Study study = new Study();
-    study.setName(en("name en to update").forFr("name fr to update"));
+    study.setName(en("name en").forFr("name fr"));
     studyService.save(study);
 
     assertThat(studyService.findAllStates()).hasSize(1);
@@ -141,8 +141,12 @@ public class StudyServiceTest {
     assertThat(publishedState.getId()).isEqualTo(study.getId());
     assertThat(publishedState.getPublishedTag()).isEqualTo("1");
 
-    assertThat(studyService.findPublishedStudy(study.getId())).areFieldsEqualToEachOther(study);
+    Study draft = studyService.findDraftStudy(study.getId());
+    draft.setName(en("new name en").forFr("new name fr"));
+    studyService.save(draft);
 
+    assertThat(studyService.findPublishedStudy(study.getId())).areFieldsEqualToEachOther(study);
+    assertThat(studyService.findDraftStudy(study.getId())).areFieldsEqualToEachOther(draft);
   }
 
   @Configuration
