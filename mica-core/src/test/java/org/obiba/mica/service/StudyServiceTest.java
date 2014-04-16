@@ -2,7 +2,6 @@ package org.obiba.mica.service;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.UnknownHostException;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -35,7 +34,9 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import com.google.common.eventbus.EventBus;
 import com.google.common.io.Files;
 import com.mongodb.Mongo;
-import com.mongodb.MongoClient;
+
+import de.flapdoodle.embed.mongo.distribution.Version;
+import de.flapdoodle.embed.mongo.tests.MongodForTestsFactory;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -52,7 +53,6 @@ import static org.obiba.mica.domain.LocalizedString.en;
 public class StudyServiceTest {
 
   private static final Logger log = LoggerFactory.getLogger(StudyServiceTest.class);
-
 
   @Inject
   private StudyService studyService;
@@ -74,6 +74,7 @@ public class StudyServiceTest {
   @Before
   public void clearDatabase() {
     mongoTemplate.getDb().dropDatabase();
+    reset(eventBus);
   }
 
   @Test
@@ -94,7 +95,6 @@ public class StudyServiceTest {
     assertThat(studyState.getName()).isEqualTo(study.getName());
 
     verify(eventBus).post(any(StudyUpdatedEvent.class));
-    reset(eventBus);
 
     Study retrievedStudy = studyService.findDraftStudy(study.getId());
     assertThat(retrievedStudy).areFieldsEqualToEachOther(study);
@@ -102,7 +102,6 @@ public class StudyServiceTest {
 
   @Test
   public void test_update_study() throws Exception {
-
     Study study = new Study();
     study.setName(en("name en to update").forFr("name fr to update"));
     studyService.save(study);
@@ -120,7 +119,6 @@ public class StudyServiceTest {
     assertThat(studyState.getName()).isEqualTo(study.getName());
 
     verify(eventBus, times(2)).post(any(StudyUpdatedEvent.class));
-    reset(eventBus);
 
     Study retrievedStudy = studyService.findDraftStudy(study.getId());
     assertThat(retrievedStudy).areFieldsEqualToEachOther(study);
@@ -132,9 +130,6 @@ public class StudyServiceTest {
     Study study = new Study();
     study.setName(en("name en to update").forFr("name fr to update"));
     studyService.save(study);
-
-    log.debug("all: {}", studyService.findAllStates());
-    log.debug("publish: {}", studyService.findPublishedStates());
 
     assertThat(studyService.findAllStates()).hasSize(1);
     assertThat(studyService.findPublishedStates()).isEmpty();
@@ -159,8 +154,6 @@ public class StudyServiceTest {
     static {
       BASE_REPO.deleteOnExit();
     }
-
-
 
     @Bean
     public PropertySourcesPlaceholderConfigurer placeHolderConfigurer() {
@@ -195,8 +188,8 @@ public class StudyServiceTest {
     }
 
     @Override
-    public Mongo mongo() throws UnknownHostException {
-      return new MongoClient("localhost:27018");
+    public Mongo mongo() throws IOException {
+      return MongodForTestsFactory.with(Version.Main.PRODUCTION).newMongo();
     }
 
     @Override
