@@ -24,6 +24,9 @@ public class StudyState extends AbstractTimestampedDocument implements Serializa
   private Long version;
 
   @Indexed
+  private PublicationStatus publicationStatus = PublicationStatus.DRAFT;
+
+  @Indexed
   private String publishedTag;
 
   @NotNull
@@ -65,6 +68,14 @@ public class StudyState extends AbstractTimestampedDocument implements Serializa
     this.name = name;
   }
 
+  public PublicationStatus getPublicationStatus() {
+    return publicationStatus;
+  }
+
+  public void setPublicationStatus(PublicationStatus publicationStatus) {
+    this.publicationStatus = publicationStatus;
+  }
+
   @Override
   public int hashCode() {
     return Objects.hash(id);
@@ -81,7 +92,7 @@ public class StudyState extends AbstractTimestampedDocument implements Serializa
   @Override
   public String toString() {
     return com.google.common.base.Objects.toStringHelper(this).add("id", id).add("name", name)
-        .add("publishedTag", publishedTag).toString();
+        .add("publicationStatus", publicationStatus).add("publishedTag", publishedTag).toString();
   }
 
 }
