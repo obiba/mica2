@@ -107,7 +107,7 @@
     <commons-io.version>2.4</commons-io.version>
     <commons-lang.version>2.6</commons-lang.version>
     <ehcache-core.version>2.6.8</ehcache-core.version>
-    <fongo.version>1.4.3</fongo.version>
+    <fongo.version>1.4.4</fongo.version>
     <guava.version>16.0.1</guava.version>
     <geronimo-javamail_1.4_mail.version>1.8.3</geronimo-javamail_1.4_mail.version>
     <gson.version>2.2.4</gson.version>
@@ -133,10 +133,18 @@
     <maven-assertj-generator-plugin.version>1.2.0</maven-assertj-generator-plugin.version>
     <maven-buildnumber-plugin.version>1.2</maven-buildnumber-plugin.version>
     <maven-dependency-plugin.version>2.1</maven-dependency-plugin.version>
+    <maven-embedmongo-plugin.version>0.1.10</maven-embedmongo-plugin.version>
     <maven-enforcer-plugin.version>1.3.1</maven-enforcer-plugin.version>
     <maven-findbugs-plugin.version>2.5.3</maven-findbugs-plugin.version>
     <maven-pmd-plugin.version>3.1</maven-pmd-plugin.version>
     <maven-sonar-plugin.version>2.2</maven-sonar-plugin.version>
+
+    <!-- The following properties configure the embedded MongoDB instance used for tests -->
+    <embeddedMongoDbBindIp>127.0.0.1</embeddedMongoDbBindIp>
+    <!-- Not using default port to reduce chances of shutting down an external MongoDB instance -->
+    <embeddedMongoDbPort>27018</embeddedMongoDbPort>
+    <embeddedMongoDbTempDir>${project.build.directory}/embeddedMongoDb/extracted</embeddedMongoDbTempDir>
+    <embeddedMongoDbLogDir>${project.build.directory}/embeddedMongoDb/logs</embeddedMongoDbLogDir>
 
   </properties>
 
@@ -574,6 +582,27 @@
           <artifactId>assertj-assertions-generator-maven-plugin</artifactId>
           <version>${maven-assertj-generator-plugin.version}</version>
         </plugin>
+
+        <plugin>
+          <groupId>com.github.joelittlejohn.embedmongo</groupId>
+          <artifactId>embedmongo-maven-plugin</artifactId>
+          <version>${maven-embedmongo-plugin.version}</version>
+          <configuration>
+            <port>${embeddedMongoDbPort}</port>
+            <logging>console</logging>
+            <!--<logging>file</logging>-->
+            <!--<logFile>${embeddedMongoDbLogDir}/embedded-mongodb.log</logFile>-->
+            <!--<bindIp>${embeddedMongoDbBindIp}</bindIp>-->
+          </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>commons-io</groupId>
+              <artifactId>commons-io</artifactId>
+              <version>${commons-io.version}</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+
       </plugins>
     </pluginManagement>
 
@@ -664,20 +693,20 @@
 
       <!-- JAVA 8 is not supported yet by PMD -->
       <!--<plugin>-->
-        <!--<artifactId>maven-pmd-plugin</artifactId>-->
-        <!--<version>${maven-pmd-plugin.version}</version>-->
-        <!--<configuration>-->
-          <!--<linkXref>false</linkXref>-->
-          <!--<sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>-->
-          <!--<minimumTokens>30</minimumTokens>-->
-          <!--<targetJdk>${java.version}</targetJdk>-->
-          <!--<excludeRoots>-->
-            <!--<excludeRoot>target/generated-sources</excludeRoot>-->
-          <!--</excludeRoots>-->
-          <!--<rulesets>-->
-            <!--<ruleset>http://github.com/obiba/conventions/raw/master/obiba-pmd-ruleset.xml</ruleset>-->
-          <!--</rulesets>-->
-        <!--</configuration>-->
+      <!--<artifactId>maven-pmd-plugin</artifactId>-->
+      <!--<version>${maven-pmd-plugin.version}</version>-->
+      <!--<configuration>-->
+      <!--<linkXref>false</linkXref>-->
+      <!--<sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>-->
+      <!--<minimumTokens>30</minimumTokens>-->
+      <!--<targetJdk>${java.version}</targetJdk>-->
+      <!--<excludeRoots>-->
+      <!--<excludeRoot>target/generated-sources</excludeRoot>-->
+      <!--</excludeRoots>-->
+      <!--<rulesets>-->
+      <!--<ruleset>http://github.com/obiba/conventions/raw/master/obiba-pmd-ruleset.xml</ruleset>-->
+      <!--</rulesets>-->
+      <!--</configuration>-->
       <!--</plugin>-->
 
       <plugin>

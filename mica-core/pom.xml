@@ -243,6 +243,16 @@
       </resource>
     </resources>
 
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </testResource>
+    </testResources>
+
     <plugins>
 
       <plugin>
@@ -252,6 +262,33 @@
           <execution>
             <goals>
               <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>com.github.joelittlejohn.embedmongo</groupId>
+        <artifactId>embedmongo-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>start-embedded-mongodb</id>
+            <phase>generate-test-resources</phase>
+            <goals>
+              <goal>start</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>stop-embedded-mongodb</id>
+            <!--
+                Using phase "test" to trigger shut down when running "mvn test". This is safe
+                because the Surefire plug-in is configured above and order of declaration
+                within a POM is considered to resolve execution order of two plug-ins with
+                executions in the same phase
+            -->
+            <phase>test</phase>
+            <goals>
+              <goal>stop</goal>
             </goals>
           </execution>
         </executions>

@@ -22,8 +22,8 @@ spring:
     password:
 
   mongodb:
-      url: localhost:27017
-      databaseName: mica
+      url: ${embeddedMongoDbBindIp}:${embeddedMongoDbPort}
+      databaseName: mica-test
       username:
       password:
 

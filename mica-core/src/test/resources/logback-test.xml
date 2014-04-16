@@ -3,7 +3,7 @@
 <configuration scan="true">
 
   <logger name="org.obiba.mica" level="DEBUG"/>
-  <logger name="org.springframework" level="debug"/>
+  <logger name="org.springframework" level="info"/>
 
   <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>

@@ -2,6 +2,7 @@ package org.obiba.mica.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -21,7 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -29,10 +32,10 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
-import com.github.fakemongo.Fongo;
 import com.google.common.eventbus.EventBus;
 import com.google.common.io.Files;
 import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -50,7 +53,6 @@ public class StudyServiceTest {
 
   private static final Logger log = LoggerFactory.getLogger(StudyServiceTest.class);
 
-  private static final String DATABASE_NAME = "mica";
 
   @Inject
   private StudyService studyService;
@@ -62,7 +64,7 @@ public class StudyServiceTest {
   private EventBus eventBus;
 
   @Inject
-  private Fongo fongo;
+  private MongoTemplate mongoTemplate;
 
   @BeforeClass
   public static void init() {
@@ -71,7 +73,7 @@ public class StudyServiceTest {
 
   @Before
   public void clearDatabase() {
-    fongo.dropDatabase(DATABASE_NAME);
+    mongoTemplate.getDb().dropDatabase();
   }
 
   @Test
@@ -124,6 +126,30 @@ public class StudyServiceTest {
     assertThat(retrievedStudy).areFieldsEqualToEachOther(study);
   }
 
+  @Test
+  public void test_publish_current() throws Exception {
+
+    Study study = new Study();
+    study.setName(en("name en to update").forFr("name fr to update"));
+    studyService.save(study);
+
+    log.debug("all: {}", studyService.findAllStates());
+    log.debug("publish: {}", studyService.findPublishedStates());
+
+    assertThat(studyService.findAllStates()).hasSize(1);
+    assertThat(studyService.findPublishedStates()).isEmpty();
+
+    studyService.publish(study.getId());
+    List<StudyState> publishedStates = studyService.findPublishedStates();
+    assertThat(publishedStates).hasSize(1);
+    StudyState publishedState = publishedStates.get(0);
+    assertThat(publishedState.getId()).isEqualTo(study.getId());
+    assertThat(publishedState.getPublishedTag()).isEqualTo("1");
+
+    assertThat(studyService.findPublishedStudy(study.getId())).areFieldsEqualToEachOther(study);
+
+  }
+
   @Configuration
   @EnableMongoRepositories("org.obiba.mica.repository")
   static class Config extends AbstractMongoConfiguration {
@@ -134,8 +160,12 @@ public class StudyServiceTest {
       BASE_REPO.deleteOnExit();
     }
 
-    @Inject
-    private Fongo fongo;
+
+
+    @Bean
+    public PropertySourcesPlaceholderConfigurer placeHolderConfigurer() {
+      return new PropertySourcesPlaceholderConfigurer();
+    }
 
     @Bean
     public StudyService studyService() {
@@ -155,29 +185,25 @@ public class StudyServiceTest {
     }
 
     @Bean
-    public Fongo fongo() throws IOException {
-      return new Fongo("mica-test");
-    }
-
-    @Bean
     public EventBus eventBus() {
       return mock(EventBus.class);
     }
 
     @Override
     protected String getDatabaseName() {
-      return DATABASE_NAME;
+      return "mica-test";
     }
 
     @Override
-    public Mongo mongo() {
-      return fongo.getMongo();
+    public Mongo mongo() throws UnknownHostException {
+      return new MongoClient("localhost:27018");
     }
 
     @Override
     protected String getMappingBasePackage() {
       return "org.obiba.mica.domain";
     }
+
   }
 
 }
