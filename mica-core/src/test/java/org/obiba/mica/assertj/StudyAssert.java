@@ -3,22 +3,17 @@ package org.obiba.mica.assertj;
 import java.util.Iterator;
 
 import org.assertj.core.api.AbstractAssert;
-import org.assertj.core.internal.Failures;
-import org.assertj.core.util.VisibleForTesting;
 import org.obiba.mica.domain.Population;
 import org.obiba.mica.domain.Study;
 
 import com.google.common.collect.ObjectArrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.obiba.mica.assertj.AssertionUtils.areIterableItemFieldsEqualToEachOther;
+import static org.obiba.mica.assertj.AssertionUtils.areIterableFieldsEqualToEachOther;
 
 public class StudyAssert extends AbstractAssert<StudyAssert, Study> {
 
   private static final String[] DEFAULT_EXCLUDES = new String[] { "contacts", "investigators", "populations" };
-
-  @VisibleForTesting
-  Failures failures = Failures.instance();
 
   protected StudyAssert(Study actual) {
     super(actual, StudyAssert.class);
@@ -32,8 +27,8 @@ public class StudyAssert extends AbstractAssert<StudyAssert, Study> {
         : ObjectArrays.concat(DEFAULT_EXCLUDES, excludeFields, String.class);
 
     assertThat(actual).isEqualToIgnoringGivenFields(expected, excludes);
-    areIterableItemFieldsEqualToEachOther(actual.getContacts(), expected.getContacts());
-    areIterableItemFieldsEqualToEachOther(actual.getInvestigators(), expected.getInvestigators());
+    areIterableFieldsEqualToEachOther(actual.getContacts(), expected.getContacts());
+    areIterableFieldsEqualToEachOther(actual.getInvestigators(), expected.getInvestigators());
     arePopulationFieldsEqualToEachOther(actual.getPopulations(), expected.getPopulations());
     return myself;
   }
@@ -46,7 +41,7 @@ public class StudyAssert extends AbstractAssert<StudyAssert, Study> {
       Population actualPop = actualIt.next();
       Population expectedPop = expectedIt.next();
       assertThat(actualPop).isEqualToIgnoringGivenFields(expectedPop, "dataCollectionEvents");
-      areIterableItemFieldsEqualToEachOther(actualPop.getDataCollectionEvents(), expectedPop.getDataCollectionEvents());
+      areIterableFieldsEqualToEachOther(actualPop.getDataCollectionEvents(), expectedPop.getDataCollectionEvents());
     }
   }
 

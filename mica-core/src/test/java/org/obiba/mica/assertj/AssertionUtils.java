@@ -8,7 +8,7 @@ public class AssertionUtils {
 
   private AssertionUtils() {}
 
-  public static <T> void areIterableItemFieldsEqualToEachOther(Iterable<T> actualCollection,
+  public static <T> void areIterableFieldsEqualToEachOther(Iterable<T> actualCollection,
       Iterable<T> expectedCollection) {
 
     assertThat(actualCollection).hasSameSizeAs(expectedCollection);
