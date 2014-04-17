@@ -191,3 +191,10 @@ message AttachmentDto {
   optional int32 size = 5;
   optional string md5 = 6;
 }
+
+message MicaConfig {
+  required string name = 1 [default = "Mica"];
+  repeated string languages = 2;
+  required string defaultCharSet = 3 [default = "ISO-8859-1"];
+  optional string publicURL = 4;
+}

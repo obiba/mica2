@@ -47,7 +47,7 @@ public class MicaConfig extends AbstractAuditableDocument {
   }
 
   public List<Locale> getLocales() {
-    return locales;
+    return locales == null ? (locales = new ArrayList<>()) : locales;
   }
 
   public List<String> getLocalesAsString() {
