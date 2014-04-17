@@ -1,27 +1,17 @@
 package org.obiba.mica.domain;
 
-import java.io.Serializable;
-import java.util.Objects;
-
 import javax.validation.constraints.NotNull;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 
 @Document
-public class StudyState extends AbstractTimestampedDocument implements Serializable {
+public class StudyState extends AbstractAuditableDocument {
 
   private static final long serialVersionUID = -4271967393906681773L;
-
-  @Id
-  private String id;
-
-  @Version
-  private Long version;
 
   @Indexed
   private PublicationStatus publicationStatus = PublicationStatus.DRAFT;
@@ -31,22 +21,6 @@ public class StudyState extends AbstractTimestampedDocument implements Serializa
 
   @NotNull
   private LocalizedString name;
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public Long getVersion() {
-    return version;
-  }
-
-  public void setVersion(Long version) {
-    this.version = version;
-  }
 
   public String getPublishedTag() {
     return publishedTag;
@@ -77,22 +51,10 @@ public class StudyState extends AbstractTimestampedDocument implements Serializa
   }
 
   @Override
-  public int hashCode() {
-    return Objects.hash(id);
-  }
-
-  @Override
-  @SuppressWarnings("SimplifiableIfStatement")
-  public boolean equals(Object obj) {
-    if(this == obj) return true;
-    if(obj == null || getClass() != obj.getClass()) return false;
-    return Objects.equals(id, ((StudyState) obj).id);
-  }
-
-  @Override
-  public String toString() {
-    return com.google.common.base.Objects.toStringHelper(this).add("id", id).add("name", name)
-        .add("publicationStatus", publicationStatus).add("publishedTag", publishedTag).toString();
+  protected Objects.ToStringHelper toStringHelper() {
+    return super.toStringHelper().add("name", name) //
+        .add("publicationStatus", publicationStatus) //
+        .add("publishedTag", publishedTag);
   }
 
 }

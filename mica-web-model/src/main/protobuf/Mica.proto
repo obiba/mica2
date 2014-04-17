@@ -4,33 +4,38 @@ option java_package = "org.obiba.mica.web.model";
 
 message StudySummaryDto {
   required string id = 1;
-  repeated LocalizedStringDto name = 2;
-  optional TimestampsDto timestamps = 3;
+  optional TimestampsDto timestamps = 2;
+  repeated LocalizedStringDto name = 3;
+  repeated LocalizedStringDto designs = 4;
+  optional TargetNumberDto targetNumber = 5;
+  repeated CountryDto countries = 6;
+  repeated NetworkRelationDto networks = 7;
 }
 
 message StudyDto {
   required string id = 1;
-  repeated LocalizedStringDto name = 2;
-  repeated LocalizedStringDto acronym = 3;
-  repeated ContactDto investigators = 4;
-  repeated ContactDto contacts = 5;
-  repeated LocalizedStringDto objectives = 6;
-  optional string website = 7;
-  optional AuthorizationDto specificAuthorization = 8;
-  optional AuthorizationDto maelstromAuthorization = 9;
-  optional StudyMethodsDto methods = 10;
-  optional NumberOfParticipantsDto numberOfParticipants = 11;
-  optional int32 startYear = 12;
-  optional int32 endYear = 13;
-  repeated string access = 14;
-  repeated LocalizedStringDto otherAccess = 15;
-  optional string markerPaper = 16;
-  optional string pubmedId = 17;
-  repeated AttachmentDto attachments = 18;
-  repeated LocalizedStringDto infos = 19;
-  repeated PopulationDto populations = 20;
-  repeated NetworkRelationDto networks = 21;
-  optional TimestampsDto timestamps = 22;
+  optional TimestampsDto timestamps = 2;
+
+  repeated LocalizedStringDto name = 3;
+  repeated LocalizedStringDto acronym = 4;
+  repeated ContactDto investigators = 5;
+  repeated ContactDto contacts = 6;
+  repeated LocalizedStringDto objectives = 7;
+  optional string website = 8;
+  optional AuthorizationDto specificAuthorization = 9;
+  optional AuthorizationDto maelstromAuthorization = 10;
+  optional StudyMethodsDto methods = 11;
+  optional NumberOfParticipantsDto numberOfParticipants = 12;
+  optional int32 startYear = 13;
+  optional int32 endYear = 14;
+  repeated string access = 15;
+  repeated LocalizedStringDto otherAccess = 16;
+  optional string markerPaper = 17;
+  optional string pubmedId = 18;
+  repeated AttachmentDto attachments = 19;
+  repeated LocalizedStringDto infos = 20;
+  repeated PopulationDto populations = 21;
+  repeated NetworkRelationDto networks = 22;
 
   message StudyMethodsDto {
     repeated string designs = 1;
@@ -45,15 +50,6 @@ message StudyDto {
     optional TargetNumberDto participant = 1;
     optional TargetNumberDto sample = 2;
     repeated LocalizedStringDto infos = 3;
-    message TargetNumberDto {
-      optional bool noLimit = 1;
-      optional int32 number = 2;
-    }
-  }
-
-  message NetworkRelationDto {
-    optional string networkId = 1;
-    repeated LocalizedStringDto networkName = 2;
   }
 
   message PopulationDto {
@@ -109,19 +105,24 @@ message StudyDto {
   }
 }
 
+message NetworkRelationDto {
+  optional string networkId = 1;
+  repeated LocalizedStringDto networkName = 2;
+}
+
 message NetworkDto {
   required string id = 1;
-  repeated LocalizedStringDto name = 2;
-  repeated LocalizedStringDto acronym = 3;
-  repeated ContactDto investigators = 4;
-  repeated ContactDto contacts = 5;
-  repeated LocalizedStringDto description = 6;
-  optional string website = 7;
-  optional AuthorizationDto maelstromAuthorization = 8;
-  repeated AttachmentDto attachments = 9;
-  repeated LocalizedStringDto infos = 10;
-  repeated StudyRelationDto studies = 11;
-  optional TimestampsDto timestamps = 12;
+  optional TimestampsDto timestamps = 2;
+  repeated LocalizedStringDto name = 3;
+  repeated LocalizedStringDto acronym = 4;
+  repeated ContactDto investigators = 5;
+  repeated ContactDto contacts = 6;
+  repeated LocalizedStringDto description = 7;
+  optional string website = 8;
+  optional AuthorizationDto maelstromAuthorization = 9;
+  repeated AttachmentDto attachments = 10;
+  repeated LocalizedStringDto infos = 11;
+  repeated StudyRelationDto studies = 12;
 
   message StudyRelationDto {
     optional string studyId = 1;
@@ -132,6 +133,16 @@ message NetworkDto {
 message TimestampsDto {
   optional string created = 1;
   optional string lastUpdate = 2;
+}
+
+message CountryDto {
+  required string iso = 1;
+  repeated LocalizedStringDto name = 2;
+}
+
+message TargetNumberDto {
+  optional bool noLimit = 1;
+  optional int32 number = 2;
 }
 
 message LocalizedStringDto {
@@ -169,7 +180,7 @@ message AddressDto {
   repeated LocalizedStringDto city = 2;
   optional string zip = 3;
   optional string state = 4;
-  optional string countryIso = 5;
+  optional CountryDto country = 5;
 }
 
 message AttachmentDto {

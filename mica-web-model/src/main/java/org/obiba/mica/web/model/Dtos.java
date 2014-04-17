@@ -21,9 +21,15 @@ public class Dtos {
   @Inject
   private StudyService studyService;
 
+  @Inject
+  private StudyDtos studyDtos;
+
+  @Inject
+  private NetworkDtos networkDtos;
+
   @NotNull
   public StudyDto asDto(@NotNull Study study) {
-    return StudyDtos.asDto(study, studyService.findStateByStudy(study));
+    return studyDtos.asDto(study, studyService.findStateByStudy(study));
   }
 
   @NotNull
@@ -33,17 +39,17 @@ public class Dtos {
 
   @NotNull
   public Study fromDto(@NotNull StudyDtoOrBuilder dto) {
-    return StudyDtos.fromDto(dto);
+    return studyDtos.fromDto(dto);
   }
 
   @NotNull
   public NetworkDto asDto(@NotNull Network network) {
-    return NetworkDtos.asDto(network);
+    return networkDtos.asDto(network);
   }
 
   @NotNull
   public Network fromDto(@NotNull NetworkDtoOrBuilder dto) {
-    return NetworkDtos.fromDto(dto);
+    return networkDtos.fromDto(dto);
   }
 
 }

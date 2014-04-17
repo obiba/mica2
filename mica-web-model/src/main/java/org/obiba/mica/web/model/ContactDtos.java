@@ -1,16 +1,24 @@
 package org.obiba.mica.web.model;
 
+import java.util.Locale;
+
+import javax.inject.Inject;
+
 import org.obiba.mica.domain.Address;
 import org.obiba.mica.domain.Contact;
+import org.obiba.mica.service.MicaConfigService;
+import org.springframework.stereotype.Component;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.obiba.mica.web.model.LocalizedStringDtos.asDtos;
 
+@Component
 class ContactDtos {
 
-  private ContactDtos() {}
+  @Inject
+  private MicaConfigService micaConfigService;
 
-  static Mica.ContactDto asDto(Contact contact) {
+  Mica.ContactDto asDto(Contact contact) {
     Mica.ContactDto.Builder builder = Mica.ContactDto.newBuilder().setLastName(contact.getLastName());
     if(!isNullOrEmpty(contact.getTitle())) builder.setTitle(contact.getTitle());
     if(!isNullOrEmpty(contact.getFirstName())) builder.setFirstName(contact.getFirstName());
@@ -20,7 +28,7 @@ class ContactDtos {
     return builder.build();
   }
 
-  static Contact fromDto(Mica.ContactDtoOrBuilder dto) {
+  Contact fromDto(Mica.ContactDtoOrBuilder dto) {
     Contact contact = new Contact();
     if(dto.hasTitle()) contact.setTitle(dto.getTitle());
     if(dto.hasFirstName()) contact.setFirstName(dto.getFirstName());
@@ -31,7 +39,7 @@ class ContactDtos {
     return contact;
   }
 
-  private static Mica.ContactDto.InstitutionDto asDto(Contact.Institution institution) {
+  private Mica.ContactDto.InstitutionDto asDto(Contact.Institution institution) {
     Mica.ContactDto.InstitutionDto.Builder builder = Mica.ContactDto.InstitutionDto.newBuilder();
     if(institution.getName() != null) builder.addAllName(asDtos(institution.getName()));
     if(institution.getDepartment() != null) builder.addAllDepartment(asDtos(institution.getDepartment()));
@@ -39,7 +47,7 @@ class ContactDtos {
     return builder.build();
   }
 
-  private static Contact.Institution fromDto(Mica.ContactDto.InstitutionDtoOrBuilder dto) {
+  private Contact.Institution fromDto(Mica.ContactDto.InstitutionDtoOrBuilder dto) {
     Contact.Institution institution = new Contact.Institution();
     institution.setName(LocalizedStringDtos.fromDto(dto.getNameList()));
     institution.setDepartment(LocalizedStringDtos.fromDto(dto.getDepartmentList()));
@@ -47,24 +55,33 @@ class ContactDtos {
     return institution;
   }
 
-  private static Mica.AddressDto asDto(Address address) {
+  private Mica.AddressDto asDto(Address address) {
     Mica.AddressDto.Builder builder = Mica.AddressDto.newBuilder();
     if(address.getStreet() != null) builder.addAllStreet(asDtos(address.getStreet()));
     if(address.getCity() != null) builder.addAllCity(asDtos(address.getCity()));
     if(!isNullOrEmpty(address.getZip())) builder.setZip(address.getZip());
     if(!isNullOrEmpty(address.getState())) builder.setState(address.getState());
-    if(!isNullOrEmpty(address.getCountryIso())) builder.setCountryIso(address.getCountryIso());
+    if(!isNullOrEmpty(address.getCountryIso())) builder.setCountry(asDto(address.getCountryIso()));
     return builder.build();
   }
 
-  private static Address fromDto(Mica.AddressDtoOrBuilder dto) {
+  private Address fromDto(Mica.AddressDtoOrBuilder dto) {
     Address address = new Address();
     address.setStreet(LocalizedStringDtos.fromDto(dto.getStreetList()));
     address.setCity(LocalizedStringDtos.fromDto(dto.getCityList()));
     if(dto.hasZip()) address.setZip(dto.getZip());
     if(dto.hasState()) address.setState(dto.getState());
-    if(dto.hasCountryIso()) address.setCountryIso(dto.getCountryIso());
+    if(dto.hasCountry()) address.setCountryIso(dto.getCountry().getIso());
     return address;
+  }
+
+  private Mica.CountryDto asDto(String countryIso) {
+    Mica.CountryDto.Builder builder = Mica.CountryDto.newBuilder().setIso(countryIso);
+    micaConfigService.getConfig().getLocales().forEach(locale -> builder.addName(
+        Mica.LocalizedStringDto.newBuilder().setLang(locale.getLanguage())
+            .setValue(new Locale(countryIso).getDisplayCountry(locale))
+    ));
+    return builder.build();
   }
 
 }

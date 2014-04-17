@@ -66,9 +66,9 @@ public class StudyDtosTest {
   }
 
   private void assertTimestamps(Timestamped study, Mica.StudyDtoOrBuilder dto) {
-    assertThat(dto.getTimestamps().getCreated()).isEqualTo(study.getCreated().toString());
+    assertThat(dto.getTimestamps().getCreated()).isEqualTo(study.getCreatedDate().toString());
     assertThat(dto.getTimestamps().getLastUpdate())
-        .isEqualTo(study.getUpdated() == null ? "" : study.getUpdated().toString());
+        .isEqualTo(study.getLastModifiedDate() == null ? "" : study.getLastModifiedDate().toString());
   }
 
   private Study createStudy() {
