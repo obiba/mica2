@@ -22,7 +22,7 @@ public abstract class AbstractAuditableDocument implements Auditable<String, Str
   private String createdBy;
 
   @CreatedDate
-  private DateTime createdDate;
+  private DateTime createdDate = DateTime.now();
 
   private String lastModifiedBy;
 

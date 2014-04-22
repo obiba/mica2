@@ -192,7 +192,7 @@ message AttachmentDto {
   optional string md5 = 6;
 }
 
-message MicaConfig {
+message MicaConfigDto {
   required string name = 1 [default = "Mica"];
   repeated string languages = 2;
   required string defaultCharSet = 3 [default = "ISO-8859-1"];

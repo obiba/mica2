@@ -3,12 +3,15 @@ package org.obiba.mica.web.model;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.obiba.mica.domain.MicaConfig;
 import org.obiba.mica.domain.Network;
 import org.obiba.mica.domain.Study;
 import org.obiba.mica.domain.StudyState;
 import org.obiba.mica.service.StudyService;
 import org.springframework.stereotype.Component;
 
+import static org.obiba.mica.web.model.Mica.MicaConfigDto;
+import static org.obiba.mica.web.model.Mica.MicaConfigDtoOrBuilder;
 import static org.obiba.mica.web.model.Mica.NetworkDto;
 import static org.obiba.mica.web.model.Mica.NetworkDtoOrBuilder;
 import static org.obiba.mica.web.model.Mica.StudyDto;
@@ -23,6 +26,9 @@ public class Dtos {
 
   @Inject
   private StudyDtos studyDtos;
+
+  @Inject
+  private MicaConfigDtos micaConfigDtos;
 
   @Inject
   private NetworkDtos networkDtos;
@@ -50,6 +56,16 @@ public class Dtos {
   @NotNull
   public Network fromDto(@NotNull NetworkDtoOrBuilder dto) {
     return networkDtos.fromDto(dto);
+  }
+
+  @NotNull
+  public MicaConfigDto asDto(@NotNull MicaConfig micaConfig) {
+    return micaConfigDtos.asDto(micaConfig);
+  }
+
+  @NotNull
+  public MicaConfig fromDto(@NotNull MicaConfigDtoOrBuilder dto) {
+    return micaConfigDtos.fromDto(dto);
   }
 
 }

@@ -2,12 +2,13 @@ package org.obiba.mica.web.model;
 
 import java.util.Locale;
 
+import javax.inject.Inject;
+
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.Mockito;
+import org.obiba.git.command.GitCommandHandler;
 import org.obiba.mica.domain.Address;
 import org.obiba.mica.domain.Contact;
 import org.obiba.mica.domain.DataCollectionEvent;
@@ -16,21 +17,37 @@ import org.obiba.mica.domain.Population;
 import org.obiba.mica.domain.Study;
 import org.obiba.mica.domain.StudyState;
 import org.obiba.mica.domain.Timestamped;
+import org.obiba.mica.repository.MicaConfigRepository;
+import org.obiba.mica.repository.StudyStateRepository;
+import org.obiba.mica.service.GitService;
+import org.obiba.mica.service.MicaConfigService;
 import org.obiba.mica.service.StudyService;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+
+import com.google.common.eventbus.EventBus;
 
 import static org.mockito.Mockito.when;
 import static org.obiba.mica.assertj.Assertions.assertThat;
 import static org.obiba.mica.domain.LocalizedString.en;
 import static org.obiba.mica.domain.Study.StudyMethods;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
+@ContextConfiguration(classes = StudyDtosTest.Config.class)
+@DirtiesContext
 @SuppressWarnings({ "MagicNumber", "OverlyCoupledClass" })
 public class StudyDtosTest {
 
-  @Mock
+  @Inject
   private StudyService studyService;
 
-  @InjectMocks
+  @Inject
   private Dtos dtos;
 
   @Test
@@ -225,4 +242,68 @@ public class StudyDtosTest {
     return event;
   }
 
+  @Configuration
+  static class Config {
+
+    @Bean
+    public Dtos dtos() {
+      return new Dtos();
+    }
+
+    @Bean
+    public StudyDtos studyDtos() {
+      return new StudyDtos();
+    }
+
+    @Bean
+    public ContactDtos contactDtos() {
+      return new ContactDtos();
+    }
+
+    @Bean
+    public StudyService studyService() {
+      return Mockito.mock(StudyService.class);
+    }
+
+    @Bean
+    public MicaConfigService micaConfigService() {
+      return Mockito.mock(MicaConfigService.class);
+    }
+
+    @Bean
+    public EventBus eventBus() {
+      return Mockito.mock(EventBus.class);
+    }
+
+    @Bean
+    public MicaConfigRepository micaConfigRepository() {
+      return Mockito.mock(MicaConfigRepository.class);
+    }
+
+    @Bean
+    public GitService gitService() {
+      return Mockito.mock(GitService.class);
+    }
+
+    @Bean
+    public GitCommandHandler gitCommandHandler() {
+      return Mockito.mock(GitCommandHandler.class);
+    }
+
+    @Bean
+    public StudyStateRepository studyStateRepository() {
+      return Mockito.mock(StudyStateRepository.class);
+    }
+
+    @Bean
+    public MicaConfigDtos micaConfigDtos() {
+      return Mockito.mock(MicaConfigDtos.class);
+    }
+
+    @Bean
+    public NetworkDtos networkDtos() {
+      return Mockito.mock(NetworkDtos.class);
+    }
+
+  }
 }
