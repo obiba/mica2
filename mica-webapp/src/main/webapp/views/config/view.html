@@ -1,0 +1,76 @@
+<div>
+
+  <h2>General Configuration</h2>
+
+  <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#micaConfigModal">
+    <span class="glyphicon glyphicon-flash"></span> Edit
+  </button>
+
+  <div class="modal fade" id="micaConfigModal" tabindex="-1" role="dialog" aria-labelledby="micaConfigLabel"
+      aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form name="form" role="form" novalidate
+            class="ng-scope ng-invalid ng-invalid-required ng-dirty ng-valid-minlength" ng-submit="update()">
+
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"
+                ng-click="clear()">&times;</button>
+            <h4 class="modal-title" id="myStudyLabel">Edit General Configuration</h4>
+          </div>
+          <div class="modal-body">
+
+            <div class="form-group">
+              <label for="name" translate="config.name">Name</label>
+              <input type="text" class="form-control" name="name" id="name" ng-model="micaConfig.name">
+            </div>
+
+            <div class="form-group">
+              <label for="defaultCharacterSet" translate="config.defaultCharacterSet">Default Character Set</label>
+              <input type="text" class="form-control" name="defaultCharacterSet" id="defaultCharacterSet"
+                  ng-model="micaConfig.defaultCharacterSet">
+            </div>
+
+            <div class="form-group">
+              <label for="publicUrl" translate="config.publicUrl">Public URL</label>
+              <input type="text" class="form-control" name="publicUrl" id="publicUrl" ng-model="micaConfig.publicUrl">
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="clear()">
+              <span class="glyphicon glyphicon-ban-circle"></span> Cancel
+            </button>
+            <button type="submit" ng-disabled="form.$invalid" class="btn btn-primary">
+              <span class="glyphicon glyphicon-save"></span> Save
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <tbody>
+      <tr>
+        <td>Name</td>
+        <td>{{micaConfig.name}}</td>
+      </tr>
+      <tr>
+        <td>Default Character Set</td>
+        <td>{{micaConfig.defaultCharacterSet}}</td>
+      </tr>
+      <tr>
+        <td>Public URL</td>
+        <td>{{micaConfig.publicUrl}}</td>
+      </tr>
+      <tr>
+        <td>Languages</td>
+        <td>{{micaConfig.languages}}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
