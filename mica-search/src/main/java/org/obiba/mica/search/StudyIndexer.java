@@ -16,7 +16,7 @@ public class StudyIndexer {
   @Async
   @Subscribe
   public void studyUpdated(StudyUpdatedEvent event) {
-    log.info("Study {} was updated", event.getEntity());
+    log.info("Study {} was updated", event.getPersistable());
   }
 
 }

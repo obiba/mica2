@@ -8,11 +8,12 @@ import java.util.Objects;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.URL;
+import org.springframework.data.domain.Persistable;
 
 /**
  * A Study.
  */
-public class Study implements Entity {
+public class Study implements Persistable<String> {
 
   private static final long serialVersionUID = 6559914069652243954L;
 
@@ -59,8 +60,14 @@ public class Study implements Entity {
 
   private List<Population> populations;
 
+  @Override
   public String getId() {
     return id;
+  }
+
+  @Override
+  public boolean isNew() {
+    return id == null;
   }
 
   public void setId(String id) {

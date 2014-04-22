@@ -7,11 +7,12 @@ import java.util.Objects;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.URL;
+import org.springframework.data.domain.Persistable;
 
 /**
  * A Network.
  */
-public class Network implements Entity {
+public class Network implements Persistable<String> {
 
   private static final long serialVersionUID = -4271967393906681773L;
 
@@ -44,6 +45,11 @@ public class Network implements Entity {
   @Override
   public String getId() {
     return id;
+  }
+
+  @Override
+  public boolean isNew() {
+    return id == null;
   }
 
   public void setId(String id) {
