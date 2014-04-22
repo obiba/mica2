@@ -7,6 +7,8 @@ import javax.validation.constraints.NotNull;
 import org.obiba.mica.domain.MicaConfig;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Strings;
+
 @Component
 class MicaConfigDtos {
 
@@ -14,9 +16,11 @@ class MicaConfigDtos {
   Mica.MicaConfigDto asDto(@NotNull MicaConfig config) {
     Mica.MicaConfigDto.Builder builder = Mica.MicaConfigDto.newBuilder() //
         .setName(config.getName()) //
-        .setDefaultCharSet(config.getDefaultCharacterSet()) //
-        .setPublicURL(config.getPublicUrl());
+        .setDefaultCharSet(config.getDefaultCharacterSet());
     config.getLocales().forEach(locale -> builder.addLanguages(locale.getLanguage()));
+    if(!Strings.isNullOrEmpty(config.getPublicUrl())) {
+      builder.setPublicURL(config.getPublicUrl());
+    }
     return builder.build();
   }
 
@@ -25,7 +29,7 @@ class MicaConfigDtos {
     MicaConfig config = new MicaConfig();
     config.setName(dto.getName());
     config.setDefaultCharacterSet(dto.getDefaultCharSet());
-    config.setPublicUrl(dto.getPublicURL());
+    if(dto.hasPublicURL()) config.setPublicUrl(dto.getPublicURL());
     dto.getLanguagesList().forEach(lang -> config.getLocales().add(new Locale(lang)));
     return config;
   }

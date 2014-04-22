@@ -12,6 +12,17 @@ public class MicaConfigDtosTest {
   private final MicaConfigDtos dtos = new MicaConfigDtos();
 
   @Test
+  public void test_empty() {
+    MicaConfig config = new MicaConfig();
+
+    Mica.MicaConfigDto dto = dtos.asDto(config);
+    assertThat(dto).isNotNull();
+
+    MicaConfig fromDto = dtos.fromDto(dto);
+    assertThat(fromDto).isEqualToIgnoringGivenFields(config, "createdDate");
+  }
+
+  @Test
   public void test() {
     MicaConfig config = new MicaConfig();
     config.setName("Test");
@@ -26,5 +37,4 @@ public class MicaConfigDtosTest {
     MicaConfig fromDto = dtos.fromDto(dto);
     assertThat(fromDto).isEqualToIgnoringGivenFields(config, "createdDate");
   }
-
 }
