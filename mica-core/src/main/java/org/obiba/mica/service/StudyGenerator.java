@@ -38,8 +38,6 @@ public class StudyGenerator {
 
     Study study = createStudy();
 
-    //TODO test GridFS
-
     studyService.save(study);
 
     studyService.publish(study.getId());

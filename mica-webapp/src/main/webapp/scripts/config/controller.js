@@ -10,7 +10,7 @@ micaApp.controller('MicaConfigController', ['$scope', 'resolvedMicaConfig', 'Mic
         function () {
           $scope.micaConfig = MicaConfig.get();
           $('#micaConfigModal').modal('hide');
-          $scope.clear();
+          $scope.micaConfig = MicaConfig.get();
         });
     };
 

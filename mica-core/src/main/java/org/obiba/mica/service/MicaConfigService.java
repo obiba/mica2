@@ -1,6 +1,7 @@
 package org.obiba.mica.service;
 
 import javax.inject.Inject;
+import javax.validation.Valid;
 
 import org.obiba.mica.domain.MicaConfig;
 import org.obiba.mica.event.MicaConfigUpdatedEvent;
@@ -36,7 +37,7 @@ public class MicaConfigService {
     return cachedConfig;
   }
 
-  public void save(MicaConfig micaConfig) {
+  public void save(@Valid MicaConfig micaConfig) {
     MicaConfig savedConfig = getConfig();
     BeanUtils.copyProperties(micaConfig, savedConfig, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
         "lastModifiedDate");

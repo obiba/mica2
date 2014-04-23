@@ -193,8 +193,8 @@ message AttachmentDto {
 }
 
 message MicaConfigDto {
-  required string name = 1 [default = "Mica"];
+  required string name = 1;
   repeated string languages = 2;
-  required string defaultCharSet = 3 [default = "ISO-8859-1"];
+  required string defaultCharSet = 3;
   optional string publicUrl = 4;
 }

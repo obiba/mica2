@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import javax.validation.constraints.NotNull;
-
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -37,12 +35,11 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   private String publicUrl;
 
-  @NotNull
   public String getName() {
     return name;
   }
 
-  public void setName(@NotNull String name) {
+  public void setName(String name) {
     this.name = name;
   }
 

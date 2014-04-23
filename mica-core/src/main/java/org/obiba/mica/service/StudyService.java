@@ -3,6 +3,7 @@ package org.obiba.mica.service;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.domain.Study;
@@ -31,7 +32,7 @@ public class StudyService {
   @Inject
   private EventBus eventBus;
 
-  public void save(@NotNull Study study) {
+  public void save(@NotNull @Valid Study study) {
     StudyState studyState = findStudyState(study);
     gitService.save(studyState.getId(), study);
 
@@ -45,6 +46,7 @@ public class StudyService {
   private StudyState findStudyState(Study study) {
     if(study.getId() == null) {
       StudyState studyState = new StudyState();
+      studyState.setName(study.getName());
       studyStateRepository.save(studyState);
       study.setId(studyState.getId());
       return studyState;

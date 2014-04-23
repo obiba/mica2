@@ -7,10 +7,9 @@
   <logger name="com.ryantenney" level="warn"/>
   <logger name="com.zaxxer" level="warn"/>
   <logger name="net.sf.ehcache" level="warn"/>
-  <logger name="org.apache" level="warn"/>
-  <logger name="javax" level="warn"/>
+  <logger name="org.apache" level="info"/>
+  <logger name="javax" level="info"/>
   <logger name="org.apache.tomcat.util.descriptor.DigesterFactory" level="OFF"/>
-  <logger name="org.hibernate.validator" level="warn"/>
   <logger name="org.hibernate" level="warn"/>
   <logger name="org.hibernate.jpa.HibernatePersistenceProvider" level="OFF"/>
   <logger name="org.atmosphere" level="warn"/>
@@ -19,7 +18,9 @@
   <logger name="org.bson" level="warn"/>
   <logger name="liquibase" level="warn"/>
   <logger name="org.glassfish" level="info"/>
-  <logger name="org.apache.shiro" level="debug"/>
+  <logger name="com.fasterxml" level="info"/>
+  <logger name="com.google.protobuf" level="info"/>
+  <logger name="org.apache.shiro" level="info"/>
 
   <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
