@@ -196,5 +196,5 @@ message MicaConfigDto {
   required string name = 1 [default = "Mica"];
   repeated string languages = 2;
   required string defaultCharSet = 3 [default = "ISO-8859-1"];
-  optional string publicURL = 4;
+  optional string publicUrl = 4;
 }

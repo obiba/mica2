@@ -35,6 +35,9 @@ debug:
 	export MAVEN_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,address=8000,suspend=n && \
 	cd mica-webapp && ${mvn_exec} spring-boot:run
 
+grunt:
+	cd mica-webapp && grunt server
+
 clear-log:
 	rm -f mica-webapp/target/mica.log*
 

@@ -19,7 +19,7 @@ class MicaConfigDtos {
         .setDefaultCharSet(config.getDefaultCharacterSet());
     config.getLocales().forEach(locale -> builder.addLanguages(locale.getLanguage()));
     if(!Strings.isNullOrEmpty(config.getPublicUrl())) {
-      builder.setPublicURL(config.getPublicUrl());
+      builder.setPublicUrl(config.getPublicUrl());
     }
     return builder.build();
   }
@@ -29,7 +29,7 @@ class MicaConfigDtos {
     MicaConfig config = new MicaConfig();
     config.setName(dto.getName());
     config.setDefaultCharacterSet(dto.getDefaultCharSet());
-    if(dto.hasPublicURL()) config.setPublicUrl(dto.getPublicURL());
+    if(dto.hasPublicUrl()) config.setPublicUrl(dto.getPublicUrl());
     dto.getLanguagesList().forEach(lang -> config.getLocales().add(new Locale(lang)));
     return config;
   }
