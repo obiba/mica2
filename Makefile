@@ -41,6 +41,9 @@ grunt:
 clear-log:
 	rm -f mica-webapp/target/mica.log*
 
+drop-mongo:
+	mongo mica --eval "db.dropDatabase()"
+
 dependencies-tree:
 	mvn dependency:tree
 
