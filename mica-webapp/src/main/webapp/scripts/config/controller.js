@@ -19,7 +19,4 @@ micaApp.controller('MicaConfigController', ['$scope', 'resolvedMicaConfig', 'Mic
       $('#micaConfigModal').modal('show');
     };
 
-    $scope.clear = function () {
-      $scope.micaConfig = {name: "", defaultCharacterSet: "", publicUrl: "", locales: []};
-    };
   }]);
