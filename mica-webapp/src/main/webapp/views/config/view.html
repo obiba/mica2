@@ -36,13 +36,13 @@
 
             <div class="form-group">
               <label for="languages" translate="config.languages">Languages</label>
-              <!--<select chosen multiple id="languages" ng-model="micaConfig.languages"-->
-              <!--ng-options="code as name for (code, name) in availableLanguages" class="chosen-select">-->
-              <!--<option value=""></option>-->
-              <!--</select>              -->
-              <select multiple id="languages" ng-model="micaConfig.languages"
-                  ng-options="code as name for (code, name) in availableLanguages" class="form-control">
+              <select chosen multiple id="languages" ng-model="micaConfig.languages"
+                  ng-options="code as name for (code, name) in availableLanguages" class="chosen-select">
               </select>
+
+              <p class="help-block" translate="config.languages-help">
+                Supported languages for studies and networks description
+              </p>
             </div>
 
             <div class="form-group">
@@ -61,6 +61,7 @@
           </div>
 
         </form>
+
       </div>
     </div>
   </div>
