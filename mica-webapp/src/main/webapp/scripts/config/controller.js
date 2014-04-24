@@ -4,6 +4,7 @@ micaApp.controller('MicaConfigController', ['$scope', '$resource', 'resolvedMica
   function ($scope, $resource, resolvedMicaConfig, MicaConfig) {
 
     $scope.micaConfig = resolvedMicaConfig;
+    $scope.availableLanguages = $resource('ws/config/languages').get();
 
     $scope.save = function () {
       MicaConfig.save($scope.micaConfig,
@@ -16,7 +17,6 @@ micaApp.controller('MicaConfigController', ['$scope', '$resource', 'resolvedMica
 
     $scope.edit = function (id) {
       $scope.micaConfig = MicaConfig.get();
-      $scope.availableLanguages = $resource('ws/config/languages').get();
       $('#micaConfigModal').modal('show');
     };
 

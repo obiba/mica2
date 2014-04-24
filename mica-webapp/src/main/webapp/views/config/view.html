@@ -36,8 +36,12 @@
 
             <div class="form-group">
               <label for="languages" translate="config.languages">Languages</label>
-              <select id="languages" chosen multiple ng-model="micaConfig.languages"
-                  ng-options="code as name for (code, name) in availableLanguages" class="form-control" >
+              <!--<select chosen multiple id="languages" ng-model="micaConfig.languages"-->
+              <!--ng-options="code as name for (code, name) in availableLanguages" class="chosen-select">-->
+              <!--<option value=""></option>-->
+              <!--</select>              -->
+              <select multiple id="languages" ng-model="micaConfig.languages"
+                  ng-options="code as name for (code, name) in availableLanguages" class="form-control">
               </select>
             </div>
 
@@ -76,7 +80,7 @@
       <td>
         <ul class="list-inline">
           <li ng-repeat="lang in micaConfig.languages">
-            <span class="badge">{{lang}}</span>
+            <span class="badge">{{lang}}</span> {{availableLanguages[lang]}}
           </li>
         </ul>
       </td>
