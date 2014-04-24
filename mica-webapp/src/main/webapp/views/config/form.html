@@ -1,0 +1,59 @@
+<div class="modal-content">
+
+  <form name="form" role="form" novalidate
+      class="ng-scope ng-invalid ng-invalid-required ng-dirty ng-valid-minlength" ng-submit="save()">
+
+    <div class="modal-header">
+      <button type="button" class="close" aria-hidden="true" ng-click="cancel()">&times;</button>
+      <h4 class="modal-title" id="myStudyLabel" translate="config.title-edit">Edit General Configuration</h4>
+    </div>
+
+    <div class="modal-body">
+
+      <div class="form-group">
+        <label for="name" translate="config.name">Name</label>
+        <input type="text" class="form-control" id="name" ng-model="micaConfig.name">
+
+        <p class="help-block" translate="config.name-help">Name of your organization</p>
+      </div>
+
+      <div class="form-group">
+        <label for="publicUrl" translate="config.publicUrl">Public URL</label>
+        <input type="text" class="form-control" id="publicUrl" ng-model="micaConfig.publicUrl">
+
+        <p class="help-block" translate="config.publicUrl-help">
+          Public base URL of the server (not the web-interface one) that will be used when
+          sending notification emails on report generation
+        </p>
+      </div>
+
+      <div class="form-group">
+        <label for="languages" translate="config.languages">Languages</label>
+        <select chosen multiple id="languages" ng-model="micaConfig.languages"
+            ng-options="code as name for (code, name) in availableLanguages" class="chosen-select">
+        </select>
+
+        <p class="help-block" translate="config.languages-help">
+          Supported languages for studies and networks description
+        </p>
+      </div>
+
+      <div class="form-group">
+        <label for="defaultCharSet" translate="config.defaultCharSet">Default Character Set</label>
+        <input type="text" class="form-control" id="defaultCharSet" ng-model="micaConfig.defaultCharSet">
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default" ng-click="cancel()">
+        <span class="glyphicon glyphicon-ban-circle"></span> <span translate="cancel">Cancel</span>
+      </button>
+      <button type="submit" ng-disabled="form.$invalid" class="btn btn-primary">
+        <span class="glyphicon glyphicon-save"></span> <span translate="save">Save</span>
+      </button>
+    </div>
+
+  </form>
+
+</div>
+
