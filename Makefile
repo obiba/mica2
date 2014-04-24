@@ -9,15 +9,18 @@ help:
 	@echo "  all   : Clean & install all modules"
 	@echo "  core  : Install core module"
 	@echo "  rest  : Install rest module"
+	@echo
 	@echo "  run   : Run webapp module"
 	@echo "  debug : Debug webapp module on port 8000"
+	@echo "  grunt : Start grunt on port 9000"
+	@echo
+	@echo "  clear-log  : Delete mica.log from mica-webapp/target"
+	@echo "  drop-mongo : Drop MongoDB mica database"
 	@echo
 	@echo "  dependencies-tree   : Displays the dependency tree"
 	@echo "  dependencies-update : Check for new dependency updates"
 	@echo "  plugins-update      : Check for new plugin updates"
 	@echo
-
-
 
 all:
 	${mvn_exec} clean install
