@@ -107,6 +107,7 @@
     <commons-io.version>2.4</commons-io.version>
     <commons-lang.version>2.6</commons-lang.version>
     <ehcache-core.version>2.6.8</ehcache-core.version>
+    <embed-mongo.version>1.43</embed-mongo.version>
     <fongo.version>1.4.4</fongo.version>
     <guava.version>16.0.1</guava.version>
     <geronimo-javamail_1.4_mail.version>1.8.3</geronimo-javamail_1.4_mail.version>
@@ -119,6 +120,7 @@
     <joda-time-hibernate.version>1.3</joda-time-hibernate.version>
     <json-path.version>0.9.1</json-path.version>
     <jsr305.version>2.0.3</jsr305.version>
+    <lesscss.version>1.5.1-SNAPSHOT</lesscss.version>
     <liquibase-slf4j.version>1.2.1</liquibase-slf4j.version>
     <metrics-spring.version>3.0.0-RC4</metrics-spring.version>
     <mongeez.version>0.9.4</mongeez.version>
@@ -135,10 +137,10 @@
     <maven-dependency-plugin.version>2.1</maven-dependency-plugin.version>
     <maven-enforcer-plugin.version>1.3.1</maven-enforcer-plugin.version>
     <maven-findbugs-plugin.version>2.5.3</maven-findbugs-plugin.version>
+    <maven-lesscss-plugin.version>1.3.3</maven-lesscss-plugin.version>
     <maven-pmd-plugin.version>3.1</maven-pmd-plugin.version>
     <maven-sonar-plugin.version>2.2</maven-sonar-plugin.version>
 
-    <embed-mongo.version>1.43</embed-mongo.version>
   </properties>
 
   <repositories>

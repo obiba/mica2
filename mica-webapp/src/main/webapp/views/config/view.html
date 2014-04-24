@@ -37,7 +37,7 @@
             <div class="form-group">
               <label for="languages" translate="config.languages">Languages</label>
               <select id="languages" chosen multiple ng-model="micaConfig.languages"
-                  ng-options="code as name for (code, name) in availableLanguages">
+                  ng-options="code as name for (code, name) in availableLanguages" class="form-control" >
               </select>
             </div>
 
