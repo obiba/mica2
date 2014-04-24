@@ -32,10 +32,9 @@ micaApp.factory('ThreadDumpService', ['$http',
   function ($http) {
     return {
       dump: function () {
-        var promise = $http.get('dump').then(function (response) {
+        return $http.get('dump').then(function (response) {
           return response.data;
         });
-        return promise;
       }
     };
   }]);
@@ -44,10 +43,9 @@ micaApp.factory('HealthCheckService', ['$rootScope', '$http',
   function ($rootScope, $http) {
     return {
       check: function () {
-        var promise = $http.get('health').then(function (response) {
+        return $http.get('health').then(function (response) {
           return response.data;
         });
-        return promise;
       }
     };
   }]);
@@ -64,16 +62,14 @@ micaApp.factory('AuditsService', ['$http',
   function ($http) {
     return {
       findAll: function () {
-        var promise = $http.get('ws/audits/all').then(function (response) {
+        return $http.get('ws/audits/all').then(function (response) {
           return response.data;
         });
-        return promise;
       },
       findByDates: function (fromDate, toDate) {
-        var promise = $http.get('ws/audits/byDates', {params: {fromDate: fromDate, toDate: toDate}}).then(function (response) {
+        return $http.get('ws/audits/byDates', {params: {fromDate: fromDate, toDate: toDate}}).then(function (response) {
           return response.data;
         });
-        return promise;
       }
     }
   }]);

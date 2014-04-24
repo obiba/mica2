@@ -5,6 +5,11 @@ micaApp.factory('MicaConfig', ['$resource',
     return $resource('ws/config', {}, {
       // override $resource.save method because it uses POST
       'save': {method: 'PUT'},
-      'get': { method: 'GET'}
+      'get': {method: 'GET'}
     });
+  }]);
+
+micaApp.factory('MicaConfigLanguages', ['$resource',
+  function ($resource) {
+    return $resource('ws/config/languages');
   }]);

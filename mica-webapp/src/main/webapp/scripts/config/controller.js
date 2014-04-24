@@ -1,7 +1,7 @@
 'use strict';
 
-micaApp.controller('MicaConfigController', ['$scope', 'resolvedMicaConfig', 'MicaConfig',
-  function ($scope, resolvedMicaConfig, MicaConfig) {
+micaApp.controller('MicaConfigController', ['$scope', 'resolvedMicaConfig', 'MicaConfig', 'MicaConfigLanguages',
+  function ($scope, resolvedMicaConfig, MicaConfig, MicaConfigLanguages) {
 
     $scope.micaConfig = resolvedMicaConfig;
 
@@ -16,6 +16,7 @@ micaApp.controller('MicaConfigController', ['$scope', 'resolvedMicaConfig', 'Mic
 
     $scope.edit = function (id) {
       $scope.micaConfig = MicaConfig.get();
+      $scope.availableLanguages = MicaConfigLanguages.get();
       $('#micaConfigModal').modal('show');
     };
 
