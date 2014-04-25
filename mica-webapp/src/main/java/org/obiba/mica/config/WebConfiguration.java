@@ -93,8 +93,8 @@ public class WebConfiguration implements ServletContextInitializer {
     compressingFilter.addMappingForUrlPatterns(disps, true, "*.json");
     compressingFilter.addMappingForUrlPatterns(disps, true, "*.html");
     compressingFilter.addMappingForUrlPatterns(disps, true, "*.js");
-    compressingFilter.addMappingForUrlPatterns(disps, true, WS_ROOT + "/*");
     compressingFilter.addMappingForUrlPatterns(disps, true, "/metrics/*");
+    // don't compress WS_ROOT/* or Jersey ExceptionMapper won't work
     compressingFilter.setAsyncSupported(true);
   }
 
