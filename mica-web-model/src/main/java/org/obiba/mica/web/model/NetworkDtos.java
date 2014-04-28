@@ -24,10 +24,10 @@ class NetworkDtos {
     Mica.NetworkDto.Builder builder = Mica.NetworkDto.newBuilder();
     builder.setId(network.getId()) //
         .setTimestamps(TimestampsDtos.asDto((Timestamped) network)) //
-        .addAllName(LocalizedStringDtos.asDtos(network.getName())) //
-        .addAllDescription(LocalizedStringDtos.asDtos(network.getDescription()));
+        .addAllName(LocalizedStringDtos.asDto(network.getName())) //
+        .addAllDescription(LocalizedStringDtos.asDto(network.getDescription()));
 
-    if(network.getAcronym() != null) builder.addAllAcronym(LocalizedStringDtos.asDtos(network.getAcronym()));
+    if(network.getAcronym() != null) builder.addAllAcronym(LocalizedStringDtos.asDto(network.getAcronym()));
     if(network.getInvestigators() != null) {
       builder.addAllInvestigators(
           network.getInvestigators().stream().map(contactDtos::asDto).collect(Collectors.<ContactDto>toList()));

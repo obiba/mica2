@@ -10,7 +10,7 @@ public class NumberOfParticipants implements Serializable {
 
   private TargetNumber sample;
 
-  private LocalizedString infos;
+  private LocalizedString info;
 
   public TargetNumber getParticipant() {
     return participant;
@@ -28,12 +28,12 @@ public class NumberOfParticipants implements Serializable {
     this.sample = sample;
   }
 
-  public LocalizedString getInfos() {
-    return infos;
+  public LocalizedString getInfo() {
+    return info;
   }
 
-  public void setInfos(LocalizedString infos) {
-    this.infos = infos;
+  public void setInfo(LocalizedString info) {
+    this.info = info;
   }
 
   public static class TargetNumber implements Serializable {

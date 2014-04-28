@@ -10,7 +10,6 @@ import org.obiba.mica.service.MicaConfigService;
 import org.springframework.stereotype.Component;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
-import static org.obiba.mica.web.model.LocalizedStringDtos.asDtos;
 
 @Component
 class ContactDtos {
@@ -41,8 +40,9 @@ class ContactDtos {
 
   private Mica.ContactDto.InstitutionDto asDto(Contact.Institution institution) {
     Mica.ContactDto.InstitutionDto.Builder builder = Mica.ContactDto.InstitutionDto.newBuilder();
-    if(institution.getName() != null) builder.addAllName(asDtos(institution.getName()));
-    if(institution.getDepartment() != null) builder.addAllDepartment(asDtos(institution.getDepartment()));
+    if(institution.getName() != null) builder.addAllName(LocalizedStringDtos.asDto(institution.getName()));
+    if(institution.getDepartment() != null)
+      builder.addAllDepartment(LocalizedStringDtos.asDto(institution.getDepartment()));
     if(institution.getAddress() != null) builder.setAddress(asDto(institution.getAddress()));
     return builder.build();
   }
@@ -57,8 +57,8 @@ class ContactDtos {
 
   private Mica.AddressDto asDto(Address address) {
     Mica.AddressDto.Builder builder = Mica.AddressDto.newBuilder();
-    if(address.getStreet() != null) builder.addAllStreet(asDtos(address.getStreet()));
-    if(address.getCity() != null) builder.addAllCity(asDtos(address.getCity()));
+    if(address.getStreet() != null) builder.addAllStreet(LocalizedStringDtos.asDto(address.getStreet()));
+    if(address.getCity() != null) builder.addAllCity(LocalizedStringDtos.asDto(address.getCity()));
     if(!isNullOrEmpty(address.getZip())) builder.setZip(address.getZip());
     if(!isNullOrEmpty(address.getState())) builder.setState(address.getState());
     if(!isNullOrEmpty(address.getCountryIso())) builder.setCountry(asDto(address.getCountryIso()));
