@@ -1,6 +1,18 @@
 'use strict';
 
 angular.module('micaApp')
+
+  .directive('nullIfEmpty', [function () {
+    return {
+      require: 'ngModel',
+      link: function (scope, elm, attr, ctrl) {
+        ctrl.$parsers.unshift(function (value) {
+          return value === '' ? null : value;
+        });
+      }
+    };
+  }])
+
   .directive('activeMenu', ['$translate', '$locale', 'tmhDynamicLocale', function ($translate, $locale, tmhDynamicLocale) {
     return {
       restrict: 'A',
@@ -20,6 +32,7 @@ angular.module('micaApp')
       }
     };
   }])
+
   .directive('activeLink', ['$location', function (location) {
     return {
       restrict: 'A',
@@ -37,7 +50,9 @@ angular.module('micaApp')
         });
       }
     };
-  }]).directive('passwordStrengthBar', function () {
+  }])
+
+  .directive('passwordStrengthBar', function () {
     return {
       replace: true,
       restrict: 'E',
@@ -113,4 +128,30 @@ angular.module('micaApp')
         });
       }
     }
-  });
+  })
+
+  .directive('nullIfEmpty', [function () {
+    return {
+      require: 'ngModel',
+      link: function (scope, elm, attr, ctrl) {
+        ctrl.$parsers.unshift(function (value) {
+          return value === '' ? null : value;
+        });
+      }
+    };
+  }])
+
+  // http://codetunes.com/2013/server-form-validation-with-angular/
+  .directive('serverError', [function () {
+    return {
+      restrict: 'A',
+      require: '?ngModel',
+      link: function (scope, element, attrs, ctrl) {
+        return element.on('change', function () {
+          return scope.$apply(function () {
+            return ctrl.$setValidity('server', true);
+          });
+        });
+      }
+    };
+  }]);
