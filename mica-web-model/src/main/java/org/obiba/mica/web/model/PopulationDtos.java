@@ -18,13 +18,16 @@ class PopulationDtos {
     PopulationDto.Builder builder = PopulationDto.newBuilder();
     builder.setId(population.getId());
     if(population.getName() != null) builder.addAllName(LocalizedStringDtos.asDto(population.getName()));
-    if(population.getDescription() != null)
+    if(population.getDescription() != null) {
       builder.addAllDescription(LocalizedStringDtos.asDto(population.getDescription()));
+    }
     if(population.getRecruitment() != null) builder.setRecruitment(asDto(population.getRecruitment()));
-    if(population.getSelectionCriteria() != null)
+    if(population.getSelectionCriteria() != null) {
       builder.setSelectionCriteria(asDto(population.getSelectionCriteria()));
-    if(population.getNumberOfParticipants() != null)
+    }
+    if(population.getNumberOfParticipants() != null) {
       builder.setNumberOfParticipants(NumberOfParticipantsDtos.asDto(population.getNumberOfParticipants()));
+    }
     population.getDataCollectionEvents().stream().forEach(dce -> builder.addDataCollectionEvents(asDto(dce)));
 
     return builder.build();
@@ -38,9 +41,9 @@ class PopulationDtos {
     if(dto.getDescriptionCount() > 0) population.setDescription(LocalizedStringDtos.fromDto(dto.getDescriptionList()));
     if(dto.hasRecruitment()) population.setRecruitment(fromDto(dto.getRecruitment()));
     if(dto.hasSelectionCriteria()) population.setSelectionCriteria(fromDto(dto.getSelectionCriteria()));
-    if(dto.hasNumberOfParticipants())
+    if(dto.hasNumberOfParticipants()) {
       population.setNumberOfParticipants(NumberOfParticipantsDtos.fromDto(dto.getNumberOfParticipants()));
-
+    }
     if(dto.getDataCollectionEventsCount() > 0) {
       dto.getDataCollectionEventsList().stream()
           .forEach(dceDto -> population.getDataCollectionEvents().add(fromDto(dceDto)));
@@ -55,17 +58,19 @@ class PopulationDtos {
     builder.setAgeMin(selectionCriteria.getAgeMin());
     builder.setAgeMax(selectionCriteria.getAgeMax());
     selectionCriteria.getCountriesIso().stream().forEach(country -> builder.addCountriesIso(country));
-    if(selectionCriteria.getTerritory() != null)
+    if(selectionCriteria.getTerritory() != null) {
       builder.addAllTerritory(LocalizedStringDtos.asDto(selectionCriteria.getTerritory()));
-
+    }
     selectionCriteria.getCriteria().stream().forEach(criteria -> builder.addCriteria(criteria));
-
-    if(selectionCriteria.getEthnicOrigin().size() > 0)
+    if(selectionCriteria.getEthnicOrigin().size() > 0) {
       builder.addAllEthnicOrigin(LocalizedStringDtos.asDtoList(selectionCriteria.getEthnicOrigin()));
-    if(selectionCriteria.getHealthStatus().size() > 0)
+    }
+    if(selectionCriteria.getHealthStatus().size() > 0) {
       builder.addAllHealthStatus(LocalizedStringDtos.asDtoList(selectionCriteria.getHealthStatus()));
-    if(selectionCriteria.getOtherCriteria() != null)
+    }
+    if(selectionCriteria.getOtherCriteria() != null) {
       builder.addAllOtherCriteria(LocalizedStringDtos.asDto(selectionCriteria.getOtherCriteria()));
+    }
     if(selectionCriteria.getInfo() != null) builder.addAllInfo(LocalizedStringDtos.asDto(selectionCriteria.getInfo()));
     return builder.build();
   }

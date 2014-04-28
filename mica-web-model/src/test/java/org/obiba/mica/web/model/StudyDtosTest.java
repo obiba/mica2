@@ -70,7 +70,7 @@ public class StudyDtosTest {
 
     when(studyService.findStateByStudy(study)).thenReturn(studyState);
     when(micaConfigService.getConfig()).thenReturn(Mockito.mock(MicaConfig.class));
-    when(micaConfigService.getConfig().getLocales()).thenReturn(Arrays.asList(Locale.ENGLISH, Locale.FRANCE));
+    when(micaConfigService.getConfig().getLocales()).thenReturn(Arrays.asList(Locale.ENGLISH, Locale.FRENCH));
 
     Mica.StudyDto dto = dtos.asDto(study);
     Study fromDto = dtos.fromDto(dto);
@@ -85,7 +85,7 @@ public class StudyDtosTest {
     studyState.setId(study.getId());
     when(studyService.findStateByStudy(study)).thenReturn(studyState);
     when(micaConfigService.getConfig()).thenReturn(Mockito.mock(MicaConfig.class));
-    when(micaConfigService.getConfig().getLocales()).thenReturn(Arrays.asList(Locale.ENGLISH, Locale.FRANCE));
+    when(micaConfigService.getConfig().getLocales()).thenReturn(Arrays.asList(Locale.ENGLISH, Locale.FRENCH));
 
     Mica.StudyDto dto = dtos.asDto(study);
     Study fromDto = dtos.fromDto(dto);

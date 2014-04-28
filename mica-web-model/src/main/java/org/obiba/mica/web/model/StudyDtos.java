@@ -50,8 +50,9 @@ class StudyDtos {
     if(study.getMaelstromAuthorization() != null)
       builder.setMaelstromAuthorization(AuthorizationDtos.asDto(study.getMaelstromAuthorization()));
     if (study.getMethods() != null) builder.setMethods(asDto(study.getMethods()));
-    if(study.getNumberOfParticipants() != null)
+    if(study.getNumberOfParticipants() != null) {
       builder.setNumberOfParticipants(NumberOfParticipantsDtos.asDto(study.getNumberOfParticipants()));
+    }
     if (study.getAttachments().size() > 0) {
       builder.addAllAttachments(
           study.getAttachments().stream().map(AttachmentDtos::asDto).collect(Collectors.<Mica.AttachmentDto>toList()));
@@ -79,13 +80,16 @@ class StudyDtos {
     study.setContacts(dto.getContactsList().stream().map(contactDtos::fromDto).collect(Collectors.<Contact>toList()));
     if (dto.getObjectivesCount() > 0) study.setObjectives(LocalizedStringDtos.fromDto(dto.getObjectivesList()));
     if(dto.hasWebsite()) study.setWebsite(dto.getWebsite());
-    if(dto.hasSpecificAuthorization())
+    if(dto.hasSpecificAuthorization()) {
       study.setSpecificAuthorization(AuthorizationDtos.fromDto(dto.getSpecificAuthorization()));
-    if(dto.hasMaelstromAuthorization())
+    }
+    if(dto.hasMaelstromAuthorization()) {
       study.setMaelstromAuthorization(AuthorizationDtos.fromDto(dto.getMaelstromAuthorization()));
+    }
     if (dto.hasMethods()) study.setMethods(fromDto(dto.getMethods()));
-    if(dto.hasNumberOfParticipants())
+    if(dto.hasNumberOfParticipants()) {
       study.setNumberOfParticipants(NumberOfParticipantsDtos.fromDto(dto.getNumberOfParticipants()));
+    }
     study.setAttachments(
         dto.getAttachmentsList().stream().map(AttachmentDtos::fromDto).collect(Collectors.<Attachment>toList()));
     study.setPopulations(
@@ -99,15 +103,19 @@ class StudyDtos {
   private Mica.StudyDto.StudyMethodsDto asDto(@NotNull Study.StudyMethods studyMethods) {
     Mica.StudyDto.StudyMethodsDto.Builder builder = Mica.StudyDto.StudyMethodsDto.newBuilder();
     studyMethods.getDesigns().forEach(design -> builder.addDesigns(design));
-    if(studyMethods.getOtherDesign() != null)
+    if(studyMethods.getOtherDesign() != null) {
       builder.addAllOtherDesign(LocalizedStringDtos.asDto(studyMethods.getOtherDesign()));
-    if(studyMethods.getFollowUpInfo() != null)
+    }
+    if(studyMethods.getFollowUpInfo() != null) {
       builder.addAllFollowUpInfo(LocalizedStringDtos.asDto(studyMethods.getFollowUpInfo()));
+    }
     studyMethods.getRecruitments().forEach(recruitment -> builder.addRecruitments(recruitment));
-    if(studyMethods.getOtherRecruitment() != null)
+    if(studyMethods.getOtherRecruitment() != null) {
       builder.addAllOtherRecruitment(LocalizedStringDtos.asDto(studyMethods.getOtherRecruitment()));
-    if(studyMethods.getInfo() != null)
+    }
+    if(studyMethods.getInfo() != null) {
       builder.addAllInfo(LocalizedStringDtos.asDto(studyMethods.getInfo()));
+    }
     return builder.build();
   }
 
@@ -118,14 +126,18 @@ class StudyDtos {
     if(dto.getOtherDesignCount() > 0){
       studyMethods.setOtherDesign(LocalizedStringDtos.fromDto(dto.getOtherDesignList()));
     }
-    if(dto.getFollowUpInfoCount() > 0)
+    if(dto.getFollowUpInfoCount() > 0) {
       studyMethods.setFollowUpInfo(LocalizedStringDtos.fromDto(dto.getFollowUpInfoList()));
-    if(dto.getRecruitmentsCount() > 0)
+    }
+    if(dto.getRecruitmentsCount() > 0) {
       studyMethods.setRecruitments(dto.getRecruitmentsList());
-    if(dto.getOtherRecruitmentCount() > 0)
+    }
+    if(dto.getOtherRecruitmentCount() > 0) {
       studyMethods.setOtherRecruitment(LocalizedStringDtos.fromDto(dto.getOtherRecruitmentList()));
-    if(dto.getInfoCount() > 0)
+    }
+    if(dto.getInfoCount() > 0) {
       studyMethods.setInfo(LocalizedStringDtos.fromDto(dto.getInfoList()));
+    }
 
     return studyMethods;
   }

@@ -13,12 +13,15 @@ class NumberOfParticipantsDtos {
   @NotNull
   static NumberOfParticipantsDto asDto(@NotNull NumberOfParticipants numberOfParticipants) {
     NumberOfParticipantsDto.Builder builder = NumberOfParticipantsDto.newBuilder();
-    if(numberOfParticipants.getParticipant() != null)
+    if(numberOfParticipants.getParticipant() != null) {
       builder.setParticipant(TargetNumberDtos.asDto(numberOfParticipants.getParticipant()));
-    if(numberOfParticipants.getSample() != null)
+    }
+    if(numberOfParticipants.getSample() != null) {
       builder.setSample(TargetNumberDtos.asDto(numberOfParticipants.getSample()));
-    if(numberOfParticipants.getInfo() != null)
+    }
+    if(numberOfParticipants.getInfo() != null) {
       builder.addAllInfo(LocalizedStringDtos.asDto(numberOfParticipants.getInfo()));
+    }
     return builder.build();
   }
 

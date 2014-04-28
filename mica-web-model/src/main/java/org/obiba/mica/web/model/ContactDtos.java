@@ -41,8 +41,9 @@ class ContactDtos {
   private Mica.ContactDto.InstitutionDto asDto(Contact.Institution institution) {
     Mica.ContactDto.InstitutionDto.Builder builder = Mica.ContactDto.InstitutionDto.newBuilder();
     if(institution.getName() != null) builder.addAllName(LocalizedStringDtos.asDto(institution.getName()));
-    if(institution.getDepartment() != null)
+    if(institution.getDepartment() != null){
       builder.addAllDepartment(LocalizedStringDtos.asDto(institution.getDepartment()));
+    }
     if(institution.getAddress() != null) builder.setAddress(asDto(institution.getAddress()));
     return builder.build();
   }
