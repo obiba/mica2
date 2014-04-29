@@ -1,6 +1,6 @@
 package org.obiba.mica.domain;
 
-public enum PublicationStatus {
+public enum RevisionStatus {
 
   DRAFT, NEEDS_REVIEW
 

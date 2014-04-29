@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.eventbus.EventBus;
 
-import static org.obiba.mica.domain.PublicationStatus.DRAFT;
+import static org.obiba.mica.domain.RevisionStatus.DRAFT;
 
 @Service
 public class StudyService {

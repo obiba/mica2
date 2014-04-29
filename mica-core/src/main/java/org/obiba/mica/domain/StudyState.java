@@ -14,7 +14,7 @@ public class StudyState extends AbstractAuditableDocument {
   private static final long serialVersionUID = -4271967393906681773L;
 
   @Indexed
-  private PublicationStatus publicationStatus = PublicationStatus.DRAFT;
+  private RevisionStatus publicationStatus = RevisionStatus.DRAFT;
 
   @Indexed
   private String publishedTag;
@@ -42,11 +42,11 @@ public class StudyState extends AbstractAuditableDocument {
     this.name = name;
   }
 
-  public PublicationStatus getPublicationStatus() {
+  public RevisionStatus getPublicationStatus() {
     return publicationStatus;
   }
 
-  public void setPublicationStatus(PublicationStatus publicationStatus) {
+  public void setPublicationStatus(RevisionStatus publicationStatus) {
     this.publicationStatus = publicationStatus;
   }
 
