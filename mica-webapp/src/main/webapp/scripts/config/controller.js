@@ -11,8 +11,6 @@ micaApp.controller('MicaConfigController', ['$scope', '$resource', '$log', 'reso
 
     function ($scope, $resource, $location, $log, resolvedMicaConfig, MicaConfig) {
 
-      $log.debug('edit $scope:', $scope);
-
       $scope.micaConfig = resolvedMicaConfig;
       $scope.availableLanguages = $resource('ws/config/languages').get();
 
@@ -22,8 +20,6 @@ micaApp.controller('MicaConfigController', ['$scope', '$resource', '$log', 'reso
             $location.path('/config').replace();
           },
           function (response) {
-
-//            $log.debug('begin save $scope:', $scope);
 //            $log.debug('response:', response);
 
 //        [{
@@ -35,15 +31,12 @@ micaApp.controller('MicaConfigController', ['$scope', '$resource', '$log', 'reso
 
             $scope.errors = [];
             response.data.forEach(function (error) {
-              $log.debug('error: ', error);
+              //$log.debug('error: ', error);
               var field = error.path.substring(error.path.indexOf('.') + 1);
-//              $log.debug('field: ', field);
+              $scope.form[field].$dirty = true;
               $scope.form[field].$setValidity('server', false);
               $scope.errors[field] = error.message;
             });
-
-            $log.debug('end save $scope:', $scope);
-
           });
       };
 
