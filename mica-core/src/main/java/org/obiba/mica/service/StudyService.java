@@ -102,7 +102,7 @@ public class StudyService {
    */
   public StudyState publish(@NotNull String id) throws NoSuchStudyException {
     StudyState studyState = findStateById(id);
-    studyState.setPublicationStatus(DRAFT);
+    studyState.setRevisionStatus(DRAFT);
     studyState.setPublishedTag(gitService.tag(id));
     studyStateRepository.save(studyState);
     return studyState;
