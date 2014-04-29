@@ -1,9 +1,10 @@
 'use strict';
 
-micaApp.factory('Study', ['$resource',
+micaApp.factory('StudiesResource', ['$resource',
   function ($resource) {
-    return $resource('ws/studies/:id', {}, {
-      'query': { method: 'GET', isArray: true},
-      'get': { method: 'GET'}
-    });
-  }]);
+    return $resource('ws/draft/studies');
+  }])
+  .factory('StudyResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/draft/study/:id');
+    }]);

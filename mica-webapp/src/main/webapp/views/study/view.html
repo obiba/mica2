@@ -1,0 +1,24 @@
+<div>
+
+  <h2 translate="study.details">Study details</h2>
+
+  <table class="table table-striped">
+    <tbody>
+    <tr>
+      <td translate="study.name">Name</td>
+      <td>
+        <ul class="list-unstyled">
+          <li ng-repeat="name in study.name">
+            <span class="badge">{{name.lang}}</span> {{name.value}}
+          </li>
+        </ul>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <a ng-href="#/study/{{study.id}}/edit" class="btn btn-primary btn-lg">
+    <i class="fa fa-pencil-square-o"></i> <span translate="edit">Edit</span>
+  </a>
+
+</div>

@@ -6,11 +6,14 @@ micaApp
       $routeProvider
         .when('/study', {
           templateUrl: 'views/study/studies.html',
-          controller: 'StudyController',
-          resolve: {
-            resolvedStudy: ['Study', function (Study) {
-              return Study.query();
-            }]
-          }
+          controller: 'StudyListController'
+        })
+        .when('/study/:id', {
+          templateUrl: 'views/study/view.html',
+          controller: 'StudyViewController'
+        })
+        .when('/study/:id/edit', {
+          templateUrl: 'views/study/study-form.html',
+          controller: 'StudyEditController'
         })
     }]);

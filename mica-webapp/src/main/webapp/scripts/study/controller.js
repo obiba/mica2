@@ -1,32 +1,31 @@
 'use strict';
 
-micaApp.controller('StudyController', ['$scope', 'resolvedStudy', 'Study',
-  function ($scope, resolvedStudy, Study) {
+micaApp.controller('StudyListController', ['$scope', 'StudiesResource', 'StudyResource',
 
-    $scope.studies = resolvedStudy;
+  function ($scope, StudiesResource, StudyResource) {
 
-    $scope.create = function () {
-      Study.save($scope.study,
+    $scope.studies = StudiesResource.query();
+
+    $scope.deleteStudy = function (id) {
+      StudyResource.delete({id: id},
         function () {
-          $scope.studies = Study.query();
-          $('#saveStudyModal').modal('hide');
-          $scope.clear();
+          $scope.studies = StudiesResource.query();
         });
     };
 
-    $scope.update = function (id) {
-      $scope.study = Study.get({id: id});
-      $('#saveStudyModal').modal('show');
-    };
+  }])
+  .controller('StudyViewController', ['$scope', '$routeParams', 'StudyResource',
 
-    $scope.delete = function (id) {
-      Study.delete({id: id},
-        function () {
-          $scope.studies = Study.query();
-        });
-    };
+    function ($scope, $routeParams, StudyResource) {
 
-    $scope.clear = function () {
-      $scope.study = {id: "", sampleTextAttribute: "", sampleDateAttribute: ""};
-    };
-  }]);
+      $scope.study = StudyResource.get({id: $routeParams.id});
+
+    }])
+
+  .controller('StudyEditController', ['$scope', '$routeParams', 'StudyResource',
+
+    function ($scope, $routeParams, StudyResource) {
+
+      $scope.study = StudyResource.get({id: $routeParams.id});
+
+    }]);
