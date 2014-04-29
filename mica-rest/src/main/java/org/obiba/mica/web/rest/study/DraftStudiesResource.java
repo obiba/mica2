@@ -5,9 +5,14 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
+import org.obiba.mica.domain.Study;
 import org.obiba.mica.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -32,6 +37,14 @@ public class DraftStudiesResource {
   @Timed
   public List<Mica.StudySummaryDto> list() {
     return studyService.findAllStates().stream().map(dtos::asDto).collect(Collectors.toList());
+  }
+
+  @POST
+  @Timed
+  public Response create(@SuppressWarnings("TypeMayBeWeakened") Mica.StudyDto studyDto, @Context UriInfo uriInfo) {
+    Study study = dtos.fromDto(studyDto);
+    studyService.save(study);
+    return Response.created(uriInfo.getBaseUriBuilder().path(DraftStudyResource.class).build(study.getId())).build();
   }
 
   @Path("/study/{id}")
