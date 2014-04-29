@@ -148,6 +148,7 @@ angular.module('micaApp')
       require: '?ngModel',
       link: function (scope, element, attrs, ctrl) {
         return element.on('change', function () {
+          console.log('serverError element change', element);
           return scope.$apply(function () {
             console.log('serverError scope', scope);
             console.log('serverError ctrl', ctrl);
