@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.eventbus.EventBus;
 
-import static org.obiba.mica.domain.PublicationStatus.DRAFT;
+import static org.obiba.mica.domain.RevisionStatus.DRAFT;
 
 @Service
 public class StudyService {
@@ -102,7 +102,7 @@ public class StudyService {
    */
   public StudyState publish(@NotNull String id) throws NoSuchStudyException {
     StudyState studyState = findStateById(id);
-    studyState.setPublicationStatus(DRAFT);
+    studyState.setRevisionStatus(DRAFT);
     studyState.setPublishedTag(gitService.tag(id));
     studyStateRepository.save(studyState);
     return studyState;
