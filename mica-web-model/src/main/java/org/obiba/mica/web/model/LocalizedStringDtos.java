@@ -33,7 +33,7 @@ class LocalizedStringDtos {
   @NotNull
   static List<Mica.LocalizedStringDtos> asDtoList(@NotNull Collection<LocalizedString> localizedStrings) {
     List<Mica.LocalizedStringDtos> dtos = new ArrayList<>();
-    localizedStrings.stream().forEach(localizedString -> dtos.add(
+    localizedStrings.forEach(localizedString -> dtos.add(
         Mica.LocalizedStringDtos.newBuilder().addAllLocalizedStrings(asDto(localizedString))
             .build()));
 
@@ -43,7 +43,7 @@ class LocalizedStringDtos {
   @NotNull
   static List<LocalizedString> fromDtoList(@NotNull Collection<Mica.LocalizedStringDtos> dtos) {
     List<LocalizedString> localizedStrings = new ArrayList<>();
-    dtos.stream().forEach( t -> localizedStrings.add(fromDto(t.getLocalizedStringsList())));
+    dtos.forEach( t -> localizedStrings.add(fromDto(t.getLocalizedStringsList())));
     return localizedStrings;
   }
 }

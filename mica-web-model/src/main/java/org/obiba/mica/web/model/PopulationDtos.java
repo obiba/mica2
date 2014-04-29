@@ -28,7 +28,7 @@ class PopulationDtos {
     if(population.getNumberOfParticipants() != null) {
       builder.setNumberOfParticipants(NumberOfParticipantsDtos.asDto(population.getNumberOfParticipants()));
     }
-    population.getDataCollectionEvents().stream().forEach(dce -> builder.addDataCollectionEvents(asDto(dce)));
+    population.getDataCollectionEvents().forEach(dce -> builder.addDataCollectionEvents(asDto(dce)));
 
     return builder.build();
   }
@@ -45,7 +45,7 @@ class PopulationDtos {
       population.setNumberOfParticipants(NumberOfParticipantsDtos.fromDto(dto.getNumberOfParticipants()));
     }
     if(dto.getDataCollectionEventsCount() > 0) {
-      dto.getDataCollectionEventsList().stream()
+      dto.getDataCollectionEventsList()
           .forEach(dceDto -> population.getDataCollectionEvents().add(fromDto(dceDto)));
     }
     return population;
@@ -57,11 +57,11 @@ class PopulationDtos {
     builder.setGender(PopulationDto.SelectionCriteriaDto.Gender.valueOf(selectionCriteria.getGender().ordinal()));
     builder.setAgeMin(selectionCriteria.getAgeMin());
     builder.setAgeMax(selectionCriteria.getAgeMax());
-    selectionCriteria.getCountriesIso().stream().forEach(country -> builder.addCountriesIso(country));
+    selectionCriteria.getCountriesIso().forEach(country -> builder.addCountriesIso(country));
     if(selectionCriteria.getTerritory() != null) {
       builder.addAllTerritory(LocalizedStringDtos.asDto(selectionCriteria.getTerritory()));
     }
-    selectionCriteria.getCriteria().stream().forEach(criteria -> builder.addCriteria(criteria));
+    selectionCriteria.getCriteria().forEach(criteria -> builder.addCriteria(criteria));
     if(selectionCriteria.getEthnicOrigin().size() > 0) {
       builder.addAllEthnicOrigin(LocalizedStringDtos.asDtoList(selectionCriteria.getEthnicOrigin()));
     }
@@ -138,15 +138,15 @@ class PopulationDtos {
     if(dce.getStartMonth() != null) builder.setStartMonth(dce.getStartMonth());
     if(dce.getEndYear() != null) builder.setEndYear(dce.getEndYear());
     if(dce.getEndMonth() != null) builder.setEndMonth(dce.getEndMonth());
-    dce.getDataSources().stream().forEach(ds -> builder.addDataSources(ds));
-    dce.getAdministrativeDatabases().stream().forEach(adminDb -> builder.addAdministrativeDatabases(adminDb));
+    dce.getDataSources().forEach(ds -> builder.addDataSources(ds));
+    dce.getAdministrativeDatabases().forEach(adminDb -> builder.addAdministrativeDatabases(adminDb));
     if(dce.getOtherDataSources() != null)
       builder.addAllOtherDataSources(LocalizedStringDtos.asDto(dce.getOtherDataSources()));
-    dce.getBioSamples().stream().forEach(sample -> builder.addBioSamples(sample));
+    dce.getBioSamples().forEach(sample -> builder.addBioSamples(sample));
     if(dce.getTissueTypes() != null) builder.addAllTissueTypes(LocalizedStringDtos.asDto(dce.getTissueTypes()));
     if(dce.getOtherBioSamples() != null)
       builder.addAllOtherBioSamples(LocalizedStringDtos.asDto(dce.getOtherBioSamples()));
-    dce.getAttachments().stream().forEach(attachment -> builder.addAttachments(AttachmentDtos.asDto(attachment)));
+    dce.getAttachments().forEach(attachment -> builder.addAttachments(AttachmentDtos.asDto(attachment)));
     return builder.build();
   }
 

@@ -30,7 +30,7 @@ class StudyDtos {
         .addAllObjectives(LocalizedStringDtos.asDto(study.getObjectives()));
 
     if (study.getStartYear() != null) builder.setStartYear(study.getStartYear());
-    study.getAccess().stream().forEach(access -> builder.addAccess(access));
+    study.getAccess().forEach(access -> builder.addAccess(access));
     if (study.getOtherAccess() != null) builder.addAllOtherAccess(LocalizedStringDtos.asDto(study.getOtherAccess()));
     if (study.getMarkerPaper() != null) builder.setMarkerPaper(study.getMarkerPaper());
     if (study.getPubmedId() != null) builder.setPubmedId(study.getPubmedId());
@@ -58,7 +58,7 @@ class StudyDtos {
           study.getAttachments().stream().map(AttachmentDtos::asDto).collect(Collectors.<Mica.AttachmentDto>toList()));
     }
 
-    study.getPopulations().stream().forEach(population -> builder.addPopulations(PopulationDtos.asDto(population)));
+    study.getPopulations().forEach(population -> builder.addPopulations(PopulationDtos.asDto(population)));
     //TODO continue
 
     return builder.build();
