@@ -13,4 +13,13 @@ micaApp
             }]
           }
         })
+        .when('/config/edit', {
+          templateUrl: 'views/config/form.html',
+          controller: 'MicaConfigEditController',
+          resolve: {
+            resolvedMicaConfig: ['MicaConfig', function (MicaConfig) {
+              return MicaConfig.get();
+            }]
+          }
+        })
     }]);
