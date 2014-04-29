@@ -74,7 +74,12 @@ public class Network implements Persistable<String> {
 
   @NotNull
   public List<Contact> getInvestigators() {
-    return investigators == null ? (investigators = new ArrayList<>()) : investigators;
+    return investigators;
+  }
+
+  public void addInvestigator(@NotNull Contact investigator) {
+    if (investigators == null) investigators = new ArrayList<>();
+    investigators.add(investigator);
   }
 
   public void setInvestigators(List<Contact> investigators) {
@@ -83,7 +88,12 @@ public class Network implements Persistable<String> {
 
   @NotNull
   public List<Contact> getContacts() {
-    return contacts == null ? (contacts = new ArrayList<>()) : contacts;
+    return contacts;
+  }
+
+  public void addContact(@NotNull Contact contact) {
+    if (contacts == null) contacts = new ArrayList<>();
+    contacts.add(contact);
   }
 
   public void setContacts(List<Contact> contacts) {
@@ -106,9 +116,13 @@ public class Network implements Persistable<String> {
     this.website = website;
   }
 
-  @NotNull
   public List<Attachment> getAttachments() {
-    return attachments == null ? (attachments = new ArrayList<>()) : attachments;
+    return attachments;
+  }
+
+  public void addAttachment(@NotNull Attachment attachment) {
+    if (attachments == null) attachments = new ArrayList<>();
+    attachments.add(attachment);
   }
 
   public void setAttachments(List<Attachment> attachments) {
@@ -123,9 +137,13 @@ public class Network implements Persistable<String> {
     this.infos = infos;
   }
 
-  @NotNull
   public List<String> getStudyIds() {
-    return studyIds == null ? (studyIds = new ArrayList<>()) : studyIds;
+    return studyIds;
+  }
+
+  public void addStudyId(@NotNull String studyId) {
+    if (studyIds == null) studyIds = new ArrayList<>();
+    studyIds.add(studyId);
   }
 
   public void setStudyIds(List<String> studyIds) {
@@ -134,7 +152,12 @@ public class Network implements Persistable<String> {
 
   @NotNull
   public List<Study> getStudies() {
-    return studies == null ? (studies = new ArrayList<>()) : studies;
+    return studies;
+  }
+
+  public void addStudy(@NotNull Study study) {
+    if (studies == null) studies = new ArrayList<>();
+    studies.add(study);
   }
 
   public void setStudies(List<Study> studies) {

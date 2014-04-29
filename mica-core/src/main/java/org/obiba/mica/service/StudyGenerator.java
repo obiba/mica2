@@ -43,7 +43,7 @@ public class StudyGenerator {
     studyService.publish(study.getId());
 
 //    Network network = createNetwork();
-//    network.getStudies().add(study);
+//    network.addStudy(study);
 //    networkRepository.save(network);
 //
 //    studyRepository.findAll().forEach(s -> log.info(">> {}", s));
@@ -63,20 +63,20 @@ public class StudyGenerator {
     study.setWebsite("http://www.clsa-elcv.ca");
 
     Contact contact = createContact();
-    study.getContacts().add(contact);
-    study.getInvestigators().add(contact);
+    study.addContact(contact);
+    study.addInvestigator(contact);
 
     study.setStartYear(2002);
     study.setEndYear(2050);
 
     study.setMethods(new StudyMethods());
-    study.getMethods().getDesigns().add("case_control");
-    study.getMethods().getDesigns().add("clinical_trial");
-    study.getMethods().getDesigns().add("other");
+    study.getMethods().addDesign("case_control");
+    study.getMethods().addDesign("clinical_trial");
+    study.getMethods().addDesign("other");
     study.getMethods().setOtherDesign(en("Cross-sectional prevalence study"));
 
-    study.getMethods().getRecruitments().add("individuals");
-    study.getMethods().getRecruitments().add("other");
+    study.getMethods().addRecruitment("individuals");
+    study.getMethods().addRecruitment("other");
     study.getMethods().setOtherRecruitment(en("Specific individuals"));
     study.getMethods().setFollowUpInfo(en("General Information on Follow Up (profile and frequency)"));
     study.getMethods().setInfo(en("Supplementary information about study design"));
@@ -87,16 +87,16 @@ public class StudyGenerator {
     study.getNumberOfParticipants().setSample(new TargetNumber());
     study.getNumberOfParticipants().getSample().setNumber(30_000);
 
-    study.getAccess().add("data");
-    study.getAccess().add("bio_samples");
-    study.getAccess().add("other");
+    study.addAccess("data");
+    study.addAccess("bio_samples");
+    study.addAccess("other");
     study.setOtherAccess(en("Other access"));
 
     study.setMarkerPaper(
         "Raina PS, Wolfson C, Kirkland SA, Griffith LE, Oremus M, Patterson C, Tuokko H, Penning M, Balion CM, Hogan D, Wister A, Payette H, Shannon H, and Brazil K, The Canadian longitudinal study on aging (CLSA). Can J Aging, 2009. 28(3): p. 221-9.");
     study.setPubmedId("PUBMED 19860977");
 
-    study.getPopulations().add(createPopulation());
+    study.addPopulation(createPopulation());
     return study;
   }
 
@@ -127,7 +127,7 @@ public class StudyGenerator {
     population.getSelectionCriteria().setAgeMin(45);
     population.getSelectionCriteria().setAgeMax(85);
     population.getSelectionCriteria().setGender(Gender.women);
-    population.getSelectionCriteria().getCountriesIso().add(Locale.CANADA.getISO3Country());
+    population.getSelectionCriteria().addCountryIso(Locale.CANADA.getISO3Country());
     population.getSelectionCriteria()
         .setOtherCriteria(en("<p>Language: Individuals who are able to respond in either French or English.</p>\n" +
             "<p>Exclusion criteria: The CLSA uses the same exclusion criteria as the Statistics Canada Canadian Community Health Survey – Healthy Aging. Excluded from the study are:</p>\n" +
@@ -139,22 +139,22 @@ public class StudyGenerator {
             "</ul>"));
 
     population.setRecruitment(new Population.Recruitment());
-    population.getRecruitment().getDataSources().add("questionnaires");
-    population.getRecruitment().getDataSources().add("administratives_databases");
-    population.getRecruitment().getDataSources().add("others");
+    population.getRecruitment().addDataSource("questionnaires");
+    population.getRecruitment().addDataSource("administratives_databases");
+    population.getRecruitment().addDataSource("others");
     population.getRecruitment().setOtherSource(en("Other source of recruitment"));
 
-    population.getRecruitment().getGeneralPopulationSources().add("selected_samples");
+    population.getRecruitment().addGeneralPopulationSource("selected_samples");
 
-    population.getRecruitment().getSpecificPopulationSources().add("clinic_patients");
-    population.getRecruitment().getSpecificPopulationSources().add("other");
+    population.getRecruitment().addSpecificPopulationSource("clinic_patients");
+    population.getRecruitment().addSpecificPopulationSource("other");
     population.getRecruitment().setOtherSpecificPopulationSource(en("Other specific population"));
 
-    population.getRecruitment().getStudies().add(en("Canadian Community Health Survey (CCHS) – Healthy Aging"));
-    population.getRecruitment().getStudies().add(en("CARTaGENE"));
+    population.getRecruitment().addStudy(en("Canadian Community Health Survey (CCHS) – Healthy Aging"));
+    population.getRecruitment().addStudy(en("CARTaGENE"));
 
-    population.getDataCollectionEvents().add(createEvent1());
-    population.getDataCollectionEvents().add(createEvent2());
+    population.addDataCollectionEvent(createEvent1());
+    population.addDataCollectionEvent(createEvent2());
 
     return population;
   }
@@ -165,12 +165,12 @@ public class StudyGenerator {
     event.setDescription(en("Baseline data collection"));
     event.setStartYear(2010);
     event.setEndYear(2015);
-    event.getDataSources().add("questionnaires");
-    event.getDataSources().add("physical_measures");
-    event.getDataSources().add("biological_samples");
-    event.getBioSamples().add("BioSamples.blood");
-    event.getBioSamples().add("BioSamples.urine");
-    event.getBioSamples().add("BioSamples.others");
+    event.addDataSource("questionnaires");
+    event.addDataSource("physical_measures");
+    event.addDataSource("biological_samples");
+    event.addBioSample("BioSamples.blood");
+    event.addBioSample("BioSamples.urine");
+    event.addBioSample("BioSamples.others");
     event.setOtherBioSamples(en("Other biological sample"));
     return event;
   }
@@ -181,10 +181,10 @@ public class StudyGenerator {
     event.setDescription(en("First follow-up from baseline data collection"));
     event.setStartYear(2014);
     event.setEndYear(2018);
-    event.getDataSources().add("questionnaires");
-    event.getDataSources().add("physical_measures");
-    event.getDataSources().add("administratives_databases");
-    event.getDataSources().add("others");
+    event.addDataSource("questionnaires");
+    event.addDataSource("physical_measures");
+    event.addDataSource("administratives_databases");
+    event.addDataSource("others");
     event.setOtherDataSources(en("Other data sources"));
     return event;
   }
