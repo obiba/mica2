@@ -92,7 +92,12 @@ public class Study implements Persistable<String> {
 
   @NotNull
   public List<Contact> getInvestigators() {
-    return investigators == null ? (investigators = new ArrayList<>()) : investigators;
+    return investigators;
+  }
+
+  public void addInvestigator(@NotNull Contact investigator) {
+    if (investigators == null) investigators = new ArrayList<>();
+    investigators.add(investigator);
   }
 
   public void setInvestigators(List<Contact> investigators) {
@@ -101,7 +106,12 @@ public class Study implements Persistable<String> {
 
   @NotNull
   public List<Contact> getContacts() {
-    return contacts == null ? (contacts = new ArrayList<>()) : contacts;
+    return contacts;
+  }
+
+  public void addContact(@NotNull Contact aContact) {
+    if (contacts == null) contacts = new ArrayList<>();
+    contacts.add(aContact);
   }
 
   public void setContacts(List<Contact> contacts) {
@@ -173,7 +183,12 @@ public class Study implements Persistable<String> {
   }
 
   public List<String> getAccess() {
-    return access == null ? (access = new ArrayList<>()) : access;
+    return access;
+  }
+
+  public void addAccess(@NotNull String anAccess) {
+    if (access == null) access = new ArrayList<>();
+    access.add(anAccess);
   }
 
   public void setAccess(List<String> access) {
@@ -205,7 +220,12 @@ public class Study implements Persistable<String> {
   }
 
   public List<Attachment> getAttachments() {
-    return attachments == null ? (attachments = new ArrayList<>()) : attachments;
+    return attachments;
+  }
+
+  public void addAttachment(@NotNull Attachment anAttachment) {
+    if (attachments == null) attachments = new ArrayList<>();
+    attachments.add(anAttachment);
   }
 
   public void setAttachments(List<Attachment> attachments) {
@@ -221,7 +241,12 @@ public class Study implements Persistable<String> {
   }
 
   public List<Population> getPopulations() {
-    return populations == null ? (populations = new ArrayList<>()) : populations;
+    return populations;
+  }
+
+  public void addPopulation(@NotNull Population population) {
+    if (populations == null) populations = new ArrayList<>();
+    populations.add(population);
   }
 
   public void setPopulations(List<Population> populations) {
@@ -263,7 +288,12 @@ public class Study implements Persistable<String> {
     private LocalizedString info;
 
     public List<String> getDesigns() {
-      return designs == null ? (designs = new ArrayList<>()) : designs;
+      return designs;
+    }
+
+    public void addDesign(@NotNull String design) {
+      if (designs == null) designs = new ArrayList<>();
+      designs.add(design);
     }
 
     public void setDesigns(List<String> designs) {
@@ -287,7 +317,12 @@ public class Study implements Persistable<String> {
     }
 
     public List<String> getRecruitments() {
-      return recruitments == null ? (recruitments = new ArrayList<>()) : recruitments;
+      return recruitments;
+    }
+
+    public void addRecruitment(@NotNull String recruitment) {
+      if (recruitments == null) recruitments = new ArrayList<>();
+      recruitments.add(recruitment);
     }
 
     public void setRecruitments(List<String> recruitments) {

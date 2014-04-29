@@ -1,4 +1,4 @@
-skipTests=true
+skipTests=false
 mvn_exec=mvn -Dmaven.test.skip=${skipTests}
 
 help:

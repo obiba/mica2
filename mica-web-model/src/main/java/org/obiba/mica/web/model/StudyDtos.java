@@ -30,36 +30,41 @@ class StudyDtos {
         .addAllObjectives(LocalizedStringDtos.asDto(study.getObjectives()));
 
     if (study.getStartYear() != null) builder.setStartYear(study.getStartYear());
-    study.getAccess().forEach(access -> builder.addAccess(access));
+    if (study.getAccess() != null) {
+      study.getAccess().forEach(access -> builder.addAccess(access));
+    }
     if (study.getOtherAccess() != null) builder.addAllOtherAccess(LocalizedStringDtos.asDto(study.getOtherAccess()));
     if (study.getMarkerPaper() != null) builder.setMarkerPaper(study.getMarkerPaper());
     if (study.getPubmedId() != null) builder.setPubmedId(study.getPubmedId());
 
     if(study.getAcronym() != null) builder.addAllAcronym(LocalizedStringDtos.asDto(study.getAcronym()));
-    if(study.getInvestigators().size() > 0) {
+    if(study.getInvestigators() != null) {
       builder.addAllInvestigators(
           study.getInvestigators().stream().map(contactDtos::asDto).collect(Collectors.<ContactDto>toList()));
     }
-    if(study.getContacts().size() > 0) {
+    if(study.getContacts() != null) {
       builder.addAllContacts(
           study.getContacts().stream().map(contactDtos::asDto).collect(Collectors.<ContactDto>toList()));
     }
     if(!isNullOrEmpty(study.getWebsite())) builder.setWebsite(study.getWebsite());
-    if(study.getSpecificAuthorization() != null)
+    if(study.getSpecificAuthorization() != null) {
       builder.setSpecificAuthorization(AuthorizationDtos.asDto(study.getSpecificAuthorization()));
-    if(study.getMaelstromAuthorization() != null)
+    }
+    if(study.getMaelstromAuthorization() != null) {
       builder.setMaelstromAuthorization(AuthorizationDtos.asDto(study.getMaelstromAuthorization()));
+    }
     if (study.getMethods() != null) builder.setMethods(asDto(study.getMethods()));
     if(study.getNumberOfParticipants() != null) {
       builder.setNumberOfParticipants(NumberOfParticipantsDtos.asDto(study.getNumberOfParticipants()));
     }
-    if (study.getAttachments().size() > 0) {
+    if (study.getAttachments() != null) {
       builder.addAllAttachments(
           study.getAttachments().stream().map(AttachmentDtos::asDto).collect(Collectors.<Mica.AttachmentDto>toList()));
     }
 
-    study.getPopulations().forEach(population -> builder.addPopulations(PopulationDtos.asDto(population)));
-    //TODO continue
+    if (study.getPopulations() != null) {
+      study.getPopulations().forEach(population -> builder.addPopulations(PopulationDtos.asDto(population)));
+    }
 
     return builder.build();
   }
@@ -75,9 +80,13 @@ class StudyDtos {
     if (dto.hasPubmedId()) study.setPubmedId(dto.getPubmedId());
     if (dto.getNameCount() > 0) study.setName(LocalizedStringDtos.fromDto(dto.getNameList()));
     if (dto.getAcronymCount() > 0) study.setAcronym(LocalizedStringDtos.fromDto(dto.getAcronymList()));
-    study.setInvestigators(
-        dto.getInvestigatorsList().stream().map(contactDtos::fromDto).collect(Collectors.<Contact>toList()));
-    study.setContacts(dto.getContactsList().stream().map(contactDtos::fromDto).collect(Collectors.<Contact>toList()));
+    if (dto.getInvestigatorsCount() > 0) {
+      study.setInvestigators(
+          dto.getInvestigatorsList().stream().map(contactDtos::fromDto).collect(Collectors.<Contact>toList()));
+    }
+    if (dto.getContactsCount() > 0) {
+      study.setContacts(dto.getContactsList().stream().map(contactDtos::fromDto).collect(Collectors.<Contact>toList()));
+    }
     if (dto.getObjectivesCount() > 0) study.setObjectives(LocalizedStringDtos.fromDto(dto.getObjectivesList()));
     if(dto.hasWebsite()) study.setWebsite(dto.getWebsite());
     if(dto.hasSpecificAuthorization()) {
@@ -90,11 +99,14 @@ class StudyDtos {
     if(dto.hasNumberOfParticipants()) {
       study.setNumberOfParticipants(NumberOfParticipantsDtos.fromDto(dto.getNumberOfParticipants()));
     }
-    study.setAttachments(
-        dto.getAttachmentsList().stream().map(AttachmentDtos::fromDto).collect(Collectors.<Attachment>toList()));
-    study.setPopulations(
-        dto.getPopulationsList().stream().map(PopulationDtos::fromDto).collect(Collectors.<Population>toList()));
-    //TODO continue
+    if(dto.getAttachmentsCount() > 0) {
+      study.setAttachments(
+          dto.getAttachmentsList().stream().map(AttachmentDtos::fromDto).collect(Collectors.<Attachment>toList()));
+    }
+    if(dto.getPopulationsCount() > 0) {
+      study.setPopulations(
+          dto.getPopulationsList().stream().map(PopulationDtos::fromDto).collect(Collectors.<Population>toList()));
+    }
 
     return study;
   }
@@ -102,14 +114,16 @@ class StudyDtos {
   @NotNull
   private Mica.StudyDto.StudyMethodsDto asDto(@NotNull Study.StudyMethods studyMethods) {
     Mica.StudyDto.StudyMethodsDto.Builder builder = Mica.StudyDto.StudyMethodsDto.newBuilder();
-    studyMethods.getDesigns().forEach(design -> builder.addDesigns(design));
+    if (studyMethods.getDesigns() != null) studyMethods.getDesigns().forEach(design -> builder.addDesigns(design));
     if(studyMethods.getOtherDesign() != null) {
       builder.addAllOtherDesign(LocalizedStringDtos.asDto(studyMethods.getOtherDesign()));
     }
     if(studyMethods.getFollowUpInfo() != null) {
       builder.addAllFollowUpInfo(LocalizedStringDtos.asDto(studyMethods.getFollowUpInfo()));
     }
-    studyMethods.getRecruitments().forEach(recruitment -> builder.addRecruitments(recruitment));
+    if(studyMethods.getRecruitments() != null) {
+      studyMethods.getRecruitments().forEach(recruitment -> builder.addRecruitments(recruitment));
+    }
     if(studyMethods.getOtherRecruitment() != null) {
       builder.addAllOtherRecruitment(LocalizedStringDtos.asDto(studyMethods.getOtherRecruitment()));
     }

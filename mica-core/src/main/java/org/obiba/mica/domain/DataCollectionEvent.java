@@ -106,7 +106,12 @@ public class DataCollectionEvent implements Serializable {
   }
 
   public List<String> getDataSources() {
-    return dataSources == null ? (dataSources = new ArrayList<>()) : dataSources;
+    return dataSources;
+  }
+
+  public void addDataSource(@NotNull String datasource) {
+    if (dataSources == null) dataSources = new ArrayList<>();
+    dataSources.add(datasource);
   }
 
   public void setDataSources(List<String> dataSources) {
@@ -114,7 +119,12 @@ public class DataCollectionEvent implements Serializable {
   }
 
   public List<String> getAdministrativeDatabases() {
-    return administrativeDatabases == null ? (administrativeDatabases = new ArrayList<>()) : administrativeDatabases;
+    return administrativeDatabases;
+  }
+
+  public void addAdministrativeDatabases(@NotNull String database) {
+    if (administrativeDatabases == null) administrativeDatabases = new ArrayList<>();
+    administrativeDatabases.add(database);
   }
 
   public void setAdministrativeDatabases(List<String> administrativeDatabases) {
@@ -130,7 +140,12 @@ public class DataCollectionEvent implements Serializable {
   }
 
   public List<String> getBioSamples() {
-    return bioSamples == null ? (bioSamples = new ArrayList<>()) : bioSamples;
+    return bioSamples;
+  }
+
+  public void addBioSample(@NotNull String bioSample) {
+    if (bioSamples == null) bioSamples = new ArrayList<>();
+    bioSamples.add(bioSample);
   }
 
   public void setBioSamples(List<String> bioSamples) {
@@ -154,7 +169,12 @@ public class DataCollectionEvent implements Serializable {
   }
 
   public List<Attachment> getAttachments() {
-    return attachments == null ? (attachments = new ArrayList<>()) : attachments;
+    return attachments;
+  }
+
+  public void addAttachment(@NotNull Attachment attachment) {
+    if (attachments == null) attachments = new ArrayList<>();
+    attachments.add(attachment);
   }
 
   public void setAttachments(List<Attachment> attachments) {

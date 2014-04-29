@@ -88,7 +88,12 @@ public class Population implements Serializable {
   }
 
   public List<DataCollectionEvent> getDataCollectionEvents() {
-    return dataCollectionEvents == null ? (dataCollectionEvents = new ArrayList<>()) : dataCollectionEvents;
+    return dataCollectionEvents;
+  }
+
+  public void addDataCollectionEvent(@NotNull DataCollectionEvent dataCollectionEvent) {
+    if (dataCollectionEvents == null) dataCollectionEvents = new ArrayList<>();
+    dataCollectionEvents.add(dataCollectionEvent);
   }
 
   public void setDataCollectionEvents(List<DataCollectionEvent> dataCollectionEvents) {
@@ -129,7 +134,12 @@ public class Population implements Serializable {
     private LocalizedString info;
 
     public List<String> getDataSources() {
-      return dataSources == null ? (dataSources = new ArrayList<>()) : dataSources;
+      return dataSources;
+    }
+    
+    public void addDataSource(@NotNull String dataSource) {
+      if (dataSources == null) dataSources = new ArrayList<>();
+      dataSources.add(dataSource);
     }
 
     public void setDataSources(List<String> dataSources) {
@@ -137,9 +147,12 @@ public class Population implements Serializable {
     }
 
     public List<String> getGeneralPopulationSources() {
-      return generalPopulationSources == null
-          ? (generalPopulationSources = new ArrayList<>())
-          : generalPopulationSources;
+      return generalPopulationSources;
+    }
+
+    public void addGeneralPopulationSource(@NotNull String generalPopulationSource) {
+      if (generalPopulationSources == null) generalPopulationSources = new ArrayList<>();
+      generalPopulationSources.add(generalPopulationSource);
     }
 
     public void setGeneralPopulationSources(List<String> generalPopulationSources) {
@@ -147,9 +160,12 @@ public class Population implements Serializable {
     }
 
     public List<String> getSpecificPopulationSources() {
-      return specificPopulationSources == null
-          ? (specificPopulationSources = new ArrayList<>())
-          : specificPopulationSources;
+      return specificPopulationSources;
+    }
+
+    public void addSpecificPopulationSource(@NotNull String specificPopulationSource) {
+      if (specificPopulationSources == null) specificPopulationSources = new ArrayList<>();
+      specificPopulationSources.add(specificPopulationSource);
     }
 
     public void setSpecificPopulationSources(List<String> specificPopulationSources) {
@@ -165,9 +181,14 @@ public class Population implements Serializable {
     }
 
     public List<LocalizedString> getStudies() {
-      return studies == null ? (studies = new ArrayList<>()) : studies;
+      return studies;
     }
 
+    public void addStudy(@NotNull LocalizedString study) {
+      if (studies == null) studies = new ArrayList<>();
+      studies.add(study);
+    }
+    
     public void setStudies(List<LocalizedString> studies) {
       this.studies = studies;
     }
@@ -244,7 +265,12 @@ public class Population implements Serializable {
     }
 
     public List<String> getCountriesIso() {
-      return countriesIso == null ? (countriesIso = new ArrayList<>()) : countriesIso;
+      return countriesIso;
+    }
+
+    public void addCountryIso(@NotNull String countryIso) {
+      if (countriesIso == null) countriesIso = new ArrayList<>();
+      countriesIso.add(countryIso);
     }
 
     public void setCountriesIso(List<String> countriesIso) {
@@ -260,7 +286,12 @@ public class Population implements Serializable {
     }
 
     public List<String> getCriteria() {
-      return criteria == null ? (criteria = new ArrayList<>()) : criteria;
+      return criteria;
+    }
+
+    public void addCriteria(@NotNull String aCriteria) {
+      if (criteria == null) criteria = new ArrayList<>();
+      criteria.add(aCriteria);
     }
 
     public void setCriteria(List<String> criteria) {
@@ -268,7 +299,12 @@ public class Population implements Serializable {
     }
 
     public List<LocalizedString> getEthnicOrigin() {
-      return ethnicOrigin == null ? (ethnicOrigin = new ArrayList<>()) : ethnicOrigin;
+      return ethnicOrigin;
+    }
+
+    public void addEthnicOrigin(@NotNull LocalizedString anEthnicOrigin) {
+      if (ethnicOrigin == null) ethnicOrigin = new ArrayList<>();
+      ethnicOrigin.add(anEthnicOrigin);
     }
 
     public void setEthnicOrigin(List<LocalizedString> ethnicOrigin) {
@@ -276,7 +312,12 @@ public class Population implements Serializable {
     }
 
     public List<LocalizedString> getHealthStatus() {
-      return healthStatus == null ? (healthStatus = new ArrayList<>()) : healthStatus;
+      return healthStatus;
+    }
+
+    public void addHealthStatus(@NotNull LocalizedString aHealthStatus) {
+      if (healthStatus == null) healthStatus = new ArrayList<>();
+      healthStatus.add(aHealthStatus);
     }
 
     public void setHealthStatus(List<LocalizedString> healthStatus) {

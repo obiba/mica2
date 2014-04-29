@@ -113,27 +113,27 @@ public class StudyDtosTest {
     study.setWebsite("http://www.clsa-elcv.ca");
 
     Contact contact = createContact();
-    study.getContacts().add(contact);
-    study.getInvestigators().add(contact);
+    study.addContact(contact);
+    study.addInvestigator(contact);
 
     study.setStartYear(2002);
 
     study.setMethods(createMethods());
     study.setNumberOfParticipants(createNumberOfParticipants());
 
-    study.getAccess().add("data");
-    study.getAccess().add("bio_samples");
-    study.getAccess().add("other");
+    study.addAccess("data");
+    study.addAccess("bio_samples");
+    study.addAccess("other");
     study.setOtherAccess(en("Other access"));
 
     study.setMarkerPaper(
         "Raina PS, Wolfson C, Kirkland SA, Griffith LE, Oremus M, Patterson C, Tuokko H, Penning M, Balion CM, Hogan D, Wister A, Payette H, Shannon H, and Brazil K, The Canadian longitudinal study on aging (CLSA). Can J Aging, 2009. 28(3): p. 221-9.");
     study.setPubmedId("PUBMED 19860977");
 
-    study.getPopulations().add(createPopulation());
+    study.addPopulation(createPopulation());
     study.setSpecificAuthorization(createAuthorization("opal"));
     study.setMaelstromAuthorization(createAuthorization("mica"));
-    study.getAttachments().add(createAttachment());
+    study.addAttachment(createAttachment());
 
     return study;
   }
@@ -168,13 +168,13 @@ public class StudyDtosTest {
 
   private StudyMethods createMethods() {
     StudyMethods methods = new StudyMethods();
-    methods.getDesigns().add("case_control");
-    methods.getDesigns().add("clinical_trial");
-    methods.getDesigns().add("other");
+    methods.addDesign("case_control");
+    methods.addDesign("clinical_trial");
+    methods.addDesign("other");
     methods.setOtherDesign(en("Cross-sectional prevalence study"));
 
-    methods.getRecruitments().add("individuals");
-    methods.getRecruitments().add("other");
+    methods.addRecruitment("individuals");
+    methods.addRecruitment("other");
     methods.setOtherRecruitment(en("Specific individuals"));
     methods.setFollowUpInfo(en("General Information on Follow Up (profile and frequency)"));
     methods.setInfo(en("Supplementary information about study design"));
@@ -208,24 +208,24 @@ public class StudyDtosTest {
     population.setNumberOfParticipants(createNumberOfParticipants());
     population.setSelectionCriteria(createSelectionCriteria());
     population.setRecruitment(createRecruitment());
-    population.getDataCollectionEvents().add(createEvent1());
-    population.getDataCollectionEvents().add(createEvent2());
+    population.addDataCollectionEvent(createEvent1());
+    population.addDataCollectionEvent(createEvent2());
     return population;
   }
 
   private Recruitment createRecruitment() {
     Recruitment recruitment = new Recruitment();
-    recruitment.getDataSources().add("questionnaires");
-    recruitment.getDataSources().add("administratives_databases");
-    recruitment.getDataSources().add("others");
+    recruitment.addDataSource("questionnaires");
+    recruitment.addDataSource("administratives_databases");
+    recruitment.addDataSource("others");
     recruitment.setOtherSource(en("Other source of recruitment"));
-    recruitment.getGeneralPopulationSources().add("selected_samples");
-    recruitment.getSpecificPopulationSources().add("clinic_patients");
-    recruitment.getSpecificPopulationSources().add("other");
+    recruitment.addGeneralPopulationSource("selected_samples");
+    recruitment.addSpecificPopulationSource("clinic_patients");
+    recruitment.addSpecificPopulationSource("other");
     recruitment.setOtherSpecificPopulationSource(en("Other specific population"));
-    recruitment.getStudies().add(en("Canadian Community Health Survey (CCHS) – Healthy Aging")
+    recruitment.addStudy(en("Canadian Community Health Survey (CCHS) – Healthy Aging")
         .forFr("Enquête sur la santé dans les collectivités canadiennes (ESCC) - Vieillissement en santé"));
-    recruitment.getStudies().add(en("CARTaGENE"));
+    recruitment.addStudy(en("CARTaGENE"));
     return recruitment;
   }
 
@@ -234,10 +234,10 @@ public class StudyDtosTest {
     criteria.setAgeMin(45);
     criteria.setAgeMax(85);
     criteria.setGender(Population.SelectionCriteria.Gender.women);
-    criteria.getCountriesIso().add(Locale.CANADA.getISO3Country());
-    criteria.getCriteria().add("criteria1");
-    criteria.getEthnicOrigin().add(en("Serbian"));
-    criteria.getHealthStatus().add(en("Good"));
+    criteria.addCountryIso(Locale.CANADA.getISO3Country());
+    criteria.addCriteria("criteria1");
+    criteria.addEthnicOrigin(en("Serbian"));
+    criteria.addHealthStatus(en("Good"));
     criteria.setOtherCriteria(en("<p>Language: Individuals who are able to respond in either French or English.</p>\n" +
         "<p>Exclusion criteria: The CLSA uses the same exclusion criteria as the Statistics Canada Canadian Community Health Survey – Healthy Aging. Excluded from the study are:</p>\n" +
         "<ul><li>Residents of the three territories</li>\n" +
@@ -255,12 +255,12 @@ public class StudyDtosTest {
     event.setDescription(en("Baseline data collection"));
     event.setStartYear(2010);
     event.setEndYear(2015);
-    event.getDataSources().add("questionnaires");
-    event.getDataSources().add("physical_measures");
-    event.getDataSources().add("biological_samples");
-    event.getBioSamples().add("BioSamples.blood");
-    event.getBioSamples().add("BioSamples.urine");
-    event.getBioSamples().add("BioSamples.others");
+    event.addDataSource("questionnaires");
+    event.addDataSource("physical_measures");
+    event.addDataSource("biological_samples");
+    event.addBioSample("BioSamples.blood");
+    event.addBioSample("BioSamples.urine");
+    event.addBioSample("BioSamples.others");
     event.setAdministrativeDatabases(Arrays.asList("aDB1"));
     event.setOtherBioSamples(en("Other biological sample"));
     return event;
@@ -274,16 +274,16 @@ public class StudyDtosTest {
     event.setStartMonth(1);
     event.setEndYear(2020);
     event.setEndYear(12);
-    event.getDataSources().add("questionnaires");
-    event.getDataSources().add("physical_measures");
-    event.getDataSources().add("administratives_databases");
-    event.getDataSources().add("others");
+    event.addDataSource("questionnaires");
+    event.addDataSource("physical_measures");
+    event.addDataSource("administratives_databases");
+    event.addDataSource("others");
     event.setAdministrativeDatabases(Arrays.asList("aDB1", "aDB2"));
     event.setOtherDataSources(en("Other data sources"));
     event.setBioSamples(Arrays.asList("Blood", "Cell Tissue"));
     event.setTissueTypes(en("Liver Tissue"));
     event.setOtherBioSamples(en("Ear wax"));
-    event.getAttachments().add(createAttachment());
+    event.addAttachment(createAttachment());
     return event;
   }
 
