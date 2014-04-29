@@ -20,21 +20,14 @@ public class MicaConfigService {
   @Inject
   private EventBus eventBus;
 
-  // cache to avoid MongoDB round trip
-  private MicaConfig cachedConfig;
-
   public MicaConfig getConfig() {
-    if(cachedConfig != null) {
-      return cachedConfig;
-    }
     if(micaConfigRepository.count() == 0) {
       MicaConfig micaConfig = new MicaConfig();
       micaConfig.getLocales().add(MicaConfig.DEFAULT_LOCALE);
       micaConfigRepository.save(micaConfig);
       return getConfig();
     }
-    cachedConfig = micaConfigRepository.findAll().get(0);
-    return cachedConfig;
+    return micaConfigRepository.findAll().get(0);
   }
 
   public void save(@Valid MicaConfig micaConfig) {
@@ -42,7 +35,6 @@ public class MicaConfigService {
     BeanUtils.copyProperties(micaConfig, savedConfig, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
         "lastModifiedDate");
     micaConfigRepository.save(savedConfig);
-    cachedConfig = null;
     eventBus.post(new MicaConfigUpdatedEvent(getConfig()));
   }
 

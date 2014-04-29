@@ -105,7 +105,7 @@ public abstract class AbstractAuditableDocument implements Auditable<String, Str
   }
 
   protected com.google.common.base.Objects.ToStringHelper toStringHelper() {
-    return com.google.common.base.Objects.toStringHelper(this).omitNullValues().add("id", id);
+    return com.google.common.base.Objects.toStringHelper(this).omitNullValues().add("id", id).add("version", version);
   }
 
   @Override
