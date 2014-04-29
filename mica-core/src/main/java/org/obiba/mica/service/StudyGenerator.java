@@ -77,9 +77,9 @@ public class StudyGenerator {
 
     study.getMethods().getRecruitments().add("individuals");
     study.getMethods().getRecruitments().add("other");
-    study.getMethods().setOtherRecruitments(en("Specific individuals"));
-    study.getMethods().setFollowUpInfos(en("General Information on Follow Up (profile and frequency)"));
-    study.getMethods().setInfos(en("Supplementary information about study design"));
+    study.getMethods().setOtherRecruitment(en("Specific individuals"));
+    study.getMethods().setFollowUpInfo(en("General Information on Follow Up (profile and frequency)"));
+    study.getMethods().setInfo(en("Supplementary information about study design"));
 
     study.setNumberOfParticipants(new NumberOfParticipants());
     study.getNumberOfParticipants().setParticipant(new TargetNumber());

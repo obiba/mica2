@@ -254,13 +254,13 @@ public class Study implements Persistable<String> {
 
     private LocalizedString otherDesign;
 
-    private LocalizedString followUpInfos;
+    private LocalizedString followUpInfo;
 
     private List<String> recruitments;
 
-    private LocalizedString otherRecruitments;
+    private LocalizedString otherRecruitment;
 
-    private LocalizedString infos;
+    private LocalizedString info;
 
     public List<String> getDesigns() {
       return designs == null ? (designs = new ArrayList<>()) : designs;
@@ -278,12 +278,12 @@ public class Study implements Persistable<String> {
       this.otherDesign = otherDesign;
     }
 
-    public LocalizedString getFollowUpInfos() {
-      return followUpInfos;
+    public LocalizedString getFollowUpInfo() {
+      return followUpInfo;
     }
 
-    public void setFollowUpInfos(LocalizedString followUpInfos) {
-      this.followUpInfos = followUpInfos;
+    public void setFollowUpInfo(LocalizedString followUpInfo) {
+      this.followUpInfo = followUpInfo;
     }
 
     public List<String> getRecruitments() {
@@ -294,20 +294,20 @@ public class Study implements Persistable<String> {
       this.recruitments = recruitments;
     }
 
-    public LocalizedString getOtherRecruitments() {
-      return otherRecruitments;
+    public LocalizedString getOtherRecruitment() {
+      return otherRecruitment;
     }
 
-    public void setOtherRecruitments(LocalizedString otherRecruitments) {
-      this.otherRecruitments = otherRecruitments;
+    public void setOtherRecruitment(LocalizedString otherRecruitment) {
+      this.otherRecruitment = otherRecruitment;
     }
 
-    public LocalizedString getInfos() {
-      return infos;
+    public LocalizedString getInfo() {
+      return info;
     }
 
-    public void setInfos(LocalizedString infos) {
-      this.infos = infos;
+    public void setInfo(LocalizedString info) {
+      this.info = info;
     }
   }
 

@@ -3,6 +3,7 @@ package org.obiba.mica.domain;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -26,7 +27,7 @@ public class Population implements Serializable {
 
   private NumberOfParticipants numberOfParticipants;
 
-  private LocalizedString infos;
+  private LocalizedString info;
 
   private List<DataCollectionEvent> dataCollectionEvents;
 
@@ -78,12 +79,12 @@ public class Population implements Serializable {
     this.numberOfParticipants = numberOfParticipants;
   }
 
-  public LocalizedString getInfos() {
-    return infos;
+  public LocalizedString getInfo() {
+    return info;
   }
 
-  public void setInfos(LocalizedString infos) {
-    this.infos = infos;
+  public void setInfo(LocalizedString info) {
+    this.info = info;
   }
 
   public List<DataCollectionEvent> getDataCollectionEvents() {
@@ -92,6 +93,21 @@ public class Population implements Serializable {
 
   public void setDataCollectionEvents(List<DataCollectionEvent> dataCollectionEvents) {
     this.dataCollectionEvents = dataCollectionEvents;
+  }
+
+  @Override
+  public int hashCode() {return Objects.hash(id);}
+
+  @Override
+  public boolean equals(Object obj) {
+    if(this == obj) {
+      return true;
+    }
+    if(obj == null || getClass() != obj.getClass()) {
+      return false;
+    }
+    final Population other = (Population) obj;
+    return Objects.equals(id, other.id);
   }
 
   public static class Recruitment implements Serializable {
@@ -110,7 +126,7 @@ public class Population implements Serializable {
 
     private LocalizedString otherSource;
 
-    private LocalizedString infos;
+    private LocalizedString info;
 
     public List<String> getDataSources() {
       return dataSources == null ? (dataSources = new ArrayList<>()) : dataSources;
@@ -164,12 +180,12 @@ public class Population implements Serializable {
       this.otherSource = otherSource;
     }
 
-    public LocalizedString getInfos() {
-      return infos;
+    public LocalizedString getInfo() {
+      return info;
     }
 
-    public void setInfos(LocalizedString infos) {
-      this.infos = infos;
+    public void setInfo(LocalizedString info) {
+      this.info = info;
     }
   }
 
@@ -201,7 +217,7 @@ public class Population implements Serializable {
 
     private LocalizedString otherCriteria;
 
-    private LocalizedString infos;
+    private LocalizedString info;
 
     public Gender getGender() {
       return gender;
@@ -244,7 +260,7 @@ public class Population implements Serializable {
     }
 
     public List<String> getCriteria() {
-      return criteria;
+      return criteria == null ? (criteria = new ArrayList<>()) : criteria;
     }
 
     public void setCriteria(List<String> criteria) {
@@ -275,12 +291,12 @@ public class Population implements Serializable {
       this.otherCriteria = otherCriteria;
     }
 
-    public LocalizedString getInfos() {
-      return infos;
+    public LocalizedString getInfo() {
+      return info;
     }
 
-    public void setInfos(LocalizedString infos) {
-      this.infos = infos;
+    public void setInfo(LocalizedString info) {
+      this.info = info;
     }
   }
 

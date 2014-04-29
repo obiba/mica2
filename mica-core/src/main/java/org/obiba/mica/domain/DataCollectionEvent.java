@@ -3,6 +3,7 @@ package org.obiba.mica.domain;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -160,4 +161,18 @@ public class DataCollectionEvent implements Serializable {
     this.attachments = attachments;
   }
 
+  @Override
+  public int hashCode() {return Objects.hash(id);}
+
+  @Override
+  public boolean equals(Object obj) {
+    if(this == obj) {
+      return true;
+    }
+    if(obj == null || getClass() != obj.getClass()) {
+      return false;
+    }
+    final DataCollectionEvent other = (DataCollectionEvent) obj;
+    return Objects.equals(id, other.id);
+  }
 }

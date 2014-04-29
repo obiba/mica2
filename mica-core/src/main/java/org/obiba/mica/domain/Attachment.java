@@ -16,7 +16,11 @@ public class Attachment implements Serializable {
 
   private LocalizedString description;
 
-  private Locale locale;
+  private Locale lang;
+
+  private Integer size;
+
+  private String md5;
 
   @NotNull
   public String getName() {
@@ -43,11 +47,27 @@ public class Attachment implements Serializable {
     this.description = description;
   }
 
-  public Locale getLocale() {
-    return locale;
+  public Locale getLang() {
+    return lang;
   }
 
-  public void setLocale(Locale locale) {
-    this.locale = locale;
+  public void setLang(Locale lang) {
+    this.lang = lang;
+  }
+
+  public Integer getSize() {
+    return size;
+  }
+
+  public void setSize(Integer size) {
+    this.size = size;
+  }
+
+  public String getMd5() {
+    return md5;
+  }
+
+  public void setMd5(String md5) {
+    this.md5 = md5;
   }
 }

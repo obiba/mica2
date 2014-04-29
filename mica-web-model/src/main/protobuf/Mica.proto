@@ -33,43 +33,45 @@ message StudyDto {
   optional string markerPaper = 17;
   optional string pubmedId = 18;
   repeated AttachmentDto attachments = 19;
-  repeated LocalizedStringDto infos = 20;
+  repeated LocalizedStringDto info = 20;
   repeated PopulationDto populations = 21;
   repeated NetworkRelationDto networks = 22;
 
   message StudyMethodsDto {
     repeated string designs = 1;
     repeated LocalizedStringDto otherDesign = 2;
-    repeated LocalizedStringDto followUpInfos = 3;
+    repeated LocalizedStringDto followUpInfo = 3;
     repeated string recruitments = 4;
-    repeated LocalizedStringDto otherRecruitments = 5;
-    repeated LocalizedStringDto infos = 6;
+    repeated LocalizedStringDto otherRecruitment = 5;
+    repeated LocalizedStringDto info = 6;
   }
 
   message NumberOfParticipantsDto {
     optional TargetNumberDto participant = 1;
     optional TargetNumberDto sample = 2;
-    repeated LocalizedStringDto infos = 3;
+    repeated LocalizedStringDto info = 3;
   }
 
   message PopulationDto {
-    repeated LocalizedStringDto name = 1;
-    repeated LocalizedStringDto description = 2;
-    optional RecruitmentDto recruitment = 3;
-    optional SelectionCriteriaDto selectionCriteria = 4;
-    optional NumberOfParticipantsDto numberOfParticipants = 5;
-    repeated LocalizedStringDto infos = 6;
-    repeated DataCollectionEventDto dataCollectionEvents = 7;
+    required string id = 1;
+    repeated LocalizedStringDto name = 2;
+    repeated LocalizedStringDto description = 3;
+    optional RecruitmentDto recruitment = 4;
+    optional SelectionCriteriaDto selectionCriteria = 5;
+    optional NumberOfParticipantsDto numberOfParticipants = 6;
+    repeated LocalizedStringDto info = 7;
+    repeated DataCollectionEventDto dataCollectionEvents = 8;
 
     message RecruitmentDto {
       repeated string dataSources = 1;
       repeated string generalPopulationSources = 2;
       repeated string specificPopulationSources = 3;
       repeated LocalizedStringDto otherSpecificPopulationSource = 4;
-      repeated string studies = 5;
+      repeated LocalizedStringDtos studies = 5;
       repeated LocalizedStringDto otherSource = 6;
-      repeated LocalizedStringDto infos = 7;
+      repeated LocalizedStringDto info = 7;
     }
+
     message SelectionCriteriaDto {
       enum Gender {
         men = 0;
@@ -84,23 +86,24 @@ message StudyDto {
       repeated LocalizedStringDtos ethnicOrigin = 7;
       repeated LocalizedStringDtos healthStatus = 8;
       repeated LocalizedStringDto otherCriteria = 9;
-      repeated LocalizedStringDto infos = 10;
+      repeated LocalizedStringDto info = 10;
     }
 
     message DataCollectionEventDto {
-      repeated LocalizedStringDto name = 1;
-      repeated LocalizedStringDto description = 2;
-      required int32 startYear = 3;
-      optional int32 startMonth = 4;
-      optional int32 endYear = 5;
-      optional int32 endMonth = 6;
-      repeated string dataSources = 7;
-      repeated string administrativeDatabases = 8;
-      repeated LocalizedStringDto otherDataSources = 9;
-      repeated string bioSamples = 10;
-      repeated LocalizedStringDto tissueTypes = 11;
-      repeated LocalizedStringDto otherBioSamples = 12;
-      repeated AttachmentDto attachments = 13;
+      required string id = 1;
+      repeated LocalizedStringDto name = 2;
+      repeated LocalizedStringDto description = 3;
+      required int32 startYear = 4;
+      optional int32 startMonth = 5;
+      optional int32 endYear = 6;
+      optional int32 endMonth = 7;
+      repeated string dataSources = 8;
+      repeated string administrativeDatabases = 9;
+      repeated LocalizedStringDto otherDataSources = 10;
+      repeated string bioSamples = 11;
+      repeated LocalizedStringDto tissueTypes = 12;
+      repeated LocalizedStringDto otherBioSamples = 13;
+      repeated AttachmentDto attachments = 14;
     }
   }
 }
@@ -121,7 +124,7 @@ message NetworkDto {
   optional string website = 8;
   optional AuthorizationDto maelstromAuthorization = 9;
   repeated AttachmentDto attachments = 10;
-  repeated LocalizedStringDto infos = 11;
+  repeated LocalizedStringDto info = 11;
   repeated StudyRelationDto studies = 12;
 
   message StudyRelationDto {
