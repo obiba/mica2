@@ -55,8 +55,8 @@
       <span class="glyphicon glyphicon-ban-circle"></span> <span translate="cancel">Cancel</span>
     </a>
 
-    <button type="submit" class="btn btn-primary">
-      <span class="glyphicon glyphicon-save"></span> <span translate="save">Save</span>
+    <button type="submit" ng-disabled="form.$invalid" class="btn btn-primary">
+    <span class="glyphicon glyphicon-save"></span> <span translate="save">Save</span>
     </button>
 
   </form>

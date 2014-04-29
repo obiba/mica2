@@ -141,7 +141,7 @@ angular.module('micaApp')
     };
   }])
 
-  // http://codetunes.com/2013/server-form-validation-with-angular/
+  // http://codetunes.com/2013/server-form-validation-with-angular
   .directive('serverError', [function () {
     return {
       restrict: 'A',
