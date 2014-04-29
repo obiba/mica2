@@ -56,7 +56,7 @@ var MicaConfigModalController = function ($scope, $log, $modalInstance, MicaConf
 //  };
 
   $scope.save = function (form) {
-    $log.debug('$scope.form:', $scope.form);
+
     MicaConfig.save($scope.micaConfig,
       function () {
         $modalInstance.close();
@@ -64,7 +64,7 @@ var MicaConfigModalController = function ($scope, $log, $modalInstance, MicaConf
       function (response) {
 
         $log.debug('begin save $scope:', $scope);
-        $log.debug('ERROR:', response);
+        $log.debug('response:', response);
 
 //        [{
 //          "message": "ne peut pas être vide",
@@ -82,7 +82,7 @@ var MicaConfigModalController = function ($scope, $log, $modalInstance, MicaConf
           $log.debug('field: ', field);
 
           $scope.form.micaConfig.$setValidity('server', false);
-//          $scope.form.micaConfig[field].$setValidity('server', false);
+          //$scope.form.micaConfig[field].$setValidity('server', false);
           $scope.errors[field] = error.message;
         });
 
