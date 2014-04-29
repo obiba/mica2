@@ -16,8 +16,9 @@ class AttachmentDtos {
   static AttachmentDto asDto(@NotNull Attachment attachment) {
     AttachmentDto.Builder builder = AttachmentDto.newBuilder().setFileName(attachment.getName());
     if (attachment.getType() != null) builder.setType(attachment.getType());
-    if(attachment.getDescription() != null)
+    if(attachment.getDescription() != null) {
       builder.addAllDescription(LocalizedStringDtos.asDto(attachment.getDescription()));
+    }
     if (attachment.getLang() != null) builder.setLang(attachment.getLang().toString());
     if (attachment.getSize() != null) builder.setSize(attachment.getSize());
     if (attachment.getMd5() != null) builder.setMd5(attachment.getMd5());
