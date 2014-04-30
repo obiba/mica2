@@ -6,16 +6,77 @@
   <tabset>
     <tab ng-repeat="tab in tabs" heading="{{tab.lang}}" active="tab.active" disabled="tab.disabled">
 
-      <table class="table table-striped">
-        <tbody>
-        <tr>
-          <td translate="study.name">Name</td>
-          <td>
-            <localized value="study.name" lang="tab.lang"/>
-          </td>
-        </tr>
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <caption translate="study.general-info">General Information</caption>
+          <tbody>
+          <tr ng-show="study.name.length">
+            <td translate="study.name">Name</td>
+            <td>
+              <localized value="study.name" lang="tab.lang"></localized>
+            </td>
+          </tr>
+          <tr ng-show="study.acronym.length">
+            <td translate="study.acronym">Acronym</td>
+            <td>
+              <localized value="study.acronym" lang="tab.lang"></localized>
+            </td>
+          </tr>
+          <tr ng-show="study.objectives.length">
+            <td translate="study.objectives">Objectives</td>
+            <td>
+              <localized value="study.objectives" lang="tab.lang"></localized>
+            </td>
+          </tr>
+          <tr ng-show="study.website">
+            <td translate="study.website">Website</td>
+            <td>
+              <a href="{{study.website}}" target="_blank">{{study.website}}</a>
+            </td>
+          </tr>
+          <tr ng-show="study.investigators.length">
+            <td translate="study.investigators">Investigators</td>
+            <td>
+              <ul class="list-unstyled">
+                <li ng-repeat="investigator in study.investigators">
+                  {{investigator.title}} {{investigator.firstName}} {{investigator.lastName}}
+                  <span ng-show="investigator.institution.name.length">
+                    (<localized value="investigator.institution.name" lang="tab.lang"></localized>)
+                  </span>
+                </li>
+              </ul>
+            </td>
+          </tr>
+          <tr ng-show="study.contacts.length">
+            <td translate="study.contacts">Contacts</td>
+            <td>
+              <ul class="list-unstyled">
+                <li ng-repeat="contact in study.contacts">
+                  {{contact.title}} {{contact.firstName}} {{contact.lastName}}
+                  <span ng-show="contact.institution.name.length">
+                    (<localized value="contact.institution.name" lang="tab.lang"></localized>)
+                  </span>
+                </li>
+              </ul>
+            </td>
+          </tr>
+          <tr ng-show="study.startYear">
+            <td translate="study.start-year">Study Start Year</td>
+            <td> {{study.startYear}}</td>
+          </tr>
+          <tr ng-show="study.endYear">
+            <td translate="study.end-year">Study End Year</td>
+            <td> {{study.endYear}}</td>
+          </tr>
+          <tr ng-show="study.networks.length">
+            <td translate="networks">Networks</td>
+            <td>
+              {{study.networks}}
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
 
     </tab>
   </tabset>
