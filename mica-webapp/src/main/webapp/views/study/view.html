@@ -2,20 +2,24 @@
 
   <h2 translate="study.details">Study details</h2>
 
-  <table class="table table-striped">
-    <tbody>
-    <tr>
-      <td translate="study.name">Name</td>
-      <td>
-        <ul class="list-unstyled">
-          <li ng-repeat="name in study.name">
-            <span class="badge">{{name.lang}}</span> {{name.value}}
-          </li>
-        </ul>
-      </td>
-    </tr>
-    </tbody>
-  </table>
+
+  <tabset>
+    <tab ng-repeat="tab in tabs" heading="{{tab.lang}}" active="tab.active" disabled="tab.disabled">
+
+      <table class="table table-striped">
+        <tbody>
+        <tr>
+          <td translate="study.name">Name</td>
+          <td>
+            <localized value="study.name" lang="tab.lang"/>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+    </tab>
+  </tabset>
+
 
   <a ng-href="#/study/{{study.id}}/edit" class="btn btn-primary btn-lg">
     <i class="fa fa-pencil-square-o"></i> <span translate="edit">Edit</span>

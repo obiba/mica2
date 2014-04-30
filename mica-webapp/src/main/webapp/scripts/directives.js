@@ -2,17 +2,6 @@
 
 angular.module('micaApp')
 
-  .directive('nullIfEmpty', [function () {
-    return {
-      require: 'ngModel',
-      link: function (scope, elm, attr, ctrl) {
-        ctrl.$parsers.unshift(function (value) {
-          return value === '' ? null : value;
-        });
-      }
-    };
-  }])
-
   .directive('activeMenu', ['$translate', '$locale', 'tmhDynamicLocale', function ($translate, $locale, tmhDynamicLocale) {
     return {
       restrict: 'A',
@@ -153,5 +142,17 @@ angular.module('micaApp')
           });
         });
       }
+    };
+  }])
+
+  .directive('localized', [function () {
+    return {
+      restrict: 'E',
+      replace: 'true',
+      scope: {
+        value: '=',
+        lang: '='
+      },
+      template: '<span ng-repeat="localizedValue in value | filter:{lang:lang}">{{localizedValue.value}}</span>'
     };
   }]);

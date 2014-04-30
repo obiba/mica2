@@ -14,11 +14,20 @@ micaApp.controller('StudyListController', ['$scope', 'StudiesResource', 'StudyRe
     };
 
   }])
-  .controller('StudyViewController', ['$scope', '$routeParams', 'StudyResource',
+  .controller('StudyViewController', ['$scope', '$routeParams', '$log', 'StudyResource', 'MicaConfigResource',
 
-    function ($scope, $routeParams, StudyResource) {
+    function ($scope, $routeParams, $log, StudyResource, MicaConfigResource) {
+
+      MicaConfigResource.get(function (micaConfig) {
+        $scope.tabs = [];
+        micaConfig.languages.forEach(function (lang) {
+          $scope.tabs.push({ lang: lang });
+        });
+      });
 
       $scope.study = StudyResource.get({id: $routeParams.id});
+
+      $log.debug('study', $scope.study);
 
     }])
 
