@@ -2,6 +2,10 @@
 
   <h2 translate="study.details">Study details</h2>
 
+  <a ng-href="#/study/{{study.id}}/edit" class="btn btn-primary pull-right">
+    <i class="fa fa-pencil-square-o"></i> <span translate="edit">Edit</span>
+  </a>
+
 
   <tabset>
     <tab ng-repeat="tab in tabs" heading="{{tab.lang}}" active="tab.active" disabled="tab.disabled">
@@ -130,18 +134,57 @@
               </span>
             </td>
           </tr>
-          <tr ng-show="study.numberOfParticipants.info">
-            <td translate="study.target-number.suppl-info">
+          <tr ng-show="study.numberOfParticipants.info.length">
+          <td translate="study.target-number.suppl-info">
               Supplementary information about target number of participants
             </td>
             <td>
               <localized value="study.numberOfParticipants.info" lang="tab.lang"></localized>
             </td>
           </tr>
-          <tr ng-show="study.methods.info">
-            <td translate="suppl-info">Supplementary information</td>
+          <tr ng-show="study.methods.info.length">
+          <td translate="suppl-info">Supplementary information</td>
             <td>
               <localized value="study.methods.info" lang="tab.lang"></localized>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+
+        <table class="table table-striped">
+          <caption translate="study.access.label">Access</caption>
+          <tbody>
+          <tr ng-show="study.access.length || study.otherAccess.length">
+            <td translate="study.access.for">
+              Access to external researchers or third parties provided or foreseen for
+            </td>
+            <td>
+              <ul class="list-unstyled">
+                <li ng-repeat="access in study.access">
+                  <span translate="study.access.{{access}}">{{access}}</span>
+                </li>
+                <li ng-show="study.otherAccess.length">
+                  <localized value="study.otherAccess" lang="tab.lang"></localized>
+                </li>
+              </ul>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+
+        <table class="table table-striped" ng-show="study.markerPaper || study.pubmedId">
+          <caption translate="study.marker-paper">Marker Paper</caption>
+          <tbody>
+          <tr ng-show="study.markerPaper">
+            <td translate="study.marker-paper">Marker Paper</td>
+            <td>{{study.markerPaper}}</td>
+          </tr>
+          <tr ng-show="study.pubmedId">
+            <td translate="study.pubmed-id">Pubmed ID</td>
+            <td>
+              <a ng-href="http://www.ncbi.nlm.nih.gov/pubmed/{{study.pubmedId}}" target="_blank">
+                PUBMED {{study.pubmedId}}
+              </a>
             </td>
           </tr>
           </tbody>
@@ -152,9 +195,5 @@
     </tab>
   </tabset>
 
-
-  <a ng-href="#/study/{{study.id}}/edit" class="btn btn-primary btn-lg">
-    <i class="fa fa-pencil-square-o"></i> <span translate="edit">Edit</span>
-  </a>
 
 </div>
