@@ -99,6 +99,7 @@ public class StudyDtosTest {
         .isEqualTo(study.getLastModifiedDate() == null ? "" : study.getLastModifiedDate().toString());
   }
 
+  @SuppressWarnings("OverlyLongMethod")
   private Study createStudy() {
     Study study = new Study();
     study.setId("study_1");
