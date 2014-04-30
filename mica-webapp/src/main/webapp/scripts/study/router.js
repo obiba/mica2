@@ -9,7 +9,7 @@ micaApp
           controller: 'StudyListController'
         })
         .when('/study/:id', {
-          templateUrl: 'views/study/view.html',
+          templateUrl: 'views/study/study-view.html',
           controller: 'StudyViewController'
         })
         .when('/study/:id/edit', {
