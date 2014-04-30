@@ -10,6 +10,11 @@
 
   <h5 translate="study.selection-criteria">Selection criteria</h5>
 
+  <dl ng-repeat="criteria in population.selectionCriteria.criteria" class="dl-horizontal no-margin-bottom">
+    <dt translate="study.selection-criteria.{{criteria}}">{{criteria}}</dt>
+    <dd>&nbsp;</dd>
+  </dl>
+
   <dl class="dl-horizontal">
 
     <dt translate="study.selection-criteria.country" ng-show="population.selectionCriteria.gender">
@@ -44,10 +49,6 @@
     <dd ng-show="population.selectionCriteria.territory.length">
       <localized value="population.selectionCriteria.territory" lang="tab.lang"></localized>
     </dd>
-
-    <dt ng-repeat="criteria in population.selectionCriteria.criteria">
-      <span translate="study.selection-criteria.{{criteria}}">{{criteria}}</span>
-    </dt>
 
     <dt translate="study.selection-criteria.ethnic-origin" ng-show="population.selectionCriteria.ethnicOrigin.length">
       Ethnic Origin
@@ -85,6 +86,95 @@
 
 
   <h5 translate="study.recruitment-sources">Sources of recruitment</h5>
+
+  <!--<dl ng-repeat="dataSource in population.recruitment.dataSources" class="dl-horizontal no-margin-bottom">-->
+  <!--<dt translate="study.recruitment.dataSources.{{dataSource}}">{{dataSource}}</dt>-->
+  <!--<dd>&nbsp;</dd>-->
+  <!--</dl>-->
+
+  <dl class="dl-horizontal">
+
+    <dt translate="study.recruitment-sources.general-population"
+        ng-show="population.recruitment.generalPopulationSources.length">
+      General Population
+    </dt>
+    <dd ng-show="population.recruitment.generalPopulationSources.length">
+      <span ng-repeat="source in population.recruitment.generalPopulationSources">
+        <span translate="study.recruitment-sources.general-population.{{source}}">{{source}}</span>{{$last ? '' : ', '}}
+      </span>
+    </dd>
+
+    <dt translate="study.recruitment-sources.specific-population"
+        ng-show="population.recruitment.specificPopulationSources.length || population.recruitment.otherSpecificPopulationSource.length">
+      Specific Population
+    </dt>
+    <dd ng-show="population.recruitment.specificPopulationSources.length || population.recruitment.otherSpecificPopulationSource.length">
+      <span ng-repeat="source in population.recruitment.specificPopulationSources">
+        <span translate="study.recruitment-sources.specific-population.{{source}}">{{source}}</span>{{$last ? '' : ', '}}
+      </span>
+      <div>
+        <localized value="population.recruitment.otherSpecificPopulationSource" lang="tab.lang"></localized>
+      </div>
+    </dd>
+
+    <!--{{population.recruitment.studies}}-->
+
+    <dt translate="study.recruitment-sources.studies" ng-show="population.recruitment.studies.length">
+      Participants from existing studies
+    </dt>
+    <dd ng-show="population.recruitment.studies.length">
+      <ul class="list-unstyled no-margin-bottom">
+        <li ng-repeat="localizedStudies in population.recruitment.studies">
+          <span ng-repeat="study in localizedStudies">
+            <localized value="study" lang="tab.lang"></localized>
+          </span>
+        </li>
+      </ul>
+    </dd>
+
+    <dt translate="other" ng-show="population.recruitment.otherSource.length">
+      Other
+    </dt>
+    <dd ng-show="population.recruitment.otherSource.length">
+      <localized value="population.recruitment.otherSource" lang="tab.lang"></localized>
+    </dd>
+
+    <dt translate="suppl-info" ng-show="population.recruitment.info.length">
+      Supplementary Information
+    </dt>
+    <dd ng-show="population.recruitment.info.length">
+      <localized value="population.recruitment.info" lang="tab.lang"></localized>
+    </dd>
+
+  </dl>
+
+
+  <dl class="dl-horizontal" ng-show="population.numberOfParticipants">
+
+    <dt translate="study.participants-number" ng-show="population.numberOfParticipants.participant">
+      Number of participants
+    </dt>
+    <dd ng-show="population.numberOfParticipants.participant">
+      {{population.numberOfParticipants.participant | number}}
+      <span ng-show="population.numberOfParticipants.participant.noLimit" translate="study.target-number.no-limit">
+        No Limit
+      </span>
+    </dd>
+
+    <dt translate="study.participants-number.sample" ng-show="population.numberOfParticipants.sample">
+      Number of participants with biological samples
+    </dt>
+    <dd ng-show="population.numberOfParticipants.sample">
+      {{population.numberOfParticipants.sample | number}}
+      <span ng-show="population.numberOfParticipants.sample.noLimit" translate="study.target-number.no-limit">
+        No Limit
+      </span>
+    </dd>
+
+  </dl>
+
+  <h5 translate="suppl-info" ng-show="population.info.length">Supplementary Information</h5>
+  <localized value="population.info" lang="tab.lang"></localized>
 
   <h5 translate="study.data-collection-events">Data Collection Events</h5>
 
