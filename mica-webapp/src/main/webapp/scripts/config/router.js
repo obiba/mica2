@@ -6,20 +6,10 @@ micaApp
       $routeProvider
         .when('/config', {
           templateUrl: 'views/config/view.html',
-          controller: 'MicaConfigController',
-          resolve: {
-            resolvedMicaConfig: ['MicaConfig', function (MicaConfig) {
-              return MicaConfig.get();
-            }]
-          }
+          controller: 'MicaConfigController'
         })
         .when('/config/edit', {
           templateUrl: 'views/config/form.html',
-          controller: 'MicaConfigEditController',
-          resolve: {
-            resolvedMicaConfig: ['MicaConfig', function (MicaConfig) {
-              return MicaConfig.get();
-            }]
-          }
+          controller: 'MicaConfigEditController'
         })
     }]);

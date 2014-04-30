@@ -1,21 +1,21 @@
 'use strict';
 
-micaApp.controller('MicaConfigController', ['$scope', '$resource', '$log', 'resolvedMicaConfig', 'MicaConfig',
+micaApp.controller('MicaConfigController', ['$scope', '$resource', '$log', 'MicaConfigResource',
 
-  function ($scope, $resource, $log, resolvedMicaConfig, MicaConfig) {
-    $scope.micaConfig = resolvedMicaConfig;
+  function ($scope, $resource, $log, MicaConfigResource) {
+    $scope.micaConfig = MicaConfigResource.get();
     $scope.availableLanguages = $resource('ws/config/languages').get();
   }])
 
-  .controller('MicaConfigEditController', ['$scope', '$resource', '$location', '$log', 'resolvedMicaConfig', 'MicaConfig',
+  .controller('MicaConfigEditController', ['$scope', '$resource', '$location', '$log', 'MicaConfigResource',
 
-    function ($scope, $resource, $location, $log, resolvedMicaConfig, MicaConfig) {
+    function ($scope, $resource, $location, $log, MicaConfigResource) {
 
-      $scope.micaConfig = resolvedMicaConfig;
+      $scope.micaConfig = MicaConfigResource.get();
       $scope.availableLanguages = $resource('ws/config/languages').get();
 
       $scope.save = function () {
-        MicaConfig.save($scope.micaConfig,
+        MicaConfigResource.save($scope.micaConfig,
           function () {
             $location.path('/config').replace();
           },
