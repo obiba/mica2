@@ -76,6 +76,77 @@
           </tr>
           </tbody>
         </table>
+
+        <table class="table table-striped">
+          <caption translate="study.general-design">General Design</caption>
+          <tbody>
+          <tr ng-show="study.methods.designs.length || study.methods.otherDesign.length">
+            <td translate="study.design">Study Design</td>
+            <td>
+              <ul class="list-unstyled">
+                <li ng-repeat="design in study.methods.designs">
+                  <span translate="study.design.{{design}}">{{design}}</span>
+                </li>
+                <li ng-show="study.methods.otherDesign.length">
+                  <localized value="study.methods.otherDesign" lang="tab.lang"></localized>
+                </li>
+              </ul>
+            </td>
+          </tr>
+          <tr ng-show="study.methods.followUpInfo.length">
+            <td translate="study.follow-up">Follow Up</td>
+            <td>
+              <localized value="study.methods.followUpInfo" lang="tab.lang"></localized>
+            </td>
+          </tr>
+          <tr ng-show="study.methods.recruitments.length || study.methods.otherRecruitment.length">
+            <td translate="study.recruitment-target">Recruitment target</td>
+            <td>
+              <ul class="list-unstyled">
+                <li ng-repeat="recruitment in study.methods.recruitments">
+                  <span translate="study.recruitment.{{recruitment}}">{{recruitment}}</span>
+                </li>
+                <li ng-show="study.methods.otherRecruitment.length">
+                  <localized value="study.methods.otherRecruitment" lang="tab.lang"></localized>
+                </li>
+              </ul>
+            </td>
+          </tr>
+          <tr ng-show="study.numberOfParticipants.participant">
+            <td translate="study.target-number.participants">Target number of participants</td>
+            <td>
+              {{study.numberOfParticipants.participant.number | number}}
+              <span ng-show="study.numberOfParticipants.participant.noLimit" translate="study.target-number.no-limit">
+                No Limit
+              </span>
+            </td>
+          </tr>
+          <tr ng-show="study.numberOfParticipants.sample">
+            <td translate="study.target-number.sample">Target number of participants with biological samples</td>
+            <td>
+              {{study.numberOfParticipants.sample.number | number}}
+              <span ng-show="study.numberOfParticipants.sample.noLimit" translate="study.target-number.no-limit">
+                No Limit
+              </span>
+            </td>
+          </tr>
+          <tr ng-show="study.numberOfParticipants.info">
+            <td translate="study.target-number.suppl-info">
+              Supplementary information about target number of participants
+            </td>
+            <td>
+              <localized value="study.numberOfParticipants.info" lang="tab.lang"></localized>
+            </td>
+          </tr>
+          <tr ng-show="study.methods.info">
+            <td translate="suppl-info">Supplementary information</td>
+            <td>
+              <localized value="study.methods.info" lang="tab.lang"></localized>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+
       </div>
 
     </tab>
