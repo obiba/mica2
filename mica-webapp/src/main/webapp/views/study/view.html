@@ -11,8 +11,11 @@
     <tab ng-repeat="tab in tabs" heading="{{tab.lang}}" active="tab.active" disabled="tab.disabled">
 
       <div class="table-responsive">
+
+
+        <h3 translate="study.general-info">General Information</h3>
+
         <table class="table table-striped">
-          <caption translate="study.general-info">General Information</caption>
           <tbody>
           <tr ng-show="study.name.length">
             <td translate="study.name">Name</td>
@@ -81,8 +84,10 @@
           </tbody>
         </table>
 
-        <table class="table table-striped">
-          <caption translate="study.general-design">General Design</caption>
+        <h3 translate="study.general-design" ng-show="study.methods">
+          General Design
+        </h3>
+        <table class="table table-striped" ng-show="study.methods">
           <tbody>
           <tr ng-show="study.methods.designs.length || study.methods.otherDesign.length">
             <td translate="study.design">Study Design</td>
@@ -135,15 +140,15 @@
             </td>
           </tr>
           <tr ng-show="study.numberOfParticipants.info.length">
-          <td translate="study.target-number.suppl-info">
-              Supplementary information about target number of participants
+            <td translate="study.target-number.suppl-info">
+            Supplementary information about target number of participants
             </td>
             <td>
               <localized value="study.numberOfParticipants.info" lang="tab.lang"></localized>
             </td>
           </tr>
           <tr ng-show="study.methods.info.length">
-          <td translate="suppl-info">Supplementary information</td>
+            <td translate="suppl-info">Supplementary information</td>
             <td>
               <localized value="study.methods.info" lang="tab.lang"></localized>
             </td>
@@ -151,11 +156,13 @@
           </tbody>
         </table>
 
-        <table class="table table-striped">
-          <caption translate="study.access.label">Access</caption>
+        <h3 translate="study.access.label" ng-show="study.access.length || study.otherAccess.length">
+          Access
+        </h3>
+        <table class="table table-striped" ng-show="study.access.length || study.otherAccess.length">
           <tbody>
-          <tr ng-show="study.access.length || study.otherAccess.length">
-            <td translate="study.access.for">
+          <tr>
+          <td translate="study.access.for">
               Access to external researchers or third parties provided or foreseen for
             </td>
             <td>
@@ -172,8 +179,10 @@
           </tbody>
         </table>
 
+        <h3 translate="study.marker-paper" ng-show="study.markerPaper || study.pubmedId">
+          Marker Paper
+        </h3>
         <table class="table table-striped" ng-show="study.markerPaper || study.pubmedId">
-          <caption translate="study.marker-paper">Marker Paper</caption>
           <tbody>
           <tr ng-show="study.markerPaper">
             <td translate="study.marker-paper">Marker Paper</td>
@@ -189,6 +198,69 @@
           </tr>
           </tbody>
         </table>
+
+        <h3 translate="suppl-info" ng-show="study.info.length">
+          Supplementary Information
+        </h3>
+        <table class="table table-striped" ng-show="study.info.length">
+          <tbody>
+          <tr>
+            <td>
+              <localized value="study.info" lang="tab.lang"></localized>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+
+        <h3 translate="study.timeline" ng-show="study.populations.length">Study Timeline</h3>
+
+
+        <h3 translate="study.populations" ng-show="study.populations.length">Populations</h3>
+
+
+        <h3 translate="study.authorization" ng-show="study.specificAuthorization || study.maelstromAuthorization">
+          Authorization
+        </h3>
+
+        <table class="table table-striped" ng-show="study.specificAuthorization || study.maelstromAuthorization">
+          <tbody>
+          <tr ng-show="study.maelstromAuthorization">
+            <td translate="study.authorization.maelstrom">
+              Authorization from contributors to the Maelstrom catalogues
+            </td>
+            <td>
+              <span
+                  translate="study.authorization.{{study.maelstromAuthorization.authorized ? 'authorized' : 'not-authorized'}}">
+                {{study.maelstromAuthorization.authorized ? 'authorized' : 'not-authorized'}}
+              </span>
+              <span ng-show="study.maelstromAuthorization.authorizer">
+                By {{study.maelstromAuthorization.authorizer}}
+              </span>
+              <span ng-show="study.maelstromAuthorization.date">
+                On {{study.maelstromAuthorization.date}}
+              </span>
+            </td>
+          </tr>
+          <tr ng-show="study.specificAuthorization">
+            <td translate="study.authorization.specific">
+              Authorization from contributors to the [specific network] catalogues
+            </td>
+            <td>
+              <span
+                  translate="study.authorization.{{study.specificAuthorization.authorized ? 'authorized' : 'not-authorized'}}">
+                {{study.maelstromAuthorization.authorized ? 'authorized' : 'not-authorized'}}
+              </span>
+              <span ng-show="study.specificAuthorization.authorizer">
+                By {{study.specificAuthorization.authorizer}}
+              </span>
+              <span ng-show="study.specificAuthorization.date">
+                On {{study.specificAuthorization.date}}
+              </span>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+
 
       </div>
 
