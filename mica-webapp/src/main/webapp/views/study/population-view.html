@@ -38,9 +38,11 @@
       Country
     </dt>
     <dd ng-show="population.selectionCriteria.countriesIso.length">
-      <span ng-repeat="country in population.selectionCriteria.countriesIso">
-        {{country}}{{$last ? '' : ', '}}
-      </span>
+      <ul class="list-unstyled no-margin-bottom">
+        <li ng-repeat="country in population.selectionCriteria.countriesIso">
+          {{country}}
+        </li>
+      </ul>
     </dd>
 
     <dt translate="study.selection-criteria.territory" ng-show="population.selectionCriteria.territory.length">
@@ -54,18 +56,22 @@
       Ethnic Origin
     </dt>
     <dd ng-show="population.selectionCriteria.ethnicOrigin.length">
-      <span ng-repeat="ethnicOrigin in population.selectionCriteria.ethnicOrigin">
-        <localized value="ethnicOrigin" lang="tab.lang"></localized>{{$last ? '' : ', '}}
-      </span>
+      <ul class="list-unstyled no-margin-bottom">
+        <li ng-repeat="ethnicOrigin in population.selectionCriteria.ethnicOrigin">
+          <localized value="ethnicOrigin" lang="tab.lang"></localized>
+        </li>
+      </ul>
     </dd>
 
     <dt translate="study.selection-criteria.health-status" ng-show="population.selectionCriteria.healthStatus.length">
       Health Status
     </dt>
     <dd ng-show="population.selectionCriteria.healthStatus.length">
-      <span ng-repeat="healthStatus in population.selectionCriteria.healthStatus">
-        <localized value="healthStatus" lang="tab.lang"></localized>{{$last ? '' : ', '}}
-      </span>
+      <ul class="list-unstyled no-margin-bottom">
+        <li ng-repeat="healthStatus in population.selectionCriteria.healthStatus">
+          <localized value="healthStatus" lang="tab.lang"></localized>
+        </li>
+      </ul>
     </dd>
 
     <dt translate="other" ng-show="population.selectionCriteria.otherCriteria.length">
@@ -99,9 +105,11 @@
       General Population
     </dt>
     <dd ng-show="population.recruitment.generalPopulationSources.length">
-      <span ng-repeat="source in population.recruitment.generalPopulationSources">
-        <span translate="study.recruitment-sources.general-population.{{source}}">{{source}}</span>{{$last ? '' : ', '}}
-      </span>
+      <ul class="list-unstyled no-margin-bottom">
+        <li ng-repeat="source in population.recruitment.generalPopulationSources">
+          <span translate="study.recruitment-sources.general-population.{{source}}">{{source}}</span>
+        </li>
+      </ul>
     </dd>
 
     <dt translate="study.recruitment-sources.specific-population"
@@ -109,15 +117,15 @@
       Specific Population
     </dt>
     <dd ng-show="population.recruitment.specificPopulationSources.length || population.recruitment.otherSpecificPopulationSource.length">
-      <span ng-repeat="source in population.recruitment.specificPopulationSources">
-        <span translate="study.recruitment-sources.specific-population.{{source}}">{{source}}</span>{{$last ? '' : ', '}}
-      </span>
-      <div>
-        <localized value="population.recruitment.otherSpecificPopulationSource" lang="tab.lang"></localized>
-      </div>
+      <ul class="list-unstyled no-margin-bottom">
+        <li ng-repeat="source in population.recruitment.specificPopulationSources">
+          <span translate="study.recruitment-sources.specific-population.{{source}}">{{source}}</span>
+        </li>
+        <li ng-show="population.recruitment.otherSpecificPopulationSource.length">
+          <localized value="population.recruitment.otherSpecificPopulationSource" lang="tab.lang"></localized>
+        </li>
+      </ul>
     </dd>
-
-    <!--{{population.recruitment.studies}}-->
 
     <dt translate="study.recruitment-sources.studies" ng-show="population.recruitment.studies.length">
       Participants from existing studies
@@ -176,6 +184,43 @@
   <h5 translate="suppl-info" ng-show="population.info.length">Supplementary Information</h5>
   <localized value="population.info" lang="tab.lang"></localized>
 
-  <h5 translate="study.data-collection-events">Data Collection Events</h5>
+  <div class="clearfix"></div>
+
+  <h5 translate="study.data-collection-events" ng-show="population.dataCollectionEvents.length">
+    Data Collection Events
+  </h5>
+
+  <table class="table table-striped" ng-show="population.dataCollectionEvents.length">
+    <thead>
+    <tr>
+      <th translate="study.name">Name</th>
+      <th translate="study.description">Description</th>
+      <th translate="study.start">Start</th>
+      <th translate="study.end">End</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-repeat="dce in population.dataCollectionEvents">
+      <td>
+        <localized value="dce.name" lang="tab.lang"></localized>
+      </td>
+      <td>
+        <localized value="dce.description" lang="tab.lang"></localized>
+      </td>
+      <td>
+        {{dce.startYear}}
+        <span ng-show="dce.startMonth">
+          ({{months[dce.startMonth - 1]}})
+        </span>
+      </td>
+      <td>
+        {{dce.endYear}}
+        <span ng-show="dce.endMonth">
+          ({{months[dce.endMonth - 1]}})
+        </span>
+      </td>
+    </tr>
+    </tbody>
+  </table>
 
 </div>

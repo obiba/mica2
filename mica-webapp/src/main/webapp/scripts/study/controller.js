@@ -14,9 +14,9 @@ micaApp.controller('StudyListController', ['$scope', 'StudiesResource', 'StudyRe
     };
 
   }])
-  .controller('StudyViewController', ['$scope', '$routeParams', '$log', 'StudyResource', 'MicaConfigResource',
+  .controller('StudyViewController', ['$scope', '$routeParams', '$log', '$locale', 'StudyResource', 'MicaConfigResource',
 
-    function ($scope, $routeParams, $log, StudyResource, MicaConfigResource) {
+    function ($scope, $routeParams, $log, $locale, StudyResource, MicaConfigResource) {
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
@@ -27,6 +27,9 @@ micaApp.controller('StudyListController', ['$scope', 'StudiesResource', 'StudyRe
 
       $scope.study = StudyResource.get({id: $routeParams.id});
 
+      $scope.months = $locale.DATETIME_FORMATS.MONTH;
+
+      $log.debug('months', $scope.months);
       $log.debug('study', $scope.study);
 
     }])
