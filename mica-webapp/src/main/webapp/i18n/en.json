@@ -282,7 +282,77 @@
     "languages": "Languages",
     "languages-help": "Supported languages for studies and networks description"
   },
+  "study": {
+    "label": "Study",
+    "details": "Details",
+    "general-info": "General Information",
+    "name": "Name",
+    "acronym": "Acronym",
+    "objectives": "Objectives",
+    "website": "Website",
+    "investigators": "Investigators",
+    "contacts": "Contacts",
+    "start-year": "Start Year",
+    "end-year": "End Year",
+    "general-design": "General Design",
+    "design": "Study Design",
+    "follow-up": "Follow Up",
+    "recruitment-target": "Recruitment target",
+    "target-number": {
+      "participants": "Target number of participants",
+      "sample": "Target number of participants with biological samples",
+      "no-limit": "No Limit",
+      "suppl-info": "Supplementary information about target number of participants"
+    },
+    "access": {
+      "label": "Access",
+      "for": "Access to external researchers or third parties provided or foreseen for"
+    },
+    "marker-paper": "Marker Paper",
+    "pubmed-id": "Pubmed ID",
+    "timeline": "Study Timeline",
+    "populations": "Populations",
+    "authorization": {
+      "label": "Authorization",
+      "authorized": "Authorized",
+      "not-authorized": "Not authorized",
+      "maelstrom": "Authorization from contributors to the Maelstrom catalogues",
+      "specific": "Authorization from contributors to the [specific network] catalogues"
+    },
+    "selection-criteria": {
+      "label": "Selection criteria",
+      "gender": {
+        "label": "Gender",
+        "men": "Men",
+        "women": "Women"
+      },
+      "age": "Age",
+      "country": "Country",
+      "territory": "Territory",
+      "ethnic-origin": "Ethnic Origin",
+      "health-status": "Health Status"
+    },
+    "recruitment-sources": {
+      "label": "Sources of recruitment",
+      "general-population": "General Population",
+      "specific-population": "Specific Population",
+      "studies": "Participants from existing studies"
+    },
+    "participants-number": {
+      "participant": "Number of participants",
+      "sample": "Number of participants with biological samples"
+    },
+    "data-collection-events": "Data Collection Events",
+    "start": "Start",
+    "end": "End"
+  },
+
+  "networks": "Networks",
   "edit": "Edit",
   "cancel": "Cancel",
-  "save": "Save"
+  "save": "Save",
+  "on": "On",
+  "by": "By",
+  "other": "Other",
+  "suppl-info": "Supplementary information"
 }

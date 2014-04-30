@@ -8,7 +8,7 @@
     <localized value="population.description" lang="tab.lang"></localized>
   </p>
 
-  <h5 translate="study.selection-criteria">Selection criteria</h5>
+  <h5 translate="study.selection-criteria.label">Selection criteria</h5>
 
   <dl ng-repeat="criteria in population.selectionCriteria.criteria" class="dl-horizontal no-margin-bottom">
     <dt translate="study.selection-criteria.{{criteria}}">{{criteria}}</dt>
@@ -17,7 +17,7 @@
 
   <dl class="dl-horizontal">
 
-    <dt translate="study.selection-criteria.country" ng-show="population.selectionCriteria.gender">
+    <dt translate="study.selection-criteria.gender.label" ng-show="population.selectionCriteria.gender">
       Gender
     </dt>
     <dd ng-show="population.selectionCriteria.gender"
@@ -91,7 +91,7 @@
   </dl>
 
 
-  <h5 translate="study.recruitment-sources">Sources of recruitment</h5>
+  <h5 translate="study.recruitment-sources.label">Sources of recruitment</h5>
 
   <!--<dl ng-repeat="dataSource in population.recruitment.dataSources" class="dl-horizontal no-margin-bottom">-->
   <!--<dt translate="study.recruitment.dataSources.{{dataSource}}">{{dataSource}}</dt>-->
@@ -159,7 +159,7 @@
 
   <dl class="dl-horizontal" ng-show="population.numberOfParticipants">
 
-    <dt translate="study.participants-number" ng-show="population.numberOfParticipants.participant">
+    <dt translate="study.participants-number.participant" ng-show="population.numberOfParticipants.participant">
       Number of participants
     </dt>
     <dd ng-show="population.numberOfParticipants.participant">
