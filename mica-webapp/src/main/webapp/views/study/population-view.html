@@ -10,6 +10,80 @@
 
   <h5 translate="study.selection-criteria">Selection criteria</h5>
 
+  <dl class="dl-horizontal">
+
+    <dt translate="study.selection-criteria.country" ng-show="population.selectionCriteria.gender">
+      Gender
+    </dt>
+    <dd ng-show="population.selectionCriteria.gender"
+        translate="study.selection-criteria.gender.{{population.selectionCriteria.gender}}">
+    </dd>
+
+    <dt translate="study.selection-criteria.age"
+        ng-show="population.selectionCriteria.ageMin || population.selectionCriteria.ageMax">
+      Age
+    </dt>
+    <dd ng-show="population.selectionCriteria.ageMin || population.selectionCriteria.ageMax">
+      <span ng-show="population.selectionCriteria.ageMin">Minimum {{population.selectionCriteria.ageMin}}</span>
+      <span ng-show="population.selectionCriteria.ageMin && population.selectionCriteria.ageMax"> - </span>
+      <span ng-show="population.selectionCriteria.ageMax">Maximum {{population.selectionCriteria.ageMax}}</span>
+    </dd>
+
+    <dt translate="study.selection-criteria.country" ng-show="population.selectionCriteria.countriesIso.length">
+      Country
+    </dt>
+    <dd ng-show="population.selectionCriteria.countriesIso.length">
+      <span ng-repeat="country in population.selectionCriteria.countriesIso">
+        {{country}}{{$last ? '' : ', '}}
+      </span>
+    </dd>
+
+    <dt translate="study.selection-criteria.territory" ng-show="population.selectionCriteria.territory.length">
+      Territory
+    </dt>
+    <dd ng-show="population.selectionCriteria.territory.length">
+      <localized value="population.selectionCriteria.territory" lang="tab.lang"></localized>
+    </dd>
+
+    <dt ng-repeat="criteria in population.selectionCriteria.criteria">
+      <span translate="study.selection-criteria.{{criteria}}">{{criteria}}</span>
+    </dt>
+
+    <dt translate="study.selection-criteria.ethnic-origin" ng-show="population.selectionCriteria.ethnicOrigin.length">
+      Ethnic Origin
+    </dt>
+    <dd ng-show="population.selectionCriteria.ethnicOrigin.length">
+      <span ng-repeat="ethnicOrigin in population.selectionCriteria.ethnicOrigin">
+        <localized value="ethnicOrigin" lang="tab.lang"></localized>{{$last ? '' : ', '}}
+      </span>
+    </dd>
+
+    <dt translate="study.selection-criteria.health-status" ng-show="population.selectionCriteria.healthStatus.length">
+      Health Status
+    </dt>
+    <dd ng-show="population.selectionCriteria.healthStatus.length">
+      <span ng-repeat="healthStatus in population.selectionCriteria.healthStatus">
+        <localized value="healthStatus" lang="tab.lang"></localized>{{$last ? '' : ', '}}
+      </span>
+    </dd>
+
+    <dt translate="other" ng-show="population.selectionCriteria.otherCriteria.length">
+      Other
+    </dt>
+    <dd ng-show="population.selectionCriteria.otherCriteria.length">
+      <localized value="population.selectionCriteria.otherCriteria" lang="tab.lang"></localized>
+    </dd>
+
+    <dt translate="suppl-info" ng-show="population.selectionCriteria.info.length">
+      Supplementary Information
+    </dt>
+    <dd ng-show="population.selectionCriteria.info.length">
+      <localized value="population.selectionCriteria.info" lang="tab.lang"></localized>
+    </dd>
+
+  </dl>
+
+
   <h5 translate="study.recruitment-sources">Sources of recruitment</h5>
 
   <h5 translate="study.data-collection-events">Data Collection Events</h5>

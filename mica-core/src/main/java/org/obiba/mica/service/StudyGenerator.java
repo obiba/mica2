@@ -81,7 +81,7 @@ public class StudyGenerator {
 
     study.setMarkerPaper(
         "Raina PS, Wolfson C, Kirkland SA, Griffith LE, Oremus M, Patterson C, Tuokko H, Penning M, Balion CM, Hogan D, Wister A, Payette H, Shannon H, and Brazil K, The Canadian longitudinal study on aging (CLSA). Can J Aging, 2009. 28(3): p. 221-9.");
-    study.setPubmedId("PUBMED 19860977");
+    study.setPubmedId("19860977");
 
     study.addPopulation(createPopulation());
     study.setSpecificAuthorization(createAuthorization("opal"));
