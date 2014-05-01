@@ -46,4 +46,9 @@ micaApp.controller('StudyListController', ['$scope', 'StudiesResource', 'StudyRe
         $log.debug('languages', $scope.languages);
       });
 
+
+      $scope.save = function () {
+        $log.debug('scope.form', $scope.form);
+      };
+
     }]);

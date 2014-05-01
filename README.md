@@ -2,9 +2,18 @@
 
 ## For developers
 
-Use Makefile to build and run the project: `make help`
+Install NodeJS, Grunt and Bower
 
-Refer to `/vagrant-developer/scripts/setup.sh` for build dependencies (NodeJS, Yeoman, etc...)
+```
+sudo add-apt-repository -y ppa:chris-lea/node.js
+sudo apt-get install -y nodejs
+sudo npm install -g grunt-cli bower
+```
+
+Use Makefile to build and run the project: run `make all run` in one terminal and `make grunt` in another.
+
+See `make help` for other targets.
+
 
 
 ## Download

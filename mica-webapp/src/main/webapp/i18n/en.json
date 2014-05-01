@@ -289,6 +289,7 @@
     "name": "Name",
     "name-help": "Official study name",
     "acronym": "Acronym",
+    "acronym-help": "Acronym of the study if applicable",
     "objectives": "Objectives",
     "website": "Website",
     "investigators": "Investigators",
