@@ -5,15 +5,15 @@ micaApp
     function ($routeProvider, $httpProvider, $translateProvider) {
       $routeProvider
         .when('/study', {
-          templateUrl: 'views/study/studies.html',
+          templateUrl: 'views/study/list.html',
           controller: 'StudyListController'
         })
         .when('/study/:id', {
-          templateUrl: 'views/study/study-view.html',
+          templateUrl: 'views/study/view.html',
           controller: 'StudyViewController'
         })
         .when('/study/:id/edit', {
-          templateUrl: 'views/study/study-form.html',
+          templateUrl: 'views/study/form.html',
           controller: 'StudyEditController'
         })
     }]);

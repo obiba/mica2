@@ -34,10 +34,16 @@ micaApp.controller('StudyListController', ['$scope', 'StudiesResource', 'StudyRe
 
     }])
 
-  .controller('StudyEditController', ['$scope', '$routeParams', 'StudyResource',
+  .controller('StudyEditController', ['$scope', '$routeParams', '$log', 'StudyResource', 'MicaConfigResource',
 
-    function ($scope, $routeParams, StudyResource) {
+    function ($scope, $routeParams, $log, StudyResource, MicaConfigResource) {
 
       $scope.study = StudyResource.get({id: $routeParams.id});
+      $log.debug('study', $scope.study);
+
+      MicaConfigResource.get(function (micaConfig) {
+        $scope.languages = micaConfig.languages;
+        $log.debug('languages', $scope.languages);
+      });
 
     }]);

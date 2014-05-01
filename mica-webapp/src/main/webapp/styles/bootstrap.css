@@ -9239,3 +9239,7 @@ button.close {
 .no-margin-bottom {
   margin-bottom: 0;
 }
+
+form .tab-content {
+  padding-top: 20px;
+}

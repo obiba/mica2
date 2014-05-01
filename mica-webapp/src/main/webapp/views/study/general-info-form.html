@@ -1,0 +1,13 @@
+<div class="form-group" ng-class="{'has-error': form.name-lang.$invalid}">
+  <label for="name-{{lang}}" translate="study.name" class="control-label">Name</label>
+  <span ng-repeat="name in study.name | filter:{lang:lang}">
+    <input type="text" class="form-control" id="name-{{lang}}" name="name-{{lang}}" ng-model="name.value"
+        required server-error>
+  </span>
+  <p class="input-error" ng-show="form.name-lang.$dirty && form.name-lang.$invalid">
+    <span ng-show="form.name-lang.$error.server">{{ errors.name-lang }}</span>
+    <span ng-show="form.name-lang.$error.required">Required</span>
+  </p>
+  <p class="help-block" translate="study.name-help">Name of your organization</p>
+</div>
+
