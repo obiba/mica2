@@ -1,37 +1,23 @@
 <div class="form-group" ng-class="{'has-error': form.name-lang.$invalid}">
   <label for="name-{{lang}}" translate="study.name" class="control-label">Name</label>
   <input ng-repeat="name in study.name | filter:{lang:lang}" type="text" class="form-control"
-      id="'name-'+lang" name="name-{{lang}}" ng-model="name.value" required server-error>
-  <p class="input-error" ng-show="form['name_' + lang].$dirty && form['name_' + lang].$invalid">
-    <span ng-show="form['name_' + lang].$error.server">{{ errors['name_' + lang]}}</span>
-    <span ng-show="form['name_' + lang].$error.required">Required</span>
+      id="name-{{lang}}" name="name-{{lang}}" ng-model="name.value" required server-error>
+  <p class="input-error" ng-show="form['name-' + lang].$dirty && form['name-' + lang].$invalid">
+    <span ng-show="form['name-' + lang].$error.server">{{ errors['name-' + lang]}}</span>
+    <span ng-show="form['name-' + lang].$error.required">Required</span>
   </p>
   <p class="help-block" translate="study.name-help">Name of your organization</p>
 </div>
 
 <div class="form-group" ng-class="{'has-error': form.acronym-lang.$invalid}">
   <label for="acronym-{{lang}}" translate="study.acronym" class="control-label">Acronym</label>
-  <span ng-repeat="acronym in study.acronym | filter:{lang:lang}">
-    <input type="text" class="form-control" id="acronym-{{lang}}" name="acronym-{{lang}}" ng-model="acronym.value"
-        server-error>
-  </span>
+  <input ng-repeat="acronym in study.acronym | filter:{lang:lang}" type="text" class="form-control"
+      id="acronym-{{lang}}" name="acronym-{{lang}}" ng-model="name.value" required server-error>
   <p class="input-error" ng-show="form['acronym-' + lang].$dirty && form['acronym-' + lang].$invalid">
     <span ng-show="form['acronym-' + lang].$error.server">{{ errors['acronym-' + lang]}}</span>
   </p>
   <p class="help-block" translate="study.acronym-help">Acronym of the study if applicable</p>
 </div>
 
-
-lang: {{lang}}<br/>
-form.$error: {{form.$error}}<br/>
-form.$invalid: {{form.$invalid}}<br/>
-<span ng-repeat="input in form">
-  input: {{input}}<br/>
-  input.name: {{input.name}}<br/>
-  input.$error: {{input.$error}}<br/>
-</span>
-form.name_en.$error: {{form.name_en.$error}}<br/>
-form['name_' + lang].$error: {{form['name_' + lang].$error}}<br/>
-form.name_lang.$error: {{form.name_lang.$error}}<br/>
 
 
