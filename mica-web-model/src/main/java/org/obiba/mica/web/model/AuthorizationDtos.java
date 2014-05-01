@@ -18,19 +18,17 @@ class AuthorizationDtos {
   static AuthorizationDto asDto(@NotNull Authorization authorization) {
     AuthorizationDto.Builder builder = AuthorizationDto.newBuilder();
     builder.setAuthorized(authorization.isAuthorized());
-    if (!Strings.isNullOrEmpty(authorization.getAuthorizer())) builder.setAuthorizer(authorization.getAuthorizer());
-    if (authorization.getDate() != null) builder.setDate(authorization.getDate().toString());
-
+    if(!Strings.isNullOrEmpty(authorization.getAuthorizer())) builder.setAuthorizer(authorization.getAuthorizer());
+    if(authorization.getDate() != null) builder.setDate(authorization.getDate().toString());
     return builder.build();
   }
 
   @NotNull
   static Authorization fromDto(@NotNull AuthorizationDto dto) {
     Authorization authorization = new Authorization();
-    if (dto.hasAuthorizer()) authorization.setAuthorizer(dto.getAuthorizer());
-    if (dto.hasAuthorized()) authorization.setAuthorized(dto.getAuthorized());
-    if (dto.hasDate()) authorization.setDate(LocalDateTime.parse(dto.getDate()));
-
+    if(dto.hasAuthorizer()) authorization.setAuthorizer(dto.getAuthorizer());
+    if(dto.hasAuthorized()) authorization.setAuthorized(dto.getAuthorized());
+    if(dto.hasDate()) authorization.setDate(LocalDateTime.parse(dto.getDate()));
     return authorization;
   }
 

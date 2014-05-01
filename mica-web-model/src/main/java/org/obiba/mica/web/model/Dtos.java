@@ -19,6 +19,7 @@ import static org.obiba.mica.web.model.Mica.StudyDtoOrBuilder;
 import static org.obiba.mica.web.model.Mica.StudySummaryDto;
 
 @Component
+@SuppressWarnings("OverlyCoupledClass")
 public class Dtos {
 
   @Inject
@@ -33,6 +34,9 @@ public class Dtos {
   @Inject
   private NetworkDtos networkDtos;
 
+  @Inject
+  private StudySummaryDtos studySummaryDtos;
+
   @NotNull
   public StudyDto asDto(@NotNull Study study) {
     return studyDtos.asDto(study, studyService.findStateByStudy(study));
@@ -40,7 +44,7 @@ public class Dtos {
 
   @NotNull
   public StudySummaryDto asDto(@NotNull StudyState studyState) {
-    return StudySummaryDtos.asDto(studyState);
+    return studySummaryDtos.asDto(studyState);
   }
 
   @NotNull

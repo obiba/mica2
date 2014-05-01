@@ -17,6 +17,9 @@ class ContactDtos {
   @Inject
   private MicaConfigService micaConfigService;
 
+  @Inject
+  private LocalizedStringDtos localizedStringDtos;
+
   Mica.ContactDto asDto(Contact contact) {
     Mica.ContactDto.Builder builder = Mica.ContactDto.newBuilder().setLastName(contact.getLastName());
     if(!isNullOrEmpty(contact.getTitle())) builder.setTitle(contact.getTitle());
@@ -40,9 +43,9 @@ class ContactDtos {
 
   private Mica.ContactDto.InstitutionDto asDto(Contact.Institution institution) {
     Mica.ContactDto.InstitutionDto.Builder builder = Mica.ContactDto.InstitutionDto.newBuilder();
-    if(institution.getName() != null) builder.addAllName(LocalizedStringDtos.asDto(institution.getName()));
-    if(institution.getDepartment() != null){
-      builder.addAllDepartment(LocalizedStringDtos.asDto(institution.getDepartment()));
+    if(institution.getName() != null) builder.addAllName(localizedStringDtos.asDto(institution.getName()));
+    if(institution.getDepartment() != null) {
+      builder.addAllDepartment(localizedStringDtos.asDto(institution.getDepartment()));
     }
     if(institution.getAddress() != null) builder.setAddress(asDto(institution.getAddress()));
     return builder.build();
@@ -50,16 +53,16 @@ class ContactDtos {
 
   private Contact.Institution fromDto(Mica.ContactDto.InstitutionDtoOrBuilder dto) {
     Contact.Institution institution = new Contact.Institution();
-    institution.setName(LocalizedStringDtos.fromDto(dto.getNameList()));
-    institution.setDepartment(LocalizedStringDtos.fromDto(dto.getDepartmentList()));
+    institution.setName(localizedStringDtos.fromDto(dto.getNameList()));
+    institution.setDepartment(localizedStringDtos.fromDto(dto.getDepartmentList()));
     if(dto.hasAddress()) institution.setAddress(fromDto(dto.getAddress()));
     return institution;
   }
 
   private Mica.AddressDto asDto(Address address) {
     Mica.AddressDto.Builder builder = Mica.AddressDto.newBuilder();
-    if(address.getStreet() != null) builder.addAllStreet(LocalizedStringDtos.asDto(address.getStreet()));
-    if(address.getCity() != null) builder.addAllCity(LocalizedStringDtos.asDto(address.getCity()));
+    if(address.getStreet() != null) builder.addAllStreet(localizedStringDtos.asDto(address.getStreet()));
+    if(address.getCity() != null) builder.addAllCity(localizedStringDtos.asDto(address.getCity()));
     if(!isNullOrEmpty(address.getZip())) builder.setZip(address.getZip());
     if(!isNullOrEmpty(address.getState())) builder.setState(address.getState());
     if(!isNullOrEmpty(address.getCountryIso())) builder.setCountry(asDto(address.getCountryIso()));
@@ -68,8 +71,8 @@ class ContactDtos {
 
   private Address fromDto(Mica.AddressDtoOrBuilder dto) {
     Address address = new Address();
-    address.setStreet(LocalizedStringDtos.fromDto(dto.getStreetList()));
-    address.setCity(LocalizedStringDtos.fromDto(dto.getCityList()));
+    address.setStreet(localizedStringDtos.fromDto(dto.getStreetList()));
+    address.setCity(localizedStringDtos.fromDto(dto.getCityList()));
     if(dto.hasZip()) address.setZip(dto.getZip());
     if(dto.hasState()) address.setState(dto.getState());
     if(dto.hasCountry()) address.setCountryIso(dto.getCountry().getIso());

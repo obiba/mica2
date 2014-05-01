@@ -6,6 +6,8 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
+import org.bson.types.ObjectId;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -27,6 +29,7 @@ import org.obiba.mica.service.GitService;
 import org.obiba.mica.service.MicaConfigService;
 import org.obiba.mica.service.StudyService;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -58,10 +61,17 @@ public class StudyDtosTest {
   @Inject
   private Dtos dtos;
 
+  @Before
+  public void before() {
+    MicaConfig config = new MicaConfig();
+    config.setLocales(Arrays.asList(Locale.ENGLISH, Locale.FRENCH));
+    when(micaConfigService.getConfig()).thenReturn(config);
+  }
+
   @Test
   public void test_required_only_dto() throws Exception {
     Study study = new Study();
-    study.setId("study_1");
+    study.setId(new ObjectId().toString());
     study.setName(en("Canadian Longitudinal Study on Aging"));
     study.setObjectives(en("The Canadian Longitudinal Study on Aging (CLSA) is a large, national, long-term study"));
 
@@ -69,8 +79,6 @@ public class StudyDtosTest {
     studyState.setId(study.getId());
 
     when(studyService.findStateByStudy(study)).thenReturn(studyState);
-    when(micaConfigService.getConfig()).thenReturn(Mockito.mock(MicaConfig.class));
-    when(micaConfigService.getConfig().getLocales()).thenReturn(Arrays.asList(Locale.ENGLISH, Locale.FRENCH));
 
     Mica.StudyDto dto = dtos.asDto(study);
     Study fromDto = dtos.fromDto(dto);
@@ -84,8 +92,6 @@ public class StudyDtosTest {
     StudyState studyState = new StudyState();
     studyState.setId(study.getId());
     when(studyService.findStateByStudy(study)).thenReturn(studyState);
-    when(micaConfigService.getConfig()).thenReturn(Mockito.mock(MicaConfig.class));
-    when(micaConfigService.getConfig().getLocales()).thenReturn(Arrays.asList(Locale.ENGLISH, Locale.FRENCH));
 
     Mica.StudyDto dto = dtos.asDto(study);
     Study fromDto = dtos.fromDto(dto);
@@ -289,22 +295,8 @@ public class StudyDtosTest {
   }
 
   @Configuration
+  @ComponentScan("org.obiba.mica.web.model")
   static class Config {
-
-    @Bean
-    public Dtos dtos() {
-      return new Dtos();
-    }
-
-    @Bean
-    public StudyDtos studyDtos() {
-      return new StudyDtos();
-    }
-
-    @Bean
-    public ContactDtos contactDtos() {
-      return new ContactDtos();
-    }
 
     @Bean
     public StudyService studyService() {
@@ -339,16 +331,6 @@ public class StudyDtosTest {
     @Bean
     public StudyStateRepository studyStateRepository() {
       return Mockito.mock(StudyStateRepository.class);
-    }
-
-    @Bean
-    public MicaConfigDtos micaConfigDtos() {
-      return Mockito.mock(MicaConfigDtos.class);
-    }
-
-    @Bean
-    public NetworkDtos networkDtos() {
-      return Mockito.mock(NetworkDtos.class);
     }
 
   }

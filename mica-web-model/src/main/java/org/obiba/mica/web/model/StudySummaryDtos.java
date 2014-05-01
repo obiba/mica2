@@ -1,20 +1,24 @@
 package org.obiba.mica.web.model;
 
+import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.domain.StudyState;
+import org.springframework.stereotype.Component;
 
+@Component
 @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
 class StudySummaryDtos {
 
-  private StudySummaryDtos() {}
+  @Inject
+  private LocalizedStringDtos localizedStringDtos;
 
   @NotNull
-  static Mica.StudySummaryDto asDto(@NotNull StudyState studyState) {
+  Mica.StudySummaryDto asDto(@NotNull StudyState studyState) {
     Mica.StudySummaryDto.Builder builder = Mica.StudySummaryDto.newBuilder();
     builder.setId(studyState.getId()) //
         .setTimestamps(TimestampsDtos.asDto(studyState)) //
-        .addAllName(LocalizedStringDtos.asDto(studyState.getName()));
+        .addAllName(localizedStringDtos.asDto(studyState.getName()));
     return builder.build();
   }
 

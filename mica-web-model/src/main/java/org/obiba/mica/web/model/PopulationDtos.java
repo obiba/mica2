@@ -2,33 +2,45 @@ package org.obiba.mica.web.model;
 
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.domain.Attachment;
 import org.obiba.mica.domain.DataCollectionEvent;
 import org.obiba.mica.domain.Population;
+import org.springframework.stereotype.Component;
 
 import static org.obiba.mica.web.model.Mica.StudyDto.PopulationDto;
 
+@Component
+@SuppressWarnings("OverlyLongMethod")
 class PopulationDtos {
-  private PopulationDtos() {}
+
+  @Inject
+  private LocalizedStringDtos localizedStringDtos;
+
+  @Inject
+  private NumberOfParticipantsDtos numberOfParticipantsDtos;
+
+  @Inject
+  private AttachmentDtos attachmentDtos;
 
   @NotNull
-  static PopulationDto asDto(Population population) {
+  PopulationDto asDto(Population population) {
     PopulationDto.Builder builder = PopulationDto.newBuilder();
     builder.setId(population.getId());
-    if(population.getName() != null) builder.addAllName(LocalizedStringDtos.asDto(population.getName()));
+    if(population.getName() != null) builder.addAllName(localizedStringDtos.asDto(population.getName()));
     if(population.getDescription() != null) {
-      builder.addAllDescription(LocalizedStringDtos.asDto(population.getDescription()));
+      builder.addAllDescription(localizedStringDtos.asDto(population.getDescription()));
     }
     if(population.getRecruitment() != null) builder.setRecruitment(asDto(population.getRecruitment()));
     if(population.getSelectionCriteria() != null) {
       builder.setSelectionCriteria(asDto(population.getSelectionCriteria()));
     }
     if(population.getNumberOfParticipants() != null) {
-      builder.setNumberOfParticipants(NumberOfParticipantsDtos.asDto(population.getNumberOfParticipants()));
+      builder.setNumberOfParticipants(numberOfParticipantsDtos.asDto(population.getNumberOfParticipants()));
     }
-    if (population.getDataCollectionEvents() != null) {
+    if(population.getDataCollectionEvents() != null) {
       population.getDataCollectionEvents().forEach(dce -> builder.addDataCollectionEvents(asDto(dce)));
     }
 
@@ -36,15 +48,15 @@ class PopulationDtos {
   }
 
   @NotNull
-  static Population fromDto(PopulationDto dto) {
+  Population fromDto(Mica.StudyDto.PopulationDtoOrBuilder dto) {
     Population population = new Population();
     population.setId(dto.getId());
-    if(dto.getNameCount() > 0) population.setName(LocalizedStringDtos.fromDto(dto.getNameList()));
-    if(dto.getDescriptionCount() > 0) population.setDescription(LocalizedStringDtos.fromDto(dto.getDescriptionList()));
+    if(dto.getNameCount() > 0) population.setName(localizedStringDtos.fromDto(dto.getNameList()));
+    if(dto.getDescriptionCount() > 0) population.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
     if(dto.hasRecruitment()) population.setRecruitment(fromDto(dto.getRecruitment()));
     if(dto.hasSelectionCriteria()) population.setSelectionCriteria(fromDto(dto.getSelectionCriteria()));
     if(dto.hasNumberOfParticipants()) {
-      population.setNumberOfParticipants(NumberOfParticipantsDtos.fromDto(dto.getNumberOfParticipants()));
+      population.setNumberOfParticipants(numberOfParticipantsDtos.fromDto(dto.getNumberOfParticipants()));
     }
     if(dto.getDataCollectionEventsCount() > 0) {
       dto.getDataCollectionEventsList().forEach(dceDto -> population.addDataCollectionEvent(fromDto(dceDto)));
@@ -53,35 +65,35 @@ class PopulationDtos {
   }
 
   @NotNull
-  private static PopulationDto.SelectionCriteriaDto asDto(Population.SelectionCriteria selectionCriteria) {
+  private PopulationDto.SelectionCriteriaDto asDto(Population.SelectionCriteria selectionCriteria) {
     PopulationDto.SelectionCriteriaDto.Builder builder = PopulationDto.SelectionCriteriaDto.newBuilder();
     builder.setGender(PopulationDto.SelectionCriteriaDto.Gender.valueOf(selectionCriteria.getGender().ordinal()));
     builder.setAgeMin(selectionCriteria.getAgeMin());
     builder.setAgeMax(selectionCriteria.getAgeMax());
     if(selectionCriteria.getCountriesIso() != null) {
-      selectionCriteria.getCountriesIso().forEach(country -> builder.addCountriesIso(country));
+      selectionCriteria.getCountriesIso().forEach(builder::addCountriesIso);
     }
     if(selectionCriteria.getTerritory() != null) {
-      builder.addAllTerritory(LocalizedStringDtos.asDto(selectionCriteria.getTerritory()));
+      builder.addAllTerritory(localizedStringDtos.asDto(selectionCriteria.getTerritory()));
     }
     if(selectionCriteria.getCriteria() != null) {
-      selectionCriteria.getCriteria().forEach(criteria -> builder.addCriteria(criteria));
+      selectionCriteria.getCriteria().forEach(builder::addCriteria);
     }
     if(selectionCriteria.getEthnicOrigin() != null) {
-      builder.addAllEthnicOrigin(LocalizedStringDtos.asDtoList(selectionCriteria.getEthnicOrigin()));
+      builder.addAllEthnicOrigin(localizedStringDtos.asDtoList(selectionCriteria.getEthnicOrigin()));
     }
     if(selectionCriteria.getHealthStatus() != null) {
-      builder.addAllHealthStatus(LocalizedStringDtos.asDtoList(selectionCriteria.getHealthStatus()));
+      builder.addAllHealthStatus(localizedStringDtos.asDtoList(selectionCriteria.getHealthStatus()));
     }
     if(selectionCriteria.getOtherCriteria() != null) {
-      builder.addAllOtherCriteria(LocalizedStringDtos.asDto(selectionCriteria.getOtherCriteria()));
+      builder.addAllOtherCriteria(localizedStringDtos.asDto(selectionCriteria.getOtherCriteria()));
     }
-    if(selectionCriteria.getInfo() != null) builder.addAllInfo(LocalizedStringDtos.asDto(selectionCriteria.getInfo()));
+    if(selectionCriteria.getInfo() != null) builder.addAllInfo(localizedStringDtos.asDto(selectionCriteria.getInfo()));
     return builder.build();
   }
 
   @NotNull
-  private static Population.SelectionCriteria fromDto(PopulationDto.SelectionCriteriaDto dto) {
+  private Population.SelectionCriteria fromDto(PopulationDto.SelectionCriteriaDto dto) {
     Population.SelectionCriteria selectionCriteria = new Population.SelectionCriteria();
     if(dto.hasGender()) {
       selectionCriteria.setGender(Population.SelectionCriteria.Gender.valueOf(dto.getGender().name()));
@@ -89,50 +101,49 @@ class PopulationDtos {
     if(dto.hasAgeMin()) selectionCriteria.setAgeMin(dto.getAgeMin());
     if(dto.hasAgeMax()) selectionCriteria.setAgeMax(dto.getAgeMax());
     if(dto.getCountriesIsoCount() > 0) selectionCriteria.setCountriesIso(dto.getCountriesIsoList());
-    if(dto.getTerritoryCount() > 0) selectionCriteria.setTerritory(LocalizedStringDtos.fromDto(dto.getTerritoryList()));
+    if(dto.getTerritoryCount() > 0) selectionCriteria.setTerritory(localizedStringDtos.fromDto(dto.getTerritoryList()));
     if(dto.getCriteriaCount() > 0) selectionCriteria.setCriteria(dto.getCriteriaList());
     if(dto.getEthnicOriginCount() > 0) {
-      selectionCriteria.setEthnicOrigin(LocalizedStringDtos.fromDtoList(dto.getEthnicOriginList()));
+      selectionCriteria.setEthnicOrigin(localizedStringDtos.fromDtoList(dto.getEthnicOriginList()));
     }
     if(dto.getHealthStatusCount() > 0) {
-      selectionCriteria.setHealthStatus(LocalizedStringDtos.fromDtoList(dto.getHealthStatusList()));
+      selectionCriteria.setHealthStatus(localizedStringDtos.fromDtoList(dto.getHealthStatusList()));
     }
     if(dto.getOtherCriteriaCount() > 0) {
-      selectionCriteria.setOtherCriteria(LocalizedStringDtos.fromDto(dto.getOtherCriteriaList()));
+      selectionCriteria.setOtherCriteria(localizedStringDtos.fromDto(dto.getOtherCriteriaList()));
     }
-    if(dto.getInfoCount() > 0) selectionCriteria.setInfo(LocalizedStringDtos.fromDto(dto.getInfoList()));
+    if(dto.getInfoCount() > 0) selectionCriteria.setInfo(localizedStringDtos.fromDto(dto.getInfoList()));
     return selectionCriteria;
   }
 
   @NotNull
-  private static PopulationDto.RecruitmentDto asDto(@NotNull Population.Recruitment recruitment) {
+  private PopulationDto.RecruitmentDto asDto(@NotNull Population.Recruitment recruitment) {
     PopulationDto.RecruitmentDto.Builder builder = PopulationDto.RecruitmentDto.newBuilder();
     if(recruitment.getDataSources() != null) {
-      recruitment.getDataSources().forEach(datasource -> builder.addDataSources(datasource));
+      recruitment.getDataSources().forEach(builder::addDataSources);
     }
     if(recruitment.getGeneralPopulationSources() != null) {
-      recruitment.getGeneralPopulationSources().forEach(datasource -> builder.addGeneralPopulationSources(datasource));
+      recruitment.getGeneralPopulationSources().forEach(builder::addGeneralPopulationSources);
     }
     if(recruitment.getSpecificPopulationSources() != null) {
-      recruitment.getSpecificPopulationSources()
-          .forEach(datasource -> builder.addSpecificPopulationSources(datasource));
+      recruitment.getSpecificPopulationSources().forEach(builder::addSpecificPopulationSources);
     }
     if(recruitment.getOtherSpecificPopulationSource() != null) {
       builder.addAllOtherSpecificPopulationSource(
-          LocalizedStringDtos.asDto(recruitment.getOtherSpecificPopulationSource()));
+          localizedStringDtos.asDto(recruitment.getOtherSpecificPopulationSource()));
     }
     if(recruitment.getStudies() != null) {
-      builder.addAllStudies(LocalizedStringDtos.asDtoList(recruitment.getStudies()));
+      builder.addAllStudies(localizedStringDtos.asDtoList(recruitment.getStudies()));
     }
     if(recruitment.getOtherSource() != null) {
-      builder.addAllOtherSource(LocalizedStringDtos.asDto(recruitment.getOtherSource()));
+      builder.addAllOtherSource(localizedStringDtos.asDto(recruitment.getOtherSource()));
     }
-    if(recruitment.getInfo() != null) builder.addAllInfo(LocalizedStringDtos.asDto(recruitment.getInfo()));
+    if(recruitment.getInfo() != null) builder.addAllInfo(localizedStringDtos.asDto(recruitment.getInfo()));
     return builder.build();
   }
 
   @NotNull
-  private static Population.Recruitment fromDto(@NotNull PopulationDto.RecruitmentDto dto) {
+  private Population.Recruitment fromDto(@NotNull PopulationDto.RecruitmentDtoOrBuilder dto) {
     Population.Recruitment recruitment = new Population.Recruitment();
     if(dto.getDataSourcesCount() > 0) recruitment.setDataSources(dto.getDataSourcesList());
     if(dto.getGeneralPopulationSourcesCount() > 0) {
@@ -143,53 +154,53 @@ class PopulationDtos {
     }
     if(dto.getOtherSpecificPopulationSourceCount() > 0) {
       recruitment
-          .setOtherSpecificPopulationSource(LocalizedStringDtos.fromDto(dto.getOtherSpecificPopulationSourceList()));
+          .setOtherSpecificPopulationSource(localizedStringDtos.fromDto(dto.getOtherSpecificPopulationSourceList()));
     }
-    if (dto.getStudiesCount() > 0) {
-      recruitment.setStudies(LocalizedStringDtos.fromDtoList(dto.getStudiesList()));
+    if(dto.getStudiesCount() > 0) {
+      recruitment.setStudies(localizedStringDtos.fromDtoList(dto.getStudiesList()));
     }
     if(dto.getOtherSourceCount() > 0) {
-      recruitment.setOtherSource(LocalizedStringDtos.fromDto(dto.getOtherSourceList()));
+      recruitment.setOtherSource(localizedStringDtos.fromDto(dto.getOtherSourceList()));
     }
-    if(dto.getInfoCount() > 0) recruitment.setInfo(LocalizedStringDtos.fromDto(dto.getInfoList()));
+    if(dto.getInfoCount() > 0) recruitment.setInfo(localizedStringDtos.fromDto(dto.getInfoList()));
 
     return recruitment;
   }
 
   @NotNull
-  static PopulationDto.DataCollectionEventDto asDto(@NotNull DataCollectionEvent dce) {
+  PopulationDto.DataCollectionEventDto asDto(@NotNull DataCollectionEvent dce) {
     PopulationDto.DataCollectionEventDto.Builder builder = PopulationDto.DataCollectionEventDto.newBuilder();
     builder.setId(dce.getId());
-    if(dce.getName() != null) builder.addAllName(LocalizedStringDtos.asDto(dce.getName()));
-    if(dce.getDescription() != null) builder.addAllDescription(LocalizedStringDtos.asDto(dce.getDescription()));
+    if(dce.getName() != null) builder.addAllName(localizedStringDtos.asDto(dce.getName()));
+    if(dce.getDescription() != null) builder.addAllDescription(localizedStringDtos.asDto(dce.getDescription()));
     if(dce.getStartYear() != null) builder.setStartYear(dce.getStartYear());
     if(dce.getStartMonth() != null) builder.setStartMonth(dce.getStartMonth());
     if(dce.getEndYear() != null) builder.setEndYear(dce.getEndYear());
     if(dce.getEndMonth() != null) builder.setEndMonth(dce.getEndMonth());
-    if(dce.getDataSources() != null) dce.getDataSources().forEach(ds -> builder.addDataSources(ds));
+    if(dce.getDataSources() != null) dce.getDataSources().forEach(builder::addDataSources);
     if(dce.getAdministrativeDatabases() != null) {
-      dce.getAdministrativeDatabases().forEach(adminDb -> builder.addAdministrativeDatabases(adminDb));
+      dce.getAdministrativeDatabases().forEach(builder::addAdministrativeDatabases);
     }
     if(dce.getOtherDataSources() != null) {
-      builder.addAllOtherDataSources(LocalizedStringDtos.asDto(dce.getOtherDataSources()));
+      builder.addAllOtherDataSources(localizedStringDtos.asDto(dce.getOtherDataSources()));
     }
-    if (dce.getBioSamples() != null) dce.getBioSamples().forEach(sample -> builder.addBioSamples(sample));
-    if(dce.getTissueTypes() != null) builder.addAllTissueTypes(LocalizedStringDtos.asDto(dce.getTissueTypes()));
+    if(dce.getBioSamples() != null) dce.getBioSamples().forEach(builder::addBioSamples);
+    if(dce.getTissueTypes() != null) builder.addAllTissueTypes(localizedStringDtos.asDto(dce.getTissueTypes()));
     if(dce.getOtherBioSamples() != null) {
-      builder.addAllOtherBioSamples(LocalizedStringDtos.asDto(dce.getOtherBioSamples()));
+      builder.addAllOtherBioSamples(localizedStringDtos.asDto(dce.getOtherBioSamples()));
     }
     if(dce.getAttachments() != null) {
-      dce.getAttachments().forEach(attachment -> builder.addAttachments(AttachmentDtos.asDto(attachment)));
+      dce.getAttachments().forEach(attachment -> builder.addAttachments(attachmentDtos.asDto(attachment)));
     }
     return builder.build();
   }
 
   @NotNull
-  static DataCollectionEvent fromDto(@NotNull PopulationDto.DataCollectionEventDto dto) {
+  DataCollectionEvent fromDto(@NotNull PopulationDto.DataCollectionEventDto dto) {
     DataCollectionEvent dce = new DataCollectionEvent();
     dce.setId(dto.getId());
-    if(dto.getNameCount() > 0) dce.setName(LocalizedStringDtos.fromDto(dto.getNameList()));
-    if(dto.getDescriptionCount() > 0) dce.setDescription(LocalizedStringDtos.fromDto(dto.getDescriptionList()));
+    if(dto.getNameCount() > 0) dce.setName(localizedStringDtos.fromDto(dto.getNameList()));
+    if(dto.getDescriptionCount() > 0) dce.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
     if(dto.hasStartYear()) dce.setStartYear(dto.getStartYear());
     if(dto.hasStartMonth()) dce.setStartMonth(dto.getStartMonth());
     if(dto.hasEndYear()) dce.setEndYear(dto.getEndYear());
@@ -197,16 +208,16 @@ class PopulationDtos {
     if(dto.getDataSourcesCount() > 0) dce.setDataSources(dto.getDataSourcesList());
     if(dto.getAdministrativeDatabasesCount() > 0) dce.setAdministrativeDatabases(dto.getAdministrativeDatabasesList());
     if(dto.getOtherDataSourcesCount() > 0) {
-      dce.setOtherDataSources(LocalizedStringDtos.fromDto(dto.getOtherDataSourcesList()));
+      dce.setOtherDataSources(localizedStringDtos.fromDto(dto.getOtherDataSourcesList()));
     }
     if(dto.getBioSamplesCount() > 0) dce.setBioSamples(dto.getBioSamplesList());
-    if(dto.getTissueTypesCount() > 0) dce.setTissueTypes(LocalizedStringDtos.fromDto(dto.getTissueTypesList()));
+    if(dto.getTissueTypesCount() > 0) dce.setTissueTypes(localizedStringDtos.fromDto(dto.getTissueTypesList()));
     if(dto.getOtherBioSamplesCount() > 0) {
-      dce.setOtherBioSamples(LocalizedStringDtos.fromDto(dto.getOtherBioSamplesList()));
+      dce.setOtherBioSamples(localizedStringDtos.fromDto(dto.getOtherBioSamplesList()));
     }
     if(dto.getAttachmentsCount() > 0) {
       dce.setAttachments(
-          dto.getAttachmentsList().stream().map(AttachmentDtos::fromDto).collect(Collectors.<Attachment>toList()));
+          dto.getAttachmentsList().stream().map(attachmentDtos::fromDto).collect(Collectors.<Attachment>toList()));
     }
     return dce;
   }

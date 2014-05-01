@@ -1,6 +1,7 @@
 package org.obiba.mica.domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -8,7 +9,6 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.google.common.base.Function;
 import com.google.common.base.Objects;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -48,12 +48,9 @@ public class MicaConfig extends AbstractAuditableDocument {
   }
 
   public List<String> getLocalesAsString() {
-    return Lists.newArrayList(Iterables.transform(getLocales(), new Function<Locale, String>() {
-      @Override
-      public String apply(Locale locale) {
-        return locale.getLanguage();
-      }
-    }));
+    List<String> list = Lists.newArrayList(Iterables.transform(getLocales(), Locale::getLanguage));
+    Collections.sort(list);
+    return list;
   }
 
   public void setLocales(List<Locale> locales) {

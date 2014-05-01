@@ -19,15 +19,18 @@ class NetworkDtos {
   @Inject
   private ContactDtos contactDtos;
 
+  @Inject
+  private LocalizedStringDtos localizedStringDtos;
+
   @NotNull
   Mica.NetworkDto asDto(@NotNull Network network) {
     Mica.NetworkDto.Builder builder = Mica.NetworkDto.newBuilder();
     builder.setId(network.getId()) //
         .setTimestamps(TimestampsDtos.asDto((Timestamped) network)) //
-        .addAllName(LocalizedStringDtos.asDto(network.getName())) //
-        .addAllDescription(LocalizedStringDtos.asDto(network.getDescription()));
+        .addAllName(localizedStringDtos.asDto(network.getName())) //
+        .addAllDescription(localizedStringDtos.asDto(network.getDescription()));
 
-    if(network.getAcronym() != null) builder.addAllAcronym(LocalizedStringDtos.asDto(network.getAcronym()));
+    if(network.getAcronym() != null) builder.addAllAcronym(localizedStringDtos.asDto(network.getAcronym()));
     if(network.getInvestigators() != null) {
       builder.addAllInvestigators(
           network.getInvestigators().stream().map(contactDtos::asDto).collect(Collectors.<ContactDto>toList()));
@@ -47,12 +50,12 @@ class NetworkDtos {
   Network fromDto(@NotNull Mica.NetworkDtoOrBuilder dto) {
     Network network = new Network();
     network.setId(dto.getId());
-    network.setName(LocalizedStringDtos.fromDto(dto.getNameList()));
-    network.setAcronym(LocalizedStringDtos.fromDto(dto.getAcronymList()));
+    network.setName(localizedStringDtos.fromDto(dto.getNameList()));
+    network.setAcronym(localizedStringDtos.fromDto(dto.getAcronymList()));
     network.setInvestigators(
         dto.getInvestigatorsList().stream().map(contactDtos::fromDto).collect(Collectors.<Contact>toList()));
     network.setContacts(dto.getContactsList().stream().map(contactDtos::fromDto).collect(Collectors.<Contact>toList()));
-    network.setDescription(LocalizedStringDtos.fromDto(dto.getDescriptionList()));
+    network.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
     if(dto.hasWebsite()) network.setWebsite(dto.getWebsite());
 
     //TODO continue
