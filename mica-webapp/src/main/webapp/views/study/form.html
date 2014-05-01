@@ -1,9 +1,11 @@
 <div>
 
-  <h2 translate="study.title-edit">Edit Study</h2>
+  <h2 translate="study.label-edit">Edit Study</h2>
 
   <form name="form" role="form" novalidate
       class="ng-scope ng-invalid ng-invalid-required ng-dirty" ng-submit="save()">
+
+    <p class="alert alert-danger" ng-show="form.$dirty && form.$invalid">Fix errors bellow</p>
 
     <tabset>
       <tab ng-repeat="lang in languages" heading="{{lang}}">

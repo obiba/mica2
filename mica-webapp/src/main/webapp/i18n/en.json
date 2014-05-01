@@ -284,6 +284,7 @@
   },
   "study": {
     "label": "Study",
+    "label-edit": "Edit Study",
     "details": "Details",
     "general-info": "General Information",
     "name": "Name",
@@ -291,6 +292,7 @@
     "acronym": "Acronym",
     "acronym-help": "Acronym of the study if applicable",
     "objectives": "Objectives",
+    "objectives-help": "What are the principal objectives of the study?",
     "website": "Website",
     "investigators": "Investigators",
     "contacts": "Contacts",
