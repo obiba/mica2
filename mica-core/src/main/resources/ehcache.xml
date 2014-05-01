@@ -36,6 +36,13 @@
       eternal="true"
       overflowToDisk="true"/>
 
+  <cache name="micaConfig"
+      maxBytesLocalHeap="1M"
+      overflowToDisk="false"
+      eternal="true"
+      timeToLiveSeconds="0"
+      timeToIdleSeconds="0"/>
+
   <cache name="org.obiba.mica.jpa.domain.User" timeToLiveSeconds="3600"/>
 
   <cache name="org.obiba.mica.jpa.domain.Authority" timeToLiveSeconds="3600"/>
