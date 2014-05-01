@@ -12,6 +12,8 @@ import org.obiba.mica.event.StudyUpdatedEvent;
 import org.obiba.mica.repository.StudyStateRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.google.common.eventbus.EventBus;
@@ -32,6 +34,7 @@ public class StudyService {
   @Inject
   private EventBus eventBus;
 
+  @CacheEvict(value = "studies-draft", key = "#study.id")
   public void save(@NotNull @Valid Study study) {
     StudyState studyState = findStudyState(study);
     gitService.save(studyState.getId(), study);
@@ -57,7 +60,8 @@ public class StudyService {
   }
 
   @NotNull
-  public StudyState findStateByStudy(@NotNull Study study) throws NoSuchStudyException {
+  public StudyState findStateByStudy(@SuppressWarnings("TypeMayBeWeakened") @NotNull Study study)
+      throws NoSuchStudyException {
     return findStateById(study.getId());
   }
 
@@ -69,6 +73,7 @@ public class StudyService {
   }
 
   @NotNull
+  @Cacheable(value = "studies-draft", key = "#id")
   public Study findDraftStudy(@NotNull String id) throws NoSuchStudyException {
     // ensure study exists
     findStateById(id);
@@ -76,6 +81,7 @@ public class StudyService {
   }
 
   @NotNull
+  @Cacheable(value = "studies-published", key = "#id")
   public Study findPublishedStudy(@NotNull String id) throws NoSuchStudyException {
     StudyState studyState = findStateById(id);
     return gitService.readFromTag(id, studyState.getPublishedTag(), Study.class);
@@ -89,17 +95,14 @@ public class StudyService {
     return studyStateRepository.findByPublishedTagNotNull();
   }
 
-//  public void delete(@NotNull String id) {
-//    studyRepository.delete(id);
-//  }
-
   /**
-   * Publish current revision
+   * Publish current revision (HEAD)
    *
    * @param id
    * @return
    * @throws NoSuchStudyException
    */
+  @CacheEvict(value = { "studies-draft", "studies-published" }, key = "#id")
   public StudyState publish(@NotNull String id) throws NoSuchStudyException {
     StudyState studyState = findStateById(id);
     studyState.setRevisionStatus(DRAFT);
@@ -107,4 +110,9 @@ public class StudyService {
     studyStateRepository.save(studyState);
     return studyState;
   }
+
+//  @CacheEvict(value = { "studies-draft", "studies-published" }, key = "#id")
+//  public void delete(@NotNull String id) {
+//    studyRepository.delete(id);
+//  }
 }

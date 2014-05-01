@@ -43,6 +43,18 @@
       timeToLiveSeconds="0"
       timeToIdleSeconds="0"/>
 
+  <cache name="studies-draft"
+      overflowToDisk="true"
+      eternal="true"
+      timeToLiveSeconds="0"
+      timeToIdleSeconds="0"/>
+
+  <cache name="studies-published"
+      overflowToDisk="true"
+      eternal="true"
+      timeToLiveSeconds="0"
+      timeToIdleSeconds="0"/>
+
   <cache name="org.obiba.mica.jpa.domain.User" timeToLiveSeconds="3600"/>
 
   <cache name="org.obiba.mica.jpa.domain.Authority" timeToLiveSeconds="3600"/>
