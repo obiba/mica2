@@ -10,7 +10,12 @@ sudo apt-get install -y nodejs
 sudo npm install -g grunt-cli bower
 ```
 
-Use Makefile to build and run the project: run `make all run` in one terminal and `make grunt` in another.
+If you run mica-server for the first time, run `make npm-install`
+
+During development, run
+
+* `make all run` in one terminal to start mica REST server on port 8080
+* `make grunt` in another terminal to start Grunt server with live reload on port 9000
 
 See `make help` for other targets.
 
