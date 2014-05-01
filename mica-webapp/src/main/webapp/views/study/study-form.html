@@ -1,40 +1,33 @@
 <div>
 
-  <h2>Edit Study</h2>
+  <h2 translate="study.title-edit">Edit Study</h2>
 
-  <form name="form" role="form" novalidate class="ng-scope ng-invalid ng-invalid-required ng-dirty ng-valid-minlength"
-      ng-submit="create()">
+  <form name="form" role="form" novalidate
+      class="ng-scope ng-invalid ng-invalid-required ng-dirty" ng-submit="save()">
 
-    <div class="form-group">
-      <label>ID</label>
-      <input type="text" class="form-control" name="id" ng-model="study.id" readonly>
-    </div>
+    <tabset>
+      <tab heading="General Information">
+      </tab>
+      <tab heading="Authorization">
+      </tab>
+      <tab heading="Methods">
+      </tab>
+      <tab heading="Access">
+      </tab>
+      <tab heading="Marker Paper">
+      </tab>
+      <tab heading="Documents">
+      </tab>
+      <tab heading="Supplementary Information">
+      </tab>
+    </tabset>
 
-    <table class="table table-striped">
-      <tr>
-        <th>Language</th>
-        <th>Name</th>
-      </tr>
-    </table>
+    <a href="#/study" class="btn btn-default">
+      <span class="glyphicon glyphicon-ban-circle"></span> <span translate="cancel">Cancel</span>
+    </a>
 
-    <div class="form-group">
-      <label>Name</label>
-
-
-      <div ng-repeat="name in study.name">
-        <span class="badge">{{name.lang}}</span> {{name.value}}
-        <input type="text" class="form-control" name="test" ng-model="study.name" ng-minlength=1 ng-maxlength=50
-            required>
-
-      </div>
-
-    </div>
-
-    <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="clear()">
-      <span class="glyphicon glyphicon-ban-circle"></span> Cancel
-    </button>
     <button type="submit" ng-disabled="form.$invalid" class="btn btn-primary">
-      <span class="glyphicon glyphicon-save"></span> Save
+      <span class="glyphicon glyphicon-save"></span> <span translate="save">Save</span>
     </button>
 
   </form>
