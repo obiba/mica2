@@ -1,8 +1,8 @@
 'use strict';
 
 mica.config
-  .config(['$routeProvider', '$httpProvider', '$translateProvider',
-    function ($routeProvider, $httpProvider, $translateProvider) {
+  .config(['$routeProvider',
+    function ($routeProvider) {
       $routeProvider
         .when('/config', {
           templateUrl: 'scripts/config/config-view.html',

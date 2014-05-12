@@ -1,8 +1,8 @@
 'use strict';
 
 mica.study
-  .config(['$routeProvider', '$httpProvider', '$translateProvider',
-    function ($routeProvider, $httpProvider, $translateProvider) {
+  .config(['$routeProvider',
+    function ($routeProvider) {
       $routeProvider
         .when('/study', {
           templateUrl: 'scripts/study/views/study-list.html',
