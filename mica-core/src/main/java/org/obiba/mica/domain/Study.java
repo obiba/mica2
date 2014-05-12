@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.validation.constraints.NotNull;
 
@@ -58,7 +60,7 @@ public class Study implements Persistable<String> {
 
   private LocalizedString infos;
 
-  private List<Population> populations;
+  private SortedSet<Population> populations;
 
   @Override
   public String getId() {
@@ -240,16 +242,16 @@ public class Study implements Persistable<String> {
     this.infos = infos;
   }
 
-  public List<Population> getPopulations() {
+  public SortedSet<Population> getPopulations() {
     return populations;
   }
 
   public void addPopulation(@NotNull Population population) {
-    if (populations == null) populations = new ArrayList<>();
+    if (populations == null) populations = new TreeSet<>();
     populations.add(population);
   }
 
-  public void setPopulations(List<Population> populations) {
+  public void setPopulations(SortedSet<Population> populations) {
     this.populations = populations;
   }
 
