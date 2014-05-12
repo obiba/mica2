@@ -7,14 +7,14 @@ mica.study
 
       $scope.studies = DraftStudiesResource.query();
 
-    $scope.deleteStudy = function (id) {
-      DraftStudyResource.delete({id: id},
-        function () {
-          $scope.studies = DraftStudiesResource.query();
-        });
-    };
+      $scope.deleteStudy = function (id) {
+        DraftStudyResource.delete({id: id},
+          function () {
+            $scope.studies = DraftStudiesResource.query();
+          });
+      };
 
-  }])
+    }])
   .controller('StudyViewController', ['$scope', '$routeParams', '$log', '$locale', 'DraftStudyResource', 'MicaConfigResource',
 
     function ($scope, $routeParams, $log, $locale, DraftStudyResource, MicaConfigResource) {
