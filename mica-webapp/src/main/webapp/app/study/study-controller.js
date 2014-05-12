@@ -27,12 +27,13 @@ mica.study
       });
 
       $scope.study = DraftStudyResource.get({id: $routeParams.id});
+      $scope.study.$promise.then(function (studyDto) {
+        new $.MicaTimeline(new $.StudyDtoParser()).create("#timeline", studyDto);
+      });
 
       $scope.months = $locale.DATETIME_FORMATS.MONTH;
-
       $log.debug('months', $scope.months);
       $log.debug('study', $scope.study);
-
     }])
 
   .controller('StudyEditController', ['$scope', '$routeParams', '$log', 'DraftStudyResource', 'MicaConfigResource',

@@ -4,13 +4,17 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import org.bson.types.ObjectId;
 
-public class Population implements Serializable {
+import com.google.common.collect.Iterables;
+
+public class Population implements Serializable, Comparable<Population> {
 
   private static final long serialVersionUID = 6559914069652243954L;
 
@@ -29,7 +33,7 @@ public class Population implements Serializable {
 
   private LocalizedString info;
 
-  private List<DataCollectionEvent> dataCollectionEvents;
+  private SortedSet<DataCollectionEvent> dataCollectionEvents;
 
   public String getId() {
     return id;
@@ -87,16 +91,16 @@ public class Population implements Serializable {
     this.info = info;
   }
 
-  public List<DataCollectionEvent> getDataCollectionEvents() {
+  public SortedSet<DataCollectionEvent> getDataCollectionEvents() {
     return dataCollectionEvents;
   }
 
   public void addDataCollectionEvent(@NotNull DataCollectionEvent dataCollectionEvent) {
-    if (dataCollectionEvents == null) dataCollectionEvents = new ArrayList<>();
+    if (dataCollectionEvents == null) dataCollectionEvents = new TreeSet<>();
     dataCollectionEvents.add(dataCollectionEvent);
   }
 
-  public void setDataCollectionEvents(List<DataCollectionEvent> dataCollectionEvents) {
+  public void setDataCollectionEvents(SortedSet<DataCollectionEvent> dataCollectionEvents) {
     this.dataCollectionEvents = dataCollectionEvents;
   }
 
@@ -113,6 +117,13 @@ public class Population implements Serializable {
     }
     final Population other = (Population) obj;
     return Objects.equals(id, other.id);
+  }
+
+  @Override
+  public int compareTo(Population o) {
+    if (dataCollectionEvents == null) return -1;
+    if (o.dataCollectionEvents == null) return 1;
+    return Iterables.get(dataCollectionEvents, 0).compareTo(Iterables.get(o.dataCollectionEvents, 0));
   }
 
   public static class Recruitment implements Serializable {

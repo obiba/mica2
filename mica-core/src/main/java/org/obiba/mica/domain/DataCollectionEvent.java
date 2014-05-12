@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 
 import org.bson.types.ObjectId;
 
-public class DataCollectionEvent implements Serializable {
+public class DataCollectionEvent implements Serializable, Comparable<DataCollectionEvent> {
 
   private static final long serialVersionUID = 6559914069652243954L;
 
@@ -110,7 +110,7 @@ public class DataCollectionEvent implements Serializable {
   }
 
   public void addDataSource(@NotNull String datasource) {
-    if (dataSources == null) dataSources = new ArrayList<>();
+    if(dataSources == null) dataSources = new ArrayList<>();
     dataSources.add(datasource);
   }
 
@@ -123,7 +123,7 @@ public class DataCollectionEvent implements Serializable {
   }
 
   public void addAdministrativeDatabases(@NotNull String database) {
-    if (administrativeDatabases == null) administrativeDatabases = new ArrayList<>();
+    if(administrativeDatabases == null) administrativeDatabases = new ArrayList<>();
     administrativeDatabases.add(database);
   }
 
@@ -144,7 +144,7 @@ public class DataCollectionEvent implements Serializable {
   }
 
   public void addBioSample(@NotNull String bioSample) {
-    if (bioSamples == null) bioSamples = new ArrayList<>();
+    if(bioSamples == null) bioSamples = new ArrayList<>();
     bioSamples.add(bioSample);
   }
 
@@ -173,7 +173,7 @@ public class DataCollectionEvent implements Serializable {
   }
 
   public void addAttachment(@NotNull Attachment attachment) {
-    if (attachments == null) attachments = new ArrayList<>();
+    if(attachments == null) attachments = new ArrayList<>();
     attachments.add(attachment);
   }
 
@@ -194,5 +194,20 @@ public class DataCollectionEvent implements Serializable {
     }
     final DataCollectionEvent other = (DataCollectionEvent) obj;
     return Objects.equals(id, other.id);
+  }
+
+  @Override
+  public int compareTo(DataCollectionEvent o) {
+    int startA = 12 * startYear + (startMonth == null ? 0 : startMonth);
+    int startB = 12 * o.startYear + (o.startMonth == null ? 0 : o.startMonth);
+
+    if(startA == startB) {
+      int endA = 12 * (endYear == null ? 0 : endYear) + (endMonth == null ? 0 : endMonth);
+      int endB = 12 * (o.endYear == null ? 0 : o.endYear) + (o.endMonth == null ? 0 : o.endMonth);
+      if(endA == endB) return 0;
+
+      return endA < endB ? -1 : 1;
+    }
+    return startA < startB ? -1 : 1;
   }
 }
