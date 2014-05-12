@@ -1,6 +1,6 @@
 'use strict';
 
-micaApp
+mica.config
   .config(['$routeProvider', '$httpProvider', '$translateProvider',
     function ($routeProvider, $httpProvider, $translateProvider) {
       $routeProvider

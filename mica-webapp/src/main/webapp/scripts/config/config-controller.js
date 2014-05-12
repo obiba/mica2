@@ -1,11 +1,12 @@
 'use strict';
 
-micaApp.controller('MicaConfigController', ['$scope', '$resource', '$log', 'MicaConfigResource',
+mica.config
+  .controller('MicaConfigController', ['$scope', '$resource', '$log', 'MicaConfigResource',
 
-  function ($scope, $resource, $log, MicaConfigResource) {
-    $scope.micaConfig = MicaConfigResource.get();
-    $scope.availableLanguages = $resource('ws/config/languages').get();
-  }])
+    function ($scope, $resource, $log, MicaConfigResource) {
+      $scope.micaConfig = MicaConfigResource.get();
+      $scope.availableLanguages = $resource('ws/config/languages').get();
+    }])
 
   .controller('MicaConfigEditController', ['$scope', '$resource', '$location', '$log', 'MicaConfigResource',
 

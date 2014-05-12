@@ -1,6 +1,7 @@
 'use strict';
 
-micaApp.controller('StudyListController', ['$scope', 'StudiesResource', 'StudyResource',
+mica.study
+  .controller('StudyListController', ['$scope', 'StudiesResource', 'StudyResource',
 
   function ($scope, StudiesResource, StudyResource) {
 

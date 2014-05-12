@@ -1,6 +1,6 @@
 'use strict';
 
-micaApp
+mica.study
   .config(['$routeProvider', '$httpProvider', '$translateProvider',
     function ($routeProvider, $httpProvider, $translateProvider) {
       $routeProvider

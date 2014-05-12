@@ -2,33 +2,33 @@
 
 /* Services */
 
-micaApp.factory('Account', ['$resource',
+mica.factory('Account', ['$resource',
   function ($resource) {
     return $resource('ws/account', {}, {
     });
   }]);
 
-micaApp.factory('Password', ['$resource',
+mica.factory('Password', ['$resource',
   function ($resource) {
     return $resource('ws/account/change_password', {}, {
     });
   }]);
 
-micaApp.factory('Sessions', ['$resource',
+mica.factory('Sessions', ['$resource',
   function ($resource) {
     return $resource('ws/account/sessions/:series', {}, {
       'get': { method: 'GET', isArray: true}
     });
   }]);
 
-micaApp.factory('MetricsService', ['$resource',
+mica.factory('MetricsService', ['$resource',
   function ($resource) {
     return $resource('metrics/metrics', {}, {
       'get': { method: 'GET'}
     });
   }]);
 
-micaApp.factory('ThreadDumpService', ['$http',
+mica.factory('ThreadDumpService', ['$http',
   function ($http) {
     return {
       dump: function () {
@@ -39,7 +39,7 @@ micaApp.factory('ThreadDumpService', ['$http',
     };
   }]);
 
-micaApp.factory('HealthCheckService', ['$rootScope', '$http',
+mica.factory('HealthCheckService', ['$rootScope', '$http',
   function ($rootScope, $http) {
     return {
       check: function () {
@@ -50,7 +50,7 @@ micaApp.factory('HealthCheckService', ['$rootScope', '$http',
     };
   }]);
 
-micaApp.factory('LogsService', ['$resource',
+mica.factory('LogsService', ['$resource',
   function ($resource) {
     return $resource('ws/logs', {}, {
       'findAll': { method: 'GET', isArray: true},
@@ -58,7 +58,7 @@ micaApp.factory('LogsService', ['$resource',
     });
   }]);
 
-micaApp.factory('AuditsService', ['$http',
+mica.factory('AuditsService', ['$http',
   function ($http) {
     return {
       findAll: function () {
@@ -74,7 +74,7 @@ micaApp.factory('AuditsService', ['$http',
     }
   }]);
 
-micaApp.factory('Session', ['$cookieStore',
+mica.factory('Session', ['$cookieStore',
   function ($cookieStore) {
     this.create = function (login, firstName, lastName, email, userRoles) {
       this.login = login;
@@ -94,13 +94,13 @@ micaApp.factory('Session', ['$cookieStore',
     return this;
   }]);
 
-micaApp.constant('USER_ROLES', {
+mica.constant('USER_ROLES', {
   all: '*',
   admin: 'ROLE_ADMIN',
   user: 'ROLE_USER'
 });
 
-micaApp.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStore', 'authService', 'Session', 'Account',
+mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStore', 'authService', 'Session', 'Account',
   function ($rootScope, $http, $cookieStore, authService, Session, Account) {
     return {
       login: function (param) {

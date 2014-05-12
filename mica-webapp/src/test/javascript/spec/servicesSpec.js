@@ -2,7 +2,7 @@
 
 describe('Services Tests ', function () {
 
-  beforeEach(module('micaApp'));
+  beforeEach(module('mica'));
 
   describe('AuthenticationSharedService', function () {
     var serviceTested,

@@ -2,7 +2,7 @@
 
 describe('Controllers Tests ', function () {
 
-  beforeEach(module('micaApp'));
+  beforeEach(module('mica'));
 
   describe('LoginController', function () {
     var $scope;

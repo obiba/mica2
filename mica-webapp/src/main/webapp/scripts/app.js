@@ -2,11 +2,20 @@
 
 /* App Module */
 
-var micaApp = angular.module('micaApp',
-  ['http-auth-interceptor', 'tmh.dynamicLocale', 'ngResource', 'ngRoute', 'ngCookies', 'pascalprecht.translate',
-    'localytics.directives', 'ui.bootstrap']);
+var mica = angular.module('mica', [
+  'http-auth-interceptor',
+  'tmh.dynamicLocale',
+  'ngResource',
+  'ngRoute',
+  'ngCookies',
+  'pascalprecht.translate',
+  'localytics.directives',
+  'ui.bootstrap',
+  'mica.config',
+  'mica.study'
+]);
 
-micaApp
+mica
   .config(['$routeProvider', '$httpProvider', '$translateProvider', 'tmhDynamicLocaleProvider', 'USER_ROLES',
     function ($routeProvider, $httpProvider, $translateProvider, tmhDynamicLocaleProvider, USER_ROLES) {
       $routeProvider
