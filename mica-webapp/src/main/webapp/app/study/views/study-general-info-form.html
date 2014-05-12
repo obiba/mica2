@@ -12,7 +12,7 @@
 <div class="form-group" ng-class="{'has-error': form.acronym-lang.$invalid}">
   <label for="acronym-{{lang}}" translate="study.acronym" class="control-label">Acronym</label>
   <input ng-repeat="acronym in study.acronym | filter:{lang:lang}" type="text" class="form-control"
-      id="acronym-{{lang}}" name="acronym-{{lang}}" ng-model="name.value" server-error>
+      id="acronym-{{lang}}" name="acronym-{{lang}}" ng-model="acronym.value" server-error>
   <p class="input-error" ng-show="form['acronym-' + lang].$dirty && form['acronym-' + lang].$invalid">
     <span ng-show="form['acronym-' + lang].$error.server">{{ errors['acronym-' + lang]}}</span>
   </p>
@@ -27,6 +27,6 @@
     <span ng-show="form['objectives-' + lang].$error.server">{{ errors['objectives-' + lang]}}</span>
     <span ng-show="form['objectives-' + lang].$error.required">Required</span>
   </p>
-  <p class="help-block" translate="study.objectives-help">Acronym of the study if applicable</p>
+  <p class="help-block" translate="study.objectives-help">What are the principal objectives of the study?</p>
 </div>
 

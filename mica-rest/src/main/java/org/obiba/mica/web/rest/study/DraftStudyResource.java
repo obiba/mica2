@@ -41,7 +41,7 @@ public class DraftStudyResource {
 
   @PUT
   @Timed
-  public Response update(Mica.StudyDtoOrBuilder studyDto) {
+  public Response update(@SuppressWarnings("TypeMayBeWeakened") Mica.StudyDto studyDto) {
     // ensure study exists
     studyService.findDraftStudy(id);
 

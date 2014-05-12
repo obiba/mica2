@@ -16,13 +16,12 @@ mica.config
       $scope.availableLanguages = $resource('ws/config/languages').get();
 
       $scope.save = function () {
-        MicaConfigResource.save($scope.micaConfig,
+        $scope.micaConfig.$save(
           function () {
             $location.path('/config').replace();
           },
           function (response) {
 //            $log.debug('response:', response);
-
 //        [{
 //          "message": "ne peut pas être vide",
 //          "messageTemplate": "{org.hibernate.validator.constraints.NotBlank.message}",

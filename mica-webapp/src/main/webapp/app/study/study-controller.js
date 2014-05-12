@@ -36,21 +36,41 @@ mica.study
       $log.debug('study', $scope.study);
     }])
 
-  .controller('StudyEditController', ['$scope', '$routeParams', '$log', 'DraftStudyResource', 'MicaConfigResource',
+  .controller('StudyEditController', ['$scope', '$routeParams', '$log', '$location', 'DraftStudyResource', 'MicaConfigResource',
 
-    function ($scope, $routeParams, $log, DraftStudyResource, MicaConfigResource) {
+    function ($scope, $routeParams, $log, $location, DraftStudyResource, MicaConfigResource) {
 
       $scope.study = DraftStudyResource.get({id: $routeParams.id});
       $log.debug('study', $scope.study);
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.languages = micaConfig.languages;
-        $log.debug('languages', $scope.languages);
       });
 
-
       $scope.save = function () {
-        $log.debug('scope.form', $scope.form);
+
+        if ($scope.study.id) {
+
+          $log.debug('Update study', $scope.study);
+          $scope.study.$save(function (study) {
+              $location.path('/study/' + study.id).replace();
+            },
+            function (response) {
+              $log.debug('error response:', response);
+              $scope.errors = [];
+              response.data.forEach(function (error) {
+                //$log.debug('error: ', error);
+                var field = error.path.substring(error.path.indexOf('.') + 1);
+                $scope.form[field].$dirty = true;
+                $scope.form[field].$setValidity('server', false);
+                $scope.errors[field] = error.message;
+              });
+            });
+
+        } else {
+          $log.debug('Create new study', $scope.study);
+        }
+
       };
 
     }]);
