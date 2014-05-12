@@ -5,15 +5,15 @@ mica.study
     function ($routeProvider, $httpProvider, $translateProvider) {
       $routeProvider
         .when('/study', {
-          templateUrl: 'scripts/study/views/list.html',
+          templateUrl: 'scripts/study/views/study-list.html',
           controller: 'StudyListController'
         })
         .when('/study/:id', {
-          templateUrl: 'scripts/study/views/view.html',
+          templateUrl: 'scripts/study/views/study-view.html',
           controller: 'StudyViewController'
         })
         .when('/study/:id/edit', {
-          templateUrl: 'scripts/study/views/form.html',
+          templateUrl: 'scripts/study/views/study-form.html',
           controller: 'StudyEditController'
         })
     }]);
