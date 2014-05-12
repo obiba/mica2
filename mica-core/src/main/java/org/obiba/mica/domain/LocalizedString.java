@@ -1,5 +1,7 @@
 package org.obiba.mica.domain;
 
+import java.io.Serializable;
+import java.util.Comparator;
 import java.util.Locale;
 import java.util.TreeMap;
 
@@ -10,7 +12,7 @@ public class LocalizedString extends TreeMap<Locale, String> {
   private static final long serialVersionUID = 5813178087884887246L;
 
   public LocalizedString() {
-    super((l1, l2) -> l1.getLanguage().compareTo(l2.getLanguage()));
+    super((Comparator<Locale> & Serializable) (Locale l1, Locale l2) -> l1.getLanguage().compareTo(l2.getLanguage()));
   }
 
   public LocalizedString(@NotNull Locale locale, @NotNull String str) {
