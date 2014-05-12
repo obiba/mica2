@@ -1,0 +1,31 @@
+{
+  "name": "mica-study-timeline",
+  "authors": [
+    "Cedric Thiebault <cthiebault@p3g.com>"
+  ],
+  "description": "D3 Timeline for Mica Studies",
+  "main": "mica-study-timeline.js",
+  "dependencies": {
+    "d3": "~3.4.6",
+    "jquery": "~2.0.3"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "example"
+  ],
+  "license": "GNU Public License version 3",
+  "homepage": "https://github.com/obiba/mica-study-timeline",
+  "_release": "021243a863",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "021243a863536edb589835337dc1bfb9bf97695d"
+  },
+  "_source": "git@github.com:obiba/mica-study-timeline.git",
+  "_target": "*",
+  "_originalSource": "git@github.com:obiba/mica-study-timeline.git"
+}
