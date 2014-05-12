@@ -163,6 +163,7 @@ public class StudyGenerator {
     population.setRecruitment(createRecruitment());
     population.addDataCollectionEvent(createEvent1());
     population.addDataCollectionEvent(createEvent2());
+    population.addDataCollectionEvent(createEvent3());
     return population;
   }
 
@@ -226,7 +227,7 @@ public class StudyGenerator {
     event.setStartYear(2000);
     event.setStartMonth(1);
     event.setEndYear(2020);
-    event.setEndYear(12);
+    event.setEndMonth(12);
     event.addDataSource("questionnaires");
     event.addDataSource("physical_measures");
     event.addDataSource("administratives_databases");
@@ -236,6 +237,24 @@ public class StudyGenerator {
     event.setBioSamples(Arrays.asList("Blood", "Cell Tissue"));
     event.setTissueTypes(en("Liver Tissue"));
     event.setOtherBioSamples(en("Ear wax"));
+    event.addAttachment(createAttachment());
+    return event;
+  }
+
+  private DataCollectionEvent createEvent3() {
+    DataCollectionEvent event = new DataCollectionEvent();
+    event.setName(en("Pre-Selection"));
+    event.setDescription(en("Pre-selection for baseline"));
+    event.setStartYear(1996);
+    event.setStartMonth(5);
+    event.setEndYear(2000);
+    event.setEndMonth(11);
+    event.addDataSource("questionnaires");
+    event.addDataSource("physical_measures");
+    event.addDataSource("administratives_databases");
+    event.setAdministrativeDatabases(Arrays.asList("aDB1"));
+    event.setOtherDataSources(en("Other data sources"));
+    event.setBioSamples(Arrays.asList("Blood", "Cell Tissue"));
     event.addAttachment(createAttachment());
     return event;
   }

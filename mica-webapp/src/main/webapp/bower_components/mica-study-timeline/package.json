@@ -1,0 +1,27 @@
+{
+  "name": "mica-study-timeline",
+  "version": "1.0.0-SNAPSHOT",
+  "description": "D3 Timeline for Mica Studies",
+  "author": {
+    "name": "Cedric Thiebault",
+    "email": "cthiebault@p3g.com"
+  },
+  "license": "GNU Public License version 3",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/obiba/mica-study-timeline"
+  },
+  "keywords": [
+    "d3.js",
+    "mica"
+  ],
+  "devDependencies": {
+    "grunt": "~0.4.4",
+    "grunt-contrib-concat": "~0.3",
+    "grunt-contrib-uglify": "~0.2",
+    "grunt-contrib-jshint": "~0.6",
+    "grunt-contrib-watch": "~0.5",
+    "grunt-contrib-css": "~0.9.0",
+    "grunt-contrib-cssmin": "~0.9.0"
+  }
+}
