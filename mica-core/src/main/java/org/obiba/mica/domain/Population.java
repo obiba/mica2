@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.validation.constraints.Min;
@@ -33,7 +33,7 @@ public class Population implements Serializable, Comparable<Population> {
 
   private LocalizedString info;
 
-  private Set<DataCollectionEvent> dataCollectionEvents;
+  private SortedSet<DataCollectionEvent> dataCollectionEvents;
 
   public String getId() {
     return id;
@@ -91,7 +91,7 @@ public class Population implements Serializable, Comparable<Population> {
     this.info = info;
   }
 
-  public Set<DataCollectionEvent> getDataCollectionEvents() {
+  public SortedSet<DataCollectionEvent> getDataCollectionEvents() {
     return dataCollectionEvents;
   }
 
@@ -100,7 +100,7 @@ public class Population implements Serializable, Comparable<Population> {
     dataCollectionEvents.add(dataCollectionEvent);
   }
 
-  public void setDataCollectionEvents(Set<DataCollectionEvent> dataCollectionEvents) {
+  public void setDataCollectionEvents(SortedSet<DataCollectionEvent> dataCollectionEvents) {
     this.dataCollectionEvents = dataCollectionEvents;
   }
 
