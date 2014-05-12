@@ -1,11 +1,11 @@
 'use strict';
 
 mica.study
-  .factory('StudiesResource', ['$resource',
+  .factory('DraftStudiesResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/studies');
     }])
-  .factory('StudyResource', ['$resource',
+  .factory('DraftStudyResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/study/:id');
     }]);

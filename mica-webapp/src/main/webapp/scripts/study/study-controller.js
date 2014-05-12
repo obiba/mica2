@@ -1,23 +1,23 @@
 'use strict';
 
 mica.study
-  .controller('StudyListController', ['$scope', 'StudiesResource', 'StudyResource',
+  .controller('StudyListController', ['$scope', 'DraftStudiesResource', 'DraftStudyResource',
 
-  function ($scope, StudiesResource, StudyResource) {
+    function ($scope, DraftStudiesResource, DraftStudyResource) {
 
-    $scope.studies = StudiesResource.query();
+      $scope.studies = DraftStudiesResource.query();
 
     $scope.deleteStudy = function (id) {
-      StudyResource.delete({id: id},
+      DraftStudyResource.delete({id: id},
         function () {
-          $scope.studies = StudiesResource.query();
+          $scope.studies = DraftStudiesResource.query();
         });
     };
 
   }])
-  .controller('StudyViewController', ['$scope', '$routeParams', '$log', '$locale', 'StudyResource', 'MicaConfigResource',
+  .controller('StudyViewController', ['$scope', '$routeParams', '$log', '$locale', 'DraftStudyResource', 'MicaConfigResource',
 
-    function ($scope, $routeParams, $log, $locale, StudyResource, MicaConfigResource) {
+    function ($scope, $routeParams, $log, $locale, DraftStudyResource, MicaConfigResource) {
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
@@ -26,7 +26,7 @@ mica.study
         });
       });
 
-      $scope.study = StudyResource.get({id: $routeParams.id});
+      $scope.study = DraftStudyResource.get({id: $routeParams.id});
 
       $scope.months = $locale.DATETIME_FORMATS.MONTH;
 
@@ -35,11 +35,11 @@ mica.study
 
     }])
 
-  .controller('StudyEditController', ['$scope', '$routeParams', '$log', 'StudyResource', 'MicaConfigResource',
+  .controller('StudyEditController', ['$scope', '$routeParams', '$log', 'DraftStudyResource', 'MicaConfigResource',
 
-    function ($scope, $routeParams, $log, StudyResource, MicaConfigResource) {
+    function ($scope, $routeParams, $log, DraftStudyResource, MicaConfigResource) {
 
-      $scope.study = StudyResource.get({id: $routeParams.id});
+      $scope.study = DraftStudyResource.get({id: $routeParams.id});
       $log.debug('study', $scope.study);
 
       MicaConfigResource.get(function (micaConfig) {
