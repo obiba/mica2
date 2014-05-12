@@ -295,7 +295,9 @@
     "objectives-help": "What are the principal objectives of the study?",
     "website": "Website",
     "investigators": "Investigators",
+    "add-investigator": "Add Investigator",
     "contacts": "Contacts",
+    "add-contact": "Add Contact",
     "start-year": "Start Year",
     "end-year": "End Year",
     "general-design": "General Design",
@@ -350,7 +352,15 @@
     "start": "Start",
     "end": "End"
   },
-
+  "contact": {
+    "label": "Contact",
+    "title": "Title",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "phone": "Phone",
+    "dataAccessCommitteeMember": "Data Access Committee Member"
+  },
   "networks": "Networks",
   "edit": "Edit",
   "cancel": "Cancel",

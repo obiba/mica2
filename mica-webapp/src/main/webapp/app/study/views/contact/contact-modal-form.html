@@ -1,0 +1,83 @@
+<div class="modal-content">
+
+  <form name="form" role="form" novalidate
+      class="ng-scope ng-invalid ng-invalid-required ng-dirty ng-valid-minlength" ng-submit="save()">
+
+    <div class="modal-header">
+      <button type="button" class="close" aria-hidden="true" ng-click="cancel()">&times;</button>
+      <h4 class="modal-title" id="myStudyLabel" translate="config.title-edit">Edit General Configuration</h4>
+    </div>
+
+    <div class="modal-body">
+
+      <div class="form-group" ng-class="{'has-error': form.title.$invalid}">
+        <label for="title" translate="contact.title" class="control-label">Title</label>
+        <input type="text" class="form-control" id="title" name="title" ng-model="contact.title" server-error>
+        <p class="input-error" ng-show="form.title.$dirty && form.title.$invalid">
+          <span ng-show="form.title.$error.server">{{ errors.title }}</span>
+        </p>
+      </div>
+
+      <div class="form-group" ng-class="{'has-error': form.firstName.$invalid}">
+        <label for="firstName" translate="contact.firstName" class="control-label">First Name</label>
+        <input type="text" class="form-control" id="firstName" name="firstName" ng-model="contact.firstName"
+            server-error>
+        <p class="input-error" ng-show="form.firstName.$dirty && form.firstName.$invalid">
+          <span ng-show="form.firstName.$error.server">{{ errors.firstName }}</span>
+        </p>
+      </div>
+
+      <div class="form-group" ng-class="{'has-error': form.lastName.$invalid}">
+        <label for="lastName" translate="contact.lastName" class="control-label">Last Name</label>
+        <input type="text" class="form-control" id="lastName" name="lastName" ng-model="contact.lastName"
+            server-error required>
+        <p class="input-error" ng-show="form.lastName.$dirty && form.lastName.$invalid">
+          <span ng-show="form.lastName.$error.server">{{ errors.lastName }}</span>
+          <span ng-show="form.lastName.$error.required">Required</span>
+        </p>
+      </div>
+
+      <div class="form-group" ng-class="{'has-error': form.email.$invalid}">
+        <label for="email" translate="contact.email" class="control-label">Email</label>
+        <input type="text" class="form-control" id="email" name="email" ng-model="contact.email"
+            server-error>
+        <p class="input-error" ng-show="form.email.$dirty && form.email.$invalid">
+          <span ng-show="form.email.$error.server">{{ errors.email }}</span>
+        </p>
+      </div>
+
+      <div class="form-group" ng-class="{'has-error': form.phone.$invalid}">
+        <label for="phone" translate="contact.phone" class="control-label">Phone</label>
+        <input type="text" class="form-control" id="phone" name="phone" ng-model="contact.phone"
+            server-error>
+        <p class="input-error" ng-show="form.phone.$dirty && form.phone.$invalid">
+          <span ng-show="form.phone.$error.server">{{ errors.phone }}</span>
+        </p>
+      </div>
+
+      <div class="form-group" ng-class="{'has-error': form.dataAccessCommitteeMember.$invalid}">
+        <label for="dataAccessCommitteeMember" translate="contact.dataAccessCommitteeMember" class="control-label">
+          Data Access Committee Member
+        </label>
+        <input type="checkbox" class="form-control" id="dataAccessCommitteeMember" name="dataAccessCommitteeMember"
+            ng-model="contact.dataAccessCommitteeMember" server-error>
+        <p class="input-error"
+            ng-show="form.dataAccessCommitteeMember.$dirty && form.dataAccessCommitteeMember.$invalid">
+          <span ng-show="form.dataAccessCommitteeMember.$error.server">{{ errors.dataAccessCommitteeMember }}</span>
+        </p>
+      </div>
+
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default" ng-click="cancel()">
+        <span class="glyphicon glyphicon-ban-circle"></span> <span translate="cancel">Cancel</span>
+      </button>
+      <button type="submit" ng-disabled="form.$invalid" class="btn btn-primary">
+        <span class="glyphicon glyphicon-save"></span> <span translate="save">Save</span>
+      </button>
+    </div>
+
+  </form>
+
+</div>
