@@ -26,12 +26,16 @@ mica.study
         });
       });
 
-      $scope.study = DraftStudyResource.get({id: $routeParams.id});
+      var promise = DraftStudyResource.get({id: $routeParams.id});
+      promise.$promise.then(function (studyDto) {
+        new $.MicaTimeline(new $.StudyDtoParser()).create("#timeline", studyDto);
+        $scope.study = studyDto;
+        $log.debug('study', $scope.study);
+      });
 
       $scope.months = $locale.DATETIME_FORMATS.MONTH;
 
       $log.debug('months', $scope.months);
-      $log.debug('study', $scope.study);
 
     }])
 
