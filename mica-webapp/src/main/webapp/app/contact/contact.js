@@ -1,9 +1,7 @@
 'use strict';
 
-mica.study = angular.module('mica.study', [
+mica.contact = angular.module('mica.contact', [
   'mica.config',
-  'mica.contact',
   'ngResource',
   'ngRoute',
-  'ui.bootstrap',
   'pascalprecht.translate']);

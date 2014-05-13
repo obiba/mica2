@@ -1,0 +1,66 @@
+<div class="modal-content">
+
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h4 class="modal-title" translate="contact.label">Contact</h4>
+  </div>
+
+  <div class="modal-body">
+
+    <table class="table table-striped">
+      <tbody>
+      <tr>
+        <td translate="name">Name</td>
+        <td>{{contact.fullName}}</td>
+      </tr>
+      <tr ng-show="contact.phone">
+        <td translate="contact.phone">Phone</td>
+        <td>{{contact.phone}}</td>
+      </tr>
+      <tr ng-show="contact.email">
+        <td translate="contact.email">Email</td>
+        <td><a ng-href="mailto:{{contact.email}}">{{contact.email}}</a></td>
+      </tr>
+      <tr ng-show="contact.institution">
+        <td translate="contact.institution">Institution</td>
+        <td>
+          <address>
+            <strong ng-show="contact.institution.name.length">
+              <localized value="contact.institution.name" lang="lang"></localized>
+              <br/>
+            </strong>
+            <span ng-show="contact.institution.department.length">
+              <localized value="contact.institution.department" lang="lang"></localized>
+              <br/>
+            </span>
+            <span ng-show="contact.institution.address && contact.institution.address.street.length">
+              <localized value="contact.institution.address.street" lang="lang"></localized>
+              <br/>
+            </span>
+            <span ng-show="contact.institution.address
+                && (contact.institution.address.city.length || contact.institution.address.zip || contact.institution.address.state)">
+              <localized value="contact.institution.address.city" lang="lang"></localized>,
+              {{contact.institution.address.state}},
+              {{contact.institution.address.zip}}
+              <br/>
+            </span>
+            <span ng-show="contact.institution.address && contact.institution.address.country
+                && contact.institution.address.country.name.length">
+              <localized value="contact.institution.address.country.name" lang="lang"></localized>
+            </span>
+          </address>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal">
+      <span translate="close">Close</span>
+    </button>
+  </div>
+
+
+</div>
