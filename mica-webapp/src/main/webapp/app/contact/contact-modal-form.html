@@ -5,7 +5,7 @@
 
     <div class="modal-header">
       <button type="button" class="close" aria-hidden="true" ng-click="cancel()">&times;</button>
-      <h4 class="modal-title" id="myStudyLabel" translate="config.title-edit">Edit General Configuration</h4>
+      <h4 class="modal-title" id="myStudyLabel" translate="contact.edit-label">Edit Contact</h4>
     </div>
 
     <div class="modal-body">
@@ -55,11 +55,11 @@
         </p>
       </div>
 
-      <div class="form-group" ng-class="{'has-error': form.dataAccessCommitteeMember.$invalid}">
+      <div class="checkbox" ng-class="{'has-error': form.dataAccessCommitteeMember.$invalid}">
         <label for="dataAccessCommitteeMember" translate="contact.dataAccessCommitteeMember" class="control-label">
           Data Access Committee Member
         </label>
-        <input type="checkbox" class="form-control" id="dataAccessCommitteeMember" name="dataAccessCommitteeMember"
+        <input type="checkbox" id="dataAccessCommitteeMember" name="dataAccessCommitteeMember"
             ng-model="contact.dataAccessCommitteeMember" server-error>
         <p class="input-error"
             ng-show="form.dataAccessCommitteeMember.$dirty && form.dataAccessCommitteeMember.$invalid">

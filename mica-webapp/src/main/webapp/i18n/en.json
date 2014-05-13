@@ -354,6 +354,7 @@
   },
   "contact": {
     "label": "Contact",
+    "edit-label": "Edit Contact",
     "title": "Title",
     "firstName": "First Name",
     "lastName": "Last Name",

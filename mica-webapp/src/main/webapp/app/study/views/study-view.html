@@ -43,25 +43,25 @@
           <tr ng-show="study.investigators.length">
             <td translate="study.investigators">Investigators</td>
             <td>
-              <button type="button" class="btn btn-default pull-right" translate="study.add-investigator">
-                Add Investigator
-              </button>
               <ul class="list-unstyled">
                 <li ng-repeat="investigator in study.investigators">
                   {{investigator.title}} {{investigator.firstName}} {{investigator.lastName}}
                   <span ng-show="investigator.institution.name.length">
                     (<localized value="investigator.institution.name" lang="tab.lang"></localized>)
                   </span>
+                  <div ng-controller="ContactController">
+                    <a ng-click="viewContact(investigator)">View</a> | <a ng-click="editContact(investigator)">Edit</a>
+                  </div>
                 </li>
               </ul>
+              <button type="button" class="btn btn-default btn-sm">
+                <i class="fa fa-plus"></i> <span translate="study.add-investigator">Add Investigator</span>
+              </button>
             </td>
           </tr>
           <tr ng-show="study.contacts.length">
             <td translate="study.contacts">Contacts</td>
             <td>
-              <button type="button" class="btn btn-default pull-right" translate="study.add-contact">
-                Add Contact
-              </button>
               <ul class="list-unstyled">
                 <li ng-repeat="contact in study.contacts">
                   {{contact.title}} {{contact.firstName}} {{contact.lastName}}
@@ -70,6 +70,9 @@
                   </span>
                 </li>
               </ul>
+              <button type="button" class="btn btn-default btn-sm">
+                <i class="fa fa-plus"></i> <span translate="study.add-contact">Add Contact</span>
+              </button>
             </td>
           </tr>
           <tr ng-show="study.startYear">
