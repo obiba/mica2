@@ -10,7 +10,14 @@ sudo apt-get install -y nodejs
 sudo npm install -g grunt-cli bower
 ```
 
-If you run mica-server for the first time, run `make npm-install`
+If you run mica-server for the first time, run `make npm-install`.
+
+Make sure you use **Java 8**:
+
+```
+sudo update-alternatives --config java
+sudo update-alternatives --config javac
+```
 
 During development, run
 
