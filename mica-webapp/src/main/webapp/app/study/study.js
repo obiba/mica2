@@ -6,4 +6,5 @@ mica.study = angular.module('mica.study', [
   'ngResource',
   'ngRoute',
   'ui.bootstrap',
+  'ui',
   'pascalprecht.translate']);

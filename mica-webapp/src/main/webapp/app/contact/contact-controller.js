@@ -28,9 +28,9 @@ mica.contact
             }
           })
           .result.then(function (contact) {
-            $scope.$emit('contactUpdated', contact);
+            $scope.$emit('contactUpdatedEvent', contact);
           }, function () {
-            $scope.$emit('contactEditionCanceled');
+            $scope.$emit('contactEditionCanceledEvent');
           });
       };
 
@@ -59,9 +59,9 @@ mica.contact
             } else {
               study.contacts.push(contact);
             }
-            $scope.$emit('contactUpdated', contact);
+            $scope.$emit('contactUpdatedEvent', contact);
           }, function () {
-            $scope.$emit('contactEditionCanceled');
+            $scope.$emit('contactEditionCanceledEvent');
           });
       };
 

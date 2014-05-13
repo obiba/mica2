@@ -37,8 +37,14 @@ mica.study
 //      $log.debug('study', $scope.study);
 
 
-      $scope.$on('contactUpdated', function (event, contact) {
-        $log.debug('contactUpdated', contact);
+      $scope.sortableOptions = {
+        stop: function (e, ui) {
+          $scope.$emit('contactUpdatedEvent');
+        }
+      };
+
+      $scope.$on('contactUpdatedEvent', function (event, contact) {
+        $log.debug('contactUpdatedEvent', contact);
         $scope.study.$save(function (study) {
             $scope.study = DraftStudyResource.get({id: $scope.study.id});
           },
@@ -49,7 +55,7 @@ mica.study
           });
       });
 
-      $scope.$on('contactEditionCanceled', function (event) {
+      $scope.$on('contactEditionCanceledEvent', function (event) {
         $scope.study = DraftStudyResource.get({id: $scope.study.id});
       });
 

@@ -43,7 +43,7 @@
             <td translate="study.investigators">Investigators</td>
             <td>
               <div ng-controller="ContactController">
-                <ul class="list-unstyled">
+                <ul ui-sortable="sortableOptions" ng-model="study.investigators" class="list-unstyled sortable">
                   <li ng-repeat="investigator in study.investigators">
                     <a ng-click="viewContact(investigator)">
                       {{investigator.title}} {{investigator.firstName}} {{investigator.lastName}}
@@ -64,7 +64,7 @@
             <td translate="study.contacts">Contacts</td>
             <td>
               <div ng-controller="ContactController">
-                <ul class="list-unstyled">
+                <ul ui-sortable="sortableOptions" ng-model="study.contacts" class="list-unstyled sortable">
                   <li ng-repeat="contact in study.contacts">
                     <a ng-click="viewContact(contact)">
                       {{contact.title}} {{contact.firstName}} {{contact.lastName}}
