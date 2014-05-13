@@ -1,5 +1,6 @@
 package org.obiba.mica.web.model;
 
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -116,7 +117,8 @@ class StudyDtos {
     }
     if(dto.getPopulationsCount() > 0) {
       study.setPopulations(
-          dto.getPopulationsList().stream().map(populationDtos::fromDto).collect(Collectors.<Population>toList()));
+          dto.getPopulationsList().stream().map(populationDtos::fromDto).collect(Collectors.toCollection(
+              TreeSet<Population>::new)));
     }
 
     return study;
