@@ -7,56 +7,62 @@
 
   <div class="modal-body">
 
-    <table class="table table-striped">
-      <tbody>
-      <tr>
-        <td translate="name">Name</td>
-        <td>{{contact.title}} {{contact.firstName}} {{contact.lastName}}</td>
-      </tr>
-      <tr ng-show="contact.phone">
-        <td translate="contact.phone">Phone</td>
-        <td>{{contact.phone}}</td>
-      </tr>
-      <tr ng-show="contact.email">
-        <td translate="contact.email">Email</td>
-        <td><a ng-href="mailto:{{contact.email}}">{{contact.email}}</a></td>
-      </tr>
-      <tr ng-show="contact.dataAccessCommitteeMember">
-        <td translate="contact.dataAccessCommitteeMember">Data Access Committee Member</td>
-        <td translate="yes">Yes</td>
-      </tr>
-      <tr ng-show="contact.institution">
-        <td translate="contact.institution">Institution</td>
-        <td>
-          <address>
-            <strong ng-show="contact.institution.name.length">
-              <localized value="contact.institution.name" lang="lang"></localized>
-              <br/>
-            </strong>
+    <tabset>
+      <tab ng-repeat="tab in tabs" heading="{{tab.lang}}" active="tab.active" disabled="tab.disabled">
+
+        <table class="table table-striped">
+          <tbody>
+          <tr>
+            <td translate="name">Name</td>
+            <td>{{contact.title}} {{contact.firstName}} {{contact.lastName}}</td>
+          </tr>
+          <tr ng-show="contact.phone">
+            <td translate="contact.phone">Phone</td>
+            <td>{{contact.phone}}</td>
+          </tr>
+          <tr ng-show="contact.email">
+            <td translate="contact.email">Email</td>
+            <td><a ng-href="mailto:{{contact.email}}">{{contact.email}}</a></td>
+          </tr>
+          <tr ng-show="contact.dataAccessCommitteeMember">
+            <td translate="contact.dataAccessCommitteeMember">Data Access Committee Member</td>
+            <td translate="yes">Yes</td>
+          </tr>
+          <tr ng-show="contact.institution">
+            <td translate="contact.institution">Institution</td>
+            <td>
+              <address>
+                <strong ng-show="contact.institution.name.length">
+                  <localized value="contact.institution.name" lang="tab.lang"></localized>
+                  <br/>
+                </strong>
             <span ng-show="contact.institution.department.length">
-              <localized value="contact.institution.department" lang="lang"></localized>
+              <localized value="contact.institution.department" lang="tab.lang"></localized>
               <br/>
             </span>
             <span ng-show="contact.institution.address && contact.institution.address.street.length">
-              <localized value="contact.institution.address.street" lang="lang"></localized>
+              <localized value="contact.institution.address.street" lang="tab.lang"></localized>
               <br/>
             </span>
             <span ng-show="contact.institution.address
                 && (contact.institution.address.city.length || contact.institution.address.zip || contact.institution.address.state)">
-              <localized value="contact.institution.address.city" lang="lang"></localized>,
+              <localized value="contact.institution.address.city" lang="tab.lang"></localized>,
               {{contact.institution.address.state}},
               {{contact.institution.address.zip}}
               <br/>
             </span>
             <span ng-show="contact.institution.address && contact.institution.address.country
                 && contact.institution.address.country.name.length">
-              <localized value="contact.institution.address.country.name" lang="lang"></localized>
+              <localized value="contact.institution.address.country.name" lang="tab.lang"></localized>
             </span>
-          </address>
-        </td>
-      </tr>
-      </tbody>
-    </table>
+              </address>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+
+      </tab>
+    </tabset>
 
   </div>
 

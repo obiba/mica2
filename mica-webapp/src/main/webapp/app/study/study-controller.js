@@ -15,9 +15,9 @@ mica.study
       };
 
     }])
-  .controller('StudyViewController', ['$scope', '$routeParams', '$log', '$locale', 'DraftStudyResource', 'MicaConfigResource',
+  .controller('StudyViewController', ['$scope', '$routeParams', '$log', '$locale', '$location', 'DraftStudyResource', 'MicaConfigResource',
 
-    function ($scope, $routeParams, $log, $locale, DraftStudyResource, MicaConfigResource) {
+    function ($scope, $routeParams, $log, $locale, $location, DraftStudyResource, MicaConfigResource) {
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
@@ -26,14 +26,33 @@ mica.study
         });
       });
 
-      $scope.study = DraftStudyResource.get({id: $routeParams.id});
-      $scope.study.$promise.then(function (studyDto) {
-        new $.MicaTimeline(new $.StudyDtoParser()).create("#timeline", studyDto);
-      });
+      $scope.study = DraftStudyResource.get(
+        {id: $routeParams.id},
+        function (study) {
+          new $.MicaTimeline(new $.StudyDtoParser()).create("#timeline", study);
+        });
 
       $scope.months = $locale.DATETIME_FORMATS.MONTH;
-      $log.debug('months', $scope.months);
-      $log.debug('study', $scope.study);
+//      $log.debug('months', $scope.months);
+//      $log.debug('study', $scope.study);
+
+
+      $scope.$on('contactUpdated', function (event, contact) {
+        $log.debug('contactUpdated', contact);
+        $scope.study.$save(function (study) {
+            $scope.study = DraftStudyResource.get({id: $scope.study.id});
+          },
+          function (response) {
+            $log.error('error response:', response);
+            //TODO show error message with bootstrap modal
+            alert(response);
+          });
+      });
+
+      $scope.$on('contactEditionCanceled', function (event) {
+        $scope.study = DraftStudyResource.get({id: $scope.study.id});
+      });
+
     }])
 
   .controller('StudyEditController', ['$scope', '$routeParams', '$log', '$location', 'DraftStudyResource', 'MicaConfigResource',

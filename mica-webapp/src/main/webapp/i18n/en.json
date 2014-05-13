@@ -360,9 +360,11 @@
     "lastName": "Last Name",
     "email": "Email",
     "phone": "Phone",
-    "dataAccessCommitteeMember": "Data Access Committee Member"
+    "dataAccessCommitteeMember": "Data Access Committee Member",
+    "institution": "Institution"
   },
   "networks": "Networks",
+  "name": "Name",
   "edit": "Edit",
   "cancel": "Cancel",
   "save": "Save",
