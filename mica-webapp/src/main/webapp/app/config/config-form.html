@@ -6,7 +6,9 @@
       class="ng-scope ng-invalid ng-invalid-required ng-dirty" ng-submit="save()">
 
     <div class="form-group" ng-class="{'has-error': form.name.$invalid}">
-      <label for="name" translate="config.name" class="control-label">Name</label>
+      <label for="name" class="control-label">
+        <span translate="config.name">Name</span> *
+      </label>
       <input type="text" class="form-control" id="name" name="name" ng-model="micaConfig.name" required server-error>
       <p class="input-error" ng-show="form.name.$dirty && form.name.$invalid">
         <span ng-show="form.name.$error.server">{{ errors.name }}</span>
@@ -28,7 +30,9 @@
     </div>
 
     <div class="form-group" ng-class="{'has-error': form.languages.$invalid}">
-      <label for="languages" translate="config.languages" class="control-label">Languages</label>
+      <label for="languages" class="control-label">
+        <span translate="config.languages">Languages</span> *
+      </label>
       <select chosen multiple id="languages" name="languages" ng-model="micaConfig.languages"
           ng-options="code as name for (code, name) in availableLanguages" class="chosen-select" required>
       </select>
@@ -42,7 +46,9 @@
     </div>
 
     <div class="form-group" ng-class="{'has-error': form.defaultCharSet.$invalid}">
-      <label for="defaultCharSet" translate="config.defaultCharSet" class="control-label">Default Character Set</label>
+      <label for="defaultCharSet" class="control-label">
+        <span translate="config.defaultCharSet">Default Character Set</span> *
+      </label>
       <input type="text" class="form-control" id="defaultCharSet" name="defaultCharSet"
           ng-model="micaConfig.defaultCharSet" required server-error>
       <p class="input-error" ng-show="form.defaultCharSet.$dirty && form.defaultCharSet.$invalid">

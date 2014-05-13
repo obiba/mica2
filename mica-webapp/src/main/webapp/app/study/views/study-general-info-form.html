@@ -1,5 +1,7 @@
-<div class="form-group" ng-class="{'has-error': form.name-lang.$invalid}">
-  <label for="name-{{lang}}" translate="study.name" class="control-label">Name</label>
+<div class="form-group" ng-class="{'has-error': form['name-' + lang].$dirty && form['name-' + lang].$invalid}">
+  <label for="name-{{lang}}" class="control-label">
+    <span translate="study.name">Name</span> *
+  </label>
   <input ng-repeat="name in study.name | filter:{lang:lang}" type="text" class="form-control"
       id="name-{{lang}}" name="name-{{lang}}" ng-model="name.value" required server-error>
   <p class="input-error" ng-show="form['name-' + lang].$dirty && form['name-' + lang].$invalid">
@@ -9,8 +11,8 @@
   <p class="help-block" translate="study.name-help">Name of your organization</p>
 </div>
 
-<div class="form-group" ng-class="{'has-error': form.acronym-lang.$invalid}">
-  <label for="acronym-{{lang}}" translate="study.acronym" class="control-label">Acronym</label>
+<div class="form-group" ng-class="{'has-error': form['acronym-' + lang].$dirty && form['acronym-' + lang].$invalid}">
+<label for="acronym-{{lang}}" translate="study.acronym" class="control-label">Acronym</label>
   <input ng-repeat="acronym in study.acronym | filter:{lang:lang}" type="text" class="form-control"
       id="acronym-{{lang}}" name="acronym-{{lang}}" ng-model="acronym.value" server-error>
   <p class="input-error" ng-show="form['acronym-' + lang].$dirty && form['acronym-' + lang].$invalid">
@@ -19,8 +21,11 @@
   <p class="help-block" translate="study.acronym-help">Acronym of the study if applicable</p>
 </div>
 
-<div class="form-group" ng-class="{'has-error': form.objectives-lang.$invalid}">
-  <label for="objectives-{{lang}}" translate="study.objectives" class="control-label">Objectives</label>
+<div class="form-group"
+    ng-class="{'has-error': form['objectives-' + lang].$dirty && form['objectives-' + lang].$invalid}">
+  <label for="objectives-{{lang}}" class="control-label">
+    <span translate="study.objectives">Objectives</span> *
+  </label>
   <textarea ng-repeat="objectives in study.objectives | filter:{lang:lang}" rows="5" class="form-control"
       id="objectives-{{lang}}" name="objectives-{{lang}}" ng-model="objectives.value" required server-error></textarea>
   <p class="input-error" ng-show="form['objectives-' + lang].$dirty && form['objectives-' + lang].$invalid">
