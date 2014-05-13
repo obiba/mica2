@@ -12,7 +12,7 @@ mica.contact.controller('ContactViewController', ['$scope', '$resource', '$modal
       $modal
         .open({
           templateUrl: 'app/contact/contact-modal-form.html',
-          controller: ContactEditController,
+          controller: ContactEditModalController,
           resolve: {
             contact: function () {
               return $scope.contact;
@@ -27,7 +27,19 @@ mica.contact.controller('ContactViewController', ['$scope', '$resource', '$modal
 
   }]);
 
-var ContactEditController = function ($scope, $modalInstance, contact, MicaConfigResource) {
+var ContactViewModalController = function ($scope, $modalInstance, contact) {
+
+  $log.debug('view contact', contact);
+
+  $scope.contact = contact;
+
+  $scope.close = function () {
+    $modalInstance.dismiss('close');
+  };
+
+};
+
+var ContactEditModalController = function ($scope, $modalInstance, contact, MicaConfigResource) {
 
   $log.debug('edit contact', contact);
 

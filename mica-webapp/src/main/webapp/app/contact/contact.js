@@ -2,6 +2,5 @@
 
 mica.contact = angular.module('mica.contact', [
   'mica.config',
-  'ngResource',
-  'ngRoute',
-  'pascalprecht.translate']);
+  'pascalprecht.translate',
+  'ui.bootstrap']);
