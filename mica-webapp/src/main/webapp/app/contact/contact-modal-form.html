@@ -5,7 +5,10 @@
 
     <div class="modal-header">
       <button type="button" class="close" aria-hidden="true" ng-click="cancel()">&times;</button>
-      <h4 class="modal-title" id="myStudyLabel" translate="contact.edit-label">Edit Contact</h4>
+      <h4 class="modal-title" id="myStudyLabel">
+        <span ng-show="isInvestigator" translate="contact.edit-investigator">Edit Investigator</span>
+        <span ng-hide="isInvestigator" translate="contact.edit-label">Edit Contact</span>
+      </h4>
     </div>
 
     <div class="modal-body">

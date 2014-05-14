@@ -33,30 +33,68 @@ mica.study
         });
 
       $scope.months = $locale.DATETIME_FORMATS.MONTH;
-//      $log.debug('months', $scope.months);
-//      $log.debug('study', $scope.study);
+
+      $scope.$on('studyUpdatedEvent', function (event, studyUpdated) {
+        if (studyUpdated == $scope.study) {
+          $log.debug('save study', studyUpdated);
+
+          $scope.study.$save(function () {
+              $scope.study = DraftStudyResource.get({id: $scope.study.id});
+            },
+            function (response) {
+              $log.error('error response:', response);
+              //TODO show error message with notificationController
+              alert(response);
+            });
+        }
+      });
 
 
       $scope.sortableOptions = {
         stop: function (e, ui) {
-          $scope.$emit('contactUpdatedEvent');
+          $scope.$emit('studyUpdatedEvent', $scope.study);
         }
       };
 
-      $scope.$on('contactUpdatedEvent', function (event, contact) {
-        $log.debug('contactUpdatedEvent', contact);
-        $scope.study.$save(function (study) {
-            $scope.study = DraftStudyResource.get({id: $scope.study.id});
-          },
-          function (response) {
-            $log.error('error response:', response);
-            //TODO show error message with bootstrap modal
-            alert(response);
-          });
+      $scope.$on('addInvestigatorEvent', function (event, study, contact) {
+        if (study == $scope.study) {
+          if (!$scope.study.investigators) $scope.study.investigators = [];
+          $scope.study.investigators.push(contact);
+          $scope.$emit('studyUpdatedEvent', $scope.study);
+        }
       });
 
-      $scope.$on('contactEditionCanceledEvent', function (event) {
-        $scope.study = DraftStudyResource.get({id: $scope.study.id});
+      $scope.$on('addContactEvent', function (event, study, contact) {
+        if (study == $scope.study) {
+          if (!$scope.study.contacts) $scope.study.contacts = [];
+          $scope.study.contacts.push(contact);
+          $scope.$emit('studyUpdatedEvent', $scope.study);
+        }
+      });
+
+      $scope.$on('contactUpdatedEvent', function (event, study, contact) {
+        if (study == $scope.study) {
+          $scope.$emit('studyUpdatedEvent', $scope.study);
+        }
+      });
+
+      $scope.$on('contactEditionCanceledEvent', function (event, study) {
+        if (study == $scope.study) {
+          $scope.study = DraftStudyResource.get({id: $scope.study.id});
+        }
+      });
+
+      $scope.$on('contactDeletedEvent', function (event, study, contact, isInvestigator) {
+        if (study == $scope.study) {
+          if (isInvestigator) {
+            var investigatorsIndex = $scope.study.investigators.indexOf(contact);
+            if (investigatorsIndex != -1) $scope.study.investigators.splice(investigatorsIndex, 1);
+          } else {
+            var contactsIndex = $scope.study.contacts.indexOf(contact);
+            if (contactsIndex != -1) $scope.study.contacts.splice(contactsIndex, 1);
+          }
+          $scope.$emit('studyUpdatedEvent', $scope.study);
+        }
       });
 
     }])

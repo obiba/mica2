@@ -39,11 +39,12 @@
               <a href="{{study.website}}" target="_blank">{{study.website}}</a>
             </td>
           </tr>
-          <tr ng-show="study.investigators.length">
+          <tr>
             <td translate="study.investigators">Investigators</td>
             <td>
               <div ng-controller="ContactController">
-                <ul ui-sortable="sortableOptions" ng-model="study.investigators" class="list-unstyled sortable">
+                <ul ui-sortable="sortableOptions" ng-model="study.investigators" class="list-unstyled sortable"
+                    ng-show="study.investigators.length">
                   <li ng-repeat="investigator in study.investigators">
                     <a ng-click="viewContact(investigator)">
                       {{investigator.title}} {{investigator.firstName}} {{investigator.lastName}}
@@ -51,7 +52,9 @@
                         (<localized value="investigator.institution.name" lang="tab.lang"></localized>)
                       </span>
                     </a>
-                    <a ng-click="editContact(investigator)"><i class="fa fa-pencil"></i></a>
+                    <a ng-click="editInvestigator(study, investigator)" class="action"><i class="fa fa-pencil"></i></a>
+                    <a ng-click="deleteInvestigator(study, investigator)" class="action"><i
+                        class="fa fa-trash-o"></i></a>
                   </li>
                 </ul>
                 <button type="button" class="btn btn-default btn-sm" ng-click="addInvestigator(study)">
@@ -60,11 +63,12 @@
               </div>
             </td>
           </tr>
-          <tr ng-show="study.contacts.length">
+          <tr>
             <td translate="study.contacts">Contacts</td>
             <td>
               <div ng-controller="ContactController">
-                <ul ui-sortable="sortableOptions" ng-model="study.contacts" class="list-unstyled sortable">
+                <ul ui-sortable="sortableOptions" ng-model="study.contacts" class="list-unstyled sortable"
+                    ng-show="study.contacts.length">
                   <li ng-repeat="contact in study.contacts">
                     <a ng-click="viewContact(contact)">
                       {{contact.title}} {{contact.firstName}} {{contact.lastName}}
@@ -72,7 +76,8 @@
                         (<localized value="contact.institution.name" lang="tab.lang"></localized>)
                       </span>
                     </a>
-                    <a ng-click="editContact(contact)"><i class="fa fa-pencil"></i></a>
+                    <a ng-click="editContact(study, contact)" class="action"><i class="fa fa-pencil"></i></a>
+                    <a ng-click="deleteContact(study, contact)" class="action"><i class="fa fa-trash-o"></i></a>
                   </li>
                 </ul>
                 <button type="button" class="btn btn-default btn-sm" ng-click="addContact(study)">

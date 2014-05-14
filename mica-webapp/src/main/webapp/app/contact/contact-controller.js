@@ -1,8 +1,8 @@
 'use strict';
 
 mica.contact
-  .controller('ContactController', ['$scope', '$modal', '$log',
-    function ($scope, $modal, $log) {
+  .controller('ContactController', ['$rootScope', '$scope', '$modal', '$log',
+    function ($rootScope, $scope, $modal, $log) {
 
       $scope.viewContact = function (contact) {
         $modal.open({
@@ -16,7 +16,15 @@ mica.contact
         });
       };
 
-      $scope.editContact = function (contact) {
+      $scope.editInvestigator = function (contactable, contact) {
+        $scope.editInvestigatorOrContact(contactable, contact, true);
+      };
+
+      $scope.editContact = function (contactable, contact) {
+        $scope.editInvestigatorOrContact(contactable, contact, false);
+      };
+
+      $scope.editInvestigatorOrContact = function (contactable, contact, isInvestigator) {
         $modal
           .open({
             templateUrl: 'app/contact/contact-modal-form.html',
@@ -24,25 +32,28 @@ mica.contact
             resolve: {
               contact: function () {
                 return contact;
+              },
+              isInvestigator: function () {
+                return isInvestigator;
               }
             }
           })
           .result.then(function (contact) {
-            $scope.$emit('contactUpdatedEvent', contact);
+            $scope.$emit('contactUpdatedEvent', contactable, contact);
           }, function () {
-            $scope.$emit('contactEditionCanceledEvent');
+            $scope.$emit('contactEditionCanceledEvent', contactable);
           });
       };
 
-      $scope.addInvestigator = function (study) {
-        $scope.addInvestigatorOrContact(study, true);
+      $scope.addInvestigator = function (contactable) {
+        $scope.addInvestigatorOrContact(contactable, true);
       };
 
-      $scope.addContact = function (study) {
-        $scope.addInvestigatorOrContact(study, false);
+      $scope.addContact = function (contactable) {
+        $scope.addInvestigatorOrContact(contactable, false);
       };
 
-      $scope.addInvestigatorOrContact = function (study, isInvestigator) {
+      $scope.addInvestigatorOrContact = function (contactable, isInvestigator) {
         $modal
           .open({
             templateUrl: 'app/contact/contact-modal-form.html',
@@ -50,19 +61,46 @@ mica.contact
             resolve: {
               contact: function () {
                 return {};
+              },
+              isInvestigator: function () {
+                return isInvestigator;
               }
             }
           })
           .result.then(function (contact) {
             if (isInvestigator) {
-              study.investigators.push(contact);
+              $scope.$emit('addInvestigatorEvent', contactable, contact);
             } else {
-              study.contacts.push(contact);
+              $scope.$emit('addContactEvent', contactable, contact);
             }
-            $scope.$emit('contactUpdatedEvent', contact);
           }, function () {
-            $scope.$emit('contactEditionCanceledEvent');
+            $scope.$emit('contactEditionCanceledEvent', contactable);
           });
+      };
+
+      $scope.deleteInvestigator = function (contactable, contact) {
+        $scope.deleteInvestigatorOrContact(contactable, contact, true);
+      };
+
+      $scope.deleteContact = function (contactable, contact) {
+        $scope.deleteInvestigatorOrContact(contactable, contact, false);
+      };
+
+      $scope.deleteInvestigatorOrContact = function (contactable, contact, isInvestigator) {
+        $rootScope.$broadcast('showConfirmDialogEvent', {
+            //TODO i18n
+            "title": "Delete " + (isInvestigator ? "Investigator" : "Contact"),
+            "message": "Are you sure you want to delete " + (isInvestigator ? "investigator" : "contact") + " "
+              + contact.title + " " + contact.firstName + " " + contact.lastName + " ? "
+          },
+          contact);
+
+        $scope.$on('confirmDialogAcceptedEvent', function (event, contactConfirmed) {
+          if (contactConfirmed == contact) {
+            $scope.$emit('contactDeletedEvent', contactable, contact, isInvestigator);
+          }
+        });
+
       };
 
     }])
@@ -83,10 +121,11 @@ mica.contact
       };
 
     }])
-  .controller('ContactEditModalController', ['$scope', '$modalInstance', '$log', 'MicaConfigResource', 'contact',
-    function ($scope, $modalInstance, $log, MicaConfigResource, contact) {
+  .controller('ContactEditModalController', ['$scope', '$modalInstance', '$log', 'MicaConfigResource', 'contact', 'isInvestigator',
+    function ($scope, $modalInstance, $log, MicaConfigResource, contact, isInvestigator) {
 
       $scope.contact = contact;
+      $scope.isInvestigator = isInvestigator;
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.languages = micaConfig.languages;

@@ -356,6 +356,7 @@
   "contact": {
     "label": "Contact",
     "edit-label": "Edit Contact",
+    "edit-investigator": "Edit Investigator",
     "title": "Title",
     "firstName": "First Name",
     "lastName": "Last Name",
@@ -368,6 +369,8 @@
   "name": "Name",
   "edit": "Edit",
   "cancel": "Cancel",
+  "ok": "OK",
+  "confirmation": "Confirmation",
   "close": "Close",
   "save": "Save",
   "on": "On",
