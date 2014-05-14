@@ -272,6 +272,7 @@
   },
   "footer": "This is your footer",
   "config": {
+    "short-title": "Configuration",
     "title": "General Configuration",
     "title-edit": "Edit General Configuration",
     "name": "Name",
