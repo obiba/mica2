@@ -15,9 +15,9 @@ mica.study
       };
 
     }])
-  .controller('StudyViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', '$translate', 'DraftStudyResource', 'MicaConfigResource',
+  .controller('StudyViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', '$translate', 'DraftStudyResource', 'DraftStudyPublicationResource', 'MicaConfigResource',
 
-    function ($rootScope, $scope, $routeParams, $log, $locale, $location, $translate, DraftStudyResource, MicaConfigResource) {
+    function ($rootScope, $scope, $routeParams, $log, $locale, $location, $translate, DraftStudyResource, DraftStudyPublicationResource, MicaConfigResource) {
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
@@ -54,6 +54,9 @@ mica.study
             });
         }
       });
+      $scope.publish = function() {
+        DraftStudyPublicationResource.publish({id: $scope.study.id});
+      };
 
       $scope.sortableOptions = {
         stop: function (e, ui) {

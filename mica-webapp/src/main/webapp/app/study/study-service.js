@@ -12,4 +12,10 @@ mica.study
         'save': {method: 'PUT', params: {id: '@id'}},
         'get': {method: 'GET'}
       });
+    }])
+  .factory('DraftStudyPublicationResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/draft/study/:id/_publish', {}, {
+        'publish': {method: 'PUT', params: {id: '@id'}}
+      });
     }]);

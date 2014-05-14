@@ -19,6 +19,7 @@ class StudySummaryDtos {
     builder.setId(studyState.getId()) //
         .setTimestamps(TimestampsDtos.asDto(studyState)) //
         .addAllName(localizedStringDtos.asDto(studyState.getName()));
+    if (studyState.isPublished()) builder.setPublishedTag(studyState.getPublishedTag());
     return builder.build();
   }
 

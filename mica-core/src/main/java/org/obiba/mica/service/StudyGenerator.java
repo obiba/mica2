@@ -38,11 +38,12 @@ public class StudyGenerator {
   @PostConstruct
   public void init() {
 
-    Study study = createStudy();
-
+    Study study = createStudy("CLSA", "Canadian Longitudinal Study on Aging", "Étude longitudinale canadienne sur le vieillissement");
     studyService.save(study);
-
     studyService.publish(study.getId());
+
+    study = createStudy("NCDS", "National Child Development Study", "National Child Development Study");
+    studyService.save(study);
 
 //    Network network = createNetwork();
 //    network.addStudy(study);
@@ -53,11 +54,11 @@ public class StudyGenerator {
   }
 
   @SuppressWarnings("OverlyLongMethod")
-  private Study createStudy() {
+  private Study createStudy(String acronyme, String nameEn, String nameFr) {
     Study study = new Study();
     study.setName(
-        en("Canadian Longitudinal Study on Aging").forFr("Étude longitudinale canadienne sur le vieillissement"));
-    study.setAcronym(en("CLSA"));
+        en(nameEn).forFr(nameFr));
+    study.setAcronym(en(acronyme));
     study.setObjectives(
         en("The Canadian Longitudinal Study on Aging (CLSA) is a large, national, long-term study that will follow approximately 50,000 men and women between the ages of 45 and 85 for at least 20 years. The study will collect information on the changing biological, medical, psychological, social, lifestyle and economic aspects of people’s lives. These factors will be studied in order to understand how, individually and in combination, they have an impact in both maintaining health and in the development of disease and disability as people age.")
             .forFr(

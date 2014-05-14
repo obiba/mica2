@@ -3,6 +3,7 @@ package org.obiba.mica.web.rest.study;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
 import org.obiba.mica.domain.Study;
@@ -47,6 +48,13 @@ public class DraftStudyResource {
 
     Study study = dtos.fromDto(studyDto);
     studyService.save(study);
+    return Response.noContent().build();
+  }
+
+  @PUT
+  @Path("/_publish")
+  public Response publish() {
+    studyService.publish(id);
     return Response.noContent().build();
   }
 

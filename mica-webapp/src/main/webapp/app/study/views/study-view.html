@@ -2,9 +2,14 @@
 
   <h2 translate>study.details</h2>
 
-  <a ng-href="#/study/{{study.id}}/edit" class="btn btn-primary pull-right">
-    <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
-  </a>
+  <div class="btn-group pull-right">
+    <a ng-href="#/study/{{study.id}}/edit" class="btn btn-primary pull-right">
+      <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
+    </a>
+    <a ng-click="publish()" class="btn btn-primary">
+      <i class="fa fa-heart"></i> <span translate>publish</span>
+    </a>
+  </div>
 
   <tabset>
     <tab ng-repeat="tab in tabs" heading="{{tab.lang}}" active="tab.active" disabled="tab.disabled">

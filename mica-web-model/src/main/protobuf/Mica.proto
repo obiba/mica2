@@ -10,6 +10,7 @@ message StudySummaryDto {
   optional TargetNumberDto targetNumber = 5;
   repeated CountryDto countries = 6;
   repeated NetworkRelationDto networks = 7;
+  optional string publishedTag = 8;
 }
 
 message StudyDto {
