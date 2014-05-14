@@ -5,7 +5,7 @@
     <h4 class="modal-title">
       <i ng-hide="notification.iconClass" class="fa fa-info-circle"></i>
       <i ng-show="notification.iconClass" class="fa {{notification.iconClass}}"></i>
-      <span ng-hide="notification.title" translate="notification">Notification</span>
+      <span ng-hide="notification.title" translate>notification</span>
       {{notification.title}}
     </h4>
   </div>
@@ -16,7 +16,7 @@
 
   <div class="modal-footer">
     <button type="button" class="btn btn-default" ng-click="close()">
-      <span translate="close">Close</span>
+      <span translate>close</span>
     </button>
   </div>
 

@@ -282,8 +282,9 @@
     "languages": "Languages",
     "languages-help": "Supported languages for studies and networks description"
   },
+  "studies": "Studies",
   "study": {
-    "studies": "Studies",
+    "add": "Add Study",
     "label": "Study",
     "label-edit": "Edit Study",
     "details": "Details",
@@ -351,12 +352,25 @@
     },
     "data-collection-events": "Data Collection Events",
     "start": "Start",
-    "end": "End"
+    "end": "End",
+    "save-error": "Error while saving study"
   },
   "contact": {
     "label": "Contact",
-    "edit-label": "Edit Contact",
-    "edit-investigator": "Edit Investigator",
+    "delete": {
+      "contact": {
+        "title": "Delete Contact",
+        "confirm": "Are you sure you want to delete contact {{name}}?"
+      },
+      "investigator": {
+        "title": "Delete Investigator",
+        "confirm": "Are you sure you want to delete investigator {{name}}?"
+      }
+    },
+    "edit": {
+      "contact": "Edit Contact",
+      "investigator": "Edit Investigator"
+    },
     "title": "Title",
     "firstName": "First Name",
     "lastName": "Last Name",
@@ -368,6 +382,8 @@
   "networks": "Networks",
   "name": "Name",
   "edit": "Edit",
+  "view": "View",
+  "delete": "Delete",
   "cancel": "Cancel",
   "ok": "OK",
   "confirmation": "Confirmation",
@@ -377,5 +393,6 @@
   "by": "By",
   "other": "Other",
   "notification": "Notification",
+  "required": "Required",
   "suppl-info": "Supplementary information"
 }

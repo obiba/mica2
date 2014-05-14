@@ -8,25 +8,22 @@
     <localized value="population.description" lang="tab.lang"></localized>
   </p>
 
-  <h5 translate="study.selection-criteria.label">Selection criteria</h5>
+  <h5 translate>study.selection-criteria.label</h5>
 
   <dl ng-repeat="criteria in population.selectionCriteria.criteria" class="dl-horizontal no-margin-bottom">
-    <dt translate="study.selection-criteria.{{criteria}}">{{criteria}}</dt>
+    <dt translate>study.selection-criteria.{{criteria}}</dt>
     <dd>&nbsp;</dd>
   </dl>
 
   <dl class="dl-horizontal">
 
-    <dt translate="study.selection-criteria.gender.label" ng-show="population.selectionCriteria.gender">
-      Gender
-    </dt>
-    <dd ng-show="population.selectionCriteria.gender"
-        translate="study.selection-criteria.gender.{{population.selectionCriteria.gender}}">
+    <dt translate ng-show="population.selectionCriteria.gender">study.selection-criteria.gender.label</dt>
+    <dd ng-show="population.selectionCriteria.gender" translate>
+      study.selection-criteria.gender.{{population.selectionCriteria.gender}}
     </dd>
 
-    <dt translate="study.selection-criteria.age"
-        ng-show="population.selectionCriteria.ageMin || population.selectionCriteria.ageMax">
-      Age
+    <dt translate ng-show="population.selectionCriteria.ageMin || population.selectionCriteria.ageMax">
+      study.selection-criteria.age
     </dt>
     <dd ng-show="population.selectionCriteria.ageMin || population.selectionCriteria.ageMax">
       <span ng-show="population.selectionCriteria.ageMin">Minimum {{population.selectionCriteria.ageMin}}</span>
@@ -34,9 +31,7 @@
       <span ng-show="population.selectionCriteria.ageMax">Maximum {{population.selectionCriteria.ageMax}}</span>
     </dd>
 
-    <dt translate="study.selection-criteria.country" ng-show="population.selectionCriteria.countriesIso.length">
-      Country
-    </dt>
+    <dt translate ng-show="population.selectionCriteria.countriesIso.length">study.selection-criteria.country</dt>
     <dd ng-show="population.selectionCriteria.countriesIso.length">
       <ul class="list-unstyled no-margin-bottom">
         <li ng-repeat="country in population.selectionCriteria.countriesIso">
@@ -45,16 +40,12 @@
       </ul>
     </dd>
 
-    <dt translate="study.selection-criteria.territory" ng-show="population.selectionCriteria.territory.length">
-      Territory
-    </dt>
+    <dt translate ng-show="population.selectionCriteria.territory.length">study.selection-criteria.territory</dt>
     <dd ng-show="population.selectionCriteria.territory.length">
       <localized value="population.selectionCriteria.territory" lang="tab.lang"></localized>
     </dd>
 
-    <dt translate="study.selection-criteria.ethnic-origin" ng-show="population.selectionCriteria.ethnicOrigin.length">
-      Ethnic Origin
-    </dt>
+    <dt translate ng-show="population.selectionCriteria.ethnicOrigin.length">study.selection-criteria.ethnic-origin</dt>
     <dd ng-show="population.selectionCriteria.ethnicOrigin.length">
       <ul class="list-unstyled no-margin-bottom">
         <li ng-repeat="ethnicOrigin in population.selectionCriteria.ethnicOrigin">
@@ -63,9 +54,7 @@
       </ul>
     </dd>
 
-    <dt translate="study.selection-criteria.health-status" ng-show="population.selectionCriteria.healthStatus.length">
-      Health Status
-    </dt>
+    <dt translate ng-show="population.selectionCriteria.healthStatus.length">study.selection-criteria.health-status</dt>
     <dd ng-show="population.selectionCriteria.healthStatus.length">
       <ul class="list-unstyled no-margin-bottom">
         <li ng-repeat="healthStatus in population.selectionCriteria.healthStatus">
@@ -74,16 +63,12 @@
       </ul>
     </dd>
 
-    <dt translate="other" ng-show="population.selectionCriteria.otherCriteria.length">
-      Other
-    </dt>
+    <dt translate ng-show="population.selectionCriteria.otherCriteria.length">other</dt>
     <dd ng-show="population.selectionCriteria.otherCriteria.length">
       <localized value="population.selectionCriteria.otherCriteria" lang="tab.lang"></localized>
     </dd>
 
-    <dt translate="suppl-info" ng-show="population.selectionCriteria.info.length">
-      Supplementary Information
-    </dt>
+    <dt translate ng-show="population.selectionCriteria.info.length">suppl-info</dt>
     <dd ng-show="population.selectionCriteria.info.length">
       <localized value="population.selectionCriteria.info" lang="tab.lang"></localized>
     </dd>
@@ -91,35 +76,34 @@
   </dl>
 
 
-  <h5 translate="study.recruitment-sources.label">Sources of recruitment</h5>
+  <h5 translate>study.recruitment-sources.label</h5>
 
   <!--<dl ng-repeat="dataSource in population.recruitment.dataSources" class="dl-horizontal no-margin-bottom">-->
-  <!--<dt translate="study.recruitment.dataSources.{{dataSource}}">{{dataSource}}</dt>-->
+  <!--<dt translate>study.recruitment.dataSources.{{dataSource}}</dt>-->
   <!--<dd>&nbsp;</dd>-->
   <!--</dl>-->
 
   <dl class="dl-horizontal">
 
-    <dt translate="study.recruitment-sources.general-population"
-        ng-show="population.recruitment.generalPopulationSources.length">
-      General Population
+    <dt translate ng-show="population.recruitment.generalPopulationSources.length">
+      study.recruitment-sources.general-population
     </dt>
     <dd ng-show="population.recruitment.generalPopulationSources.length">
       <ul class="list-unstyled no-margin-bottom">
         <li ng-repeat="source in population.recruitment.generalPopulationSources">
-          <span translate="study.recruitment-sources.general-population.{{source}}">{{source}}</span>
+          <span translate>study.recruitment-sources.general-population.{{source}}</span>
         </li>
       </ul>
     </dd>
 
-    <dt translate="study.recruitment-sources.specific-population"
+    <dt translate
         ng-show="population.recruitment.specificPopulationSources.length || population.recruitment.otherSpecificPopulationSource.length">
-      Specific Population
+      study.recruitment-sources.specific-population
     </dt>
     <dd ng-show="population.recruitment.specificPopulationSources.length || population.recruitment.otherSpecificPopulationSource.length">
       <ul class="list-unstyled no-margin-bottom">
         <li ng-repeat="source in population.recruitment.specificPopulationSources">
-          <span translate="study.recruitment-sources.specific-population.{{source}}">{{source}}</span>
+          <span translate>study.recruitment-sources.specific-population.{{source}}</span>
         </li>
         <li ng-show="population.recruitment.otherSpecificPopulationSource.length">
           <localized value="population.recruitment.otherSpecificPopulationSource" lang="tab.lang"></localized>
@@ -127,9 +111,7 @@
       </ul>
     </dd>
 
-    <dt translate="study.recruitment-sources.studies" ng-show="population.recruitment.studies.length">
-      Participants from existing studies
-    </dt>
+    <dt translate ng-show="population.recruitment.studies.length">study.recruitment-sources.studies</dt>
     <dd ng-show="population.recruitment.studies.length">
       <ul class="list-unstyled no-margin-bottom">
         <li ng-repeat="localizedStudies in population.recruitment.studies">
@@ -140,16 +122,12 @@
       </ul>
     </dd>
 
-    <dt translate="other" ng-show="population.recruitment.otherSource.length">
-      Other
-    </dt>
+    <dt translate ng-show="population.recruitment.otherSource.length">other</dt>
     <dd ng-show="population.recruitment.otherSource.length">
       <localized value="population.recruitment.otherSource" lang="tab.lang"></localized>
     </dd>
 
-    <dt translate="suppl-info" ng-show="population.recruitment.info.length">
-      Supplementary Information
-    </dt>
+    <dt translate ng-show="population.recruitment.info.length">suppl-info</dt>
     <dd ng-show="population.recruitment.info.length">
       <localized value="population.recruitment.info" lang="tab.lang"></localized>
     </dd>
@@ -159,44 +137,34 @@
 
   <dl class="dl-horizontal" ng-show="population.numberOfParticipants">
 
-    <dt translate="study.participants-number.participant" ng-show="population.numberOfParticipants.participant">
-      Number of participants
-    </dt>
+    <dt translate ng-show="population.numberOfParticipants.participant">study.participants-number.participant</dt>
     <dd ng-show="population.numberOfParticipants.participant">
       {{population.numberOfParticipants.participant | number}}
-      <span ng-show="population.numberOfParticipants.participant.noLimit" translate="study.target-number.no-limit">
-        No Limit
-      </span>
+      <span ng-show="population.numberOfParticipants.participant.noLimit" translate>study.target-number.no-limit</span>
     </dd>
 
-    <dt translate="study.participants-number.sample" ng-show="population.numberOfParticipants.sample">
-      Number of participants with biological samples
-    </dt>
+    <dt translate ng-show="population.numberOfParticipants.sample">study.participants-number.sample</dt>
     <dd ng-show="population.numberOfParticipants.sample">
       {{population.numberOfParticipants.sample | number}}
-      <span ng-show="population.numberOfParticipants.sample.noLimit" translate="study.target-number.no-limit">
-        No Limit
-      </span>
+      <span ng-show="population.numberOfParticipants.sample.noLimit" translate>study.target-number.no-limit</span>
     </dd>
 
   </dl>
 
-  <h5 translate="suppl-info" ng-show="population.info.length">Supplementary Information</h5>
+  <h5 translate ng-show="population.info.length">suppl-info</h5>
   <localized value="population.info" lang="tab.lang"></localized>
 
   <div class="clearfix"></div>
 
-  <h5 translate="study.data-collection-events" ng-show="population.dataCollectionEvents.length">
-    Data Collection Events
-  </h5>
+  <h5 translate ng-show="population.dataCollectionEvents.length">study.data-collection-events</h5>
 
   <table class="table table-striped" ng-show="population.dataCollectionEvents.length">
     <thead>
     <tr>
-      <th translate="study.name">Name</th>
-      <th translate="study.description">Description</th>
-      <th translate="study.start">Start</th>
-      <th translate="study.end">End</th>
+      <th translate>study.name</th>
+      <th translate>study.description</th>
+      <th translate>study.start</th>
+      <th translate>study.end</th>
     </tr>
     </thead>
     <tbody>
@@ -208,16 +176,10 @@
         <localized value="dce.description" lang="tab.lang"></localized>
       </td>
       <td>
-        {{dce.startYear}}
-        <span ng-show="dce.startMonth">
-          ({{months[dce.startMonth - 1]}})
-        </span>
+        {{dce.startYear}} <span ng-show="dce.startMonth">({{months[dce.startMonth - 1]}})</span>
       </td>
       <td>
-        {{dce.endYear}}
-        <span ng-show="dce.endMonth">
-          ({{months[dce.endMonth - 1]}})
-        </span>
+        {{dce.endYear}} <span ng-show="dce.endMonth">({{months[dce.endMonth - 1]}})</span>
       </td>
     </tr>
     </tbody>

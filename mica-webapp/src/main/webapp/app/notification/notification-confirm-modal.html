@@ -4,7 +4,7 @@
     <button type="button" class="close" aria-hidden="true" ng-click="cancel()">&times;</button>
     <h4 class="modal-title">
       <i class="fa fa-exclamation-triangle"></i>
-      <span ng-hide="confirm.title" translate="confirmation">Confirmation</span>
+      <span ng-hide="confirm.title" translate>confirmation</span>
       {{confirm.title}}
     </h4>
   </div>
@@ -15,11 +15,11 @@
 
   <div class="modal-footer">
     <button type="button" class="btn btn-default" ng-click="cancel()">
-      <span ng-hide="confirm.cancel" translate="cancel">Cancel</span>
+      <span ng-hide="confirm.cancel" translate>cancel</span>
       {{confirm.cancel}}
     </button>
     <button type="button" class="btn btn-primary" ng-click="ok()">
-      <span ng-hide="confirm.ok" translate="ok">OK</span>
+      <span ng-hide="confirm.ok" translate>ok</span>
       {{confirm.ok}}
     </button>
   </div>

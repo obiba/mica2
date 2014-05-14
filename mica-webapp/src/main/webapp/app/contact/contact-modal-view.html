@@ -13,23 +13,23 @@
         <table class="table table-striped">
           <tbody>
           <tr>
-            <td translate="name">Name</td>
+            <td translate>name</td>
             <td>{{contact.title}} {{contact.firstName}} {{contact.lastName}}</td>
           </tr>
           <tr ng-show="contact.phone">
-            <td translate="contact.phone">Phone</td>
+            <td translate>contact.phone</td>
             <td>{{contact.phone}}</td>
           </tr>
           <tr ng-show="contact.email">
-            <td translate="contact.email">Email</td>
+            <td translate>contact.email</td>
             <td><a ng-href="mailto:{{contact.email}}">{{contact.email}}</a></td>
           </tr>
           <tr ng-show="contact.dataAccessCommitteeMember">
-            <td translate="contact.dataAccessCommitteeMember">Data Access Committee Member</td>
-            <td translate="yes">Yes</td>
+            <td translate>contact.dataAccessCommitteeMember</td>
+            <td translate>yes</td>
           </tr>
           <tr ng-show="contact.institution">
-            <td translate="contact.institution">Institution</td>
+            <td translate>contact.institution</td>
             <td>
               <address>
                 <strong ng-show="contact.institution.name.length">
@@ -68,7 +68,7 @@
 
   <div class="modal-footer">
     <button type="button" class="btn btn-default" ng-click="close()">
-      <span translate="close">Close</span>
+      <span translate>close</span>
     </button>
   </div>
 

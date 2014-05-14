@@ -1,9 +1,9 @@
 <div>
 
-  <h2 translate="study.details">Study details</h2>
+  <h2 translate>study.details</h2>
 
   <a ng-href="#/study/{{study.id}}/edit" class="btn btn-primary pull-right">
-    <i class="fa fa-pencil-square-o"></i> <span translate="edit">Edit</span>
+    <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
   </a>
 
   <tabset>
@@ -11,36 +11,36 @@
 
       <div class="table-responsive">
 
-        <h3 translate="study.general-info">General Information</h3>
+        <h3 translate>study.general-info</h3>
 
         <table class="table table-striped">
           <tbody>
           <tr ng-show="study.name.length">
-            <td translate="study.name">Name</td>
+            <td translate>study.name</td>
             <td>
               <localized value="study.name" lang="tab.lang"></localized>
             </td>
           </tr>
           <tr ng-show="study.acronym.length">
-            <td translate="study.acronym">Acronym</td>
+            <td translate>study.acronym</td>
             <td>
               <localized value="study.acronym" lang="tab.lang"></localized>
             </td>
           </tr>
           <tr ng-show="study.objectives.length">
-            <td translate="study.objectives">Objectives</td>
+            <td translate>study.objectives</td>
             <td>
               <localized value="study.objectives" lang="tab.lang"></localized>
             </td>
           </tr>
           <tr ng-show="study.website">
-            <td translate="study.website">Website</td>
+            <td translate>study.website</td>
             <td>
               <a href="{{study.website}}" target="_blank">{{study.website}}</a>
             </td>
           </tr>
           <tr>
-            <td translate="study.investigators">Investigators</td>
+            <td translate>study.investigators</td>
             <td>
               <div ng-controller="ContactController">
                 <ul ui-sortable="sortableOptions" ng-model="study.investigators" class="list-unstyled sortable"
@@ -58,13 +58,13 @@
                   </li>
                 </ul>
                 <button type="button" class="btn btn-default btn-sm" ng-click="addInvestigator(study)">
-                  <i class="fa fa-plus"></i> <span translate="study.add-investigator">Add Investigator</span>
+                  <i class="fa fa-plus"></i> <span translate>study.add-investigator</span>
                 </button>
               </div>
             </td>
           </tr>
           <tr>
-            <td translate="study.contacts">Contacts</td>
+            <td translate>study.contacts</td>
             <td>
               <div ng-controller="ContactController">
                 <ul ui-sortable="sortableOptions" ng-model="study.contacts" class="list-unstyled sortable"
@@ -81,21 +81,21 @@
                   </li>
                 </ul>
                 <button type="button" class="btn btn-default btn-sm" ng-click="addContact(study)">
-                  <i class="fa fa-plus"></i> <span translate="study.add-contact">Add Contact</span>
+                  <i class="fa fa-plus"></i> <span translate>study.add-contact</span>
                 </button>
               </div>
             </td>
           </tr>
           <tr ng-show="study.startYear">
-            <td translate="study.start-year">Start Year</td>
+            <td translate>study.start-year</td>
             <td> {{study.startYear}}</td>
           </tr>
           <tr ng-show="study.endYear">
-            <td translate="study.end-year">End Year</td>
+            <td translate>study.end-year</td>
             <td> {{study.endYear}}</td>
           </tr>
           <tr ng-show="study.networks.length">
-            <td translate="networks">Networks</td>
+            <td translate>networks</td>
             <td>
               {{study.networks}}
             </td>
@@ -103,17 +103,15 @@
           </tbody>
         </table>
 
-        <h3 translate="study.general-design" ng-show="study.methods">
-          General Design
-        </h3>
+        <h3 translate ng-show="study.methods">study.general-design</h3>
         <table class="table table-striped" ng-show="study.methods">
           <tbody>
           <tr ng-show="study.methods.designs.length || study.methods.otherDesign.length">
-            <td translate="study.design">Study Design</td>
+            <td translate>study.design</td>
             <td>
               <ul class="list-unstyled">
                 <li ng-repeat="design in study.methods.designs">
-                  <span translate="study.design.{{design}}">{{design}}</span>
+                  <span translate>study.design.{{design}}</span>
                 </li>
                 <li ng-show="study.methods.otherDesign.length">
                   <localized value="study.methods.otherDesign" lang="tab.lang"></localized>
@@ -122,17 +120,17 @@
             </td>
           </tr>
           <tr ng-show="study.methods.followUpInfo.length">
-            <td translate="study.follow-up">Follow Up</td>
+            <td translate>study.follow-up</td>
             <td>
               <localized value="study.methods.followUpInfo" lang="tab.lang"></localized>
             </td>
           </tr>
           <tr ng-show="study.methods.recruitments.length || study.methods.otherRecruitment.length">
-            <td translate="study.recruitment-target">Recruitment target</td>
+            <td translate>study.recruitment-target</td>
             <td>
               <ul class="list-unstyled">
                 <li ng-repeat="recruitment in study.methods.recruitments">
-                  <span translate="study.recruitment.{{recruitment}}">{{recruitment}}</span>
+                  <span translate>study.recruitment.{{recruitment}}</span>
                 </li>
                 <li ng-show="study.methods.otherRecruitment.length">
                   <localized value="study.methods.otherRecruitment" lang="tab.lang"></localized>
@@ -141,33 +139,28 @@
             </td>
           </tr>
           <tr ng-show="study.numberOfParticipants.participant">
-            <td translate="study.target-number.participants">Target number of participants</td>
+            <td translate>study.target-number.participants</td>
             <td>
               {{study.numberOfParticipants.participant.number | number}}
-              <span ng-show="study.numberOfParticipants.participant.noLimit" translate="study.target-number.no-limit">
-                No Limit
-              </span>
+              <span ng-show="study.numberOfParticipants.participant.noLimit"
+                  translate>study.target-number.no-limit</span>
             </td>
           </tr>
           <tr ng-show="study.numberOfParticipants.sample">
-            <td translate="study.target-number.sample">Target number of participants with biological samples</td>
+            <td translate>study.target-number.sample</td>
             <td>
               {{study.numberOfParticipants.sample.number | number}}
-              <span ng-show="study.numberOfParticipants.sample.noLimit" translate="study.target-number.no-limit">
-                No Limit
-              </span>
+              <span ng-show="study.numberOfParticipants.sample.noLimit" translate>study.target-number.no-limit</span>
             </td>
           </tr>
           <tr ng-show="study.numberOfParticipants.info.length">
-            <td translate="study.target-number.suppl-info">
-              Supplementary information about target number of participants
-            </td>
+            <td translate>study.target-number.suppl-info</td>
             <td>
               <localized value="study.numberOfParticipants.info" lang="tab.lang"></localized>
             </td>
           </tr>
           <tr ng-show="study.methods.info.length">
-            <td translate="suppl-info">Supplementary information</td>
+            <td translate>suppl-info</td>
             <td>
               <localized value="study.methods.info" lang="tab.lang"></localized>
             </td>
@@ -175,19 +168,15 @@
           </tbody>
         </table>
 
-        <h3 translate="study.access.label" ng-show="study.access.length || study.otherAccess.length">
-          Access
-        </h3>
+        <h3 translate ng-show="study.access.length || study.otherAccess.length">study.access.label</h3>
         <table class="table table-striped" ng-show="study.access.length || study.otherAccess.length">
           <tbody>
           <tr>
-            <td translate="study.access.for">
-              Access to external researchers or third parties provided or foreseen for
-            </td>
+            <td translate>study.access.for</td>
             <td>
               <ul class="list-unstyled">
                 <li ng-repeat="access in study.access">
-                  <span translate="study.access.{{access}}">{{access}}</span>
+                  <span translate>study.access.{{access}}</span>
                 </li>
                 <li ng-show="study.otherAccess.length">
                   <localized value="study.otherAccess" lang="tab.lang"></localized>
@@ -198,17 +187,15 @@
           </tbody>
         </table>
 
-        <h3 translate="study.marker-paper" ng-show="study.markerPaper || study.pubmedId">
-          Marker Paper
-        </h3>
+        <h3 translate ng-show="study.markerPaper || study.pubmedId">study.marker-paper</h3>
         <table class="table table-striped" ng-show="study.markerPaper || study.pubmedId">
           <tbody>
           <tr ng-show="study.markerPaper">
-            <td translate="study.marker-paper">Marker Paper</td>
+            <td translate>study.marker-paper</td>
             <td>{{study.markerPaper}}</td>
           </tr>
           <tr ng-show="study.pubmedId">
-            <td translate="study.pubmed-id">Pubmed ID</td>
+            <td translate>study.pubmed-id</td>
             <td>
               <a ng-href="http://www.ncbi.nlm.nih.gov/pubmed/{{study.pubmedId}}" target="_blank">
                 PUBMED {{study.pubmedId}}
@@ -218,9 +205,7 @@
           </tbody>
         </table>
 
-        <h3 translate="suppl-info" ng-show="study.info.length">
-          Supplementary Information
-        </h3>
+        <h3 translate ng-show="study.info.length">suppl-info</h3>
         <table class="table table-striped" ng-show="study.info.length">
           <tbody>
           <tr>
@@ -231,51 +216,40 @@
           </tbody>
         </table>
 
-        <h3 translate="study.timeline" ng-show="study.populations.length">Study Timeline</h3>
+        <h3 translate ng-show="study.populations.length">study.timeline</h3>
         <div id="timeline"></div>
 
 
-        <h3 translate="study.populations" ng-show="study.populations.length">Populations</h3>
+        <h3 translate ng-show="study.populations.length">study.populations</h3>
         <div ng-repeat="population in study.populations">
           <div ng-include="'app/study/views/population/population-view.html'"></div>
         </div>
 
-        <h3 translate="study.authorization.label" ng-show="study.specificAuthorization || study.maelstromAuthorization">
-          Authorization
-        </h3>
+        <h3 translate ng-show="study.specificAuthorization || study.maelstromAuthorization">
+          study.authorization.label</h3>
         <table class="table table-striped" ng-show="study.specificAuthorization || study.maelstromAuthorization">
           <tbody>
           <tr ng-show="study.maelstromAuthorization">
-            <td translate="study.authorization.maelstrom">
-              Authorization from contributors to the Maelstrom catalogues
-            </td>
+            <td translate>study.authorization.maelstrom</td>
             <td>
-              <span
-                  translate="study.authorization.{{study.maelstromAuthorization.authorized ? 'authorized' : 'not-authorized'}}">
-                {{study.maelstromAuthorization.authorized ? 'authorized' : 'not-authorized'}}
-              </span>
+              <span translate>study.authorization.{{study.maelstromAuthorization.authorized ? 'authorized' : 'not-authorized'}}</span>
               <span ng-show="study.maelstromAuthorization.authorizer">
-                <span translate="by">By</span> {{study.maelstromAuthorization.authorizer}}
+                <span translate>by</span> {{study.maelstromAuthorization.authorizer}}
               </span>
               <span ng-show="study.maelstromAuthorization.date">
-                <span translate="on">On</span> {{study.maelstromAuthorization.date}}
+                <span translate>on</span> {{study.maelstromAuthorization.date}}
               </span>
             </td>
           </tr>
           <tr ng-show="study.specificAuthorization">
-            <td translate="study.authorization.specific">
-              Authorization from contributors to the [specific network] catalogues
-            </td>
+            <td translate>study.authorization.specific</td>
             <td>
-              <span
-                  translate="study.authorization.{{study.specificAuthorization.authorized ? 'authorized' : 'not-authorized'}}">
-                {{study.maelstromAuthorization.authorized ? 'authorized' : 'not-authorized'}}
-              </span>
+              <span translate>study.authorization.{{study.specificAuthorization.authorized ? 'authorized' : 'not-authorized'}}</span>
               <span ng-show="study.specificAuthorization.authorizer">
-                <span translate="by">By</span> {{study.specificAuthorization.authorizer}}
+                <span translate>by</span> {{study.specificAuthorization.authorizer}}
               </span>
               <span ng-show="study.specificAuthorization.date">
-                <span translate="on">On</span> {{study.specificAuthorization.date}}
+                <span translate>on</span> {{study.specificAuthorization.date}}
               </span>
             </td>
           </tr>

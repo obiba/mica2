@@ -1,16 +1,16 @@
 <div>
 
-  <h2 translate="study.studies">Studies</h2>
+  <h2 translate>studies</h2>
 
   <button class="btn btn-primary">
-    <i class="fa fa-plus"></i> Add Study
+    <i class="fa fa-plus"></i> <span translate>study.add</span>
   </button>
 
   <div class="table-responsive">
     <table class="table table-striped">
       <thead>
       <tr>
-        <th>Name</th>
+        <th translate>study.name</th>
         <th></th>
       </tr>
       </thead>
@@ -26,13 +26,13 @@
         <td>
           <ul class="list-inline">
             <li>
-              <a ng-href="#/study/{{study.id}}">View</a>
+              <a ng-href="#/study/{{study.id}}" translate>view</a>
             </li>
             <li>
-              <a ng-href="#/study/{{study.id}}/edit">Edit</a>
+              <a ng-href="#/study/{{study.id}}/edit" translate>edit</a>
             </li>
             <li>
-              <a ng-href="#/study/{{study.id}}/delete">Delete</a>
+              <a ng-href="#/study/{{study.id}}/delete" translate>delete</a>
             </li>
           </ul>
         </td>

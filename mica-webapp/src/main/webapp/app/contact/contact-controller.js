@@ -1,8 +1,8 @@
 'use strict';
 
 mica.contact
-  .controller('ContactController', ['$rootScope', '$scope', '$modal', '$log',
-    function ($rootScope, $scope, $modal, $log) {
+  .controller('ContactController', ['$rootScope', '$scope', '$modal', '$translate', '$log',
+    function ($rootScope, $scope, $modal, $translate, $log) {
 
       $scope.viewContact = function (contact) {
         $modal.open({
@@ -87,20 +87,21 @@ mica.contact
       };
 
       $scope.deleteInvestigatorOrContact = function (contactable, contact, isInvestigator) {
-        $rootScope.$broadcast('showConfirmDialogEvent', {
-            //TODO i18n
-            "title": "Delete " + (isInvestigator ? "Investigator" : "Contact"),
-            "message": "Are you sure you want to delete " + (isInvestigator ? "investigator" : "contact") + " "
-              + contact.title + " " + contact.firstName + " " + contact.lastName + " ? "
-          },
-          contact);
+
+        var titleKey = 'contact.delete.' + (isInvestigator ? 'investigator' : 'contact') + '.title';
+        var messageKey = 'contact.delete.' + (isInvestigator ? 'investigator' : 'contact') + '.confirm';
+        $translate([titleKey, messageKey], { name: contact.title + " " + contact.firstName + " " + contact.lastName })
+          .then(function (translation) {
+            $rootScope.$broadcast('showConfirmDialogEvent',
+              {"title": translation[titleKey], "message": translation[messageKey]},
+              contact);
+          });
 
         $scope.$on('confirmDialogAcceptedEvent', function (event, contactConfirmed) {
           if (contactConfirmed == contact) {
             $scope.$emit('contactDeletedEvent', contactable, contact, isInvestigator);
           }
         });
-
       };
 
     }])

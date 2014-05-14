@@ -15,9 +15,9 @@ mica.study
       };
 
     }])
-  .controller('StudyViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', 'DraftStudyResource', 'MicaConfigResource',
+  .controller('StudyViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', '$translate', 'DraftStudyResource', 'MicaConfigResource',
 
-    function ($rootScope, $scope, $routeParams, $log, $locale, $location, DraftStudyResource, MicaConfigResource) {
+    function ($rootScope, $scope, $routeParams, $log, $locale, $location, $translate, DraftStudyResource, MicaConfigResource) {
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
@@ -43,12 +43,14 @@ mica.study
             },
             function (response) {
               $log.error('Error on study save:', response);
-              $rootScope.$broadcast('showNotificationDialogEvent', {
-                //TODO i18n
-                "iconClass": "fa-exclamation-triangle",
-                "title": "Error while saving study",
-                "message": response.data ? response.data : angular.fromJson(response)
-              });
+              $translate("study.save-error")
+                .then(function (translation) {
+                  $rootScope.$broadcast('showNotificationDialogEvent', {
+                    "iconClass": "fa-exclamation-triangle",
+                    "title": translation,
+                    "message": response.data ? response.data : angular.fromJson(response)
+                  });
+                });
             });
         }
       });
