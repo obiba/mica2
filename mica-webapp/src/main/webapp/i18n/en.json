@@ -26,7 +26,7 @@
     }
   },
   "main": {
-    "title": "Welcome, Java Hipster!",
+    "title": "Welcome to Micado!",
     "subtitle": "This is your homepage",
     "logged": {
       "message": "You are logged in as user \"{{username}}\".",
@@ -283,6 +283,7 @@
     "languages-help": "Supported languages for studies and networks description"
   },
   "study": {
+    "studies": "Studies",
     "label": "Study",
     "label-edit": "Edit Study",
     "details": "Details",
