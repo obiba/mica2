@@ -295,6 +295,7 @@
     "acronym": "Acronym",
     "acronym-help": "Acronym of the study if applicable",
     "objectives": "Objectives",
+    "description": "Description",
     "objectives-help": "What are the principal objectives of the study?",
     "website": "Website",
     "investigators": "Investigators",
@@ -323,8 +324,10 @@
     "populations": "Populations",
     "authorization": {
       "label": "Authorization",
-      "authorized": "Authorized",
-      "not-authorized": "Not authorized",
+      "authorized": {
+        "true": "Authorized",
+        "false": "Not authorized"
+      },
       "maelstrom": "Authorization from contributors to the Maelstrom catalogues",
       "specific": "Authorization from contributors to the [specific network] catalogues"
     },

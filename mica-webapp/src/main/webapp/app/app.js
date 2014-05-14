@@ -106,14 +106,14 @@ mica
         });
 
       // Initialize angular-translate
-      $translateProvider.useStaticFilesLoader({
-        prefix: 'i18n/',
-        suffix: '.json'
-      });
-
-      $translateProvider.preferredLanguage('en');
-
-      $translateProvider.useCookieStorage();
+      $translateProvider
+        .useStaticFilesLoader({
+          prefix: 'i18n/',
+          suffix: '.json'
+        })
+        .preferredLanguage('en')
+        .fallbackLanguage('en')
+        .useCookieStorage();
 
       tmhDynamicLocaleProvider.localeLocationPattern('bower_components/angular-i18n/angular-locale_{{locale}}.js')
       tmhDynamicLocaleProvider.useCookieStorage('NG_TRANSLATE_LANG_KEY');

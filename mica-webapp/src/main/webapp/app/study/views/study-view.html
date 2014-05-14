@@ -111,7 +111,7 @@
             <td>
               <ul class="list-unstyled">
                 <li ng-repeat="design in study.methods.designs">
-                  <span translate>study.design.{{design}}</span>
+                  {{'study.design.' + design | translate}}
                 </li>
                 <li ng-show="study.methods.otherDesign.length">
                   <localized value="study.methods.otherDesign" lang="tab.lang"></localized>
@@ -130,7 +130,7 @@
             <td>
               <ul class="list-unstyled">
                 <li ng-repeat="recruitment in study.methods.recruitments">
-                  <span translate>study.recruitment.{{recruitment}}</span>
+                  {{'study.recruitment.' + recruitment | translate}}
                 </li>
                 <li ng-show="study.methods.otherRecruitment.length">
                   <localized value="study.methods.otherRecruitment" lang="tab.lang"></localized>
@@ -176,7 +176,7 @@
             <td>
               <ul class="list-unstyled">
                 <li ng-repeat="access in study.access">
-                  <span translate>study.access.{{access}}</span>
+                  {{'study.access.' + access | translate}}
                 </li>
                 <li ng-show="study.otherAccess.length">
                   <localized value="study.otherAccess" lang="tab.lang"></localized>
@@ -232,7 +232,7 @@
           <tr ng-show="study.maelstromAuthorization">
             <td translate>study.authorization.maelstrom</td>
             <td>
-              <span translate>study.authorization.{{study.maelstromAuthorization.authorized ? 'authorized' : 'not-authorized'}}</span>
+              {{'study.authorization.authorized.' + study.maelstromAuthorization.authorized | translate}}
               <span ng-show="study.maelstromAuthorization.authorizer">
                 <span translate>by</span> {{study.maelstromAuthorization.authorizer}}
               </span>
@@ -244,7 +244,7 @@
           <tr ng-show="study.specificAuthorization">
             <td translate>study.authorization.specific</td>
             <td>
-              <span translate>study.authorization.{{study.specificAuthorization.authorized ? 'authorized' : 'not-authorized'}}</span>
+              {{'study.authorization.authorized.' + study.specificAuthorization.authorized | translate}}
               <span ng-show="study.specificAuthorization.authorizer">
                 <span translate>by</span> {{study.specificAuthorization.authorizer}}
               </span>
