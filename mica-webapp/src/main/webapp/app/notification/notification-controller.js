@@ -1,10 +1,19 @@
 'use strict';
 
 mica.notification
-  .controller('NotificationController', ['$rootScope', '$scope', '$modal', '$log',
-    function ($rootScope, $scope, $modal, $log) {
+  .controller('NotificationController', ['$rootScope', '$scope', '$modal',
+    function ($rootScope, $scope, $modal) {
 
-      $scope.$on('showNotificationDialogEvent', function (event, message) {
+      $scope.$on('showNotificationDialogEvent', function (event, notification) {
+        $modal.open({
+          templateUrl: 'app/notification/notification-modal.html',
+          controller: 'NotificationModalController',
+          resolve: {
+            notification: function () {
+              return notification;
+            }
+          }
+        });
       });
 
       $scope.$on('showConfirmDialogEvent', function (event, confirm, args) {
@@ -22,6 +31,16 @@ mica.notification
             $rootScope.$broadcast('confirmDialogRejectedEvent', args);
           });
       });
+
+    }])
+  .controller('NotificationModalController', ['$scope', '$modalInstance', 'notification',
+    function ($scope, $modalInstance, notification) {
+
+      $scope.notification = notification;
+
+      $scope.close = function () {
+        $modalInstance.dismiss('close');
+      };
 
     }])
   .controller('NotificationConfirmationController', ['$scope', '$modalInstance', 'confirm',
