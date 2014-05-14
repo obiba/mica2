@@ -40,6 +40,7 @@ public class DraftStudiesResource {
   }
 
   @POST
+  @Path("/studies")
   @Timed
   public Response create(@SuppressWarnings("TypeMayBeWeakened") Mica.StudyDto studyDto, @Context UriInfo uriInfo) {
     Study study = dtos.fromDto(studyDto);

@@ -52,9 +52,12 @@
                         (<localized value="investigator.institution.name" lang="tab.lang"></localized>)
                       </span>
                     </a>
-                    <a ng-click="editInvestigator(study, investigator)" class="action"><i class="fa fa-pencil"></i></a>
-                    <a ng-click="deleteInvestigator(study, investigator)" class="action"><i
-                        class="fa fa-trash-o"></i></a>
+                    <a ng-click="editInvestigator(study, investigator)" class="action">
+                      <i class="fa fa-pencil"></i>
+                    </a>
+                    <a ng-click="deleteInvestigator(study, investigator)" class="action">
+                      <i class="fa fa-trash-o"></i>
+                    </a>
                   </li>
                 </ul>
                 <button type="button" class="btn btn-default btn-sm" ng-click="addInvestigator(study)">
@@ -88,17 +91,15 @@
           </tr>
           <tr ng-show="study.startYear">
             <td translate>study.start-year</td>
-            <td> {{study.startYear}}</td>
+            <td>{{study.startYear}}</td>
           </tr>
           <tr ng-show="study.endYear">
             <td translate>study.end-year</td>
-            <td> {{study.endYear}}</td>
+            <td>{{study.endYear}}</td>
           </tr>
           <tr ng-show="study.networks.length">
             <td translate>networks</td>
-            <td>
-              {{study.networks}}
-            </td>
+            <td>{{study.networks}}</td>
           </tr>
           </tbody>
         </table>

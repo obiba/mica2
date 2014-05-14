@@ -381,7 +381,15 @@
     "email": "Email",
     "phone": "Phone",
     "dataAccessCommitteeMember": "Data Access Committee Member",
-    "institution": "Institution"
+    "institution": "Institution",
+    "department": "Department"
+  },
+  "address": {
+    "label": "Address",
+    "city": "City",
+    "zip": "Postal Code",
+    "state": "State",
+    "country": "Country"
   },
   "networks": "Networks",
   "name": "Name",

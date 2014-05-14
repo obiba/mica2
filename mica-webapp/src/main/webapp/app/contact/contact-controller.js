@@ -129,7 +129,10 @@ mica.contact
       $scope.isInvestigator = isInvestigator;
 
       MicaConfigResource.get(function (micaConfig) {
-        $scope.languages = micaConfig.languages;
+        $scope.tabs = [];
+        micaConfig.languages.forEach(function (lang) {
+          $scope.tabs.push({ lang: lang });
+        });
       });
 
       $scope.save = function () {
