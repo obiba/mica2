@@ -141,4 +141,8 @@ mica.study
 
       };
 
+      $scope.cancel = function () {
+        $location.path('/study' + ($scope.study.id ? '/' + $scope.study.id : '')).replace();
+      };
+
     }]);
