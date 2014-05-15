@@ -41,6 +41,7 @@ public class StudyService {
     gitService.save(studyState.getId(), study);
 
     studyState.setName(study.getName());
+    studyState.incrementRevisionsAhead();
     studyStateRepository.save(studyState);
 
     eventBus.post(new StudyUpdatedEvent(study));
@@ -108,6 +109,7 @@ public class StudyService {
     StudyState studyState = findStateById(id);
     studyState.setRevisionStatus(DRAFT);
     studyState.setPublishedTag(gitService.tag(id));
+    studyState.resetRevisionsAhead();
     studyStateRepository.save(studyState);
     return studyState;
   }

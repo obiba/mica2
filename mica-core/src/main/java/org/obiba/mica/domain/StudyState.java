@@ -19,6 +19,8 @@ public class StudyState extends AbstractAuditableDocument {
   @Indexed
   private String publishedTag;
 
+  private int revisionsAhead = 0;
+
   @NotNull
   private LocalizedString name;
 
@@ -32,6 +34,22 @@ public class StudyState extends AbstractAuditableDocument {
 
   public boolean isPublished() {
     return !Strings.isNullOrEmpty(publishedTag);
+  }
+
+  public int getRevisionsAhead() {
+    return revisionsAhead;
+  }
+
+  public void resetRevisionsAhead() {
+    revisionsAhead = 0;
+  }
+
+  public void incrementRevisionsAhead() {
+    revisionsAhead++;
+  }
+
+  public boolean hasRevisionsAhead() {
+    return revisionsAhead > 0;
   }
 
   public LocalizedString getName() {
