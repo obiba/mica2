@@ -357,7 +357,13 @@
     "data-collection-events": "Data Collection Events",
     "start": "Start",
     "end": "End",
-    "save-error": "Error while saving study"
+    "save-error": "Error while saving study",
+    "publication": {
+      "not-published" : "Not published",
+      "published-out-of-date" : "Published, out of date",
+      "published" : "Published",
+      "revisions-ahead": "Revisions ahead"
+    }
   },
   "contact": {
     "label": "Contact",
