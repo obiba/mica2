@@ -3,5 +3,6 @@
 mica.contact = angular.module('mica.contact', [
   'mica.config',
   'mica.notification',
+  'mica.localized',
   'pascalprecht.translate',
   'ui.bootstrap']);
