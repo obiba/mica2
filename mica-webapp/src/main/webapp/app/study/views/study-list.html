@@ -25,7 +25,14 @@
           </ul>
         </td>
         <td>
-          <span class="label label-info">{{study.publishedTag}}</span>
+          <i class="fa fa-star-o" ng-show="study.publishedTag === undefined"
+              title="{{'study.publication.not-published' | translate}}"></i>
+          <i class="fa fa-star-half-o" ng-show="study.publishedTag !== undefined && study.revisionsAhead > 0"
+              title="{{'study.publication.published-out-of-date' | translate}}"></i>
+          <i class="fa fa-star" ng-show="study.publishedTag !== undefined && study.revisionsAhead == 0"
+              title="{{'study.publication.published' | translate}}"></i>
+          <span class="label label-info" ng-show="study.publishedTag !== undefined && study.revisionsAhead > 0"
+              title="{{'study.publication.revisions-ahead' | translate}}">{{study.revisionsAhead}}</span>
         </td>
         <td>
           <ul class="list-inline">

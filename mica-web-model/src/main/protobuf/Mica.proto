@@ -11,6 +11,7 @@ message StudySummaryDto {
   repeated CountryDto countries = 6;
   repeated NetworkRelationDto networks = 7;
   optional string publishedTag = 8;
+  required int32 revisionsAhead = 9;
 }
 
 message StudyDto {
