@@ -8,6 +8,10 @@ mica.study
           templateUrl: 'app/study/views/study-list.html',
           controller: 'StudyListController'
         })
+        .when('/study/new', {
+          templateUrl: 'app/study/views/study-form.html',
+          controller: 'StudyEditController'
+        })
         .when('/study/:id', {
           templateUrl: 'app/study/views/study-view.html',
           controller: 'StudyViewController'

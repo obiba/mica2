@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import static org.obiba.mica.web.model.Mica.StudyDto.PopulationDto;
 
 @Component
-@SuppressWarnings("OverlyLongMethod")
+@SuppressWarnings({ "OverlyLongMethod", "OverlyCoupledClass" })
 class PopulationDtos {
 
   @Inject
@@ -65,9 +65,11 @@ class PopulationDtos {
   }
 
   @NotNull
-  private PopulationDto.SelectionCriteriaDto asDto(Population.SelectionCriteria selectionCriteria) {
+  private PopulationDto.SelectionCriteriaDto asDto(@NotNull Population.SelectionCriteria selectionCriteria) {
     PopulationDto.SelectionCriteriaDto.Builder builder = PopulationDto.SelectionCriteriaDto.newBuilder();
-    builder.setGender(PopulationDto.SelectionCriteriaDto.Gender.valueOf(selectionCriteria.getGender().ordinal()));
+    if(selectionCriteria.getGender() != null) {
+      builder.setGender(PopulationDto.SelectionCriteriaDto.Gender.valueOf(selectionCriteria.getGender().ordinal()));
+    }
     builder.setAgeMin(selectionCriteria.getAgeMin());
     builder.setAgeMax(selectionCriteria.getAgeMax());
     if(selectionCriteria.getCountriesIso() != null) {
