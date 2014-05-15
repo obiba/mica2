@@ -14,7 +14,7 @@ message StudySummaryDto {
 }
 
 message StudyDto {
-  required string id = 1;
+  optional string id = 1;
   optional TimestampsDto timestamps = 2;
 
   repeated LocalizedStringDto name = 3;
@@ -54,7 +54,7 @@ message StudyDto {
   }
 
   message PopulationDto {
-    required string id = 1;
+    optional string id = 1;
     repeated LocalizedStringDto name = 2;
     repeated LocalizedStringDto description = 3;
     optional RecruitmentDto recruitment = 4;
@@ -91,7 +91,7 @@ message StudyDto {
     }
 
     message DataCollectionEventDto {
-      required string id = 1;
+      optional string id = 1;
       repeated LocalizedStringDto name = 2;
       repeated LocalizedStringDto description = 3;
       required int32 startYear = 4;
@@ -115,7 +115,7 @@ message NetworkRelationDto {
 }
 
 message NetworkDto {
-  required string id = 1;
+  optional string id = 1;
   optional TimestampsDto timestamps = 2;
   repeated LocalizedStringDto name = 3;
   repeated LocalizedStringDto acronym = 4;

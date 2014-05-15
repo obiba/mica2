@@ -16,6 +16,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 
 import static org.obiba.mica.domain.RevisionStatus.DRAFT;
@@ -47,7 +48,7 @@ public class StudyService {
 
   @NotNull
   private StudyState findStudyState(Study study) {
-    if(study.getId() == null) {
+    if(Strings.isNullOrEmpty(study.getId())) {
       StudyState studyState = new StudyState();
       studyState.setName(study.getName());
       studyStateRepository.save(studyState);

@@ -84,7 +84,7 @@ class StudyDtos {
   @NotNull
   Study fromDto(@NotNull Mica.StudyDtoOrBuilder dto) {
     Study study = new Study();
-    study.setId(dto.getId());
+    if(dto.hasId()) study.setId(dto.getId());
     if(dto.hasStartYear()) study.setStartYear(dto.getStartYear());
     if(dto.getAccessCount() > 0) study.setAccess(dto.getAccessList());
     if(dto.getOtherAccessCount() > 0) study.setOtherAccess(localizedStringDtos.fromDto(dto.getOtherAccessList()));

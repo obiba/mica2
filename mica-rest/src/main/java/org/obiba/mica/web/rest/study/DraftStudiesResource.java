@@ -45,7 +45,8 @@ public class DraftStudiesResource {
   public Response create(@SuppressWarnings("TypeMayBeWeakened") Mica.StudyDto studyDto, @Context UriInfo uriInfo) {
     Study study = dtos.fromDto(studyDto);
     studyService.save(study);
-    return Response.created(uriInfo.getBaseUriBuilder().path(DraftStudyResource.class).build(study.getId())).build();
+    return Response.created(uriInfo.getBaseUriBuilder().path(DraftStudiesResource.class, "study").build(study.getId()))
+        .build();
   }
 
   @Path("/study/{id}")
