@@ -113,7 +113,7 @@ mica.study
     function ($scope, $routeParams, $log, $location, DraftStudyResource, DraftStudiesResource, MicaConfigResource) {
 
       $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}) : {};
-      $log.debug('study', $scope.study);
+      $log.debug('Edit study', $scope.study);
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
@@ -123,46 +123,54 @@ mica.study
       });
 
       $scope.save = function () {
-
-        if ($scope.study.id) {
-
-          $log.debug('Update study', $scope.study);
-          $scope.study.$save(function (study) {
-              $location.path('/study/' + study.id).replace();
-            },
-            function (response) {
-              $log.debug('error response:', response);
-              $scope.errors = [];
-              response.data.forEach(function (error) {
-                //$log.debug('error: ', error);
-                var field = error.path.substring(error.path.indexOf('.') + 1);
-                $scope.form[field].$dirty = true;
-                $scope.form[field].$setValidity('server', false);
-                $scope.errors[field] = error.message;
-              });
-            });
-
-        } else {
-          $log.debug('Create new study', $scope.study);
-
-          DraftStudiesResource.save($scope.study,
-            function (resource, getResponseHeaders) {
-              var parts = getResponseHeaders().location.split('/');
-              $location.path('/study/' + parts[parts.length - 1]).replace();
-            },
-            function (response) {
-              $log.error('Error on study save:', response);
-              $translate("study.save-error")
-                .then(function (translation) {
-                  $rootScope.$broadcast('showNotificationDialogEvent', {
-                    "iconClass": "fa-exclamation-triangle",
-                    "title": translation,
-                    "message": response.data ? response.data : angular.fromJson(response)
-                  });
-                });
-            })
+        if (!$scope.form.$valid) {
+          $scope.form.saveAttempted = true;
+          return;
         }
+        if ($scope.study.id) {
+          $scope.updateStudy();
+        } else {
+          $scope.createStudy()
+        }
+      };
 
+      $scope.createStudy = function () {
+        $log.debug('Create new study', $scope.study);
+        DraftStudiesResource.save($scope.study,
+          function (resource, getResponseHeaders) {
+            var parts = getResponseHeaders().location.split('/');
+            $location.path('/study/' + parts[parts.length - 1]).replace();
+          },
+          function (response) {
+            $log.error('Error on study save:', response);
+            $translate("study.save-error")
+              .then(function (translation) {
+                $rootScope.$broadcast('showNotificationDialogEvent', {
+                  "iconClass": "fa-exclamation-triangle",
+                  "title": translation,
+                  "message": response.data ? response.data : angular.fromJson(response)
+                });
+              });
+          })
+      };
+
+      $scope.updateStudy = function () {
+        $log.debug('Update study', $scope.study);
+        $scope.study.$save(
+          function (study) {
+            $location.path('/study/' + study.id).replace();
+          },
+          function (response) {
+            $log.debug('error response:', response);
+            $scope.errors = [];
+            response.data.forEach(function (error) {
+              //$log.debug('error: ', error);
+              var field = error.path.substring(error.path.indexOf('.') + 1);
+              $scope.form[field].$dirty = true;
+              $scope.form[field].$setValidity('server', false);
+              $scope.errors[field] = error.message;
+            });
+          });
       };
 
       $scope.cancel = function () {

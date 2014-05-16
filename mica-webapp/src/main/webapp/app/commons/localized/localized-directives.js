@@ -4,12 +4,11 @@ mica.localized
 
   .directive('localized', [function () {
     return {
-      restrict: 'E',
+      restrict: 'AE',
       scope: {
         value: '=',
         lang: '='
       },
-      replace: true,
       template: '<span ng-repeat="localizedValue in value | filter:{lang:lang}">{{localizedValue.value}}</span>'
     };
   }])
@@ -28,7 +27,7 @@ mica.localized
       },
       templateUrl: 'app/commons/localized/localized-input-template.html',
       link: function ($scope, elem, attr, ctrl) {
-        if ($scope.model == null) {
+        if (angular.isUndefined($scope.model) || $scope.model == null) {
           $scope.model = [
             {"lang": $scope.lang, "value": ""}
           ];
@@ -55,7 +54,7 @@ mica.localized
       },
       templateUrl: 'app/commons/localized/localized-textarea-template.html',
       link: function ($scope, elem, attr, ctrl) {
-        if ($scope.model == null) {
+        if (angular.isUndefined($scope.model) || $scope.model == null) {
           $scope.model = [
             {"lang": $scope.lang, "value": ""}
           ];

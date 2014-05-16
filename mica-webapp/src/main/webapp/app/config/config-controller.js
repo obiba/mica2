@@ -16,6 +16,12 @@ mica.config
       $scope.availableLanguages = $resource('ws/config/languages').get();
 
       $scope.save = function () {
+
+        if (!$scope.form.$valid) {
+          $scope.form.saveAttempted = true;
+          return;
+        }
+
         $scope.micaConfig.$save(
           function () {
             $location.path('/config').replace();

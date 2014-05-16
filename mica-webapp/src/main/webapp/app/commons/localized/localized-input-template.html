@@ -1,4 +1,5 @@
-<div class="form-group" ng-class="{'has-error': form[fieldName].$dirty && form[fieldName].$invalid}">
+<div class="form-group"
+    ng-class="{'has-error': (form[fieldName].$dirty || form.saveAttempted) && form[fieldName].$invalid}">
 
   <label for="{{fieldName}}" class="control-label">
     {{label | translate}}

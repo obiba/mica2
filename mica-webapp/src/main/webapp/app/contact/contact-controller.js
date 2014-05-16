@@ -136,6 +136,11 @@ mica.contact
       });
 
       $scope.save = function () {
+        $log.debug('save $scope', $scope);
+        if (!$scope.form.$valid) {
+          $scope.form.saveAttempted = true;
+          return;
+        }
         $modalInstance.close($scope.contact);
       };
 
