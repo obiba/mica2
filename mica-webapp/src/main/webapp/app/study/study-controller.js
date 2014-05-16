@@ -108,9 +108,9 @@ mica.study
 
     }])
 
-  .controller('StudyEditController', ['$scope', '$routeParams', '$log', '$location', 'DraftStudyResource', 'MicaConfigResource',
+  .controller('StudyEditController', ['$scope', '$routeParams', '$log', '$location', 'DraftStudyResource', 'DraftStudiesResource', 'MicaConfigResource',
 
-    function ($scope, $routeParams, $log, $location, DraftStudyResource, MicaConfigResource) {
+    function ($scope, $routeParams, $log, $location, DraftStudyResource, DraftStudiesResource, MicaConfigResource) {
 
       $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}) : {};
       $log.debug('study', $scope.study);
@@ -144,6 +144,23 @@ mica.study
 
         } else {
           $log.debug('Create new study', $scope.study);
+
+          DraftStudiesResource.save($scope.study,
+            function (resource, getResponseHeaders) {
+              var parts = getResponseHeaders().location.split('/');
+              $location.path('/study/' + parts[parts.length - 1]).replace();
+            },
+            function (response) {
+              $log.error('Error on study save:', response);
+              $translate("study.save-error")
+                .then(function (translation) {
+                  $rootScope.$broadcast('showNotificationDialogEvent', {
+                    "iconClass": "fa-exclamation-triangle",
+                    "title": translation,
+                    "message": response.data ? response.data : angular.fromJson(response)
+                  });
+                });
+            })
         }
 
       };
