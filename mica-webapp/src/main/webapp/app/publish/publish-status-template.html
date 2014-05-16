@@ -1,0 +1,10 @@
+<div>
+  <i class="fa fa-star-o" ng-show="version === undefined"
+      title="{{'study.publication.not-published' | translate}}"></i>
+  <i class="fa fa-star-half-o" ng-show="version !== undefined && ahead > 0"
+      title="{{'study.publication.published-out-of-date' | translate}}"></i>
+  <i class="fa fa-star" ng-show="version !== undefined && ahead == 0"
+      title="{{'study.publication.published' | translate}}"></i>
+  <span class="label label-info" ng-show="version !== undefined && ahead > 0"
+      title="{{'study.publication.revisions-ahead' | translate}}">{{ahead}}</span>
+</div>
