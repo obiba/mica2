@@ -116,11 +116,10 @@ class StudyDtos {
           dto.getAttachmentsList().stream().map(attachmentDtos::fromDto).collect(Collectors.<Attachment>toList()));
     }
     if(dto.getPopulationsCount() > 0) {
-      study.setPopulations(
-          dto.getPopulationsList().stream().map(populationDtos::fromDto).collect(Collectors.toCollection(
-              TreeSet<Population>::new)));
+      study.setPopulations(dto.getPopulationsList().stream().map(populationDtos::fromDto)
+              .collect(Collectors.toCollection(TreeSet<Population>::new))
+      );
     }
-
     return study;
   }
 

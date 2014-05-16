@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import static com.google.common.base.Strings.isNullOrEmpty;
 
 @Component
+@SuppressWarnings("OverlyCoupledClass")
 class ContactDtos {
 
   @Inject
