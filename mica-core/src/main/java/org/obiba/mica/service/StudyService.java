@@ -2,6 +2,7 @@ package org.obiba.mica.service;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -16,7 +17,10 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Function;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.eventbus.EventBus;
 
 import static org.obiba.mica.domain.RevisionStatus.DRAFT;
@@ -91,6 +95,18 @@ public class StudyService {
 
   public List<StudyState> findAllStates() {
     return studyStateRepository.findAll();
+  }
+
+  public List<Study> findAllDraftStudies() {
+    ImmutableList.Builder<Study> builder = ImmutableList.builder();
+    builder.addAll(Iterables.transform(studyStateRepository.findAll(), new Function<StudyState, Study>() {
+      @Nullable
+      @Override
+      public Study apply(@Nullable StudyState input) {
+        return gitService.readHead(input.getId(), Study.class);
+      }
+    }));
+    return builder.build();
   }
 
   public List<StudyState> findPublishedStates() {

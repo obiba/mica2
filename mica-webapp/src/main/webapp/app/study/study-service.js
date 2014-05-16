@@ -1,9 +1,15 @@
 'use strict';
 
 mica.study
-  .factory('DraftStudiesResource', ['$resource',
+  .factory('DraftStudySummariesResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/studies');
+      return $resource('ws/draft/study-summaries');
+    }])
+  .factory('DraftStudySummaryResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/draft/study-summary/:id', {}, {
+        'get': {method: 'GET'}
+      });
     }])
   .factory('DraftStudyResource', ['$resource',
     function ($resource) {

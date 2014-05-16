@@ -1,24 +1,24 @@
 'use strict';
 
 mica.study
-  .controller('StudyListController', ['$scope', 'DraftStudiesResource', 'DraftStudyResource',
+  .controller('StudyListController', ['$scope', 'DraftStudySummariesResource', 'DraftStudyResource',
 
-    function ($scope, DraftStudiesResource, DraftStudyResource) {
+    function ($scope, DraftStudySummariesResource, DraftStudyResource) {
 
-      $scope.studies = DraftStudiesResource.query();
+      $scope.studies = DraftStudySummariesResource.query();
 
       $scope.deleteStudy = function (id) {
         //TODO ask confirmation
         DraftStudyResource.delete({id: id},
           function () {
-            $scope.studies = DraftStudiesResource.query();
+            $scope.studies = DraftStudySummariesResource.query();
           });
       };
 
     }])
-  .controller('StudyViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', '$translate', 'DraftStudyResource', 'DraftStudyPublicationResource', 'MicaConfigResource',
+  .controller('StudyViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', '$translate', 'DraftStudySummaryResource','DraftStudyResource', 'DraftStudyPublicationResource', 'MicaConfigResource',
 
-    function ($rootScope, $scope, $routeParams, $log, $locale, $location, $translate, DraftStudyResource, DraftStudyPublicationResource, MicaConfigResource) {
+    function ($rootScope, $scope, $routeParams, $log, $locale, $location, $translate, DraftStudySummaryResource, DraftStudyResource, DraftStudyPublicationResource, MicaConfigResource) {
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
@@ -32,6 +32,8 @@ mica.study
         function (study) {
           new $.MicaTimeline(new $.StudyDtoParser()).create("#timeline", study);
         });
+
+      $scope.studySummary = DraftStudySummaryResource.get({id: $routeParams.id});
 
       $scope.months = $locale.DATETIME_FORMATS.MONTH;
 
@@ -56,7 +58,10 @@ mica.study
         }
       });
       $scope.publish = function () {
-        DraftStudyPublicationResource.publish({id: $scope.study.id});
+        DraftStudyPublicationResource.publish({id: $scope.study.id}, function() {
+          $scope.studySummary = DraftStudySummaryResource.get({id: $routeParams.id});
+        });
+
       };
 
       $scope.sortableOptions = {
@@ -108,9 +113,9 @@ mica.study
 
     }])
 
-  .controller('StudyEditController', ['$scope', '$routeParams', '$log', '$location', 'DraftStudyResource', 'DraftStudiesResource', 'MicaConfigResource',
+  .controller('StudyEditController', ['$scope', '$routeParams', '$log', '$location', 'DraftStudyResource', 'DraftStudySummariesResource', 'MicaConfigResource',
 
-    function ($scope, $routeParams, $log, $location, DraftStudyResource, DraftStudiesResource, MicaConfigResource) {
+    function ($scope, $routeParams, $log, $location, DraftStudyResource, DraftStudySummariesResource, MicaConfigResource) {
 
       $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}) : {};
       $log.debug('Edit study', $scope.study);
@@ -136,7 +141,7 @@ mica.study
 
       $scope.createStudy = function () {
         $log.debug('Create new study', $scope.study);
-        DraftStudiesResource.save($scope.study,
+        DraftStudySummariesResource.save($scope.study,
           function (resource, getResponseHeaders) {
             var parts = getResponseHeaders().location.split('/');
             $location.path('/study/' + parts[parts.length - 1]).replace();

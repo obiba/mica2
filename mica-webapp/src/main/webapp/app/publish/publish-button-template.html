@@ -1,3 +1,6 @@
-<a ng-click="publish()" class="btn btn-primary">
-  <i class="fa fa-star"></i> <span translate>publish</span>
+<a ng-click="publish()" class="btn btn-primary" ng-disabled="version !== undefined && ahead == 0">
+  <i class="fa fa-star-o" ng-show="version === undefined"></i>
+  <i class="fa fa-star-half-o" ng-show="version !== undefined && ahead > 0"></i>
+  <i class="fa fa-star" ng-show="version !== undefined && ahead == 0"></i>
+  <span translate>publish</span>
 </a>

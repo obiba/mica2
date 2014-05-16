@@ -6,7 +6,7 @@
     <a ng-href="#/study/{{study.id}}/edit" class="btn btn-primary">
       <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
     </a>
-    <publish-button></publish-button>
+    <publish-button version="studySummary.publishedTag" ahead="studySummary.revisionsAhead" publish="publish()"></publish-button>
   </div>
 
   <tabset>
