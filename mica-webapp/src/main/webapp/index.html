@@ -32,6 +32,11 @@
 <![endif]-->
 <div class="development"></div>
 <div class="container">
+
+  <div id="loading" class="center-block text-center alert-warning">
+    <i class="fa fa-spinner fa-spin"></i> <span translate>loading</span>
+  </div>
+
   <div class="header" ng-switch="authenticated">
     <ul class="nav nav-pills pull-right">
       <li>
@@ -157,6 +162,7 @@
 <script src="app/controllers.js"></script>
 <script src="app/services.js"></script>
 <script src="app/directives.js"></script>
+<script src="app/commons/rest/rest.js"></script>
 <script src="app/notification/notification.js"></script>
 <script src="app/notification/notification-controller.js"></script>
 <script src="app/config/config.js"></script>

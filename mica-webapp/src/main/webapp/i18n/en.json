@@ -365,9 +365,9 @@
     "end": "End",
     "save-error": "Error while saving study",
     "publication": {
-      "not-published" : "Not published",
-      "published-out-of-date" : "Published, out of date",
-      "published" : "Published",
+      "not-published": "Not published",
+      "published-out-of-date": "Published, out of date",
+      "published": "Published",
       "revisions-ahead": "Revisions ahead"
     }
   },
@@ -420,5 +420,6 @@
   "required": "Required",
   "suppl-info": "Supplementary information",
   "fix-error": "Please fix errors bellow",
-  "dnd-reorder": "Drag and drop to reorder"
+  "dnd-reorder": "Drag and drop to reorder",
+  "loading": "Loading..."
 }
