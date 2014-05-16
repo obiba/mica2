@@ -1,0 +1,25 @@
+<div class="form-group" ng-class="{'has-error': form[fieldName].$dirty && form[fieldName].$invalid}">
+
+  <label for="{{fieldName}}" class="control-label">
+    {{label | translate}}
+    <span ng-show="required">*</span>
+  </label>
+
+  <textarea
+      ng-repeat="localized in model | filter:{lang:lang}"
+      ng-model="localized.value"
+      rows="{{rows ? rows : 5}}"
+      class="form-control"
+      id="{{fieldName}}"
+      name="{{fieldName}}"
+      server-error
+      ng-required="required"></textarea>
+
+  <p class="input-error" ng-show="form[fieldName].$dirty && form[fieldName].$invalid">
+    <span ng-show="form[fieldName].$error.server">{{ errors[fieldName]}}</span>
+    <span ng-show="form[fieldName].$error.required" translate>required</span>
+  </p>
+
+  <p ng-show="help" class="help-block">{{help | translate}}</p>
+
+</div>

@@ -128,19 +128,4 @@ angular.module('mica')
         });
       }
     };
-  }])
-
-  // http://codetunes.com/2013/server-form-validation-with-angular
-  .directive('serverError', [function () {
-    return {
-      restrict: 'A',
-      require: '?ngModel',
-      link: function (scope, element, attrs, ctrl) {
-        return element.on('change', function () {
-          return scope.$apply(function () {
-            return ctrl.$setValidity('server', true);
-          });
-        });
-      }
-    };
   }]);

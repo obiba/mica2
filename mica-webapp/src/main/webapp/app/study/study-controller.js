@@ -8,6 +8,7 @@ mica.study
       $scope.studies = DraftStudiesResource.query();
 
       $scope.deleteStudy = function (id) {
+        //TODO ask confirmation
         DraftStudyResource.delete({id: id},
           function () {
             $scope.studies = DraftStudiesResource.query();
@@ -54,7 +55,7 @@ mica.study
             });
         }
       });
-      $scope.publish = function() {
+      $scope.publish = function () {
         DraftStudyPublicationResource.publish({id: $scope.study.id});
       };
 
@@ -111,7 +112,7 @@ mica.study
 
     function ($scope, $routeParams, $log, $location, DraftStudyResource, MicaConfigResource) {
 
-      $scope.study = DraftStudyResource.get({id: $routeParams.id});
+      $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}) : {};
       $log.debug('study', $scope.study);
 
       MicaConfigResource.get(function (micaConfig) {
