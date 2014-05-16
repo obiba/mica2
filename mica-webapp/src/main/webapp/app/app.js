@@ -11,6 +11,7 @@ var mica = angular.module('mica', [
   'pascalprecht.translate',
   'localytics.directives',
   'ui.bootstrap',
+  'mica.rest',
   'mica.config',
   'mica.study'
 ]);
