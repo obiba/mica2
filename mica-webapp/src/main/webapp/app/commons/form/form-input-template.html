@@ -1,0 +1,24 @@
+<div class="form-group" ng-class="{'has-error': form[name].$dirty && form[name].$invalid}">
+
+  <label for="{{name}}" class="control-label">
+    {{label | translate}}
+    <span ng-show="required">*</span>
+  </label>
+
+  <input
+      ng-model="model"
+      type="text"
+      class="form-control"
+      id="{{name}}"
+      name="{{name}}"
+      server-error
+      ng-required="required">
+
+  <p class="input-error" ng-show="form[name].$dirty && form[name].$invalid">
+    <span ng-show="form[name].$error.server">{{ errors[name]}}</span>
+    <span ng-show="form[name].$error.required" translate>required</span>
+  </p>
+
+  <p ng-show="help" class="help-block">{{help | translate}}</p>
+
+</div>

@@ -23,7 +23,7 @@ mica.study
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
         micaConfig.languages.forEach(function (lang) {
-          $scope.tabs.push({ lang: lang });
+          $scope.tabs.push({ lang: lang, labelKey: 'language.' + lang });
         });
       });
 
@@ -116,7 +116,10 @@ mica.study
       $log.debug('study', $scope.study);
 
       MicaConfigResource.get(function (micaConfig) {
-        $scope.languages = micaConfig.languages;
+        $scope.tabs = [];
+        micaConfig.languages.forEach(function (lang) {
+          $scope.tabs.push({ lang: lang, labelKey: 'language.' + lang });
+        });
       });
 
       $scope.save = function () {

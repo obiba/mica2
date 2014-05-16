@@ -8,9 +8,9 @@
   <div class="modal-body">
 
     <tabset>
-      <tab ng-repeat="tab in tabs" heading="{{tab.lang}}" active="tab.active" disabled="tab.disabled">
+      <tab ng-repeat="tab in tabs" heading="{{tab.labelKey | translate}}" active="tab.active" disabled="tab.disabled">
 
-        <table class="table table-striped">
+      <table class="table table-striped">
           <tbody>
           <tr>
             <td translate>name</td>

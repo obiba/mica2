@@ -113,7 +113,7 @@ mica.contact
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
         micaConfig.languages.forEach(function (lang) {
-          $scope.tabs.push({ lang: lang });
+          $scope.tabs.push({ lang: lang, labelKey: 'language.' + lang });
         });
       });
 
@@ -131,7 +131,7 @@ mica.contact
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
         micaConfig.languages.forEach(function (lang) {
-          $scope.tabs.push({ lang: lang });
+          $scope.tabs.push({ lang: lang, labelKey: 'language.' + lang });
         });
       });
 

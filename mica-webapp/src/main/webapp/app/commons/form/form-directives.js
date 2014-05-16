@@ -1,6 +1,6 @@
 'use strict';
 
-mica.formValidation
+mica.form
 
   // http://codetunes.com/2013/server-form-validation-with-angular
   .directive('serverError', [function () {
@@ -17,8 +17,52 @@ mica.formValidation
     };
   }])
 
+  .directive('formInput', [function () {
+    return {
+      restrict: 'AE',
+      require: '^form',
+      scope: {
+        name: '@',
+        model: '=',
+        label: '@',
+        required: '@',
+        help: '@'
+      },
+      templateUrl: 'app/commons/form/form-input-template.html',
+      link: function ($scope, elem, attr, ctrl) {
+        console.log('micaInput', $scope);
+        if ($scope.model == null) {
+          $scope.model = "";
+        }
+        $scope.form = ctrl;
+        console.log('$scope', $scope);
+      }
+    };
+  }])
+
+  .directive('formCheckbox', [function () {
+    return {
+      restrict: 'AE',
+      require: '^form',
+      scope: {
+        name: '@',
+        model: '=',
+        label: '@',
+        help: '@'
+      },
+      templateUrl: 'app/commons/form/form-checkbox-template.html',
+      link: function ($scope, elem, attr, ctrl) {
+        console.log('micaCheckbox', $scope);
+        if ($scope.model == null) {
+          $scope.model = false;
+        }
+        $scope.form = ctrl;
+      }
+    };
+  }])
+
   // http://code.realcrowd.com/on-the-bleeding-edge-advanced-angularjs-form-validation/
-  .directive('micaSubmit', ['$parse', function ($parse) {
+  .directive('formSubmit', ['$parse', function ($parse) {
     return {
       restrict: 'A',
       require: ['micaSubmit', '?form'],
