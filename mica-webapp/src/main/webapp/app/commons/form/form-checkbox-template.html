@@ -1,0 +1,22 @@
+<div class="checkbox" ng-class="{'has-error': form[name].$dirty && form[name].$invalid}">
+
+  <label for="{{name}}" class="control-label">
+    {{label | translate}}
+    <span ng-show="required">*</span>
+  </label>
+
+  <input
+      ng-model="model"
+      type="checkbox"
+      id="{{name}}"
+      name="{{name}}"
+      server-error>
+
+  <p class="input-error" ng-show="form[name].$dirty && form[name].$invalid">
+    <span ng-show="form[name].$error.server">{{ errors[name]}}</span>
+  </p>
+
+  <p ng-show="help" class="help-block">{{help | translate}}</p>
+
+</div>
+

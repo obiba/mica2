@@ -8,7 +8,7 @@
     <p class="alert alert-danger" ng-show="form.$dirty && form.$invalid">Fix errors bellow</p>
 
     <tabset>
-      <tab ng-repeat="lang in languages" heading="{{lang}}">
+      <tab ng-repeat="tab in tabs" heading="{{tab.labelKey | translate}}" active="tab.active" disabled="tab.disabled">
 
         <tabset>
           <tab heading="General Information">
@@ -37,7 +37,7 @@
     </tabset>
 
     <button type="button" class="btn btn-default" ng-click="cancel()">
-    <span class="glyphicon glyphicon-ban-circle"></span> <span translate>cancel</span>
+      <span class="glyphicon glyphicon-ban-circle"></span> <span translate>cancel</span>
     </button>
 
     <button type="submit" ng-disabled="form.$invalid" class="btn btn-primary">
