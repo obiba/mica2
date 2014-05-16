@@ -11,25 +11,25 @@
       <tab ng-repeat="tab in tabs" heading="{{tab.labelKey | translate}}" active="tab.active" disabled="tab.disabled">
 
         <tabset>
-          <tab heading="General Information">
+          <tab heading="{{'study.general-info' | translate}}">
             <div ng-include="'app/study/views/study-general-info-form.html'"></div>
           </tab>
-          <tab heading="Authorization">
+          <tab heading="{{'study.authorization.label' | translate}}">
             <div ng-include="'app/study/views/study-authorization-form.html'"></div>
           </tab>
-          <tab heading="Methods">
+          <tab heading="{{'study.methods' | translate}}">
             <div ng-include="'app/study/views/study-methods-form.html'"></div>
           </tab>
-          <tab heading="Access">
+          <tab heading="{{'study.access.label' | translate}}">
             <div ng-include="'app/study/views/study-access-form.html'"></div>
           </tab>
-          <tab heading="Marker Paper">
+          <tab heading="{{'study.marker-paper' | translate}}">
             <div ng-include="'app/study/views/study-marker-paper-form.html'"></div>
           </tab>
-          <tab heading="Documents">
+          <tab heading="{{'study.documents' | translate}}">
             <div ng-include="'app/study/views/study-document-form.html'"></div>
           </tab>
-          <tab heading="Supplementary Information">
+          <tab heading="{{'suppl-info' | translate}}">
           </tab>
         </tabset>
 
