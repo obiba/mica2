@@ -416,5 +416,6 @@
   "other": "Other",
   "notification": "Notification",
   "required": "Required",
-  "suppl-info": "Supplementary information"
+  "suppl-info": "Supplementary information",
+  "fix-error": "Please fix errors bellow"
 }

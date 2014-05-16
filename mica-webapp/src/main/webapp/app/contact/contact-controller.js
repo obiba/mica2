@@ -135,13 +135,13 @@ mica.contact
         });
       });
 
-      $scope.save = function () {
-        $log.debug('save $scope', $scope);
-        if (!$scope.form.$valid) {
+      $scope.save = function (form) {
+        if (form.$valid) {
+          $modalInstance.close($scope.contact);
+        } else {
+          $scope.form = form;
           $scope.form.saveAttempted = true;
-          return;
         }
-        $modalInstance.close($scope.contact);
       };
 
       $scope.cancel = function () {

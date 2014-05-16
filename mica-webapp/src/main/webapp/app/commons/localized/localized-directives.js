@@ -29,7 +29,7 @@ mica.localized
       link: function ($scope, elem, attr, ctrl) {
         if (angular.isUndefined($scope.model) || $scope.model == null) {
           $scope.model = [
-            {"lang": $scope.lang, "value": ""}
+            {lang: $scope.lang, value: ""}
           ];
         }
         $scope.fieldName = $scope.name + "-" + $scope.lang;
@@ -56,7 +56,7 @@ mica.localized
       link: function ($scope, elem, attr, ctrl) {
         if (angular.isUndefined($scope.model) || $scope.model == null) {
           $scope.model = [
-            {"lang": $scope.lang, "value": ""}
+            {lang: $scope.lang, value: ""}
           ];
         }
         $scope.fieldName = $scope.name + "-" + $scope.lang;

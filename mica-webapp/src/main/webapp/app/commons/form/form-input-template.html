@@ -1,6 +1,6 @@
-<div class="form-group" ng-class="{'has-error': (form[fieldName].$dirty || form.saveAttempted) && form[name].$invalid}">
+<div class="form-group" ng-class="{'has-error': (form[name].$dirty || form.saveAttempted) && form[name].$invalid}">
 
-<label for="{{name}}" class="control-label">
+  <label for="{{name}}" class="control-label">
     {{label | translate}}
     <span ng-show="required">*</span>
   </label>

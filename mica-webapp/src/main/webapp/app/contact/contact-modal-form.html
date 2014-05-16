@@ -1,7 +1,7 @@
 <div class="modal-content">
 
   <form name="form" role="form" novalidate
-      class="ng-scope ng-invalid ng-invalid-required ng-dirty ng-valid-minlength" ng-submit="save()">
+      class="ng-scope ng-invalid ng-invalid-required ng-dirty ng-valid-minlength" ng-submit="save(form)">
 
     <div class="modal-header">
       <button type="button" class="close" aria-hidden="true" ng-click="cancel()">&times;</button>
@@ -13,41 +13,50 @@
 
     <div class="modal-body">
 
+      <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
+
       <tabset>
         <tab ng-repeat="tab in tabs" heading="{{tab.labelKey | translate}}" active="tab.active" disabled="tab.disabled">
 
-          <div form-input name="title" model="contact.title" label="contact.title"></div>
+          <div form-input name="contact.title" model="contact.title" label="contact.title"></div>
 
-          <div form-input name="firstName" model="contact.firstName" label="contact.firstName"></div>
+          <div form-input name="contact.firstName" model="contact.firstName" label="contact.firstName"></div>
 
-          <div form-input name="lastName" model="contact.lastName" label="contact.lastName" required="true"></div>
+          <div form-input name="contact.lastName" model="contact.lastName" label="contact.lastName"
+              required="true"></div>
 
-          <div form-input name="email" model="contact.email" label="contact.email"></div>
+          <div form-input name="contact.email" model="contact.email" label="contact.email"></div>
 
-          <div form-input name="phone" model="contact.phone" label="contact.phone"></div>
+          <div form-input name="contact.phone" model="contact.phone" label="contact.phone"></div>
 
-          <div form-checkbox name="dataAccessCommitteeMember" model="contact.dataAccessCommitteeMember"
+          <div form-checkbox name="contact.dataAccessCommitteeMember" model="contact.dataAccessCommitteeMember"
               label="contact.dataAccessCommitteeMember"></div>
 
           <fieldset>
             <legend translate>contact.institution</legend>
 
-            <div localized-input name="institution" model="contact.institution.name" label="name" lang="tab.lang"></div>
-
-            <div localized-input name="department" model="contact.institution.department" label="contact.department"
+            <div localized-input name="contact.institution" model="contact.institution.name" label="name"
                 lang="tab.lang"></div>
 
-            <div localized-input name="street" model="contact.institution.address.street" label="address.label"
+            <div localized-input name="contact.institution.department" model="contact.institution.department"
+                label="contact.department"
                 lang="tab.lang"></div>
 
-            <div localized-input name="city" model="contact.institution.address.city" label="address.city"
+            <div localized-input name="contact.institution.street" model="contact.institution.address.street"
+                label="address.label"
                 lang="tab.lang"></div>
 
-            <div form-input name="zip" model="contact.institution.address.zip" label="address.zip"></div>
+            <div localized-input name="contact.institution.city" model="contact.institution.address.city"
+                label="address.city"
+                lang="tab.lang"></div>
 
-            <div form-input name="state" model="contact.institution.address.state" label="address.state"></div>
+            <div form-input name="contact.institution.zip" model="contact.institution.address.zip"
+                label="address.zip"></div>
 
-            <div form-input name="country" model="contact.institution.address.country.iso"
+            <div form-input name="contact.institution.state" model="contact.institution.address.state"
+                label="address.state"></div>
+
+            <div form-input name="contact.institution.country" model="contact.institution.address.country.iso"
                 label="address.country"></div>
 
           </fieldset>

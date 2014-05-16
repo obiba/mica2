@@ -5,7 +5,7 @@
   <form name="form" role="form" novalidate
       class="ng-scope ng-invalid ng-invalid-required ng-dirty" ng-submit="save()">
 
-    <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid">Fix errors bellow</p>
+    <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
 
     <tabset>
       <tab ng-repeat="tab in tabs" heading="{{tab.labelKey | translate}}" active="tab.active" disabled="tab.disabled">
