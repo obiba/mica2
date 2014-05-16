@@ -35,8 +35,8 @@ public class DraftStudiesResource {
   @GET
   @Path("/studies")
   @Timed
-  public List<Mica.StudySummaryDto> list() {
-    return studyService.findAllStates().stream().map(dtos::asDto).collect(Collectors.toList());
+  public List<Mica.StudyDto> list() {
+    return studyService.findAllDraftStudies().stream().map(dtos::asDto).collect(Collectors.toList());
   }
 
   @POST

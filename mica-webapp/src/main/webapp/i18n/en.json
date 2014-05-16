@@ -287,6 +287,12 @@
     "languages": "Languages",
     "languages-help": "Supported languages for studies and networks description"
   },
+  "publish": {
+    "not-published" : "Not published",
+    "published-out-of-date" : "Published, out of date",
+    "published" : "Published",
+    "revisions-ahead": "Revisions ahead"
+  },
   "studies": "Studies",
   "study": {
     "add": "Add Study",
@@ -361,13 +367,7 @@
     "data-collection-events": "Data Collection Events",
     "start": "Start",
     "end": "End",
-    "save-error": "Error while saving study",
-    "publication": {
-      "not-published" : "Not published",
-      "published-out-of-date" : "Published, out of date",
-      "published" : "Published",
-      "revisions-ahead": "Revisions ahead"
-    }
+    "save-error": "Error while saving study"
   },
   "contact": {
     "label": "Contact",
