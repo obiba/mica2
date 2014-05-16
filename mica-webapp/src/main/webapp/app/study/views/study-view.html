@@ -49,8 +49,8 @@
                 <ul ui-sortable="sortableOptions" ng-model="study.investigators" class="list-unstyled sortable"
                     ng-show="study.investigators.length">
                   <li ng-repeat="investigator in study.investigators">
-                    <a ng-click="viewContact(investigator)">
-                      {{investigator.title}} {{investigator.firstName}} {{investigator.lastName}}
+                    <a ng-click="viewContact(investigator)" title="{{'dnd-reorder' | translate}}">
+                    {{investigator.title}} {{investigator.firstName}} {{investigator.lastName}}
                       <span ng-show="investigator.institution.name.length">
                         (<localized value="investigator.institution.name" lang="tab.lang"></localized>)
                       </span>
@@ -76,8 +76,8 @@
                 <ul ui-sortable="sortableOptions" ng-model="study.contacts" class="list-unstyled sortable"
                     ng-show="study.contacts.length">
                   <li ng-repeat="contact in study.contacts">
-                    <a ng-click="viewContact(contact)">
-                      {{contact.title}} {{contact.firstName}} {{contact.lastName}}
+                    <a ng-click="viewContact(contact)" title="{{'dnd-reorder' | translate}}">
+                    {{contact.title}} {{contact.firstName}} {{contact.lastName}}
                       <span ng-show="contact.institution.name.length">
                         (<localized value="contact.institution.name" lang="tab.lang"></localized>)
                       </span>

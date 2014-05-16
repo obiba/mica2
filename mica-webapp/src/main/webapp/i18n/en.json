@@ -300,6 +300,7 @@
     "label-edit": "Edit Study",
     "details": "Details",
     "general-info": "General Information",
+    "methods": "Methods",
     "name": "Name",
     "name-help": "Official study name",
     "acronym": "Acronym",
@@ -330,6 +331,7 @@
     },
     "marker-paper": "Marker Paper",
     "pubmed-id": "Pubmed ID",
+    "documents": "Documents",
     "timeline": "Study Timeline",
     "populations": "Populations",
     "authorization": {
@@ -417,5 +419,6 @@
   "notification": "Notification",
   "required": "Required",
   "suppl-info": "Supplementary information",
-  "fix-error": "Please fix errors bellow"
+  "fix-error": "Please fix errors bellow",
+  "dnd-reorder": "Drag and drop to reorder"
 }
