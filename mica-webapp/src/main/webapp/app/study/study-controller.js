@@ -30,7 +30,7 @@ mica.study
       $scope.study = DraftStudyResource.get(
         {id: $routeParams.id},
         function (study) {
-          new $.MicaTimeline(new $.StudyDtoParser()).create("#timeline", study);
+          new $.MicaTimeline(new $.StudyDtoParser()).create("#timeline", study).addLegend();
         });
 
       $scope.studySummary = DraftStudySummaryResource.get({id: $routeParams.id});
