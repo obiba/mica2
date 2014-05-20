@@ -34,7 +34,6 @@
   };
 
   function shadeColor(color, percent) {
-    console.log("Precent:", percent);
     // validate hex string
     var hex = String(color).replace(/[^0-9a-f]/gi, '');
     if (hex.length < 6) {
