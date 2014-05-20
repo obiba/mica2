@@ -32,9 +32,9 @@ import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.util.SimpleByteSource;
-import org.obiba.mica.jpa.domain.Authority;
-import org.obiba.mica.jpa.domain.User;
-import org.obiba.mica.jpa.repository.UserRepository;
+import org.obiba.mica.domain.Authority;
+import org.obiba.mica.domain.User;
+import org.obiba.mica.repository.UserRepository;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.core.env.Environment;
 

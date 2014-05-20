@@ -10,7 +10,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
-import org.h2.server.web.WebServlet;
 import org.obiba.mica.web.filter.CachingHttpHeadersFilter;
 import org.obiba.mica.web.filter.StaticResourcesProductionFilter;
 import org.obiba.mica.web.filter.gzip.GZipServletFilter;
@@ -68,7 +67,6 @@ public class WebConfiguration implements ServletContextInitializer {
       initCachingHttpHeadersFilter(servletContext, disps);
     }
     initGzipFilter(servletContext, disps);
-    initH2Console(servletContext);
 
     log.info("Web application fully configured");
   }
@@ -153,16 +151,6 @@ public class WebConfiguration implements ServletContextInitializer {
     metricsAdminServlet.addMapping("/metrics/metrics/*");
     metricsAdminServlet.setAsyncSupported(true);
     metricsAdminServlet.setLoadOnStartup(2);
-  }
-
-  /**
-   * Initializes H2 console
-   */
-  private void initH2Console(ServletContext servletContext) {
-    log.debug("Initialize H2 console");
-    ServletRegistration.Dynamic h2ConsoleServlet = servletContext.addServlet("H2Console", new WebServlet());
-    h2ConsoleServlet.addMapping("/console/*");
-    h2ConsoleServlet.setLoadOnStartup(1);
   }
 
 }

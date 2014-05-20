@@ -6,8 +6,11 @@
     "hibernateCache": "ehcache",
     "clusteredHttpSession": "no",
     "websocket": "no",
-    "devDatabaseType": "h2Memory",
-    "prodDatabaseType": "mysql",
-    "useCompass": false
+    "devDatabaseType": "mongodb",
+    "prodDatabaseType": "mongodb",
+    "useCompass": false,
+    "databaseType": "nosql",
+    "frontendBuilder": "grunt",
+    "javaVersion": "8"
   }
 }

@@ -85,13 +85,9 @@ public abstract class HealthCheckIndicator implements HealthIndicator<Map<String
   public static class Result {
     private final boolean healthy;
 
-    private String message;
+    private final String message;
 
     private Throwable exception;
-
-    private Result(boolean healthy) {
-      this.healthy = healthy;
-    }
 
     public Result(boolean healthy, String message) {
       this.healthy = healthy;

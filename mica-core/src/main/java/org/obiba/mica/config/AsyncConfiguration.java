@@ -2,6 +2,7 @@ package org.obiba.mica.config;
 
 import java.util.concurrent.Executor;
 
+import org.obiba.mica.async.ExceptionHandlingAsyncTaskExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
@@ -43,6 +44,6 @@ public class AsyncConfiguration implements AsyncConfigurer, EnvironmentAware {
     executor.setMaxPoolSize(propertyResolver.getProperty("maxPoolSize", Integer.class, DEFAULT_MAX_POOL_SIZE));
     executor.setQueueCapacity(propertyResolver.getProperty("queueCapacity", Integer.class, DEFAULT_QUEUE_CAPACITY));
     executor.setThreadNamePrefix("mica-executor-");
-    return executor;
+    return new ExceptionHandlingAsyncTaskExecutor(executor);
   }
 }

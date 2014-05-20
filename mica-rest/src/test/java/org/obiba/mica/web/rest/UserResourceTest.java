@@ -7,7 +7,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.obiba.mica.TestApplication;
-import org.obiba.mica.jpa.repository.UserRepository;
+import org.obiba.mica.repository.UserRepository;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;

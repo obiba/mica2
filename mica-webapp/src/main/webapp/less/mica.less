@@ -1,3 +1,196 @@
+// bootstrap
+@import "../bower_components/bootstrap/less/variables";
+// copied from bootstrap to allows override
+@import "variables";
+@import "../bower_components/bootstrap/less/mixins";
+@import "../bower_components/bootstrap/less/normalize";
+@import "../bower_components/bootstrap/less/print";
+@import "../bower_components/bootstrap/less/scaffolding";
+@import "../bower_components/bootstrap/less/type";
+@import "../bower_components/bootstrap/less/code";
+@import "../bower_components/bootstrap/less/grid";
+@import "../bower_components/bootstrap/less/tables";
+@import "../bower_components/bootstrap/less/forms";
+@import "../bower_components/bootstrap/less/buttons";
+@import "../bower_components/bootstrap/less/component-animations";
+@import "../bower_components/bootstrap/less/glyphicons";
+@import "../bower_components/bootstrap/less/dropdowns";
+@import "../bower_components/bootstrap/less/button-groups";
+@import "../bower_components/bootstrap/less/input-groups";
+@import "../bower_components/bootstrap/less/navs";
+@import "../bower_components/bootstrap/less/navbar";
+@import "../bower_components/bootstrap/less/breadcrumbs";
+@import "../bower_components/bootstrap/less/pagination";
+@import "../bower_components/bootstrap/less/pager";
+@import "../bower_components/bootstrap/less/labels";
+@import "../bower_components/bootstrap/less/badges";
+@import "../bower_components/bootstrap/less/jumbotron";
+@import "../bower_components/bootstrap/less/thumbnails";
+@import "../bower_components/bootstrap/less/alerts";
+@import "../bower_components/bootstrap/less/progress-bars";
+@import "../bower_components/bootstrap/less/media";
+@import "../bower_components/bootstrap/less/list-group";
+@import "../bower_components/bootstrap/less/panels";
+@import "../bower_components/bootstrap/less/wells";
+@import "../bower_components/bootstrap/less/close";
+@import "../bower_components/bootstrap/less/modals";
+@import "../bower_components/bootstrap/less/tooltip";
+@import "../bower_components/bootstrap/less/popovers";
+@import "../bower_components/bootstrap/less/carousel";
+@import "../bower_components/bootstrap/less/utilities";
+@import "../bower_components/bootstrap/less/responsive-utilities";
+// font-awesome
+// copied from font-awesome to allows @fa-font-path override
+@import "../bower_components/font-awesome/less/variables";
+
+@fa-font-path: "../bower_components/font-awesome/fonts";
+@import "../bower_components/font-awesome/less/mixins";
+@import "../bower_components/font-awesome/less/path";
+@import "../bower_components/font-awesome/less/core";
+@import "../bower_components/font-awesome/less/larger";
+@import "../bower_components/font-awesome/less/fixed-width";
+@import "../bower_components/font-awesome/less/list";
+@import "../bower_components/font-awesome/less/bordered-pulled";
+@import "../bower_components/font-awesome/less/spinning";
+@import "../bower_components/font-awesome/less/rotated-flipped";
+@import "../bower_components/font-awesome/less/stacked";
+@import "../bower_components/font-awesome/less/icons";
+
+@import "bootstrap-chosen/bootstrap-chosen";
+
+body {
+  background: #fafafa;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #333;
+}
+
+.development {
+  position: absolute;
+  width: 149px;
+  height: 149px;
+  top: 0;
+  left: 0;
+  border: 0;
+  z-index: 1000;
+  background-image: url("../images/development_ribbon.png");
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.hero-unit {
+  margin: 50px auto 0 auto;
+  width: 300px;
+  font-size: 18px;
+  font-weight: 200;
+  line-height: 30px;
+  background-color: #eee;
+  border-radius: 6px;
+  padding: 60px;
+
+  h1 {
+    font-size: 60px;
+    line-height: 1;
+    letter-spacing: -1px;
+  }
+}
+
+.error {
+  color: white;
+  background-color: red;
+}
+
+.hipster {
+  display: inline-block;
+  width: 463px;
+  height: 640px;
+  background-image: url("../images/hipster.jpg");
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+
+.hand {
+  cursor: pointer;
+}
+
+#threadDump .popover,
+#healthCheck .popover {
+  top: inherit;
+  display: block;
+  font-size: 10px;
+  max-width: 1024px;
+}
+
+#healthCheck .popover {
+  margin-left: -50px;
+}
+
+.alert .popover pre {
+  font-size: 10px;
+}
+
+.voffset {
+  margin-top: 2px;
+}
+
+.voffset1 {
+  margin-top: 5px;
+}
+
+.voffset2 {
+  margin-top: 10px;
+}
+
+.voffset3 {
+  margin-top: 15px;
+}
+
+.voffset4 {
+  margin-top: 30px;
+}
+
+.voffset5 {
+  margin-top: 40px;
+}
+
+.voffset6 {
+  margin-top: 60px;
+}
+
+.voffset7 {
+  margin-top: 80px;
+}
+
+.voffset8 {
+  margin-top: 100px;
+}
+
+.voffset9 {
+  margin-top: 150px;
+}
+
+/* start Password strength bar style */
+ul#strength {
+  display: inline;
+  list-style: none;
+  margin: 0;
+  margin-left: 15px;
+  padding: 0;
+  vertical-align: 2px;
+}
+
+.point:last {
+  margin: 0 !important;
+}
+
+.point {
+  background: #DDD;
+  border-radius: 2px;
+  display: inline-block;
+  height: 5px;
+  margin-right: 1px;
+  width: 20px;
+}
+
 .input-error {
   .alert-danger;
   padding: 2px 5px;

@@ -11,11 +11,11 @@ a {
 }
 
 .jasmine_reporter a:hover, .jasmine_reporter a:active {
-  color: blue;
+  color: blue; 
 }
 
 .run_spec {
-  float: right;
+  float:right;
   padding-right: 5px;
   font-size: .8em;
   text-decoration: none;
@@ -46,10 +46,14 @@ a {
   background-color: yellow;
 }
 
+
 .options {
   text-align: right;
   font-size: .8em;
 }
+
+
+
 
 .suite {
   border: 1px outset gray;
@@ -58,7 +62,7 @@ a {
 }
 
 .suite .suite {
-  margin: 5px;
+  margin: 5px; 
 }
 
 .suite.passed {
@@ -115,8 +119,9 @@ a {
   display: none;
 }
 
+
 /*.resultMessage {*/
-/*white-space: pre;*/
+  /*white-space: pre;*/
 /*}*/
 
 .resultMessage span.result {
@@ -150,8 +155,9 @@ a {
   display: block;
 }
 
+
 #jasmine_content {
-  position: fixed;
+  position:fixed;
   right: 100%;
 }
 

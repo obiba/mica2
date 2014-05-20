@@ -6,10 +6,10 @@ import javax.inject.Inject;
 
 import org.apache.shiro.SecurityUtils;
 import org.joda.time.LocalDate;
-import org.obiba.mica.jpa.domain.PersistentToken;
-import org.obiba.mica.jpa.domain.User;
-import org.obiba.mica.jpa.repository.PersistentTokenRepository;
-import org.obiba.mica.jpa.repository.UserRepository;
+import org.obiba.mica.domain.PersistentToken;
+import org.obiba.mica.domain.User;
+import org.obiba.mica.repository.PersistentTokenRepository;
+import org.obiba.mica.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -61,8 +61,6 @@ public class UserService {
     List<PersistentToken> tokens = persistentTokenRepository.findByTokenDateBefore(now.minusMonths(1));
     for(PersistentToken token : tokens) {
       log.debug("Deleting token {}", token.getSeries());
-      User user = token.getUser();
-      user.getPersistentTokens().remove(token);
       persistentTokenRepository.delete(token);
     }
   }

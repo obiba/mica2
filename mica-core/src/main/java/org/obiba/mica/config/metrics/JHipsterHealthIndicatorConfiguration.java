@@ -4,12 +4,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.sql.DataSource;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 @Configuration
@@ -19,20 +19,18 @@ public class JHipsterHealthIndicatorConfiguration implements InitializingBean {
   private JavaMailSenderImpl javaMailSender;
 
   @Inject
-  private DataSource dataSource;
+  private MongoTemplate mongoTemplate;
 
   private final JavaMailHealthCheckIndicator javaMailHealthCheckIndicator = new JavaMailHealthCheckIndicator();
 
   private final DatabaseHealthCheckIndicator databaseHealthCheckIndicator = new DatabaseHealthCheckIndicator();
 
   @Bean
-  public HealthIndicator healthIndicator() {
+  public HealthIndicator<Map<String, HealthCheckIndicator.Result>> healthIndicator() {
     return () -> {
       Map<String, HealthCheckIndicator.Result> healths = new LinkedHashMap<>();
-
       healths.putAll(javaMailHealthCheckIndicator.health());
       healths.putAll(databaseHealthCheckIndicator.health());
-
       return healths;
     };
   }
@@ -40,6 +38,6 @@ public class JHipsterHealthIndicatorConfiguration implements InitializingBean {
   @Override
   public void afterPropertiesSet() throws Exception {
     javaMailHealthCheckIndicator.setJavaMailSender(javaMailSender);
-    databaseHealthCheckIndicator.setDataSource(dataSource);
+    databaseHealthCheckIndicator.setMongoTemplate(mongoTemplate);
   }
 }

@@ -2,8 +2,6 @@
   "name": "mica",
   "version": "0.0.0",
   "dependencies": {
-    "atmosphere": "2.1.2",
-    "jquery-atmosphere": "2.1.2",
     "modernizr": "2.7.1",
     "jquery": "2.0.3",
     "angular": "1.2.16",
@@ -17,7 +15,7 @@
     "angular-translate-loader-static-files": "2.1.0",
     "angular-dynamic-locale": "0.1.1",
     "angular-i18n": "1.2.16",
-    "swagger-ui": "2.0.14",
+    "swagger-ui": "2.0.16",
     "angular-chosen-localytics": "~1.0.6",
     "angular-bootstrap": "~0.10.0",
     "font-awesome": "~4.0.3",

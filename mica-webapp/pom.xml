@@ -77,7 +77,7 @@
           </outputDirectory>
           <compress>false</compress>
           <includes>
-            <include>bootstrap.less</include>
+            <include>mica.less</include>
           </includes>
         </configuration>
         <executions>
@@ -111,6 +111,17 @@
           <arguments>
             <argument>--spring.profiles.active=dev</argument>
           </arguments>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>src/main/webapp/dist</directory>
+            </fileset>
+          </filesets>
         </configuration>
       </plugin>
 
