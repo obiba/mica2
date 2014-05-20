@@ -11,7 +11,7 @@ mica.rest = angular.module('mica.rest', [])
   })
 
   // register the interceptor as a service, intercepts ALL angular ajax http calls
-  .factory('loadingHttpInterceptor', function ($q, $window) {
+  .factory('loadingHttpInterceptor', ['$q', function ($q) {
     return function (promise) {
       return promise.then(
         function (response) {
@@ -23,4 +23,4 @@ mica.rest = angular.module('mica.rest', [])
           return $q.reject(response);
         });
     };
-  });
+  }]);
