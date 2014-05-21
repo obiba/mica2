@@ -1,4 +1,4 @@
-package org.obiba.mica.service.search;
+package org.obiba.mica.service.search.study;
 
 import org.obiba.mica.service.study.event.StudyPublishedEvent;
 import org.slf4j.Logger;
