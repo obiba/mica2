@@ -16,7 +16,7 @@ mica.study
       };
 
     }])
-  .controller('StudyViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', '$translate', 'DraftStudySummaryResource','DraftStudyResource', 'DraftStudyPublicationResource', 'MicaConfigResource',
+  .controller('StudyViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', '$translate', 'DraftStudySummaryResource', 'DraftStudyResource', 'DraftStudyPublicationResource', 'MicaConfigResource',
 
     function ($rootScope, $scope, $routeParams, $log, $locale, $location, $translate, DraftStudySummaryResource, DraftStudyResource, DraftStudyPublicationResource, MicaConfigResource) {
 
@@ -58,7 +58,7 @@ mica.study
         }
       });
       $scope.publish = function () {
-        DraftStudyPublicationResource.publish({id: $scope.study.id}, function() {
+        DraftStudyPublicationResource.publish({id: $scope.study.id}, function () {
           $scope.studySummary = DraftStudySummaryResource.get({id: $routeParams.id});
         });
 
@@ -141,7 +141,7 @@ mica.study
 
       $scope.createStudy = function () {
         $log.debug('Create new study', $scope.study);
-        DraftStudySummariesResource.save($scope.study,
+        DraftStudiesResource.save($scope.study,
           function (resource, getResponseHeaders) {
             var parts = getResponseHeaders().location.split('/');
             $location.path('/study/' + parts[parts.length - 1]).replace();

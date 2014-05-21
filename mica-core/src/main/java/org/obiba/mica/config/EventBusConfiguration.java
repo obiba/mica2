@@ -7,6 +7,7 @@ import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
@@ -47,13 +48,15 @@ public class EventBusConfiguration {
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+      // need the target class, not the Spring proxied one
+      Class<?> targetClass = AopProxyUtils.ultimateTargetClass(bean);
       // for each method in the bean
-      for(Method method : bean.getClass().getMethods()) {
+      for(Method method : targetClass.getMethods()) {
         if(method.isAnnotationPresent(Subscribe.class)) {
-          // register it with the event bus
-          eventBus.register(bean);
           log.debug("Register bean {} ({}) containing method {} to EventBus", beanName, bean.getClass().getName(),
               method.getName());
+          // register it with the event bus
+          eventBus.register(bean);
           return bean; // we only need to register once
         }
       }

@@ -38,6 +38,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import com.google.common.eventbus.EventBus;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import static org.mockito.Mockito.when;
 import static org.obiba.mica.assertj.Assertions.assertThat;
@@ -311,6 +313,11 @@ public class StudyDtosTest {
     @Bean
     public EventBus eventBus() {
       return Mockito.mock(EventBus.class);
+    }
+
+    @Bean
+    public Gson gson() {
+      return new GsonBuilder().create();
     }
 
     @Bean

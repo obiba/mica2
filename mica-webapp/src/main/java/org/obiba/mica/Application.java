@@ -5,6 +5,7 @@ import java.util.Arrays;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.config.Constants;
 import org.slf4j.Logger;
@@ -51,6 +52,8 @@ public class Application {
    */
   public static void main(String... args) throws InterruptedException {
 
+    checkSystemProperty("MICA_HOME");
+
     SpringApplication app = new SpringApplication(Application.class);
     app.setShowBanner(false);
 
@@ -61,6 +64,14 @@ public class Application {
     addDefaultProfile(app, source);
 
     app.run(args);
+  }
+
+  private static void checkSystemProperty(@NotNull String... properties) {
+    for(String property : properties) {
+      if(System.getProperty(property) == null) {
+        throw new IllegalStateException("System property \"" + property + "\" must be defined.");
+      }
+    }
   }
 
   /**

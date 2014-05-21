@@ -19,6 +19,7 @@
   <!--<logger name="com.google.protobuf" level="warn"/>-->
   <!--<logger name="org.apache.shiro" level="info"/>-->
   <!--<logger name="net.sf.ehcache" level="trace"/>-->
+  <!--<logger name="org.elasticsearch" level="debug"/>-->
 
 
   <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
@@ -30,11 +31,9 @@
   </appender>
 
   <appender name="mica.log" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <!--<file>${logback.logDir}/mica.log</file>-->
-    <file>target/mica.log</file>
+    <file>${MICA_HOME}/logs/mica.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-      <!--<fileNamePattern>${logback.logDir}/mica-%i.log</fileNamePattern>-->
-      <fileNamePattern>target/mica-%i.log</fileNamePattern>
+      <fileNamePattern>${MICA_HOME}/logs/mica-%i.log</fileNamePattern>
       <maxIndex>10</maxIndex>
     </rollingPolicy>
     <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">

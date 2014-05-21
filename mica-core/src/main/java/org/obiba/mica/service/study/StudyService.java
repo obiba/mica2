@@ -129,7 +129,7 @@ public class StudyService {
     studyState.setPublishedTag(gitService.tag(id));
     studyState.resetRevisionsAhead();
     studyStateRepository.save(studyState);
-    eventBus.post(new StudyPublishedEvent(studyState));
+    eventBus.post(new StudyPublishedEvent(findPublishedStudy(id)));
     return studyState;
   }
 

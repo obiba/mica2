@@ -1,5 +1,8 @@
-skipTests=false
-mvn_exec=mvn -Dmaven.test.skip=${skipTests}
+skipTests = false
+mvn_exec = mvn -Dmaven.test.skip=${skipTests}
+current_dir = $(shell pwd)
+mica_home = target/mica_home
+
 
 help:
 	@echo
@@ -7,7 +10,10 @@ help:
 	@echo
 	@echo "Available make targets:"
 	@echo "  all         : Clean & install all modules"
+	@echo "  clean       : Clean all modules"
+	@echo "  install     : Install all modules"
 	@echo "  core        : Install core module"
+	@echo "  search      : Install search module"
 	@echo "  rest        : Install rest module"
 	@echo
 	@echo "  run         : Run webapp module"
@@ -23,21 +29,29 @@ help:
 	@echo "  plugins-update      : Check for new plugin updates"
 	@echo
 
-all:
-	${mvn_exec} clean install
+all: clean install
+
+clean:
+	${mvn_exec} clean
+
+install:
+	${mvn_exec} install
 
 core:
 	cd mica-core && ${mvn_exec} install
+
+search:
+	cd mica-search && ${mvn_exec} install
 
 rest:
 	cd mica-rest && ${mvn_exec} install
 
 run:
-	cd mica-webapp && ${mvn_exec} spring-boot:run
+	cd mica-webapp && ${mvn_exec} spring-boot:run -DMICA_HOME="${mica_home}"
 
 debug:
 	export MAVEN_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,address=8000,suspend=n && \
-	cd mica-webapp && ${mvn_exec} spring-boot:run
+	cd mica-webapp && ${mvn_exec} spring-boot:run -DMICA_HOME="${mica_home}"
 
 grunt:
 	cd mica-webapp && grunt server
@@ -59,3 +73,13 @@ dependencies-update:
 
 plugins-update:
 	mvn versions:display-plugin-updates
+
+elasticsearch-head:
+	rm -rf .work/elasticsearch-head && \
+	mkdir -p .work && \
+	cd .work && \
+	git clone git://github.com/mobz/elasticsearch-head.git
+	@echo  
+	@echo "ElasticSearch-Head is available at:" 
+	@echo "file://${current_dir}/.work/elasticsearch-head/index.html" 
+	@echo  

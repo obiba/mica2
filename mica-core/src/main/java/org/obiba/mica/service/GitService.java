@@ -27,7 +27,6 @@ import org.obiba.git.command.ReadFileCommand;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
@@ -41,14 +40,16 @@ public class GitService {
   @Inject
   private GitCommandHandler gitCommandHandler;
 
-  private File repositoriesRoot;
+  @Inject
+  private Gson gson;
 
-  private final Gson gson = new GsonBuilder().create();
+  private File repositoriesRoot;
 
   @PostConstruct
   public void init() {
-    if(repositoriesRoot == null)
+    if(repositoriesRoot == null) {
       repositoriesRoot = new File(PATH_DATA.replace("${MICA_HOME}", System.getProperty("MICA_HOME")));
+    }
   }
 
   public void setRepositoriesRoot(File repositoriesRoot) {

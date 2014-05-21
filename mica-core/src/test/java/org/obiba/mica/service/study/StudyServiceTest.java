@@ -34,6 +34,8 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.io.Files;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.mongodb.Mongo;
 
 import de.flapdoodle.embed.mongo.distribution.Version;
@@ -180,6 +182,11 @@ public class StudyServiceTest {
     @Bean
     public GitCommandHandler gitCommandHandler() throws IOException {
       return new GitCommandHandler();
+    }
+
+    @Bean
+    public Gson gson() {
+      return new GsonBuilder().create();
     }
 
     @Bean

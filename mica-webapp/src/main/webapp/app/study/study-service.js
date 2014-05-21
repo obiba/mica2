@@ -11,6 +11,13 @@ mica.study
         'get': {method: 'GET'}
       });
     }])
+  .factory('DraftStudiesResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/draft/studies', {}, {
+        // override $resource.save method because it uses POST by default
+        'save': {method: 'PUT', params: {id: '@id'}}
+      });
+    }])
   .factory('DraftStudyResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/study/:id', {}, {
