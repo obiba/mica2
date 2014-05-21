@@ -130,7 +130,6 @@ public class StudyService {
     studyState.resetRevisionsAhead();
     studyStateRepository.save(studyState);
     eventBus.post(new StudyPublishedEvent(studyState));
-
     return studyState;
   }
 

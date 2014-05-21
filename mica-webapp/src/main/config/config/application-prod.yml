@@ -23,6 +23,8 @@ shiro:
 elasticsearch:
   dataNode: true
   clusterName: mica
+  shards: 5
+  replicas: 1
   settings:
 
 metrics:

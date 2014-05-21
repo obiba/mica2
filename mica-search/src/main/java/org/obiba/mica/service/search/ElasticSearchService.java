@@ -48,7 +48,7 @@ public class ElasticSearchService implements EnvironmentAware {
     log.debug("Starting Elastic Search node");
     String micaHome = System.getProperty("MICA_HOME");
     node = NodeBuilder.nodeBuilder() //
-        .client(!Boolean.valueOf(propertyResolver.getProperty("dataNode", "true"))) //
+        .client(!propertyResolver.getProperty("dataNode", Boolean.class, true)) //
         .settings(ImmutableSettings.settingsBuilder() //
             .classLoader(getClass().getClassLoader()) //
             .loadFromClasspath("elasticsearch.yml") //
@@ -88,6 +88,14 @@ public class ElasticSearchService implements EnvironmentAware {
       throw new IllegalStateException("Elastic Search is not running!");
     }
     return ((InternalNode) node).injector().getInstance(RestController.class);
+  }
+
+  public int getNbShards() {
+    return propertyResolver.getProperty("shards", Integer.class, 5);
+  }
+
+  public int getNbReplicas() {
+    return propertyResolver.getProperty("replicas", Integer.class, 1);
   }
 
 }
