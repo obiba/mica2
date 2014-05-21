@@ -20,8 +20,10 @@ shiro:
     nbHashIterations: 10000
     salt: mica
 
-git:
-  repo-path: target/git-repo
+elasticsearch:
+  dataNode: true
+  clusterName: mica
+  settings:
 
 metrics:
     jmx.enabled: true

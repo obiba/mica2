@@ -24,9 +24,6 @@ import org.obiba.git.command.AbstractGitWriteCommand;
 import org.obiba.git.command.AddFilesCommand;
 import org.obiba.git.command.GitCommandHandler;
 import org.obiba.git.command.ReadFileCommand;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
-import org.springframework.context.EnvironmentAware;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -37,12 +34,12 @@ import com.google.gson.stream.JsonWriter;
 import static com.google.common.base.Charsets.UTF_8;
 
 @Component
-public class GitService implements EnvironmentAware {
+public class GitService {
+
+  public static final String PATH_DATA = "${MICA_HOME}/data/git";
 
   @Inject
   private GitCommandHandler gitCommandHandler;
-
-  private RelaxedPropertyResolver propertyResolver;
 
   private File repositoriesRoot;
 
@@ -50,12 +47,8 @@ public class GitService implements EnvironmentAware {
 
   @PostConstruct
   public void init() {
-    if(repositoriesRoot == null) repositoriesRoot = new File(propertyResolver.getProperty("repo-path"));
-  }
-
-  @Override
-  public void setEnvironment(Environment environment) {
-    propertyResolver = new RelaxedPropertyResolver(environment, "git.");
+    if(repositoriesRoot == null)
+      repositoriesRoot = new File(PATH_DATA.replace("${MICA_HOME}", System.getProperty("MICA_HOME")));
   }
 
   public void setRepositoriesRoot(File repositoriesRoot) {

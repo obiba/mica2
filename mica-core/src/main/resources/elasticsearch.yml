@@ -1,0 +1,18 @@
+http.enabled: false
+discovery.zen.ping.multicast.enabled: false
+index:
+    analysis:
+        analyzer:
+            mica_index_analyzer:
+               type: custom
+               tokenizer: standard
+               filter: [standard,lowercase,mica_nGram_filter]
+            mica_search_analyzer:
+               type: custom
+               tokenizer: standard
+               filter: [standard,lowercase]
+        filter:
+            mica_nGram_filter:
+                type: nGram
+                min_gram: 2
+                max_gram: 20

@@ -24,9 +24,6 @@ public class CacheConfiguration {
   private static final Logger log = LoggerFactory.getLogger(CacheConfiguration.class);
 
   @Inject
-  private Environment env;
-
-  @Inject
   private MetricRegistry metricRegistry;
 
   @Inject
