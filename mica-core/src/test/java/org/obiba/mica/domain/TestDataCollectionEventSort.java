@@ -1,7 +1,10 @@
 package org.obiba.mica.domain;
 
+import java.util.SortedSet;
+
 import org.junit.Test;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 
 import static org.obiba.mica.assertj.Assertions.assertThat;
@@ -51,6 +54,53 @@ public class TestDataCollectionEventSort {
     assertThat(event.getStartMonth()).isEqualTo(1);
   }
 
+  @Test
+  public void test_study_population_sort_with_duplicate_event_dates() {
+    Study study = new Study();
+    study.setId("01234567889");
+    study.addPopulation(createPopulation("Population001", createEvent("A", 2010, 1, 2020, 12),
+        createEvent("B", 2014, 1, 2035, 12), createEvent("C", 2010, 1, 2020, 12)));
+
+    Population population = Iterables.get(study.getPopulations(), 0);
+    SortedSet<DataCollectionEvent> events = population.getDataCollectionEvents();
+    assertThat(events.size()).isEqualTo(3);
+    assertThat(Iterables.get(events, 0).getStartYear()).isEqualTo(2010);
+    assertThat(Iterables.get(events, 1).getStartYear()).isEqualTo(2010);
+  }
+
+  @Test
+  public void test_study_population_sort_with_duplicate_events() {
+    Study study = new Study();
+    study.setId("01234567889");
+    study.addPopulation(createPopulation("Population001", createEvent("A", "A", 2010, 1, 2020, 12),
+        createEvent("A", "A", 2014, 1, 2035, 12), createEvent("A", "A", 2010, 1, 2020, 12)));
+
+    Population population = Iterables.get(study.getPopulations(), 0);
+    SortedSet<DataCollectionEvent> events = population.getDataCollectionEvents();
+    assertThat(events.size()).isEqualTo(2);
+    assertThat(Iterables.get(events, 0).getStartYear()).isEqualTo(2010);
+    assertThat(Iterables.get(events, 1).getStartYear()).isEqualTo(2014);
+  }
+
+
+  @Test
+  public void test_study_populations_sort_with_duplicate_events() {
+    Study study = new Study();
+    study.setId("01234567889");
+    study.addPopulation(createPopulation("Population001", createEvent("A", "A", 2010, 1, 2020, 12)));
+    study.addPopulation(createPopulation("Population002", createEvent("A", "A", 2010, 1, 2020, 12)));
+    study.addPopulation(createPopulation("Population003", createEvent("A", "A", 2010, 1, 2020, 12)));
+
+    SortedSet<Population> populations = study.getPopulations();
+    assertThat(populations.size()).isEqualTo(3);
+    assertThat(Iterables.get((Iterables.get(populations, 0).getDataCollectionEvents()), 0).getStartYear())
+        .isEqualTo(2010);
+    assertThat(Iterables.get((Iterables.get(populations, 1).getDataCollectionEvents()), 0).getStartYear())
+        .isEqualTo(2010);
+    assertThat(Iterables.get((Iterables.get(populations, 2).getDataCollectionEvents()), 0).getStartYear())
+        .isEqualTo(2010);
+  }
+
   private Population createPopulation(String name, DataCollectionEvent... events) {
     Population population = new Population();
     population.setName(en(name));
@@ -63,7 +113,13 @@ public class TestDataCollectionEventSort {
 
   private DataCollectionEvent createEvent(String name, Integer startYear, Integer startMonth, Integer endYear,
       Integer endMonth) {
+    return createEvent(null, name, startYear, startMonth, endYear, endMonth);
+  }
+
+  private DataCollectionEvent createEvent(String id, String name, Integer startYear, Integer startMonth, Integer endYear,
+      Integer endMonth) {
     DataCollectionEvent event = new DataCollectionEvent();
+    if (!Strings.isNullOrEmpty(id)) event.setId(id);
     event.setName(en(name));
     event.setDescription(en("Baseline data collection"));
     event.setStartYear(startYear);
