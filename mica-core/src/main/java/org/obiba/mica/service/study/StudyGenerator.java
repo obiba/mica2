@@ -1,4 +1,4 @@
-package org.obiba.mica.service;
+package org.obiba.mica.service.study;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;

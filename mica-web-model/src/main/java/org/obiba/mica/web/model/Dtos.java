@@ -7,7 +7,7 @@ import org.obiba.mica.domain.MicaConfig;
 import org.obiba.mica.domain.Network;
 import org.obiba.mica.domain.Study;
 import org.obiba.mica.domain.StudyState;
-import org.obiba.mica.service.StudyService;
+import org.obiba.mica.service.study.StudyService;
 import org.springframework.stereotype.Component;
 
 import static org.obiba.mica.web.model.Mica.MicaConfigDto;

@@ -1,4 +1,4 @@
-package org.obiba.mica.service;
+package org.obiba.mica.service.search;
 
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;

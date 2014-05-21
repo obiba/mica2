@@ -1,4 +1,4 @@
-package org.obiba.mica.service;
+package org.obiba.mica.service.study;
 
 import java.util.List;
 
@@ -9,8 +9,10 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.domain.Study;
 import org.obiba.mica.domain.StudyState;
-import org.obiba.mica.event.StudyUpdatedEvent;
 import org.obiba.mica.repository.StudyStateRepository;
+import org.obiba.mica.service.GitService;
+import org.obiba.mica.service.study.event.DraftStudyUpdatedEvent;
+import org.obiba.mica.service.study.event.StudyPublishedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
@@ -48,7 +50,7 @@ public class StudyService {
     studyState.incrementRevisionsAhead();
     studyStateRepository.save(studyState);
 
-    eventBus.post(new StudyUpdatedEvent(study));
+    eventBus.post(new DraftStudyUpdatedEvent(study));
   }
 
   @NotNull
@@ -127,6 +129,8 @@ public class StudyService {
     studyState.setPublishedTag(gitService.tag(id));
     studyState.resetRevisionsAhead();
     studyStateRepository.save(studyState);
+    eventBus.post(new StudyPublishedEvent(studyState));
+
     return studyState;
   }
 

@@ -182,11 +182,6 @@
       <artifactId>de.flapdoodle.embed.mongo</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>org.elasticsearch</groupId>
-      <artifactId>elasticsearch</artifactId>
-    </dependency>
-
   </dependencies>
 
   <build>

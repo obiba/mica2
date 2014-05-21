@@ -3,7 +3,7 @@ package org.obiba.mica.web.rest.study;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 
-import org.obiba.mica.service.StudyService;
+import org.obiba.mica.service.study.StudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.annotation.Scope;

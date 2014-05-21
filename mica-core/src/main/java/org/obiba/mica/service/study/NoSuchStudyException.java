@@ -1,4 +1,4 @@
-package org.obiba.mica.service;
+package org.obiba.mica.service.study;
 
 import java.util.NoSuchElementException;
 
