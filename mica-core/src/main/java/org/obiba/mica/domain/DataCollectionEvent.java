@@ -204,7 +204,7 @@ public class DataCollectionEvent implements Serializable, Comparable<DataCollect
     if(startA == startB) {
       int endA = 12 * (endYear == null ? 0 : endYear) + (endMonth == null ? 0 : endMonth);
       int endB = 12 * (o.endYear == null ? 0 : o.endYear) + (o.endMonth == null ? 0 : o.endMonth);
-      if(endA == endB) return 0;
+      if(endA == endB) return id.compareTo(o.id);
 
       return endA < endB ? -1 : 1;
     }

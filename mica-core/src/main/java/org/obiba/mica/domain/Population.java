@@ -96,7 +96,7 @@ public class Population implements Serializable, Comparable<Population> {
   }
 
   public void addDataCollectionEvent(@NotNull DataCollectionEvent dataCollectionEvent) {
-    if (dataCollectionEvents == null) dataCollectionEvents = new TreeSet<>();
+    if(dataCollectionEvents == null) dataCollectionEvents = new TreeSet<>();
     dataCollectionEvents.add(dataCollectionEvent);
   }
 
@@ -121,9 +121,10 @@ public class Population implements Serializable, Comparable<Population> {
 
   @Override
   public int compareTo(Population o) {
-    if (dataCollectionEvents == null) return -1;
-    if (o.dataCollectionEvents == null) return 1;
-    return Iterables.get(dataCollectionEvents, 0).compareTo(Iterables.get(o.dataCollectionEvents, 0));
+    if(dataCollectionEvents == null) return -1;
+    if(o.dataCollectionEvents == null) return 1;
+    int result = Iterables.get(dataCollectionEvents, 0).compareTo(Iterables.get(o.dataCollectionEvents, 0));
+    return result == 0 ? id.compareTo(o.id) : result;
   }
 
   public static class Recruitment implements Serializable {
@@ -147,9 +148,9 @@ public class Population implements Serializable, Comparable<Population> {
     public List<String> getDataSources() {
       return dataSources;
     }
-    
+
     public void addDataSource(@NotNull String dataSource) {
-      if (dataSources == null) dataSources = new ArrayList<>();
+      if(dataSources == null) dataSources = new ArrayList<>();
       dataSources.add(dataSource);
     }
 
@@ -162,7 +163,7 @@ public class Population implements Serializable, Comparable<Population> {
     }
 
     public void addGeneralPopulationSource(@NotNull String generalPopulationSource) {
-      if (generalPopulationSources == null) generalPopulationSources = new ArrayList<>();
+      if(generalPopulationSources == null) generalPopulationSources = new ArrayList<>();
       generalPopulationSources.add(generalPopulationSource);
     }
 
@@ -175,7 +176,7 @@ public class Population implements Serializable, Comparable<Population> {
     }
 
     public void addSpecificPopulationSource(@NotNull String specificPopulationSource) {
-      if (specificPopulationSources == null) specificPopulationSources = new ArrayList<>();
+      if(specificPopulationSources == null) specificPopulationSources = new ArrayList<>();
       specificPopulationSources.add(specificPopulationSource);
     }
 
@@ -196,10 +197,10 @@ public class Population implements Serializable, Comparable<Population> {
     }
 
     public void addStudy(@NotNull LocalizedString study) {
-      if (studies == null) studies = new ArrayList<>();
+      if(studies == null) studies = new ArrayList<>();
       studies.add(study);
     }
-    
+
     public void setStudies(List<LocalizedString> studies) {
       this.studies = studies;
     }
@@ -280,7 +281,7 @@ public class Population implements Serializable, Comparable<Population> {
     }
 
     public void addCountryIso(@NotNull String countryIso) {
-      if (countriesIso == null) countriesIso = new ArrayList<>();
+      if(countriesIso == null) countriesIso = new ArrayList<>();
       countriesIso.add(countryIso);
     }
 
@@ -301,7 +302,7 @@ public class Population implements Serializable, Comparable<Population> {
     }
 
     public void addCriteria(@NotNull String aCriteria) {
-      if (criteria == null) criteria = new ArrayList<>();
+      if(criteria == null) criteria = new ArrayList<>();
       criteria.add(aCriteria);
     }
 
@@ -314,7 +315,7 @@ public class Population implements Serializable, Comparable<Population> {
     }
 
     public void addEthnicOrigin(@NotNull LocalizedString anEthnicOrigin) {
-      if (ethnicOrigin == null) ethnicOrigin = new ArrayList<>();
+      if(ethnicOrigin == null) ethnicOrigin = new ArrayList<>();
       ethnicOrigin.add(anEthnicOrigin);
     }
 
@@ -327,7 +328,7 @@ public class Population implements Serializable, Comparable<Population> {
     }
 
     public void addHealthStatus(@NotNull LocalizedString aHealthStatus) {
-      if (healthStatus == null) healthStatus = new ArrayList<>();
+      if(healthStatus == null) healthStatus = new ArrayList<>();
       healthStatus.add(aHealthStatus);
     }
 
