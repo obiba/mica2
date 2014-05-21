@@ -10,13 +10,10 @@
   <!--<logger name="org.apache" level="info"/>-->
   <!--<logger name="javax" level="info"/>-->
   <!--<logger name="org.apache.tomcat.util.descriptor.DigesterFactory" level="OFF"/>-->
-  <!--<logger name="org.hibernate" level="warn"/>-->
-  <!--<logger name="org.hibernate.jpa.HibernatePersistenceProvider" level="OFF"/>-->
   <!--<logger name="org.atmosphere" level="warn"/>-->
   <!--<logger name="org.thymeleaf" level="warn"/>-->
   <!--<logger name="org.springframework" level="info"/>-->
   <!--<logger name="org.bson" level="warn"/>-->
-  <!--<logger name="liquibase" level="warn"/>-->
   <!--<logger name="org.glassfish" level="warn"/>-->
   <!--<logger name="com.fasterxml" level="warn"/>-->
   <!--<logger name="com.google.protobuf" level="warn"/>-->

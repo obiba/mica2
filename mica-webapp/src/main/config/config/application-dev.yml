@@ -41,8 +41,5 @@ hotReload:
       project: org.obiba.mica
       domain: org.obiba.mica.domain
       restdto: org.obiba.mica.web.rest.dto
-    liquibase:
-      defaultCatalogName: 
-      defaultSchema:
     watchdir:
       - target/classes
