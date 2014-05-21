@@ -9,8 +9,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
-import org.obiba.mica.jpa.domain.User;
-import org.obiba.mica.jpa.repository.UserRepository;
+import org.obiba.mica.domain.User;
+import org.obiba.mica.repository.UserRepository;
 import org.obiba.mica.security.AuthoritiesConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

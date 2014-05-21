@@ -19,6 +19,10 @@
     </dependency>
     <dependency>
       <groupId>com.codahale.metrics</groupId>
+      <artifactId>metrics-json</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.codahale.metrics</groupId>
       <artifactId>metrics-ehcache</artifactId>
     </dependency>
     <dependency>
@@ -54,10 +58,6 @@
       <artifactId>metrics-spring</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.zaxxer</groupId>
-      <artifactId>HikariCP</artifactId>
-    </dependency>
-    <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
@@ -74,40 +74,12 @@
       <artifactId>joda-time</artifactId>
     </dependency>
     <dependency>
-      <groupId>joda-time</groupId>
-      <artifactId>joda-time-hibernate</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.apache.geronimo.javamail</groupId>
       <artifactId>geronimo-javamail_1.4_mail</artifactId>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-entitymanager</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-ehcache</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
       <artifactId>hibernate-validator</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jadira.usertype</groupId>
-      <artifactId>usertype.core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.liquibase</groupId>
-      <artifactId>liquibase-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.liquibase.ext</groupId>
-      <artifactId>liquibase-hibernate4</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -128,10 +100,6 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-aop</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-data-jpa</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -179,11 +147,6 @@
     </dependency>
 
     <dependency>
-      <groupId>com.mattbertolini</groupId>
-      <artifactId>liquibase-slf4j</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>org.obiba.commons</groupId>
       <artifactId>obiba-shiro</artifactId>
     </dependency>
@@ -213,11 +176,6 @@
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>com.github.fakemongo</groupId>
-      <artifactId>fongo</artifactId>
     </dependency>
 
     <dependency>

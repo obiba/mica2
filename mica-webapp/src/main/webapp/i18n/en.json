@@ -300,6 +300,7 @@
     "label-edit": "Edit Study",
     "details": "Details",
     "general-info": "General Information",
+    "methods": "Methods",
     "name": "Name",
     "name-help": "Official study name",
     "acronym": "Acronym",
@@ -330,6 +331,7 @@
     },
     "marker-paper": "Marker Paper",
     "pubmed-id": "Pubmed ID",
+    "documents": "Documents",
     "timeline": "Study Timeline",
     "populations": "Populations",
     "authorization": {
@@ -367,7 +369,13 @@
     "data-collection-events": "Data Collection Events",
     "start": "Start",
     "end": "End",
-    "save-error": "Error while saving study"
+    "save-error": "Error while saving study",
+    "publication": {
+      "not-published": "Not published",
+      "published-out-of-date": "Published, out of date",
+      "published": "Published",
+      "revisions-ahead": "Revisions ahead"
+    }
   },
   "contact": {
     "label": "Contact",
@@ -417,5 +425,7 @@
   "notification": "Notification",
   "required": "Required",
   "suppl-info": "Supplementary information",
-  "fix-error": "Please fix errors bellow"
+  "fix-error": "Please fix errors bellow",
+  "dnd-reorder": "Drag and drop to reorder",
+  "loading": "Loading..."
 }

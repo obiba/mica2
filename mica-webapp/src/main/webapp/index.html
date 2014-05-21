@@ -19,8 +19,7 @@
   <meta name="viewport" content="width=device-width">
   <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
   <!-- build:css(.tmp) styles/main.css -->
-  <link rel="stylesheet" href="styles/bootstrap.css">
-  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="styles/mica.css">
   <link rel="stylesheet" href="styles/famfamfam-flags.css">
   <link rel="stylesheet" href="bower_components/mica-study-timeline/mica-study-timeline.min.css">
   <!-- endbuild -->
@@ -32,6 +31,11 @@
 <![endif]-->
 <div class="development"></div>
 <div class="container">
+
+  <div id="loading" class="center-block text-center alert-warning">
+    <i class="fa fa-spinner fa-spin"></i> <span translate>loading</span>
+  </div>
+
   <div class="header" ng-switch="authenticated">
     <ul class="nav nav-pills pull-right">
       <li>
@@ -157,6 +161,7 @@
 <script src="app/controllers.js"></script>
 <script src="app/services.js"></script>
 <script src="app/directives.js"></script>
+<script src="app/commons/rest/rest.js"></script>
 <script src="app/notification/notification.js"></script>
 <script src="app/notification/notification-controller.js"></script>
 <script src="app/config/config.js"></script>

@@ -2,13 +2,17 @@ package org.obiba.mica.aop.logging;
 
 import java.util.Arrays;
 
+import javax.inject.Inject;
+
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.obiba.mica.config.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 
 /**
  * Aspect for logging.
@@ -19,12 +23,20 @@ public class LoggingAspect {
   @SuppressWarnings("NonConstantLogger")
   private final Logger logger = LoggerFactory.getLogger(getClass());
 
+  @Inject
+  private Environment env;
+
   private static final String WITHIN_EXPR = "within(org.obiba.mica.repository..*) || within(org.obiba.mica.service..*)";
 
   @AfterThrowing(pointcut = WITHIN_EXPR, throwing = "e")
   public void logAfterThrowing(JoinPoint joinPoint, Throwable e) {
-    logger.error("Exception in {}.{}() with cause = {}", joinPoint.getSignature().getDeclaringTypeName(),
-        joinPoint.getSignature().getName(), e.getCause());
+    if(env.acceptsProfiles(Constants.SPRING_PROFILE_DEVELOPMENT)) {
+      logger.error("Exception in {}.{}() with cause = {}", joinPoint.getSignature().getDeclaringTypeName(),
+          joinPoint.getSignature().getName(), e.getCause(), e);
+    } else {
+      logger.error("Exception in {}.{}() with cause = {}", joinPoint.getSignature().getDeclaringTypeName(),
+          joinPoint.getSignature().getName(), e.getCause());
+    }
   }
 
   @Around(WITHIN_EXPR)

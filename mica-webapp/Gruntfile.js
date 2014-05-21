@@ -19,10 +19,26 @@ module.exports = function (grunt) {
       app: require('./bower.json').appPath || 'app',
       dist: 'src/main/webapp/dist'
     },
+    less: {
+      development: {
+        options: {
+          compress: true,
+          yuicompress: true,
+          optimization: 2
+        },
+        files: {
+          // target.css file: source.less file
+          "src/main/webapp/styles/mica.css": "src/main/webapp/less/mica.less"
+        }
+      }
+    },
     watch: {
       styles: {
-        files: ['src/main/webapp/styles/{,*/}*.css'],
-        tasks: ['copy:styles', 'autoprefixer']
+        files: ['src/main/webapp/less/{,*/}*.less'],
+        tasks: ['less'],
+        options: {
+          nospawn: true
+        }
       },
       livereload: {
         options: {
@@ -67,13 +83,6 @@ module.exports = function (grunt) {
         },
         {
           context: '/dump',
-          host: 'localhost',
-          port: 8080,
-          https: false,
-          changeOrigin: false
-        },
-        {
-          context: '/console',
           host: 'localhost',
           port: 8080,
           https: false,

@@ -1,17 +1,20 @@
 {
-  "folders": [
+    "folders":
+    [
+        {
+            "path": ".",
+            "folder_exclude_patterns": ["dist", "node_modules", "lib"]
+        }
+    ],
+    "settings":
     {
-      "path": ".",
-      "folder_exclude_patterns": ["dist", "node_modules", "lib"]
-    }
-  ],
-  "settings": {
-    "file_exclude_patterns": ["swagger-ui.sublime-workspace"]
-  },
-  "build_systems": [
-    {
-      "name": "List",
-      "cmd": ["ls"]
-    }
-  ]
+        "file_exclude_patterns": ["swagger-ui.sublime-workspace"]
+    },
+    "build_systems":
+    [
+        {
+            "name": "List",
+            "cmd": ["ls"]
+        }
+    ]
 }
