@@ -65,38 +65,6 @@
     <plugins>
 
       <plugin>
-        <groupId>org.lesscss</groupId>
-        <artifactId>lesscss-maven-plugin</artifactId>
-        <version>${maven-lesscss-plugin.version}</version>
-        <configuration>
-          <sourceDirectory>
-            ${project.basedir}/src/main/webapp/less
-          </sourceDirectory>
-          <outputDirectory>
-            ${project.basedir}/src/main/webapp/styles
-          </outputDirectory>
-          <compress>false</compress>
-          <includes>
-            <include>mica.less</include>
-          </includes>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>compile</goal>
-            </goals>
-          </execution>
-        </executions>
-        <dependencies>
-          <dependency>
-            <groupId>org.lesscss</groupId>
-            <artifactId>lesscss</artifactId>
-            <version>${lesscss.version}</version>
-          </dependency>
-        </dependencies>
-      </plugin>
-
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
