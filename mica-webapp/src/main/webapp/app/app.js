@@ -21,34 +21,34 @@ mica
     function ($routeProvider, $httpProvider, $translateProvider, tmhDynamicLocaleProvider, USER_ROLES) {
       $routeProvider
         .when('/login', {
-          templateUrl: 'views/login.html',
+          templateUrl: 'app/views/login.html',
           controller: 'LoginController',
           access: {
             authorizedRoles: [USER_ROLES.all]
           }
         })
         .when('/error', {
-          templateUrl: 'views/error.html',
+          templateUrl: 'app/views/error.html',
           access: {
             authorizedRoles: [USER_ROLES.all]
           }
         })
         .when('/settings', {
-          templateUrl: 'views/settings.html',
+          templateUrl: 'app/views/settings.html',
           controller: 'SettingsController',
           access: {
             authorizedRoles: [USER_ROLES.all]
           }
         })
         .when('/password', {
-          templateUrl: 'views/password.html',
+          templateUrl: 'app/views/password.html',
           controller: 'PasswordController',
           access: {
             authorizedRoles: [USER_ROLES.all]
           }
         })
         .when('/sessions', {
-          templateUrl: 'views/sessions.html',
+          templateUrl: 'app/views/sessions.html',
           controller: 'SessionsController',
           resolve: {
             resolvedSessions: ['Sessions', function (Sessions) {
@@ -60,14 +60,14 @@ mica
           }
         })
         .when('/metrics', {
-          templateUrl: 'views/metrics.html',
+          templateUrl: 'app/views/metrics.html',
           controller: 'MetricsController',
           access: {
             authorizedRoles: [USER_ROLES.admin]
           }
         })
         .when('/logs', {
-          templateUrl: 'views/logs.html',
+          templateUrl: 'app/views/logs.html',
           controller: 'LogsController',
           resolve: {
             resolvedLogs: ['LogsService', function (LogsService) {
@@ -79,27 +79,27 @@ mica
           }
         })
         .when('/audits', {
-          templateUrl: 'views/audits.html',
+          templateUrl: 'app/views/audits.html',
           controller: 'AuditsController',
           access: {
             authorizedRoles: [USER_ROLES.admin]
           }
         })
         .when('/logout', {
-          templateUrl: 'views/main.html',
+          templateUrl: 'app/views/main.html',
           controller: 'LogoutController',
           access: {
             authorizedRoles: [USER_ROLES.all]
           }
         })
         .when('/docs', {
-          templateUrl: 'views/docs.html',
+          templateUrl: 'app/views/docs.html',
           access: {
             authorizedRoles: [USER_ROLES.admin]
           }
         })
         .otherwise({
-          templateUrl: 'views/main.html',
+          templateUrl: 'app/views/main.html',
           controller: 'MainController',
           access: {
             authorizedRoles: [USER_ROLES.all]

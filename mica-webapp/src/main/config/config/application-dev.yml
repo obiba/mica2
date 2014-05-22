@@ -25,7 +25,7 @@ elasticsearch:
   clusterName: mica
   shards: 5
   replicas: 1
-  settings:
+  settings: "http.enabled: true"
 
 metrics:
     jmx.enabled: true
