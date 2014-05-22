@@ -1,6 +1,7 @@
 package org.obiba.mica.domain;
 
 import java.io.Serializable;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -43,9 +44,9 @@ public class Study implements Persistable<String> {
 
   private NumberOfParticipants numberOfParticipants;
 
-  private Integer startYear;
+  private Year start;
 
-  private Integer endYear;
+  private Year end;
 
   private List<String> access;
 
@@ -54,6 +55,7 @@ public class Study implements Persistable<String> {
   private String markerPaper;
 
   //TODO add pubmedId validator
+  //@PubmedId
   private String pubmedId;
 
   private List<Attachment> attachments;
@@ -168,20 +170,20 @@ public class Study implements Persistable<String> {
     this.numberOfParticipants = numberOfParticipants;
   }
 
-  public Integer getStartYear() {
-    return startYear;
+  public Year getStart() {
+    return start;
   }
 
-  public void setStartYear(Integer startYear) {
-    this.startYear = startYear;
+  public void setStart(Year start) {
+    this.start = start;
   }
 
-  public Integer getEndYear() {
-    return endYear;
+  public Year getEnd() {
+    return end;
   }
 
-  public void setEndYear(Integer endYear) {
-    this.endYear = endYear;
+  public void setEnd(Year end) {
+    this.end = end;
   }
 
   public List<String> getAccess() {

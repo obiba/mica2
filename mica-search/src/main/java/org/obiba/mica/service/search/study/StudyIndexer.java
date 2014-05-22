@@ -2,8 +2,10 @@ package org.obiba.mica.service.search.study;
 
 import javax.inject.Inject;
 
+import org.obiba.mica.domain.Study;
 import org.obiba.mica.service.search.ElasticSearchIndexer;
 import org.obiba.mica.service.study.event.DraftStudyUpdatedEvent;
+import org.obiba.mica.service.study.event.StudyDeletedEvent;
 import org.obiba.mica.service.study.event.StudyPublishedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,4 +40,26 @@ public class StudyIndexer {
     elasticSearchIndexer.index(PUBLISHED_STUDY_INDEX, event.getPersistable());
   }
 
+  @Async
+  @Subscribe
+  public void studyDeleted(StudyDeletedEvent event) {
+    log.info("Study {} was deleted", event.getPersistable());
+    elasticSearchIndexer.delete(DRAFT_STUDY_INDEX, event.getPersistable());
+    elasticSearchIndexer.delete(PUBLISHED_STUDY_INDEX, event.getPersistable());
+  }
+
+  @Async
+  public void reIndexAllDraft(Iterable<Study> studies) {
+    reIndexAll(DRAFT_STUDY_INDEX, studies);
+  }
+
+  @Async
+  public void reIndexAllPublished(Iterable<Study> studies) {
+    reIndexAll(PUBLISHED_STUDY_INDEX, studies);
+  }
+
+  private void reIndexAll(String indexName, Iterable<Study> studies) {
+    elasticSearchIndexer.dropIndex(indexName);
+    elasticSearchIndexer.indexAll(indexName, studies);
+  }
 }

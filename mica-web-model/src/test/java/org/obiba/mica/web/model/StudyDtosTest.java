@@ -1,6 +1,7 @@
 package org.obiba.mica.web.model;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.Year;
 import java.util.Arrays;
 import java.util.Locale;
 
@@ -125,7 +126,7 @@ public class StudyDtosTest {
     study.addContact(contact);
     study.addInvestigator(contact);
 
-    study.setStartYear(2002);
+    study.setStart(Year.of(2002));
 
     study.setMethods(createMethods());
     study.setNumberOfParticipants(createNumberOfParticipants());
@@ -162,7 +163,7 @@ public class StudyDtosTest {
     Authorization authorization = new Authorization();
     authorization.setAuthorizer(authorizer);
     authorization.setAuthorized(true);
-    authorization.setDate(LocalDateTime.now());
+    authorization.setDate(LocalDate.now());
     return authorization;
   }
 
@@ -262,8 +263,8 @@ public class StudyDtosTest {
     DataCollectionEvent event = new DataCollectionEvent();
     event.setName(en("Baseline Recruitment"));
     event.setDescription(en("Baseline data collection"));
-    event.setStartYear(2010);
-    event.setEndYear(2015);
+    event.setStart(2010, null);
+    event.setEnd(2015, null);
     event.addDataSource("questionnaires");
     event.addDataSource("physical_measures");
     event.addDataSource("biological_samples");
@@ -279,10 +280,8 @@ public class StudyDtosTest {
     DataCollectionEvent event = new DataCollectionEvent();
     event.setName(en("Follow-Up One"));
     event.setDescription(en("First follow-up from baseline data collection"));
-    event.setStartYear(2000);
-    event.setStartMonth(1);
-    event.setEndYear(2020);
-    event.setEndYear(12);
+    event.setStart(2000, null);
+    event.setEnd(2020, null);
     event.addDataSource("questionnaires");
     event.addDataSource("physical_measures");
     event.addDataSource("administratives_databases");

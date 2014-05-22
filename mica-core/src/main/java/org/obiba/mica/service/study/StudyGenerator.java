@@ -1,6 +1,8 @@
 package org.obiba.mica.service.study;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.Year;
+import java.time.YearMonth;
 import java.util.Arrays;
 import java.util.Locale;
 
@@ -75,7 +77,7 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
     study.addContact(contact);
     study.addInvestigator(contact);
 
-    study.setStartYear(2002);
+    study.setStart(Year.of(2002));
 
     study.setMethods(createMethods());
     study.setNumberOfParticipants(createNumberOfParticipants());
@@ -112,7 +114,7 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
     Authorization authorization = new Authorization();
     authorization.setAuthorizer(authorizer);
     authorization.setAuthorized(true);
-    authorization.setDate(LocalDateTime.now());
+    authorization.setDate(LocalDate.now());
     return authorization;
   }
 
@@ -213,8 +215,8 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
     DataCollectionEvent event = new DataCollectionEvent();
     event.setName(en("Baseline Recruitment"));
     event.setDescription(en("Baseline data collection"));
-    event.setStartYear(2010);
-    event.setEndYear(2015);
+    event.setStart(YearMonth.of(2010, 1));
+    event.setEnd(YearMonth.of(2015, 12));
     event.addDataSource("questionnaires");
     event.addDataSource("physical_measures");
     event.addDataSource("biological_samples");
@@ -230,10 +232,8 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
     DataCollectionEvent event = new DataCollectionEvent();
     event.setName(en("Follow-Up One"));
     event.setDescription(en("First follow-up from baseline data collection"));
-    event.setStartYear(2000);
-    event.setStartMonth(1);
-    event.setEndYear(2020);
-    event.setEndMonth(12);
+    event.setStart(YearMonth.of(2000, 1));
+    event.setEnd(YearMonth.of(2020, 12));
     event.addDataSource("questionnaires");
     event.addDataSource("physical_measures");
     event.addDataSource("administratives_databases");
@@ -251,10 +251,8 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
     DataCollectionEvent event = new DataCollectionEvent();
     event.setName(en("Pre-Selection"));
     event.setDescription(en("Pre-selection for baseline"));
-    event.setStartYear(1996);
-    event.setStartMonth(5);
-    event.setEndYear(2000);
-    event.setEndMonth(11);
+    event.setStart(YearMonth.of(1996, 5));
+    event.setEnd(YearMonth.of(2000, 11));
     event.addDataSource("questionnaires");
     event.addDataSource("physical_measures");
     event.addDataSource("administratives_databases");

@@ -1,6 +1,6 @@
 package org.obiba.mica.web.model;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import javax.validation.constraints.NotNull;
 
@@ -24,11 +24,11 @@ class AuthorizationDtos {
   }
 
   @NotNull
-  static Authorization fromDto(@NotNull AuthorizationDto dto) {
+  static Authorization fromDto(@NotNull Mica.AuthorizationDtoOrBuilder dto) {
     Authorization authorization = new Authorization();
     if(dto.hasAuthorizer()) authorization.setAuthorizer(dto.getAuthorizer());
     if(dto.hasAuthorized()) authorization.setAuthorized(dto.getAuthorized());
-    if(dto.hasDate()) authorization.setDate(LocalDateTime.parse(dto.getDate()));
+    if(dto.hasDate()) authorization.setDate(LocalDate.parse(dto.getDate()));
     return authorization;
   }
 

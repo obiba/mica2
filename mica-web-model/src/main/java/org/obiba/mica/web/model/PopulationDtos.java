@@ -175,10 +175,12 @@ class PopulationDtos {
     builder.setId(dce.getId());
     if(dce.getName() != null) builder.addAllName(localizedStringDtos.asDto(dce.getName()));
     if(dce.getDescription() != null) builder.addAllDescription(localizedStringDtos.asDto(dce.getDescription()));
-    if(dce.getStartYear() != null) builder.setStartYear(dce.getStartYear());
-    if(dce.getStartMonth() != null) builder.setStartMonth(dce.getStartMonth());
-    if(dce.getEndYear() != null) builder.setEndYear(dce.getEndYear());
-    if(dce.getEndMonth() != null) builder.setEndMonth(dce.getEndMonth());
+    if(dce.getStart() != null) {
+      builder.setStartYear(dce.getStart().getYear()).setStartMonth(dce.getStart().getMonthValue());
+    }
+    if(dce.getEnd() != null) {
+      builder.setEndYear(dce.getEnd().getYear()).setEndMonth(dce.getEnd().getMonthValue());
+    }
     if(dce.getDataSources() != null) dce.getDataSources().forEach(builder::addDataSources);
     if(dce.getAdministrativeDatabases() != null) {
       dce.getAdministrativeDatabases().forEach(builder::addAdministrativeDatabases);
@@ -203,10 +205,8 @@ class PopulationDtos {
     dce.setId(dto.getId());
     if(dto.getNameCount() > 0) dce.setName(localizedStringDtos.fromDto(dto.getNameList()));
     if(dto.getDescriptionCount() > 0) dce.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
-    if(dto.hasStartYear()) dce.setStartYear(dto.getStartYear());
-    if(dto.hasStartMonth()) dce.setStartMonth(dto.getStartMonth());
-    if(dto.hasEndYear()) dce.setEndYear(dto.getEndYear());
-    if(dto.hasEndMonth()) dce.setEndMonth(dto.getEndMonth());
+    if(dto.hasStartYear()) dce.setStart(dto.getStartYear(), dto.hasStartMonth() ? dto.getStartMonth() : null);
+    if(dto.hasEndYear()) dce.setEnd(dto.getEndYear(), dto.hasEndMonth() ? dto.getEndMonth() : null);
     if(dto.getDataSourcesCount() > 0) dce.setDataSources(dto.getDataSourcesList());
     if(dto.getAdministrativeDatabasesCount() > 0) dce.setAdministrativeDatabases(dto.getAdministrativeDatabasesList());
     if(dto.getOtherDataSourcesCount() > 0) {
