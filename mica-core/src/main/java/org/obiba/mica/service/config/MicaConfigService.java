@@ -1,10 +1,9 @@
-package org.obiba.mica.service;
+package org.obiba.mica.service.config;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
 
 import org.obiba.mica.domain.MicaConfig;
-import org.obiba.mica.event.MicaConfigUpdatedEvent;
 import org.obiba.mica.repository.MicaConfigRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;

@@ -1,4 +1,4 @@
-package org.obiba.mica.service;
+package org.obiba.mica.service.study;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,8 +15,9 @@ import org.junit.runner.RunWith;
 import org.obiba.git.command.GitCommandHandler;
 import org.obiba.mica.domain.Study;
 import org.obiba.mica.domain.StudyState;
-import org.obiba.mica.event.StudyUpdatedEvent;
 import org.obiba.mica.repository.StudyStateRepository;
+import org.obiba.mica.service.GitService;
+import org.obiba.mica.service.study.event.DraftStudyUpdatedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -33,6 +34,8 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.io.Files;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.mongodb.Mongo;
 
 import de.flapdoodle.embed.mongo.distribution.Version;
@@ -94,7 +97,7 @@ public class StudyServiceTest {
         .isEqualTo(study.getId());
     assertThat(studyState.getName()).isEqualTo(study.getName());
 
-    verify(eventBus).post(any(StudyUpdatedEvent.class));
+    verify(eventBus).post(any(DraftStudyUpdatedEvent.class));
 
     Study retrievedStudy = studyService.findDraftStudy(study.getId());
     assertThat(retrievedStudy).areFieldsEqualToEachOther(study);
@@ -118,7 +121,7 @@ public class StudyServiceTest {
         .isEqualTo(study.getId());
     assertThat(studyState.getName()).isEqualTo(study.getName());
 
-    verify(eventBus, times(2)).post(any(StudyUpdatedEvent.class));
+    verify(eventBus, times(2)).post(any(DraftStudyUpdatedEvent.class));
 
     Study retrievedStudy = studyService.findDraftStudy(study.getId());
     assertThat(retrievedStudy).areFieldsEqualToEachOther(study);
@@ -179,6 +182,11 @@ public class StudyServiceTest {
     @Bean
     public GitCommandHandler gitCommandHandler() throws IOException {
       return new GitCommandHandler();
+    }
+
+    @Bean
+    public Gson gson() {
+      return new GsonBuilder().create();
     }
 
     @Bean

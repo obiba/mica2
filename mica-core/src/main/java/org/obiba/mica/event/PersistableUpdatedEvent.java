@@ -2,13 +2,13 @@ package org.obiba.mica.event;
 
 import org.springframework.data.domain.Persistable;
 
-public class PersistableUpdatedEvent {
+public class PersistableUpdatedEvent<TPersistable extends Persistable<?>> {
 
-  private final Persistable<?> persistable;
+  private final TPersistable persistable;
 
-  public PersistableUpdatedEvent(Persistable<?> persistable) {this.persistable = persistable;}
+  public PersistableUpdatedEvent(TPersistable persistable) {this.persistable = persistable;}
 
-  public Persistable<?> getPersistable() {
+  public TPersistable getPersistable() {
     return persistable;
   }
 }

@@ -6,7 +6,7 @@ import javax.inject.Inject;
 
 import org.obiba.mica.domain.Address;
 import org.obiba.mica.domain.Contact;
-import org.obiba.mica.service.MicaConfigService;
+import org.obiba.mica.service.config.MicaConfigService;
 import org.springframework.stereotype.Component;
 
 import static com.google.common.base.Strings.isNullOrEmpty;

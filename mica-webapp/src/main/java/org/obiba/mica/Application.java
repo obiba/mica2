@@ -5,6 +5,7 @@ import java.util.Arrays;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.config.Constants;
 import org.slf4j.Logger;
@@ -51,6 +52,8 @@ public class Application {
    */
   public static void main(String... args) throws InterruptedException {
 
+    checkSystemProperty("MICA_HOME");
+
     SpringApplication app = new SpringApplication(Application.class);
     app.setShowBanner(false);
 
@@ -60,10 +63,15 @@ public class Application {
     // if not the development profile will be added
     addDefaultProfile(app, source);
 
-    // Fallback to set the list of liquibase package list
-    addLiquibaseScanPackages();
-
     app.run(args);
+  }
+
+  private static void checkSystemProperty(@NotNull String... properties) {
+    for(String property : properties) {
+      if(System.getProperty(property) == null) {
+        throw new IllegalStateException("System property \"" + property + "\" must be defined.");
+      }
+    }
   }
 
   /**
@@ -75,17 +83,4 @@ public class Application {
     }
   }
 
-  /**
-   * Set the liquibases.scan.packages to avoid an exception from ServiceLocator
-   * <p>
-   * See the following JIRA issue https://liquibase.jira.com/browse/CORE-677
-   */
-  private static void addLiquibaseScanPackages() {
-    System.setProperty("liquibase.scan.packages", "liquibase.change" + "," + "liquibase.database" + "," +
-        "liquibase.parser" + "," + "liquibase.precondition" + "," + "liquibase.datatype" + "," +
-        "liquibase.serializer" + "," + "liquibase.sqlgenerator" + "," + "liquibase.executor" + "," +
-        "liquibase.snapshot" + "," + "liquibase.logging" + "," + "liquibase.diff" + "," +
-        "liquibase.structure" + "," + "liquibase.structurecompare" + "," + "liquibase.lockservice" + "," +
-        "liquibase.ext" + "," + "liquibase.changelog");
-  }
 }

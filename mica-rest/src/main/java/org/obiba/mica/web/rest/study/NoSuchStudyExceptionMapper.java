@@ -14,7 +14,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import org.obiba.mica.service.NoSuchStudyException;
+import org.obiba.mica.service.study.NoSuchStudyException;
 
 @Provider
 public class NoSuchStudyExceptionMapper implements ExceptionMapper<NoSuchStudyException> {

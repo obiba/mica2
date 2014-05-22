@@ -14,3 +14,4 @@ src/main/webapp/dist
 spring_loaded
 *.log
 .vagrant
+.work

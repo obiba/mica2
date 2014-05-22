@@ -6,35 +6,35 @@
     <span class="glyphicon glyphicon-flash"></span> Create a new Network
   </button>
   <div class="modal fade" id="saveNetworkModal" tabindex="-1" role="dialog" aria-labelledby="myNetworkLabel"
-       aria-hidden="true">
+      aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <form name="form" role="form" novalidate
-              class="ng-scope ng-invalid ng-invalid-required ng-dirty ng-valid-minlength"
-              ng-submit="create()">
+            class="ng-scope ng-invalid ng-invalid-required ng-dirty ng-valid-minlength"
+            ng-submit="create()">
 
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true"
-                    ng-click="clear()">&times;</button>
+                ng-click="clear()">&times;</button>
             <h4 class="modal-title" id="myNetworkLabel">Create or edit a Network</h4>
           </div>
           <div class="modal-body">
             <div class="form-group">
               <label>ID</label>
               <input type="text" class="form-control" name="id"
-                     ng-model="network.id" readonly>
+                  ng-model="network.id" readonly>
             </div>
 
             <div class="form-group">
               <label>Sample text attribute</label>
               <input type="text" class="form-control" name="test"
-                     ng-model="network.sampleTextAttribute" ng-minlength=1 ng-maxlength=50 required>
+                  ng-model="network.sampleTextAttribute" ng-minlength=1 ng-maxlength=50 required>
             </div>
 
             <div class="form-group">
               <label>Sample date attribute</label>
               <input type="date" class="form-control" name="test"
-                     ng-model="network.sampleDateAttribute" required>
+                  ng-model="network.sampleDateAttribute" required>
             </div>
           </div>
           <div class="modal-footer">
@@ -67,13 +67,13 @@
         <td>{{network.sampleDateAttribute}}</td>
         <td>
           <button type="submit"
-                  ng-click="update(network.id)"
-                  class="btn">
+              ng-click="update(network.id)"
+              class="btn">
             <span class="glyphicon glyphicon-pencil"></span> Edit
           </button>
           <button type="submit"
-                  ng-click="delete(network.id)"
-                  class="btn btn-danger">
+              ng-click="delete(network.id)"
+              class="btn btn-danger">
             <span class="glyphicon glyphicon-remove-circle"></span> Delete
           </button>
         </td>

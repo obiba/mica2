@@ -30,9 +30,6 @@
       <properties>
         <!-- Spring profile to use -->
         <spring.profiles.active>dev</spring.profiles.active>
-        <!-- log configuration -->
-        <logback.loglevel>DEBUG</logback.loglevel>
-        <logback.logDir>${project.build.directory}/logs</logback.logDir>
       </properties>
     </profile>
 
@@ -41,10 +38,6 @@
       <properties>
         <!-- Spring profile to use -->
         <spring.profiles.active>prod</spring.profiles.active>
-        <!-- log configuration -->
-        <logback.loglevel>INFO</logback.loglevel>
-        <logback.appender>CONSOLE</logback.appender>
-        <logback.logDir>/var/logs/mica-server</logback.logDir>
       </properties>
       <build>
         <plugins>
@@ -107,6 +100,7 @@
     <commons-io.version>2.4</commons-io.version>
     <commons-lang.version>2.6</commons-lang.version>
     <ehcache-core.version>2.6.8</ehcache-core.version>
+    <elasticsearch.version>1.1.1</elasticsearch.version>
     <embed-mongo.version>1.45</embed-mongo.version>
     <guava.version>17.0</guava.version>
     <geronimo-javamail_1.4_mail.version>1.8.3</geronimo-javamail_1.4_mail.version>
@@ -222,6 +216,17 @@
         <groupId>org.obiba.mica</groupId>
         <artifactId>mica-rest</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.obiba.mica</groupId>
+        <artifactId>mica-search</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.elasticsearch</groupId>
+        <artifactId>elasticsearch</artifactId>
+        <version>${elasticsearch.version}</version>
       </dependency>
 
       <dependency>

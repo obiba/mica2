@@ -1,10 +1,9 @@
-package org.obiba.mica.service;
+package org.obiba.mica.service.study;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Locale;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.obiba.mica.domain.Address;
@@ -18,6 +17,8 @@ import org.obiba.mica.domain.Population;
 import org.obiba.mica.domain.Study;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 import static org.obiba.mica.domain.LocalizedString.en;
@@ -25,7 +26,7 @@ import static org.obiba.mica.domain.Study.StudyMethods;
 
 @SuppressWarnings({ "MagicNumber", "OverlyLongMethod" })
 @Component
-public class StudyGenerator {
+public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent> {
 
   private static final Logger log = LoggerFactory.getLogger(StudyGenerator.class);
 
@@ -35,15 +36,20 @@ public class StudyGenerator {
 //  @Inject
 //  private NetworkRepository networkRepository;
 
-  @PostConstruct
-  public void init() {
+  @Override
+  public void onApplicationEvent(ContextRefreshedEvent event) {
+    log.debug("Create new study - ContextStartedEvent");
+    create();
+  }
 
-    Study study = createStudy("CLSA", "Canadian Longitudinal Study on Aging", "Étude longitudinale canadienne sur le vieillissement");
+  public void create() {
+
+    Study study = createStudy("CLSA", "Canadian Longitudinal Study on Aging",
+        "Étude longitudinale canadienne sur le vieillissement");
     studyService.save(study);
     studyService.publish(study.getId());
 
-    study = createStudy("NCDS", "National Child Development Study", "National Child Development Study");
-    studyService.save(study);
+    studyService.save(createStudy("NCDS", "National Child Development Study", "National Child Development Study"));
 
 //    Network network = createNetwork();
 //    network.addStudy(study);
@@ -56,8 +62,7 @@ public class StudyGenerator {
   @SuppressWarnings("OverlyLongMethod")
   private Study createStudy(String acronyme, String nameEn, String nameFr) {
     Study study = new Study();
-    study.setName(
-        en(nameEn).forFr(nameFr));
+    study.setName(en(nameEn).forFr(nameFr));
     study.setAcronym(en(acronyme));
     study.setObjectives(
         en("The Canadian Longitudinal Study on Aging (CLSA) is a large, national, long-term study that will follow approximately 50,000 men and women between the ages of 45 and 85 for at least 20 years. The study will collect information on the changing biological, medical, psychological, social, lifestyle and economic aspects of people’s lives. These factors will be studied in order to understand how, individually and in combination, they have an impact in both maintaining health and in the development of disease and disability as people age.")

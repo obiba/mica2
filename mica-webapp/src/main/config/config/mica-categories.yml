@@ -1,3 +1,5 @@
+# list categories for study String[] fields (will be validated by Bean Validator)
+
 study:
 
   access:

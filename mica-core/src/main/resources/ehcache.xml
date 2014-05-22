@@ -55,17 +55,5 @@
       timeToLiveSeconds="0"
       timeToIdleSeconds="0"/>
 
-  <cache name="org.obiba.mica.jpa.domain.User" timeToLiveSeconds="3600"/>
-
-  <cache name="org.obiba.mica.jpa.domain.Authority" timeToLiveSeconds="3600"/>
-
-  <cache name="org.obiba.mica.jpa.domain.User.authorities" timeToLiveSeconds="3600"/>
-
-  <cache name="org.obiba.mica.jpa.domain.PersistentToken" timeToLiveSeconds="3600"/>
-
-  <cache name="org.obiba.mica.jpa.domain.User.persistentTokens" timeToLiveSeconds="3600"/>
-
-  <cache name="org.obiba.mica.jpa.domain.PersistentAuditEvent" timeToLiveSeconds="3600"/>
-
 </ehcache>
 
