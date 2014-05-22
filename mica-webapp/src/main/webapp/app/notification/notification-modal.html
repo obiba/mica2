@@ -5,7 +5,7 @@
     <h4 class="modal-title">
       <i ng-hide="notification.iconClass" class="fa fa-info-circle"></i>
       <i ng-show="notification.iconClass" class="fa {{notification.iconClass}}"></i>
-      <span ng-hide="notification.title" translate>notification</span>
+      <span ng-hide="notification.title" translate>{{notification.titleKey || 'notification'}}</span>
       {{notification.title}}
     </h4>
   </div>
