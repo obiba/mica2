@@ -1,8 +1,8 @@
 package org.obiba.mica.service.study;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -19,10 +19,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Function;
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import com.google.common.eventbus.EventBus;
 
 import static org.obiba.mica.domain.RevisionStatus.DRAFT;
@@ -44,7 +41,7 @@ public class StudyService {
   @CacheEvict(value = "studies-draft", key = "#study.id")
   public void save(@NotNull @Valid Study study) {
     StudyState studyState = findStudyState(study);
-    gitService.save(studyState.getId(), study);
+    gitService.save(study);
 
     studyState.setName(study.getName());
     studyState.incrementRevisionsAhead();
@@ -100,15 +97,8 @@ public class StudyService {
   }
 
   public List<Study> findAllDraftStudies() {
-    ImmutableList.Builder<Study> builder = ImmutableList.builder();
-    builder.addAll(Iterables.transform(studyStateRepository.findAll(), new Function<StudyState, Study>() {
-      @Nullable
-      @Override
-      public Study apply(@Nullable StudyState input) {
-        return gitService.readHead(input.getId(), Study.class);
-      }
-    }));
-    return builder.build();
+    return studyStateRepository.findAll().stream()
+        .map(studyState -> gitService.readHead(studyState.getId(), Study.class)).collect(Collectors.toList());
   }
 
   public List<StudyState> findPublishedStates() {

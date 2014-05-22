@@ -54,7 +54,7 @@ public class GitService {
     this.repositoriesRoot = repositoriesRoot;
   }
 
-  public void save(String id, AbstractGitPersistable persistable) {
+  public void save(AbstractGitPersistable persistable) {
     try {
 
       persistable.setLastModifiedDate(DateTime.now());
@@ -71,8 +71,8 @@ public class GitService {
       // add this temp JSON file to GIT
       try(InputStream input = new FileInputStream(jsonFile)) {
         gitCommandHandler.execute(
-            new AddFilesCommand.Builder(getRepositoryPath(id), "Update " + jsonFileName).addFile(jsonFileName, input)
-                .build()
+            new AddFilesCommand.Builder(getRepositoryPath(persistable.getId()), "Update " + jsonFileName)
+                .addFile(jsonFileName, input).build()
         );
       }
 
@@ -80,7 +80,7 @@ public class GitService {
       jsonFile.delete();
 
     } catch(IOException e) {
-      throw new RuntimeException("Cannot persist " + persistable + " to " + id + " repo", e);
+      throw new RuntimeException("Cannot persist " + persistable + " to " + persistable.getId() + " repo", e);
     }
   }
 
