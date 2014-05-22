@@ -11,7 +11,6 @@ import org.obiba.mica.domain.Attachment;
 import org.obiba.mica.domain.Contact;
 import org.obiba.mica.domain.Population;
 import org.obiba.mica.domain.Study;
-import org.obiba.mica.domain.Timestamped;
 import org.springframework.stereotype.Component;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -37,10 +36,10 @@ class StudyDtos {
   private NumberOfParticipantsDtos numberOfParticipantsDtos;
 
   @NotNull
-  Mica.StudyDto asDto(@NotNull Study study, Timestamped studyState) {
+  Mica.StudyDto asDto(@NotNull Study study) {
     Mica.StudyDto.Builder builder = Mica.StudyDto.newBuilder();
     builder.setId(study.getId()) //
-        .setTimestamps(TimestampsDtos.asDto(studyState)) //
+        .setTimestamps(TimestampsDtos.asDto(study)) //
         .addAllName(localizedStringDtos.asDto(study.getName())) //
         .addAllObjectives(localizedStringDtos.asDto(study.getObjectives()));
 
@@ -76,6 +75,9 @@ class StudyDtos {
       builder.addAllAttachments(
           study.getAttachments().stream().map(attachmentDtos::asDto).collect(Collectors.<Mica.AttachmentDto>toList()));
     }
+    if(study.getInfo() != null) {
+      builder.addAllInfo(localizedStringDtos.asDto(study.getInfo()));
+    }
     if(study.getPopulations() != null) {
       study.getPopulations().forEach(population -> builder.addPopulations(populationDtos.asDto(population)));
     }
@@ -86,6 +88,7 @@ class StudyDtos {
   Study fromDto(@NotNull Mica.StudyDtoOrBuilder dto) {
     Study study = new Study();
     if(dto.hasId()) study.setId(dto.getId());
+    if(dto.hasTimestamps()) TimestampsDtos.fromDto(dto.getTimestamps(), study);
     if(dto.hasStartYear()) study.setStart(Year.of(dto.getStartYear()));
     if(dto.getAccessCount() > 0) study.setAccess(dto.getAccessList());
     if(dto.getOtherAccessCount() > 0) study.setOtherAccess(localizedStringDtos.fromDto(dto.getOtherAccessList()));
@@ -116,6 +119,7 @@ class StudyDtos {
       study.setAttachments(
           dto.getAttachmentsList().stream().map(attachmentDtos::fromDto).collect(Collectors.<Attachment>toList()));
     }
+    if(dto.getInfoCount() > 0) study.setInfo(localizedStringDtos.fromDto(dto.getInfoList()));
     if(dto.getPopulationsCount() > 0) {
       study.setPopulations(dto.getPopulationsList().stream().map(populationDtos::fromDto)
               .collect(Collectors.toCollection(TreeSet<Population>::new))

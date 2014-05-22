@@ -1,5 +1,6 @@
 package org.obiba.mica.web.model;
 
+import org.joda.time.DateTime;
 import org.obiba.mica.domain.Timestamped;
 
 class TimestampsDtos {
@@ -13,4 +14,8 @@ class TimestampsDtos {
     return builder.build();
   }
 
+  static void fromDto(Mica.TimestampsDtoOrBuilder dto, Timestamped timestamped) {
+    if(dto.hasCreated()) timestamped.setCreatedDate(DateTime.parse(dto.getCreated()));
+    if(dto.hasLastUpdate()) timestamped.setLastModifiedDate(DateTime.parse(dto.getLastUpdate()));
+  }
 }

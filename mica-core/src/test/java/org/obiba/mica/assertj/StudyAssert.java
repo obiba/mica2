@@ -3,23 +3,24 @@ package org.obiba.mica.assertj;
 import org.assertj.core.api.AbstractAssert;
 import org.obiba.mica.domain.Study;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class StudyAssert extends AbstractAssert<StudyAssert, Study> {
 
-  private final Gson gson = new GsonBuilder().create();
+  private final ObjectMapper objectMapper;
 
   protected StudyAssert(Study actual) {
     super(actual, StudyAssert.class);
+    objectMapper = new ObjectMapper();
+    objectMapper.findAndRegisterModules();
   }
 
   public StudyAssert areFieldsEqualToEachOther(Study expected) {
-    JsonElement actualJson = gson.toJsonTree(actual, actual.getClass());
-    JsonElement expectedJson = gson.toJsonTree(expected, expected.getClass());
+    JsonNode actualJson = objectMapper.valueToTree(actual);
+    JsonNode expectedJson = objectMapper.valueToTree(expected);
     assertThat(actualJson).isEqualTo(expectedJson);
     return myself;
   }

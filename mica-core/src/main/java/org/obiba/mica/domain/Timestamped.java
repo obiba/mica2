@@ -9,6 +9,9 @@ public interface Timestamped {
   @NotNull
   DateTime getCreatedDate();
 
+  void setCreatedDate(DateTime createdDate);
+
   DateTime getLastModifiedDate();
 
+  void setLastModifiedDate(DateTime lastModifiedDate);
 }

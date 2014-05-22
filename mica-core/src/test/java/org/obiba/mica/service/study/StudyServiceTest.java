@@ -13,6 +13,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.obiba.git.command.GitCommandHandler;
+import org.obiba.mica.config.JsonConfiguration;
 import org.obiba.mica.domain.Study;
 import org.obiba.mica.domain.StudyState;
 import org.obiba.mica.repository.StudyStateRepository;
@@ -34,8 +35,6 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.io.Files;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.mongodb.Mongo;
 
 import de.flapdoodle.embed.mongo.distribution.Version;
@@ -51,7 +50,7 @@ import static org.obiba.mica.domain.LocalizedString.en;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
-@ContextConfiguration(classes = StudyServiceTest.Config.class)
+@ContextConfiguration(classes = { StudyServiceTest.Config.class, JsonConfiguration.class })
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class StudyServiceTest {
 
@@ -182,11 +181,6 @@ public class StudyServiceTest {
     @Bean
     public GitCommandHandler gitCommandHandler() throws IOException {
       return new GitCommandHandler();
-    }
-
-    @Bean
-    public Gson gson() {
-      return new GsonBuilder().create();
     }
 
     @Bean

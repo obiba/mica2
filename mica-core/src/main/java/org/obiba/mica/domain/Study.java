@@ -4,23 +4,21 @@ import java.io.Serializable;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.URL;
-import org.springframework.data.domain.Persistable;
+
+import com.google.common.base.Objects;
 
 /**
  * A Study.
  */
-public class Study implements Persistable<String> {
+public class Study extends AbstractGitPersistable {
 
   private static final long serialVersionUID = 6559914069652243954L;
-
-  private String id;
 
   @NotNull
   private LocalizedString name;
@@ -60,23 +58,9 @@ public class Study implements Persistable<String> {
 
   private List<Attachment> attachments;
 
-  private LocalizedString infos;
+  private LocalizedString info;
 
   private SortedSet<Population> populations;
-
-  @Override
-  public String getId() {
-    return id;
-  }
-
-  @Override
-  public boolean isNew() {
-    return id == null;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
 
   public LocalizedString getName() {
     return name;
@@ -100,7 +84,7 @@ public class Study implements Persistable<String> {
   }
 
   public void addInvestigator(@NotNull Contact investigator) {
-    if (investigators == null) investigators = new ArrayList<>();
+    if(investigators == null) investigators = new ArrayList<>();
     investigators.add(investigator);
   }
 
@@ -114,7 +98,7 @@ public class Study implements Persistable<String> {
   }
 
   public void addContact(@NotNull Contact aContact) {
-    if (contacts == null) contacts = new ArrayList<>();
+    if(contacts == null) contacts = new ArrayList<>();
     contacts.add(aContact);
   }
 
@@ -191,7 +175,7 @@ public class Study implements Persistable<String> {
   }
 
   public void addAccess(@NotNull String anAccess) {
-    if (access == null) access = new ArrayList<>();
+    if(access == null) access = new ArrayList<>();
     access.add(anAccess);
   }
 
@@ -228,7 +212,7 @@ public class Study implements Persistable<String> {
   }
 
   public void addAttachment(@NotNull Attachment anAttachment) {
-    if (attachments == null) attachments = new ArrayList<>();
+    if(attachments == null) attachments = new ArrayList<>();
     attachments.add(anAttachment);
   }
 
@@ -236,12 +220,12 @@ public class Study implements Persistable<String> {
     this.attachments = attachments;
   }
 
-  public LocalizedString getInfos() {
-    return infos;
+  public LocalizedString getInfo() {
+    return info;
   }
 
-  public void setInfos(LocalizedString infos) {
-    this.infos = infos;
+  public void setInfo(LocalizedString info) {
+    this.info = info;
   }
 
   public SortedSet<Population> getPopulations() {
@@ -249,7 +233,7 @@ public class Study implements Persistable<String> {
   }
 
   public void addPopulation(@NotNull Population population) {
-    if (populations == null) populations = new TreeSet<>();
+    if(populations == null) populations = new TreeSet<>();
     populations.add(population);
   }
 
@@ -258,21 +242,8 @@ public class Study implements Persistable<String> {
   }
 
   @Override
-  public int hashCode() {
-    return Objects.hash(id);
-  }
-
-  @Override
-  @SuppressWarnings("SimplifiableIfStatement")
-  public boolean equals(Object obj) {
-    if(this == obj) return true;
-    if(obj == null || getClass() != obj.getClass()) return false;
-    return Objects.equals(id, ((Study) obj).id);
-  }
-
-  @Override
-  public String toString() {
-    return com.google.common.base.Objects.toStringHelper(this).add("id", id).add("name", name).toString();
+  protected Objects.ToStringHelper toStringHelper() {
+    return super.toStringHelper().add("name", name);
   }
 
   public static class StudyMethods implements Serializable {
@@ -296,7 +267,7 @@ public class Study implements Persistable<String> {
     }
 
     public void addDesign(@NotNull String design) {
-      if (designs == null) designs = new ArrayList<>();
+      if(designs == null) designs = new ArrayList<>();
       designs.add(design);
     }
 
@@ -325,7 +296,7 @@ public class Study implements Persistable<String> {
     }
 
     public void addRecruitment(@NotNull String recruitment) {
-      if (recruitments == null) recruitments = new ArrayList<>();
+      if(recruitments == null) recruitments = new ArrayList<>();
       recruitments.add(recruitment);
     }
 

@@ -17,7 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Persistable;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 public class ElasticSearchIndexer {
@@ -28,19 +29,27 @@ public class ElasticSearchIndexer {
   private ElasticSearchService elasticSearchService;
 
   @Inject
-  private Gson gson;
+  private ObjectMapper objectMapper;
 
   public IndexResponse index(String indexName, Persistable<String> persistable) {
     createIndexIfNeeded(indexName);
-    return getIndexRequestBuilder(indexName, persistable).setSource(gson.toJson(persistable)).execute().actionGet();
+    return getIndexRequestBuilder(indexName, persistable).setSource(toJson(persistable)).execute().actionGet();
   }
 
   public BulkResponse indexAll(String indexName, Iterable<? extends Persistable<String>> persistables) {
     createIndexIfNeeded(indexName);
     BulkRequestBuilder bulkRequest = elasticSearchService.getClient().prepareBulk();
-    persistables.forEach(persistable -> bulkRequest
-        .add(getIndexRequestBuilder(indexName, persistable).setSource(gson.toJson(persistable))));
+    persistables.forEach(
+        persistable -> bulkRequest.add(getIndexRequestBuilder(indexName, persistable).setSource(toJson(persistable))));
     return bulkRequest.execute().actionGet();
+  }
+
+  private String toJson(Object obj) {
+    try {
+      return objectMapper.writeValueAsString(obj);
+    } catch(JsonProcessingException e) {
+      throw new RuntimeException("Cannot serialize " + obj + " to ElasticSearch", e);
+    }
   }
 
   public DeleteResponse delete(String indexName, Persistable<String> persistable) {

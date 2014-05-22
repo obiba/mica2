@@ -39,7 +39,7 @@ public class Dtos {
 
   @NotNull
   public StudyDto asDto(@NotNull Study study) {
-    return studyDtos.asDto(study, studyService.findStateByStudy(study));
+    return studyDtos.asDto(study);
   }
 
   @NotNull
