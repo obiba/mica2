@@ -1,7 +1,7 @@
 package org.obiba.mica.domain;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class Authorization implements Serializable {
 
@@ -11,7 +11,7 @@ public class Authorization implements Serializable {
 
   private String authorizer;
 
-  private LocalDateTime date;
+  private LocalDate date;
 
   public boolean isAuthorized() {
     return authorized;
@@ -29,11 +29,11 @@ public class Authorization implements Serializable {
     this.authorizer = authorizer;
   }
 
-  public LocalDateTime getDate() {
+  public LocalDate getDate() {
     return date;
   }
 
-  public void setDate(LocalDateTime date) {
+  public void setDate(LocalDate date) {
     this.date = date;
   }
 }

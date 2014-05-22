@@ -1,15 +1,17 @@
 package org.obiba.mica.domain;
 
 import java.io.Serializable;
+import java.time.Month;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import org.bson.types.ObjectId;
+
+import com.google.common.collect.ComparisonChain;
 
 public class DataCollectionEvent implements Serializable, Comparable<DataCollectionEvent> {
 
@@ -22,18 +24,9 @@ public class DataCollectionEvent implements Serializable, Comparable<DataCollect
 
   private LocalizedString description;
 
-  @NotNull
-  private Integer startYear;
+  private YearMonth start;
 
-  @Min(1)
-  @Max(12)
-  private Integer startMonth;
-
-  private Integer endYear;
-
-  @Min(1)
-  @Max(12)
-  private Integer endMonth;
+  private YearMonth end;
 
   private List<String> dataSources;
 
@@ -73,36 +66,28 @@ public class DataCollectionEvent implements Serializable, Comparable<DataCollect
     this.description = description;
   }
 
-  public Integer getStartYear() {
-    return startYear;
+  public YearMonth getStart() {
+    return start;
   }
 
-  public void setStartYear(Integer startYear) {
-    this.startYear = startYear;
+  public void setStart(YearMonth start) {
+    this.start = start;
   }
 
-  public Integer getStartMonth() {
-    return startMonth;
+  public void setStart(int year, Integer month) {
+    start = YearMonth.of(year, month == null ? Month.JANUARY.getValue() : month);
   }
 
-  public void setStartMonth(Integer startMonth) {
-    this.startMonth = startMonth;
+  public YearMonth getEnd() {
+    return end;
   }
 
-  public Integer getEndYear() {
-    return endYear;
+  public void setEnd(YearMonth end) {
+    this.end = end;
   }
 
-  public void setEndYear(Integer endYear) {
-    this.endYear = endYear;
-  }
-
-  public Integer getEndMonth() {
-    return endMonth;
-  }
-
-  public void setEndMonth(Integer endMonth) {
-    this.endMonth = endMonth;
+  public void setEnd(int year, Integer month) {
+    end = YearMonth.of(year, month == null ? Month.DECEMBER.getValue() : month);
   }
 
   public List<String> getDataSources() {
@@ -185,29 +170,15 @@ public class DataCollectionEvent implements Serializable, Comparable<DataCollect
   public int hashCode() {return Objects.hash(id);}
 
   @Override
+  @SuppressWarnings("SimplifiableIfStatement")
   public boolean equals(Object obj) {
-    if(this == obj) {
-      return true;
-    }
-    if(obj == null || getClass() != obj.getClass()) {
-      return false;
-    }
-    final DataCollectionEvent other = (DataCollectionEvent) obj;
-    return Objects.equals(id, other.id);
+    if(this == obj) return true;
+    if(obj == null || getClass() != obj.getClass()) return false;
+    return Objects.equals(id, ((DataCollectionEvent) obj).id);
   }
 
   @Override
-  public int compareTo(DataCollectionEvent o) {
-    int startA = 12 * startYear + (startMonth == null ? 0 : startMonth);
-    int startB = 12 * o.startYear + (o.startMonth == null ? 0 : o.startMonth);
-
-    if(startA == startB) {
-      int endA = 12 * (endYear == null ? 0 : endYear) + (endMonth == null ? 0 : endMonth);
-      int endB = 12 * (o.endYear == null ? 0 : o.endYear) + (o.endMonth == null ? 0 : o.endMonth);
-      if(endA == endB) return id.compareTo(o.id);
-
-      return endA < endB ? -1 : 1;
-    }
-    return startA < startB ? -1 : 1;
+  public int compareTo(@NotNull DataCollectionEvent dce) {
+    return ComparisonChain.start().compare(start, dce.start).compare(end, dce.end).compare(id, dce.id).result();
   }
 }

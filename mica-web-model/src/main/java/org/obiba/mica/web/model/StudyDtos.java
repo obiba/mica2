@@ -1,5 +1,6 @@
 package org.obiba.mica.web.model;
 
+import java.time.Year;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
@@ -43,7 +44,7 @@ class StudyDtos {
         .addAllName(localizedStringDtos.asDto(study.getName())) //
         .addAllObjectives(localizedStringDtos.asDto(study.getObjectives()));
 
-    if(study.getStartYear() != null) builder.setStartYear(study.getStartYear());
+    if(study.getStart() != null) builder.setStartYear(study.getStart().getValue());
     if(study.getAccess() != null) {
       study.getAccess().forEach(builder::addAccess);
     }
@@ -85,7 +86,7 @@ class StudyDtos {
   Study fromDto(@NotNull Mica.StudyDtoOrBuilder dto) {
     Study study = new Study();
     if(dto.hasId()) study.setId(dto.getId());
-    if(dto.hasStartYear()) study.setStartYear(dto.getStartYear());
+    if(dto.hasStartYear()) study.setStart(Year.of(dto.getStartYear()));
     if(dto.getAccessCount() > 0) study.setAccess(dto.getAccessList());
     if(dto.getOtherAccessCount() > 0) study.setOtherAccess(localizedStringDtos.fromDto(dto.getOtherAccessList()));
     if(dto.hasMarkerPaper()) study.setMarkerPaper(dto.getMarkerPaper());
