@@ -5,8 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -19,18 +17,17 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.transport.PushResult;
+import org.joda.time.DateTime;
 import org.obiba.git.GitException;
 import org.obiba.git.command.AbstractGitWriteCommand;
 import org.obiba.git.command.AddFilesCommand;
 import org.obiba.git.command.GitCommandHandler;
 import org.obiba.git.command.ReadFileCommand;
+import org.obiba.mica.domain.AbstractGitPersistable;
 import org.springframework.stereotype.Component;
 
-import com.google.gson.Gson;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-
-import static com.google.common.base.Charsets.UTF_8;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.annotations.VisibleForTesting;
 
 @Component
 public class GitService {
@@ -41,7 +38,7 @@ public class GitService {
   private GitCommandHandler gitCommandHandler;
 
   @Inject
-  private Gson gson;
+  private ObjectMapper objectMapper;
 
   private File repositoriesRoot;
 
@@ -52,22 +49,23 @@ public class GitService {
     }
   }
 
+  @VisibleForTesting
   public void setRepositoriesRoot(File repositoriesRoot) {
     this.repositoriesRoot = repositoriesRoot;
   }
 
-  public void save(String id, Object obj) {
+  public void save(String id, AbstractGitPersistable persistable) {
     try {
+
+      persistable.setLastModifiedDate(DateTime.now());
 
       File jsonFile = File.createTempFile("mica", "json");
       jsonFile.deleteOnExit();
-      String jsonFileName = getJsonFileName(obj.getClass());
+      String jsonFileName = getJsonFileName(persistable.getClass());
 
       // write Object to temp JSON file
-      try(FileOutputStream out = new FileOutputStream(jsonFile);
-          JsonWriter writer = new JsonWriter(new OutputStreamWriter(out, UTF_8))) {
-        writer.setIndent("  ");
-        gson.toJson(obj, obj.getClass(), writer);
+      try(FileOutputStream out = new FileOutputStream(jsonFile)) {
+        objectMapper.writeValue(out, persistable);
       }
 
       // add this temp JSON file to GIT
@@ -82,7 +80,7 @@ public class GitService {
       jsonFile.delete();
 
     } catch(IOException e) {
-      throw new RuntimeException("Cannot persist " + obj + " to " + id + " repo", e);
+      throw new RuntimeException("Cannot persist " + persistable + " to " + id + " repo", e);
     }
   }
 
@@ -97,9 +95,8 @@ public class GitService {
   private <T> T read(String id, @Nullable String tag, Class<T> clazz) {
     try {
       try(InputStream inputStream = gitCommandHandler
-          .execute(new ReadFileCommand.Builder(getRepositoryPath(id), getJsonFileName(clazz)).tag(tag).build());
-          JsonReader reader = new JsonReader(new InputStreamReader(inputStream, UTF_8))) {
-        return gson.fromJson(reader, clazz);
+          .execute(new ReadFileCommand.Builder(getRepositoryPath(id), getJsonFileName(clazz)).tag(tag).build())) {
+        return objectMapper.readValue(inputStream, clazz);
       }
     } catch(IOException e) {
       throw new RuntimeException("Cannot read " + clazz.getName() + " from " + id + " repo", e);

@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 
 /**
  * Utility class for testing REST controllers.
@@ -28,6 +29,7 @@ public class TestUtil {
    */
   public static byte[] convertObjectToJsonBytes(Object object) throws IOException {
     ObjectMapper mapper = new ObjectMapper();
+    mapper.registerModule(new JodaModule());
     mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     return mapper.writeValueAsBytes(object);
   }

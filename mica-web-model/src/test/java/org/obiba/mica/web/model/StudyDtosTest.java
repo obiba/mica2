@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.obiba.git.command.GitCommandHandler;
+import org.obiba.mica.config.JsonConfiguration;
 import org.obiba.mica.domain.Address;
 import org.obiba.mica.domain.Attachment;
 import org.obiba.mica.domain.Authorization;
@@ -22,7 +23,6 @@ import org.obiba.mica.domain.MicaConfig;
 import org.obiba.mica.domain.NumberOfParticipants;
 import org.obiba.mica.domain.Population;
 import org.obiba.mica.domain.Study;
-import org.obiba.mica.domain.StudyState;
 import org.obiba.mica.domain.Timestamped;
 import org.obiba.mica.repository.MicaConfigRepository;
 import org.obiba.mica.repository.StudyStateRepository;
@@ -39,8 +39,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import com.google.common.eventbus.EventBus;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import static org.mockito.Mockito.when;
 import static org.obiba.mica.assertj.Assertions.assertThat;
@@ -50,13 +48,10 @@ import static org.obiba.mica.domain.Study.StudyMethods;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
-@ContextConfiguration(classes = StudyDtosTest.Config.class)
+@ContextConfiguration(classes = { StudyDtosTest.Config.class, JsonConfiguration.class })
 @DirtiesContext
 @SuppressWarnings({ "MagicNumber", "OverlyCoupledClass" })
 public class StudyDtosTest {
-
-  @Inject
-  private StudyService studyService;
 
   @Inject
   private MicaConfigService micaConfigService;
@@ -78,27 +73,19 @@ public class StudyDtosTest {
     study.setName(en("Canadian Longitudinal Study on Aging"));
     study.setObjectives(en("The Canadian Longitudinal Study on Aging (CLSA) is a large, national, long-term study"));
 
-    StudyState studyState = new StudyState();
-    studyState.setId(study.getId());
-
-    when(studyService.findStateByStudy(study)).thenReturn(studyState);
-
     Mica.StudyDto dto = dtos.asDto(study);
     Study fromDto = dtos.fromDto(dto);
-    assertTimestamps(studyState, dto);
+    assertTimestamps(study, dto);
     assertThat(fromDto).areFieldsEqualToEachOther(study);
   }
 
   @Test
   public void test_full_dto() throws Exception {
     Study study = createStudy();
-    StudyState studyState = new StudyState();
-    studyState.setId(study.getId());
-    when(studyService.findStateByStudy(study)).thenReturn(studyState);
 
     Mica.StudyDto dto = dtos.asDto(study);
     Study fromDto = dtos.fromDto(dto);
-    assertTimestamps(studyState, dto);
+    assertTimestamps(study, dto);
     assertThat(fromDto).areFieldsEqualToEachOther(study);
   }
 
@@ -312,11 +299,6 @@ public class StudyDtosTest {
     @Bean
     public EventBus eventBus() {
       return Mockito.mock(EventBus.class);
-    }
-
-    @Bean
-    public Gson gson() {
-      return new GsonBuilder().create();
     }
 
     @Bean
