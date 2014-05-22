@@ -9,6 +9,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Objects;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -22,7 +23,7 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public static final Locale DEFAULT_LOCALE = Locale.ENGLISH;
 
-  public static final String DEFAULT_CHARSET = "ISO-8859-1";
+  public static final String DEFAULT_CHARSET = Charsets.UTF_8.toString();
 
   @NotBlank
   private String name = DEFAULT_NAME;
