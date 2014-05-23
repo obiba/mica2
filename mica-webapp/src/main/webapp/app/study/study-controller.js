@@ -157,7 +157,7 @@ mica.study
       };
 
       var saveErrorHandler = function (response) {
-        FormServerValidation.error(response, $scope.languages, $scope.form);
+        FormServerValidation.error(response, $scope.form, $scope.languages);
       };
 
       $scope.cancel = function () {
