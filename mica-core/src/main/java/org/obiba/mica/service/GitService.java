@@ -10,6 +10,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.eclipse.jgit.api.Git;
@@ -25,11 +26,13 @@ import org.obiba.git.command.GitCommandHandler;
 import org.obiba.git.command.ReadFileCommand;
 import org.obiba.mica.domain.AbstractGitPersistable;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
 
 @Component
+@Validated
 public class GitService {
 
   public static final String PATH_DATA = "${MICA_HOME}/data/git";
@@ -54,7 +57,7 @@ public class GitService {
     this.repositoriesRoot = repositoriesRoot;
   }
 
-  public void save(AbstractGitPersistable persistable) {
+  public void save(@NotNull @Valid AbstractGitPersistable persistable) {
     try {
 
       persistable.setLastModifiedDate(DateTime.now());

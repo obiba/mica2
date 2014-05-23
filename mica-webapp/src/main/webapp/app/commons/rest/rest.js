@@ -34,7 +34,7 @@ mica.rest = angular.module('mica.rest', ['mica.notification'])
           return response;
         },
         function (response) {
-          $log.debug('httpErrorsInterceptor error', response);
+          // $log.debug('httpErrorsInterceptor error', response);
           var config = response.config;
           if (config.errorHandler) {
             return $q.reject(response);

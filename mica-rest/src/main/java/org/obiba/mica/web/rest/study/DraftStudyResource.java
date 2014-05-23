@@ -53,6 +53,7 @@ public class DraftStudyResource {
 
   @PUT
   @Path("/_publish")
+  @Timed
   public Response publish() {
     studyService.publish(id);
     return Response.noContent().build();

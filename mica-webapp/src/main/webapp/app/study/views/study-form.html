@@ -8,7 +8,8 @@
     <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
 
     <tabset>
-      <tab ng-repeat="tab in tabs" heading="{{tab.labelKey | translate}}" active="tab.active" disabled="tab.disabled">
+      <tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active"
+          disabled="tab.disabled">
 
         <tabset>
           <tab heading="{{'study.general-info' | translate}}">

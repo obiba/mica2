@@ -16,10 +16,10 @@
       server-error
       ng-required="required"></textarea>
 
-  <p class="input-error" ng-show="form[fieldName].$dirty && form[fieldName].$invalid">
-    <span ng-show="form[fieldName].$error.server">{{ errors[fieldName]}}</span>
-    <span ng-show="form[fieldName].$error.required" translate>required</span>
-  </p>
+  <ul class="input-error list-unstyled" ng-show="form[fieldName].$dirty && form[fieldName].$invalid">
+    <li ng-show="form[fieldName].$error.required" translate>required</li>
+    <li ng-repeat="error in form[fieldName].errors">{{error}}</li>
+  </ul>
 
   <p ng-show="help" class="help-block">{{help | translate}}</p>
 
