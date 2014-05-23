@@ -23,7 +23,7 @@ mica.study
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
         micaConfig.languages.forEach(function (lang) {
-          $scope.tabs.push({ lang: lang, labelKey: 'language.' + lang });
+          $scope.tabs.push({lang: lang});
         });
       });
 
@@ -61,7 +61,7 @@ mica.study
       };
 
       $scope.sortableOptions = {
-        stop: function (e, ui) {
+        stop: function () {
           $scope.$emit('studyUpdatedEvent', $scope.study);
         }
       };
@@ -82,7 +82,7 @@ mica.study
         }
       });
 
-      $scope.$on('contactUpdatedEvent', function (event, study, contact) {
+      $scope.$on('contactUpdatedEvent', function (event, study) {
         if (study == $scope.study) {
           $scope.$emit('studyUpdatedEvent', $scope.study);
         }
@@ -109,17 +109,19 @@ mica.study
 
     }])
 
-  .controller('StudyEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$location', 'DraftStudyResource', 'DraftStudiesResource', 'MicaConfigResource',
+  .controller('StudyEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$location', 'DraftStudyResource', 'DraftStudiesResource', 'MicaConfigResource', 'StringUtils', 'FormServerValidation',
 
-    function ($rootScope, $scope, $routeParams, $log, $location, DraftStudyResource, DraftStudiesResource, MicaConfigResource) {
+    function ($rootScope, $scope, $routeParams, $log, $location, DraftStudyResource, DraftStudiesResource, MicaConfigResource, StringUtils, FormServerValidation) {
 
       $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}) : {};
       $log.debug('Edit study', $scope.study);
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
+        $scope.languages = [];
         micaConfig.languages.forEach(function (lang) {
-          $scope.tabs.push({ lang: lang, labelKey: 'language.' + lang });
+          $scope.tabs.push({ lang: lang });
+          $scope.languages.push(lang);
         });
       });
 
@@ -129,53 +131,33 @@ mica.study
           return;
         }
         if ($scope.study.id) {
-          $scope.updateStudy();
+          updateStudy();
         } else {
-          $scope.createStudy()
+          createStudy()
         }
       };
 
-      $scope.createStudy = function () {
+      var createStudy = function () {
         $log.debug('Create new study', $scope.study);
         DraftStudiesResource.save($scope.study,
           function (resource, getResponseHeaders) {
             var parts = getResponseHeaders().location.split('/');
             $location.path('/study/' + parts[parts.length - 1]).replace();
           },
-          function (response) {
-            $scope.saveErrorHandler(response);
-          })
+          saveErrorHandler)
       };
 
-      $scope.updateStudy = function () {
+      var updateStudy = function () {
         $log.debug('Update study', $scope.study);
         $scope.study.$save(
           function (study) {
             $location.path('/study/' + study.id).replace();
           },
-          function (response) {
-            $scope.saveErrorHandler(response);
-          });
+          saveErrorHandler);
       };
 
-      $scope.saveErrorHandler = function (response) {
-        $log.error('Error on study save:', response);
-        if (response.data instanceof Array) {
-          $scope.errors = [];
-          response.data.forEach(function (error) {
-            //$log.debug('error: ', error);
-            var field = error.path.substring(error.path.indexOf('.') + 1);
-            $scope.form[field].$dirty = true;
-            $scope.form[field].$setValidity('server', false);
-            $scope.errors[field] = error.message;
-          });
-        } else {
-          $rootScope.$broadcast('showNotificationDialogEvent', {
-            iconClass: "fa-exclamation-triangle",
-            titleKey: "study.save-error",
-            message: response.data ? response.data : angular.fromJson(response)
-          });
-        }
+      var saveErrorHandler = function (response) {
+        FormServerValidation.error(response, $scope.languages, $scope.form);
       };
 
       $scope.cancel = function () {

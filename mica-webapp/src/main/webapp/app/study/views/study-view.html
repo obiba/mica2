@@ -6,11 +6,13 @@
     <a ng-href="#/study/{{study.id}}/edit" class="btn btn-primary">
       <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
     </a>
-    <publish-button version="studySummary.publishedTag" ahead="studySummary.revisionsAhead" publish="publish()"></publish-button>
+    <publish-button version="studySummary.publishedTag" ahead="studySummary.revisionsAhead"
+        publish="publish()"></publish-button>
   </div>
 
   <tabset>
-    <tab ng-repeat="tab in tabs" heading="{{tab.labelKey | translate}}" active="tab.active" disabled="tab.disabled">
+    <tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active"
+        disabled="tab.disabled">
 
       <div class="table-responsive">
 
@@ -50,7 +52,7 @@
                     ng-show="study.investigators.length">
                   <li ng-repeat="investigator in study.investigators">
                     <a ng-click="viewContact(investigator)" title="{{'dnd-reorder' | translate}}">
-                    {{investigator.title}} {{investigator.firstName}} {{investigator.lastName}}
+                      {{investigator.title}} {{investigator.firstName}} {{investigator.lastName}}
                       <span ng-show="investigator.institution.name.length">
                         (<localized value="investigator.institution.name" lang="tab.lang"></localized>)
                       </span>
@@ -77,7 +79,7 @@
                     ng-show="study.contacts.length">
                   <li ng-repeat="contact in study.contacts">
                     <a ng-click="viewContact(contact)" title="{{'dnd-reorder' | translate}}">
-                    {{contact.title}} {{contact.firstName}} {{contact.lastName}}
+                      {{contact.title}} {{contact.firstName}} {{contact.lastName}}
                       <span ng-show="contact.institution.name.length">
                         (<localized value="contact.institution.name" lang="tab.lang"></localized>)
                       </span>
