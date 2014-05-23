@@ -78,7 +78,6 @@ public class Study extends AbstractGitPersistable {
     this.acronym = acronym;
   }
 
-  @NotNull
   public List<Contact> getInvestigators() {
     return investigators;
   }
@@ -92,14 +91,13 @@ public class Study extends AbstractGitPersistable {
     this.investigators = investigators;
   }
 
-  @NotNull
   public List<Contact> getContacts() {
     return contacts;
   }
 
-  public void addContact(@NotNull Contact aContact) {
+  public void addContact(@NotNull Contact contact) {
     if(contacts == null) contacts = new ArrayList<>();
-    contacts.add(aContact);
+    contacts.add(contact);
   }
 
   public void setContacts(List<Contact> contacts) {

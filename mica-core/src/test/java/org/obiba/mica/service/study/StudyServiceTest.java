@@ -19,8 +19,6 @@ import org.obiba.mica.domain.StudyState;
 import org.obiba.mica.repository.StudyStateRepository;
 import org.obiba.mica.service.GitService;
 import org.obiba.mica.service.study.event.DraftStudyUpdatedEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
@@ -54,7 +52,7 @@ import static org.obiba.mica.domain.LocalizedString.en;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class StudyServiceTest {
 
-  private static final Logger log = LoggerFactory.getLogger(StudyServiceTest.class);
+//  private static final Logger log = LoggerFactory.getLogger(StudyServiceTest.class);
 
   @Inject
   private StudyService studyService;
@@ -87,7 +85,6 @@ public class StudyServiceTest {
     studyService.save(study);
 
     List<StudyState> studyStates = studyStateRepository.findAll();
-    log.info(">>> studyStates: {}", studyStates);
     assertThat(studyStates).hasSize(1);
 
     StudyState studyState = studyStates.get(0);

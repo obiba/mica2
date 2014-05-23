@@ -13,11 +13,10 @@ import org.obiba.mica.repository.StudyStateRepository;
 import org.obiba.mica.service.GitService;
 import org.obiba.mica.service.study.event.DraftStudyUpdatedEvent;
 import org.obiba.mica.service.study.event.StudyPublishedEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
@@ -25,9 +24,10 @@ import com.google.common.eventbus.EventBus;
 import static org.obiba.mica.domain.RevisionStatus.DRAFT;
 
 @Service
+@Validated
 public class StudyService {
 
-  private static final Logger log = LoggerFactory.getLogger(StudyService.class);
+//  private static final Logger log = LoggerFactory.getLogger(StudyService.class);
 
   @Inject
   private StudyStateRepository studyStateRepository;

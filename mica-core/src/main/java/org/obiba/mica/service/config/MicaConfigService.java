@@ -2,17 +2,20 @@ package org.obiba.mica.service.config;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.domain.MicaConfig;
 import org.obiba.mica.repository.MicaConfigRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import com.google.common.eventbus.EventBus;
 
-@Component
+@Service
+@Validated
 public class MicaConfigService {
 
   @Inject
@@ -37,7 +40,7 @@ public class MicaConfigService {
   }
 
   @CacheEvict(value = "micaConfig", allEntries = true)
-  public void save(@Valid MicaConfig micaConfig) {
+  public void save(@NotNull @Valid MicaConfig micaConfig) {
     MicaConfig savedConfig = getOrCreateMicaConfig();
     BeanUtils.copyProperties(micaConfig, savedConfig, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
         "lastModifiedDate");
