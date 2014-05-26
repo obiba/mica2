@@ -3,17 +3,19 @@
 /* App Module */
 
 var mica = angular.module('mica', [
+  'angular-loading-bar',
   'http-auth-interceptor',
-  'tmh.dynamicLocale',
+  'localytics.directives',
+  'mica.config',
+  'ngObiba',
+  'mica.study',
+  'ngAnimate',
+  'ngCookies',
   'ngResource',
   'ngRoute',
-  'ngCookies',
   'pascalprecht.translate',
-  'localytics.directives',
-  'ui.bootstrap',
-  'mica.rest',
-  'mica.config',
-  'mica.study'
+  'tmh.dynamicLocale',
+  'ui.bootstrap'
 ]);
 
 mica
@@ -116,7 +118,7 @@ mica
         .fallbackLanguage('en')
         .useCookieStorage();
 
-      tmhDynamicLocaleProvider.localeLocationPattern('bower_components/angular-i18n/angular-locale_{{locale}}.js')
+      tmhDynamicLocaleProvider.localeLocationPattern('bower_components/angular-i18n/angular-locale_{{locale}}.js');
       tmhDynamicLocaleProvider.useCookieStorage('NG_TRANSLATE_LANG_KEY');
     }])
 
@@ -165,41 +167,41 @@ mica
           event.preventDefault();
           if (AuthenticationSharedService.isAuthenticated()) {
             // user is not allowed
-            $rootScope.$broadcast("event:auth-notAuthorized");
+            $rootScope.$broadcast('event:auth-notAuthorized');
           } else {
             // user is not logged in
-            $rootScope.$broadcast("event:auth-loginRequired");
+            $rootScope.$broadcast('event:auth-loginRequired');
           }
         } else {
           // Check if the customer is still authenticated on the server
           // Try to load a protected 1 pixel image.
-          $http({method: 'GET', url: '/protected/transparent.gif'}).
-            error(function (response) {
-              // Not authorized
-              if (response.status === 401) {
-                $rootScope.$broadcast("event:auth-notAuthorized");
-              }
-            })
+//          $http({method: 'GET', url: '/protected/transparent.gif'}).
+//            error(function (response) {
+//              // Not authorized
+//              if (response.status === 401) {
+//                $rootScope.$broadcast("event:auth-notAuthorized");
+//              }
+//            })
         }
       });
 
       // Call when the the client is confirmed
-      $rootScope.$on('event:auth-loginConfirmed', function (data) {
-        if ($location.path() === "/login") {
+      $rootScope.$on('event:auth-loginConfirmed', function () {
+        if ($location.path() === '/login') {
           $location.path('/').replace();
         }
       });
 
       // Call when the 401 response is returned by the server
-      $rootScope.$on('event:auth-loginRequired', function (rejection) {
+      $rootScope.$on('event:auth-loginRequired', function () {
         Session.destroy();
-        if ($location.path() !== "/" && $location.path() !== "") {
+        if ($location.path() !== '/' && $location.path() !== '') {
           $location.path('/login').replace();
         }
       });
 
       // Call when the 403 response is returned by the server
-      $rootScope.$on('event:auth-notAuthorized', function (rejection) {
+      $rootScope.$on('event:auth-notAuthorized', function () {
         $rootScope.errorMessage = 'errors.403';
         $location.path('/error').replace();
       });

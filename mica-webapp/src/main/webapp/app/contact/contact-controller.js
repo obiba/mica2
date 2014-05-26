@@ -1,8 +1,8 @@
 'use strict';
 
 mica.contact
-  .controller('ContactController', ['$rootScope', '$scope', '$modal', '$translate', '$log',
-    function ($rootScope, $scope, $modal, $translate, $log) {
+  .controller('ContactController', ['$rootScope', '$scope', '$modal', '$translate',
+    function ($rootScope, $scope, $modal, $translate) {
 
       $scope.viewContact = function (contact) {
         $modal.open({
@@ -90,15 +90,15 @@ mica.contact
 
         var titleKey = 'contact.delete.' + (isInvestigator ? 'investigator' : 'contact') + '.title';
         var messageKey = 'contact.delete.' + (isInvestigator ? 'investigator' : 'contact') + '.confirm';
-        $translate([titleKey, messageKey], { name: contact.title + " " + contact.firstName + " " + contact.lastName })
+        $translate([titleKey, messageKey], { name: contact.title + ' ' + contact.firstName + ' ' + contact.lastName })
           .then(function (translation) {
             $rootScope.$broadcast('showConfirmDialogEvent',
-              {"title": translation[titleKey], "message": translation[messageKey]},
+              {title: translation[titleKey], message: translation[messageKey]},
               contact);
           });
 
         $scope.$on('confirmDialogAcceptedEvent', function (event, contactConfirmed) {
-          if (contactConfirmed == contact) {
+          if (contactConfirmed === contact) {
             $scope.$emit('contactDeletedEvent', contactable, contact, isInvestigator);
           }
         });

@@ -2,4 +2,5 @@
 
 mica.publish = angular.module('mica.publish', [
   'pascalprecht.translate',
-  'ui.bootstrap']);
+  'ui.bootstrap'
+]);

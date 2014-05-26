@@ -1,9 +1,9 @@
 'use strict';
 
-mica.form
+angular.module('obiba.form')
 
   // http://codetunes.com/2013/server-form-validation-with-angular
-  .directive('serverError', [function () {
+  .directive('formServerError', [function () {
     return {
       restrict: 'A',
       require: '?ngModel',
@@ -28,10 +28,10 @@ mica.form
         required: '@',
         help: '@'
       },
-      templateUrl: 'app/commons/form/form-input-template.html',
+      templateUrl: 'form/form-input-template.tpl.html',
       link: function ($scope, elem, attr, ctrl) {
-        if (angular.isUndefined($scope.model) || $scope.model == null) {
-          $scope.model = "";
+        if (angular.isUndefined($scope.model) || $scope.model === null) {
+          $scope.model = '';
         }
         $scope.form = ctrl;
       }
@@ -48,9 +48,9 @@ mica.form
         label: '@',
         help: '@'
       },
-      templateUrl: 'app/commons/form/form-checkbox-template.html',
+      templateUrl: 'form/form-checkbox-template.tpl.html',
       link: function ($scope, elem, attr, ctrl) {
-        if (angular.isUndefined($scope.model) || $scope.model == null) {
+        if (angular.isUndefined($scope.model) || $scope.model === null) {
           $scope.model = false;
         }
         $scope.form = ctrl;

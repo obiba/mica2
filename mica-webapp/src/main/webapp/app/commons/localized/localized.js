@@ -2,5 +2,6 @@
 
 mica.localized = angular.module('mica.localized', [
   'mica.config',
-  'mica.notification',
-  'pascalprecht.translate']);
+  'obiba.notification',
+  'pascalprecht.translate'
+]);

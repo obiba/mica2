@@ -1,9 +1,9 @@
 'use strict';
 
-mica.form
+angular.module('obiba.form')
 
-  .service('FormServerValidation', ['$rootScope', '$log', 'StringUtils',
-    function ($rootScope, $log, StringUtils) {
+  .service('FormServerValidation', ['$rootScope', '$log', 'StringUtils', 'NOTIFICATION_EVENTS',
+    function ($rootScope, $log, StringUtils, NOTIFICATION_EVENTS) {
       this.error = function (response, form, languages) {
 //        $log.debug('FormServerValidation response', response);
 //        $log.debug('FormServerValidation form', form);
@@ -14,7 +14,9 @@ mica.form
           var setFieldError = function (field, error) {
             form[field].$dirty = true;
             form[field].$setValidity('server', false);
-            if (form[field].errors == null) form[field].errors = [];
+            if (form[field].errors === null) {
+              form[field].errors = [];
+            }
             form[field].errors.push(StringUtils.capitaliseFirstLetter(error.message));
           };
 
@@ -30,12 +32,11 @@ mica.form
           });
           $log.debug(form);
         } else {
-          $rootScope.$broadcast('showNotificationDialogEvent', {
-            iconClass: "fa-exclamation-triangle",
-            titleKey: "study.save-error",
+          $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
+            titleKey: 'form-server-error',
             message: response.data ? response.data : angular.fromJson(response)
           });
         }
 
-      }
+      };
     }]);

@@ -1,7 +1,8 @@
 'use strict';
 
 mica.config = angular.module('mica.config', [
-  'mica.form',
+  'obiba.form',
   'ngResource',
   'ngRoute',
-  'pascalprecht.translate']);
+  'pascalprecht.translate'
+]);

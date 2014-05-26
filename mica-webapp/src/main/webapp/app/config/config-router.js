@@ -11,5 +11,5 @@ mica.config
         .when('/config/edit', {
           templateUrl: 'app/config/config-form.html',
           controller: 'MicaConfigEditController'
-        })
+        });
     }]);

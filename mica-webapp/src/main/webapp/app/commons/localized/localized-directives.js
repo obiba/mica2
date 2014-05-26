@@ -27,12 +27,12 @@ mica.localized
       },
       templateUrl: 'app/commons/localized/localized-input-template.html',
       link: function ($scope, elem, attr, ctrl) {
-        if (angular.isUndefined($scope.model) || $scope.model == null) {
+        if (angular.isUndefined($scope.model) || $scope.model === null) {
           $scope.model = [
-            {lang: $scope.lang, value: ""}
+            {lang: $scope.lang, value: ''}
           ];
         }
-        $scope.fieldName = $scope.name + "-" + $scope.lang;
+        $scope.fieldName = $scope.name + '-' + $scope.lang;
         $scope.form = ctrl;
 //        console.log('localizedInput', $scope);
       }
@@ -54,12 +54,12 @@ mica.localized
       },
       templateUrl: 'app/commons/localized/localized-textarea-template.html',
       link: function ($scope, elem, attr, ctrl) {
-        if (angular.isUndefined($scope.model) || $scope.model == null) {
+        if (angular.isUndefined($scope.model) || $scope.model === null) {
           $scope.model = [
-            {lang: $scope.lang, value: ""}
+            {lang: $scope.lang, value: ''}
           ];
         }
-        $scope.fieldName = $scope.name + "-" + $scope.lang;
+        $scope.fieldName = $scope.name + '-' + $scope.lang;
         $scope.form = ctrl;
 //        console.log('localizedTextarea', $scope);
       }

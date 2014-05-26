@@ -1,0 +1,28 @@
+{
+  "name": "ng-obiba",
+  "main": "ng-obiba.js",
+  "description": "OBiBa AngularJS commons",
+  "license": "GNU Public License version 3",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "1.2.16",
+    "angular-translate": "2.1.0",
+    "angular-ui": "~0.4.0"
+  },
+  "homepage": "https://github.com/obiba/ng-obiba",
+  "_release": "ce233206bb",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "ce233206bb23d26a3ba5976cda7881650ad70812"
+  },
+  "_source": "git@github.com:obiba/ng-obiba.git",
+  "_target": "*",
+  "_originalSource": "git@github.com:obiba/ng-obiba.git"
+}

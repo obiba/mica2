@@ -1,4 +1,4 @@
-<div class="form-group" ng-class="{'has-error': (form[name].$dirty || form.saveAttempted) && form[name].$invalid}">
+<div class="checkbox" ng-class="{'has-error': (form[fieldName].$dirty || form.saveAttempted) && form[name].$invalid}">
 
   <label for="{{name}}" class="control-label">
     {{label | translate}}
@@ -7,12 +7,10 @@
 
   <input
       ng-model="model"
-      type="text"
-      class="form-control"
+      type="checkbox"
       id="{{name}}"
       name="{{name}}"
-      server-error
-      ng-required="required">
+      form-server-error>
 
   <ul class="input-error list-unstyled" ng-show="form[name].$dirty && form[name].$invalid">
     <li ng-show="form[name].$error.required" translate>required</li>
@@ -22,3 +20,4 @@
   <p ng-show="help" class="help-block">{{help | translate}}</p>
 
 </div>
+
