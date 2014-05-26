@@ -7,7 +7,7 @@ Install NodeJS, Grunt and Bower
 ```
 sudo add-apt-repository -y ppa:chris-lea/node.js
 sudo apt-get install -y nodejs
-sudo npm install -g grunt-cli bower
+npm install -g grunt-cli bower
 ```
 
 If you run mica-server for the first time, run `make npm-install`.

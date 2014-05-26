@@ -71,7 +71,7 @@ mica.factory('AuditsService', ['$http',
           return response.data;
         });
       }
-    }
+    };
   }]);
 
 mica.factory('Session', ['$cookieStore',
@@ -104,26 +104,26 @@ mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStor
   function ($rootScope, $http, $cookieStore, authService, Session, Account) {
     return {
       login: function (param) {
-        var data = "j_username=" + param.username + "&j_password=" + param.password + "&_spring_security_remember_me=" + param.rememberMe + "&submit=Login";
+        var data = 'j_username=' + param.username + '&j_password=' + param.password + '&_spring_security_remember_me=' + param.rememberMe + '&submit=Login';
         $http.post('ws/authentication', data, {
           headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
+            'Content-Type': 'application/x-www-form-urlencoded'
           },
           ignoreAuthModule: 'ignoreAuthModule'
-        }).success(function (data, status, headers, config) {
+        }).success(function () {
           Account.get(function (data) {
             Session.create(data.login, data.firstName, data.lastName, data.email, data.roles);
             $cookieStore.put('account', JSON.stringify(Session));
             authService.loginConfirmed(data);
           });
-        }).error(function (data, status, headers, config) {
+        }).error(function () {
           Session.destroy();
         });
       },
       isAuthenticated: function () {
         if (!Session.login) {
           // check if the user has a cookie
-          if ($cookieStore.get('account') != null) {
+          if ($cookieStore.get('account') !== null) {
             var account = JSON.parse($cookieStore.get('account'));
             Session.create(account.login, account.firstName, account.lastName,
               account.email, account.userRoles);
@@ -134,7 +134,7 @@ mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStor
       },
       isAuthorized: function (authorizedRoles) {
         if (!angular.isArray(authorizedRoles)) {
-          if (authorizedRoles == '*') {
+          if (authorizedRoles === '*') {
             return true;
           }
 
@@ -147,7 +147,7 @@ mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStor
           var authorized = (!!Session.login &&
             Session.userRoles.indexOf(authorizedRole) !== -1);
 
-          if (authorized || authorizedRole == '*') {
+          if (authorized || authorizedRole === '*') {
             isAuthorized = true;
           }
         });
@@ -157,7 +157,7 @@ mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStor
       logout: function () {
         $rootScope.authenticationError = false;
         $http.get('ws/logout')
-          .success(function (data, status, headers, config) {
+          .success(function () {
             Session.destroy();
             authService.loginCancelled();
           });

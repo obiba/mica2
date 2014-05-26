@@ -2,8 +2,9 @@
 
 mica.contact = angular.module('mica.contact', [
   'mica.config',
-  'mica.notification',
-  'mica.form',
+  'obiba.notification',
+  'obiba.form',
   'mica.localized',
   'pascalprecht.translate',
-  'ui.bootstrap']);
+  'ui.bootstrap'
+]);

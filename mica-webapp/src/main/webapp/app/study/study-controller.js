@@ -16,9 +16,9 @@ mica.study
       };
 
     }])
-  .controller('StudyViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', 'DraftStudySummaryResource', 'DraftStudyResource', 'DraftStudyPublicationResource', 'MicaConfigResource',
+  .controller('StudyViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', 'DraftStudySummaryResource', 'DraftStudyResource', 'DraftStudyPublicationResource', 'MicaConfigResource', 'NOTIFICATION_EVENTS',
 
-    function ($rootScope, $scope, $routeParams, $log, $locale, $location, DraftStudySummaryResource, DraftStudyResource, DraftStudyPublicationResource, MicaConfigResource) {
+    function ($rootScope, $scope, $routeParams, $log, $locale, $location, DraftStudySummaryResource, DraftStudyResource, DraftStudyPublicationResource, MicaConfigResource, NOTIFICATION_EVENTS) {
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
@@ -30,7 +30,7 @@ mica.study
       $scope.study = DraftStudyResource.get(
         {id: $routeParams.id},
         function (study) {
-          new $.MicaTimeline(new $.StudyDtoParser()).create("#timeline", study).addLegend();
+          new $.MicaTimeline(new $.StudyDtoParser()).create('#timeline', study).addLegend();
         });
 
       $scope.studySummary = DraftStudySummaryResource.get({id: $routeParams.id});
@@ -38,7 +38,7 @@ mica.study
       $scope.months = $locale.DATETIME_FORMATS.MONTH;
 
       $scope.$on('studyUpdatedEvent', function (event, studyUpdated) {
-        if (studyUpdated == $scope.study) {
+        if (studyUpdated === $scope.study) {
           $log.debug('save study', studyUpdated);
 
           $scope.study.$save(function () {
@@ -46,9 +46,7 @@ mica.study
             },
             function (response) {
               $log.error('Error on study save:', response);
-              $rootScope.$broadcast('showNotificationDialogEvent', {
-                iconClass: "fa-exclamation-triangle",
-                titleKey: "study.save-error",
+              $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
                 message: response.data ? response.data : angular.fromJson(response)
               });
             });
@@ -67,29 +65,33 @@ mica.study
       };
 
       $scope.$on('addInvestigatorEvent', function (event, study, contact) {
-        if (study == $scope.study) {
-          if (!$scope.study.investigators) $scope.study.investigators = [];
+        if (study === $scope.study) {
+          if (!$scope.study.investigators) {
+            $scope.study.investigators = [];
+          }
           $scope.study.investigators.push(contact);
           $scope.$emit('studyUpdatedEvent', $scope.study);
         }
       });
 
       $scope.$on('addContactEvent', function (event, study, contact) {
-        if (study == $scope.study) {
-          if (!$scope.study.contacts) $scope.study.contacts = [];
+        if (study === $scope.study) {
+          if (!$scope.study.contacts) {
+            $scope.study.contacts = [];
+          }
           $scope.study.contacts.push(contact);
           $scope.$emit('studyUpdatedEvent', $scope.study);
         }
       });
 
       $scope.$on('contactUpdatedEvent', function (event, study) {
-        if (study == $scope.study) {
+        if (study === $scope.study) {
           $scope.$emit('studyUpdatedEvent', $scope.study);
         }
       });
 
       $scope.$on('contactEditionCanceledEvent', function (event, study) {
-        if (study == $scope.study) {
+        if (study === $scope.study) {
           $scope.study = DraftStudyResource.get({id: $scope.study.id});
         }
       });
@@ -98,10 +100,14 @@ mica.study
         if (study == $scope.study) {
           if (isInvestigator) {
             var investigatorsIndex = $scope.study.investigators.indexOf(contact);
-            if (investigatorsIndex != -1) $scope.study.investigators.splice(investigatorsIndex, 1);
+            if (investigatorsIndex !== -1) {
+              $scope.study.investigators.splice(investigatorsIndex, 1);
+            }
           } else {
             var contactsIndex = $scope.study.contacts.indexOf(contact);
-            if (contactsIndex != -1) $scope.study.contacts.splice(contactsIndex, 1);
+            if (contactsIndex !== -1) {
+              $scope.study.contacts.splice(contactsIndex, 1);
+            }
           }
           $scope.$emit('studyUpdatedEvent', $scope.study);
         }
@@ -133,7 +139,7 @@ mica.study
         if ($scope.study.id) {
           updateStudy();
         } else {
-          createStudy()
+          createStudy();
         }
       };
 
@@ -144,7 +150,7 @@ mica.study
             var parts = getResponseHeaders().location.split('/');
             $location.path('/study/' + parts[parts.length - 1]).replace();
           },
-          saveErrorHandler)
+          saveErrorHandler);
       };
 
       var updateStudy = function () {

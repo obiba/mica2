@@ -19,5 +19,5 @@ mica.study
         .when('/study/:id/edit', {
           templateUrl: 'app/study/views/study-form.html',
           controller: 'StudyEditController'
-        })
+        });
     }]);
