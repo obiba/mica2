@@ -1,6 +1,11 @@
 'use strict';
 
 mica.study
+
+  .constant('STUDY_EVENTS', {
+    studyUpdated: 'event:study-updated'
+  })
+
   .controller('StudyListController', ['$scope', 'DraftStudySummariesResource', 'DraftStudyResource',
 
     function ($scope, DraftStudySummariesResource, DraftStudyResource) {
@@ -16,9 +21,9 @@ mica.study
       };
 
     }])
-  .controller('StudyViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', 'DraftStudySummaryResource', 'DraftStudyResource', 'DraftStudyPublicationResource', 'MicaConfigResource', 'NOTIFICATION_EVENTS',
+  .controller('StudyViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', 'DraftStudySummaryResource', 'DraftStudyResource', 'DraftStudyPublicationResource', 'MicaConfigResource', 'STUDY_EVENTS', 'NOTIFICATION_EVENTS', 'CONTACT_EVENTS',
 
-    function ($rootScope, $scope, $routeParams, $log, $locale, $location, DraftStudySummaryResource, DraftStudyResource, DraftStudyPublicationResource, MicaConfigResource, NOTIFICATION_EVENTS) {
+    function ($rootScope, $scope, $routeParams, $log, $locale, $location, DraftStudySummaryResource, DraftStudyResource, DraftStudyPublicationResource, MicaConfigResource, STUDY_EVENTS, NOTIFICATION_EVENTS, CONTACT_EVENTS) {
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
@@ -37,7 +42,11 @@ mica.study
 
       $scope.months = $locale.DATETIME_FORMATS.MONTH;
 
-      $scope.$on('studyUpdatedEvent', function (event, studyUpdated) {
+      $scope.emitStudyUpdated = function () {
+        $scope.$emit(STUDY_EVENTS.studyUpdated, $scope.study);
+      };
+
+      $scope.$on(STUDY_EVENTS.studyUpdated, function (event, studyUpdated) {
         if (studyUpdated === $scope.study) {
           $log.debug('save study', studyUpdated);
 
@@ -60,44 +69,44 @@ mica.study
 
       $scope.sortableOptions = {
         stop: function () {
-          $scope.$emit('studyUpdatedEvent', $scope.study);
+          $scope.emitStudyUpdated();
         }
       };
 
-      $scope.$on('addInvestigatorEvent', function (event, study, contact) {
+      $scope.$on(CONTACT_EVENTS.addInvestigator, function (event, study, contact) {
         if (study === $scope.study) {
           if (!$scope.study.investigators) {
             $scope.study.investigators = [];
           }
           $scope.study.investigators.push(contact);
-          $scope.$emit('studyUpdatedEvent', $scope.study);
+          $scope.emitStudyUpdated();
         }
       });
 
-      $scope.$on('addContactEvent', function (event, study, contact) {
+      $scope.$on(CONTACT_EVENTS.addContact, function (event, study, contact) {
         if (study === $scope.study) {
           if (!$scope.study.contacts) {
             $scope.study.contacts = [];
           }
           $scope.study.contacts.push(contact);
-          $scope.$emit('studyUpdatedEvent', $scope.study);
+          $scope.emitStudyUpdated();
         }
       });
 
-      $scope.$on('contactUpdatedEvent', function (event, study) {
+      $scope.$on(CONTACT_EVENTS.contactUpdated, function (event, study) {
         if (study === $scope.study) {
-          $scope.$emit('studyUpdatedEvent', $scope.study);
+          $scope.emitStudyUpdated();
         }
       });
 
-      $scope.$on('contactEditionCanceledEvent', function (event, study) {
+      $scope.$on(CONTACT_EVENTS.contactEditionCanceled, function (event, study) {
         if (study === $scope.study) {
           $scope.study = DraftStudyResource.get({id: $scope.study.id});
         }
       });
 
-      $scope.$on('contactDeletedEvent', function (event, study, contact, isInvestigator) {
-        if (study == $scope.study) {
+      $scope.$on(CONTACT_EVENTS.contactDeleted, function (event, study, contact, isInvestigator) {
+        if (study === $scope.study) {
           if (isInvestigator) {
             var investigatorsIndex = $scope.study.investigators.indexOf(contact);
             if (investigatorsIndex !== -1) {
@@ -109,9 +118,11 @@ mica.study
               $scope.study.contacts.splice(contactsIndex, 1);
             }
           }
-          $scope.$emit('studyUpdatedEvent', $scope.study);
+          $scope.emitStudyUpdated();
         }
       });
+
+
 
     }])
 
