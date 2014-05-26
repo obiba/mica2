@@ -28,7 +28,7 @@ module.exports = function (grunt) {
         },
         files: {
           // target.css file: source.less file
-          "src/main/webapp/styles/mica.css": "src/main/webapp/less/mica.less"
+          'src/main/webapp/styles/mica.css': 'src/main/webapp/less/mica.less'
         }
       }
     },
@@ -47,7 +47,7 @@ module.exports = function (grunt) {
         files: [
           'src/main/webapp/{,*/}*.html',
           '.tmp/styles/{,*/}*.css',
-          '{.tmp/,}src/main/webapp/scripts/{,*/}*.js',
+          '{.tmp/,}src/main/webapp/app/{,*/}*.js',
           'src/main/webapp/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
         ]
       }
@@ -141,15 +141,17 @@ module.exports = function (grunt) {
       },
       server: '.tmp'
     },
+
     jshint: {
       options: {
         jshintrc: '.jshintrc'
       },
       all: [
         'Gruntfile.js',
-        'src/main/webapp/scripts/{,*/}*.js'
+        'src/main/webapp/app/**/*.js'
       ]
     },
+
     coffee: {
       options: {
         sourceMap: true,
@@ -159,7 +161,7 @@ module.exports = function (grunt) {
         files: [
           {
             expand: true,
-            cwd: 'src/main/webapp/scripts',
+            cwd: 'src/main/webapp/app',
             src: '{,*/}*.coffee',
             dest: '.tmp/scripts',
             ext: '.js'
@@ -187,7 +189,7 @@ module.exports = function (grunt) {
       dist: {
         files: {
           src: [
-            '<%= yeoman.dist %>/scripts/{,*/}*.js',
+            '<%= yeoman.dist %>/app/{,*/}*.js',
             '<%= yeoman.dist %>/styles/{,*/}*.css',
             '<%= yeoman.dist %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}',
             '<%= yeoman.dist %>/fonts/*'
@@ -353,8 +355,8 @@ module.exports = function (grunt) {
     uglify: {
       dist: {
         files: {
-          '<%= yeoman.dist %>/scripts/scripts.js': [
-            '<%= yeoman.dist %>/scripts/scripts.js'
+          '<%= yeoman.dist %>/app/scripts.js': [
+            '<%= yeoman.dist %>/app/scripts.js'
           ]
         }
       }
@@ -368,6 +370,7 @@ module.exports = function (grunt) {
 
     grunt.task.run([
       'clean:server',
+      'jshint',
       'concurrent:server',
       'autoprefixer',
       'configureProxies',
@@ -386,6 +389,7 @@ module.exports = function (grunt) {
 
   grunt.registerTask('build', [
     'clean:dist',
+    'jshint',
     'useminPrepare',
     'concurrent:dist',
     'autoprefixer',
