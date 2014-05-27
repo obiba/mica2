@@ -70,8 +70,12 @@ class PopulationDtos {
     if(selectionCriteria.getGender() != null) {
       builder.setGender(PopulationDto.SelectionCriteriaDto.Gender.valueOf(selectionCriteria.getGender().ordinal()));
     }
-    builder.setAgeMin(selectionCriteria.getAgeMin());
-    builder.setAgeMax(selectionCriteria.getAgeMax());
+    if (selectionCriteria.getAgeMin() != null) {
+      builder.setAgeMin(selectionCriteria.getAgeMin());
+    }
+    if (selectionCriteria.getAgeMax() != null) {
+      builder.setAgeMax(selectionCriteria.getAgeMax());
+    }
     if(selectionCriteria.getCountriesIso() != null) {
       selectionCriteria.getCountriesIso().forEach(builder::addCountriesIso);
     }
