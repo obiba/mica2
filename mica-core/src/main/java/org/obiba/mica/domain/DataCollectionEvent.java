@@ -179,6 +179,13 @@ public class DataCollectionEvent implements Serializable, Comparable<DataCollect
 
   @Override
   public int compareTo(@NotNull DataCollectionEvent dce) {
-    return ComparisonChain.start().compare(start, dce.start).compare(end, dce.end).compare(id, dce.id).result();
+    ComparisonChain chain = ComparisonChain.start();
+    if (start != null && dce.start != null) {
+      chain.compare(start, dce.start);
+    }
+    if (end != null && dce.end != null) {
+      chain.compare(end, dce.end);
+    }
+    return chain.compare(id, dce.id).result();
   }
 }
