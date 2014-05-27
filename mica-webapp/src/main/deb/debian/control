@@ -1,0 +1,22 @@
+Source: mica-server
+Section: devel
+Priority: extra
+Maintainer: OBiBa <info@obiba.org>
+Build-Depends: debhelper (>= 7.0.15)
+Standards-Version: 3.8.4
+Homepage: http://www.obiba.org
+Package: mica
+Version: [[version]]
+Architecture: all
+Pre-Depends: debconf, coreutils (>= 6.10)
+Depends: daemon, adduser, psmisc, java8-runtime
+Suggests:
+Description: OBiBa Mica Server
+ Mica Server
+ .
+ OBiBa is an international software development project committed to building a
+ full suite of open source software for biobanks. It is comprised of several
+ independent and self-funded teams around the world, each of which is producing
+ stand-alone applications that support particular biobank activities. The
+ applications can be customized and integrated to create a complete biobank
+ information management system.

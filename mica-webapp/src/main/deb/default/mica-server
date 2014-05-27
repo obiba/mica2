@@ -1,0 +1,32 @@
+# Defaults for rserver initscript
+# sourced by /etc/init.d/rserver
+# installed at /etc/default/rserver by the maintainer scripts
+
+# pulled in from the init script; makes things easier.
+NAME=rserver
+
+# location of java
+JAVA=/usr/bin/java
+
+# arguments to pass to java
+JAVA_ARGS="-Xmx128M -XX:MaxPermSize=128M -XX:+UseG1GC"
+
+# ulimit
+# Increase maximum open files for the rserver process
+# Comment this out to use the system default
+MAXOPENFILES=16384
+
+# user id (or id:gid) to be run as
+RSERVER_USER=rserver
+
+# location of the rserver distribution file
+RSERVER_DIST=/usr/share/rserver
+
+# rserver home location
+RSERVER_HOME=/var/lib/rserver
+
+# rserver log directory or syslog facility
+RSERVER_LOG=/var/log/rserver
+
+# arguments to pass to rserver.
+RSERVER_ARGS=""
