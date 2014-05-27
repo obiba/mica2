@@ -3,10 +3,10 @@
 angular.module('obiba.notification')
 
   .constant('NOTIFICATION_EVENTS', {
-    showNotificationDialog: 'event-show-notification-dialog',
-    showConfirmDialog: 'event-show-confirmation-dialog',
-    confirmDialogAccepted: 'event-confirmation-accepted',
-    confirmDialogRejected: 'event-confirmation-rejected'
+    showNotificationDialog: 'event:show-notification-dialog',
+    showConfirmDialog: 'event:show-confirmation-dialog',
+    confirmDialogAccepted: 'event:confirmation-accepted',
+    confirmDialogRejected: 'event:confirmation-rejected'
   })
 
   .controller('NotificationController', ['$rootScope', '$scope', '$modal', 'NOTIFICATION_EVENTS',
@@ -41,6 +41,7 @@ angular.module('obiba.notification')
       });
 
     }])
+
   .controller('NotificationModalController', ['$scope', '$modalInstance', 'notification',
     function ($scope, $modalInstance, notification) {
 
@@ -57,6 +58,7 @@ angular.module('obiba.notification')
       };
 
     }])
+
   .controller('NotificationConfirmationController', ['$scope', '$modalInstance', 'confirm',
     function ($scope, $modalInstance, confirm) {
 

@@ -8,19 +8,24 @@
     "node_modules",
     "bower_components",
     "test",
-    "tests"
+    "tests",
+    "coverage"
   ],
   "dependencies": {
     "angular": "1.2.16",
-    "angular-translate": "2.1.0",
-    "angular-ui": "~0.4.0"
+    "angular-bootstrap": "~0.10.0",
+    "angular-translate": "2.1.0"
+  },
+  "devDependencies": {
+    "angular-mocks": "1.2.16",
+    "angular-scenario": "1.2.16"
   },
   "homepage": "https://github.com/obiba/ng-obiba",
-  "_release": "ce233206bb",
+  "_release": "783cfc34a8",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "ce233206bb23d26a3ba5976cda7881650ad70812"
+    "commit": "783cfc34a8d3186bc8ee551ce212156470548bac"
   },
   "_source": "git@github.com:obiba/ng-obiba.git",
   "_target": "*",

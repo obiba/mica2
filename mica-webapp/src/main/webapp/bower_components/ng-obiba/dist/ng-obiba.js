@@ -3,17 +3,17 @@
  * https://github.com/obiba/ng-obiba
 
  * License: GNU Public License version 3
- * Date: 2014-05-26
+ * Date: 2014-05-27
  */
 'use strict';
 
 angular.module('obiba.utils', [])
 
-    .service('StringUtils', function () {
-      this.capitaliseFirstLetter = function (string) {
-        return string.charAt(0).toUpperCase() + string.slice(1);
-      };
-    });
+  .service('StringUtils', function () {
+    this.capitaliseFirstLetter = function (string) {
+      return string ? string.charAt(0).toUpperCase() + string.slice(1) : null;
+    };
+  });
 ;'use strict';
 
 angular.module('obiba.notification', [
@@ -26,10 +26,10 @@ angular.module('obiba.notification', [
 angular.module('obiba.notification')
 
   .constant('NOTIFICATION_EVENTS', {
-    showNotificationDialog: 'event-show-notification-dialog',
-    showConfirmDialog: 'event-show-confirmation-dialog',
-    confirmDialogAccepted: 'event-confirmation-accepted',
-    confirmDialogRejected: 'event-confirmation-rejected'
+    showNotificationDialog: 'event:show-notification-dialog',
+    showConfirmDialog: 'event:show-confirmation-dialog',
+    confirmDialogAccepted: 'event:confirmation-accepted',
+    confirmDialogRejected: 'event:confirmation-rejected'
   })
 
   .controller('NotificationController', ['$rootScope', '$scope', '$modal', 'NOTIFICATION_EVENTS',
@@ -64,6 +64,7 @@ angular.module('obiba.notification')
       });
 
     }])
+
   .controller('NotificationModalController', ['$scope', '$modalInstance', 'notification',
     function ($scope, $modalInstance, notification) {
 
@@ -80,6 +81,7 @@ angular.module('obiba.notification')
       };
 
     }])
+
   .controller('NotificationConfirmationController', ['$scope', '$modalInstance', 'confirm',
     function ($scope, $modalInstance, confirm) {
 

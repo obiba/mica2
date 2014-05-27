@@ -8,6 +8,7 @@ module.exports = function (grunt) {
       pkg: grunt.file.readJSON('package.json'),
       src: {
         js: [
+          // order is important!
           'src/utils/utils.js',
           'src/notification/notification.js',
           'src/notification/notification-controller.js',
@@ -20,7 +21,17 @@ module.exports = function (grunt) {
       }
     },
 
-    clean: ['<%= destination_dir %>/bower_components', 'tmp', 'dist'],
+    clean: {
+      build: ['<%= destination_dir %>/bower_components', 'tmp', 'dist'],
+      tmp: ['tmp']
+    },
+
+    karma: {
+      unit: {
+        configFile: 'test/karma.conf.js',
+        singleRun: true
+      }
+    },
 
     /* convert AngularJs html templates to cached JavaScript */
     html2js: {
@@ -72,7 +83,8 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-html2js');
+  grunt.loadNpmTasks('grunt-karma');
 
-  grunt.registerTask('default', ['clean', 'jshint', 'html2js', 'concat', 'uglify']);
+  grunt.registerTask('default', ['clean:build', 'jshint', 'html2js', 'concat', 'clean:tmp', 'karma', 'uglify']);
 
 };
