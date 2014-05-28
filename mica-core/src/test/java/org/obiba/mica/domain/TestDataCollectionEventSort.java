@@ -100,6 +100,46 @@ public class TestDataCollectionEventSort {
         .isEqualTo(of(2010, 1));
   }
 
+  @Test
+  public void test_with_null_date_year_month_parts() {
+    DataCollectionEvent event1 = createEvent("A", "A", null, null, null, null);
+    DataCollectionEvent evetn2 = createEvent("A", "A", null, null, null, null);
+    assertThat(event1.compareTo(evetn2)).isEqualTo(0);
+
+    DataCollectionEvent event3 = createEvent("A", "A", null, null, null, null);
+    DataCollectionEvent event4 = createEvent("B", "A", null, null, null, null);
+    assertThat(event3.compareTo(event4)).isEqualTo(-1);
+
+    DataCollectionEvent event5 = createEvent("A", "A", null, null, 2020, 12);
+    DataCollectionEvent event6 = createEvent("B", "A", 2010, 1, 2020, 12);
+    assertThat(event5.compareTo(event6)).isEqualTo(1);
+
+    DataCollectionEvent event7 = createEvent("A", "A", 2010, 1, null, null);
+    DataCollectionEvent event8 = createEvent("B", "A", 2010, 1, 2020, 12);
+    assertThat(event7.compareTo(event8)).isEqualTo(1);
+
+    DataCollectionEvent event9 = createEvent("A", "A", 2010, 1, 2020, 12);
+    DataCollectionEvent event10 = createEvent("B", "A", null, null, 2020, 12);
+    assertThat(event9.compareTo(event10)).isEqualTo(-1);
+
+    DataCollectionEvent event11 = createEvent("A", "A", 2010, 1, 2020, 12);
+    DataCollectionEvent event12 = createEvent("B", "A", 2010, 1, null, null);
+    assertThat(event11.compareTo(event12)).isEqualTo(-1);
+
+    DataCollectionEvent event13 = createEvent("A", "A", 2010, 1, 2020, 12);
+    DataCollectionEvent event14 = createEvent("B", "A", null, null, null, null);
+    assertThat(event13.compareTo(event14)).isEqualTo(-1);
+
+    DataCollectionEvent event15 = createEvent("A", "A", 2010, 1, 2020, 12);
+    DataCollectionEvent event16 = createEvent("A", "A", 2011, 1, 2020, 12);
+    assertThat(event15.compareTo(event16)).isEqualTo(-1);
+
+    DataCollectionEvent event17 = createEvent("A", "A", 2011, 1, 2020, 12);
+    DataCollectionEvent event18 = createEvent("A", "A", 2010, 1, 2020, 12);
+    assertThat(event17.compareTo(event18)).isEqualTo(1);
+  }
+
+
   private Population createPopulation(String name, DataCollectionEvent... events) {
     Population population = new Population();
     population.setName(en(name));
@@ -114,13 +154,13 @@ public class TestDataCollectionEventSort {
     return createEvent(null, name, startYear, startMonth, endYear, endMonth);
   }
 
-  private DataCollectionEvent createEvent(String id, String name, int startYear, Integer startMonth, Integer endYear,
+  private DataCollectionEvent createEvent(String id, String name, Integer startYear, Integer startMonth, Integer endYear,
       Integer endMonth) {
     DataCollectionEvent event = new DataCollectionEvent();
     event.setId(id);
     event.setName(en(name));
     event.setDescription(en("Baseline data collection"));
-    event.setStart(startYear, startMonth);
+    if (startYear != null) event.setStart(startYear, startMonth);
     if(endYear != null) event.setEnd(endYear, endMonth);
     return event;
   }
