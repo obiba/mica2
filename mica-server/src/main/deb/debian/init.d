@@ -1,26 +1,24 @@
 #!/bin/bash
 ### BEGIN INIT INFO
-# Provides:          rserver
+# Provides:          mica-server
 # Required-Start:    $network $local_fs $remote_fs
 # Required-Stop:     $remote_fs
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: <Enter a short description of the sortware>
-# Description:       <Enter a long description of the software>
-#                    <...>
-#                    <...>
+# Short-Description: Mica server
+# Description:       Start/stop Mica server.
 ### END INIT INFO
 
 # Author: OBiBa <info@obiba.org>
 
 # PATH should only include /usr/* if it runs after the mountnfs.sh script
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
-DESC=rserver             # Introduce a short description here
-NAME=rserver             # Introduce the short server's name here
-RSERVER_USER=rserver        # User to use to run the service
+DESC=mica-server             # Introduce a short description here
+NAME=mica-server             # Introduce the short server's name here
+MICA_SERVER_USER=mica-server        # User to use to run the service
 DAEMON=/usr/bin/daemon # Introduce the server's location here
 DAEMON_ARGS=""             # Arguments to run the daemon with
-MAIN_CLASS=org.obiba.rserver.Application
+MAIN_CLASS=org.obiba.mica.Application
 TMPDIR=/tmp/$NAME
 PIDFILE=$TMPDIR/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
@@ -38,8 +36,8 @@ SCRIPTNAME=/etc/init.d/$NAME
 # Depend on lsb-base (>= 3.0-6) to ensure that this file is present.
 . /lib/lsb/init-functions
 
-DAEMON_ARGS="--name=$NAME --user=$RSERVER_USER --pidfile=$PIDFILE --inherit --env=RSERVER_HOME=$RSERVER_HOME --env=RSERVER_LOG=$RSERVER_LOG --output=$RSERVER_LOG/stdout.log --chdir=$RSERVER_HOME"
-CLASSPATH="$RSERVER_HOME/conf:$RSERVER_DIST/lib/*"
+DAEMON_ARGS="--name=$NAME --user=$MICA_SERVER_USER --pidfile=$PIDFILE --inherit --env=MICA_SERVER_HOME=$MICA_SERVER_HOME --env=MICA_SERVER_LOG=$MICA_SERVER_LOG --output=$MICA_SERVER_LOG/stdout.log --chdir=$MICA_SERVER_HOME"
+CLASSPATH="$MICA_SERVER_HOME/conf:$MICA_SERVER_DIST/lib/*"
 
 # Get the status of the daemon process
 get_daemon_status()
@@ -49,19 +47,19 @@ get_daemon_status()
 
 get_running() 
 {
-    return `ps -U $RSERVER_USER --no-headers -f | egrep -e '(java|daemon)' | grep -c . `
+    return `ps -U $MICA_SERVER_USER --no-headers -f | egrep -e '(java|daemon)' | grep -c . `
 }
 
 get_running_daemon() 
 {
-    return `ps -U $RSERVER_USER --no-headers -f | egrep -e '(daemon)' | grep -c . `
+    return `ps -U $MICA_SERVER_USER --no-headers -f | egrep -e '(daemon)' | grep -c . `
 }
 
 force_stop() 
 {
     get_running
     if [ $? -ne 0 ]; then 
-        killall -u $RSERVER_USER java || return 3
+        killall -u $MICA_SERVER_USER java || return 3
     fi
 }
 
@@ -80,7 +78,7 @@ do_start()
         ulimit -n $MAXOPENFILES
     fi
     
-    $DAEMON $DAEMON_ARGS -- $JAVA $JAVA_ARGS -cp $CLASSPATH -DRSERVER_HOME=$RSERVER_HOME -DRSERVER_DIST=$RSERVER_DIST -DRSERVER_LOG=$RSERVER_LOG $MAIN_CLASS $RSERVER_ARGS || return 2
+    $DAEMON $DAEMON_ARGS -- $JAVA $JAVA_ARGS -cp $CLASSPATH -DMICA_SERVER_HOME=$MICA_SERVER_HOME -DMICA_SERVER_DIST=$MICA_SERVER_DIST -DMICA_SERVER_LOG=$MICA_SERVER_LOG $MAIN_CLASS $MICA_SERVER_ARGS || return 2
 }
 
 #
@@ -133,11 +131,11 @@ do_reload() {
 }
 
 #
-# Make sure tmp dir exists, otherwise daemon calls will fail
+# Make sure mica-server tmp dir exists, otherwise daemon calls will fail
 #
 if [ ! -d $TMPDIR ]; then 
   mkdir $TMPDIR
-  chown -R $RSERVER_USER:adm $TMPDIR
+  chown -R $MICA_SERVER_USER:adm $TMPDIR
   chmod -R 750 $TMPDIR
 fi
 
@@ -195,10 +193,10 @@ case "$1" in
                       echo
                   fi
               elif [ $procs -eq 1 ]; then 
-                  echo "An instance of rserver is running at the moment"
+                  echo "An instance of mica-server is running at the moment"
                   echo "but the pidfile $PIDFILE is missing"
               else 
-                  echo "$procs instances of rserver are running at the moment"
+                  echo "$procs instances of mica-server are running at the moment"
                   echo "but the pidfile $PIDFILE is missing"
               fi
               ;;

@@ -39,7 +39,7 @@ import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.core.env.Environment;
 
 /**
- * Realm for users defined in opal's own users database.
+ * Realm for users defined in mica-server's own users database.
  */
 //@Component
 //@Transactional

@@ -23,9 +23,9 @@ public class ElasticSearchService implements EnvironmentAware {
 
   private static final Logger log = LoggerFactory.getLogger(ElasticSearchService.class);
 
-  public static final String PATH_DATA = "${MICA_HOME}/work/elasticsearch/data";
+  public static final String PATH_DATA = "${MICA_SERVER_HOME}/work/elasticsearch/data";
 
-  public static final String PATH_WORK = "${MICA_HOME}/work/elasticsearch/work";
+  public static final String PATH_WORK = "${MICA_SERVER_HOME}/work/elasticsearch/work";
 
   private RelaxedPropertyResolver propertyResolver;
 
@@ -46,14 +46,14 @@ public class ElasticSearchService implements EnvironmentAware {
       throw new IllegalStateException("Cannot start Elastic Search as it is already running.");
     }
     log.debug("Starting Elastic Search node");
-    String micaHome = System.getProperty("MICA_HOME");
+    String micaHome = System.getProperty("MICA_SERVER_HOME");
     node = NodeBuilder.nodeBuilder() //
         .client(!propertyResolver.getProperty("dataNode", Boolean.class, true)) //
         .settings(ImmutableSettings.settingsBuilder() //
             .classLoader(getClass().getClassLoader()) //
             .loadFromClasspath("elasticsearch.yml") //
-            .put("path.data", PATH_DATA.replace("${MICA_HOME}", micaHome)) //
-            .put("path.work", PATH_WORK.replace("${MICA_HOME}", micaHome)) //
+            .put("path.data", PATH_DATA.replace("${MICA_SERVER_HOME}", micaHome)) //
+            .put("path.work", PATH_WORK.replace("${MICA_SERVER_HOME}", micaHome)) //
             .loadFromSource(propertyResolver.getProperty("settings")) //
         ) //
         .clusterName(propertyResolver.getProperty("clusterName", "mica")) //

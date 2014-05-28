@@ -128,7 +128,7 @@ public class StudyDtosTest {
     study.setPubmedId("PUBMED 19860977");
 
     study.addPopulation(createPopulation());
-    study.setSpecificAuthorization(createAuthorization("opal"));
+    study.setSpecificAuthorization(createAuthorization("mica-server"));
     study.setMaelstromAuthorization(createAuthorization("mica"));
     study.addAttachment(createAttachment());
 

@@ -31,9 +31,9 @@
   </appender>
 
   <appender name="mica.log" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <file>${MICA_HOME}/logs/mica.log</file>
+    <file>${MICA_SERVER_LOG}/mica.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-      <fileNamePattern>${MICA_HOME}/logs/mica-%i.log</fileNamePattern>
+      <fileNamePattern>${MICA_SERVER_LOG}/mica-%i.log</fileNamePattern>
       <maxIndex>10</maxIndex>
     </rollingPolicy>
     <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">

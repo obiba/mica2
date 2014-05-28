@@ -18,6 +18,7 @@
     <module>mica-search</module>
     <module>mica-web-model</module>
     <module>mica-webapp</module>
+    <module>mica-server</module>
   </modules>
 
   <profiles>
@@ -219,6 +220,11 @@
       <dependency>
         <groupId>org.obiba.mica</groupId>
         <artifactId>mica-search</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.obiba.mica</groupId>
+        <artifactId>mica-webapp</artifactId>
         <version>${project.version}</version>
       </dependency>
 

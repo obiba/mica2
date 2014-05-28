@@ -1,5 +1,5 @@
 #!/bin/sh
-# prerm script for opal
+# prerm script for mica-server
 #
 # see: dh_installdeb(1)
 
@@ -19,7 +19,6 @@ set -e
 
 case "$1" in
     remove|upgrade|deconfigure)
-      /etc/init.d/mica-server stop
     ;;
 
     failed-upgrade)

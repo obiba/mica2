@@ -1,0 +1,57 @@
+#!/bin/bash
+
+# OS specific support.
+cygwin=false
+case "`uname`" in
+CYGWIN*) cygwin=true;;
+esac
+
+if [ -z "$JAVA_OPTS" ]
+then
+  # Set default JAVA_OPTS
+  JAVA_OPTS="-Xmx2G -XX:MaxPermSize=128M"
+  export JAVA_OPTS
+fi
+
+# The directory containing the mica-server shell script
+MICA_SERVER_BIN_DIR=`dirname $0`
+# resolve links - $0 may be a softlink
+MICA_SERVER_DIST=$(readlink -f $MICA_SERVER_BIN_DIR/..)
+
+export MICA_SERVER_DIST
+
+export MICA_SERVER_LOG=$MICA_SERVER_HOME/logs
+
+echo "JAVA_OPTS=$JAVA_OPTS"
+echo "MICA_SERVER_HOME=$MICA_SERVER_HOME"
+echo "MICA_SERVER_DIST=$MICA_SERVER_DIST"
+
+if [ -z "$MICA_SERVER_HOME" ]
+then
+  echo "MICA_SERVER_HOME not set."
+  exit 2;
+fi
+
+if $cygwin; then
+  # For Cygwin, ensure paths are in UNIX format before anything is touched
+  [ -n "$MICA_SERVER_DIST" ] && MICA_SERVER_BIN=`cygpath --unix "$MICA_SERVER_DIST"`
+  [ -n "$MICA_SERVER_HOME" ] && MICA_SERVER_HOME=`cygpath --unix "$MICA_SERVER_HOME"`
+  
+  # For Cygwin, switch paths to Windows format before running java  
+  export MICA_SERVER_DIST=`cygpath --absolute --windows "$MICA_SERVER_DIST"`
+  export MICA_SERVER_HOME=`cygpath --absolute --windows "$MICA_SERVER_HOME"`
+fi
+
+# Java 6 supports wildcard classpath entries
+# http://download.oracle.com/javase/6/docs/technotes/tools/solaris/classpath.html
+CLASSPATH=$MICA_SERVER_HOME/conf:"$MICA_SERVER_DIST/lib/*"
+if $cygwin; then
+  CLASSPATH=$MICA_SERVER_HOME/conf;"$MICA_SERVER_DIST/lib/*"
+fi
+
+[ -e "$MICA_SERVER_HOME/logs" ] || mkdir "$MICA_SERVER_HOME/logs"
+
+JAVA_DEBUG=-agentlib:jdwp=transport=dt_socket,server=y,address=8000,suspend=n
+
+# Add $JAVA_DEBUG to this line to enable remote JVM debugging (for developers)
+java $JAVA_OPTS -cp "$CLASSPATH" -DMICA_SERVER_HOME="${MICA_SERVER_HOME}" -DMICA_SERVER_DIST=${MICA_SERVER_DIST} -DMICA_SERVER_LOG=${MICA_SERVER_LOG} -Dnewrelic.config.file=${MICA_SERVER_HOME}/conf/newrelic.yml -javaagent:$MICA_SERVER_DIST/lib/newrelic-agent-${newrelic.version}.jar org.obiba.MICA_SERVER.server.MICA_SERVERServer $@

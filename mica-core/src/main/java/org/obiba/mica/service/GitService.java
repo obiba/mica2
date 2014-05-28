@@ -35,7 +35,7 @@ import com.google.common.annotations.VisibleForTesting;
 @Validated
 public class GitService {
 
-  public static final String PATH_DATA = "${MICA_HOME}/data/git";
+  public static final String PATH_DATA = "${MICA_SERVER_HOME}/data/git";
 
   @Inject
   private GitCommandHandler gitCommandHandler;
@@ -48,7 +48,7 @@ public class GitService {
   @PostConstruct
   public void init() {
     if(repositoriesRoot == null) {
-      repositoriesRoot = new File(PATH_DATA.replace("${MICA_HOME}", System.getProperty("MICA_HOME")));
+      repositoriesRoot = new File(PATH_DATA.replace("${MICA_SERVER_HOME}", System.getProperty("MICA_SERVER_HOME")));
     }
   }
 

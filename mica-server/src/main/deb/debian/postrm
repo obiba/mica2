@@ -23,7 +23,6 @@ case "$1" in
 	purge)
         userdel -f mica-server || true
         rm -rf /var/lib/mica-server /var/log/mica-server /tmp/mica-server /etc/mica-server /usr/share/mica-server
-        update-rc.d mica-server remove
     ;;
 
     remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
