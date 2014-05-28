@@ -21,6 +21,7 @@
   <!--<logger name="net.sf.ehcache" level="trace"/>-->
   <!--<logger name="org.elasticsearch" level="debug"/>-->
 
+  <logger name="org.springframework.boot" level="debug"/>
 
   <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>

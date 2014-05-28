@@ -16,12 +16,13 @@
 
     <dependency>
       <groupId>org.obiba.mica</groupId>
-      <artifactId>mica-core</artifactId>
+      <artifactId>mica-webapp</artifactId>
+      <type>war</type>
     </dependency>
     <dependency>
       <groupId>org.obiba.mica</groupId>
       <artifactId>mica-webapp</artifactId>
-      <type>war</type>
+      <type>warpath</type>
     </dependency>
 
     <dependency>
@@ -64,6 +65,7 @@
           </arguments>
         </configuration>
       </plugin>
+
     </plugins>
 
   </build>

@@ -8,15 +8,15 @@ server:
 spring:
     profiles: dev
 
-    mongodb:
-        url: localhost:27017
-        databaseName: mica
-        username:
-        password:
-
     thymeleaf:
         mode: XHTML
         cache: false
+
+mongodb:
+    url: localhost:27017
+    databaseName: mica
+    username:
+    password:
 
 shiro:
   password:

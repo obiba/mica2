@@ -1,4 +1,4 @@
-skipTests = false
+skipTests = true
 mvn_exec = mvn -Dmaven.test.skip=${skipTests}
 current_dir = $(shell pwd)
 mica_server_home = ${current_dir}/mica-server/target/mica_server_home
