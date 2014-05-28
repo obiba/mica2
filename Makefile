@@ -1,8 +1,8 @@
 skipTests = false
 mvn_exec = mvn -Dmaven.test.skip=${skipTests}
 current_dir = $(shell pwd)
-mica_home = target/mica_home
-
+mica_server_home = ${current_dir}/mica-server/target/mica_server_home
+mica_server_log = ${mica_server_home}/logs
 
 help:
 	@echo
@@ -15,13 +15,14 @@ help:
 	@echo "  core        : Install core module"
 	@echo "  search      : Install search module"
 	@echo "  rest        : Install rest module"
+	@echo "  webapp      : Install webapp module"
 	@echo
-	@echo "  run         : Run webapp module"
-	@echo "  debug       : Debug webapp module on port 8000"
+	@echo "  run         : Run server module"
+	@echo "  debug       : Debug server module on port 8000"
 	@echo "  grunt       : Start grunt on port 9000"
 	@echo "  npm-install : Download all NodeJS dependencies"
 	@echo
-	@echo "  clear-log   : Delete mica.log from mica-webapp/target"
+	@echo "  clear-log   : Delete mica.log from mica-server/target"
 	@echo "  drop-mongo  : Drop MongoDB mica database"
 	@echo
 	@echo "  dependencies-tree   : Displays the dependency tree"
@@ -46,12 +47,15 @@ search:
 rest:
 	cd mica-rest && ${mvn_exec} install
 
+webapp:
+	cd mica-webapp && ${mvn_exec} install
+
 run:
-	cd mica-webapp && ${mvn_exec} spring-boot:run -DMICA_HOME="${mica_home}"
+	cd mica-server && ${mvn_exec} spring-boot:run -DMICA_SERVER_HOME="${mica_server_home}" -DMICA_SERVER_LOG="${mica_server_log}"
 
 debug:
 	export MAVEN_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,address=8000,suspend=n && \
-	cd mica-webapp && ${mvn_exec} spring-boot:run -DMICA_HOME="${mica_home}"
+	cd mica-server && ${mvn_exec} spring-boot:run -DMICA_SERVER_HOME="${mica_server_home}" -DMICA_SERVER_LOG="${mica_server_log}"
 
 grunt:
 	cd mica-webapp && grunt server
@@ -60,7 +64,7 @@ npm-install:
 	cd mica-webapp && npm install
 
 clear-log:
-	rm -f mica-webapp/target/mica.log*
+	rm -rf ${mica_server_log}
 
 drop-mongo:
 	mongo mica --eval "db.dropDatabase()"

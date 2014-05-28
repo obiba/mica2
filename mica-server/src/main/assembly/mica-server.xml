@@ -75,7 +75,7 @@
     <dependencySet>
       <outputDirectory>webapp</outputDirectory>
       <includes>
-        <include>org.obiba.mica-server:mica-server-gwt-client:war</include>
+        <include>org.obiba.mica-server:mica-webapp:war</include>
       </includes>
       <scope>runtime</scope>
       <unpack>true</unpack>
@@ -86,7 +86,8 @@
       <outputDirectory>tools/lib</outputDirectory>
       <includes>
         <include>org.apache.shiro.tools:shiro-tools-hasher:*</include>
-        <include>org.obiba.mica-server.tools:password-hasher:jar:cli</include>
+        <!--TODO use obiba-commons password-hasher -->
+        <!--<include>org.obiba.mica-server.tools:password-hasher:jar:cli</include>-->
       </includes>
     </dependencySet>
 
