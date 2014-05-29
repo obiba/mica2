@@ -115,10 +115,10 @@
     <mongeez.version>0.9.4</mongeez.version>
     <newrelic.version>3.4.2</newrelic.version>
     <nosqlunit.version>0.7.9</nosqlunit.version>
-    <obiba-commons.version>1.6-SNAPSHOT</obiba-commons.version>
+    <obiba-commons.version>1.7-SNAPSHOT</obiba-commons.version>
     <protobuf.version>2.5.0</protobuf.version>
     <protobuf-java-format.version>1.2.1-obiba</protobuf-java-format.version>
-    <shiro.version>1.2.3</shiro.version>
+    <shiro.version>1.2.3-java8</shiro.version>
     <shiro-extras.version>1.0.3-obiba</shiro-extras.version>
 
     <maven-antrun-plugin.version>1.7</maven-antrun-plugin.version>
@@ -424,13 +424,19 @@
       </dependency>
       <dependency>
         <groupId>org.obiba.commons</groupId>
-        <artifactId>obiba-jersey</artifactId>
+        <artifactId>obiba-git</artifactId>
         <version>${obiba-commons.version}</version>
       </dependency>
       <dependency>
         <groupId>org.obiba.commons</groupId>
-        <artifactId>obiba-git</artifactId>
+        <artifactId>obiba-password-hasher</artifactId>
         <version>${obiba-commons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.obiba.commons</groupId>
+        <artifactId>obiba-password-hasher</artifactId>
+        <version>${obiba-commons.version}</version>
+        <classifier>cli</classifier>
       </dependency>
 
       <dependency>

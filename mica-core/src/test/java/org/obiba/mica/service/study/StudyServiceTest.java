@@ -153,9 +153,11 @@ public class StudyServiceTest {
   static class Config extends AbstractMongoConfiguration {
 
     static final File BASE_REPO = Files.createTempDir();
+    static final File BASE_CLONE = Files.createTempDir();
 
     static {
       BASE_REPO.deleteOnExit();
+      BASE_CLONE.deleteOnExit();
     }
 
     @Bean
@@ -172,6 +174,7 @@ public class StudyServiceTest {
     public GitService gitService() throws IOException {
       GitService gitService = new GitService();
       gitService.setRepositoriesRoot(BASE_REPO);
+      gitService.setClonesRoot(BASE_CLONE);
       return gitService;
     }
 

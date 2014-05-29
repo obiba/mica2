@@ -37,6 +37,8 @@ public class GitService {
 
   public static final String PATH_DATA = "${MICA_SERVER_HOME}/data/git";
 
+  public static final String PATH_CLONES = "${MICA_SERVER_HOME}/work/git";
+
   @Inject
   private GitCommandHandler gitCommandHandler;
 
@@ -45,16 +47,26 @@ public class GitService {
 
   private File repositoriesRoot;
 
+  private File clonesRoot;
+
   @PostConstruct
   public void init() {
     if(repositoriesRoot == null) {
       repositoriesRoot = new File(PATH_DATA.replace("${MICA_SERVER_HOME}", System.getProperty("MICA_SERVER_HOME")));
+    }
+    if(clonesRoot == null) {
+      clonesRoot = new File(PATH_CLONES.replace("${MICA_SERVER_HOME}", System.getProperty("MICA_SERVER_HOME")));
     }
   }
 
   @VisibleForTesting
   public void setRepositoriesRoot(File repositoriesRoot) {
     this.repositoriesRoot = repositoriesRoot;
+  }
+
+  @VisibleForTesting
+  public void setClonesRoot(File clonesRoot) {
+    this.clonesRoot = clonesRoot;
   }
 
   public void save(@NotNull @Valid AbstractGitPersistable persistable) {
@@ -75,8 +87,7 @@ public class GitService {
       try(InputStream input = new FileInputStream(jsonFile)) {
         gitCommandHandler.execute(
             new AddFilesCommand.Builder(getRepositoryPath(persistable.getId()), "Update " + jsonFileName)
-                .addFile(jsonFileName, input).build()
-        );
+                .addFile(jsonFileName, input).build());
       }
 
       //noinspection ResultOfMethodCallIgnored
@@ -107,13 +118,17 @@ public class GitService {
   }
 
   public String tag(String id) {
-    IncrementTagCommand command = new IncrementTagCommand(getRepositoryPath(id));
+    IncrementTagCommand command = new IncrementTagCommand(getRepositoryPath(id), getClonePath(id));
     gitCommandHandler.execute(command);
     return String.valueOf(command.getNewTag());
   }
 
   private File getRepositoryPath(String id) {
     return new File(repositoriesRoot, id + ".git");
+  }
+
+  private File getClonePath(String id) {
+    return new File(clonesRoot, id);
   }
 
   private String getJsonFileName(Class<?> clazz) {
@@ -124,8 +139,8 @@ public class GitService {
 
     private int newTag = 1;
 
-    private IncrementTagCommand(@NotNull File repositoryPath) {
-      super(repositoryPath, null);
+    private IncrementTagCommand(@NotNull File repositoryPath, @NotNull File clonesPath) {
+      super(repositoryPath, clonesPath, null);
     }
 
     @Override

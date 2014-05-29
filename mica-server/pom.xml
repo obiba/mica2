@@ -50,6 +50,17 @@
       <artifactId>newrelic-agent</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.apache.shiro.tools</groupId>
+      <artifactId>shiro-tools-hasher</artifactId>
+      <classifier>cli</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.obiba.commons</groupId>
+      <artifactId>obiba-password-hasher</artifactId>
+      <classifier>cli</classifier>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -141,9 +152,7 @@
                     </copy>
 
                     <mkdir dir="${deb.dir}/usr/share"/>
-                    <unzip src="${basedir}/target/mica-webapp-${project.version}-dist.zip" dest="${deb.dir}/usr/share"/>
-                    <move file="${deb.dir}/usr/share/mica-webapp-${project.version}"
-                        todir="${deb.dir}/usr/share/mica-server-${project.version}"/>
+                    <unzip src="${basedir}/target/mica-server-${project.version}-dist.zip" dest="${deb.dir}/usr/share"/>
 
                     <mkdir dir="${deb.dir}/etc"/>
                     <move todir="${deb.dir}/etc/mica-server">
