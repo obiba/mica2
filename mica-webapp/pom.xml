@@ -32,6 +32,15 @@
       <artifactId>obiba-shiro-web</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-tomcat</artifactId>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -39,6 +48,13 @@
     <resources>
       <resource>
         <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>**/*</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>src/main/conf</directory>
         <filtering>true</filtering>
         <includes>
           <include>**/*</include>
@@ -53,6 +69,16 @@
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
           <packagingExcludes>WEB-INF/lib/tomcat-*.jar</packagingExcludes>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <arguments>
+            <argument>--spring.profiles.active=dev</argument>
+          </arguments>
         </configuration>
       </plugin>
 
