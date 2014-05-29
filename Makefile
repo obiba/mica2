@@ -1,7 +1,7 @@
 skipTests = false
 mvn_exec = mvn -Dmaven.test.skip=${skipTests}
 current_dir = $(shell pwd)
-mica_server_home = ${current_dir}/mica-webapp/target/mica_server_home
+mica_server_home = ${current_dir}/mica-server/target/mica_server_home
 mica_server_log = ${mica_server_home}/logs
 
 help:
@@ -15,8 +15,9 @@ help:
 	@echo "  core        : Install core module"
 	@echo "  search      : Install search module"
 	@echo "  rest        : Install rest module"
+	@echo "  angular     : Install angularjs module"
 	@echo
-	@echo "  run         : Run webapp module"
+	@echo "  run         : Run server module"
 	@echo "  debug       : Debug server module on port 8000"
 	@echo "  grunt       : Start grunt on port 9000"
 	@echo "  npm-install : Download all NodeJS dependencies"
@@ -46,18 +47,21 @@ search:
 rest:
 	cd mica-rest && ${mvn_exec} install
 
+angular:
+	cd mica-angularjs-client && ${mvn_exec} install
+
 run:
-	cd mica-webapp && ${mvn_exec} spring-boot:run -DMICA_SERVER_HOME="${mica_server_home}" -DMICA_SERVER_LOG="${mica_server_log}"
+	cd mica-server && ${mvn_exec} spring-boot:run -DMICA_SERVER_HOME="${mica_server_home}" -DMICA_SERVER_LOG="${mica_server_log}"
 
 debug:
 	export MAVEN_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,address=8000,suspend=n && \
-	cd mica-webapp && ${mvn_exec} spring-boot:run -DMICA_SERVER_HOME="${mica_server_home}" -DMICA_SERVER_LOG="${mica_server_log}"
+	cd mica-server && ${mvn_exec} spring-boot:run -DMICA_SERVER_HOME="${mica_server_home}" -DMICA_SERVER_LOG="${mica_server_log}"
 
 grunt:
-	cd mica-webapp && grunt server
+	cd mica-angularjs-client && grunt server
 
 npm-install:
-	cd mica-webapp && npm install
+	cd mica-angularjs-client && npm install
 
 clear-log:
 	rm -rf ${mica_server_log}
