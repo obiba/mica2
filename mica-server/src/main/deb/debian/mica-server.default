@@ -1,0 +1,32 @@
+# Defaults for mica-server initscript
+# sourced by /etc/init.d/mica-server
+# installed at /etc/default/mica-server by the maintainer scripts
+
+# pulled in from the init script; makes things easier.
+NAME=mica-server
+
+# location of java
+JAVA=/usr/bin/java
+
+# ulimit
+# Increase maximum open files for the mica-server process
+# Comment this out to use the system default
+MAXOPENFILES=16384
+
+# user id (or id:gid) to be run as
+MICA_SERVER_USER=mica-server
+
+# location of the mica-server distribution file
+MICA_SERVER_DIST=/usr/share/mica-server
+
+# Mica Server home location
+MICA_SERVER_HOME=/var/lib/mica-server
+
+# Mica Server log directory or syslog facility
+MICA_SERVER_LOG=/var/log/mica-server
+
+# arguments to pass to mica-server.
+MICA_SERVER_ARGS=""
+
+# arguments to pass to java
+JAVA_ARGS="-Xms1G -Xmx2G -XX:MaxPermSize=256M -XX:+UseG1GC -Dnewrelic.config.file=$MICA_SERVER_HOME/conf/newrelic.yml -javaagent:$MICA_SERVER_DIST/lib/newrelic-agent-@newrelic_version@.jar"

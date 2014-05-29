@@ -2,11 +2,11 @@
 
 ## For developers
 
-Install NodeJS, Grunt and Bower
+Install NodeJS, Grunt, Bower and Debian packaging utils
 
 ```
 sudo add-apt-repository -y ppa:chris-lea/node.js
-sudo apt-get install -y nodejs
+sudo apt-get install -y nodejs devscripts
 npm install -g grunt-cli bower
 ```
 
@@ -25,7 +25,6 @@ During development, run
 * `make grunt` in another terminal to start Grunt server with live reload on port **9000**
 
 See `make help` for other targets.
-
 
 
 ## Download

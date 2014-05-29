@@ -1,0 +1,86 @@
+# used for developement when application is run with dev profile
+
+
+server:
+    port: 8080
+    address: localhost
+
+spring:
+    profiles: dev
+
+    thymeleaf:
+        mode: XHTML
+        cache: false
+
+mongodb:
+    url: localhost:27017
+    databaseName: mica
+    username:
+    password:
+
+shiro:
+  password:
+    nbHashIterations: 10000
+    salt: mica
+
+elasticsearch:
+  dataNode: true
+  clusterName: mica
+  shards: 5
+  replicas: 1
+  settings: "http.enabled: true"
+
+metrics:
+    jmx.enabled: true
+    graphite:
+        enabled: false
+        host: localhost
+        port: 2003
+
+cache:
+    timeToLiveSeconds: 3600
+
+# You can add as many as folders to watch
+# You just need to add a dash + the directory to watch
+hotReload:
+    enabled: true
+    package:
+      project: org.obiba.mica
+      domain: org.obiba.mica.domain
+      restdto: org.obiba.mica.web.rest.dto
+    watchdir:
+      - target/classes
+
+# Disable the spring security default configuration from spring-boot-actuator
+#management.security.enabled: false
+
+# Disable Jolokia - An http/json bridge for remote JMX access
+endpoints.jolokia.enabled: false
+
+# security configuration (this key should be unique for your application, and kept secret)
+#jhipster.security.rememberme.key: mica
+
+async:
+    corePoolSize: 2
+    maxPoolSize: 50
+    queueCapacity: 10000
+
+spring:
+    mail:
+        host: localhost
+        port: 25
+        user:
+        password:
+        protocol: smtp
+        tls: false
+        auth: false
+
+    messageSource:
+        cacheSeconds: 1
+
+authentication:
+    oauth:
+        clientid: jhipsterapp
+        secret: mySecretOAuthSecret
+        # Token is valid 30 minutes
+        tokenValidityInSeconds: 1800

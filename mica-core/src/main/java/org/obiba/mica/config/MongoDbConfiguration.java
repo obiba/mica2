@@ -37,7 +37,7 @@ public class MongoDbConfiguration extends AbstractMongoConfiguration implements 
 
   @Override
   public void setEnvironment(Environment environment) {
-    propertyResolver = new RelaxedPropertyResolver(environment, "spring.mongodb.");
+    propertyResolver = new RelaxedPropertyResolver(environment, "mongodb.");
   }
 
   @Override

@@ -1,0 +1,8 @@
+# This is where MICA_SERVER_HOME is located
+var/lib/mica-server
+
+# Store mica-server log here
+var/log/mica-server
+
+# Store mica-server.pid here
+tmp/mica-server

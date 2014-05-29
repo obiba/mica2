@@ -17,7 +17,8 @@
     <module>mica-rest</module>
     <module>mica-search</module>
     <module>mica-web-model</module>
-    <module>mica-webapp</module>
+    <module>mica-server</module>
+    <module>mica-angularjs-client</module>
   </modules>
 
   <profiles>
@@ -112,14 +113,16 @@
     <jsr305.version>2.0.3</jsr305.version>
     <metrics-spring.version>3.0.0</metrics-spring.version>
     <mongeez.version>0.9.4</mongeez.version>
+    <newrelic.version>3.4.2</newrelic.version>
     <nosqlunit.version>0.7.9</nosqlunit.version>
-    <obiba-commons.version>1.6-SNAPSHOT</obiba-commons.version>
+    <obiba-commons.version>1.7-SNAPSHOT</obiba-commons.version>
     <protobuf.version>2.5.0</protobuf.version>
     <protobuf-java-format.version>1.2.1-obiba</protobuf-java-format.version>
-    <shiro.version>1.2.3</shiro.version>
+    <shiro.version>1.2.3-java8</shiro.version>
     <shiro-extras.version>1.0.3-obiba</shiro-extras.version>
 
-    <maven-assertj-generator-plugin.version>1.2.0</maven-assertj-generator-plugin.version>
+    <maven-antrun-plugin.version>1.7</maven-antrun-plugin.version>
+    <maven-assembly-plugin.version>2.4</maven-assembly-plugin.version>
     <maven-buildnumber-plugin.version>1.2</maven-buildnumber-plugin.version>
     <maven-dependency-plugin.version>2.1</maven-dependency-plugin.version>
     <maven-enforcer-plugin.version>1.3.1</maven-enforcer-plugin.version>
@@ -220,6 +223,12 @@
         <groupId>org.obiba.mica</groupId>
         <artifactId>mica-search</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.obiba.mica</groupId>
+        <artifactId>mica-angularjs-client</artifactId>
+        <version>${project.version}</version>
+        <type>war</type>
       </dependency>
 
       <dependency>
@@ -415,13 +424,19 @@
       </dependency>
       <dependency>
         <groupId>org.obiba.commons</groupId>
-        <artifactId>obiba-jersey</artifactId>
+        <artifactId>obiba-git</artifactId>
         <version>${obiba-commons.version}</version>
       </dependency>
       <dependency>
         <groupId>org.obiba.commons</groupId>
-        <artifactId>obiba-git</artifactId>
+        <artifactId>obiba-password-hasher</artifactId>
         <version>${obiba-commons.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.obiba.commons</groupId>
+        <artifactId>obiba-password-hasher</artifactId>
+        <version>${obiba-commons.version}</version>
+        <classifier>cli</classifier>
       </dependency>
 
       <dependency>
@@ -486,6 +501,13 @@
         <scope>test</scope>
       </dependency>
 
+      <dependency>
+        <groupId>com.newrelic.agent.java</groupId>
+        <artifactId>newrelic-agent</artifactId>
+        <version>${newrelic.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+
     </dependencies>
 
   </dependencyManagement>
@@ -529,13 +551,23 @@
   <build>
 
     <pluginManagement>
+
       <plugins>
+
         <plugin>
-          <groupId>org.assertj</groupId>
-          <artifactId>assertj-assertions-generator-maven-plugin</artifactId>
-          <version>${maven-assertj-generator-plugin.version}</version>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <version>${maven-antrun-plugin.version}</version>
         </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>${maven-assembly-plugin.version}</version>
+        </plugin>
+
       </plugins>
+
     </pluginManagement>
 
     <plugins>

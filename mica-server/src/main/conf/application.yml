@@ -1,0 +1,72 @@
+server:
+    port: 8080
+    address: localhost
+
+spring:
+    profiles: prod
+
+    thymeleaf:
+        mode: XHTML
+        cache: true
+
+mongodb:
+    url: localhost:27017
+    databaseName: mica
+    username:
+    password:
+
+shiro:
+  password:
+    nbHashIterations: 10000
+    salt: mica
+
+elasticsearch:
+  dataNode: true
+  clusterName: mica
+  shards: 5
+  replicas: 1
+  settings:
+
+metrics:
+    jmx.enabled: true
+    graphite:
+        enabled: false
+        host: localhost
+        port: 2003
+
+cache:
+    timeToLiveSeconds: 3600
+
+# Disable the spring security default configuration from spring-boot-actuator
+#management.security.enabled: false
+
+# Disable Jolokia - An http/json bridge for remote JMX access
+endpoints.jolokia.enabled: false
+
+# security configuration (this key should be unique for your application, and kept secret)
+#jhipster.security.rememberme.key: mica
+
+async:
+    corePoolSize: 2
+    maxPoolSize: 50
+    queueCapacity: 10000
+
+spring:
+    mail:
+        host: localhost
+        port: 25
+        user:
+        password:
+        protocol: smtp
+        tls: false
+        auth: false
+
+    messageSource:
+        cacheSeconds: 1
+
+authentication:
+    oauth:
+        clientid: jhipsterapp
+        secret: mySecretOAuthSecret
+        # Token is valid 30 minutes
+        tokenValidityInSeconds: 1800
