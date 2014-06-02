@@ -10,7 +10,7 @@
     properties from the resources/config/*.yml files.
   -->
 
-  <diskStore path="java.io.tmpdir"/>
+  <diskStore path="${MICA_SERVER_HOME}/work/ehcache"/>
 
   <defaultCache eternal="false" overflowToDisk="false"/>
 
