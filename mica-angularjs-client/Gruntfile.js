@@ -264,7 +264,7 @@ module.exports = function (grunt) {
           {
             expand: true,
             cwd: 'src/main/webapp',
-            src: ['*.html', 'views/*.html'],
+            src: ['*.html', 'app/**/*.html'],
             dest: '<%= yeoman.dist %>'
           }
         ]
@@ -380,11 +380,11 @@ module.exports = function (grunt) {
   });
 
   grunt.registerTask('test', [
-    'clean:server',
-    'concurrent:test',
-    'autoprefixer',
-    'connect:test',
-    'karma'
+//    'clean:server',
+//    'concurrent:test',
+//    'autoprefixer',
+//    'connect:test',
+//    'karma'
   ]);
 
   grunt.registerTask('build', [

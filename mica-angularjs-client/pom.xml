@@ -40,4 +40,49 @@
 
   </build>
 
+  <profiles>
+
+    <profile>
+      <id>ci-build</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.github.trecloux</groupId>
+            <artifactId>yeoman-maven-plugin</artifactId>
+            <version>0.2</version>
+            <configuration>
+              <yeomanProjectDirectory>${project.basedir}</yeomanProjectDirectory>
+            </configuration>
+            <executions>
+              <execution>
+                <id>run-grunt</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>build</goal>
+                </goals>
+                <configuration>
+                  <gruntBuildArgs>--force</gruntBuildArgs>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <artifactId>maven-clean-plugin</artifactId>
+            <configuration>
+              <filesets>
+                <fileset>
+                  <directory>.tmp</directory>
+                </fileset>
+                <fileset>
+                  <directory>node_modules</directory>
+                </fileset>
+              </filesets>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+  </profiles>
+
 </project>
