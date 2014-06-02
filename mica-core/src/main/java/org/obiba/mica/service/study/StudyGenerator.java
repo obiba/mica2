@@ -10,6 +10,7 @@ import javax.inject.Inject;
 
 import org.obiba.mica.domain.Address;
 import org.obiba.mica.domain.Attachment;
+import org.obiba.mica.domain.Attribute;
 import org.obiba.mica.domain.Authorization;
 import org.obiba.mica.domain.Contact;
 import org.obiba.mica.domain.DataCollectionEvent;
@@ -69,8 +70,7 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
     study.setObjectives(
         en("The Canadian Longitudinal Study on Aging (CLSA) is a large, national, long-term study that will follow approximately 50,000 men and women between the ages of 45 and 85 for at least 20 years. The study will collect information on the changing biological, medical, psychological, social, lifestyle and economic aspects of people’s lives. These factors will be studied in order to understand how, individually and in combination, they have an impact in both maintaining health and in the development of disease and disability as people age.")
             .forFr(
-                "L’Étude longitudinale canadienne sur le vieillissement (ÉLCV) est une vaste étude nationale à long terme qui permettra de suivre environ 50 000 Canadiennes et Canadiens âgé(e)s de 45 à 85 ans pendant une période d’au moins 20 ans. L’ÉLCV recueillera des renseignements sur les changements biologiques, médicaux, psychologiques, sociaux et sur les habitudes de vie qui se produisent chez les gens. On étudiera ces facteurs pour comprendre la façon dont ils influencent, individuellement et collectivement, le maintien en santé et le développement de maladies et d’incapacités au fur et à mesure que les gens vieillissent. L’ÉLCV sera l’une des études les plus complètes du genre entreprises jusqu’à ce jour, non seulement au Canada, mais aussi au niveau international.")
-    );
+                "L’Étude longitudinale canadienne sur le vieillissement (ÉLCV) est une vaste étude nationale à long terme qui permettra de suivre environ 50 000 Canadiennes et Canadiens âgé(e)s de 45 à 85 ans pendant une période d’au moins 20 ans. L’ÉLCV recueillera des renseignements sur les changements biologiques, médicaux, psychologiques, sociaux et sur les habitudes de vie qui se produisent chez les gens. On étudiera ces facteurs pour comprendre la façon dont ils influencent, individuellement et collectivement, le maintien en santé et le développement de maladies et d’incapacités au fur et à mesure que les gens vieillissent. L’ÉLCV sera l’une des études les plus complètes du genre entreprises jusqu’à ce jour, non seulement au Canada, mais aussi au niveau international."));
     study.setWebsite("http://www.clsa-elcv.ca");
 
     Contact contact = createContact();
@@ -95,6 +95,11 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
     study.setSpecificAuthorization(createAuthorization("mica-server"));
     study.setMaelstromAuthorization(createAuthorization("mica"));
     study.addAttachment(createAttachment());
+
+    study.addAttribute(
+        Attribute.Builder.newAttribute("att1").namespace("mica").locale(Locale.FRENCH).value("value fr").build());
+    study.addAttribute(
+        Attribute.Builder.newAttribute("att1").namespace("mica").locale(Locale.ENGLISH).value("value en").build());
 
     return study;
   }

@@ -114,6 +114,7 @@ public class StudyDtosTest {
     study.addInvestigator(contact);
 
     study.setStart(Year.of(2002));
+    study.setEnd(Year.of(2050));
 
     study.setMethods(createMethods());
     study.setNumberOfParticipants(createNumberOfParticipants());

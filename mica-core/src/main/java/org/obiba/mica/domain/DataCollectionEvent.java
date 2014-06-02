@@ -7,13 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.bson.types.ObjectId;
 
 import com.google.common.collect.ComparisonChain;
 
-public class DataCollectionEvent implements Serializable, Comparable<DataCollectionEvent> {
+public class DataCollectionEvent extends AbstractAttributeAware
+    implements Serializable, Comparable<DataCollectionEvent> {
 
   private static final long serialVersionUID = 6559914069652243954L;
 
@@ -74,7 +76,7 @@ public class DataCollectionEvent implements Serializable, Comparable<DataCollect
     this.start = start;
   }
 
-  public void setStart(int year, Integer month) {
+  public void setStart(int year, @Nullable Integer month) {
     start = YearMonth.of(year, month == null ? Month.JANUARY.getValue() : month);
   }
 
@@ -86,7 +88,7 @@ public class DataCollectionEvent implements Serializable, Comparable<DataCollect
     this.end = end;
   }
 
-  public void setEnd(int year, Integer month) {
+  public void setEnd(int year, @Nullable Integer month) {
     end = YearMonth.of(year, month == null ? Month.DECEMBER.getValue() : month);
   }
 
@@ -181,15 +183,15 @@ public class DataCollectionEvent implements Serializable, Comparable<DataCollect
   public int compareTo(@NotNull DataCollectionEvent dce) {
     ComparisonChain chain = ComparisonChain.start();
 
-    if (start != null && dce.start != null) {
+    if(start != null && dce.start != null) {
       chain = chain.compare(start, dce.start);
-    } else if (start != dce.start) {
+    } else if(start != dce.start) {
       return start == null ? 1 : -1;
     }
 
-    if (end != null && dce.end != null) {
+    if(end != null && dce.end != null) {
       chain = chain.compare(end, dce.end);
-    } else if (end != dce.end) {
+    } else if(end != dce.end) {
       return end == null ? 1 : -1;
     }
 

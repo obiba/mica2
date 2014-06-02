@@ -4,19 +4,23 @@ import java.io.Serializable;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.URL;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.Multimap;
 
 /**
  * A Study.
  */
-public class Study extends AbstractGitPersistable {
+public class Study extends AbstractGitPersistable implements AttributeAware {
 
   private static final long serialVersionUID = 6559914069652243954L;
 
@@ -61,6 +65,8 @@ public class Study extends AbstractGitPersistable {
   private LocalizedString info;
 
   private SortedSet<Population> populations;
+
+  private LinkedListMultimap<String, Attribute> attributes;
 
   public LocalizedString getName() {
     return name;
@@ -242,6 +248,61 @@ public class Study extends AbstractGitPersistable {
   @Override
   protected Objects.ToStringHelper toStringHelper() {
     return super.toStringHelper().add("name", name);
+  }
+
+  @Override
+  public Multimap<String, Attribute> getAttributes() {
+    return attributes;
+  }
+
+  @Override
+  public void setAttributes(LinkedListMultimap<String, Attribute> attributes) {
+    this.attributes = attributes;
+  }
+
+  @Override
+  public void addAttribute(Attribute attribute) {
+    if(attributes == null) attributes = LinkedListMultimap.create();
+    attributes.put(attribute.getMapKey(), attribute);
+  }
+
+  @Override
+  public void removeAttribute(Attribute attribute) {
+    if(attributes != null) {
+      attributes.remove(attribute.getMapKey(), attribute);
+    }
+  }
+
+  @Override
+  public void removeAllAttributes() {
+    if(attributes != null) attributes.clear();
+  }
+
+  @Override
+  public boolean hasAttribute(String attName, @Nullable String namespace) {
+    return attributes != null && attributes.containsKey(Attribute.getMapKey(attName, namespace));
+  }
+
+  @Override
+  public boolean hasAttribute(String attName, @Nullable String namespace, @Nullable Locale locale) {
+    try {
+      getAttribute(attName, namespace, locale);
+      return true;
+    } catch(NoSuchAttributeException e) {
+      return false;
+    }
+  }
+
+  @Override
+  public Attribute getAttribute(String attName, @Nullable String namespace, @Nullable Locale locale) {
+    if(hasAttribute(attName, namespace)) {
+      for(Attribute attribute : attributes.get(Attribute.getMapKey(attName, namespace))) {
+        if(attribute.isLocalisedWith(locale)) {
+          return attribute;
+        }
+      }
+    }
+    throw new NoSuchAttributeException(attName, getClass().getName());
   }
 
   public static class StudyMethods implements Serializable {

@@ -14,7 +14,7 @@ import org.bson.types.ObjectId;
 
 import com.google.common.collect.Iterables;
 
-public class Population implements Serializable, Comparable<Population> {
+public class Population extends AbstractAttributeAware implements Serializable, Comparable<Population>, AttributeAware {
 
   private static final long serialVersionUID = 6559914069652243954L;
 

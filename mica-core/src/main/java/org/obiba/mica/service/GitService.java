@@ -118,17 +118,13 @@ public class GitService {
   }
 
   public String tag(String id) {
-    IncrementTagCommand command = new IncrementTagCommand(getRepositoryPath(id), getClonePath(id));
+    IncrementTagCommand command = new IncrementTagCommand(getRepositoryPath(id), clonesRoot);
     gitCommandHandler.execute(command);
     return String.valueOf(command.getNewTag());
   }
 
   private File getRepositoryPath(String id) {
     return new File(repositoriesRoot, id + ".git");
-  }
-
-  private File getClonePath(String id) {
-    return new File(clonesRoot, id);
   }
 
   private String getJsonFileName(Class<?> clazz) {
