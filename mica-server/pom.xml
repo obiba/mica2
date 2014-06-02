@@ -65,34 +65,7 @@
 
   <build>
 
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>true</filtering>
-        <includes>
-          <include>**/*</include>
-        </includes>
-      </resource>
-      <resource>
-        <directory>src/main/conf</directory>
-        <filtering>true</filtering>
-        <includes>
-          <include>**/*</include>
-        </includes>
-      </resource>
-    </resources>
-
-    <plugins>
-
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-        <configuration>
-          <arguments>
-            <argument>--spring.profiles.active=dev</argument>
-          </arguments>
-        </configuration>
-      </plugin>
+     <plugins>
 
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
@@ -112,12 +85,31 @@
         </executions>
       </plugin>
 
-
     </plugins>
 
   </build>
 
   <profiles>
+
+    <profile>
+      <!--
+        Add config files to classpath in order to run application from maven:
+        mvn spring-boot:run -Pdev
+       -->
+      <id>dev</id>
+      <build>
+        <resources>
+          <resource>
+            <directory>src/main/conf</directory>
+            <filtering>true</filtering>
+            <includes>
+              <include>**/*</include>
+            </includes>
+          </resource>
+        </resources>
+      </build>
+    </profile>
+
     <profile>
       <!-- A profile for the builds performed by the continuous integration server -->
       <id>ci-build</id>
@@ -156,7 +148,7 @@
 
                     <mkdir dir="${deb.dir}/etc"/>
                     <move todir="${deb.dir}/etc/mica-server">
-                      <fileset dir="${deb.dir}/usr/share/mica-server-${project.version}/conf" />
+                      <fileset dir="${deb.dir}/usr/share/mica-server-${project.version}/conf"/>
                     </move>
                     <delete file="${deb.dir}/etc/mica-server/application-dev.yml"/>
 

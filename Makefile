@@ -51,7 +51,7 @@ angular:
 	cd mica-angularjs-client && ${mvn_exec} install
 
 run:
-	cd mica-server && ${mvn_exec} spring-boot:run -DMICA_SERVER_HOME="${mica_server_home}" -DMICA_SERVER_LOG="${mica_server_log}"
+	cd mica-server && ${mvn_exec} spring-boot:run -Pdev -DMICA_SERVER_HOME="${mica_server_home}" -DMICA_SERVER_LOG="${mica_server_log}"
 
 debug:
 	export MAVEN_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,address=8000,suspend=n && \

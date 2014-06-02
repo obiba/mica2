@@ -82,9 +82,8 @@
       <scope>runtime</scope>
       <unpack>true</unpack>
       <excludes>
-        <!--TODO use obiba-commons password-hasher -->
-        <!--<exclude>org.obiba.mica-server.tools:password-hasher:jar:cli</exclude>-->
-        <!--<exclude>org.apache.shiro.tools:shiro-tools-hasher:*</exclude>-->
+        <exclude>org.obiba.commons:obiba-password-hasher:jar:cli</exclude>
+        <exclude>org.apache.shiro.tools:shiro-tools-hasher:*</exclude>
       </excludes>
     </dependencySet>
 
