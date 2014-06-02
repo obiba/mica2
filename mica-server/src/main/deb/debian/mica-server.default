@@ -29,4 +29,4 @@ MICA_SERVER_LOG=/var/log/mica-server
 MICA_SERVER_ARGS=""
 
 # arguments to pass to java
-JAVA_ARGS="-Xms1G -Xmx2G -XX:MaxPermSize=256M -XX:+UseG1GC -Dnewrelic.config.file=$MICA_SERVER_HOME/conf/newrelic.yml -javaagent:$MICA_SERVER_DIST/lib/newrelic-agent-@newrelic_version@.jar"
+JAVA_ARGS="-Xms1G -Xmx2G -XX:MaxPermSize=256M -XX:+UseG1GC --spring.profiles.active=prod -Dnewrelic.config.file=$MICA_SERVER_HOME/conf/newrelic.yml -javaagent:$MICA_SERVER_DIST/lib/newrelic-agent-@newrelic_version@.jar"

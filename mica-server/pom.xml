@@ -156,15 +156,16 @@
 
                     <mkdir dir="${deb.dir}/etc"/>
                     <move todir="${deb.dir}/etc/mica-server">
-                      <fileset dir="${deb.dir}/usr/share/mica-server-${project.version}/conf"/>
+                      <fileset dir="${deb.dir}/usr/share/mica-server-${project.version}/conf" />
                     </move>
+                    <delete file="${deb.dir}/etc/mica-server/application-dev.yml"/>
 
                     <exec executable="debuild" dir="${deb.dir}" failonerror="true" osfamily="unix">
                       <arg value="-b"/>
                       <!-- Uncomment following options to package locally  -->
-                      <arg value="-i" />
-                      <arg value="-us" />
-                      <arg value="-uc" />
+                      <!--<arg value="-i"/>-->
+                      <!--<arg value="-us"/>-->
+                      <!--<arg value="-uc"/>-->
                     </exec>
                   </target>
                 </configuration>

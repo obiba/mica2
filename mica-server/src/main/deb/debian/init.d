@@ -13,11 +13,11 @@
 
 # PATH should only include /usr/* if it runs after the mountnfs.sh script
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
-DESC=mica-server             # Introduce a short description here
-NAME=mica-server             # Introduce the short server's name here
-MICA_SERVER_USER=mica-server        # User to use to run the service
-DAEMON=/usr/bin/daemon # Introduce the server's location here
-DAEMON_ARGS=""             # Arguments to run the daemon with
+DESC=mica-server              # Introduce a short description here
+NAME=mica-server              # Introduce the short server's name here
+MICA_SERVER_USER=mica-server  # User to use to run the service
+DAEMON=/usr/bin/daemon        # Introduce the server's location here
+DAEMON_ARGS=""                # Arguments to run the daemon with
 MAIN_CLASS=org.obiba.mica.Application
 TMPDIR=/tmp/$NAME
 PIDFILE=$TMPDIR/$NAME.pid
