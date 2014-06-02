@@ -44,6 +44,7 @@ class StudyDtos {
         .addAllObjectives(localizedStringDtos.asDto(study.getObjectives()));
 
     if(study.getStart() != null) builder.setStartYear(study.getStart().getValue());
+    if(study.getEnd() != null) builder.setEndYear(study.getEnd().getValue());
     if(study.getAccess() != null) {
       study.getAccess().forEach(builder::addAccess);
     }
@@ -90,6 +91,7 @@ class StudyDtos {
     if(dto.hasId()) study.setId(dto.getId());
     if(dto.hasTimestamps()) TimestampsDtos.fromDto(dto.getTimestamps(), study);
     if(dto.hasStartYear()) study.setStart(Year.of(dto.getStartYear()));
+    if(dto.hasEndYear()) study.setEnd(Year.of(dto.getEndYear()));
     if(dto.getAccessCount() > 0) study.setAccess(dto.getAccessList());
     if(dto.getOtherAccessCount() > 0) study.setOtherAccess(localizedStringDtos.fromDto(dto.getOtherAccessList()));
     if(dto.hasMarkerPaper()) study.setMarkerPaper(dto.getMarkerPaper());
