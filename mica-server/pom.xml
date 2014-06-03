@@ -9,6 +9,7 @@
     <version>0.1-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
+  <packaging>war</packaging>
 
   <artifactId>mica-server</artifactId>
 
@@ -65,7 +66,23 @@
 
   <build>
 
-     <plugins>
+    <plugins>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <overlays>
+            <overlay>
+              <groupId>org.obiba.mica</groupId>
+              <artifactId>mica-angularjs-client</artifactId>
+              <excludes>
+                <exclude>WEB-INF/**</exclude>
+              </excludes>
+            </overlay>
+          </overlays>
+        </configuration>
+      </plugin>
 
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
@@ -99,6 +116,13 @@
       <id>dev</id>
       <build>
         <resources>
+          <resource>
+            <directory>src/main/resources</directory>
+            <filtering>true</filtering>
+            <includes>
+              <include>**/*</include>
+            </includes>
+          </resource>
           <resource>
             <directory>src/main/conf</directory>
             <filtering>true</filtering>

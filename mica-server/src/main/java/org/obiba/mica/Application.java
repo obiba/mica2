@@ -7,7 +7,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.config.Constants;
+import org.obiba.mica.config.Profiles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -78,8 +78,8 @@ public class Application {
    * Set a default profile if it has not been set
    */
   private static void addDefaultProfile(SpringApplication app, SimpleCommandLinePropertySource source) {
-    if(!source.containsProperty("spring.profiles.active")) {
-      app.setAdditionalProfiles(Constants.SPRING_PROFILE_PRODUCTION);
+    if(!source.containsProperty("spring.profiles.active") && System.getProperty("spring.profiles.active") == null) {
+      app.setAdditionalProfiles(Profiles.PROD);
     }
   }
 

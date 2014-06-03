@@ -9,7 +9,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.obiba.mica.config.Constants;
+import org.obiba.mica.config.Profiles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -30,7 +30,7 @@ public class LoggingAspect {
 
   @AfterThrowing(pointcut = WITHIN_EXPR, throwing = "e")
   public void logAfterThrowing(JoinPoint joinPoint, Throwable e) {
-    if(env.acceptsProfiles(Constants.SPRING_PROFILE_DEVELOPMENT)) {
+    if(env.acceptsProfiles(Profiles.DEV)) {
       logger.error("Exception in {}.{}() with cause = {}", joinPoint.getSignature().getDeclaringTypeName(),
           joinPoint.getSignature().getName(), e.getCause(), e);
     } else {

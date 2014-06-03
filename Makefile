@@ -50,12 +50,18 @@ rest:
 angular:
 	cd mica-angularjs-client && ${mvn_exec} install
 
+angular-compile-js:
+	cd mica-angularjs-client && ${mvn_exec} install -Pci-build	
+
 run:
-	cd mica-server && ${mvn_exec} spring-boot:run -Pdev -DMICA_SERVER_HOME="${mica_server_home}" -DMICA_SERVER_LOG="${mica_server_log}"
+	cd mica-server && ${mvn_exec} package spring-boot:run -Pdev -Dspring.profiles.active=dev -DMICA_SERVER_HOME="${mica_server_home}" -DMICA_SERVER_LOG="${mica_server_log}"
+
+run-prod: 
+	cd mica-server && ${mvn_exec} package spring-boot:run -Pdev -Dspring.profiles.active=prod -DMICA_SERVER_HOME="${mica_server_home}" -DMICA_SERVER_LOG="${mica_server_log}"
 
 debug:
 	export MAVEN_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,address=8000,suspend=n && \
-	cd mica-server && ${mvn_exec} spring-boot:run -DMICA_SERVER_HOME="${mica_server_home}" -DMICA_SERVER_LOG="${mica_server_log}"
+	cd mica-server && ${mvn_exec} spring-boot:run -Pdev -Dspring.profiles.active=dev -DMICA_SERVER_HOME="${mica_server_home}" -DMICA_SERVER_LOG="${mica_server_log}"
 
 grunt:
 	cd mica-angularjs-client && grunt server
