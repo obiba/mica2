@@ -51,22 +51,27 @@
       <artifactId>newrelic-agent</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>org.apache.shiro.tools</groupId>
-      <artifactId>shiro-tools-hasher</artifactId>
-      <classifier>cli</classifier>
-    </dependency>
-    <dependency>
-      <groupId>org.obiba.commons</groupId>
-      <artifactId>obiba-password-hasher</artifactId>
-      <classifier>cli</classifier>
-    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>org.apache.shiro.tools</groupId>-->
+      <!--<artifactId>shiro-tools-hasher</artifactId>-->
+      <!--<classifier>cli</classifier>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>org.obiba.commons</groupId>-->
+      <!--<artifactId>obiba-password-hasher</artifactId>-->
+      <!--<classifier>cli</classifier>-->
+    <!--</dependency>-->
 
   </dependencies>
 
   <build>
 
     <plugins>
+
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -84,23 +89,23 @@
         </configuration>
       </plugin>
 
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <descriptors>
-            <descriptor>src/main/assembly/mica-server.xml</descriptor>
-          </descriptors>
-        </configuration>
-        <executions>
-          <execution>
-            <id>make-assembly</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+      <!--<plugin>-->
+        <!--<artifactId>maven-assembly-plugin</artifactId>-->
+        <!--<configuration>-->
+          <!--<descriptors>-->
+            <!--<descriptor>src/main/assembly/mica-server.xml</descriptor>-->
+          <!--</descriptors>-->
+        <!--</configuration>-->
+        <!--<executions>-->
+          <!--<execution>-->
+            <!--<id>make-assembly</id>-->
+            <!--<phase>package</phase>-->
+            <!--<goals>-->
+              <!--<goal>single</goal>-->
+            <!--</goals>-->
+          <!--</execution>-->
+        <!--</executions>-->
+      <!--</plugin>-->
 
     </plugins>
 
@@ -131,6 +136,50 @@
             </includes>
           </resource>
         </resources>
+        <plugins>
+          <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <configuration>
+              <arguments>
+                <argument>--spring.profiles.active=dev</argument>
+              </arguments>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>js-compiled</id>
+      <build>
+        <resources>
+          <resource>
+            <directory>src/main/resources</directory>
+            <filtering>true</filtering>
+            <includes>
+              <include>**/*</include>
+            </includes>
+          </resource>
+          <resource>
+            <directory>src/main/conf</directory>
+            <filtering>true</filtering>
+            <includes>
+              <include>**/*</include>
+            </includes>
+          </resource>
+        </resources>
+        <plugins>
+          <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <configuration>
+              <arguments>
+                <argument>--spring.profiles.active=prod</argument>
+              </arguments>
+            </configuration>
+          </plugin>
+        </plugins>
       </build>
     </profile>
 
