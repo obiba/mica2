@@ -2,6 +2,9 @@
 
 <configuration scan="true">
 
+  <!-- console log config -->
+  <include resource="org/springframework/boot/logging/logback/basic.xml"/>
+
   <logger name="org.obiba" level="debug"/>
 
   <!--<logger name="com.codahale.metrics" level="warn"/>-->
@@ -20,14 +23,6 @@
   <!--<logger name="org.apache.shiro" level="info"/>-->
   <!--<logger name="net.sf.ehcache" level="trace"/>-->
   <!--<logger name="org.elasticsearch" level="debug"/>-->
-
-  <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-    <encoder>
-      <charset>utf-8</charset>
-      <!--<Pattern>%date [%thread] %-5level %logger - %message%n</Pattern>-->
-      <Pattern>%date %-5level %logger - %message%n</Pattern>
-    </encoder>
-  </appender>
 
   <appender name="mica.log" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <file>${MICA_SERVER_LOG}/mica.log</file>
@@ -49,7 +44,6 @@
   </contextListener>
 
   <root level="info">
-  <appender-ref ref="console"/>
     <appender-ref ref="mica.log"/>
   </root>
 
