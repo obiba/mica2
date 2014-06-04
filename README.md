@@ -31,7 +31,7 @@ See `make help` for other targets.
 
 See Obiba Maven 2.x repository: [http://www.obiba.org/maven2](http://www.obiba.org/maven2)
 
-And Obiba Snaphot Maven 2.x repository: [http://www.obiba.org/maven2-snapshots](http://www.obiba.org/maven2-snapshots)
+And Obiba Snapshot Maven 2.x repository: [http://www.obiba.org/maven2-snapshots](http://www.obiba.org/maven2-snapshots)
 
 
 ## Bug tracker

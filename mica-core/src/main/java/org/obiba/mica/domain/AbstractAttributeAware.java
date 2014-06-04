@@ -55,7 +55,8 @@ public abstract class AbstractAttributeAware implements AttributeAware {
   }
 
   @Override
-  public Attribute getAttribute(String attName, @Nullable String namespace, @Nullable Locale locale) {
+  public Attribute getAttribute(String attName, @Nullable String namespace, @Nullable Locale locale)
+      throws NoSuchAttributeException {
     if(hasAttribute(attName, namespace)) {
       for(Attribute attribute : attributes.get(Attribute.getMapKey(attName, namespace))) {
         if(attribute.isLocalisedWith(locale)) {

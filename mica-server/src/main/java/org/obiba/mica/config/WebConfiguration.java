@@ -62,7 +62,7 @@ public class WebConfiguration implements ServletContextInitializer {
 
     EnumSet<DispatcherType> disps = EnumSet.of(REQUEST, FORWARD, ASYNC);
     initMetrics(servletContext, disps);
-    if(env.acceptsProfiles(Constants.SPRING_PROFILE_PRODUCTION)) {
+    if(env.acceptsProfiles(Profiles.PROD)) {
       initStaticResourcesProductionFilter(servletContext, disps);
       initCachingHttpHeadersFilter(servletContext, disps);
     }

@@ -11,7 +11,7 @@
  *
  * Date: @DATE
  */
-(function (window, undefined) {
+(function( window, undefined ) {
 
 // Can't do this because several apps including ASP.NET trace
 // the stack via arguments.caller.callee and Firefox dies if

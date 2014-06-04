@@ -1,6 +1,6 @@
 package org.obiba.mica;
 
-import org.obiba.mica.config.Constants;
+import org.obiba.mica.config.Profiles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -33,6 +33,6 @@ public class ApplicationWebXml extends SpringBootServletInitializer {
     }
 
     log.warn("No Spring profile configured, running with default configuration");
-    return Constants.SPRING_PROFILE_DEVELOPMENT;
+    return Profiles.PROD;
   }
 }

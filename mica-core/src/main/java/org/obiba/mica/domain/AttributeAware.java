@@ -23,5 +23,5 @@ public interface AttributeAware {
 
   boolean hasAttribute(String attName, @Nullable String namespace, @Nullable Locale locale);
 
-  Attribute getAttribute(String attName, @Nullable String namespace, @Nullable Locale locale);
+  Attribute getAttribute(String attName, @Nullable String namespace, @Nullable Locale locale) throws NoSuchAttributeException;
 }

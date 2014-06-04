@@ -13,4 +13,9 @@
 *.jpg binary
 *.ttf binary
 *.exe binary
+*.gzip binary
+*.ai binary
+*.eps binary
+*.pdf binary
+*.eot binary
 protoc-2.5.0-linux-x86_64 binary
