@@ -17,8 +17,8 @@
     <module>mica-rest</module>
     <module>mica-search</module>
     <module>mica-web-model</module>
-    <module>mica-server</module>
-    <module>mica-angularjs-client</module>
+    <module>mica-webapp</module>
+    <module>mica-dist</module>
   </modules>
 
   <properties>
@@ -157,9 +157,8 @@
       </dependency>
       <dependency>
         <groupId>org.obiba.mica</groupId>
-        <artifactId>mica-angularjs-client</artifactId>
+        <artifactId>mica-webapp</artifactId>
         <version>${project.version}</version>
-        <type>war</type>
       </dependency>
 
       <dependency>

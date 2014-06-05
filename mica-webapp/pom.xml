@@ -1,0 +1,211 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.obiba.mica</groupId>
+    <artifactId>mica</artifactId>
+    <version>0.1-SNAPSHOT</version>
+    <relativePath>../</relativePath>
+  </parent>
+
+  <artifactId>mica-webapp</artifactId>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>org.obiba.mica</groupId>
+      <artifactId>mica-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.obiba.mica</groupId>
+      <artifactId>mica-web-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.obiba.mica</groupId>
+      <artifactId>mica-rest</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.obiba.commons</groupId>
+      <artifactId>obiba-shiro-web</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-tomcat</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.newrelic.agent.java</groupId>
+      <artifactId>newrelic-agent</artifactId>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+
+    <plugins>
+
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <mainClass>org.obiba.mica.Application</mainClass>
+          <layout>ZIP</layout>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>src/main/webapp/dist</directory>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
+
+      <!--<plugin>-->
+      <!--<artifactId>maven-assembly-plugin</artifactId>-->
+      <!--<configuration>-->
+      <!--<descriptors>-->
+      <!--<descriptor>src/main/assembly/mica-server.xml</descriptor>-->
+      <!--</descriptors>-->
+      <!--</configuration>-->
+      <!--<executions>-->
+      <!--<execution>-->
+      <!--<id>make-assembly</id>-->
+      <!--<phase>package</phase>-->
+      <!--<goals>-->
+      <!--<goal>single</goal>-->
+      <!--</goals>-->
+      <!--</execution>-->
+      <!--</executions>-->
+      <!--</plugin>-->
+
+    </plugins>
+
+  </build>
+
+  <profiles>
+
+    <profile>
+      <!--
+        Add config files to classpath in order to run application from maven:
+        mvn spring-boot:run -Pdev
+       -->
+      <id>dev</id>
+      <build>
+        <resources>
+          <resource>
+            <directory>src/main/resources</directory>
+            <filtering>true</filtering>
+            <includes>
+              <include>**/*</include>
+            </includes>
+          </resource>
+          <resource>
+            <directory>src/main/conf</directory>
+            <filtering>true</filtering>
+            <includes>
+              <include>**/*</include>
+            </includes>
+          </resource>
+        </resources>
+        <plugins>
+          <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <configuration>
+              <arguments>
+                <argument>--spring.profiles.active=dev</argument>
+              </arguments>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>js-compiled</id>
+      <build>
+        <resources>
+          <resource>
+            <directory>src/main/resources</directory>
+            <filtering>true</filtering>
+            <includes>
+              <include>**/*</include>
+            </includes>
+          </resource>
+          <resource>
+            <directory>src/main/conf</directory>
+            <filtering>true</filtering>
+            <includes>
+              <include>**/*</include>
+            </includes>
+          </resource>
+        </resources>
+        <plugins>
+          <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <configuration>
+              <arguments>
+                <argument>--spring.profiles.active=prod</argument>
+              </arguments>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>ci-build</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.github.trecloux</groupId>
+            <artifactId>yeoman-maven-plugin</artifactId>
+            <version>0.2</version>
+            <configuration>
+              <yeomanProjectDirectory>${project.basedir}</yeomanProjectDirectory>
+            </configuration>
+            <executions>
+              <execution>
+                <id>run-grunt</id>
+                <phase>generate-resources</phase>
+                <goals>
+                  <goal>build</goal>
+                </goals>
+                <configuration>
+                  <gruntBuildArgs>--force</gruntBuildArgs>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <artifactId>maven-clean-plugin</artifactId>
+            <configuration>
+              <filesets>
+                <fileset>
+                  <directory>.tmp</directory>
+                </fileset>
+                <fileset>
+                  <directory>node_modules</directory>
+                </fileset>
+              </filesets>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+  </profiles>
+
+</project>

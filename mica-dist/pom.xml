@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.obiba.mica</groupId>
+    <artifactId>mica</artifactId>
+    <version>0.1-SNAPSHOT</version>
+    <relativePath>../</relativePath>
+  </parent>
+
+  <artifactId>mica-dist</artifactId>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>org.obiba.mica</groupId>
+      <artifactId>mica-webapp</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.shiro.tools</groupId>
+      <artifactId>shiro-tools-hasher</artifactId>
+      <classifier>cli</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.obiba.commons</groupId>
+      <artifactId>obiba-password-hasher</artifactId>
+      <classifier>cli</classifier>
+    </dependency>
+
+  </dependencies>
+
+  <profiles>
+
+    <profile>
+      <!-- A profile for the builds performed by the continuous integration server -->
+      <id>ci-build</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>make-deb</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <property name="deb.dir" value="${basedir}/target/deb"/>
+                    <property name="deb.version" value="${project.version}-b${buildNumber}"/>
+                    <tstamp>
+                      <!-- http://www.debian.org/doc/debian-policy/ch-source.html -->
+                      <format property="deb.date" pattern="EEE, d MMM yyyy HH:mm:ss Z" locale="en"/>
+                    </tstamp>
+
+                    <mkdir dir="${deb.dir}"/>
+                    <copy todir="${deb.dir}">
+                      <fileset dir="src/main/deb"/>
+                      <filterset>
+                        <filter token="project.version" value="${deb.version}"/>
+                        <filter token="date" value="${deb.date}"/>
+                        <filter token="newrelic_version" value="${newrelic.version}"/>
+                      </filterset>
+                    </copy>
+
+                    <mkdir dir="${deb.dir}/usr/share"/>
+                    <unzip src="${basedir}/target/mica-server-${project.version}-dist.zip" dest="${deb.dir}/usr/share"/>
+
+                    <mkdir dir="${deb.dir}/etc"/>
+                    <move todir="${deb.dir}/etc/mica-server">
+                      <fileset dir="${deb.dir}/usr/share/mica-server-${project.version}/conf"/>
+                    </move>
+                    <delete file="${deb.dir}/etc/mica-server/application-dev.yml"/>
+
+                    <exec executable="debuild" dir="${deb.dir}" failonerror="true" osfamily="unix">
+                      <arg value="-b"/>
+                      <!-- Uncomment following options to package locally  -->
+                      <!--<arg value="-i"/>-->
+                      <!--<arg value="-us"/>-->
+                      <!--<arg value="-uc"/>-->
+                    </exec>
+                  </target>
+                </configuration>
+              </execution>
+              <execution>
+                <id>deploy-deb</id>
+                <phase>deploy</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <property name="deb.version" value="${project.version}-b${buildNumber}"/>
+                    <!-- Deploy deb file in deb repo -->
+                    <copy todir="${obiba.deb.dir}/${mica-server.deploy.dir}"
+                        file="target/mica_server_${deb.version}_all.deb"/>
+                  </target>
+                </configuration>
+              </execution>
+              <execution>
+                <id>deploy-package</id>
+                <phase>deploy</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <!-- Deploy Mica Server package file in download repo -->
+                    <copy todir="${obiba.download.dir}/mica-server/${mica-server.deploy.dir}"
+                        file="target/mica-server-${project.version}-dist.zip"/>
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+
+    </profile>
+  </profiles>
+
+</project>
