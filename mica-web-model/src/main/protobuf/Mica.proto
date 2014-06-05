@@ -202,6 +202,12 @@ message AttachmentDto {
   optional string md5 = 6;
 }
 
+message FileDto {
+  required string fileName = 1;
+  optional int32 size = 5;
+  optional string md5 = 6;
+}
+
 message MicaConfigDto {
   required string name = 1;
   repeated string languages = 2;
