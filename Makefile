@@ -50,6 +50,11 @@ run:
 	cd mica-webapp && \
 	${mvn_exec} spring-boot:run -Pdev -DMICA_SERVER_HOME="${mica_server_home}" -DMICA_SERVER_LOG="${mica_server_log}"
 
+run-prod:
+	cd mica-webapp && \
+	mvn package -Pci-build && \
+	java -Dloader.path=src/main/conf,target/mica-webapp-0.1-SNAPSHOT.jar -DMICA_SERVER_HOME="${mica_server_home}" -DMICA_SERVER_LOG="${mica_server_log}" -jar target/mica-webapp-0.1-SNAPSHOT.jar
+
 debug:
 	export MAVEN_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,address=8000,suspend=n && \
 	cd mica-webapp && \

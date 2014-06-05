@@ -17,7 +17,6 @@
     <dependency>
       <groupId>org.obiba.mica</groupId>
       <artifactId>mica-webapp</artifactId>
-      <type>war</type>
     </dependency>
 
     <dependency>

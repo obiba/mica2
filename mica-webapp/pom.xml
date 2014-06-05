@@ -9,7 +9,6 @@
     <version>0.1-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
-  <packaging>war</packaging>
 
   <artifactId>mica-webapp</artifactId>
 
