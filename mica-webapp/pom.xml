@@ -11,7 +11,7 @@
   </parent>
   <packaging>war</packaging>
 
-  <artifactId>mica-angularjs-client</artifactId>
+  <artifactId>mica-webapp</artifactId>
 
   <build>
 

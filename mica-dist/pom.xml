@@ -11,7 +11,7 @@
   </parent>
   <packaging>war</packaging>
 
-  <artifactId>mica-server</artifactId>
+  <artifactId>mica-dist</artifactId>
 
   <dependencies>
 
