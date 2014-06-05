@@ -157,7 +157,7 @@
       </dependency>
       <dependency>
         <groupId>org.obiba.mica</groupId>
-        <artifactId>mica-angularjs-client</artifactId>
+        <artifactId>mica-webapp</artifactId>
         <version>${project.version}</version>
         <type>war</type>
       </dependency>

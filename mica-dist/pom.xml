@@ -9,7 +9,6 @@
     <version>0.1-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
-  <packaging>war</packaging>
 
   <artifactId>mica-dist</artifactId>
 
@@ -17,171 +16,24 @@
 
     <dependency>
       <groupId>org.obiba.mica</groupId>
-      <artifactId>mica-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.obiba.mica</groupId>
-      <artifactId>mica-web-model</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.obiba.mica</groupId>
-      <artifactId>mica-rest</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.obiba.commons</groupId>
-      <artifactId>obiba-shiro-web</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.obiba.mica</groupId>
-      <artifactId>mica-angularjs-client</artifactId>
+      <artifactId>mica-webapp</artifactId>
       <type>war</type>
     </dependency>
 
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
+      <groupId>org.apache.shiro.tools</groupId>
+      <artifactId>shiro-tools-hasher</artifactId>
+      <classifier>cli</classifier>
     </dependency>
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-tomcat</artifactId>
+      <groupId>org.obiba.commons</groupId>
+      <artifactId>obiba-password-hasher</artifactId>
+      <classifier>cli</classifier>
     </dependency>
-
-    <dependency>
-      <groupId>com.newrelic.agent.java</groupId>
-      <artifactId>newrelic-agent</artifactId>
-    </dependency>
-
-    <!--<dependency>-->
-      <!--<groupId>org.apache.shiro.tools</groupId>-->
-      <!--<artifactId>shiro-tools-hasher</artifactId>-->
-      <!--<classifier>cli</classifier>-->
-    <!--</dependency>-->
-    <!--<dependency>-->
-      <!--<groupId>org.obiba.commons</groupId>-->
-      <!--<artifactId>obiba-password-hasher</artifactId>-->
-      <!--<classifier>cli</classifier>-->
-    <!--</dependency>-->
 
   </dependencies>
 
-  <build>
-
-    <plugins>
-
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-war-plugin</artifactId>
-        <configuration>
-          <overlays>
-            <overlay>
-              <groupId>org.obiba.mica</groupId>
-              <artifactId>mica-angularjs-client</artifactId>
-              <excludes>
-                <exclude>WEB-INF/**</exclude>
-              </excludes>
-            </overlay>
-          </overlays>
-        </configuration>
-      </plugin>
-
-      <!--<plugin>-->
-        <!--<artifactId>maven-assembly-plugin</artifactId>-->
-        <!--<configuration>-->
-          <!--<descriptors>-->
-            <!--<descriptor>src/main/assembly/mica-server.xml</descriptor>-->
-          <!--</descriptors>-->
-        <!--</configuration>-->
-        <!--<executions>-->
-          <!--<execution>-->
-            <!--<id>make-assembly</id>-->
-            <!--<phase>package</phase>-->
-            <!--<goals>-->
-              <!--<goal>single</goal>-->
-            <!--</goals>-->
-          <!--</execution>-->
-        <!--</executions>-->
-      <!--</plugin>-->
-
-    </plugins>
-
-  </build>
-
   <profiles>
-
-    <profile>
-      <!--
-        Add config files to classpath in order to run application from maven:
-        mvn spring-boot:run -Pdev
-       -->
-      <id>dev</id>
-      <build>
-        <resources>
-          <resource>
-            <directory>src/main/resources</directory>
-            <filtering>true</filtering>
-            <includes>
-              <include>**/*</include>
-            </includes>
-          </resource>
-          <resource>
-            <directory>src/main/conf</directory>
-            <filtering>true</filtering>
-            <includes>
-              <include>**/*</include>
-            </includes>
-          </resource>
-        </resources>
-        <plugins>
-          <plugin>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-maven-plugin</artifactId>
-            <configuration>
-              <arguments>
-                <argument>--spring.profiles.active=dev</argument>
-              </arguments>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <profile>
-      <id>js-compiled</id>
-      <build>
-        <resources>
-          <resource>
-            <directory>src/main/resources</directory>
-            <filtering>true</filtering>
-            <includes>
-              <include>**/*</include>
-            </includes>
-          </resource>
-          <resource>
-            <directory>src/main/conf</directory>
-            <filtering>true</filtering>
-            <includes>
-              <include>**/*</include>
-            </includes>
-          </resource>
-        </resources>
-        <plugins>
-          <plugin>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-maven-plugin</artifactId>
-            <configuration>
-              <arguments>
-                <argument>--spring.profiles.active=prod</argument>
-              </arguments>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
 
     <profile>
       <!-- A profile for the builds performed by the continuous integration server -->
