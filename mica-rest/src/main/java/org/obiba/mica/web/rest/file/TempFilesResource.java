@@ -2,7 +2,7 @@ package org.obiba.mica.web.rest.file;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.net.URI;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -16,13 +16,13 @@ import javax.ws.rs.core.UriInfo;
 
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
+import org.obiba.mica.service.file.TempFile;
+import org.obiba.mica.service.file.TempFileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
 import com.codahale.metrics.annotation.Timed;
-import com.google.common.base.Charsets;
-import com.google.common.io.CharStreams;
 
 @Path("/files/temp")
 public class TempFilesResource {
@@ -32,25 +32,20 @@ public class TempFilesResource {
   @Inject
   private ApplicationContext applicationContext;
 
+  @Inject
+  private TempFileService tempFileService;
+
   @POST
   @Consumes(MediaType.MULTIPART_FORM_DATA)
   @Timed
   public Response upload(@FormDataParam("file") InputStream uploadedInputStream,
-      @FormDataParam("file") FormDataContentDisposition fileDetail, @Context UriInfo uriInfo) {
+      @FormDataParam("file") FormDataContentDisposition fileDetail, @Context UriInfo uriInfo) throws IOException {
 
-    log.debug("name: {}", fileDetail.getName());
-    log.debug("fileName: {}", fileDetail.getFileName());
-    log.debug("param: {}", fileDetail.getParameters());
-    log.debug("size: {}", fileDetail.getSize());
-    log.debug("type: {}", fileDetail.getType());
-    try {
-      log.debug("file content: {}", CharStreams.toString(new InputStreamReader(uploadedInputStream, Charsets.UTF_8)));
-    } catch(IOException e) {
-      e.printStackTrace();
-    }
-
-    String fileId = "1";
-    return Response.created(uriInfo.getBaseUriBuilder().path(TempFilesResource.class, "file").build(fileId)).build();
+    TempFile tempFile = tempFileService.addTempFile(fileDetail.getFileName(), uploadedInputStream);
+    //TODO make this work
+    // URI location = uriInfo.getBaseUriBuilder().path(TempFilesResource.class, "file").build(tempFile.getId());
+    URI location = uriInfo.getBaseUriBuilder().path("/files/temp/" + tempFile.getId()).build();
+    return Response.created(location).build();
   }
 
   @Path("/{id}")

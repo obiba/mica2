@@ -15,6 +15,7 @@ help:
 	@echo "  install     : Install all modules"
 	@echo "  core        : Install core module"
 	@echo "  search      : Install search module"
+	@echo "  proto       : Install web-model module"
 	@echo "  rest        : Install rest module"
 	@echo
 	@echo "  run         : Run webapp module"
@@ -44,8 +45,8 @@ core:
 search:
 	cd mica-search && ${mvn_exec} install
 
-model:
-	cd mica-web-model && ${mvn_exec} install
+proto:
+	cd mica-web-model && ${mvn_exec} install	
 
 rest:
 	cd mica-rest && ${mvn_exec} install

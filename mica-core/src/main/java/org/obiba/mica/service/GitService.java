@@ -35,9 +35,9 @@ import com.google.common.annotations.VisibleForTesting;
 @Validated
 public class GitService {
 
-  public static final String PATH_DATA = "${MICA_SERVER_HOME}/data/git";
+  private static final String PATH_DATA = "${MICA_SERVER_HOME}/data/git";
 
-  public static final String PATH_CLONES = "${MICA_SERVER_HOME}/work/git";
+  private static final String PATH_CLONES = "${MICA_SERVER_HOME}/work/git";
 
   @Inject
   private GitCommandHandler gitCommandHandler;

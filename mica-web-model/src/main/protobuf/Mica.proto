@@ -202,10 +202,10 @@ message AttachmentDto {
   optional string md5 = 6;
 }
 
-message FileDto {
-  required string fileName = 1;
-  optional int32 size = 5;
-  optional string md5 = 6;
+message TempFileDto {
+  required string name = 1;
+  optional int64 size = 2;
+  optional string md5 = 3;
 }
 
 message MicaConfigDto {
