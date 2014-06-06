@@ -15,11 +15,14 @@ import java.util.Set;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 
 import net.sf.ehcache.CacheManager;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.credential.PasswordMatcher;
+import org.apache.shiro.authc.pam.FirstSuccessfulStrategy;
+import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
 import org.apache.shiro.authz.ModularRealmAuthorizer;
 import org.apache.shiro.authz.permission.PermissionResolver;
 import org.apache.shiro.authz.permission.PermissionResolverAware;
@@ -38,12 +41,18 @@ import org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO;
 import org.apache.shiro.util.LifecycleUtils;
 import org.obiba.mica.security.realm.MicaPermissionResolver;
 import org.obiba.shiro.SessionStorageEvaluator;
+import org.obiba.shiro.realm.ObibaRealm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 
 import static org.obiba.mica.security.AuthoritiesConstants.ADMIN;
@@ -56,6 +65,9 @@ public class SecurityManagerFactory implements FactoryBean<SecurityManager> {
   private static final long SESSION_VALIDATION_INTERVAL = 3600000l; // 1 hour
 
   private static final Logger log = LoggerFactory.getLogger(SecurityManagerFactory.class);
+
+  @Inject
+  private Environment env;
 
   @Inject
   private Set<Realm> realms;
@@ -131,8 +143,7 @@ public class SecurityManagerFactory implements FactoryBean<SecurityManager> {
       initializeSessionManager(dsm);
       initializeSubjectDAO(dsm);
       initializeAuthorizer(dsm);
-
-//      ((AbstractAuthenticator) dsm.getAuthenticator()).setAuthenticationListeners(authenticationListeners);
+      initializeAuthenticator(dsm);
 
       return dsm;
     }
@@ -170,11 +181,31 @@ public class SecurityManagerFactory implements FactoryBean<SecurityManager> {
       }
     }
 
+    private void initializeAuthenticator(DefaultSecurityManager dsm) {
+      //((AbstractAuthenticator) dsm.getAuthenticator()).setAuthenticationListeners(authenticationListeners);
+
+      if(dsm.getAuthenticator() instanceof ModularRealmAuthenticator) {
+        ((ModularRealmAuthenticator) dsm.getAuthenticator()).setAuthenticationStrategy(new FirstSuccessfulStrategy());
+      }
+    }
+
     @Override
     protected void applyRealmsToSecurityManager(Collection<Realm> shiroRealms, @SuppressWarnings(
         "ParameterHidesMemberVariable") SecurityManager securityManager) {
-      super.applyRealmsToSecurityManager(ImmutableList.<Realm>builder().addAll(realms).addAll(shiroRealms).build(),
-          securityManager);
+      ImmutableList.Builder<Realm> builder = ImmutableList.<Realm>builder().addAll(realms).addAll(shiroRealms);
+      RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(env, "shiro.obibaRealm.");
+      String obibaRealmUrl = propertyResolver.getProperty("url");
+      String serviceName = propertyResolver.getProperty("service.name");
+      String serviceKey = propertyResolver.getProperty("service.key");
+
+      if(!Strings.isNullOrEmpty(obibaRealmUrl)) {
+        ObibaRealm oRealm = new ObibaRealm();
+        oRealm.setBaseUrl(obibaRealmUrl);
+        oRealm.setServiceName(serviceName);
+        oRealm.setServiceKey(serviceKey);
+        builder.add(oRealm);
+      }
+      super.applyRealmsToSecurityManager(builder.build(), securityManager);
     }
 
     @Override

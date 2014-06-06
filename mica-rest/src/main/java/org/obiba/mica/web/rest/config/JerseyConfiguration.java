@@ -6,6 +6,7 @@ import org.glassfish.jersey.server.ServerProperties;
 import org.glassfish.jersey.server.spring.scope.RequestContextFilter;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.servlet.ServletProperties;
+import org.obiba.mica.web.rest.security.AuthenticationInterceptor;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,6 +28,7 @@ public class JerseyConfiguration extends ResourceConfig {
       register(RequestContextFilter.class);
       packages("org.obiba.mica.web", "org.obiba.jersey", "com.fasterxml.jackson");
       register(LoggingFilter.class);
+      register(AuthenticationInterceptor.class);
       // validation errors will be sent to the client
       property(ServerProperties.BV_SEND_ERROR_IN_RESPONSE, true);
     }
