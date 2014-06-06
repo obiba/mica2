@@ -99,13 +99,14 @@
                     </copy>
 
                     <mkdir dir="${deb.dir}/usr/share"/>
-                    <unzip src="${basedir}/target/mica-server-${project.version}-dist.zip" dest="${deb.dir}/usr/share"/>
+                    <unzip src="${basedir}/target/mica-dist-${project.version}-dist.zip" dest="${deb.dir}/usr/share"/>
+                    <move file="${deb.dir}/usr/share/mica-dist-${project.version}"
+                        tofile="${deb.dir}/usr/share/mica-server-${project.version}"/>
 
                     <mkdir dir="${deb.dir}/etc"/>
                     <move todir="${deb.dir}/etc/mica-server">
                       <fileset dir="${deb.dir}/usr/share/mica-server-${project.version}/conf"/>
                     </move>
-                    <delete file="${deb.dir}/etc/mica-server/application-dev.yml"/>
 
                     <exec executable="debuild" dir="${deb.dir}" failonerror="true" osfamily="unix">
                       <arg value="-b"/>
@@ -127,8 +128,8 @@
                   <target>
                     <property name="deb.version" value="${project.version}-b${buildNumber}"/>
                     <!-- Deploy deb file in deb repo -->
-                    <copy todir="${obiba.deb.dir}/${mica-server.deploy.dir}"
-                        file="target/mica_server_${deb.version}_all.deb"/>
+                    <copy file="target/mica_server_${deb.version}_all.deb"
+                        todir="${obiba.deb.dir}/${mica-server.deploy.dir}"/>
                   </target>
                 </configuration>
               </execution>
@@ -141,8 +142,8 @@
                 <configuration>
                   <target>
                     <!-- Deploy Mica Server package file in download repo -->
-                    <copy todir="${obiba.download.dir}/mica-server/${mica-server.deploy.dir}"
-                        file="target/mica-server-${project.version}-dist.zip"/>
+                    <copy file="target/mica-server-${project.version}-dist.zip"
+                        todir="${obiba.download.dir}/mica-server/${mica-server.deploy.dir}"/>
                   </target>
                 </configuration>
               </execution>

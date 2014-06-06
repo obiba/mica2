@@ -66,14 +66,6 @@
   </fileSets>
   <dependencySets>
 
-    <!-- Copy dependency jar files to 'lib' -->
-    <!--<dependencySet>-->
-    <!--<outputDirectory>lib</outputDirectory>-->
-    <!--<excludes>-->
-    <!--<exclude>org.obiba.mica:mica-webapp:*</exclude>-->
-    <!--</excludes>-->
-    <!--</dependencySet>-->
-
     <dependencySet>
       <outputDirectory>webapp</outputDirectory>
       <includes>
