@@ -1,4 +1,5 @@
 skipTests = false
+version=0.1-SNAPSHOT
 mvn_exec = mvn -Dmaven.test.skip=${skipTests}
 current_dir = $(shell pwd)
 mica_server_home = ${current_dir}/mica-webapp/target/mica_server_home
@@ -52,8 +53,15 @@ run:
 
 run-prod:
 	cd mica-webapp && \
-	mvn package -Pci-build && \
-	java -Dloader.path=src/main/conf,target/mica-webapp-0.1-SNAPSHOT.jar -DMICA_SERVER_HOME="${mica_server_home}" -DMICA_SERVER_LOG="${mica_server_log}" -jar target/mica-webapp-0.1-SNAPSHOT.jar
+	mvn install -Pci-build && \
+	cd ../mica-dist && \
+	mvn clean package && \
+	cd target && \
+	unzip mica-dist-${version}-dist.zip && \
+	mkdir mica_server_home && \
+	mv mica-dist-${version}/conf mica_server_home/conf && \
+	export MICA_SERVER_HOME="${current_dir}/mica-dist/target/mica_server_home" && \
+	mica-dist-${version}/bin/mica-server
 
 debug:
 	export MAVEN_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,address=8000,suspend=n && \

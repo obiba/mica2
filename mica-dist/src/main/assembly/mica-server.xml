@@ -53,38 +53,34 @@
     </fileSet>
 
     <fileSet>
-      <directory>src/main/conf</directory>
+      <directory>../mica-webapp/src/main/conf</directory>
       <outputDirectory>conf</outputDirectory>
       <includes>
         <include>**/*.*</include>
       </includes>
+      <excludes>
+        <exclude>application-dev.yml</exclude>
+      </excludes>
     </fileSet>
 
   </fileSets>
   <dependencySets>
 
     <!-- Copy dependency jar files to 'lib' -->
-    <dependencySet>
-      <outputDirectory>lib</outputDirectory>
-      <excludes>
-        <exclude>org.obiba.mica:mica-angularjs-client:*</exclude>
-        <exclude>org.obiba.commons:obiba-password-hasher:jar:cli</exclude>
-        <exclude>org.apache.shiro.tools:shiro-tools-hasher:*</exclude>
-      </excludes>
-    </dependencySet>
-
+    <!--<dependencySet>-->
+    <!--<outputDirectory>lib</outputDirectory>-->
+    <!--<excludes>-->
+    <!--<exclude>org.obiba.mica:mica-webapp:*</exclude>-->
+    <!--</excludes>-->
+    <!--</dependencySet>-->
 
     <dependencySet>
       <outputDirectory>webapp</outputDirectory>
       <includes>
-        <include>org.obiba.mica:mica-angularjs-client:war</include>
+        <include>org.obiba.mica:mica-webapp:war</include>
       </includes>
       <scope>runtime</scope>
       <unpack>true</unpack>
-      <excludes>
-        <exclude>org.obiba.commons:obiba-password-hasher:jar:cli</exclude>
-        <exclude>org.apache.shiro.tools:shiro-tools-hasher:*</exclude>
-      </excludes>
     </dependencySet>
 
     <!-- Tools -->

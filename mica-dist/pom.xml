@@ -18,6 +18,11 @@
       <groupId>org.obiba.mica</groupId>
       <artifactId>mica-webapp</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.obiba.mica</groupId>
+      <artifactId>mica-webapp</artifactId>
+      <type>war</type>
+    </dependency>
 
     <dependency>
       <groupId>org.apache.shiro.tools</groupId>
@@ -31,6 +36,32 @@
     </dependency>
 
   </dependencies>
+
+  <build>
+
+    <plugins>
+
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptors>
+            <descriptor>src/main/assembly/mica-server.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+
+  </build>
 
   <profiles>
 
