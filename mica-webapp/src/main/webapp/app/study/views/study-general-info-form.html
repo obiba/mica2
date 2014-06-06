@@ -8,3 +8,9 @@
     required="true" help="study.objectives-help"></div>
 
 <input type="file" ng-file-select="onFileSelect($files)" multiple>
+
+<ul ng-show="files.length">
+  <li ng-repeat="file in files">
+    {{file.name}} - {{file.size | bytes}} [md5: {{file.md5}}]
+  </li>
+</ul>

@@ -124,9 +124,9 @@ mica.study
 
     }])
 
-  .controller('StudyEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$location', '$upload', 'DraftStudyResource', 'DraftStudiesResource', 'MicaConfigResource', 'StringUtils', 'FormServerValidation',
+  .controller('StudyEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$location', '$upload', 'DraftStudyResource', 'DraftStudiesResource', 'MicaConfigResource', 'StringUtils', 'FormServerValidation', 'TempFileResource',
 
-    function ($rootScope, $scope, $routeParams, $log, $location, $upload, DraftStudyResource, DraftStudiesResource, MicaConfigResource, StringUtils, FormServerValidation) {
+    function ($rootScope, $scope, $routeParams, $log, $location, $upload, DraftStudyResource, DraftStudiesResource, MicaConfigResource, StringUtils, FormServerValidation, TempFileResource) {
 
       $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}) : {};
       $log.debug('Edit study', $scope.study);
@@ -140,6 +140,7 @@ mica.study
         });
       });
 
+      $scope.files = [];
       $scope.onFileSelect = function ($files) {
         $files.forEach(function (file) {
           $scope.upload = $upload
@@ -151,9 +152,10 @@ mica.study
             .progress(function (evt) {
               $log.debug('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
             })
-            .success(function (data/*, status, headers, config*/) {
-              // file is uploaded successfully
-              $log.debug(data);
+            .success(function (data, status, getResponseHeaders) {
+              var parts = getResponseHeaders().location.split('/');
+              var fileId = parts[parts.length - 1];
+              $scope.files.push(TempFileResource.get({id: fileId}));
             });
         });
       };
