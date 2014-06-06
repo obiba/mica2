@@ -160,6 +160,12 @@
         <artifactId>mica-webapp</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.obiba.mica</groupId>
+        <artifactId>mica-webapp</artifactId>
+        <version>${project.version}</version>
+        <type>war</type>
+      </dependency>
 
       <dependency>
         <groupId>org.elasticsearch</groupId>

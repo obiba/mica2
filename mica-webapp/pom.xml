@@ -11,6 +11,7 @@
   </parent>
 
   <artifactId>mica-webapp</artifactId>
+  <packaging>war</packaging>
 
   <dependencies>
 
@@ -58,15 +59,6 @@
     <plugins>
 
       <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-        <configuration>
-          <mainClass>org.obiba.mica.Application</mainClass>
-          <layout>ZIP</layout>
-        </configuration>
-      </plugin>
-
-      <plugin>
         <artifactId>maven-clean-plugin</artifactId>
         <configuration>
           <filesets>
@@ -76,24 +68,6 @@
           </filesets>
         </configuration>
       </plugin>
-
-      <!--<plugin>-->
-      <!--<artifactId>maven-assembly-plugin</artifactId>-->
-      <!--<configuration>-->
-      <!--<descriptors>-->
-      <!--<descriptor>src/main/assembly/mica-server.xml</descriptor>-->
-      <!--</descriptors>-->
-      <!--</configuration>-->
-      <!--<executions>-->
-      <!--<execution>-->
-      <!--<id>make-assembly</id>-->
-      <!--<phase>package</phase>-->
-      <!--<goals>-->
-      <!--<goal>single</goal>-->
-      <!--</goals>-->
-      <!--</execution>-->
-      <!--</executions>-->
-      <!--</plugin>-->
 
     </plugins>
 
