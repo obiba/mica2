@@ -142,22 +142,42 @@ mica.study
 
       $scope.files = [];
       $scope.onFileSelect = function ($files) {
-        $files.forEach(function (file) {
-          $scope.upload = $upload
-            .upload({
-              url: '/ws/files/temp',
-              method: 'POST',
-              file: file
-            })
-            .progress(function (evt) {
-              $log.debug('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
-            })
-            .success(function (data, status, getResponseHeaders) {
-              var parts = getResponseHeaders().location.split('/');
-              var fileId = parts[parts.length - 1];
-              $scope.files.push(TempFileResource.get({id: fileId}));
-            });
+        $scope.uploadedFiles = $files;
+        $scope.uploadedFiles.forEach(function (file) {
+          uploadFile(file);
         });
+      };
+
+      var uploadFile = function (file) {
+        $scope.upload = $upload
+          .upload({
+            url: '/ws/files/temp',
+            method: 'POST',
+            file: file
+          })
+          .progress(function (evt) {
+            file.progress = parseInt(100.0 * evt.loaded / evt.total);
+          })
+          .success(function (data, status, getResponseHeaders) {
+            var parts = getResponseHeaders().location.split('/');
+            var fileId = parts[parts.length - 1];
+            file.temp = TempFileResource.get({id: fileId});
+          });
+      };
+
+      $scope.deleteTempFile = function (tempFileId) {
+        $log.debug('Delete ', tempFileId);
+        TempFileResource.delete(
+          {id: tempFileId},
+          function () {
+            for (var i = $scope.uploadedFiles.length - 1; i--;) {
+              var file = $scope.uploadedFiles[i];
+              if (file.temp && file.temp.id === tempFileId) {
+                $scope.uploadedFiles.splice(i, 1);
+              }
+            }
+          }
+        );
       };
 
       $scope.save = function () {
