@@ -70,21 +70,21 @@ module.exports = function (grunt) {
         {
           context: '/ws',
           host: 'localhost',
-          port: 8080,
+          port: 8082,
           https: false,
           changeOrigin: false
         },
         {
           context: '/metrics',
           host: 'localhost',
-          port: 8080,
+          port: 8082,
           https: false,
           changeOrigin: false
         },
         {
           context: '/dump',
           host: 'localhost',
-          port: 8080,
+          port: 8082,
           https: false,
           changeOrigin: false
         }
