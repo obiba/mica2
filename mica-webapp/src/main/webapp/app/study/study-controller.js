@@ -122,13 +122,11 @@ mica.study
         }
       });
 
-
-
     }])
 
-  .controller('StudyEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$location', 'DraftStudyResource', 'DraftStudiesResource', 'MicaConfigResource', 'StringUtils', 'FormServerValidation',
+  .controller('StudyEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$location', '$upload', 'DraftStudyResource', 'DraftStudiesResource', 'MicaConfigResource', 'StringUtils', 'FormServerValidation',
 
-    function ($rootScope, $scope, $routeParams, $log, $location, DraftStudyResource, DraftStudiesResource, MicaConfigResource, StringUtils, FormServerValidation) {
+    function ($rootScope, $scope, $routeParams, $log, $location, $upload, DraftStudyResource, DraftStudiesResource, MicaConfigResource, StringUtils, FormServerValidation) {
 
       $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}) : {};
       $log.debug('Edit study', $scope.study);
@@ -141,6 +139,24 @@ mica.study
           $scope.languages.push(lang);
         });
       });
+
+      $scope.onFileSelect = function ($files) {
+        $files.forEach(function (file) {
+          $scope.upload = $upload
+            .upload({
+              url: '/ws/files/temp',
+              method: 'POST',
+              file: file
+            })
+            .progress(function (evt) {
+              $log.debug('percent: ' + parseInt(100.0 * evt.loaded / evt.total));
+            })
+            .success(function (data/*, status, headers, config*/) {
+              // file is uploaded successfully
+              $log.debug(data);
+            });
+        });
+      };
 
       $scope.save = function () {
         if (!$scope.form.$valid) {

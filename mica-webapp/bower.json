@@ -25,6 +25,7 @@
     "jquery-ui": "~1.10.4",
     "json3": "3.3.0",
     "mica-study-timeline": "git@github.com:obiba/mica-study-timeline.git",
+    "ng-file-upload": "~1.4.0",
     "ng-obiba": "git@github.com:obiba/ng-obiba.git",
     "modernizr": "2.7.1",
     "swagger-ui": "2.0.16"
