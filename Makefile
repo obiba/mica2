@@ -18,7 +18,7 @@ help:
 	@echo "  rest        : Install rest module"
 	@echo
 	@echo "  run         : Run webapp module"
-	@echo "  debug       : Debug webapp module on port 8000"
+	@echo "  debug       : Debug webapp module on port 8002"
 	@echo "  grunt       : Start grunt on port 9000"
 	@echo "  npm-install : Download all NodeJS dependencies"
 	@echo
@@ -64,7 +64,7 @@ run-prod:
 	mica-dist-${version}/bin/mica-server
 
 debug:
-	export MAVEN_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,address=8000,suspend=n && \
+	export MAVEN_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,address=8002,suspend=n && \
 	cd mica-webapp && \
 	${mvn_exec} spring-boot:run -Pdev -Dspring.profiles.active=dev -DMICA_SERVER_HOME="${mica_server_home}" -DMICA_SERVER_LOG="${mica_server_log}"
 
