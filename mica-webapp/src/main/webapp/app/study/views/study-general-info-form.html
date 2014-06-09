@@ -7,33 +7,3 @@
 <div localized-textarea name="study.objectives" model="study.objectives" label="study.objectives" lang="tab.lang"
     required="true" help="study.objectives-help"></div>
 
-<input type="file" ng-file-select="onFileSelect($files)" multiple>
-
-<ul ng-show="files.length">
-  <li ng-repeat="file in files">
-    {{file.name}} - {{file.size | bytes}} [md5: {{file.md5}}]
-  </li>
-</ul>
-
-<table class="table table-striped">
-  <tbody>
-  <tr ng-repeat="file in uploadedFiles">
-    <td>
-      <progressbar ng-show="file.showProgressBar" class="progress-striped" value="file.progress">{{file.progress}}%
-      </progressbar>
-    </td>
-    <td>
-      {{file.name}}
-    </td>
-    <td>
-      {{file.size | bytes}}
-    </td>
-    <td>
-      <small ng-show="file.temp">[md5: {{file.temp.md5}}]</small>
-    </td>
-    <td>
-      <a ng-show="file.temp" ng-click="deleteTempFile(file.temp.id)" class="action"><i class="fa fa-trash-o"></i></a>
-    </td>
-  </tr>
-  </tbody>
-</table>
