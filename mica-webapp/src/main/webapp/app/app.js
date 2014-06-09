@@ -158,9 +158,9 @@ mica
     function ($rootScope, $location, $http, AuthenticationSharedService, Session, USER_ROLES) {
       $rootScope.$on('$routeChangeStart', function (event, next) {
         $rootScope.authenticated = AuthenticationSharedService.isAuthenticated();
-        $rootScope.isAuthorized = AuthenticationSharedService.isAuthorized;
+        $rootScope.hasRole = AuthenticationSharedService.isAuthorized;
         $rootScope.userRoles = USER_ROLES;
-        $rootScope.account = Session;
+        $rootScope.subject = Session;
 
         var authorizedRoles = next.access.authorizedRoles;
         if (!AuthenticationSharedService.isAuthorized(authorizedRoles)) {
@@ -208,6 +208,7 @@ mica
 
       // Call when the user logs out
       $rootScope.$on('event:auth-loginCancelled', function () {
-        $location.path('');
+        $rootScope.authenticated = undefined;
+        $location.path('/login');
       });
     }]);

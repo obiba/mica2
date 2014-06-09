@@ -2,6 +2,11 @@ package obiba.mica;
 
 option java_package = "org.obiba.mica.web.model";
 
+message SessionDto {
+  required string username = 1;
+  required string role = 2;
+}
+
 message StudySummaryDto {
   required string id = 1;
   optional TimestampsDto timestamps = 2;

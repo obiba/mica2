@@ -1,7 +1,9 @@
 // bootstrap
 @import "../bower_components/bootstrap/less/variables";
-// copied from bootstrap to allows override
+// copied from bootswatch flatly to allows override
 @import "variables";
+
+// bootstrap
 @import "../bower_components/bootstrap/less/mixins";
 @import "../bower_components/bootstrap/less/normalize";
 @import "../bower_components/bootstrap/less/print";
@@ -39,6 +41,10 @@
 @import "../bower_components/bootstrap/less/carousel";
 @import "../bower_components/bootstrap/less/utilities";
 @import "../bower_components/bootstrap/less/responsive-utilities";
+
+// bootswatch
+@import "../bower_components/bootswatch/flatly/bootswatch";
+
 // font-awesome
 // copied from font-awesome to allows @fa-font-path override
 @import "../bower_components/font-awesome/less/variables";
@@ -64,6 +70,30 @@ body {
   color: #333;
 }
 
+.inline {
+  display: inline;
+}
+
+.page-header {
+  margin-top: 50px;
+}
+
+footer {
+  margin: 40px 0;
+  padding: 20px 0;
+  border-top: solid 1px #EEEEEE;
+
+  font-size: 0.8em;
+}
+
+.table {
+  margin-top: 5px;
+}
+
+.table thead {
+  background-color: #EEEEEE;
+}
+
 .development {
   position: absolute;
   width: 149px;
@@ -71,7 +101,7 @@ body {
   top: 0;
   left: 0;
   border: 0;
-  z-index: 1000;
+  z-index: 10000;
   background-image: url("../images/development_ribbon.png");
   background-position: center center;
   background-repeat: no-repeat;
