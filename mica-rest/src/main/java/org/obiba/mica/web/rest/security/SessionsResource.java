@@ -9,6 +9,7 @@
  */
 package org.obiba.mica.web.rest.security;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
@@ -23,6 +24,7 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.ThreadContext;
 import org.obiba.mica.web.rest.config.JerseyConfiguration;
+import org.obiba.shiro.web.filter.AuthenticationExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -33,14 +35,15 @@ public class SessionsResource {
 
   private static final Logger log = LoggerFactory.getLogger(SessionsResource.class);
 
+  @Inject
+  private AuthenticationExecutor authenticationExecutor;
+
   @POST
   @Path("/sessions")
   public Response createSession(@SuppressWarnings("TypeMayBeWeakened") @Context HttpServletRequest servletRequest,
       @FormParam("username") String username, @FormParam("password") String password) {
     try {
-      Subject subject = SecurityUtils.getSubject();
-      subject.login(new UsernamePasswordToken(username, password));
-      ThreadContext.bind(subject);
+      authenticationExecutor.login(new UsernamePasswordToken(username, password));
       String sessionId = SecurityUtils.getSubject().getSession().getId().toString();
       log.info("Successful session creation for user '{}' session ID is '{}'.", username, sessionId);
       return Response.created(
