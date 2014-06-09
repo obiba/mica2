@@ -2,8 +2,8 @@
 
 mica.constant('USER_ROLES', {
   all: '*',
-  admin: 'ROLE_ADMIN',
-  user: 'ROLE_USER'
+  admin: 'mica-administrator',
+  user: 'mica-user'
 });
 
 /* Services */
