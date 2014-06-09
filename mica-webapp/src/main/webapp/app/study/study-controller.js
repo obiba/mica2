@@ -124,9 +124,9 @@ mica.study
 
     }])
 
-  .controller('StudyEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$location', '$upload', 'DraftStudyResource', 'DraftStudiesResource', 'MicaConfigResource', 'StringUtils', 'FormServerValidation', 'TempFileResource',
+  .controller('StudyEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$location', '$upload', '$timeout', 'DraftStudyResource', 'DraftStudiesResource', 'MicaConfigResource', 'StringUtils', 'FormServerValidation', 'TempFileResource',
 
-    function ($rootScope, $scope, $routeParams, $log, $location, $upload, DraftStudyResource, DraftStudiesResource, MicaConfigResource, StringUtils, FormServerValidation, TempFileResource) {
+    function ($rootScope, $scope, $routeParams, $log, $location, $upload, $timeout, DraftStudyResource, DraftStudiesResource, MicaConfigResource, StringUtils, FormServerValidation, TempFileResource) {
 
       $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}) : {};
       $log.debug('Edit study', $scope.study);
@@ -149,6 +149,7 @@ mica.study
       };
 
       var uploadFile = function (file) {
+        file.showProgressBar = true;
         $scope.upload = $upload
           .upload({
             url: '/ws/files/temp',
@@ -161,12 +162,20 @@ mica.study
           .success(function (data, status, getResponseHeaders) {
             var parts = getResponseHeaders().location.split('/');
             var fileId = parts[parts.length - 1];
-            file.temp = TempFileResource.get({id: fileId});
+            file.temp = TempFileResource.get(
+              {id: fileId},
+              function () {
+                // wait for 1 second before hiding progress bar
+                $timeout(function () {
+                  file.showProgressBar = false;
+                }, 1000);
+              }
+            );
           });
       };
 
       $scope.deleteTempFile = function (tempFileId) {
-        $log.debug('Delete ', tempFileId);
+//        $log.debug('Delete ', tempFileId);
         TempFileResource.delete(
           {id: tempFileId},
           function () {

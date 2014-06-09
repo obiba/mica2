@@ -19,7 +19,8 @@
   <tbody>
   <tr ng-repeat="file in uploadedFiles">
     <td>
-      <progressbar class="progress-striped" value="file.progress">{{file.progress}}%</progressbar>
+      <progressbar ng-show="file.showProgressBar" class="progress-striped" value="file.progress">{{file.progress}}%
+      </progressbar>
     </td>
     <td>
       {{file.name}}

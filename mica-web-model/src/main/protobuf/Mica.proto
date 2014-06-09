@@ -203,9 +203,10 @@ message AttachmentDto {
 }
 
 message TempFileDto {
-  required string name = 1;
-  optional int64 size = 2;
-  optional string md5 = 3;
+  required string id = 1;
+  required string name = 2;
+  optional int64 size = 3;
+  optional string md5 = 4;
 }
 
 message MicaConfigDto {

@@ -10,7 +10,7 @@ class TempFileDtos {
 
   @NotNull
   Mica.TempFileDto asDto(@NotNull TempFile tempFile) {
-    return Mica.TempFileDto.newBuilder().setName(tempFile.getName()).setSize(tempFile.getSize())
+    return Mica.TempFileDto.newBuilder().setId(tempFile.getId()).setName(tempFile.getName()).setSize(tempFile.getSize())
         .setMd5(tempFile.getMd5()).build();
   }
 
