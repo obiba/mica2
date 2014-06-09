@@ -21,7 +21,7 @@ sudo update-alternatives --config javac
 
 During development, run
 
-* `make all drop-mongo run` in one terminal to start a fresh empty mica REST server on port **8082**
+* `make all drop-mongo run` in one terminal to start a fresh empty mica REST server on [HTTP port 8082](http://localhost:8082) or [HTTPS port 8445](https://localhost:8445)
 * `make grunt` in another terminal to start Grunt server with live reload on port **9000**
 
 See `make help` for other targets.

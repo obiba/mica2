@@ -41,8 +41,8 @@ mica.factory('Session', ['$cookieStore',
     return this;
   }]);
 
-mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStore', 'authService', 'Session', 'CurrentSession',
-  function ($rootScope, $http, $cookieStore, authService, Session, CurrentSession) {
+mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStore', '$cookies', 'authService', 'Session', 'CurrentSession',
+  function ($rootScope, $http, $cookieStore, $cookies, authService, Session, CurrentSession) {
     return {
       login: function (param) {
         var data = 'username=' + param.username + '&password=' + param.password;
@@ -62,12 +62,24 @@ mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStor
         });
       },
       isAuthenticated: function () {
+        // check for Session object state
         if (!Session.login) {
-          // check if the user has a cookie
-          if ($cookieStore.get('mica_subject') !== null) {
+          // check if there is a cookie for the subject
+          var subject_cookie = $cookieStore.get('mica_subject');
+          if (subject_cookie !== null && subject_cookie) {
             var account = JSON.parse($cookieStore.get('mica_subject'));
             Session.create(account.login, account.role);
             $rootScope.account = Session;
+            return true;
+          }
+          // check if there is a Obiba session
+          var obiba_cookie = $cookies.obibaid;
+          if (obiba_cookie !== null && obiba_cookie) {
+            CurrentSession.get(function (data) {
+              Session.create(data.username, data.role);
+              $cookieStore.put('mica_subject', JSON.stringify(Session));
+              authService.loginConfirmed(data);
+            });
           }
         }
         return !!Session.login;
