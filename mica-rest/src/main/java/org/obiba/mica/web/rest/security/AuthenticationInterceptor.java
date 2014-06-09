@@ -37,6 +37,10 @@ public class AuthenticationInterceptor implements ContainerResponseFilter {
       int timeout = (int) (session.getTimeout() / 1000);
       responseContext.getHeaders().putSingle(HttpHeaders.SET_COOKIE,
           new NewCookie(MICA_SESSION_ID_COOKIE_NAME, session.getId().toString(), "/", null, null, timeout, false));
+      Object cookieValue = session.getAttribute(HttpHeaders.SET_COOKIE);
+      if(cookieValue != null) {
+        responseContext.getHeaders().add(HttpHeaders.SET_COOKIE, NewCookie.valueOf(cookieValue.toString()));
+      }
     } else {
       if(responseContext.getHeaders().get(HttpHeaders.SET_COOKIE) == null) {
         responseContext.getHeaders().putSingle(HttpHeaders.SET_COOKIE,
