@@ -12,6 +12,8 @@ package org.obiba.mica.web.rest.security;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 
 import org.apache.shiro.SecurityUtils;
@@ -28,15 +30,19 @@ import org.springframework.stereotype.Component;
 @RequiresAuthentication
 public class CurrentSessionResource {
 
+  private static final String OBIBA_ID_COOKIE_NAME = "obibaid";
+
   @DELETE
   public Response deleteSession() {
     // Delete the Shiro session
     try {
       SecurityUtils.getSubject().logout();
+      return Response.ok().header(HttpHeaders.SET_COOKIE,
+          new NewCookie(OBIBA_ID_COOKIE_NAME, null, "/", null, "Obiba session deleted", 0, false)).build();
     } catch(InvalidSessionException e) {
       // Ignore
+      return Response.ok().build();
     }
-    return Response.ok().build();
   }
 
   @GET
