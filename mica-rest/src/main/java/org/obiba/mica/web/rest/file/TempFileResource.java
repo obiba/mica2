@@ -8,8 +8,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
-import org.obiba.mica.service.file.TempFile;
-import org.obiba.mica.service.file.TempFileService;
+import org.obiba.mica.file.TempFile;
+import org.obiba.mica.file.TempFileService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.annotation.Scope;

@@ -2,7 +2,7 @@ package org.obiba.mica.web.model;
 
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.service.file.TempFile;
+import org.obiba.mica.file.TempFile;
 import org.springframework.stereotype.Component;
 
 @Component

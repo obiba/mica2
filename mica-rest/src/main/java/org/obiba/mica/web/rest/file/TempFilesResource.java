@@ -16,8 +16,8 @@ import javax.ws.rs.core.UriInfo;
 
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.obiba.mica.service.file.TempFile;
-import org.obiba.mica.service.file.TempFileService;
+import org.obiba.mica.file.TempFile;
+import org.obiba.mica.file.TempFileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
