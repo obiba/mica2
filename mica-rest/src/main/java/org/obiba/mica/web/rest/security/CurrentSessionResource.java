@@ -15,8 +15,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.session.InvalidSessionException;
+import org.apache.shiro.subject.Subject;
+import org.obiba.mica.security.Roles;
+import org.obiba.mica.web.model.Mica;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -35,22 +39,21 @@ public class CurrentSessionResource {
     return Response.ok().build();
   }
 
-//  @GET
-//  public Agate.SessionDto get() {
-//    Subject subject = SecurityUtils.getSubject();
-//    Agate.SessionDto.Builder builder = Agate.SessionDto.newBuilder() //
-//        .setUsername(subject.getPrincipal().toString()) //
-//        .setRealm(subject.getPrincipals().getRealmNames().iterator().next());
-//
-//    try {
-//      subject.checkRole(Roles.AGATE_ADMIN.name());
-//      builder.setRole(Roles.AGATE_ADMIN.name());
-//    } catch(AuthorizationException e) {
-//      builder.setRole(Roles.AGATE_USER.name());
-//    }
-//
-//    return builder.build();
-//  }
+  @GET
+  public Mica.SessionDto get() {
+    Subject subject = SecurityUtils.getSubject();
+    Mica.SessionDto.Builder builder = Mica.SessionDto.newBuilder() //
+        .setUsername(subject.getPrincipal().toString());
+
+    try {
+      subject.checkRole(Roles.MICA_ADMIN.toString());
+      builder.setRole(Roles.MICA_ADMIN.toString());
+    } catch(AuthorizationException e) {
+      builder.setRole(Roles.MICA_USER.toString());
+    }
+
+    return builder.build();
+  }
 
   @GET
   @Path("/username")

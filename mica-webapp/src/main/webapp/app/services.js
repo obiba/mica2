@@ -1,24 +1,112 @@
 'use strict';
 
+mica.constant('USER_ROLES', {
+  all: '*',
+  admin: 'ROLE_ADMIN',
+  user: 'ROLE_USER'
+});
+
 /* Services */
+
+mica.factory('CurrentSession', ['$resource',
+  function ($resource) {
+    return $resource('ws/auth/session/_current');
+  }]);
 
 mica.factory('Account', ['$resource',
   function ($resource) {
-    return $resource('ws/account', {}, {
+    return $resource('ws/user/_current', {}, {
     });
   }]);
 
 mica.factory('Password', ['$resource',
   function ($resource) {
-    return $resource('ws/account/change_password', {}, {
+    return $resource('ws/user/_current/password', {}, {
     });
   }]);
 
-mica.factory('Sessions', ['$resource',
-  function ($resource) {
-    return $resource('ws/account/sessions/:series', {}, {
-      'get': { method: 'GET', isArray: true}
-    });
+mica.factory('Session', ['$cookieStore',
+  function ($cookieStore) {
+    this.create = function (login, role) {
+      this.login = login;
+      this.role = role;
+    };
+    this.destroy = function () {
+      this.login = null;
+      this.role = null;
+      $cookieStore.remove('mica_subject');
+      $cookieStore.remove('micasid');
+      $cookieStore.remove('obibaid');
+    };
+    return this;
+  }]);
+
+mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStore', 'authService', 'Session', 'CurrentSession',
+  function ($rootScope, $http, $cookieStore, authService, Session, CurrentSession) {
+    return {
+      login: function (param) {
+        var data = 'username=' + param.username + '&password=' + param.password;
+        $http.post('ws/auth/sessions', data, {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          ignoreAuthModule: 'ignoreAuthModule'
+        }).success(function () {
+          CurrentSession.get(function (data) {
+            Session.create(data.username, data.role);
+            $cookieStore.put('mica_subject', JSON.stringify(Session));
+            authService.loginConfirmed(data);
+          });
+        }).error(function () {
+          Session.destroy();
+        });
+      },
+      isAuthenticated: function () {
+        if (!Session.login) {
+          // check if the user has a cookie
+          if ($cookieStore.get('mica_subject') !== null) {
+            var account = JSON.parse($cookieStore.get('mica_subject'));
+            Session.create(account.login, account.role);
+            $rootScope.account = Session;
+          }
+        }
+        return !!Session.login;
+      },
+      isAuthorized: function (authorizedRoles) {
+        if (!angular.isArray(authorizedRoles)) {
+          if (authorizedRoles === '*') {
+            return true;
+          }
+
+          authorizedRoles = [authorizedRoles];
+        }
+
+        var isAuthorized = false;
+
+        angular.forEach(authorizedRoles, function (authorizedRole) {
+          var authorized = (!!Session.login &&
+            Session.role === authorizedRole);
+
+          if (authorized || authorizedRole === '*') {
+            isAuthorized = true;
+          }
+        });
+
+        return isAuthorized;
+      },
+      logout: function () {
+        $rootScope.authenticationError = false;
+        $http({method: 'DELETE', url: 'ws/auth/session/_current', errorHandler: true})
+          .success(function () {
+            Session.destroy();
+            authService.loginCancelled(null, 'logout');
+          }).error(function () {
+            Session.destroy();
+            authService.loginCancelled(null, 'logout failure');
+          }
+        );
+      }
+    };
   }]);
 
 mica.factory('MetricsService', ['$resource',
@@ -70,97 +158,6 @@ mica.factory('AuditsService', ['$http',
         return $http.get('ws/audits/byDates', {params: {fromDate: fromDate, toDate: toDate}}).then(function (response) {
           return response.data;
         });
-      }
-    };
-  }]);
-
-mica.factory('Session', ['$cookieStore',
-  function ($cookieStore) {
-    this.create = function (login, firstName, lastName, email, userRoles) {
-      this.login = login;
-      this.firstName = firstName;
-      this.lastName = lastName;
-      this.email = email;
-      this.userRoles = userRoles;
-    };
-    this.destroy = function () {
-      this.login = null;
-      this.firstName = null;
-      this.lastName = null;
-      this.email = null;
-      this.roles = null;
-      $cookieStore.remove('account');
-    };
-    return this;
-  }]);
-
-mica.constant('USER_ROLES', {
-  all: '*',
-  admin: 'ROLE_ADMIN',
-  user: 'ROLE_USER'
-});
-
-mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStore', 'authService', 'Session', 'Account',
-  function ($rootScope, $http, $cookieStore, authService, Session, Account) {
-    return {
-      login: function (param) {
-        var data = 'j_username=' + param.username + '&j_password=' + param.password + '&_spring_security_remember_me=' + param.rememberMe + '&submit=Login';
-        $http.post('ws/authentication', data, {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          },
-          ignoreAuthModule: 'ignoreAuthModule'
-        }).success(function () {
-          Account.get(function (data) {
-            Session.create(data.login, data.firstName, data.lastName, data.email, data.roles);
-            $cookieStore.put('account', JSON.stringify(Session));
-            authService.loginConfirmed(data);
-          });
-        }).error(function () {
-          Session.destroy();
-        });
-      },
-      isAuthenticated: function () {
-        if (!Session.login) {
-          // check if the user has a cookie
-          if ($cookieStore.get('account') !== null) {
-            var account = JSON.parse($cookieStore.get('account'));
-            Session.create(account.login, account.firstName, account.lastName,
-              account.email, account.userRoles);
-            $rootScope.account = Session;
-          }
-        }
-        return !!Session.login;
-      },
-      isAuthorized: function (authorizedRoles) {
-        if (!angular.isArray(authorizedRoles)) {
-          if (authorizedRoles === '*') {
-            return true;
-          }
-
-          authorizedRoles = [authorizedRoles];
-        }
-
-        var isAuthorized = false;
-
-        angular.forEach(authorizedRoles, function (authorizedRole) {
-          var authorized = (!!Session.login &&
-            Session.userRoles.indexOf(authorizedRole) !== -1);
-
-          if (authorized || authorizedRole === '*') {
-            isAuthorized = true;
-          }
-        });
-
-        return isAuthorized;
-      },
-      logout: function () {
-        $rootScope.authenticationError = false;
-        $http.get('ws/logout')
-          .success(function () {
-            Session.destroy();
-            authService.loginCancelled();
-          });
       }
     };
   }]);

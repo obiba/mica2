@@ -8,6 +8,8 @@
     "browsehappy": "You are using an <strong>outdated</strong> browser. Please <a href=\"http://browsehappy.com/\">upgrade your browser</a> to improve your experience.",
     "menu": {
       "home": "Home",
+      "myProfile": "My Profile",
+      "logout": "Sign Out",
       "account": {
         "main": "Account",
         "settings": "Settings",
@@ -17,8 +19,8 @@
         "metrics": "Metrics",
         "logs": "Logs",
         "audits": "Audits",
-        "login": "Authenticate",
-        "logout": "Log out"
+        "login": "Sign In",
+        "logout": "Sign out"
       },
       "admin": "Administration",
       "language": "Language"
@@ -31,20 +33,11 @@
   },
   "main": {
     "title": "Welcome to Micado!",
-    "subtitle": "This is your homepage",
+    "subtitle": "Mica allows you to browse studies and, for those with administrator rights, edit them.",
     "logged": {
-      "message": "You are logged in as user \"{{username}}\".",
-      "authenticated": "If you want to <a href=\"#/login\">authenticate</a>, you can try the default accounts:<br/>- Admnistrator (login=\"admin\" and password=\"admin\") <br/>- User (login=\"user\" and password=\"user\")."
-    },
-    "question": "If you have any question on JHipster:",
-    "link": {
-      "homepage": "JHipster homepage",
-      "stackoverflow": "JHipster on Stack Overflow",
-      "bugtracker": "JHipster bug tracker",
-      "contact": "contact @java_hipster on Twitter"
-    },
-    "like": "If you like JHipster, don't forget to give us a star on",
-    "github": "Github"
+      "userMessage": "You are logged in as user \"{{username}}\".",
+      "adminMessage": "You are logged in as user \"{{username}}\" with administrator rights."
+    }
   },
   "login": {
     "title": "Authentication",
@@ -54,7 +47,7 @@
       "password": "Password",
       "password.placeholder": "Your password",
       "rememberme": "Automatic Login",
-      "button": "Authenticate"
+      "button": "Sign In"
     },
     "messages": {
       "error": {

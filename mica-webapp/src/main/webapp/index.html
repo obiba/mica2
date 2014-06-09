@@ -31,96 +31,91 @@
   your browser</a> to improve your experience.</p>
 <![endif]-->
 <div class="development"></div>
-<div class="container">
 
-  <div class="header" ng-switch="authenticated">
-    <ul class="nav nav-pills pull-right">
-      <li>
-        <a href="#">
-          <span class="glyphicon glyphicon-home"></span> <span translate>global.menu.home</span>
-        </a>
-      </li>
-      <li>
-        <a href="#/config">
-          <i class="fa fa-cog"></i> <span translate>config.short-title</span>
-        </a>
-      </li>
-      <li>
-        <a href="#/study">
-          <span class="glyphicon glyphicon-tree-deciduous"></span> <span translate>studies</span>
-        </a>
-      </li>
-      <li class="dropdown pointer">
-        <a class="dropdown-toggle" data-toggle="dropdown">
-          <span>
-            <span class="glyphicon glyphicon-user"></span>
-            <span class="hidden-tablet" translate>global.menu.account.main</span>
-            <b class="caret"></b>
-          </span>
-        </a>
-        <ul class="dropdown-menu" ng-controller="MenuController">
-          <li ng-switch-when="true"><a href="#/settings"><span class="glyphicon glyphicon-wrench"></span>
-            &nbsp;<span translate>global.menu.account.settings</span></a></li>
-          <li ng-switch-when="true"><a href="#/password"><span class="glyphicon glyphicon-lock"></span>
-            &nbsp;<span translate>global.menu.account.password</span></a></li>
-          <li ng-switch-when="true"><a href="#/sessions"><span class="glyphicon glyphicon-cloud"></span>
-            &nbsp;<span translate>global.menu.account.sessions</span></a></li>
-          <li ng-switch-when="true"><a href="#/logout"><span class="glyphicon glyphicon-log-out"></span>
-            &nbsp;<span translate>global.menu.account.logout</span></a></li>
-          <li ng-switch-when="false"><a href="#/login"><span class="glyphicon glyphicon-log-in"></span>
-            &nbsp;<span translate>global.menu.account.login</span></a></li>
-        </ul>
-      </li>
-      <li ng-switch-when="true" ng-show="isAuthorized(userRoles.admin)" class="dropdown pointer"
-          ng-controller="AdminController">
-        <a class="dropdown-toggle" data-toggle="dropdown">
-        <span>
-          <span class="glyphicon glyphicon-tower"></span>
-          <span class="hidden-tablet" translate>global.menu.admin</span>
-          <b class="caret"></b>
-        </span>
-        </a>
-        <ul class="dropdown-menu">
-          <li><a href="#/metrics"><span class="glyphicon glyphicon-dashboard"></span>
-            &nbsp;<span translate>global.menu.account.metrics</span></a></li>
-          <li><a href="#/audits"><span class="glyphicon glyphicon-bell"></span>
-            &nbsp;<span translate>global.menu.account.audits</span></a></li>
-          <li><a href="#/logs"><span class="glyphicon glyphicon-tasks"></span>
-            &nbsp;<span translate>global.menu.account.logs</span></a></li>
-          <li><a href="#/docs"><span class="glyphicon glyphicon-book"></span>
-            &nbsp;<span translate>global.menu.account.apidocs</span></a></li>
-        </ul>
-      </li>
-      <li class="dropdown pointer" ng-controller="LanguageController">
-        <a class="dropdown-toggle" data-toggle="dropdown">
-        <span>
-          <span class="glyphicon glyphicon-flag"></span>
-          <span class="hidden-tablet" translate>global.menu.language</span>
-          <b class="caret"></b>
-        </span>
-        </a>
-        <ul class="dropdown-menu">
-          <li active-menu="en">
-            <a href="#" ng-click="changeLanguage(&apos;en&apos;)"><span class="famfamfam-flag-gb"></span>
-              &nbsp;<span translate>global.language.en</span></a>
-          </li>
-          <li active-menu="fr">
-            <a href="#" ng-click="changeLanguage(&apos;fr&apos;)"><span class="famfamfam-flag-fr"></span>
-              &nbsp;<span translate>global.language.fr</span></a>
-          </li>
-        </ul>
-      </li>
-    </ul>
-    <h3 class="text-muted">Mica</h3>
+<div class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <a href="#" class="navbar-brand">Mica</a>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar-main" ng-switch="authenticated">
+      <ul class="nav navbar-nav">
+        <li ng-hide="!authenticated">
+          <a href="#/study">
+            <span translate>studies</span>
+          </a>
+        </li>
+        <li class="dropdown" ng-hide="!hasRole('mica-administrator')">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            <span translate>global.menu.admin</span>
+            <i class="fa fa-caret-down"></i></a>
+          <ul class="dropdown-menu pull-right">
+            <li>
+              <a href="#/config">
+                <i class="fa fa-cog"></i> <span translate>config.short-title</span>
+              </a>
+            </li>
+            <li class="divider"></li>
+            <li>
+              <a href="#/metrics">
+                <span class="glyphicon glyphicon-dashboard"></span>
+              &nbsp;<span translate>global.menu.account.metrics</span>
+              </a>
+            </li>
+            <li>
+              <a href="#/audits"><span class="glyphicon glyphicon-bell"></span>
+              &nbsp;<span translate>global.menu.account.audits</span>
+              </a>
+            </li>
+            <li>
+              <a href="#/logs"><span class="glyphicon glyphicon-tasks"></span>
+              &nbsp;<span translate>global.menu.account.logs</span>
+              </a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+
+      <ul class="nav navbar-nav navbar-right" ng-hide="!authenticated">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            <i class="fa fa-user"></i>
+            {{subject.login}}
+            <i class="fa fa-caret-down"></i></a>
+          <ul class="dropdown-menu pull-right">
+            <li><a href="#/profile"><i class="fa fa-cog"></i> <span translate>global.menu.myProfile</span></a></li>
+            <li class="divider"></li>
+            <li><a href="#/logout"><i class="fa fa-sign-out"></i> <span translate>global.menu.logout</span></a></li>
+          </ul>
+        </li>
+      </ul>
+
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="page-header" ng-switch="authenticated">
   </div>
 
   <div ng-controller="NotificationController"></div>
 
-  <div class="well" ng-view=""></div>
+  <div ng-view=""></div>
 
-  <div class="footer">
-    <p translate>footer</p>
-  </div>
+  <footer ng-hide="!authenticated">
+    <div class="row">
+      <div class="col-lg-12">
+        <ul class="list-unstyled list-inline">
+          <li class="pull-right">0.1-SNAPSHOT</li>
+          <li>© 2014</li>
+          <li><a href="http://obiba.org" target="_blank"> OBiBa </a></li>
+          <li><a href="http://wiki.obiba.org/display/MICADOC" target="_blank">
+            Documentation </a></li>
+          <li><a href="https://github.com/obiba/agate" target="_blank"> Sources
+          </a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
 </div>
 
 <!-- Google Analytics: uncomment and change UA-XXXXX-X to be your site's ID.

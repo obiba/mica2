@@ -1,21 +1,22 @@
 <div ng-cloak>
   <div class="row">
     <div class="col-md-8">
-      <h1 translate="main.title">Welcome to Micado!</h1>
+      <h1><span translate>main.title</span></h1>
 
-      <p class="lead" translate="main.subtitle">This is your homepage</p>
+      <p><span translate>main.subtitle</span></p>
 
-      <div ng-switch="authenticated">
-        <div class="alert alert-success" ng-switch-when="true"
-            translate="main.logged.message" translate-values="{username: '{{account.login}}'}">
-          You are logged in as user "Admin".
-        </div>
-
-        <div class="alert alert-warning" ng-switch-when="false" translate="main.logged.authenticated">
-          If you want to <a href="#/login">authenticate</a>, you can try the default login="admin" and
-          password="admin".
-        </div>
+      <div class="alert alert-success" ng-hide="!(authenticated && hasRole('MICA_USER'))"
+          translate translate-values="{username: '{{subject.login}}'}">
+        main.logged.userMessage
       </div>
+      <div class="alert alert-warning" ng-hide="!(authenticated && hasRole('mica-administrator'))"
+          translate translate-values="{username: '{{subject.login}}'}">
+        main.logged.adminMessage
+      </div>
+      <a href="#/login" class="btn btn-info" ng-hide="authenticated">
+        <span translate>login.form.button</span>
+      </a>
+
     </div>
   </div>
 </div>
