@@ -13,7 +13,6 @@ package org.obiba.mica.study.rest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 
 import javax.inject.Inject;
 import javax.ws.rs.DefaultValue;
@@ -25,30 +24,26 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.json.JSONException;
 import org.obiba.mica.search.ElasticSearchService;
 import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Search;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
+import com.codahale.metrics.annotation.Timed;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import static org.obiba.mica.web.model.Search.QueryResultDto;
 
-@Component
-@Scope("request")
-@Path("/search/published")
-public class PublishedStudiesIndexResource {
+@Path("/studies/_search")
+public class PublishedStudiesSearchResource {
 
-  private static final Logger log = LoggerFactory.getLogger(PublishedStudiesIndexResource.class);
+  private static final Logger log = LoggerFactory.getLogger(PublishedStudiesSearchResource.class);
 
   @Inject
   private Dtos dtos;
@@ -59,22 +54,13 @@ public class PublishedStudiesIndexResource {
   @Inject
   private ElasticSearchService elasticSearchService;
 
-  /**
-   * TODO: this method should be renamed to _search and receive a queryDto
-   *
-   * @param from
-   * @param size
-   * @return
-   * @throws JSONException
-   * @throws IOException
-   */
   @GET
-  @Path("/studies")
+  @Timed
   public QueryResultDto list(@QueryParam("from") @DefaultValue("0") int from,
       @QueryParam("size") @DefaultValue("10") int size) throws JSONException, IOException {
 
     SearchResponse response = elasticSearchService.getClient() //
-        .prepareSearch("study-published") //
+        .prepareSearch(StudyIndexer.PUBLISHED_STUDY_INDEX) //
         .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
         .setQuery(QueryBuilders.matchAllQuery()) //
         .addAggregation(AggregationBuilders.terms("access").field("access")) //
@@ -83,23 +69,17 @@ public class PublishedStudiesIndexResource {
         .execute() //
         .actionGet();
 
+    QueryResultDto.Builder builder = QueryResultDto.newBuilder().setTotalHits((int) response.getHits().getTotalHits());
 
-    QueryResultDto.Builder builder = QueryResultDto.newBuilder().setTotalHits((int)response.getHits().getTotalHits());
-
-    for (SearchHit hit : response.getHits()) {
-      InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
-      builder.addStudies(dtos.asDto(objectMapper.readValue(inputStream, Study.class)));
-    }
-
-    for (Aggregation aggregation : response.getAggregations()) {
-      StringTerms terms = (StringTerms)aggregation;
-
-      for (Bucket bucket : terms.getBuckets()) {
-        builder.addAggs(
-            Search.TermsAggregateDto.newBuilder().setKey(bucket.getKey()).setCount((int) bucket.getDocCount()));
+    for(SearchHit hit : response.getHits()) {
+      try(InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes())) {
+        builder.addStudies(dtos.asDto(objectMapper.readValue(inputStream, Study.class)));
       }
     }
-
+    response.getAggregations() //
+        .forEach(aggregation -> ((Terms) aggregation).getBuckets() //
+            .forEach(bucket -> builder.addAggs(
+                Search.TermsAggregateDto.newBuilder().setKey(bucket.getKey()).setCount((int) bucket.getDocCount()))));
     return builder.build();
   }
 

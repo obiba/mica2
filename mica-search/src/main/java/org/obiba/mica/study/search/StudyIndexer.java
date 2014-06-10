@@ -19,9 +19,9 @@ public class StudyIndexer {
 
   private static final Logger log = LoggerFactory.getLogger(StudyIndexer.class);
 
-  private static final String DRAFT_STUDY_INDEX = "study-draft";
+  public static final String DRAFT_STUDY_INDEX = "study-draft";
 
-  private static final String PUBLISHED_STUDY_INDEX = "study-published";
+  public static final String PUBLISHED_STUDY_INDEX = "study-published";
 
   @Inject
   private ElasticSearchIndexer elasticSearchIndexer;
