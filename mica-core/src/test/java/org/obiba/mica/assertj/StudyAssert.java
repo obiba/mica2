@@ -1,7 +1,7 @@
 package org.obiba.mica.assertj;
 
 import org.assertj.core.api.AbstractAssert;
-import org.obiba.mica.domain.Study;
+import org.obiba.mica.study.domain.Study;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

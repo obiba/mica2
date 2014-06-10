@@ -6,8 +6,8 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.domain.Contact;
-import org.obiba.mica.domain.Network;
 import org.obiba.mica.domain.Timestamped;
+import org.obiba.mica.network.Network;
 import org.springframework.stereotype.Component;
 
 import static com.google.common.base.Strings.isNullOrEmpty;

@@ -4,7 +4,7 @@ import java.util.Locale;
 
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.domain.MicaConfig;
+import org.obiba.mica.micaConfig.MicaConfig;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;

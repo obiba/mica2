@@ -7,10 +7,10 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.domain.Attachment;
 import org.obiba.mica.domain.Contact;
-import org.obiba.mica.domain.Population;
-import org.obiba.mica.domain.Study;
+import org.obiba.mica.file.Attachment;
+import org.obiba.mica.study.domain.Population;
+import org.obiba.mica.study.domain.Study;
 import org.springframework.stereotype.Component;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -124,8 +124,7 @@ class StudyDtos {
     if(dto.getInfoCount() > 0) study.setInfo(localizedStringDtos.fromDto(dto.getInfoList()));
     if(dto.getPopulationsCount() > 0) {
       study.setPopulations(dto.getPopulationsList().stream().map(populationDtos::fromDto)
-              .collect(Collectors.toCollection(TreeSet<Population>::new))
-      );
+              .collect(Collectors.toCollection(TreeSet<Population>::new)));
     }
     return study;
   }

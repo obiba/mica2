@@ -6,7 +6,7 @@ import javax.inject.Inject;
 
 import org.obiba.mica.domain.Address;
 import org.obiba.mica.domain.Contact;
-import org.obiba.mica.service.config.MicaConfigService;
+import org.obiba.mica.micaConfig.MicaConfigService;
 import org.springframework.stereotype.Component;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -84,8 +84,7 @@ class ContactDtos {
     Mica.CountryDto.Builder builder = Mica.CountryDto.newBuilder().setIso(countryIso);
     micaConfigService.getConfig().getLocales().forEach(locale -> builder.addName(
         Mica.LocalizedStringDto.newBuilder().setLang(locale.getLanguage())
-            .setValue(new Locale(countryIso).getDisplayCountry(locale))
-    ));
+            .setValue(new Locale(countryIso).getDisplayCountry(locale))));
     return builder.build();
   }
 

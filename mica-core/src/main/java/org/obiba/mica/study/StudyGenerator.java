@@ -1,107 +1,80 @@
-package org.obiba.mica.web.model;
+package org.obiba.mica.study;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.Year;
+import java.time.YearMonth;
 import java.util.Arrays;
 import java.util.Locale;
 
 import javax.inject.Inject;
 
-import org.bson.types.ObjectId;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mockito;
-import org.obiba.git.command.GitCommandHandler;
-import org.obiba.mica.config.JsonConfiguration;
 import org.obiba.mica.domain.Address;
+import org.obiba.mica.domain.Attribute;
 import org.obiba.mica.domain.Authorization;
 import org.obiba.mica.domain.Contact;
-import org.obiba.mica.domain.Timestamped;
 import org.obiba.mica.file.Attachment;
-import org.obiba.mica.micaConfig.MicaConfig;
-import org.obiba.mica.micaConfig.MicaConfigRepository;
-import org.obiba.mica.micaConfig.MicaConfigService;
-import org.obiba.mica.service.GitService;
-import org.obiba.mica.study.StudyService;
-import org.obiba.mica.study.StudyStateRepository;
+import org.obiba.mica.file.TempFile;
+import org.obiba.mica.file.TempFileService;
+import org.obiba.mica.network.Network;
 import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.NumberOfParticipants;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.stereotype.Component;
 
-import com.google.common.eventbus.EventBus;
-
-import static org.mockito.Mockito.when;
-import static org.obiba.mica.assertj.Assertions.assertThat;
 import static org.obiba.mica.domain.LocalizedString.en;
-import static org.obiba.mica.study.domain.Population.Recruitment;
 import static org.obiba.mica.study.domain.Study.StudyMethods;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
-@ContextConfiguration(classes = { StudyDtosTest.Config.class, JsonConfiguration.class })
-@DirtiesContext
-@SuppressWarnings({ "MagicNumber", "OverlyCoupledClass" })
-public class StudyDtosTest {
+@SuppressWarnings({ "MagicNumber", "OverlyLongMethod" })
+@Component
+public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent> {
+
+  private static final Logger log = LoggerFactory.getLogger(StudyGenerator.class);
 
   @Inject
-  private MicaConfigService micaConfigService;
+  private StudyService studyService;
 
   @Inject
-  private Dtos dtos;
+  private TempFileService tempFileService;
 
-  @Before
-  public void before() {
-    MicaConfig config = new MicaConfig();
-    config.setLocales(Arrays.asList(Locale.ENGLISH, Locale.FRENCH));
-    when(micaConfigService.getConfig()).thenReturn(config);
+//  @Inject
+//  private NetworkRepository networkRepository;
+
+  @Override
+  public void onApplicationEvent(ContextRefreshedEvent event) {
+    log.debug("Create new study - ContextStartedEvent");
+    create();
   }
 
-  @Test
-  public void test_required_only_dto() throws Exception {
-    Study study = new Study();
-    study.setId(new ObjectId().toString());
-    study.setName(en("Canadian Longitudinal Study on Aging"));
-    study.setObjectives(en("The Canadian Longitudinal Study on Aging (CLSA) is a large, national, long-term study"));
+  public void create() {
 
-    Mica.StudyDto dto = dtos.asDto(study);
-    Study fromDto = dtos.fromDto(dto);
-    assertTimestamps(study, dto);
-    assertThat(fromDto).areFieldsEqualToEachOther(study);
-  }
+    Study study = createStudy("CLSA", "Canadian Longitudinal Study on Aging",
+        "Étude longitudinale canadienne sur le vieillissement");
+    studyService.save(study);
+    studyService.publish(study.getId());
 
-  @Test
-  public void test_full_dto() throws Exception {
-    Study study = createStudy();
+    studyService.save(createStudy("NCDS", "National Child Development Study", "National Child Development Study"));
 
-    Mica.StudyDto dto = dtos.asDto(study);
-    Study fromDto = dtos.fromDto(dto);
-    assertTimestamps(study, dto);
-    assertThat(fromDto).areFieldsEqualToEachOther(study);
-  }
-
-  private void assertTimestamps(Timestamped study, Mica.StudyDtoOrBuilder dto) {
-    assertThat(dto.getTimestamps().getCreated()).isEqualTo(study.getCreatedDate().toString());
-    assertThat(dto.getTimestamps().getLastUpdate())
-        .isEqualTo(study.getLastModifiedDate() == null ? "" : study.getLastModifiedDate().toString());
+//    Network network = createNetwork();
+//    network.addStudy(study);
+//    networkRepository.save(network);
+//
+//    studyRepository.findAll().forEach(s -> log.info(">> {}", s));
+//    networkRepository.findAll().forEach(s -> log.info(">> {}", s));
   }
 
   @SuppressWarnings("OverlyLongMethod")
-  private Study createStudy() {
+  private Study createStudy(String acronyme, String nameEn, String nameFr) {
     Study study = new Study();
-    study.setId("study_1");
-    study.setName(
-        en("Canadian Longitudinal Study on Aging").forFr("Étude longitudinale canadienne sur le vieillissement"));
-    study.setAcronym(en("CLSA"));
+    study.setName(en(nameEn).forFr(nameFr));
+    study.setAcronym(en(acronyme));
     study.setObjectives(
         en("The Canadian Longitudinal Study on Aging (CLSA) is a large, national, long-term study that will follow approximately 50,000 men and women between the ages of 45 and 85 for at least 20 years. The study will collect information on the changing biological, medical, psychological, social, lifestyle and economic aspects of people’s lives. These factors will be studied in order to understand how, individually and in combination, they have an impact in both maintaining health and in the development of disease and disability as people age.")
             .forFr(
@@ -113,7 +86,6 @@ public class StudyDtosTest {
     study.addInvestigator(contact);
 
     study.setStart(Year.of(2002));
-    study.setEnd(Year.of(2050));
 
     study.setMethods(createMethods());
     study.setNumberOfParticipants(createNumberOfParticipants());
@@ -125,26 +97,35 @@ public class StudyDtosTest {
 
     study.setMarkerPaper(
         "Raina PS, Wolfson C, Kirkland SA, Griffith LE, Oremus M, Patterson C, Tuokko H, Penning M, Balion CM, Hogan D, Wister A, Payette H, Shannon H, and Brazil K, The Canadian longitudinal study on aging (CLSA). Can J Aging, 2009. 28(3): p. 221-9.");
-    study.setPubmedId("PUBMED 19860977");
+    study.setPubmedId("19860977");
 
     study.addPopulation(createPopulation());
     study.setSpecificAuthorization(createAuthorization("mica-server"));
     study.setMaelstromAuthorization(createAuthorization("mica"));
     study.addAttachment(createAttachment());
 
+    study.addAttribute(
+        Attribute.Builder.newAttribute("att1").namespace("mica").locale(Locale.FRENCH).value("value fr").build());
+    study.addAttribute(
+        Attribute.Builder.newAttribute("att1").namespace("mica").locale(Locale.ENGLISH).value("value en").build());
+
     return study;
   }
 
   private Attachment createAttachment() {
-    Attachment attachment = new Attachment();
-    attachment.setId(new ObjectId().toString());
-    attachment.setName("patate.frite");
-    attachment.setType("zip");
-    attachment.setDescription(en("This is an attachment"));
-    attachment.setLang(Locale.ENGLISH);
-    attachment.setSize(1_000_000);
-    attachment.setMd5("7822fe77621b0b2c542215e599a3b511");
-    return attachment;
+    try {
+      TempFile tempFile = tempFileService.addTempFile("study-attachment.txt",
+          new ByteArrayInputStream("This is an attachment".getBytes(StandardCharsets.UTF_8)));
+      Attachment attachment = new Attachment();
+      attachment.setId(tempFile.getId());
+      attachment.setJustUploaded(true);
+      attachment.setType("protocol");
+      attachment.setDescription(en("This is an attachment"));
+      attachment.setLang(Locale.ENGLISH);
+      return attachment;
+    } catch(IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   private Authorization createAuthorization(String authorizer) {
@@ -208,11 +189,12 @@ public class StudyDtosTest {
     population.setRecruitment(createRecruitment());
     population.addDataCollectionEvent(createEvent1());
     population.addDataCollectionEvent(createEvent2());
+    population.addDataCollectionEvent(createEvent3());
     return population;
   }
 
-  private Recruitment createRecruitment() {
-    Recruitment recruitment = new Recruitment();
+  private Population.Recruitment createRecruitment() {
+    Population.Recruitment recruitment = new Population.Recruitment();
     recruitment.addDataSource("questionnaires");
     recruitment.addDataSource("administratives_databases");
     recruitment.addDataSource("others");
@@ -251,8 +233,8 @@ public class StudyDtosTest {
     DataCollectionEvent event = new DataCollectionEvent();
     event.setName(en("Baseline Recruitment"));
     event.setDescription(en("Baseline data collection"));
-    event.setStart(2010, null);
-    event.setEnd(2015, null);
+    event.setStart(YearMonth.of(2010, 1));
+    event.setEnd(YearMonth.of(2015, 12));
     event.addDataSource("questionnaires");
     event.addDataSource("physical_measures");
     event.addDataSource("biological_samples");
@@ -268,8 +250,8 @@ public class StudyDtosTest {
     DataCollectionEvent event = new DataCollectionEvent();
     event.setName(en("Follow-Up One"));
     event.setDescription(en("First follow-up from baseline data collection"));
-    event.setStart(2000, null);
-    event.setEnd(2020, null);
+    event.setStart(YearMonth.of(2000, 1));
+    event.setEnd(YearMonth.of(2020, 12));
     event.addDataSource("questionnaires");
     event.addDataSource("physical_measures");
     event.addDataSource("administratives_databases");
@@ -283,44 +265,26 @@ public class StudyDtosTest {
     return event;
   }
 
-  @Configuration
-  @ComponentScan("org.obiba.mica.web.model")
-  static class Config {
-
-    @Bean
-    public StudyService studyService() {
-      return Mockito.mock(StudyService.class);
-    }
-
-    @Bean
-    public MicaConfigService micaConfigService() {
-      return Mockito.mock(MicaConfigService.class);
-    }
-
-    @Bean
-    public EventBus eventBus() {
-      return Mockito.mock(EventBus.class);
-    }
-
-    @Bean
-    public MicaConfigRepository micaConfigRepository() {
-      return Mockito.mock(MicaConfigRepository.class);
-    }
-
-    @Bean
-    public GitService gitService() {
-      return Mockito.mock(GitService.class);
-    }
-
-    @Bean
-    public GitCommandHandler gitCommandHandler() {
-      return Mockito.mock(GitCommandHandler.class);
-    }
-
-    @Bean
-    public StudyStateRepository studyStateRepository() {
-      return Mockito.mock(StudyStateRepository.class);
-    }
-
+  private DataCollectionEvent createEvent3() {
+    DataCollectionEvent event = new DataCollectionEvent();
+    event.setName(en("Pre-Selection"));
+    event.setDescription(en("Pre-selection for baseline"));
+    event.setStart(YearMonth.of(1996, 5));
+    event.setEnd(YearMonth.of(2000, 11));
+    event.addDataSource("questionnaires");
+    event.addDataSource("physical_measures");
+    event.addDataSource("administratives_databases");
+    event.setAdministrativeDatabases(Arrays.asList("aDB1"));
+    event.setOtherDataSources(en("Other data sources"));
+    event.setBioSamples(Arrays.asList("Blood", "Cell Tissue"));
+    event.addAttachment(createAttachment());
+    return event;
   }
+
+  private Network createNetwork() {
+    Network network = new Network();
+    network.setName(en("Biobanking and Biomolecular Resources Research Infrastructure"));
+    return network;
+  }
+
 }

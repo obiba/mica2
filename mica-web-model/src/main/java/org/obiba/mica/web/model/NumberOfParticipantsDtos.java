@@ -3,7 +3,7 @@ package org.obiba.mica.web.model;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.domain.NumberOfParticipants;
+import org.obiba.mica.study.domain.NumberOfParticipants;
 import org.springframework.stereotype.Component;
 
 import static org.obiba.mica.web.model.Mica.StudyDto.NumberOfParticipantsDto;
