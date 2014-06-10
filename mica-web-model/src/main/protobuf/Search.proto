@@ -1,0 +1,15 @@
+import "Mica.proto";
+
+option java_package = "org.obiba.mica.web.model";
+
+message QueryResultDto {
+  repeated FacetResultDto facets = 1;
+  required int32 totalHits = 2;
+  repeated obiba.mica.StudyDto studies = 3;  // this is temporary, must be abstracted for any type of Dto
+}
+
+
+message FacetResultDto {
+  required string facet = 1;
+  required int32 count = 2;
+}
