@@ -44,6 +44,9 @@ core:
 search:
 	cd mica-search && ${mvn_exec} install
 
+model:
+	cd mica-web-model && ${mvn_exec} install
+
 rest:
 	cd mica-rest && ${mvn_exec} install
 
