@@ -12,6 +12,8 @@ import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.URL;
+import org.obiba.mica.file.AttachmentSerialize;
+import org.obiba.mica.service.study.StudyAttachmentSerializer;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.LinkedListMultimap;
@@ -20,6 +22,7 @@ import com.google.common.collect.Multimap;
 /**
  * A Study.
  */
+@AttachmentSerialize(StudyAttachmentSerializer.class)
 public class Study extends AbstractGitPersistable implements AttributeAware {
 
   private static final long serialVersionUID = 6559914069652243954L;

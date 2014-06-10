@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -21,10 +22,16 @@ import org.eclipse.jgit.transport.PushResult;
 import org.joda.time.DateTime;
 import org.obiba.git.GitException;
 import org.obiba.git.command.AbstractGitWriteCommand;
-import org.obiba.git.command.AddFilesCommand;
+import org.obiba.git.command.AddDeleteFilesCommand;
 import org.obiba.git.command.GitCommandHandler;
+import org.obiba.git.command.ListFilesCommand;
 import org.obiba.git.command.ReadFileCommand;
 import org.obiba.mica.domain.AbstractGitPersistable;
+import org.obiba.mica.file.AttachmentSerialize;
+import org.obiba.mica.file.AttachmentSerializer;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.data.domain.Persistable;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
@@ -44,6 +51,9 @@ public class GitService {
 
   @Inject
   private ObjectMapper objectMapper;
+
+  @Inject
+  private ApplicationContext applicationContext;
 
   private File repositoriesRoot;
 
@@ -69,7 +79,7 @@ public class GitService {
     this.clonesRoot = clonesRoot;
   }
 
-  public void save(@NotNull @Valid AbstractGitPersistable persistable) {
+  public <TGitPersistable extends AbstractGitPersistable> void save(@NotNull @Valid TGitPersistable persistable) {
     try {
 
       persistable.setLastModifiedDate(DateTime.now());
@@ -83,11 +93,16 @@ public class GitService {
         objectMapper.writeValue(out, persistable);
       }
 
+      AddDeleteFilesCommand.Builder builder = new AddDeleteFilesCommand.Builder(getRepositoryPath(persistable.getId()),
+          clonesRoot, "Update");
+
+      // copy tempFile to Git repo
+      processAttachments(persistable, builder);
+
       // add this temp JSON file to GIT
       try(InputStream input = new FileInputStream(jsonFile)) {
-        gitCommandHandler.execute(
-            new AddFilesCommand.Builder(getRepositoryPath(persistable.getId()), "Update " + jsonFileName)
-                .addFile(jsonFileName, input).build());
+        builder.addFile(jsonFileName, input);
+        gitCommandHandler.execute(builder.build());
       }
 
       //noinspection ResultOfMethodCallIgnored
@@ -96,6 +111,24 @@ public class GitService {
     } catch(IOException e) {
       throw new RuntimeException("Cannot persist " + persistable + " to " + persistable.getId() + " repo", e);
     }
+  }
+
+  @SuppressWarnings("unchecked")
+  private <TGitPersistable extends AbstractGitPersistable> void processAttachments(TGitPersistable persistable,
+      AddDeleteFilesCommand.Builder builder) throws IOException {
+    AttachmentSerialize attachmentSerialize = AnnotationUtils
+        .findAnnotation(persistable.getClass(), AttachmentSerialize.class);
+    if(attachmentSerialize == null) return;
+
+    AttachmentSerializer<TGitPersistable> serializer = applicationContext
+        .getBean((Class<? extends AttachmentSerializer<TGitPersistable>>) attachmentSerialize.value());
+    serializer.serializeAttachments(persistable, getExistingPathsInRepo(persistable), builder);
+  }
+
+  private Collection<String> getExistingPathsInRepo(Persistable<String> persistable) {
+    return gitCommandHandler.execute(
+        new ListFilesCommand.Builder(getRepositoryPath(persistable.getId()), clonesRoot).filter("attachment/*")
+            .recursive(true).build());
   }
 
   public <T> T readHead(String id, Class<T> clazz) {

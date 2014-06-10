@@ -86,6 +86,9 @@ clear-log:
 drop-mongo:
 	mongo mica --eval "db.dropDatabase()"
 
+drop-data: drop-mongo
+	rm -rf ${mica_server_home}
+
 dependencies-tree:
 	mvn dependency:tree
 

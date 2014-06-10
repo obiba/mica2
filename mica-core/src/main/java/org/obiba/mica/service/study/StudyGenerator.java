@@ -1,5 +1,8 @@
 package org.obiba.mica.service.study;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.YearMonth;
@@ -18,6 +21,8 @@ import org.obiba.mica.domain.Network;
 import org.obiba.mica.domain.NumberOfParticipants;
 import org.obiba.mica.domain.Population;
 import org.obiba.mica.domain.Study;
+import org.obiba.mica.file.TempFile;
+import org.obiba.mica.file.TempFileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
@@ -35,6 +40,9 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
 
   @Inject
   private StudyService studyService;
+
+  @Inject
+  private TempFileService tempFileService;
 
 //  @Inject
 //  private NetworkRepository networkRepository;
@@ -105,14 +113,19 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
   }
 
   private Attachment createAttachment() {
-    Attachment attachment = new Attachment();
-    attachment.setName("patate.frite");
-    attachment.setType("zip");
-    attachment.setDescription(en("This is an attachment"));
-    attachment.setLang(Locale.ENGLISH);
-    attachment.setSize(1_000_000);
-    attachment.setMd5("7822fe77621b0b2c542215e599a3b511");
-    return attachment;
+    try {
+      TempFile tempFile = tempFileService.addTempFile("study-attachment.txt",
+          new ByteArrayInputStream("This is an attachment".getBytes(StandardCharsets.UTF_8)));
+      Attachment attachment = new Attachment();
+      attachment.setId(tempFile.getId());
+      attachment.setJustUploaded(true);
+      attachment.setType("protocol");
+      attachment.setDescription(en("This is an attachment"));
+      attachment.setLang(Locale.ENGLISH);
+      return attachment;
+    } catch(IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   private Authorization createAuthorization(String authorizer) {

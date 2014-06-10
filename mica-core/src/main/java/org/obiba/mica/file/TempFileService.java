@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.hash.Hashing;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
@@ -39,6 +40,11 @@ public class TempFileService {
     }
   }
 
+  @VisibleForTesting
+  public void setTmpRoot(File tmpRoot) {
+    this.tmpRoot = tmpRoot;
+  }
+
   @NotNull
   public TempFile addTempFile(@NotNull String fileName, @NotNull InputStream uploadedInputStream) throws IOException {
 
@@ -61,8 +67,14 @@ public class TempFileService {
     return tempFile;
   }
 
-  public byte[] getContent(@NotNull String id) throws NoSuchTempFileException, IOException {
-    return Files.toByteArray(getFile(id));
+  public byte[] getContent(@NotNull String id) throws NoSuchTempFileException {
+    try {
+      // check that this tempFile exists
+      getMetadata(id);
+      return Files.toByteArray(getFile(id));
+    } catch(IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   private File getFile(@NotNull String id) {

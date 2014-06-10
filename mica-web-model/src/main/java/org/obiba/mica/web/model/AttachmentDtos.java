@@ -18,15 +18,14 @@ class AttachmentDtos {
 
   @NotNull
   AttachmentDto asDto(@NotNull Attachment attachment) {
-    AttachmentDto.Builder builder = AttachmentDto.newBuilder().setFileName(attachment.getName());
+    AttachmentDto.Builder builder = AttachmentDto.newBuilder().setFileName(attachment.getName())
+        .setSize(attachment.getSize());
     if(attachment.getType() != null) builder.setType(attachment.getType());
     if(attachment.getDescription() != null) {
       builder.addAllDescription(localizedStringDtos.asDto(attachment.getDescription()));
     }
     if(attachment.getLang() != null) builder.setLang(attachment.getLang().toString());
-    if(attachment.getSize() != null) builder.setSize(attachment.getSize());
     if(attachment.getMd5() != null) builder.setMd5(attachment.getMd5());
-
     return builder.build();
   }
 
@@ -37,7 +36,7 @@ class AttachmentDtos {
     if(dto.hasType()) attachment.setType(dto.getType());
     if(dto.getDescriptionCount() > 0) attachment.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
     if(dto.hasLang()) attachment.setLang(new Locale(dto.getLang()));
-    if(dto.hasSize()) attachment.setSize(dto.getSize());
+    attachment.setSize(dto.getSize());
     if(dto.hasMd5()) attachment.setMd5(dto.getMd5());
     return attachment;
   }

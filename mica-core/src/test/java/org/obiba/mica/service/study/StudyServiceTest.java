@@ -16,6 +16,7 @@ import org.obiba.git.command.GitCommandHandler;
 import org.obiba.mica.config.JsonConfiguration;
 import org.obiba.mica.domain.Study;
 import org.obiba.mica.domain.StudyState;
+import org.obiba.mica.file.TempFileService;
 import org.obiba.mica.repository.StudyStateRepository;
 import org.obiba.mica.service.GitService;
 import org.obiba.mica.service.study.event.DraftStudyUpdatedEvent;
@@ -149,15 +150,19 @@ public class StudyServiceTest {
   }
 
   @Configuration
-  @EnableMongoRepositories("org.obiba.mica.repository")
+  @EnableMongoRepositories("org.obiba.mica")
   static class Config extends AbstractMongoConfiguration {
 
     static final File BASE_REPO = Files.createTempDir();
+
     static final File BASE_CLONE = Files.createTempDir();
+
+    static final File TEMP = Files.createTempDir();
 
     static {
       BASE_REPO.deleteOnExit();
       BASE_CLONE.deleteOnExit();
+      TEMP.deleteOnExit();
     }
 
     @Bean
@@ -168,6 +173,18 @@ public class StudyServiceTest {
     @Bean
     public StudyService studyService() {
       return new StudyService();
+    }
+
+    @Bean
+    public StudyAttachmentSerializer studyAttachmentSerializer() {
+      return new StudyAttachmentSerializer();
+    }
+
+    @Bean
+    public TempFileService tempFileService() {
+      TempFileService tempFileService = new TempFileService();
+      tempFileService.setTmpRoot(TEMP);
+      return tempFileService;
     }
 
     @Bean
@@ -200,7 +217,7 @@ public class StudyServiceTest {
 
     @Override
     protected String getMappingBasePackage() {
-      return "org.obiba.mica.domain";
+      return "org.obiba.mica";
     }
 
   }

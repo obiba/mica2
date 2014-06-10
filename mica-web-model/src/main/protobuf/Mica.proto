@@ -198,8 +198,9 @@ message AttachmentDto {
   optional string type = 2;
   repeated LocalizedStringDto description = 3;
   optional string lang = 4;
-  optional int32 size = 5;
+  optional int64 size = 5;
   optional string md5 = 6;
+  optional string tempId = 7;
 }
 
 message TempFileDto {

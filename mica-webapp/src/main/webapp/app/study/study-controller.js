@@ -149,7 +149,17 @@ mica.study
       };
 
       var uploadFile = function (file) {
-        file.showProgressBar = true;
+        $log.debug('file', file);
+
+        var attachment = {
+          showProgressBar: true,
+          progress: 0,
+          file: file,
+          fileName: file.name,
+          size: file.size
+        };
+        $scope.study.attachments.push(attachment);
+
         $scope.upload = $upload
           .upload({
             url: '/ws/files/temp',
@@ -157,18 +167,19 @@ mica.study
             file: file
           })
           .progress(function (evt) {
-            file.progress = parseInt(100.0 * evt.loaded / evt.total);
+            attachment.progress = parseInt(100.0 * evt.loaded / evt.total);
           })
           .success(function (data, status, getResponseHeaders) {
             var parts = getResponseHeaders().location.split('/');
             var fileId = parts[parts.length - 1];
-            file.temp = TempFileResource.get(
+            TempFileResource.get(
               {id: fileId},
-              function () {
+              function (tempFile) {
+                $log.debug('tempFile', tempFile);
+                attachment.tempId = tempFile.id;
+                attachment.md5 = tempFile.md5;
                 // wait for 1 second before hiding progress bar
-                $timeout(function () {
-                  file.showProgressBar = false;
-                }, 1000);
+                $timeout(function () { attachment.showProgressBar = false; }, 1000);
               }
             );
           });
@@ -187,6 +198,10 @@ mica.study
             }
           }
         );
+      };
+
+      $scope.deleteFile = function (fileId) {
+        $log.debug('Delete ', fileId);
       };
 
       $scope.save = function () {
