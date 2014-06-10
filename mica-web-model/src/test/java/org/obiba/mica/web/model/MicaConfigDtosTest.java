@@ -3,7 +3,7 @@ package org.obiba.mica.web.model;
 import java.util.Locale;
 
 import org.junit.Test;
-import org.obiba.mica.domain.MicaConfig;
+import org.obiba.mica.micaConfig.MicaConfig;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

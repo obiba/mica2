@@ -1,4 +1,4 @@
-package org.obiba.mica.domain;
+package org.obiba.mica.micaConfig;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,6 +7,7 @@ import java.util.Locale;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
+import org.obiba.mica.domain.AbstractAuditableDocument;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.google.common.base.Charsets;

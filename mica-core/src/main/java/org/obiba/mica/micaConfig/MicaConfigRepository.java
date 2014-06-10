@@ -1,6 +1,5 @@
-package org.obiba.mica.repository;
+package org.obiba.mica.micaConfig;
 
-import org.obiba.mica.domain.MicaConfig;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface MicaConfigRepository extends MongoRepository<MicaConfig, String> {

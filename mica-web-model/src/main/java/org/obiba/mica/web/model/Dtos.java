@@ -3,11 +3,11 @@ package org.obiba.mica.web.model;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.domain.MicaConfig;
 import org.obiba.mica.domain.Network;
 import org.obiba.mica.domain.Study;
 import org.obiba.mica.domain.StudyState;
 import org.obiba.mica.file.TempFile;
+import org.obiba.mica.micaConfig.MicaConfig;
 import org.obiba.mica.service.study.StudyService;
 import org.springframework.stereotype.Component;
 
