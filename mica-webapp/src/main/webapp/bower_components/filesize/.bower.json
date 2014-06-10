@@ -1,0 +1,15 @@
+{
+  "name": "filesize",
+  "homepage": "https://github.com/avoidwork/filesize.js",
+  "version": "2.0.3",
+  "_release": "2.0.3",
+  "_resolution": {
+    "type": "version",
+    "tag": "2.0.3",
+    "commit": "a8966f8ad4765a65883d43981e042cbcba304a83"
+  },
+  "_source": "git://github.com/avoidwork/filesize.js.git",
+  "_target": "~2.0.3",
+  "_originalSource": "filesize",
+  "_direct": true
+}

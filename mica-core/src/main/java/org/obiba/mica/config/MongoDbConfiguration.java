@@ -25,7 +25,7 @@ import com.mongodb.MongoClient;
 import static com.google.common.base.Strings.isNullOrEmpty;
 
 @Configuration
-@EnableMongoRepositories("org.obiba.mica.repository")
+@EnableMongoRepositories("org.obiba.mica")
 public class MongoDbConfiguration extends AbstractMongoConfiguration implements EnvironmentAware {
 
   private static final Logger log = LoggerFactory.getLogger(MongoDbConfiguration.class);

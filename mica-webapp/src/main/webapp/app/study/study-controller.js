@@ -122,13 +122,11 @@ mica.study
         }
       });
 
-
-
     }])
 
-  .controller('StudyEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$location', 'DraftStudyResource', 'DraftStudiesResource', 'MicaConfigResource', 'StringUtils', 'FormServerValidation',
+  .controller('StudyEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$location', '$upload', '$timeout', 'DraftStudyResource', 'DraftStudiesResource', 'MicaConfigResource', 'StringUtils', 'FormServerValidation', 'TempFileResource',
 
-    function ($rootScope, $scope, $routeParams, $log, $location, DraftStudyResource, DraftStudiesResource, MicaConfigResource, StringUtils, FormServerValidation) {
+    function ($rootScope, $scope, $routeParams, $log, $location, $upload, $timeout, DraftStudyResource, DraftStudiesResource, MicaConfigResource, StringUtils, FormServerValidation, TempFileResource) {
 
       $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}) : {};
       $log.debug('Edit study', $scope.study);
@@ -142,6 +140,72 @@ mica.study
         });
       });
 
+      $scope.files = [];
+      $scope.onFileSelect = function ($files) {
+        $scope.uploadedFiles = $files;
+        $scope.uploadedFiles.forEach(function (file) {
+          uploadFile(file);
+        });
+      };
+
+      var uploadFile = function (file) {
+        $log.debug('file', file);
+
+        var attachment = {
+          showProgressBar: true,
+          lang: getActiveTab().lang,
+          progress: 0,
+          file: file,
+          fileName: file.name,
+          size: file.size
+        };
+        $scope.study.attachments.push(attachment);
+
+        $scope.upload = $upload
+          .upload({
+            url: '/ws/files/temp',
+            method: 'POST',
+            file: file
+          })
+          .progress(function (evt) {
+            attachment.progress = parseInt(100.0 * evt.loaded / evt.total);
+          })
+          .success(function (data, status, getResponseHeaders) {
+            var parts = getResponseHeaders().location.split('/');
+            var fileId = parts[parts.length - 1];
+            TempFileResource.get(
+              {id: fileId},
+              function (tempFile) {
+                $log.debug('tempFile', tempFile);
+                attachment.id = tempFile.id;
+                attachment.md5 = tempFile.md5;
+                attachment.justUploaded = true;
+                // wait for 1 second before hiding progress bar
+                $timeout(function () { attachment.showProgressBar = false; }, 1000);
+              }
+            );
+          });
+      };
+
+      $scope.deleteTempFile = function (tempFileId) {
+//        $log.debug('Delete ', tempFileId);
+        TempFileResource.delete(
+          {id: tempFileId},
+          function () {
+            for (var i = $scope.study.attachments.length - 1; i--;) {
+              var attachment = $scope.study.attachments[i];
+              if (attachment.justUploaded && attachment.id === tempFileId) {
+                $scope.study.attachments.splice(i, 1);
+              }
+            }
+          }
+        );
+      };
+
+      $scope.deleteFile = function (fileId) {
+        $log.debug('Delete ', fileId);
+      };
+
       $scope.save = function () {
         if (!$scope.form.$valid) {
           $scope.form.saveAttempted = true;
@@ -152,6 +216,12 @@ mica.study
         } else {
           createStudy();
         }
+      };
+
+      var getActiveTab = function () {
+        return $scope.tabs.filter(function (tab) {
+          return tab.active;
+        })[0];
       };
 
       var createStudy = function () {

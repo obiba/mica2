@@ -65,16 +65,16 @@ mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStor
         // check for Session object state
         if (!Session.login) {
           // check if there is a cookie for the subject
-          var subject_cookie = $cookieStore.get('mica_subject');
-          if (subject_cookie !== null && subject_cookie) {
+          var subjectCookie = $cookieStore.get('mica_subject');
+          if (subjectCookie !== null && subjectCookie) {
             var account = JSON.parse($cookieStore.get('mica_subject'));
             Session.create(account.login, account.role);
             $rootScope.account = Session;
             return true;
           }
           // check if there is a Obiba session
-          var obiba_cookie = $cookies.obibaid;
-          if (obiba_cookie !== null && obiba_cookie) {
+          var obibaCookie = $cookies.obibaid;
+          if (obibaCookie !== null && obibaCookie) {
             CurrentSession.get(function (data) {
               Session.create(data.username, data.role);
               $cookieStore.put('mica_subject', JSON.stringify(Session));

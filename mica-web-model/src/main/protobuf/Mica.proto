@@ -194,12 +194,21 @@ message AddressDto {
 }
 
 message AttachmentDto {
-  required string fileName = 1;
-  optional string type = 2;
-  repeated LocalizedStringDto description = 3;
-  optional string lang = 4;
-  optional int32 size = 5;
-  optional string md5 = 6;
+  required string id = 1;
+  required string fileName = 2;
+  optional string type = 3;
+  repeated LocalizedStringDto description = 4;
+  optional string lang = 5;
+  optional int64 size = 6;
+  optional string md5 = 7;
+  optional bool justUploaded = 8;
+}
+
+message TempFileDto {
+  required string id = 1;
+  required string name = 2;
+  optional int64 size = 3;
+  optional string md5 = 4;
 }
 
 message MicaConfigDto {

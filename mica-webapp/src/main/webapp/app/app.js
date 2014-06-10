@@ -15,7 +15,8 @@ var mica = angular.module('mica', [
   'ngRoute',
   'pascalprecht.translate',
   'tmh.dynamicLocale',
-  'ui.bootstrap'
+  'ui.bootstrap',
+  'angularFileUpload'
 ]);
 
 mica

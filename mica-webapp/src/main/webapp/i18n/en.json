@@ -325,6 +325,7 @@
     "marker-paper": "Marker Paper",
     "pubmed-id": "Pubmed ID",
     "documents": "Documents",
+    "documents-help": "If applicable, please provide relevant documentation about the study (e.g.: Study Protocol).",
     "timeline": "Study Timeline",
     "populations": "Populations",
     "authorization": {

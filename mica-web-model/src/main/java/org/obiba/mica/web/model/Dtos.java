@@ -7,6 +7,7 @@ import org.obiba.mica.domain.MicaConfig;
 import org.obiba.mica.domain.Network;
 import org.obiba.mica.domain.Study;
 import org.obiba.mica.domain.StudyState;
+import org.obiba.mica.file.TempFile;
 import org.obiba.mica.service.study.StudyService;
 import org.springframework.stereotype.Component;
 
@@ -36,6 +37,9 @@ public class Dtos {
 
   @Inject
   private StudySummaryDtos studySummaryDtos;
+
+  @Inject
+  private TempFileDtos tempFileDtos;
 
   @NotNull
   public StudyDto asDto(@NotNull Study study) {
@@ -72,4 +76,8 @@ public class Dtos {
     return micaConfigDtos.fromDto(dto);
   }
 
+  @NotNull
+  public Mica.TempFileDto asDto(@NotNull TempFile tempFile) {
+    return tempFileDtos.asDto(tempFile);
+  }
 }

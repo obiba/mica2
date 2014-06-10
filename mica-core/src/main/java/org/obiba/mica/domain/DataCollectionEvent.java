@@ -11,11 +11,13 @@ import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.domain.Persistable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.ComparisonChain;
 
 public class DataCollectionEvent extends AbstractAttributeAware
-    implements Serializable, Comparable<DataCollectionEvent> {
+    implements Serializable, Persistable<String>, Comparable<DataCollectionEvent> {
 
   private static final long serialVersionUID = 6559914069652243954L;
 
@@ -44,8 +46,15 @@ public class DataCollectionEvent extends AbstractAttributeAware
 
   private List<Attachment> attachments;
 
+  @Override
   public String getId() {
     return id;
+  }
+
+  @JsonIgnore
+  @Override
+  public boolean isNew() {
+    return false;
   }
 
   public void setId(String id) {
