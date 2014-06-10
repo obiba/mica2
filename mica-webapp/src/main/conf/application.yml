@@ -2,6 +2,13 @@ server:
     port: 8082
     address: localhost
 
+https:
+    port: 8445
+    keystore:
+        file: file:${MICA_SERVER_HOME}/conf/keystore.p12
+        password: changeit
+        type: PKCS12
+
 spring:
     profiles: prod
 
