@@ -3,7 +3,7 @@ package org.obiba.mica.web.model;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.domain.StudyState;
+import org.obiba.mica.study.domain.StudyState;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -20,7 +20,7 @@ class StudySummaryDtos {
         .setTimestamps(TimestampsDtos.asDto(studyState)) //
         .addAllName(localizedStringDtos.asDto(studyState.getName())) //
         .setRevisionsAhead(studyState.getRevisionsAhead());
-    if (studyState.isPublished()) builder.setPublishedTag(studyState.getPublishedTag());
+    if(studyState.isPublished()) builder.setPublishedTag(studyState.getPublishedTag());
     return builder.build();
   }
 

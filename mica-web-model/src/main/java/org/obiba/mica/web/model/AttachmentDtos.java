@@ -5,7 +5,7 @@ import java.util.Locale;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.domain.Attachment;
+import org.obiba.mica.file.Attachment;
 import org.springframework.stereotype.Component;
 
 import static org.obiba.mica.web.model.Mica.AttachmentDto;

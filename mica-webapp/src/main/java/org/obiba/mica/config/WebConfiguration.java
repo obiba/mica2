@@ -47,7 +47,7 @@ import static javax.servlet.DispatcherType.ERROR;
 import static javax.servlet.DispatcherType.FORWARD;
 import static javax.servlet.DispatcherType.INCLUDE;
 import static javax.servlet.DispatcherType.REQUEST;
-import static org.obiba.mica.web.rest.config.JerseyConfiguration.WS_ROOT;
+import static org.obiba.mica.config.JerseyConfiguration.WS_ROOT;
 
 /**
  * Configuration of web application with Servlet 3.0 APIs.

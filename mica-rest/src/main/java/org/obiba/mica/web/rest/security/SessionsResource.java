@@ -21,9 +21,7 @@ import javax.ws.rs.core.UriBuilder;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.subject.Subject;
-import org.apache.shiro.util.ThreadContext;
-import org.obiba.mica.web.rest.config.JerseyConfiguration;
+import org.obiba.mica.config.JerseyConfiguration;
 import org.obiba.shiro.web.filter.AuthenticationExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,8 +44,8 @@ public class SessionsResource {
       authenticationExecutor.login(new UsernamePasswordToken(username, password));
       String sessionId = SecurityUtils.getSubject().getSession().getId().toString();
       log.info("Successful session creation for user '{}' session ID is '{}'.", username, sessionId);
-      return Response.created(
-          UriBuilder.fromPath(JerseyConfiguration.WS_ROOT).path(SessionResource.class).build(sessionId))
+      return Response
+          .created(UriBuilder.fromPath(JerseyConfiguration.WS_ROOT).path(SessionResource.class).build(sessionId))
           .build();
 
     } catch(AuthenticationException e) {

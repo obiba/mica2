@@ -5,9 +5,9 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.domain.Attachment;
-import org.obiba.mica.domain.DataCollectionEvent;
-import org.obiba.mica.domain.Population;
+import org.obiba.mica.file.Attachment;
+import org.obiba.mica.study.domain.DataCollectionEvent;
+import org.obiba.mica.study.domain.Population;
 import org.springframework.stereotype.Component;
 
 import static org.obiba.mica.web.model.Mica.StudyDto.PopulationDto;
@@ -70,10 +70,10 @@ class PopulationDtos {
     if(selectionCriteria.getGender() != null) {
       builder.setGender(PopulationDto.SelectionCriteriaDto.Gender.valueOf(selectionCriteria.getGender().ordinal()));
     }
-    if (selectionCriteria.getAgeMin() != null) {
+    if(selectionCriteria.getAgeMin() != null) {
       builder.setAgeMin(selectionCriteria.getAgeMin());
     }
-    if (selectionCriteria.getAgeMax() != null) {
+    if(selectionCriteria.getAgeMax() != null) {
       builder.setAgeMax(selectionCriteria.getAgeMax());
     }
     if(selectionCriteria.getCountriesIso() != null) {

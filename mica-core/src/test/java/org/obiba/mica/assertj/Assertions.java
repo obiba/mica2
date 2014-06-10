@@ -1,6 +1,6 @@
 package org.obiba.mica.assertj;
 
-import org.obiba.mica.domain.Study;
+import org.obiba.mica.study.domain.Study;
 
 public class Assertions extends org.assertj.core.api.Assertions {
 
