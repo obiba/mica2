@@ -211,6 +211,25 @@
           </tbody>
         </table>
 
+        <h3 translate ng-show="study.attachments.length">study.documents</h3>
+        <table class="table table-striped" ng-show="study.attachments.length">
+          <tbody>
+          <tr ng-repeat="attachment in study.attachments | filter:{lang:lang}">
+            <td>
+              <a ng-href="{{attachment.id}}" target="_blank">
+                {{attachment.fileName}}
+              </a>
+            </td>
+            <td>
+              {{attachment.size | bytes}}
+            </td>
+            <td>
+              <small>md5: {{attachment.md5}}</small>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+
         <h3 translate ng-show="study.info.length">suppl-info</h3>
         <table class="table table-striped" ng-show="study.info.length">
           <tbody>

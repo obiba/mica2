@@ -153,6 +153,7 @@ mica.study
 
         var attachment = {
           showProgressBar: true,
+          lang: getActiveTab().lang,
           progress: 0,
           file: file,
           fileName: file.name,
@@ -176,8 +177,9 @@ mica.study
               {id: fileId},
               function (tempFile) {
                 $log.debug('tempFile', tempFile);
-                attachment.tempId = tempFile.id;
+                attachment.id = tempFile.id;
                 attachment.md5 = tempFile.md5;
+                attachment.justUploaded = true;
                 // wait for 1 second before hiding progress bar
                 $timeout(function () { attachment.showProgressBar = false; }, 1000);
               }
@@ -190,10 +192,10 @@ mica.study
         TempFileResource.delete(
           {id: tempFileId},
           function () {
-            for (var i = $scope.uploadedFiles.length - 1; i--;) {
-              var file = $scope.uploadedFiles[i];
-              if (file.temp && file.temp.id === tempFileId) {
-                $scope.uploadedFiles.splice(i, 1);
+            for (var i = $scope.study.attachments.length - 1; i--;) {
+              var attachment = $scope.study.attachments[i];
+              if (attachment.justUploaded && attachment.id === tempFileId) {
+                $scope.study.attachments.splice(i, 1);
               }
             }
           }
@@ -214,6 +216,12 @@ mica.study
         } else {
           createStudy();
         }
+      };
+
+      var getActiveTab = function () {
+        return $scope.tabs.filter(function (tab) {
+          return tab.active;
+        })[0];
       };
 
       var createStudy = function () {

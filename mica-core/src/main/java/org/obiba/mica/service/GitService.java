@@ -88,16 +88,16 @@ public class GitService {
       jsonFile.deleteOnExit();
       String jsonFileName = getJsonFileName(persistable.getClass());
 
-      // write Object to temp JSON file
-      try(FileOutputStream out = new FileOutputStream(jsonFile)) {
-        objectMapper.writeValue(out, persistable);
-      }
-
       AddDeleteFilesCommand.Builder builder = new AddDeleteFilesCommand.Builder(getRepositoryPath(persistable.getId()),
           clonesRoot, "Update");
 
       // copy tempFile to Git repo
       processAttachments(persistable, builder);
+
+      // write TGitPersistable to temp JSON file
+      try(FileOutputStream out = new FileOutputStream(jsonFile)) {
+        objectMapper.writeValue(out, persistable);
+      }
 
       // add this temp JSON file to GIT
       try(InputStream input = new FileInputStream(jsonFile)) {
