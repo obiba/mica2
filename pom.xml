@@ -159,11 +159,6 @@
         <groupId>org.obiba.mica</groupId>
         <artifactId>mica-webapp</artifactId>
         <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.obiba.mica</groupId>
-        <artifactId>mica-webapp</artifactId>
-        <version>${project.version}</version>
         <type>war</type>
       </dependency>
 
