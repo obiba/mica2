@@ -4,12 +4,15 @@ import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
 import org.obiba.mica.domain.Study;
 import org.obiba.mica.service.study.StudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
+import org.obiba.mica.web.rest.file.FileResource;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -27,6 +30,9 @@ public class DraftStudyResource {
 
   @Inject
   private Dtos dtos;
+
+  @Inject
+  private ApplicationContext applicationContext;
 
   private String id;
 
@@ -68,5 +74,11 @@ public class DraftStudyResource {
 //    studyService.delete(id);
 //    return Response.noContent().build();
 //  }
-
+  @Path("/file/{fileId}")
+  public FileResource study(@PathParam("fileId") String fileId) {
+    FileResource studyResource = applicationContext.getBean(FileResource.class);
+    studyResource.setPersistable(studyService.findDraftStudy(id));
+    studyResource.setFileId(fileId);
+    return studyResource;
+  }
 }

@@ -5,14 +5,17 @@ import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.NoSuchElementException;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.URL;
 import org.obiba.mica.file.AttachmentSerialize;
+import org.obiba.mica.file.PersistableWithAttachments;
 import org.obiba.mica.service.study.StudyAttachmentSerializer;
 
 import com.google.common.base.Objects;
@@ -23,7 +26,7 @@ import com.google.common.collect.Multimap;
  * A Study.
  */
 @AttachmentSerialize(StudyAttachmentSerializer.class)
-public class Study extends AbstractGitPersistable implements AttributeAware {
+public class Study extends AbstractGitPersistable implements AttributeAware, PersistableWithAttachments {
 
   private static final long serialVersionUID = 6559914069652243954L;
 
@@ -225,6 +228,28 @@ public class Study extends AbstractGitPersistable implements AttributeAware {
 
   public void setAttachments(List<Attachment> attachments) {
     this.attachments = attachments;
+  }
+
+  @NotNull
+  @Override
+  public Attachment findAttachmentById(String attachmentId) {
+    if(getAttachments() != null) {
+      for(Attachment attachment : getAttachments()) {
+        if(attachment.getId().equals(attachmentId)) return attachment;
+      }
+    }
+    if(getPopulations() != null) {
+      for(Population population : getPopulations().stream().filter(p -> p.getDataCollectionEvents() != null)
+          .collect(Collectors.toList())) {
+        for(DataCollectionEvent dce : population.getDataCollectionEvents().stream()
+            .filter(d -> d.getAttachments() != null).collect(Collectors.toList())) {
+          for(Attachment attachment : dce.getAttachments()) {
+            if(attachment.getId().equals(attachmentId)) return attachment;
+          }
+        }
+      }
+    }
+    throw new NoSuchElementException("Attachment " + attachmentId + " not found for study " + getId());
   }
 
   public LocalizedString getInfo() {

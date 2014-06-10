@@ -12,6 +12,7 @@ import org.obiba.mica.domain.Study;
 import org.obiba.mica.file.AttachmentSerializer;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.file.TempFileService;
+import org.obiba.mica.service.GitService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Persistable;
@@ -54,18 +55,15 @@ public class StudyAttachmentSerializer implements AttachmentSerializer<Study> {
 
   private void processAttachment(Attachment attachment, Persistable<String> parent,
       AddDeleteFilesCommand.Builder builder, Collection<String> filesToDelete) {
-    String pathInRepo = null;
+    String pathInRepo = GitService.getPathInRepo(attachment.getId());
     if(attachment.isJustUploaded()) {
       TempFile tempFile = tempFileService.getMetadata(attachment.getId());
-      pathInRepo = getPathInRepo(tempFile.getName(), parent);
       builder.addFile(pathInRepo, new ByteArrayInputStream(tempFileService.getContent(attachment.getId())));
       attachment.setName(tempFile.getName());
       attachment.setSize(tempFile.getSize());
       attachment.setMd5(tempFile.getMd5());
       attachment.setJustUploaded(false);
       tempFileService.delete(attachment.getId());
-    } else {
-      pathInRepo = getPathInRepo(attachment.getName(), parent);
     }
     filesToDelete.remove(pathInRepo);
 

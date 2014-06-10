@@ -216,15 +216,16 @@
           <tbody>
           <tr ng-repeat="attachment in study.attachments | filter:{lang:lang}">
             <td>
-              <a ng-href="{{attachment.id}}" target="_blank">
-                {{attachment.fileName}}
+              <a target="_self" ng-href="/ws/draft/study/{{study.id}}/file/{{attachment.id}}/_download"
+                  download="{{attachment.fileName}}">
+              {{attachment.fileName}}
               </a>
             </td>
             <td>
               {{attachment.size | bytes}}
             </td>
             <td>
-              <small>md5: {{attachment.md5}}</small>
+              <small>MD5: {{attachment.md5}}</small>
             </td>
           </tr>
           </tbody>

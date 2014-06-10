@@ -37,6 +37,7 @@ import org.springframework.validation.annotation.Validated;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.io.ByteStreams;
 
 @Component
 @Validated
@@ -45,6 +46,8 @@ public class GitService {
   private static final String PATH_DATA = "${MICA_SERVER_HOME}/data/git";
 
   private static final String PATH_CLONES = "${MICA_SERVER_HOME}/work/git";
+
+  private static final String ATTACHMENTS_PATH = "attachments/";
 
   @Inject
   private GitCommandHandler gitCommandHandler;
@@ -84,24 +87,16 @@ public class GitService {
 
       persistable.setLastModifiedDate(DateTime.now());
 
-      File jsonFile = File.createTempFile("mica", "json");
-      jsonFile.deleteOnExit();
-      String jsonFileName = getJsonFileName(persistable.getClass());
-
       AddDeleteFilesCommand.Builder builder = new AddDeleteFilesCommand.Builder(getRepositoryPath(persistable.getId()),
           clonesRoot, "Update");
 
-      // copy tempFile to Git repo
       processAttachments(persistable, builder);
 
-      // write TGitPersistable to temp JSON file
-      try(FileOutputStream out = new FileOutputStream(jsonFile)) {
-        objectMapper.writeValue(out, persistable);
-      }
+      File jsonFile = serializePersistable(persistable);
 
       // add this temp JSON file to GIT
       try(InputStream input = new FileInputStream(jsonFile)) {
-        builder.addFile(jsonFileName, input);
+        builder.addFile(getJsonFileName(persistable.getClass()), input);
         gitCommandHandler.execute(builder.build());
       }
 
@@ -111,6 +106,16 @@ public class GitService {
     } catch(IOException e) {
       throw new RuntimeException("Cannot persist " + persistable + " to " + persistable.getId() + " repo", e);
     }
+  }
+
+  private <TGitPersistable extends AbstractGitPersistable> File serializePersistable(TGitPersistable persistable)
+      throws IOException {
+    File jsonFile = File.createTempFile("mica", "json");
+    jsonFile.deleteOnExit();
+    try(FileOutputStream out = new FileOutputStream(jsonFile)) {
+      objectMapper.writeValue(out, persistable);
+    }
+    return jsonFile;
   }
 
   @SuppressWarnings("unchecked")
@@ -127,7 +132,7 @@ public class GitService {
 
   private Collection<String> getExistingPathsInRepo(Persistable<String> persistable) {
     return gitCommandHandler.execute(
-        new ListFilesCommand.Builder(getRepositoryPath(persistable.getId()), clonesRoot).filter("attachment/*")
+        new ListFilesCommand.Builder(getRepositoryPath(persistable.getId()), clonesRoot).filter(ATTACHMENTS_PATH + "*")
             .recursive(true).build());
   }
 
@@ -148,6 +153,29 @@ public class GitService {
     } catch(IOException e) {
       throw new RuntimeException("Cannot read " + clazz.getName() + " from " + id + " repo", e);
     }
+  }
+
+  public byte[] readFileHead(String id, String fileId) {
+    return readFile(id, fileId, null);
+  }
+
+  public byte[] readFileFromTag(String id, String fileId, String tag) {
+    return readFile(id, fileId, tag);
+  }
+
+  private byte[] readFile(String id, String fileId, @Nullable String tag) {
+    try {
+      try(InputStream inputStream = gitCommandHandler
+          .execute(new ReadFileCommand.Builder(getRepositoryPath(id), getPathInRepo(fileId)).tag(tag).build())) {
+        return ByteStreams.toByteArray(inputStream);
+      }
+    } catch(IOException e) {
+      throw new RuntimeException("Cannot read file " + fileId + " from " + id + " repo", e);
+    }
+  }
+
+  public static String getPathInRepo(String attachmentId) {
+    return ATTACHMENTS_PATH + attachmentId;
   }
 
   public String tag(String id) {

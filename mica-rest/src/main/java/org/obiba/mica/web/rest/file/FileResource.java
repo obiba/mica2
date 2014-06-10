@@ -1,34 +1,44 @@
 package org.obiba.mica.web.rest.file;
 
+import javax.inject.Inject;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Response;
+
+import org.obiba.mica.domain.Attachment;
+import org.obiba.mica.file.PersistableWithAttachments;
+import org.obiba.mica.service.GitService;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import com.codahale.metrics.annotation.Timed;
 
 @Component
 @Scope("request")
 public class FileResource {
 
-  private String repo;
+  @Inject
+  private GitService gitService;
 
-  private String id;
+  private PersistableWithAttachments persistable;
 
-  public void setRepo(String repo) {
-    this.repo = repo;
+  private String fileId;
+
+  public void setPersistable(PersistableWithAttachments persistable) {
+    this.persistable = persistable;
   }
 
-  public void setId(String id) {
-    this.id = id;
+  public void setFileId(String fileId) {
+    this.fileId = fileId;
   }
 
-  //  @GET
-//  @Timed
-//  public FileDto getMetadata() {
-//    return null;
-//  }
-//
-//  @GET
-//  @Path("/_download")
-//  @Timed
-//  public FileDto download() {
-//    return null;
-//  }
+  @GET
+  @Path("/_download")
+  @Timed
+  public Response download() {
+    Attachment attachment = persistable.findAttachmentById(fileId);
+    return Response.ok(gitService.readFileHead(persistable.getId(), fileId))
+        .header("Content-Disposition", "attachment; filename=\"" + attachment.getName() + "\"").build();
+  }
+
 }
