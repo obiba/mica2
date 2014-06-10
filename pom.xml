@@ -32,7 +32,7 @@
     <commons-io.version>2.4</commons-io.version>
     <commons-lang.version>2.6</commons-lang.version>
     <ehcache-core.version>2.6.8</ehcache-core.version>
-    <elasticsearch.version>1.1.1</elasticsearch.version>
+    <elasticsearch.version>1.2.1</elasticsearch.version>
     <embed-mongo.version>1.45</embed-mongo.version>
     <guava.version>17.0</guava.version>
     <geronimo-javamail_1.4_mail.version>1.8.3</geronimo-javamail_1.4_mail.version>

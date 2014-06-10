@@ -25,9 +25,9 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.facet.Facet;
-import org.elasticsearch.search.facet.FacetBuilders;
-import org.elasticsearch.search.facet.terms.TermsFacet;
+import org.elasticsearch.search.aggregations.Aggregation;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
 import org.json.JSONException;
 import org.obiba.mica.search.ElasticSearchService;
 import org.obiba.mica.study.domain.Study;
@@ -40,6 +40,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import static org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import static org.obiba.mica.web.model.Search.QueryResultDto;
 
 @Component
@@ -76,26 +77,26 @@ public class PublishedStudiesIndexResource {
         .prepareSearch("study-published") //
         .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
         .setQuery(QueryBuilders.matchAllQuery()) //
-        .addFacet(FacetBuilders.termsFacet("access").field("access")) //
+        .addAggregation(AggregationBuilders.terms("access").field("access")) //
         .setFrom(from) //
         .setSize(size) //
         .execute() //
         .actionGet();
 
-    QueryResultDto.Builder builder = QueryResultDto.newBuilder().setTotalHits((int) response.getHits().getTotalHits());
 
-    for(SearchHit hit : response.getHits()) {
-      Map<String, Object> ss = hit.getSource();
+    QueryResultDto.Builder builder = QueryResultDto.newBuilder().setTotalHits((int)response.getHits().getTotalHits());
 
+    for (SearchHit hit : response.getHits()) {
       InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
       builder.addStudies(dtos.asDto(objectMapper.readValue(inputStream, Study.class)));
     }
 
-    for(Facet facet : response.getFacets()) {
-      TermsFacet tf = (TermsFacet) facet;
-      for(TermsFacet.Entry entry : tf.getEntries()) {
-        builder.addFacets(
-            Search.FacetResultDto.newBuilder().setFacet(entry.getTerm().string()).setCount(entry.getCount()));
+    for (Aggregation aggregation : response.getAggregations()) {
+      StringTerms terms = (StringTerms)aggregation;
+
+      for (Bucket bucket : terms.getBuckets()) {
+        builder.addAggs(
+            Search.TermsAggregateDto.newBuilder().setKey(bucket.getKey()).setCount((int) bucket.getDocCount()));
       }
     }
 
