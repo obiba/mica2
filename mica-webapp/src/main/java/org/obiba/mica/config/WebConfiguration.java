@@ -22,19 +22,21 @@ import org.obiba.mica.web.filter.gzip.GZipServletFilter;
 import org.obiba.shiro.web.filter.AuthenticationFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.boot.context.embedded.ConfigurableEmbeddedServletContainer;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.boot.context.embedded.ServletContextInitializer;
 import org.springframework.boot.context.embedded.jetty.JettyEmbeddedServletContainerFactory;
 import org.springframework.boot.context.embedded.jetty.JettyServerCustomizer;
+import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceEditor;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.servlet.InstrumentedFilter;
@@ -54,9 +56,15 @@ import static org.obiba.mica.web.rest.config.JerseyConfiguration.WS_ROOT;
 @ComponentScan({ "org.obiba.mica", "org.obiba.shiro" })
 @PropertySource("classpath:mica-webapp.properties")
 @AutoConfigureAfter(SecurityConfiguration.class)
-public class WebConfiguration implements ServletContextInitializer, JettyServerCustomizer {
+public class WebConfiguration implements ServletContextInitializer, JettyServerCustomizer, EnvironmentAware {
 
   private static final Logger log = LoggerFactory.getLogger(WebConfiguration.class);
+
+  private static final int DEFAULT_HTTPS_PORT = 8445;
+
+  private static final String DEFAULT_KEYSTORE_FILE = "file:${MICA_SERVER_HOME}/conf/keystore.p12";
+
+  private static final String DEFAULT_KEYSTORE_TYPE = "PKCS12";
 
   private static final int MAX_IDLE_TIME = 30000;
 
@@ -71,17 +79,26 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
   @Inject
   private AuthenticationFilter authenticationFilter;
 
-  @Value("${https.port}")
   private int httpsPort;
 
-  @Value("${https.keystore.file}")
   private Resource keystoreFile;
 
-  @Value("${https.keystore.password}")
   private String keystorePass;
 
-  @Value("${https.keystore.type}")
   private String keystoreType;
+
+  @Override
+  public void setEnvironment(Environment environment) {
+    RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(environment, "https.");
+    httpsPort = propertyResolver.getProperty("port", Integer.class, DEFAULT_HTTPS_PORT);
+
+    ResourceEditor resourceEditor = new ResourceEditor();
+    resourceEditor.setAsText(propertyResolver.getProperty("keystore.file", String.class, DEFAULT_KEYSTORE_FILE));
+    keystoreFile = (Resource) resourceEditor.getValue();
+
+    keystorePass = propertyResolver.getProperty("keystore.password");
+    keystoreType = propertyResolver.getProperty("keystore.type", String.class, DEFAULT_KEYSTORE_TYPE);
+  }
 
   @Bean
   EmbeddedServletContainerCustomizer containerCustomizer() throws Exception {
