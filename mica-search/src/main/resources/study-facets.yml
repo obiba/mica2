@@ -1,0 +1,27 @@
+# Define study aggregations: field, name and type
+#
+# For basic terms aggregation:
+#   <field>: <name>
+# If <name> is null, field with be used as name
+#
+# For specific aggregation:
+#   <field>:
+#     type: range
+#     name: <name>
+# If name is not defined, field with be used as name
+#
+
+start:
+  type: range
+    name: start-year
+
+end:
+  type: range
+  name: end-year
+
+access: access
+
+populations:
+  recruitment:
+    dataSources:
+    generalPopulationSources:
