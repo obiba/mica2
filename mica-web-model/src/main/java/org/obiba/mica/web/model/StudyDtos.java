@@ -132,8 +132,10 @@ class StudyDtos {
   @NotNull
   private Mica.StudyDto.StudyMethodsDto asDto(@NotNull Study.StudyMethods studyMethods) {
     Mica.StudyDto.StudyMethodsDto.Builder builder = Mica.StudyDto.StudyMethodsDto.newBuilder();
-    if(studyMethods.getDesigns() != null) studyMethods.getDesigns().forEach(builder::addDesigns);
-    if(studyMethods.getOtherDesign() != null) {
+    if(studyMethods.getDesigns() != null) {
+      builder.addAllDesigns(studyMethods.getDesigns());
+    }
+    if(studyMethods.getOtherDesign() != null && !studyMethods.getOtherDesign().isEmpty()) {
       builder.addAllOtherDesign(localizedStringDtos.asDto(studyMethods.getOtherDesign()));
     }
     if(studyMethods.getFollowUpInfo() != null) {

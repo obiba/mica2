@@ -1,5 +1,6 @@
 import "Mica.proto";
 
+package obiba.mica;
 option java_package = "org.obiba.mica.web.model";
 
 message QueryResultDto {
@@ -7,7 +8,6 @@ message QueryResultDto {
   required int32 totalHits = 2;
   repeated obiba.mica.StudyDto studies = 3;  // this is temporary, must be abstracted for any type of Dto
 }
-
 
 message TermsAggregateDto {
   required string key = 1;

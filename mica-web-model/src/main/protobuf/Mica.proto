@@ -1,5 +1,4 @@
 package obiba.mica;
-
 option java_package = "org.obiba.mica.web.model";
 
 message SessionDto {
@@ -11,12 +10,13 @@ message StudySummaryDto {
   required string id = 1;
   optional TimestampsDto timestamps = 2;
   repeated LocalizedStringDto name = 3;
-  repeated LocalizedStringDto designs = 4;
-  optional TargetNumberDto targetNumber = 5;
-  repeated CountryDto countries = 6;
-  repeated NetworkRelationDto networks = 7;
-  optional string publishedTag = 8;
-  required int32 revisionsAhead = 9;
+  repeated LocalizedStringDto acronym = 4;
+  repeated string designs = 5;
+  optional TargetNumberDto targetNumber = 6;
+  repeated string countries = 7;
+  repeated NetworkRelationDto networks = 8;
+  optional string publishedTag = 9;
+  required int32 revisionsAhead = 10;
 }
 
 message StudyDto {

@@ -111,23 +111,18 @@ public class Population extends AbstractAttributeAware implements Serializable, 
   public int hashCode() {return Objects.hash(id);}
 
   @Override
+  @SuppressWarnings("SimplifiableIfStatement")
   public boolean equals(Object obj) {
-    if(this == obj) {
-      return true;
-    }
-    if(obj == null || getClass() != obj.getClass()) {
-      return false;
-    }
-    final Population other = (Population) obj;
-    return Objects.equals(id, other.id);
+    if(this == obj) return true;
+    if(obj == null || getClass() != obj.getClass()) return false;
+    return Objects.equals(id, ((Population) obj).id);
   }
 
   @Override
-  public int compareTo(Population o) {
-    if(dataCollectionEvents == null) return -1;
-    if(o.dataCollectionEvents == null) return 1;
-    int result = Iterables.get(dataCollectionEvents, 0).compareTo(Iterables.get(o.dataCollectionEvents, 0));
-    return result == 0 ? id.compareTo(o.id) : result;
+  public int compareTo(Population pop) {
+    if(dataCollectionEvents == null || dataCollectionEvents.isEmpty()) return -1;
+    if(pop.dataCollectionEvents == null || pop.dataCollectionEvents.isEmpty()) return 1;
+    return Iterables.get(dataCollectionEvents, 0).compareTo(Iterables.get(pop.dataCollectionEvents, 0));
   }
 
   public static class Recruitment implements Serializable {

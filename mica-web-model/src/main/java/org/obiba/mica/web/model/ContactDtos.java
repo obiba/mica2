@@ -1,12 +1,9 @@
 package org.obiba.mica.web.model;
 
-import java.util.Locale;
-
 import javax.inject.Inject;
 
 import org.obiba.mica.domain.Address;
 import org.obiba.mica.domain.Contact;
-import org.obiba.mica.micaConfig.MicaConfigService;
 import org.springframework.stereotype.Component;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -16,7 +13,7 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 class ContactDtos {
 
   @Inject
-  private MicaConfigService micaConfigService;
+  private CountryDtos countryDtos;
 
   @Inject
   private LocalizedStringDtos localizedStringDtos;
@@ -66,7 +63,7 @@ class ContactDtos {
     if(address.getCity() != null) builder.addAllCity(localizedStringDtos.asDto(address.getCity()));
     if(!isNullOrEmpty(address.getZip())) builder.setZip(address.getZip());
     if(!isNullOrEmpty(address.getState())) builder.setState(address.getState());
-    if(!isNullOrEmpty(address.getCountryIso())) builder.setCountry(asDto(address.getCountryIso()));
+    if(!isNullOrEmpty(address.getCountryIso())) builder.setCountry(countryDtos.asDto(address.getCountryIso()));
     return builder.build();
   }
 
@@ -78,14 +75,6 @@ class ContactDtos {
     if(dto.hasState()) address.setState(dto.getState());
     if(dto.hasCountry()) address.setCountryIso(dto.getCountry().getIso());
     return address;
-  }
-
-  private Mica.CountryDto asDto(String countryIso) {
-    Mica.CountryDto.Builder builder = Mica.CountryDto.newBuilder().setIso(countryIso);
-    micaConfigService.getConfig().getLocales().forEach(locale -> builder.addName(
-        Mica.LocalizedStringDto.newBuilder().setLang(locale.getLanguage())
-            .setValue(new Locale(countryIso).getDisplayCountry(locale))));
-    return builder.build();
   }
 
 }
