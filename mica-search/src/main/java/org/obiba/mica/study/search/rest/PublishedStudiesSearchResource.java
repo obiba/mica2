@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.study.rest;
+package org.obiba.mica.study.search.rest;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -20,11 +20,11 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 
+import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.json.JSONException;
 import org.obiba.mica.search.ElasticSearchService;
@@ -32,8 +32,6 @@ import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Search;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.annotation.Timed;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,7 +41,7 @@ import static org.obiba.mica.web.model.Search.QueryResultDto;
 @Path("/studies/_search")
 public class PublishedStudiesSearchResource {
 
-  private static final Logger log = LoggerFactory.getLogger(PublishedStudiesSearchResource.class);
+  private static final String STUDY_FACETS_YML = "study-facets.yml";
 
   @Inject
   private Dtos dtos;
@@ -54,20 +52,23 @@ public class PublishedStudiesSearchResource {
   @Inject
   private ElasticSearchService elasticSearchService;
 
+  @Inject
+  private AggregationYamlParser aggregationYamlParser;
+
   @GET
   @Timed
   public QueryResultDto list(@QueryParam("from") @DefaultValue("0") int from,
       @QueryParam("size") @DefaultValue("10") int size) throws JSONException, IOException {
 
-    SearchResponse response = elasticSearchService.getClient() //
+    SearchRequestBuilder requestBuilder = elasticSearchService.getClient() //
         .prepareSearch(StudyIndexer.PUBLISHED_STUDY_INDEX) //
         .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
         .setQuery(QueryBuilders.matchAllQuery()) //
-        .addAggregation(AggregationBuilders.terms("access").field("access")) //
         .setFrom(from) //
-        .setSize(size) //
-        .execute() //
-        .actionGet();
+        .setSize(size);
+    aggregationYamlParser.getAggregations(STUDY_FACETS_YML).forEach(requestBuilder::addAggregation);
+
+    SearchResponse response = requestBuilder.execute().actionGet();
 
     QueryResultDto.Builder builder = QueryResultDto.newBuilder().setTotalHits((int) response.getHits().getTotalHits());
 
