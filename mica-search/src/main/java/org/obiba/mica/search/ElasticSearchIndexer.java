@@ -9,6 +9,7 @@ import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
@@ -26,7 +27,10 @@ public class ElasticSearchIndexer {
   private static final Logger log = LoggerFactory.getLogger(ElasticSearchIndexer.class);
 
   @Inject
-  private ElasticSearchService elasticSearchService;
+  private ElasticSearchConfiguration elasticSearchConfiguration;
+
+  @Inject
+  private Client client;
 
   @Inject
   private ObjectMapper objectMapper;
@@ -38,7 +42,7 @@ public class ElasticSearchIndexer {
 
   public BulkResponse indexAll(String indexName, Iterable<? extends Persistable<String>> persistables) {
     createIndexIfNeeded(indexName);
-    BulkRequestBuilder bulkRequest = elasticSearchService.getClient().prepareBulk();
+    BulkRequestBuilder bulkRequest = client.prepareBulk();
     persistables.forEach(
         persistable -> bulkRequest.add(getIndexRequestBuilder(indexName, persistable).setSource(toJson(persistable))));
     return bulkRequest.execute().actionGet();
@@ -54,26 +58,25 @@ public class ElasticSearchIndexer {
 
   public DeleteResponse delete(String indexName, Persistable<String> persistable) {
     createIndexIfNeeded(indexName);
-    return elasticSearchService.getClient()
-        .prepareDelete(indexName, persistable.getClass().getSimpleName(), persistable.getId()).execute().actionGet();
+    return client.prepareDelete(indexName, persistable.getClass().getSimpleName(), persistable.getId()).execute()
+        .actionGet();
   }
 
   public DeleteIndexResponse dropIndex(String indexName) {
-    return elasticSearchService.getClient().admin().indices().prepareDelete(indexName).execute().actionGet();
+    return client.admin().indices().prepareDelete(indexName).execute().actionGet();
   }
 
   private IndexRequestBuilder getIndexRequestBuilder(String indexName, Persistable<String> persistable) {
-    return elasticSearchService.getClient()
-        .prepareIndex(indexName, persistable.getClass().getSimpleName(), persistable.getId());
+    return client.prepareIndex(indexName, persistable.getClass().getSimpleName(), persistable.getId());
   }
 
   private void createIndexIfNeeded(String indexName) {
-    IndicesAdminClient indicesAdmin = elasticSearchService.getClient().admin().indices();
+    IndicesAdminClient indicesAdmin = client.admin().indices();
     if(!indicesAdmin.exists(new IndicesExistsRequest(indexName)).actionGet().isExists()) {
       log.info("Creating index {}", indexName);
       Settings settings = ImmutableSettings.settingsBuilder() //
-          .put("number_of_shards", elasticSearchService.getNbShards()) //
-          .put("number_of_replicas", elasticSearchService.getNbReplicas()).build();
+          .put("number_of_shards", elasticSearchConfiguration.getNbShards()) //
+          .put("number_of_replicas", elasticSearchConfiguration.getNbReplicas()).build();
       indicesAdmin.prepareCreate(indexName).setSettings(settings).execute().actionGet();
     }
   }

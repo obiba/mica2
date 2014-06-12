@@ -23,11 +23,11 @@ import javax.ws.rs.QueryParam;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.json.JSONException;
-import org.obiba.mica.search.ElasticSearchService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.mica.web.model.Dtos;
@@ -50,7 +50,7 @@ public class PublishedStudiesSearchResource {
   private ObjectMapper objectMapper;
 
   @Inject
-  private ElasticSearchService elasticSearchService;
+  private Client client;
 
   @Inject
   private AggregationYamlParser aggregationYamlParser;
@@ -60,8 +60,7 @@ public class PublishedStudiesSearchResource {
   public QueryResultDto list(@QueryParam("from") @DefaultValue("0") int from,
       @QueryParam("size") @DefaultValue("10") int size) throws JSONException, IOException {
 
-    SearchRequestBuilder requestBuilder = elasticSearchService.getClient() //
-        .prepareSearch(StudyIndexer.PUBLISHED_STUDY_INDEX) //
+    SearchRequestBuilder requestBuilder = client.prepareSearch(StudyIndexer.PUBLISHED_STUDY_INDEX) //
         .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
         .setQuery(QueryBuilders.matchAllQuery()) //
         .setFrom(from) //
