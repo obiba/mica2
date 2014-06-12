@@ -34,7 +34,7 @@ public class TempFileService {
   public void init() throws IOException {
     if(tmpRoot == null) {
       tmpRoot = new File(TMP_ROOT.replace("${MICA_SERVER_HOME}", System.getProperty("MICA_SERVER_HOME")));
-      if(!tmpRoot.mkdirs()) {
+      if(!tmpRoot.exists() && !tmpRoot.mkdirs()) {
         throw new IOException("Cannot create temp dir for new temp file: " + tmpRoot.getAbsolutePath());
       }
     }
