@@ -43,6 +43,7 @@ message StudyDto {
   repeated LocalizedStringDto info = 20;
   repeated PopulationDto populations = 21;
   repeated NetworkRelationDto networks = 22;
+  repeated AttributeDto attributes = 23;
 
   message StudyMethodsDto {
     repeated string designs = 1;
@@ -68,6 +69,7 @@ message StudyDto {
     optional NumberOfParticipantsDto numberOfParticipants = 6;
     repeated LocalizedStringDto info = 7;
     repeated DataCollectionEventDto dataCollectionEvents = 8;
+    repeated AttributeDto attributes = 9;
 
     message RecruitmentDto {
       repeated string dataSources = 1;
@@ -111,6 +113,7 @@ message StudyDto {
       repeated LocalizedStringDto tissueTypes = 12;
       repeated LocalizedStringDto otherBioSamples = 13;
       repeated AttachmentDto attachments = 14;
+      repeated AttributeDto attributes = 15;
     }
   }
 }
@@ -216,4 +219,11 @@ message MicaConfigDto {
   repeated string languages = 2;
   required string defaultCharSet = 3;
   optional string publicUrl = 4;
+}
+
+message AttributeDto {
+  required string name = 1;
+  required string value = 2;
+  optional string locale = 3;
+  optional string namespace = 4;
 }

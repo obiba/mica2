@@ -190,6 +190,10 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
     population.addDataCollectionEvent(createEvent1());
     population.addDataCollectionEvent(createEvent2());
     population.addDataCollectionEvent(createEvent3());
+    population.addAttribute(
+        Attribute.Builder.newAttribute("att1").namespace("mica").locale(Locale.FRENCH).value("value fr").build());
+    population.addAttribute(
+        Attribute.Builder.newAttribute("att1").namespace("mica").locale(Locale.ENGLISH).value("value en").build());
     return population;
   }
 
@@ -243,6 +247,10 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
     event.addBioSample("BioSamples.others");
     event.setAdministrativeDatabases(Arrays.asList("aDB1"));
     event.setOtherBioSamples(en("Other biological sample"));
+    event.addAttribute(
+        Attribute.Builder.newAttribute("att1").namespace("mica").locale(Locale.FRENCH).value("value fr").build());
+    event.addAttribute(
+        Attribute.Builder.newAttribute("att1").namespace("mica").locale(Locale.ENGLISH).value("value en").build());
     return event;
   }
 

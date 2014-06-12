@@ -25,6 +25,9 @@ class PopulationDtos {
   @Inject
   private AttachmentDtos attachmentDtos;
 
+  @Inject
+  private AttributeDtos attributeDtos;
+
   @NotNull
   PopulationDto asDto(Population population) {
     PopulationDto.Builder builder = PopulationDto.newBuilder();
@@ -43,7 +46,9 @@ class PopulationDtos {
     if(population.getDataCollectionEvents() != null) {
       population.getDataCollectionEvents().forEach(dce -> builder.addDataCollectionEvents(asDto(dce)));
     }
-
+    if(population.getAttributes() != null) {
+      population.getAttributes().values().forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
+    }
     return builder.build();
   }
 
@@ -60,6 +65,9 @@ class PopulationDtos {
     }
     if(dto.getDataCollectionEventsCount() > 0) {
       dto.getDataCollectionEventsList().forEach(dceDto -> population.addDataCollectionEvent(fromDto(dceDto)));
+    }
+    if(dto.getAttributesCount() > 0) {
+      dto.getAttributesList().forEach(attributeDto -> population.addAttribute(attributeDtos.fromDto(attributeDto)));
     }
     return population;
   }
@@ -200,6 +208,9 @@ class PopulationDtos {
     if(dce.getAttachments() != null) {
       dce.getAttachments().forEach(attachment -> builder.addAttachments(attachmentDtos.asDto(attachment)));
     }
+    if(dce.getAttributes() != null) {
+      dce.getAttributes().values().forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
+    }
     return builder.build();
   }
 
@@ -224,6 +235,9 @@ class PopulationDtos {
     if(dto.getAttachmentsCount() > 0) {
       dce.setAttachments(
           dto.getAttachmentsList().stream().map(attachmentDtos::fromDto).collect(Collectors.<Attachment>toList()));
+    }
+    if(dto.getAttributesCount() > 0) {
+      dto.getAttributesList().forEach(attributeDto -> dce.addAttribute(attributeDtos.fromDto(attributeDto)));
     }
     return dce;
   }
