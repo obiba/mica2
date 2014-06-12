@@ -35,6 +35,9 @@ class StudyDtos {
   @Inject
   private NumberOfParticipantsDtos numberOfParticipantsDtos;
 
+  @Inject
+  private AttributeDtos attributeDtos;
+
   @NotNull
   Mica.StudyDto asDto(@NotNull Study study) {
     Mica.StudyDto.Builder builder = Mica.StudyDto.newBuilder();
@@ -82,6 +85,9 @@ class StudyDtos {
     if(study.getPopulations() != null) {
       study.getPopulations().forEach(population -> builder.addPopulations(populationDtos.asDto(population)));
     }
+    if(study.getAttributes() != null) {
+      study.getAttributes().values().forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
+    }
     return builder.build();
   }
 
@@ -126,6 +132,10 @@ class StudyDtos {
       study.setPopulations(dto.getPopulationsList().stream().map(populationDtos::fromDto)
               .collect(Collectors.toCollection(TreeSet<Population>::new)));
     }
+    if(dto.getAttributesCount() > 0) {
+      dto.getAttributesList().forEach(attributeDto -> study.addAttribute(attributeDtos.fromDto(attributeDto)));
+    }
+
     return study;
   }
 

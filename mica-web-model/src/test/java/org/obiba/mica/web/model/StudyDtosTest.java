@@ -15,6 +15,7 @@ import org.mockito.Mockito;
 import org.obiba.git.command.GitCommandHandler;
 import org.obiba.mica.config.JsonConfiguration;
 import org.obiba.mica.domain.Address;
+import org.obiba.mica.domain.Attribute;
 import org.obiba.mica.domain.Authorization;
 import org.obiba.mica.domain.Contact;
 import org.obiba.mica.domain.Timestamped;
@@ -123,6 +124,11 @@ public class StudyDtosTest {
     study.addAccess("other");
     study.setOtherAccess(en("Other access"));
 
+    study.addAttribute(
+        Attribute.Builder.newAttribute("att1").namespace("mica").locale(Locale.FRENCH).value("value fr").build());
+    study.addAttribute(
+        Attribute.Builder.newAttribute("att1").namespace("mica").locale(Locale.ENGLISH).value("value en").build());
+
     study.setMarkerPaper(
         "Raina PS, Wolfson C, Kirkland SA, Griffith LE, Oremus M, Patterson C, Tuokko H, Penning M, Balion CM, Hogan D, Wister A, Payette H, Shannon H, and Brazil K, The Canadian longitudinal study on aging (CLSA). Can J Aging, 2009. 28(3): p. 221-9.");
     study.setPubmedId("PUBMED 19860977");
@@ -208,6 +214,10 @@ public class StudyDtosTest {
     population.setRecruitment(createRecruitment());
     population.addDataCollectionEvent(createEvent1());
     population.addDataCollectionEvent(createEvent2());
+    population.addAttribute(
+        Attribute.Builder.newAttribute("att1").namespace("mica").locale(Locale.FRENCH).value("value fr").build());
+    population.addAttribute(
+        Attribute.Builder.newAttribute("att1").namespace("mica").locale(Locale.ENGLISH).value("value en").build());
     return population;
   }
 
@@ -261,6 +271,10 @@ public class StudyDtosTest {
     event.addBioSample("BioSamples.others");
     event.setAdministrativeDatabases(Arrays.asList("aDB1"));
     event.setOtherBioSamples(en("Other biological sample"));
+    event.addAttribute(
+        Attribute.Builder.newAttribute("att1").namespace("mica").locale(Locale.FRENCH).value("value fr").build());
+    event.addAttribute(
+        Attribute.Builder.newAttribute("att1").namespace("mica").locale(Locale.ENGLISH).value("value en").build());
     return event;
   }
 
