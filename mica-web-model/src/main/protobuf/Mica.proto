@@ -222,8 +222,8 @@ message MicaConfigDto {
 }
 
 message AttributeDto {
-  required string name = 1;
-  required string value = 2;
-  optional string locale = 3;
-  optional string namespace = 4;
+  optional string namespace = 1;
+  required string name = 2;
+  required string value = 3;
+  optional string locale = 4;
 }

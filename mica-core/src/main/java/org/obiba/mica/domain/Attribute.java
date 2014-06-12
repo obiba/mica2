@@ -22,6 +22,7 @@ public class Attribute implements Serializable {
 
   private Locale locale;
 
+  @NotNull
   private String value;
 
   public String getName() {
