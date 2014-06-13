@@ -3,6 +3,7 @@ package org.obiba.mica.study.domain;
 import java.io.Serializable;
 import java.time.Year;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.NoSuchElementException;
@@ -22,10 +23,9 @@ import org.obiba.mica.domain.Contact;
 import org.obiba.mica.domain.LocalizedString;
 import org.obiba.mica.domain.NoSuchAttributeException;
 import org.obiba.mica.file.Attachment;
-import org.obiba.mica.file.AttachmentSerialize;
 import org.obiba.mica.file.PersistableWithAttachments;
-import org.obiba.mica.study.StudyAttachmentSerializer;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
@@ -33,7 +33,6 @@ import com.google.common.collect.Multimap;
 /**
  * A Study.
  */
-@AttachmentSerialize(StudyAttachmentSerializer.class)
 public class Study extends AbstractGitPersistable implements AttributeAware, PersistableWithAttachments {
 
   private static final long serialVersionUID = 6559914069652243954L;
@@ -258,6 +257,23 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
       }
     }
     throw new NoSuchElementException("Attachment " + attachmentId + " not found for study " + getId());
+  }
+
+  @JsonIgnore
+  @Override
+  public Iterable<Attachment> getAllAttachments() {
+    Collection<Attachment> all = new ArrayList<>();
+    if(getAttachments() != null) {
+      all.addAll(getAttachments());
+    }
+    if(getPopulations() != null) {
+      getPopulations().stream() //
+          .filter(population -> population.getDataCollectionEvents() != null) //
+          .forEach(population -> population.getDataCollectionEvents().stream() //
+              .filter(dce -> dce.getAttachments() != null) //
+              .forEach(dce -> all.addAll(dce.getAttachments())));
+    }
+    return all;
   }
 
   public LocalizedString getInfo() {

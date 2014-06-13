@@ -1,11 +1,13 @@
 package org.obiba.mica.service;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -27,10 +29,10 @@ import org.obiba.git.command.GitCommandHandler;
 import org.obiba.git.command.ListFilesCommand;
 import org.obiba.git.command.ReadFileCommand;
 import org.obiba.mica.domain.AbstractGitPersistable;
-import org.obiba.mica.file.AttachmentSerialize;
-import org.obiba.mica.file.AttachmentSerializer;
-import org.springframework.context.ApplicationContext;
-import org.springframework.core.annotation.AnnotationUtils;
+import org.obiba.mica.file.Attachment;
+import org.obiba.mica.file.PersistableWithAttachments;
+import org.obiba.mica.file.TempFile;
+import org.obiba.mica.file.TempFileService;
 import org.springframework.data.domain.Persistable;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
@@ -56,7 +58,7 @@ public class GitService {
   private ObjectMapper objectMapper;
 
   @Inject
-  private ApplicationContext applicationContext;
+  private TempFileService tempFileService;
 
   private File repositoriesRoot;
 
@@ -90,7 +92,9 @@ public class GitService {
       AddDeleteFilesCommand.Builder builder = new AddDeleteFilesCommand.Builder(getRepositoryPath(persistable.getId()),
           clonesRoot, "Update");
 
-      processAttachments(persistable, builder);
+      if(persistable instanceof PersistableWithAttachments) {
+        processAttachments((PersistableWithAttachments) persistable, builder);
+      }
 
       File jsonFile = serializePersistable(persistable);
 
@@ -118,22 +122,34 @@ public class GitService {
     return jsonFile;
   }
 
-  @SuppressWarnings("unchecked")
-  private <TGitPersistable extends AbstractGitPersistable> void processAttachments(TGitPersistable persistable,
-      AddDeleteFilesCommand.Builder builder) throws IOException {
-    AttachmentSerialize attachmentSerialize = AnnotationUtils
-        .findAnnotation(persistable.getClass(), AttachmentSerialize.class);
-    if(attachmentSerialize == null) return;
+  private void processAttachments(PersistableWithAttachments persistable, AddDeleteFilesCommand.Builder builder)
+      throws IOException {
 
-    AttachmentSerializer<TGitPersistable> serializer = applicationContext
-        .getBean((Class<? extends AttachmentSerializer<TGitPersistable>>) attachmentSerialize.value());
-    serializer.serializeAttachments(persistable, getExistingPathsInRepo(persistable), builder);
+    Collection<String> existingPathsInRepo = getExistingPathsInRepo(persistable);
+    Collection<String> filesToDelete = new HashSet<>(existingPathsInRepo);
+    persistable.getAllAttachments().forEach(a -> processAttachment(a, persistable, builder, filesToDelete));
+    filesToDelete.forEach(builder::deleteFile);
   }
 
   private Collection<String> getExistingPathsInRepo(Persistable<String> persistable) {
     return gitCommandHandler.execute(
         new ListFilesCommand.Builder(getRepositoryPath(persistable.getId()), clonesRoot).filter(ATTACHMENTS_PATH + "*")
             .recursive(true).build());
+  }
+
+  private void processAttachment(Attachment attachment, Persistable<String> parent,
+      AddDeleteFilesCommand.Builder builder, Collection<String> filesToDelete) {
+    String pathInRepo = getPathInRepo(attachment.getId());
+    if(attachment.isJustUploaded()) {
+      TempFile tempFile = tempFileService.getMetadata(attachment.getId());
+      builder.addFile(pathInRepo, new ByteArrayInputStream(tempFileService.getContent(attachment.getId())));
+      attachment.setName(tempFile.getName());
+      attachment.setSize(tempFile.getSize());
+      attachment.setMd5(tempFile.getMd5());
+      attachment.setJustUploaded(false);
+      tempFileService.delete(attachment.getId());
+    }
+    filesToDelete.remove(pathInRepo);
   }
 
   public <T> T readHead(String id, Class<T> clazz) {
@@ -174,7 +190,7 @@ public class GitService {
     }
   }
 
-  public static String getPathInRepo(String attachmentId) {
+  private String getPathInRepo(String attachmentId) {
     return ATTACHMENTS_PATH + attachmentId;
   }
 

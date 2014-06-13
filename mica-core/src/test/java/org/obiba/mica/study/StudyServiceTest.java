@@ -175,11 +175,6 @@ public class StudyServiceTest {
     }
 
     @Bean
-    public StudyAttachmentSerializer studyAttachmentSerializer() {
-      return new StudyAttachmentSerializer();
-    }
-
-    @Bean
     public TempFileService tempFileService() {
       TempFileService tempFileService = new TempFileService();
       tempFileService.setTmpRoot(TEMP);
