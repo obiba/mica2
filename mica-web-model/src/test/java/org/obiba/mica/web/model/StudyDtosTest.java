@@ -20,6 +20,8 @@ import org.obiba.mica.domain.Authorization;
 import org.obiba.mica.domain.Contact;
 import org.obiba.mica.domain.Timestamped;
 import org.obiba.mica.file.Attachment;
+import org.obiba.mica.file.TempFileRepository;
+import org.obiba.mica.file.TempFileService;
 import org.obiba.mica.micaConfig.MicaConfig;
 import org.obiba.mica.micaConfig.MicaConfigRepository;
 import org.obiba.mica.micaConfig.MicaConfigService;
@@ -324,6 +326,16 @@ public class StudyDtosTest {
     @Bean
     public GitService gitService() {
       return Mockito.mock(GitService.class);
+    }
+
+    @Bean
+    public TempFileService tempFileService() {
+      return Mockito.mock(TempFileService.class);
+    }
+
+    @Bean
+    public TempFileRepository tempFileRepository() {
+      return Mockito.mock(TempFileRepository.class);
     }
 
     @Bean
