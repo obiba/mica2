@@ -1,6 +1,6 @@
 /*! mica-study-timeline - v1.0.0-SNAPSHOT
  *  License: GNU Public License version 3
- *  Date: 2014-05-20
+ *  Date: 2014-06-18
  */
 (function () {
 

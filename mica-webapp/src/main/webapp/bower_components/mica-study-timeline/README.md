@@ -1,7 +1,5 @@
 # D3 Timeline for Mica Studies
 
-Inspired from [d3.chart.template](https://github.com/jgoodall/d3.chart.template)
-
 ## Building
 
 1. Run `bower install` to install `d3` and `d3.chart` into `bower_components`
