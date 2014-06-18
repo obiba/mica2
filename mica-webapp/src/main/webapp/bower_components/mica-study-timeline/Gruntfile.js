@@ -26,7 +26,7 @@ module.exports = function (grunt) {
     cssmin : {
       css:{
         src: "src/*.css",
-        dest: "<%= meta.pkg.name %>.min.css"
+        dest: "dist/<%= meta.pkg.name %>.min.css"
       }
     },
     jshint: {
@@ -64,8 +64,8 @@ module.exports = function (grunt) {
       },
       dist: {
         files: [
-          { "<%= meta.pkg.name %>.js": "<%= meta.srcFiles %>" },
-          { "<%= meta.pkg.name %>.css": "<%= meta.cssFiles %>" }
+          { "dist/<%= meta.pkg.name %>.js": "<%= meta.srcFiles %>" },
+          { "dist/<%= meta.pkg.name %>.css": "<%= meta.cssFiles %>" }
         ]
       },
       release: {
@@ -82,7 +82,7 @@ module.exports = function (grunt) {
       },
       dist: {
         files: {
-          "<%= meta.pkg.name %>.min.js": "<%= meta.pkg.name %>.js"
+          "dist/<%= meta.pkg.name %>.min.js": "<%= meta.pkg.name %>.js"
         }
       },
       release: {
