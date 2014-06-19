@@ -50,17 +50,17 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
   @Override
   public void onApplicationEvent(ContextRefreshedEvent event) {
     log.debug("Create new study - ContextStartedEvent");
-    create();
+//    create();
   }
 
   public void create() {
 
-    Study study = createStudy("CLSA", "Canadian Longitudinal Study on Aging",
-        "Étude longitudinale canadienne sur le vieillissement");
-    studyService.save(study);
-    studyService.publish(study.getId());
-
-    studyService.save(createStudy("NCDS", "National Child Development Study", "National Child Development Study"));
+//    Study study = createStudy("CLSA", "Canadian Longitudinal Study on Aging",
+//        "Étude longitudinale canadienne sur le vieillissement");
+//    studyService.save(study);
+//    studyService.publish(study.getId());
+//
+//    studyService.save(createStudy("NCDS", "National Child Development Study", "National Child Development Study"));
 
 //    Network network = createNetwork();
 //    network.addStudy(study);
