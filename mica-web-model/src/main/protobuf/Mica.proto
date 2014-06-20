@@ -25,25 +25,26 @@ message StudyDto {
 
   repeated LocalizedStringDto name = 3;
   repeated LocalizedStringDto acronym = 4;
-  repeated ContactDto investigators = 5;
-  repeated ContactDto contacts = 6;
-  repeated LocalizedStringDto objectives = 7;
-  optional string website = 8;
-  optional AuthorizationDto specificAuthorization = 9;
-  optional AuthorizationDto maelstromAuthorization = 10;
-  optional StudyMethodsDto methods = 11;
-  optional NumberOfParticipantsDto numberOfParticipants = 12;
-  optional int32 startYear = 13;
-  optional int32 endYear = 14;
-  repeated string access = 15;
-  repeated LocalizedStringDto otherAccess = 16;
-  optional string markerPaper = 17;
-  optional string pubmedId = 18;
-  repeated AttachmentDto attachments = 19;
-  repeated LocalizedStringDto info = 20;
-  repeated PopulationDto populations = 21;
-  repeated NetworkRelationDto networks = 22;
-  repeated AttributeDto attributes = 23;
+  optional AttachmentDto logo = 5;
+  repeated ContactDto investigators = 6;
+  repeated ContactDto contacts = 7;
+  repeated LocalizedStringDto objectives = 8;
+  optional string website = 9;
+  optional AuthorizationDto specificAuthorization = 10;
+  optional AuthorizationDto maelstromAuthorization = 11;
+  optional StudyMethodsDto methods = 12;
+  optional NumberOfParticipantsDto numberOfParticipants = 13;
+  optional int32 startYear = 14;
+  optional int32 endYear = 15;
+  repeated string access = 16;
+  repeated LocalizedStringDto otherAccess = 17;
+  optional string markerPaper = 18;
+  optional string pubmedId = 19;
+  repeated AttachmentDto attachments = 20;
+  repeated LocalizedStringDto info = 21;
+  repeated PopulationDto populations = 22;
+  repeated NetworkRelationDto networks = 23;
+  repeated AttributeDto attributes = 24;
 
   message StudyMethodsDto {
     repeated string designs = 1;
