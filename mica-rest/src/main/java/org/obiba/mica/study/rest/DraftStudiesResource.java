@@ -12,6 +12,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.study.StudyService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.web.model.Dtos;
@@ -21,6 +22,7 @@ import org.springframework.context.ApplicationContext;
 import com.codahale.metrics.annotation.Timed;
 
 @Path("/draft")
+@RequiresAuthentication
 public class DraftStudiesResource {
 
   @Inject
