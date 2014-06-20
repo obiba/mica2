@@ -6,6 +6,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.study.StudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -19,6 +20,7 @@ import com.codahale.metrics.annotation.Timed;
  */
 @Component
 @Scope("request")
+@RequiresAuthentication
 public class DraftStudySummaryResource {
 
   @Inject

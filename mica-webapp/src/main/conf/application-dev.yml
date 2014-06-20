@@ -24,6 +24,11 @@ mongodb:
     password:
 
 shiro:
+  obibaRealm:
+    url: https://localhost:8444
+    service:
+      name: mica-server
+      key: changeit
   password:
     nbHashIterations: 10000
     salt: mica
