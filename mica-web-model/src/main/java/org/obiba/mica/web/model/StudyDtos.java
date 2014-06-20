@@ -46,6 +46,8 @@ class StudyDtos {
         .addAllName(localizedStringDtos.asDto(study.getName())) //
         .addAllObjectives(localizedStringDtos.asDto(study.getObjectives()));
 
+    if(study.getLogo() != null) builder.setLogo(attachmentDtos.asDto(study.getLogo()));
+
     if(study.getStart() != null) builder.setStartYear(study.getStart().getValue());
     if(study.getEnd() != null) builder.setEndYear(study.getEnd().getValue());
     if(study.getAccess() != null) {
@@ -104,6 +106,7 @@ class StudyDtos {
     if(dto.hasPubmedId()) study.setPubmedId(dto.getPubmedId());
     if(dto.getNameCount() > 0) study.setName(localizedStringDtos.fromDto(dto.getNameList()));
     if(dto.getAcronymCount() > 0) study.setAcronym(localizedStringDtos.fromDto(dto.getAcronymList()));
+    if(dto.hasLogo()) study.setLogo(attachmentDtos.fromDto(dto.getLogo()));
     if(dto.getInvestigatorsCount() > 0) {
       study.setInvestigators(
           dto.getInvestigatorsList().stream().map(contactDtos::fromDto).collect(Collectors.<Contact>toList()));
@@ -130,7 +133,7 @@ class StudyDtos {
     if(dto.getInfoCount() > 0) study.setInfo(localizedStringDtos.fromDto(dto.getInfoList()));
     if(dto.getPopulationsCount() > 0) {
       study.setPopulations(dto.getPopulationsList().stream().map(populationDtos::fromDto)
-              .collect(Collectors.toCollection(TreeSet<Population>::new)));
+          .collect(Collectors.toCollection(TreeSet<Population>::new)));
     }
     if(dto.getAttributesCount() > 0) {
       dto.getAttributesList().forEach(attributeDto -> study.addAttribute(attributeDtos.fromDto(attributeDto)));

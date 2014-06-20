@@ -139,6 +139,7 @@ public class StudyDtosTest {
     study.setSpecificAuthorization(createAuthorization("mica-server"));
     study.setMaelstromAuthorization(createAuthorization("mica"));
     study.addAttachment(createAttachment());
+    study.setLogo(createAttachment());
 
     return study;
   }

@@ -42,6 +42,8 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
 
   private LocalizedString acronym;
 
+  private Attachment logo;
+
   private List<Contact> investigators;
 
   private List<Contact> contacts;
@@ -95,6 +97,14 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
 
   public void setAcronym(LocalizedString acronym) {
     this.acronym = acronym;
+  }
+
+  public Attachment getLogo() {
+    return logo;
+  }
+
+  public void setLogo(Attachment logo) {
+    this.logo = logo;
   }
 
   public List<Contact> getInvestigators() {
@@ -240,6 +250,7 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
   @NotNull
   @Override
   public Attachment findAttachmentById(String attachmentId) {
+    if (getLogo() != null && logo.getId().equals(attachmentId)) return logo;
     if(getAttachments() != null) {
       for(Attachment attachment : getAttachments()) {
         if(attachment.getId().equals(attachmentId)) return attachment;
@@ -263,6 +274,9 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
   @Override
   public Iterable<Attachment> getAllAttachments() {
     Collection<Attachment> all = new ArrayList<>();
+    if(logo != null) {
+      all.add(logo);
+    }
     if(getAttachments() != null) {
       all.addAll(getAttachments());
     }
