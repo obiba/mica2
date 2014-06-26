@@ -17,6 +17,7 @@ import org.obiba.mica.file.Attachment;
 import org.springframework.data.domain.Persistable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.Strings;
 import com.google.common.collect.ComparisonChain;
 
 public class DataCollectionEvent extends AbstractAttributeAware
@@ -61,7 +62,7 @@ public class DataCollectionEvent extends AbstractAttributeAware
   }
 
   public void setId(String id) {
-    this.id = id;
+    if(!Strings.isNullOrEmpty(id)) this.id = id;
   }
 
   public LocalizedString getName() {

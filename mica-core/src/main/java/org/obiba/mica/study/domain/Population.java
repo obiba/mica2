@@ -15,6 +15,7 @@ import org.obiba.mica.domain.AbstractAttributeAware;
 import org.obiba.mica.domain.AttributeAware;
 import org.obiba.mica.domain.LocalizedString;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 
 public class Population extends AbstractAttributeAware implements Serializable, Comparable<Population>, AttributeAware {
@@ -43,7 +44,7 @@ public class Population extends AbstractAttributeAware implements Serializable, 
   }
 
   public void setId(String id) {
-    this.id = id;
+    if(!Strings.isNullOrEmpty(id)) this.id = id;
   }
 
   public LocalizedString getName() {
