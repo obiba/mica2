@@ -82,7 +82,7 @@ module.exports = function (grunt) {
       },
       dist: {
         files: {
-          "dist/<%= meta.pkg.name %>.min.js": "<%= meta.pkg.name %>.js"
+          "dist/<%= meta.pkg.name %>.min.js": "dist/<%= meta.pkg.name %>.js"
         }
       },
       release: {
