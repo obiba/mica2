@@ -18,7 +18,7 @@ import org.obiba.mica.domain.Contact;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.file.TempFileService;
-import org.obiba.mica.network.Network;
+import org.obiba.mica.domain.Network;
 import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.NumberOfParticipants;
 import org.obiba.mica.study.domain.Population;
