@@ -15,7 +15,6 @@ import java.util.Set;
 
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
 
 import net.sf.ehcache.CacheManager;
 
@@ -45,9 +44,7 @@ import org.obiba.shiro.realm.ObibaRealm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.stereotype.Component;

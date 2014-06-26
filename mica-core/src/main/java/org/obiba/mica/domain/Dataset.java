@@ -10,37 +10,20 @@
 
 package org.obiba.mica.domain;
 
-import java.util.Objects;
-
 import javax.validation.constraints.NotNull;
 
-import org.springframework.data.domain.Persistable;
+import org.springframework.data.mongodb.core.index.Indexed;
 
 /**
  * Proxy to Opal tables.
  */
-public class Dataset implements Persistable<String> {
+public class Dataset extends AbstractAuditableDocument {
 
   private static final long serialVersionUID = -3328963766855899217L;
 
-  private String id;
-
   @NotNull
+  @Indexed(unique = true)
   private String name;
-
-  @Override
-  public String getId() {
-    return id;
-  }
-
-  @Override
-  public boolean isNew() {
-    return id == null;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
 
   public String getName() {
     return name;
@@ -51,18 +34,7 @@ public class Dataset implements Persistable<String> {
   }
 
   @Override
-  public int hashCode() {return Objects.hash(id);}
-
-  @Override
-  @SuppressWarnings("SimplifiableIfStatement")
-  public boolean equals(Object obj) {
-    if(this == obj) return true;
-    if(obj == null || getClass() != obj.getClass()) return false;
-    return Objects.equals(id, ((Dataset) obj).id);
-  }
-
-  @Override
-  public String toString() {
-    return com.google.common.base.Objects.toStringHelper(this).add("id", id).add("name", name).toString();
+  protected com.google.common.base.Objects.ToStringHelper toStringHelper() {
+    return super.toStringHelper().add("name", name);
   }
 }

@@ -25,6 +25,8 @@ mongodb:
 opal:
   url: https://localhost:8443
   project: mica
+  username: administrator
+  password: password
 
 shiro:
   obibaRealm:

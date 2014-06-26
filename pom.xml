@@ -48,6 +48,7 @@
     <newrelic.version>3.4.2</newrelic.version>
     <nosqlunit.version>0.7.9</nosqlunit.version>
     <obiba-commons.version>1.7-SNAPSHOT</obiba-commons.version>
+    <opal.version>2.3-SNAPSHOT</opal.version>
     <protobuf.version>2.5.0</protobuf.version>
     <protobuf-java-format.version>1.2.1-obiba</protobuf-java-format.version>
     <shiro.version>1.2.3-java8</shiro.version>
@@ -379,6 +380,17 @@
         <artifactId>obiba-password-hasher</artifactId>
         <version>${obiba-commons.version}</version>
         <classifier>cli</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>org.obiba.opal</groupId>
+        <artifactId>opal-web-model</artifactId>
+        <version>${opal.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.obiba.opal</groupId>
+        <artifactId>opal-rest-client</artifactId>
+        <version>${opal.version}</version>
       </dependency>
 
       <dependency>
