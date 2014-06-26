@@ -1,6 +1,6 @@
 /*! mica-study-timeline - v1.0.0-SNAPSHOT
  *  License: GNU Public License version 3
- *  Date: 2014-06-18
+ *  Date: 2014-06-26
  */
 (function () {
 
@@ -400,12 +400,17 @@
      */
     function parsePopulationsInternal(populations, colors) {
       return function (i, populationDto) {
+        var lines = [];
         populationData = {};
         setId(populationData, populationDto, 'id');
         setTitle(populationData, populationDto, 'name');
         populationData.color = colors.nextColor();
         if (populationDto.hasOwnProperty('dataCollectionEvents') && populationDto.dataCollectionEvents.length > 0) {
-          parseEvents(populations, populationData, populationDto.dataCollectionEvents, bounds);
+          parseEvents(lines, populationData, populationDto.dataCollectionEvents, bounds);
+          // use a loop instead of array.concat() in order to add lines to the same populations variable (same instance)
+          $.each(lines, function(i,  line) {
+            populations.push(line);
+          });
         }
       };
     }
