@@ -10,18 +10,20 @@ https:
         type: PKCS12
 
 spring:
-    profiles: prod
-
-    thymeleaf:
-        mode: XHTML
-        cache: true
+  profiles: prod
+  thymeleaf:
+    mode: XHTML
+    cache: true
 
 mongodb:
-    url: localhost:27017
-    databaseName: mica
-    username:
-    password:
+  url: localhost:27017
+  databaseName: mica
+  username:
+  password:
 
+opal:
+  url: https://localhost:8443
+  project: mica
 
 shiro:
   obibaRealm:

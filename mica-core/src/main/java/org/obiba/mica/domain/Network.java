@@ -1,4 +1,4 @@
-package org.obiba.mica.network;
+package org.obiba.mica.domain;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,9 +7,6 @@ import java.util.Objects;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.URL;
-import org.obiba.mica.domain.Authorization;
-import org.obiba.mica.domain.Contact;
-import org.obiba.mica.domain.LocalizedString;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.study.domain.Study;
 import org.springframework.data.domain.Persistable;

@@ -5,7 +5,7 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.micaConfig.MicaConfig;
-import org.obiba.mica.network.Network;
+import org.obiba.mica.domain.Network;
 import org.obiba.mica.study.StudyService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
