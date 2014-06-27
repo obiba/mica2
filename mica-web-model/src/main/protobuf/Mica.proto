@@ -45,6 +45,7 @@ message StudyDto {
   repeated PopulationDto populations = 22;
   repeated NetworkRelationDto networks = 23;
   repeated AttributeDto attributes = 24;
+  optional string opal = 25;
 
   message StudyMethodsDto {
     repeated string designs = 1;
