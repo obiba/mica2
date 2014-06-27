@@ -50,7 +50,7 @@ public class DatasetResource {
   @GET
   @Path("/variable/{variable}")
   public Magma.VariableDto getVariable(@PathParam("variable") String variable) {
-    return Dtos.asDto(datasetService.getVariable(name, variable)).build();
+    return datasetService.getVariable(name, variable);
   }
 
   @GET

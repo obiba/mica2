@@ -22,6 +22,7 @@ import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.opal.rest.client.magma.RestDatasource;
 import org.obiba.opal.rest.client.magma.RestDatasourceFactory;
 import org.obiba.opal.rest.client.magma.RestValueTable;
+import org.obiba.opal.web.model.Magma;
 import org.obiba.opal.web.model.Math;
 import org.obiba.opal.web.model.Search;
 import org.slf4j.Logger;
@@ -73,8 +74,8 @@ public class DatasetService implements EnvironmentAware {
         .getVariableValueSource(variableName));
   }
 
-  public Variable getVariable(String tableName, String variableName) {
-    return getVariableValueSource(tableName, variableName).getVariable();
+  public Magma.VariableDto getVariable(String tableName, String variableName) {
+    return getVariableValueSource(tableName, variableName).getVariableDto();
   }
 
   public Math.SummaryStatisticsDto getVariableSummary(String tableName, String variableName) {
