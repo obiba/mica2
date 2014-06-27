@@ -13,15 +13,17 @@ package org.obiba.mica.service;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.magma.Datasource;
 import org.obiba.magma.DatasourceFactory;
-import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.Variable;
 import org.obiba.magma.support.Initialisables;
 import org.obiba.mica.domain.Dataset;
 import org.obiba.mica.repository.DatasetRepository;
 import org.obiba.mica.study.NoSuchStudyException;
+import org.obiba.opal.rest.client.magma.RestDatasource;
 import org.obiba.opal.rest.client.magma.RestDatasourceFactory;
+import org.obiba.opal.rest.client.magma.RestValueTable;
+import org.obiba.opal.web.model.Math;
+import org.obiba.opal.web.model.Search;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
@@ -44,6 +46,8 @@ public class DatasetService implements EnvironmentAware {
 
   private RelaxedPropertyResolver opalPropertyResolver;
 
+  private RestDatasource datasource;
+
   @Override
   public void setEnvironment(Environment environment) {
     opalPropertyResolver = new RelaxedPropertyResolver(environment, "opal.");
@@ -60,24 +64,65 @@ public class DatasetService implements EnvironmentAware {
     return dataset;
   }
 
-  public Iterable<Variable> getVariables(String name) {
-    try {
-      Datasource datasource = getDatasource();
-      Initialisables.initialise(datasource);
-      return datasource.getValueTable(name).getVariables();
-    } catch(NoSuchValueTableException e) {
-      throw NoSuchDatasetException.withName(name);
-    } catch(Exception e) {
-      log.error("Unable to connect to Opal: {}", e.getMessage(), e);
-      throw NoSuchDatasetException.withName(name);
-    }
+  public Iterable<Variable> getVariables(String tableName) {
+    return execute(datasource -> datasource.getValueTable(tableName).getVariables());
   }
 
-  private Datasource getDatasource() {
-    String name = getRemoteDatasource();
-    DatasourceFactory factory = new RestDatasourceFactory(name, getOpalUrl(),
-        getOpalUsername(), getOpalPassword(), name);
-    return factory.create();
+  public RestValueTable.RestVariableValueSource getVariableValueSource(String tableName, String variableName) {
+    return execute(datasource -> (RestValueTable.RestVariableValueSource) datasource.getValueTable(tableName)
+        .getVariableValueSource(variableName));
+  }
+
+  public Variable getVariable(String tableName, String variableName) {
+    return getVariableValueSource(tableName, variableName).getVariable();
+  }
+
+  public Math.SummaryStatisticsDto getVariableSummary(String tableName, String variableName) {
+    return getVariableValueSource(tableName, variableName).getSummary();
+  }
+
+  public Search.QueryResultDto getVariableFacet(String tableName, String variableName) {
+    return getVariableValueSource(tableName, variableName).getFacet();
+  }
+
+  /**
+   * Build the default {@link org.obiba.opal.rest.client.magma.RestDatasource} and execute the callback with it.
+   *
+   * @param callback
+   * @param <T>
+   * @return
+   */
+  public <T> T execute(DatasourceCallback<T> callback) {
+    return callback.doWithDatasource(getDatasource());
+  }
+
+  /**
+   * Callback that can be used to make any operations on a {@link org.obiba.opal.rest.client.magma.RestDatasource}
+   *
+   * @param <T>
+   */
+  public interface DatasourceCallback<T> {
+    T doWithDatasource(RestDatasource datasource);
+  }
+
+  //
+  // Private methods
+  //
+
+  /**
+   * Get a {@link org.obiba.opal.rest.client.magma.RestDatasource} on the default Opal project.
+   *
+   * @return
+   */
+  private RestDatasource getDatasource() {
+    if(datasource == null) {
+      String name = getRemoteDatasource();
+      DatasourceFactory factory = new RestDatasourceFactory(name, getOpalUrl(), getOpalUsername(), getOpalPassword(),
+          name);
+      datasource = (RestDatasource) factory.create();
+      Initialisables.initialise(datasource);
+    }
+    return datasource;
   }
 
   private String getOpalUrl() {

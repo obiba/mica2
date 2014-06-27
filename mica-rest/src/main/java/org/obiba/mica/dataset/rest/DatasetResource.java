@@ -20,7 +20,8 @@ import javax.ws.rs.PathParam;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.service.DatasetService;
 import org.obiba.opal.web.magma.Dtos;
-import org.obiba.opal.web.model.Magma;
+import org.obiba.opal.web.model.*;
+import org.obiba.opal.web.model.Math;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -45,5 +46,24 @@ public class DatasetResource {
     datasetService.getVariables(name).forEach(variable -> builder.add(Dtos.asDto(variable).build()));
     return builder.build();
   }
+
+  @GET
+  @Path("/variable/{variable}")
+  public Magma.VariableDto getVariable(@PathParam("variable") String variable) {
+    return Dtos.asDto(datasetService.getVariable(name, variable)).build();
+  }
+
+  @GET
+  @Path("/variable/{variable}/summary")
+  public Math.SummaryStatisticsDto getVariableSummary(@PathParam("variable") String variable) {
+    return datasetService.getVariableSummary(name, variable);
+  }
+
+  @GET
+  @Path("/variable/{variable}/facet")
+  public Search.QueryResultDto getVariableFacet(@PathParam("variable") String variable) {
+    return datasetService.getVariableFacet(name, variable);
+  }
+
 
 }
