@@ -86,6 +86,10 @@ public class DatasetService implements EnvironmentAware {
     return getVariableValueSource(tableName, variableName).getFacet();
   }
 
+  public Search.QueryResultDto getFacets(String tableName, Search.QueryTermsDto query) {
+    return execute(datasource -> (RestValueTable) datasource.getValueTable(tableName)).getFacets(query);
+  }
+
   /**
    * Build the default {@link org.obiba.opal.rest.client.magma.RestDatasource} and execute the callback with it.
    *

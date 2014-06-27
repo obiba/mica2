@@ -14,14 +14,16 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.service.DatasetService;
 import org.obiba.opal.web.magma.Dtos;
-import org.obiba.opal.web.model.*;
+import org.obiba.opal.web.model.Magma;
 import org.obiba.opal.web.model.Math;
+import org.obiba.opal.web.model.Search;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -65,5 +67,10 @@ public class DatasetResource {
     return datasetService.getVariableFacet(name, variable);
   }
 
+  @POST
+  @Path("/facets")
+  public Search.QueryResultDto getFacets(Search.QueryTermsDto query) {
+    return datasetService.getFacets(name, query);
+  }
 
 }
