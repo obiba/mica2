@@ -67,6 +67,7 @@ class StudyDtos {
           study.getContacts().stream().map(contactDtos::asDto).collect(Collectors.<ContactDto>toList()));
     }
     if(!isNullOrEmpty(study.getWebsite())) builder.setWebsite(study.getWebsite());
+    if(!isNullOrEmpty(study.getOpal())) builder.setOpal(study.getOpal());
     if(study.getSpecificAuthorization() != null) {
       builder.setSpecificAuthorization(AuthorizationDtos.asDto(study.getSpecificAuthorization()));
     }
@@ -116,6 +117,7 @@ class StudyDtos {
     }
     if(dto.getObjectivesCount() > 0) study.setObjectives(localizedStringDtos.fromDto(dto.getObjectivesList()));
     if(dto.hasWebsite()) study.setWebsite(dto.getWebsite());
+    if(dto.hasOpal()) study.setOpal(dto.getOpal());
     if(dto.hasSpecificAuthorization()) {
       study.setSpecificAuthorization(AuthorizationDtos.fromDto(dto.getSpecificAuthorization()));
     }

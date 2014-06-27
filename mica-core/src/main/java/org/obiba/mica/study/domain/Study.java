@@ -81,6 +81,9 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
 
   private SortedSet<Population> populations;
 
+  @URL
+  private String opal;
+
   private LinkedListMultimap<String, Attribute> attributes;
 
   public LocalizedString getName() {
@@ -147,6 +150,14 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
 
   public void setWebsite(String website) {
     this.website = website;
+  }
+
+  public String getOpal() {
+    return opal;
+  }
+
+  public void setOpal(String opal) {
+    this.opal = opal;
   }
 
   public Authorization getSpecificAuthorization() {
