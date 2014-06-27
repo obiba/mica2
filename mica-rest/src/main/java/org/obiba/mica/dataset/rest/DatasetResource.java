@@ -14,6 +14,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
@@ -21,6 +22,8 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.service.DatasetService;
 import org.obiba.opal.web.magma.Dtos;
 import org.obiba.opal.web.model.Magma;
+import org.obiba.opal.web.model.Math;
+import org.obiba.opal.web.model.Search;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -44,6 +47,30 @@ public class DatasetResource {
     ImmutableList.Builder<Magma.VariableDto> builder = ImmutableList.builder();
     datasetService.getVariables(name).forEach(variable -> builder.add(Dtos.asDto(variable).build()));
     return builder.build();
+  }
+
+  @GET
+  @Path("/variable/{variable}")
+  public Magma.VariableDto getVariable(@PathParam("variable") String variable) {
+    return datasetService.getVariable(name, variable);
+  }
+
+  @GET
+  @Path("/variable/{variable}/summary")
+  public Math.SummaryStatisticsDto getVariableSummary(@PathParam("variable") String variable) {
+    return datasetService.getVariableSummary(name, variable);
+  }
+
+  @GET
+  @Path("/variable/{variable}/facet")
+  public Search.QueryResultDto getVariableFacet(@PathParam("variable") String variable) {
+    return datasetService.getVariableFacet(name, variable);
+  }
+
+  @POST
+  @Path("/facets")
+  public Search.QueryResultDto getFacets(Search.QueryTermsDto query) {
+    return datasetService.getFacets(name, query);
   }
 
 }
