@@ -229,3 +229,35 @@ message AttributeDto {
   required string value = 3;
   optional string locale = 4;
 }
+
+message DatasetDto {
+  optional string id = 1;
+  repeated LocalizedStringDto name = 2;
+  repeated LocalizedStringDto description = 3;
+  repeated AttributeDto attributes = 4;
+
+  extensions 1000 to max;
+
+  message StudyTableDto {
+    optional string studyId = 1;
+    required string project = 2;
+    required string table = 3;
+  }
+}
+
+message StudyDatasetDto {
+  required DatasetDto.StudyTableDto studyTable = 1;
+
+  extend DatasetDto {
+    optional StudyDatasetDto type = 1000;
+  }
+}
+
+message HarmonizedDatasetDto {
+  required string table = 1;
+  repeated DatasetDto.StudyTableDto studyTables = 2;
+
+  extend DatasetDto {
+    optional HarmonizedDatasetDto type = 1001;
+  }
+}

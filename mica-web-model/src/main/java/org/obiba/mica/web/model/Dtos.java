@@ -3,9 +3,11 @@ package org.obiba.mica.web.model;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.obiba.mica.domain.HarmonizedDataset;
+import org.obiba.mica.domain.Network;
+import org.obiba.mica.domain.StudyDataset;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.micaConfig.MicaConfig;
-import org.obiba.mica.domain.Network;
 import org.obiba.mica.study.StudyService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
@@ -40,6 +42,9 @@ public class Dtos {
 
   @Inject
   private TempFileDtos tempFileDtos;
+
+  @Inject
+  private DatasetDtos datasetDtos;
 
   @NotNull
   public StudyDto asDto(@NotNull Study study) {
@@ -80,4 +85,16 @@ public class Dtos {
   public Mica.TempFileDto asDto(@NotNull TempFile tempFile) {
     return tempFileDtos.asDto(tempFile);
   }
+
+  @NotNull
+  public Mica.DatasetDto asDto(@NotNull StudyDataset dataset) {
+    return datasetDtos.asDto(dataset);
+  }
+
+  @NotNull
+  public Mica.DatasetDto asDto(@NotNull HarmonizedDataset dataset) {
+    return datasetDtos.asDto(dataset);
+  }
+
+
 }
