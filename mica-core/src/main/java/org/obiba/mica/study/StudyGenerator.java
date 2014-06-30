@@ -15,10 +15,14 @@ import org.obiba.mica.domain.Address;
 import org.obiba.mica.domain.Attribute;
 import org.obiba.mica.domain.Authorization;
 import org.obiba.mica.domain.Contact;
+import org.obiba.mica.domain.HarmonizedDataset;
+import org.obiba.mica.domain.StudyTable;
+import org.obiba.mica.domain.StudyDataset;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.file.TempFileService;
 import org.obiba.mica.domain.Network;
+import org.obiba.mica.service.DatasetService;
 import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.NumberOfParticipants;
 import org.obiba.mica.study.domain.Population;
@@ -44,6 +48,9 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
   @Inject
   private TempFileService tempFileService;
 
+  @Inject
+  private DatasetService datasetService;
+
 //  @Inject
 //  private NetworkRepository networkRepository;
 
@@ -60,7 +67,23 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
     studyService.save(study);
     studyService.publish(study.getId());
 
+    StudyDataset studyDataset = new StudyDataset();
+    studyDataset.setName(en("Participants").forFr("Participants"));
+    StudyTable table = new StudyTable();
+    table.setStudyId(study.getId());
+    table.setProject("test");
+    table.setTable("Participants");
+    studyDataset.setStudyTable(table);
+    datasetService.save(studyDataset);
+
+    HarmonizedDataset harmonizedDataset = new HarmonizedDataset();
+    harmonizedDataset.setName(en("Ankle Brachial").forFr("Ankle Brachial"));
+    harmonizedDataset.setTable("AnkleBrachial");
+    datasetService.save(harmonizedDataset);
+
     studyService.save(createStudy("NCDS", "National Child Development Study", "National Child Development Study"));
+
+
 
 //    Network network = createNetwork();
 //    network.addStudy(study);
@@ -80,6 +103,7 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
             .forFr(
                 "L’Étude longitudinale canadienne sur le vieillissement (ÉLCV) est une vaste étude nationale à long terme qui permettra de suivre environ 50 000 Canadiennes et Canadiens âgé(e)s de 45 à 85 ans pendant une période d’au moins 20 ans. L’ÉLCV recueillera des renseignements sur les changements biologiques, médicaux, psychologiques, sociaux et sur les habitudes de vie qui se produisent chez les gens. On étudiera ces facteurs pour comprendre la façon dont ils influencent, individuellement et collectivement, le maintien en santé et le développement de maladies et d’incapacités au fur et à mesure que les gens vieillissent. L’ÉLCV sera l’une des études les plus complètes du genre entreprises jusqu’à ce jour, non seulement au Canada, mais aussi au niveau international."));
     study.setWebsite("http://www.clsa-elcv.ca");
+    study.setOpal("https://localhost:8443");
 
     Contact contact = createContact();
     study.addContact(contact);

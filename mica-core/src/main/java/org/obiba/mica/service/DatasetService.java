@@ -10,15 +10,18 @@
 
 package org.obiba.mica.service;
 
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.magma.DatasourceFactory;
 import org.obiba.magma.Variable;
 import org.obiba.magma.support.Initialisables;
-import org.obiba.mica.domain.Dataset;
-import org.obiba.mica.repository.DatasetRepository;
-import org.obiba.mica.study.NoSuchStudyException;
+import org.obiba.mica.domain.HarmonizedDataset;
+import org.obiba.mica.domain.StudyDataset;
+import org.obiba.mica.repository.HarmonizedDatasetRepository;
+import org.obiba.mica.repository.StudyDatasetRepository;
 import org.obiba.opal.rest.client.magma.RestDatasource;
 import org.obiba.opal.rest.client.magma.RestDatasourceFactory;
 import org.obiba.opal.rest.client.magma.RestValueTable;
@@ -43,7 +46,10 @@ public class DatasetService implements EnvironmentAware {
   private static final Logger log = LoggerFactory.getLogger(DatasetService.class);
 
   @Inject
-  private DatasetRepository datasetRepository;
+  private StudyDatasetRepository studyDatasetRepository;
+
+  @Inject
+  private HarmonizedDatasetRepository harmonizedDatasetRepository;
 
   private RelaxedPropertyResolver opalPropertyResolver;
 
@@ -54,15 +60,34 @@ public class DatasetService implements EnvironmentAware {
     opalPropertyResolver = new RelaxedPropertyResolver(environment, "opal.");
   }
 
-  public void save(@NotNull Dataset dataset) {
-    datasetRepository.save(dataset);
+  public void save(@NotNull StudyDataset dataset) {
+    studyDatasetRepository.save(dataset);
+  }
+
+  public void save(@NotNull HarmonizedDataset dataset) {
+    harmonizedDatasetRepository.save(dataset);
   }
 
   @NotNull
-  public Dataset findById(@NotNull String id) throws NoSuchStudyException {
-    Dataset dataset = datasetRepository.findOne(id);
+  public StudyDataset findStudyDatasetById(@NotNull String id) throws NoSuchDatasetException {
+    StudyDataset dataset = studyDatasetRepository.findOne(id);
     if(dataset == null) throw NoSuchDatasetException.withId(id);
     return dataset;
+  }
+
+  @NotNull
+  public HarmonizedDataset findHarmonizedDatasetById(@NotNull String id) throws NoSuchDatasetException {
+    HarmonizedDataset dataset = harmonizedDatasetRepository.findOne(id);
+    if(dataset == null) throw NoSuchDatasetException.withId(id);
+    return dataset;
+  }
+
+  public List<StudyDataset> getStudyDatasets() {
+    return studyDatasetRepository.findAll();
+  }
+
+  public List<HarmonizedDataset> getHarmonizedDatasets() {
+    return harmonizedDatasetRepository.findAll();
   }
 
   public Iterable<Variable> getVariables(String tableName) {

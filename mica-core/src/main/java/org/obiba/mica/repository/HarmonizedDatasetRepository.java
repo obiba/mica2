@@ -10,12 +10,12 @@
 
 package org.obiba.mica.repository;
 
-import org.obiba.mica.domain.Dataset;
+import org.obiba.mica.domain.HarmonizedDataset;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**
- * Spring Data MongoDB repository for the Dataset entity.
+ * Spring Data MongoDB repository for the {@link org.obiba.mica.domain.HarmonizedDataset} entity.
  */
-public interface DatasetRepository extends MongoRepository<Dataset, String> {
+public interface HarmonizedDatasetRepository extends MongoRepository<HarmonizedDataset, String> {
 
 }
