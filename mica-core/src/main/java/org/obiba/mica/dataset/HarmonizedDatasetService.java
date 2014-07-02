@@ -8,15 +8,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.service;
+package org.obiba.mica.dataset;
 
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.domain.HarmonizedDataset;
+import org.obiba.mica.dataset.DatasetService;
+import org.obiba.mica.dataset.domain.HarmonizedDataset;
 import org.obiba.mica.repository.HarmonizedDatasetRepository;
+import org.obiba.mica.service.NoSuchDatasetException;
 import org.obiba.mica.study.event.StudyDeletedEvent;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -37,11 +39,11 @@ public class HarmonizedDatasetService extends DatasetService {
   }
 
   /**
-   * Get the {@link org.obiba.mica.domain.HarmonizedDataset} from its id.
+   * Get the {@link org.obiba.mica.dataset.domain.HarmonizedDataset} from its id.
    *
    * @param id
    * @return
-   * @throws NoSuchDatasetException
+   * @throws org.obiba.mica.service.NoSuchDatasetException
    */
   @NotNull
   public HarmonizedDataset findHarmonizedDatasetById(@NotNull String id) throws NoSuchDatasetException {
@@ -51,7 +53,7 @@ public class HarmonizedDatasetService extends DatasetService {
   }
 
   /**
-   * Get all {@link org.obiba.mica.domain.HarmonizedDataset}s.
+   * Get all {@link org.obiba.mica.dataset.domain.HarmonizedDataset}s.
    *
    * @return
    */
@@ -60,7 +62,7 @@ public class HarmonizedDatasetService extends DatasetService {
   }
 
   /**
-   * Get all {@link org.obiba.mica.domain.HarmonizedDataset}s having a reference to the given study.
+   * Get all {@link org.obiba.mica.dataset.domain.HarmonizedDataset}s having a reference to the given study.
    * @param studyId
    * @return
    */

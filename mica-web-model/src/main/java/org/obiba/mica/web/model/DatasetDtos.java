@@ -15,9 +15,9 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.domain.Dataset;
-import org.obiba.mica.domain.HarmonizedDataset;
-import org.obiba.mica.domain.StudyDataset;
+import org.obiba.mica.dataset.domain.Dataset;
+import org.obiba.mica.dataset.domain.HarmonizedDataset;
+import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.domain.StudyTable;
 import org.springframework.stereotype.Component;
 
@@ -46,6 +46,7 @@ class DatasetDtos {
     Mica.DatasetDto.Builder builder = asDtoBuilder(dataset);
 
     Mica.HarmonizedDatasetDto.Builder hbuilder = Mica.HarmonizedDatasetDto.newBuilder();
+    hbuilder.setProject(dataset.getProject());
     hbuilder.setTable(dataset.getTable());
     if(!dataset.getStudyTables().isEmpty()) {
       hbuilder.addAllStudyTables(dataset.getStudyTables().stream().map(this::asDto).collect(Collectors.toList()));

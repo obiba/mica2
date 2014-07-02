@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.service;
+package org.obiba.mica.dataset;
 
 import org.obiba.magma.DatasourceFactory;
 import org.obiba.magma.Variable;
@@ -26,7 +26,7 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 
 /**
- * {@link org.obiba.mica.domain.Dataset} management service.
+ * {@link org.obiba.mica.dataset.domain.Dataset} management service.
  */
 
 public abstract class DatasetService implements EnvironmentAware {

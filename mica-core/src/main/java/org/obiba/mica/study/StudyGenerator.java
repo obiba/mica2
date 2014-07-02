@@ -15,15 +15,15 @@ import org.obiba.mica.domain.Address;
 import org.obiba.mica.domain.Attribute;
 import org.obiba.mica.domain.Authorization;
 import org.obiba.mica.domain.Contact;
-import org.obiba.mica.domain.HarmonizedDataset;
+import org.obiba.mica.dataset.domain.HarmonizedDataset;
 import org.obiba.mica.domain.Network;
-import org.obiba.mica.domain.StudyDataset;
+import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.domain.StudyTable;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.file.TempFileService;
-import org.obiba.mica.service.HarmonizedDatasetService;
-import org.obiba.mica.service.StudyDatasetService;
+import org.obiba.mica.dataset.HarmonizedDatasetService;
+import org.obiba.mica.dataset.StudyDatasetService;
 import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.NumberOfParticipants;
 import org.obiba.mica.study.domain.Population;
@@ -82,6 +82,7 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
 
     HarmonizedDataset harmonizedDataset = new HarmonizedDataset();
     harmonizedDataset.setName(en("Ankle Brachial").forFr("Ankle Brachial"));
+    harmonizedDataset.setProject("mica");
     harmonizedDataset.setTable("AnkleBrachial");
     table = new StudyTable();
     table.setStudyId(study.getId());

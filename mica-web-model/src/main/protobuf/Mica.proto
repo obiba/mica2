@@ -254,8 +254,9 @@ message StudyDatasetDto {
 }
 
 message HarmonizedDatasetDto {
-  required string table = 1;
-  repeated DatasetDto.StudyTableDto studyTables = 2;
+  required string project = 1;
+  required string table = 2;
+  repeated DatasetDto.StudyTableDto studyTables = 3;
 
   extend DatasetDto {
     optional HarmonizedDatasetDto type = 1001;

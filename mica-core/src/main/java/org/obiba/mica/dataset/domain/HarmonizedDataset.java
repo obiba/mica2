@@ -8,10 +8,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.domain;
+package org.obiba.mica.dataset.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.validation.constraints.NotNull;
+
+import org.obiba.mica.dataset.domain.Dataset;
+import org.obiba.mica.domain.StudyTable;
 
 /**
  * Dataset that relies on Study Opal servers summaries.
@@ -26,8 +31,15 @@ public class HarmonizedDataset extends Dataset {
   private List<StudyTable> studyTables;
 
   /**
+   * Project in which the table is located.
+   */
+  @NotNull
+  private String project;
+
+  /**
    * Table that holds the variables in the primary Opal.
    */
+  @NotNull
   private String table;
 
   public List<StudyTable> getStudyTables() {
@@ -40,6 +52,14 @@ public class HarmonizedDataset extends Dataset {
 
   public void setStudyTables(List<StudyTable> studyTables) {
     this.studyTables = studyTables;
+  }
+
+  public String getProject() {
+    return project;
+  }
+
+  public void setProject(String project) {
+    this.project = project;
   }
 
   public String getTable() {
