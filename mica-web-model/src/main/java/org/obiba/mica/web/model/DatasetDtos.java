@@ -15,9 +15,9 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.dataset.domain.Dataset;
-import org.obiba.mica.dataset.domain.HarmonizedDataset;
-import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.domain.Dataset;
+import org.obiba.mica.domain.HarmonizedDataset;
+import org.obiba.mica.domain.StudyDataset;
 import org.obiba.mica.domain.StudyTable;
 import org.springframework.stereotype.Component;
 
