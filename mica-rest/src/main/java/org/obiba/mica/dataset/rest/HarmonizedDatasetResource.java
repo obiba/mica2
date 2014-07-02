@@ -19,6 +19,7 @@ import javax.ws.rs.PathParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.service.HarmonizedDatasetService;
+import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.magma.Dtos;
 import org.obiba.opal.web.model.Magma;
 import org.springframework.context.annotation.Scope;
@@ -38,21 +39,32 @@ public class HarmonizedDatasetResource {
   @Inject
   private HarmonizedDatasetService datasetService;
 
+  @Inject
+  private org.obiba.mica.web.model.Dtos dtos;
+
+  @GET
+  public Mica.DatasetDto get() {
+    return dtos.asDto(datasetService.findById(id));
+  }
+
+  @GET
+  @Path("/table")
+  public Magma.TableDto getTable() {
+    return datasetService.getTableDto(id);
+  }
+
   @GET
   @Path("/variables")
   public List<Magma.VariableDto> getVariables() {
     ImmutableList.Builder<Magma.VariableDto> builder = ImmutableList.builder();
-    datasetService.getVariables(getTableName()).forEach(variable -> builder.add(Dtos.asDto(variable).build()));
+    datasetService.getVariables(id).forEach(variable -> builder.add(Dtos.asDto(variable).build()));
     return builder.build();
   }
 
   @GET
   @Path("/variable/{variable}")
   public Magma.VariableDto getVariable(@PathParam("variable") String variable) {
-    return datasetService.getVariable(getTableName(), variable);
+    return datasetService.getVariable(id, variable);
   }
 
-  private String getTableName() {
-    return datasetService.findById(id).getTable();
-  }
 }

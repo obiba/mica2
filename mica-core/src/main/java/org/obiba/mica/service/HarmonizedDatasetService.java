@@ -10,27 +10,16 @@
 
 package org.obiba.mica.service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.magma.DatasourceFactory;
-import org.obiba.magma.Variable;
-import org.obiba.magma.support.Initialisables;
+import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.mica.domain.HarmonizedDataset;
 import org.obiba.mica.repository.HarmonizedDatasetRepository;
-import org.obiba.mica.service.DatasetService;
-import org.obiba.mica.service.NoSuchDatasetException;
 import org.obiba.mica.study.event.StudyDeletedEvent;
-import org.obiba.opal.rest.client.magma.RestDatasource;
-import org.obiba.opal.rest.client.magma.RestDatasourceFactory;
 import org.obiba.opal.rest.client.magma.RestValueTable;
-import org.springframework.boot.bind.RelaxedPropertyResolver;
-import org.springframework.context.EnvironmentAware;
-import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -40,19 +29,10 @@ import com.google.common.eventbus.Subscribe;
 
 @Service
 @Validated
-public class HarmonizedDatasetService extends DatasetService implements EnvironmentAware {
+public class HarmonizedDatasetService extends DatasetService {
 
   @Inject
   private HarmonizedDatasetRepository harmonizedDatasetRepository;
-
-  private RelaxedPropertyResolver opalPropertyResolver;
-
-  private Map<String, RestDatasource> datasourceMap = new HashMap<>();
-
-  @Override
-  public void setEnvironment(Environment environment) {
-    opalPropertyResolver = new RelaxedPropertyResolver(environment, "opal.");
-  }
 
   public void save(@NotNull HarmonizedDataset dataset) {
     harmonizedDatasetRepository.save(dataset);
@@ -93,22 +73,10 @@ public class HarmonizedDatasetService extends DatasetService implements Environm
   }
 
   @Override
-  public RestValueTable getTable(@NotNull String id) throws NoSuchDatasetException {
+  @NotNull
+  public RestValueTable getTable(@NotNull String id) throws NoSuchDatasetException, NoSuchValueTableException {
     HarmonizedDataset dataset = findById(id);
     return execute(dataset.getProject(), datasource -> (RestValueTable) datasource.getValueTable(dataset.getTable()));
-  }
-
-  /**
-   * Get the variables of a {@link org.obiba.mica.domain.HarmonizedDataset} from its id.
-   *
-   * @param id
-   * @return
-   * @throws org.obiba.mica.service.NoSuchDatasetException
-   */
-  @Override
-  public Iterable<Variable> getVariables(@NotNull String id) throws NoSuchDatasetException {
-    HarmonizedDataset dataset = findById(id);
-    return execute(dataset.getProject(), datasource -> datasource.getValueTable(dataset.getTable()).getVariables());
   }
 
   /**
@@ -129,41 +97,13 @@ public class HarmonizedDatasetService extends DatasetService implements Environm
   /**
    * Build or reuse the {@link org.obiba.opal.rest.client.magma.RestDatasource} and execute the callback with it.
    *
+   * @param project
    * @param callback
    * @param <T>
    * @return
    */
   private <T> T execute(String project, DatasourceCallback<T> callback) {
     return execute(getDatasource(project), callback);
-  }
-
-  /**
-   * Get a {@link org.obiba.opal.rest.client.magma.RestDatasource} on the default Opal project.
-   *
-   * @param project
-   * @return
-   */
-  private RestDatasource getDatasource(String project) {
-    if(!datasourceMap.containsKey(project)) {
-      DatasourceFactory factory = new RestDatasourceFactory(project, getOpalUrl(), getOpalUsername(), getOpalPassword(),
-          project);
-      RestDatasource datasource = (RestDatasource) factory.create();
-      Initialisables.initialise(datasource);
-      datasourceMap.put(project, datasource);
-    }
-    return datasourceMap.get(project);
-  }
-
-  private String getOpalUrl() {
-    return opalPropertyResolver.getProperty("url");
-  }
-
-  private String getOpalUsername() {
-    return opalPropertyResolver.getProperty("username");
-  }
-
-  private String getOpalPassword() {
-    return opalPropertyResolver.getProperty("password");
   }
 
 }

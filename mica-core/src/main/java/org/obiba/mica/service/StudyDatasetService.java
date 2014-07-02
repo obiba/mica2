@@ -15,11 +15,10 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.magma.Variable;
+import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.mica.domain.StudyDataset;
+import org.obiba.mica.domain.StudyTable;
 import org.obiba.mica.repository.StudyDatasetRepository;
-import org.obiba.mica.service.DatasetService;
-import org.obiba.mica.service.NoSuchDatasetException;
 import org.obiba.mica.study.event.StudyDeletedEvent;
 import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.springframework.scheduling.annotation.Async;
@@ -38,17 +37,6 @@ public class StudyDatasetService extends DatasetService {
 
   public void save(@NotNull StudyDataset dataset) {
     studyDatasetRepository.save(dataset);
-  }
-
-  @Override
-  public Iterable<Variable> getVariables(@NotNull String id) throws NoSuchDatasetException {
-    StudyDataset dataset = findById(id);
-    return null;
-  }
-
-  @Override
-  public RestValueTable getTable(@NotNull String id) {
-    return null;
   }
 
   /**
@@ -76,12 +64,21 @@ public class StudyDatasetService extends DatasetService {
 
   /**
    * Get all {@link org.obiba.mica.domain.StudyDataset}s of a study.
+   *
    * @param studyId
    * @return
    */
   public List<StudyDataset> findAllStudyDatasets(String studyId) {
-    if (Strings.isNullOrEmpty(studyId)) return findAllStudyDatasets();
+    if(Strings.isNullOrEmpty(studyId)) return findAllStudyDatasets();
     return studyDatasetRepository.findByStudyTableStudyId(studyId);
+  }
+
+  @Override
+  @NotNull
+  public RestValueTable getTable(@NotNull String id) throws NoSuchDatasetException, NoSuchValueTableException {
+    StudyDataset dataset = findById(id);
+    StudyTable studyTable = dataset.getStudyTable();
+    return execute(studyTable, datasource -> (RestValueTable) datasource.getValueTable(studyTable.getTable()));
   }
 
   /**
@@ -97,4 +94,21 @@ public class StudyDatasetService extends DatasetService {
     // TODO
     //findAllStudyDatasets(studyId);
   }
+
+  //
+  // Private methods
+  //
+
+  /**
+   * Build or reuse the {@link org.obiba.opal.rest.client.magma.RestDatasource} and execute the callback with it.
+   *
+   * @param studyTable
+   * @param callback
+   * @param <T>
+   * @return
+   */
+  private <T> T execute(StudyTable studyTable, DatasourceCallback<T> callback) {
+    return execute(getDatasource(studyTable), callback);
+  }
+
 }
