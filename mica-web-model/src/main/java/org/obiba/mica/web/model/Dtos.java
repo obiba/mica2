@@ -3,9 +3,9 @@ package org.obiba.mica.web.model;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.dataset.domain.HarmonizedDataset;
+import org.obiba.mica.domain.HarmonizedDataset;
 import org.obiba.mica.domain.Network;
-import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.domain.StudyDataset;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.micaConfig.MicaConfig;
 import org.obiba.mica.study.StudyService;

@@ -8,9 +8,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.domain;
+package org.obiba.mica.domain;
 
-import org.obiba.mica.dataset.domain.Dataset;
+import org.obiba.mica.domain.Dataset;
 import org.obiba.mica.domain.StudyTable;
 
 /**
