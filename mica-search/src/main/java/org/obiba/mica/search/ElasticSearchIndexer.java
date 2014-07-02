@@ -62,6 +62,10 @@ public class ElasticSearchIndexer {
         .actionGet();
   }
 
+  public boolean hasIndex(String indexName) {
+    return client.admin().indices().exists(new IndicesExistsRequest(indexName)).actionGet().isExists();
+  }
+
   public DeleteIndexResponse dropIndex(String indexName) {
     return client.admin().indices().prepareDelete(indexName).execute().actionGet();
   }
@@ -72,7 +76,7 @@ public class ElasticSearchIndexer {
 
   private void createIndexIfNeeded(String indexName) {
     IndicesAdminClient indicesAdmin = client.admin().indices();
-    if(!indicesAdmin.exists(new IndicesExistsRequest(indexName)).actionGet().isExists()) {
+    if(!hasIndex(indexName)) {
       log.info("Creating index {}", indexName);
       Settings settings = ImmutableSettings.settingsBuilder() //
           .put("number_of_shards", elasticSearchConfiguration.getNbShards()) //
