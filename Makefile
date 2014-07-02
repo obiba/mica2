@@ -2,7 +2,11 @@ skipTests = false
 version=0.1-SNAPSHOT
 mvn_exec = mvn -Dmaven.test.skip=${skipTests}
 current_dir = $(shell pwd)
-mica_server_home = ${current_dir}/mica-webapp/target/mica_server_home
+ifdef MICA_SERVER_HOME
+	mica_server_home = ${MICA_SERVER_HOME}
+else
+	mica_server_home = ${current_dir}/mica-webapp/target/mica_server_home
+endif
 mica_server_log = ${mica_server_home}/logs
 
 help:
