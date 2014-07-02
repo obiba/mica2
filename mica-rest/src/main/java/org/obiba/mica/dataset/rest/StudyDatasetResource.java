@@ -19,7 +19,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.service.DatasetService;
+import org.obiba.mica.service.StudyDatasetService;
 import org.obiba.opal.web.magma.Dtos;
 import org.obiba.opal.web.model.Magma;
 import org.obiba.opal.web.model.Math;
@@ -39,7 +39,7 @@ public class StudyDatasetResource {
   private String id;
 
   @Inject
-  private DatasetService datasetService;
+  private StudyDatasetService datasetService;
 
   @GET
   @Path("/variables")

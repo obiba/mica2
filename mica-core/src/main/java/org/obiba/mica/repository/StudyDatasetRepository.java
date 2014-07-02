@@ -10,6 +10,8 @@
 
 package org.obiba.mica.repository;
 
+import java.util.List;
+
 import org.obiba.mica.domain.StudyDataset;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
@@ -17,5 +19,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
  * Spring Data MongoDB repository for the {@link org.obiba.mica.domain.StudyDataset} entity.
  */
 public interface StudyDatasetRepository extends MongoRepository<StudyDataset, String> {
+
+  List<StudyDataset> findByStudyTableStudyId(String studyId);
 
 }
