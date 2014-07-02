@@ -13,7 +13,7 @@
 
 start:
   type: range
-    name: start-year
+  name: start-year
 
 end:
   type: range

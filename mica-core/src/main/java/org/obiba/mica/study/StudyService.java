@@ -12,8 +12,11 @@ import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
 import org.obiba.mica.study.event.StudyPublishedEvent;
+import org.obiba.mica.study.event.IndexStudiesEvent;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -24,7 +27,7 @@ import static org.obiba.mica.domain.RevisionStatus.DRAFT;
 
 @Service
 @Validated
-public class StudyService {
+public class StudyService implements ApplicationListener<ContextRefreshedEvent> {
 
 //  private static final Logger log = LoggerFactory.getLogger(StudyService.class);
 
@@ -122,8 +125,17 @@ public class StudyService {
     return studyState;
   }
 
+  @Override
+  public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+    List<Study> publishedStudies = findPublishedStates().stream()
+        .map(studyState -> gitService.readFromTag(studyState.getId(), studyState.getPublishedTag(), Study.class))
+        .collect(Collectors.toList());
+
+    eventBus.post(new IndexStudiesEvent(publishedStudies, findAllDraftStudies()));
+  }
+
 //  @CacheEvict(value = { "studies-draft", "studies-published" }, key = "#id")
 //  public void delete(@NotNull String id) {
 //    studyRepository.delete(id);
 //  }
-}
+  }
