@@ -10,6 +10,8 @@
 
 package org.obiba.mica.repository;
 
+import java.util.List;
+
 import org.obiba.mica.domain.HarmonizedDataset;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
@@ -17,5 +19,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
  * Spring Data MongoDB repository for the {@link org.obiba.mica.domain.HarmonizedDataset} entity.
  */
 public interface HarmonizedDatasetRepository extends MongoRepository<HarmonizedDataset, String> {
+
+  List<HarmonizedDataset> findByStudyTablesStudyId(String studyId);
 
 }

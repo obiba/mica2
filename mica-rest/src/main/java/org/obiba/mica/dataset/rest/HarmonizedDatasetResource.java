@@ -18,7 +18,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.service.DatasetService;
+import org.obiba.mica.service.HarmonizedDatasetService;
 import org.obiba.opal.web.magma.Dtos;
 import org.obiba.opal.web.model.Magma;
 import org.springframework.context.annotation.Scope;
@@ -36,7 +36,7 @@ public class HarmonizedDatasetResource {
   private String id;
 
   @Inject
-  private DatasetService datasetService;
+  private HarmonizedDatasetService datasetService;
 
   @GET
   @Path("/variables")

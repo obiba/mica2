@@ -16,9 +16,10 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.service.DatasetService;
+import org.obiba.mica.service.StudyDatasetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.annotation.Scope;
@@ -31,14 +32,14 @@ import org.springframework.stereotype.Component;
 public class StudyDatasetsResource {
 
   @Inject
-  private DatasetService datasetService;
+  private StudyDatasetService datasetService;
 
   @Inject
   private Dtos dtos;
 
   @GET
-  public List<Mica.DatasetDto> get() {
-    return datasetService.getStudyDatasets().stream().map(dtos::asDto).collect(Collectors.toList());
+  public List<Mica.DatasetDto> get(@QueryParam("study") String studyId) {
+    return datasetService.findAllStudyDatasets(studyId).stream().map(dtos::asDto).collect(Collectors.toList());
   }
 
 }

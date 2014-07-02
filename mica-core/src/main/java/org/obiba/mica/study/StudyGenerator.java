@@ -16,13 +16,14 @@ import org.obiba.mica.domain.Attribute;
 import org.obiba.mica.domain.Authorization;
 import org.obiba.mica.domain.Contact;
 import org.obiba.mica.domain.HarmonizedDataset;
-import org.obiba.mica.domain.StudyTable;
+import org.obiba.mica.domain.Network;
 import org.obiba.mica.domain.StudyDataset;
+import org.obiba.mica.domain.StudyTable;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.file.TempFileService;
-import org.obiba.mica.domain.Network;
-import org.obiba.mica.service.DatasetService;
+import org.obiba.mica.service.HarmonizedDatasetService;
+import org.obiba.mica.service.StudyDatasetService;
 import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.NumberOfParticipants;
 import org.obiba.mica.study.domain.Population;
@@ -49,7 +50,10 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
   private TempFileService tempFileService;
 
   @Inject
-  private DatasetService datasetService;
+  private HarmonizedDatasetService harmonizedDatasetService;
+
+  @Inject
+  private StudyDatasetService studyDatasetService;
 
 //  @Inject
 //  private NetworkRepository networkRepository;
@@ -74,12 +78,17 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
     table.setProject("test");
     table.setTable("Participants");
     studyDataset.setStudyTable(table);
-    datasetService.save(studyDataset);
+    studyDatasetService.save(studyDataset);
 
     HarmonizedDataset harmonizedDataset = new HarmonizedDataset();
     harmonizedDataset.setName(en("Ankle Brachial").forFr("Ankle Brachial"));
     harmonizedDataset.setTable("AnkleBrachial");
-    datasetService.save(harmonizedDataset);
+    table = new StudyTable();
+    table.setStudyId(study.getId());
+    table.setProject("test");
+    table.setTable("AnkleBrachial");
+    harmonizedDataset.addStudyTable(table);
+    harmonizedDatasetService.save(harmonizedDataset);
 
     studyService.save(createStudy("NCDS", "National Child Development Study", "National Child Development Study"));
 
