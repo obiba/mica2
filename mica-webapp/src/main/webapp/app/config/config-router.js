@@ -5,11 +5,11 @@ mica.config
     function ($routeProvider) {
       $routeProvider
         .when('/config', {
-          templateUrl: 'app/config/config-view.html',
+          templateUrl: 'app/config/views/config-view.html',
           controller: 'MicaConfigController'
         })
         .when('/config/edit', {
-          templateUrl: 'app/config/config-form.html',
+          templateUrl: 'app/config/views/config-form.html',
           controller: 'MicaConfigEditController'
         });
     }]);
