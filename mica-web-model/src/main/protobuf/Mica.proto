@@ -234,7 +234,8 @@ message DatasetDto {
   optional string id = 1;
   repeated LocalizedStringDto name = 2;
   repeated LocalizedStringDto description = 3;
-  repeated AttributeDto attributes = 4;
+  required bool published = 4;
+  repeated AttributeDto attributes = 5;
 
   extensions 1000 to max;
 

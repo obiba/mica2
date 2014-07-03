@@ -15,12 +15,6 @@ import java.util.Locale;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.domain.AbstractAuditableDocument;
-import org.obiba.mica.domain.Attribute;
-import org.obiba.mica.domain.AttributeAware;
-import org.obiba.mica.domain.LocalizedString;
-import org.obiba.mica.domain.NoSuchAttributeException;
-
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 
@@ -35,6 +29,8 @@ public abstract class Dataset extends AbstractAuditableDocument implements Attri
   private LocalizedString name;
 
   private LocalizedString description;
+
+  private boolean published = false;
 
   private LinkedListMultimap<String, Attribute> attributes;
 
@@ -52,6 +48,14 @@ public abstract class Dataset extends AbstractAuditableDocument implements Attri
 
   public void setDescription(LocalizedString description) {
     this.description = description;
+  }
+
+  public boolean isPublished() {
+    return published;
+  }
+
+  public void setPublished(boolean published) {
+    this.published = published;
   }
 
   @Override

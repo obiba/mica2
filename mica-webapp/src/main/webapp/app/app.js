@@ -9,6 +9,7 @@ var mica = angular.module('mica', [
   'mica.config',
   'ngObiba',
   'mica.study',
+  'mica.dataset',
   'ngAnimate',
   'ngCookies',
   'ngResource',

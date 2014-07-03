@@ -72,6 +72,7 @@ class DatasetDtos {
     if(dataset.getDescription() != null) {
       builder.addAllDescription(localizedStringDtos.asDto(dataset.getDescription()));
     }
+    builder.setPublished(dataset.isPublished());
     if(dataset.getAttributes() != null) {
       dataset.getAttributes().values().forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
     }
