@@ -40,9 +40,23 @@
     <div class="navbar-collapse collapse" id="navbar-main" ng-switch="authenticated">
       <ul class="nav navbar-nav">
         <li ng-hide="!authenticated">
+          <a href="#/network">
+            <span translate>networks</span>
+          </a>
+        </li>
+        <li ng-hide="!authenticated">
           <a href="#/study">
             <span translate>studies</span>
           </a>
+        </li>
+        <li class="dropdown" ng-hide="!authenticated">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            <span translate>datasets</span>
+            <i class="fa fa-caret-down"></i></a>
+          <ul class="dropdown-menu pull-right">
+            <li><a href="#/study-dataset"><span translate>study-datasets</span></a></li>
+            <li><a href="#/harmonized-dataset"><span translate>harmonized-datasets</span></a></li>
+          </ul>
         </li>
         <li class="dropdown" ng-hide="!hasRole('mica-administrator')">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
@@ -176,6 +190,10 @@
 <script src="app/study/study-router.js"></script>
 <script src="app/study/study-controller.js"></script>
 <script src="app/study/study-service.js"></script>
+<script src="app/dataset/dataset.js"></script>
+<script src="app/dataset/dataset-router.js"></script>
+<script src="app/dataset/dataset-controller.js"></script>
+<script src="app/dataset/dataset-service.js"></script>
 <!-- endbuild -->
 </body>
 </html>

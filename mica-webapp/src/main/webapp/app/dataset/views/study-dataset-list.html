@@ -1,0 +1,51 @@
+<div>
+
+  <h2 translate>study-datasets</h2>
+
+  <a ng-href="#/study-dataset/new" class="btn btn-primary">
+    <i class="fa fa-plus"></i> <span translate>dataset.add</span>
+  </a>
+
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <th translate>dataset.name</th>
+        <th>Published</th>
+        <th></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr ng-repeat="dataset in studyDatasets">
+        <td>
+          <ul class="list-unstyled">
+            <li ng-repeat="name in dataset.name">
+              <span class="badge">{{name.lang}}</span> {{name.value}}
+            </li>
+          </ul>
+        </td>
+        <td>
+          <i class="fa fa-star-o" ng-show="!dataset.published"
+              title="{{'publish.not-published' | translate}}"></i>
+          <i class="fa fa-star" ng-show="dataset.published"
+              title="{{'publish.published' | translate}}"></i>
+        </td>
+        <td>
+          <ul class="list-inline">
+            <li>
+              <a ng-href="#/study-dataset/{{dataset.id}}" translate>view</a>
+            </li>
+            <li>
+              <a ng-href="#/study-dataset/{{dataset.id}}/edit" translate>edit</a>
+            </li>
+            <li>
+              <a ng-href="#/study-dataset/{{dataset.id}}/delete" translate>delete</a>
+            </li>
+          </ul>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>

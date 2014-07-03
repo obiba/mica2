@@ -404,6 +404,13 @@
     "country": "Country"
   },
   "networks": "Networks",
+  "datasets" : "Datasets",
+  "dataset" : {
+    "name" : "Name",
+    "add" : "Add Dataset"
+  },
+  "study-datasets" : "Study Datasets",
+  "harmonized-datasets" : "Harmonized Datasets",
   "name": "Name",
   "edit": "Edit",
   "view": "View",
