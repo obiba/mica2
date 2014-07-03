@@ -8,6 +8,7 @@ import java.util.Properties;
 
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.yaml.YamlPropertiesFactoryBean;
@@ -37,14 +38,15 @@ public class AggregationYamlParser {
       String value = (String) entry.getValue();
       if(!key.contains(NAME) && !key.contains(TYPE)) {
         String name = getName(value, key);
-        termsBuilders.add(AggregationBuilders.terms(name).field(key));
+        termsBuilders.add(AggregationBuilders.terms(name).field(key).order(Terms.Order.term(true)));
         log.debug("Add default terms aggregation: name={}, field={}", name, key);
       } else {
         if(key.contains(TYPE)) {
-          parseSpecificAggregation(properties, key, value);
+          termsBuilders.add(parseSpecificAggregation(properties, key, value));
         }
       }
     }
+
     return termsBuilders;
   }
 
@@ -54,7 +56,8 @@ public class AggregationYamlParser {
     switch(value) {
       case "range":
         log.debug("Add range aggregation: name={}, field={}", name, field);
-        return AggregationBuilders.range(name).field(field);
+        // TODO remove this method if no range can be provided! Added bound to prevent possible crash
+        return AggregationBuilders.range(name).field(field).addUnboundedTo(Integer.MAX_VALUE);
       default:
         throw new IllegalArgumentException("Unsupported aggregation type " + value + " for field " + field);
     }

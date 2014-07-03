@@ -4,12 +4,19 @@ package obiba.mica;
 option java_package = "org.obiba.mica.web.model";
 
 message QueryResultDto {
-  repeated TermsAggregateDto aggs = 1;
+  repeated AggregateResultDto aggs = 1;
   required int32 totalHits = 2;
-  repeated obiba.mica.StudyDto studies = 3;  // this is temporary, must be abstracted for any type of Dto
+  repeated obiba.mica.StudySummaryDto summaries = 3;
+  repeated obiba.mica.StudyDto studies = 4;
 }
 
-message TermsAggregateDto {
-  required string key = 1;
-  required int32 count = 2;
+message AggregateResultDto {
+  required string aggregate = 1;
+  repeated TermsAggregateResultDto termsAggregates= 2;
+
+  message TermsAggregateResultDto {
+    required string key = 1;
+    required int32 count = 2;
+  }
 }
+

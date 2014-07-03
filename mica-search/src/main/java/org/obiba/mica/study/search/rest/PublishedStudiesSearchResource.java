@@ -28,10 +28,14 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.json.JSONException;
+import org.obiba.mica.study.StudyService;
 import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Search;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.annotation.Timed;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -42,6 +46,8 @@ import static org.obiba.mica.web.model.Search.QueryResultDto;
 public class PublishedStudiesSearchResource {
 
   private static final String STUDY_FACETS_YML = "study-facets.yml";
+
+  private static final Logger log = LoggerFactory.getLogger(PublishedStudiesSearchResource.class);
 
   @Inject
   private Dtos dtos;
@@ -55,10 +61,14 @@ public class PublishedStudiesSearchResource {
   @Inject
   private AggregationYamlParser aggregationYamlParser;
 
+  @Inject
+  private StudyService studyService;
+
   @GET
   @Timed
   public QueryResultDto list(@QueryParam("from") @DefaultValue("0") int from,
-      @QueryParam("size") @DefaultValue("10") int size) throws JSONException, IOException {
+      @QueryParam("size") @DefaultValue("10") int size, @QueryParam("detailed") @DefaultValue("false") boolean detailed)
+      throws JSONException, IOException {
 
     SearchRequestBuilder requestBuilder = client.prepareSearch(StudyIndexer.PUBLISHED_STUDY_INDEX) //
         .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
@@ -67,19 +77,31 @@ public class PublishedStudiesSearchResource {
         .setSize(size);
     aggregationYamlParser.getAggregations(STUDY_FACETS_YML).forEach(requestBuilder::addAggregation);
 
+    log.info("Request: {}", requestBuilder.toString());
     SearchResponse response = requestBuilder.execute().actionGet();
+    log.info("Response: {}", response.toString());
 
     QueryResultDto.Builder builder = QueryResultDto.newBuilder().setTotalHits((int) response.getHits().getTotalHits());
 
     for(SearchHit hit : response.getHits()) {
       try(InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes())) {
-        builder.addStudies(dtos.asDto(objectMapper.readValue(inputStream, Study.class)));
+        builder.addSummaries(dtos.asDto(studyService.findStateById(hit.getId())));
+        if(detailed) {
+          builder.addStudies(dtos.asDto(objectMapper.readValue(inputStream, Study.class)));
+        }
       }
     }
+
     response.getAggregations() //
-        .forEach(aggregation -> ((Terms) aggregation).getBuckets() //
-            .forEach(bucket -> builder.addAggs(
-                Search.TermsAggregateDto.newBuilder().setKey(bucket.getKey()).setCount((int) bucket.getDocCount()))));
+        .forEach(aggregation -> {
+          Search.AggregateResultDto.Builder aggResultBuilder = Search.AggregateResultDto.newBuilder();
+          aggResultBuilder.setAggregate(aggregation.getName());
+          ((Terms) aggregation).getBuckets().forEach(bucket -> aggResultBuilder.addTermsAggregates(
+              Search.AggregateResultDto.TermsAggregateResultDto.newBuilder().setKey(bucket.getKey())
+                  .setCount((int)bucket.getDocCount())));
+          builder.addAggs(aggResultBuilder.build());
+        });
+
     return builder.build();
   }
 
