@@ -3,6 +3,26 @@ import "Mica.proto";
 package obiba.mica;
 option java_package = "org.obiba.mica.web.model";
 
+message QueryDto {
+  required int32 from = 1 [default = 0];
+  required int32 size = 2 [default = 10];
+  required bool detailed = 3 [default = true];;
+  required FilteredQueryDto filteredQuery = 4;
+}
+
+message FilteredQueryDto {
+  required BoolFilterQueryDto filter = 1;
+}
+
+message BoolFilterQueryDto {
+  repeated TermsQueryDto terms = 1;
+}
+
+message TermsQueryDto {
+  required string field = 1;
+  repeated string values = 2;
+}
+
 message QueryResultDto {
   repeated AggregationResultDto aggs = 1;
   required int32 totalHits = 2;

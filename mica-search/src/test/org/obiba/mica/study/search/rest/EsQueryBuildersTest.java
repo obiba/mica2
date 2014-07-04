@@ -12,15 +12,13 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.obiba.mica.config.JsonConfiguration;
 import org.obiba.mica.study.search.rest.EsQueryBuilders;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { EsQueryBuildersTest.Config.class, JsonConfiguration.class })
-
+@ContextConfiguration(classes = { EsQueryBuildersTest.Config.class})
 public class EsQueryBuildersTest {
 
   @Test
