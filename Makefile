@@ -102,11 +102,6 @@ dependencies-update:
 plugins-update:
 	mvn versions:display-plugin-updates
 
-keystore:
-	rm -f keystore.p12
-	keytool -genkey -alias tomcat -keystore keystore.p12 -storepass changeit -validity 365 -keyalg RSA -keysize 2048 -storetype pkcs12 -dname "CN=Mica, O=Maelstrom, OU=OBiBa, L=Montreal, ST=Quebec, C=CA"
-	@echo "Generated keystore file:" `pwd`/keystore.p12
-
 elasticsearch-head:
 	rm -rf .work/elasticsearch-head && \
 	mkdir -p .work && \

@@ -5,10 +5,6 @@ server:
 
 https:
     port: 8445
-    keystore:
-        file: classpath:/keystore.p12
-        password: changeit
-        type: PKCS12
 
 spring:
   profiles: dev

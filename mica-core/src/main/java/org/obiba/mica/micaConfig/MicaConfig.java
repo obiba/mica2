@@ -37,6 +37,8 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   private String publicUrl;
 
+  private String secretKey;
+
   public String getName() {
     return name;
   }
@@ -73,6 +75,14 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public void setPublicUrl(String publicUrl) {
     this.publicUrl = publicUrl;
+  }
+
+  public String getSecretKey() {
+    return secretKey;
+  }
+
+  public void setSecretKey(String secretKey) {
+    this.secretKey = secretKey;
   }
 
   @Override
