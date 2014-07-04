@@ -10,9 +10,13 @@
 
 package org.obiba.mica.service;
 
+import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.Variable;
+import org.obiba.mica.domain.StudyTable;
+import org.obiba.mica.study.StudyService;
 import org.obiba.opal.rest.client.magma.RestDatasource;
 import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.obiba.opal.web.model.Magma;
@@ -29,14 +33,12 @@ public abstract class DatasetService {
 
   private static final Logger log = LoggerFactory.getLogger(DatasetService.class);
 
-  /**
-   * Get the variables of the {@link org.obiba.mica.domain.Dataset} identified by its id.
-   *
-   * @param id
-   * @return
-   * @throws NoSuchDatasetException
-   */
-  public abstract Iterable<Variable> getVariables(@NotNull String id) throws NoSuchDatasetException;
+  @Inject
+  private StudyService studyService;
+
+  @Inject
+  private DatasourceRegistry datasourceRegistry;
+
 
   /**
    * Get the {@link org.obiba.opal.web.model.Magma.TableDto} of the {@link org.obiba.mica.domain.Dataset} identified by its id.
@@ -44,7 +46,19 @@ public abstract class DatasetService {
    * @param id
    * @return
    */
-  public abstract RestValueTable getTable(@NotNull String id);
+  @NotNull
+  public abstract RestValueTable getTable(@NotNull String id) throws NoSuchDatasetException, NoSuchValueTableException;
+
+  /**
+   * Get the variables of the {@link org.obiba.mica.domain.Dataset} identified by its id.
+   *
+   * @param id
+   * @return
+   * @throws NoSuchDatasetException
+   */
+  public Iterable<Variable> getVariables(@NotNull String id) throws NoSuchDatasetException {
+    return getTable(id).getVariables();
+  }
 
   /**
    * Get the {@link org.obiba.magma.VariableValueSource} (proxy to the {@link org.obiba.magma.Variable} of
@@ -99,6 +113,15 @@ public abstract class DatasetService {
    */
   protected <T> T execute(RestDatasource datasource, DatasourceCallback<T> callback) {
     return callback.doWithDatasource(datasource);
+  }
+
+  protected RestDatasource getDatasource(@NotNull StudyTable studyTable) {
+    String opalUrl = studyService.findDraftStudy(studyTable.getStudyId()).getOpal();
+    return datasourceRegistry.getDatasource(opalUrl, studyTable.getProject());
+  }
+
+  protected RestDatasource getDatasource(@NotNull String project) {
+    return datasourceRegistry.getDatasource(project);
   }
 
 }

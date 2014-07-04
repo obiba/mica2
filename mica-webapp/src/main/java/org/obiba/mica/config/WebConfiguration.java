@@ -16,6 +16,7 @@ import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.obiba.mica.service.KeyStoreService;
 import org.obiba.mica.web.filter.CachingHttpHeadersFilter;
 import org.obiba.mica.web.filter.StaticResourcesProductionFilter;
 import org.obiba.mica.web.filter.gzip.GZipServletFilter;
@@ -37,6 +38,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceEditor;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.servlet.InstrumentedFilter;
@@ -62,10 +64,6 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
 
   private static final int DEFAULT_HTTPS_PORT = 8445;
 
-  private static final String DEFAULT_KEYSTORE_FILE = "file:${MICA_SERVER_HOME}/conf/keystore.p12";
-
-  private static final String DEFAULT_KEYSTORE_TYPE = "PKCS12";
-
   private static final int MAX_IDLE_TIME = 30000;
 
   private static final int REQUEST_HEADER_SIZE = 8192;
@@ -79,25 +77,15 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
   @Inject
   private AuthenticationFilter authenticationFilter;
 
+  @Inject
+  private org.obiba.ssl.SslContextFactory sslContextFactory;
+
   private int httpsPort;
-
-  private Resource keystoreFile;
-
-  private String keystorePass;
-
-  private String keystoreType;
 
   @Override
   public void setEnvironment(Environment environment) {
     RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(environment, "https.");
     httpsPort = propertyResolver.getProperty("port", Integer.class, DEFAULT_HTTPS_PORT);
-
-    ResourceEditor resourceEditor = new ResourceEditor();
-    resourceEditor.setAsText(propertyResolver.getProperty("keystore.file", String.class, DEFAULT_KEYSTORE_FILE));
-    keystoreFile = (Resource) resourceEditor.getValue();
-
-    keystorePass = propertyResolver.getProperty("keystore.password");
-    keystoreType = propertyResolver.getProperty("keystore.type", String.class, DEFAULT_KEYSTORE_TYPE);
   }
 
   @Bean
@@ -114,17 +102,19 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
   }
 
   private void customizeSsl(Server server) {
-    SslContextFactory jettySsl = new SslContextFactory();
+    SslContextFactory jettySsl = new SslContextFactory() {
+
+      @Override
+      protected void doStart() throws Exception {
+        setSslContext(sslContextFactory.createSslContext());
+      }
+
+      @Override
+      public void checkKeyStore() {
+      }
+    };
     jettySsl.setWantClientAuth(true);
     jettySsl.setNeedClientAuth(false);
-
-    try {
-      jettySsl.setKeyStorePath(keystoreFile.getFile().getAbsolutePath());
-      jettySsl.setKeyStorePassword(keystorePass);
-      jettySsl.setKeyStoreType(keystoreType);
-    } catch(IOException e) {
-      throw new RuntimeException("Failed to set jetty server keystore: " + e.getMessage(), e);
-    }
 
     Connector sslConnector = new SslSelectChannelConnector(jettySsl);
     sslConnector.setPort(httpsPort);
