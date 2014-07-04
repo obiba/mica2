@@ -30,7 +30,6 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.json.JSONException;
 import org.obiba.mica.study.StudyService;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Search;
@@ -94,11 +93,11 @@ public class PublishedStudiesSearchResource {
 
     response.getAggregations() //
         .forEach(aggregation -> {
-          Search.AggregateResultDto.Builder aggResultBuilder = Search.AggregateResultDto.newBuilder();
-          aggResultBuilder.setAggregate(aggregation.getName());
-          ((Terms) aggregation).getBuckets().forEach(bucket -> aggResultBuilder.addTermsAggregates(
-              Search.AggregateResultDto.TermsAggregateResultDto.newBuilder().setKey(bucket.getKey())
-                  .setCount((int)bucket.getDocCount())));
+          Search.AggregationResultDto.Builder aggResultBuilder = Search.AggregationResultDto.newBuilder();
+          aggResultBuilder.setAggregation(aggregation.getName());
+          ((Terms) aggregation).getBuckets().forEach(bucket -> aggResultBuilder.addTermsAggregations(
+              Search.AggregationResultDto.TermsAggregationResultDto.newBuilder().setKey(bucket.getKey())
+                  .setCount((int) bucket.getDocCount())));
           builder.addAggs(aggResultBuilder.build());
         });
 
