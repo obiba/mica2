@@ -114,7 +114,7 @@
 
                 <!-- PHP -->
                 <copy file="${basedir}/tools/protobuf/php/template/wrapper.proto" todir="${basedir}/src/main/protobuf"/>
-                <replace file="${basedir}/src/main/protobuf/wrapper.proto" token="__PROTO_FILE__" value="Mica"/>
+                <replace file="${basedir}/src/main/protobuf/wrapper.proto" token="__PROTO_FILE__" value="MicaSearch"/>
                 <mkdir dir="target/generated-sources/protobuf-php"/>
                 <!--suppress MavenModelInspection -->
                 <exec dir="${basedir}" executable="${basedir}/tools/protobuf/protoc-${os.protoc}" failonerror="true">
