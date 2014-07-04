@@ -32,14 +32,14 @@ import org.obiba.mica.study.StudyService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.mica.web.model.Dtos;
-import org.obiba.mica.web.model.Search;
+import org.obiba.mica.web.model.MicaSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.annotation.Timed;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.obiba.mica.web.model.Search.QueryResultDto;
+import static org.obiba.mica.web.model.MicaSearch.QueryResultDto;
 
 @Path("/studies/_search")
 public class PublishedStudiesSearchResource {
@@ -93,10 +93,10 @@ public class PublishedStudiesSearchResource {
 
     response.getAggregations() //
         .forEach(aggregation -> {
-          Search.AggregationResultDto.Builder aggResultBuilder = Search.AggregationResultDto.newBuilder();
+          MicaSearch.AggregationResultDto.Builder aggResultBuilder = MicaSearch.AggregationResultDto.newBuilder();
           aggResultBuilder.setAggregation(aggregation.getName());
           ((Terms) aggregation).getBuckets().forEach(bucket -> aggResultBuilder.addTermsAggregations(
-              Search.AggregationResultDto.TermsAggregationResultDto.newBuilder().setKey(bucket.getKey())
+              MicaSearch.AggregationResultDto.TermsAggregationResultDto.newBuilder().setKey(bucket.getKey())
                   .setCount((int) bucket.getDocCount())));
           builder.addAggs(aggResultBuilder.build());
         });
