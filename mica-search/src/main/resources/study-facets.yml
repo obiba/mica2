@@ -12,16 +12,31 @@
 #
 
 start:
-  type: range
-  name: start-year
-
 end:
-  type: range
-  name: end-year
+access:
 
-access: access
+methods:
+  designs:
+  recruitments:
+
+numberOfParticipants:
+  participant:
+    number:
+  sample:
+    number:
 
 populations:
+  selectionCriteria:
+    criteria:
+    countriesIso:
+    ageMax:
+    ageMin:
+    gender:
+
   recruitment:
     dataSources:
     generalPopulationSources:
+
+  dataCollectionEvents:
+    start:
+    bioSamples:
