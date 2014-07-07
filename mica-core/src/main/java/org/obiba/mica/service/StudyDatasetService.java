@@ -58,7 +58,7 @@ public class StudyDatasetService extends DatasetService {
    *
    * @return
    */
-  public List<StudyDataset> findAllStudyDatasets() {
+  public List<StudyDataset> findAllDatasets() {
     return studyDatasetRepository.findAll();
   }
 
@@ -68,9 +68,52 @@ public class StudyDatasetService extends DatasetService {
    * @param studyId
    * @return
    */
-  public List<StudyDataset> findAllStudyDatasets(String studyId) {
-    if(Strings.isNullOrEmpty(studyId)) return findAllStudyDatasets();
+  public List<StudyDataset> findAllDatasets(String studyId) {
+    if(Strings.isNullOrEmpty(studyId)) return findAllDatasets();
     return studyDatasetRepository.findByStudyTableStudyId(studyId);
+  }
+
+  /**
+   * Get all published {@link org.obiba.mica.domain.StudyDataset}s.
+   *
+   * @return
+   */
+  public List<StudyDataset> findAllPublishedDatasets() {
+    return studyDatasetRepository.findByPublished(true);
+  }
+
+  /**
+   * Get all published {@link org.obiba.mica.domain.StudyDataset}s of a study.
+   *
+   * @param studyId
+   * @return
+   */
+  public List<StudyDataset> findAllPublishedDatasets(String studyId) {
+    if(Strings.isNullOrEmpty(studyId)) return findAllPublishedDatasets();
+    return studyDatasetRepository.findByStudyTableStudyIdAndPublished(studyId, true);
+  }
+
+  /**
+   * Apply dataset publication flag.
+   *
+   * @param studyId
+   * @param published
+   */
+  public void publish(String studyId, boolean published) {
+    StudyDataset dataset = findById(studyId);
+    dataset.setPublished(published);
+    save(dataset);
+  }
+
+  /**
+   * Check if a dataset is published.
+   *
+   * @param studyId
+   * @return
+   */
+  public boolean isPublished(String studyId) throws NoSuchDatasetException {
+    StudyDataset dataset = findById(studyId);
+    return dataset.isPublished();
   }
 
   @Override
@@ -92,7 +135,7 @@ public class StudyDatasetService extends DatasetService {
     String studyId = event.getPersistable().getId();
 
     // TODO
-    //findAllStudyDatasets(studyId);
+    //findAllDatasets(studyId);
   }
 
   //

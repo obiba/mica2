@@ -8,23 +8,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.rest;
+package org.obiba.mica.dataset.rest.harmonized;
 
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.service.StudyDatasetService;
+import org.obiba.mica.service.HarmonizedDatasetService;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.magma.Dtos;
 import org.obiba.opal.web.model.Magma;
-import org.obiba.opal.web.model.Math;
-import org.obiba.opal.web.model.Search;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -32,18 +29,20 @@ import com.google.common.collect.ImmutableList;
 
 @Component
 @Scope("request")
-@Path("/study-dataset/{id}")
 @RequiresAuthentication
-public class StudyDatasetResource {
-
-  @PathParam("id")
-  private String id;
+public class HarmonizedDatasetResource {
 
   @Inject
-  private StudyDatasetService datasetService;
+  private HarmonizedDatasetService datasetService;
 
   @Inject
   private org.obiba.mica.web.model.Dtos dtos;
+
+  private String id;
+
+  public void setId(String id) {
+    this.id = id;
+  }
 
   @GET
   public Mica.DatasetDto get() {
@@ -68,24 +67,6 @@ public class StudyDatasetResource {
   @Path("/variable/{variable}")
   public Magma.VariableDto getVariable(@PathParam("variable") String variable) {
     return datasetService.getVariable(id, variable);
-  }
-
-  @GET
-  @Path("/variable/{variable}/summary")
-  public Math.SummaryStatisticsDto getVariableSummary(@PathParam("variable") String variable) {
-    return datasetService.getVariableSummary(id, variable);
-  }
-
-  @GET
-  @Path("/variable/{variable}/facet")
-  public Search.QueryResultDto getVariableFacet(@PathParam("variable") String variable) {
-    return datasetService.getVariableFacet(id, variable);
-  }
-
-  @POST
-  @Path("/facets")
-  public Search.QueryResultDto getFacets(Search.QueryTermsDto query) {
-    return datasetService.getFacets(id, query);
   }
 
 }

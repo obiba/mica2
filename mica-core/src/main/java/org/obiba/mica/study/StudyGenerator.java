@@ -100,8 +100,8 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
 //    network.addStudy(study);
 //    networkRepository.save(network);
 //
-//    studyRepository.findAll().forEach(s -> log.info(">> {}", s));
-//    networkRepository.findAll().forEach(s -> log.info(">> {}", s));
+//    studyRepository.findAllDatasets().forEach(s -> log.info(">> {}", s));
+//    networkRepository.findAllDatasets().forEach(s -> log.info(">> {}", s));
   }
 
   @SuppressWarnings("OverlyLongMethod")

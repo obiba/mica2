@@ -57,7 +57,7 @@ public class HarmonizedDatasetService extends DatasetService {
    *
    * @return
    */
-  public List<HarmonizedDataset> findAll() {
+  public List<HarmonizedDataset> findAllDatasets() {
     return harmonizedDatasetRepository.findAll();
   }
 
@@ -67,9 +67,50 @@ public class HarmonizedDatasetService extends DatasetService {
    * @param studyId
    * @return
    */
-  public List<HarmonizedDataset> findAll(String studyId) {
-    if(Strings.isNullOrEmpty(studyId)) return findAll();
+  public List<HarmonizedDataset> findAllDatasets(String studyId) {
+    if(Strings.isNullOrEmpty(studyId)) return findAllDatasets();
     return harmonizedDatasetRepository.findByStudyTablesStudyId(studyId);
+  }
+
+  /**
+   * Get all published {@link org.obiba.mica.domain.HarmonizedDataset}s.
+   *
+   * @return
+   */
+  public List<HarmonizedDataset> findAllPublishedDatasets() {
+    return harmonizedDatasetRepository.findByPublished(true);
+  }
+
+  /**
+   * Get all published {@link org.obiba.mica.domain.HarmonizedDataset}s having a reference to the given study.
+   *
+   * @param studyId
+   * @return
+   */
+  public List<HarmonizedDataset> findAllPublishedDatasets(String studyId) {
+    if(Strings.isNullOrEmpty(studyId)) return findAllPublishedDatasets();
+    return harmonizedDatasetRepository.findByStudyTablesStudyIdAndPublished(studyId, true);
+  }
+
+  /**
+   * Apply dataset publication flag.
+   * @param studyId
+   * @param published
+   */
+  public void publish(String studyId, boolean published) {
+    HarmonizedDataset dataset = findById(studyId);
+    dataset.setPublished(published);
+    save(dataset);
+  }
+
+  /**
+   * Check if a dataset is published.
+   * @param studyId
+   * @return
+   */
+  public boolean isPublished(String studyId) throws NoSuchDatasetException {
+    HarmonizedDataset dataset = findById(studyId);
+    return dataset.isPublished();
   }
 
   @Override
