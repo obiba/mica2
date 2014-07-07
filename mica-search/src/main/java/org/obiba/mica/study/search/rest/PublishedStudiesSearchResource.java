@@ -89,6 +89,10 @@ public class PublishedStudiesSearchResource {
         .setFrom(from) //
         .setSize(size);
 
+    if (!detailed) {
+      requestBuilder.setNoFields();
+    }
+
     aggregationYamlParser.getAggregations(STUDY_FACETS_YML).forEach(requestBuilder::addAggregation);
 
     log.info("Request: {}", requestBuilder.toString());
@@ -98,13 +102,10 @@ public class PublishedStudiesSearchResource {
     QueryResultDto.Builder builder = QueryResultDto.newBuilder().setTotalHits((int) response.getHits().getTotalHits());
 
     for(SearchHit hit : response.getHits()) {
-      try(InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes())) {
-        builder.addSummaries(dtos.asDto(studyService.findStateById(hit.getId())));
-        if(detailed) {
-          builder.addStudies(dtos.asDto(objectMapper.readValue(inputStream, Study.class)));
-        }
-      } catch(IOException e) {
-        e.printStackTrace();
+      builder.addSummaries(dtos.asDto(studyService.findStateById(hit.getId())));
+      if(detailed) {
+        InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
+        builder.addStudies(dtos.asDto(objectMapper.readValue(inputStream, Study.class)));
       }
     }
 
