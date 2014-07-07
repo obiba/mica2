@@ -17,6 +17,7 @@ import java.io.InputStream;
 import javax.inject.Inject;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 
@@ -24,6 +25,7 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
@@ -39,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import com.codahale.metrics.annotation.Timed;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import static org.obiba.mica.web.model.MicaSearch.QueryDto;
 import static org.obiba.mica.web.model.MicaSearch.QueryResultDto;
 
 @Path("/studies/_search")
@@ -69,11 +72,23 @@ public class PublishedStudiesSearchResource {
       @QueryParam("size") @DefaultValue("10") int size, @QueryParam("detailed") @DefaultValue("false") boolean detailed)
       throws JSONException, IOException {
 
+    return execute(QueryBuilders.matchAllQuery(), from, size, detailed);
+  }
+
+  @POST
+  @Timed
+  public QueryResultDto list(QueryDto dtoQuery) throws IOException {
+    return execute(QueryDtoParser.newParser().parse(dtoQuery), dtoQuery.getFrom(), dtoQuery.getSize(),
+        dtoQuery.getDetailed());
+  }
+
+  private QueryResultDto execute(QueryBuilder queryBuilder, int from, int size, boolean detailed) throws IOException {
     SearchRequestBuilder requestBuilder = client.prepareSearch(StudyIndexer.PUBLISHED_STUDY_INDEX) //
         .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
-        .setQuery(QueryBuilders.matchAllQuery()) //
+        .setQuery(queryBuilder) //
         .setFrom(from) //
         .setSize(size);
+
     aggregationYamlParser.getAggregations(STUDY_FACETS_YML).forEach(requestBuilder::addAggregation);
 
     log.info("Request: {}", requestBuilder.toString());
@@ -88,6 +103,8 @@ public class PublishedStudiesSearchResource {
         if(detailed) {
           builder.addStudies(dtos.asDto(objectMapper.readValue(inputStream, Study.class)));
         }
+      } catch(IOException e) {
+        e.printStackTrace();
       }
     }
 
@@ -103,5 +120,6 @@ public class PublishedStudiesSearchResource {
 
     return builder.build();
   }
+
 
 }
