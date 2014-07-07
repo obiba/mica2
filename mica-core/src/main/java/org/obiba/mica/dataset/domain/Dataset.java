@@ -8,12 +8,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.domain;
+package org.obiba.mica.dataset.domain;
 
 import java.util.Locale;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
+
+import org.obiba.mica.domain.AbstractAuditableDocument;
+import org.obiba.mica.domain.Attribute;
+import org.obiba.mica.domain.AttributeAware;
+import org.obiba.mica.domain.LocalizedString;
+import org.obiba.mica.domain.NoSuchAttributeException;
 
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;

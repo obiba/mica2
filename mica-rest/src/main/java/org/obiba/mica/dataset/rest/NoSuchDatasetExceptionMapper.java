@@ -14,7 +14,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import org.obiba.mica.service.NoSuchDatasetException;
+import org.obiba.mica.dataset.NoSuchDatasetException;
 
 @Provider
 public class NoSuchDatasetExceptionMapper implements ExceptionMapper<NoSuchDatasetException> {

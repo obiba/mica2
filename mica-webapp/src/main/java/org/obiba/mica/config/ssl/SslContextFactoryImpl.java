@@ -14,7 +14,7 @@ import javax.inject.Inject;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
 
-import org.obiba.mica.service.KeyStoreService;
+import org.obiba.mica.dataset.KeyStoreService;
 import org.obiba.security.KeyStoreManager;
 import org.obiba.ssl.SslContextFactory;
 import org.obiba.ssl.X509ExtendedKeyManagerImpl;

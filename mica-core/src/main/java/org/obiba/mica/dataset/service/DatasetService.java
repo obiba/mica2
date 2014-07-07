@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.service;
+package org.obiba.mica.dataset.service;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
@@ -16,6 +16,8 @@ import javax.validation.constraints.NotNull;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.Variable;
 import org.obiba.mica.domain.StudyTable;
+import org.obiba.mica.dataset.DatasourceRegistry;
+import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.study.StudyService;
 import org.obiba.opal.rest.client.magma.RestDatasource;
 import org.obiba.opal.rest.client.magma.RestValueTable;
@@ -26,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link org.obiba.mica.domain.Dataset} management service.
+ * {@link org.obiba.mica.dataset.domain.Dataset} management service.
  */
 
 public abstract class DatasetService {
@@ -41,7 +43,7 @@ public abstract class DatasetService {
 
 
   /**
-   * Get the {@link org.obiba.opal.web.model.Magma.TableDto} of the {@link org.obiba.mica.domain.Dataset} identified by its id.
+   * Get the {@link org.obiba.opal.web.model.Magma.TableDto} of the {@link org.obiba.mica.dataset.domain.Dataset} identified by its id.
    *
    * @param id
    * @return
@@ -50,7 +52,7 @@ public abstract class DatasetService {
   public abstract RestValueTable getTable(@NotNull String id) throws NoSuchDatasetException, NoSuchValueTableException;
 
   /**
-   * Get the variables of the {@link org.obiba.mica.domain.Dataset} identified by its id.
+   * Get the variables of the {@link org.obiba.mica.dataset.domain.Dataset} identified by its id.
    *
    * @param id
    * @return
@@ -62,7 +64,7 @@ public abstract class DatasetService {
 
   /**
    * Get the {@link org.obiba.magma.VariableValueSource} (proxy to the {@link org.obiba.magma.Variable} of
-   * the {@link org.obiba.mica.domain.Dataset} identified by its id.
+   * the {@link org.obiba.mica.dataset.domain.Dataset} identified by its id.
    *
    * @param id
    * @param variableName

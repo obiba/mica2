@@ -18,7 +18,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.service.HarmonizedDatasetService;
+import org.obiba.mica.dataset.service.HarmonizedDatasetService;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.magma.Dtos;
 import org.obiba.opal.web.model.Magma;

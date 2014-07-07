@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.service;
+package org.obiba.mica.dataset.service;
 
 import java.util.List;
 
@@ -16,8 +16,10 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.magma.NoSuchValueTableException;
-import org.obiba.mica.domain.HarmonizedDataset;
-import org.obiba.mica.repository.HarmonizedDatasetRepository;
+import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.domain.StudyTable;
+import org.obiba.mica.dataset.StudyDatasetRepository;
+import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.study.event.StudyDeletedEvent;
 import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.springframework.scheduling.annotation.Async;
@@ -29,95 +31,98 @@ import com.google.common.eventbus.Subscribe;
 
 @Service
 @Validated
-public class HarmonizedDatasetService extends DatasetService {
+public class StudyDatasetService extends DatasetService {
 
   @Inject
-  private HarmonizedDatasetRepository harmonizedDatasetRepository;
+  private StudyDatasetRepository studyDatasetRepository;
 
-  public void save(@NotNull HarmonizedDataset dataset) {
-    harmonizedDatasetRepository.save(dataset);
+  public void save(@NotNull StudyDataset dataset) {
+    studyDatasetRepository.save(dataset);
   }
 
   /**
-   * Get the {@link org.obiba.mica.domain.HarmonizedDataset} from its id.
+   * Get the {@link org.obiba.mica.dataset.domain.StudyDataset} fron its id
    *
    * @param id
    * @return
-   * @throws org.obiba.mica.service.NoSuchDatasetException
+   * @throws org.obiba.mica.dataset.NoSuchDatasetException
    */
   @NotNull
-  public HarmonizedDataset findById(@NotNull String id) throws NoSuchDatasetException {
-    HarmonizedDataset dataset = harmonizedDatasetRepository.findOne(id);
+  public StudyDataset findById(@NotNull String id) throws NoSuchDatasetException {
+    StudyDataset dataset = studyDatasetRepository.findOne(id);
     if(dataset == null) throw NoSuchDatasetException.withId(id);
     return dataset;
   }
 
   /**
-   * Get all {@link org.obiba.mica.domain.HarmonizedDataset}s.
+   * Get all {@link org.obiba.mica.dataset.domain.StudyDataset}s.
    *
    * @return
    */
-  public List<HarmonizedDataset> findAllDatasets() {
-    return harmonizedDatasetRepository.findAll();
+  public List<StudyDataset> findAllDatasets() {
+    return studyDatasetRepository.findAll();
   }
 
   /**
-   * Get all {@link org.obiba.mica.domain.HarmonizedDataset}s having a reference to the given study.
+   * Get all {@link org.obiba.mica.dataset.domain.StudyDataset}s of a study.
    *
    * @param studyId
    * @return
    */
-  public List<HarmonizedDataset> findAllDatasets(String studyId) {
+  public List<StudyDataset> findAllDatasets(String studyId) {
     if(Strings.isNullOrEmpty(studyId)) return findAllDatasets();
-    return harmonizedDatasetRepository.findByStudyTablesStudyId(studyId);
+    return studyDatasetRepository.findByStudyTableStudyId(studyId);
   }
 
   /**
-   * Get all published {@link org.obiba.mica.domain.HarmonizedDataset}s.
+   * Get all published {@link org.obiba.mica.dataset.domain.StudyDataset}s.
    *
    * @return
    */
-  public List<HarmonizedDataset> findAllPublishedDatasets() {
-    return harmonizedDatasetRepository.findByPublished(true);
+  public List<StudyDataset> findAllPublishedDatasets() {
+    return studyDatasetRepository.findByPublished(true);
   }
 
   /**
-   * Get all published {@link org.obiba.mica.domain.HarmonizedDataset}s having a reference to the given study.
+   * Get all published {@link org.obiba.mica.dataset.domain.StudyDataset}s of a study.
    *
    * @param studyId
    * @return
    */
-  public List<HarmonizedDataset> findAllPublishedDatasets(String studyId) {
+  public List<StudyDataset> findAllPublishedDatasets(String studyId) {
     if(Strings.isNullOrEmpty(studyId)) return findAllPublishedDatasets();
-    return harmonizedDatasetRepository.findByStudyTablesStudyIdAndPublished(studyId, true);
+    return studyDatasetRepository.findByStudyTableStudyIdAndPublished(studyId, true);
   }
 
   /**
    * Apply dataset publication flag.
+   *
    * @param studyId
    * @param published
    */
   public void publish(String studyId, boolean published) {
-    HarmonizedDataset dataset = findById(studyId);
+    StudyDataset dataset = findById(studyId);
     dataset.setPublished(published);
     save(dataset);
   }
 
   /**
    * Check if a dataset is published.
+   *
    * @param studyId
    * @return
    */
   public boolean isPublished(String studyId) throws NoSuchDatasetException {
-    HarmonizedDataset dataset = findById(studyId);
+    StudyDataset dataset = findById(studyId);
     return dataset.isPublished();
   }
 
   @Override
   @NotNull
   public RestValueTable getTable(@NotNull String id) throws NoSuchDatasetException, NoSuchValueTableException {
-    HarmonizedDataset dataset = findById(id);
-    return execute(dataset.getProject(), datasource -> (RestValueTable) datasource.getValueTable(dataset.getTable()));
+    StudyDataset dataset = findById(id);
+    StudyTable studyTable = dataset.getStudyTable();
+    return execute(studyTable, datasource -> (RestValueTable) datasource.getValueTable(studyTable.getTable()));
   }
 
   /**
@@ -128,7 +133,10 @@ public class HarmonizedDatasetService extends DatasetService {
   @Async
   @Subscribe
   public void studyDeleted(StudyDeletedEvent event) {
+    String studyId = event.getPersistable().getId();
 
+    // TODO
+    //findAllDatasets(studyId);
   }
 
   //
@@ -138,13 +146,13 @@ public class HarmonizedDatasetService extends DatasetService {
   /**
    * Build or reuse the {@link org.obiba.opal.rest.client.magma.RestDatasource} and execute the callback with it.
    *
-   * @param project
+   * @param studyTable
    * @param callback
    * @param <T>
    * @return
    */
-  private <T> T execute(String project, DatasourceCallback<T> callback) {
-    return execute(getDatasource(project), callback);
+  private <T> T execute(StudyTable studyTable, DatasourceCallback<T> callback) {
+    return execute(getDatasource(studyTable), callback);
   }
 
 }

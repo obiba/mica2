@@ -8,15 +8,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.repository;
+package org.obiba.mica.dataset;
 
 import java.util.List;
 
-import org.obiba.mica.domain.HarmonizedDataset;
+import org.obiba.mica.dataset.domain.HarmonizedDataset;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**
- * Spring Data MongoDB repository for the {@link org.obiba.mica.domain.HarmonizedDataset} entity.
+ * Spring Data MongoDB repository for the {@link org.obiba.mica.dataset.domain.HarmonizedDataset} entity.
  */
 public interface HarmonizedDatasetRepository extends MongoRepository<HarmonizedDataset, String> {
 

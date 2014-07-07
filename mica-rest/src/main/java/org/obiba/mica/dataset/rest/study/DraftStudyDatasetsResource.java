@@ -23,7 +23,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.service.StudyDatasetService;
+import org.obiba.mica.dataset.service.StudyDatasetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.ApplicationContext;
@@ -46,7 +46,7 @@ public class DraftStudyDatasetsResource {
   private ApplicationContext applicationContext;
 
   /**
-   * Get all {@link org.obiba.mica.domain.StudyDataset}, optionally filtered by study.
+   * Get all {@link org.obiba.mica.dataset.domain.StudyDataset}, optionally filtered by study.
    *
    * @param studyId can be null, in which case all datasets are returned
    * @return

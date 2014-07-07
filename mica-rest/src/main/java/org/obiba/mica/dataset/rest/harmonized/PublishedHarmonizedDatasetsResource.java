@@ -20,8 +20,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.service.HarmonizedDatasetService;
-import org.obiba.mica.service.NoSuchDatasetException;
+import org.obiba.mica.dataset.service.HarmonizedDatasetService;
+import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.ApplicationContext;
@@ -44,7 +44,7 @@ public class PublishedHarmonizedDatasetsResource {
   private ApplicationContext applicationContext;
 
   /**
-   * Get all {@link org.obiba.mica.domain.HarmonizedDataset}, optionally filtered by study.
+   * Get all {@link org.obiba.mica.dataset.domain.HarmonizedDataset}, optionally filtered by study.
    *
    * @param studyId can be null, in which case all datasets are returned
    * @return
