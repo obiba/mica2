@@ -6,7 +6,7 @@ option java_package = "org.obiba.mica.web.model";
 message QueryDto {
   required int32 from = 1 [default = 0];
   required int32 size = 2 [default = 10];
-  required bool detailed = 3 [default = true];;
+  required bool detailed = 3 [default = true];
   required FilteredQueryDto filteredQuery = 4;
 }
 
