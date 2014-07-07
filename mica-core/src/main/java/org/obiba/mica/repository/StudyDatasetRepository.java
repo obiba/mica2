@@ -22,4 +22,8 @@ public interface StudyDatasetRepository extends MongoRepository<StudyDataset, St
 
   List<StudyDataset> findByStudyTableStudyId(String studyId);
 
+  List<StudyDataset> findByPublished(boolean published);
+
+  List<StudyDataset> findByStudyTableStudyIdAndPublished(String studyId, boolean published);
+
 }
