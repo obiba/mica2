@@ -68,7 +68,7 @@ public class Attribute implements Serializable {
 
   @JsonIgnore
   public String getMapKey() {
-    return getMapKey(namespace, name);
+    return getMapKey(name, namespace);
   }
 
   public static String getMapKey(String name, @Nullable String namespace) {
@@ -112,6 +112,14 @@ public class Attribute implements Serializable {
 
     public static Builder newAttribute(String name) {
       return new Builder(name);
+    }
+
+    public static Builder newAttribute(org.obiba.magma.Attribute attr) {
+      Builder builder = new Builder(attr.getName());
+      if(attr.hasNamespace()) builder.namespace(attr.getNamespace());
+      if(attr.isLocalised()) builder.locale(attr.getLocale());
+      if(attr.getValue() != null) builder.value(attr.getValue().toString());
+      return builder;
     }
 
     public Builder namespace(String namespace) {

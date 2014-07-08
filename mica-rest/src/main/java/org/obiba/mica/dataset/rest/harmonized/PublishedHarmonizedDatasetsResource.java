@@ -20,7 +20,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.dataset.service.HarmonizedDatasetService;
+import org.obiba.mica.service.HarmonizedDatasetService;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;

@@ -13,6 +13,7 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
+import org.obiba.mica.domain.Indexable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Persistable;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 
 @Component
 public class ElasticSearchIndexer {
@@ -36,15 +38,51 @@ public class ElasticSearchIndexer {
   private ObjectMapper objectMapper;
 
   public IndexResponse index(String indexName, Persistable<String> persistable) {
+    return index(indexName, persistable, null);
+  }
+
+  public IndexResponse index(String indexName, Persistable<String> persistable, Persistable<String> parent) {
     createIndexIfNeeded(indexName);
-    return getIndexRequestBuilder(indexName, persistable).setSource(toJson(persistable)).execute().actionGet();
+    String parentId = parent == null ? null : parent.getId();
+    return getIndexRequestBuilder(indexName, persistable).setSource(toJson(persistable)).setParent(parentId).execute()
+        .actionGet();
+  }
+
+  public IndexResponse index(String indexName, Indexable indexable) {
+    return index(indexName, indexable, null);
+  }
+
+  public IndexResponse index(String indexName, Indexable indexable, Indexable parent) {
+    createIndexIfNeeded(indexName);
+    String parentId = parent == null ? null : parent.getId();
+    return getIndexRequestBuilder(indexName, indexable).setSource(toJson(indexable)).setParent(parentId).execute()
+        .actionGet();
   }
 
   public BulkResponse indexAll(String indexName, Iterable<? extends Persistable<String>> persistables) {
+    return indexAll(indexName, persistables, null);
+  }
+
+  public BulkResponse indexAll(String indexName, Iterable<? extends Persistable<String>> persistables,
+      Persistable<String> parent) {
     createIndexIfNeeded(indexName);
+    String parentId = parent == null ? null : parent.getId();
     BulkRequestBuilder bulkRequest = client.prepareBulk();
-    persistables.forEach(
-        persistable -> bulkRequest.add(getIndexRequestBuilder(indexName, persistable).setSource(toJson(persistable))));
+    persistables.forEach(persistable -> bulkRequest
+        .add(getIndexRequestBuilder(indexName, persistable).setSource(toJson(persistable)).setParent(parentId)));
+    return bulkRequest.execute().actionGet();
+  }
+
+  public BulkResponse indexAllIndexables(String indexName, Iterable<? extends Indexable> indexables) {
+    return indexAllIndexables(indexName, indexables, null);
+  }
+
+  public BulkResponse indexAllIndexables(String indexName, Iterable<? extends Indexable> indexables, Indexable parent) {
+    createIndexIfNeeded(indexName);
+    String parentId = parent == null ? null : parent.getId();
+    BulkRequestBuilder bulkRequest = client.prepareBulk();
+    indexables.forEach(indexable -> bulkRequest
+        .add(getIndexRequestBuilder(indexName, indexable).setSource(toJson(indexable)).setParent(parentId)));
     return bulkRequest.execute().actionGet();
   }
 
@@ -74,6 +112,10 @@ public class ElasticSearchIndexer {
     return client.prepareIndex(indexName, persistable.getClass().getSimpleName(), persistable.getId());
   }
 
+  private IndexRequestBuilder getIndexRequestBuilder(String indexName, Indexable indexable) {
+    return client.prepareIndex(indexName, indexable.getClass().getSimpleName(), indexable.getId());
+  }
+
   private void createIndexIfNeeded(String indexName) {
     IndicesAdminClient indicesAdmin = client.admin().indices();
     if(!hasIndex(indexName)) {
@@ -81,6 +123,7 @@ public class ElasticSearchIndexer {
       Settings settings = ImmutableSettings.settingsBuilder() //
           .put("number_of_shards", elasticSearchConfiguration.getNbShards()) //
           .put("number_of_replicas", elasticSearchConfiguration.getNbReplicas()).build();
+
       indicesAdmin.prepareCreate(indexName).setSettings(settings).execute().actionGet();
     }
   }

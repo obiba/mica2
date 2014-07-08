@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.service;
+package org.obiba.mica.service;
 
 import java.util.List;
 
@@ -16,9 +16,12 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.magma.NoSuchValueTableException;
-import org.obiba.mica.dataset.domain.HarmonizedDataset;
+import org.obiba.mica.dataset.DatasourceRegistry;
 import org.obiba.mica.dataset.HarmonizedDatasetRepository;
 import org.obiba.mica.dataset.NoSuchDatasetException;
+import org.obiba.mica.dataset.domain.HarmonizedDataset;
+import org.obiba.mica.dataset.service.DatasetService;
+import org.obiba.mica.study.StudyService;
 import org.obiba.mica.study.event.StudyDeletedEvent;
 import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.springframework.scheduling.annotation.Async;
@@ -26,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import com.google.common.base.Strings;
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 @Service
@@ -33,7 +37,16 @@ import com.google.common.eventbus.Subscribe;
 public class HarmonizedDatasetService extends DatasetService {
 
   @Inject
+  private StudyService studyService;
+
+  @Inject
+  private DatasourceRegistry datasourceRegistry;
+
+  @Inject
   private HarmonizedDatasetRepository harmonizedDatasetRepository;
+
+  @Inject
+  private EventBus eventBus;
 
   public void save(@NotNull HarmonizedDataset dataset) {
     harmonizedDatasetRepository.save(dataset);
@@ -95,22 +108,24 @@ public class HarmonizedDatasetService extends DatasetService {
 
   /**
    * Apply dataset publication flag.
-   * @param studyId
+   *
+   * @param id
    * @param published
    */
-  public void publish(String studyId, boolean published) {
-    HarmonizedDataset dataset = findById(studyId);
+  public void publish(@NotNull String id, boolean published) {
+    HarmonizedDataset dataset = findById(id);
     dataset.setPublished(published);
     save(dataset);
   }
 
   /**
    * Check if a dataset is published.
-   * @param studyId
+   *
+   * @param id
    * @return
    */
-  public boolean isPublished(String studyId) throws NoSuchDatasetException {
-    HarmonizedDataset dataset = findById(studyId);
+  public boolean isPublished(@NotNull String id) throws NoSuchDatasetException {
+    HarmonizedDataset dataset = findById(id);
     return dataset.isPublished();
   }
 
@@ -130,6 +145,21 @@ public class HarmonizedDatasetService extends DatasetService {
   @Subscribe
   public void studyDeleted(StudyDeletedEvent event) {
 
+  }
+
+  @Override
+  protected DatasourceRegistry getDatasourceRegistry() {
+    return datasourceRegistry;
+  }
+
+  @Override
+  protected StudyService getStudyService() {
+    return studyService;
+  }
+
+  @Override
+  protected EventBus getEventBus() {
+    return eventBus;
   }
 
   //

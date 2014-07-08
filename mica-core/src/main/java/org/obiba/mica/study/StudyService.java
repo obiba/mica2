@@ -11,8 +11,8 @@ import org.obiba.mica.service.GitService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
-import org.obiba.mica.study.event.StudyPublishedEvent;
 import org.obiba.mica.study.event.IndexStudiesEvent;
+import org.obiba.mica.study.event.StudyPublishedEvent;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationListener;
@@ -138,4 +138,4 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
 //  public void delete(@NotNull String id) {
 //    studyRepository.delete(id);
 //  }
-  }
+}

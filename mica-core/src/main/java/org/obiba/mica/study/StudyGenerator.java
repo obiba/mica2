@@ -23,8 +23,8 @@ import org.obiba.mica.domain.StudyTable;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.file.TempFileService;
-import org.obiba.mica.dataset.service.HarmonizedDatasetService;
-import org.obiba.mica.dataset.service.StudyDatasetService;
+import org.obiba.mica.service.HarmonizedDatasetService;
+import org.obiba.mica.service.StudyDatasetService;
 import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.NumberOfParticipants;
 import org.obiba.mica.study.domain.Population;
@@ -76,22 +76,22 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
     studyService.publish(study.getId());
 
     StudyDataset studyDataset = new StudyDataset();
-    studyDataset.setName(en("Participants").forFr("Participants"));
+    studyDataset.setName(en("FNAC").forFr("FNAC"));
     StudyTable table = new StudyTable();
     table.setStudyId(study.getId());
     table.setProject("test");
-    table.setTable("Participants");
+    table.setTable("FNAC");
     studyDataset.setStudyTable(table);
     studyDatasetService.save(studyDataset);
 
     HarmonizedDataset harmonizedDataset = new HarmonizedDataset();
-    harmonizedDataset.setName(en("Ankle Brachial").forFr("Ankle Brachial"));
+    harmonizedDataset.setName(en("Healthy Obese Project").forFr("Projet des obeses en sante"));
     harmonizedDataset.setProject("mica");
-    harmonizedDataset.setTable("AnkleBrachial");
+    harmonizedDataset.setTable("HOP");
     table = new StudyTable();
     table.setStudyId(study.getId());
     table.setProject("test");
-    table.setTable("AnkleBrachial");
+    table.setTable("HOP");
     harmonizedDataset.addStudyTable(table);
     harmonizedDatasetService.save(harmonizedDataset);
 

@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.service;
+package org.obiba.mica.service;
 
 import java.util.List;
 
@@ -16,10 +16,13 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.magma.NoSuchValueTableException;
-import org.obiba.mica.dataset.domain.StudyDataset;
-import org.obiba.mica.domain.StudyTable;
-import org.obiba.mica.dataset.StudyDatasetRepository;
+import org.obiba.mica.dataset.DatasourceRegistry;
 import org.obiba.mica.dataset.NoSuchDatasetException;
+import org.obiba.mica.dataset.StudyDatasetRepository;
+import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.dataset.service.DatasetService;
+import org.obiba.mica.domain.StudyTable;
+import org.obiba.mica.study.StudyService;
 import org.obiba.mica.study.event.StudyDeletedEvent;
 import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.springframework.scheduling.annotation.Async;
@@ -27,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import com.google.common.base.Strings;
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 @Service
@@ -34,7 +38,16 @@ import com.google.common.eventbus.Subscribe;
 public class StudyDatasetService extends DatasetService {
 
   @Inject
+  private StudyService studyService;
+
+  @Inject
+  private DatasourceRegistry datasourceRegistry;
+
+  @Inject
   private StudyDatasetRepository studyDatasetRepository;
+
+  @Inject
+  private EventBus eventBus;
 
   public void save(@NotNull StudyDataset dataset) {
     studyDatasetRepository.save(dataset);
@@ -97,11 +110,11 @@ public class StudyDatasetService extends DatasetService {
   /**
    * Apply dataset publication flag.
    *
-   * @param studyId
+   * @param id
    * @param published
    */
-  public void publish(String studyId, boolean published) {
-    StudyDataset dataset = findById(studyId);
+  public void publish(@NotNull String id, boolean published) {
+    StudyDataset dataset = findById(id);
     dataset.setPublished(published);
     save(dataset);
   }
@@ -109,11 +122,11 @@ public class StudyDatasetService extends DatasetService {
   /**
    * Check if a dataset is published.
    *
-   * @param studyId
+   * @param id
    * @return
    */
-  public boolean isPublished(String studyId) throws NoSuchDatasetException {
-    StudyDataset dataset = findById(studyId);
+  public boolean isPublished(@NotNull String id) throws NoSuchDatasetException {
+    StudyDataset dataset = findById(id);
     return dataset.isPublished();
   }
 
@@ -126,7 +139,8 @@ public class StudyDatasetService extends DatasetService {
   }
 
   /**
-   * On study deletion, go through all datasets related to this study and remove the dependency.
+   * On study deletion, go through all datasets related to this study, then remove the dependency
+   * and clean the variable index.
    *
    * @param event
    */
@@ -137,6 +151,21 @@ public class StudyDatasetService extends DatasetService {
 
     // TODO
     //findAllDatasets(studyId);
+  }
+
+  @Override
+  protected DatasourceRegistry getDatasourceRegistry() {
+    return datasourceRegistry;
+  }
+
+  @Override
+  protected StudyService getStudyService() {
+    return studyService;
+  }
+
+  @Override
+  protected EventBus getEventBus() {
+    return eventBus;
   }
 
   //

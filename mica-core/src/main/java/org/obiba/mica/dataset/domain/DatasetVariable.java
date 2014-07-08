@@ -10,59 +10,131 @@
 
 package org.obiba.mica.dataset.domain;
 
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.domain.AbstractAuditableDocument;
+import org.obiba.magma.Variable;
 import org.obiba.mica.domain.Attribute;
 import org.obiba.mica.domain.AttributeAware;
 import org.obiba.mica.domain.Indexable;
-import org.obiba.mica.domain.LocalizedString;
 import org.obiba.mica.domain.NoSuchAttributeException;
 
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 
-/**
- * Proxy to Opal tables.
- */
-public abstract class Dataset extends AbstractAuditableDocument implements AttributeAware, Indexable {
+public class DatasetVariable implements Indexable, AttributeAware {
 
-  private static final long serialVersionUID = -3328963766855899217L;
+  public enum Type {
+    STUDY,
+    HARMONIZED,
+    DATASCHEMA
+  }
 
   @NotNull
-  private LocalizedString name;
+  private String datasetId;
 
-  private LocalizedString description;
+  private Type variableType;
 
-  private boolean published = false;
+  private final String name;
+
+  private final String entityType;
+
+  private final String mimeType;
+
+  private final String unit;
+
+  private final String valueType;
+
+  private final String referencedEntityType;
+
+  private final boolean repeatable;
+
+  private final String occurrenceGroup;
+
+  private List<DatasetCategory> categories;
 
   private LinkedListMultimap<String, Attribute> attributes;
 
-  public LocalizedString getName() {
+  public DatasetVariable(StudyDataset dataset, Variable variable) {
+    this(dataset.getId(), Type.STUDY, variable);
+  }
+
+  public DatasetVariable(HarmonizedDataset dataset, Variable variable) {
+    this(dataset.getId(), Type.DATASCHEMA, variable);
+  }
+
+  public DatasetVariable(String datasetId, Type type, Variable variable) {
+    this.datasetId = datasetId;
+    variableType = type;
+    name = variable.getName();
+    entityType = variable.getEntityType();
+    mimeType = variable.getMimeType();
+    unit = variable.getUnit();
+    valueType = variable.getValueType().getName();
+    referencedEntityType = variable.getReferencedEntityType();
+    repeatable = variable.isRepeatable();
+    occurrenceGroup = variable.getOccurrenceGroup();
+    if(variable.hasCategories()) {
+      categories = variable.getCategories().stream().map(DatasetCategory::new).collect(Collectors.toList());
+    }
+    if(variable.hasAttributes()) {
+      for(org.obiba.magma.Attribute attr : variable.getAttributes()) {
+        addAttribute(Attribute.Builder.newAttribute(attr).build());
+      }
+    }
+  }
+
+  @Override
+  public String getId() {
+    return datasetId + "_" + name;
+  }
+
+  public String getDatasetId() {
+    return datasetId;
+  }
+
+  public Type getVariableType() {
+    return variableType;
+  }
+
+  public String getName() {
     return name;
   }
 
-  public void setName(LocalizedString name) {
-    this.name = name;
+  public String getEntityType() {
+    return entityType;
   }
 
-  public LocalizedString getDescription() {
-    return description;
+  public String getMimeType() {
+    return mimeType;
   }
 
-  public void setDescription(LocalizedString description) {
-    this.description = description;
+  public String getUnit() {
+    return unit;
   }
 
-  public boolean isPublished() {
-    return published;
+  public String getValueType() {
+    return valueType;
   }
 
-  public void setPublished(boolean published) {
-    this.published = published;
+  public String getReferencedEntityType() {
+    return referencedEntityType;
+  }
+
+  public boolean isRepeatable() {
+    return repeatable;
+  }
+
+  public String getOccurrenceGroup() {
+    return occurrenceGroup;
+  }
+
+  public List<DatasetCategory> getCategories() {
+    return categories;
   }
 
   @Override
@@ -119,10 +191,5 @@ public abstract class Dataset extends AbstractAuditableDocument implements Attri
       }
     }
     throw new NoSuchAttributeException(attName, getClass().getName());
-  }
-
-  @Override
-  protected com.google.common.base.Objects.ToStringHelper toStringHelper() {
-    return super.toStringHelper().add("name", name);
   }
 }

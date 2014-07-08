@@ -13,56 +13,39 @@ package org.obiba.mica.dataset.domain;
 import java.util.Locale;
 
 import javax.annotation.Nullable;
-import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.domain.AbstractAuditableDocument;
+import org.obiba.magma.Category;
 import org.obiba.mica.domain.Attribute;
 import org.obiba.mica.domain.AttributeAware;
-import org.obiba.mica.domain.Indexable;
-import org.obiba.mica.domain.LocalizedString;
 import org.obiba.mica.domain.NoSuchAttributeException;
 
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 
-/**
- * Proxy to Opal tables.
- */
-public abstract class Dataset extends AbstractAuditableDocument implements AttributeAware, Indexable {
+public class DatasetCategory implements AttributeAware {
 
-  private static final long serialVersionUID = -3328963766855899217L;
+  private final String name;
 
-  @NotNull
-  private LocalizedString name;
-
-  private LocalizedString description;
-
-  private boolean published = false;
+  private final boolean missing;
 
   private LinkedListMultimap<String, Attribute> attributes;
 
-  public LocalizedString getName() {
+  public DatasetCategory(Category category) {
+    name = category.getName();
+    missing = category.isMissing();
+    if(category.hasAttributes()) {
+      for(org.obiba.magma.Attribute attr : category.getAttributes()) {
+        addAttribute(Attribute.Builder.newAttribute(attr).build());
+      }
+    }
+  }
+
+  public String getName() {
     return name;
   }
 
-  public void setName(LocalizedString name) {
-    this.name = name;
-  }
-
-  public LocalizedString getDescription() {
-    return description;
-  }
-
-  public void setDescription(LocalizedString description) {
-    this.description = description;
-  }
-
-  public boolean isPublished() {
-    return published;
-  }
-
-  public void setPublished(boolean published) {
-    this.published = published;
+  public boolean isMissing() {
+    return missing;
   }
 
   @Override
@@ -121,8 +104,4 @@ public abstract class Dataset extends AbstractAuditableDocument implements Attri
     throw new NoSuchAttributeException(attName, getClass().getName());
   }
 
-  @Override
-  protected com.google.common.base.Objects.ToStringHelper toStringHelper() {
-    return super.toStringHelper().add("name", name);
-  }
 }

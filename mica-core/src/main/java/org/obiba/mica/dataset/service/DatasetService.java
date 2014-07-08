@@ -10,14 +10,14 @@
 
 package org.obiba.mica.dataset.service;
 
-import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.Variable;
-import org.obiba.mica.domain.StudyTable;
 import org.obiba.mica.dataset.DatasourceRegistry;
 import org.obiba.mica.dataset.NoSuchDatasetException;
+import org.obiba.mica.dataset.event.IndexDatasetsEvent;
+import org.obiba.mica.domain.StudyTable;
 import org.obiba.mica.study.StudyService;
 import org.obiba.opal.rest.client.magma.RestDatasource;
 import org.obiba.opal.rest.client.magma.RestValueTable;
@@ -27,6 +27,8 @@ import org.obiba.opal.web.model.Search;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.eventbus.EventBus;
+
 /**
  * {@link org.obiba.mica.dataset.domain.Dataset} management service.
  */
@@ -35,12 +37,11 @@ public abstract class DatasetService {
 
   private static final Logger log = LoggerFactory.getLogger(DatasetService.class);
 
-  @Inject
-  private StudyService studyService;
+  protected abstract StudyService getStudyService();
 
-  @Inject
-  private DatasourceRegistry datasourceRegistry;
+  protected abstract DatasourceRegistry getDatasourceRegistry();
 
+  protected abstract EventBus getEventBus();
 
   /**
    * Get the {@link org.obiba.opal.web.model.Magma.TableDto} of the {@link org.obiba.mica.dataset.domain.Dataset} identified by its id.
@@ -106,6 +107,13 @@ public abstract class DatasetService {
   }
 
   /**
+   * Index or re-index all datasets with their variables.
+   */
+  public void indexAll() {
+    getEventBus().post(new IndexDatasetsEvent());
+  }
+
+  /**
    * Execute the callback on the given datasource.
    *
    * @param datasource
@@ -118,12 +126,12 @@ public abstract class DatasetService {
   }
 
   protected RestDatasource getDatasource(@NotNull StudyTable studyTable) {
-    String opalUrl = studyService.findDraftStudy(studyTable.getStudyId()).getOpal();
-    return datasourceRegistry.getDatasource(opalUrl, studyTable.getProject());
+    String opalUrl = getStudyService().findDraftStudy(studyTable.getStudyId()).getOpal();
+    return getDatasourceRegistry().getDatasource(opalUrl, studyTable.getProject());
   }
 
   protected RestDatasource getDatasource(@NotNull String project) {
-    return datasourceRegistry.getDatasource(project);
+    return getDatasourceRegistry().getDatasource(project);
   }
 
 }

@@ -23,7 +23,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.dataset.service.StudyDatasetService;
+import org.obiba.mica.service.StudyDatasetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.ApplicationContext;
@@ -55,6 +55,13 @@ public class DraftStudyDatasetsResource {
   @Path("/study-datasets")
   public List<Mica.DatasetDto> getDatasets(@QueryParam("study") String studyId) {
     return datasetService.findAllDatasets(studyId).stream().map(dtos::asDto).collect(Collectors.toList());
+  }
+
+  @PUT
+  @Path("/study-datasets/_index")
+  public Response reIndex() {
+    datasetService.indexAll();
+    return Response.noContent().build();
   }
 
   @Path("/study-dataset/{id}")
