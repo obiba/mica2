@@ -21,7 +21,6 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Strings;
 
 @Component
 public class ElasticSearchIndexer {
@@ -100,6 +99,12 @@ public class ElasticSearchIndexer {
         .actionGet();
   }
 
+  public DeleteResponse delete(String indexName, Indexable indexable) {
+    createIndexIfNeeded(indexName);
+    return client.prepareDelete(indexName, getType(indexable), indexable.getId()).execute()
+        .actionGet();
+  }
+
   public boolean hasIndex(String indexName) {
     return client.admin().indices().exists(new IndicesExistsRequest(indexName)).actionGet().isExists();
   }
@@ -113,10 +118,16 @@ public class ElasticSearchIndexer {
   }
 
   private IndexRequestBuilder getIndexRequestBuilder(String indexName, Indexable indexable) {
-    return client.prepareIndex(indexName, indexable.getClass().getSimpleName(), indexable.getId());
+    return client.prepareIndex(indexName, getType(indexable), indexable.getId());
   }
 
-  private void createIndexIfNeeded(String indexName) {
+  private String getType(Indexable indexable) {
+    return indexable.getMappingName() == null
+        ? indexable.getClassName()
+        : indexable.getMappingName();
+  }
+
+  private synchronized void createIndexIfNeeded(String indexName) {
     IndicesAdminClient indicesAdmin = client.admin().indices();
     if(!hasIndex(indexName)) {
       log.info("Creating index {}", indexName);

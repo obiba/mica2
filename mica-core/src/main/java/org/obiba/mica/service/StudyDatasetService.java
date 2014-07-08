@@ -20,6 +20,7 @@ import org.obiba.mica.dataset.DatasourceRegistry;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.StudyDatasetRepository;
 import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.service.DatasetService;
 import org.obiba.mica.domain.StudyTable;
 import org.obiba.mica.study.StudyService;
@@ -51,6 +52,7 @@ public class StudyDatasetService extends DatasetService {
 
   public void save(@NotNull StudyDataset dataset) {
     studyDatasetRepository.save(dataset);
+    eventBus.post(new DatasetUpdatedEvent(dataset));
   }
 
   /**

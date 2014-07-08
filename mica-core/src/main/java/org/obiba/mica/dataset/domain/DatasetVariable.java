@@ -28,10 +28,14 @@ import com.google.common.collect.Multimap;
 
 public class DatasetVariable implements Indexable, AttributeAware {
 
+  private static final long serialVersionUID = -141834508275072637L;
+
+  public static final String MAPPING_NAME = "Variable";
+
   public enum Type {
-    STUDY,
-    HARMONIZED,
-    DATASCHEMA
+    Study,       // variable extracted from a study dataset
+    Dataschema,  // variable extracted from a harmonized dataset
+    Harmonized   // variable that implements a Datashema variable
   }
 
   @NotNull
@@ -60,11 +64,11 @@ public class DatasetVariable implements Indexable, AttributeAware {
   private LinkedListMultimap<String, Attribute> attributes;
 
   public DatasetVariable(StudyDataset dataset, Variable variable) {
-    this(dataset.getId(), Type.STUDY, variable);
+    this(dataset.getId(), Type.Study, variable);
   }
 
   public DatasetVariable(HarmonizedDataset dataset, Variable variable) {
-    this(dataset.getId(), Type.DATASCHEMA, variable);
+    this(dataset.getId(), Type.Dataschema, variable);
   }
 
   public DatasetVariable(String datasetId, Type type, Variable variable) {
@@ -191,5 +195,15 @@ public class DatasetVariable implements Indexable, AttributeAware {
       }
     }
     throw new NoSuchAttributeException(attName, getClass().getName());
+  }
+
+  @Override
+  public String getClassName() {
+    return getClass().getSimpleName();
+  }
+
+  @Override
+  public String getMappingName() {
+    return MAPPING_NAME;
   }
 }

@@ -8,22 +8,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.domain;
+package org.obiba.mica.dataset.event;
 
-import java.io.Serializable;
+import org.obiba.mica.dataset.domain.Dataset;
+import org.obiba.mica.event.PersistableUpdatedEvent;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+public class DatasetUpdatedEvent extends PersistableUpdatedEvent<Dataset> {
 
-/**
- * Allow indexing of a document that is not persisted.
- */
-public interface Indexable extends Serializable {
-
-  String getId();
-
-  String getClassName();
-
-  @JsonIgnore
-  String getMappingName();
-
+  public DatasetUpdatedEvent(Dataset persistable) {
+    super(persistable);
+  }
 }

@@ -20,6 +20,7 @@ import org.obiba.mica.dataset.DatasourceRegistry;
 import org.obiba.mica.dataset.HarmonizedDatasetRepository;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.HarmonizedDataset;
+import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.service.DatasetService;
 import org.obiba.mica.study.StudyService;
 import org.obiba.mica.study.event.StudyDeletedEvent;
@@ -50,6 +51,7 @@ public class HarmonizedDatasetService extends DatasetService {
 
   public void save(@NotNull HarmonizedDataset dataset) {
     harmonizedDatasetRepository.save(dataset);
+    eventBus.post(new DatasetUpdatedEvent(dataset));
   }
 
   /**

@@ -32,6 +32,8 @@ public abstract class Dataset extends AbstractAuditableDocument implements Attri
 
   private static final long serialVersionUID = -3328963766855899217L;
 
+  public static final String MAPPING_NAME = "Dataset";
+
   @NotNull
   private LocalizedString name;
 
@@ -119,6 +121,16 @@ public abstract class Dataset extends AbstractAuditableDocument implements Attri
       }
     }
     throw new NoSuchAttributeException(attName, getClass().getName());
+  }
+
+  @Override
+  public String getClassName() {
+    return getClass().getSimpleName();
+  }
+
+  @Override
+  public String getMappingName() {
+    return MAPPING_NAME;
   }
 
   @Override

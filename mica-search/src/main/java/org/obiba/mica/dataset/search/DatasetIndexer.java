@@ -18,7 +18,10 @@ import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizedDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.dataset.event.DatasetDeletedEvent;
+import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.event.IndexDatasetsEvent;
+import org.obiba.mica.domain.Indexable;
 import org.obiba.mica.search.ElasticSearchIndexer;
 import org.obiba.mica.service.HarmonizedDatasetService;
 import org.obiba.mica.service.StudyDatasetService;
@@ -51,15 +54,49 @@ public class DatasetIndexer {
 
   @Async
   @Subscribe
+  public void datasetUpdated(DatasetUpdatedEvent event) {
+    log.info("Dataset {} was updated", event.getPersistable());
+    reIndex(event.getPersistable());
+  }
+
+  @Async
+  @Subscribe
+  public void datasetDeleted(DatasetDeletedEvent event) {
+    log.info("Dataset {} was deleted", event.getPersistable());
+    deleteFromIndex(event.getPersistable());
+  }
+
+  @Async
+  @Subscribe
   public void indexAll(IndexDatasetsEvent event) {
     reIndexAll(DRAFT_DATASET_INDEX, findAllDatasets());
     reIndexAll(PUBLISHED_DATASET_INDEX, findAllPublishedDatasets());
   }
 
+  private void reIndex(Dataset dataset) {
+    deleteFromIndex(dataset);
+    elasticSearchIndexer.index(DRAFT_DATASET_INDEX, (Indexable) dataset);
+    indexDatasetVariables(DRAFT_DATASET_INDEX, dataset);
+    if(dataset.isPublished()) {
+      elasticSearchIndexer.index(PUBLISHED_DATASET_INDEX, (Indexable) dataset);
+      indexDatasetVariables(PUBLISHED_DATASET_INDEX, dataset);
+    }
+  }
+
+  private void deleteFromIndex(Dataset dataset) {
+    // TODO delete variables from indices
+    elasticSearchIndexer.delete(DRAFT_DATASET_INDEX, (Indexable) dataset);
+    elasticSearchIndexer.delete(PUBLISHED_DATASET_INDEX, (Indexable) dataset);
+  }
+
   private void reIndexAll(String indexName, Iterable<Dataset> datasets) {
     if(elasticSearchIndexer.hasIndex(indexName)) elasticSearchIndexer.dropIndex(indexName);
-    elasticSearchIndexer.indexAll(indexName, datasets);
-    for(Dataset dataset : datasets) {
+    elasticSearchIndexer.indexAllIndexables(indexName, datasets);
+    datasets.forEach(dataset -> indexDatasetVariables(indexName, dataset));
+  }
+
+  private void indexDatasetVariables(String indexName, Dataset dataset) {
+    try {
       if(dataset instanceof StudyDataset) {
         elasticSearchIndexer.indexAllIndexables(indexName, Iterables
             .transform(studyDatasetService.getVariables(dataset.getId()),
@@ -69,6 +106,8 @@ public class DatasetIndexer {
             .transform(harmonizedDatasetService.getVariables(dataset.getId()),
                 input -> new DatasetVariable((HarmonizedDataset) dataset, input)));
       }
+    } catch(Exception e) {
+      log.error("Unable to index variables of dataset: {}", dataset, e);
     }
   }
 
