@@ -8,6 +8,10 @@
 #   <field>:
 #     type: range
 #     name: <name>
+# Or:
+#   <field>:
+#     type: stats
+#     name: <name>
 # If name is not defined, field with be used as name
 #
 

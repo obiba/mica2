@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
 
+import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
@@ -27,8 +28,8 @@ public class AggregationYamlParser {
 
   private static final String NAME = ".name";
 
-  public Iterable<AggregationBuilder<?>> getAggregations(String file) throws IOException {
-    Collection<AggregationBuilder<?>> termsBuilders = new ArrayList<>();
+  public Iterable<AbstractAggregationBuilder> getAggregations(String file) throws IOException {
+    Collection<AbstractAggregationBuilder> termsBuilders = new ArrayList<>();
 
     YamlPropertiesFactoryBean yamlPropertiesFactoryBean = new YamlPropertiesFactoryBean();
     yamlPropertiesFactoryBean.setResources(new Resource[] { new ClassPathResource(file) });
@@ -50,10 +51,13 @@ public class AggregationYamlParser {
     return termsBuilders;
   }
 
-  private AggregationBuilder<?> parseSpecificAggregation(Properties properties, String key, String value) {
+  private AbstractAggregationBuilder parseSpecificAggregation(Properties properties, String key, String value) {
     String field = key.replace(TYPE, "");
     String name = getName(properties.getProperty(field + NAME), field);
     switch(value) {
+      case "stats":
+        log.debug("Add stats aggregation: name={}, field={}", name, field);
+        return AggregationBuilders.stats(name).field(field);
       case "range":
         log.debug("Add range aggregation: name={}, field={}", name, field);
         // TODO remove this method if no range can be provided! Added bound to prevent possible crash
