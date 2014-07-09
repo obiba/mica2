@@ -43,6 +43,8 @@ public class DatasetIndexer {
 
   public static final String PUBLISHED_DATASET_INDEX = "dataset-published";
 
+  public static final String VARIABLE_TYPE = DatasetVariable.MAPPING_NAME;
+
   @Inject
   private StudyDatasetService studyDatasetService;
 

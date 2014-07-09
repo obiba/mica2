@@ -263,3 +263,26 @@ message HarmonizedDatasetDto {
     optional HarmonizedDatasetDto type = 1001;
   }
 }
+
+message DatasetCategoryDto {
+  required string name = 1;
+  required bool missing = 2;
+  repeated AttributeDto attributes = 3;
+}
+
+message DatasetVariableDto {
+  required string id = 1;
+  required string datasetId = 2;
+  repeated string studyIds = 3;
+  required string variableType = 4;
+  required string name = 5;
+  required string entityType = 6;
+  required string valueType = 7;
+  optional string mimeType = 8;
+  required bool repeatable = 9;
+  optional string occurrenceGroup = 10;
+  optional string unit = 11;
+  optional string referencedEntityType = 12;
+  repeated AttributeDto attributes = 13;
+  repeated DatasetCategoryDto categories = 14;
+}

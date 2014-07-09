@@ -1,0 +1,40 @@
+# Define study aggregations: field, name and type
+#
+# For basic terms aggregation:
+#   <field>: <name>
+# If <name> is null, field with be used as name
+#
+# For specific aggregation:
+#   <field>:
+#     type: range
+#     name: <name>
+# Or:
+#   <field>:
+#     type: stats
+#     name: <name>
+# If name is not defined, field with be used as name
+#
+
+variableType:
+entityType:
+mimeType:
+valueType:
+repeatable:
+occurrenceGroup:
+
+categories:
+  missing:
+
+attributes:
+  maelstrom.essence:
+    value:
+  maelstrom.measure:
+    value:
+  maelstrom.sociodemographic_characteristics:
+    value:
+  maelstrom.status:
+    value:
+  maelstrom.target:
+    value:
+  maelstrom.period:
+    value:

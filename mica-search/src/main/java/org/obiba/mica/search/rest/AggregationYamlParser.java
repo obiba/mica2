@@ -1,4 +1,4 @@
-package org.obiba.mica.study.search.rest;
+package org.obiba.mica.search.rest;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
-import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.slf4j.Logger;
@@ -29,10 +28,14 @@ public class AggregationYamlParser {
   private static final String NAME = ".name";
 
   public Iterable<AbstractAggregationBuilder> getAggregations(String file) throws IOException {
+    return getAggregations(new ClassPathResource(file));
+  }
+
+  public Iterable<AbstractAggregationBuilder> getAggregations(Resource description) throws IOException {
     Collection<AbstractAggregationBuilder> termsBuilders = new ArrayList<>();
 
     YamlPropertiesFactoryBean yamlPropertiesFactoryBean = new YamlPropertiesFactoryBean();
-    yamlPropertiesFactoryBean.setResources(new Resource[] { new ClassPathResource(file) });
+    yamlPropertiesFactoryBean.setResources(new Resource[] { description });
     Properties properties = yamlPropertiesFactoryBean.getObject();
     for(Map.Entry<Object, Object> entry : properties.entrySet()) {
       String key = (String) entry.getKey();

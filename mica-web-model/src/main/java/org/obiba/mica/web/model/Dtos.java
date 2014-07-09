@@ -3,6 +3,7 @@ package org.obiba.mica.web.model;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizedDataset;
 import org.obiba.mica.domain.Network;
 import org.obiba.mica.dataset.domain.StudyDataset;
@@ -96,5 +97,8 @@ public class Dtos {
     return datasetDtos.asDto(dataset);
   }
 
+  public Mica.DatasetVariableDto asDto(@NotNull DatasetVariable variable) {
+    return datasetDtos.asDto(variable);
+  }
 
 }

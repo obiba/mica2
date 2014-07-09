@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.study.search.rest;
+package org.obiba.mica.dataset.search.rest;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -25,11 +25,11 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.json.JSONException;
+import org.obiba.mica.dataset.domain.DatasetVariable;
+import org.obiba.mica.dataset.search.DatasetIndexer;
 import org.obiba.mica.search.rest.AbstractSearchResource;
 import org.obiba.mica.search.rest.QueryDtoParser;
 import org.obiba.mica.study.StudyService;
-import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.mica.web.model.Dtos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,12 +42,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import static org.obiba.mica.web.model.MicaSearch.QueryDto;
 import static org.obiba.mica.web.model.MicaSearch.QueryResultDto;
 
-@Path("/studies/_search")
-public class PublishedStudiesSearchResource extends AbstractSearchResource {
+@Path("/variables/_search")
+public class PublishedVariablesSearchResource extends AbstractSearchResource {
 
-  private static final String STUDY_FACETS_YML = "study-facets.yml";
+  private static final String VARIABLE_FACETS_YML = "variable-facets.yml";
 
-  private static final Logger log = LoggerFactory.getLogger(PublishedStudiesSearchResource.class);
+  private static final Logger log = LoggerFactory.getLogger(PublishedVariablesSearchResource.class);
 
   @Inject
   private Dtos dtos;
@@ -76,27 +76,25 @@ public class PublishedStudiesSearchResource extends AbstractSearchResource {
 
   @Override
   protected Resource getAggregationsDescription() {
-    return new ClassPathResource(STUDY_FACETS_YML);
+    return new ClassPathResource(VARIABLE_FACETS_YML);
   }
 
   @Override
   protected String getSearchIndex() {
-    return StudyIndexer.PUBLISHED_STUDY_INDEX;
+    return DatasetIndexer.PUBLISHED_DATASET_INDEX;
   }
 
   @Override
   protected String getSearchType() {
-    return StudyIndexer.STUDY_TYPE;
+    return DatasetIndexer.VARIABLE_TYPE;
   }
 
   @Override
   protected void processHits(QueryResultDto.Builder builder, boolean detailed, SearchHits hits) throws IOException {
     for(SearchHit hit : hits) {
-      builder.addSummaries(dtos.asDto(studyService.findStateById(hit.getId())));
-      if(detailed) {
-        InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
-        builder.addStudies(dtos.asDto(objectMapper.readValue(inputStream, Study.class)));
-      }
+      // detailed flag ignored
+      InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
+      builder.addVariables(dtos.asDto(objectMapper.readValue(inputStream, DatasetVariable.class)));
     }
   }
 }

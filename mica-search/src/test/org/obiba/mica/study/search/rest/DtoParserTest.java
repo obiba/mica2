@@ -12,7 +12,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.obiba.mica.study.search.rest.QueryDtoParser;
+import org.obiba.mica.search.rest.QueryDtoParser;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;

@@ -88,6 +88,7 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
     harmonizedDataset.setName(en("Healthy Obese Project").forFr("Projet des obeses en sante"));
     harmonizedDataset.setProject("mica");
     harmonizedDataset.setTable("HOP");
+    harmonizedDataset.setPublished(true);
     table = new StudyTable();
     table.setStudyId(study.getId());
     table.setProject("test");

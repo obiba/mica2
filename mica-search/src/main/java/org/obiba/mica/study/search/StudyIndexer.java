@@ -24,6 +24,8 @@ public class StudyIndexer {
 
   public static final String PUBLISHED_STUDY_INDEX = "study-published";
 
+  public static final String STUDY_TYPE = "Study";
+
   @Inject
   private ElasticSearchIndexer elasticSearchIndexer;
 
@@ -67,7 +69,7 @@ public class StudyIndexer {
   }
 
   private void reIndexAll(String indexName, Iterable<Study> studies) {
-    if (elasticSearchIndexer.hasIndex(indexName)) elasticSearchIndexer.dropIndex(indexName);
+    if(elasticSearchIndexer.hasIndex(indexName)) elasticSearchIndexer.dropIndex(indexName);
     elasticSearchIndexer.indexAll(indexName, studies);
   }
 }

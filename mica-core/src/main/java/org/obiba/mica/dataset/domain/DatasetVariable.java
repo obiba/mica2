@@ -24,6 +24,7 @@ import org.obiba.mica.domain.Indexable;
 import org.obiba.mica.domain.NoSuchAttributeException;
 
 import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 public class DatasetVariable implements Indexable, AttributeAware {
@@ -41,37 +42,44 @@ public class DatasetVariable implements Indexable, AttributeAware {
   @NotNull
   private String datasetId;
 
+  private List<String> studyIds;
+
   private Type variableType;
 
-  private final String name;
+  private String name;
 
-  private final String entityType;
+  private String entityType;
 
-  private final String mimeType;
+  private String mimeType;
 
-  private final String unit;
+  private String unit;
 
-  private final String valueType;
+  private String valueType;
 
-  private final String referencedEntityType;
+  private String referencedEntityType;
 
-  private final boolean repeatable;
+  private boolean repeatable;
 
-  private final String occurrenceGroup;
+  private String occurrenceGroup;
 
   private List<DatasetCategory> categories;
 
   private LinkedListMultimap<String, Attribute> attributes;
 
+  public DatasetVariable() {}
+
   public DatasetVariable(StudyDataset dataset, Variable variable) {
     this(dataset.getId(), Type.Study, variable);
+    studyIds = Lists.newArrayList(dataset.getStudyTable().getStudyId());
   }
 
   public DatasetVariable(HarmonizedDataset dataset, Variable variable) {
     this(dataset.getId(), Type.Dataschema, variable);
+    studyIds = Lists.newArrayList();
+    dataset.getStudyTables().forEach(table -> studyIds.add(table.getStudyId()));
   }
 
-  public DatasetVariable(String datasetId, Type type, Variable variable) {
+  private DatasetVariable(String datasetId, Type type, Variable variable) {
     this.datasetId = datasetId;
     variableType = type;
     name = variable.getName();
@@ -94,11 +102,22 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   @Override
   public String getId() {
-    return datasetId + "_" + name;
+    return datasetId + ":" + variableType + ":" + name;
+  }
+
+  public void setId(String id) {
+    IdResolver resolver = IdResolver.from(id);
+    variableType = resolver.getType();
+    datasetId = resolver.getDatasetId();
+    name = resolver.getName();
   }
 
   public String getDatasetId() {
     return datasetId;
+  }
+
+  public List<String> getStudyIds() {
+    return studyIds;
   }
 
   public Type getVariableType() {
@@ -202,8 +221,54 @@ public class DatasetVariable implements Indexable, AttributeAware {
     return getClass().getSimpleName();
   }
 
+  /**
+   * For Json deserialization.
+   * @param className
+   */
+  public void setClassName(String className) {}
+
   @Override
   public String getMappingName() {
     return MAPPING_NAME;
+  }
+
+  public static class IdResolver {
+
+    private final String id;
+
+    private final Type type;
+
+    private final String datasetId;
+
+    private final String name;
+
+    public static IdResolver from(String id) {
+      return new IdResolver(id);
+    }
+
+    private IdResolver(String id) {
+      this.id = id;
+      datasetId = id.substring(0, id.indexOf(':'));
+      String tail = id.substring(id.indexOf(':') + 1);
+      type = Type.valueOf(tail.substring(0, tail.indexOf(':')));
+      name = tail.substring(tail.indexOf(':') + 1);
+    }
+
+    public Type getType() {
+      return type;
+    }
+
+    public String getDatasetId() {
+      return datasetId;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    @Override
+    public String toString() {
+      return "[" + type + "," + datasetId + "," + name + "]";
+    }
   }
 }

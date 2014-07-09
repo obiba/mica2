@@ -24,11 +24,13 @@ import com.google.common.collect.Multimap;
 
 public class DatasetCategory implements AttributeAware {
 
-  private final String name;
+  private String name;
 
-  private final boolean missing;
+  private boolean missing;
 
   private LinkedListMultimap<String, Attribute> attributes;
+
+  public DatasetCategory() {}
 
   public DatasetCategory(Category category) {
     name = category.getName();

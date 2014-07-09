@@ -28,6 +28,7 @@ message QueryResultDto {
   required int32 totalHits = 2;
   repeated obiba.mica.StudySummaryDto summaries = 3;
   repeated obiba.mica.StudyDto studies = 4;
+  repeated obiba.mica.DatasetVariableDto variables = 5;
 }
 
 message AggregationResultDto {
