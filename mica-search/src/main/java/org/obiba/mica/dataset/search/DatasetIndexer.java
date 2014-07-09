@@ -100,13 +100,11 @@ public class DatasetIndexer {
   private void indexDatasetVariables(String indexName, Dataset dataset) {
     try {
       if(dataset instanceof StudyDataset) {
-        elasticSearchIndexer.indexAllIndexables(indexName, Iterables
-            .transform(studyDatasetService.getVariables(dataset.getId()),
-                input -> new DatasetVariable((StudyDataset) dataset, input)));
+        elasticSearchIndexer
+            .indexAllIndexables(indexName, studyDatasetService.getDatasetVariables((StudyDataset) dataset));
       } else {
-        elasticSearchIndexer.indexAllIndexables(indexName, Iterables
-            .transform(harmonizedDatasetService.getVariables(dataset.getId()),
-                input -> new DatasetVariable((HarmonizedDataset) dataset, input)));
+        elasticSearchIndexer
+            .indexAllIndexables(indexName, harmonizedDatasetService.getDatasetVariables((HarmonizedDataset) dataset));
       }
     } catch(Exception e) {
       log.error("Unable to index variables of dataset: {}", dataset, e);

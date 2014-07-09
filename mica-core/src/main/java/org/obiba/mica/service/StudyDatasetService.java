@@ -19,6 +19,8 @@ import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.mica.dataset.DatasourceRegistry;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.StudyDatasetRepository;
+import org.obiba.mica.dataset.domain.Dataset;
+import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.service.DatasetService;
@@ -31,12 +33,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Iterables;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 @Service
 @Validated
-public class StudyDatasetService extends DatasetService {
+public class StudyDatasetService extends DatasetService<StudyDataset> {
 
   @Inject
   private StudyService studyService;
@@ -132,12 +135,32 @@ public class StudyDatasetService extends DatasetService {
     return dataset.isPublished();
   }
 
+  /**
+   * Index the dataset and associated variables.
+   *
+   * @param id
+   */
+  public void index(@NotNull String id) {
+    StudyDataset dataset = findById(id);
+    eventBus.post(new DatasetUpdatedEvent(dataset));
+  }
+
   @Override
   @NotNull
-  public RestValueTable getTable(@NotNull String id) throws NoSuchDatasetException, NoSuchValueTableException {
-    StudyDataset dataset = findById(id);
+  protected RestValueTable getTable(@NotNull StudyDataset dataset)
+      throws NoSuchDatasetException, NoSuchValueTableException {
     StudyTable studyTable = dataset.getStudyTable();
     return execute(studyTable, datasource -> (RestValueTable) datasource.getValueTable(studyTable.getTable()));
+  }
+
+  @Override
+  public Iterable<DatasetVariable> getDatasetVariables(StudyDataset dataset) {
+    return Iterables.transform(getVariables(dataset), input -> new DatasetVariable(dataset, input));
+  }
+
+  @Override
+  public DatasetVariable getDatasetVariable(StudyDataset dataset, String variableName) {
+    return new DatasetVariable(dataset, getVariableValueSource(dataset, variableName).getVariable());
   }
 
   /**

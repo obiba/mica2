@@ -16,6 +16,8 @@ import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.Variable;
 import org.obiba.mica.dataset.DatasourceRegistry;
 import org.obiba.mica.dataset.NoSuchDatasetException;
+import org.obiba.mica.dataset.domain.Dataset;
+import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.event.IndexDatasetsEvent;
 import org.obiba.mica.domain.StudyTable;
 import org.obiba.mica.study.StudyService;
@@ -33,9 +35,34 @@ import com.google.common.eventbus.EventBus;
  * {@link org.obiba.mica.dataset.domain.Dataset} management service.
  */
 
-public abstract class DatasetService {
+public abstract class DatasetService<T extends Dataset> {
 
   private static final Logger log = LoggerFactory.getLogger(DatasetService.class);
+
+  /**
+   * Get all {@link org.obiba.mica.dataset.domain.DatasetVariable}s from a {@link org.obiba.mica.dataset.domain.Dataset}.
+   * @param dataset
+   * @return
+   */
+  public abstract Iterable<DatasetVariable> getDatasetVariables(T dataset);
+
+  /**
+   * Get the {@link org.obiba.mica.dataset.domain.DatasetVariable} from a {@link org.obiba.mica.dataset.domain.Dataset}.
+   * @param dataset
+   * @param name
+   * @return
+   */
+  public abstract DatasetVariable getDatasetVariable(T dataset, String name);
+
+  /**
+   * Get the {@link org.obiba.opal.web.model.Magma.TableDto} of the {@link org.obiba.mica.dataset.domain.Dataset} identified by its id.
+   *
+   * @param dataset
+   * @return
+   */
+  @NotNull
+  protected abstract RestValueTable getTable(@NotNull T dataset)
+      throws NoSuchDatasetException, NoSuchValueTableException;
 
   protected abstract StudyService getStudyService();
 
@@ -44,66 +71,57 @@ public abstract class DatasetService {
   protected abstract EventBus getEventBus();
 
   /**
-   * Get the {@link org.obiba.opal.web.model.Magma.TableDto} of the {@link org.obiba.mica.dataset.domain.Dataset} identified by its id.
-   *
-   * @param id
-   * @return
-   */
-  @NotNull
-  public abstract RestValueTable getTable(@NotNull String id) throws NoSuchDatasetException, NoSuchValueTableException;
-
-  /**
    * Get the variables of the {@link org.obiba.mica.dataset.domain.Dataset} identified by its id.
    *
-   * @param id
+   * @param dataset
    * @return
    * @throws NoSuchDatasetException
    */
-  public Iterable<Variable> getVariables(@NotNull String id) throws NoSuchDatasetException {
-    return getTable(id).getVariables();
+  protected Iterable<Variable> getVariables(@NotNull T dataset) throws NoSuchDatasetException {
+    return getTable(dataset).getVariables();
   }
 
   /**
    * Get the {@link org.obiba.magma.VariableValueSource} (proxy to the {@link org.obiba.magma.Variable} of
    * the {@link org.obiba.mica.dataset.domain.Dataset} identified by its id.
    *
-   * @param id
+   * @param dataset
    * @param variableName
    * @return
    * @throws NoSuchDatasetException
    */
-  public RestValueTable.RestVariableValueSource getVariableValueSource(@NotNull String id, String variableName)
+  protected RestValueTable.RestVariableValueSource getVariableValueSource(@NotNull T dataset, String variableName)
       throws NoSuchDatasetException {
-    return (RestValueTable.RestVariableValueSource) getTable(id).getVariableValueSource(variableName);
+    return (RestValueTable.RestVariableValueSource) getTable(dataset).getVariableValueSource(variableName);
   }
 
-  public Magma.TableDto getTableDto(@NotNull String id) {
-    return getTable(id).getTableDto();
+  public Magma.TableDto getTableDto(@NotNull T dataset) {
+    return getTable(dataset).getTableDto();
   }
 
-  public Magma.VariableDto getVariable(@NotNull String id, String variableName) {
-    return getVariableValueSource(id, variableName).getVariableDto();
+  public Magma.VariableDto getVariable(@NotNull T dataset, String variableName) {
+    return getVariableValueSource(dataset, variableName).getVariableDto();
   }
 
-  public Math.SummaryStatisticsDto getVariableSummary(@NotNull String id, String variableName) {
-    return getVariableValueSource(id, variableName).getSummary();
+  public Math.SummaryStatisticsDto getVariableSummary(@NotNull T dataset, String variableName) {
+    return getVariableValueSource(dataset, variableName).getSummary();
   }
 
-  public Search.QueryResultDto getVariableFacet(@NotNull String id, String variableName) {
-    return getVariableValueSource(id, variableName).getFacet();
+  public Search.QueryResultDto getVariableFacet(@NotNull T dataset, String variableName) {
+    return getVariableValueSource(dataset, variableName).getFacet();
   }
 
-  public Search.QueryResultDto getFacets(String id, Search.QueryTermsDto query) {
-    return getTable(id).getFacets(query);
+  public Search.QueryResultDto getFacets(@NotNull T dataset, Search.QueryTermsDto query) {
+    return getTable(dataset).getFacets(query);
   }
 
   /**
    * Callback that can be used to make any operations on a {@link org.obiba.opal.rest.client.magma.RestDatasource}
    *
-   * @param <T>
+   * @param <R>
    */
-  public interface DatasourceCallback<T> {
-    T doWithDatasource(RestDatasource datasource);
+  public interface DatasourceCallback<R> {
+    R doWithDatasource(RestDatasource datasource);
   }
 
   /**
@@ -118,10 +136,10 @@ public abstract class DatasetService {
    *
    * @param datasource
    * @param callback
-   * @param <T>
+   * @param <R>
    * @return
    */
-  protected <T> T execute(RestDatasource datasource, DatasourceCallback<T> callback) {
+  protected <R> R execute(RestDatasource datasource, DatasourceCallback<R> callback) {
     return callback.doWithDatasource(datasource);
   }
 

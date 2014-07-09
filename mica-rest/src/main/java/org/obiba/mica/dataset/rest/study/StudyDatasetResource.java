@@ -15,16 +15,19 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.service.StudyDatasetService;
 import org.obiba.mica.web.model.Mica;
-import org.obiba.opal.web.magma.Dtos;
 import org.obiba.opal.web.model.Magma;
 import org.obiba.opal.web.model.Math;
 import org.obiba.opal.web.model.Search;
+import org.obiba.mica.web.model.Dtos;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -39,7 +42,7 @@ public class StudyDatasetResource {
   private StudyDatasetService datasetService;
 
   @Inject
-  private org.obiba.mica.web.model.Dtos dtos;
+  private Dtos dtos;
 
   private String id;
 
@@ -49,46 +52,56 @@ public class StudyDatasetResource {
 
   @GET
   public Mica.DatasetDto get() {
-    return dtos.asDto(datasetService.findById(id));
+    return dtos.asDto(getDataset());
+  }
+
+  @PUT
+  public Response index() {
+    datasetService.index(id);
+    return Response.noContent().build();
   }
 
   @GET
   @Path("/table")
   public Magma.TableDto getTable() {
-    Magma.TableDto dto = datasetService.getTableDto(id);
+    Magma.TableDto dto = datasetService.getTableDto(getDataset());
     return dto;
   }
 
   @GET
   @Path("/variables")
-  public List<Magma.VariableDto> getVariables() {
-    ImmutableList.Builder<Magma.VariableDto> builder = ImmutableList.builder();
-    datasetService.getVariables(id).forEach(variable -> builder.add(Dtos.asDto(variable).build()));
+  public List<Mica.DatasetVariableDto> getVariables() {
+    ImmutableList.Builder<Mica.DatasetVariableDto> builder = ImmutableList.builder();
+    datasetService.getDatasetVariables(getDataset()).forEach(variable -> builder.add(dtos.asDto(variable)));
     return builder.build();
   }
 
   @GET
   @Path("/variable/{variable}")
-  public Magma.VariableDto getVariable(@PathParam("variable") String variable) {
-    return datasetService.getVariable(id, variable);
+  public Mica.DatasetVariableDto getVariable(@PathParam("variable") String variable) {
+    return dtos.asDto(datasetService.getDatasetVariable(getDataset(), variable));
   }
 
   @GET
   @Path("/variable/{variable}/summary")
   public Math.SummaryStatisticsDto getVariableSummary(@PathParam("variable") String variable) {
-    return datasetService.getVariableSummary(id, variable);
+    return datasetService.getVariableSummary(getDataset(), variable);
   }
 
   @GET
   @Path("/variable/{variable}/facet")
   public Search.QueryResultDto getVariableFacet(@PathParam("variable") String variable) {
-    return datasetService.getVariableFacet(id, variable);
+    return datasetService.getVariableFacet(getDataset(), variable);
   }
 
   @POST
   @Path("/facets")
   public Search.QueryResultDto getFacets(Search.QueryTermsDto query) {
-    return datasetService.getFacets(id, query);
+    return datasetService.getFacets(getDataset(), query);
+  }
+
+  private StudyDataset getDataset() {
+    return datasetService.findById(id);
   }
 
 }

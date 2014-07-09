@@ -19,7 +19,9 @@ import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.mica.dataset.DatasourceRegistry;
 import org.obiba.mica.dataset.HarmonizedDatasetRepository;
 import org.obiba.mica.dataset.NoSuchDatasetException;
+import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizedDataset;
+import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.service.DatasetService;
 import org.obiba.mica.study.StudyService;
@@ -30,12 +32,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Iterables;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 @Service
 @Validated
-public class HarmonizedDatasetService extends DatasetService {
+public class HarmonizedDatasetService extends DatasetService<HarmonizedDataset> {
 
   @Inject
   private StudyService studyService;
@@ -109,6 +112,16 @@ public class HarmonizedDatasetService extends DatasetService {
   }
 
   /**
+   * Index the dataset and associated variables.
+   *
+   * @param id
+   */
+  public void index(@NotNull String id) {
+    HarmonizedDataset dataset = findById(id);
+    eventBus.post(new DatasetUpdatedEvent(dataset));
+  }
+
+  /**
    * Apply dataset publication flag.
    *
    * @param id
@@ -133,9 +146,19 @@ public class HarmonizedDatasetService extends DatasetService {
 
   @Override
   @NotNull
-  public RestValueTable getTable(@NotNull String id) throws NoSuchDatasetException, NoSuchValueTableException {
-    HarmonizedDataset dataset = findById(id);
+  protected RestValueTable getTable(@NotNull HarmonizedDataset dataset)
+      throws NoSuchDatasetException, NoSuchValueTableException {
     return execute(dataset.getProject(), datasource -> (RestValueTable) datasource.getValueTable(dataset.getTable()));
+  }
+
+  @Override
+  public Iterable<DatasetVariable> getDatasetVariables(HarmonizedDataset dataset) {
+    return Iterables.transform(getVariables(dataset), input -> new DatasetVariable(dataset, input));
+  }
+
+  @Override
+  public DatasetVariable getDatasetVariable(HarmonizedDataset dataset, String variableName) {
+    return new DatasetVariable(dataset, getVariableValueSource(dataset, variableName).getVariable());
   }
 
   /**
