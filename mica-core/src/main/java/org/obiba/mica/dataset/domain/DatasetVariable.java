@@ -227,6 +227,15 @@ public class DatasetVariable implements Indexable, AttributeAware {
    */
   public void setClassName(String className) {}
 
+  protected com.google.common.base.Objects.ToStringHelper toStringHelper() {
+    return com.google.common.base.Objects.toStringHelper(this).omitNullValues().add("id", getId());
+  }
+
+  @Override
+  public final String toString() {
+    return toStringHelper().toString();
+  }
+
   @Override
   public String getMappingName() {
     return MAPPING_NAME;
