@@ -40,7 +40,8 @@ message StudyResultDto {
 }
 
 message DatasetVariableResultDto {
-  repeated obiba.mica.DatasetVariableDto variables = 1;
+  repeated string ids = 1;
+  repeated obiba.mica.DatasetVariableDto variables = 2;
 
   extend QueryResultDto {
     optional DatasetVariableResultDto result = 1001;

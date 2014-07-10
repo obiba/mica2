@@ -65,6 +65,7 @@ class DatasetDtos {
     Mica.DatasetVariableDto.Builder builder = Mica.DatasetVariableDto.newBuilder() //
         .setId(variable.getId()) //
         .setDatasetId(variable.getDatasetId()) //
+        .addAllDatasetName(localizedStringDtos.asDto(variable.getDatasetName())) //
         .setName(variable.getName()) //
         .setEntityType(variable.getEntityType()) //
         .setValueType(variable.getValueType())//

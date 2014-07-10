@@ -21,6 +21,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
@@ -44,6 +45,7 @@ import static org.obiba.mica.web.model.MicaSearch.QueryDto;
 import static org.obiba.mica.web.model.MicaSearch.QueryResultDto;
 
 @Path("/variables/_search")
+@RequiresAuthentication
 public class PublishedVariablesSearchResource extends AbstractSearchResource {
 
   private static final String VARIABLE_FACETS_YML = "variable-facets.yml";
@@ -94,9 +96,11 @@ public class PublishedVariablesSearchResource extends AbstractSearchResource {
   protected void processHits(QueryResultDto.Builder builder, boolean detailed, SearchHits hits) throws IOException {
     MicaSearch.DatasetVariableResultDto.Builder resBuilder = MicaSearch.DatasetVariableResultDto.newBuilder();
     for(SearchHit hit : hits) {
-      // detailed flag ignored
-      InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
-      resBuilder.addVariables(dtos.asDto(objectMapper.readValue(inputStream, DatasetVariable.class)));
+      resBuilder.addIds(hit.getId());
+      if(detailed) {
+        InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
+        resBuilder.addVariables(dtos.asDto(objectMapper.readValue(inputStream, DatasetVariable.class)));
+      }
     }
     builder.setExtension(MicaSearch.DatasetVariableResultDto.result, resBuilder.build());
   }

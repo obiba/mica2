@@ -21,6 +21,7 @@ import org.obiba.magma.Variable;
 import org.obiba.mica.domain.Attribute;
 import org.obiba.mica.domain.AttributeAware;
 import org.obiba.mica.domain.Indexable;
+import org.obiba.mica.domain.LocalizedString;
 import org.obiba.mica.domain.NoSuchAttributeException;
 
 import com.google.common.collect.LinkedListMultimap;
@@ -66,21 +67,26 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   private LinkedListMultimap<String, Attribute> attributes;
 
+  @NotNull
+  private LocalizedString datasetName;
+
   public DatasetVariable() {}
 
   public DatasetVariable(StudyDataset dataset, Variable variable) {
-    this(dataset.getId(), Type.Study, variable);
+    this(dataset, Type.Study, variable);
+    datasetName = dataset.getName();
     studyIds = Lists.newArrayList(dataset.getStudyTable().getStudyId());
   }
 
   public DatasetVariable(HarmonizedDataset dataset, Variable variable) {
-    this(dataset.getId(), Type.Dataschema, variable);
+    this(dataset, Type.Dataschema, variable);
     studyIds = Lists.newArrayList();
     dataset.getStudyTables().forEach(table -> studyIds.add(table.getStudyId()));
   }
 
-  private DatasetVariable(String datasetId, Type type, Variable variable) {
-    this.datasetId = datasetId;
+  private DatasetVariable(Dataset dataset, Type type, Variable variable) {
+    datasetId = dataset.getId();
+    datasetName = dataset.getName();
     variableType = type;
     name = variable.getName();
     entityType = variable.getEntityType();
@@ -114,6 +120,10 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   public String getDatasetId() {
     return datasetId;
+  }
+
+  public LocalizedString getDatasetName() {
+    return datasetName;
   }
 
   public List<String> getStudyIds() {

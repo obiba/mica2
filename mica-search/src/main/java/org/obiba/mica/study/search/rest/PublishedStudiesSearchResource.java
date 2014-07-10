@@ -21,6 +21,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
@@ -44,6 +45,7 @@ import static org.obiba.mica.web.model.MicaSearch.QueryDto;
 import static org.obiba.mica.web.model.MicaSearch.QueryResultDto;
 
 @Path("/studies/_search")
+@RequiresAuthentication
 public class PublishedStudiesSearchResource extends AbstractSearchResource {
 
   private static final String STUDY_FACETS_YML = "study-facets.yml";

@@ -285,4 +285,5 @@ message DatasetVariableDto {
   optional string referencedEntityType = 12;
   repeated AttributeDto attributes = 13;
   repeated DatasetCategoryDto categories = 14;
+  repeated LocalizedStringDto datasetName = 15;
 }
