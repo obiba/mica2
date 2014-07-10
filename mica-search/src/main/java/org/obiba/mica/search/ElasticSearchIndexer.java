@@ -9,12 +9,14 @@ import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsReques
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteResponse;
+import org.elasticsearch.action.deletebyquery.DeleteByQueryResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.obiba.mica.domain.Indexable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,6 +109,11 @@ public class ElasticSearchIndexer {
   public DeleteResponse delete(String indexName, Indexable indexable) {
     createIndexIfNeeded(indexName);
     return client.prepareDelete(indexName, getType(indexable), indexable.getId()).execute().actionGet();
+  }
+
+  public DeleteByQueryResponse delete(String indexName, String type, QueryBuilder query) {
+    createIndexIfNeeded(indexName);
+    return client.prepareDeleteByQuery(indexName).setTypes(type).setQuery(query).execute().actionGet();
   }
 
   public boolean hasIndex(String indexName) {

@@ -14,6 +14,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizedDataset;
@@ -86,8 +88,13 @@ public class DatasetIndexer {
   }
 
   private void deleteFromIndex(Dataset dataset) {
-    // TODO delete variables from indices
+    // remove documents that have this dataset as parent
+    QueryBuilder datasetChildrenQuery = QueryBuilders.hasParentQuery(Dataset.MAPPING_NAME,
+        QueryBuilders.idsQuery(Dataset.MAPPING_NAME).addIds(dataset.getId()));
+
+    elasticSearchIndexer.delete(DRAFT_DATASET_INDEX, VARIABLE_TYPE, datasetChildrenQuery);
     elasticSearchIndexer.delete(DRAFT_DATASET_INDEX, (Indexable) dataset);
+    elasticSearchIndexer.delete(PUBLISHED_DATASET_INDEX, VARIABLE_TYPE, datasetChildrenQuery);
     elasticSearchIndexer.delete(PUBLISHED_DATASET_INDEX, (Indexable) dataset);
   }
 
