@@ -24,6 +24,7 @@ import org.obiba.mica.dataset.domain.HarmonizedDataset;
 import org.obiba.mica.service.HarmonizedDatasetService;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Magma;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -33,6 +34,9 @@ import com.google.common.collect.ImmutableList;
 @Scope("request")
 @RequiresAuthentication
 public class HarmonizedDatasetResource {
+
+  @Inject
+  private ApplicationContext applicationContext;
 
   @Inject
   private HarmonizedDatasetService datasetService;
@@ -71,10 +75,12 @@ public class HarmonizedDatasetResource {
     return builder.build();
   }
 
-  @GET
   @Path("/variable/{variable}")
-  public Mica.DatasetVariableDto getVariable(@PathParam("variable") String variable) {
-    return dtos.asDto(datasetService.getDatasetVariable(getDataset(), variable));
+  public DataschemaDatasetVariableResource getVariable(@PathParam("variable") String variable) {
+    DataschemaDatasetVariableResource resource = applicationContext.getBean(DataschemaDatasetVariableResource.class);
+    resource.setDatasetId(id);
+    resource.setName(variable);
+    return resource;
   }
 
   private HarmonizedDataset getDataset() {

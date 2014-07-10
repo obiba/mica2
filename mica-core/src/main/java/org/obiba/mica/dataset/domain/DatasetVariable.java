@@ -102,7 +102,7 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   @Override
   public String getId() {
-    return datasetId + ":" + variableType + ":" + name;
+    return datasetId + ":" + name + ":" + variableType;
   }
 
   public void setId(String id) {
@@ -223,6 +223,7 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   /**
    * For Json deserialization.
+   *
    * @param className
    */
   public void setClassName(String className) {}
@@ -259,8 +260,8 @@ public class DatasetVariable implements Indexable, AttributeAware {
       this.id = id;
       datasetId = id.substring(0, id.indexOf(':'));
       String tail = id.substring(id.indexOf(':') + 1);
-      type = Type.valueOf(tail.substring(0, tail.indexOf(':')));
-      name = tail.substring(tail.indexOf(':') + 1);
+      name = tail.substring(0, tail.indexOf(':'));
+      type = Type.valueOf(tail.substring(tail.indexOf(':') + 1));
     }
 
     public Type getType() {
@@ -277,7 +278,7 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
     @Override
     public String toString() {
-      return "[" + type + "," + datasetId + "," + name + "]";
+      return "[" + datasetId + "," + name + "," + type + "]";
     }
   }
 }

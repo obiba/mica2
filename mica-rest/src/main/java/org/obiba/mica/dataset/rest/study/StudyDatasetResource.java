@@ -23,11 +23,11 @@ import javax.ws.rs.core.Response;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.service.StudyDatasetService;
+import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Magma;
-import org.obiba.opal.web.model.Math;
 import org.obiba.opal.web.model.Search;
-import org.obiba.mica.web.model.Dtos;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -37,6 +37,9 @@ import com.google.common.collect.ImmutableList;
 @Scope("request")
 @RequiresAuthentication
 public class StudyDatasetResource {
+
+  @Inject
+  private ApplicationContext applicationContext;
 
   @Inject
   private StudyDatasetService datasetService;
@@ -76,22 +79,12 @@ public class StudyDatasetResource {
     return builder.build();
   }
 
-  @GET
   @Path("/variable/{variable}")
-  public Mica.DatasetVariableDto getVariable(@PathParam("variable") String variable) {
-    return dtos.asDto(datasetService.getDatasetVariable(getDataset(), variable));
-  }
-
-  @GET
-  @Path("/variable/{variable}/summary")
-  public Math.SummaryStatisticsDto getVariableSummary(@PathParam("variable") String variable) {
-    return datasetService.getVariableSummary(getDataset(), variable);
-  }
-
-  @GET
-  @Path("/variable/{variable}/facet")
-  public Search.QueryResultDto getVariableFacet(@PathParam("variable") String variable) {
-    return datasetService.getVariableFacet(getDataset(), variable);
+  public StudyDatasetVariableResource getVariable(@PathParam("variable") String variable) {
+    StudyDatasetVariableResource resource = applicationContext.getBean(StudyDatasetVariableResource.class);
+    resource.setDatasetId(id);
+    resource.setName(variable);
+    return resource;
   }
 
   @POST
