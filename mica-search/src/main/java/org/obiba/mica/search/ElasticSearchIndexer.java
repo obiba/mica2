@@ -1,5 +1,7 @@
 package org.obiba.mica.search;
 
+import java.util.Set;
+
 import javax.inject.Inject;
 
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
@@ -35,6 +37,9 @@ public class ElasticSearchIndexer {
 
   @Inject
   private ObjectMapper objectMapper;
+
+  @Inject
+  private Set<IndexConfigurationListener> indexConfigurationListeners;
 
   public IndexResponse index(String indexName, Persistable<String> persistable) {
     return index(indexName, persistable, null);
@@ -101,8 +106,7 @@ public class ElasticSearchIndexer {
 
   public DeleteResponse delete(String indexName, Indexable indexable) {
     createIndexIfNeeded(indexName);
-    return client.prepareDelete(indexName, getType(indexable), indexable.getId()).execute()
-        .actionGet();
+    return client.prepareDelete(indexName, getType(indexable), indexable.getId()).execute().actionGet();
   }
 
   public boolean hasIndex(String indexName) {
@@ -113,6 +117,14 @@ public class ElasticSearchIndexer {
     return client.admin().indices().prepareDelete(indexName).execute().actionGet();
   }
 
+  public Client getClient() {
+    return client;
+  }
+
+  //
+  // Private methods
+  //
+
   private IndexRequestBuilder getIndexRequestBuilder(String indexName, Persistable<String> persistable) {
     return client.prepareIndex(indexName, persistable.getClass().getSimpleName(), persistable.getId());
   }
@@ -122,9 +134,7 @@ public class ElasticSearchIndexer {
   }
 
   private String getType(Indexable indexable) {
-    return indexable.getMappingName() == null
-        ? indexable.getClassName()
-        : indexable.getMappingName();
+    return indexable.getMappingName() == null ? indexable.getClassName() : indexable.getMappingName();
   }
 
   private synchronized void createIndexIfNeeded(String indexName) {
@@ -136,7 +146,14 @@ public class ElasticSearchIndexer {
           .put("number_of_replicas", elasticSearchConfiguration.getNbReplicas()).build();
 
       indicesAdmin.prepareCreate(indexName).setSettings(settings).execute().actionGet();
+      if (indexConfigurationListeners != null) {
+        indexConfigurationListeners.forEach(listener -> listener.onIndexCreated(client, indexName));
+      }
     }
+  }
+
+  public static interface IndexConfigurationListener {
+    void onIndexCreated(Client client, String indexName);
   }
 
 }

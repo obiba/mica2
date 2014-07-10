@@ -101,10 +101,11 @@ public class DatasetIndexer {
     try {
       if(dataset instanceof StudyDataset) {
         elasticSearchIndexer
-            .indexAllIndexables(indexName, studyDatasetService.getDatasetVariables((StudyDataset) dataset));
+            .indexAllIndexables(indexName, studyDatasetService.getDatasetVariables((StudyDataset) dataset), dataset);
       } else {
         elasticSearchIndexer
-            .indexAllIndexables(indexName, harmonizedDatasetService.getDatasetVariables((HarmonizedDataset) dataset));
+            .indexAllIndexables(indexName, harmonizedDatasetService.getDatasetVariables((HarmonizedDataset) dataset),
+                dataset);
       }
     } catch(Exception e) {
       log.error("Unable to index variables of dataset: {}", dataset, e);
