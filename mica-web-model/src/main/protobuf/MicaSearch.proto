@@ -26,9 +26,25 @@ message TermsQueryDto {
 message QueryResultDto {
   repeated AggregationResultDto aggs = 1;
   required int32 totalHits = 2;
-  repeated obiba.mica.StudySummaryDto summaries = 3;
-  repeated obiba.mica.StudyDto studies = 4;
-  repeated obiba.mica.DatasetVariableDto variables = 5;
+
+  extensions 1000 to max;
+}
+
+message StudyResultDto {
+  repeated obiba.mica.StudySummaryDto summaries = 1;
+  repeated obiba.mica.StudyDto studies = 2;
+
+  extend QueryResultDto {
+    optional StudyResultDto result = 1000;
+  }
+}
+
+message DatasetVariableResultDto {
+  repeated obiba.mica.DatasetVariableDto variables = 1;
+
+  extend QueryResultDto {
+    optional DatasetVariableResultDto result = 1001;
+  }
 }
 
 message AggregationResultDto {

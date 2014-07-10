@@ -31,6 +31,7 @@ import org.obiba.mica.search.rest.AbstractSearchResource;
 import org.obiba.mica.search.rest.QueryDtoParser;
 import org.obiba.mica.study.StudyService;
 import org.obiba.mica.web.model.Dtos;
+import org.obiba.mica.web.model.MicaSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -91,10 +92,12 @@ public class PublishedVariablesSearchResource extends AbstractSearchResource {
 
   @Override
   protected void processHits(QueryResultDto.Builder builder, boolean detailed, SearchHits hits) throws IOException {
+    MicaSearch.DatasetVariableResultDto.Builder resBuilder = MicaSearch.DatasetVariableResultDto.newBuilder();
     for(SearchHit hit : hits) {
       // detailed flag ignored
       InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
-      builder.addVariables(dtos.asDto(objectMapper.readValue(inputStream, DatasetVariable.class)));
+      resBuilder.addVariables(dtos.asDto(objectMapper.readValue(inputStream, DatasetVariable.class)));
     }
+    builder.setExtension(MicaSearch.DatasetVariableResultDto.result, resBuilder.build());
   }
 }

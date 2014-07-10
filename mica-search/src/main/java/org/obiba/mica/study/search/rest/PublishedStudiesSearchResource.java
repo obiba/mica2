@@ -31,6 +31,7 @@ import org.obiba.mica.study.StudyService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.mica.web.model.Dtos;
+import org.obiba.mica.web.model.MicaSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -91,12 +92,14 @@ public class PublishedStudiesSearchResource extends AbstractSearchResource {
 
   @Override
   protected void processHits(QueryResultDto.Builder builder, boolean detailed, SearchHits hits) throws IOException {
+    MicaSearch.StudyResultDto.Builder resBuilder = MicaSearch.StudyResultDto.newBuilder();
     for(SearchHit hit : hits) {
-      builder.addSummaries(dtos.asDto(studyService.findStateById(hit.getId())));
+      resBuilder.addSummaries(dtos.asDto(studyService.findStateById(hit.getId())));
       if(detailed) {
         InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
-        builder.addStudies(dtos.asDto(objectMapper.readValue(inputStream, Study.class)));
+        resBuilder.addStudies(dtos.asDto(objectMapper.readValue(inputStream, Study.class)));
       }
     }
+    builder.setExtension(MicaSearch.StudyResultDto.result, resBuilder.build());
   }
 }
