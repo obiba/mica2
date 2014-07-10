@@ -10,6 +10,7 @@
 
 package org.obiba.mica.dataset.domain;
 
+import java.util.List;
 import java.util.Locale;
 
 import javax.annotation.Nullable;
@@ -81,6 +82,12 @@ public class DatasetCategory implements AttributeAware {
   @Override
   public boolean hasAttribute(String attName, @Nullable String namespace) {
     return attributes != null && attributes.containsKey(Attribute.getMapKey(attName, namespace));
+  }
+
+  @Override
+  public List<Attribute> getAttributes(String attName, @Nullable String namespace) {
+    if(!hasAttribute(attName, namespace)) throw new NoSuchAttributeException(attName, getClass().getName());
+    return attributes.get(Attribute.getMapKey(attName, namespace));
   }
 
   @Override

@@ -1,5 +1,6 @@
 package org.obiba.mica.domain;
 
+import java.util.List;
 import java.util.Locale;
 
 import javax.annotation.Nullable;
@@ -20,6 +21,8 @@ public interface AttributeAware {
   void removeAllAttributes();
 
   boolean hasAttribute(String attName, @Nullable String namespace);
+
+  List<Attribute> getAttributes(String attName, @Nullable String namespace);
 
   boolean hasAttribute(String attName, @Nullable String namespace, @Nullable Locale locale);
 

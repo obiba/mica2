@@ -261,7 +261,7 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
   @NotNull
   @Override
   public Attachment findAttachmentById(String attachmentId) {
-    if (getLogo() != null && logo.getId().equals(attachmentId)) return logo;
+    if(getLogo() != null && logo.getId().equals(attachmentId)) return logo;
     if(getAttachments() != null) {
       for(Attachment attachment : getAttachments()) {
         if(attachment.getId().equals(attachmentId)) return attachment;
@@ -358,6 +358,12 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
   @Override
   public boolean hasAttribute(String attName, @Nullable String namespace) {
     return attributes != null && attributes.containsKey(Attribute.getMapKey(attName, namespace));
+  }
+
+  @Override
+  public List<Attribute> getAttributes(String attName, @Nullable String namespace) {
+    if(!hasAttribute(attName, namespace)) throw new NoSuchAttributeException(attName, getClass().getName());
+    return attributes.get(Attribute.getMapKey(attName, namespace));
   }
 
   @Override

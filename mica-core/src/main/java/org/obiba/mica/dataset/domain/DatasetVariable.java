@@ -194,6 +194,12 @@ public class DatasetVariable implements Indexable, AttributeAware {
   }
 
   @Override
+  public List<Attribute> getAttributes(String attName, @Nullable String namespace) {
+    if(!hasAttribute(attName, namespace)) throw new NoSuchAttributeException(attName, getClass().getName());
+    return attributes.get(Attribute.getMapKey(attName, namespace));
+  }
+
+  @Override
   public boolean hasAttribute(String attName, @Nullable String namespace, @Nullable Locale locale) {
     try {
       getAttribute(attName, namespace, locale);

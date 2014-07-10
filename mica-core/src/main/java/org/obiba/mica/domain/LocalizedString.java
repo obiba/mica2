@@ -2,6 +2,7 @@ package org.obiba.mica.domain;
 
 import java.io.Serializable;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 import java.util.TreeMap;
 
@@ -39,5 +40,11 @@ public class LocalizedString extends TreeMap<Locale, String> {
 
   public static LocalizedString fr(@NotNull String str) {
     return new LocalizedString(Locale.FRENCH, str);
+  }
+
+  public static LocalizedString from(@NotNull List<Attribute> attributes) {
+    LocalizedString localizedString = new LocalizedString();
+    attributes.forEach(attr -> localizedString.put(attr.getLocale(), attr.getValue()));
+    return localizedString;
   }
 }
