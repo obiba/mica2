@@ -92,6 +92,25 @@ public class ElasticSearchIndexer {
     return bulkRequest.execute().actionGet();
   }
 
+  public static Indexable asIndexable(final Persistable<String> persistable) {
+    return new Indexable() {
+      @Override
+      public String getId() {
+        return persistable.getId();
+      }
+
+      @Override
+      public String getClassName() {
+        return getClass().getSimpleName();
+      }
+
+      @Override
+      public String getMappingName() {
+        return getClassName();
+      }
+    };
+  }
+
   private String toJson(Object obj) {
     try {
       return objectMapper.writeValueAsString(obj);

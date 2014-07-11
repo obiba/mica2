@@ -74,7 +74,6 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   public DatasetVariable(StudyDataset dataset, Variable variable) {
     this(dataset, Type.Study, variable);
-    datasetName = dataset.getName();
     studyIds = Lists.newArrayList(dataset.getStudyTable().getStudyId());
   }
 
@@ -82,6 +81,11 @@ public class DatasetVariable implements Indexable, AttributeAware {
     this(dataset, Type.Dataschema, variable);
     studyIds = Lists.newArrayList();
     dataset.getStudyTables().forEach(table -> studyIds.add(table.getStudyId()));
+  }
+
+  public DatasetVariable(HarmonizedDataset dataset, Variable variable, String studyId) {
+    this(dataset, Type.Harmonized, variable);
+    studyIds = Lists.newArrayList(studyId);
   }
 
   private DatasetVariable(Dataset dataset, Type type, Variable variable) {

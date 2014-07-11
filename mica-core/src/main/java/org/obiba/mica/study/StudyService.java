@@ -94,6 +94,10 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
     return gitService.readFromTag(id, studyState.getPublishedTag(), Study.class);
   }
 
+  public boolean isPublished(@NotNull String id) throws NoSuchStudyException {
+    return findStateById(id).isPublished();
+  }
+
   public List<StudyState> findAllStates() {
     return studyStateRepository.findAll();
   }

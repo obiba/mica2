@@ -11,11 +11,16 @@
 package org.obiba.mica.dataset.event;
 
 import org.obiba.mica.dataset.domain.Dataset;
+import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.event.PersistableDeletedEvent;
 
 public class DatasetDeletedEvent extends PersistableDeletedEvent<Dataset> {
 
   public DatasetDeletedEvent(Dataset persistable) {
     super(persistable);
+  }
+
+  public boolean isStudyDataset() {
+    return getPersistable() instanceof StudyDataset;
   }
 }

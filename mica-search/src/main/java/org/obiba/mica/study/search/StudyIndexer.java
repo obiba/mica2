@@ -2,12 +2,15 @@ package org.obiba.mica.study.search;
 
 import javax.inject.Inject;
 
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.obiba.mica.dataset.search.DatasetIndexer;
 import org.obiba.mica.search.ElasticSearchIndexer;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
+import org.obiba.mica.study.event.IndexStudiesEvent;
 import org.obiba.mica.study.event.StudyDeletedEvent;
 import org.obiba.mica.study.event.StudyPublishedEvent;
-import org.obiba.mica.study.event.IndexStudiesEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
@@ -47,7 +50,13 @@ public class StudyIndexer {
   @Subscribe
   public void studyDeleted(StudyDeletedEvent event) {
     log.info("Study {} was deleted", event.getPersistable());
+    // remove variables that have the study as parent and belongs to the dataset
+    QueryBuilder studyChildrenQuery = QueryBuilders.hasParentQuery(Study.class.getSimpleName(),
+        QueryBuilders.idsQuery(Study.class.getSimpleName()).addIds(event.getPersistable().getId()));
+
+    elasticSearchIndexer.delete(DRAFT_STUDY_INDEX, DatasetIndexer.VARIABLE_TYPE, studyChildrenQuery);
     elasticSearchIndexer.delete(DRAFT_STUDY_INDEX, event.getPersistable());
+    elasticSearchIndexer.delete(PUBLISHED_STUDY_INDEX, DatasetIndexer.VARIABLE_TYPE, studyChildrenQuery);
     elasticSearchIndexer.delete(PUBLISHED_STUDY_INDEX, event.getPersistable());
   }
 

@@ -16,15 +16,18 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.magma.NoSuchValueTableException;
+import org.obiba.magma.Variable;
 import org.obiba.mica.dataset.DatasourceRegistry;
 import org.obiba.mica.dataset.HarmonizedDatasetRepository;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizedDataset;
-import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.service.DatasetService;
+import org.obiba.mica.domain.StudyTable;
+import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.StudyService;
+import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.event.StudyDeletedEvent;
 import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.springframework.scheduling.annotation.Async;
@@ -161,6 +164,11 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizedDataset> 
     return new DatasetVariable(dataset, getVariableValueSource(dataset, variableName).getVariable());
   }
 
+  public Iterable<DatasetVariable> getDatasetVariables(HarmonizedDataset dataset, Study study) {
+    return Iterables
+        .transform(getVariables(dataset, study.getId()), input -> new DatasetVariable(dataset, input, study.getId()));
+  }
+
   /**
    * On study deletion, go through all datasets related to this study and remove the dependency.
    *
@@ -190,6 +198,20 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizedDataset> 
   //
   // Private methods
   //
+
+  private Iterable<Variable> getVariables(@NotNull HarmonizedDataset dataset, String studyId)
+      throws NoSuchDatasetException {
+    return getTable(dataset, studyId).getVariables();
+  }
+
+  private RestValueTable getTable(@NotNull HarmonizedDataset dataset, String studyId) {
+    for (StudyTable studyTable : dataset.getStudyTables()) {
+      if (studyTable.getStudyId().equals(studyId)) {
+        return execute(studyTable.getProject(), ds -> (RestValueTable)ds.getValueTable(studyTable.getTable()));
+      }
+    }
+    throw NoSuchStudyException.withId(studyId);
+  }
 
   /**
    * Build or reuse the {@link org.obiba.opal.rest.client.magma.RestDatasource} and execute the callback with it.
