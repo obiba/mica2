@@ -71,7 +71,7 @@ public class HarmonizedDatasetIndexer extends DatasetIndexer<HarmonizedDataset> 
 
   @Override
   protected Iterable<DatasetVariable> getVariables(HarmonizedDataset dataset, Study study) {
-    return harmonizedDatasetService.getDatasetVariables(dataset, study);
+    return harmonizedDatasetService.getDatasetVariables(dataset, study.getId());
   }
 
   @Override

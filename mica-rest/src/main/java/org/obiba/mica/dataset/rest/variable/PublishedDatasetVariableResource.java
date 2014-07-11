@@ -18,6 +18,7 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.rest.harmonized.DataschemaDatasetVariableResource;
+import org.obiba.mica.dataset.rest.harmonized.HarmonizedDatasetVariableResource;
 import org.obiba.mica.dataset.rest.study.StudyDatasetVariableResource;
 import org.obiba.mica.service.HarmonizedDatasetService;
 import org.obiba.mica.service.StudyDatasetService;
@@ -55,8 +56,8 @@ public class PublishedDatasetVariableResource {
         break;
       case Harmonized:
         if (!harmonizedDatasetService.isPublished(resolver.getDatasetId())) throw NoSuchDatasetException.withId(resolver.getDatasetId());
-        // TODO study specific
-        // resource = applicationContext.getBean(HarmonizedDatasetVariableResource.class);
+        resource = applicationContext.getBean(HarmonizedDatasetVariableResource.class);
+        ((HarmonizedDatasetVariableResource)resource).setStudyId(resolver.getStudyId());
         break;
     }
 

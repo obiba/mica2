@@ -112,7 +112,11 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   @Override
   public String getId() {
-    return datasetId + ":" + name + ":" + variableType;
+    String id = datasetId + ":" + name + ":" + variableType;
+    if(Type.Harmonized.equals(variableType)) {
+      id = id + ":" + studyIds.get(0);
+    }
+    return id;
   }
 
   public void setId(String id) {
@@ -272,6 +276,8 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
     private final String name;
 
+    private final String studyId;
+
     public static IdResolver from(String id) {
       return new IdResolver(id);
     }
@@ -281,7 +287,14 @@ public class DatasetVariable implements Indexable, AttributeAware {
       datasetId = id.substring(0, id.indexOf(':'));
       String tail = id.substring(id.indexOf(':') + 1);
       name = tail.substring(0, tail.indexOf(':'));
-      type = Type.valueOf(tail.substring(tail.indexOf(':') + 1));
+      tail = tail.substring(tail.indexOf(':') + 1);
+      if(tail.indexOf(':') < 0) {
+        type = Type.valueOf(tail);
+        studyId = null;
+      } else {
+        type = Type.valueOf(tail.substring(0, tail.indexOf(':')));
+        studyId = tail.substring(tail.indexOf(':') + 1);
+      }
     }
 
     public Type getType() {
@@ -296,9 +309,13 @@ public class DatasetVariable implements Indexable, AttributeAware {
       return name;
     }
 
+    public String getStudyId() {
+      return studyId;
+    }
+
     @Override
     public String toString() {
-      return "[" + datasetId + "," + name + "," + type + "]";
+      return "[" + datasetId + "," + name + "," + type + ", " + studyId + "]";
     }
   }
 }

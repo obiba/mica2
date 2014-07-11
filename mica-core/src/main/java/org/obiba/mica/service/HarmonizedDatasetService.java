@@ -164,10 +164,15 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizedDataset> 
     return new DatasetVariable(dataset, getVariableValueSource(dataset, variableName).getVariable());
   }
 
-  public Iterable<DatasetVariable> getDatasetVariables(HarmonizedDataset dataset, Study study) {
+  public Iterable<DatasetVariable> getDatasetVariables(HarmonizedDataset dataset, String studyId) {
     return Iterables
-        .transform(getVariables(dataset, study.getId()), input -> new DatasetVariable(dataset, input, study.getId()));
+        .transform(getVariables(dataset, studyId), input -> new DatasetVariable(dataset, input, studyId));
   }
+
+  public DatasetVariable getDatasetVariable(HarmonizedDataset dataset, String variableName, String studyId) {
+    return new DatasetVariable(dataset, getTable(dataset, studyId).getVariableValueSource(variableName).getVariable());
+  }
+
 
   /**
    * On study deletion, go through all datasets related to this study and remove the dependency.

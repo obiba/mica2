@@ -17,6 +17,7 @@ import javax.ws.rs.PathParam;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.rest.harmonized.DataschemaDatasetVariableResource;
+import org.obiba.mica.dataset.rest.harmonized.HarmonizedDatasetVariableResource;
 import org.obiba.mica.dataset.rest.study.StudyDatasetVariableResource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
@@ -43,8 +44,8 @@ public class DraftDatasetVariableResource {
         resource = applicationContext.getBean(DataschemaDatasetVariableResource.class);
         break;
       case Harmonized:
-        // TODO study specific
-        //resource = applicationContext.getBean(HarmonizedDatasetVariableResource.class);
+        resource = applicationContext.getBean(HarmonizedDatasetVariableResource.class);
+        ((HarmonizedDatasetVariableResource)resource).setStudyId(resolver.getStudyId());
         break;
     }
 
