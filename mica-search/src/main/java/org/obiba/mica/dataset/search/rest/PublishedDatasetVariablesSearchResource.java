@@ -15,6 +15,9 @@ import javax.ws.rs.Path;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.dataset.search.DatasetIndexer;
 
+/**
+ * Search for variables in the published dataset index.
+ */
 @Path("/variables/dataset/_search")
 @RequiresAuthentication
 public class PublishedDatasetVariablesSearchResource extends AbstractVariablesSearchResource {

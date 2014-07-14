@@ -16,6 +16,9 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.dataset.search.DatasetIndexer;
 import org.obiba.mica.study.search.StudyIndexer;
 
+/**
+ * Search for variables in the published study index.
+ */
 @Path("/variables/study/_search")
 @RequiresAuthentication
 public class PublishedStudyVariablesSearchResource extends AbstractVariablesSearchResource {
