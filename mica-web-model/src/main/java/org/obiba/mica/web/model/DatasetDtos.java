@@ -126,7 +126,7 @@ class DatasetDtos {
 
   private Mica.DatasetDto.Builder asDtoBuilder(Dataset dataset) {
     Mica.DatasetDto.Builder builder = Mica.DatasetDto.newBuilder();
-    builder.setId(dataset.getId());
+    builder.setId(dataset.getId()).setEntityType(dataset.getEntityType());
     if(dataset.getName() != null) builder.addAllName(localizedStringDtos.asDto(dataset.getName()));
     if(dataset.getDescription() != null) {
       builder.addAllDescription(localizedStringDtos.asDto(dataset.getDescription()));

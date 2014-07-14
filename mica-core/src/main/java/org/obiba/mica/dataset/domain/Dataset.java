@@ -40,6 +40,8 @@ public abstract class Dataset extends AbstractAuditableDocument implements Attri
 
   private LocalizedString description;
 
+  private String entityType;
+
   private boolean published = false;
 
   private LinkedListMultimap<String, Attribute> attributes;
@@ -58,6 +60,14 @@ public abstract class Dataset extends AbstractAuditableDocument implements Attri
 
   public void setDescription(LocalizedString description) {
     this.description = description;
+  }
+
+  public String getEntityType() {
+    return entityType;
+  }
+
+  public void setEntityType(String entityType) {
+    this.entityType = entityType;
   }
 
   public boolean isPublished() {
