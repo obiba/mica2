@@ -61,6 +61,22 @@ class DatasetDtos {
   }
 
   @NotNull
+  Mica.DatasetVariableResolverDto asDto(@NotNull DatasetVariable.IdResolver resolver) {
+    Mica.DatasetVariableResolverDto.Builder builder = Mica.DatasetVariableResolverDto.newBuilder();
+
+    builder.setId(resolver.getId()) //
+        .setDatasetId(resolver.getDatasetId()) //
+        .setName(resolver.getName()) //
+        .setVariableType(resolver.getType().name());
+
+    if (resolver.hasStudyId()) {
+      builder.setStudyId(resolver.getStudyId());
+    }
+
+    return builder.build();
+  }
+
+  @NotNull
   Mica.DatasetVariableDto asDto(@NotNull DatasetVariable variable) {
     Mica.DatasetVariableDto.Builder builder = Mica.DatasetVariableDto.newBuilder() //
         .setId(variable.getId()) //

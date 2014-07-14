@@ -24,6 +24,7 @@ import org.obiba.mica.domain.Indexable;
 import org.obiba.mica.domain.LocalizedString;
 import org.obiba.mica.domain.NoSuchAttributeException;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -297,6 +298,10 @@ public class DatasetVariable implements Indexable, AttributeAware {
       }
     }
 
+    public String getId() {
+      return id;
+    }
+
     public Type getType() {
       return type;
     }
@@ -311,6 +316,10 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
     public String getStudyId() {
       return studyId;
+    }
+
+    public boolean hasStudyId() {
+      return !Strings.isNullOrEmpty(studyId);
     }
 
     @Override

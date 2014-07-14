@@ -5,8 +5,8 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizedDataset;
-import org.obiba.mica.domain.Network;
 import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.domain.Network;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.micaConfig.MicaConfig;
 import org.obiba.mica.study.StudyService;
@@ -97,8 +97,14 @@ public class Dtos {
     return datasetDtos.asDto(dataset);
   }
 
+  @NotNull
   public Mica.DatasetVariableDto asDto(@NotNull DatasetVariable variable) {
     return datasetDtos.asDto(variable);
+  }
+
+  @NotNull
+  public Mica.DatasetVariableResolverDto asDto(@NotNull DatasetVariable.IdResolver variableResolver) {
+    return datasetDtos.asDto(variableResolver);
   }
 
 }

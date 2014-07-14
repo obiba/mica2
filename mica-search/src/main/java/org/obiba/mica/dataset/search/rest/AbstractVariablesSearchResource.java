@@ -18,23 +18,17 @@ import javax.inject.Inject;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.json.JSONException;
 import org.obiba.mica.dataset.domain.DatasetVariable;
-import org.obiba.mica.dataset.search.DatasetIndexer;
 import org.obiba.mica.search.rest.AbstractSearchResource;
 import org.obiba.mica.search.rest.QueryDtoParser;
-import org.obiba.mica.study.StudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.MicaSearch;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -44,22 +38,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import static org.obiba.mica.web.model.MicaSearch.QueryDto;
 import static org.obiba.mica.web.model.MicaSearch.QueryResultDto;
 
-@Path("/variables/_search")
-@RequiresAuthentication
-public class PublishedVariablesSearchResource extends AbstractSearchResource {
+public abstract class AbstractVariablesSearchResource extends AbstractSearchResource {
 
   private static final String VARIABLE_FACETS_YML = "variable-facets.yml";
-
-  private static final Logger log = LoggerFactory.getLogger(PublishedVariablesSearchResource.class);
 
   @Inject
   private Dtos dtos;
 
   @Inject
   private ObjectMapper objectMapper;
-
-  @Inject
-  private StudyService studyService;
 
   @GET
   @Timed
@@ -83,20 +70,10 @@ public class PublishedVariablesSearchResource extends AbstractSearchResource {
   }
 
   @Override
-  protected String getSearchIndex() {
-    return DatasetIndexer.PUBLISHED_DATASET_INDEX;
-  }
-
-  @Override
-  protected String getSearchType() {
-    return DatasetIndexer.VARIABLE_TYPE;
-  }
-
-  @Override
   protected void processHits(QueryResultDto.Builder builder, boolean detailed, SearchHits hits) throws IOException {
     MicaSearch.DatasetVariableResultDto.Builder resBuilder = MicaSearch.DatasetVariableResultDto.newBuilder();
     for(SearchHit hit : hits) {
-      resBuilder.addIds(hit.getId());
+      resBuilder.addSummaries(dtos.asDto(DatasetVariable.IdResolver.from(hit.getId())));
       if(detailed) {
         InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
         resBuilder.addVariables(dtos.asDto(objectMapper.readValue(inputStream, DatasetVariable.class)));

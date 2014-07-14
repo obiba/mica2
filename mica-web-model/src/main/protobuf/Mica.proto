@@ -288,3 +288,14 @@ message DatasetVariableDto {
   repeated DatasetCategoryDto categories = 14;
   repeated LocalizedStringDto datasetName = 15;
 }
+
+message DatasetVariableResolverDto {
+  required string id = 1;
+  required string datasetId = 2;
+  required string name = 3;
+  required string variableType = 4;
+  optional string studyId = 5;
+  repeated LocalizedStringDto datasetName = 6;
+  repeated LocalizedStringDto variableLabel = 7;
+  repeated LocalizedStringDto studyName = 8;
+}
