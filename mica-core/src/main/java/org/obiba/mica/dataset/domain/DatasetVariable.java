@@ -35,6 +35,8 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   public static final String MAPPING_NAME = "Variable";
 
+  private static final String ID_SEPARATOR = ":";
+
   public enum Type {
     Study,       // variable extracted from a study dataset
     Dataschema,  // variable extracted from a harmonized dataset
@@ -113,9 +115,9 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   @Override
   public String getId() {
-    String id = datasetId + ":" + name + ":" + variableType;
+    String id = datasetId + ID_SEPARATOR + name + ID_SEPARATOR + variableType;
     if(Type.Harmonized.equals(variableType)) {
-      id = id + ":" + studyIds.get(0);
+      id = id + ID_SEPARATOR + studyIds.get(0);
     }
     return id;
   }
@@ -284,17 +286,19 @@ public class DatasetVariable implements Indexable, AttributeAware {
     }
 
     private IdResolver(String id) {
+      if (id == null) throw new IllegalArgumentException("Dataset variable cannot be null");
       this.id = id;
-      datasetId = id.substring(0, id.indexOf(':'));
-      String tail = id.substring(id.indexOf(':') + 1);
-      name = tail.substring(0, tail.indexOf(':'));
-      tail = tail.substring(tail.indexOf(':') + 1);
-      if(tail.indexOf(':') < 0) {
-        type = Type.valueOf(tail);
-        studyId = null;
+
+      String [] tokens = id.split(ID_SEPARATOR);
+      if (tokens.length<3) throw new IllegalArgumentException("Not a valid dataset variable ID: " + id);
+
+      datasetId = tokens[0];
+      name = tokens[1];
+      type = Type.valueOf(tokens[2]);
+      if (tokens.length>3) {
+        studyId = tokens[3];
       } else {
-        type = Type.valueOf(tail.substring(0, tail.indexOf(':')));
-        studyId = tail.substring(tail.indexOf(':') + 1);
+        studyId = null;
       }
     }
 
