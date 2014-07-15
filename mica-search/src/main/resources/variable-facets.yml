@@ -26,15 +26,15 @@ categories:
   missing:
 
 attributes:
-  maelstrom.essence:
-    value:
-  maelstrom.measure:
-    value:
-  maelstrom.sociodemographic_characteristics:
-    value:
-  maelstrom.status:
-    value:
-  maelstrom.target:
-    value:
-  maelstrom.period:
-    value:
+  maelstrom__essence:
+    en:
+  maelstrom__measure:
+    en:
+  maelstrom__sociodemographic_characteristics:
+    en:
+  maelstrom__status:
+    und:
+  maelstrom__target:
+    en:
+  maelstrom__period:
+    en:

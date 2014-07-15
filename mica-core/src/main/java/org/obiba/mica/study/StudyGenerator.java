@@ -85,7 +85,7 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
     studyDatasetService.save(studyDataset);
 
     HarmonizedDataset harmonizedDataset = new HarmonizedDataset();
-    harmonizedDataset.setName(en("Healthy Obese Project").forFr("Projet des obeses en sante"));
+    harmonizedDataset.setName(en("Healthy Obese Project").forFr("Projet des obeses en sante").forLanguageTag(null, "coucou"));
     harmonizedDataset.setProject("mica");
     harmonizedDataset.setTable("HOP");
     harmonizedDataset.setPublished(true);
@@ -144,9 +144,9 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
     study.addAttachment(createAttachment());
 
     study.addAttribute(
-        Attribute.Builder.newAttribute("att1").namespace("mica").locale(Locale.FRENCH).value("value fr").build());
+        Attribute.Builder.newAttribute("att1").namespace("mica").value(Locale.FRENCH, "value fr").build());
     study.addAttribute(
-        Attribute.Builder.newAttribute("att1").namespace("mica").locale(Locale.ENGLISH).value("value en").build());
+        Attribute.Builder.newAttribute("att1").namespace("mica").value(Locale.ENGLISH, "value en").build());
 
     return study;
   }
@@ -230,9 +230,9 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
     population.addDataCollectionEvent(createEvent2());
     population.addDataCollectionEvent(createEvent3());
     population.addAttribute(
-        Attribute.Builder.newAttribute("att1").namespace("mica").locale(Locale.FRENCH).value("value fr").build());
+        Attribute.Builder.newAttribute("att1").namespace("mica").value(Locale.FRENCH, "value fr").build());
     population.addAttribute(
-        Attribute.Builder.newAttribute("att1").namespace("mica").locale(Locale.ENGLISH).value("value en").build());
+        Attribute.Builder.newAttribute("att1").namespace("mica").value(Locale.ENGLISH, "value en").build());
     return population;
   }
 
@@ -287,9 +287,9 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
     event.setAdministrativeDatabases(Arrays.asList("aDB1"));
     event.setOtherBioSamples(en("Other biological sample"));
     event.addAttribute(
-        Attribute.Builder.newAttribute("att1").namespace("mica").locale(Locale.FRENCH).value("value fr").build());
+        Attribute.Builder.newAttribute("att1").namespace("mica").value(Locale.FRENCH, "value fr").build());
     event.addAttribute(
-        Attribute.Builder.newAttribute("att1").namespace("mica").locale(Locale.ENGLISH).value("value en").build());
+        Attribute.Builder.newAttribute("att1").namespace("mica").value(Locale.ENGLISH, "value en").build());
     return event;
   }
 

@@ -127,9 +127,9 @@ public class StudyDtosTest {
     study.setOtherAccess(en("Other access"));
 
     study.addAttribute(
-        Attribute.Builder.newAttribute("att1").namespace("mica").locale(Locale.FRENCH).value("value fr").build());
+        Attribute.Builder.newAttribute("att1").namespace("mica").value(Locale.FRENCH, "value fr").build());
     study.addAttribute(
-        Attribute.Builder.newAttribute("att1").namespace("mica").locale(Locale.ENGLISH).value("value en").build());
+        Attribute.Builder.newAttribute("att1").namespace("mica").value(Locale.ENGLISH, "value en").build());
 
     study.setMarkerPaper(
         "Raina PS, Wolfson C, Kirkland SA, Griffith LE, Oremus M, Patterson C, Tuokko H, Penning M, Balion CM, Hogan D, Wister A, Payette H, Shannon H, and Brazil K, The Canadian longitudinal study on aging (CLSA). Can J Aging, 2009. 28(3): p. 221-9.");
@@ -218,9 +218,9 @@ public class StudyDtosTest {
     population.addDataCollectionEvent(createEvent1());
     population.addDataCollectionEvent(createEvent2());
     population.addAttribute(
-        Attribute.Builder.newAttribute("att1").namespace("mica").locale(Locale.FRENCH).value("value fr").build());
+        Attribute.Builder.newAttribute("att1").namespace("mica").value(Locale.FRENCH, "value fr").build());
     population.addAttribute(
-        Attribute.Builder.newAttribute("att1").namespace("mica").locale(Locale.ENGLISH).value("value en").build());
+        Attribute.Builder.newAttribute("att1").namespace("mica").value(Locale.ENGLISH, "value en").build());
     return population;
   }
 
@@ -275,9 +275,9 @@ public class StudyDtosTest {
     event.setAdministrativeDatabases(Arrays.asList("aDB1"));
     event.setOtherBioSamples(en("Other biological sample"));
     event.addAttribute(
-        Attribute.Builder.newAttribute("att1").namespace("mica").locale(Locale.FRENCH).value("value fr").build());
+        Attribute.Builder.newAttribute("att1").namespace("mica").value(Locale.FRENCH, "value fr").build());
     event.addAttribute(
-        Attribute.Builder.newAttribute("att1").namespace("mica").locale(Locale.ENGLISH).value("value en").build());
+        Attribute.Builder.newAttribute("att1").namespace("mica").value(Locale.ENGLISH, "value en").build());
     return event;
   }
 

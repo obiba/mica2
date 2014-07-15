@@ -109,7 +109,7 @@ class DatasetDtos {
     }
 
     if (variable.getAttributes() != null) {
-      variable.getAttributes().values().forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
+      variable.getAttributes().asAttributeList().forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
     }
 
     if (variable.getCategories() != null) {
@@ -125,7 +125,7 @@ class DatasetDtos {
     .setMissing(category.isMissing());
 
     if (category.getAttributes() != null) {
-      category.getAttributes().values().forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
+      category.getAttributes().asAttributeList().forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
     }
 
     return builder.build();
@@ -149,7 +149,7 @@ class DatasetDtos {
     }
     builder.setPublished(dataset.isPublished());
     if(dataset.getAttributes() != null) {
-      dataset.getAttributes().values().forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
+      dataset.getAttributes().asAttributeList().forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
     }
     return builder;
   }

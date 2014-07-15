@@ -10,18 +10,12 @@
 
 package org.obiba.mica.dataset.domain;
 
-import java.util.List;
-import java.util.Locale;
-
 import javax.annotation.Nullable;
 
 import org.obiba.magma.Category;
 import org.obiba.mica.domain.Attribute;
 import org.obiba.mica.domain.AttributeAware;
-import org.obiba.mica.domain.NoSuchAttributeException;
-
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.Multimap;
+import org.obiba.mica.domain.Attributes;
 
 public class DatasetCategory implements AttributeAware {
 
@@ -29,7 +23,7 @@ public class DatasetCategory implements AttributeAware {
 
   private boolean missing;
 
-  private LinkedListMultimap<String, Attribute> attributes;
+  private Attributes attributes;
 
   public DatasetCategory() {}
 
@@ -51,66 +45,31 @@ public class DatasetCategory implements AttributeAware {
     return missing;
   }
 
-  @Override
-  public Multimap<String, Attribute> getAttributes() {
+  public Attributes getAttributes() {
     return attributes;
   }
 
   @Override
-  public void setAttributes(LinkedListMultimap<String, Attribute> attributes) {
-    this.attributes = attributes;
-  }
-
-  @Override
   public void addAttribute(Attribute attribute) {
-    if(attributes == null) attributes = LinkedListMultimap.create();
-    attributes.put(attribute.getMapKey(), attribute);
+    if(attributes == null) attributes = new Attributes();
+    attributes.addAttribute(attribute);
   }
 
   @Override
   public void removeAttribute(Attribute attribute) {
     if(attributes != null) {
-      attributes.remove(attribute.getMapKey(), attribute);
+      attributes.removeAttribute(attribute);
     }
   }
 
   @Override
   public void removeAllAttributes() {
-    if(attributes != null) attributes.clear();
+    if(attributes != null) attributes.removeAllAttributes();
   }
 
   @Override
   public boolean hasAttribute(String attName, @Nullable String namespace) {
-    return attributes != null && attributes.containsKey(Attribute.getMapKey(attName, namespace));
-  }
-
-  @Override
-  public List<Attribute> getAttributes(String attName, @Nullable String namespace) {
-    if(!hasAttribute(attName, namespace)) throw new NoSuchAttributeException(attName, getClass().getName());
-    return attributes.get(Attribute.getMapKey(attName, namespace));
-  }
-
-  @Override
-  public boolean hasAttribute(String attName, @Nullable String namespace, @Nullable Locale locale) {
-    try {
-      getAttribute(attName, namespace, locale);
-      return true;
-    } catch(NoSuchAttributeException e) {
-      return false;
-    }
-  }
-
-  @Override
-  public Attribute getAttribute(String attName, @Nullable String namespace, @Nullable Locale locale)
-      throws NoSuchAttributeException {
-    if(hasAttribute(attName, namespace)) {
-      for(Attribute attribute : attributes.get(Attribute.getMapKey(attName, namespace))) {
-        if(attribute.isLocalisedWith(locale)) {
-          return attribute;
-        }
-      }
-    }
-    throw new NoSuchAttributeException(attName, getClass().getName());
+    return attributes != null && attributes.hasAttribute(attName, namespace);
   }
 
 }

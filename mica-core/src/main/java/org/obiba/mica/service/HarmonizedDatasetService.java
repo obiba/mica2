@@ -27,7 +27,6 @@ import org.obiba.mica.dataset.service.DatasetService;
 import org.obiba.mica.domain.StudyTable;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.StudyService;
-import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.event.StudyDeletedEvent;
 import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.springframework.scheduling.annotation.Async;

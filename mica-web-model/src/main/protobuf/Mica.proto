@@ -226,8 +226,7 @@ message MicaConfigDto {
 message AttributeDto {
   optional string namespace = 1;
   required string name = 2;
-  required string value = 3;
-  optional string locale = 4;
+  repeated LocalizedStringDto values = 3;
 }
 
 message DatasetDto {

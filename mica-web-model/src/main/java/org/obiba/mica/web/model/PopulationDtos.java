@@ -47,7 +47,7 @@ class PopulationDtos {
       population.getDataCollectionEvents().forEach(dce -> builder.addDataCollectionEvents(asDto(dce)));
     }
     if(population.getAttributes() != null) {
-      population.getAttributes().values().forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
+      population.getAttributes().asAttributeList().forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
     }
     return builder.build();
   }
@@ -209,7 +209,7 @@ class PopulationDtos {
       dce.getAttachments().forEach(attachment -> builder.addAttachments(attachmentDtos.asDto(attachment)));
     }
     if(dce.getAttributes() != null) {
-      dce.getAttributes().values().forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
+      dce.getAttributes().asAttributeList().forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
     }
     return builder.build();
   }

@@ -20,10 +20,7 @@ public class Attribute implements Serializable {
 
   private String namespace;
 
-  private Locale locale;
-
-  @NotNull
-  private String value;
+  private LocalizedString values;
 
   public String getName() {
     return name;
@@ -41,29 +38,12 @@ public class Attribute implements Serializable {
     this.namespace = namespace;
   }
 
-  public Locale getLocale() {
-    return locale;
+  public void setValues(LocalizedString values) {
+    this.values = values;
   }
 
-  public void setLocale(Locale locale) {
-    this.locale = locale;
-  }
-
-  @JsonIgnore
-  public boolean isLocalised() {
-    return locale != null;
-  }
-
-  public boolean isLocalisedWith(@SuppressWarnings("ParameterHidesMemberVariable") @Nullable Locale locale) {
-    return locale == null && !isLocalised() || locale != null && isLocalised() && locale.equals(getLocale());
-  }
-
-  public String getValue() {
-    return value;
-  }
-
-  public void setValue(String value) {
-    this.value = value;
+  public LocalizedString getValues() {
+    return values;
   }
 
   @JsonIgnore
@@ -71,13 +51,17 @@ public class Attribute implements Serializable {
     return getMapKey(name, namespace);
   }
 
+  public boolean isLocalisedWith(@Nullable Locale locale) {
+    return values != null && values.contains(locale);
+  }
+
   public static String getMapKey(String name, @Nullable String namespace) {
-    return Strings.isNullOrEmpty(namespace) ? name : namespace + "." + name;
+    return Strings.isNullOrEmpty(namespace) ? name : namespace + "__" + name;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, namespace, locale, value);
+    return Objects.hash(name, namespace, values);
   }
 
   @Override
@@ -86,13 +70,13 @@ public class Attribute implements Serializable {
     if(obj == null || getClass() != obj.getClass()) return false;
     Attribute other = (Attribute) obj;
     return Objects.equals(name, other.name) && Objects.equals(namespace, other.namespace) &&
-        Objects.equals(locale, other.locale) && Objects.equals(value, other.value);
+        Objects.equals(values, other.values);
   }
 
   @Override
   public String toString() {
     return com.google.common.base.Objects.toStringHelper(this).omitNullValues().add("name", name)
-        .add("namespace", namespace).add("locale", locale).add("value", value).toString();
+        .add("namespace", namespace).add("values", values).toString();
   }
 
   @SuppressWarnings("ParameterHidesMemberVariable")
@@ -111,14 +95,21 @@ public class Attribute implements Serializable {
     }
 
     public static Builder newAttribute(String name) {
-      return new Builder(name);
+      if(!name.contains("__")) return new Builder(name);
+      else {
+        String namespace = name.substring(0, name.indexOf("__"));
+        return new Builder(name.substring(name.indexOf("__") + 2)).namespace(namespace);
+      }
     }
 
     public static Builder newAttribute(org.obiba.magma.Attribute attr) {
       Builder builder = new Builder(attr.getName());
       if(attr.hasNamespace()) builder.namespace(attr.getNamespace());
-      if(attr.isLocalised()) builder.locale(attr.getLocale());
-      if(attr.getValue() != null) builder.value(attr.getValue().toString());
+
+      if(attr.getValue() != null) {
+        if(attr.isLocalised()) builder.value(attr.getLocale(), attr.getValue().toString());
+        else builder.value(Locale.forLanguageTag("und"), attr.getValue().toString());
+      }
       return builder;
     }
 
@@ -127,13 +118,17 @@ public class Attribute implements Serializable {
       return this;
     }
 
-    public Builder value(String value) {
-      attribute.value = value;
+    public Builder values(LocalizedString values) {
+      if(attribute.values == null) attribute.values = values;
+      else attribute.values.merge(values);
       return this;
     }
 
-    public Builder locale(Locale locale) {
-      attribute.locale = locale;
+    public Builder value(Locale locale, String value) {
+      if(attribute.values == null) {
+        attribute.values = new LocalizedString();
+      }
+      attribute.values.merge(locale.toLanguageTag(), value, (oldValue, newValue) -> newValue);
       return this;
     }
 

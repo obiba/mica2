@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import org.mongeez.MongeezRunner;
+import org.obiba.mica.domain.LocalizedString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
@@ -13,12 +14,17 @@ import org.springframework.context.ApplicationContextException;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.data.authentication.UserCredentials;
 import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
+import org.springframework.data.mongodb.core.convert.CustomConversions;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
+import com.google.common.collect.Lists;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 
@@ -58,6 +64,12 @@ public class MongoDbConfiguration extends AbstractMongoConfiguration implements 
   }
 
   @Override
+  public CustomConversions customConversions() {
+    return new CustomConversions(
+        Lists.newArrayList(new LocalizedStringWriteConverter(), new LocalizedStringReadConverter()));
+  }
+
+  @Override
   @Nullable
   protected UserCredentials getUserCredentials() {
     String username = propertyResolver.getProperty("username");
@@ -81,6 +93,27 @@ public class MongoDbConfiguration extends AbstractMongoConfiguration implements 
     if(!isNullOrEmpty(username)) mongeez.setPassWord(password);
 
     return mongeez;
+  }
+
+  public static class LocalizedStringWriteConverter implements Converter<LocalizedString, DBObject> {
+
+    @Override
+    public DBObject convert(LocalizedString source) {
+      DBObject dbo = new BasicDBObject();
+      source.entrySet().forEach(entry -> dbo.put(entry.getKey(), entry.getValue()));
+      return dbo;
+    }
+  }
+
+  public static class LocalizedStringReadConverter implements Converter<DBObject, LocalizedString> {
+
+    @Override
+    public LocalizedString convert(DBObject source) {
+      LocalizedString rval = new LocalizedString();
+      source.keySet()
+          .forEach(key -> rval.put(key, source.get(key) == null ? null : source.get(key).toString()));
+      return rval;
+    }
   }
 
 }

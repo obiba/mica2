@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.obiba.git.command.GitCommandHandler;
 import org.obiba.mica.config.JsonConfiguration;
+import org.obiba.mica.config.MongoDbConfiguration;
 import org.obiba.mica.file.TempFileService;
 import org.obiba.mica.service.GitService;
 import org.obiba.mica.study.domain.Study;
@@ -24,6 +25,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.convert.CustomConversions;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -31,6 +33,7 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.common.io.Files;
 import com.mongodb.Mongo;
@@ -207,6 +210,14 @@ public class StudyServiceTest {
     @Override
     public Mongo mongo() throws IOException {
       return MongodForTestsFactory.with(Version.Main.PRODUCTION).newMongo();
+    }
+
+    @Override
+    @Bean
+    public CustomConversions customConversions() {
+      return new CustomConversions(
+          Lists.newArrayList(new MongoDbConfiguration.LocalizedStringWriteConverter(),
+              new MongoDbConfiguration.LocalizedStringReadConverter()));
     }
 
     @Override

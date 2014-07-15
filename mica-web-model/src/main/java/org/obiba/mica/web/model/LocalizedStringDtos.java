@@ -2,7 +2,6 @@ package org.obiba.mica.web.model;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -18,7 +17,7 @@ class LocalizedStringDtos {
 
   Iterable<Mica.LocalizedStringDto> asDto(@SuppressWarnings("TypeMayBeWeakened") LocalizedString localizedString) {
     return localizedString.entrySet().stream().map(
-        entry -> Mica.LocalizedStringDto.newBuilder().setLang(entry.getKey().getLanguage()).setValue(entry.getValue())
+        entry -> Mica.LocalizedStringDto.newBuilder().setLang(entry.getKey()).setValue(entry.getValue())
             .build()
     ).collect(Collectors.toList());
   }
@@ -28,7 +27,7 @@ class LocalizedStringDtos {
     LocalizedString localizedString = new LocalizedString();
     for(Mica.LocalizedStringDto dto : dtos) {
       if(!Strings.isNullOrEmpty(dto.getValue())) {
-        localizedString.put(new Locale(dto.getLang()), dto.getValue());
+        localizedString.put(dto.getLang(), dto.getValue());
       }
     }
     return localizedString;
