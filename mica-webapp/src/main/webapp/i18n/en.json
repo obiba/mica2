@@ -369,7 +369,8 @@
       "published-out-of-date": "Published, out of date",
       "published": "Published",
       "revisions-ahead": "Revisions ahead"
-    }
+    },
+    "opal" : "Opal server"
   },
   "contact": {
     "label": "Contact",
