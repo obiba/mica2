@@ -281,6 +281,8 @@
     "languages-help": "Supported languages for studies and networks description"
   },
   "publish": {
+    "label" : "Publish",
+    "un-publish" : "Unpublish",
     "not-published": "Not published",
     "published-out-of-date": "Published, out of date",
     "published": "Published",
@@ -415,7 +417,9 @@
     "study-table" : "Study Table",
     "study-tables" : "Study Tables",
     "project" : "Project",
-    "table" : "Table"
+    "table" : "Table",
+    "data-schema" : "Data Schema",
+    "index": "Index"
   },
   "study-datasets" : "Study Datasets",
   "study-dataset" : "Study Dataset",

@@ -18,9 +18,9 @@ mica.dataset
 
     }])
 
-  .controller('StudyDatasetViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', 'StudyDatasetResource', 'StudyDatasetPublicationResource', 'MicaConfigResource',
+  .controller('StudyDatasetViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', 'StudyDatasetResource', 'StudyDatasetPublicationResource', 'StudyDatasetIndexResource', 'MicaConfigResource',
 
-    function ($rootScope, $scope, $routeParams, $log, $locale, $location, StudyDatasetResource, StudyDatasetPublicationResource, MicaConfigResource) {
+    function ($rootScope, $scope, $routeParams, $log, $locale, $location, StudyDatasetResource, StudyDatasetPublicationResource, StudyDatasetIndexResource, MicaConfigResource) {
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
@@ -30,6 +30,22 @@ mica.dataset
       });
 
       $scope.dataset = StudyDatasetResource.get({id: $routeParams.id});
+
+      $scope.publish = function () {
+        StudyDatasetPublicationResource.publish({id: $scope.dataset.id}, function () {
+          $scope.dataset = StudyDatasetResource.get({id: $routeParams.id});
+        });
+      };
+
+      $scope.unPublish = function () {
+        StudyDatasetPublicationResource.unPublish({id: $scope.dataset.id}, function () {
+          $scope.dataset = StudyDatasetResource.get({id: $routeParams.id});
+        });
+      };
+
+      $scope.index = function () {
+        StudyDatasetIndexResource.index({id: $scope.dataset.id}, function (){});
+      };
 
     }])
 
@@ -45,6 +61,37 @@ mica.dataset
           function () {
             $scope.studyDatasets = HarmonizedDatasetsResource.query();
           });
+      };
+
+    }])
+
+  .controller('HarmonizedDatasetViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', 'HarmonizedDatasetResource', 'HarmonizedDatasetPublicationResource', 'HarmonizedDatasetIndexResource', 'MicaConfigResource',
+
+    function ($rootScope, $scope, $routeParams, $log, $locale, $location, HarmonizedDatasetResource, HarmonizedDatasetPublicationResource, HarmonizedDatasetIndexResource, MicaConfigResource) {
+
+      MicaConfigResource.get(function (micaConfig) {
+        $scope.tabs = [];
+        micaConfig.languages.forEach(function (lang) {
+          $scope.tabs.push({lang: lang});
+        });
+      });
+
+      $scope.dataset = HarmonizedDatasetResource.get({id: $routeParams.id});
+
+      $scope.publish = function () {
+        HarmonizedDatasetPublicationResource.publish({id: $scope.dataset.id}, function () {
+          $scope.dataset = HarmonizedDatasetResource.get({id: $routeParams.id});
+        });
+      };
+
+      $scope.unPublish = function () {
+        HarmonizedDatasetPublicationResource.unPublish({id: $scope.dataset.id}, function () {
+          $scope.dataset = HarmonizedDatasetResource.get({id: $routeParams.id});
+        });
+      };
+
+      $scope.index = function () {
+        HarmonizedDatasetIndexResource.index({id: $scope.dataset.id}, function (){});
       };
 
     }]);

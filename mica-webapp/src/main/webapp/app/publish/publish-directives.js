@@ -24,4 +24,17 @@ mica.publish
       },
       templateUrl: 'app/publish/publish-button-template.html'
     };
+  }])
+
+  .directive('publishSwitch', [function () {
+    return {
+      restrict: 'AE',
+      replace: true,
+      scope: {
+        status: '=',
+        publish: '&',
+        unPublish: '&'
+      },
+      templateUrl: 'app/publish/publish-switch-template.html'
+    };
   }]);
