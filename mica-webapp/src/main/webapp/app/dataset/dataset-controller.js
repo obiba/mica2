@@ -18,6 +18,21 @@ mica.dataset
 
     }])
 
+  .controller('StudyDatasetViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', 'StudyDatasetResource', 'StudyDatasetPublicationResource', 'MicaConfigResource',
+
+    function ($rootScope, $scope, $routeParams, $log, $locale, $location, StudyDatasetResource, StudyDatasetPublicationResource, MicaConfigResource) {
+
+      MicaConfigResource.get(function (micaConfig) {
+        $scope.tabs = [];
+        micaConfig.languages.forEach(function (lang) {
+          $scope.tabs.push({lang: lang});
+        });
+      });
+
+      $scope.dataset = StudyDatasetResource.get({id: $routeParams.id});
+
+    }])
+
   .controller('HarmonizedDatasetListController', ['$scope', 'HarmonizedDatasetsResource', 'HarmonizedDatasetResource',
 
     function ($scope, HarmonizedDatasetsResource, HarmonizedDatasetResource) {

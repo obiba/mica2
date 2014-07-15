@@ -407,10 +407,19 @@
   "datasets" : "Datasets",
   "dataset" : {
     "name" : "Name",
-    "add" : "Add Dataset"
+    "add" : "Add Dataset",
+    "general-info": "General Information",
+    "description" : "Description",
+    "entity-type" : "Entity Type",
+    "study-table" : "Study Table",
+    "study-tables" : "Study Tables",
+    "project" : "Project",
+    "table" : "Table"
   },
   "study-datasets" : "Study Datasets",
+  "study-dataset" : "Study Dataset",
   "harmonized-datasets" : "Harmonized Datasets",
+  "harmonized-dataset" : "Harmonized Dataset",
   "name": "Name",
   "edit": "Edit",
   "view": "View",
