@@ -19,6 +19,7 @@ import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.event.DatasetDeletedEvent;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.event.IndexDatasetsEvent;
+import org.obiba.mica.dataset.event.IndexStudyDatasetsEvent;
 import org.obiba.mica.service.StudyDatasetService;
 import org.obiba.mica.study.domain.Study;
 import org.slf4j.Logger;
@@ -61,6 +62,12 @@ public class StudyDatasetIndexer extends DatasetIndexer<StudyDataset> {
   @Async
   @Subscribe
   public void indexAll(IndexDatasetsEvent event) {
+    reIndexAll();
+  }
+
+  @Async
+  @Subscribe
+  public void indexAll(IndexStudyDatasetsEvent event) {
     reIndexAll();
   }
 

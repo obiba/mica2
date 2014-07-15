@@ -16,19 +16,27 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.mica.dataset.domain.Dataset;
+import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.dataset.rest.harmonized.DraftHarmonizedDatasetsResource;
 import org.obiba.mica.service.StudyDatasetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import com.codahale.metrics.annotation.Timed;
 
 @Component
 @Scope("request")
@@ -53,34 +61,57 @@ public class DraftStudyDatasetsResource {
    */
   @GET
   @Path("/study-datasets")
-  public List<Mica.DatasetDto> getDatasets(@QueryParam("study") String studyId) {
+  @Timed
+  public List<Mica.DatasetDto> list(@QueryParam("study") String studyId) {
     return datasetService.findAllDatasets(studyId).stream().map(dtos::asDto).collect(Collectors.toList());
+  }
+
+  @POST
+  @Path("/study-datasets")
+  @Timed
+  public Response create(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo) {
+    Dataset dataset = dtos.fromDto(datasetDto);
+    if(!(dataset instanceof StudyDataset)) throw new IllegalArgumentException("An study dataset is expected");
+
+    datasetService.save((StudyDataset) dataset);
+    return Response.created(
+        uriInfo.getBaseUriBuilder().path(DraftHarmonizedDatasetsResource.class, "study-dataset")
+            .build(dataset.getId())).build();
   }
 
   @PUT
   @Path("/study-datasets/_index")
+  @Timed
   public Response reIndex() {
     datasetService.indexAll();
     return Response.noContent().build();
   }
 
   @Path("/study-dataset/{id}")
-  public StudyDatasetResource getDataset(@PathParam("id") String id) {
+  public StudyDatasetResource dataset(@PathParam("id") String id) {
     StudyDatasetResource resource = applicationContext.getBean(StudyDatasetResource.class);
     resource.setId(id);
     return resource;
   }
 
   @PUT
+  @Path("/study-dataset/{id}/_index")
+  @Timed
+  public Response index(@PathParam("id") String id) {
+    datasetService.index(id);
+    return Response.noContent().build();
+  }
+
+  @PUT
   @Path("/study-dataset/{id}/_publish")
-  public Response publishDataset(@PathParam("id") String id) {
+  public Response publish(@PathParam("id") String id) {
     datasetService.publish(id, true);
     return Response.noContent().build();
   }
 
   @DELETE
   @Path("/study-dataset/{id}/_publish")
-  public Response unPublishDataset(@PathParam("id") String id) {
+  public Response unPublish(@PathParam("id") String id) {
     datasetService.publish(id, false);
     return Response.noContent().build();
   }

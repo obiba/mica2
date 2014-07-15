@@ -19,10 +19,10 @@ import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.mica.dataset.DatasourceRegistry;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.StudyDatasetRepository;
-import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
+import org.obiba.mica.dataset.event.IndexStudyDatasetsEvent;
 import org.obiba.mica.dataset.service.DatasetService;
 import org.obiba.mica.domain.StudyTable;
 import org.obiba.mica.study.StudyService;
@@ -143,6 +143,13 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
   public void index(@NotNull String id) {
     StudyDataset dataset = findById(id);
     eventBus.post(new DatasetUpdatedEvent(dataset));
+  }
+
+  /**
+   * Index or re-index all datasets with their variables.
+   */
+  public void indexAll() {
+    getEventBus().post(new IndexStudyDatasetsEvent());
   }
 
   @Override

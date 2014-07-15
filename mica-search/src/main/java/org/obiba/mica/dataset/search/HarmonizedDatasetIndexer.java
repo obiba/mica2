@@ -19,6 +19,7 @@ import org.obiba.mica.dataset.domain.HarmonizedDataset;
 import org.obiba.mica.dataset.event.DatasetDeletedEvent;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.event.IndexDatasetsEvent;
+import org.obiba.mica.dataset.event.IndexHarmonizedDatasetsEvent;
 import org.obiba.mica.service.HarmonizedDatasetService;
 import org.obiba.mica.study.domain.Study;
 import org.slf4j.Logger;
@@ -55,12 +56,19 @@ public class HarmonizedDatasetIndexer extends DatasetIndexer<HarmonizedDataset> 
     log.info("Dataset {} was deleted", event.getPersistable());
     HarmonizedDataset harmonizedDataset = (HarmonizedDataset) event.getPersistable();
     deleteFromDatasetIndices(harmonizedDataset);
-    harmonizedDataset.getStudyTables().forEach(studyTable -> deleteFromStudyIndices(harmonizedDataset, studyTable.getStudyId()));
+    harmonizedDataset.getStudyTables()
+        .forEach(studyTable -> deleteFromStudyIndices(harmonizedDataset, studyTable.getStudyId()));
   }
 
   @Async
   @Subscribe
   public void indexAll(IndexDatasetsEvent event) {
+    reIndexAll();
+  }
+
+  @Async
+  @Subscribe
+  public void indexAll(IndexHarmonizedDatasetsEvent event) {
     reIndexAll();
   }
 

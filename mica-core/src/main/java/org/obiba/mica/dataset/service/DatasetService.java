@@ -18,7 +18,6 @@ import org.obiba.mica.dataset.DatasourceRegistry;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
-import org.obiba.mica.dataset.event.IndexDatasetsEvent;
 import org.obiba.mica.domain.StudyTable;
 import org.obiba.mica.study.StudyService;
 import org.obiba.opal.rest.client.magma.RestDatasource;
@@ -122,13 +121,6 @@ public abstract class DatasetService<T extends Dataset> {
    */
   public interface DatasourceCallback<R> {
     R doWithDatasource(RestDatasource datasource);
-  }
-
-  /**
-   * Index or re-index all datasets with their variables.
-   */
-  public void indexAll() {
-    getEventBus().post(new IndexDatasetsEvent());
   }
 
   /**

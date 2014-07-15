@@ -27,6 +27,8 @@ public abstract class Dataset extends AbstractAuditableDocument implements Attri
 
   private static final long serialVersionUID = -3328963766855899217L;
 
+  public static final String DEFAULT_ENTITY_TYPE = "Participant";
+
   public static final String MAPPING_NAME = "Dataset";
 
   @NotNull
@@ -34,7 +36,7 @@ public abstract class Dataset extends AbstractAuditableDocument implements Attri
 
   private LocalizedString description;
 
-  private String entityType;
+  private String entityType = DEFAULT_ENTITY_TYPE;
 
   private boolean published = false;
 
@@ -61,7 +63,7 @@ public abstract class Dataset extends AbstractAuditableDocument implements Attri
   }
 
   public void setEntityType(String entityType) {
-    this.entityType = entityType;
+    this.entityType = entityType == null ? DEFAULT_ENTITY_TYPE : entityType;
   }
 
   public boolean isPublished() {

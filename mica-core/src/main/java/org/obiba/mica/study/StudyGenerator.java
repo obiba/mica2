@@ -77,6 +77,7 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
 
     StudyDataset studyDataset = new StudyDataset();
     studyDataset.setName(en("FNAC").forFr("FNAC"));
+    studyDataset.setEntityType("Participant");
     StudyTable table = new StudyTable();
     table.setStudyId(study.getId());
     table.setProject("test");
@@ -85,7 +86,8 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
     studyDatasetService.save(studyDataset);
 
     HarmonizedDataset harmonizedDataset = new HarmonizedDataset();
-    harmonizedDataset.setName(en("Healthy Obese Project").forFr("Projet des obeses en sante").forLanguageTag(null, "coucou"));
+    harmonizedDataset.setName(en("Healthy Obese Project").forFr("Projet des obeses en sante"));
+    harmonizedDataset.setEntityType("Participant");
     harmonizedDataset.setProject("mica");
     harmonizedDataset.setTable("HOP");
     harmonizedDataset.setPublished(true);

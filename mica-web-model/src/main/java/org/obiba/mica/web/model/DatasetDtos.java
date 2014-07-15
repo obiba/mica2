@@ -153,4 +153,41 @@ class DatasetDtos {
     }
     return builder;
   }
+
+  @NotNull
+  public Dataset fromDto(Mica.DatasetDto dto) {
+    Dataset dataset;
+    if (dto.hasExtension(Mica.HarmonizedDatasetDto.type)) {
+      HarmonizedDataset harmonizedDataset = new HarmonizedDataset();
+      Mica.HarmonizedDatasetDto ext = dto.getExtension(Mica.HarmonizedDatasetDto.type);
+      harmonizedDataset.setProject(ext.getProject());
+      harmonizedDataset.setTable(ext.getTable());
+      if (ext.getStudyTablesCount()>0) {
+        ext.getStudyTablesList().forEach(tableDto -> harmonizedDataset.addStudyTable(fromDto(tableDto)));
+      }
+      dataset = harmonizedDataset;
+    } else {
+      StudyDataset studyDataset = new StudyDataset();
+      Mica.StudyDatasetDto ext = dto.getExtension(Mica.StudyDatasetDto.type);
+      studyDataset.setStudyTable(fromDto(ext.getStudyTable()));
+      dataset = studyDataset;
+    }
+    if (dto.hasId()) dataset.setId(dto.getId());
+    dataset.setName(localizedStringDtos.fromDto(dto.getNameList()));
+    dataset.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
+    dataset.setEntityType(dto.getEntityType());
+    dataset.setPublished(dto.getPublished());
+    if(dto.getAttributesCount() > 0) {
+      dto.getAttributesList().forEach(attributeDto -> dataset.addAttribute(attributeDtos.fromDto(attributeDto)));
+    }
+    return dataset;
+  }
+
+  private StudyTable fromDto(Mica.DatasetDto.StudyTableDto dto) {
+    StudyTable table = new StudyTable();
+    table.setStudyId(dto.getStudyId());
+    table.setProject(dto.getProject());
+    table.setTable(dto.getTable());
+    return table;
+  }
 }

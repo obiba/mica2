@@ -23,6 +23,7 @@ import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizedDataset;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
+import org.obiba.mica.dataset.event.IndexHarmonizedDatasetsEvent;
 import org.obiba.mica.dataset.service.DatasetService;
 import org.obiba.mica.domain.StudyTable;
 import org.obiba.mica.study.NoSuchStudyException;
@@ -124,6 +125,13 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizedDataset> 
   }
 
   /**
+   * Index or re-index all datasets with their variables.
+   */
+  public void indexAll() {
+    getEventBus().post(new IndexHarmonizedDatasetsEvent());
+  }
+
+  /**
    * Apply dataset publication flag.
    *
    * @param id
@@ -164,14 +172,12 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizedDataset> 
   }
 
   public Iterable<DatasetVariable> getDatasetVariables(HarmonizedDataset dataset, String studyId) {
-    return Iterables
-        .transform(getVariables(dataset, studyId), input -> new DatasetVariable(dataset, input, studyId));
+    return Iterables.transform(getVariables(dataset, studyId), input -> new DatasetVariable(dataset, input, studyId));
   }
 
   public DatasetVariable getDatasetVariable(HarmonizedDataset dataset, String variableName, String studyId) {
     return new DatasetVariable(dataset, getTable(dataset, studyId).getVariableValueSource(variableName).getVariable());
   }
-
 
   /**
    * On study deletion, go through all datasets related to this study and remove the dependency.
@@ -209,9 +215,9 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizedDataset> 
   }
 
   private RestValueTable getTable(@NotNull HarmonizedDataset dataset, String studyId) {
-    for (StudyTable studyTable : dataset.getStudyTables()) {
-      if (studyTable.getStudyId().equals(studyId)) {
-        return execute(studyTable.getProject(), ds -> (RestValueTable)ds.getValueTable(studyTable.getTable()));
+    for(StudyTable studyTable : dataset.getStudyTables()) {
+      if(studyTable.getStudyId().equals(studyId)) {
+        return execute(studyTable.getProject(), ds -> (RestValueTable) ds.getValueTable(studyTable.getTable()));
       }
     }
     throw NoSuchStudyException.withId(studyId);
