@@ -28,7 +28,6 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
-import org.obiba.mica.dataset.rest.harmonized.DraftHarmonizedDatasetsResource;
 import org.obiba.mica.service.StudyDatasetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -74,9 +73,8 @@ public class DraftStudyDatasetsResource {
     if(!(dataset instanceof StudyDataset)) throw new IllegalArgumentException("An study dataset is expected");
 
     datasetService.save((StudyDataset) dataset);
-    return Response.created(
-        uriInfo.getBaseUriBuilder().path(DraftHarmonizedDatasetsResource.class, "study-dataset")
-            .build(dataset.getId())).build();
+    return Response.created(uriInfo.getBaseUriBuilder().segment("draft", "study-dataset", dataset.getId()).build())
+        .build();
   }
 
   @PUT

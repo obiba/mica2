@@ -73,9 +73,8 @@ public class DraftHarmonizedDatasetsResource {
     if(!(dataset instanceof HarmonizedDataset)) throw new IllegalArgumentException("An harmonized dataset is expected");
 
     datasetService.save((HarmonizedDataset) dataset);
-    return Response.created(
-        uriInfo.getBaseUriBuilder().path(DraftHarmonizedDatasetsResource.class, "harmonized-dataset")
-            .build(dataset.getId())).build();
+    return Response.created(uriInfo.getBaseUriBuilder().segment("draft", "harmonized-dataset", dataset.getId()).build())
+        .build();
   }
 
   @PUT
