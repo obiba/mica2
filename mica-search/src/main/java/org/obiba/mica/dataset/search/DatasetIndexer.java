@@ -44,10 +44,11 @@ public abstract class DatasetIndexer<T extends Dataset> {
   protected void reIndex(T dataset) {
     deleteFromDatasetIndices(dataset);
     elasticSearchIndexer.index(DRAFT_DATASET_INDEX, (Indexable) dataset);
-    indexDatasetVariables(DRAFT_DATASET_INDEX, getVariables(dataset), dataset);
+    Iterable<DatasetVariable> variables = getVariables(dataset);
+    indexDatasetVariables(DRAFT_DATASET_INDEX, variables, dataset);
     if(dataset.isPublished()) {
       elasticSearchIndexer.index(PUBLISHED_DATASET_INDEX, (Indexable) dataset);
-      indexDatasetVariables(PUBLISHED_DATASET_INDEX, getVariables(dataset), dataset);
+      indexDatasetVariables(PUBLISHED_DATASET_INDEX, variables, dataset);
     }
   }
 
