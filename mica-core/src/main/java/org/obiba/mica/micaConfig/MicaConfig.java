@@ -26,6 +26,8 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public static final String DEFAULT_CHARSET = Charsets.UTF_8.toString();
 
+  public static final String DEFAULT_OPAL = "https://localhost:8443";
+
   @NotBlank
   private String name = DEFAULT_NAME;
 
@@ -34,6 +36,9 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   @NotBlank
   private String defaultCharacterSet = DEFAULT_CHARSET;
+
+  @NotBlank
+  private String opal = DEFAULT_OPAL;
 
   private String publicUrl;
 
@@ -67,6 +72,14 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public void setDefaultCharacterSet(String defaultCharacterSet) {
     this.defaultCharacterSet = defaultCharacterSet;
+  }
+
+  public String getOpal() {
+    return opal;
+  }
+
+  public void setOpal(String opal) {
+    this.opal = opal;
   }
 
   public String getPublicUrl() {

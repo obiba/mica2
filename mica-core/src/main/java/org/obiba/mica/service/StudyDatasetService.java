@@ -16,7 +16,7 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.magma.NoSuchValueTableException;
-import org.obiba.mica.dataset.DatasourceRegistry;
+import org.obiba.mica.dataset.DatasourceConnectionPool;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.StudyDatasetRepository;
 import org.obiba.mica.dataset.domain.DatasetVariable;
@@ -45,7 +45,7 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
   private StudyService studyService;
 
   @Inject
-  private DatasourceRegistry datasourceRegistry;
+  private DatasourceConnectionPool datasourceConnectionPool;
 
   @Inject
   private StudyDatasetRepository studyDatasetRepository;
@@ -186,8 +186,8 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
   }
 
   @Override
-  protected DatasourceRegistry getDatasourceRegistry() {
-    return datasourceRegistry;
+  protected DatasourceConnectionPool getDatasourceConnectionPool() {
+    return datasourceConnectionPool;
   }
 
   @Override

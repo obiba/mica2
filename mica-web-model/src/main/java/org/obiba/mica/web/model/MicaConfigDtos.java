@@ -21,6 +21,7 @@ class MicaConfigDtos {
     if(!Strings.isNullOrEmpty(config.getPublicUrl())) {
       builder.setPublicUrl(config.getPublicUrl());
     }
+    builder.setOpal(config.getOpal());
     return builder.build();
   }
 
@@ -31,6 +32,7 @@ class MicaConfigDtos {
     config.setDefaultCharacterSet(dto.getDefaultCharSet());
     if(dto.hasPublicUrl()) config.setPublicUrl(dto.getPublicUrl());
     dto.getLanguagesList().forEach(lang -> config.getLocales().add(new Locale(lang)));
+    config.setOpal(dto.getOpal());
     return config;
   }
 

@@ -278,7 +278,8 @@
     "publicUrl-help": "Public base URL of the server (not the web-interface one) that will be used when sending notification emails on report generation",
     "defaultCharSet": "Default Character Set",
     "languages": "Languages",
-    "languages-help": "Supported languages for studies and networks description"
+    "languages-help": "Supported languages for studies and networks description",
+    "opal" : "Primary Opal Server"
   },
   "publish": {
     "label" : "Publish",

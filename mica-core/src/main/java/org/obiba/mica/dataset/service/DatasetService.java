@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.Variable;
-import org.obiba.mica.dataset.DatasourceRegistry;
+import org.obiba.mica.dataset.DatasourceConnectionPool;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
@@ -65,7 +65,7 @@ public abstract class DatasetService<T extends Dataset> {
 
   protected abstract StudyService getStudyService();
 
-  protected abstract DatasourceRegistry getDatasourceRegistry();
+  protected abstract DatasourceConnectionPool getDatasourceConnectionPool();
 
   protected abstract EventBus getEventBus();
 
@@ -137,11 +137,11 @@ public abstract class DatasetService<T extends Dataset> {
 
   protected RestDatasource getDatasource(@NotNull StudyTable studyTable) {
     String opalUrl = getStudyService().findDraftStudy(studyTable.getStudyId()).getOpal();
-    return getDatasourceRegistry().getDatasource(opalUrl, studyTable.getProject());
+    return getDatasourceConnectionPool().getDatasource(opalUrl, studyTable.getProject());
   }
 
   protected RestDatasource getDatasource(@NotNull String project) {
-    return getDatasourceRegistry().getDatasource(project);
+    return getDatasourceConnectionPool().getDatasource(project);
   }
 
 }

@@ -13,8 +13,12 @@ package org.obiba.mica.dataset;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+
 import org.obiba.magma.DatasourceFactory;
 import org.obiba.magma.support.Initialisables;
+import org.obiba.mica.micaConfig.MicaConfigService;
 import org.obiba.opal.rest.client.magma.RestDatasource;
 import org.obiba.opal.rest.client.magma.RestDatasourceFactory;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
@@ -23,7 +27,10 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DatasourceRegistry implements EnvironmentAware {
+public class DatasourceConnectionPool implements EnvironmentAware {
+
+  @Inject
+  private MicaConfigService micaConfigService;
 
   private Map<String, RestDatasource> datasourceMap = new HashMap<>();
 
@@ -34,8 +41,15 @@ public class DatasourceRegistry implements EnvironmentAware {
     opalPropertyResolver = new RelaxedPropertyResolver(environment, "opal.");
   }
 
-  public synchronized RestDatasource getDatasource(String opalUrl, String project) {
-    String url = opalUrl + "/ws/datasource/" + project;
+  /**
+   * Get the datasource from the provided Opal server url.
+   * @param opalUrl if null, default Opal server url will be used.
+   * @param project
+   * @return
+   */
+  public synchronized RestDatasource getDatasource(@Nullable String opalUrl, String project) {
+    String url = opalUrl == null ? getDefaultOpal() : opalUrl;
+    url = url + "/ws/datasource/" + project;
     if(!datasourceMap.containsKey(url)) {
       DatasourceFactory factory = new RestDatasourceFactory(project, opalUrl, getOpalUsername(), getOpalPassword(),
           project);
@@ -47,17 +61,21 @@ public class DatasourceRegistry implements EnvironmentAware {
   }
 
   /**
-   * Get a {@link org.obiba.opal.rest.client.magma.RestDatasource} on the default Opal project.
+   * Get a {@link org.obiba.opal.rest.client.magma.RestDatasource} from the default Opal server.
    *
    * @param project
    * @return
    */
   public RestDatasource getDatasource(String project) {
-    return getDatasource(getOpalUrl(), project);
+    return getDatasource(getDefaultOpal(), project);
   }
 
-  private String getOpalUrl() {
-    return opalPropertyResolver.getProperty("url");
+  /**
+   * Get the url of the default Opal server as defined in the configuration.
+   * @return
+   */
+  public String getDefaultOpal() {
+    return micaConfigService.getConfig().getOpal();
   }
 
   private String getOpalUsername() {
