@@ -57,13 +57,14 @@
           <tr>
             <td translate>dataset.project</td>
             <td>
-              {{dataset['obiba.mica.HarmonizedDatasetDto.type'].project}}
+              <a ng-href="{{opal + '/ui/index.html#!project;name=' + datasetProject}}" target="_blank">{{datasetProject}}</a>
             </td>
           </tr>
           <tr>
             <td translate>dataset.table</td>
             <td>
-              {{dataset['obiba.mica.HarmonizedDatasetDto.type'].table}}
+              <a ng-href="{{opal + '/ui/index.html#!project;name=' + datasetProject + ';tab=TABLES;path=' + datasetProject + '.' + datasetTable}}"
+                  target="_blank">{{datasetTable}}</a>
             </td>
           </tr>
           </tbody>

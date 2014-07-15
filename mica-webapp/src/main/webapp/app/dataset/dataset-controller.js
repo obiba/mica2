@@ -44,7 +44,7 @@ mica.dataset
       };
 
       $scope.index = function () {
-        StudyDatasetIndexResource.index({id: $scope.dataset.id}, function (){});
+        StudyDatasetIndexResource.index({id: $scope.dataset.id}, function () {});
       };
 
     }])
@@ -70,13 +70,17 @@ mica.dataset
     function ($rootScope, $scope, $routeParams, $log, $locale, $location, HarmonizedDatasetResource, HarmonizedDatasetPublicationResource, HarmonizedDatasetIndexResource, MicaConfigResource) {
 
       MicaConfigResource.get(function (micaConfig) {
+        $scope.opal = micaConfig.opal;
         $scope.tabs = [];
         micaConfig.languages.forEach(function (lang) {
           $scope.tabs.push({lang: lang});
         });
       });
 
-      $scope.dataset = HarmonizedDatasetResource.get({id: $routeParams.id});
+      $scope.dataset = HarmonizedDatasetResource.get({id: $routeParams.id}, function (dataset) {
+        $scope.datasetProject = dataset['obiba.mica.HarmonizedDatasetDto.type'].project;
+        $scope.datasetTable = dataset['obiba.mica.HarmonizedDatasetDto.type'].table;
+      });
 
       $scope.publish = function () {
         HarmonizedDatasetPublicationResource.publish({id: $scope.dataset.id}, function () {
@@ -91,7 +95,7 @@ mica.dataset
       };
 
       $scope.index = function () {
-        HarmonizedDatasetIndexResource.index({id: $scope.dataset.id}, function (){});
+        HarmonizedDatasetIndexResource.index({id: $scope.dataset.id}, function () {});
       };
 
     }]);
