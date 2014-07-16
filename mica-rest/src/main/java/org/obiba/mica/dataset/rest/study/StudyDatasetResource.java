@@ -13,14 +13,18 @@ package org.obiba.mica.dataset.rest.study;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.service.StudyDatasetService;
 import org.obiba.mica.web.model.Dtos;
@@ -31,6 +35,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.codahale.metrics.annotation.Timed;
 import com.google.common.collect.ImmutableList;
 
 @Component
@@ -47,6 +52,7 @@ public class StudyDatasetResource {
   @Inject
   private Dtos dtos;
 
+  @NotNull
   private String id;
 
   public void setId(String id) {
@@ -59,8 +65,13 @@ public class StudyDatasetResource {
   }
 
   @PUT
-  public Response index() {
-    datasetService.index(id);
+  @Timed
+  public Response update(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo) {
+    if (!datasetDto.hasId() || datasetDto.getId().equals(id)) throw new IllegalArgumentException("Not the expected dataset id");
+    Dataset dataset = dtos.fromDto(datasetDto);
+    if(!(dataset instanceof StudyDataset)) throw new IllegalArgumentException("An study dataset is expected");
+
+    datasetService.save((StudyDataset) dataset);
     return Response.noContent().build();
   }
 
