@@ -13,6 +13,7 @@ package org.obiba.mica.dataset.service;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.magma.NoSuchValueTableException;
+import org.obiba.magma.NoSuchVariableException;
 import org.obiba.magma.Variable;
 import org.obiba.mica.dataset.DatasourceConnectionPool;
 import org.obiba.mica.dataset.NoSuchDatasetException;
@@ -23,8 +24,6 @@ import org.obiba.mica.study.StudyService;
 import org.obiba.opal.rest.client.magma.RestDatasource;
 import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.obiba.opal.web.model.Magma;
-import org.obiba.opal.web.model.Math;
-import org.obiba.opal.web.model.Search;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +39,7 @@ public abstract class DatasetService<T extends Dataset> {
 
   /**
    * Get all {@link org.obiba.mica.dataset.domain.DatasetVariable}s from a {@link org.obiba.mica.dataset.domain.Dataset}.
+   *
    * @param dataset
    * @return
    */
@@ -47,6 +47,7 @@ public abstract class DatasetService<T extends Dataset> {
 
   /**
    * Get the {@link org.obiba.mica.dataset.domain.DatasetVariable} from a {@link org.obiba.mica.dataset.domain.Dataset}.
+   *
    * @param dataset
    * @param name
    * @return
@@ -60,8 +61,7 @@ public abstract class DatasetService<T extends Dataset> {
    * @return
    */
   @NotNull
-  protected abstract RestValueTable getTable(@NotNull T dataset)
-      throws NoSuchDatasetException, NoSuchValueTableException;
+  protected abstract RestValueTable getTable(@NotNull T dataset) throws NoSuchValueTableException;
 
   protected abstract StudyService getStudyService();
 
@@ -90,7 +90,7 @@ public abstract class DatasetService<T extends Dataset> {
    * @throws NoSuchDatasetException
    */
   protected RestValueTable.RestVariableValueSource getVariableValueSource(@NotNull T dataset, String variableName)
-      throws NoSuchDatasetException {
+      throws NoSuchValueTableException, NoSuchVariableException {
     return (RestValueTable.RestVariableValueSource) getTable(dataset).getVariableValueSource(variableName);
   }
 
@@ -100,18 +100,6 @@ public abstract class DatasetService<T extends Dataset> {
 
   public Magma.VariableDto getVariable(@NotNull T dataset, String variableName) {
     return getVariableValueSource(dataset, variableName).getVariableDto();
-  }
-
-  public Math.SummaryStatisticsDto getVariableSummary(@NotNull T dataset, String variableName) {
-    return getVariableValueSource(dataset, variableName).getSummary();
-  }
-
-  public Search.QueryResultDto getVariableFacet(@NotNull T dataset, String variableName) {
-    return getVariableValueSource(dataset, variableName).getFacet();
-  }
-
-  public Search.QueryResultDto getFacets(@NotNull T dataset, Search.QueryTermsDto query) {
-    return getTable(dataset).getFacets(query);
   }
 
   /**

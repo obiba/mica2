@@ -104,6 +104,7 @@ public class StudyDatasetResource {
 
   @GET
   @Path("/table")
+  @RequiresRoles(Roles.MICA_ADMIN)
   public Magma.TableDto getTable() {
     Magma.TableDto dto = datasetService.getTableDto(getDataset());
     return dto;

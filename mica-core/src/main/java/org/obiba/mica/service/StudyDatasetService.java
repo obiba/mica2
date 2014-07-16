@@ -28,6 +28,7 @@ import org.obiba.mica.domain.StudyTable;
 import org.obiba.mica.study.StudyService;
 import org.obiba.mica.study.event.StudyDeletedEvent;
 import org.obiba.opal.rest.client.magma.RestValueTable;
+import org.obiba.opal.web.model.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -154,8 +155,7 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
 
   @Override
   @NotNull
-  protected RestValueTable getTable(@NotNull StudyDataset dataset)
-      throws NoSuchDatasetException, NoSuchValueTableException {
+  protected RestValueTable getTable(@NotNull StudyDataset dataset) throws NoSuchValueTableException {
     StudyTable studyTable = dataset.getStudyTable();
     return execute(studyTable, datasource -> (RestValueTable) datasource.getValueTable(studyTable.getTable()));
   }
@@ -168,6 +168,19 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
   @Override
   public DatasetVariable getDatasetVariable(StudyDataset dataset, String variableName) {
     return new DatasetVariable(dataset, getVariableValueSource(dataset, variableName).getVariable());
+  }
+
+  public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary(@NotNull StudyDataset dataset,
+      String variableName) {
+    return getVariableValueSource(dataset, variableName).getSummary();
+  }
+
+  public Search.QueryResultDto getVariableFacet(@NotNull StudyDataset dataset, String variableName) {
+    return getVariableValueSource(dataset, variableName).getFacet();
+  }
+
+  public Search.QueryResultDto getFacets(@NotNull StudyDataset dataset, Search.QueryTermsDto query) {
+    return getTable(dataset).getFacets(query);
   }
 
   /**

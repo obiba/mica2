@@ -102,6 +102,7 @@ public class HarmonizedDatasetResource {
 
   @GET
   @Path("/table")
+  @RequiresRoles(Roles.MICA_ADMIN)
   public Magma.TableDto getTable() {
     return datasetService.getTableDto(getDataset());
   }

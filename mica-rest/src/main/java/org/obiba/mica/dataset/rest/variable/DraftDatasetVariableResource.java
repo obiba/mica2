@@ -14,11 +14,12 @@ import javax.inject.Inject;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.rest.harmonized.DataschemaDatasetVariableResource;
 import org.obiba.mica.dataset.rest.harmonized.HarmonizedDatasetVariableResource;
 import org.obiba.mica.dataset.rest.study.StudyDatasetVariableResource;
+import org.obiba.mica.security.Roles;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -26,7 +27,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("request")
 @Path("/draft")
-@RequiresAuthentication
+@RequiresRoles(Roles.MICA_ADMIN)
 public class DraftDatasetVariableResource {
 
   @Inject

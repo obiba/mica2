@@ -16,12 +16,14 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.magma.NoSuchValueTableException;
+import org.obiba.magma.NoSuchVariableException;
 import org.obiba.magma.Variable;
 import org.obiba.mica.dataset.DatasourceConnectionPool;
 import org.obiba.mica.dataset.HarmonizedDatasetRepository;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizedDataset;
+import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.event.IndexHarmonizedDatasetsEvent;
 import org.obiba.mica.dataset.service.DatasetService;
@@ -30,6 +32,7 @@ import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.StudyService;
 import org.obiba.mica.study.event.StudyDeletedEvent;
 import org.obiba.opal.rest.client.magma.RestValueTable;
+import org.obiba.opal.web.model.Search;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -156,8 +159,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizedDataset> 
 
   @Override
   @NotNull
-  protected RestValueTable getTable(@NotNull HarmonizedDataset dataset)
-      throws NoSuchDatasetException, NoSuchValueTableException {
+  protected RestValueTable getTable(@NotNull HarmonizedDataset dataset) throws NoSuchValueTableException {
     return execute(dataset.getProject(), datasource -> (RestValueTable) datasource.getValueTable(dataset.getTable()));
   }
 
@@ -177,6 +179,21 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizedDataset> 
 
   public DatasetVariable getDatasetVariable(HarmonizedDataset dataset, String variableName, String studyId) {
     return new DatasetVariable(dataset, getTable(dataset, studyId).getVariableValueSource(variableName).getVariable());
+  }
+
+  public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary(@NotNull HarmonizedDataset dataset,
+      String variableName, String studyId) {
+    return getVariableValueSource(dataset, variableName, studyId).getSummary();
+  }
+
+  public Search.QueryResultDto getVariableFacet(@NotNull HarmonizedDataset dataset, String variableName,
+      String studyId) {
+    return getVariableValueSource(dataset, variableName, studyId).getFacet();
+  }
+
+  public Search.QueryResultDto getFacets(@NotNull HarmonizedDataset dataset, Search.QueryTermsDto query,
+      String studyId) {
+    return getTable(dataset, studyId).getFacets(query);
   }
 
   /**
@@ -214,10 +231,22 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizedDataset> 
     return getTable(dataset, studyId).getVariables();
   }
 
-  private RestValueTable getTable(@NotNull HarmonizedDataset dataset, String studyId) {
+  private RestValueTable getTable(@NotNull HarmonizedDataset dataset, String studyId)
+      throws NoSuchStudyException, NoSuchValueTableException {
     for(StudyTable studyTable : dataset.getStudyTables()) {
       if(studyTable.getStudyId().equals(studyId)) {
-        return execute(studyTable.getProject(), ds -> (RestValueTable) ds.getValueTable(studyTable.getTable()));
+        return execute(studyTable, ds -> (RestValueTable) ds.getValueTable(studyTable.getTable()));
+      }
+    }
+    throw NoSuchStudyException.withId(studyId);
+  }
+
+  private RestValueTable.RestVariableValueSource getVariableValueSource(@NotNull HarmonizedDataset dataset,
+      String variableName, String studyId)
+      throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
+    for(StudyTable studyTable : dataset.getStudyTables()) {
+      if(studyTable.getStudyId().equals(studyId)) {
+        return (RestValueTable.RestVariableValueSource) getTable(dataset, studyId).getVariableValueSource(variableName);
       }
     }
     throw NoSuchStudyException.withId(studyId);
@@ -233,6 +262,18 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizedDataset> 
    */
   private <T> T execute(String project, DatasourceCallback<T> callback) {
     return execute(getDatasource(project), callback);
+  }
+
+  /**
+   * Build or reuse the {@link org.obiba.opal.rest.client.magma.RestDatasource} and execute the callback with it.
+   *
+   * @param studyTable
+   * @param callback
+   * @param <T>
+   * @return
+   */
+  private <T> T execute(StudyTable studyTable, DatasourceCallback<T> callback) {
+    return execute(getDatasource(studyTable), callback);
   }
 
 }
