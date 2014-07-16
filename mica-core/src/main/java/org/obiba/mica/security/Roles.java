@@ -10,17 +10,9 @@
 
 package org.obiba.mica.security;
 
-public enum Roles {
-  MICA_ADMIN {
-    @Override
-    public String toString() {
-      return "mica-administrator";
-    }
-  }, //
-  MICA_USER {
-    @Override
-    public String toString() {
-      return "mica-user";
-    }
-  }
+public interface Roles {
+
+  String MICA_ADMIN = "mica-administrator";
+
+  String MICA_USER = "mica-user";
 }

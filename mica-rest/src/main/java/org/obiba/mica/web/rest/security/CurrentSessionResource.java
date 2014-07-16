@@ -52,10 +52,10 @@ public class CurrentSessionResource {
         .setUsername(subject.getPrincipal().toString());
 
     try {
-      subject.checkRole(Roles.MICA_ADMIN.toString());
-      builder.setRole(Roles.MICA_ADMIN.toString());
+      subject.checkRole(Roles.MICA_ADMIN);
+      builder.setRole(Roles.MICA_ADMIN);
     } catch(AuthorizationException e) {
-      builder.setRole(Roles.MICA_USER.toString());
+      builder.setRole(Roles.MICA_USER);
     }
 
     return builder.build();

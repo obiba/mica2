@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -25,9 +24,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.security.Roles;
 import org.obiba.mica.service.StudyDatasetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -40,7 +40,7 @@ import com.codahale.metrics.annotation.Timed;
 @Component
 @Scope("request")
 @Path("/draft")
-@RequiresAuthentication
+@RequiresRoles(Roles.MICA_ADMIN)
 public class DraftStudyDatasetsResource {
 
   @Inject
@@ -90,28 +90,6 @@ public class DraftStudyDatasetsResource {
     StudyDatasetResource resource = applicationContext.getBean(StudyDatasetResource.class);
     resource.setId(id);
     return resource;
-  }
-
-  @PUT
-  @Path("/study-dataset/{id}/_index")
-  @Timed
-  public Response index(@PathParam("id") String id) {
-    datasetService.index(id);
-    return Response.noContent().build();
-  }
-
-  @PUT
-  @Path("/study-dataset/{id}/_publish")
-  public Response publish(@PathParam("id") String id) {
-    datasetService.publish(id, true);
-    return Response.noContent().build();
-  }
-
-  @DELETE
-  @Path("/study-dataset/{id}/_publish")
-  public Response unPublish(@PathParam("id") String id) {
-    datasetService.publish(id, false);
-    return Response.noContent().build();
   }
 
 }

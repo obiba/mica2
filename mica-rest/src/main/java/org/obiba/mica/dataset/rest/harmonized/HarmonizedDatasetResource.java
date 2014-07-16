@@ -13,6 +13,7 @@ package org.obiba.mica.dataset.rest.harmonized;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -22,8 +23,10 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizedDataset;
+import org.obiba.mica.security.Roles;
 import org.obiba.mica.service.HarmonizedDatasetService;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Magma;
@@ -61,12 +64,39 @@ public class HarmonizedDatasetResource {
 
   @PUT
   @Timed
+  @RequiresRoles(Roles.MICA_ADMIN)
   public Response update(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo) {
-    if (!datasetDto.hasId() || datasetDto.getId().equals(id)) throw new IllegalArgumentException("Not the expected dataset id");
+    if(!datasetDto.hasId() || datasetDto.getId().equals(id))
+      throw new IllegalArgumentException("Not the expected dataset id");
     Dataset dataset = dtos.fromDto(datasetDto);
-    if(!(dataset instanceof HarmonizedDataset)) throw new IllegalArgumentException("A harmonized dataset is expected");
+    if(!(dataset instanceof HarmonizedDataset)) throw new IllegalArgumentException("An harmonized dataset is expected");
 
     datasetService.save((HarmonizedDataset) dataset);
+    return Response.noContent().build();
+  }
+
+  @PUT
+  @Path("/_index")
+  @Timed
+  @RequiresRoles(Roles.MICA_ADMIN)
+  public Response index() {
+    datasetService.index(id);
+    return Response.noContent().build();
+  }
+
+  @PUT
+  @Path("/_publish")
+  @RequiresRoles(Roles.MICA_ADMIN)
+  public Response publish() {
+    datasetService.publish(id, true);
+    return Response.noContent().build();
+  }
+
+  @DELETE
+  @Path("/_publish")
+  @RequiresRoles(Roles.MICA_ADMIN)
+  public Response unPublish() {
+    datasetService.publish(id, false);
     return Response.noContent().build();
   }
 
