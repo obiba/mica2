@@ -123,6 +123,15 @@ public class HarmonizedDatasetResource {
     return resource;
   }
 
+  @Path("/study/{study}/variable/{variable}")
+  public HarmonizedDatasetVariableResource getVariable(@PathParam("study") String studyId, @PathParam("variable") String variable) {
+    HarmonizedDatasetVariableResource resource = applicationContext.getBean(HarmonizedDatasetVariableResource.class);
+    resource.setDatasetId(id);
+    resource.setName(variable);
+    resource.setStudyId(studyId);
+    return resource;
+  }
+
   private HarmonizedDataset getDataset() {
     return datasetService.findById(id);
   }
