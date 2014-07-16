@@ -15,7 +15,6 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.domain.StudyTable;
 
 /**
@@ -42,6 +41,7 @@ public class HarmonizedDataset extends Dataset {
   @NotNull
   private String table;
 
+  @NotNull
   public List<StudyTable> getStudyTables() {
     return studyTables == null ? studyTables = new ArrayList<>() : studyTables;
   }
