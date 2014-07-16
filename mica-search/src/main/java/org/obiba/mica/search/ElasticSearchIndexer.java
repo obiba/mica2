@@ -4,6 +4,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
@@ -12,11 +13,16 @@ import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.deletebyquery.DeleteByQueryResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
 import org.obiba.mica.domain.Indexable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -131,8 +137,34 @@ public class ElasticSearchIndexer {
   }
 
   public DeleteByQueryResponse delete(String indexName, String type, QueryBuilder query) {
+    return deleteParentChild(indexName, type, query);
+    //createIndexIfNeeded(indexName);
+    //return client.prepareDeleteByQuery(indexName).setTypes(type).setQuery(query).execute().actionGet();
+  }
+
+  private DeleteByQueryResponse deleteParentChild(String indexName, String type, QueryBuilder query) {
     createIndexIfNeeded(indexName);
-    return client.prepareDeleteByQuery(indexName).setTypes(type).setQuery(query).execute().actionGet();
+
+    // ES does not support (yet?) delete by query with has_parent or has_child
+    // workaround is to search the ids, then delete them explicitly
+    try {
+      SearchRequestBuilder search = new SearchRequestBuilder(client) //
+          .setIndices(indexName) //
+          .setTypes(type) //
+          .setQuery(query) //
+          .setSize(Integer.MAX_VALUE) //
+          .setNoFields();
+
+      log.debug("Request: {}", search.toString());
+      SearchResponse response = search.execute().actionGet();
+      log.debug("Response: {}", response.toString());
+
+      IdsQueryBuilder idsQuery = QueryBuilders.idsQuery(type);
+      response.getHits().forEach(hit -> idsQuery.addIds(hit.getId()));
+      return client.prepareDeleteByQuery(indexName).setTypes(type).setQuery(idsQuery).execute().actionGet();
+    } catch(ElasticsearchException e) {
+      return client.prepareDeleteByQuery(indexName).setTypes(type).setQuery(query).execute().actionGet();
+    }
   }
 
   public boolean hasIndex(String indexName) {
@@ -172,7 +204,7 @@ public class ElasticSearchIndexer {
           .put("number_of_replicas", elasticSearchConfiguration.getNbReplicas()).build();
 
       indicesAdmin.prepareCreate(indexName).setSettings(settings).execute().actionGet();
-      if (indexConfigurationListeners != null) {
+      if(indexConfigurationListeners != null) {
         indexConfigurationListeners.forEach(listener -> listener.onIndexCreated(client, indexName));
       }
     }

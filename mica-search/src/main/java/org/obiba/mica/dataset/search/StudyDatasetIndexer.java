@@ -17,6 +17,7 @@ import javax.inject.Inject;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.event.DatasetDeletedEvent;
+import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.event.IndexDatasetsEvent;
 import org.obiba.mica.dataset.event.IndexStudyDatasetsEvent;
@@ -45,8 +46,18 @@ public class StudyDatasetIndexer extends DatasetIndexer<StudyDataset> {
     if(!event.isStudyDataset()) return;
     log.info("Dataset {} was updated", event.getPersistable());
     StudyDataset studyDataset = (StudyDataset) event.getPersistable();
-    reIndex(studyDataset);
-    reIndex(studyDataset, studyDataset.getStudyTable().getStudyId());
+    reIndexDraft(studyDataset);
+    reIndexDraft(studyDataset, studyDataset.getStudyTable().getStudyId());
+  }
+
+  @Async
+  @Subscribe
+  public void datasetPublished(DatasetPublishedEvent event) {
+    if(!event.isStudyDataset()) return;
+    log.info("Dataset {} was published: {}", event.getPersistable(), event.isPublished());
+    StudyDataset studyDataset = (StudyDataset) event.getPersistable();
+    reIndexPublished(studyDataset);
+    reIndexPublished(studyDataset, studyDataset.getStudyTable().getStudyId());
   }
 
   @Async

@@ -12,8 +12,10 @@ package org.obiba.mica.dataset.search;
 
 import javax.inject.Inject;
 
+import org.elasticsearch.action.deletebyquery.DeleteByQueryResponse;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.rest.RestStatus;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.domain.Indexable;
@@ -41,24 +43,29 @@ public abstract class DatasetIndexer<T extends Dataset> {
   @Inject
   protected ElasticSearchIndexer elasticSearchIndexer;
 
-  protected void reIndex(T dataset) {
-    deleteFromDatasetIndices(dataset);
+  protected void reIndexDraft(T dataset) {
+    deleteFromDatasetIndex(DRAFT_DATASET_INDEX, dataset);
     elasticSearchIndexer.index(DRAFT_DATASET_INDEX, (Indexable) dataset);
-    Iterable<DatasetVariable> variables = getVariables(dataset);
-    indexDatasetVariables(DRAFT_DATASET_INDEX, variables, dataset);
+    indexDatasetVariables(DRAFT_DATASET_INDEX, getVariables(dataset), dataset);
+  }
+
+  protected void reIndexPublished(T dataset) {
+    deleteFromDatasetIndex(PUBLISHED_DATASET_INDEX, dataset);
     if(dataset.isPublished()) {
       elasticSearchIndexer.index(PUBLISHED_DATASET_INDEX, (Indexable) dataset);
-      indexDatasetVariables(PUBLISHED_DATASET_INDEX, variables, dataset);
+      indexDatasetVariables(PUBLISHED_DATASET_INDEX, getVariables(dataset), dataset);
     }
   }
 
-  protected void reIndex(T dataset, String studyId) {
-    deleteFromStudyIndices(dataset, studyId);
-    indexStudyVariables(StudyIndexer.DRAFT_STUDY_INDEX, dataset,
-        studyService.findDraftStudy(studyId));
-    if (studyService.isPublished(studyId)) {
-      indexStudyVariables(StudyIndexer.PUBLISHED_STUDY_INDEX, dataset,
-          studyService.findPublishedStudy(studyId));
+  protected void reIndexDraft(T dataset, String studyId) {
+    deleteFromStudyIndex(StudyIndexer.DRAFT_STUDY_INDEX, dataset, studyId);
+    indexStudyVariables(StudyIndexer.DRAFT_STUDY_INDEX, dataset, studyService.findDraftStudy(studyId));
+  }
+
+  protected void reIndexPublished(T dataset, String studyId) {
+    deleteFromStudyIndex(StudyIndexer.PUBLISHED_STUDY_INDEX, dataset, studyId);
+    if(dataset.isPublished() && studyService.isPublished(studyId)) {
+      indexStudyVariables(StudyIndexer.PUBLISHED_STUDY_INDEX, dataset, studyService.findPublishedStudy(studyId));
     }
   }
 
@@ -69,10 +76,10 @@ public abstract class DatasetIndexer<T extends Dataset> {
 
   private void deleteFromDatasetIndex(String indexName, T dataset) {
     // remove variables that have this dataset as parent
-    QueryBuilder datasetChildrenQuery = QueryBuilders
+    QueryBuilder query = QueryBuilders
         .hasParentQuery(Dataset.MAPPING_NAME, QueryBuilders.idsQuery(Dataset.MAPPING_NAME).addIds(dataset.getId()));
 
-    elasticSearchIndexer.delete(indexName, VARIABLE_TYPE, datasetChildrenQuery);
+    checkDeleteResponse(indexName, query, elasticSearchIndexer.delete(indexName, VARIABLE_TYPE, query));
     elasticSearchIndexer.delete(indexName, (Indexable) dataset);
   }
 
@@ -88,7 +95,13 @@ public abstract class DatasetIndexer<T extends Dataset> {
     QueryBuilder query = QueryBuilders.boolQuery().must(studyChildrenQuery)
         .must(QueryBuilders.termQuery("datasetId", dataset.getId()));
 
-    elasticSearchIndexer.delete(indexName, VARIABLE_TYPE, query);
+    checkDeleteResponse(indexName, query, elasticSearchIndexer.delete(indexName, VARIABLE_TYPE, query));
+  }
+
+  private void checkDeleteResponse(String indexName, QueryBuilder query, DeleteByQueryResponse response) {
+    if(response.status().getStatus() >= RestStatus.BAD_REQUEST.getStatus()) {
+      log.error("Delete variables from {} failed ({}): {}", indexName, response.status(), query.toString());
+    }
   }
 
   protected void reIndexAll() {

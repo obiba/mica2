@@ -21,6 +21,7 @@ import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.StudyDatasetRepository;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.event.IndexStudyDatasetsEvent;
 import org.obiba.mica.dataset.service.DatasetService;
@@ -123,6 +124,7 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
     StudyDataset dataset = findById(id);
     dataset.setPublished(published);
     save(dataset);
+    eventBus.post(new DatasetPublishedEvent(dataset));
   }
 
   /**

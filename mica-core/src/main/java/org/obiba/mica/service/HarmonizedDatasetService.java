@@ -23,7 +23,7 @@ import org.obiba.mica.dataset.HarmonizedDatasetRepository;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizedDataset;
-import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.event.IndexHarmonizedDatasetsEvent;
 import org.obiba.mica.dataset.service.DatasetService;
@@ -144,6 +144,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizedDataset> 
     HarmonizedDataset dataset = findById(id);
     dataset.setPublished(published);
     save(dataset);
+    eventBus.post(new DatasetPublishedEvent(dataset));
   }
 
   /**

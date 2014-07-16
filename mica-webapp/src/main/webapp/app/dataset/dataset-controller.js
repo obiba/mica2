@@ -31,16 +31,20 @@ mica.dataset
 
       $scope.dataset = StudyDatasetResource.get({id: $routeParams.id});
 
-      $scope.publish = function () {
-        StudyDatasetPublicationResource.publish({id: $scope.dataset.id}, function () {
-          $scope.dataset = StudyDatasetResource.get({id: $routeParams.id});
-        });
+      $scope.isPublished = function() {
+        return $scope.dataset.published;
       };
 
-      $scope.unPublish = function () {
-        StudyDatasetPublicationResource.unPublish({id: $scope.dataset.id}, function () {
-          $scope.dataset = StudyDatasetResource.get({id: $routeParams.id});
-        });
+      $scope.publish = function () {
+        if ($scope.dataset.published) {
+          StudyDatasetPublicationResource.unPublish({id: $scope.dataset.id}, function () {
+            $scope.dataset = StudyDatasetResource.get({id: $routeParams.id});
+          });
+        } else {
+          StudyDatasetPublicationResource.publish({id: $scope.dataset.id}, function () {
+            $scope.dataset = StudyDatasetResource.get({id: $routeParams.id});
+          });
+        }
       };
 
       $scope.index = function () {
@@ -82,16 +86,20 @@ mica.dataset
         $scope.datasetTable = dataset['obiba.mica.HarmonizedDatasetDto.type'].table;
       });
 
-      $scope.publish = function () {
-        HarmonizedDatasetPublicationResource.publish({id: $scope.dataset.id}, function () {
-          $scope.dataset = HarmonizedDatasetResource.get({id: $routeParams.id});
-        });
+      $scope.isPublished = function() {
+        return $scope.dataset.published;
       };
 
-      $scope.unPublish = function () {
-        HarmonizedDatasetPublicationResource.unPublish({id: $scope.dataset.id}, function () {
-          $scope.dataset = HarmonizedDatasetResource.get({id: $routeParams.id});
-        });
+      $scope.publish = function () {
+        if ($scope.dataset.published) {
+          HarmonizedDatasetPublicationResource.unPublish({id: $scope.dataset.id}, function () {
+            $scope.dataset = HarmonizedDatasetResource.get({id: $routeParams.id});
+          });
+        } else {
+          HarmonizedDatasetPublicationResource.publish({id: $scope.dataset.id}, function () {
+            $scope.dataset = HarmonizedDatasetResource.get({id: $routeParams.id});
+          });
+        }
       };
 
       $scope.index = function () {

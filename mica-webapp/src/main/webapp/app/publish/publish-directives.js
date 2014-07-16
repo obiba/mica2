@@ -31,9 +31,8 @@ mica.publish
       restrict: 'AE',
       replace: true,
       scope: {
-        status: '=',
-        publish: '&',
-        unPublish: '&'
+        status: '&',
+        publish: '&'
       },
       templateUrl: 'app/publish/publish-switch-template.html'
     };

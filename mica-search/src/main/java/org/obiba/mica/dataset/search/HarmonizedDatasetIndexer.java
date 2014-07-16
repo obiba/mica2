@@ -17,6 +17,7 @@ import javax.inject.Inject;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizedDataset;
 import org.obiba.mica.dataset.event.DatasetDeletedEvent;
+import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.event.IndexDatasetsEvent;
 import org.obiba.mica.dataset.event.IndexHarmonizedDatasetsEvent;
@@ -45,8 +46,18 @@ public class HarmonizedDatasetIndexer extends DatasetIndexer<HarmonizedDataset> 
     if(event.isStudyDataset()) return;
     log.info("Dataset {} was updated", event.getPersistable());
     HarmonizedDataset harmonizedDataset = (HarmonizedDataset) event.getPersistable();
-    reIndex(harmonizedDataset);
-    harmonizedDataset.getStudyTables().forEach(studyTable -> reIndex(harmonizedDataset, studyTable.getStudyId()));
+    reIndexDraft(harmonizedDataset);
+    harmonizedDataset.getStudyTables().forEach(studyTable -> reIndexDraft(harmonizedDataset, studyTable.getStudyId()));
+  }
+
+  @Async
+  @Subscribe
+  public void datasetPublished(DatasetPublishedEvent event) {
+    if(event.isStudyDataset()) return;
+    log.info("Dataset {} was published: {}", event.getPersistable(), event.isPublished());
+    HarmonizedDataset harmonizedDataset = (HarmonizedDataset) event.getPersistable();
+    reIndexPublished(harmonizedDataset);
+    harmonizedDataset.getStudyTables().forEach(studyTable -> reIndexPublished(harmonizedDataset, studyTable.getStudyId()));
   }
 
   @Async

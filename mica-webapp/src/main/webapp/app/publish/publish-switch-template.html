@@ -1,6 +1,6 @@
-<a ng-click="status ? unPublish() : publish()" class="btn btn-primary">
-  <i class="fa fa-star-o" ng-show="!status"></i>
-  <span translate ng-show="!status">publish.label</span>
-  <i class="fa fa-star" ng-show="status"></i>
-  <span translate ng-show="status">publish.un-publish</span>
+<a ng-click="publish()" class="btn btn-primary">
+  <i class="fa fa-star-o" ng-show="!status()"></i>
+  <span translate ng-show="!status()">publish.label</span>
+  <i class="fa fa-star" ng-show="status()"></i>
+  <span translate ng-show="status()">publish.un-publish</span>
 </a>
