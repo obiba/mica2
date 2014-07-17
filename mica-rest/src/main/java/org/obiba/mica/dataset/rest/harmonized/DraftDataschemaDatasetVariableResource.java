@@ -69,6 +69,16 @@ public class DraftDataschemaDatasetVariableResource implements DatasetVariableRe
     return builder.build();
   }
 
+  @GET
+  @Path("/facet")
+  public List<Mica.DatasetVariableDto> getHarmonizedVariables() {
+    ImmutableList.Builder<Mica.DatasetVariableDto> builder = ImmutableList.builder();
+    HarmonizedDataset dataset = getDataset();
+    dataset.getStudyTables().forEach(
+        table -> builder.add(dtos.asDto(datasetService.getDatasetVariable(dataset, variableName, table.getStudyId()))));
+    return builder.build();
+  }
+
   private HarmonizedDataset getDataset() {
     return datasetService.findById(datasetId);
   }
