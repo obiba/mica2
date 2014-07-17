@@ -110,6 +110,9 @@ public abstract class Dataset extends AbstractAuditableDocument implements Attri
     return getClass().getSimpleName();
   }
 
+  // for JSON deserial
+  public void setClassName(String className) {}
+
   @Override
   public String getMappingName() {
     return MAPPING_NAME;

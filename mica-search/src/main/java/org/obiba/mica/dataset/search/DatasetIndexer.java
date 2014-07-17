@@ -37,6 +37,8 @@ public abstract class DatasetIndexer<T extends Dataset> {
 
   public static final String VARIABLE_TYPE = DatasetVariable.MAPPING_NAME;
 
+  public static final String DATASET_TYPE = Dataset.MAPPING_NAME;
+
   @Inject
   protected StudyService studyService;
 

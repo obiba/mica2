@@ -89,13 +89,12 @@ public class Dtos {
   }
 
   @NotNull
-  public Mica.DatasetDto asDto(@NotNull StudyDataset dataset) {
-    return datasetDtos.asDto(dataset);
-  }
-
-  @NotNull
-  public Mica.DatasetDto asDto(@NotNull HarmonizedDataset dataset) {
-    return datasetDtos.asDto(dataset);
+  public Mica.DatasetDto asDto(@NotNull Dataset dataset) {
+    if (dataset instanceof StudyDataset) {
+      return datasetDtos.asDto((StudyDataset)dataset);
+    } else {
+      return datasetDtos.asDto((HarmonizedDataset) dataset);
+    }
   }
 
   @NotNull

@@ -8,24 +8,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.search.rest;
+package org.obiba.mica.dataset.search.rest.variable;
 
 import javax.ws.rs.Path;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.dataset.search.DatasetIndexer;
-import org.obiba.mica.study.search.StudyIndexer;
 
 /**
- * Search for variables in the published study index.
+ * Search for variables in the published dataset index.
  */
-@Path("/variables/study/_search")
+@Path("/variables/dataset/_search")
 @RequiresAuthentication
-public class PublishedStudyVariablesSearchResource extends AbstractVariablesSearchResource {
+public class PublishedDatasetVariablesSearchResource extends AbstractVariablesSearchResource {
 
   @Override
   protected String getSearchIndex() {
-    return StudyIndexer.PUBLISHED_STUDY_INDEX;
+    return DatasetIndexer.PUBLISHED_DATASET_INDEX;
   }
 
   @Override
