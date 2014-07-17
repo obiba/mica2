@@ -15,6 +15,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.rest.harmonized.DraftDataschemaDatasetVariableResource;
 import org.obiba.mica.dataset.rest.harmonized.DraftHarmonizedDatasetVariableResource;
@@ -52,7 +53,7 @@ public class DraftDatasetVariableResource {
 
     if (resource != null) {
       resource.setDatasetId(resolver.getDatasetId());
-      resource.setName(resolver.getName());
+      resource.setVariableName(resolver.getName());
       return resource;
     }
 

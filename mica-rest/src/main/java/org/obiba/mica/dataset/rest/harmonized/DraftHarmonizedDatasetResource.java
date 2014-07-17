@@ -122,7 +122,7 @@ public class DraftHarmonizedDatasetResource {
   public DraftDataschemaDatasetVariableResource getVariable(@PathParam("variable") String variable) {
     DraftDataschemaDatasetVariableResource resource = applicationContext.getBean(DraftDataschemaDatasetVariableResource.class);
     resource.setDatasetId(id);
-    resource.setName(variable);
+    resource.setVariableName(variable);
     return resource;
   }
 
@@ -130,7 +130,7 @@ public class DraftHarmonizedDatasetResource {
   public DraftHarmonizedDatasetVariableResource getVariable(@PathParam("study") String studyId, @PathParam("variable") String variable) {
     DraftHarmonizedDatasetVariableResource resource = applicationContext.getBean(DraftHarmonizedDatasetVariableResource.class);
     resource.setDatasetId(id);
-    resource.setName(variable);
+    resource.setVariableName(variable);
     resource.setStudyId(studyId);
     return resource;
   }

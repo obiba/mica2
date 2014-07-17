@@ -8,20 +8,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.rest.harmonized;
+package org.obiba.mica.dataset.search.rest.harmonized;
 
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizedDataset;
-import org.obiba.mica.dataset.DatasetVariableResource;
+import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetVariableResource;
 import org.obiba.mica.domain.StudyTable;
 import org.obiba.mica.service.HarmonizedDatasetService;
-import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Math;
 import org.obiba.opal.web.model.Search;
@@ -30,32 +31,36 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.ImmutableList;
 
+/**
+ * Dataschema variable resource: variable describing an harmonized dataset.
+ */
 @Component
 @Scope("request")
 @RequiresAuthentication
-public class DraftDataschemaDatasetVariableResource implements DatasetVariableResource {
+public class PublishedDataschemaDatasetVariableResource
+    extends AbstractPublishedDatasetVariableResource<HarmonizedDataset> {
 
+  @PathParam("id")
   private String datasetId;
 
+  @PathParam("name")
   private String variableName;
 
   @Inject
   private HarmonizedDatasetService datasetService;
 
-  @Inject
-  private Dtos dtos;
-
   @GET
   public Mica.DatasetVariableDto getVariable() {
-    return dtos.asDto(datasetService.getDatasetVariable(getDataset(), variableName));
+    return getDatasetVariableDto(HarmonizedDataset.class, datasetId, variableName);
   }
 
   @GET
   @Path("/summary")
   public List<Math.SummaryStatisticsDto> getVariableSummaries() {
     ImmutableList.Builder<Math.SummaryStatisticsDto> builder = ImmutableList.builder();
-    for (StudyTable table : getDataset().getStudyTables()) {
-      builder.add(datasetService.getVariableSummary(getDataset(), variableName, table.getStudyId()));
+    HarmonizedDataset dataset = getDataset(HarmonizedDataset.class, datasetId);
+    for(StudyTable table : dataset.getStudyTables()) {
+      builder.add(datasetService.getVariableSummary(dataset, variableName, table.getStudyId()));
     }
     return builder.build();
   }
@@ -64,14 +69,16 @@ public class DraftDataschemaDatasetVariableResource implements DatasetVariableRe
   @Path("/facet")
   public List<Search.QueryResultDto> getVariableFacets() {
     ImmutableList.Builder<Search.QueryResultDto> builder = ImmutableList.builder();
-    for (StudyTable table : getDataset().getStudyTables()) {
-      builder.add(datasetService.getVariableFacet(getDataset(), variableName, table.getStudyId()));
+    HarmonizedDataset dataset = getDataset(HarmonizedDataset.class, datasetId);
+    for(StudyTable table : dataset.getStudyTables()) {
+      builder.add(datasetService.getVariableFacet(dataset, variableName, table.getStudyId()));
     }
     return builder.build();
   }
 
-  private HarmonizedDataset getDataset() {
-    return datasetService.findById(datasetId);
+  @Override
+  protected DatasetVariable.Type getDatasetVariableType() {
+    return DatasetVariable.Type.Dataschema;
   }
 
   @Override

@@ -122,7 +122,7 @@ public class DraftStudyDatasetResource {
   public DraftStudyDatasetVariableResource getVariable(@PathParam("variable") String variable) {
     DraftStudyDatasetVariableResource resource = applicationContext.getBean(DraftStudyDatasetVariableResource.class);
     resource.setDatasetId(id);
-    resource.setName(variable);
+    resource.setVariableName(variable);
     return resource;
   }
 

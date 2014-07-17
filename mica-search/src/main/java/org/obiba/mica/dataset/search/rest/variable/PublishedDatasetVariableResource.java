@@ -8,18 +8,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.rest.variable;
+package org.obiba.mica.dataset.search.rest.variable;
 
 import javax.inject.Inject;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.DatasetVariable;
-import org.obiba.mica.dataset.rest.harmonized.DraftDataschemaDatasetVariableResource;
-import org.obiba.mica.dataset.rest.harmonized.DraftHarmonizedDatasetVariableResource;
-import org.obiba.mica.dataset.rest.study.DraftStudyDatasetVariableResource;
+import org.obiba.mica.dataset.search.rest.harmonized.PublishedDataschemaDatasetVariableResource;
+import org.obiba.mica.dataset.search.rest.harmonized.PublishedHarmonizedDatasetVariableResource;
+import org.obiba.mica.dataset.search.rest.study.PublishedStudyDatasetVariableResource;
 import org.obiba.mica.service.HarmonizedDatasetService;
 import org.obiba.mica.service.StudyDatasetService;
 import org.springframework.context.ApplicationContext;
@@ -48,22 +49,22 @@ public class PublishedDatasetVariableResource {
     switch(resolver.getType()) {
       case Study:
         if (!studyDatasetService.isPublished(resolver.getDatasetId())) throw NoSuchDatasetException.withId(resolver.getDatasetId());
-        resource = applicationContext.getBean(DraftStudyDatasetVariableResource.class);
+        resource = applicationContext.getBean(PublishedStudyDatasetVariableResource.class);
         break;
       case Dataschema:
         if (!harmonizedDatasetService.isPublished(resolver.getDatasetId())) throw NoSuchDatasetException.withId(resolver.getDatasetId());
-        resource = applicationContext.getBean(DraftDataschemaDatasetVariableResource.class);
+        resource = applicationContext.getBean(PublishedDataschemaDatasetVariableResource.class);
         break;
       case Harmonized:
         if (!harmonizedDatasetService.isPublished(resolver.getDatasetId())) throw NoSuchDatasetException.withId(resolver.getDatasetId());
-        resource = applicationContext.getBean(DraftHarmonizedDatasetVariableResource.class);
-        ((DraftHarmonizedDatasetVariableResource)resource).setStudyId(resolver.getStudyId());
+        resource = applicationContext.getBean(PublishedHarmonizedDatasetVariableResource.class);
+        ((PublishedHarmonizedDatasetVariableResource)resource).setStudyId(resolver.getStudyId());
         break;
     }
 
     if (resource != null) {
       resource.setDatasetId(resolver.getDatasetId());
-      resource.setName(resolver.getName());
+      resource.setVariableName(resolver.getName());
       return resource;
     }
 

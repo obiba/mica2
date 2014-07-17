@@ -21,7 +21,7 @@ import javax.ws.rs.PathParam;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.StudyDataset;
-import org.obiba.mica.dataset.search.rest.PublishedDatasetSearchResource;
+import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetResource;
 import org.obiba.mica.service.StudyDatasetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -29,11 +29,14 @@ import org.obiba.opal.web.model.*;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+/**
+ * Study variable resource: variable describing a study dataset.
+ */
 @Component
 @Scope("request")
 @Path("/study-dataset/{id}")
 @RequiresAuthentication
-public class PublishedStudyDatasetResource extends PublishedDatasetSearchResource<StudyDataset> {
+public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResource<StudyDataset> {
 
   @PathParam("id")
   private String id;
@@ -65,32 +68,22 @@ public class PublishedStudyDatasetResource extends PublishedDatasetSearchResourc
     return getDatasetVariableDtos(StudyDataset.class, id);
   }
 
-  @GET
-  @Path("/variable/{name}")
-  public Mica.DatasetVariableDto getVariable(@PathParam("name") String variableName) {
-    return getDatasetVariableDto(StudyDataset.class, id, variableName);
-  }
-
-  @GET
-  @Path("/variable/{name}/summary")
-  public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary(@PathParam("name") String variableName) {
-    return datasetService.getVariableSummary(getDataset(StudyDataset.class, id), variableName);
-  }
-
-  @GET
-  @Path("/variable/{name}/facet")
-  public Search.QueryResultDto getVariableFacet(@PathParam("name") String variableName) {
-    return datasetService.getVariableFacet(getDataset(StudyDataset.class, id), variableName);
-  }
-
-  @Override
-  protected DatasetVariable.Type getDatasetVariableType() {
-    return DatasetVariable.Type.Study;
+  @Path("/variable/{variable}")
+  public PublishedStudyDatasetVariableResource getVariable(@PathParam("variable") String variable) {
+    PublishedStudyDatasetVariableResource resource = applicationContext.getBean(PublishedStudyDatasetVariableResource.class);
+    resource.setDatasetId(id);
+    resource.setVariableName(variable);
+    return resource;
   }
 
   @POST
   @Path("/facets")
   public Search.QueryResultDto getFacets(Search.QueryTermsDto query) {
     return datasetService.getFacets(getDataset(StudyDataset.class, id), query);
+  }
+
+  @Override
+  protected DatasetVariable.Type getDatasetVariableType() {
+    return DatasetVariable.Type.Study;
   }
 }
