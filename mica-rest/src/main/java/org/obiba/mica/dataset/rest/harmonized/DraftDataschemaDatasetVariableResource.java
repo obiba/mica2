@@ -17,9 +17,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.dataset.domain.HarmonizedDataset;
 import org.obiba.mica.dataset.DatasetVariableResource;
-import org.obiba.mica.domain.StudyTable;
+import org.obiba.mica.dataset.domain.HarmonizedDataset;
 import org.obiba.mica.service.HarmonizedDatasetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -54,9 +53,9 @@ public class DraftDataschemaDatasetVariableResource implements DatasetVariableRe
   @Path("/summary")
   public List<Math.SummaryStatisticsDto> getVariableSummaries() {
     ImmutableList.Builder<Math.SummaryStatisticsDto> builder = ImmutableList.builder();
-    for (StudyTable table : getDataset().getStudyTables()) {
-      builder.add(datasetService.getVariableSummary(getDataset(), variableName, table.getStudyId()));
-    }
+    HarmonizedDataset dataset = getDataset();
+    dataset.getStudyTables()
+        .forEach(table -> builder.add(datasetService.getVariableSummary(dataset, variableName, table.getStudyId())));
     return builder.build();
   }
 
@@ -64,9 +63,9 @@ public class DraftDataschemaDatasetVariableResource implements DatasetVariableRe
   @Path("/facet")
   public List<Search.QueryResultDto> getVariableFacets() {
     ImmutableList.Builder<Search.QueryResultDto> builder = ImmutableList.builder();
-    for (StudyTable table : getDataset().getStudyTables()) {
-      builder.add(datasetService.getVariableFacet(getDataset(), variableName, table.getStudyId()));
-    }
+    HarmonizedDataset dataset = getDataset();
+    dataset.getStudyTables()
+        .forEach(table -> builder.add(datasetService.getVariableFacet(dataset, variableName, table.getStudyId())));
     return builder.build();
   }
 

@@ -21,7 +21,6 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizedDataset;
 import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetVariableResource;
-import org.obiba.mica.domain.StudyTable;
 import org.obiba.mica.service.HarmonizedDatasetService;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Math;
@@ -59,9 +58,8 @@ public class PublishedDataschemaDatasetVariableResource
   public List<Math.SummaryStatisticsDto> getVariableSummaries() {
     ImmutableList.Builder<Math.SummaryStatisticsDto> builder = ImmutableList.builder();
     HarmonizedDataset dataset = getDataset(HarmonizedDataset.class, datasetId);
-    for(StudyTable table : dataset.getStudyTables()) {
-      builder.add(datasetService.getVariableSummary(dataset, variableName, table.getStudyId()));
-    }
+    dataset.getStudyTables()
+        .forEach(table -> builder.add(datasetService.getVariableSummary(dataset, variableName, table.getStudyId())));
     return builder.build();
   }
 
@@ -70,15 +68,23 @@ public class PublishedDataschemaDatasetVariableResource
   public List<Search.QueryResultDto> getVariableFacets() {
     ImmutableList.Builder<Search.QueryResultDto> builder = ImmutableList.builder();
     HarmonizedDataset dataset = getDataset(HarmonizedDataset.class, datasetId);
-    for(StudyTable table : dataset.getStudyTables()) {
-      builder.add(datasetService.getVariableFacet(dataset, variableName, table.getStudyId()));
-    }
+    dataset.getStudyTables()
+        .forEach(table -> builder.add(datasetService.getVariableFacet(dataset, variableName, table.getStudyId())));
+    return builder.build();
+  }
+
+  @GET
+  @Path("/harmonized")
+  public List<Mica.DatasetVariableDto> getHarmonizedVariables() {
+    ImmutableList.Builder<Mica.DatasetVariableDto> builder = ImmutableList.builder();
+    HarmonizedDataset dataset = getDataset(HarmonizedDataset.class, datasetId);
+    dataset.getStudyTables().forEach(table -> builder.add(getDatasetVariableDto(HarmonizedDataset.class, datasetId, variableName, table.getStudyId())));
     return builder.build();
   }
 
   @Override
   protected DatasetVariable.Type getDatasetVariableType(String studyId) {
-    return DatasetVariable.Type.Dataschema;
+    return studyId == null ? DatasetVariable.Type.Dataschema : DatasetVariable.Type.Harmonized;
   }
 
   @Override
