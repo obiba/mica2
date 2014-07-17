@@ -58,7 +58,7 @@ public class DraftDataschemaDatasetVariableResource extends DatasetVariableResou
 
   @GET
   @Path("/facet")
-  public List<Search.QueryResultDto> getVariableFacet() {
+  public List<Search.QueryResultDto> getVariableFacets() {
     ImmutableList.Builder<Search.QueryResultDto> builder = ImmutableList.builder();
     for (StudyTable table : getDataset().getStudyTables()) {
       builder.add(datasetService.getVariableFacet(getDataset(), getName(), table.getStudyId()));

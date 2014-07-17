@@ -15,6 +15,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -26,10 +27,12 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizedDataset;
+import org.obiba.mica.domain.StudyTable;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.service.HarmonizedDatasetService;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Magma;
+import org.obiba.opal.web.model.Search;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -130,6 +133,17 @@ public class DraftHarmonizedDatasetResource {
     resource.setName(variable);
     resource.setStudyId(studyId);
     return resource;
+  }
+
+  @POST
+  @Path("/facets")
+  public List<Search.QueryResultDto> getFacets(Search.QueryTermsDto query) {
+    ImmutableList.Builder<Search.QueryResultDto> builder = ImmutableList.builder();
+    HarmonizedDataset dataset = getDataset();
+    for(StudyTable table : dataset.getStudyTables()) {
+      builder.add(datasetService.getFacets(dataset, query, table.getStudyId()));
+    }
+    return builder.build();
   }
 
   private HarmonizedDataset getDataset() {
