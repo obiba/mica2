@@ -18,9 +18,9 @@ mica.dataset
 
     }])
 
-  .controller('StudyDatasetViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', 'StudyDatasetResource', 'StudyDatasetPublicationResource', 'StudyDatasetIndexResource', 'MicaConfigResource',
+  .controller('StudyDatasetViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', 'StudyDatasetResource', 'StudyDatasetPublicationResource', 'MicaConfigResource',
 
-    function ($rootScope, $scope, $routeParams, $log, $locale, $location, StudyDatasetResource, StudyDatasetPublicationResource, StudyDatasetIndexResource, MicaConfigResource) {
+    function ($rootScope, $scope, $routeParams, $log, $locale, $location, StudyDatasetResource, StudyDatasetPublicationResource, MicaConfigResource) {
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
@@ -47,10 +47,6 @@ mica.dataset
         }
       };
 
-      $scope.index = function () {
-        StudyDatasetIndexResource.index({id: $scope.dataset.id}, function () {});
-      };
-
     }])
 
   .controller('HarmonizedDatasetListController', ['$scope', 'HarmonizedDatasetsResource', 'HarmonizedDatasetResource',
@@ -69,9 +65,9 @@ mica.dataset
 
     }])
 
-  .controller('HarmonizedDatasetViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', 'HarmonizedDatasetResource', 'HarmonizedDatasetPublicationResource', 'HarmonizedDatasetIndexResource', 'MicaConfigResource',
+  .controller('HarmonizedDatasetViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', 'HarmonizedDatasetResource', 'HarmonizedDatasetPublicationResource', 'MicaConfigResource',
 
-    function ($rootScope, $scope, $routeParams, $log, $locale, $location, HarmonizedDatasetResource, HarmonizedDatasetPublicationResource, HarmonizedDatasetIndexResource, MicaConfigResource) {
+    function ($rootScope, $scope, $routeParams, $log, $locale, $location, HarmonizedDatasetResource, HarmonizedDatasetPublicationResource, MicaConfigResource) {
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.opal = micaConfig.opal;
@@ -100,10 +96,6 @@ mica.dataset
             $scope.dataset = HarmonizedDatasetResource.get({id: $routeParams.id});
           });
         }
-      };
-
-      $scope.index = function () {
-        HarmonizedDatasetIndexResource.index({id: $scope.dataset.id}, function () {});
       };
 
     }]);

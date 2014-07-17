@@ -21,13 +21,6 @@ mica.dataset
       });
     }])
 
-  .factory('StudyDatasetIndexResource', ['$resource',
-    function ($resource) {
-      return $resource('ws/draft/study-dataset/:id/_index', {}, {
-        'index': {method: 'PUT', params: {id: '@id'}}
-      });
-    }])
-
   .factory('HarmonizedDatasetsResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/harmonized-datasets');
@@ -45,12 +38,5 @@ mica.dataset
       return $resource('ws/draft/harmonized-dataset/:id/_publish', {}, {
         'publish': {method: 'PUT', params: {id: '@id'}},
         'unPublish': {method: 'DELETE', params: {id: '@id'}}
-      });
-    }])
-
-  .factory('HarmonizedDatasetIndexResource', ['$resource',
-    function ($resource) {
-      return $resource('ws/draft/harmonized-dataset/:id/_index', {}, {
-        'index': {method: 'PUT', params: {id: '@id'}}
       });
     }]);

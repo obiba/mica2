@@ -58,7 +58,6 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
   @Inject
   private HarmonizedDatasetService harmonizedDatasetService;
 
-
 //  @Inject
 //  private NetworkRepository networkRepository;
 
@@ -84,23 +83,23 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
     table.setTable("FNAC");
     studyDataset.setStudyTable(table);
     studyDatasetService.save(studyDataset);
+    studyDatasetService.publish(studyDataset.getId(), true);
 
     HarmonizedDataset harmonizedDataset = new HarmonizedDataset();
     harmonizedDataset.setName(en("Healthy Obese Project").forFr("Projet des obeses en sante"));
     harmonizedDataset.setEntityType("Participant");
     harmonizedDataset.setProject("mica");
     harmonizedDataset.setTable("HOP");
-    harmonizedDataset.setPublished(true);
     table = new StudyTable();
     table.setStudyId(study.getId());
     table.setProject("test");
     table.setTable("HOP");
     harmonizedDataset.addStudyTable(table);
     harmonizedDatasetService.save(harmonizedDataset);
+    harmonizedDatasetService.publish(harmonizedDataset.getId(), true);
 
-    studyService.save(createStudy("NCDS", "National Child Development Study", "National Child Development Study"));
-
-
+    study = createStudy("NCDS", "National Child Development Study", "National Child Development Study");
+    studyService.save(study);
 
 //    Network network = createNetwork();
 //    network.addStudy(study);
