@@ -5,7 +5,7 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
-import org.obiba.mica.dataset.domain.HarmonizedDataset;
+import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.domain.Network;
 import org.obiba.mica.file.TempFile;
@@ -93,7 +93,7 @@ public class Dtos {
     if (dataset instanceof StudyDataset) {
       return datasetDtos.asDto((StudyDataset)dataset);
     } else {
-      return datasetDtos.asDto((HarmonizedDataset) dataset);
+      return datasetDtos.asDto((HarmonizationDataset) dataset);
     }
   }
 

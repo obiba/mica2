@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.rest.harmonized;
+package org.obiba.mica.dataset.rest.harmonization;
 
 import java.util.List;
 
@@ -18,8 +18,8 @@ import javax.ws.rs.Path;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.dataset.DatasetVariableResource;
-import org.obiba.mica.dataset.domain.HarmonizedDataset;
-import org.obiba.mica.service.HarmonizedDatasetService;
+import org.obiba.mica.dataset.domain.HarmonizationDataset;
+import org.obiba.mica.service.HarmonizationDatasetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Math;
@@ -39,7 +39,7 @@ public class DraftDataschemaDatasetVariableResource implements DatasetVariableRe
   private String variableName;
 
   @Inject
-  private HarmonizedDatasetService datasetService;
+  private HarmonizationDatasetService datasetService;
 
   @Inject
   private Dtos dtos;
@@ -53,7 +53,7 @@ public class DraftDataschemaDatasetVariableResource implements DatasetVariableRe
   @Path("/summary")
   public List<Math.SummaryStatisticsDto> getVariableSummaries() {
     ImmutableList.Builder<Math.SummaryStatisticsDto> builder = ImmutableList.builder();
-    HarmonizedDataset dataset = getDataset();
+    HarmonizationDataset dataset = getDataset();
     dataset.getStudyTables()
         .forEach(table -> builder.add(datasetService.getVariableSummary(dataset, variableName, table.getStudyId())));
     return builder.build();
@@ -63,7 +63,7 @@ public class DraftDataschemaDatasetVariableResource implements DatasetVariableRe
   @Path("/facet")
   public List<Search.QueryResultDto> getVariableFacets() {
     ImmutableList.Builder<Search.QueryResultDto> builder = ImmutableList.builder();
-    HarmonizedDataset dataset = getDataset();
+    HarmonizationDataset dataset = getDataset();
     dataset.getStudyTables()
         .forEach(table -> builder.add(datasetService.getVariableFacet(dataset, variableName, table.getStudyId())));
     return builder.build();
@@ -73,13 +73,13 @@ public class DraftDataschemaDatasetVariableResource implements DatasetVariableRe
   @Path("/harmonizations")
   public List<Mica.DatasetVariableDto> getHarmonizedVariables() {
     ImmutableList.Builder<Mica.DatasetVariableDto> builder = ImmutableList.builder();
-    HarmonizedDataset dataset = getDataset();
+    HarmonizationDataset dataset = getDataset();
     dataset.getStudyTables().forEach(
         table -> builder.add(dtos.asDto(datasetService.getDatasetVariable(dataset, variableName, table.getStudyId()))));
     return builder.build();
   }
 
-  private HarmonizedDataset getDataset() {
+  private HarmonizationDataset getDataset() {
     return datasetService.findById(datasetId);
   }
 

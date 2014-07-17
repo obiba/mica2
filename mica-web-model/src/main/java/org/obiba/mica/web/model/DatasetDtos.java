@@ -18,7 +18,7 @@ import javax.validation.constraints.NotNull;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetCategory;
 import org.obiba.mica.dataset.domain.DatasetVariable;
-import org.obiba.mica.dataset.domain.HarmonizedDataset;
+import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.domain.StudyTable;
 import org.springframework.stereotype.Component;
@@ -46,16 +46,16 @@ class DatasetDtos {
   }
 
   @NotNull
-  Mica.DatasetDto asDto(@NotNull HarmonizedDataset dataset) {
+  Mica.DatasetDto asDto(@NotNull HarmonizationDataset dataset) {
     Mica.DatasetDto.Builder builder = asDtoBuilder(dataset);
 
-    Mica.HarmonizedDatasetDto.Builder hbuilder = Mica.HarmonizedDatasetDto.newBuilder();
+    Mica.HarmonizationDatasetDto.Builder hbuilder = Mica.HarmonizationDatasetDto.newBuilder();
     hbuilder.setProject(dataset.getProject());
     hbuilder.setTable(dataset.getTable());
     if(!dataset.getStudyTables().isEmpty()) {
       hbuilder.addAllStudyTables(dataset.getStudyTables().stream().map(this::asDto).collect(Collectors.toList()));
     }
-    builder.setExtension(Mica.HarmonizedDatasetDto.type, hbuilder.build());
+    builder.setExtension(Mica.HarmonizationDatasetDto.type, hbuilder.build());
 
     return builder.build();
   }
@@ -157,15 +157,15 @@ class DatasetDtos {
   @NotNull
   public Dataset fromDto(Mica.DatasetDto dto) {
     Dataset dataset;
-    if (dto.hasExtension(Mica.HarmonizedDatasetDto.type)) {
-      HarmonizedDataset harmonizedDataset = new HarmonizedDataset();
-      Mica.HarmonizedDatasetDto ext = dto.getExtension(Mica.HarmonizedDatasetDto.type);
-      harmonizedDataset.setProject(ext.getProject());
-      harmonizedDataset.setTable(ext.getTable());
+    if (dto.hasExtension(Mica.HarmonizationDatasetDto.type)) {
+      HarmonizationDataset harmonizationDataset = new HarmonizationDataset();
+      Mica.HarmonizationDatasetDto ext = dto.getExtension(Mica.HarmonizationDatasetDto.type);
+      harmonizationDataset.setProject(ext.getProject());
+      harmonizationDataset.setTable(ext.getTable());
       if (ext.getStudyTablesCount()>0) {
-        ext.getStudyTablesList().forEach(tableDto -> harmonizedDataset.addStudyTable(fromDto(tableDto)));
+        ext.getStudyTablesList().forEach(tableDto -> harmonizationDataset.addStudyTable(fromDto(tableDto)));
       }
-      dataset = harmonizedDataset;
+      dataset = harmonizationDataset;
     } else {
       StudyDataset studyDataset = new StudyDataset();
       Mica.StudyDatasetDto ext = dto.getExtension(Mica.StudyDatasetDto.type);

@@ -23,19 +23,19 @@ mica.dataset
 
   .factory('HarmonizedDatasetsResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/harmonized-datasets');
+      return $resource('ws/draft/harmonization-datasets');
     }])
 
   .factory('HarmonizedDatasetResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/harmonized-dataset/:id', {}, {
+      return $resource('ws/draft/harmonization-dataset/:id', {}, {
         'get': {method: 'GET'}
       });
     }])
 
   .factory('HarmonizedDatasetPublicationResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/harmonized-dataset/:id/_publish', {}, {
+      return $resource('ws/draft/harmonization-dataset/:id/_publish', {}, {
         'publish': {method: 'PUT', params: {id: '@id'}},
         'unPublish': {method: 'DELETE', params: {id: '@id'}}
       });

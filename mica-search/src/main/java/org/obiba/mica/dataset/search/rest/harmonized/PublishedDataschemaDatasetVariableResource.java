@@ -19,9 +19,9 @@ import javax.ws.rs.PathParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.dataset.domain.DatasetVariable;
-import org.obiba.mica.dataset.domain.HarmonizedDataset;
+import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetVariableResource;
-import org.obiba.mica.service.HarmonizedDatasetService;
+import org.obiba.mica.service.HarmonizationDatasetService;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Math;
 import org.obiba.opal.web.model.Search;
@@ -31,13 +31,13 @@ import org.springframework.stereotype.Component;
 import com.google.common.collect.ImmutableList;
 
 /**
- * Dataschema variable resource: variable describing an harmonized dataset.
+ * Dataschema variable resource: variable describing an harmonization dataset.
  */
 @Component
 @Scope("request")
 @RequiresAuthentication
 public class PublishedDataschemaDatasetVariableResource
-    extends AbstractPublishedDatasetVariableResource<HarmonizedDataset> {
+    extends AbstractPublishedDatasetVariableResource<HarmonizationDataset> {
 
   @PathParam("id")
   private String datasetId;
@@ -46,18 +46,18 @@ public class PublishedDataschemaDatasetVariableResource
   private String variableName;
 
   @Inject
-  private HarmonizedDatasetService datasetService;
+  private HarmonizationDatasetService datasetService;
 
   @GET
   public Mica.DatasetVariableDto getVariable() {
-    return getDatasetVariableDto(HarmonizedDataset.class, datasetId, variableName);
+    return getDatasetVariableDto(HarmonizationDataset.class, datasetId, variableName);
   }
 
   @GET
   @Path("/summary")
   public List<Math.SummaryStatisticsDto> getVariableSummaries() {
     ImmutableList.Builder<Math.SummaryStatisticsDto> builder = ImmutableList.builder();
-    HarmonizedDataset dataset = getDataset(HarmonizedDataset.class, datasetId);
+    HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
     dataset.getStudyTables()
         .forEach(table -> builder.add(datasetService.getVariableSummary(dataset, variableName, table.getStudyId())));
     return builder.build();
@@ -67,7 +67,7 @@ public class PublishedDataschemaDatasetVariableResource
   @Path("/facet")
   public List<Search.QueryResultDto> getVariableFacets() {
     ImmutableList.Builder<Search.QueryResultDto> builder = ImmutableList.builder();
-    HarmonizedDataset dataset = getDataset(HarmonizedDataset.class, datasetId);
+    HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
     dataset.getStudyTables()
         .forEach(table -> builder.add(datasetService.getVariableFacet(dataset, variableName, table.getStudyId())));
     return builder.build();
@@ -77,8 +77,8 @@ public class PublishedDataschemaDatasetVariableResource
   @Path("/harmonizations")
   public List<Mica.DatasetVariableDto> getHarmonizedVariables() {
     ImmutableList.Builder<Mica.DatasetVariableDto> builder = ImmutableList.builder();
-    HarmonizedDataset dataset = getDataset(HarmonizedDataset.class, datasetId);
-    dataset.getStudyTables().forEach(table -> builder.add(getDatasetVariableDto(HarmonizedDataset.class, datasetId, variableName, table.getStudyId())));
+    HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
+    dataset.getStudyTables().forEach(table -> builder.add(getDatasetVariableDto(HarmonizationDataset.class, datasetId, variableName, table.getStudyId())));
     return builder.build();
   }
 

@@ -21,7 +21,7 @@ import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.search.rest.harmonized.PublishedDataschemaDatasetVariableResource;
 import org.obiba.mica.dataset.search.rest.harmonized.PublishedHarmonizedDatasetVariableResource;
 import org.obiba.mica.dataset.search.rest.study.PublishedStudyDatasetVariableResource;
-import org.obiba.mica.service.HarmonizedDatasetService;
+import org.obiba.mica.service.HarmonizationDatasetService;
 import org.obiba.mica.service.StudyDatasetService;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
@@ -37,7 +37,7 @@ public class PublishedDatasetVariableResource {
   private StudyDatasetService studyDatasetService;
 
   @Inject
-  private HarmonizedDatasetService harmonizedDatasetService;
+  private HarmonizationDatasetService harmonizationDatasetService;
 
   @Inject
   private ApplicationContext applicationContext;
@@ -52,11 +52,11 @@ public class PublishedDatasetVariableResource {
         resource = applicationContext.getBean(PublishedStudyDatasetVariableResource.class);
         break;
       case Dataschema:
-        if (!harmonizedDatasetService.isPublished(resolver.getDatasetId())) throw NoSuchDatasetException.withId(resolver.getDatasetId());
+        if (!harmonizationDatasetService.isPublished(resolver.getDatasetId())) throw NoSuchDatasetException.withId(resolver.getDatasetId());
         resource = applicationContext.getBean(PublishedDataschemaDatasetVariableResource.class);
         break;
       case Harmonized:
-        if (!harmonizedDatasetService.isPublished(resolver.getDatasetId())) throw NoSuchDatasetException.withId(resolver.getDatasetId());
+        if (!harmonizationDatasetService.isPublished(resolver.getDatasetId())) throw NoSuchDatasetException.withId(resolver.getDatasetId());
         resource = applicationContext.getBean(PublishedHarmonizedDatasetVariableResource.class);
         ((PublishedHarmonizedDatasetVariableResource)resource).setStudyId(resolver.getStudyId());
         break;

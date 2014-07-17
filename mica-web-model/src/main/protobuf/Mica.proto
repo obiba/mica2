@@ -255,13 +255,13 @@ message StudyDatasetDto {
   }
 }
 
-message HarmonizedDatasetDto {
+message HarmonizationDatasetDto {
   required string project = 1;
   required string table = 2;
   repeated DatasetDto.StudyTableDto studyTables = 3;
 
   extend DatasetDto {
-    optional HarmonizedDatasetDto type = 1001;
+    optional HarmonizationDatasetDto type = 1001;
   }
 }
 

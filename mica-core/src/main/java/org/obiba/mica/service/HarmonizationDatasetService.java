@@ -19,14 +19,13 @@ import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.magma.Variable;
 import org.obiba.mica.dataset.DatasourceConnectionPool;
-import org.obiba.mica.dataset.HarmonizedDatasetRepository;
+import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.DatasetVariable;
-import org.obiba.mica.dataset.domain.HarmonizedDataset;
-import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
-import org.obiba.mica.dataset.event.IndexHarmonizedDatasetsEvent;
+import org.obiba.mica.dataset.event.IndexHarmonizationDatasetsEvent;
 import org.obiba.mica.dataset.service.DatasetService;
 import org.obiba.mica.domain.StudyTable;
 import org.obiba.mica.study.NoSuchStudyException;
@@ -46,7 +45,7 @@ import com.google.common.eventbus.Subscribe;
 
 @Service
 @Validated
-public class HarmonizedDatasetService extends DatasetService<HarmonizedDataset> {
+public class HarmonizationDatasetService extends DatasetService<HarmonizationDataset> {
 
   @Inject
   private StudyService studyService;
@@ -55,74 +54,74 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizedDataset> 
   private DatasourceConnectionPool datasourceConnectionPool;
 
   @Inject
-  private HarmonizedDatasetRepository harmonizedDatasetRepository;
+  private HarmonizationDatasetRepository harmonizationDatasetRepository;
 
   @Inject
   private EventBus eventBus;
 
-  public void save(@NotNull HarmonizedDataset dataset) {
-    HarmonizedDataset saved = dataset;
+  public void save(@NotNull HarmonizationDataset dataset) {
+    HarmonizationDataset saved = dataset;
     if(!Strings.isNullOrEmpty(dataset.getId())) {
       saved = findById(dataset.getId());
       BeanUtils.copyProperties(dataset, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
           "lastModifiedDate");
     }
-    harmonizedDatasetRepository.save(saved);
+    harmonizationDatasetRepository.save(saved);
     eventBus.post(new DatasetUpdatedEvent(saved));
   }
 
   /**
-   * Get the {@link org.obiba.mica.dataset.domain.HarmonizedDataset} from its id.
+   * Get the {@link org.obiba.mica.dataset.domain.HarmonizationDataset} from its id.
    *
    * @param id
    * @return
    * @throws org.obiba.mica.dataset.NoSuchDatasetException
    */
   @NotNull
-  public HarmonizedDataset findById(@NotNull String id) throws NoSuchDatasetException {
-    HarmonizedDataset dataset = harmonizedDatasetRepository.findOne(id);
+  public HarmonizationDataset findById(@NotNull String id) throws NoSuchDatasetException {
+    HarmonizationDataset dataset = harmonizationDatasetRepository.findOne(id);
     if(dataset == null) throw NoSuchDatasetException.withId(id);
     return dataset;
   }
 
   /**
-   * Get all {@link org.obiba.mica.dataset.domain.HarmonizedDataset}s.
+   * Get all {@link org.obiba.mica.dataset.domain.HarmonizationDataset}s.
    *
    * @return
    */
-  public List<HarmonizedDataset> findAllDatasets() {
-    return harmonizedDatasetRepository.findAll();
+  public List<HarmonizationDataset> findAllDatasets() {
+    return harmonizationDatasetRepository.findAll();
   }
 
   /**
-   * Get all {@link org.obiba.mica.dataset.domain.HarmonizedDataset}s having a reference to the given study.
+   * Get all {@link org.obiba.mica.dataset.domain.HarmonizationDataset}s having a reference to the given study.
    *
    * @param studyId
    * @return
    */
-  public List<HarmonizedDataset> findAllDatasets(String studyId) {
+  public List<HarmonizationDataset> findAllDatasets(String studyId) {
     if(Strings.isNullOrEmpty(studyId)) return findAllDatasets();
-    return harmonizedDatasetRepository.findByStudyTablesStudyId(studyId);
+    return harmonizationDatasetRepository.findByStudyTablesStudyId(studyId);
   }
 
   /**
-   * Get all published {@link org.obiba.mica.dataset.domain.HarmonizedDataset}s.
+   * Get all published {@link org.obiba.mica.dataset.domain.HarmonizationDataset}s.
    *
    * @return
    */
-  public List<HarmonizedDataset> findAllPublishedDatasets() {
-    return harmonizedDatasetRepository.findByPublished(true);
+  public List<HarmonizationDataset> findAllPublishedDatasets() {
+    return harmonizationDatasetRepository.findByPublished(true);
   }
 
   /**
-   * Get all published {@link org.obiba.mica.dataset.domain.HarmonizedDataset}s having a reference to the given study.
+   * Get all published {@link org.obiba.mica.dataset.domain.HarmonizationDataset}s having a reference to the given study.
    *
    * @param studyId
    * @return
    */
-  public List<HarmonizedDataset> findAllPublishedDatasets(String studyId) {
+  public List<HarmonizationDataset> findAllPublishedDatasets(String studyId) {
     if(Strings.isNullOrEmpty(studyId)) return findAllPublishedDatasets();
-    return harmonizedDatasetRepository.findByStudyTablesStudyIdAndPublished(studyId, true);
+    return harmonizationDatasetRepository.findByStudyTablesStudyIdAndPublished(studyId, true);
   }
 
   /**
@@ -131,7 +130,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizedDataset> 
    * @param id
    */
   public void index(@NotNull String id) {
-    HarmonizedDataset dataset = findById(id);
+    HarmonizationDataset dataset = findById(id);
     eventBus.post(new DatasetUpdatedEvent(dataset));
   }
 
@@ -139,7 +138,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizedDataset> 
    * Index or re-index all datasets with their variables.
    */
   public void indexAll() {
-    getEventBus().post(new IndexHarmonizedDatasetsEvent());
+    getEventBus().post(new IndexHarmonizationDatasetsEvent());
   }
 
   /**
@@ -149,7 +148,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizedDataset> 
    * @param published
    */
   public void publish(@NotNull String id, boolean published) {
-    HarmonizedDataset dataset = findById(id);
+    HarmonizationDataset dataset = findById(id);
     dataset.setPublished(published);
     save(dataset);
     eventBus.post(new DatasetPublishedEvent(dataset));
@@ -162,45 +161,45 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizedDataset> 
    * @return
    */
   public boolean isPublished(@NotNull String id) throws NoSuchDatasetException {
-    HarmonizedDataset dataset = findById(id);
+    HarmonizationDataset dataset = findById(id);
     return dataset.isPublished();
   }
 
   @Override
   @NotNull
-  protected RestValueTable getTable(@NotNull HarmonizedDataset dataset) throws NoSuchValueTableException {
+  protected RestValueTable getTable(@NotNull HarmonizationDataset dataset) throws NoSuchValueTableException {
     return execute(dataset.getProject(), datasource -> (RestValueTable) datasource.getValueTable(dataset.getTable()));
   }
 
   @Override
-  public Iterable<DatasetVariable> getDatasetVariables(HarmonizedDataset dataset) {
+  public Iterable<DatasetVariable> getDatasetVariables(HarmonizationDataset dataset) {
     return Iterables.transform(getVariables(dataset), input -> new DatasetVariable(dataset, input));
   }
 
   @Override
-  public DatasetVariable getDatasetVariable(HarmonizedDataset dataset, String variableName) {
+  public DatasetVariable getDatasetVariable(HarmonizationDataset dataset, String variableName) {
     return new DatasetVariable(dataset, getVariableValueSource(dataset, variableName).getVariable());
   }
 
-  public Iterable<DatasetVariable> getDatasetVariables(HarmonizedDataset dataset, String studyId) {
+  public Iterable<DatasetVariable> getDatasetVariables(HarmonizationDataset dataset, String studyId) {
     return Iterables.transform(getVariables(dataset, studyId), input -> new DatasetVariable(dataset, input, studyId));
   }
 
-  public DatasetVariable getDatasetVariable(HarmonizedDataset dataset, String variableName, String studyId) {
+  public DatasetVariable getDatasetVariable(HarmonizationDataset dataset, String variableName, String studyId) {
     return new DatasetVariable(dataset, getTable(dataset, studyId).getVariableValueSource(variableName).getVariable());
   }
 
-  public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary(@NotNull HarmonizedDataset dataset,
+  public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary(@NotNull HarmonizationDataset dataset,
       String variableName, String studyId) {
     return getVariableValueSource(dataset, variableName, studyId).getSummary();
   }
 
-  public Search.QueryResultDto getVariableFacet(@NotNull HarmonizedDataset dataset, String variableName,
+  public Search.QueryResultDto getVariableFacet(@NotNull HarmonizationDataset dataset, String variableName,
       String studyId) {
     return getVariableValueSource(dataset, variableName, studyId).getFacet();
   }
 
-  public Search.QueryResultDto getFacets(@NotNull HarmonizedDataset dataset, Search.QueryTermsDto query,
+  public Search.QueryResultDto getFacets(@NotNull HarmonizationDataset dataset, Search.QueryTermsDto query,
       String studyId) {
     return getTable(dataset, studyId).getFacets(query);
   }
@@ -235,12 +234,12 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizedDataset> 
   // Private methods
   //
 
-  private Iterable<Variable> getVariables(@NotNull HarmonizedDataset dataset, String studyId)
+  private Iterable<Variable> getVariables(@NotNull HarmonizationDataset dataset, String studyId)
       throws NoSuchDatasetException {
     return getTable(dataset, studyId).getVariables();
   }
 
-  private RestValueTable getTable(@NotNull HarmonizedDataset dataset, String studyId)
+  private RestValueTable getTable(@NotNull HarmonizationDataset dataset, String studyId)
       throws NoSuchStudyException, NoSuchValueTableException {
     for(StudyTable studyTable : dataset.getStudyTables()) {
       if(studyTable.getStudyId().equals(studyId)) {
@@ -250,7 +249,7 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizedDataset> 
     throw NoSuchStudyException.withId(studyId);
   }
 
-  private RestValueTable.RestVariableValueSource getVariableValueSource(@NotNull HarmonizedDataset dataset,
+  private RestValueTable.RestVariableValueSource getVariableValueSource(@NotNull HarmonizationDataset dataset,
       String variableName, String studyId)
       throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
     for(StudyTable studyTable : dataset.getStudyTables()) {

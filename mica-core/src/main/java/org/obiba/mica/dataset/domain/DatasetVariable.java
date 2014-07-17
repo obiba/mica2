@@ -36,7 +36,7 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   public enum Type {
     Study,       // variable extracted from a study dataset
-    Dataschema,  // variable extracted from a harmonized dataset
+    Dataschema,  // variable extracted from a harmonization dataset
     Harmonized   // variable that implements a Datashema variable
   }
 
@@ -77,13 +77,13 @@ public class DatasetVariable implements Indexable, AttributeAware {
     studyIds = Lists.newArrayList(dataset.getStudyTable().getStudyId());
   }
 
-  public DatasetVariable(HarmonizedDataset dataset, Variable variable) {
+  public DatasetVariable(HarmonizationDataset dataset, Variable variable) {
     this(dataset, Type.Dataschema, variable);
     studyIds = Lists.newArrayList();
     dataset.getStudyTables().forEach(table -> studyIds.add(table.getStudyId()));
   }
 
-  public DatasetVariable(HarmonizedDataset dataset, Variable variable, String studyId) {
+  public DatasetVariable(HarmonizationDataset dataset, Variable variable, String studyId) {
     this(dataset, Type.Harmonized, variable);
     studyIds = Lists.newArrayList(studyId);
   }

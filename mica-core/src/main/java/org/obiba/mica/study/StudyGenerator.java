@@ -16,14 +16,14 @@ import org.obiba.mica.domain.Address;
 import org.obiba.mica.domain.Attribute;
 import org.obiba.mica.domain.Authorization;
 import org.obiba.mica.domain.Contact;
-import org.obiba.mica.dataset.domain.HarmonizedDataset;
+import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.domain.Network;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.domain.StudyTable;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.file.TempFileService;
-import org.obiba.mica.service.HarmonizedDatasetService;
+import org.obiba.mica.service.HarmonizationDatasetService;
 import org.obiba.mica.service.StudyDatasetService;
 import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.NumberOfParticipants;
@@ -56,7 +56,7 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
   private StudyDatasetService studyDatasetService;
 
   @Inject
-  private HarmonizedDatasetService harmonizedDatasetService;
+  private HarmonizationDatasetService harmonizationDatasetService;
 
 //  @Inject
 //  private NetworkRepository networkRepository;
@@ -85,18 +85,18 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
     studyDatasetService.save(studyDataset);
     studyDatasetService.publish(studyDataset.getId(), true);
 
-    HarmonizedDataset harmonizedDataset = new HarmonizedDataset();
-    harmonizedDataset.setName(en("Healthy Obese Project").forFr("Projet des obeses en sante"));
-    harmonizedDataset.setEntityType("Participant");
-    harmonizedDataset.setProject("mica");
-    harmonizedDataset.setTable("HOP");
+    HarmonizationDataset harmonizationDataset = new HarmonizationDataset();
+    harmonizationDataset.setName(en("Healthy Obese Project").forFr("Projet des obeses en sante"));
+    harmonizationDataset.setEntityType("Participant");
+    harmonizationDataset.setProject("mica");
+    harmonizationDataset.setTable("HOP");
     table = new StudyTable();
     table.setStudyId(study.getId());
     table.setProject("test");
     table.setTable("HOP");
-    harmonizedDataset.addStudyTable(table);
-    harmonizedDatasetService.save(harmonizedDataset);
-    harmonizedDatasetService.publish(harmonizedDataset.getId(), true);
+    harmonizationDataset.addStudyTable(table);
+    harmonizationDatasetService.save(harmonizationDataset);
+    harmonizationDatasetService.publish(harmonizationDataset.getId(), true);
 
     study = createStudy("NCDS", "National Child Development Study", "National Child Development Study");
     studyService.save(study);

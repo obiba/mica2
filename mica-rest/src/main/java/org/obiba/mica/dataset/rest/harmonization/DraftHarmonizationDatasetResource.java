@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.rest.harmonized;
+package org.obiba.mica.dataset.rest.harmonization;
 
 import java.util.List;
 
@@ -26,10 +26,10 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.dataset.domain.Dataset;
-import org.obiba.mica.dataset.domain.HarmonizedDataset;
+import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.domain.StudyTable;
 import org.obiba.mica.security.Roles;
-import org.obiba.mica.service.HarmonizedDatasetService;
+import org.obiba.mica.service.HarmonizationDatasetService;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Magma;
 import org.obiba.opal.web.model.Search;
@@ -43,13 +43,13 @@ import com.google.common.collect.ImmutableList;
 @Component
 @Scope("request")
 @RequiresAuthentication
-public class DraftHarmonizedDatasetResource {
+public class DraftHarmonizationDatasetResource {
 
   @Inject
   private ApplicationContext applicationContext;
 
   @Inject
-  private HarmonizedDatasetService datasetService;
+  private HarmonizationDatasetService datasetService;
 
   @Inject
   private org.obiba.mica.web.model.Dtos dtos;
@@ -72,9 +72,9 @@ public class DraftHarmonizedDatasetResource {
     if(!datasetDto.hasId() || !datasetDto.getId().equals(id))
       throw new IllegalArgumentException("Not the expected dataset id");
     Dataset dataset = dtos.fromDto(datasetDto);
-    if(!(dataset instanceof HarmonizedDataset)) throw new IllegalArgumentException("An harmonized dataset is expected");
+    if(!(dataset instanceof HarmonizationDataset)) throw new IllegalArgumentException("An harmonization dataset is expected");
 
-    datasetService.save((HarmonizedDataset) dataset);
+    datasetService.save((HarmonizationDataset) dataset);
     return Response.noContent().build();
   }
 
@@ -139,14 +139,14 @@ public class DraftHarmonizedDatasetResource {
   @Path("/facets")
   public List<Search.QueryResultDto> getFacets(Search.QueryTermsDto query) {
     ImmutableList.Builder<Search.QueryResultDto> builder = ImmutableList.builder();
-    HarmonizedDataset dataset = getDataset();
+    HarmonizationDataset dataset = getDataset();
     for(StudyTable table : dataset.getStudyTables()) {
       builder.add(datasetService.getFacets(dataset, query, table.getStudyId()));
     }
     return builder.build();
   }
 
-  private HarmonizedDataset getDataset() {
+  private HarmonizationDataset getDataset() {
     return datasetService.findById(id);
   }
 

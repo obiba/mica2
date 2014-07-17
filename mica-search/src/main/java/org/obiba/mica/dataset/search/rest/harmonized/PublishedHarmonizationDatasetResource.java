@@ -22,10 +22,10 @@ import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.dataset.domain.DatasetVariable;
-import org.obiba.mica.dataset.domain.HarmonizedDataset;
+import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetResource;
 import org.obiba.mica.domain.StudyTable;
-import org.obiba.mica.service.HarmonizedDatasetService;
+import org.obiba.mica.service.HarmonizationDatasetService;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Search;
 import org.springframework.context.annotation.Scope;
@@ -35,24 +35,24 @@ import com.google.common.collect.ImmutableList;
 
 @Component
 @Scope("request")
-@Path("/harmonized-dataset/{id}")
+@Path("/harmonization-dataset/{id}")
 @RequiresAuthentication
-public class PublishedHarmonizedDatasetResource extends AbstractPublishedDatasetResource<HarmonizedDataset> {
+public class PublishedHarmonizationDatasetResource extends AbstractPublishedDatasetResource<HarmonizationDataset> {
 
   @PathParam("id")
   private String id;
 
   @Inject
-  private HarmonizedDatasetService datasetService;
+  private HarmonizationDatasetService datasetService;
 
   /**
-   * Get {@link org.obiba.mica.dataset.domain.HarmonizedDataset} from published index.
+   * Get {@link org.obiba.mica.dataset.domain.HarmonizationDataset} from published index.
    *
    * @return
    */
   @GET
   public Mica.DatasetDto get() {
-    return getDatasetDto(HarmonizedDataset.class, id);
+    return getDatasetDto(HarmonizationDataset.class, id);
   }
 
   /**
@@ -69,7 +69,7 @@ public class PublishedHarmonizedDatasetResource extends AbstractPublishedDataset
   public List<Mica.DatasetVariableDto> getVariables(@QueryParam("from") @DefaultValue("0") int from,
       @QueryParam("limit") @DefaultValue("10000") int limit, @QueryParam("sort") String sort,
       @QueryParam("order") String order) {
-    return getDatasetVariableDtos(HarmonizedDataset.class, id, null, from, limit, sort, order);
+    return getDatasetVariableDtos(HarmonizationDataset.class, id, null, from, limit, sort, order);
   }
 
   @Path("/variable/{variable}")
@@ -86,7 +86,7 @@ public class PublishedHarmonizedDatasetResource extends AbstractPublishedDataset
   public List<Mica.DatasetVariableDto> getVariables(@PathParam("study") String studyId,
       @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10000") int limit,
       @QueryParam("sort") String sort, @QueryParam("order") String order) {
-    return getDatasetVariableDtos(HarmonizedDataset.class, id, studyId, from, limit, sort, order);
+    return getDatasetVariableDtos(HarmonizationDataset.class, id, studyId, from, limit, sort, order);
   }
 
   @Path("/study/{study}/variable/{variable}")
@@ -104,7 +104,7 @@ public class PublishedHarmonizedDatasetResource extends AbstractPublishedDataset
   @Path("/facets")
   public List<Search.QueryResultDto> getFacets(Search.QueryTermsDto query) {
     ImmutableList.Builder<Search.QueryResultDto> builder = ImmutableList.builder();
-    HarmonizedDataset dataset = getDataset(HarmonizedDataset.class, id);
+    HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, id);
     for(StudyTable table : dataset.getStudyTables()) {
       builder.add(datasetService.getFacets(dataset, query, table.getStudyId()));
     }

@@ -20,7 +20,7 @@ import org.obiba.mica.domain.StudyTable;
 /**
  * Dataset that relies on Study Opal servers summaries.
  */
-public class HarmonizedDataset extends Dataset {
+public class HarmonizationDataset extends Dataset {
 
   private static final long serialVersionUID = -658603952811380458L;
 

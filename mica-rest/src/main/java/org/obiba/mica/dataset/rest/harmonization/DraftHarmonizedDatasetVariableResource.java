@@ -8,16 +8,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.rest.harmonized;
+package org.obiba.mica.dataset.rest.harmonization;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.dataset.domain.HarmonizedDataset;
+import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.DatasetVariableResource;
-import org.obiba.mica.service.HarmonizedDatasetService;
+import org.obiba.mica.service.HarmonizationDatasetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.*;
@@ -34,7 +34,7 @@ public class DraftHarmonizedDatasetVariableResource implements DatasetVariableRe
   private String variableName;
 
   @Inject
-  private HarmonizedDatasetService datasetService;
+  private HarmonizationDatasetService datasetService;
 
   @Inject
   private Dtos dtos;
@@ -62,7 +62,7 @@ public class DraftHarmonizedDatasetVariableResource implements DatasetVariableRe
     this.studyId = studyId;
   }
 
-  private HarmonizedDataset getDataset() {
+  private HarmonizationDataset getDataset() {
     return datasetService.findById(datasetId);
   }
 

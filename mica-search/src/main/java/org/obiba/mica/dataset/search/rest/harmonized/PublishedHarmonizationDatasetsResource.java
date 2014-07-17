@@ -18,7 +18,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.dataset.domain.HarmonizedDataset;
+import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetsResource;
 import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
@@ -28,14 +28,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope("request")
-@Path("/harmonized-datasets")
+@Path("/harmonization-datasets")
 @RequiresAuthentication
-public class PublishedHarmonizedDatasetsResource extends AbstractPublishedDatasetsResource<HarmonizedDataset> {
+public class PublishedHarmonizationDatasetsResource extends AbstractPublishedDatasetsResource<HarmonizationDataset> {
 
-  private static final Logger log = LoggerFactory.getLogger(PublishedHarmonizedDatasetsResource.class);
+  private static final Logger log = LoggerFactory.getLogger(PublishedHarmonizationDatasetsResource.class);
 
   /**
-   * Get {@link org.obiba.mica.dataset.domain.HarmonizedDataset}s, optionally filtered by study.
+   * Get {@link org.obiba.mica.dataset.domain.HarmonizationDataset}s, optionally filtered by study.
    *
    * @param from
    * @param limit
@@ -49,7 +49,7 @@ public class PublishedHarmonizedDatasetsResource extends AbstractPublishedDatase
       @QueryParam("limit") @DefaultValue("1000") int limit, @QueryParam("sort") String sort,
       @QueryParam("order") String order, @QueryParam("study") String studyId) {
 
-    return getDatasetDtos(HarmonizedDataset.class, from, limit, sort, order, studyId);
+    return getDatasetDtos(HarmonizationDataset.class, from, limit, sort, order, studyId);
   }
 
   @Override

@@ -21,20 +21,20 @@ mica.dataset
           controller: 'StudyDatasetEditController'
         })
 
-        .when('/harmonized-dataset', {
-          templateUrl: 'app/dataset/views/harmonized-dataset-list.html',
+        .when('/harmonization-dataset', {
+          templateUrl: 'app/dataset/views/harmonization-dataset-list.html',
           controller: 'HarmonizedDatasetListController'
         })
-        .when('/harmonized-dataset/new', {
-          templateUrl: 'app/dataset/views/harmonized-dataset-form.html',
+        .when('/harmonization-dataset/new', {
+          templateUrl: 'app/dataset/views/harmonization-dataset-form.html',
           controller: 'HarmonizedDatasetEditController'
         })
-        .when('/harmonized-dataset/:id', {
-          templateUrl: 'app/dataset/views/harmonized-dataset-view.html',
+        .when('/harmonization-dataset/:id', {
+          templateUrl: 'app/dataset/views/harmonization-dataset-view.html',
           controller: 'HarmonizedDatasetViewController'
         })
-        .when('/harmonized-dataset/:id/edit', {
-          templateUrl: 'app/dataset/views/harmonized-dataset-form.html',
+        .when('/harmonization-dataset/:id/edit', {
+          templateUrl: 'app/dataset/views/harmonization-dataset-form.html',
           controller: 'HarmonizedDatasetEditController'
         });
     }]);

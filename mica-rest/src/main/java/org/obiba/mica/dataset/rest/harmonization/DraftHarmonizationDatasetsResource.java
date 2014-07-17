@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.rest.harmonized;
+package org.obiba.mica.dataset.rest.harmonization;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,9 +26,9 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.dataset.domain.Dataset;
-import org.obiba.mica.dataset.domain.HarmonizedDataset;
+import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.security.Roles;
-import org.obiba.mica.service.HarmonizedDatasetService;
+import org.obiba.mica.service.HarmonizationDatasetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.ApplicationContext;
@@ -41,10 +41,10 @@ import com.codahale.metrics.annotation.Timed;
 @Scope("request")
 @Path("/draft")
 @RequiresRoles(Roles.MICA_ADMIN)
-public class DraftHarmonizedDatasetsResource {
+public class DraftHarmonizationDatasetsResource {
 
   @Inject
-  private HarmonizedDatasetService datasetService;
+  private HarmonizationDatasetService datasetService;
 
   @Inject
   private Dtos dtos;
@@ -53,41 +53,41 @@ public class DraftHarmonizedDatasetsResource {
   private ApplicationContext applicationContext;
 
   /**
-   * Get all {@link org.obiba.mica.dataset.domain.HarmonizedDataset}, optionally filtered by study.
+   * Get all {@link org.obiba.mica.dataset.domain.HarmonizationDataset}, optionally filtered by study.
    *
    * @param studyId can be null, in which case all datasets are returned
    * @return
    */
   @GET
-  @Path("/harmonized-datasets")
+  @Path("/harmonization-datasets")
   @Timed
   public List<Mica.DatasetDto> list(@QueryParam("study") String studyId) {
     return datasetService.findAllDatasets(studyId).stream().map(dtos::asDto).collect(Collectors.toList());
   }
 
   @POST
-  @Path("/harmonized-datasets")
+  @Path("/harmonization-datasets")
   @Timed
   public Response create(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo) {
     Dataset dataset = dtos.fromDto(datasetDto);
-    if(!(dataset instanceof HarmonizedDataset)) throw new IllegalArgumentException("An harmonized dataset is expected");
+    if(!(dataset instanceof HarmonizationDataset)) throw new IllegalArgumentException("An harmonization dataset is expected");
 
-    datasetService.save((HarmonizedDataset) dataset);
-    return Response.created(uriInfo.getBaseUriBuilder().segment("draft", "harmonized-dataset", dataset.getId()).build())
+    datasetService.save((HarmonizationDataset) dataset);
+    return Response.created(uriInfo.getBaseUriBuilder().segment("draft", "harmonization-dataset", dataset.getId()).build())
         .build();
   }
 
   @PUT
-  @Path("/harmonized-datasets/_index")
+  @Path("/harmonization-datasets/_index")
   @Timed
   public Response reIndex() {
     datasetService.indexAll();
     return Response.noContent().build();
   }
 
-  @Path("/harmonized-dataset/{id}")
-  public DraftHarmonizedDatasetResource dataset(@PathParam("id") String id) {
-    DraftHarmonizedDatasetResource resource = applicationContext.getBean(DraftHarmonizedDatasetResource.class);
+  @Path("/harmonization-dataset/{id}")
+  public DraftHarmonizationDatasetResource dataset(@PathParam("id") String id) {
+    DraftHarmonizationDatasetResource resource = applicationContext.getBean(DraftHarmonizationDatasetResource.class);
     resource.setId(id);
     return resource;
   }
