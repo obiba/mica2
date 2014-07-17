@@ -19,7 +19,7 @@ import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.dataset.domain.HarmonizedDataset;
-import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetsSearchResource;
+import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetsResource;
 import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +30,7 @@ import org.springframework.stereotype.Component;
 @Scope("request")
 @Path("/harmonized-datasets")
 @RequiresAuthentication
-public class PublishedHarmonizedDatasetsResource extends AbstractPublishedDatasetsSearchResource<HarmonizedDataset> {
+public class PublishedHarmonizedDatasetsResource extends AbstractPublishedDatasetsResource<HarmonizedDataset> {
 
   private static final Logger log = LoggerFactory.getLogger(PublishedHarmonizedDatasetsResource.class);
 

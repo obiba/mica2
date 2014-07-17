@@ -15,14 +15,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
@@ -87,14 +91,28 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
     return dtos.asDto(getDataset(clazz, datasetId));
   }
 
-  protected List<Mica.DatasetVariableDto> getDatasetVariableDtos(Class<T> clazz, @NotNull String datasetId) {
-    QueryBuilder query = QueryBuilders.boolQuery().must(hasParentDatasetQuery(clazz, datasetId))
-        .must(QueryBuilders.queryString(getDatasetVariableType().toString()).field("variableType"));
+  protected List<Mica.DatasetVariableDto> getDatasetVariableDtos(Class<T> clazz, @NotNull String datasetId, @Nullable String studyId, int from,
+      int limit, @Nullable String sort, @Nullable String order) {
+    BoolQueryBuilder query = QueryBuilders.boolQuery()
+        .must(QueryBuilders.queryString(getDatasetVariableType(studyId).toString()).field("variableType"));
+
+    if(studyId == null) {
+      query.must(hasParentDatasetQuery(clazz, datasetId));
+    } else {
+      query.must(hasParentStudyQuery(studyId)).must(QueryBuilders.queryString(datasetId).field("datasetId"));
+    }
 
     SearchRequestBuilder search = new SearchRequestBuilder(client) //
-        .setIndices(DatasetIndexer.PUBLISHED_DATASET_INDEX) //
+        .setIndices(studyId == null ? DatasetIndexer.PUBLISHED_DATASET_INDEX : StudyIndexer.PUBLISHED_STUDY_INDEX) //
         .setTypes(DatasetIndexer.VARIABLE_TYPE) //
-        .setQuery(query);
+        .setQuery(query) //
+        .setFrom(from) //
+        .setSize(limit);
+
+    if(sort != null) {
+      search.addSort(
+          SortBuilders.fieldSort(sort).order(order == null ? SortOrder.ASC : SortOrder.valueOf(order.toUpperCase())));
+    }
 
     log.info(search.toString());
     SearchResponse response = search.execute().actionGet();
@@ -113,7 +131,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
     return builder.build();
   }
 
-  protected abstract DatasetVariable.Type getDatasetVariableType();
+  protected abstract DatasetVariable.Type getDatasetVariableType(String studyId);
 
   protected QueryBuilder hasParentDatasetQuery(Class<T> clazz, @NotNull String datasetId) {
     return QueryBuilders.hasParentQuery(DatasetIndexer.DATASET_TYPE,

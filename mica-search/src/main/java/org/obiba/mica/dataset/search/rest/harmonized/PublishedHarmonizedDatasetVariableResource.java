@@ -64,7 +64,7 @@ public class PublishedHarmonizedDatasetVariableResource
   }
 
   @Override
-  protected DatasetVariable.Type getDatasetVariableType() {
+  protected DatasetVariable.Type getDatasetVariableType(String studyId) {
     return DatasetVariable.Type.Harmonized;
   }
 

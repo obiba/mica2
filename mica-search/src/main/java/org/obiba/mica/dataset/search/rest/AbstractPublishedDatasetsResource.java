@@ -40,9 +40,9 @@ import com.google.common.collect.ImmutableList;
  *
  * @param <T>
  */
-public abstract class AbstractPublishedDatasetsSearchResource<T extends Dataset> {
+public abstract class AbstractPublishedDatasetsResource<T extends Dataset> {
 
-  private static final Logger log = LoggerFactory.getLogger(AbstractPublishedDatasetsSearchResource.class);
+  private static final Logger log = LoggerFactory.getLogger(AbstractPublishedDatasetsResource.class);
 
   @Inject
   private Dtos dtos;

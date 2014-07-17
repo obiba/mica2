@@ -77,7 +77,7 @@ public class PublishedDataschemaDatasetVariableResource
   }
 
   @Override
-  protected DatasetVariable.Type getDatasetVariableType() {
+  protected DatasetVariable.Type getDatasetVariableType(String studyId) {
     return DatasetVariable.Type.Dataschema;
   }
 

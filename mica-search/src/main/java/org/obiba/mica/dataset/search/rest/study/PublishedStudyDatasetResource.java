@@ -13,10 +13,12 @@ package org.obiba.mica.dataset.search.rest.study;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.dataset.domain.DatasetVariable;
@@ -50,6 +52,10 @@ public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResou
   /**
    * Get {@link org.obiba.mica.dataset.domain.StudyDataset} from published index.
    *
+   * @param from
+   * @param limit
+   * @param sort
+   * @param order
    * @return
    */
   @GET
@@ -64,13 +70,16 @@ public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResou
    */
   @GET
   @Path("/variables")
-  public List<Mica.DatasetVariableDto> getVariables() {
-    return getDatasetVariableDtos(StudyDataset.class, id);
+  public List<Mica.DatasetVariableDto> getVariables(@QueryParam("from") @DefaultValue("0") int from,
+      @QueryParam("limit") @DefaultValue("1000") int limit, @QueryParam("sort") String sort,
+      @QueryParam("order") String order) {
+    return getDatasetVariableDtos(StudyDataset.class, id, null, from, limit, sort, order);
   }
 
   @Path("/variable/{variable}")
   public PublishedStudyDatasetVariableResource getVariable(@PathParam("variable") String variable) {
-    PublishedStudyDatasetVariableResource resource = applicationContext.getBean(PublishedStudyDatasetVariableResource.class);
+    PublishedStudyDatasetVariableResource resource = applicationContext
+        .getBean(PublishedStudyDatasetVariableResource.class);
     resource.setDatasetId(id);
     resource.setVariableName(variable);
     return resource;
@@ -83,7 +92,7 @@ public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResou
   }
 
   @Override
-  protected DatasetVariable.Type getDatasetVariableType() {
+  protected DatasetVariable.Type getDatasetVariableType(String studyId) {
     return DatasetVariable.Type.Study;
   }
 }

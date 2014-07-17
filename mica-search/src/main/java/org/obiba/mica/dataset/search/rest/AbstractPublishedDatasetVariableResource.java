@@ -56,7 +56,7 @@ public abstract class AbstractPublishedDatasetVariableResource<T extends Dataset
   protected DatasetVariable getDatasetVariable(Class<T> clazz, @NotNull String datasetId, @NotNull String variableName,
       @Nullable String studyId) throws NoSuchVariableException {
     BoolQueryBuilder query = QueryBuilders.boolQuery()
-        .must(QueryBuilders.queryString(getDatasetVariableType().toString()).field("variableType"))
+        .must(QueryBuilders.queryString(getDatasetVariableType(studyId).toString()).field("variableType"))
         .must(QueryBuilders.queryString(variableName).field("name"));
 
     if(studyId == null) {
