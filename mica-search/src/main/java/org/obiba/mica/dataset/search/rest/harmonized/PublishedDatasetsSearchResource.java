@@ -35,6 +35,11 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 
+/**
+ * Retrieve the {@link org.obiba.mica.dataset.domain.Dataset} from the published dataset index.
+ *
+ * @param <T>
+ */
 public abstract class PublishedDatasetsSearchResource<T extends Dataset> {
 
   private static final Logger log = LoggerFactory.getLogger(PublishedDatasetsSearchResource.class);

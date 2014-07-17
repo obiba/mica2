@@ -27,8 +27,6 @@ import org.springframework.stereotype.Component;
 @RequiresAuthentication
 public class PublishedStudyDatasetResource {
 
-
-
   @Inject
   private StudyDatasetService datasetService;
 
@@ -37,7 +35,7 @@ public class PublishedStudyDatasetResource {
 
   @Path("/study-dataset/{id}")
   public StudyDatasetResource getDataset(@PathParam("id") String id) {
-    if (!datasetService.isPublished(id)) throw NoSuchDatasetException.withId(id);
+    if(!datasetService.isPublished(id)) throw NoSuchDatasetException.withId(id);
     StudyDatasetResource resource = applicationContext.getBean(StudyDatasetResource.class);
     resource.setId(id);
     return resource;

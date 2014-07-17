@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope("request")
-@Path("/")
+@Path("/study-datasets")
 @RequiresAuthentication
 public class PublishedStudyDatasetsSearchResource extends PublishedDatasetsSearchResource<StudyDataset> {
 
@@ -44,7 +44,6 @@ public class PublishedStudyDatasetsSearchResource extends PublishedDatasetsSearc
    * @return
    */
   @GET
-  @Path("/study-datasets")
   public List<Mica.DatasetDto> list(@QueryParam("from") @DefaultValue("0") int from,
       @QueryParam("limit") @DefaultValue("1000") int limit, @QueryParam("sort") String sort,
       @QueryParam("order") String order, @QueryParam("study") String studyId) {

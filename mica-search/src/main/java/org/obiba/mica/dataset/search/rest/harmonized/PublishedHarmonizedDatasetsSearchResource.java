@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope("request")
-@Path("/")
+@Path("/harmonized-datasets")
 @RequiresAuthentication
 public class PublishedHarmonizedDatasetsSearchResource extends PublishedDatasetsSearchResource<HarmonizedDataset> {
 
@@ -44,7 +44,6 @@ public class PublishedHarmonizedDatasetsSearchResource extends PublishedDatasets
    * @return
    */
   @GET
-  @Path("/harmonized-datasets")
   public List<Mica.DatasetDto> list(@QueryParam("from") @DefaultValue("0") int from,
       @QueryParam("limit") @DefaultValue("1000") int limit, @QueryParam("sort") String sort,
       @QueryParam("order") String order, @QueryParam("study") String studyId) {
