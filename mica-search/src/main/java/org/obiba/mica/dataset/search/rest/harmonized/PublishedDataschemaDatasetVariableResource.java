@@ -74,7 +74,7 @@ public class PublishedDataschemaDatasetVariableResource
   }
 
   @GET
-  @Path("/harmonized")
+  @Path("/harmonizations")
   public List<Mica.DatasetVariableDto> getHarmonizedVariables() {
     ImmutableList.Builder<Mica.DatasetVariableDto> builder = ImmutableList.builder();
     HarmonizedDataset dataset = getDataset(HarmonizedDataset.class, datasetId);

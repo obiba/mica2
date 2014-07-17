@@ -70,7 +70,7 @@ public class DraftDataschemaDatasetVariableResource implements DatasetVariableRe
   }
 
   @GET
-  @Path("/facet")
+  @Path("/harmonizations")
   public List<Mica.DatasetVariableDto> getHarmonizedVariables() {
     ImmutableList.Builder<Mica.DatasetVariableDto> builder = ImmutableList.builder();
     HarmonizedDataset dataset = getDataset();
