@@ -23,6 +23,7 @@ import org.obiba.mica.dataset.HarmonizedDatasetRepository;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizedDataset;
+import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.event.IndexHarmonizedDatasetsEvent;
@@ -33,6 +34,7 @@ import org.obiba.mica.study.StudyService;
 import org.obiba.mica.study.event.StudyDeletedEvent;
 import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.obiba.opal.web.model.Search;
+import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -59,8 +61,14 @@ public class HarmonizedDatasetService extends DatasetService<HarmonizedDataset> 
   private EventBus eventBus;
 
   public void save(@NotNull HarmonizedDataset dataset) {
-    harmonizedDatasetRepository.save(dataset);
-    eventBus.post(new DatasetUpdatedEvent(dataset));
+    HarmonizedDataset saved = dataset;
+    if(!Strings.isNullOrEmpty(dataset.getId())) {
+      saved = findById(dataset.getId());
+      BeanUtils.copyProperties(dataset, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
+          "lastModifiedDate");
+    }
+    harmonizedDatasetRepository.save(saved);
+    eventBus.post(new DatasetUpdatedEvent(saved));
   }
 
   /**

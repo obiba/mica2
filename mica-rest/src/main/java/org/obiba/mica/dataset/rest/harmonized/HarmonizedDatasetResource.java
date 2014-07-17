@@ -66,7 +66,7 @@ public class HarmonizedDatasetResource {
   @Timed
   @RequiresRoles(Roles.MICA_ADMIN)
   public Response update(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo) {
-    if(!datasetDto.hasId() || datasetDto.getId().equals(id))
+    if(!datasetDto.hasId() || !datasetDto.getId().equals(id))
       throw new IllegalArgumentException("Not the expected dataset id");
     Dataset dataset = dtos.fromDto(datasetDto);
     if(!(dataset instanceof HarmonizedDataset)) throw new IllegalArgumentException("An harmonized dataset is expected");

@@ -30,6 +30,7 @@ import org.obiba.mica.study.StudyService;
 import org.obiba.mica.study.event.StudyDeletedEvent;
 import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.obiba.opal.web.model.*;
+import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -56,8 +57,14 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
   private EventBus eventBus;
 
   public void save(@NotNull StudyDataset dataset) {
-    studyDatasetRepository.save(dataset);
-    eventBus.post(new DatasetUpdatedEvent(dataset));
+    StudyDataset saved = dataset;
+    if(!Strings.isNullOrEmpty(dataset.getId())) {
+      saved = findById(dataset.getId());
+      BeanUtils.copyProperties(dataset, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
+          "lastModifiedDate");
+    }
+    studyDatasetRepository.save(saved);
+    eventBus.post(new DatasetUpdatedEvent(saved));
   }
 
   /**

@@ -69,7 +69,7 @@ public class StudyDatasetResource {
   @Timed
   @RequiresRoles(Roles.MICA_ADMIN)
   public Response update(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo) {
-    if (!datasetDto.hasId() || datasetDto.getId().equals(id)) throw new IllegalArgumentException("Not the expected dataset id");
+    if (!datasetDto.hasId() || !datasetDto.getId().equals(id)) throw new IllegalArgumentException("Not the expected dataset id");
     Dataset dataset = dtos.fromDto(datasetDto);
     if(!(dataset instanceof StudyDataset)) throw new IllegalArgumentException("A study dataset is expected");
 
