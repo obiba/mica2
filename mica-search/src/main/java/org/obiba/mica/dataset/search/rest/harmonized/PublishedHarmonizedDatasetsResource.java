@@ -19,6 +19,7 @@ import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.dataset.domain.HarmonizedDataset;
+import org.obiba.mica.dataset.search.rest.PublishedDatasetsSearchResource;
 import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +30,9 @@ import org.springframework.stereotype.Component;
 @Scope("request")
 @Path("/harmonized-datasets")
 @RequiresAuthentication
-public class PublishedHarmonizedDatasetsSearchResource extends PublishedDatasetsSearchResource<HarmonizedDataset> {
+public class PublishedHarmonizedDatasetsResource extends PublishedDatasetsSearchResource<HarmonizedDataset> {
 
-  private static final Logger log = LoggerFactory.getLogger(PublishedHarmonizedDatasetsSearchResource.class);
+  private static final Logger log = LoggerFactory.getLogger(PublishedHarmonizedDatasetsResource.class);
 
   /**
    * Get {@link org.obiba.mica.dataset.domain.HarmonizedDataset}s, optionally filtered by study.
@@ -48,7 +49,7 @@ public class PublishedHarmonizedDatasetsSearchResource extends PublishedDatasets
       @QueryParam("limit") @DefaultValue("1000") int limit, @QueryParam("sort") String sort,
       @QueryParam("order") String order, @QueryParam("study") String studyId) {
 
-    return getDatasets(HarmonizedDataset.class, from, limit, sort, order, studyId);
+    return getDatasetDtos(HarmonizedDataset.class, from, limit, sort, order, studyId);
   }
 
   @Override

@@ -86,8 +86,8 @@ public class DraftStudyDatasetsResource {
   }
 
   @Path("/study-dataset/{id}")
-  public StudyDatasetResource dataset(@PathParam("id") String id) {
-    StudyDatasetResource resource = applicationContext.getBean(StudyDatasetResource.class);
+  public DraftStudyDatasetResource dataset(@PathParam("id") String id) {
+    DraftStudyDatasetResource resource = applicationContext.getBean(DraftStudyDatasetResource.class);
     resource.setId(id);
     return resource;
   }

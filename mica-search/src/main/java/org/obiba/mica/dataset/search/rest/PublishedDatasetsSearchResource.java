@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.search.rest.harmonized;
+package org.obiba.mica.dataset.search.rest;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -36,7 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 
 /**
- * Retrieve the {@link org.obiba.mica.dataset.domain.Dataset} from the published dataset index.
+ * Retrieve the {@link org.obiba.mica.dataset.domain.Dataset}s from the published dataset index.
  *
  * @param <T>
  */
@@ -53,12 +53,12 @@ public abstract class PublishedDatasetsSearchResource<T extends Dataset> {
   @Inject
   private ObjectMapper objectMapper;
 
-  protected List<Mica.DatasetDto> getDatasets(Class<T> clazz, int from, int limit, @Nullable String sort,
+  protected List<Mica.DatasetDto> getDatasetDtos(Class<T> clazz, int from, int limit, @Nullable String sort,
       @Nullable String order, @Nullable String studyId) {
-    QueryBuilder query = QueryBuilders.queryString(clazz.getSimpleName()).defaultField("className");
+    QueryBuilder query = QueryBuilders.queryString(clazz.getSimpleName()).field("className");
     if(studyId != null) {
       query = QueryBuilders.boolQuery().must(query)
-          .must(QueryBuilders.queryString(studyId).defaultField(getStudyIdField()));
+          .must(QueryBuilders.queryString(studyId).field(getStudyIdField()));
     }
 
     SearchRequestBuilder search = new SearchRequestBuilder(client) //
@@ -69,7 +69,7 @@ public abstract class PublishedDatasetsSearchResource<T extends Dataset> {
         .setSize(limit);
 
     if(sort != null) {
-      search.addSort(SortBuilders.fieldSort(sort).order(order == null ? SortOrder.ASC : SortOrder.valueOf(order)));
+      search.addSort(SortBuilders.fieldSort(sort).order(order == null ? SortOrder.ASC : SortOrder.valueOf(order.toUpperCase())));
     }
 
     log.info(search.toString());

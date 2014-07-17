@@ -43,7 +43,7 @@ import com.google.common.collect.ImmutableList;
 @Component
 @Scope("request")
 @RequiresAuthentication
-public class StudyDatasetResource {
+public class DraftStudyDatasetResource {
 
   @Inject
   private ApplicationContext applicationContext;
@@ -119,8 +119,8 @@ public class StudyDatasetResource {
   }
 
   @Path("/variable/{variable}")
-  public StudyDatasetVariableResource getVariable(@PathParam("variable") String variable) {
-    StudyDatasetVariableResource resource = applicationContext.getBean(StudyDatasetVariableResource.class);
+  public DraftStudyDatasetVariableResource getVariable(@PathParam("variable") String variable) {
+    DraftStudyDatasetVariableResource resource = applicationContext.getBean(DraftStudyDatasetVariableResource.class);
     resource.setDatasetId(id);
     resource.setName(variable);
     return resource;

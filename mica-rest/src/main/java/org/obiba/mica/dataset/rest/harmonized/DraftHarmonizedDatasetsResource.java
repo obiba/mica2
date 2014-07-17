@@ -86,8 +86,8 @@ public class DraftHarmonizedDatasetsResource {
   }
 
   @Path("/harmonized-dataset/{id}")
-  public HarmonizedDatasetResource dataset(@PathParam("id") String id) {
-    HarmonizedDatasetResource resource = applicationContext.getBean(HarmonizedDatasetResource.class);
+  public DraftHarmonizedDatasetResource dataset(@PathParam("id") String id) {
+    DraftHarmonizedDatasetResource resource = applicationContext.getBean(DraftHarmonizedDatasetResource.class);
     resource.setId(id);
     return resource;
   }

@@ -16,9 +16,9 @@ import javax.ws.rs.PathParam;
 
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.dataset.domain.DatasetVariable;
-import org.obiba.mica.dataset.rest.harmonized.DataschemaDatasetVariableResource;
-import org.obiba.mica.dataset.rest.harmonized.HarmonizedDatasetVariableResource;
-import org.obiba.mica.dataset.rest.study.StudyDatasetVariableResource;
+import org.obiba.mica.dataset.rest.harmonized.DraftDataschemaDatasetVariableResource;
+import org.obiba.mica.dataset.rest.harmonized.DraftHarmonizedDatasetVariableResource;
+import org.obiba.mica.dataset.rest.study.DraftStudyDatasetVariableResource;
 import org.obiba.mica.security.Roles;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
@@ -39,14 +39,14 @@ public class DraftDatasetVariableResource {
     DatasetVariable.IdResolver resolver = DatasetVariable.IdResolver.from(id);
     switch(resolver.getType()) {
       case Study:
-        resource = applicationContext.getBean(StudyDatasetVariableResource.class);
+        resource = applicationContext.getBean(DraftStudyDatasetVariableResource.class);
         break;
       case Dataschema:
-        resource = applicationContext.getBean(DataschemaDatasetVariableResource.class);
+        resource = applicationContext.getBean(DraftDataschemaDatasetVariableResource.class);
         break;
       case Harmonized:
-        resource = applicationContext.getBean(HarmonizedDatasetVariableResource.class);
-        ((HarmonizedDatasetVariableResource)resource).setStudyId(resolver.getStudyId());
+        resource = applicationContext.getBean(DraftHarmonizedDatasetVariableResource.class);
+        ((DraftHarmonizedDatasetVariableResource)resource).setStudyId(resolver.getStudyId());
         break;
     }
 

@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.search.rest.harmonized;
+package org.obiba.mica.dataset.search.rest.study;
 
 import java.util.List;
 
@@ -19,6 +19,7 @@ import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.dataset.search.rest.PublishedDatasetsSearchResource;
 import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,9 +30,9 @@ import org.springframework.stereotype.Component;
 @Scope("request")
 @Path("/study-datasets")
 @RequiresAuthentication
-public class PublishedStudyDatasetsSearchResource extends PublishedDatasetsSearchResource<StudyDataset> {
+public class PublishedStudyDatasetsResource extends PublishedDatasetsSearchResource<StudyDataset> {
 
-  private static final Logger log = LoggerFactory.getLogger(PublishedStudyDatasetsSearchResource.class);
+  private static final Logger log = LoggerFactory.getLogger(PublishedStudyDatasetsResource.class);
 
   /**
    * Get {@link org.obiba.mica.dataset.domain.StudyDataset}s, optionally filtered by study.
@@ -48,7 +49,7 @@ public class PublishedStudyDatasetsSearchResource extends PublishedDatasetsSearc
       @QueryParam("limit") @DefaultValue("1000") int limit, @QueryParam("sort") String sort,
       @QueryParam("order") String order, @QueryParam("study") String studyId) {
 
-    return getDatasets(StudyDataset.class, from, limit, sort, order, studyId);
+    return getDatasetDtos(StudyDataset.class, from, limit, sort, order, studyId);
   }
 
   @Override

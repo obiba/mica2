@@ -8,57 +8,52 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.rest.harmonized;
+package org.obiba.mica.dataset.rest.study;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.dataset.domain.HarmonizedDataset;
+import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.rest.variable.DatasetVariableResource;
-import org.obiba.mica.service.HarmonizedDatasetService;
+import org.obiba.mica.service.StudyDatasetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
-import org.obiba.opal.web.model.*;
+import org.obiba.opal.web.model.Math;
+import org.obiba.opal.web.model.Search;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
 @Scope("request")
 @RequiresAuthentication
-public class HarmonizedDatasetVariableResource extends DatasetVariableResource {
+public class DraftStudyDatasetVariableResource extends DatasetVariableResource {
 
   @Inject
-  private HarmonizedDatasetService datasetService;
+  private StudyDatasetService datasetService;
 
   @Inject
   private Dtos dtos;
 
-  private String studyId;
-
   @GET
   public Mica.DatasetVariableDto getVariable() {
-    return dtos.asDto(datasetService.getDatasetVariable(getDataset(), getName(), studyId));
+    return dtos.asDto(datasetService.getDatasetVariable(getDataset(), getName()));
   }
 
   @GET
   @Path("/summary")
-  public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary() {
-    return datasetService.getVariableSummary(getDataset(), getName(), studyId);
+  public Math.SummaryStatisticsDto getVariableSummary() {
+    return datasetService.getVariableSummary(getDataset(), getName());
   }
 
   @GET
   @Path("/facet")
   public Search.QueryResultDto getVariableFacet() {
-    return datasetService.getVariableFacet(getDataset(), getName(), studyId);
+    return datasetService.getVariableFacet(getDataset(), getName());
   }
 
-  public void setStudyId(String studyId) {
-    this.studyId = studyId;
-  }
-
-  private HarmonizedDataset getDataset() {
+  private StudyDataset getDataset() {
     return datasetService.findById(getDatasetId());
   }
 

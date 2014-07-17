@@ -40,7 +40,7 @@ import com.google.common.collect.ImmutableList;
 @Component
 @Scope("request")
 @RequiresAuthentication
-public class HarmonizedDatasetResource {
+public class DraftHarmonizedDatasetResource {
 
   @Inject
   private ApplicationContext applicationContext;
@@ -116,16 +116,16 @@ public class HarmonizedDatasetResource {
   }
 
   @Path("/variable/{variable}")
-  public DataschemaDatasetVariableResource getVariable(@PathParam("variable") String variable) {
-    DataschemaDatasetVariableResource resource = applicationContext.getBean(DataschemaDatasetVariableResource.class);
+  public DraftDataschemaDatasetVariableResource getVariable(@PathParam("variable") String variable) {
+    DraftDataschemaDatasetVariableResource resource = applicationContext.getBean(DraftDataschemaDatasetVariableResource.class);
     resource.setDatasetId(id);
     resource.setName(variable);
     return resource;
   }
 
   @Path("/study/{study}/variable/{variable}")
-  public HarmonizedDatasetVariableResource getVariable(@PathParam("study") String studyId, @PathParam("variable") String variable) {
-    HarmonizedDatasetVariableResource resource = applicationContext.getBean(HarmonizedDatasetVariableResource.class);
+  public DraftHarmonizedDatasetVariableResource getVariable(@PathParam("study") String studyId, @PathParam("variable") String variable) {
+    DraftHarmonizedDatasetVariableResource resource = applicationContext.getBean(DraftHarmonizedDatasetVariableResource.class);
     resource.setDatasetId(id);
     resource.setName(variable);
     resource.setStudyId(studyId);
