@@ -66,8 +66,8 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
    */
   @GET
   @Path("/variables")
-  public List<Mica.DatasetVariableDto> getVariables(@QueryParam("from") @DefaultValue("0") int from,
-      @QueryParam("limit") @DefaultValue("10000") int limit, @QueryParam("sort") String sort,
+  public Mica.DatasetVariablesDto getVariables(@QueryParam("from") @DefaultValue("0") int from,
+      @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
       @QueryParam("order") String order) {
     return getDatasetVariableDtos(HarmonizationDataset.class, id, null, from, limit, sort, order);
   }
@@ -83,8 +83,8 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
 
   @GET
   @Path("/study/{study}/variables")
-  public List<Mica.DatasetVariableDto> getVariables(@PathParam("study") String studyId,
-      @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10000") int limit,
+  public Mica.DatasetVariablesDto getVariables(@PathParam("study") String studyId,
+      @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit,
       @QueryParam("sort") String sort, @QueryParam("order") String order) {
     return getDatasetVariableDtos(HarmonizationDataset.class, id, studyId, from, limit, sort, order);
   }

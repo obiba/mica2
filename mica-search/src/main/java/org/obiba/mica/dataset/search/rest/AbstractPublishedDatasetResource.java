@@ -91,7 +91,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
     return dtos.asDto(getDataset(clazz, datasetId));
   }
 
-  protected List<Mica.DatasetVariableDto> getDatasetVariableDtos(Class<T> clazz, @NotNull String datasetId, @Nullable String studyId, int from,
+  protected Mica.DatasetVariablesDto getDatasetVariableDtos(Class<T> clazz, @NotNull String datasetId, @Nullable String studyId, int from,
       int limit, @Nullable String sort, @Nullable String order) {
     BoolQueryBuilder query = QueryBuilders.boolQuery()
         .must(QueryBuilders.queryString(getDatasetVariableType(studyId).toString()).field("variableType"));
@@ -118,11 +118,14 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
     SearchResponse response = search.execute().actionGet();
     log.info(response.toString());
 
-    ImmutableList.Builder<Mica.DatasetVariableDto> builder = ImmutableList.builder();
+    Mica.DatasetVariablesDto.Builder builder = Mica.DatasetVariablesDto.newBuilder() //
+        .setTotal(Long.valueOf(response.getHits().getTotalHits()).intValue()) //
+        .setFrom(from) //
+        .setLimit(limit);
     response.getHits().forEach(hit -> {
       InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
       try {
-        builder.add(dtos.asDto(objectMapper.readValue(inputStream, DatasetVariable.class)));
+        builder.addVariables(dtos.asDto(objectMapper.readValue(inputStream, DatasetVariable.class)));
       } catch(IOException e) {
         log.error("Failed retrieving {}", DatasetVariable.class.getSimpleName(), e);
       }

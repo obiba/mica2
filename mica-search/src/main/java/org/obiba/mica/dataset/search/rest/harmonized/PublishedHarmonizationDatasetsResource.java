@@ -10,8 +10,6 @@
 
 package org.obiba.mica.dataset.search.rest.harmonized;
 
-import java.util.List;
-
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -45,8 +43,8 @@ public class PublishedHarmonizationDatasetsResource extends AbstractPublishedDat
    * @return
    */
   @GET
-  public List<Mica.DatasetDto> list(@QueryParam("from") @DefaultValue("0") int from,
-      @QueryParam("limit") @DefaultValue("1000") int limit, @QueryParam("sort") String sort,
+  public Mica.DatasetsDto list(@QueryParam("from") @DefaultValue("0") int from,
+      @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
       @QueryParam("order") String order, @QueryParam("study") String studyId) {
 
     return getDatasetDtos(HarmonizationDataset.class, from, limit, sort, order, studyId);

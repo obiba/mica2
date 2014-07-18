@@ -265,6 +265,13 @@ message HarmonizationDatasetDto {
   }
 }
 
+message DatasetsDto {
+  required int32 total = 1;
+  required int32 from = 2;
+  required int32 limit = 3;
+  repeated DatasetDto datasets = 4;
+}
+
 message DatasetCategoryDto {
   required string name = 1;
   required bool missing = 2;
@@ -287,6 +294,13 @@ message DatasetVariableDto {
   repeated AttributeDto attributes = 13;
   repeated DatasetCategoryDto categories = 14;
   repeated LocalizedStringDto datasetName = 15;
+}
+
+message DatasetVariablesDto {
+  required int32 total = 1;
+  required int32 from = 2;
+  required int32 limit = 3;
+  repeated DatasetVariableDto variables = 4;
 }
 
 message DatasetVariableResolverDto {

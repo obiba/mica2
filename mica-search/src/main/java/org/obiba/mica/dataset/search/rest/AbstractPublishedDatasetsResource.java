@@ -53,7 +53,7 @@ public abstract class AbstractPublishedDatasetsResource<T extends Dataset> {
   @Inject
   private ObjectMapper objectMapper;
 
-  protected List<Mica.DatasetDto> getDatasetDtos(Class<T> clazz, int from, int limit, @Nullable String sort,
+  protected Mica.DatasetsDto getDatasetDtos(Class<T> clazz, int from, int limit, @Nullable String sort,
       @Nullable String order, @Nullable String studyId) {
     QueryBuilder query = QueryBuilders.queryString(clazz.getSimpleName()).field("className");
     if(studyId != null) {
@@ -76,11 +76,14 @@ public abstract class AbstractPublishedDatasetsResource<T extends Dataset> {
     SearchResponse response = search.execute().actionGet();
     log.info(response.toString());
 
-    ImmutableList.Builder<Mica.DatasetDto> builder = ImmutableList.builder();
+    Mica.DatasetsDto.Builder builder = Mica.DatasetsDto.newBuilder() //
+        .setTotal(Long.valueOf(response.getHits().getTotalHits()).intValue()) //
+        .setFrom(from) //
+        .setLimit(limit);
     response.getHits().forEach(hit -> {
       InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
       try {
-        builder.add(dtos.asDto(objectMapper.readValue(inputStream, clazz)));
+        builder.addDatasets(dtos.asDto(objectMapper.readValue(inputStream, clazz)));
       } catch(IOException e) {
         log.error("Failed retrieving {}", clazz.getSimpleName(), e);
       }

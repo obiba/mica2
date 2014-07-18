@@ -70,8 +70,8 @@ public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResou
    */
   @GET
   @Path("/variables")
-  public List<Mica.DatasetVariableDto> getVariables(@QueryParam("from") @DefaultValue("0") int from,
-      @QueryParam("limit") @DefaultValue("1000") int limit, @QueryParam("sort") String sort,
+  public Mica.DatasetVariablesDto getVariables(@QueryParam("from") @DefaultValue("0") int from,
+      @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
       @QueryParam("order") String order) {
     return getDatasetVariableDtos(StudyDataset.class, id, null, from, limit, sort, order);
   }
