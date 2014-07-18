@@ -79,7 +79,7 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
     studyDataset.setEntityType("Participant");
     StudyTable table = new StudyTable();
     table.setStudyId(study.getId());
-    table.setProject("test");
+    table.setProject("study1");
     table.setTable("FNAC");
     studyDataset.setStudyTable(table);
     studyDatasetService.save(studyDataset);
@@ -92,7 +92,7 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
     harmonizationDataset.setTable("HOP");
     table = new StudyTable();
     table.setStudyId(study.getId());
-    table.setProject("test");
+    table.setProject("study1");
     table.setTable("HOP");
     harmonizationDataset.addStudyTable(table);
     harmonizationDatasetService.save(harmonizationDataset);
