@@ -21,6 +21,7 @@ mimeType:
 valueType:
 repeatable:
 occurrenceGroup:
+datasetId:
 
 categories:
   missing:
