@@ -39,7 +39,7 @@ class StudySummaryDtos {
     if(study.getAcronym() != null) {
       builder.addAllAcronym(localizedStringDtos.asDto(study.getAcronym()));
     }
-    if(study.getMethods().getDesigns() != null) {
+    if(study.getMethods() != null && study.getMethods().getDesigns() != null) {
       builder.addAllDesigns(study.getMethods().getDesigns());
     }
     if(study.getNumberOfParticipants() != null && study.getNumberOfParticipants().getParticipant() != null) {

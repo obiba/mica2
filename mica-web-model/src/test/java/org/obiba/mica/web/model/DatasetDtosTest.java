@@ -1,0 +1,90 @@
+/*
+ * Copyright (c) 2014 OBiBa. All rights reserved.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package org.obiba.mica.web.model;
+
+import java.util.Arrays;
+import java.util.Locale;
+
+import javax.inject.Inject;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.obiba.mica.config.JsonConfiguration;
+import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.domain.StudyTable;
+import org.obiba.mica.micaConfig.MicaConfig;
+import org.obiba.mica.micaConfig.MicaConfigService;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+
+import static org.mockito.Mockito.when;
+import static org.obiba.mica.domain.LocalizedString.en;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
+@ContextConfiguration(classes = { DatasetDtosTest.Config.class, JsonConfiguration.class })
+@DirtiesContext
+@SuppressWarnings({ "MagicNumber", "OverlyCoupledClass" })
+public class DatasetDtosTest {
+
+  @Inject
+  private MicaConfigService micaConfigService;
+
+  @Inject
+  private Dtos dtos;
+
+  @Before
+  public void before() {
+    MicaConfig config = new MicaConfig();
+    config.setLocales(Arrays.asList(Locale.ENGLISH, Locale.FRENCH));
+    when(micaConfigService.getConfig()).thenReturn(config);
+  }
+
+  @Test
+  public void test_study_dataset_dto() throws Exception {
+    StudyDataset studyDataset = createStudyDataset();
+    Mica.DatasetDto dto = dtos.asDto(studyDataset);
+    System.out.println(dto);
+  }
+
+  private StudyDataset createStudyDataset() {
+    StudyDataset studyDataset = new StudyDataset();
+    studyDataset.setName(en("FNAC").forFr("FNAC"));
+    studyDataset.setEntityType("Participant");
+    StudyTable table = new StudyTable();
+    table.setStudyId("1111111111111111");
+    table.setProject("study1");
+    table.setTable("FNAC");
+    studyDataset.setStudyTable(table);
+    return studyDataset;
+  }
+
+  @Configuration
+  @ComponentScan("org.obiba.mica.web.model")
+  static class Config {
+
+
+    @Bean
+    public MicaConfigService micaConfigService() {
+      return Mockito.mock(MicaConfigService.class);
+    }
+
+
+  }
+}
