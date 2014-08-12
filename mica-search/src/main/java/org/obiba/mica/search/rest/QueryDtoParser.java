@@ -14,6 +14,7 @@ import org.elasticsearch.index.query.BoolFilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.FilteredQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.obiba.mica.web.model.MicaSearch;
 
 import static org.obiba.mica.web.model.MicaSearch.BoolFilterQueryDto;
 import static org.obiba.mica.web.model.MicaSearch.FilteredQueryDto;
@@ -28,8 +29,16 @@ public class QueryDtoParser {
   }
 
   public FilteredQueryBuilder parse(QueryDto queryDto) {
-    FilteredQueryDto filteredQueryDto = queryDto.getFilteredQuery();
+    return parseFilterQuery(queryDto.getFilteredQuery());
+  }
+
+  private FilteredQueryBuilder parseFilterQuery(FilteredQueryDto filteredQueryDto) {
     BoolFilterQueryDto boolFilterDto = filteredQueryDto.getFilter();
+    BoolFilterBuilder boolFilter = parseBoolFilter(boolFilterDto);
+    return QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), boolFilter);
+  }
+
+  private BoolFilterBuilder parseBoolFilter(BoolFilterQueryDto boolFilterDto) {
     BoolFilterBuilder boolFilter = FilterBuilders.boolFilter();
 
     if(boolFilterDto.getTermsList().size() > 0) {
@@ -37,7 +46,16 @@ public class QueryDtoParser {
           .forEach(terms -> boolFilter.must(FilterBuilders.termsFilter(terms.getField(), terms.getValuesList())));
     }
 
-    return QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), boolFilter);
+    if(boolFilterDto.hasParentChildFilter()) {
+      MicaSearch.ParentChildFilterDto parentChildFilterDto = boolFilterDto.getParentChildFilter();
+      FilteredQueryBuilder dtoFilteredQuery = parseFilterQuery(parentChildFilterDto.getFilteredQuery());
+      String type = parentChildFilterDto.getType();
+      boolFilter.must(
+          parentChildFilterDto.getRelationship() == MicaSearch.ParentChildFilterDto.Relationship.PARENT ? FilterBuilders
+              .hasParentFilter(type, dtoFilteredQuery) : FilterBuilders.hasChildFilter(type, dtoFilteredQuery));
+    }
+
+    return boolFilter;
   }
 
 }

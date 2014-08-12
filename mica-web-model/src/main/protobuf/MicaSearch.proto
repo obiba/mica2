@@ -16,6 +16,18 @@ message FilteredQueryDto {
 
 message BoolFilterQueryDto {
   repeated TermsQueryDto terms = 1;
+  optional ParentChildFilterDto parentChildFilter = 2;
+}
+
+message ParentChildFilterDto {
+  enum Relationship {
+    PARENT = 0;
+    CHILD = 1;
+  }
+
+  required Relationship relationship = 1;
+  required string type = 2;
+  required FilteredQueryDto filteredQuery = 3;
 }
 
 message TermsQueryDto {
