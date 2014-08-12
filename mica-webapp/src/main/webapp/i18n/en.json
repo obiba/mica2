@@ -412,6 +412,7 @@
   "dataset" : {
     "name" : "Name",
     "add" : "Add Dataset",
+    "label-edit" : "Edit Dataset",
     "general-info": "General Information",
     "description" : "Description",
     "entity-type" : "Entity Type",

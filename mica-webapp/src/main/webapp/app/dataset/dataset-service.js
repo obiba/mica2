@@ -6,9 +6,17 @@ mica.dataset
       return $resource('ws/draft/study-datasets');
     }])
 
+  .factory('DraftStudyDatasetsResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/draft/study-datasets', {}, {
+        'save': {method: 'POST', errorHandler: true}
+      });
+    }])
+
   .factory('StudyDatasetResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/study-dataset/:id', {}, {
+        'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true},
         'get': {method: 'GET'}
       });
     }])
