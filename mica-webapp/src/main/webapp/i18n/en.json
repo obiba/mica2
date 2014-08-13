@@ -424,6 +424,11 @@
     "index": "Index",
     "add-study-table": "Add Study Table"
   },
+  "attributes": "Attributes",
+  "attribute": {
+    "name": "Name",
+    "value": "Value"
+  },
   "study-datasets" : "Study Datasets",
   "study-dataset" : "Study Dataset",
   "harmonization-datasets" : "Harmonization Datasets",

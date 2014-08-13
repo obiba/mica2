@@ -22,6 +22,7 @@ import org.mockito.Mockito;
 import org.obiba.mica.config.JsonConfiguration;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.domain.Attribute;
 import org.obiba.mica.domain.StudyTable;
 import org.obiba.mica.micaConfig.MicaConfig;
 import org.obiba.mica.micaConfig.MicaConfigService;
@@ -82,6 +83,9 @@ public class DatasetDtosTest {
     table.setProject("study1");
     table.setTable("FNAC");
     studyDataset.setStudyTable(table);
+    studyDataset.addAttribute(Attribute.Builder.newAttribute("att1").namespace("mica").value(Locale.FRENCH, "value fr").value(Locale.ENGLISH, "Value en").build());
+    studyDataset.addAttribute(Attribute.Builder.newAttribute("att2").namespace("mica").value(Locale.FRENCH, "value fr").build());
+
     return studyDataset;
   }
 
