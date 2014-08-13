@@ -241,7 +241,7 @@ message DatasetDto {
   extensions 1000 to max;
 
   message StudyTableDto {
-    optional string studyId = 1;
+    required string studyId = 1;
     required string project = 2;
     required string table = 3;
   }

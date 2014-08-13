@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<!--
+  ~ Copyright (c) 2014 OBiBa. All rights reserved.
+  ~
+  ~ This program and the accompanying materials
+  ~ are made available under the terms of the GNU Public License v3.0.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<div class="voffset4">
+  <h3 translate>dataset.study-tables</h3>
+
+  <button type="button" class="btn btn-default btn-sm voffset2" ng-click="addStudyTable()">
+    <i class="fa fa-plus"></i> <span translate>dataset.add-study-table</span>
+  </button>
+
+
+  <div ng-show="dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables">
+    <table class="table table-striped" ng-show="dataset['obiba.mica.HarmonizationDatasetDto.type']">
+      <thead>
+      <tr>
+        <th translate>study.label</th>
+        <th translate>dataset.project</th>
+        <th translate>dataset.table</th>
+        <th translate>actions</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr ng-repeat="studyTable in dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables">
+        <td>
+          <a ng-href="#/study/{{studyTable.studyId}}">
+            {{studyTable.studyId}}
+          </a>
+        </td>
+        <td>
+          {{studyTable.project}}
+        </td>
+        <td>
+          {{studyTable.table}}
+        </td>
+        <td>
+          <a href="" ng-click="editStudyTable($index)" class="action"><i class="fa fa-pencil"></i></a>
+          <a href="" ng-click="deleteStudyTable($index)" class="action"><i class="fa fa-trash-o"></i></a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

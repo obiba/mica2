@@ -421,7 +421,8 @@
     "project" : "Project",
     "table" : "Table",
     "data-schema" : "Data Schema",
-    "index": "Index"
+    "index": "Index",
+    "add-study-table": "Add Study Table"
   },
   "study-datasets" : "Study Datasets",
   "study-dataset" : "Study Dataset",
@@ -445,5 +446,6 @@
   "fix-error": "Please fix errors bellow",
   "dnd-reorder": "Drag and drop to reorder",
   "loading": "Loading...",
-  "error": "Error"
+  "error": "Error",
+  "actions": "Actions"
 }

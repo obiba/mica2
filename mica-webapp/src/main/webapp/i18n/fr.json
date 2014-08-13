@@ -1,4 +1,8 @@
 {
+  "language": {
+    "en": "Anglais",
+    "fr": "Français"
+  },
   "global": {
     "title": "JHipster",
     "browsehappy": "Vous utilisez un <strong>ancien</strong> navigateur. Veuillez <a href=\"http://browsehappy.com/\">mettre à jour votre navigateur</a> pour une meilleure expérience.",
@@ -272,4 +276,185 @@
     "403": "Vous n'avez pas les droits pour accéder à cette page."
   },
   "footer": "Ceci est votre pied de page"
+}
+  "config": {
+    "short-title": "Configuration",
+    "title": "General Configuration",
+    "title-edit": "Edit General Configuration",
+    "name": "Name",
+    "name-help": "Name of your organization",
+    "publicUrl": "Public URL",
+    "publicUrl-help": "Public base URL of the server (not the web-interface one) that will be used when sending notification emails on report generation",
+    "defaultCharSet": "Default Character Set",
+    "languages": "Languages",
+    "languages-help": "Supported languages for studies and networks description",
+    "opal" : "Primary Opal Server"
+  },
+  "publish": {
+    "label" : "Publish",
+    "un-publish" : "Unpublish",
+    "not-published": "Not published",
+    "published-out-of-date": "Published, out of date",
+    "published": "Published",
+    "revisions-ahead": "Revisions ahead"
+  },
+  "studies": "Studies",
+  "study": {
+    "add": "Add Study",
+    "label": "Study",
+    "label-edit": "Edit Study",
+    "details": "Details",
+    "general-info": "General Information",
+    "methods": "Methods",
+    "name": "Name",
+    "name-help": "Official study name",
+    "acronym": "Acronym",
+    "acronym-help": "Acronym of the study if applicable",
+    "objectives": "Objectives",
+    "description": "Description",
+    "objectives-help": "What are the principal objectives of the study?",
+    "website": "Website",
+    "investigators": "Investigators",
+    "add-investigator": "Add Investigator",
+    "contacts": "Contacts",
+    "add-contact": "Add Contact",
+    "start-year": "Start Year",
+    "end-year": "End Year",
+    "general-design": "General Design",
+    "design": "Study Design",
+    "follow-up": "Follow Up",
+    "recruitment-target": "Recruitment target",
+    "target-number": {
+      "participants": "Target number of participants",
+      "sample": "Target number of participants with biological samples",
+      "no-limit": "No Limit",
+      "suppl-info": "Supplementary information about target number of participants"
+    },
+    "access": {
+      "label": "Access",
+      "for": "Access to external researchers or third parties provided or foreseen for"
+    },
+    "marker-paper": "Marker Paper",
+    "pubmed-id": "Pubmed ID",
+    "documents": "Documents",
+    "documents-help": "If applicable, please provide relevant documentation about the study (e.g.: Study Protocol).",
+    "timeline": "Study Timeline",
+    "populations": "Populations",
+    "authorization": {
+      "label": "Authorization",
+      "authorized": {
+        "true": "Authorized",
+        "false": "Not authorized"
+      },
+      "maelstrom": "Authorization from contributors to the Maelstrom catalogues",
+      "specific": "Authorization from contributors to the [specific network] catalogues"
+    },
+    "selection-criteria": {
+      "label": "Selection criteria",
+      "gender": {
+        "label": "Gender",
+        "men": "Men",
+        "women": "Women"
+      },
+      "age": "Age",
+      "country": "Country",
+      "territory": "Territory",
+      "ethnic-origin": "Ethnic Origin",
+      "health-status": "Health Status"
+    },
+    "recruitment-sources": {
+      "label": "Sources of recruitment",
+      "general-population": "General Population",
+      "specific-population": "Specific Population",
+      "studies": "Participants from existing studies"
+    },
+    "participants-number": {
+      "participant": "Number of participants",
+      "sample": "Number of participants with biological samples"
+    },
+    "data-collection-events": "Data Collection Events",
+    "start": "Start",
+    "end": "End",
+    "save-error": "Error while saving study",
+    "publication": {
+      "not-published": "Not published",
+      "published-out-of-date": "Published, out of date",
+      "published": "Published",
+      "revisions-ahead": "Revisions ahead"
+    },
+    "opal" : "Opal Server"
+  },
+  "contact": {
+    "label": "Contact",
+    "delete": {
+      "contact": {
+        "title": "Delete Contact",
+        "confirm": "Are you sure you want to delete contact {{name}}?"
+      },
+      "investigator": {
+        "title": "Delete Investigator",
+        "confirm": "Are you sure you want to delete investigator {{name}}?"
+      }
+    },
+    "edit": {
+      "contact": "Edit Contact",
+      "investigator": "Edit Investigator"
+    },
+    "title": "Title",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "phone": "Phone",
+    "dataAccessCommitteeMember": "Data Access Committee Member",
+    "institution": "Institution",
+    "department": "Department"
+  },
+  "address": {
+    "label": "Address",
+    "city": "City",
+    "zip": "Postal Code",
+    "state": "State",
+    "country": "Country"
+  },
+  "networks": "Networks",
+  "datasets" : "Datasets",
+  "dataset" : {
+    "name" : "Nom",
+    "add" : "Ajouter Dataset",
+    "label-edit" : "Modifier Dataset",
+    "general-info": "Information général",
+    "description" : "Description",
+    "entity-type" : "Type d'entité",
+    "study-table" : "Table d'étude",
+    "study-tables" : "Tables d'études",
+    "project" : "Project",
+    "table" : "Table",
+    "data-schema" : "Data Schema",
+    "index": "Index",
+    "add-study-table": "Add Study Table"
+  },
+  "study-datasets" : "Study Datasets",
+  "study-dataset" : "Study Dataset",
+  "harmonization-datasets" : "Harmonization Datasets",
+  "harmonization-dataset" : "Harmonization Dataset",
+  "name": "Name",
+  "edit": "Edit",
+  "view": "View",
+  "delete": "Delete",
+  "cancel": "Cancel",
+  "ok": "OK",
+  "confirmation": "Confirmation",
+  "close": "Close",
+  "save": "Save",
+  "on": "On",
+  "by": "By",
+  "other": "Other",
+  "notification": "Notification",
+  "required": "Required",
+  "suppl-info": "Supplementary information",
+  "fix-error": "Please fix errors bellow",
+  "dnd-reorder": "Drag and drop to reorder",
+  "loading": "Loading...",
+  "error": "Error",
+  "actions": "Actions"
 }

@@ -29,19 +29,27 @@ mica.dataset
       });
     }])
 
-  .factory('HarmonizedDatasetsResource', ['$resource',
+  .factory('DraftHarmonizationDatasetsResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/draft/harmonization-datasets', {}, {
+        'save': {method: 'POST', errorHandler: true}
+      });
+    }])
+
+  .factory('HarmonizationDatasetsResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/harmonization-datasets');
     }])
 
-  .factory('HarmonizedDatasetResource', ['$resource',
+  .factory('HarmonizationDatasetResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/harmonization-dataset/:id', {}, {
+        'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true},
         'get': {method: 'GET'}
       });
     }])
 
-  .factory('HarmonizedDatasetPublicationResource', ['$resource',
+  .factory('HarmonizationDatasetPublicationResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/harmonization-dataset/:id/_publish', {}, {
         'publish': {method: 'PUT', params: {id: '@id'}},

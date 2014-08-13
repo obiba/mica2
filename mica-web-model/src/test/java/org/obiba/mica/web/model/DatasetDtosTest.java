@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.obiba.mica.config.JsonConfiguration;
+import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.domain.StudyTable;
 import org.obiba.mica.micaConfig.MicaConfig;
@@ -56,10 +57,19 @@ public class DatasetDtosTest {
     when(micaConfigService.getConfig()).thenReturn(config);
   }
 
+  // TODO complete this class by using StudyDtosTest class
+
   @Test
   public void test_study_dataset_dto() throws Exception {
     StudyDataset studyDataset = createStudyDataset();
     Mica.DatasetDto dto = dtos.asDto(studyDataset);
+    System.out.println(dto);
+  }
+
+  @Test
+  public void test_harmonized_dataset_dto() throws Exception {
+    HarmonizationDataset harmonizationDataset = createHarmonizedDataset();
+    Mica.DatasetDto dto = dtos.asDto(harmonizationDataset);
     System.out.println(dto);
   }
 
@@ -73,6 +83,20 @@ public class DatasetDtosTest {
     table.setTable("FNAC");
     studyDataset.setStudyTable(table);
     return studyDataset;
+  }
+
+  private HarmonizationDataset createHarmonizedDataset() {
+    HarmonizationDataset harmonizationDataset = new HarmonizationDataset();
+    harmonizationDataset.setName(en("Healthy Obese Project").forFr("Projet des obeses en sante"));
+    harmonizationDataset.setEntityType("Participant");
+    harmonizationDataset.setProject("mica");
+    harmonizationDataset.setTable("HOP");
+    StudyTable table = new StudyTable();
+    table.setStudyId("222222222222222");
+    table.setProject("study1");
+    table.setTable("HOP");
+    harmonizationDataset.addStudyTable(table);
+    return harmonizationDataset;
   }
 
   @Configuration
