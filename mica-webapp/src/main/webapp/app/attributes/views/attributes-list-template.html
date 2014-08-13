@@ -1,0 +1,32 @@
+<div ng-show="namespaces || namespaces.length > 0">
+
+  <h3 translate>attributes</h3>
+
+  <div ng-repeat="(namespace, attributes) in namespaces">
+
+    <span class="badge badge-success">{{namespace}}</span>
+
+    <table class="table table-striped attributes-column">
+      <thead>
+      <tr>
+        <th translate>attribute.name</th>
+        <th translate>attribute.value</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr ng-repeat="attribute in attributes">
+        <td>
+          {{attribute.name}}
+        </td>
+        <td>
+          <ul class="list-inline">
+            <li ng-repeat="locale in attribute.values">
+              <span class="badge">{{locale.lang}}</span> {{locale.value}}
+            </li>
+          </ul>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
