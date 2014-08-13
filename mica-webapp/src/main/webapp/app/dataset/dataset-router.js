@@ -23,18 +23,18 @@ mica.dataset
 
         .when('/harmonization-dataset', {
           templateUrl: 'app/dataset/views/harmonization-dataset-list.html',
-          controller: 'HarmonizedDatasetListController'
+          controller: 'HarmonizationDatasetListController'
         })
         .when('/harmonization-dataset/new', {
           templateUrl: 'app/dataset/views/harmonization-dataset-form.html',
-          controller: 'HarmonizedDatasetEditController'
+          controller: 'HarmonizationDatasetEditController'
         })
         .when('/harmonization-dataset/:id', {
           templateUrl: 'app/dataset/views/harmonization-dataset-view.html',
-          controller: 'HarmonizedDatasetViewController'
+          controller: 'HarmonizationDatasetViewController'
         })
         .when('/harmonization-dataset/:id/edit', {
           templateUrl: 'app/dataset/views/harmonization-dataset-form.html',
-          controller: 'HarmonizedDatasetEditController'
+          controller: 'HarmonizationDatasetEditController'
         });
     }]);
