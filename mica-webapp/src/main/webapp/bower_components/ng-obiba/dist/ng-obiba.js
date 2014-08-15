@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba
 
  * License: GNU Public License version 3
- * Date: 2014-05-27
+ * Date: 2014-08-15
  */
 'use strict';
 
@@ -215,6 +215,28 @@ angular.module('obiba.form')
     };
   }])
 
+  .directive('formLocalizedInput', [function () {
+    return {
+      restrict: 'AE',
+      require: '^form',
+      scope: {
+        locales: '=',
+        name: '@',
+        model: '=',
+        label: '@',
+        required: '@',
+        help: '@'
+      },
+      templateUrl: 'form/form-localized-input-template.tpl.html',
+      link: function ($scope, elem, attr, ctrl) {
+        if (angular.isUndefined($scope.model) || $scope.model === null) {
+          $scope.model = '';
+        }
+        $scope.form = ctrl;
+      }
+    };
+  }])
+
   .directive('formCheckbox', [function () {
     return {
       restrict: 'AE',
@@ -241,7 +263,7 @@ angular.module('ngObiba', [
   'obiba.rest',
   'obiba.utils'
 ]);
-;angular.module('templates-main', ['form/form-checkbox-template.tpl.html', 'form/form-input-template.tpl.html', 'notification/notification-confirm-modal.tpl.html', 'notification/notification-modal.tpl.html']);
+;angular.module('templates-main', ['form/form-checkbox-template.tpl.html', 'form/form-input-template.tpl.html', 'form/form-localized-input-template.tpl.html', 'notification/notification-confirm-modal.tpl.html', 'notification/notification-modal.tpl.html']);
 
 angular.module("form/form-checkbox-template.tpl.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("form/form-checkbox-template.tpl.html",
@@ -295,6 +317,36 @@ angular.module("form/form-input-template.tpl.html", []).run(["$templateCache", f
     "  </ul>\n" +
     "\n" +
     "  <p ng-show=\"help\" class=\"help-block\">{{help | translate}}</p>\n" +
+    "\n" +
+    "</div>");
+}]);
+
+angular.module("form/form-localized-input-template.tpl.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("form/form-localized-input-template.tpl.html",
+    "<div class=\"form-group\" ng-class=\"{'has-error': (form[name].$dirty || form.saveAttempted) && form[name].$invalid}\">\n" +
+    "\n" +
+    "    <label for=\"{{name}}\" class=\"control-label\">\n" +
+    "        {{label | translate}}\n" +
+    "        <span ng-show=\"required\">*</span>\n" +
+    "    </label>\n" +
+    "\n" +
+    "    <div class=\"input-group\" ng-repeat=\"locale in locales track by $index\">\n" +
+    "        <span class=\"input-group-addon\">{{locale.lang}}</span>\n" +
+    "        <input\n" +
+    "                ng-model=\"locale.value\"\n" +
+    "                type=\"text\"\n" +
+    "                class=\"form-control\"\n" +
+    "                id=\"{{name}}.{{locale.lang}}\"\n" +
+    "                name=\"{{name}}.locale.lang}}\"\n" +
+    "                form-server-error>\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <ul class=\"input-error list-unstyled\" ng-show=\"form[name].$dirty && form[name].$invalid\">\n" +
+    "        <li ng-show=\"form[name].$error.required\" translate>required</li>\n" +
+    "        <li ng-repeat=\"error in form[name].errors\">{{error}}</li>\n" +
+    "    </ul>\n" +
+    "\n" +
+    "    <p ng-show=\"help\" class=\"help-block\">{{help | translate}}</p>\n" +
     "\n" +
     "</div>");
 }]);

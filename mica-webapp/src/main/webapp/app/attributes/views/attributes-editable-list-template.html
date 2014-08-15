@@ -1,0 +1,43 @@
+<div>
+
+  <h3 translate>attributes</h3>
+
+  <button type="button" class="btn btn-default btn-sm voffset2" ng-click="addAttribute()">
+    <i class="fa fa-plus"></i> <span translate>attribute.add-attribute</span>
+  </button>
+
+  <div ng-show="namespaces || namespaces.length > 0">
+    <div class="voffset3" ng-repeat="(namespace, attributes) in namespaces">
+
+      <span class="badge badge-success">{{namespace}}</span>
+
+      <table class="table table-striped attributes-column">
+        <thead>
+        <tr>
+          <th class="width25" translate>name</th>
+          <th class="width75" translate>values</th>
+          <th translate>actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="attribute in attributes">
+          <td class="width25">
+            {{attribute.data.name}}
+          </td>
+          <td class="width75">
+            <ul class="list-inline">
+              <li ng-repeat="locale in attribute.data.values">
+                <span class="badge">{{locale.lang}}</span> {{locale.value}}
+              </li>
+            </ul>
+          </td>
+          <td>
+            <a href="" ng-click="editAttribute(attribute.masterIndex)" class="action"><i class="fa fa-pencil"></i></a>
+            <a href="" ng-click="deleteAttribute(attribute.masterIndex)" class="action"><i class="fa fa-trash-o"></i></a>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

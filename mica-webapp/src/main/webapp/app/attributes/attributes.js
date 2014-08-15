@@ -11,6 +11,7 @@
 'use strict';
 
 mica.attributes = angular.module('mica.attributes', [
+  'mica.config',
   'pascalprecht.translate',
   'ui.bootstrap'
 ]);

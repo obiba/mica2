@@ -21,4 +21,16 @@ mica.attributes
       },
       templateUrl: 'app/attributes/views/attributes-list-template.html'
     };
+  }])
+
+  .directive('attributesEditableList', [function () {
+    return {
+      restrict: 'E',
+      replace: true,
+      controller: 'AttributesEditableListController',
+      scope: {
+        attributes: '='
+      },
+      templateUrl: 'app/attributes/views/attributes-editable-list-template.html'
+    };
   }]);
