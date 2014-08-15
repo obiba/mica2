@@ -435,14 +435,17 @@
   },
   "attributes": "Attributes",
   "attribute": {
-    "name": "Name",
-    "value": "Value"
+    "add-attribute": "Add Attribute",
+    "edit-attribute": "Edit Attribute"
   },
   "study-datasets" : "Study Datasets",
   "study-dataset" : "Study Dataset",
   "harmonization-datasets" : "Harmonization Datasets",
   "harmonization-dataset" : "Harmonization Dataset",
   "name": "Name",
+  "value": "Value",
+  "values": "Values",
+  "namespace": "Namespace",
   "edit": "Edit",
   "view": "View",
   "delete": "Delete",
@@ -451,6 +454,7 @@
   "confirmation": "Confirmation",
   "close": "Close",
   "save": "Save",
+  "apply": "Apply",
   "on": "On",
   "by": "By",
   "other": "Other",

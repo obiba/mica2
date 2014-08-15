@@ -2,25 +2,25 @@
 
   <h3 translate>attributes</h3>
 
-  <div ng-repeat="(namespace, attributes) in namespaces">
+  <div class="" ng-repeat="(namespace, attributes) in namespaces">
 
     <span class="badge badge-success">{{namespace}}</span>
 
     <table class="table table-striped attributes-column">
       <thead>
       <tr>
-        <th translate>attribute.name</th>
-        <th translate>attribute.value</th>
+        <th class="width25" translate>name</th>
+        <th translate>values</th>
       </tr>
       </thead>
       <tbody>
       <tr ng-repeat="attribute in attributes">
-        <td>
-          {{attribute.name}}
+        <td class="width25">
+          {{attribute.data.name}}
         </td>
         <td>
           <ul class="list-inline">
-            <li ng-repeat="locale in attribute.values">
+            <li ng-repeat="locale in attribute.data.values">
               <span class="badge">{{locale.lang}}</span> {{locale.value}}
             </li>
           </ul>

@@ -24,6 +24,8 @@
         <tabset>
           <tab heading="{{'dataset.general-info' | translate}}">
             <div ng-include="'app/dataset/views/dataset-general-info-form.html'"></div>
+
+            <attributes-editable-list attributes="dataset.attributes"></attributes-editable-list>
           </tab>
           <tab heading="{{'dataset.study-table' | translate}}">
             <div ng-include="'app/dataset/views/dataset-study-table-form.html'"></div>

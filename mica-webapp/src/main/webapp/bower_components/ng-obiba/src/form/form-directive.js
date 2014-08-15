@@ -38,6 +38,28 @@ angular.module('obiba.form')
     };
   }])
 
+  .directive('formLocalizedInput', [function () {
+    return {
+      restrict: 'AE',
+      require: '^form',
+      scope: {
+        locales: '=',
+        name: '@',
+        model: '=',
+        label: '@',
+        required: '@',
+        help: '@'
+      },
+      templateUrl: 'form/form-localized-input-template.tpl.html',
+      link: function ($scope, elem, attr, ctrl) {
+        if (angular.isUndefined($scope.model) || $scope.model === null) {
+          $scope.model = '';
+        }
+        $scope.form = ctrl;
+      }
+    };
+  }])
+
   .directive('formCheckbox', [function () {
     return {
       restrict: 'AE',

@@ -18,9 +18,9 @@ mica.dataset
 
     }])
 
-  .controller('StudyDatasetEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', 'StudyDatasetResource', 'DraftStudyDatasetsResource', 'StudyDatasetPublicationResource', 'MicaConfigResource',
+  .controller('StudyDatasetEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', 'StudyDatasetResource', 'DraftStudyDatasetsResource', 'StudyDatasetPublicationResource', 'MicaConfigResource', 'FormServerValidation',
 
-    function ($rootScope, $scope, $routeParams, $log, $locale, $location, StudyDatasetResource, DraftStudyDatasetsResource, StudyDatasetPublicationResource, MicaConfigResource) {
+    function ($rootScope, $scope, $routeParams, $log, $locale, $location, StudyDatasetResource, DraftStudyDatasetsResource, StudyDatasetPublicationResource, MicaConfigResource, FormServerValidation) {
 
       $scope.dataset = $routeParams.id ?
         StudyDatasetResource.get({id: $routeParams.id}) : {published: false, 'obiba.mica.StudyDatasetDto.type': {} };
@@ -72,13 +72,11 @@ mica.dataset
     }])
 
 
-  .controller('HarmonizationDatasetEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', '$modal', 'HarmonizationDatasetResource', 'DraftHarmonizationDatasetsResource', 'HarmonizationDatasetPublicationResource', 'MicaConfigResource',
+  .controller('HarmonizationDatasetEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', '$modal', 'HarmonizationDatasetResource', 'DraftHarmonizationDatasetsResource', 'HarmonizationDatasetPublicationResource', 'MicaConfigResource', 'FormServerValidation',
 
-    function ($rootScope, $scope, $routeParams, $log, $locale, $location, $modal, HarmonizationDatasetResource, DraftHarmonizationDatasetsResource, HarmonizationDatasetPublicationResource, MicaConfigResource) {
+    function ($rootScope, $scope, $routeParams, $log, $locale, $location, $modal, HarmonizationDatasetResource, DraftHarmonizationDatasetsResource, HarmonizationDatasetPublicationResource, MicaConfigResource, FormServerValidation) {
 
-      $scope.dataset = $routeParams.id
-        ? HarmonizationDatasetResource.get({id: $routeParams.id})
-        : {published: false, 'obiba.mica.HarmonizationDatasetDto.type': {} };
+      $scope.dataset = $routeParams.id ? HarmonizationDatasetResource.get({id: $routeParams.id}) : {published: false, 'obiba.mica.HarmonizationDatasetDto.type': {} };
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
@@ -117,7 +115,7 @@ mica.dataset
             $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables.push(studyTable);
           }, function () {
           });
-      }
+      };
 
       $scope.editStudyTable = function(index) {
         $modal
@@ -134,14 +132,14 @@ mica.dataset
             $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables[index] = studyTable;
           }, function () {
           });
-      }
+      };
 
       $scope.deleteStudyTable = function(index) {
         $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables.splice(index);
         if ($scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables.length === 0) {
           $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables = undefined;
         }
-      }
+      };
 
       $scope.cancel = function () {
         $location.path('/harmonization-dataset' + ($scope.dataset.id ? '/' + $scope.dataset.id : '')).replace();
