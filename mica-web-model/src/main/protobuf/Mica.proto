@@ -249,6 +249,7 @@ message DatasetDto {
 
 message StudyDatasetDto {
   required DatasetDto.StudyTableDto studyTable = 1;
+  optional StudySummaryDto studySummary = 2;
 
   extend DatasetDto {
     optional StudyDatasetDto type = 1000;
@@ -259,6 +260,7 @@ message HarmonizationDatasetDto {
   required string project = 1;
   required string table = 2;
   repeated DatasetDto.StudyTableDto studyTables = 3;
+  repeated StudySummaryDto studySummaries = 4;
 
   extend DatasetDto {
     optional HarmonizationDatasetDto type = 1001;

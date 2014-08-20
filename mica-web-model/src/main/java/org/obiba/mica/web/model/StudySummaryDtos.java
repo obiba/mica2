@@ -36,6 +36,8 @@ class StudySummaryDtos {
         ? studyService.findPublishedStudy(studyState.getId())
         : studyService.findDraftStudy(studyState.getId());
 
+    if (study == null) return builder.build();
+
     if(study.getAcronym() != null) {
       builder.addAllAcronym(localizedStringDtos.asDto(study.getAcronym()));
     }

@@ -26,6 +26,8 @@ import org.obiba.mica.domain.Attribute;
 import org.obiba.mica.domain.StudyTable;
 import org.obiba.mica.micaConfig.MicaConfig;
 import org.obiba.mica.micaConfig.MicaConfigService;
+import org.obiba.mica.study.StudyService;
+import org.obiba.mica.study.domain.StudyState;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -47,6 +49,9 @@ public class DatasetDtosTest {
 
   @Inject
   private MicaConfigService micaConfigService;
+
+  @Inject
+  private StudyService studyService;
 
   @Inject
   private Dtos dtos;
@@ -86,6 +91,11 @@ public class DatasetDtosTest {
     studyDataset.addAttribute(Attribute.Builder.newAttribute("att1").namespace("mica").value(Locale.FRENCH, "value fr").value(Locale.ENGLISH, "Value en").build());
     studyDataset.addAttribute(Attribute.Builder.newAttribute("att2").namespace("mica").value(Locale.FRENCH, "value fr").build());
 
+    StudyState state = new StudyState();
+    state.setId("1111111111111111");
+    state.setName(en("S1").forFr("S1"));
+    when(studyService.findStateById("1111111111111111")).thenReturn(state);
+
     return studyDataset;
   }
 
@@ -100,6 +110,12 @@ public class DatasetDtosTest {
     table.setProject("study1");
     table.setTable("HOP");
     harmonizationDataset.addStudyTable(table);
+
+    StudyState state = new StudyState();
+    state.setId("222222222222222");
+    state.setName(en("S2").forFr("S2"));
+    when(studyService.findStateById("222222222222222")).thenReturn(state);
+
     return harmonizationDataset;
   }
 
@@ -113,6 +129,10 @@ public class DatasetDtosTest {
       return Mockito.mock(MicaConfigService.class);
     }
 
+    @Bean
+    public StudyService studyService() {
+      return Mockito.mock(StudyService.class);
+    }
 
   }
 }
