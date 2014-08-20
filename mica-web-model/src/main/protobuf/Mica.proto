@@ -294,6 +294,7 @@ message DatasetVariableDto {
   repeated AttributeDto attributes = 13;
   repeated DatasetCategoryDto categories = 14;
   repeated LocalizedStringDto datasetName = 15;
+  repeated StudySummaryDto studySummaries = 16;
 }
 
 message DatasetVariablesDto {

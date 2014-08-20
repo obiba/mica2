@@ -21,6 +21,7 @@ import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.domain.StudyTable;
+import org.obiba.mica.study.StudyService;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
@@ -33,6 +34,12 @@ class DatasetDtos {
 
   @Inject
   private AttributeDtos attributeDtos;
+
+  @Inject
+  private StudySummaryDtos studySummaryDtos;
+
+  @Inject
+  private StudyService studyService;
 
   @NotNull
   Mica.DatasetDto asDto(@NotNull StudyDataset dataset) {
@@ -90,6 +97,10 @@ class DatasetDtos {
 
     if (variable.getStudyIds() != null) {
       builder.addAllStudyIds(variable.getStudyIds());
+      // TODO need to know at this point if it is the published or draft study that is requested
+      for (String studyId : variable.getStudyIds()) {
+        builder.addStudySummaries(studySummaryDtos.asDto(studyService.findStateById(studyId)));
+      }
     }
 
     if (!Strings.isNullOrEmpty(variable.getOccurrenceGroup())) {
