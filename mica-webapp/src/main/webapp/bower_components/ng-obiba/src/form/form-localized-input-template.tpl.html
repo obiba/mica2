@@ -1,0 +1,26 @@
+<div class="form-group" ng-class="{'has-error': (form[name].$dirty || form.saveAttempted) && form[name].$invalid}">
+
+    <label for="{{name}}" class="control-label">
+        {{label | translate}}
+        <span ng-show="required">*</span>
+    </label>
+
+    <div class="input-group" ng-repeat="locale in locales track by $index">
+        <span class="input-group-addon">{{locale.lang}}</span>
+        <input
+                ng-model="locale.value"
+                type="text"
+                class="form-control"
+                id="{{name}}.{{locale.lang}}"
+                name="{{name}}.locale.lang}}"
+                form-server-error>
+    </div>
+
+    <ul class="input-error list-unstyled" ng-show="form[name].$dirty && form[name].$invalid">
+        <li ng-show="form[name].$error.required" translate>required</li>
+        <li ng-repeat="error in form[name].errors">{{error}}</li>
+    </ul>
+
+    <p ng-show="help" class="help-block">{{help | translate}}</p>
+
+</div>
