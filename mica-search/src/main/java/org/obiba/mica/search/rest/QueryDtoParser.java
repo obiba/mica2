@@ -11,14 +11,20 @@
 package org.obiba.mica.search.rest;
 
 import org.elasticsearch.index.query.BoolFilterBuilder;
+import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.FilteredQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeFilterBuilder;
 import org.obiba.mica.web.model.MicaSearch;
 
 import static org.obiba.mica.web.model.MicaSearch.BoolFilterQueryDto;
+import static org.obiba.mica.web.model.MicaSearch.FilterQueryDto;
 import static org.obiba.mica.web.model.MicaSearch.FilteredQueryDto;
+import static org.obiba.mica.web.model.MicaSearch.ParentChildFilterDto;
 import static org.obiba.mica.web.model.MicaSearch.QueryDto;
+import static org.obiba.mica.web.model.MicaSearch.RangeFilterQueryDto;
+import static org.obiba.mica.web.model.MicaSearch.RangeFilterQueryDto.Condition;
 
 public class QueryDtoParser {
 
@@ -41,21 +47,57 @@ public class QueryDtoParser {
   private BoolFilterBuilder parseBoolFilter(BoolFilterQueryDto boolFilterDto) {
     BoolFilterBuilder boolFilter = FilterBuilders.boolFilter();
 
-    if(boolFilterDto.getTermsList().size() > 0) {
-      boolFilterDto.getTermsList()
-          .forEach(terms -> boolFilter.must(FilterBuilders.termsFilter(terms.getField(), terms.getValuesList())));
+    if(boolFilterDto.getFiltersCount() > 0) {
+      boolFilterDto.getFiltersList().forEach(filter -> boolFilter.must(parseFilter(filter)));
     }
 
     if(boolFilterDto.hasParentChildFilter()) {
-      MicaSearch.ParentChildFilterDto parentChildFilterDto = boolFilterDto.getParentChildFilter();
+      ParentChildFilterDto parentChildFilterDto = boolFilterDto.getParentChildFilter();
       FilteredQueryBuilder dtoFilteredQuery = parseFilterQuery(parentChildFilterDto.getFilteredQuery());
       String type = parentChildFilterDto.getType();
       boolFilter.must(
-          parentChildFilterDto.getRelationship() == MicaSearch.ParentChildFilterDto.Relationship.PARENT ? FilterBuilders
+          parentChildFilterDto.getRelationship() == ParentChildFilterDto.Relationship.PARENT ? FilterBuilders
               .hasParentFilter(type, dtoFilteredQuery) : FilterBuilders.hasChildFilter(type, dtoFilteredQuery));
     }
 
     return boolFilter;
+  }
+
+  private FilterBuilder parseFilter(FilterQueryDto filter) {
+    String field = filter.getField();
+    if(filter.hasExtension(MicaSearch.TermsFilterQueryDto.terms)) {
+      return FilterBuilders
+          .termsFilter(field, filter.getExtension(MicaSearch.TermsFilterQueryDto.terms).getValuesList());
+    } else if (filter.hasExtension(RangeFilterQueryDto.range)) {
+      return parseRangeFilter(field, filter.getExtension(RangeFilterQueryDto.range));
+    }
+
+    throw new IllegalArgumentException("Invalid filter extension");
+  }
+
+  private FilterBuilder parseRangeFilter(String field, RangeFilterQueryDto rangeFilterDto) {
+    RangeFilterBuilder filterBuilder = FilterBuilders.rangeFilter(field);
+    if (rangeFilterDto.hasFrom()) parseRangeFilterCondition(filterBuilder, rangeFilterDto.getFrom());
+    if (rangeFilterDto.hasTo()) parseRangeFilterCondition(filterBuilder, rangeFilterDto.getTo());
+    return filterBuilder;
+  }
+
+  private void parseRangeFilterCondition(RangeFilterBuilder filterBuilder, Condition condition) {
+    String value = condition.getValue();
+    switch (condition.getOp()) {
+      case LT:
+        filterBuilder.lt(value);
+        break;
+      case LTE:
+        filterBuilder.lte(value);
+        break;
+      case GT:
+        filterBuilder.gt(value);
+        break;
+      case GTE:
+        filterBuilder.gte(value);
+        break;
+    }
   }
 
 }
