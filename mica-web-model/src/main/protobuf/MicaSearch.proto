@@ -15,7 +15,7 @@ message FilteredQueryDto {
 }
 
 message BoolFilterQueryDto {
-  repeated TermsQueryDto terms = 1;
+  repeated FilterQueryDto filters = 1;
   optional ParentChildFilterDto parentChildFilter = 2;
 }
 
@@ -30,9 +30,38 @@ message ParentChildFilterDto {
   required FilteredQueryDto filteredQuery = 3;
 }
 
-message TermsQueryDto {
+message FilterQueryDto {
   required string field = 1;
+  extensions 1000 to max;
+}
+
+message TermsFilterQueryDto {
   repeated string values = 2;
+
+  extend FilterQueryDto {
+    optional TermsFilterQueryDto terms = 1000;
+  }
+}
+
+message RangeFilterQueryDto {
+  enum Operator {
+    LT = 0;
+    LTE = 1;
+    GT = 2;
+    GTE = 3;
+  }
+
+  optional Condition from = 1;
+  optional Condition to = 2;
+
+  message Condition {
+    required Operator op = 1;
+    required string value = 2;
+  }
+
+  extend FilterQueryDto {
+    optional RangeFilterQueryDto range = 1001;
+  }
 }
 
 message QueryResultDto {
