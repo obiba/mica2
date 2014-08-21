@@ -10,8 +10,6 @@
 
 package org.obiba.mica.web.model;
 
-import java.util.stream.Collectors;
-
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
@@ -22,6 +20,7 @@ import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.domain.StudyTable;
 import org.obiba.mica.study.StudyService;
+import org.obiba.mica.study.domain.StudyState;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
@@ -46,10 +45,10 @@ class DatasetDtos {
     Mica.DatasetDto.Builder builder = asDtoBuilder(dataset);
 
     if(dataset.hasStudyTable()) {
-      Mica.StudyDatasetDto.Builder sbuilder = Mica.StudyDatasetDto.newBuilder().setStudyTable(
-          asDto(dataset.getStudyTable()))
-          // TODO need to know at this point if it is the published or draft study that is requested
-          .setStudySummary(studySummaryDtos.asDto(studyService.findStateById(dataset.getStudyTable().getStudyId())));
+      // TODO need to know at this point if it is the published or draft study that is requested
+      StudyState studyState = studyService.findStateById(dataset.getStudyTable().getStudyId());
+      Mica.StudyDatasetDto.Builder sbuilder = Mica.StudyDatasetDto.newBuilder()
+          .setStudyTable(asDto(dataset.getStudyTable()).setStudySummary(studySummaryDtos.asDto(studyState)));
       builder.setExtension(Mica.StudyDatasetDto.type, sbuilder.build());
     }
     return builder.build();
@@ -63,10 +62,9 @@ class DatasetDtos {
     hbuilder.setProject(dataset.getProject());
     hbuilder.setTable(dataset.getTable());
     if(!dataset.getStudyTables().isEmpty()) {
-      hbuilder.addAllStudyTables(dataset.getStudyTables().stream().map(this::asDto).collect(Collectors.toList()));
       // TODO need to know at this point if it is the published or draft study that is requested
-      dataset.getStudyTables().forEach(studyTable -> hbuilder
-          .addStudySummaries(studySummaryDtos.asDto(studyService.findStateById(studyTable.getStudyId()))));
+      dataset.getStudyTables().forEach(studyTable -> hbuilder.addStudyTables(asDto(studyTable)
+          .setStudySummary(studySummaryDtos.asDto(studyService.findStateById(studyTable.getStudyId())))));
     }
     builder.setExtension(Mica.HarmonizationDatasetDto.type, hbuilder.build());
 
@@ -150,13 +148,13 @@ class DatasetDtos {
     return builder.build();
   }
 
-  private Mica.DatasetDto.StudyTableDto asDto(StudyTable studyTable) {
+  private Mica.DatasetDto.StudyTableDto.Builder asDto(StudyTable studyTable) {
     Mica.DatasetDto.StudyTableDto.Builder builder = Mica.DatasetDto.StudyTableDto.newBuilder() //
         .setStudyId(studyTable.getStudyId()) //
         .setProject(studyTable.getProject()) //
         .setTable(studyTable.getTable());
 
-    return builder.build();
+    return builder;
   }
 
   private Mica.DatasetDto.Builder asDtoBuilder(Dataset dataset) {
