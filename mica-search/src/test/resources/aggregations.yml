@@ -1,0 +1,32 @@
+start:
+end:
+access:
+
+methods:
+  designs:
+  recruitments:
+
+numberOfParticipants:
+  participant:
+    number:
+  sample:
+    number:
+
+populations :
+  selectionCriteria:
+    criteria:
+    countriesIso:
+    ageMax:
+    ageMin:
+    gender:
+
+  recruitment:
+    dataSources:
+    generalPopulationSources:
+
+  dataCollectionEvents:
+    agg:
+      type: stats
+      field: end
+    start:
+    bioSamples:

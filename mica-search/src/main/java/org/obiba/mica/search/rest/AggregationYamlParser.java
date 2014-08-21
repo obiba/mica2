@@ -23,9 +23,9 @@ public class AggregationYamlParser {
 
   private static final Logger log = LoggerFactory.getLogger(AggregationYamlParser.class);
 
-  private static final String TYPE = ".type";
+  private static final String TYPE = ".agg.type";
 
-  private static final String NAME = ".name";
+  private static final String FIELD = ".agg.field";
 
   public Iterable<AbstractAggregationBuilder> getAggregations(String file) throws IOException {
     return getAggregations(new ClassPathResource(file));
@@ -40,14 +40,13 @@ public class AggregationYamlParser {
     for(Map.Entry<Object, Object> entry : properties.entrySet()) {
       String key = (String) entry.getKey();
       String value = (String) entry.getValue();
-      if(!key.contains(NAME) && !key.contains(TYPE)) {
+      if(key.contains(TYPE)) {
+        termsBuilders.add(parseSpecificAggregation(properties, key, value));
+        log.debug("Add specific aggregation: name={}, field={}", key, value);
+      } else if (!key.contains(FIELD)) {
         String name = getName(value, key);
         termsBuilders.add(AggregationBuilders.terms(name).field(key).order(Terms.Order.term(true)));
         log.debug("Add default terms aggregation: name={}, field={}", name, key);
-      } else {
-        if(key.contains(TYPE)) {
-          termsBuilders.add(parseSpecificAggregation(properties, key, value));
-        }
       }
     }
 
@@ -55,8 +54,10 @@ public class AggregationYamlParser {
   }
 
   private AbstractAggregationBuilder parseSpecificAggregation(Properties properties, String key, String value) {
-    String field = key.replace(TYPE, "");
-    String name = getName(properties.getProperty(field + NAME), field);
+    String prefix = key.replace(TYPE, "");
+    String field =  prefix + "." + properties.getProperty(prefix + FIELD);
+    String name = getName(field, "");
+
     switch(value) {
       case "stats":
         log.debug("Add stats aggregation: name={}, field={}", name, field);
