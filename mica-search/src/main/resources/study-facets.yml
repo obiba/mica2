@@ -25,16 +25,24 @@ methods:
 
 numberOfParticipants:
   participant:
-    number:
+    agg:
+      type: stats
+      field: number
   sample:
-    number:
+    agg:
+      type: stats
+      field: number
 
 populations:
   selectionCriteria:
     criteria:
     countriesIso:
-    ageMax:
-    ageMin:
+    agg:
+      type: stats
+      field: ageMin
+    agg:
+      type: stats
+      field: ageMax
     gender:
 
   recruitment:
@@ -42,5 +50,6 @@ populations:
     generalPopulationSources:
 
   dataCollectionEvents:
+    end:
     start:
     bioSamples:

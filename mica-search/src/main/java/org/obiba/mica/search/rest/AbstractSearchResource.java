@@ -20,8 +20,6 @@ import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHits;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms;
-import org.obiba.mica.web.model.MicaSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -83,22 +81,13 @@ public abstract class AbstractSearchResource {
     log.info("Request: {}", requestBuilder.toString());
     SearchResponse response = requestBuilder.execute().actionGet();
     log.info("Response: {}", response.toString());
-
     QueryResultDto.Builder builder = QueryResultDto.newBuilder().setTotalHits((int) response.getHits().getTotalHits());
-
     processHits(builder, detailed, response.getHits());
+    builder.addAllAggs(EsQueryResultParser.newParser().parseAggregations(response.getAggregations()));
 
-    response.getAggregations() //
-        .forEach(aggregation -> {
-          MicaSearch.AggregationResultDto.Builder aggResultBuilder = MicaSearch.AggregationResultDto.newBuilder();
-          aggResultBuilder.setAggregation(aggregation.getName());
-          ((Terms) aggregation).getBuckets().forEach(bucket -> aggResultBuilder.addTermsAggregations(
-              MicaSearch.AggregationResultDto.TermsAggregationResultDto.newBuilder().setKey(bucket.getKey())
-                  .setCount((int) bucket.getDocCount())));
-          builder.addAggs(aggResultBuilder.build());
-        });
-
-    return builder.build();
+    QueryResultDto resultDto = builder.build();
+    log.info("Response DTP: {}", resultDto);
+    return resultDto;
   }
 
 }
