@@ -10,8 +10,6 @@
 
 package org.obiba.mica.web.model;
 
-import java.util.stream.Collectors;
-
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
@@ -22,6 +20,7 @@ import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.domain.StudyTable;
 import org.obiba.mica.study.StudyService;
+import org.obiba.mica.study.domain.StudyState;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
@@ -46,8 +45,11 @@ class DatasetDtos {
     Mica.DatasetDto.Builder builder = asDtoBuilder(dataset);
 
     if(dataset.hasStudyTable()) {
-      builder.setExtension(Mica.StudyDatasetDto.type,
-          Mica.StudyDatasetDto.newBuilder().setStudyTable(asDto(dataset.getStudyTable())).build());
+      // TODO need to know at this point if it is the published or draft study that is requested
+      StudyState studyState = studyService.findStateById(dataset.getStudyTable().getStudyId());
+      Mica.StudyDatasetDto.Builder sbuilder = Mica.StudyDatasetDto.newBuilder()
+          .setStudyTable(asDto(dataset.getStudyTable()).setStudySummary(studySummaryDtos.asDto(studyState)));
+      builder.setExtension(Mica.StudyDatasetDto.type, sbuilder.build());
     }
     return builder.build();
   }
@@ -60,7 +62,9 @@ class DatasetDtos {
     hbuilder.setProject(dataset.getProject());
     hbuilder.setTable(dataset.getTable());
     if(!dataset.getStudyTables().isEmpty()) {
-      hbuilder.addAllStudyTables(dataset.getStudyTables().stream().map(this::asDto).collect(Collectors.toList()));
+      // TODO need to know at this point if it is the published or draft study that is requested
+      dataset.getStudyTables().forEach(studyTable -> hbuilder.addStudyTables(asDto(studyTable)
+          .setStudySummary(studySummaryDtos.asDto(studyService.findStateById(studyTable.getStudyId())))));
     }
     builder.setExtension(Mica.HarmonizationDatasetDto.type, hbuilder.build());
 
@@ -76,7 +80,7 @@ class DatasetDtos {
         .setName(resolver.getName()) //
         .setVariableType(resolver.getType().name());
 
-    if (resolver.hasStudyId()) {
+    if(resolver.hasStudyId()) {
       builder.setStudyId(resolver.getStudyId());
     }
 
@@ -95,35 +99,36 @@ class DatasetDtos {
         .setVariableType(variable.getVariableType().name()) //
         .setRepeatable(variable.isRepeatable());
 
-    if (variable.getStudyIds() != null) {
+    if(variable.getStudyIds() != null) {
       builder.addAllStudyIds(variable.getStudyIds());
       // TODO need to know at this point if it is the published or draft study that is requested
-      for (String studyId : variable.getStudyIds()) {
+      for(String studyId : variable.getStudyIds()) {
         builder.addStudySummaries(studySummaryDtos.asDto(studyService.findStateById(studyId)));
       }
     }
 
-    if (!Strings.isNullOrEmpty(variable.getOccurrenceGroup())) {
+    if(!Strings.isNullOrEmpty(variable.getOccurrenceGroup())) {
       builder.setOccurrenceGroup(variable.getOccurrenceGroup());
     }
 
-    if (!Strings.isNullOrEmpty(variable.getUnit())) {
+    if(!Strings.isNullOrEmpty(variable.getUnit())) {
       builder.setUnit(variable.getUnit());
     }
 
-    if (!Strings.isNullOrEmpty(variable.getReferencedEntityType())) {
+    if(!Strings.isNullOrEmpty(variable.getReferencedEntityType())) {
       builder.setReferencedEntityType(variable.getReferencedEntityType());
     }
 
-    if (!Strings.isNullOrEmpty(variable.getMimeType())) {
+    if(!Strings.isNullOrEmpty(variable.getMimeType())) {
       builder.setMimeType(variable.getMimeType());
     }
 
-    if (variable.getAttributes() != null) {
-      variable.getAttributes().asAttributeList().forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
+    if(variable.getAttributes() != null) {
+      variable.getAttributes().asAttributeList()
+          .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
     }
 
-    if (variable.getCategories() != null) {
+    if(variable.getCategories() != null) {
       variable.getCategories().forEach(category -> builder.addCategories(asDto(category)));
     }
 
@@ -132,28 +137,29 @@ class DatasetDtos {
 
   private Mica.DatasetCategoryDto asDto(DatasetCategory category) {
     Mica.DatasetCategoryDto.Builder builder = Mica.DatasetCategoryDto.newBuilder() //
-    .setName(category.getName()) //
-    .setMissing(category.isMissing());
+        .setName(category.getName()) //
+        .setMissing(category.isMissing());
 
-    if (category.getAttributes() != null) {
-      category.getAttributes().asAttributeList().forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
+    if(category.getAttributes() != null) {
+      category.getAttributes().asAttributeList()
+          .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
     }
 
     return builder.build();
   }
 
-  private Mica.DatasetDto.StudyTableDto asDto(StudyTable studyTable) {
+  private Mica.DatasetDto.StudyTableDto.Builder asDto(StudyTable studyTable) {
     Mica.DatasetDto.StudyTableDto.Builder builder = Mica.DatasetDto.StudyTableDto.newBuilder() //
         .setStudyId(studyTable.getStudyId()) //
         .setProject(studyTable.getProject()) //
         .setTable(studyTable.getTable());
 
-    return builder.build();
+    return builder;
   }
 
   private Mica.DatasetDto.Builder asDtoBuilder(Dataset dataset) {
     Mica.DatasetDto.Builder builder = Mica.DatasetDto.newBuilder();
-    if (dataset.getId() != null) builder.setId(dataset.getId());
+    if(dataset.getId() != null) builder.setId(dataset.getId());
     builder.setEntityType(dataset.getEntityType());
     if(dataset.getName() != null) builder.addAllName(localizedStringDtos.asDto(dataset.getName()));
     if(dataset.getDescription() != null) {
@@ -161,7 +167,8 @@ class DatasetDtos {
     }
     builder.setPublished(dataset.isPublished());
     if(dataset.getAttributes() != null) {
-      dataset.getAttributes().asAttributeList().forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
+      dataset.getAttributes().asAttributeList()
+          .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
     }
     return builder;
   }
@@ -169,12 +176,12 @@ class DatasetDtos {
   @NotNull
   public Dataset fromDto(Mica.DatasetDto dto) {
     Dataset dataset;
-    if (dto.hasExtension(Mica.HarmonizationDatasetDto.type)) {
+    if(dto.hasExtension(Mica.HarmonizationDatasetDto.type)) {
       HarmonizationDataset harmonizationDataset = new HarmonizationDataset();
       Mica.HarmonizationDatasetDto ext = dto.getExtension(Mica.HarmonizationDatasetDto.type);
       harmonizationDataset.setProject(ext.getProject());
       harmonizationDataset.setTable(ext.getTable());
-      if (ext.getStudyTablesCount()>0) {
+      if(ext.getStudyTablesCount() > 0) {
         ext.getStudyTablesList().forEach(tableDto -> harmonizationDataset.addStudyTable(fromDto(tableDto)));
       }
       dataset = harmonizationDataset;
@@ -184,7 +191,7 @@ class DatasetDtos {
       studyDataset.setStudyTable(fromDto(ext.getStudyTable()));
       dataset = studyDataset;
     }
-    if (dto.hasId()) dataset.setId(dto.getId());
+    if(dto.hasId()) dataset.setId(dto.getId());
     dataset.setName(localizedStringDtos.fromDto(dto.getNameList()));
     dataset.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
     dataset.setEntityType(dto.getEntityType());

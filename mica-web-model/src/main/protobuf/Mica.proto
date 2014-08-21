@@ -244,6 +244,7 @@ message DatasetDto {
     required string studyId = 1;
     required string project = 2;
     required string table = 3;
+    optional StudySummaryDto studySummary = 4;
   }
 }
 
