@@ -18,6 +18,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.rest.RestStatus;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
+import org.obiba.mica.domain.AbstractAuditableDocument;
 import org.obiba.mica.domain.Indexable;
 import org.obiba.mica.search.ElasticSearchIndexer;
 import org.obiba.mica.study.StudyService;
@@ -79,7 +80,7 @@ public abstract class DatasetIndexer<T extends Dataset> {
   private void deleteFromDatasetIndex(String indexName, T dataset) {
     // remove variables that have this dataset as parent
     QueryBuilder query = QueryBuilders
-        .hasParentQuery(Dataset.MAPPING_NAME, QueryBuilders.idsQuery(Dataset.MAPPING_NAME).addIds(dataset.getId()));
+        .hasParentQuery(Dataset.MAPPING_NAME, QueryBuilders.idsQuery(Dataset.MAPPING_NAME).addIds(((AbstractAuditableDocument)dataset).getId()));
 
     checkDeleteResponse(indexName, query, elasticSearchIndexer.delete(indexName, VARIABLE_TYPE, query));
     elasticSearchIndexer.delete(indexName, (Indexable) dataset);
@@ -95,7 +96,7 @@ public abstract class DatasetIndexer<T extends Dataset> {
     QueryBuilder studyChildrenQuery = QueryBuilders.hasParentQuery(Study.class.getSimpleName(),
         QueryBuilders.idsQuery(Study.class.getSimpleName()).addIds(studyId));
     QueryBuilder query = QueryBuilders.boolQuery().must(studyChildrenQuery)
-        .must(QueryBuilders.termQuery("datasetId", dataset.getId()));
+        .must(QueryBuilders.termQuery("datasetId", ((AbstractAuditableDocument)dataset).getId()));
 
     checkDeleteResponse(indexName, query, elasticSearchIndexer.delete(indexName, VARIABLE_TYPE, query));
   }
