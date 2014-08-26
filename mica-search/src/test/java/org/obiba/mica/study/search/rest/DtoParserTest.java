@@ -28,8 +28,8 @@ import static org.obiba.mica.web.model.MicaSearch.BoolFilterQueryDto;
 import static org.obiba.mica.web.model.MicaSearch.FilterQueryDto;
 import static org.obiba.mica.web.model.MicaSearch.FilteredQueryDto;
 import static org.obiba.mica.web.model.MicaSearch.QueryDto;
+import static org.obiba.mica.web.model.MicaSearch.RangeConditionDto;
 import static org.obiba.mica.web.model.MicaSearch.RangeFilterQueryDto;
-import static org.obiba.mica.web.model.MicaSearch.RangeFilterQueryDto.Condition;
 import static org.obiba.mica.web.model.MicaSearch.TermsFilterQueryDto;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -134,7 +134,10 @@ public class DtoParserTest {
 
     FilterQueryDto rangeDto = FilterQueryDto.newBuilder().setField("Study.populations.dataCollectionEvents.end")
         .setExtension(RangeFilterQueryDto.range, RangeFilterQueryDto.newBuilder()
-            .setFrom(Condition.newBuilder().setOp(RangeFilterQueryDto.Operator.GTE).setValue("2002")).build()).build();
+                .setFrom(RangeConditionDto.newBuilder().setOp(RangeConditionDto.Operator.GTE).setValue("2002"))
+                .setTo(RangeConditionDto.newBuilder().setOp(RangeConditionDto.Operator.LTE).setValue("2012")).build())
+        .build();
+
 
     BoolFilterQueryDto boolDto = BoolFilterQueryDto.newBuilder().addFilters(termsDto).addFilters(rangeDto).build();
     FilteredQueryDto filteredDto = FilteredQueryDto.newBuilder().setFilter(boolDto).build();
@@ -145,7 +148,7 @@ public class DtoParserTest {
     System.out.println(parser.parse(quertDto).toString());
     ObjectMapper mapper = new ObjectMapper();
     JsonNode node1 = mapper.readTree(
-        "{\"filtered\": {\"query\": {\"match_all\": {} }, \"filter\": {\"bool\": {\"must\": [{\"terms\": {\"Study.populations.dataCollectionEvents.id\": [\"53f4b8ab6cf07b0996deb4f7\"] } }, {\"range\": {\"Study.populations.dataCollectionEvents.end\": {\"from\": \"2002\", \"to\": null, \"include_lower\": true, \"include_upper\": true } } } ] } } } }");
+        "{\"filtered\": {\"query\": {\"match_all\": {} }, \"filter\": {\"bool\": {\"must\": [{\"terms\": {\"Study.populations.dataCollectionEvents.id\": [\"53f4b8ab6cf07b0996deb4f7\"] } }, {\"range\": {\"Study.populations.dataCollectionEvents.end\": {\"from\": \"2002\", \"to\": \"2012\", \"include_lower\": true, \"include_upper\": true } } } ] } } } }");
     JsonNode node2 = mapper.readTree(parser.parse(quertDto).toString());
     assertThat(node1).isEqualTo(node2);
   }

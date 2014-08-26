@@ -23,8 +23,8 @@ import static org.obiba.mica.web.model.MicaSearch.FilterQueryDto;
 import static org.obiba.mica.web.model.MicaSearch.FilteredQueryDto;
 import static org.obiba.mica.web.model.MicaSearch.ParentChildFilterDto;
 import static org.obiba.mica.web.model.MicaSearch.QueryDto;
+import static org.obiba.mica.web.model.MicaSearch.RangeConditionDto;
 import static org.obiba.mica.web.model.MicaSearch.RangeFilterQueryDto;
-import static org.obiba.mica.web.model.MicaSearch.RangeFilterQueryDto.Condition;
 
 public class QueryDtoParser {
 
@@ -82,7 +82,7 @@ public class QueryDtoParser {
     return filterBuilder;
   }
 
-  private void parseRangeFilterCondition(RangeFilterBuilder filterBuilder, Condition condition) {
+  private void parseRangeFilterCondition(RangeFilterBuilder filterBuilder, RangeConditionDto condition) {
     String value = condition.getValue();
     switch (condition.getOp()) {
       case LT:
