@@ -1,7 +1,6 @@
-import "Mica.proto";
-
 package obiba.mica;
 option java_package = "org.obiba.mica.web.model";
+import "Mica.proto";
 
 message QueryDto {
   required int32 from = 1 [default = 0];
@@ -43,7 +42,7 @@ message TermsFilterQueryDto {
   }
 }
 
-message RangeFilterQueryDto {
+message RangeConditionDto {
   enum Operator {
     LT = 0;
     LTE = 1;
@@ -51,13 +50,14 @@ message RangeFilterQueryDto {
     GTE = 3;
   }
 
-  optional Condition from = 1;
-  optional Condition to = 2;
+  required Operator op = 1;
+  required string value = 2;
+}
 
-  message Condition {
-    required Operator op = 1;
-    required string value = 2;
-  }
+message RangeFilterQueryDto {
+
+  optional RangeConditionDto from = 1;
+  optional RangeConditionDto to = 2;
 
   extend FilterQueryDto {
     optional RangeFilterQueryDto range = 1001;
