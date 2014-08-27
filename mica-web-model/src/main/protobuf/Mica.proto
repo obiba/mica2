@@ -314,4 +314,5 @@ message DatasetVariableResolverDto {
   repeated LocalizedStringDto datasetName = 6;
   repeated LocalizedStringDto variableLabel = 7;
   repeated LocalizedStringDto studyName = 8;
+  repeated LocalizedStringDto studyAcronym = 9;
 }

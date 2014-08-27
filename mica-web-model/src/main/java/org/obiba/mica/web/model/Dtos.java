@@ -7,10 +7,10 @@ import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.domain.LocalizedString;
 import org.obiba.mica.domain.Network;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.micaConfig.MicaConfig;
-import org.obiba.mica.study.StudyService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
 import org.springframework.stereotype.Component;
@@ -26,9 +26,6 @@ import static org.obiba.mica.web.model.Mica.StudySummaryDto;
 @Component
 @SuppressWarnings("OverlyCoupledClass")
 public class Dtos {
-
-  @Inject
-  private StudyService studyService;
 
   @Inject
   private StudyDtos studyDtos;
@@ -47,6 +44,9 @@ public class Dtos {
 
   @Inject
   private DatasetDtos datasetDtos;
+
+  @Inject
+  private LocalizedStringDtos localizedStringDtos;
 
   @NotNull
   public StudyDto asDto(@NotNull Study study) {
@@ -108,8 +108,13 @@ public class Dtos {
   }
 
   @NotNull
-  public Mica.DatasetVariableResolverDto asDto(@NotNull DatasetVariable.IdResolver variableResolver) {
+  public Mica.DatasetVariableResolverDto.Builder asDto(@NotNull DatasetVariable.IdResolver variableResolver) {
     return datasetDtos.asDto(variableResolver);
+  }
+
+  @NotNull
+  public Iterable<Mica.LocalizedStringDto> asDto(LocalizedString string) {
+    return localizedStringDtos.asDto(string);
   }
 
 }

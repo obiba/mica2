@@ -93,11 +93,11 @@ public class PublishedStudiesSearchResource extends AbstractSearchResource {
   }
 
   @Override
-  protected void processHits(QueryResultDto.Builder builder, boolean detailed, SearchHits hits) throws IOException {
+  protected void processHits(QueryResultDto.Builder builder, boolean detailedQuery, boolean detailedResult, SearchHits hits) throws IOException {
     MicaSearch.StudyResultDto.Builder resBuilder = MicaSearch.StudyResultDto.newBuilder();
     for(SearchHit hit : hits) {
       resBuilder.addSummaries(dtos.asDto(studyService.findStateById(hit.getId())));
-      if(detailed) {
+      if(detailedQuery && detailedResult) {
         InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
         resBuilder.addStudies(dtos.asDto(objectMapper.readValue(inputStream, Study.class)));
       }

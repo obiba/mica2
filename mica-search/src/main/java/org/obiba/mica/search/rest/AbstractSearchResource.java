@@ -38,33 +38,42 @@ public abstract class AbstractSearchResource {
 
   /**
    * Get the description of the available aggregation in YAML format and as a {@link org.springframework.core.io.Resource}.
+   *
    * @return
    */
   protected abstract Resource getAggregationsDescription();
 
   /**
    * Get the ES index name.
+   *
    * @return
    */
   protected abstract String getSearchIndex();
 
   /**
    * Get the ES type that is searched.
+   *
    * @return
    */
   protected abstract String getSearchType();
 
   /**
    * Process the search hits by adding detailed results.
+   *
    * @param builder
    * @param detailed
    * @param hits
    * @throws IOException
    */
-  protected abstract void processHits(QueryResultDto.Builder builder, boolean detailed, SearchHits hits)
-      throws IOException;
+  protected abstract void processHits(QueryResultDto.Builder builder, boolean detailedQuery, boolean detailedResult,
+      SearchHits hits) throws IOException;
 
   protected QueryResultDto execute(QueryBuilder queryBuilder, int from, int size, boolean detailed) throws IOException {
+    return execute(queryBuilder, from, size, detailed, detailed);
+  }
+
+  protected QueryResultDto execute(QueryBuilder queryBuilder, int from, int size, boolean detailedQuery,
+      boolean detailedResult) throws IOException {
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
         .setTypes(getSearchType()) //
         .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
@@ -72,7 +81,7 @@ public abstract class AbstractSearchResource {
         .setFrom(from) //
         .setSize(size);
 
-    if(!detailed) {
+    if(!detailedQuery) {
       requestBuilder.setNoFields();
     }
 
@@ -82,7 +91,7 @@ public abstract class AbstractSearchResource {
     SearchResponse response = requestBuilder.execute().actionGet();
     log.info("Response: {}", response.toString());
     QueryResultDto.Builder builder = QueryResultDto.newBuilder().setTotalHits((int) response.getHits().getTotalHits());
-    processHits(builder, detailed, response.getHits());
+    processHits(builder, detailedQuery, detailedResult, response.getHits());
     builder.addAllAggs(EsQueryResultParser.newParser().parseAggregations(response.getAggregations()));
 
     QueryResultDto resultDto = builder.build();
