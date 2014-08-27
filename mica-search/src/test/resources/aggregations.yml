@@ -1,32 +1,13 @@
-start:
-end:
-access:
+number:
+  properties:
+    type: "stats"
 
-methods:
-  designs:
-  recruitments:
+text:
+  properties:
+    localized: "true"
 
-numberOfParticipants:
-  participant:
-    number:
-  sample:
-    number:
+normal:
 
-populations :
-  selectionCriteria:
-    criteria:
-    countriesIso:
-    ageMax:
-    ageMin:
-    gender:
+parent:
+  child:
 
-  recruitment:
-    dataSources:
-    generalPopulationSources:
-
-  dataCollectionEvents:
-    agg:
-      type: stats
-      field: end
-    start:
-    bioSamples:

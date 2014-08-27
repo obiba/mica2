@@ -1,18 +1,18 @@
-# Define study aggregations: field, name and type
+# Define study aggregations following these format rules:
 #
-# For basic terms aggregation:
-#   <field>: <name>
-# If <name> is null, field with be used as name
+# <field>:
 #
-# For specific aggregation:
-#   <field>:
-#     type: range
-#     name: <name>
-# Or:
-#   <field>:
-#     type: stats
-#     name: <name>
-# If name is not defined, field with be used as name
+#
+# <field>:
+#   properties:
+#     type: "terms" | "stats"
+#
+#
+# <field>:
+#   properties:
+#     localized: "true"
+#
+# NOTE: 'localized' aggregations can only be applied to 'terms' types
 #
 
 start:
@@ -25,24 +25,24 @@ methods:
 
 numberOfParticipants:
   participant:
-    agg:
-      type: stats
-      field: number
+    number:
+      properties:
+        type: "stats"
   sample:
-    agg:
-      type: stats
-      field: number
+    number:
+      properties:
+        type: "stats"
 
 populations:
   selectionCriteria:
     criteria:
     countriesIso:
-    agg:
-      type: stats
-      field: ageMin
-    agg:
-      type: stats
-      field: ageMax
+    ageMin:
+      properties:
+        type: "stats"
+    ageMin:
+      properties:
+        type: "stats"
     gender:
 
   recruitment:

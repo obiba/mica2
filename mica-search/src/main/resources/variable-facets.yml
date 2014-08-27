@@ -1,18 +1,18 @@
-# Define study aggregations: field, name and type
+# Define study aggregations following these format rules:
 #
-# For basic terms aggregation:
-#   <field>: <name>
-# If <name> is null, field with be used as name
+# <field>:
 #
-# For specific aggregation:
-#   <field>:
-#     type: range
-#     name: <name>
-# Or:
-#   <field>:
-#     type: stats
-#     name: <name>
-# If name is not defined, field with be used as name
+#
+# <field>:
+#   properties:
+#     type: "terms" | "stats"
+#
+#
+# <field>:
+#   properties:
+#     localized: "true"
+#
+# NOTE: 'localized' aggregations can only be applied to 'terms' types
 #
 
 variableType:
@@ -22,20 +22,29 @@ valueType:
 repeatable:
 occurrenceGroup:
 datasetId:
+datasetName:
+  properties:
+    localized: "true"
 
 categories:
   missing:
 
 attributes:
   maelstrom__essence:
-    en:
+    properties:
+      localized: "true"
   maelstrom__measure:
-    en:
+    properties:
+      localized: "true"
   maelstrom__sociodemographic_characteristics:
-    en:
+    properties:
+      localized: "true"
   maelstrom__status:
-    und:
+    properties:
+      localized: "true"
   maelstrom__target:
-    en:
+    properties:
+      localized: "true"
   maelstrom__period:
-    en:
+    properties:
+      localized: "true"

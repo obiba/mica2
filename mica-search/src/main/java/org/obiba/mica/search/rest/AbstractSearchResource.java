@@ -20,6 +20,7 @@ import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHits;
+import org.obiba.mica.micaConfig.MicaConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -32,6 +33,9 @@ public abstract class AbstractSearchResource {
 
   @Inject
   private Client client;
+
+  @Inject
+  private MicaConfigService micaConfigService;
 
   @Inject
   private AggregationYamlParser aggregationYamlParser;
@@ -85,6 +89,7 @@ public abstract class AbstractSearchResource {
       requestBuilder.setNoFields();
     }
 
+    aggregationYamlParser.setLocales(micaConfigService.getConfig().getLocales());
     aggregationYamlParser.getAggregations(getAggregationsDescription()).forEach(requestBuilder::addAggregation);
 
     log.info("Request: {}", requestBuilder.toString());
@@ -94,9 +99,7 @@ public abstract class AbstractSearchResource {
     processHits(builder, detailedQuery, detailedResult, response.getHits());
     builder.addAllAggs(EsQueryResultParser.newParser().parseAggregations(response.getAggregations()));
 
-    QueryResultDto resultDto = builder.build();
-    log.info("Response DTP: {}", resultDto);
-    return resultDto;
+    return builder.build();
   }
 
 }

@@ -1,0 +1,4 @@
+agg:
+  properties:
+    type: "stats"
+    localized: "true"
