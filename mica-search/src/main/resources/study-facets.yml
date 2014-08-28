@@ -12,7 +12,8 @@
 #   properties:
 #     localized: "true"
 #
-# NOTE: 'localized' aggregations can only be applied to 'terms' types
+# NOTE: 'localized' aggregations can only be applied to 'terms' types. In addition, the value 'true' must be quoted a
+# shortcoming of the YAML processor.
 #
 
 start:
