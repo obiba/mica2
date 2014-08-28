@@ -3,8 +3,13 @@ package org.obiba.mica.search.rest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
@@ -23,56 +28,114 @@ public class AggregationYamlParser {
 
   private static final Logger log = LoggerFactory.getLogger(AggregationYamlParser.class);
 
-  private static final String TYPE = ".agg.type";
+  private static final String FIELD_SEPARATOR = ".";
 
-  private static final String FIELD = ".agg.field";
+  private static final String NAME_SEPARATOR = "-";
+
+  private static final String UND_LOCALE = Locale.forLanguageTag("und").toLanguageTag();
+
+  private static final String UND_LOCALE_FIELD = FIELD_SEPARATOR + UND_LOCALE;
+
+  private static final String UND_LOCALE_NAME = NAME_SEPARATOR + UND_LOCALE;
+
+  private static final String DEFAULT_LOCALE = Locale.ENGLISH.getLanguage();
+
+  private static final String DEFAULT_LOCALE_FIELD = FIELD_SEPARATOR + DEFAULT_LOCALE;
+
+  private static final String DEFAULT_LOCALE_NAME = NAME_SEPARATOR + DEFAULT_LOCALE;
+
+  private static final String PROPERTIES = FIELD_SEPARATOR + "properties";
+
+  private static final String TYPE = PROPERTIES + FIELD_SEPARATOR + "type";
+
+  private static final String LOCALIZED = PROPERTIES + FIELD_SEPARATOR + "localized";
+
+  private static final String AGG_TERMS = "terms";
+
+  private static final String AGG_STATS = "stats";
+
+  private List<Locale> locales;
 
   public Iterable<AbstractAggregationBuilder> getAggregations(String file) throws IOException {
     return getAggregations(new ClassPathResource(file));
   }
 
+  public void setLocales(List<Locale> locales) {
+    this.locales = locales;
+  }
+
   public Iterable<AbstractAggregationBuilder> getAggregations(Resource description) throws IOException {
     Collection<AbstractAggregationBuilder> termsBuilders = new ArrayList<>();
-
     YamlPropertiesFactoryBean yamlPropertiesFactoryBean = new YamlPropertiesFactoryBean();
     yamlPropertiesFactoryBean.setResources(new Resource[] { description });
     Properties properties = yamlPropertiesFactoryBean.getObject();
-    for(Map.Entry<Object, Object> entry : properties.entrySet()) {
-      String key = (String) entry.getKey();
-      String value = (String) entry.getValue();
-      if(key.contains(TYPE)) {
-        termsBuilders.add(parseSpecificAggregation(properties, key, value));
-        log.debug("Add specific aggregation: name={}, field={}", key, value);
-      } else if (!key.contains(FIELD)) {
-        String name = getName(value, key);
-        termsBuilders.add(AggregationBuilders.terms(name).field(key).order(Terms.Order.term(true)));
-        log.debug("Add default terms aggregation: name={}, field={}", name, key);
+    SortedMap<String, ?> sortedSystemProperties = new TreeMap(properties);
+    String prevKey = null;
+    for(Map.Entry<String, ?> entry : sortedSystemProperties.entrySet()) {
+      String key = entry.getKey().replaceAll("\\" + PROPERTIES + ".*$", "");
+      if(!key.equals(prevKey)) {
+        parseAggregation(termsBuilders, properties, key);
+        prevKey = key;
       }
     }
 
     return termsBuilders;
   }
 
-  private AbstractAggregationBuilder parseSpecificAggregation(Properties properties, String key, String value) {
-    String prefix = key.replace(TYPE, "");
-    String field =  prefix + "." + properties.getProperty(prefix + FIELD);
-    String name = getName(field, "");
+  private void parseAggregation(Collection<AbstractAggregationBuilder> termsBuilders, Properties properties,
+      String key) {
+    Boolean localized = Boolean.valueOf(properties.getProperty(key + LOCALIZED));
+    String type = getAggregationType(properties.getProperty(key + TYPE), localized);
+    createAggregation(termsBuilders, getFields(key, localized), type);
+  }
 
-    switch(value) {
-      case "stats":
-        log.debug("Add stats aggregation: name={}, field={}", name, field);
-        return AggregationBuilders.stats(name).field(field);
-      case "range":
-        log.debug("Add range aggregation: name={}, field={}", name, field);
-        // TODO remove this method if no range can be provided! Added bound to prevent possible crash
-        return AggregationBuilders.range(name).field(field).addUnboundedTo(Integer.MAX_VALUE);
-      default:
-        throw new IllegalArgumentException("Unsupported aggregation type " + value + " for field " + field);
+  private void createAggregation(Collection<AbstractAggregationBuilder> termsBuilders, Map<String, String> fields,
+      String type) {
+    fields.entrySet().forEach(entry -> {
+      log.info("Building aggregation '{}' of type '{}'", entry.getKey(), type);
+
+      switch(type) {
+        case AGG_TERMS:
+          termsBuilders
+              .add(AggregationBuilders.terms(entry.getKey()).field(entry.getValue()).order(Terms.Order.term(true)));
+          break;
+        case AGG_STATS:
+          termsBuilders.add(AggregationBuilders.stats(entry.getKey()).field(entry.getValue()));
+          break;
+        default:
+          throw new IllegalArgumentException("Invalid aggregation type detected: " + type);
+      }
+    });
+  }
+
+  private Map<String, String> getFields(String field, Boolean localized) {
+    String name = field.replaceAll("\\" + FIELD_SEPARATOR, NAME_SEPARATOR);
+    final Map<String, String> fields = new HashMap<>();
+    if(localized) {
+      fields.put(name + UND_LOCALE_NAME, field + UND_LOCALE_FIELD);
+
+      if(locales != null) {
+        locales.stream()
+            .forEach(locale -> fields.put(name + NAME_SEPARATOR + locale, field + FIELD_SEPARATOR + locale));
+      } else {
+        fields.put(name + DEFAULT_LOCALE_NAME, field + DEFAULT_LOCALE_FIELD);
+      }
+    } else {
+      fields.put(name, field);
     }
+
+    return fields;
   }
 
-  private String getName(String name, String field) {
-    return (Strings.isNullOrEmpty(name) ? field : name).replaceAll("\\.", "-");
+  /**
+   * Default the type to 'terms' if localized is true, otherwise use valid input type
+   * @param type
+   * @param localized
+   * @return
+   */
+  private String getAggregationType(String type, Boolean localized) {
+    return !localized && !Strings.isNullOrEmpty(type) && type.matches(String.format("^(%s|%s)$", AGG_STATS, AGG_TERMS))
+        ? type
+        : AGG_TERMS;
   }
-
 }
