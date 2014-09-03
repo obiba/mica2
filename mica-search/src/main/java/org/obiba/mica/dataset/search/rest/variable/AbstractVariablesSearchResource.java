@@ -13,7 +13,9 @@ package org.obiba.mica.dataset.search.rest.variable;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.ws.rs.DefaultValue;
@@ -24,8 +26,11 @@ import javax.ws.rs.QueryParam;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.aggregations.Aggregations;
 import org.json.JSONException;
 import org.obiba.mica.dataset.domain.DatasetVariable;
+import org.obiba.mica.dataset.search.PublishedDatasetService;
+import org.obiba.mica.dataset.search.PublishedStudyService;
 import org.obiba.mica.search.rest.AbstractSearchResource;
 import org.obiba.mica.search.rest.QueryDtoParser;
 import org.obiba.mica.service.HarmonizationDatasetService;
@@ -49,6 +54,16 @@ import static org.obiba.mica.web.model.MicaSearch.QueryResultDto;
 public abstract class AbstractVariablesSearchResource extends AbstractSearchResource {
 
   private static final String VARIABLE_FACETS_YML = "variable-facets.yml";
+
+  private static final String AGG_STUDY_IDS = "studyIds";
+
+  private static final String AGG_DATASET_ID = "datasetId";
+
+  @Inject
+  PublishedStudyService publishedStudiesService;
+
+  @Inject
+  PublishedDatasetService publishedDatasetService;
 
   @Inject
   private Dtos dtos;
@@ -87,14 +102,15 @@ public abstract class AbstractVariablesSearchResource extends AbstractSearchReso
   }
 
   @Override
-  protected void processHits(QueryResultDto.Builder builder, boolean detailedQuery, boolean detailedResult, SearchHits hits) throws IOException {
+  protected void processHits(QueryResultDto.Builder builder, boolean detailedQuery, boolean detailedResult,
+      SearchHits hits) throws IOException {
     MicaSearch.DatasetVariableResultDto.Builder resBuilder = MicaSearch.DatasetVariableResultDto.newBuilder();
     Map<String, Study> studyMap = Maps.newHashMap();
 
     for(SearchHit hit : hits) {
       DatasetVariable.IdResolver resolver = DatasetVariable.IdResolver.from(hit.getId());
 
-      if (detailedQuery) {
+      if(detailedQuery) {
         InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
         DatasetVariable variable = objectMapper.readValue(inputStream, DatasetVariable.class);
         resBuilder.addSummaries(processHit(resolver, variable, studyMap));
@@ -106,8 +122,41 @@ public abstract class AbstractVariablesSearchResource extends AbstractSearchReso
     builder.setExtension(MicaSearch.DatasetVariableResultDto.result, resBuilder.build());
   }
 
+  @Override
+  protected void processAggregations(MicaSearch.QueryResultDto.Builder builder, Aggregations aggregations) {
+    super.processAggregations(builder, aggregations);
+    // easier to deal with DTOs
+    builder.getAggsList().stream().filter(aggDto -> aggDto.getAggregation().matches(AGG_DATASET_ID+"|"+AGG_STUDY_IDS))
+        .collect(Collectors.toList()).forEach(agg -> {
+      processAggregation(builder, agg);
+    });
+  }
+
+  protected void processAggregation(QueryResultDto.Builder builder, MicaSearch.AggregationResultDto agg) {
+    List<MicaSearch.TermsAggregationResultDto> terms = agg.getExtension(MicaSearch.TermsAggregationResultDto.terms);
+    if(terms == null) return;
+
+    switch(agg.getAggregation()) {
+      case AGG_DATASET_ID:
+        List<Mica.DatasetDto> datasetDtos = publishedDatasetService
+            .findByIds(terms.stream().map(term -> term.getKey()).collect(Collectors.toList())).stream()
+            .map(dataset -> dtos.asDto(dataset)).collect(Collectors.toList());
+        builder.setExtension(MicaSearch.DatasetsResultDto.result,
+            MicaSearch.DatasetsResultDto.newBuilder().addAllDatasets(datasetDtos).build());
+        break;
+      case AGG_STUDY_IDS:
+        List<Mica.StudySummaryDto> studySummaryDtos = publishedStudiesService
+            .findByIds(terms.stream().map(term -> term.getKey()).collect(Collectors.toList())).stream()
+            .map(study -> dtos.asSummaryDto(study)).collect(Collectors.toList());
+        builder.setExtension(MicaSearch.StudySummariesResultDto.result,
+            MicaSearch.StudySummariesResultDto.newBuilder().addAllSummaries(studySummaryDtos).build());
+        break;
+    }
+  }
+
   /**
    * Fill the variable resolver dto with user-friendly labels about the variable, the dataset and the study.
+   *
    * @param resolver
    * @param variable
    * @param studyMap study cache
@@ -128,10 +177,10 @@ public abstract class AbstractVariablesSearchResource extends AbstractSearchReso
       builder.setStudyId(studyId);
       try {
         Study study;
-        if (studyMap.containsKey(studyId)) {
+        if(studyMap.containsKey(studyId)) {
           study = studyMap.get(studyId);
         } else {
-         study =  studyService.findPublishedStudy(studyId);
+          study = studyService.findPublishedStudy(studyId);
           studyMap.put(studyId, study);
         }
 
@@ -143,7 +192,7 @@ public abstract class AbstractVariablesSearchResource extends AbstractSearchReso
 
     builder.addAllDatasetName(dtos.asDto(variable.getDatasetName()));
 
-    if (variable.hasAttribute("label", null)) {
+    if(variable.hasAttribute("label", null)) {
       builder.addAllVariableLabel(dtos.asDto(variable.getAttributes().getAttribute("label", null).getValues()));
     }
 

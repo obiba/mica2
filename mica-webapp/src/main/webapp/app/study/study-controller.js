@@ -6,24 +6,24 @@ mica.study
     studyUpdated: 'event:study-updated'
   })
 
-  .controller('StudyListController', ['$scope', 'DraftStudySummariesResource', 'DraftStudyResource',
+  .controller('StudyListController', ['$scope', 'StudyStatesResource', 'DraftStudyResource',
 
-    function ($scope, DraftStudySummariesResource, DraftStudyResource) {
+    function ($scope, StudyStatesResource, DraftStudyResource) {
 
-      $scope.studies = DraftStudySummariesResource.query();
+      $scope.studies = StudyStatesResource.query();
 
       $scope.deleteStudy = function (id) {
         //TODO ask confirmation
         DraftStudyResource.delete({id: id},
           function () {
-            $scope.studies = DraftStudySummariesResource.query();
+            $scope.studies = StudyStatesResource.query();
           });
       };
 
     }])
-  .controller('StudyViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', 'DraftStudySummaryResource', 'DraftStudyResource', 'DraftStudyPublicationResource', 'MicaConfigResource', 'STUDY_EVENTS', 'NOTIFICATION_EVENTS', 'CONTACT_EVENTS',
+  .controller('StudyViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', 'StudyStateResource', 'DraftStudyResource', 'DraftStudyPublicationResource', 'MicaConfigResource', 'STUDY_EVENTS', 'NOTIFICATION_EVENTS', 'CONTACT_EVENTS',
 
-    function ($rootScope, $scope, $routeParams, $log, $locale, $location, DraftStudySummaryResource, DraftStudyResource, DraftStudyPublicationResource, MicaConfigResource, STUDY_EVENTS, NOTIFICATION_EVENTS, CONTACT_EVENTS) {
+    function ($rootScope, $scope, $routeParams, $log, $locale, $location, StudyStateResource, DraftStudyResource, DraftStudyPublicationResource, MicaConfigResource, STUDY_EVENTS, NOTIFICATION_EVENTS, CONTACT_EVENTS) {
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
@@ -38,7 +38,7 @@ mica.study
           new $.MicaTimeline(new $.StudyDtoParser()).create('#timeline', study).addLegend();
         });
 
-      $scope.studySummary = DraftStudySummaryResource.get({id: $routeParams.id});
+      $scope.studySummary = StudyStateResource.get({id: $routeParams.id});
 
       $scope.months = $locale.DATETIME_FORMATS.MONTH;
 
@@ -63,7 +63,7 @@ mica.study
       });
       $scope.publish = function () {
         DraftStudyPublicationResource.publish({id: $scope.study.id}, function () {
-          $scope.studySummary = DraftStudySummaryResource.get({id: $routeParams.id});
+          $scope.studySummary = StudyStateResource.get({id: $routeParams.id});
         });
       };
 

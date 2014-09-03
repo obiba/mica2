@@ -23,6 +23,7 @@ valueType:
 repeatable:
 occurrenceGroup:
 datasetId:
+studyIds:
 
 categories:
   missing:

@@ -11,6 +11,7 @@
 package org.obiba.mica.search.rest;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -20,7 +21,9 @@ import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.aggregations.Aggregations;
 import org.obiba.mica.micaConfig.MicaConfigService;
+import org.obiba.mica.web.model.MicaSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -65,12 +68,17 @@ public abstract class AbstractSearchResource {
    * Process the search hits by adding detailed results.
    *
    * @param builder
-   * @param detailed
+   * @param detailedQuery
+   * @param detailedResult
    * @param hits
    * @throws IOException
    */
   protected abstract void processHits(QueryResultDto.Builder builder, boolean detailedQuery, boolean detailedResult,
       SearchHits hits) throws IOException;
+
+  protected void processAggregations(QueryResultDto.Builder builder, Aggregations aggregations) {
+    builder.addAllAggs(EsQueryResultParser.newParser().parseAggregations(aggregations));
+  }
 
   protected QueryResultDto execute(QueryBuilder queryBuilder, int from, int size, boolean detailed) throws IOException {
     return execute(queryBuilder, from, size, detailed, detailed);
@@ -97,9 +105,11 @@ public abstract class AbstractSearchResource {
     log.info("Response: {}", response.toString());
     QueryResultDto.Builder builder = QueryResultDto.newBuilder().setTotalHits((int) response.getHits().getTotalHits());
     processHits(builder, detailedQuery, detailedResult, response.getHits());
-    builder.addAllAggs(EsQueryResultParser.newParser().parseAggregations(response.getAggregations()));
+    processAggregations(builder, response.getAggregations());
 
-    return builder.build();
+    QueryResultDto dto = builder.build();
+    log.info("Response DTO : {}", dto);
+    return dto;
   }
 
 }
