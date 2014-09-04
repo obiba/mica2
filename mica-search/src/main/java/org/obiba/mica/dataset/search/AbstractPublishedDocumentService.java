@@ -10,6 +10,7 @@
 
 package org.obiba.mica.dataset.search;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -24,13 +25,19 @@ import org.elasticsearch.index.query.FilteredQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHits;
+import org.obiba.mica.service.PublishedDocumentService;
 
-public abstract class AbstractPublishedDocumentService<T> {
+public abstract class AbstractPublishedDocumentService<T> implements PublishedDocumentService<T> {
 
   private static final int MAX_SIZE = 99999;
 
   @Inject
   private Client client;
+
+  public T findById(String id) {
+    List<T> results = findByIds(Arrays.asList(id));
+    return (results != null && results.size() > 0) ? results.get(0) : null;
+  }
 
   public List<T> findAll() {
     return executeQuery(QueryBuilders.matchAllQuery(), 0, MAX_SIZE);

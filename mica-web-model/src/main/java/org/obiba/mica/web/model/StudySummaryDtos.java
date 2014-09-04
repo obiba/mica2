@@ -6,7 +6,8 @@ import java.util.HashSet;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.study.StudyService;
+import org.obiba.mica.study.service.PublishedStudyService;
+import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,9 @@ class StudySummaryDtos {
 
   @Inject
   private LocalizedStringDtos localizedStringDtos;
+
+  @Inject
+  private PublishedStudyService publishedStudyService;
 
   @Inject
   private StudyService studyService;
@@ -36,7 +40,7 @@ class StudySummaryDtos {
     }
 
     Study study = studyState.isPublished()
-        ? studyService.findPublishedStudy(studyState.getId())
+        ? publishedStudyService.findById(studyState.getId())
         : studyService.findDraftStudy(studyState.getId());
 
     Mica.StudySummaryDto.Builder builder;

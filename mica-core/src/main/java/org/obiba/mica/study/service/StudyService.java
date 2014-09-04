@@ -1,4 +1,4 @@
-package org.obiba.mica.study;
+package org.obiba.mica.study.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,6 +8,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.service.GitService;
+import org.obiba.mica.study.NoSuchStudyException;
+import org.obiba.mica.study.StudyStateRepository;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;

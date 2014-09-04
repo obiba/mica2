@@ -29,7 +29,7 @@ import org.obiba.mica.dataset.event.IndexHarmonizationDatasetsEvent;
 import org.obiba.mica.dataset.service.DatasetService;
 import org.obiba.mica.domain.StudyTable;
 import org.obiba.mica.study.NoSuchStudyException;
-import org.obiba.mica.study.StudyService;
+import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.study.event.StudyDeletedEvent;
 import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.obiba.opal.web.model.Search;

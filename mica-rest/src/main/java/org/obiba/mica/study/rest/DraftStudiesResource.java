@@ -13,7 +13,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.study.StudyService;
+import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;

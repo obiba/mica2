@@ -28,7 +28,7 @@ import org.elasticsearch.search.SearchHits;
 import org.json.JSONException;
 import org.obiba.mica.search.rest.AbstractSearchResource;
 import org.obiba.mica.search.rest.QueryDtoParser;
-import org.obiba.mica.study.StudyService;
+import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.mica.web.model.Dtos;
@@ -59,7 +59,7 @@ public class PublishedStudiesSearchResource extends AbstractSearchResource {
   private ObjectMapper objectMapper;
 
   @Inject
-  private StudyService studyService;
+  private PublishedStudyService publishedStudyService;
 
   @GET
   @Timed
@@ -96,7 +96,7 @@ public class PublishedStudiesSearchResource extends AbstractSearchResource {
   protected void processHits(QueryResultDto.Builder builder, boolean detailedQuery, boolean detailedResult, SearchHits hits) throws IOException {
     MicaSearch.StudyResultDto.Builder resBuilder = MicaSearch.StudyResultDto.newBuilder();
     for(SearchHit hit : hits) {
-      resBuilder.addSummaries(dtos.asDto(studyService.findStateById(hit.getId())));
+      resBuilder.addSummaries(dtos.asSummaryDto(publishedStudyService.findById(hit.getId())));
       if(detailedQuery && detailedResult) {
         InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
         resBuilder.addStudies(dtos.asDto(objectMapper.readValue(inputStream, Study.class)));

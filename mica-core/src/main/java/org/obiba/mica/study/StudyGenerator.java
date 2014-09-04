@@ -29,6 +29,7 @@ import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.NumberOfParticipants;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.service.StudyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;

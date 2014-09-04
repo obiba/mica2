@@ -4,7 +4,7 @@ import javax.inject.Inject;
 import javax.ws.rs.GET;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.study.StudyService;
+import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.annotation.Scope;
@@ -21,7 +21,7 @@ import com.codahale.metrics.annotation.Timed;
 public class PublishedStudyResource {
 
   @Inject
-  private StudyService studyService;
+  private PublishedStudyService publishedStudyService;
 
   @Inject
   private Dtos dtos;
@@ -35,7 +35,7 @@ public class PublishedStudyResource {
   @GET
   @Timed
   public Mica.StudyDto get() {
-    return dtos.asDto(studyService.findPublishedStudy(id));
+    return dtos.asDto(publishedStudyService.findById(id));
   }
 
 }

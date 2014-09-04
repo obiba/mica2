@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.obiba.mica.TestApplication;
-import org.obiba.mica.study.StudyService;
+import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.web.rest.TestUtil;
 import org.springframework.boot.test.SpringApplicationConfiguration;
