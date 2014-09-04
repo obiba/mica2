@@ -26,7 +26,8 @@ import org.obiba.mica.domain.Attribute;
 import org.obiba.mica.domain.StudyTable;
 import org.obiba.mica.micaConfig.MicaConfig;
 import org.obiba.mica.micaConfig.MicaConfigService;
-import org.obiba.mica.study.StudyService;
+import org.obiba.mica.study.service.PublishedStudyService;
+import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.study.domain.StudyState;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -127,6 +128,11 @@ public class DatasetDtosTest {
     @Bean
     public MicaConfigService micaConfigService() {
       return Mockito.mock(MicaConfigService.class);
+    }
+
+    @Bean
+    public PublishedStudyService publishedStudyService() {
+      return Mockito.mock(PublishedStudyService.class);
     }
 
     @Bean

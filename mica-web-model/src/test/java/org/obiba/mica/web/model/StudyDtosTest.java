@@ -26,7 +26,7 @@ import org.obiba.mica.micaConfig.MicaConfig;
 import org.obiba.mica.micaConfig.MicaConfigRepository;
 import org.obiba.mica.micaConfig.MicaConfigService;
 import org.obiba.mica.service.GitService;
-import org.obiba.mica.study.StudyService;
+import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.study.StudyStateRepository;
 import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.NumberOfParticipants;

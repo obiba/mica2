@@ -20,6 +20,7 @@ import javax.inject.Inject;
 import org.elasticsearch.search.SearchHits;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.search.StudyIndexer;
+import org.obiba.mica.study.service.PublishedStudyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -28,8 +29,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
 @Service
-public class PublishedStudyService extends AbstractPublishedDocumentService<Study> {
-  private static final Logger log = LoggerFactory.getLogger(PublishedStudyService.class);
+public class EsPublishedStudyService extends AbstractPublishedDocumentService<Study> implements PublishedStudyService {
+
+  private static final Logger log = LoggerFactory.getLogger(EsPublishedStudyService.class);
 
   @Inject
   private ObjectMapper objectMapper;

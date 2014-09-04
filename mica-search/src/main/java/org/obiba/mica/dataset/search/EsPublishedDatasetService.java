@@ -21,13 +21,15 @@ import org.elasticsearch.search.SearchHits;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.dataset.service.PublishedDatasetService;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
 @Service
-public class PublishedDatasetService extends AbstractPublishedDocumentService<Dataset> {
+class EsPublishedDatasetService extends AbstractPublishedDocumentService<Dataset>
+    implements PublishedDatasetService {
 
   @Inject
   private ObjectMapper objectMapper;
@@ -38,7 +40,8 @@ public class PublishedDatasetService extends AbstractPublishedDocumentService<Da
     hits.forEach(hit -> {
       InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
       try {
-        datasets.add((Dataset)objectMapper.readValue(inputStream, getClass((String)hit.getSource().get("className"))));
+        datasets
+            .add((Dataset) objectMapper.readValue(inputStream, getClass((String) hit.getSource().get("className"))));
       } catch(IOException e) {
         throw new RuntimeException(e);
       }

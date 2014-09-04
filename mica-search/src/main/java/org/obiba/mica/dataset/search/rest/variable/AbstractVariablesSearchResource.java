@@ -29,15 +29,14 @@ import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.json.JSONException;
 import org.obiba.mica.dataset.domain.DatasetVariable;
-import org.obiba.mica.dataset.search.PublishedDatasetService;
-import org.obiba.mica.dataset.search.PublishedStudyService;
+import org.obiba.mica.dataset.service.PublishedDatasetService;
 import org.obiba.mica.search.rest.AbstractSearchResource;
 import org.obiba.mica.search.rest.QueryDtoParser;
 import org.obiba.mica.service.HarmonizationDatasetService;
 import org.obiba.mica.service.StudyDatasetService;
 import org.obiba.mica.study.NoSuchStudyException;
-import org.obiba.mica.study.StudyService;
 import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
@@ -60,7 +59,7 @@ public abstract class AbstractVariablesSearchResource extends AbstractSearchReso
   private static final String AGG_DATASET_ID = "datasetId";
 
   @Inject
-  PublishedStudyService publishedStudiesService;
+  PublishedStudyService publishedStudyService;
 
   @Inject
   PublishedDatasetService publishedDatasetService;
@@ -76,9 +75,6 @@ public abstract class AbstractVariablesSearchResource extends AbstractSearchReso
 
   @Inject
   private HarmonizationDatasetService harmonizationDatasetService;
-
-  @Inject
-  private StudyService studyService;
 
   @GET
   @Timed
@@ -145,7 +141,7 @@ public abstract class AbstractVariablesSearchResource extends AbstractSearchReso
             MicaSearch.DatasetsResultDto.newBuilder().addAllDatasets(datasetDtos).build());
         break;
       case AGG_STUDY_IDS:
-        List<Mica.StudySummaryDto> studySummaryDtos = publishedStudiesService
+        List<Mica.StudySummaryDto> studySummaryDtos = publishedStudyService
             .findByIds(terms.stream().map(term -> term.getKey()).collect(Collectors.toList())).stream()
             .map(study -> dtos.asSummaryDto(study)).collect(Collectors.toList());
         builder.setExtension(MicaSearch.StudySummariesResultDto.result,
@@ -180,7 +176,7 @@ public abstract class AbstractVariablesSearchResource extends AbstractSearchReso
         if(studyMap.containsKey(studyId)) {
           study = studyMap.get(studyId);
         } else {
-          study = studyService.findPublishedStudy(studyId);
+          study = publishedStudyService.findById(studyId);
           studyMap.put(studyId, study);
         }
 

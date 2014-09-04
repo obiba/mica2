@@ -21,7 +21,7 @@ import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.domain.AbstractAuditableDocument;
 import org.obiba.mica.domain.Indexable;
 import org.obiba.mica.search.ElasticSearchIndexer;
-import org.obiba.mica.study.StudyService;
+import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.search.StudyIndexer;
 import org.slf4j.Logger;
