@@ -61,7 +61,7 @@ public abstract class AbstractPublishedDatasetsResource<T extends Dataset> {
           .must(QueryBuilders.queryString(studyId).field(getStudyIdField()));
     }
 
-    SearchRequestBuilder search = new SearchRequestBuilder(client) //
+    SearchRequestBuilder search = client.prepareSearch() //
         .setIndices(DatasetIndexer.PUBLISHED_DATASET_INDEX) //
         .setTypes(DatasetIndexer.DATASET_TYPE) //
         .setQuery(query) //

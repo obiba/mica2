@@ -22,7 +22,6 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
 import org.obiba.mica.domain.Indexable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -148,7 +147,7 @@ public class ElasticSearchIndexer {
     // ES does not support (yet?) delete by query with has_parent or has_child
     // workaround is to search the ids, then delete them explicitly
     try {
-      SearchRequestBuilder search = new SearchRequestBuilder(client) //
+      SearchRequestBuilder search = client.prepareSearch() //
           .setIndices(indexName) //
           .setTypes(type) //
           .setQuery(query) //

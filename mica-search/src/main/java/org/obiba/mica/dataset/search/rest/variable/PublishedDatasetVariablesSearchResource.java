@@ -31,5 +31,4 @@ public class PublishedDatasetVariablesSearchResource extends AbstractVariablesSe
   protected String getSearchType() {
     return DatasetIndexer.VARIABLE_TYPE;
   }
-
 }

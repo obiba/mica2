@@ -67,7 +67,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
     query = QueryBuilders.boolQuery().must(query)
         .must(QueryBuilders.idsQuery(DatasetIndexer.DATASET_TYPE).addIds(datasetId));
 
-    SearchRequestBuilder search = new SearchRequestBuilder(client) //
+    SearchRequestBuilder search = client.prepareSearch() //
         .setIndices(DatasetIndexer.PUBLISHED_DATASET_INDEX) //
         .setTypes(DatasetIndexer.DATASET_TYPE) //
         .setQuery(query);

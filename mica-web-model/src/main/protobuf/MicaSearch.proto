@@ -83,9 +83,27 @@ message StudyResultDto {
 message DatasetVariableResultDto {
   repeated obiba.mica.DatasetVariableResolverDto summaries = 1;
   repeated obiba.mica.DatasetVariableDto variables = 2;
+  repeated obiba.mica.DatasetDto datasets = 3;
 
   extend QueryResultDto {
     optional DatasetVariableResultDto result = 1001;
+  }
+}
+
+message DatasetsResultDto {
+  repeated obiba.mica.DatasetDto datasets = 1;
+
+  extend QueryResultDto {
+    optional DatasetsResultDto result = 1002;
+  }
+}
+
+message StudySummariesResultDto {
+  repeated obiba.mica.StudySummaryDto summaries = 1;
+
+  extend QueryResultDto {
+    optional StudySummariesResultDto
+     result = 1003;
   }
 }
 

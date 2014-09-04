@@ -15,8 +15,16 @@ message StudySummaryDto {
   optional TargetNumberDto targetNumber = 6;
   repeated string countries = 7;
   repeated NetworkRelationDto networks = 8;
-  optional string publishedTag = 9;
-  required int32 revisionsAhead = 10;
+  extensions 1000 to max;
+}
+
+message StudyStateDto {
+  optional string publishedTag = 1;
+  required int32 revisionsAhead = 2;
+
+  extend StudySummaryDto {
+    optional StudyStateDto state = 1000;
+  }
 }
 
 message StudyDto {

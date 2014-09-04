@@ -21,7 +21,7 @@ import com.codahale.metrics.annotation.Timed;
 @Component
 @Scope("request")
 @RequiresAuthentication
-public class DraftStudySummaryResource {
+public class StudyStateResource {
 
   @Inject
   private StudyService studyService;

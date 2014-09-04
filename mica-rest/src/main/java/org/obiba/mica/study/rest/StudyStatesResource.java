@@ -18,7 +18,7 @@ import com.codahale.metrics.annotation.Timed;
 
 @Path("/draft")
 @RequiresAuthentication
-public class DraftStudySummariesResource {
+public class StudyStatesResource {
 
   @Inject
   private StudyService studyService;
@@ -30,15 +30,15 @@ public class DraftStudySummariesResource {
   private ApplicationContext applicationContext;
 
   @GET
-  @Path("/study-summaries")
+  @Path("/study-states")
   @Timed
   public List<Mica.StudySummaryDto> list() {
     return studyService.findAllStates().stream().map(dtos::asDto).collect(Collectors.toList());
   }
 
-  @Path("/study-summary/{id}")
-  public DraftStudySummaryResource study(@PathParam("id") String id) {
-    DraftStudySummaryResource studyStateResource = applicationContext.getBean(DraftStudySummaryResource.class);
+  @Path("/study-state/{id}")
+  public StudyStateResource study(@PathParam("id") String id) {
+    StudyStateResource studyStateResource = applicationContext.getBean(StudyStateResource.class);
     studyStateResource.setId(id);
     return studyStateResource;
   }

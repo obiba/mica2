@@ -54,6 +54,11 @@ public class Dtos {
   }
 
   @NotNull
+  public StudySummaryDto asSummaryDto(@NotNull Study study) {
+    return studySummaryDtos.asDto(study);
+  }
+
+  @NotNull
   public StudySummaryDto asDto(@NotNull StudyState studyState) {
     return studySummaryDtos.asDto(studyState);
   }

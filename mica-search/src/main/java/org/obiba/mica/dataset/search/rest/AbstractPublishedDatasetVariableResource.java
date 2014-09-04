@@ -65,7 +65,7 @@ public abstract class AbstractPublishedDatasetVariableResource<T extends Dataset
       query.must(hasParentStudyQuery(studyId)).must(QueryBuilders.queryString(datasetId).field("datasetId"));
     }
 
-    SearchRequestBuilder search = new SearchRequestBuilder(client) //
+    SearchRequestBuilder search = client.prepareSearch() //
         .setIndices(studyId == null ? DatasetIndexer.PUBLISHED_DATASET_INDEX : StudyIndexer.PUBLISHED_STUDY_INDEX) //
         .setTypes(DatasetIndexer.VARIABLE_TYPE) //
         .setQuery(query);
