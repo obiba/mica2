@@ -67,6 +67,7 @@ message RangeFilterQueryDto {
 message QueryResultDto {
   repeated AggregationResultDto aggs = 1;
   required int32 totalHits = 2;
+  required int64 totalCount = 3;
 
   extensions 1000 to max;
 }
