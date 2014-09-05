@@ -17,6 +17,7 @@ import javax.validation.constraints.NotNull;
 
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.InternalAggregation;
+import org.elasticsearch.search.aggregations.bucket.global.Global;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.metrics.stats.Stats;
 import org.obiba.mica.web.model.MicaSearch;
@@ -26,6 +27,8 @@ import static org.obiba.mica.web.model.MicaSearch.StatsAggregationResultDto;
 import static org.obiba.mica.web.model.MicaSearch.TermsAggregationResultDto;
 
 public class EsQueryResultParser {
+
+  private long totalCount;
 
   private EsQueryResultParser() {}
 
@@ -54,6 +57,9 @@ public class EsQueryResultParser {
                   TermsAggregationResultDto.newBuilder().setKey(bucket.getKey()).setCount((int) bucket.getDocCount())
                       .build()));
           break;
+        case "global":
+          totalCount = ((Global)aggregation).getDocCount();
+          break;
 
         default:
           throw new RuntimeException("Unsupported aggregation type " + aggName);
@@ -64,6 +70,10 @@ public class EsQueryResultParser {
     });
 
     return aggResults;
+  }
+
+  public long getTotalCount() {
+    return totalCount;
   }
 
 }

@@ -11,7 +11,6 @@
 package org.obiba.mica.search.rest;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -21,9 +20,9 @@ import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.obiba.mica.micaConfig.MicaConfigService;
-import org.obiba.mica.web.model.MicaSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -33,6 +32,8 @@ import static org.obiba.mica.web.model.MicaSearch.QueryResultDto;
 public abstract class AbstractSearchResource {
 
   private static final Logger log = LoggerFactory.getLogger(AbstractSearchResource.class);
+
+  private static final String AGG_TOTAL_COUNT = "totalCount";
 
   @Inject
   private Client client;
@@ -77,7 +78,9 @@ public abstract class AbstractSearchResource {
       SearchHits hits) throws IOException;
 
   protected void processAggregations(QueryResultDto.Builder builder, Aggregations aggregations) {
-    builder.addAllAggs(EsQueryResultParser.newParser().parseAggregations(aggregations));
+    EsQueryResultParser parser = EsQueryResultParser.newParser();
+    builder.addAllAggs(parser.parseAggregations(aggregations));
+    builder.setTotalCount(parser.getTotalCount());
   }
 
   protected QueryResultDto execute(QueryBuilder queryBuilder, int from, int size, boolean detailed) throws IOException {
@@ -91,7 +94,8 @@ public abstract class AbstractSearchResource {
         .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
         .setQuery(queryBuilder) //
         .setFrom(from) //
-        .setSize(size);
+        .setSize(size)
+        .addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT));
 
     if(!detailedQuery) {
       requestBuilder.setNoFields();
@@ -108,7 +112,7 @@ public abstract class AbstractSearchResource {
     processAggregations(builder, response.getAggregations());
 
     QueryResultDto dto = builder.build();
-    log.info("Response DTO : {}", dto);
+    log.debug("Response DTO : {}", dto);
     return dto;
   }
 
