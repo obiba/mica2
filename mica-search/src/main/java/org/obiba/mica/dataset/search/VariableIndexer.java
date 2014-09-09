@@ -20,6 +20,7 @@ import org.elasticsearch.action.deletebyquery.DeleteByQueryResponse;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.rest.RestStatus;
+import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
@@ -33,6 +34,7 @@ import org.obiba.mica.domain.StudyTable;
 import org.obiba.mica.search.ElasticSearchIndexer;
 import org.obiba.mica.service.HarmonizationDatasetService;
 import org.obiba.mica.service.StudyDatasetService;
+import org.obiba.mica.study.NoSuchStudyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
@@ -122,7 +124,11 @@ public class VariableIndexer {
       Map<String, List<DatasetVariable>> harmonizedVariables = Maps.newHashMap();
 
       for(StudyTable studyTable : dataset.getStudyTables()) {
-        populateHarmonizedVariablesMap(harmonizedVariables, getVariables(dataset, studyTable.getStudyId()));
+        try {
+          populateHarmonizedVariablesMap(harmonizedVariables, getVariables(dataset, studyTable.getStudyId()));
+        } catch(NoSuchValueTableException e) {
+          // ignore (case the study does not implement this harmonization dataset
+        }
       }
 
       harmonizedVariables.keySet().forEach(
@@ -162,7 +168,7 @@ public class VariableIndexer {
    * @param dataset
    * @return
    */
-  private Iterable<DatasetVariable> getVariables(HarmonizationDataset dataset) {
+  private Iterable<DatasetVariable> getVariables(HarmonizationDataset dataset) throws NoSuchValueTableException {
     return harmonizationDatasetService.getDatasetVariables(dataset);
   }
 
@@ -173,7 +179,8 @@ public class VariableIndexer {
    * @param studyId
    * @return
    */
-  protected Iterable<DatasetVariable> getVariables(HarmonizationDataset dataset, String studyId) {
+  protected Iterable<DatasetVariable> getVariables(HarmonizationDataset dataset, String studyId)
+      throws NoSuchStudyException, NoSuchValueTableException {
     return harmonizationDatasetService.getDatasetVariables(dataset, studyId);
   }
 

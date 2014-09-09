@@ -43,7 +43,7 @@ public abstract class DatasetService<T extends Dataset> {
    * @param dataset
    * @return
    */
-  public abstract Iterable<DatasetVariable> getDatasetVariables(T dataset);
+  public abstract Iterable<DatasetVariable> getDatasetVariables(T dataset) throws NoSuchValueTableException;
 
   /**
    * Get the {@link org.obiba.mica.dataset.domain.DatasetVariable} from a {@link org.obiba.mica.dataset.domain.Dataset}.
@@ -52,7 +52,8 @@ public abstract class DatasetService<T extends Dataset> {
    * @param name
    * @return
    */
-  public abstract DatasetVariable getDatasetVariable(T dataset, String name);
+  public abstract DatasetVariable getDatasetVariable(T dataset, String name)
+      throws NoSuchValueTableException, NoSuchVariableException;
 
   /**
    * Get the {@link org.obiba.opal.web.model.Magma.TableDto} of the {@link org.obiba.mica.dataset.domain.Dataset} identified by its id.
@@ -76,7 +77,8 @@ public abstract class DatasetService<T extends Dataset> {
    * @return
    * @throws NoSuchDatasetException
    */
-  protected Iterable<Variable> getVariables(@NotNull T dataset) throws NoSuchDatasetException {
+  protected Iterable<Variable> getVariables(@NotNull T dataset)
+      throws NoSuchDatasetException, NoSuchValueTableException {
     return getTable(dataset).getVariables();
   }
 
