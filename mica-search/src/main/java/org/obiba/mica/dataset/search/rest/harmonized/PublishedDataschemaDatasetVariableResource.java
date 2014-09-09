@@ -17,6 +17,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
@@ -56,8 +57,13 @@ public class PublishedDataschemaDatasetVariableResource
   public List<Math.SummaryStatisticsDto> getVariableSummaries() {
     ImmutableList.Builder<Math.SummaryStatisticsDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
-    dataset.getStudyTables()
-        .forEach(table -> builder.add(datasetService.getVariableSummary(dataset, variableName, table.getStudyId())));
+    dataset.getStudyTables().forEach(table -> {
+      try {
+        builder.add(datasetService.getVariableSummary(dataset, variableName, table.getStudyId()));
+      } catch(NoSuchVariableException | NoSuchValueTableException e) {
+        // ignore (case the study has not implemented this dataschema variable)
+      }
+    });
     return builder.build();
   }
 
@@ -66,8 +72,13 @@ public class PublishedDataschemaDatasetVariableResource
   public List<Search.QueryResultDto> getVariableFacets() {
     ImmutableList.Builder<Search.QueryResultDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
-    dataset.getStudyTables()
-        .forEach(table -> builder.add(datasetService.getVariableFacet(dataset, variableName, table.getStudyId())));
+    dataset.getStudyTables().forEach(table -> {
+      try {
+        builder.add(datasetService.getVariableFacet(dataset, variableName, table.getStudyId()));
+      } catch(NoSuchVariableException | NoSuchValueTableException e) {
+        // ignore (case the study has not implemented this dataschema variable)
+      }
+    });
     return builder.build();
   }
 
@@ -79,11 +90,13 @@ public class PublishedDataschemaDatasetVariableResource
 
     dataset.getStudyTables().forEach(table -> {
       try {
-        builder.add(getDatasetVariableDto(datasetId, variableName, DatasetVariable.Type.Harmonized, table.getStudyId()));
+        builder
+            .add(getDatasetVariableDto(datasetId, variableName, DatasetVariable.Type.Harmonized, table.getStudyId()));
       } catch(NoSuchVariableException e) {
         // ignore (case the study has not implemented this dataschema variable)
       }
-    }); return builder.build();
+    });
+    return builder.build();
   }
 
   @Override
