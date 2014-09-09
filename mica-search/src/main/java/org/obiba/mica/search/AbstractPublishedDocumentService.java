@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.search;
+package org.obiba.mica.search;
 
 import java.util.Arrays;
 import java.util.List;

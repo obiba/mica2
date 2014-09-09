@@ -17,6 +17,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.magma.NoSuchValueTableException;
+import org.obiba.magma.NoSuchVariableException;
 import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.service.HarmonizationDatasetService;
@@ -54,8 +56,13 @@ public class DraftDataschemaDatasetVariableResource implements DatasetVariableRe
   public List<Math.SummaryStatisticsDto> getVariableSummaries() {
     ImmutableList.Builder<Math.SummaryStatisticsDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset();
-    dataset.getStudyTables()
-        .forEach(table -> builder.add(datasetService.getVariableSummary(dataset, variableName, table.getStudyId())));
+    dataset.getStudyTables().forEach(table -> {
+      try {
+        builder.add(datasetService.getVariableSummary(dataset, variableName, table.getStudyId()));
+      } catch(NoSuchVariableException | NoSuchValueTableException e) {
+        // ignore (case the study has not implemented this dataschema variable)
+      }
+    });
     return builder.build();
   }
 
@@ -64,8 +71,13 @@ public class DraftDataschemaDatasetVariableResource implements DatasetVariableRe
   public List<Search.QueryResultDto> getVariableFacets() {
     ImmutableList.Builder<Search.QueryResultDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset();
-    dataset.getStudyTables()
-        .forEach(table -> builder.add(datasetService.getVariableFacet(dataset, variableName, table.getStudyId())));
+    dataset.getStudyTables().forEach(table -> {
+      try {
+        builder.add(datasetService.getVariableFacet(dataset, variableName, table.getStudyId()));
+      } catch(NoSuchVariableException | NoSuchValueTableException e) {
+        // ignore (case the study has not implemented this dataschema variable)
+      }
+    });
     return builder.build();
   }
 
@@ -74,8 +86,13 @@ public class DraftDataschemaDatasetVariableResource implements DatasetVariableRe
   public List<Mica.DatasetVariableDto> getHarmonizedVariables() {
     ImmutableList.Builder<Mica.DatasetVariableDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset();
-    dataset.getStudyTables().forEach(
-        table -> builder.add(dtos.asDto(datasetService.getDatasetVariable(dataset, variableName, table.getStudyId()))));
+    dataset.getStudyTables().forEach(table -> {
+      try {
+        builder.add(dtos.asDto(datasetService.getDatasetVariable(dataset, variableName, table.getStudyId())));
+      } catch(NoSuchVariableException | NoSuchValueTableException e) {
+        // ignore (case the study has not implemented this dataschema variable)
+      }
+    });
     return builder.build();
   }
 

@@ -26,4 +26,6 @@ public interface Indexable extends Serializable {
   @JsonIgnore
   String getMappingName();
 
+  String getParentId();
+
 }

@@ -13,7 +13,6 @@ package org.obiba.mica.dataset.search.rest.study;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.dataset.domain.DatasetVariable;
@@ -31,10 +30,8 @@ import org.springframework.stereotype.Component;
 @RequiresAuthentication
 public class PublishedStudyDatasetVariableResource extends AbstractPublishedDatasetVariableResource<StudyDataset> {
 
-  @PathParam("id")
   private String datasetId;
 
-  @PathParam("name")
   private String variableName;
 
   @Inject
@@ -45,7 +42,7 @@ public class PublishedStudyDatasetVariableResource extends AbstractPublishedData
 
   @GET
   public Mica.DatasetVariableDto getVariable() {
-    return getDatasetVariableDto(StudyDataset.class, datasetId, variableName);
+    return getDatasetVariableDto(datasetId, variableName, DatasetVariable.Type.Study);
   }
 
   @GET

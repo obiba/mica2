@@ -15,9 +15,10 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.magma.NoSuchValueTableException;
+import org.obiba.magma.NoSuchVariableException;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetVariableResource;
@@ -39,10 +40,8 @@ import com.google.common.collect.ImmutableList;
 public class PublishedDataschemaDatasetVariableResource
     extends AbstractPublishedDatasetVariableResource<HarmonizationDataset> {
 
-  @PathParam("id")
   private String datasetId;
 
-  @PathParam("name")
   private String variableName;
 
   @Inject
@@ -50,7 +49,7 @@ public class PublishedDataschemaDatasetVariableResource
 
   @GET
   public Mica.DatasetVariableDto getVariable() {
-    return getDatasetVariableDto(HarmonizationDataset.class, datasetId, variableName);
+    return getDatasetVariableDto(datasetId, variableName, DatasetVariable.Type.Dataschema);
   }
 
   @GET
@@ -58,8 +57,13 @@ public class PublishedDataschemaDatasetVariableResource
   public List<Math.SummaryStatisticsDto> getVariableSummaries() {
     ImmutableList.Builder<Math.SummaryStatisticsDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
-    dataset.getStudyTables()
-        .forEach(table -> builder.add(datasetService.getVariableSummary(dataset, variableName, table.getStudyId())));
+    dataset.getStudyTables().forEach(table -> {
+      try {
+        builder.add(datasetService.getVariableSummary(dataset, variableName, table.getStudyId()));
+      } catch(NoSuchVariableException | NoSuchValueTableException e) {
+        // ignore (case the study has not implemented this dataschema variable)
+      }
+    });
     return builder.build();
   }
 
@@ -68,8 +72,13 @@ public class PublishedDataschemaDatasetVariableResource
   public List<Search.QueryResultDto> getVariableFacets() {
     ImmutableList.Builder<Search.QueryResultDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
-    dataset.getStudyTables()
-        .forEach(table -> builder.add(datasetService.getVariableFacet(dataset, variableName, table.getStudyId())));
+    dataset.getStudyTables().forEach(table -> {
+      try {
+        builder.add(datasetService.getVariableFacet(dataset, variableName, table.getStudyId()));
+      } catch(NoSuchVariableException | NoSuchValueTableException e) {
+        // ignore (case the study has not implemented this dataschema variable)
+      }
+    });
     return builder.build();
   }
 
@@ -78,7 +87,15 @@ public class PublishedDataschemaDatasetVariableResource
   public List<Mica.DatasetVariableDto> getHarmonizedVariables() {
     ImmutableList.Builder<Mica.DatasetVariableDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
-    dataset.getStudyTables().forEach(table -> builder.add(getDatasetVariableDto(HarmonizationDataset.class, datasetId, variableName, table.getStudyId())));
+
+    dataset.getStudyTables().forEach(table -> {
+      try {
+        builder
+            .add(getDatasetVariableDto(datasetId, variableName, DatasetVariable.Type.Harmonized, table.getStudyId()));
+      } catch(NoSuchVariableException e) {
+        // ignore (case the study has not implemented this dataschema variable)
+      }
+    });
     return builder.build();
   }
 

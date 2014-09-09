@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.search;
+package org.obiba.mica.study.search;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -18,8 +18,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.elasticsearch.search.SearchHits;
+import org.obiba.mica.search.AbstractPublishedDocumentService;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

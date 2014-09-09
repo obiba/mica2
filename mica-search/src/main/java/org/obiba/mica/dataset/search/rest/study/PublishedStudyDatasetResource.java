@@ -10,8 +10,6 @@
 
 package org.obiba.mica.dataset.search.rest.study;
 
-import java.util.List;
-
 import javax.inject.Inject;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -27,7 +25,7 @@ import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetResource;
 import org.obiba.mica.service.StudyDatasetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
-import org.obiba.opal.web.model.*;
+import org.obiba.opal.web.model.Search;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -73,7 +71,7 @@ public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResou
   public Mica.DatasetVariablesDto getVariables(@QueryParam("from") @DefaultValue("0") int from,
       @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
       @QueryParam("order") String order) {
-    return getDatasetVariableDtos(StudyDataset.class, id, null, from, limit, sort, order);
+    return getDatasetVariableDtos(id, from, limit, sort, order);
   }
 
   @Path("/variable/{variable}")
