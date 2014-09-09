@@ -23,6 +23,7 @@ import org.obiba.mica.domain.Attributes;
 import org.obiba.mica.domain.Indexable;
 import org.obiba.mica.domain.LocalizedString;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
@@ -31,6 +32,8 @@ public class DatasetVariable implements Indexable, AttributeAware {
   private static final long serialVersionUID = -141834508275072637L;
 
   public static final String MAPPING_NAME = "Variable";
+
+  public static final String HMAPPING_NAME = "H" + MAPPING_NAME;
 
   private static final String ID_SEPARATOR = ":";
 
@@ -227,8 +230,17 @@ public class DatasetVariable implements Indexable, AttributeAware {
   }
 
   @Override
+  @JsonIgnore
   public String getMappingName() {
-    return MAPPING_NAME;
+    return variableType.equals(Type.Harmonized) ? "H" + MAPPING_NAME : MAPPING_NAME;
+  }
+
+  @Override
+  @JsonIgnore
+  public String getParentId() {
+    return variableType.equals(Type.Harmonized)
+        ? datasetId + ID_SEPARATOR + name + ID_SEPARATOR + Type.Dataschema
+        : null;
   }
 
   public static class IdResolver {
@@ -247,17 +259,25 @@ public class DatasetVariable implements Indexable, AttributeAware {
       return new IdResolver(id);
     }
 
+    public static String encode(String datasetId, String variableName, Type variableType, String studyId) {
+      String id = datasetId + ID_SEPARATOR + variableName + ID_SEPARATOR + variableType;
+      if(Type.Harmonized.equals(variableType)) {
+        id = id + ID_SEPARATOR + studyId;
+      }
+      return id;
+    }
+
     private IdResolver(String id) {
-      if (id == null) throw new IllegalArgumentException("Dataset variable cannot be null");
+      if(id == null) throw new IllegalArgumentException("Dataset variable cannot be null");
       this.id = id;
 
-      String [] tokens = id.split(ID_SEPARATOR);
-      if (tokens.length<3) throw new IllegalArgumentException("Not a valid dataset variable ID: " + id);
+      String[] tokens = id.split(ID_SEPARATOR);
+      if(tokens.length < 3) throw new IllegalArgumentException("Not a valid dataset variable ID: " + id);
 
       datasetId = tokens[0];
       name = tokens[1];
       type = Type.valueOf(tokens[2]);
-      if (tokens.length>3) {
+      if(tokens.length > 3) {
         studyId = tokens[3];
       } else {
         studyId = null;

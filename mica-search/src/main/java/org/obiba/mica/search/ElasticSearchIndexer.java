@@ -2,7 +2,9 @@ package org.obiba.mica.search;
 
 import java.util.Set;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.validation.constraints.Null;
 
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
@@ -85,35 +87,22 @@ public class ElasticSearchIndexer {
   }
 
   public BulkResponse indexAllIndexables(String indexName, Iterable<? extends Indexable> indexables) {
-    return indexAllIndexables(indexName, indexables, null);
+    return indexAllIndexables(indexName, indexables, (String) null);
   }
 
-  public BulkResponse indexAllIndexables(String indexName, Iterable<? extends Indexable> indexables, Indexable parent) {
-    createIndexIfNeeded(indexName);
+  public BulkResponse indexAllIndexables(String indexName, Iterable<? extends Indexable> indexables,
+      @Nullable Indexable parent) {
     String parentId = parent == null ? null : parent.getId();
+    return indexAllIndexables(indexName, indexables, parentId);
+  }
+
+  public BulkResponse indexAllIndexables(String indexName, Iterable<? extends Indexable> indexables,
+      @Nullable String parentId) {
+    createIndexIfNeeded(indexName);
     BulkRequestBuilder bulkRequest = client.prepareBulk();
     indexables.forEach(indexable -> bulkRequest
         .add(getIndexRequestBuilder(indexName, indexable).setSource(toJson(indexable)).setParent(parentId)));
     return bulkRequest.execute().actionGet();
-  }
-
-  public static Indexable asIndexable(final Persistable<String> persistable) {
-    return new Indexable() {
-      @Override
-      public String getId() {
-        return persistable.getId();
-      }
-
-      @Override
-      public String getClassName() {
-        return getClass().getSimpleName();
-      }
-
-      @Override
-      public String getMappingName() {
-        return getClassName();
-      }
-    };
   }
 
   private String toJson(Object obj) {

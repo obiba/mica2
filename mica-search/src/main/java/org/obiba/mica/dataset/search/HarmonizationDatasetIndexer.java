@@ -14,7 +14,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.event.DatasetDeletedEvent;
 import org.obiba.mica.dataset.event.DatasetPublishedEvent;
@@ -22,7 +21,6 @@ import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.event.IndexDatasetsEvent;
 import org.obiba.mica.dataset.event.IndexHarmonizationDatasetsEvent;
 import org.obiba.mica.service.HarmonizationDatasetService;
-import org.obiba.mica.study.domain.Study;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
@@ -69,8 +67,6 @@ public class HarmonizationDatasetIndexer extends DatasetIndexer<HarmonizationDat
     log.info("Dataset {} was deleted", event.getPersistable());
     HarmonizationDataset harmonizationDataset = (HarmonizationDataset) event.getPersistable();
     deleteFromDatasetIndices(harmonizationDataset);
-    harmonizationDataset.getStudyTables()
-        .forEach(studyTable -> deleteFromStudyIndices(harmonizationDataset, studyTable.getStudyId()));
   }
 
   @Async
@@ -83,16 +79,6 @@ public class HarmonizationDatasetIndexer extends DatasetIndexer<HarmonizationDat
   @Subscribe
   public void indexAll(IndexHarmonizationDatasetsEvent event) {
     reIndexAll();
-  }
-
-  @Override
-  protected Iterable<DatasetVariable> getVariables(HarmonizationDataset dataset) {
-    return harmonizationDatasetService.getDatasetVariables(dataset);
-  }
-
-  @Override
-  protected Iterable<DatasetVariable> getVariables(HarmonizationDataset dataset, Study study) {
-    return harmonizationDatasetService.getDatasetVariables(dataset, study.getId());
   }
 
   @Override

@@ -31,6 +31,7 @@ import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.search.DatasetIndexer;
+import org.obiba.mica.dataset.search.VariableIndexer;
 import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -91,20 +92,14 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
     return dtos.asDto(getDataset(clazz, datasetId));
   }
 
-  protected Mica.DatasetVariablesDto getDatasetVariableDtos(Class<T> clazz, @NotNull String datasetId, @Nullable String studyId, int from,
-      int limit, @Nullable String sort, @Nullable String order) {
-    BoolQueryBuilder query = QueryBuilders.boolQuery()
-        .must(QueryBuilders.queryString(getDatasetVariableType(studyId).toString()).field("variableType"));
+  protected Mica.DatasetVariablesDto getDatasetVariableDtos(@NotNull String datasetId, int from, int limit,
+      @Nullable String sort, @Nullable String order) {
 
-    if(studyId == null) {
-      query.must(hasParentDatasetQuery(clazz, datasetId));
-    } else {
-      query.must(hasParentStudyQuery(studyId)).must(QueryBuilders.queryString(datasetId).field("datasetId"));
-    }
+    QueryBuilder query = QueryBuilders.termQuery("datasetId", datasetId);
 
     SearchRequestBuilder search = new SearchRequestBuilder(client) //
-        .setIndices(studyId == null ? DatasetIndexer.PUBLISHED_DATASET_INDEX : StudyIndexer.PUBLISHED_STUDY_INDEX) //
-        .setTypes(DatasetIndexer.VARIABLE_TYPE) //
+        .setIndices(VariableIndexer.PUBLISHED_VARIABLE_INDEX) //
+        .setTypes(VariableIndexer.VARIABLE_TYPE) //
         .setQuery(query) //
         .setFrom(from) //
         .setSize(limit);

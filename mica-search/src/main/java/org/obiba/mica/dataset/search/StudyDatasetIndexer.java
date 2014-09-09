@@ -14,7 +14,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.event.DatasetDeletedEvent;
 import org.obiba.mica.dataset.event.DatasetPublishedEvent;
@@ -22,7 +21,6 @@ import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.event.IndexDatasetsEvent;
 import org.obiba.mica.dataset.event.IndexStudyDatasetsEvent;
 import org.obiba.mica.service.StudyDatasetService;
-import org.obiba.mica.study.domain.Study;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
@@ -67,7 +65,6 @@ public class StudyDatasetIndexer extends DatasetIndexer<StudyDataset> {
     log.info("Dataset {} was deleted", event.getPersistable());
     StudyDataset studyDataset = (StudyDataset) event.getPersistable();
     deleteFromDatasetIndices(studyDataset);
-    deleteFromStudyIndices(studyDataset, studyDataset.getStudyTable().getStudyId());
   }
 
   @Async
@@ -80,16 +77,6 @@ public class StudyDatasetIndexer extends DatasetIndexer<StudyDataset> {
   @Subscribe
   public void indexAll(IndexStudyDatasetsEvent event) {
     reIndexAll();
-  }
-
-  @Override
-  protected Iterable<DatasetVariable> getVariables(StudyDataset dataset) {
-    return studyDatasetService.getDatasetVariables(dataset);
-  }
-
-  @Override
-  protected Iterable<DatasetVariable> getVariables(StudyDataset dataset, Study study) {
-    return getVariables(dataset);
   }
 
   @Override

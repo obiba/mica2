@@ -13,7 +13,6 @@ package org.obiba.mica.dataset.search.rest.harmonized;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.dataset.domain.DatasetVariable;
@@ -34,13 +33,10 @@ import org.springframework.stereotype.Component;
 public class PublishedHarmonizedDatasetVariableResource
     extends AbstractPublishedDatasetVariableResource<HarmonizationDataset> {
 
-  @PathParam("id")
   private String datasetId;
 
-  @PathParam("name")
   private String variableName;
 
-  @PathParam("id")
   private String studyId;
 
   @Inject
@@ -48,7 +44,7 @@ public class PublishedHarmonizedDatasetVariableResource
 
   @GET
   public Mica.DatasetVariableDto getVariable() {
-    return getDatasetVariableDto(HarmonizationDataset.class, datasetId, variableName, studyId);
+    return getDatasetVariableDto(datasetId, variableName, DatasetVariable.Type.Harmonized, studyId);
   }
 
   @GET

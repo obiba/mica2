@@ -15,4 +15,5 @@ public interface DatasetVariableResource {
   void setDatasetId(String datasetId);
 
   void setVariableName(String name);
+
 }

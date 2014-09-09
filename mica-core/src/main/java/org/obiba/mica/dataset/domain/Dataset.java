@@ -20,6 +20,8 @@ import org.obiba.mica.domain.Attributes;
 import org.obiba.mica.domain.Indexable;
 import org.obiba.mica.domain.LocalizedString;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * Proxy to Opal tables.
  */
@@ -114,8 +116,15 @@ public abstract class Dataset extends AbstractAuditableDocument implements Attri
   public void setClassName(String className) {}
 
   @Override
+  @JsonIgnore
   public String getMappingName() {
     return MAPPING_NAME;
+  }
+
+  @Override
+  @JsonIgnore
+  public String getParentId() {
+    return null;
   }
 
   @Override
