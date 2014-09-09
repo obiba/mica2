@@ -16,6 +16,7 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.magma.NoSuchValueTableException;
+import org.obiba.magma.NoSuchVariableException;
 import org.obiba.mica.dataset.DatasourceConnectionPool;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.StudyDatasetRepository;
@@ -26,6 +27,7 @@ import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.event.IndexStudyDatasetsEvent;
 import org.obiba.mica.dataset.service.DatasetService;
 import org.obiba.mica.domain.StudyTable;
+import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.event.StudyDeletedEvent;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.opal.rest.client.magma.RestValueTable;
@@ -175,20 +177,23 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
   }
 
   @Override
-  public DatasetVariable getDatasetVariable(StudyDataset dataset, String variableName) {
+  public DatasetVariable getDatasetVariable(StudyDataset dataset, String variableName)
+      throws NoSuchValueTableException, NoSuchVariableException {
     return new DatasetVariable(dataset, getVariableValueSource(dataset, variableName).getVariable());
   }
 
   public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary(@NotNull StudyDataset dataset,
-      String variableName) {
+      String variableName) throws NoSuchValueTableException, NoSuchVariableException {
     return getVariableValueSource(dataset, variableName).getSummary();
   }
 
-  public Search.QueryResultDto getVariableFacet(@NotNull StudyDataset dataset, String variableName) {
+  public Search.QueryResultDto getVariableFacet(@NotNull StudyDataset dataset, String variableName)
+      throws NoSuchValueTableException, NoSuchVariableException {
     return getVariableValueSource(dataset, variableName).getFacet();
   }
 
-  public Search.QueryResultDto getFacets(@NotNull StudyDataset dataset, Search.QueryTermsDto query) {
+  public Search.QueryResultDto getFacets(@NotNull StudyDataset dataset, Search.QueryTermsDto query)
+      throws NoSuchValueTableException, NoSuchVariableException {
     return getTable(dataset).getFacets(query);
   }
 

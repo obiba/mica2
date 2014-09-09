@@ -172,35 +172,39 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   }
 
   @Override
-  public Iterable<DatasetVariable> getDatasetVariables(HarmonizationDataset dataset) {
+  public Iterable<DatasetVariable> getDatasetVariables(HarmonizationDataset dataset) throws NoSuchValueTableException {
     return Iterables.transform(getVariables(dataset), input -> new DatasetVariable(dataset, input));
   }
 
   @Override
-  public DatasetVariable getDatasetVariable(HarmonizationDataset dataset, String variableName) {
+  public DatasetVariable getDatasetVariable(HarmonizationDataset dataset, String variableName)
+      throws NoSuchValueTableException, NoSuchVariableException {
     return new DatasetVariable(dataset, getVariableValueSource(dataset, variableName).getVariable());
   }
 
-  public Iterable<DatasetVariable> getDatasetVariables(HarmonizationDataset dataset, String studyId) {
+  public Iterable<DatasetVariable> getDatasetVariables(HarmonizationDataset dataset, String studyId)
+      throws NoSuchStudyException, NoSuchValueTableException {
     return Iterables.transform(getVariables(dataset, studyId), input -> new DatasetVariable(dataset, input, studyId));
   }
 
-  public DatasetVariable getDatasetVariable(HarmonizationDataset dataset, String variableName, String studyId) {
+  public DatasetVariable getDatasetVariable(HarmonizationDataset dataset, String variableName, String studyId)
+      throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
     return new DatasetVariable(dataset, getTable(dataset, studyId).getVariableValueSource(variableName).getVariable());
   }
 
   public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary(@NotNull HarmonizationDataset dataset,
-      String variableName, String studyId) {
+      String variableName, String studyId)
+      throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
     return getVariableValueSource(dataset, variableName, studyId).getSummary();
   }
 
   public Search.QueryResultDto getVariableFacet(@NotNull HarmonizationDataset dataset, String variableName,
-      String studyId) {
+      String studyId) throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
     return getVariableValueSource(dataset, variableName, studyId).getFacet();
   }
 
   public Search.QueryResultDto getFacets(@NotNull HarmonizationDataset dataset, Search.QueryTermsDto query,
-      String studyId) {
+      String studyId) throws NoSuchStudyException, NoSuchValueTableException {
     return getTable(dataset, studyId).getFacets(query);
   }
 
@@ -235,7 +239,7 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   //
 
   private Iterable<Variable> getVariables(@NotNull HarmonizationDataset dataset, String studyId)
-      throws NoSuchDatasetException {
+      throws NoSuchDatasetException, NoSuchStudyException, NoSuchValueTableException {
     return getTable(dataset, studyId).getVariables();
   }
 
