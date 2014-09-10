@@ -33,6 +33,7 @@ class NetworkDtos {
     Mica.NetworkDto.Builder builder = Mica.NetworkDto.newBuilder();
     builder.setId(network.getId()) //
         .setTimestamps(TimestampsDtos.asDto(network)) //
+        .setPublished(network.isPublished()) //
         .addAllName(localizedStringDtos.asDto(network.getName())) //
         .addAllDescription(localizedStringDtos.asDto(network.getDescription())) //
         .addAllAcronym(localizedStringDtos.asDto(network.getAcronym())) //
@@ -66,6 +67,7 @@ class NetworkDtos {
   Network fromDto(@NotNull Mica.NetworkDtoOrBuilder dto) {
     Network network = new Network();
     network.setId(dto.getId());
+    network.setPublished(dto.getPublished());
     network.setName(localizedStringDtos.fromDto(dto.getNameList()));
     network.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
     network.setAcronym(localizedStringDtos.fromDto(dto.getAcronymList()));

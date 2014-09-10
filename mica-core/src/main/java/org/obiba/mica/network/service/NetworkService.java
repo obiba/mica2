@@ -92,6 +92,15 @@ public class NetworkService {
   }
 
   /**
+   * Get all published {@link org.obiba.mica.network.domain.Network}s.
+   *
+   * @return
+   */
+  public List<Network> findAllPublishedNetworks() {
+    return networkRepository.findByPublished(true);
+  }
+
+  /**
    * Index all {@link org.obiba.mica.network.domain.Network}s.
    */
   public void indexAll() {
