@@ -35,8 +35,6 @@ import org.obiba.mica.dataset.search.VariableIndexer;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
 import org.obiba.mica.search.rest.AbstractSearchResource;
 import org.obiba.mica.search.rest.QueryDtoParser;
-import org.obiba.mica.service.HarmonizationDatasetService;
-import org.obiba.mica.service.StudyDatasetService;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
@@ -74,12 +72,6 @@ public class PublishedDatasetVariablesSearchResource extends AbstractSearchResou
 
   @Inject
   private ObjectMapper objectMapper;
-
-  @Inject
-  private StudyDatasetService studyDatasetService;
-
-  @Inject
-  private HarmonizationDatasetService harmonizationDatasetService;
 
   @Override
   protected String getSearchIndex() {
