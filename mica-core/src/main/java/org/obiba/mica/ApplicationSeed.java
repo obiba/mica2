@@ -334,6 +334,7 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
   private Network createNetwork() {
     Network network = new Network();
     network.setName(en("Biobanking and Biomolecular Resources Research Infrastructure"));
+    network.setPublished(true);
 
     Contact contact = createContact();
     network.addContact(contact);
