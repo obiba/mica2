@@ -8,7 +8,7 @@ import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.domain.LocalizedString;
-import org.obiba.mica.domain.Network;
+import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.micaConfig.MicaConfig;
 import org.obiba.mica.study.domain.Study;

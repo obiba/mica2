@@ -12,6 +12,7 @@ package org.obiba.mica.service;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
@@ -118,7 +119,7 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
    * @param studyId
    * @return
    */
-  public List<StudyDataset> findAllPublishedDatasets(String studyId) {
+  public List<StudyDataset> findAllPublishedDatasets(@Nullable String studyId) {
     if(Strings.isNullOrEmpty(studyId)) return findAllPublishedDatasets();
     return studyDatasetRepository.findByStudyTableStudyIdAndPublished(studyId, true);
   }

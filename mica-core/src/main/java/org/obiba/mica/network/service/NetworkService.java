@@ -1,0 +1,138 @@
+/*
+ * Copyright (c) 2014 OBiBa. All rights reserved.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package org.obiba.mica.network.service;
+
+import java.util.List;
+
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+
+import org.obiba.mica.network.NetworkRepository;
+import org.obiba.mica.network.NoSuchNetworkException;
+import org.obiba.mica.network.domain.Network;
+import org.obiba.mica.network.event.IndexNetworksEvent;
+import org.obiba.mica.network.event.NetworkDeletedEvent;
+import org.obiba.mica.network.event.NetworkPublishedEvent;
+import org.obiba.mica.network.event.NetworkUpdatedEvent;
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+
+import com.google.common.base.Strings;
+import com.google.common.eventbus.EventBus;
+
+@Service
+@Validated
+public class NetworkService {
+
+  @Inject
+  private NetworkRepository networkRepository;
+
+  @Inject
+  private EventBus eventBus;
+
+  /**
+   * Create or update provided {@link org.obiba.mica.network.domain.Network}.
+   *
+   * @param network
+   */
+  public void save(@NotNull Network network) {
+    Network saved = network;
+    if(!network.isNew()) {
+      saved = findById(network.getId());
+      BeanUtils.copyProperties(network, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
+          "lastModifiedDate");
+    }
+    networkRepository.save(saved);
+    eventBus.post(new NetworkUpdatedEvent(saved));
+  }
+
+  /**
+   * Find a {@link org.obiba.mica.network.domain.Network} by its ID.
+   *
+   * @param id
+   * @return
+   * @throws NoSuchNetworkException
+   */
+  @NotNull
+  public Network findById(@NotNull String id) throws NoSuchNetworkException {
+    Network network = networkRepository.findOne(id);
+    if(network == null) throw NoSuchNetworkException.withId(id);
+    return network;
+  }
+
+  /**
+   * Find all {@link org.obiba.mica.network.domain.Network}s, optionally related to
+   * a {@link org.obiba.mica.study.domain.Study} ID.
+   *
+   * @param studyId
+   * @return
+   */
+  public List<Network> findAllNetworks(@Nullable String studyId) {
+    if(Strings.isNullOrEmpty(studyId)) return findAllNetworks();
+    return networkRepository.findByStudyIds(studyId);
+  }
+
+  /**
+   * Get all {@link org.obiba.mica.network.domain.Network}s.
+   *
+   * @return
+   */
+  public List<Network> findAllNetworks() {
+    return networkRepository.findAll();
+  }
+
+  /**
+   * Index all {@link org.obiba.mica.network.domain.Network}s.
+   */
+  public void indexAll() {
+    eventBus.post(new IndexNetworksEvent());
+  }
+
+  /**
+   * Set the publication flag on a {@link org.obiba.mica.network.domain.Network}.
+   *
+   * @param id
+   * @param published
+   * @throws NoSuchNetworkException
+   */
+  public void publish(@NotNull String id, boolean published) throws NoSuchNetworkException {
+    Network network = findById(id);
+    network.setPublished(published);
+    save(network);
+    eventBus.post(new NetworkPublishedEvent(network));
+  }
+
+  /**
+   * Index a specific {@link org.obiba.mica.network.domain.Network} without updating it.
+   *
+   * @param id
+   * @throws NoSuchNetworkException
+   */
+  public void index(@NotNull String id) throws NoSuchNetworkException {
+    Network network = findById(id);
+    eventBus.post(new NetworkUpdatedEvent(network));
+  }
+
+  /**
+   * Delete a {@link org.obiba.mica.network.domain.Network}.
+   *
+   * @param id
+   * @throws NoSuchNetworkException
+   */
+  public void delete(@NotNull String id) throws NoSuchNetworkException {
+    Network network = findById(id);
+    networkRepository.delete(id);
+    eventBus.post(new NetworkDeletedEvent(network));
+  }
+
+}

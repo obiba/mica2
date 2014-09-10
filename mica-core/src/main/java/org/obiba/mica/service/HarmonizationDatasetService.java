@@ -12,6 +12,7 @@ package org.obiba.mica.service;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
@@ -61,7 +62,7 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
 
   public void save(@NotNull HarmonizationDataset dataset) {
     HarmonizationDataset saved = dataset;
-    if(!Strings.isNullOrEmpty(dataset.getId())) {
+    if(!dataset.isNew()) {
       saved = findById(dataset.getId());
       BeanUtils.copyProperties(dataset, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
           "lastModifiedDate");
@@ -99,7 +100,7 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
    * @param studyId
    * @return
    */
-  public List<HarmonizationDataset> findAllDatasets(String studyId) {
+  public List<HarmonizationDataset> findAllDatasets(@Nullable String studyId) {
     if(Strings.isNullOrEmpty(studyId)) return findAllDatasets();
     return harmonizationDatasetRepository.findByStudyTablesStudyId(studyId);
   }
