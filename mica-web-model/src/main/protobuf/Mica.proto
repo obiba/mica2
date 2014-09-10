@@ -14,7 +14,6 @@ message StudySummaryDto {
   repeated string designs = 5;
   optional TargetNumberDto targetNumber = 6;
   repeated string countries = 7;
-  repeated NetworkRelationDto networks = 8;
   extensions 1000 to max;
 }
 
@@ -51,7 +50,6 @@ message StudyDto {
   repeated AttachmentDto attachments = 20;
   repeated LocalizedStringDto info = 21;
   repeated PopulationDto populations = 22;
-  repeated NetworkRelationDto networks = 23;
   repeated AttributeDto attributes = 24;
   optional string opal = 25;
 
@@ -128,11 +126,6 @@ message StudyDto {
   }
 }
 
-message NetworkRelationDto {
-  optional string networkId = 1;
-  repeated LocalizedStringDto networkName = 2;
-}
-
 message NetworkDto {
   optional string id = 1;
   optional TimestampsDto timestamps = 2;
@@ -145,12 +138,8 @@ message NetworkDto {
   optional AuthorizationDto maelstromAuthorization = 9;
   repeated AttachmentDto attachments = 10;
   repeated LocalizedStringDto info = 11;
-  repeated StudyRelationDto studies = 12;
-
-  message StudyRelationDto {
-    optional string studyId = 1;
-    repeated LocalizedStringDto studyName = 2;
-  }
+  repeated string studyIds = 12;
+  repeated StudySummaryDto studySummaries = 13;
 }
 
 message TimestampsDto {

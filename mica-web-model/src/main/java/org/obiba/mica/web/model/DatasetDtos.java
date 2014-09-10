@@ -19,9 +19,6 @@ import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.domain.StudyTable;
-import org.obiba.mica.study.service.PublishedStudyService;
-import org.obiba.mica.study.service.StudyService;
-import org.obiba.mica.study.domain.StudyState;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
@@ -38,19 +35,13 @@ class DatasetDtos {
   @Inject
   private StudySummaryDtos studySummaryDtos;
 
-  @Inject
-  private PublishedStudyService publishedStudyService;
-
-  @Inject
-  private StudyService studyService;
-
   @NotNull
   Mica.DatasetDto asDto(@NotNull StudyDataset dataset) {
     Mica.DatasetDto.Builder builder = asDtoBuilder(dataset);
 
     if(dataset.hasStudyTable()) {
       Mica.StudyDatasetDto.Builder sbuilder = Mica.StudyDatasetDto.newBuilder().setStudyTable(
-          asDto(dataset.getStudyTable()).setStudySummary(getStudySummary(dataset.getStudyTable().getStudyId())));
+          asDto(dataset.getStudyTable()).setStudySummary(studySummaryDtos.asDto(dataset.getStudyTable().getStudyId())));
       builder.setExtension(Mica.StudyDatasetDto.type, sbuilder.build());
     }
     return builder.build();
@@ -65,7 +56,7 @@ class DatasetDtos {
     hbuilder.setTable(dataset.getTable());
     if(!dataset.getStudyTables().isEmpty()) {
       dataset.getStudyTables().forEach(studyTable -> hbuilder.addStudyTables(asDto(studyTable)
-          .setStudySummary(getStudySummary(studyTable.getStudyId()))));
+          .setStudySummary(studySummaryDtos.asDto(studyTable.getStudyId()))));
     }
     builder.setExtension(Mica.HarmonizationDatasetDto.type, hbuilder.build());
 
@@ -103,7 +94,7 @@ class DatasetDtos {
     if(variable.getStudyIds() != null) {
       builder.addAllStudyIds(variable.getStudyIds());
       for(String studyId : variable.getStudyIds()) {
-        builder.addStudySummaries(getStudySummary(studyId));
+        builder.addStudySummaries(studySummaryDtos.asDto(studyId));
       }
     }
 
@@ -208,14 +199,5 @@ class DatasetDtos {
     table.setProject(dto.getProject());
     table.setTable(dto.getTable());
     return table;
-  }
-
-  private Mica.StudySummaryDto getStudySummary(String studyId) {
-    StudyState studyState = studyService.findStateById(studyId);
-    if (studyState.isPublished()) {
-      return studySummaryDtos.asDto(publishedStudyService.findById(studyId));
-    }
-
-    return studySummaryDtos.asDto(studyState);
   }
 }

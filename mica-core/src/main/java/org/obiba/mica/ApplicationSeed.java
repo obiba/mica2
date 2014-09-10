@@ -1,4 +1,4 @@
-package org.obiba.mica.study;
+package org.obiba.mica;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -17,12 +17,13 @@ import org.obiba.mica.domain.Attribute;
 import org.obiba.mica.domain.Authorization;
 import org.obiba.mica.domain.Contact;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
-import org.obiba.mica.domain.Network;
+import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.domain.StudyTable;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.file.TempFileService;
+import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.service.HarmonizationDatasetService;
 import org.obiba.mica.service.StudyDatasetService;
 import org.obiba.mica.study.domain.DataCollectionEvent;
@@ -43,9 +44,9 @@ import static org.obiba.mica.study.domain.Study.StudyMethods;
 @SuppressWarnings({ "MagicNumber", "OverlyLongMethod" })
 @Component
 @Profile(Profiles.DEV)
-public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent> {
+public class ApplicationSeed implements ApplicationListener<ContextRefreshedEvent> {
 
-  private static final Logger log = LoggerFactory.getLogger(StudyGenerator.class);
+  private static final Logger log = LoggerFactory.getLogger(ApplicationSeed.class);
 
   @Inject
   private StudyService studyService;
@@ -59,8 +60,9 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
   @Inject
   private HarmonizationDatasetService harmonizationDatasetService;
 
-//  @Inject
-//  private NetworkRepository networkRepository;
+
+  @Inject
+  private NetworkService networkService;
 
   @Override
   public void onApplicationEvent(ContextRefreshedEvent event) {
@@ -70,10 +72,13 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
 
   public void create() {
 
+    Network network = createNetwork();
+
     Study study = createStudy("CLSA", "Canadian Longitudinal Study on Aging",
         "Étude longitudinale canadienne sur le vieillissement");
     studyService.save(study);
     studyService.publish(study.getId());
+    network.addStudy(study);
 
     StudyDataset studyDataset = new StudyDataset();
     studyDataset.setName(en("FNAC").forFr("FNAC"));
@@ -101,13 +106,9 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
 
     study = createStudy("NCDS", "National Child Development Study", "National Child Development Study");
     studyService.save(study);
+    network.addStudy(study);
 
-//    Network network = createNetwork();
-//    network.addStudy(study);
-//    networkRepository.save(network);
-//
-//    studyRepository.findAllDatasets().forEach(s -> log.info(">> {}", s));
-//    networkRepository.findAllDatasets().forEach(s -> log.info(">> {}", s));
+    networkService.save(network);
   }
 
   @SuppressWarnings("OverlyLongMethod")
@@ -333,6 +334,11 @@ public class StudyGenerator implements ApplicationListener<ContextRefreshedEvent
   private Network createNetwork() {
     Network network = new Network();
     network.setName(en("Biobanking and Biomolecular Resources Research Infrastructure"));
+
+    Contact contact = createContact();
+    network.addContact(contact);
+    network.addInvestigator(contact);
+
     return network;
   }
 

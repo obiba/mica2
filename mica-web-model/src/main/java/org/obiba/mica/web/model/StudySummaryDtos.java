@@ -56,6 +56,15 @@ class StudySummaryDtos {
     return builder.setExtension(Mica.StudyStateDto.state, stateBuilder.build()).build();
   }
 
+  Mica.StudySummaryDto asDto(String studyId) {
+    StudyState studyState = studyService.findStateById(studyId);
+    if (studyState.isPublished()) {
+      return asDto(publishedStudyService.findById(studyId));
+    }
+
+    return asDto(studyState);
+  }
+
   private Mica.StudySummaryDto.Builder asDtoBuilder(@NotNull Study study) {
     Mica.StudySummaryDto.Builder builder = Mica.StudySummaryDto.newBuilder();
 

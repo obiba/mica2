@@ -1,29 +1,31 @@
-package org.obiba.mica.domain;
+package org.obiba.mica.network.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.URL;
+import org.obiba.mica.domain.AbstractAuditableDocument;
+import org.obiba.mica.domain.Authorization;
+import org.obiba.mica.domain.Contact;
+import org.obiba.mica.domain.LocalizedString;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.study.domain.Study;
-import org.springframework.data.domain.Persistable;
 
 /**
  * A Network.
  */
-public class Network implements Persistable<String> {
+public class Network extends AbstractAuditableDocument {
 
   private static final long serialVersionUID = -4271967393906681773L;
-
-  private String id;
 
   @NotNull
   private LocalizedString name;
 
   private LocalizedString acronym;
+
+  private boolean published = false;
 
   private List<Contact> investigators;
 
@@ -40,23 +42,11 @@ public class Network implements Persistable<String> {
 
   private List<String> studyIds;
 
-  private transient List<Study> studies;
-
   private Authorization maelstromAuthorization;
 
-  @Override
-  public String getId() {
-    return id;
-  }
-
-  @Override
-  public boolean isNew() {
-    return id == null;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
+  //
+  // Accessors
+  //
 
   public LocalizedString getName() {
     return name;
@@ -74,14 +64,22 @@ public class Network implements Persistable<String> {
     this.acronym = acronym;
   }
 
+  public boolean isPublished() {
+    return published;
+  }
+
+  public void setPublished(boolean published) {
+    this.published = published;
+  }
+
   @NotNull
   public List<Contact> getInvestigators() {
+    if(investigators == null) investigators = new ArrayList<>();
     return investigators;
   }
 
   public void addInvestigator(@NotNull Contact investigator) {
-    if(investigators == null) investigators = new ArrayList<>();
-    investigators.add(investigator);
+    getInvestigators().add(investigator);
   }
 
   public void setInvestigators(List<Contact> investigators) {
@@ -90,12 +88,12 @@ public class Network implements Persistable<String> {
 
   @NotNull
   public List<Contact> getContacts() {
+    if(contacts == null) contacts = new ArrayList<>();
     return contacts;
   }
 
   public void addContact(@NotNull Contact contact) {
-    if(contacts == null) contacts = new ArrayList<>();
-    contacts.add(contact);
+    getContacts().add(contact);
   }
 
   public void setContacts(List<Contact> contacts) {
@@ -118,13 +116,14 @@ public class Network implements Persistable<String> {
     this.website = website;
   }
 
+  @NotNull
   public List<Attachment> getAttachments() {
+    if(attachments == null) attachments = new ArrayList<>();
     return attachments;
   }
 
   public void addAttachment(@NotNull Attachment attachment) {
-    if(attachments == null) attachments = new ArrayList<>();
-    attachments.add(attachment);
+    getAttachments().add(attachment);
   }
 
   public void setAttachments(List<Attachment> attachments) {
@@ -139,31 +138,22 @@ public class Network implements Persistable<String> {
     this.infos = infos;
   }
 
+  @NotNull
   public List<String> getStudyIds() {
+    if(studyIds == null) studyIds = new ArrayList<>();
     return studyIds;
   }
 
   public void addStudyId(@NotNull String studyId) {
-    if(studyIds == null) studyIds = new ArrayList<>();
-    studyIds.add(studyId);
+    getStudyIds().add(studyId);
   }
 
   public void setStudyIds(List<String> studyIds) {
     this.studyIds = studyIds;
   }
 
-  @NotNull
-  public List<Study> getStudies() {
-    return studies;
-  }
-
   public void addStudy(@NotNull Study study) {
-    if(studies == null) studies = new ArrayList<>();
-    studies.add(study);
-  }
-
-  public void setStudies(List<Study> studies) {
-    this.studies = studies;
+    if (!study.isNew()) addStudyId(study.getId());
   }
 
   public Authorization getMaelstromAuthorization() {
@@ -175,19 +165,8 @@ public class Network implements Persistable<String> {
   }
 
   @Override
-  public int hashCode() {return Objects.hash(id);}
-
-  @Override
-  @SuppressWarnings("SimplifiableIfStatement")
-  public boolean equals(Object obj) {
-    if(this == obj) return true;
-    if(obj == null || getClass() != obj.getClass()) return false;
-    return Objects.equals(id, ((Network) obj).id);
-  }
-
-  @Override
-  public String toString() {
-    return com.google.common.base.Objects.toStringHelper(this).add("id", id).add("name", name).toString();
+  protected com.google.common.base.Objects.ToStringHelper toStringHelper() {
+    return super.toStringHelper().add("name", name);
   }
 
 }

@@ -6,8 +6,8 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.domain.Contact;
-import org.obiba.mica.domain.Timestamped;
-import org.obiba.mica.domain.Network;
+import org.obiba.mica.file.Attachment;
+import org.obiba.mica.network.domain.Network;
 import org.springframework.stereotype.Component;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -22,15 +22,22 @@ class NetworkDtos {
   @Inject
   private LocalizedStringDtos localizedStringDtos;
 
+  @Inject
+  private AttachmentDtos attachmentDtos;
+
+  @Inject
+  private StudySummaryDtos studySummaryDtos;
+
   @NotNull
   Mica.NetworkDto asDto(@NotNull Network network) {
     Mica.NetworkDto.Builder builder = Mica.NetworkDto.newBuilder();
     builder.setId(network.getId()) //
-        .setTimestamps(TimestampsDtos.asDto((Timestamped) network)) //
+        .setTimestamps(TimestampsDtos.asDto(network)) //
         .addAllName(localizedStringDtos.asDto(network.getName())) //
-        .addAllDescription(localizedStringDtos.asDto(network.getDescription()));
+        .addAllDescription(localizedStringDtos.asDto(network.getDescription())) //
+        .addAllAcronym(localizedStringDtos.asDto(network.getAcronym())) //
+        .addAllInfo(localizedStringDtos.asDto(network.getInfos()));
 
-    if(network.getAcronym() != null) builder.addAllAcronym(localizedStringDtos.asDto(network.getAcronym()));
     if(network.getInvestigators() != null) {
       builder.addAllInvestigators(
           network.getInvestigators().stream().map(contactDtos::asDto).collect(Collectors.<ContactDto>toList()));
@@ -41,7 +48,16 @@ class NetworkDtos {
     }
     if(!isNullOrEmpty(network.getWebsite())) builder.setWebsite(network.getWebsite());
 
-    //TODO continue
+    network.getStudyIds().forEach(studyId -> {
+      builder.addStudyIds(studyId);
+      builder.addStudySummaries(studySummaryDtos.asDto(studyId));
+    });
+
+    network.getAttachments().forEach(attachment -> builder.addAttachments(attachmentDtos.asDto(attachment)));
+
+    if(network.getMaelstromAuthorization() != null) {
+      builder.setMaelstromAuthorization(AuthorizationDtos.asDto(network.getMaelstromAuthorization()));
+    }
 
     return builder.build();
   }
@@ -51,14 +67,23 @@ class NetworkDtos {
     Network network = new Network();
     network.setId(dto.getId());
     network.setName(localizedStringDtos.fromDto(dto.getNameList()));
+    network.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
     network.setAcronym(localizedStringDtos.fromDto(dto.getAcronymList()));
+    network.setInfos(localizedStringDtos.fromDto(dto.getInfoList()));
     network.setInvestigators(
         dto.getInvestigatorsList().stream().map(contactDtos::fromDto).collect(Collectors.<Contact>toList()));
     network.setContacts(dto.getContactsList().stream().map(contactDtos::fromDto).collect(Collectors.<Contact>toList()));
-    network.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
     if(dto.hasWebsite()) network.setWebsite(dto.getWebsite());
+    if(dto.getStudyIdsCount() > 0) {
+      dto.getStudyIdsList().forEach(network::addStudyId);
+    }
+    if(dto.getAttachmentsCount() > 0) {
+      network.setAttachments(
+          dto.getAttachmentsList().stream().map(attachmentDtos::fromDto).collect(Collectors.<Attachment>toList()));
+    }
 
-    //TODO continue
+    if(dto.hasMaelstromAuthorization())
+      network.setMaelstromAuthorization(AuthorizationDtos.fromDto(dto.getMaelstromAuthorization()));
 
     return network;
   }
