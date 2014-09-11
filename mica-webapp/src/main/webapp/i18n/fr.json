@@ -442,6 +442,16 @@
   "study-dataset" : "Study Dataset",
   "harmonization-datasets" : "Harmonization Datasets",
   "harmonization-dataset" : "Harmonization Dataset",
+  "network" : {
+    "name" : "Name",
+    "acronym": "Acronym",
+    "add" : "Add Network",
+    "label-edit" : "Edit Network",
+    "general-info": "General Information",
+    "description" : "Description",
+    "index": "Index",
+    "add-study": "Add Study"
+  },
   "name": "Name",
   "value": "Value",
   "values": "Values",
