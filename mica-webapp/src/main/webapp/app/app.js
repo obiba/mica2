@@ -8,6 +8,7 @@ var mica = angular.module('mica', [
   'localytics.directives',
   'mica.config',
   'ngObiba',
+  'mica.network',
   'mica.study',
   'mica.dataset',
   'ngAnimate',
