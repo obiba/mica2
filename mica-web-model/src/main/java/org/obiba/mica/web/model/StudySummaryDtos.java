@@ -44,7 +44,7 @@ class StudySummaryDtos {
         : studyService.findDraftStudy(studyState.getId());
 
     Mica.StudySummaryDto.Builder builder;
-    if (study == null) {
+    if(study == null) {
       builder = Mica.StudySummaryDto.newBuilder();
       builder.setId(studyState.getId()) //
           .setTimestamps(TimestampsDtos.asDto(studyState)) //
@@ -58,7 +58,7 @@ class StudySummaryDtos {
 
   Mica.StudySummaryDto asDto(String studyId) {
     StudyState studyState = studyService.findStateById(studyId);
-    if (studyState.isPublished()) {
+    if(studyState.isPublished()) {
       return asDto(publishedStudyService.findById(studyId));
     }
 
@@ -70,11 +70,9 @@ class StudySummaryDtos {
 
     builder.setId(study.getId()) //
         .setTimestamps(TimestampsDtos.asDto(study)) //
-        .addAllName(localizedStringDtos.asDto(study.getName()));
+        .addAllName(localizedStringDtos.asDto(study.getName())) //
+        .addAllAcronym(localizedStringDtos.asDto(study.getAcronym()));
 
-    if(study.getAcronym() != null) {
-      builder.addAllAcronym(localizedStringDtos.asDto(study.getAcronym()));
-    }
     if(study.getMethods() != null && study.getMethods().getDesigns() != null) {
       builder.addAllDesigns(study.getMethods().getDesigns());
     }

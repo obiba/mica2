@@ -16,6 +16,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.network.NoSuchNetworkException;
 import org.obiba.mica.network.domain.Network;
@@ -47,7 +48,9 @@ public class NetworkService {
    */
   public void save(@NotNull Network network) {
     Network saved = network;
-    if(!network.isNew()) {
+    if(network.isNew()) {
+      saved.setId(getNextId(saved.getAcronym()));
+    } else {
       saved = findById(network.getId());
       BeanUtils.copyProperties(network, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
           "lastModifiedDate");
@@ -142,6 +145,23 @@ public class NetworkService {
     Network network = findById(id);
     networkRepository.delete(id);
     eventBus.post(new NetworkDeletedEvent(network));
+  }
+
+  private String getNextId(LocalizedString suggested) {
+    if (suggested == null) return null;
+    String prefix = suggested.asString().toLowerCase();
+    if (Strings.isNullOrEmpty(prefix)) return null;
+    String next = prefix;
+    try {
+      findById(next);
+      for (int i = 1; i<=1000; i++) {
+        next = prefix + "-" + i;
+        findById(next);
+      }
+      return null;
+    } catch (NoSuchNetworkException e) {
+      return next;
+    }
   }
 
 }

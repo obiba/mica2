@@ -7,7 +7,9 @@ import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.service.GitService;
+import org.obiba.mica.network.NoSuchNetworkException;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.StudyStateRepository;
 import org.obiba.mica.study.domain.Study;
@@ -56,9 +58,10 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
 
   @NotNull
   private StudyState findStudyState(Study study) {
-    if(Strings.isNullOrEmpty(study.getId())) {
+    if(study.isNew()) {
       StudyState studyState = new StudyState();
       studyState.setName(study.getName());
+      studyState.setId(getNextId(study.getAcronym()));
       studyStateRepository.save(studyState);
       study.setId(studyState.getId());
       return studyState;
@@ -144,4 +147,21 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
 //  public void delete(@NotNull String id) {
 //    studyRepository.delete(id);
 //  }
+
+  private String getNextId(LocalizedString suggested) {
+    if (suggested == null) return null;
+    String prefix = suggested.asString().toLowerCase();
+    if (Strings.isNullOrEmpty(prefix)) return null;
+    String next = prefix;
+    try {
+      findStateById(next);
+      for (int i = 1; i<=1000; i++) {
+        next = prefix + "-" + i;
+        findStateById(next);
+      }
+      return null;
+    } catch (NoSuchStudyException e) {
+      return next;
+    }
+  }
 }

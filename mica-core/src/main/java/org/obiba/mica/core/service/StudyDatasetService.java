@@ -60,7 +60,9 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
 
   public void save(@NotNull StudyDataset dataset) {
     StudyDataset saved = dataset;
-    if(!Strings.isNullOrEmpty(dataset.getId())) {
+    if(saved.isNew()) {
+      saved.setId(getNextId(saved.getAcronym()));
+    } else {
       saved = findById(dataset.getId());
       BeanUtils.copyProperties(dataset, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
           "lastModifiedDate");

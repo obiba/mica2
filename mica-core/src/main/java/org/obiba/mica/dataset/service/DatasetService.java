@@ -15,11 +15,12 @@ import javax.validation.constraints.NotNull;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.magma.Variable;
+import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.DatasourceConnectionPool;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
-import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.opal.rest.client.magma.RestDatasource;
 import org.obiba.opal.rest.client.magma.RestValueTable;
@@ -27,6 +28,7 @@ import org.obiba.opal.web.model.Magma;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 
 /**
@@ -69,6 +71,33 @@ public abstract class DatasetService<T extends Dataset> {
   protected abstract DatasourceConnectionPool getDatasourceConnectionPool();
 
   protected abstract EventBus getEventBus();
+
+  /**
+   * Find a dataset by its identifier.
+   *
+   * @param id
+   * @return
+   * @throws NoSuchDatasetException
+   */
+  @NotNull
+  public abstract T findById(@NotNull String id) throws NoSuchDatasetException;
+
+  protected String getNextId(LocalizedString suggested) {
+    if(suggested == null) return null;
+    String prefix = suggested.asString().toLowerCase();
+    if(Strings.isNullOrEmpty(prefix)) return null;
+    String next = prefix;
+    try {
+      findById(next);
+      for(int i = 1; i <= 1000; i++) {
+        next = prefix + "-" + i;
+        findById(next);
+      }
+      return null;
+    } catch(NoSuchDatasetException e) {
+      return next;
+    }
+  }
 
   /**
    * Get the variables of the {@link org.obiba.mica.dataset.domain.Dataset} identified by its id.

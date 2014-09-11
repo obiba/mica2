@@ -36,6 +36,9 @@ public abstract class Dataset extends AbstractAuditableDocument implements Attri
   @NotNull
   private LocalizedString name;
 
+  @NotNull
+  private LocalizedString acronym;
+
   private LocalizedString description;
 
   private String entityType = DEFAULT_ENTITY_TYPE;
@@ -50,6 +53,14 @@ public abstract class Dataset extends AbstractAuditableDocument implements Attri
 
   public void setName(LocalizedString name) {
     this.name = name;
+  }
+
+  public LocalizedString getAcronym() {
+    return acronym;
+  }
+
+  public void setAcronym(LocalizedString acronym) {
+    this.acronym = acronym;
   }
 
   public LocalizedString getDescription() {

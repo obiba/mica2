@@ -23,6 +23,7 @@ public class Network extends AbstractAuditableDocument {
   @NotNull
   private LocalizedString name;
 
+  @NotNull
   private LocalizedString acronym;
 
   private boolean published = false;
