@@ -231,10 +231,11 @@ message AttributeDto {
 message DatasetDto {
   optional string id = 1;
   repeated LocalizedStringDto name = 2;
-  repeated LocalizedStringDto description = 3;
-  required string entityType = 4;
-  required bool published = 5;
-  repeated AttributeDto attributes = 6;
+  repeated LocalizedStringDto acronym = 3;
+  repeated LocalizedStringDto description = 4;
+  required string entityType = 5;
+  required bool published = 6;
+  repeated AttributeDto attributes = 7;
 
   extensions 1000 to max;
 

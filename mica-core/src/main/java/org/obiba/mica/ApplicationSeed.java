@@ -74,7 +74,7 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
 
     Network network = createNetwork();
 
-    Study study = createStudy("CLSA", "Canadian Longitudinal Study on Aging",
+    Study study = createStudy("CLSA", "ELCV", "Canadian Longitudinal Study on Aging",
         "Étude longitudinale canadienne sur le vieillissement");
     studyService.save(study);
     studyService.publish(study.getId());
@@ -82,6 +82,7 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
 
     StudyDataset studyDataset = new StudyDataset();
     studyDataset.setName(en("FNAC").forFr("FNAC"));
+    studyDataset.setAcronym(en("FNAC"));
     studyDataset.setEntityType("Participant");
     StudyTable table = new StudyTable();
     table.setStudyId(study.getId());
@@ -93,6 +94,7 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
 
     HarmonizationDataset harmonizationDataset = new HarmonizationDataset();
     harmonizationDataset.setName(en("Healthy Obese Project").forFr("Projet des obeses en sante"));
+    harmonizationDataset.setAcronym(en("HOP"));
     harmonizationDataset.setEntityType("Participant");
     harmonizationDataset.setProject("mica");
     harmonizationDataset.setTable("HOP");
@@ -104,7 +106,7 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
     harmonizationDatasetService.save(harmonizationDataset);
     harmonizationDatasetService.publish(harmonizationDataset.getId(), true);
 
-    study = createStudy("NCDS", "National Child Development Study", "National Child Development Study");
+    study = createStudy("NCDS", null, "National Child Development Study", "National Child Development Study");
     studyService.save(study);
     network.addStudy(study);
 
@@ -112,10 +114,10 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
   }
 
   @SuppressWarnings("OverlyLongMethod")
-  private Study createStudy(String acronyme, String nameEn, String nameFr) {
+  private Study createStudy(String acronymEn, String acronymFr, String nameEn, String nameFr) {
     Study study = new Study();
     study.setName(en(nameEn).forFr(nameFr));
-    study.setAcronym(en(acronyme));
+    study.setAcronym(en(acronymEn).forFr(acronymFr));
     study.setObjectives(
         en("The Canadian Longitudinal Study on Aging (CLSA) is a large, national, long-term study that will follow approximately 50,000 men and women between the ages of 45 and 85 for at least 20 years. The study will collect information on the changing biological, medical, psychological, social, lifestyle and economic aspects of people’s lives. These factors will be studied in order to understand how, individually and in combination, they have an impact in both maintaining health and in the development of disease and disability as people age.")
             .forFr(
@@ -333,6 +335,7 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
 
   private Network createNetwork() {
     Network network = new Network();
+    network.setAcronym(en("BBMRI"));
     network.setName(en("Biobanking and Biomolecular Resources Research Infrastructure"));
     network.setPublished(true);
 

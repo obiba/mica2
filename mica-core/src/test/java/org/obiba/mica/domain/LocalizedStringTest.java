@@ -29,6 +29,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.obiba.mica.core.domain.LocalizedString.en;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
@@ -53,6 +54,21 @@ public class LocalizedStringTest {
     log.debug(string2.toString());
     assertThat(string2.keySet().contains(Locale.ENGLISH.toLanguageTag())).isTrue();
     assertThat(string2.keySet().contains(Locale.forLanguageTag("und").toLanguageTag())).isTrue();
+  }
+
+  @Test
+  public void test_localized_string_as_string() throws Exception {
+    LocalizedString string = en("CLSA").forFr("ÉLCV");
+    log.debug(string.asString());
+    assertThat(string.asString()).isEqualTo("CLSA-ELCV");
+  }
+
+  @Test
+  public void test_localized_string_as_acronym() throws Exception {
+    LocalizedString string = en("Canadian Longitudinal Study on Aging")
+        .forFr("Étude longitudinale canadienne sur le vieillissement");
+    log.debug(string.asAcronym().toString());
+    assertThat(string.asAcronym().asString()).isEqualTo("CLSA-E");
   }
 
 }

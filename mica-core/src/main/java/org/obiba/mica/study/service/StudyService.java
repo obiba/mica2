@@ -3,10 +3,12 @@ package org.obiba.mica.study.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.StudyStateRepository;
@@ -56,9 +58,10 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
 
   @NotNull
   private StudyState findStudyState(Study study) {
-    if(Strings.isNullOrEmpty(study.getId())) {
+    if(study.isNew()) {
       StudyState studyState = new StudyState();
       studyState.setName(study.getName());
+      studyState.setId(generateId(study));
       studyStateRepository.save(studyState);
       study.setId(studyState.getId());
       return studyState;
@@ -66,12 +69,6 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
     StudyState studyState = studyStateRepository.findOne(study.getId());
     if(studyState == null) throw NoSuchStudyException.withId(study.getId());
     return studyState;
-  }
-
-  @NotNull
-  public StudyState findStateByStudy(@SuppressWarnings("TypeMayBeWeakened") @NotNull Study study)
-      throws NoSuchStudyException {
-    return findStateById(study.getId());
   }
 
   @NotNull
@@ -144,4 +141,34 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
 //  public void delete(@NotNull String id) {
 //    studyRepository.delete(id);
 //  }
+
+  @Nullable
+  private String generateId(@NotNull Study study) {
+    ensureAcronym(study);
+    return getNextId(study.getAcronym());
+  }
+
+  @Nullable
+  private String getNextId(LocalizedString suggested) {
+    if(suggested == null) return null;
+    String prefix = suggested.asString().toLowerCase();
+    if(Strings.isNullOrEmpty(prefix)) return null;
+    String next = prefix;
+    try {
+      findStateById(next);
+      for(int i = 1; i <= 1000; i++) {
+        next = prefix + "-" + i;
+        findStateById(next);
+      }
+      return null;
+    } catch(NoSuchStudyException e) {
+      return next;
+    }
+  }
+
+  private void ensureAcronym(@NotNull Study study) {
+    if(study.getAcronym() == null || study.getAcronym().isEmpty()) {
+      study.setAcronym(study.getName().asAcronym());
+    }
+  }
 }

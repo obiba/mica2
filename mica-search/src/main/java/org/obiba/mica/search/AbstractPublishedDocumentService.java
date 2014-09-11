@@ -19,9 +19,7 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.BoolFilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
-import org.elasticsearch.index.query.FilteredQueryBuilder;
+import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHits;
@@ -64,9 +62,10 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
     return processHits(response.getHits());
   }
 
-  private FilteredQueryBuilder buildFilteredQuery(List<String> ids) {
-    BoolFilterBuilder boolFilter = FilterBuilders.boolFilter().must(FilterBuilders.termsFilter("id", ids));
-    return QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), boolFilter);
+  private QueryBuilder buildFilteredQuery(List<String> ids) {
+    IdsQueryBuilder builder = QueryBuilders.idsQuery(getType());
+    ids.forEach(builder::addIds);
+    return builder;
   }
 
 }

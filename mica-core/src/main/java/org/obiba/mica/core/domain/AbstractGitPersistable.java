@@ -6,6 +6,7 @@ import org.joda.time.DateTime;
 import org.springframework.data.domain.Persistable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.Strings;
 
 public abstract class AbstractGitPersistable implements Persistable<String>, Timestamped {
 
@@ -29,7 +30,7 @@ public abstract class AbstractGitPersistable implements Persistable<String>, Tim
   @JsonIgnore
   @Override
   public boolean isNew() {
-    return id == null;
+    return Strings.isNullOrEmpty(id);
   }
 
   @Override

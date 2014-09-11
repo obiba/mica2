@@ -152,10 +152,10 @@ class DatasetDtos {
     Mica.DatasetDto.Builder builder = Mica.DatasetDto.newBuilder();
     if(dataset.getId() != null) builder.setId(dataset.getId());
     builder.setEntityType(dataset.getEntityType());
-    if(dataset.getName() != null) builder.addAllName(localizedStringDtos.asDto(dataset.getName()));
-    if(dataset.getDescription() != null) {
-      builder.addAllDescription(localizedStringDtos.asDto(dataset.getDescription()));
-    }
+    builder.addAllName(localizedStringDtos.asDto(dataset.getName()));
+    builder.addAllAcronym(localizedStringDtos.asDto(dataset.getAcronym()));
+    builder.addAllDescription(localizedStringDtos.asDto(dataset.getDescription()));
+
     builder.setPublished(dataset.isPublished());
     if(dataset.getAttributes() != null) {
       dataset.getAttributes().asAttributeList()
