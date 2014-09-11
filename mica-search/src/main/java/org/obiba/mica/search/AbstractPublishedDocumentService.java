@@ -25,7 +25,7 @@ import org.elasticsearch.index.query.FilteredQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHits;
-import org.obiba.mica.service.PublishedDocumentService;
+import org.obiba.mica.core.service.PublishedDocumentService;
 
 public abstract class AbstractPublishedDocumentService<T> implements PublishedDocumentService<T> {
 

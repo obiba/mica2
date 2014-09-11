@@ -7,7 +7,7 @@ import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.service.GitService;
+import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.StudyStateRepository;
 import org.obiba.mica.study.domain.Study;
@@ -25,7 +25,7 @@ import org.springframework.validation.annotation.Validated;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 
-import static org.obiba.mica.domain.RevisionStatus.DRAFT;
+import static org.obiba.mica.core.domain.RevisionStatus.DRAFT;
 
 @Service
 @Validated

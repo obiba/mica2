@@ -4,7 +4,6 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.validation.constraints.Null;
 
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
@@ -24,7 +23,7 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.obiba.mica.domain.Indexable;
+import org.obiba.mica.core.domain.Indexable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Persistable;

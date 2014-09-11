@@ -10,7 +10,7 @@
 
 package org.obiba.mica.network.event;
 
-import org.obiba.mica.event.PersistableUpdatedEvent;
+import org.obiba.mica.core.event.PersistableUpdatedEvent;
 import org.obiba.mica.network.domain.Network;
 
 public class NetworkPublishedEvent extends PersistableUpdatedEvent<Network> {

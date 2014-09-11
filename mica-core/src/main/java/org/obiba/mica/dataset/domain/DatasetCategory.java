@@ -13,9 +13,9 @@ package org.obiba.mica.dataset.domain;
 import javax.annotation.Nullable;
 
 import org.obiba.magma.Category;
-import org.obiba.mica.domain.Attribute;
-import org.obiba.mica.domain.AttributeAware;
-import org.obiba.mica.domain.Attributes;
+import org.obiba.mica.core.domain.Attribute;
+import org.obiba.mica.core.domain.AttributeAware;
+import org.obiba.mica.core.domain.Attributes;
 
 public class DatasetCategory implements AttributeAware {
 

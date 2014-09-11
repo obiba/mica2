@@ -20,7 +20,7 @@ import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.rest.harmonization.DraftDataschemaDatasetVariableResource;
 import org.obiba.mica.dataset.rest.harmonization.DraftHarmonizedDatasetVariableResource;
 import org.obiba.mica.dataset.rest.study.DraftStudyDatasetVariableResource;
-import org.obiba.mica.security.Roles;
+import org.obiba.mica.core.security.Roles;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;

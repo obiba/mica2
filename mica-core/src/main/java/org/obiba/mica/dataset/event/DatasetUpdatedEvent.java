@@ -12,7 +12,7 @@ package org.obiba.mica.dataset.event;
 
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
-import org.obiba.mica.event.PersistableUpdatedEvent;
+import org.obiba.mica.core.event.PersistableUpdatedEvent;
 
 public class DatasetUpdatedEvent extends PersistableUpdatedEvent<Dataset> {
 

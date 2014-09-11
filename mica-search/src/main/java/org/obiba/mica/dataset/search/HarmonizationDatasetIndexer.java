@@ -20,7 +20,7 @@ import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.event.IndexDatasetsEvent;
 import org.obiba.mica.dataset.event.IndexHarmonizationDatasetsEvent;
-import org.obiba.mica.service.HarmonizationDatasetService;
+import org.obiba.mica.core.service.HarmonizationDatasetService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;

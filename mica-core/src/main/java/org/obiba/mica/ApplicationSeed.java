@@ -12,20 +12,20 @@ import java.util.Locale;
 import javax.inject.Inject;
 
 import org.obiba.mica.config.Profiles;
-import org.obiba.mica.domain.Address;
-import org.obiba.mica.domain.Attribute;
-import org.obiba.mica.domain.Authorization;
-import org.obiba.mica.domain.Contact;
+import org.obiba.mica.core.domain.Address;
+import org.obiba.mica.core.domain.Attribute;
+import org.obiba.mica.core.domain.Authorization;
+import org.obiba.mica.core.domain.Contact;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.dataset.domain.StudyDataset;
-import org.obiba.mica.domain.StudyTable;
+import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.file.TempFileService;
 import org.obiba.mica.network.service.NetworkService;
-import org.obiba.mica.service.HarmonizationDatasetService;
-import org.obiba.mica.service.StudyDatasetService;
+import org.obiba.mica.core.service.HarmonizationDatasetService;
+import org.obiba.mica.core.service.StudyDatasetService;
 import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.NumberOfParticipants;
 import org.obiba.mica.study.domain.Population;
@@ -38,7 +38,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
-import static org.obiba.mica.domain.LocalizedString.en;
+import static org.obiba.mica.core.domain.LocalizedString.en;
 import static org.obiba.mica.study.domain.Study.StudyMethods;
 
 @SuppressWarnings({ "MagicNumber", "OverlyLongMethod" })

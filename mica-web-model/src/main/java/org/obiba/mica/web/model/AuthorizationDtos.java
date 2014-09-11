@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.domain.Authorization;
+import org.obiba.mica.core.domain.Authorization;
 
 import com.google.common.base.Strings;
 

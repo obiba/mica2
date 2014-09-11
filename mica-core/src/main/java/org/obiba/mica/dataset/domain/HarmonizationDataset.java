@@ -15,7 +15,7 @@ import java.util.List;
 
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.domain.StudyTable;
+import org.obiba.mica.core.domain.StudyTable;
 
 /**
  * Dataset that relies on Study Opal servers summaries.

@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import org.mongeez.MongeezRunner;
-import org.obiba.mica.domain.LocalizedString;
+import org.obiba.mica.core.domain.LocalizedString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.bind.RelaxedPropertyResolver;

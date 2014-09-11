@@ -18,7 +18,7 @@ import org.obiba.mica.dataset.domain.DatasetCategory;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
-import org.obiba.mica.domain.StudyTable;
+import org.obiba.mica.core.domain.StudyTable;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;

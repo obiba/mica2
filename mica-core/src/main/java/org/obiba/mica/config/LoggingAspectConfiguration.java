@@ -1,6 +1,6 @@
 package org.obiba.mica.config;
 
-import org.obiba.mica.aop.logging.LoggingAspect;
+import org.obiba.mica.core.LoggingAspect;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;

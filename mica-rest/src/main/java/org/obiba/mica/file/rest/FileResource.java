@@ -7,7 +7,7 @@ import javax.ws.rs.core.Response;
 
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.PersistableWithAttachments;
-import org.obiba.mica.service.GitService;
+import org.obiba.mica.core.service.GitService;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 

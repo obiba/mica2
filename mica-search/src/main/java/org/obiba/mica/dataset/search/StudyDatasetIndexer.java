@@ -20,7 +20,7 @@ import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.event.IndexDatasetsEvent;
 import org.obiba.mica.dataset.event.IndexStudyDatasetsEvent;
-import org.obiba.mica.service.StudyDatasetService;
+import org.obiba.mica.core.service.StudyDatasetService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;

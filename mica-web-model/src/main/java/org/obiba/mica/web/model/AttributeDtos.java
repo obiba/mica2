@@ -3,7 +3,7 @@ package org.obiba.mica.web.model;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.domain.Attribute;
+import org.obiba.mica.core.domain.Attribute;
 import org.springframework.stereotype.Component;
 
 @Component

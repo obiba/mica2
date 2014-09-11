@@ -11,9 +11,9 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import org.bson.types.ObjectId;
-import org.obiba.mica.domain.AbstractAttributeAware;
-import org.obiba.mica.domain.AttributeAware;
-import org.obiba.mica.domain.LocalizedString;
+import org.obiba.mica.core.domain.AbstractAttributeAware;
+import org.obiba.mica.core.domain.AttributeAware;
+import org.obiba.mica.core.domain.LocalizedString;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
