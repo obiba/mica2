@@ -2,7 +2,7 @@ package org.obiba.mica.config;
 
 import java.util.concurrent.Executor;
 
-import org.obiba.mica.async.ExceptionHandlingAsyncTaskExecutor;
+import org.obiba.mica.core.ExceptionHandlingAsyncTaskExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.bind.RelaxedPropertyResolver;

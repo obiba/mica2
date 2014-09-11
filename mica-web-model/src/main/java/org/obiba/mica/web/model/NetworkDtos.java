@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.domain.Contact;
+import org.obiba.mica.core.domain.Contact;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.network.domain.Network;
 import org.springframework.stereotype.Component;

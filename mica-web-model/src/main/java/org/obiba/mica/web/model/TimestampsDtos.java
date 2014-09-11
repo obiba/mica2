@@ -1,7 +1,7 @@
 package org.obiba.mica.web.model;
 
 import org.joda.time.DateTime;
-import org.obiba.mica.domain.Timestamped;
+import org.obiba.mica.core.domain.Timestamped;
 
 class TimestampsDtos {
 

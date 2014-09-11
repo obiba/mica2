@@ -16,7 +16,7 @@ import org.obiba.git.command.GitCommandHandler;
 import org.obiba.mica.config.JsonConfiguration;
 import org.obiba.mica.config.MongoDbConfiguration;
 import org.obiba.mica.file.TempFileService;
-import org.obiba.mica.service.GitService;
+import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
@@ -48,7 +48,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.obiba.mica.assertj.Assertions.assertThat;
-import static org.obiba.mica.domain.LocalizedString.en;
+import static org.obiba.mica.core.domain.LocalizedString.en;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(DependencyInjectionTestExecutionListener.class)

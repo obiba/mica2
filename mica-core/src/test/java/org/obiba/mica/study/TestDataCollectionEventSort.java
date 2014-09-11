@@ -11,7 +11,7 @@ import com.google.common.collect.Iterables;
 
 import static java.time.YearMonth.of;
 import static org.obiba.mica.assertj.Assertions.assertThat;
-import static org.obiba.mica.domain.LocalizedString.en;
+import static org.obiba.mica.core.domain.LocalizedString.en;
 
 @SuppressWarnings({ "MagicNumber", "OverlyLongMethod" })
 public class TestDataCollectionEventSort {

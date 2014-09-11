@@ -10,7 +10,7 @@ import javax.ws.rs.core.Response;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.file.rest.FileResource;
-import org.obiba.mica.security.Roles;
+import org.obiba.mica.core.security.Roles;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.web.model.Dtos;

@@ -12,7 +12,7 @@ package org.obiba.mica.dataset.event;
 
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
-import org.obiba.mica.event.PersistableDeletedEvent;
+import org.obiba.mica.core.event.PersistableDeletedEvent;
 
 public class DatasetDeletedEvent extends PersistableDeletedEvent<Dataset> {
 

@@ -2,9 +2,9 @@ package org.obiba.mica.study.domain;
 
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.domain.AbstractAuditableDocument;
-import org.obiba.mica.domain.LocalizedString;
-import org.obiba.mica.domain.RevisionStatus;
+import org.obiba.mica.core.domain.AbstractAuditableDocument;
+import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.core.domain.RevisionStatus;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 

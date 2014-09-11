@@ -3,7 +3,7 @@ package org.obiba.mica.file;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.service.GitService;
+import org.obiba.mica.core.service.GitService;
 import org.springframework.stereotype.Component;
 
 @Component

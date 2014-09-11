@@ -22,8 +22,8 @@ import org.mockito.Mockito;
 import org.obiba.mica.config.JsonConfiguration;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
-import org.obiba.mica.domain.Attribute;
-import org.obiba.mica.domain.StudyTable;
+import org.obiba.mica.core.domain.Attribute;
+import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.micaConfig.MicaConfig;
 import org.obiba.mica.micaConfig.MicaConfigService;
 import org.obiba.mica.study.service.PublishedStudyService;
@@ -39,7 +39,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 import static org.mockito.Mockito.when;
-import static org.obiba.mica.domain.LocalizedString.en;
+import static org.obiba.mica.core.domain.LocalizedString.en;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(DependencyInjectionTestExecutionListener.class)

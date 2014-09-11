@@ -17,6 +17,7 @@ import javax.inject.Inject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.obiba.mica.config.JsonConfiguration;
+import org.obiba.mica.core.domain.LocalizedString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.annotation.DirtiesContext;

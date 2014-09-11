@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.obiba.mica.domain.PersistentAuditEvent;
+import org.obiba.mica.core.domain.PersistentAuditEvent;
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.context.annotation.Configuration;
 

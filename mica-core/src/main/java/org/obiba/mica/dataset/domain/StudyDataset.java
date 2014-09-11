@@ -10,8 +10,7 @@
 
 package org.obiba.mica.dataset.domain;
 
-import org.obiba.mica.dataset.domain.Dataset;
-import org.obiba.mica.domain.StudyTable;
+import org.obiba.mica.core.domain.StudyTable;
 
 /**
  * Dataset that relies on Study Opal server to extract variables and summaries.

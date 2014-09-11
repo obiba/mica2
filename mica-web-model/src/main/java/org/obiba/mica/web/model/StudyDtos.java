@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.domain.Contact;
+import org.obiba.mica.core.domain.Contact;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
@@ -89,7 +89,8 @@ class StudyDtos {
       study.getPopulations().forEach(population -> builder.addPopulations(populationDtos.asDto(population)));
     }
     if(study.getAttributes() != null) {
-      study.getAttributes().asAttributeList().forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
+      study.getAttributes().asAttributeList().forEach(
+          attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
     }
     return builder.build();
   }

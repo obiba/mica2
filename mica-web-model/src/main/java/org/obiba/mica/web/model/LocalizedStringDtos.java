@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.domain.LocalizedString;
+import org.obiba.mica.core.domain.LocalizedString;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;

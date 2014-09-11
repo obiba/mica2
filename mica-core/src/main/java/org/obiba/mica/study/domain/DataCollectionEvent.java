@@ -11,8 +11,8 @@ import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.bson.types.ObjectId;
-import org.obiba.mica.domain.AbstractAttributeAware;
-import org.obiba.mica.domain.LocalizedString;
+import org.obiba.mica.core.domain.AbstractAttributeAware;
+import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.file.Attachment;
 import org.springframework.data.domain.Persistable;
 

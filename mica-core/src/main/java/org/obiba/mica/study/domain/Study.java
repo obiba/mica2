@@ -14,13 +14,13 @@ import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.URL;
-import org.obiba.mica.domain.AbstractGitPersistable;
-import org.obiba.mica.domain.Attribute;
-import org.obiba.mica.domain.AttributeAware;
-import org.obiba.mica.domain.Attributes;
-import org.obiba.mica.domain.Authorization;
-import org.obiba.mica.domain.Contact;
-import org.obiba.mica.domain.LocalizedString;
+import org.obiba.mica.core.domain.AbstractGitPersistable;
+import org.obiba.mica.core.domain.Attribute;
+import org.obiba.mica.core.domain.AttributeAware;
+import org.obiba.mica.core.domain.Attributes;
+import org.obiba.mica.core.domain.Authorization;
+import org.obiba.mica.core.domain.Contact;
+import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.PersistableWithAttachments;
 

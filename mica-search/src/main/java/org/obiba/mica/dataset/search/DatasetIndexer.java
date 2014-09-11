@@ -13,7 +13,7 @@ package org.obiba.mica.dataset.search;
 import javax.inject.Inject;
 
 import org.obiba.mica.dataset.domain.Dataset;
-import org.obiba.mica.domain.Indexable;
+import org.obiba.mica.core.domain.Indexable;
 import org.obiba.mica.search.ElasticSearchIndexer;
 import org.obiba.mica.study.service.StudyService;
 import org.slf4j.Logger;

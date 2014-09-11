@@ -27,7 +27,7 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.service.NetworkService;
-import org.obiba.mica.security.Roles;
+import org.obiba.mica.core.security.Roles;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.ApplicationContext;

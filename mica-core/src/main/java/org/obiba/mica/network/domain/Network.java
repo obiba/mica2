@@ -6,10 +6,10 @@ import java.util.List;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.URL;
-import org.obiba.mica.domain.AbstractAuditableDocument;
-import org.obiba.mica.domain.Authorization;
-import org.obiba.mica.domain.Contact;
-import org.obiba.mica.domain.LocalizedString;
+import org.obiba.mica.core.domain.AbstractAuditableDocument;
+import org.obiba.mica.core.domain.Authorization;
+import org.obiba.mica.core.domain.Contact;
+import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.study.domain.Study;
 

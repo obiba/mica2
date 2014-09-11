@@ -2,8 +2,8 @@ package org.obiba.mica.web.model;
 
 import javax.inject.Inject;
 
-import org.obiba.mica.domain.Address;
-import org.obiba.mica.domain.Contact;
+import org.obiba.mica.core.domain.Address;
+import org.obiba.mica.core.domain.Contact;
 import org.springframework.stereotype.Component;
 
 import static com.google.common.base.Strings.isNullOrEmpty;

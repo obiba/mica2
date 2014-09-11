@@ -17,7 +17,7 @@ import javax.ws.rs.Path;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.DatasetVariableResource;
-import org.obiba.mica.service.HarmonizationDatasetService;
+import org.obiba.mica.core.service.HarmonizationDatasetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.*;

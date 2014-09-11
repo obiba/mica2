@@ -13,12 +13,12 @@ package org.obiba.mica.dataset.domain;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.domain.AbstractAuditableDocument;
-import org.obiba.mica.domain.Attribute;
-import org.obiba.mica.domain.AttributeAware;
-import org.obiba.mica.domain.Attributes;
-import org.obiba.mica.domain.Indexable;
-import org.obiba.mica.domain.LocalizedString;
+import org.obiba.mica.core.domain.AbstractAuditableDocument;
+import org.obiba.mica.core.domain.Attribute;
+import org.obiba.mica.core.domain.AttributeAware;
+import org.obiba.mica.core.domain.Attributes;
+import org.obiba.mica.core.domain.Indexable;
+import org.obiba.mica.core.domain.LocalizedString;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

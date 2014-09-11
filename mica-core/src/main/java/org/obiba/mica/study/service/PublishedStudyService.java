@@ -10,7 +10,7 @@
 
 package org.obiba.mica.study.service;
 
-import org.obiba.mica.service.PublishedDocumentService;
+import org.obiba.mica.core.service.PublishedDocumentService;
 import org.obiba.mica.study.domain.Study;
 
 public interface PublishedStudyService extends PublishedDocumentService<Study> {}

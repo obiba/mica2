@@ -5,7 +5,7 @@ import java.util.Locale;
 
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.domain.LocalizedString;
+import org.obiba.mica.core.domain.LocalizedString;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
