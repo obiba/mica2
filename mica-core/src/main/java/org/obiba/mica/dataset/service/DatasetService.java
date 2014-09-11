@@ -10,6 +10,7 @@
 
 package org.obiba.mica.dataset.service;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.magma.NoSuchValueTableException;
@@ -82,7 +83,8 @@ public abstract class DatasetService<T extends Dataset> {
   @NotNull
   public abstract T findById(@NotNull String id) throws NoSuchDatasetException;
 
-  protected String getNextId(LocalizedString suggested) {
+  @Nullable
+  protected String getNextId(@Nullable LocalizedString suggested) {
     if(suggested == null) return null;
     String prefix = suggested.asString().toLowerCase();
     if(Strings.isNullOrEmpty(prefix)) return null;
@@ -96,6 +98,17 @@ public abstract class DatasetService<T extends Dataset> {
       return null;
     } catch(NoSuchDatasetException e) {
       return next;
+    }
+  }
+
+  protected void generateId(@NotNull T dataset) {
+    ensureAcronym(dataset);
+    dataset.setId(getNextId(dataset.getAcronym()));
+  }
+
+  private void ensureAcronym(@NotNull T dataset) {
+    if (dataset.getAcronym() == null || dataset.getAcronym().isEmpty()) {
+      dataset.setAcronym(dataset.getName().asAcronym());
     }
   }
 

@@ -49,7 +49,7 @@ public class NetworkService {
   public void save(@NotNull Network network) {
     Network saved = network;
     if(network.isNew()) {
-      saved.setId(getNextId(saved.getAcronym()));
+      generateId(saved);
     } else {
       saved = findById(network.getId());
       BeanUtils.copyProperties(network, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
@@ -147,6 +147,11 @@ public class NetworkService {
     eventBus.post(new NetworkDeletedEvent(network));
   }
 
+  private void generateId(Network network) {
+    ensureAcronym(network);
+    network.setId(getNextId(network.getAcronym()));
+  }
+
   private String getNextId(LocalizedString suggested) {
     if (suggested == null) return null;
     String prefix = suggested.asString().toLowerCase();
@@ -161,6 +166,12 @@ public class NetworkService {
       return null;
     } catch (NoSuchNetworkException e) {
       return next;
+    }
+  }
+
+  private void ensureAcronym(@NotNull Network network) {
+    if (network.getAcronym() == null || network.getAcronym().isEmpty()) {
+      network.setAcronym(network.getName().asAcronym());
     }
   }
 

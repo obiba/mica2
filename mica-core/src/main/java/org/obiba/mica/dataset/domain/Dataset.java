@@ -36,7 +36,6 @@ public abstract class Dataset extends AbstractAuditableDocument implements Attri
   @NotNull
   private LocalizedString name;
 
-  @NotNull
   private LocalizedString acronym;
 
   private LocalizedString description;

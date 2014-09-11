@@ -300,7 +300,7 @@
     "name": "Name",
     "name-help": "Official study name",
     "acronym": "Acronym",
-    "acronym-help": "Acronym of the study if applicable",
+    "acronym-help": "Acronym of the study",
     "objectives": "Objectives",
     "description": "Description",
     "objectives-help": "What are the principal objectives of the study?",
@@ -411,6 +411,7 @@
   "datasets" : "Datasets",
   "dataset" : {
     "name" : "Name",
+    "acronym": "Acronym",
     "add" : "Add Dataset",
     "label-edit" : "Edit Dataset",
     "general-info": "General Information",

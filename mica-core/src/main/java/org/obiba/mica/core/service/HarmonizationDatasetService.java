@@ -63,7 +63,7 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   public void save(@NotNull HarmonizationDataset dataset) {
     HarmonizationDataset saved = dataset;
     if(saved.isNew()) {
-      saved.setId(getNextId(saved.getAcronym()));
+      generateId(saved);
     } else {
       saved = findById(dataset.getId());
       BeanUtils.copyProperties(dataset, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
