@@ -108,6 +108,14 @@ message StudySummariesResultDto {
   }
 }
 
+message NetworksResultDto {
+  repeated obiba.mica.NetworkDto networks = 1;
+
+  extend QueryResultDto {
+    optional NetworksResultDto result = 1004;
+  }
+}
+
 message AggregationResultDto {
   required string aggregation = 1;
   extensions 1000 to max;

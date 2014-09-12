@@ -10,13 +10,14 @@
 
 package org.obiba.mica.network.rest;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.network.service.PublishedNetworkService;
@@ -42,8 +43,17 @@ public class PublishedNetworksResource {
   @GET
   @Path("/networks")
   @Timed
-  public List<Mica.NetworkDto> list() {
-    return publishedNetworkService.findAll().stream().map(dtos::asDto).collect(Collectors.toList());
+  public Mica.NetworksDto list(@QueryParam("from") @DefaultValue("0") int from,
+      @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort, @QueryParam("order") String order, @QueryParam("study") String studyId) {
+
+    PublishedNetworkService.Networks networks = publishedNetworkService.getNetworks(from, limit, sort, order, studyId);
+
+    Mica.NetworksDto.Builder builder = Mica.NetworksDto.newBuilder();
+
+    builder.setFrom(networks.getFrom()).setLimit(networks.getLimit()).setTotal(networks.getTotal());
+    builder.addAllNetworks(networks.getList().stream().map(dtos::asDto).collect(Collectors.toList()));
+
+    return builder.build();
   }
 
   @Path("/network/{id}")
@@ -52,5 +62,6 @@ public class PublishedNetworksResource {
     networkResource.setId(id);
     return networkResource;
   }
+
 
 }

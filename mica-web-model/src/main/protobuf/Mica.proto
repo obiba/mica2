@@ -143,6 +143,13 @@ message NetworkDto {
   required bool published = 14;
 }
 
+message NetworksDto {
+  required int32 total = 1;
+  required int32 from = 2;
+  required int32 limit = 3;
+  repeated NetworkDto networks = 4;
+}
+
 message TimestampsDto {
   optional string created = 1;
   optional string lastUpdate = 2;
