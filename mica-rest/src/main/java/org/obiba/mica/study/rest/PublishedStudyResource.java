@@ -4,6 +4,8 @@ import javax.inject.Inject;
 import javax.ws.rs.GET;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.mica.study.NoSuchStudyException;
+import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -35,7 +37,9 @@ public class PublishedStudyResource {
   @GET
   @Timed
   public Mica.StudyDto get() {
-    return dtos.asDto(publishedStudyService.findById(id));
+    Study study = publishedStudyService.findById(id);
+    if (study == null) throw NoSuchStudyException.withId(id);
+    return dtos.asDto(study);
   }
 
 }

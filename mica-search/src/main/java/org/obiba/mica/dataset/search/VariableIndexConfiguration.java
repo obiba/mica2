@@ -10,7 +10,11 @@
 
 package org.obiba.mica.dataset.search;
 
+import java.io.IOException;
+
 import org.elasticsearch.client.Client;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.common.xcontent.XContentFactory;
 import org.obiba.mica.search.ElasticSearchIndexer;
 import org.springframework.stereotype.Component;
 
@@ -21,12 +25,38 @@ public class VariableIndexConfiguration implements ElasticSearchIndexer.IndexCon
   public void onIndexCreated(Client client, String indexName) {
     if(VariableIndexer.DRAFT_VARIABLE_INDEX.equals(indexName) ||
         VariableIndexer.PUBLISHED_VARIABLE_INDEX.equals(indexName)) {
-      setVariableParentType(client, indexName);
+      setMappingProperties(client, indexName);
     }
   }
 
-  private void setVariableParentType(Client client, String indexName) {
-    client.admin().indices().preparePutMapping(indexName).setType(VariableIndexer.HARMONIZED_VARIABLE_TYPE)
-        .setSource("_parent", "type=" + VariableIndexer.VARIABLE_TYPE).execute().actionGet();
+  private void setMappingProperties(Client client, String indexName) {
+    try {
+      client.admin().indices().preparePutMapping(indexName).setType(VariableIndexer.VARIABLE_TYPE)
+          .setSource(createMappingProperties(VariableIndexer.VARIABLE_TYPE)).execute().actionGet();
+      client.admin().indices().preparePutMapping(indexName).setType(VariableIndexer.HARMONIZED_VARIABLE_TYPE)
+          .setSource(createMappingProperties(VariableIndexer.HARMONIZED_VARIABLE_TYPE)).execute().actionGet();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
+
+  private XContentBuilder createMappingProperties(String type) throws IOException {
+    XContentBuilder mapping = XContentFactory.jsonBuilder().startObject().startObject(type);
+
+    // properties
+    mapping.startObject("properties");
+    mapping.startObject("id").field("type", "string").field("index","not_analyzed").endObject();
+    mapping.startObject("studyIds").field("type", "string").field("index","not_analyzed").endObject();
+    mapping.startObject("datasetId").field("type", "string").field("index","not_analyzed").endObject();
+    mapping.endObject();
+
+    // parent
+    if (VariableIndexer.HARMONIZED_VARIABLE_TYPE.equals(type)) {
+      mapping.startObject("_parent").field("type", VariableIndexer.VARIABLE_TYPE).endObject();
+    }
+
+    mapping.endObject().endObject();
+    return mapping;
+  }
+
 }
