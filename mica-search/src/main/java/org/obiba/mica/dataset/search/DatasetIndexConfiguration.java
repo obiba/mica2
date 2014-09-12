@@ -40,6 +40,7 @@ public class DatasetIndexConfiguration implements ElasticSearchIndexer.IndexConf
 
     // properties
     mapping.startObject("properties");
+    mapping.startObject("id").field("type", "string").field("index","not_analyzed").endObject();
 
     mapping.startObject("studyTables") //
         .startObject("properties");

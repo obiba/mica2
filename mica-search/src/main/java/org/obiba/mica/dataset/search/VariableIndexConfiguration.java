@@ -25,14 +25,8 @@ public class VariableIndexConfiguration implements ElasticSearchIndexer.IndexCon
   public void onIndexCreated(Client client, String indexName) {
     if(VariableIndexer.DRAFT_VARIABLE_INDEX.equals(indexName) ||
         VariableIndexer.PUBLISHED_VARIABLE_INDEX.equals(indexName)) {
-      setVariableParentType(client, indexName);
       setMappingProperties(client, indexName);
     }
-  }
-
-  private void setVariableParentType(Client client, String indexName) {
-    client.admin().indices().preparePutMapping(indexName).setType(VariableIndexer.HARMONIZED_VARIABLE_TYPE)
-        .setSource("_parent", "type=" + VariableIndexer.VARIABLE_TYPE).execute().actionGet();
   }
 
   private void setMappingProperties(Client client, String indexName) {
@@ -51,9 +45,15 @@ public class VariableIndexConfiguration implements ElasticSearchIndexer.IndexCon
 
     // properties
     mapping.startObject("properties");
+    mapping.startObject("id").field("type", "string").field("index","not_analyzed").endObject();
     mapping.startObject("studyIds").field("type", "string").field("index","not_analyzed").endObject();
     mapping.startObject("datasetId").field("type", "string").field("index","not_analyzed").endObject();
     mapping.endObject();
+
+    // parent
+    if (VariableIndexer.HARMONIZED_VARIABLE_TYPE.equals(type)) {
+      mapping.startObject("_parent").field("type", VariableIndexer.VARIABLE_TYPE).endObject();
+    }
 
     mapping.endObject().endObject();
     return mapping;
