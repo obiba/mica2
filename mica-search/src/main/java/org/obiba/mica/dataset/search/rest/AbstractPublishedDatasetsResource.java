@@ -21,6 +21,8 @@ import javax.inject.Inject;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilders;
@@ -56,15 +58,16 @@ public abstract class AbstractPublishedDatasetsResource<T extends Dataset> {
   protected Mica.DatasetsDto getDatasetDtos(Class<T> clazz, int from, int limit, @Nullable String sort,
       @Nullable String order, @Nullable String studyId) {
     QueryBuilder query = QueryBuilders.queryString(clazz.getSimpleName()).field("className");
+    FilterBuilder filter = null;
     if(studyId != null) {
-      query = QueryBuilders.boolQuery().must(query)
-          .must(QueryBuilders.queryString(studyId).field(getStudyIdField()));
+      filter = FilterBuilders.termFilter(getStudyIdField(), studyId);
     }
 
     SearchRequestBuilder search = client.prepareSearch() //
         .setIndices(DatasetIndexer.PUBLISHED_DATASET_INDEX) //
         .setTypes(DatasetIndexer.DATASET_TYPE) //
         .setQuery(query) //
+        .setPostFilter(filter) //
         .setFrom(from) //
         .setSize(limit);
 
