@@ -10,7 +10,9 @@
 
 package org.obiba.mica.dataset.service;
 
-import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.core.service.PublishedDocumentService;
+import org.obiba.mica.dataset.domain.Dataset;
 
-public interface PublishedDatasetService extends PublishedDocumentService<Dataset> {}
+public interface PublishedDatasetService extends PublishedDocumentService<Dataset> {
+
+}

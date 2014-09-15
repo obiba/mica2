@@ -20,6 +20,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.mica.core.service.PublishedDocumentService;
+import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -44,9 +46,11 @@ public class PublishedNetworksResource {
   @Path("/networks")
   @Timed
   public Mica.NetworksDto list(@QueryParam("from") @DefaultValue("0") int from,
-      @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort, @QueryParam("order") String order, @QueryParam("study") String studyId) {
+      @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
+      @QueryParam("order") String order, @QueryParam("study") String studyId) {
 
-    PublishedNetworkService.Networks networks = publishedNetworkService.getNetworks(from, limit, sort, order, studyId);
+    PublishedDocumentService.Documents<Network> networks = publishedNetworkService
+        .find(from, limit, sort, order, studyId);
 
     Mica.NetworksDto.Builder builder = Mica.NetworksDto.newBuilder();
 
@@ -62,6 +66,5 @@ public class PublishedNetworksResource {
     networkResource.setId(id);
     return networkResource;
   }
-
 
 }

@@ -17,6 +17,13 @@ message StudySummaryDto {
   extensions 1000 to max;
 }
 
+message StudySummariesDto {
+  required int32 total = 1;
+  required int32 from = 2;
+  required int32 limit = 3;
+  repeated StudySummaryDto studySummaries = 4;
+}
+
 message StudyStateDto {
   optional string publishedTag = 1;
   required int32 revisionsAhead = 2;
