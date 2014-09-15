@@ -12,8 +12,84 @@ package org.obiba.mica.core.service;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
+
+import com.google.common.collect.Lists;
+
 public interface PublishedDocumentService<T> {
+
+  /**
+   * Get one document by its ID, returns null if not found.
+   *
+   * @param id
+   * @return
+   */
   T findById(String id);
+
+  /**
+   * List all documents.
+   *
+   * @return
+   */
   List<T> findAll();
+
+  /**
+   * List all documents matching a list of IDs.
+   *
+   * @param ids
+   * @return
+   */
   List<T> findByIds(List<String> ids);
+
+  /**
+   * Get the list in a object that informs about the set of documents that was retrieved.
+   *
+   * @param from
+   * @param limit
+   * @param sort
+   * @param order
+   * @param studyId
+   * @return
+   */
+  Documents<T> find(int from, int limit, @Nullable String sort, @Nullable String order, @Nullable String studyId);
+
+  /**
+   * Documents query result container.
+   */
+  class Documents<T> {
+    private final int total;
+
+    private final int from;
+
+    private final int limit;
+
+    private final List<T> list = Lists.newArrayList();
+
+    public Documents(int total, int from, int limit) {
+      this.total = total;
+      this.from = from;
+      this.limit = limit;
+    }
+
+    public List<T> getList() {
+      return list;
+    }
+
+    public void add(T document) {
+      if(document != null) list.add(document);
+    }
+
+    public int getTotal() {
+      return total;
+    }
+
+    public int getFrom() {
+      return from;
+    }
+
+    public int getLimit() {
+      return limit;
+    }
+  }
+
 }

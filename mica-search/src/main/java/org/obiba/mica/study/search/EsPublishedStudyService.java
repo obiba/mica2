@@ -15,9 +15,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
+import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.obiba.mica.core.service.PublishedDocumentService;
 import org.obiba.mica.search.AbstractPublishedDocumentService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
@@ -31,25 +34,13 @@ import com.google.common.collect.Lists;
 @Service
 public class EsPublishedStudyService extends AbstractPublishedDocumentService<Study> implements PublishedStudyService {
 
-  private static final Logger log = LoggerFactory.getLogger(EsPublishedStudyService.class);
-
   @Inject
   private ObjectMapper objectMapper;
 
-
   @Override
-  protected List<Study> processHits(SearchHits hits) {
-    List<Study> studies = Lists.newArrayList();
-    hits.forEach(hit -> {
-      InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
-      try {
-        studies.add(objectMapper.readValue(inputStream, Study.class));
-      } catch(IOException e) {
-        throw new RuntimeException(e);
-      }
-    });
-
-    return studies;
+  protected Study processHit(SearchHit hit) throws IOException {
+    InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
+    return objectMapper.readValue(inputStream, Study.class);
   }
 
   @Override
@@ -61,4 +52,6 @@ public class EsPublishedStudyService extends AbstractPublishedDocumentService<St
   protected String getType() {
     return StudyIndexer.STUDY_TYPE;
   }
+
+
 }
