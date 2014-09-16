@@ -45,9 +45,9 @@ public class PublishedStudyDatasetsResource extends AbstractPublishedDatasetsRes
   @GET
   public Mica.DatasetsDto list(@QueryParam("from") @DefaultValue("0") int from,
       @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
-      @QueryParam("order") String order, @QueryParam("study") String studyId) {
+      @QueryParam("order") String order, @QueryParam("study") String studyId, @QueryParam("query") String query) {
 
-    return getDatasetDtos(StudyDataset.class, from, limit, sort, order, studyId);
+    return getDatasetDtos(StudyDataset.class, from, limit, sort, order, studyId, query);
   }
 
   @Override

@@ -45,9 +45,9 @@ public class PublishedHarmonizationDatasetsResource extends AbstractPublishedDat
   @GET
   public Mica.DatasetsDto list(@QueryParam("from") @DefaultValue("0") int from,
       @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
-      @QueryParam("order") String order, @QueryParam("study") String studyId) {
+      @QueryParam("order") String order, @QueryParam("study") String studyId, @QueryParam("query") String query) {
 
-    return getDatasetDtos(HarmonizationDataset.class, from, limit, sort, order, studyId);
+    return getDatasetDtos(HarmonizationDataset.class, from, limit, sort, order, studyId, query);
   }
 
   @Override

@@ -47,10 +47,10 @@ public class PublishedNetworksResource {
   @Timed
   public Mica.NetworksDto list(@QueryParam("from") @DefaultValue("0") int from,
       @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
-      @QueryParam("order") String order, @QueryParam("study") String studyId) {
+      @QueryParam("order") String order, @QueryParam("study") String studyId, @QueryParam("query") String query) {
 
     PublishedDocumentService.Documents<Network> networks = publishedNetworkService
-        .find(from, limit, sort, order, studyId);
+        .find(from, limit, sort, order, studyId, query);
 
     Mica.NetworksDto.Builder builder = Mica.NetworksDto.newBuilder();
 
