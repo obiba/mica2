@@ -64,7 +64,12 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
 
   @Override
   public Documents<T> find(int from, int limit, @Nullable String sort, @Nullable String order,
-      @Nullable String studyId) {
+      @Nullable String studyId, @Nullable String queryString) {
+
+    QueryBuilder query = null;
+    if (queryString != null) {
+      query = QueryBuilders.queryString(queryString);
+    }
 
     FilterBuilder filter = null;
     if(studyId != null) {
@@ -74,6 +79,7 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
     SearchRequestBuilder search = client.prepareSearch() //
         .setIndices(getIndexName()) //
         .setTypes(getType()) //
+        .setQuery(query) //
         .setPostFilter(filter) //
         .setFrom(from) //
         .setSize(limit);

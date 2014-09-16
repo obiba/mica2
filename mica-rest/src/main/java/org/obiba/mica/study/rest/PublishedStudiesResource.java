@@ -37,9 +37,9 @@ public class PublishedStudiesResource {
   @Timed
   public Mica.StudySummariesDto list(@QueryParam("from") @DefaultValue("0") int from,
       @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
-      @QueryParam("order") String order) {
+      @QueryParam("order") String order, @QueryParam("query") String query) {
 
-    PublishedDocumentService.Documents<Study> studies = publishedStudyService.find(from, limit, sort, order, null);
+    PublishedDocumentService.Documents<Study> studies = publishedStudyService.find(from, limit, sort, order, null, query);
 
     Mica.StudySummariesDto.Builder builder = Mica.StudySummariesDto.newBuilder();
 

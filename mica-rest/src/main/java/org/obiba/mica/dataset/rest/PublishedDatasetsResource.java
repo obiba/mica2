@@ -46,9 +46,11 @@ public class PublishedDatasetsResource {
   @Path("/datasets")
   @Timed
   public Mica.DatasetsDto list(@QueryParam("from") @DefaultValue("0") int from,
-      @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort, @QueryParam("order") String order, @QueryParam("study") String studyId) {
+      @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
+      @QueryParam("order") String order, @QueryParam("study") String studyId, @QueryParam("query") String query) {
 
-    PublishedDocumentService.Documents<Dataset> datasets = publishedDatasetService.find(from, limit, sort, order, studyId);
+    PublishedDocumentService.Documents<Dataset> datasets = publishedDatasetService
+        .find(from, limit, sort, order, studyId, query);
 
     Mica.DatasetsDto.Builder builder = Mica.DatasetsDto.newBuilder();
 
