@@ -10,9 +10,7 @@
 
 package org.obiba.mica.study.search.rest;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 import javax.inject.Inject;
 import javax.ws.rs.DefaultValue;
@@ -22,86 +20,32 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
 import org.json.JSONException;
-import org.obiba.mica.search.rest.AbstractSearchResource;
-import org.obiba.mica.search.rest.QueryDtoParser;
-import org.obiba.mica.study.service.PublishedStudyService;
-import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.search.StudyIndexer;
-import org.obiba.mica.web.model.Dtos;
+import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.web.model.MicaSearch;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 
 import com.codahale.metrics.annotation.Timed;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-import static org.obiba.mica.web.model.MicaSearch.QueryDto;
-import static org.obiba.mica.web.model.MicaSearch.QueryResultDto;
+import static org.obiba.mica.web.model.MicaSearch.JoinQueryResultDto;
 
 @Path("/studies/_search")
 @RequiresAuthentication
-public class PublishedStudiesSearchResource extends AbstractSearchResource {
-
-  private static final String STUDY_FACETS_YML = "study-facets.yml";
-
-  private static final Logger log = LoggerFactory.getLogger(PublishedStudiesSearchResource.class);
+public class PublishedStudiesSearchResource {
 
   @Inject
-  private Dtos dtos;
-
-  @Inject
-  private ObjectMapper objectMapper;
-
-  @Inject
-  private PublishedStudyService publishedStudyService;
+  private JoinQueryExecutor joinQueryExecutor;
 
   @GET
   @Timed
-  public QueryResultDto list(@QueryParam("from") @DefaultValue("0") int from,
-      @QueryParam("size") @DefaultValue("10") int size, @QueryParam("detailed") @DefaultValue("false") boolean detailed)
+  public JoinQueryResultDto list(@QueryParam("from") @DefaultValue("0") int from,
+      @QueryParam("size") @DefaultValue("10") int size)
       throws JSONException, IOException {
-
-    return execute(QueryBuilders.matchAllQuery(), from, size, detailed);
+    return joinQueryExecutor.query(from, size);
   }
 
   @POST
   @Timed
-  public QueryResultDto list(QueryDto dtoQuery) throws IOException {
-    return execute(QueryDtoParser.newParser().parse(dtoQuery), dtoQuery.getFrom(), dtoQuery.getSize(),
-        dtoQuery.getDetailed());
-  }
-
-  @Override
-  protected Resource getAggregationsDescription() {
-    return new ClassPathResource(STUDY_FACETS_YML);
-  }
-
-  @Override
-  protected String getSearchIndex() {
-    return StudyIndexer.PUBLISHED_STUDY_INDEX;
-  }
-
-  @Override
-  protected String getSearchType() {
-    return StudyIndexer.STUDY_TYPE;
-  }
-
-  @Override
-  protected void processHits(QueryResultDto.Builder builder, boolean detailedQuery, boolean detailedResult, SearchHits hits) throws IOException {
-    MicaSearch.StudyResultDto.Builder resBuilder = MicaSearch.StudyResultDto.newBuilder();
-    for(SearchHit hit : hits) {
-      resBuilder.addSummaries(dtos.asSummaryDto(publishedStudyService.findById(hit.getId())));
-      if(detailedQuery && detailedResult) {
-        InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
-        resBuilder.addStudies(dtos.asDto(objectMapper.readValue(inputStream, Study.class)));
-      }
-    }
-    builder.setExtension(MicaSearch.StudyResultDto.result, resBuilder.build());
+  public JoinQueryResultDto list(MicaSearch.JoinQueryDto joinQueryDto) throws IOException {
+    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.STUDY, joinQueryDto);
   }
 }

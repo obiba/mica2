@@ -47,8 +47,16 @@ public class QueryDtoParser {
   private BoolFilterBuilder parseBoolFilter(BoolFilterQueryDto boolFilterDto) {
     BoolFilterBuilder boolFilter = FilterBuilders.boolFilter();
 
-    if(boolFilterDto.getFiltersCount() > 0) {
-      boolFilterDto.getFiltersList().forEach(filter -> boolFilter.must(parseFilter(filter)));
+    if(boolFilterDto.getMustCount() > 0) {
+      boolFilterDto.getMustList().forEach(filter -> boolFilter.must(parseFilter(filter)));
+    }
+
+    if(boolFilterDto.getMustNotCount() > 0) {
+      boolFilterDto.getMustNotList().forEach(filter -> boolFilter.mustNot(parseFilter(filter)));
+    }
+
+    if(boolFilterDto.getShouldCount() > 0) {
+      boolFilterDto.getShouldList().forEach(filter -> boolFilter.should(parseFilter(filter)));
     }
 
     if(boolFilterDto.hasParentChildFilter()) {

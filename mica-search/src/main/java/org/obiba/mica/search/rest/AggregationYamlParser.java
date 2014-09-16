@@ -1,16 +1,6 @@
 package org.obiba.mica.search.rest;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
+import com.google.common.base.Strings;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
@@ -21,7 +11,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
-import com.google.common.base.Strings;
+import java.io.IOException;
+import java.util.*;
 
 @Component
 public class AggregationYamlParser {
@@ -65,10 +56,13 @@ public class AggregationYamlParser {
   }
 
   public Iterable<AbstractAggregationBuilder> getAggregations(Resource description) throws IOException {
-    Collection<AbstractAggregationBuilder> termsBuilders = new ArrayList<>();
     YamlPropertiesFactoryBean yamlPropertiesFactoryBean = new YamlPropertiesFactoryBean();
     yamlPropertiesFactoryBean.setResources(new Resource[] { description });
-    Properties properties = yamlPropertiesFactoryBean.getObject();
+    return getAggregations(yamlPropertiesFactoryBean.getObject());
+  }
+
+  public Iterable<AbstractAggregationBuilder> getAggregations(Properties properties) throws IOException {
+    Collection<AbstractAggregationBuilder> termsBuilders = new ArrayList<>();
     SortedMap<String, ?> sortedSystemProperties = new TreeMap(properties);
     String prevKey = null;
     for(Map.Entry<String, ?> entry : sortedSystemProperties.entrySet()) {

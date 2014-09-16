@@ -2,6 +2,14 @@ package obiba.mica;
 option java_package = "org.obiba.mica.web.model";
 import "Mica.proto";
 
+
+message JoinQueryDto {
+  optional QueryDto variableQueryDto = 1;
+  optional QueryDto datasetQueryDto = 2;
+  optional QueryDto studyQueryDto = 3;
+  optional QueryDto networkQueryDto = 4;
+}
+
 message QueryDto {
   required int32 from = 1 [default = 0];
   required int32 size = 2 [default = 10];
@@ -14,8 +22,10 @@ message FilteredQueryDto {
 }
 
 message BoolFilterQueryDto {
-  repeated FilterQueryDto filters = 1;
-  optional ParentChildFilterDto parentChildFilter = 2;
+  repeated FilterQueryDto must = 1;
+  repeated FilterQueryDto must_not = 2;
+  repeated FilterQueryDto should = 3;
+  optional ParentChildFilterDto parentChildFilter = 4;
 }
 
 message ParentChildFilterDto {
@@ -64,6 +74,13 @@ message RangeFilterQueryDto {
   }
 }
 
+message JoinQueryResultDto {
+  optional QueryResultDto variableResultDto = 1;
+  optional QueryResultDto datasetResultDto = 2;
+  optional QueryResultDto studyResultDto = 3;
+  optional QueryResultDto networkResultDto = 4;
+}
+
 message QueryResultDto {
   repeated AggregationResultDto aggs = 1;
   required int32 totalHits = 2;
@@ -72,14 +89,6 @@ message QueryResultDto {
   extensions 1000 to max;
 }
 
-message StudyResultDto {
-  repeated obiba.mica.StudySummaryDto summaries = 1;
-  repeated obiba.mica.StudyDto studies = 2;
-
-  extend QueryResultDto {
-    optional StudyResultDto result = 1000;
-  }
-}
 
 message DatasetVariableResultDto {
   repeated obiba.mica.DatasetVariableResolverDto summaries = 1;
@@ -87,15 +96,32 @@ message DatasetVariableResultDto {
   repeated obiba.mica.DatasetDto datasets = 3;
 
   extend QueryResultDto {
-    optional DatasetVariableResultDto result = 1001;
+    optional DatasetVariableResultDto result = 1000;
   }
 }
 
-message DatasetsResultDto {
+message DatasetResultDto {
   repeated obiba.mica.DatasetDto datasets = 1;
 
   extend QueryResultDto {
-    optional DatasetsResultDto result = 1002;
+    optional DatasetResultDto result = 1001;
+  }
+}
+
+message StudyResultDto {
+  repeated obiba.mica.StudySummaryDto summaries = 1;
+  repeated obiba.mica.StudyDto studies = 2;
+
+  extend QueryResultDto {
+    optional StudyResultDto result = 1002;
+  }
+}
+
+message NetworkResultDto {
+  repeated obiba.mica.NetworkDto networks = 1;
+
+  extend QueryResultDto {
+    optional NetworkResultDto result = 1003;
   }
 }
 
@@ -104,15 +130,7 @@ message StudySummariesResultDto {
 
   extend QueryResultDto {
     optional StudySummariesResultDto
-     result = 1003;
-  }
-}
-
-message NetworksResultDto {
-  repeated obiba.mica.NetworkDto networks = 1;
-
-  extend QueryResultDto {
-    optional NetworksResultDto result = 1004;
+     result = 1009;
   }
 }
 

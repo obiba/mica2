@@ -16,6 +16,7 @@
 # shortcoming of the YAML processor.
 #
 
+id:
 start:
 end:
 access:
