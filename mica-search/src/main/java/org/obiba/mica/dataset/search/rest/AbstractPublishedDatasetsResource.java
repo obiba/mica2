@@ -56,8 +56,11 @@ public abstract class AbstractPublishedDatasetsResource<T extends Dataset> {
   private ObjectMapper objectMapper;
 
   protected Mica.DatasetsDto getDatasetDtos(Class<T> clazz, int from, int limit, @Nullable String sort,
-      @Nullable String order, @Nullable String studyId) {
+      @Nullable String order, @Nullable String studyId, @Nullable String queryString) {
     QueryBuilder query = QueryBuilders.queryString(clazz.getSimpleName()).field("className");
+    if (queryString != null) {
+      query = QueryBuilders.boolQuery().must(query).must(QueryBuilders.queryString(queryString));
+    }
     FilterBuilder filter = null;
     if(studyId != null) {
       filter = FilterBuilders.termFilter(getStudyIdField(), studyId);
