@@ -8,65 +8,67 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.search.join;
-
-import java.util.Properties;
-
-import javax.inject.Inject;
+package org.obiba.mica.search.queries;
 
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.obiba.mica.dataset.search.DatasetIndexer;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
-import org.obiba.mica.network.search.NetworkIndexer;
-import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
-@Component
-public class NetworkQuery extends AbstractDocumentQuery {
+import javax.inject.Inject;
+import java.util.Properties;
 
-  private static final String NETWORK_FACETS_YML = "network-facets.yml";
+@Component
+public class DatasetQuery extends AbstractDocumentQuery {
+
+
+  private static final String DATASET_FACETS_YML = "dataset-facets.yml";
 
   private static Properties joinFields = new Properties();
+
   static {
-    joinFields.setProperty("studyIds", "");
-  };
+    joinFields.setProperty("studyTable.studyId", "");
+    joinFields.setProperty("studyTables.studyId", "");
+  }
 
   @Inject
   Dtos dtos;
 
   @Inject
-  PublishedNetworkService publishedNetworkService;
+  PublishedDatasetService publishedDatasetService;
 
   @Override
   public String getSearchIndex() {
-    return NetworkIndexer.PUBLISHED_NETWORK_INDEX;
+    return DatasetIndexer.PUBLISHED_DATASET_INDEX;
   }
 
   @Override
   public String getSearchType() {
-    return NetworkIndexer.NETWORK_TYPE;
+    return DatasetIndexer.DATASET_TYPE;
   }
 
   @Override
   public Resource getAggregationsDescription() {
-    return new ClassPathResource(NETWORK_FACETS_YML);
+    return new ClassPathResource(DATASET_FACETS_YML);
   }
 
   @Override
   public void processHits(MicaSearch.QueryResultDto.Builder builder, SearchHits hits) {
-    MicaSearch.NetworkResultDto.Builder resBuilder = MicaSearch.NetworkResultDto.newBuilder();
+    MicaSearch.DatasetResultDto.Builder resBuilder = MicaSearch.DatasetResultDto.newBuilder();
     for(SearchHit hit : hits) {
-      resBuilder.addNetworks(dtos.asDto(publishedNetworkService.findById(hit.getId())));
+      resBuilder.addDatasets(dtos.asDto(publishedDatasetService.findById(hit.getId())));
     }
-    builder.setExtension(MicaSearch.NetworkResultDto.result, resBuilder.build());
+    builder.setExtension(MicaSearch.DatasetResultDto.result, resBuilder.build());
   }
 
   @Override
   protected Properties getJoinFields() {
     return joinFields;
   }
+
 }

@@ -8,11 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.search.join;
-
-import java.util.Properties;
-
-import javax.inject.Inject;
+package org.obiba.mica.search.queries;
 
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
@@ -23,6 +19,9 @@ import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
+import java.util.Properties;
 
 @Component
 public class StudyQuery extends AbstractDocumentQuery {

@@ -10,23 +10,20 @@
 
 package org.obiba.mica.search;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
-import org.obiba.mica.search.join.AbstractDocumentQuery;
-import org.obiba.mica.search.join.DatasetQuery;
-import org.obiba.mica.search.join.NetworkQuery;
-import org.obiba.mica.search.join.StudyQuery;
+import org.obiba.mica.search.queries.AbstractDocumentQuery;
+import org.obiba.mica.search.queries.DatasetQuery;
+import org.obiba.mica.search.queries.NetworkQuery;
+import org.obiba.mica.search.queries.StudyQuery;
 import org.obiba.mica.web.model.MicaSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.Lists;
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.obiba.mica.web.model.MicaSearch.JoinQueryDto;
 import static org.obiba.mica.web.model.MicaSearch.JoinQueryResultDto;

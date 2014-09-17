@@ -103,7 +103,7 @@ public class AggregationYamlParser {
   }
 
   private Map<String, String> getFields(String field, Boolean localized) {
-    String name = field.replaceAll("\\" + FIELD_SEPARATOR, NAME_SEPARATOR);
+    String name = formatName(field);
     final Map<String, String> fields = new HashMap<>();
     if(localized) {
       fields.put(name + UND_LOCALE_NAME, field + UND_LOCALE_FIELD);
@@ -131,5 +131,13 @@ public class AggregationYamlParser {
     return !localized && !Strings.isNullOrEmpty(type) && type.matches(String.format("^(%s|%s)$", AGG_STATS, AGG_TERMS))
         ? type
         : AGG_TERMS;
+  }
+
+  public static String formatName(String name) {
+    return name.replaceAll("\\" + FIELD_SEPARATOR, NAME_SEPARATOR);
+  }
+
+  public static String unformatName(String name) {
+    return name.replaceAll(NAME_SEPARATOR, FIELD_SEPARATOR);
   }
 }
