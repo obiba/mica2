@@ -113,6 +113,11 @@ public class Dtos {
   }
 
   @NotNull
+  public Mica.DatasetVariableSummaryDto asSummaryDto(@NotNull DatasetVariable variable) {
+    return datasetDtos.asSummaryDto(variable);
+  }
+
+  @NotNull
   public Mica.DatasetVariableResolverDto.Builder asDto(@NotNull DatasetVariable.IdResolver variableResolver) {
     return datasetDtos.asDto(variableResolver);
   }

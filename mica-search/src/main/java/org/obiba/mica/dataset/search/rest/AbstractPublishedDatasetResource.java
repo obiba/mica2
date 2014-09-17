@@ -27,9 +27,11 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
+import org.obiba.magma.NoSuchVariableException;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
+import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.search.DatasetIndexer;
 import org.obiba.mica.dataset.search.VariableIndexer;
 import org.obiba.mica.study.search.StudyIndexer;
@@ -129,17 +131,79 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
     return builder.build();
   }
 
-  protected abstract DatasetVariable.Type getDatasetVariableType(String studyId);
+  protected Mica.DatasetVariableHarmonizationDto getVariableHarmonizationDto(HarmonizationDataset dataset,
+      String variableName) {
+    DatasetVariable.IdResolver variableResolver = DatasetVariable.IdResolver.from(dataset.getId(), variableName,
+        DatasetVariable.Type.Dataschema, null);
+    Mica.DatasetVariableHarmonizationDto.Builder builder = Mica.DatasetVariableHarmonizationDto.newBuilder();
+    builder.setResolver(dtos.asDto(variableResolver));
 
-  protected QueryBuilder hasParentDatasetQuery(Class<T> clazz, @NotNull String datasetId) {
-    return QueryBuilders.hasParentQuery(DatasetIndexer.DATASET_TYPE,
-        QueryBuilders.boolQuery().must(QueryBuilders.idsQuery(DatasetIndexer.DATASET_TYPE).addIds(datasetId))
-            .must(QueryBuilders.queryString(clazz.getSimpleName()).field("className")));
+    dataset.getStudyTables().forEach(table -> {
+      try {
+        builder.addDatasetVariableSummaries(
+            getDatasetVariableSummaryDto(dataset.getId(), variableResolver.getName(), DatasetVariable.Type.Harmonized,
+                table.getStudyId()));
+      } catch(NoSuchVariableException e) {
+        // ignore (case the study has not implemented this dataschema variable)
+      }
+    });
+
+    return builder.build();
   }
 
-  protected QueryBuilder hasParentStudyQuery(@NotNull String studyId) {
-    return QueryBuilders.hasParentQuery(StudyIndexer.STUDY_TYPE,
-        QueryBuilders.boolQuery().must(QueryBuilders.idsQuery(StudyIndexer.STUDY_TYPE).addIds(studyId)));
+  /**
+   * Look for a variable of a dataset in the published dataset index or the published study index depending on
+   * whether a study ID is provided for resolving variable's parent.
+   *
+   * @param datasetId
+   * @param variableName
+   * @param studyId
+   * @return
+   * @throws NoSuchVariableException
+   */
+  protected DatasetVariable getDatasetVariable(@NotNull String datasetId, @NotNull String variableName,
+      DatasetVariable.Type variableType, @Nullable String studyId) throws NoSuchVariableException {
+
+    String variableId = DatasetVariable.IdResolver.encode(datasetId, variableName, variableType, studyId);
+    String indexType = variableType.equals(DatasetVariable.Type.Harmonized)
+        ? VariableIndexer.HARMONIZED_VARIABLE_TYPE
+        : VariableIndexer.VARIABLE_TYPE;
+
+    QueryBuilder query = QueryBuilders.idsQuery(indexType).addIds(variableId);
+
+    SearchRequestBuilder search = client.prepareSearch() //
+        .setIndices(VariableIndexer.PUBLISHED_VARIABLE_INDEX) //
+        .setTypes(indexType) //
+        .setQuery(query);
+
+    log.info(search.toString());
+    SearchResponse response = search.execute().actionGet();
+    log.info(response.toString());
+
+    if(response.getHits().totalHits() == 0) throw new NoSuchVariableException(variableName);
+
+    InputStream inputStream = new ByteArrayInputStream(response.getHits().hits()[0].getSourceAsString().getBytes());
+    try {
+      return objectMapper.readValue(inputStream, DatasetVariable.class);
+    } catch(IOException e) {
+      log.error("Failed retrieving {}", DatasetVariable.class.getSimpleName(), e);
+      throw new NoSuchVariableException(variableName);
+    }
+  }
+
+  protected Mica.DatasetVariableDto getDatasetVariableDto(@NotNull String datasetId, @NotNull String variableName,
+      DatasetVariable.Type variableType) {
+    return getDatasetVariableDto(datasetId, variableName, variableType, null);
+  }
+
+  protected Mica.DatasetVariableDto getDatasetVariableDto(@NotNull String datasetId, @NotNull String variableName,
+      DatasetVariable.Type variableType, @Nullable String studyId) {
+    return dtos.asDto(getDatasetVariable(datasetId, variableName, variableType, studyId));
+  }
+
+  protected Mica.DatasetVariableSummaryDto getDatasetVariableSummaryDto(@NotNull String datasetId,
+      @NotNull String variableName, DatasetVariable.Type variableType, @Nullable String studyId) {
+    return dtos.asSummaryDto(getDatasetVariable(datasetId, variableName, variableType, studyId));
   }
 
 }

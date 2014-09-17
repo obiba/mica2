@@ -258,6 +258,9 @@ public class DatasetVariable implements Indexable, AttributeAware {
     public static IdResolver from(String id) {
       return new IdResolver(id);
     }
+    public static IdResolver from(String datasetId, String variableName, Type variableType, String studyId) {
+      return from(encode(datasetId, variableName, variableType, studyId));
+    }
 
     public static String encode(String datasetId, String variableName, Type variableType, String studyId) {
       String id = datasetId + ID_SEPARATOR + variableName + ID_SEPARATOR + variableType;

@@ -15,10 +15,11 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.mica.core.service.StudyDatasetService;
+import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.StudyDataset;
-import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetVariableResource;
-import org.obiba.mica.core.service.StudyDatasetService;
+import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetResource;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Search;
@@ -28,7 +29,8 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("request")
 @RequiresAuthentication
-public class PublishedStudyDatasetVariableResource extends AbstractPublishedDatasetVariableResource<StudyDataset> {
+public class PublishedStudyDatasetVariableResource extends AbstractPublishedDatasetResource<StudyDataset> implements
+    DatasetVariableResource {
 
   private String datasetId;
 
@@ -55,11 +57,6 @@ public class PublishedStudyDatasetVariableResource extends AbstractPublishedData
   @Path("/facet")
   public Search.QueryResultDto getVariableFacet() {
     return datasetService.getVariableFacet(getDataset(StudyDataset.class, datasetId), variableName);
-  }
-
-  @Override
-  protected DatasetVariable.Type getDatasetVariableType(String studyId) {
-    return DatasetVariable.Type.Study;
   }
 
   @Override

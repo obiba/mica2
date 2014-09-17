@@ -126,6 +126,19 @@ class DatasetDtos {
     return builder.build();
   }
 
+  @NotNull
+  Mica.DatasetVariableSummaryDto asSummaryDto(@NotNull DatasetVariable variable) {
+    Mica.DatasetVariableSummaryDto.Builder builder = Mica.DatasetVariableSummaryDto.newBuilder() //
+        .setResolver(asDto(DatasetVariable.IdResolver.from(variable.getId())));
+
+    if(variable.getAttributes() != null) {
+      variable.getAttributes().asAttributeList()
+          .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
+    }
+
+    return builder.build();
+  }
+
   private Mica.DatasetCategoryDto asDto(DatasetCategory category) {
     Mica.DatasetCategoryDto.Builder builder = Mica.DatasetCategoryDto.newBuilder() //
         .setName(category.getName()) //

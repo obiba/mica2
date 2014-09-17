@@ -329,3 +329,20 @@ message DatasetVariableResolverDto {
   repeated LocalizedStringDto studyName = 8;
   repeated LocalizedStringDto studyAcronym = 9;
 }
+
+message DatasetVariableSummaryDto {
+  required DatasetVariableResolverDto resolver = 1;
+  repeated AttributeDto attributes = 2;
+}
+
+message DatasetVariableHarmonizationDto {
+  required DatasetVariableResolverDto resolver = 1;
+  repeated DatasetVariableSummaryDto datasetVariableSummaries = 2;
+}
+
+message DatasetVariablesHarmonizationsDto {
+  required int32 total = 1;
+  required int32 from = 2;
+  required int32 limit = 3;
+  repeated DatasetVariableHarmonizationDto variableHarmonizations = 4;
+}
