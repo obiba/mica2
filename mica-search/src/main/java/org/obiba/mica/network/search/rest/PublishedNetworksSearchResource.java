@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.search.rest.variable;
+package org.obiba.mica.network.search.rest;
 
 import java.io.IOException;
 
@@ -22,23 +22,22 @@ import javax.ws.rs.QueryParam;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.json.JSONException;
 import org.obiba.mica.search.JoinQueryExecutor;
-import org.obiba.mica.web.model.MicaSearch;
 
 import com.codahale.metrics.annotation.Timed;
 
-/**
- * Search for variables in the published variable index.
- */
-@Path("/variables/_search")
+import static org.obiba.mica.web.model.MicaSearch.JoinQueryDto;
+import static org.obiba.mica.web.model.MicaSearch.JoinQueryResultDto;
+
+@Path("/networks/_search")
 @RequiresAuthentication
-public class PublishedDatasetVariablesSearchResource {
+public class PublishedNetworksSearchResource {
 
   @Inject
   JoinQueryExecutor joinQueryExecutor;
 
   @GET
   @Timed
-  public MicaSearch.JoinQueryResultDto list(@QueryParam("from") @DefaultValue("0") int from,
+  public JoinQueryResultDto list(@QueryParam("from") @DefaultValue("0") int from,
       @QueryParam("size") @DefaultValue("10") int size)
       throws JSONException, IOException {
     return joinQueryExecutor.query(from, size);
@@ -46,8 +45,7 @@ public class PublishedDatasetVariablesSearchResource {
 
   @POST
   @Timed
-  public MicaSearch.JoinQueryResultDto list(MicaSearch.JoinQueryDto joinQueryDto) throws IOException {
-    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.VARIABLE, joinQueryDto);
+  public JoinQueryResultDto list(JoinQueryDto joinQueryDto) throws IOException {
+    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.NETWORK, joinQueryDto);
   }
-
 }

@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset.search.rest.variable;
+package org.obiba.mica.dataset.search.rest;
 
 import java.io.IOException;
 
@@ -26,13 +26,9 @@ import org.obiba.mica.web.model.MicaSearch;
 
 import com.codahale.metrics.annotation.Timed;
 
-/**
- * Search for variables in the published variable index.
- */
-@Path("/variables/_search")
+@Path("/datasets/_search")
 @RequiresAuthentication
-public class PublishedDatasetVariablesSearchResource {
-
+public class PublishedDatasetSearchResource {
   @Inject
   JoinQueryExecutor joinQueryExecutor;
 
@@ -47,7 +43,7 @@ public class PublishedDatasetVariablesSearchResource {
   @POST
   @Timed
   public MicaSearch.JoinQueryResultDto list(MicaSearch.JoinQueryDto joinQueryDto) throws IOException {
-    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.VARIABLE, joinQueryDto);
+    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.DATASET, joinQueryDto);
   }
 
 }

@@ -1,16 +1,6 @@
 package org.obiba.mica.search.rest;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
+import com.google.common.base.Strings;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
@@ -21,7 +11,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
-import com.google.common.base.Strings;
+import java.io.IOException;
+import java.util.*;
 
 @Component
 public class AggregationYamlParser {
@@ -65,10 +56,13 @@ public class AggregationYamlParser {
   }
 
   public Iterable<AbstractAggregationBuilder> getAggregations(Resource description) throws IOException {
-    Collection<AbstractAggregationBuilder> termsBuilders = new ArrayList<>();
     YamlPropertiesFactoryBean yamlPropertiesFactoryBean = new YamlPropertiesFactoryBean();
     yamlPropertiesFactoryBean.setResources(new Resource[] { description });
-    Properties properties = yamlPropertiesFactoryBean.getObject();
+    return getAggregations(yamlPropertiesFactoryBean.getObject());
+  }
+
+  public Iterable<AbstractAggregationBuilder> getAggregations(Properties properties) throws IOException {
+    Collection<AbstractAggregationBuilder> termsBuilders = new ArrayList<>();
     SortedMap<String, ?> sortedSystemProperties = new TreeMap(properties);
     String prevKey = null;
     for(Map.Entry<String, ?> entry : sortedSystemProperties.entrySet()) {
@@ -109,7 +103,7 @@ public class AggregationYamlParser {
   }
 
   private Map<String, String> getFields(String field, Boolean localized) {
-    String name = field.replaceAll("\\" + FIELD_SEPARATOR, NAME_SEPARATOR);
+    String name = formatName(field);
     final Map<String, String> fields = new HashMap<>();
     if(localized) {
       fields.put(name + UND_LOCALE_NAME, field + UND_LOCALE_FIELD);
@@ -137,5 +131,13 @@ public class AggregationYamlParser {
     return !localized && !Strings.isNullOrEmpty(type) && type.matches(String.format("^(%s|%s)$", AGG_STATS, AGG_TERMS))
         ? type
         : AGG_TERMS;
+  }
+
+  public static String formatName(String name) {
+    return name.replaceAll("\\" + FIELD_SEPARATOR, NAME_SEPARATOR);
+  }
+
+  public static String unformatName(String name) {
+    return name.replaceAll(NAME_SEPARATOR, FIELD_SEPARATOR);
   }
 }
