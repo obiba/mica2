@@ -19,10 +19,11 @@ import javax.ws.rs.Path;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
+import org.obiba.mica.core.service.HarmonizationDatasetService;
+import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
-import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetVariableResource;
-import org.obiba.mica.core.service.HarmonizationDatasetService;
+import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetResource;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Math;
 import org.obiba.opal.web.model.Search;
@@ -38,7 +39,7 @@ import com.google.common.collect.ImmutableList;
 @Scope("request")
 @RequiresAuthentication
 public class PublishedDataschemaDatasetVariableResource
-    extends AbstractPublishedDatasetVariableResource<HarmonizationDataset> {
+    extends AbstractPublishedDatasetResource<HarmonizationDataset> implements DatasetVariableResource {
 
   private String datasetId;
 
@@ -82,26 +83,16 @@ public class PublishedDataschemaDatasetVariableResource
     return builder.build();
   }
 
+  /**
+   * Get the harmonized variable summaries for each of the study.
+   *
+   * @return
+   */
   @GET
   @Path("/harmonizations")
-  public List<Mica.DatasetVariableDto> getHarmonizedVariables() {
-    ImmutableList.Builder<Mica.DatasetVariableDto> builder = ImmutableList.builder();
+  public Mica.DatasetVariableHarmonizationDto getVariableHarmonizations() {
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
-
-    dataset.getStudyTables().forEach(table -> {
-      try {
-        builder
-            .add(getDatasetVariableDto(datasetId, variableName, DatasetVariable.Type.Harmonized, table.getStudyId()));
-      } catch(NoSuchVariableException e) {
-        // ignore (case the study has not implemented this dataschema variable)
-      }
-    });
-    return builder.build();
-  }
-
-  @Override
-  protected DatasetVariable.Type getDatasetVariableType(String studyId) {
-    return studyId == null ? DatasetVariable.Type.Dataschema : DatasetVariable.Type.Harmonized;
+    return getVariableHarmonizationDto(dataset, variableName);
   }
 
   @Override

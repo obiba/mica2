@@ -19,11 +19,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.dataset.domain.DatasetVariable;
+import org.obiba.mica.core.service.StudyDatasetService;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetResource;
-import org.obiba.mica.core.service.StudyDatasetService;
-import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Search;
 import org.springframework.context.annotation.Scope;
@@ -43,9 +41,6 @@ public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResou
 
   @Inject
   private StudyDatasetService datasetService;
-
-  @Inject
-  private Dtos dtos;
 
   /**
    * Get {@link org.obiba.mica.dataset.domain.StudyDataset} from published index.
@@ -89,8 +84,4 @@ public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResou
     return datasetService.getFacets(getDataset(StudyDataset.class, id), query);
   }
 
-  @Override
-  protected DatasetVariable.Type getDatasetVariableType(String studyId) {
-    return DatasetVariable.Type.Study;
-  }
 }

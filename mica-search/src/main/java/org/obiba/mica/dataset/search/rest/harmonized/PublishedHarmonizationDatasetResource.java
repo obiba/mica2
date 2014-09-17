@@ -21,11 +21,10 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.dataset.domain.DatasetVariable;
-import org.obiba.mica.dataset.domain.HarmonizationDataset;
-import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetResource;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.core.service.HarmonizationDatasetService;
+import org.obiba.mica.dataset.domain.HarmonizationDataset;
+import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetResource;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Search;
 import org.springframework.context.annotation.Scope;
@@ -72,6 +71,32 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
     return getDatasetVariableDtos(id, from, limit, sort, order);
   }
 
+  /**
+   * Get the harmonized variable summaries for each of the queried dataschema variables and for each of the study.
+   *
+   * @param from
+   * @param limit
+   * @param sort
+   * @param order
+   * @return
+   */
+  @GET
+  @Path("/variables/harmonizations")
+  public Mica.DatasetVariablesHarmonizationsDto getVariableHarmonizations(
+      @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit,
+      @QueryParam("sort") String sort, @QueryParam("order") String order) {
+    Mica.DatasetVariablesHarmonizationsDto.Builder builder = Mica.DatasetVariablesHarmonizationsDto.newBuilder();
+    HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, id);
+    Mica.DatasetVariablesDto variablesDto = getDatasetVariableDtos(id, from, limit, sort, order);
+
+    builder.setTotal(variablesDto.getTotal()).setLimit(variablesDto.getLimit()).setFrom(variablesDto.getFrom());
+
+    variablesDto.getVariablesList().forEach(
+        variable -> builder.addVariableHarmonizations(getVariableHarmonizationDto(dataset, variable.getName())));
+
+    return builder.build();
+  }
+
   @Path("/variable/{variable}")
   public PublishedDataschemaDatasetVariableResource getVariable(@PathParam("variable") String variable) {
     PublishedDataschemaDatasetVariableResource resource = applicationContext
@@ -109,11 +134,6 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
       builder.add(datasetService.getFacets(dataset, query, table.getStudyId()));
     }
     return builder.build();
-  }
-
-  @Override
-  protected DatasetVariable.Type getDatasetVariableType(String studyId) {
-    return studyId == null ? DatasetVariable.Type.Dataschema : DatasetVariable.Type.Harmonized;
   }
 
 }

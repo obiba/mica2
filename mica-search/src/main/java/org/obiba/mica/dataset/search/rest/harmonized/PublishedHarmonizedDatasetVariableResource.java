@@ -15,10 +15,11 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.mica.core.service.HarmonizationDatasetService;
+import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
-import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetVariableResource;
-import org.obiba.mica.core.service.HarmonizationDatasetService;
+import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetResource;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Search;
 import org.springframework.context.annotation.Scope;
@@ -31,7 +32,7 @@ import org.springframework.stereotype.Component;
 @Scope("request")
 @RequiresAuthentication
 public class PublishedHarmonizedDatasetVariableResource
-    extends AbstractPublishedDatasetVariableResource<HarmonizationDataset> {
+    extends AbstractPublishedDatasetResource<HarmonizationDataset> implements DatasetVariableResource {
 
   private String datasetId;
 
@@ -57,11 +58,6 @@ public class PublishedHarmonizedDatasetVariableResource
   @Path("/facet")
   public Search.QueryResultDto getVariableFacet() {
     return datasetService.getVariableFacet(getDataset(HarmonizationDataset.class, datasetId), variableName, studyId);
-  }
-
-  @Override
-  protected DatasetVariable.Type getDatasetVariableType(String studyId) {
-    return DatasetVariable.Type.Harmonized;
   }
 
   @Override
