@@ -89,7 +89,8 @@ class DatasetDtos {
         .setEntityType(variable.getEntityType()) //
         .setValueType(variable.getValueType())//
         .setVariableType(variable.getVariableType().name()) //
-        .setRepeatable(variable.isRepeatable());
+        .setRepeatable(variable.isRepeatable()) //
+        .setNature(variable.getNature());
 
     if(variable.getStudyIds() != null) {
       builder.addAllStudyIds(variable.getStudyIds());

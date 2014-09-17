@@ -17,6 +17,7 @@ import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.magma.Variable;
+import org.obiba.magma.support.VariableNature;
 import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.AttributeAware;
 import org.obiba.mica.core.domain.Attributes;
@@ -70,6 +71,8 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   private Attributes attributes;
 
+  private String nature;
+
   @NotNull
   private LocalizedString datasetName;
 
@@ -103,6 +106,7 @@ public class DatasetVariable implements Indexable, AttributeAware {
     referencedEntityType = variable.getReferencedEntityType();
     repeatable = variable.isRepeatable();
     occurrenceGroup = variable.getOccurrenceGroup();
+    nature = VariableNature.getNature(variable).name();
     if(variable.hasCategories()) {
       categories = variable.getCategories().stream().map(DatasetCategory::new).collect(Collectors.toList());
     }
@@ -206,6 +210,10 @@ public class DatasetVariable implements Indexable, AttributeAware {
   @Override
   public boolean hasAttribute(String attName, @Nullable String namespace) {
     return attributes != null && attributes.hasAttribute(attName, namespace);
+  }
+
+  public String getNature() {
+    return nature;
   }
 
   @Override
