@@ -10,7 +10,13 @@
 
 package org.obiba.mica.search.queries;
 
-import com.google.common.collect.Lists;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.inject.Inject;
+
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
@@ -31,12 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
-import javax.inject.Inject;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.stream.Collectors;
+import com.google.common.collect.Lists;
 
 import static org.obiba.mica.web.model.MicaSearch.QueryDto;
 import static org.obiba.mica.web.model.MicaSearch.QueryResultDto;
@@ -151,7 +152,7 @@ public abstract class AbstractDocumentQuery {
    * @return
    * @throws IOException
    */
-  protected List execute(QueryBuilder queryBuilder, boolean details) throws IOException {
+  protected List<String> execute(QueryBuilder queryBuilder, boolean details) throws IOException {
     if(queryBuilder == null) return null;
 
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
@@ -168,16 +169,14 @@ public abstract class AbstractDocumentQuery {
     log.info("Request: {}", requestBuilder.toString());
     SearchResponse response = requestBuilder.execute().actionGet();
     log.info("Response: {}", response.toString());
-    QueryResultDto.Builder builder = QueryResultDto.newBuilder().setTotalHits((int) response.getHits().getTotalHits());
-    if(details) processHits(builder, response.getHits());
-    processAggregations(builder, response.getAggregations());
+    if (response.getHits().totalHits() > 0) {
+      QueryResultDto.Builder builder = QueryResultDto.newBuilder().setTotalHits((int) response.getHits().getTotalHits());
+      if(details) processHits(builder, response.getHits());
+      processAggregations(builder, response.getAggregations());
+      resultDto = builder.build();
+    }
 
-    resultDto = builder.build();
-    Properties joinFields = getJoinFields();
-
-    return resultDto.getAggsList().stream() //
-        .filter(aggDto -> joinFields.getProperty(AggregationYamlParser.unformatName(aggDto.getAggregation())) != null) //
-        .collect(Collectors.toList());
+    return getResponseStudyIds(resultDto.getAggsList());
   }
 
   /**
@@ -232,6 +231,24 @@ public abstract class AbstractDocumentQuery {
       filters.add(QueryDtoHelper.createTermFilter(entry.getKey().toString(), studyIds));
     }
     return filters;
+  }
+
+  /**
+   * Iterate through response aggregations and retrieve the studyIds that were included
+   *
+   * @param aggDtos
+   * @return
+   */
+  private List<String> getResponseStudyIds(List<MicaSearch.AggregationResultDto> aggDtos) {
+    Properties joinFields = getJoinFields();
+    List<String> ids = Lists.newArrayList();
+    aggDtos.forEach(aggDto -> {
+      if(joinFields.getProperty(AggregationYamlParser.unformatName(aggDto.getAggregation())) != null) {
+        aggDto.getExtension(MicaSearch.TermsAggregationResultDto.terms).forEach(term -> ids.add(term.getKey()));
+      }
+    });
+
+    return ids;
   }
 
 }

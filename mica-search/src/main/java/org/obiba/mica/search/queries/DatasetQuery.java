@@ -10,6 +10,10 @@
 
 package org.obiba.mica.search.queries;
 
+import java.util.Properties;
+
+import javax.inject.Inject;
+
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.obiba.mica.dataset.search.DatasetIndexer;
@@ -19,9 +23,6 @@ import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
-
-import javax.inject.Inject;
-import java.util.Properties;
 
 @Component
 public class DatasetQuery extends AbstractDocumentQuery {

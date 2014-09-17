@@ -42,14 +42,16 @@ public class EsQueryResultParser {
 
       MicaSearch.AggregationResultDto.Builder aggResultBuilder = MicaSearch.AggregationResultDto.newBuilder();
       aggResultBuilder.setAggregation(aggregation.getName());
-      String aggName = ((InternalAggregation) aggregation).type().name();
+      String aggType = ((InternalAggregation) aggregation).type().name();
 
-      switch (aggName) {
+      switch (aggType) {
         case "stats":
           Stats stats = (Stats) aggregation;
-          aggResultBuilder.setExtension(StatsAggregationResultDto.stats,
-              StatsAggregationResultDto.newBuilder().setCount(stats.getCount()).setMin(stats.getMin())
-                  .setMax(stats.getMax()).setAvg(stats.getAvg()).setSum(stats.getSum()).build());
+          if (stats.getCount() > 0) {
+            aggResultBuilder.setExtension(StatsAggregationResultDto.stats,
+                StatsAggregationResultDto.newBuilder().setCount(stats.getCount()).setMin(stats.getMin())
+                    .setMax(stats.getMax()).setAvg(stats.getAvg()).setSum(stats.getSum()).build());
+          }
           break;
         case "terms":
           ((Terms) aggregation).getBuckets().forEach(
@@ -59,10 +61,11 @@ public class EsQueryResultParser {
           break;
         case "global":
           totalCount = ((Global)aggregation).getDocCount();
-          break;
+          // do not include in the list of aggregations
+          return;
 
         default:
-          throw new RuntimeException("Unsupported aggregation type " + aggName);
+          throw new RuntimeException("Unsupported aggregation type " + aggType);
       }
 
       aggResults.add(aggResultBuilder.build());

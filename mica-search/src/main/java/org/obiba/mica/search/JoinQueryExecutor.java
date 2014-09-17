@@ -10,6 +10,13 @@
 
 package org.obiba.mica.search;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+
 import org.obiba.mica.search.queries.AbstractDocumentQuery;
 import org.obiba.mica.search.queries.DatasetQuery;
 import org.obiba.mica.search.queries.NetworkQuery;
@@ -18,12 +25,6 @@ import org.obiba.mica.web.model.MicaSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import javax.inject.Inject;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.obiba.mica.web.model.MicaSearch.JoinQueryDto;
 import static org.obiba.mica.web.model.MicaSearch.JoinQueryResultDto;
@@ -96,30 +97,30 @@ public class JoinQueryExecutor {
     List<AbstractDocumentQuery> queries = Arrays.asList(subQueries).stream().filter(q -> q.getQuery() != null)
         .collect(Collectors.toList());
 
-    List<String> ids = null;
-    if (queries.size() > 0) ids = queryStudyIds(queries);
-    if(ids == null || ids.size() > 0) ids = docQuery.query(ids);
-    if(ids.size() > 0) queryAggragations(ids, subQueries);
+    List<String> studyIds = null;
+    if (queries.size() > 0) studyIds = queryStudyIds(queries);
+    if(studyIds == null || studyIds.size() > 0) studyIds = docQuery.query(studyIds);
+    if(studyIds.size() > 0) queryAggragations(studyIds, subQueries);
   }
 
-  private void queryAggragations(List<String> ids, AbstractDocumentQuery... queries) throws IOException {
-    for(AbstractDocumentQuery query : queries) query.queryAggrations(ids);
+  private void queryAggragations(List<String> studyIds, AbstractDocumentQuery... queries) throws IOException {
+    for(AbstractDocumentQuery query : queries) query.queryAggrations(studyIds);
   }
 
   private List<String> queryStudyIds(List<AbstractDocumentQuery> queries) throws IOException {
-    List<String> ids = queries.get(0).queryStudyIds();
+    List<String> studyIds = queries.get(0).queryStudyIds();
     queries.subList(1, queries.size()).forEach(query -> {
-      if(ids.size() > 0) {
+      if(studyIds.size() > 0) {
         try {
-          ids.retainAll(query.queryStudyIds());
+          studyIds.retainAll(query.queryStudyIds());
         } catch(IOException e) {
           log.error("Failed to query study IDs '{}'", e);
         }
-        if(ids.size() == 0) return;
+        if(studyIds.size() == 0) return;
       }
     });
 
-    return ids;
+    return studyIds;
   }
 
 }
