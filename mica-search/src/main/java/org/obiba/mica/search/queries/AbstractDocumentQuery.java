@@ -46,6 +46,10 @@ public abstract class AbstractDocumentQuery {
 
   private static final String AGG_TOTAL_COUNT = "totalCount";
 
+  private static final int DEFAULT_FROM = 0;
+
+  private static final int DEFAULT_SIZE = 10;
+
   @Inject
   private Client client;
 
@@ -108,14 +112,16 @@ public abstract class AbstractDocumentQuery {
 
   /**
    * Executes a 'match all' query to retrieve documents and aggregations
+   *
    * @throws IOException
    */
-  public void query() throws IOException {
-    execute(QueryBuilders.matchAllQuery(), true);
+  public void query(int from, int size) throws IOException {
+    execute(QueryBuilders.matchAllQuery(), from, size, true);
   }
 
   /**
    * Executes a filtered query to retrieve documents and aggregations
+   *
    * @param studyIds
    * @return List of study IDs
    * @throws IOException
@@ -123,12 +129,13 @@ public abstract class AbstractDocumentQuery {
   public List<String> query(List<String> studyIds) throws IOException {
     if(queryDto == null) throw new IllegalArgumentException("Document query cannot have a NULL query.");
     addStudyIdFilters(studyIds);
-    return execute(QueryDtoParser.newParser().parse(queryDto), true);
+    return execute(QueryDtoParser.newParser().parse(queryDto), queryDto.getFrom(), queryDto.getSize(), true);
   }
 
   /**
    * Executes a filtered query to retrieve documents and aggregations, former being optional dependinggg on the type of
    * query.
+   *
    * @param studyIds
    * @throws IOException
    */
@@ -138,27 +145,31 @@ public abstract class AbstractDocumentQuery {
 
   protected void queryAggregations(List<String> studyIds, boolean details) throws IOException {
     if(queryDto == null) {
-      execute(QueryDtoParser.newParser().parse(createStudyIdFilters(studyIds)), details);
+      QueryDto tempQueryDto = createStudyIdFilters(studyIds);
+      execute(QueryDtoParser.newParser().parse(tempQueryDto), tempQueryDto.getFrom(), tempQueryDto.getSize(), details);
     } else {
       addStudyIdFilters(studyIds);
-      execute(QueryDtoParser.newParser().parse(queryDto), details);
+      execute(QueryDtoParser.newParser().parse(queryDto), queryDto.getFrom(), queryDto.getSize(), details);
     }
   }
 
   /**
    * Executes a query to retrieve documents and aggregations
+   *
    * @param queryBuilder
    * @param details
    * @return
    * @throws IOException
    */
-  protected List<String> execute(QueryBuilder queryBuilder, boolean details) throws IOException {
+  protected List<String> execute(QueryBuilder queryBuilder, int from, int size, boolean details) throws IOException {
     if(queryBuilder == null) return null;
 
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
         .setTypes(getSearchType()) //
         .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
         .setQuery(queryBuilder) //
+        .setFrom(from) //
+        .setSize(size) //
         .addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT));
 
     if(ignoreFields()) requestBuilder.setNoFields();
@@ -169,8 +180,9 @@ public abstract class AbstractDocumentQuery {
     log.info("Request: {}", requestBuilder.toString());
     SearchResponse response = requestBuilder.execute().actionGet();
     log.info("Response: {}", response.toString());
-    if (response.getHits().totalHits() > 0) {
-      QueryResultDto.Builder builder = QueryResultDto.newBuilder().setTotalHits((int) response.getHits().getTotalHits());
+    if(response.getHits().totalHits() > 0) {
+      QueryResultDto.Builder builder = QueryResultDto.newBuilder()
+          .setTotalHits((int) response.getHits().getTotalHits());
       if(details) processHits(builder, response.getHits());
       processAggregations(builder, response.getAggregations());
       resultDto = builder.build();
@@ -181,6 +193,7 @@ public abstract class AbstractDocumentQuery {
 
   /**
    * Returning 'false' will include documents in the query result
+   *
    * @return
    */
   protected boolean ignoreFields() {
@@ -189,6 +202,7 @@ public abstract class AbstractDocumentQuery {
 
   /**
    * Creates domain documents DTOs
+   *
    * @param builder
    * @param hits
    * @throws IOException
@@ -197,6 +211,7 @@ public abstract class AbstractDocumentQuery {
 
   /**
    * Creates domain aggregation DTOs
+   *
    * @param builder
    * @param aggregations
    */
@@ -208,6 +223,7 @@ public abstract class AbstractDocumentQuery {
 
   /**
    * Returns study ID fields (aggregtaion fields)
+   *
    * @return
    */
   protected abstract Properties getJoinFields();
@@ -218,7 +234,7 @@ public abstract class AbstractDocumentQuery {
   }
 
   protected QueryDto createStudyIdFilters(List<String> studyIds) {
-    return QueryDto.newBuilder().setSize(10).setFrom(0).setDetailed(false).setFilteredQuery(
+    return QueryDto.newBuilder().setSize(10).setFrom(0).setFilteredQuery(
         MicaSearch.FilteredQueryDto.newBuilder()
             .setFilter(MicaSearch.BoolFilterQueryDto.newBuilder().addAllShould(createTermFilterQueryDtos(studyIds))))
         .build();

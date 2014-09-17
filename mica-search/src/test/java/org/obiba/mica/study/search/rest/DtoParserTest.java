@@ -46,8 +46,7 @@ public class DtoParserTest {
 
     BoolFilterQueryDto boolDto = BoolFilterQueryDto.newBuilder().addMust(termsDto1).addMust(termsDto2).build();
     FilteredQueryDto filteredDto = FilteredQueryDto.newBuilder().setFilter(boolDto).build();
-    QueryDto quertDto = QueryDto.newBuilder().setFilteredQuery(filteredDto).setFrom(0).setSize(10).setDetailed(false)
-        .build();
+    QueryDto quertDto = QueryDto.newBuilder().setFilteredQuery(filteredDto).setFrom(0).setSize(10).build();
 
     QueryDtoParser parser = QueryDtoParser.newParser();
 
@@ -81,8 +80,7 @@ public class DtoParserTest {
     BoolFilterQueryDto boolDto = BoolFilterQueryDto.newBuilder().addMust(termsDto1).addMust(termsDto2)
         .setParentChildFilter(parentChildFilterDto).build();
     FilteredQueryDto filteredDto = FilteredQueryDto.newBuilder().setFilter(boolDto).build();
-    QueryDto quertDto = QueryDto.newBuilder().setFilteredQuery(filteredDto).setFrom(0).setSize(10).setDetailed(false)
-        .build();
+    QueryDto quertDto = QueryDto.newBuilder().setFilteredQuery(filteredDto).setFrom(0).setSize(10).build();
 
     QueryDtoParser parser = QueryDtoParser.newParser();
 
@@ -114,8 +112,7 @@ public class DtoParserTest {
         .setParentChildFilter(parentChildFilterDto).build();
 
     FilteredQueryDto filteredDto = FilteredQueryDto.newBuilder().setFilter(boolParentDto).build();
-    QueryDto quertDto = QueryDto.newBuilder().setFilteredQuery(filteredDto).setFrom(0).setSize(10).setDetailed(false)
-        .build();
+    QueryDto quertDto = QueryDto.newBuilder().setFilteredQuery(filteredDto).setFrom(0).setSize(10).build();
 
     QueryDtoParser parser = QueryDtoParser.newParser();
 
@@ -141,8 +138,7 @@ public class DtoParserTest {
 
     BoolFilterQueryDto boolDto = BoolFilterQueryDto.newBuilder().addMust(termsDto).addMust(rangeDto).build();
     FilteredQueryDto filteredDto = FilteredQueryDto.newBuilder().setFilter(boolDto).build();
-    QueryDto quertDto = QueryDto.newBuilder().setFilteredQuery(filteredDto).setFrom(0).setSize(10).setDetailed(false)
-        .build();
+    QueryDto quertDto = QueryDto.newBuilder().setFilteredQuery(filteredDto).setFrom(0).setSize(10).build();
     System.out.println(quertDto);
     QueryDtoParser parser = QueryDtoParser.newParser();
     ObjectMapper mapper = new ObjectMapper();
@@ -171,8 +167,7 @@ public class DtoParserTest {
     BoolFilterQueryDto boolDto = BoolFilterQueryDto.newBuilder().addMust(termsDto).addShould(rangeDto)
         .addMustNot(badTermsDto).build();
     FilteredQueryDto filteredDto = FilteredQueryDto.newBuilder().setFilter(boolDto).build();
-    QueryDto quertDto = QueryDto.newBuilder().setFilteredQuery(filteredDto).setFrom(0).setSize(10).setDetailed(false)
-        .build();
+    QueryDto quertDto = QueryDto.newBuilder().setFilteredQuery(filteredDto).setFrom(0).setSize(10).build();
 
     QueryDtoParser parser = QueryDtoParser.newParser();
     System.out.println(parser.parse(quertDto).toString());
