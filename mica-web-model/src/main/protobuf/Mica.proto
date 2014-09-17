@@ -306,10 +306,11 @@ message DatasetVariableDto {
   optional string unit = 11;
   optional string referencedEntityType = 12;
   required string nature = 13;
-  repeated AttributeDto attributes = 14;
-  repeated DatasetCategoryDto categories = 15;
-  repeated LocalizedStringDto datasetName = 16;
-  repeated StudySummaryDto studySummaries = 17;
+  required int32 index = 14;
+  repeated AttributeDto attributes = 15;
+  repeated DatasetCategoryDto categories = 16;
+  repeated LocalizedStringDto datasetName = 17;
+  repeated StudySummaryDto studySummaries = 18;
 }
 
 message DatasetVariablesDto {

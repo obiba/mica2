@@ -73,6 +73,8 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   private String nature;
 
+  private int index;
+
   @NotNull
   private LocalizedString datasetName;
 
@@ -107,6 +109,7 @@ public class DatasetVariable implements Indexable, AttributeAware {
     repeatable = variable.isRepeatable();
     occurrenceGroup = variable.getOccurrenceGroup();
     nature = VariableNature.getNature(variable).name();
+    index = variable.getIndex();
     if(variable.hasCategories()) {
       categories = variable.getCategories().stream().map(DatasetCategory::new).collect(Collectors.toList());
     }
@@ -214,6 +217,10 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   public String getNature() {
     return nature;
+  }
+
+  public int getIndex() {
+    return index;
   }
 
   @Override
