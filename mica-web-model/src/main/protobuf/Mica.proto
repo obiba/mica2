@@ -305,10 +305,11 @@ message DatasetVariableDto {
   optional string occurrenceGroup = 10;
   optional string unit = 11;
   optional string referencedEntityType = 12;
-  repeated AttributeDto attributes = 13;
-  repeated DatasetCategoryDto categories = 14;
-  repeated LocalizedStringDto datasetName = 15;
-  repeated StudySummaryDto studySummaries = 16;
+  required string nature = 13;
+  repeated AttributeDto attributes = 14;
+  repeated DatasetCategoryDto categories = 15;
+  repeated LocalizedStringDto datasetName = 16;
+  repeated StudySummaryDto studySummaries = 17;
 }
 
 message DatasetVariablesDto {

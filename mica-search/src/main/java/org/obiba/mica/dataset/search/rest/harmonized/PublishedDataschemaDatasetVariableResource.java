@@ -62,7 +62,8 @@ public class PublishedDataschemaDatasetVariableResource
       try {
         builder.add(datasetService.getVariableSummary(dataset, variableName, table.getStudyId()));
       } catch(NoSuchVariableException | NoSuchValueTableException e) {
-        // ignore (case the study has not implemented this dataschema variable)
+        // case the study has not implemented this dataschema variable
+        builder.add(Math.SummaryStatisticsDto.newBuilder().setResource(variableName).build());
       }
     });
     return builder.build();
@@ -77,7 +78,8 @@ public class PublishedDataschemaDatasetVariableResource
       try {
         builder.add(datasetService.getVariableFacet(dataset, variableName, table.getStudyId()));
       } catch(NoSuchVariableException | NoSuchValueTableException e) {
-        // ignore (case the study has not implemented this dataschema variable)
+        // case the study has not implemented this dataschema variable
+        builder.add(Search.QueryResultDto.newBuilder().setTotalHits(0).build());
       }
     });
     return builder.build();
