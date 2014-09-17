@@ -54,10 +54,10 @@ public class JoinQueryExecutor {
   private NetworkQuery networkQuery;
 
   public MicaSearch.JoinQueryResultDto query(int from, int size) throws IOException {
-    variableQuery.query();
-    datasetQuery.query();
-    studyQuery.query();
-    networkQuery.query();
+    variableQuery.query(from, size);
+    datasetQuery.query(from, size);
+    studyQuery.query(from, size);
+    networkQuery.query(from, size);
 
     return JoinQueryResultDto.newBuilder().setVariableResultDto(variableQuery.getResultQuery())
         .setDatasetResultDto(datasetQuery.getResultQuery()).setStudyResultDto(studyQuery.getResultQuery())
