@@ -20,6 +20,9 @@ class StudySummaryDtos {
   private LocalizedStringDtos localizedStringDtos;
 
   @Inject
+  private AttachmentDtos attachmentDtos;
+  
+  @Inject
   private PublishedStudyService publishedStudyService;
 
   @Inject
@@ -72,6 +75,8 @@ class StudySummaryDtos {
         .setTimestamps(TimestampsDtos.asDto(study)) //
         .addAllName(localizedStringDtos.asDto(study.getName())) //
         .addAllAcronym(localizedStringDtos.asDto(study.getAcronym()));
+
+    if(study.getLogo() != null) builder.setLogo(attachmentDtos.asDto(study.getLogo()));
 
     if(study.getMethods() != null && study.getMethods().getDesigns() != null) {
       builder.addAllDesigns(study.getMethods().getDesigns());
