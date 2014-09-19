@@ -188,7 +188,7 @@ public abstract class AbstractDocumentQuery {
       resultDto = builder.build();
     }
 
-    return getResponseStudyIds(resultDto.getAggsList());
+    return resultDto == null ? null : getResponseStudyIds(resultDto.getAggsList());
   }
 
   /**
