@@ -100,7 +100,7 @@ public class JoinQueryExecutor {
     List<String> studyIds = null;
     if (queries.size() > 0) studyIds = queryStudyIds(queries);
     if(studyIds == null || studyIds.size() > 0) studyIds = docQuery.query(studyIds);
-    if(studyIds.size() > 0) queryAggragations(studyIds, subQueries);
+    if(studyIds != null && studyIds.size() > 0) queryAggragations(studyIds, subQueries);
   }
 
   private void queryAggragations(List<String> studyIds, AbstractDocumentQuery... queries) throws IOException {
