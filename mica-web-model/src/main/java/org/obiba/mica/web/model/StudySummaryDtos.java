@@ -74,7 +74,8 @@ class StudySummaryDtos {
     builder.setId(study.getId()) //
         .setTimestamps(TimestampsDtos.asDto(study)) //
         .addAllName(localizedStringDtos.asDto(study.getName())) //
-        .addAllAcronym(localizedStringDtos.asDto(study.getAcronym()));
+        .addAllAcronym(localizedStringDtos.asDto(study.getAcronym())) //
+        .addAllObjectives(localizedStringDtos.asDto(study.getObjectives()));
 
     if(study.getLogo() != null) builder.setLogo(attachmentDtos.asDto(study.getLogo()));
 

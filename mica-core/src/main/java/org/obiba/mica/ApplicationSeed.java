@@ -60,7 +60,6 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
   @Inject
   private HarmonizationDatasetService harmonizationDatasetService;
 
-
   @Inject
   private NetworkService networkService;
 
@@ -95,6 +94,8 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
     HarmonizationDataset harmonizationDataset = new HarmonizationDataset();
     harmonizationDataset.setName(en("Healthy Obese Project").forFr("Projet des obeses en sante"));
     harmonizationDataset.setAcronym(en("HOP"));
+    harmonizationDataset.setDescription(
+        en("The Healthy Obese Project (HOP) is a BioSHaRE-EU core project  which aims to evaluate the prevalence of the metabolically healthy obese, assess lifestyle determinants and clinical consequences of healthy obesity and explore genetic modifications and advanced metabolic profiling related to both the determinants and consequences of healthy obesity. The Healthy Obese Project (HOP) is separated into study phases that each assess a specific research question."));
     harmonizationDataset.setEntityType("Participant");
     harmonizationDataset.setProject("mica");
     harmonizationDataset.setTable("HOP");
