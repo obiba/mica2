@@ -15,6 +15,7 @@ message StudySummaryDto {
   optional TargetNumberDto targetNumber = 6;
   repeated string countries = 7;
   optional AttachmentDto logo = 8;
+  repeated LocalizedStringDto objectives = 9;
   extensions 1000 to max;
 }
 
