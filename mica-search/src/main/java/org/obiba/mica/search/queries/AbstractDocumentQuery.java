@@ -10,13 +10,7 @@
 
 package org.obiba.mica.search.queries;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.inject.Inject;
-
+import com.google.common.collect.Lists;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
@@ -37,7 +31,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
-import com.google.common.collect.Lists;
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 import static org.obiba.mica.web.model.MicaSearch.QueryDto;
 import static org.obiba.mica.web.model.MicaSearch.QueryResultDto;
@@ -127,7 +125,11 @@ public abstract class AbstractDocumentQuery {
    * @throws IOException
    */
   public List<String> query(List<String> studyIds) throws IOException {
-    if(queryDto == null) throw new IllegalArgumentException("Document query cannot have a NULL query.");
+
+    if(queryDto == null) {
+      QueryDto tempQueryDto = createStudyIdFilters(studyIds);
+      return execute(QueryDtoParser.newParser().parse(tempQueryDto), tempQueryDto.getFrom(), tempQueryDto.getSize(), true);
+    }
     addStudyIdFilters(studyIds);
     return execute(QueryDtoParser.newParser().parse(queryDto), queryDto.getFrom(), queryDto.getSize(), true);
   }
@@ -234,10 +236,13 @@ public abstract class AbstractDocumentQuery {
   }
 
   protected QueryDto createStudyIdFilters(List<String> studyIds) {
-    return QueryDto.newBuilder().setSize(10).setFrom(0).setFilteredQuery(
-        MicaSearch.FilteredQueryDto.newBuilder()
-            .setFilter(MicaSearch.BoolFilterQueryDto.newBuilder().addAllShould(createTermFilterQueryDtos(studyIds))))
-        .build();
+    QueryDto.Builder builder = QueryDto.newBuilder().setSize(DEFAULT_SIZE).setFrom(DEFAULT_FROM);
+    if (studyIds != null && studyIds.size() > 0) {
+      builder.setFilteredQuery( MicaSearch.FilteredQueryDto.newBuilder()
+          .setFilter(MicaSearch.BoolFilterQueryDto.newBuilder().addAllShould(createTermFilterQueryDtos(studyIds))));
+    }
+
+    return builder.build();
   }
 
   private List<MicaSearch.FilterQueryDto> createTermFilterQueryDtos(List<String> studyIds) {
