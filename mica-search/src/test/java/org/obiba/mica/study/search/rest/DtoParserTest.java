@@ -172,7 +172,9 @@ public class DtoParserTest {
     QueryDtoParser parser = QueryDtoParser.newParser();
     System.out.println(parser.parse(quertDto).toString());
     ObjectMapper mapper = new ObjectMapper();
-
+    JsonNode node1 = mapper.readTree("{\"filtered\" : {\"query\" : {\"match_all\" : { } }, \"filter\" : {\"bool\" : {\"must\" : {\"terms\" : {\"Study.populations.dataCollectionEvents.id\" : [ \"53f4b8ab6cf07b0996deb4f7\" ] } }, \"must_not\" : {\"terms\" : {\"Study.populations.dataCollectionEvents.id\" : [ \"aaaaaa\" ] } }, \"should\" : {\"range\" : {\"Study.populations.dataCollectionEvents.end\" : {\"from\" : \"2002\", \"to\" : \"2012\", \"include_lower\" : true, \"include_upper\" : true } } } } } } }");
+    JsonNode node2 = mapper.readTree(parser.parse(quertDto).toString());
+    assertThat(node1).isEqualTo(node2);
   }
 
   @Configuration

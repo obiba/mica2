@@ -10,7 +10,12 @@
 
 package org.obiba.mica.search.queries;
 
-import com.google.common.collect.Lists;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.inject.Inject;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
@@ -31,11 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
-import javax.inject.Inject;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import com.google.common.collect.Lists;
 
 import static org.obiba.mica.web.model.MicaSearch.QueryDto;
 import static org.obiba.mica.web.model.MicaSearch.QueryResultDto;
@@ -238,8 +239,9 @@ public abstract class AbstractDocumentQuery {
   protected QueryDto createStudyIdFilters(List<String> studyIds) {
     QueryDto.Builder builder = QueryDto.newBuilder().setSize(DEFAULT_SIZE).setFrom(DEFAULT_FROM);
     if (studyIds != null && studyIds.size() > 0) {
-      builder.setFilteredQuery( MicaSearch.FilteredQueryDto.newBuilder()
-          .setFilter(MicaSearch.BoolFilterQueryDto.newBuilder().addAllShould(createTermFilterQueryDtos(studyIds))));
+      MicaSearch.BoolFilterQueryDto.Builder boolBuilder = MicaSearch.BoolFilterQueryDto.newBuilder();
+      boolBuilder.addAllShould(createTermFilterQueryDtos(studyIds));
+      builder.setFilteredQuery(MicaSearch.FilteredQueryDto.newBuilder().setFilter(boolBuilder));
     }
 
     return builder.build();

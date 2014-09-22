@@ -10,10 +10,10 @@
 
 package org.obiba.mica.search.rest;
 
+import org.elasticsearch.index.query.BaseQueryBuilder;
 import org.elasticsearch.index.query.BoolFilterBuilder;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
-import org.elasticsearch.index.query.FilteredQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.RangeFilterBuilder;
 import org.obiba.mica.web.model.MicaSearch;
@@ -34,14 +34,17 @@ public class QueryDtoParser {
     return new QueryDtoParser();
   }
 
-  public FilteredQueryBuilder parse(QueryDto queryDto) {
+  public BaseQueryBuilder parse(QueryDto queryDto) {
     return parseFilterQuery(queryDto.getFilteredQuery());
   }
 
-  private FilteredQueryBuilder parseFilterQuery(FilteredQueryDto filteredQueryDto) {
-    BoolFilterQueryDto boolFilterDto = filteredQueryDto.getFilter();
-    BoolFilterBuilder boolFilter = parseBoolFilter(boolFilterDto);
-    return QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), boolFilter);
+  private BaseQueryBuilder parseFilterQuery(FilteredQueryDto filteredQueryDto) {
+    if (filteredQueryDto.hasFilter()) {
+      BoolFilterQueryDto boolFilterDto = filteredQueryDto.getFilter();
+      BoolFilterBuilder boolFilter = parseBoolFilter(boolFilterDto);
+      return QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), boolFilter);
+    }
+    return QueryBuilders.matchAllQuery();
   }
 
   private BoolFilterBuilder parseBoolFilter(BoolFilterQueryDto boolFilterDto) {
@@ -61,7 +64,7 @@ public class QueryDtoParser {
 
     if(boolFilterDto.hasParentChildFilter()) {
       ParentChildFilterDto parentChildFilterDto = boolFilterDto.getParentChildFilter();
-      FilteredQueryBuilder dtoFilteredQuery = parseFilterQuery(parentChildFilterDto.getFilteredQuery());
+      BaseQueryBuilder dtoFilteredQuery = parseFilterQuery(parentChildFilterDto.getFilteredQuery());
       String type = parentChildFilterDto.getType();
       boolFilter.must(
           parentChildFilterDto.getRelationship() == ParentChildFilterDto.Relationship.PARENT ? FilterBuilders
