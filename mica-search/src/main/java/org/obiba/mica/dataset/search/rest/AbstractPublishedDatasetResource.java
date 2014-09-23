@@ -75,9 +75,8 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
         .setTypes(DatasetIndexer.DATASET_TYPE) //
         .setQuery(query);
 
-    log.info(search.toString());
+    log.debug("Request: {}", search.toString());
     SearchResponse response = search.execute().actionGet();
-    log.info(response.toString());
 
     if(response.getHits().totalHits() == 0) throw NoSuchDatasetException.withId(datasetId);
 
@@ -176,9 +175,8 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
         .setTypes(indexType) //
         .setQuery(query);
 
-    log.info(search.toString());
+    log.debug("Request: {}", search.toString());
     SearchResponse response = search.execute().actionGet();
-    log.info(response.toString());
 
     if(response.getHits().totalHits() == 0) throw new NoSuchVariableException(variableName);
 

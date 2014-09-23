@@ -101,7 +101,6 @@ public abstract class AbstractDocumentQuery {
     aggregationYamlParser.getAggregations(getJoinFields()).forEach(requestBuilder::addAggregation);
     log.info("Request: {}", requestBuilder);
     SearchResponse response = requestBuilder.execute().actionGet();
-    log.info("Response: {}", response);
     List<String> ids = Lists.newArrayList();
     response.getAggregations()
         .forEach(aggregation -> ((Terms) aggregation).getBuckets().forEach(bucket -> ids.add(bucket.getKey())));
@@ -182,7 +181,6 @@ public abstract class AbstractDocumentQuery {
 
     log.info("Request: {}", requestBuilder.toString());
     SearchResponse response = requestBuilder.execute().actionGet();
-    log.info("Response: {}", response.toString());
     if(response.getHits().totalHits() > 0) {
       QueryResultDto.Builder builder = QueryResultDto.newBuilder()
           .setTotalHits((int) response.getHits().getTotalHits());
