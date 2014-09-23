@@ -13,7 +13,7 @@ message JoinQueryDto {
 message QueryDto {
   required int32 from = 1 [default = 0];
   required int32 size = 2 [default = 10];
-  required FilteredQueryDto filteredQuery = 3;
+  optional FilteredQueryDto filteredQuery = 3;
 }
 
 message FilteredQueryDto {
