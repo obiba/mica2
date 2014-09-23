@@ -89,9 +89,8 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
           SortBuilders.fieldSort(sort).order(order == null ? SortOrder.ASC : SortOrder.valueOf(order.toUpperCase())));
     }
 
-    log.info(search.toString());
+    log.debug("Request: {}", search.toString());
     SearchResponse response = search.execute().actionGet();
-    log.info(response.toString());
 
     Documents<T> documents = new Documents<>(Long.valueOf(response.getHits().getTotalHits()).intValue(), from, limit);
 

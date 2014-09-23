@@ -144,7 +144,6 @@ public class ElasticSearchIndexer {
 
       log.debug("Request: {}", search.toString());
       SearchResponse response = search.execute().actionGet();
-      log.debug("Response: {}", response.toString());
 
       IdsQueryBuilder idsQuery = QueryBuilders.idsQuery(type);
       response.getHits().forEach(hit -> idsQuery.addIds(hit.getId()));

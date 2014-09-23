@@ -78,9 +78,8 @@ public abstract class AbstractPublishedDatasetsResource<T extends Dataset> {
       search.addSort(SortBuilders.fieldSort(sort).order(order == null ? SortOrder.ASC : SortOrder.valueOf(order.toUpperCase())));
     }
 
-    log.info(search.toString());
+    log.debug("Request: {}", search.toString());
     SearchResponse response = search.execute().actionGet();
-    log.info(response.toString());
 
     Mica.DatasetsDto.Builder builder = Mica.DatasetsDto.newBuilder() //
         .setTotal(Long.valueOf(response.getHits().getTotalHits()).intValue()) //
