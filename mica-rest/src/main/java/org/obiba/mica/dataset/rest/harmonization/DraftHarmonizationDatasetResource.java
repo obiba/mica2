@@ -29,7 +29,7 @@ import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.core.security.Roles;
-import org.obiba.mica.core.service.HarmonizationDatasetService;
+import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Magma;
 import org.obiba.opal.web.model.Search;
