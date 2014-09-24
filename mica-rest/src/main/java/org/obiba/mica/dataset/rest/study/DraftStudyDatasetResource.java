@@ -28,7 +28,7 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.core.security.Roles;
-import org.obiba.mica.core.service.StudyDatasetService;
+import org.obiba.mica.dataset.service.StudyDatasetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Magma;

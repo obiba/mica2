@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.core.service;
+package org.obiba.mica.dataset.service;
 
 import java.util.List;
 
