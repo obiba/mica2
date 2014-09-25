@@ -1,6 +1,15 @@
 package org.obiba.mica.search.rest;
 
-import com.google.common.base.Strings;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
@@ -11,8 +20,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.util.*;
+import com.google.common.base.Strings;
 
 @Component
 public class AggregationYamlParser {
@@ -91,7 +99,7 @@ public class AggregationYamlParser {
       switch(type) {
         case AGG_TERMS:
           termsBuilders
-              .add(AggregationBuilders.terms(entry.getKey()).field(entry.getValue()).order(Terms.Order.term(true)));
+              .add(AggregationBuilders.terms(entry.getKey()).field(entry.getValue()).order(Terms.Order.term(true)).size(0));
           break;
         case AGG_STATS:
           termsBuilders.add(AggregationBuilders.stats(entry.getKey()).field(entry.getValue()));

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -17,6 +18,7 @@ import org.obiba.mica.core.domain.LocalizedString;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 
 public class Population extends AbstractAttributeAware implements Serializable, Comparable<Population>, AttributeAware {
 
@@ -102,6 +104,17 @@ public class Population extends AbstractAttributeAware implements Serializable, 
   public void addDataCollectionEvent(@NotNull DataCollectionEvent dataCollectionEvent) {
     if(dataCollectionEvents == null) dataCollectionEvents = new TreeSet<>();
     dataCollectionEvents.add(dataCollectionEvent);
+  }
+
+  public List<String> getAllDataSources() {
+    if (dataCollectionEvents != null) {
+      List<String> dataSources = Lists.newArrayList();
+      dataCollectionEvents.stream().filter(dce -> dce.getDataSources() != null)
+          .forEach(dce -> dataSources.addAll(dce.getDataSources()));
+      return dataSources.stream().distinct().collect(Collectors.toList());
+    }
+
+    return null;
   }
 
   public void setDataCollectionEvents(SortedSet<DataCollectionEvent> dataCollectionEvents) {

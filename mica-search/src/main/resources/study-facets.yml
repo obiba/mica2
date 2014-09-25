@@ -52,6 +52,7 @@ populations:
     generalPopulationSources:
 
   dataCollectionEvents:
+    dataSources:
     end:
     start:
     bioSamples:
