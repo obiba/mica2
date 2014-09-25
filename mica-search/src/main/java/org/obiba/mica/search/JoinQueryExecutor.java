@@ -94,7 +94,7 @@ public class JoinQueryExecutor {
   }
 
   private void execute(AbstractDocumentQuery docQuery, AbstractDocumentQuery... subQueries) throws IOException {
-    List<AbstractDocumentQuery> queries = Arrays.asList(subQueries).stream().filter(q -> q.getQuery() != null)
+    List<AbstractDocumentQuery> queries = Arrays.asList(subQueries).stream().filter(q -> q.hasQueryFilters())
         .collect(Collectors.toList());
 
     List<String> studyIds = null;
@@ -102,7 +102,7 @@ public class JoinQueryExecutor {
     if (queries.size() > 0) studyIds = queryStudyIds(queries);
     if(studyIds == null || studyIds.size() > 0) joinedStudyIds = docQuery.query(studyIds);
     if(joinedStudyIds != null && joinedStudyIds.size() > 0)
-      queryAggragations(docQuery.getQuery() == null ? studyIds : joinedStudyIds, subQueries);
+      queryAggragations(docQuery.hasQueryFilters() ? joinedStudyIds : studyIds, subQueries);
   }
 
   private void queryAggragations(List<String> studyIds, AbstractDocumentQuery... queries) throws IOException {

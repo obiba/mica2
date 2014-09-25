@@ -2,15 +2,21 @@ package org.obiba.mica.web.model;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.study.service.PublishedStudyService;
-import org.obiba.mica.study.service.StudyService;
+import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
+import org.obiba.mica.study.service.PublishedStudyService;
+import org.obiba.mica.study.service.StudyService;
 import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Lists;
 
 @Component
 @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
@@ -86,10 +92,19 @@ class StudySummaryDtos {
       builder.setTargetNumber(TargetNumberDtos.asDto(study.getNumberOfParticipants().getParticipant()));
     }
     Collection<String> countries = new HashSet<>();
-    if(study.getPopulations() != null) {
-      study.getPopulations().stream() //
+    SortedSet<Population> populations = study.getPopulations();
+    if(populations != null) {
+      populations.stream() //
           .filter(population -> population.getSelectionCriteria().getCountriesIso() != null)
           .forEach(population -> countries.addAll(population.getSelectionCriteria().getCountriesIso()));
+
+      List<String> dataSources = Lists.newArrayList();
+      populations.stream().filter(population -> population.getAllDataSources() != null)
+          .forEach(population -> dataSources.addAll(population.getAllDataSources()));
+
+      if (dataSources.size()> 0) {
+        builder.addAllDataSources(dataSources.stream().distinct().collect(Collectors.toList()));
+      }
     }
     builder.addAllCountries(countries);
     return builder;

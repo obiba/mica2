@@ -68,6 +68,10 @@ public abstract class AbstractDocumentQuery {
     return queryDto;
   }
 
+  public boolean hasQueryFilters() {
+    return queryDto != null && queryDto.hasFilteredQuery() && queryDto.getFilteredQuery().hasFilter();
+  }
+
   public void initialize(QueryDto query) {
     queryDto = query;
     resultDto = null;
@@ -133,6 +137,7 @@ public abstract class AbstractDocumentQuery {
     addStudyIdFilters(studyIds);
     return execute(QueryDtoParser.newParser().parse(queryDto), queryDto.getFrom(), queryDto.getSize(), true);
   }
+
 
   /**
    * Executes a filtered query to retrieve documents and aggregations, former being optional dependinggg on the type of

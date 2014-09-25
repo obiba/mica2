@@ -16,6 +16,7 @@ message StudySummaryDto {
   repeated string countries = 7;
   optional AttachmentDto logo = 8;
   repeated LocalizedStringDto objectives = 9;
+  repeated string dataSources = 10;
   extensions 1000 to max;
 }
 

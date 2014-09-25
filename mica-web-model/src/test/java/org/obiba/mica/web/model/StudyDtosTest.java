@@ -92,6 +92,15 @@ public class StudyDtosTest {
     assertThat(fromDto).areFieldsEqualToEachOther(study);
   }
 
+  @Test
+  public void test_study_summary_dto() {
+    Study study = createStudy();
+    study.addPopulation(createPopulation());
+    Mica.StudySummaryDto dto = dtos.asSummaryDto(study);
+    assertThat(dto.getDataSources(0)).isEqualTo("questionnaires");
+    assertThat(dto.getDataSourcesCount()).isEqualTo(5);
+  }
+
   private void assertTimestamps(Timestamped study, Mica.StudyDtoOrBuilder dto) {
     assertThat(dto.getTimestamps().getCreated()).isEqualTo(study.getCreatedDate().toString());
     assertThat(dto.getTimestamps().getLastUpdate())
