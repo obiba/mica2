@@ -18,7 +18,7 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
-import org.obiba.mica.dataset.DatasourceConnectionPool;
+import org.obiba.mica.micaConfig.OpalService;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.StudyDatasetRepository;
 import org.obiba.mica.dataset.domain.DatasetVariable;
@@ -26,7 +26,6 @@ import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.event.IndexStudyDatasetsEvent;
-import org.obiba.mica.dataset.service.DatasetService;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.study.event.StudyDeletedEvent;
 import org.obiba.mica.study.service.StudyService;
@@ -50,7 +49,7 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
   private StudyService studyService;
 
   @Inject
-  private DatasourceConnectionPool datasourceConnectionPool;
+  private OpalService opalService;
 
   @Inject
   private StudyDatasetRepository studyDatasetRepository;
@@ -216,8 +215,8 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
   }
 
   @Override
-  protected DatasourceConnectionPool getDatasourceConnectionPool() {
-    return datasourceConnectionPool;
+  protected OpalService getOpalService() {
+    return opalService;
   }
 
   @Override

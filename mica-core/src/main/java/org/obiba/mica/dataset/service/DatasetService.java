@@ -18,7 +18,7 @@ import org.obiba.magma.NoSuchVariableException;
 import org.obiba.magma.Variable;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.StudyTable;
-import org.obiba.mica.dataset.DatasourceConnectionPool;
+import org.obiba.mica.micaConfig.OpalService;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
@@ -69,7 +69,7 @@ public abstract class DatasetService<T extends Dataset> {
 
   protected abstract StudyService getStudyService();
 
-  protected abstract DatasourceConnectionPool getDatasourceConnectionPool();
+  protected abstract OpalService getOpalService();
 
   protected abstract EventBus getEventBus();
 
@@ -169,11 +169,11 @@ public abstract class DatasetService<T extends Dataset> {
 
   protected RestDatasource getDatasource(@NotNull StudyTable studyTable) {
     String opalUrl = getStudyService().findDraftStudy(studyTable.getStudyId()).getOpal();
-    return getDatasourceConnectionPool().getDatasource(opalUrl, studyTable.getProject());
+    return getOpalService().getDatasource(opalUrl, studyTable.getProject());
   }
 
   protected RestDatasource getDatasource(@NotNull String project) {
-    return getDatasourceConnectionPool().getDatasource(project);
+    return getOpalService().getDatasource(project);
   }
 
 }
