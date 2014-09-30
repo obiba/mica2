@@ -13,8 +13,10 @@ package org.obiba.mica.micaConfig;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -96,12 +98,36 @@ public class OpalService implements EnvironmentAware {
     return micaConfigService.getConfig().getOpal();
   }
 
+  //
+  // Taxonomies
+  //
+
+  public List<Taxonomy> getTaxonomies() {
+    return getTaxonomyDtos().stream().map(Dtos::fromDto).collect(Collectors.toList());
+  }
+
+  public List<Opal.TaxonomyDto> getTaxonomyDtos() {
+    try {
+      OpalJavaClient opalClient = getOpalJavaClient();
+      URI uri = opalClient.newUri().segment("system", "conf", "taxonomies").build();
+      return opalClient.getResources(Opal.TaxonomyDto.class, uri, Opal.TaxonomyDto.newBuilder());
+    } catch(URISyntaxException e) {
+      log.error("Malformed URI to Opal: " + getDefaultOpal(), e);
+      throw new NoSuchElementException();
+    }
+  }
+
+  /**
+   * Get a summary of the {@link org.obiba.opal.core.domain.taxonomy.Taxonomy}s available from Opal master.
+   *
+   * @return
+   */
   public Opal.TaxonomiesDto getTaxonomySummaryDtos() {
     try {
       OpalJavaClient opalClient = getOpalJavaClient();
-      URI uri = opalClient.newUri().segment("system","conf","taxonomies", "summaries").build();
+      URI uri = opalClient.newUri().segment("system", "conf", "taxonomies", "summaries").build();
       return opalClient.getResource(Opal.TaxonomiesDto.class, uri, Opal.TaxonomiesDto.newBuilder());
-    } catch (URISyntaxException e) {
+    } catch(URISyntaxException e) {
       log.error("Malformed URI to Opal: " + getDefaultOpal(), e);
       throw new NoSuchElementException();
     }
@@ -118,12 +144,19 @@ public class OpalService implements EnvironmentAware {
     return Dtos.fromDto(getTaxonomyDto(name));
   }
 
+  /**
+   * Get the {@link org.obiba.opal.core.domain.taxonomy.Taxonomy} as a Dto from Opal master.
+   *
+   * @param name
+   * @return
+   * @throws org.obiba.opal.core.cfg.NoSuchTaxonomyException
+   */
   public Opal.TaxonomyDto getTaxonomyDto(String name) {
     try {
       OpalJavaClient opalClient = getOpalJavaClient();
-      URI uri = opalClient.newUri().segment("system","conf","taxonomy", name).build();
+      URI uri = opalClient.newUri().segment("system", "conf", "taxonomy", name).build();
       return opalClient.getResource(Opal.TaxonomyDto.class, uri, Opal.TaxonomyDto.newBuilder());
-    } catch (URISyntaxException e) {
+    } catch(URISyntaxException e) {
       log.error("Malformed URI to Opal: " + getDefaultOpal(), e);
       throw new NoSuchTaxonomyException(name);
     }
@@ -142,7 +175,7 @@ public class OpalService implements EnvironmentAware {
   }
 
   private OpalJavaClient getOpalJavaClient() throws URISyntaxException {
-    if (opalJavaClient != null) return opalJavaClient;
+    if(opalJavaClient != null) return opalJavaClient;
 
     String opalUrl = getDefaultOpal();
     while(opalUrl.endsWith("/")) {
