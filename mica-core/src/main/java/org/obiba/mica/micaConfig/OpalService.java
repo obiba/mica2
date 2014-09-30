@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.dataset;
+package org.obiba.mica.micaConfig;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -21,7 +21,6 @@ import javax.inject.Inject;
 
 import org.obiba.magma.DatasourceFactory;
 import org.obiba.magma.support.Initialisables;
-import org.obiba.mica.micaConfig.MicaConfigService;
 import org.obiba.opal.core.cfg.NoSuchTaxonomyException;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.rest.client.magma.OpalJavaClient;

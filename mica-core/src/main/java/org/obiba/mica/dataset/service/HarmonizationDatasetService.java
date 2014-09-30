@@ -19,7 +19,7 @@ import javax.validation.constraints.NotNull;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.magma.Variable;
-import org.obiba.mica.dataset.OpalService;
+import org.obiba.mica.micaConfig.OpalService;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.DatasetVariable;
