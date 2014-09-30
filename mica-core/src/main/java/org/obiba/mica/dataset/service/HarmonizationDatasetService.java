@@ -19,7 +19,7 @@ import javax.validation.constraints.NotNull;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.magma.Variable;
-import org.obiba.mica.dataset.DatasourceConnectionPool;
+import org.obiba.mica.micaConfig.OpalService;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.DatasetVariable;
@@ -27,7 +27,6 @@ import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.event.IndexHarmonizationDatasetsEvent;
-import org.obiba.mica.dataset.service.DatasetService;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.service.StudyService;
@@ -52,7 +51,7 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   private StudyService studyService;
 
   @Inject
-  private DatasourceConnectionPool datasourceConnectionPool;
+  private OpalService opalService;
 
   @Inject
   private HarmonizationDatasetRepository harmonizationDatasetRepository;
@@ -223,8 +222,8 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   }
 
   @Override
-  protected DatasourceConnectionPool getDatasourceConnectionPool() {
-    return datasourceConnectionPool;
+  protected OpalService getOpalService() {
+    return opalService;
   }
 
   @Override
