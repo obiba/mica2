@@ -16,6 +16,7 @@ import org.obiba.mica.core.domain.Address;
 import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.Authorization;
 import org.obiba.mica.core.domain.Contact;
+import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.dataset.domain.StudyDataset;
@@ -111,7 +112,35 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
     studyService.save(study);
     network.addStudy(study);
 
+    study = createStudy("LBLS", null, "Long Beach Longitudinal Study", "Long Beach Longitudinal Study");
+    studyService.save(study);
+    studyService.publish(study.getId());
+    network.addStudy(study);
+
+    createStudyDataset(study, en("1978"));
+    createStudyDataset(study, en("1981"));
+    createStudyDataset(study, en("1994"));
+    createStudyDataset(study, en("1997"));
+    createStudyDataset(study, en("2000"));
+    createStudyDataset(study, en("2003"));
+    createStudyDataset(study, en("2008"));
+
     networkService.save(network);
+  }
+
+  private StudyDataset createStudyDataset(Study study, LocalizedString name) {
+    StudyDataset studyDataset = new StudyDataset();
+    studyDataset.setName(name);
+    studyDataset.setAcronym(name);
+    studyDataset.setEntityType("Participant");
+    StudyTable table = new StudyTable();
+    table.setStudyId(study.getId());
+    table.setProject(study.getAcronym().get("en"));
+    table.setTable(name.get("en"));
+    studyDataset.setStudyTable(table);
+    studyDatasetService.save(studyDataset);
+    studyDatasetService.publish(studyDataset.getId(), true);
+    return studyDataset;
   }
 
   @SuppressWarnings("OverlyLongMethod")

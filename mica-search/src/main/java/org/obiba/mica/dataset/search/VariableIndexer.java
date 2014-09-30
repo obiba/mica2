@@ -21,6 +21,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.rest.RestStatus;
 import org.obiba.magma.NoSuchValueTableException;
+import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
@@ -30,10 +31,9 @@ import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.event.IndexHarmonizationDatasetsEvent;
 import org.obiba.mica.dataset.event.IndexStudyDatasetsEvent;
-import org.obiba.mica.core.domain.StudyTable;
-import org.obiba.mica.search.ElasticSearchIndexer;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.dataset.service.StudyDatasetService;
+import org.obiba.mica.search.ElasticSearchIndexer;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,6 +83,10 @@ public class VariableIndexer {
   @Async
   @Subscribe
   public void datasetPublished(DatasetPublishedEvent event) {
+    if (!event.isPublished()) {
+      deleteDatasetVariables(PUBLISHED_VARIABLE_INDEX, event.getPersistable());
+      return;
+    }
     if(event.isStudyDataset()) {
       indexDatasetVariables(PUBLISHED_VARIABLE_INDEX, getVariables((StudyDataset) event.getPersistable()));
     } else {
