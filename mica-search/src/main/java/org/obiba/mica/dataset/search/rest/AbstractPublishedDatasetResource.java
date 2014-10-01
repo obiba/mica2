@@ -13,6 +13,7 @@ package org.obiba.mica.dataset.search.rest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -34,9 +35,11 @@ import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.search.DatasetIndexer;
 import org.obiba.mica.dataset.search.VariableIndexer;
+import org.obiba.mica.micaConfig.OpalService;
 import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
+import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -64,6 +67,9 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
 
   @Inject
   protected ObjectMapper objectMapper;
+
+  @Inject
+  protected OpalService opalService;
 
   protected T getDataset(Class<T> clazz, @NotNull String datasetId) throws NoSuchDatasetException {
     QueryBuilder query = QueryBuilders.queryString(clazz.getSimpleName()).field("className");
@@ -118,10 +124,12 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
         .setTotal(Long.valueOf(response.getHits().getTotalHits()).intValue()) //
         .setFrom(from) //
         .setLimit(limit);
+
+    List<Taxonomy> taxonomies = getTaxonomies();
     response.getHits().forEach(hit -> {
       InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
       try {
-        builder.addVariables(dtos.asDto(objectMapper.readValue(inputStream, DatasetVariable.class)));
+        builder.addVariables(dtos.asDto(objectMapper.readValue(inputStream, DatasetVariable.class), taxonomies));
       } catch(IOException e) {
         log.error("Failed retrieving {}", DatasetVariable.class.getSimpleName(), e);
       }
@@ -196,7 +204,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
 
   protected Mica.DatasetVariableDto getDatasetVariableDto(@NotNull String datasetId, @NotNull String variableName,
       DatasetVariable.Type variableType, @Nullable String studyId) {
-    return dtos.asDto(getDatasetVariable(datasetId, variableName, variableType, studyId));
+    return dtos.asDto(getDatasetVariable(datasetId, variableName, variableType, studyId), getTaxonomies());
   }
 
   protected Mica.DatasetVariableSummaryDto getDatasetVariableSummaryDto(@NotNull String datasetId,
@@ -204,4 +212,14 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
     return dtos.asSummaryDto(getDatasetVariable(datasetId, variableName, variableType, studyId));
   }
 
+  @NotNull
+  protected List<Taxonomy> getTaxonomies() {
+    List<Taxonomy> taxonomies = null;
+    try {
+      taxonomies = opalService.getTaxonomies();
+    } catch(Exception e) {
+      // ignore
+    }
+    return taxonomies == null ? Collections.emptyList() : taxonomies;
+  }
 }

@@ -3,6 +3,7 @@ package org.obiba.mica.web.model;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -45,5 +46,13 @@ class LocalizedStringDtos {
   @NotNull
   List<LocalizedString> fromDtoList(@NotNull Collection<Mica.LocalizedStringDtos> dtos) {
     return dtos.stream().map(dto -> fromDto(dto.getLocalizedStringsList())).collect(Collectors.toList());
+  }
+
+  public Iterable<Mica.LocalizedStringDto> asDto(Map<String, String> localizedMap) {
+    if (localizedMap == null || localizedMap.isEmpty()) return Collections.emptyList();
+    return localizedMap.entrySet().stream().map(
+        entry -> Mica.LocalizedStringDto.newBuilder().setLang(entry.getKey()).setValue(entry.getValue())
+            .build()
+    ).collect(Collectors.toList());
   }
 }

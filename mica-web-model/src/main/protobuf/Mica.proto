@@ -245,6 +245,22 @@ message AttributeDto {
   repeated LocalizedStringDto values = 3;
 }
 
+message TaxonomyEntityDto {
+  required string name = 1;
+  repeated LocalizedStringDto titles = 2;
+  repeated LocalizedStringDto descriptions = 3;
+}
+
+message TermAttributeDto {
+  required TaxonomyEntityDto vocabulary = 1;
+  repeated TaxonomyEntityDto terms = 2;
+}
+
+message TermAttributesDto {
+  required TaxonomyEntityDto taxonomy = 1;
+  repeated TermAttributeDto vocabularyTerms = 2;
+}
+
 message DatasetDto {
   optional string id = 1;
   repeated LocalizedStringDto name = 2;
@@ -314,6 +330,7 @@ message DatasetVariableDto {
   repeated DatasetCategoryDto categories = 16;
   repeated LocalizedStringDto datasetName = 17;
   repeated StudySummaryDto studySummaries = 18;
+  repeated TermAttributesDto termAttributes = 19;
 }
 
 message DatasetVariablesDto {
