@@ -98,9 +98,11 @@ public class VariableIndexConfiguration implements ElasticSearchIndexer.IndexCon
       String field = Attribute.getMapKey(vocabulary.getName(), namespace);
       if(vocabulary.hasTerms()) {
         // not analyzed: we want exact match
-        mapping.startObject(field).field("type", "string").field("index", "not_analyzed").endObject();
-      } else {
-        mapping.startObject(field).field("type", "string").endObject();
+        mapping.startObject(field);
+        mapping.startObject("properties");
+        mapping.startObject("und").field("type", "string").field("index", "not_analyzed").endObject();
+        mapping.endObject(); // properties
+        mapping.endObject(); // field
       }
     }
   }
