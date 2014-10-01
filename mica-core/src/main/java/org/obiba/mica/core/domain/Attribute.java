@@ -8,7 +8,6 @@ import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 
 public class Attribute implements Serializable {
 
@@ -47,10 +46,6 @@ public class Attribute implements Serializable {
 
   public boolean isLocalisedWith(@Nullable Locale locale) {
     return values != null && values.contains(locale);
-  }
-
-  public static String getMapKey(String name, @Nullable String namespace) {
-    return Strings.isNullOrEmpty(namespace) ? name : namespace + "__" + name;
   }
 
   @Override

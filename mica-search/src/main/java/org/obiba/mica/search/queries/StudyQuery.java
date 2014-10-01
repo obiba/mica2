@@ -61,7 +61,7 @@ public class StudyQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  public Resource getAggregationsDescription() {
+  protected Resource getAggregationsDescription() {
     return new ClassPathResource(STUDY_FACETS_YML);
   }
 

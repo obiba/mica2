@@ -26,23 +26,4 @@ studyIds:
 
 categories:
   missing:
-
-attributes:
-  maelstrom__essence:
-    properties:
-      localized: "true"
-  maelstrom__measure:
-    properties:
-      localized: "true"
-  maelstrom__sociodemographic_characteristics:
-    properties:
-      localized: "true"
-  maelstrom__status:
-    properties:
-      localized: "true"
-  maelstrom__target:
-    properties:
-      localized: "true"
-  maelstrom__period:
-    properties:
-      localized: "true"
+  

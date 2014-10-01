@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -85,7 +86,12 @@ public abstract class AbstractDocumentQuery {
 
   public abstract String getSearchType();
 
-  public abstract Resource getAggregationsDescription();
+  protected abstract Resource getAggregationsDescription();
+
+  @Nullable
+  protected Properties getAggregationsProperties() {
+    return null;
+  }
 
   /**
    * Executes query to extract study IDs from the aggregation results
@@ -183,6 +189,7 @@ public abstract class AbstractDocumentQuery {
 
     aggregationYamlParser.setLocales(micaConfigService.getConfig().getLocales());
     aggregationYamlParser.getAggregations(getAggregationsDescription()).forEach(requestBuilder::addAggregation);
+    aggregationYamlParser.getAggregations(getAggregationsProperties()).forEach(requestBuilder::addAggregation);
 
     log.info("Request: {}", requestBuilder.toString());
     SearchResponse response = requestBuilder.execute().actionGet();

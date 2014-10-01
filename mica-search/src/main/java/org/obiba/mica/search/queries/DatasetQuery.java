@@ -54,7 +54,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  public Resource getAggregationsDescription() {
+  protected Resource getAggregationsDescription() {
     return new ClassPathResource(DATASET_FACETS_YML);
   }
 

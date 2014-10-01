@@ -40,7 +40,7 @@ public class Attributes extends TreeMap<String, LocalizedString> implements Attr
   }
 
   public void removeAttribute(String name, @Nullable String namespace) {
-    String key = Attribute.getMapKey(name, namespace);
+    String key = AttributeKey.getMapKey(name, namespace);
     remove(key);
   }
 
@@ -56,13 +56,13 @@ public class Attributes extends TreeMap<String, LocalizedString> implements Attr
 
   @Override
   public boolean hasAttribute(String attName, @Nullable String namespace) {
-    return containsKey(Attribute.getMapKey(attName, namespace));
+    return containsKey(AttributeKey.getMapKey(attName, namespace));
   }
 
   @JsonIgnore
   public Attribute getAttribute(String attName, @Nullable String namespace) {
     if(!hasAttribute(attName, namespace)) throw new NoSuchAttributeException(attName, getClass().getName());
-    LocalizedString values = get(Attribute.getMapKey(attName, namespace));
+    LocalizedString values = get(AttributeKey.getMapKey(attName, namespace));
     return Attribute.Builder.newAttribute(attName).namespace(namespace).values(values).build();
   }
 

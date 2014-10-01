@@ -3,6 +3,7 @@ package org.obiba.mica.search.rest;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -10,6 +11,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.SortedMap;
 import java.util.TreeMap;
+
+import javax.annotation.Nullable;
+
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
@@ -63,13 +67,17 @@ public class AggregationYamlParser {
     this.locales = locales;
   }
 
-  public Iterable<AbstractAggregationBuilder> getAggregations(Resource description) throws IOException {
+  public Iterable<AbstractAggregationBuilder> getAggregations(@Nullable Resource description) throws IOException {
+    if (description == null) return Collections.emptyList();
+
     YamlPropertiesFactoryBean yamlPropertiesFactoryBean = new YamlPropertiesFactoryBean();
     yamlPropertiesFactoryBean.setResources(new Resource[] { description });
     return getAggregations(yamlPropertiesFactoryBean.getObject());
   }
 
-  public Iterable<AbstractAggregationBuilder> getAggregations(Properties properties) throws IOException {
+  public Iterable<AbstractAggregationBuilder> getAggregations(@Nullable Properties properties) throws IOException {
+    if (properties == null) return Collections.emptyList();
+
     Collection<AbstractAggregationBuilder> termsBuilders = new ArrayList<>();
     SortedMap<String, ?> sortedSystemProperties = new TreeMap(properties);
     String prevKey = null;

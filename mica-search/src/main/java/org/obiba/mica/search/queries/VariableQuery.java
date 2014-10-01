@@ -13,22 +13,28 @@ package org.obiba.mica.search.queries;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.obiba.mica.core.domain.AttributeKey;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.search.VariableIndexer;
+import org.obiba.mica.micaConfig.OpalService;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
+import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -36,8 +42,11 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
 
+import sun.util.locale.LanguageTag;
+
 @Component
 public class VariableQuery extends AbstractDocumentQuery {
+
   private static final String VARIABLE_FACETS_YML = "variable-facets.yml";
 
   private static Properties joinFields = new Properties();
@@ -45,6 +54,9 @@ public class VariableQuery extends AbstractDocumentQuery {
   static {
     joinFields.setProperty("studyIds", "");
   }
+
+  @Inject
+  private OpalService opalService;
 
   @Inject
   private PublishedStudyService publishedStudyService;
@@ -137,8 +149,25 @@ public class VariableQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  public Resource getAggregationsDescription() {
+  protected Resource getAggregationsDescription() {
     return new ClassPathResource(VARIABLE_FACETS_YML);
+  }
+
+  @Nullable
+  @Override
+  protected Properties getAggregationsProperties() {
+    Properties properties = new Properties();
+    getTaxonomies().forEach(taxonomy -> {
+      if(taxonomy.hasVocabularies()) {
+        taxonomy.getVocabularies().forEach(vocabulary -> {
+          if(vocabulary.hasTerms()) {
+            properties.put("attributes." + AttributeKey.getMapKey(vocabulary.getName(), taxonomy.getName()) + "." +
+                LanguageTag.UNDETERMINED, "");
+          }
+        });
+      }
+    });
+    return properties;
   }
 
   @Override
@@ -146,4 +175,14 @@ public class VariableQuery extends AbstractDocumentQuery {
     return joinFields;
   }
 
+  @NotNull
+  protected List<Taxonomy> getTaxonomies() {
+    List<Taxonomy> taxonomies = null;
+    try {
+      taxonomies = opalService.getTaxonomies();
+    } catch(Exception e) {
+      // ignore
+    }
+    return taxonomies == null ? Collections.emptyList() : taxonomies;
+  }
 }

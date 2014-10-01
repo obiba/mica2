@@ -51,7 +51,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  public Resource getAggregationsDescription() {
+  protected Resource getAggregationsDescription() {
     return new ClassPathResource(NETWORK_FACETS_YML);
   }
 
