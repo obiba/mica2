@@ -10,14 +10,19 @@
 
 package org.obiba.mica.search.queries;
 
-import java.util.Properties;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.search.NetworkIndexer;
 import org.obiba.mica.network.service.PublishedNetworkService;
+import org.obiba.mica.search.CountStatsData;
+import org.obiba.mica.search.CountStatsDtoBuilders;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.core.io.ClassPathResource;
@@ -29,10 +34,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
 
   private static final String NETWORK_FACETS_YML = "network-facets.yml";
 
-  private static Properties joinFields = new Properties();
-  static {
-    joinFields.setProperty("studyIds", "");
-  };
+  private static final String JOIN_FIELD = "studyIds";
 
   @Inject
   Dtos dtos;
@@ -56,7 +58,26 @@ public class NetworkQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  public void processHits(MicaSearch.QueryResultDto.Builder builder, SearchHits hits) {
+  public void processHits(MicaSearch.QueryResultDto.Builder builder, SearchHits hits, CountStatsData counts) {
+    if (counts == null) {
+      processHits(builder, hits);
+      return;
+    }
+
+    MicaSearch.NetworkResultDto.Builder resBuilder = MicaSearch.NetworkResultDto.newBuilder();
+    CountStatsDtoBuilders.NetworkCountStatsBuilder networkCountStatsBuilder
+        = CountStatsDtoBuilders.NetworkCountStatsBuilder.newBuilder(counts);
+
+    for(SearchHit hit : hits) {
+      Network network = publishedNetworkService.findById(hit.getId());
+      resBuilder.addNetworks(dtos.asDtoBuilder(network)
+          .setExtension(MicaSearch.CountStatsDto.networkCountStats, networkCountStatsBuilder.build(network)).build());
+    }
+
+    builder.setExtension(MicaSearch.NetworkResultDto.result, resBuilder.build());
+  }
+
+  private void processHits(MicaSearch.QueryResultDto.Builder builder, SearchHits hits) {
     MicaSearch.NetworkResultDto.Builder resBuilder = MicaSearch.NetworkResultDto.newBuilder();
     for(SearchHit hit : hits) {
       resBuilder.addNetworks(dtos.asDto(publishedNetworkService.findById(hit.getId())));
@@ -64,8 +85,15 @@ public class NetworkQuery extends AbstractDocumentQuery {
     builder.setExtension(MicaSearch.NetworkResultDto.result, resBuilder.build());
   }
 
+
   @Override
-  protected Properties getJoinFields() {
-    return joinFields;
+  protected List<String> getJoinFields() {
+    return Arrays.asList(JOIN_FIELD);
   }
+
+  @Override
+  public Map<String, Integer> getStudyCounts() {
+    return getStudyCounts(JOIN_FIELD);
+  }
+
 }

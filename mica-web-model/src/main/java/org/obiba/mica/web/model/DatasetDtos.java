@@ -45,20 +45,25 @@ class DatasetDtos {
   private StudySummaryDtos studySummaryDtos;
 
   @NotNull
-  Mica.DatasetDto asDto(@NotNull StudyDataset dataset) {
-    Mica.DatasetDto.Builder builder = asDtoBuilder(dataset);
+  Mica.DatasetDto.Builder asDtoBuilder(@NotNull StudyDataset dataset) {
+    Mica.DatasetDto.Builder builder = asBuilder(dataset);
 
     if(dataset.hasStudyTable()) {
       Mica.StudyDatasetDto.Builder sbuilder = Mica.StudyDatasetDto.newBuilder().setStudyTable(
           asDto(dataset.getStudyTable()).setStudySummary(studySummaryDtos.asDto(dataset.getStudyTable().getStudyId())));
       builder.setExtension(Mica.StudyDatasetDto.type, sbuilder.build());
     }
-    return builder.build();
+    return builder;
   }
 
   @NotNull
-  Mica.DatasetDto asDto(@NotNull HarmonizationDataset dataset) {
-    Mica.DatasetDto.Builder builder = asDtoBuilder(dataset);
+  Mica.DatasetDto asDto(@NotNull StudyDataset dataset) {
+    return asDtoBuilder(dataset).build();
+  }
+
+  @NotNull
+  Mica.DatasetDto.Builder asDtoBuilder(@NotNull HarmonizationDataset dataset) {
+    Mica.DatasetDto.Builder builder = asBuilder(dataset);
 
     Mica.HarmonizationDatasetDto.Builder hbuilder = Mica.HarmonizationDatasetDto.newBuilder();
     hbuilder.setProject(dataset.getProject());
@@ -69,7 +74,12 @@ class DatasetDtos {
     }
     builder.setExtension(Mica.HarmonizationDatasetDto.type, hbuilder.build());
 
-    return builder.build();
+    return builder;
+  }
+
+  @NotNull
+  Mica.DatasetDto asDto(@NotNull HarmonizationDataset dataset) {
+    return asDtoBuilder(dataset).build();
   }
 
   @NotNull
@@ -221,7 +231,7 @@ class DatasetDtos {
     return builder;
   }
 
-  private Mica.DatasetDto.Builder asDtoBuilder(Dataset dataset) {
+  private Mica.DatasetDto.Builder asBuilder(Dataset dataset) {
     Mica.DatasetDto.Builder builder = Mica.DatasetDto.newBuilder();
     if(dataset.getId() != null) builder.setId(dataset.getId());
     builder.setEntityType(dataset.getEntityType());

@@ -116,6 +116,26 @@ message StudyResultDto {
   }
 }
 
+message CountStatsDto {
+  optional int32 variables = 1;
+  optional int32 studyDatasets = 2;
+  optional int32 harmonizationDatasets = 3;
+  optional int32 studies = 4;
+  optional int32 networks = 5;
+
+  extend StudySummaryDto {
+    optional CountStatsDto studyCountStats = 1001;
+  }
+
+  extend DatasetDto {
+    optional CountStatsDto datasetCountStats = 1003;
+  }
+
+  extend NetworkDto {
+    optional CountStatsDto networkCountStats = 1001;
+  }
+}
+
 message NetworkResultDto {
   repeated obiba.mica.NetworkDto networks = 1;
 

@@ -13,6 +13,7 @@ package org.obiba.mica.search.queries;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,7 @@ import org.obiba.mica.core.domain.AttributeKey;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.search.VariableIndexer;
 import org.obiba.mica.micaConfig.OpalService;
+import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
@@ -49,11 +51,7 @@ public class VariableQuery extends AbstractDocumentQuery {
 
   private static final String VARIABLE_FACETS_YML = "variable-facets.yml";
 
-  private static Properties joinFields = new Properties();
-
-  static {
-    joinFields.setProperty("studyIds", "");
-  }
+  private static final String JOIN_FIELD = "studyIds";
 
   @Inject
   private OpalService opalService;
@@ -78,7 +76,7 @@ public class VariableQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  protected void processHits(MicaSearch.QueryResultDto.Builder builder, SearchHits hits) throws IOException {
+  protected void processHits(MicaSearch.QueryResultDto.Builder builder, SearchHits hits, CountStatsData counts) throws IOException {
     MicaSearch.DatasetVariableResultDto.Builder resBuilder = MicaSearch.DatasetVariableResultDto.newBuilder();
     Map<String, Study> studyMap = Maps.newHashMap();
 
@@ -144,8 +142,8 @@ public class VariableQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  public void queryAggrations(List<String> studyIds) throws IOException {
-    queryAggregations(studyIds, false);
+  public List<String> queryAggrations(List<String> studyIds) throws IOException {
+    return queryAggregations(studyIds, false);
   }
 
   @Override
@@ -155,6 +153,15 @@ public class VariableQuery extends AbstractDocumentQuery {
 
   @Nullable
   @Override
+  public Map<String, Integer> getStudyCounts() {
+    return getStudyCounts(JOIN_FIELD);
+  }
+
+  @Override
+  protected List<String> getJoinFields() {
+    return Arrays.asList(JOIN_FIELD);
+  }
+
   protected Properties getAggregationsProperties() {
     Properties properties = new Properties();
     getTaxonomies().forEach(taxonomy -> {
@@ -168,11 +175,6 @@ public class VariableQuery extends AbstractDocumentQuery {
       }
     });
     return properties;
-  }
-
-  @Override
-  protected Properties getJoinFields() {
-    return joinFields;
   }
 
   @NotNull
