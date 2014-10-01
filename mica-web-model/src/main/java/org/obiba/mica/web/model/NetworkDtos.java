@@ -29,7 +29,7 @@ class NetworkDtos {
   private StudySummaryDtos studySummaryDtos;
 
   @NotNull
-  Mica.NetworkDto asDto(@NotNull Network network) {
+  Mica.NetworkDto.Builder asDtoBuilder(@NotNull Network network) {
     Mica.NetworkDto.Builder builder = Mica.NetworkDto.newBuilder();
     builder.setId(network.getId()) //
         .setTimestamps(TimestampsDtos.asDto(network)) //
@@ -60,7 +60,13 @@ class NetworkDtos {
       builder.setMaelstromAuthorization(AuthorizationDtos.asDto(network.getMaelstromAuthorization()));
     }
 
-    return builder.build();
+    return builder;
+  }
+
+
+  @NotNull
+  Mica.NetworkDto asDto(@NotNull Network network) {
+    return asDtoBuilder(network).build();
   }
 
   @NotNull

@@ -29,6 +29,7 @@ import org.obiba.mica.core.domain.AttributeKey;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.search.VariableIndexer;
 import org.obiba.mica.micaConfig.OpalService;
+import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
@@ -75,7 +76,7 @@ public class VariableQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  protected void processHits(MicaSearch.QueryResultDto.Builder builder, SearchHits hits) throws IOException {
+  protected void processHits(MicaSearch.QueryResultDto.Builder builder, SearchHits hits, CountStatsData counts) throws IOException {
     MicaSearch.DatasetVariableResultDto.Builder resBuilder = MicaSearch.DatasetVariableResultDto.newBuilder();
     Map<String, Study> studyMap = Maps.newHashMap();
 
@@ -141,8 +142,8 @@ public class VariableQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  public void queryAggrations(List<String> studyIds) throws IOException {
-    queryAggregations(studyIds, false);
+  public List<String> queryAggrations(List<String> studyIds) throws IOException {
+    return queryAggregations(studyIds, false);
   }
 
   @Override

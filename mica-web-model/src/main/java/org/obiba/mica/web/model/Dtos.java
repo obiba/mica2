@@ -57,6 +57,11 @@ public class Dtos {
   }
 
   @NotNull
+  public StudySummaryDto.Builder asSummaryDtoBuilder(@NotNull Study study) {
+    return studySummaryDtos.asDtoBuilder(study);
+  }
+
+  @NotNull
   public StudySummaryDto asSummaryDto(@NotNull Study study) {
     return studySummaryDtos.asDto(study);
   }
@@ -69,6 +74,11 @@ public class Dtos {
   @NotNull
   public Study fromDto(@NotNull StudyDtoOrBuilder dto) {
     return studyDtos.fromDto(dto);
+  }
+
+  @NotNull
+  public NetworkDto.Builder asDtoBuilder(@NotNull Network network) {
+    return networkDtos.asDtoBuilder(network);
   }
 
   @NotNull
@@ -102,6 +112,15 @@ public class Dtos {
       return datasetDtos.asDto((StudyDataset)dataset);
     } else {
       return datasetDtos.asDto((HarmonizationDataset) dataset);
+    }
+  }
+
+  @NotNull
+  public Mica.DatasetDto.Builder asDtoBuilder(@NotNull Dataset dataset) {
+    if (dataset instanceof StudyDataset) {
+      return datasetDtos.asDtoBuilder((StudyDataset)dataset);
+    } else {
+      return datasetDtos.asDtoBuilder((HarmonizationDataset) dataset);
     }
   }
 

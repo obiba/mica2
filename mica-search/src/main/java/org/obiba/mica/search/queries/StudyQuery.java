@@ -18,6 +18,9 @@ import javax.inject.Inject;
 
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.obiba.mica.search.CountStatsData;
+import org.obiba.mica.search.CountStatsDtoBuilders;
+import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.web.model.Dtos;
@@ -50,7 +53,27 @@ public class StudyQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  public void processHits(MicaSearch.QueryResultDto.Builder builder, SearchHits hits) {
+  public void processHits(MicaSearch.QueryResultDto.Builder builder, SearchHits hits, CountStatsData counts) {
+    if(counts == null) {
+      processHits(builder, hits);
+      return;
+    }
+
+    MicaSearch.StudyResultDto.Builder resBuilder = MicaSearch.StudyResultDto.newBuilder();
+    CountStatsDtoBuilders.StudyCountStatsBuilder studyCountStatsBuilder = CountStatsDtoBuilders.StudyCountStatsBuilder
+        .newBuilder(counts);
+
+    for(SearchHit hit : hits) {
+      Study study = publishedStudyService.findById(hit.getId());
+      resBuilder.addSummaries(dtos.asSummaryDtoBuilder(study)
+          .setExtension(MicaSearch.CountStatsDto.studyCountStats, studyCountStatsBuilder.build(study)).build());
+
+    }
+
+    builder.setExtension(MicaSearch.StudyResultDto.result, resBuilder.build());
+  }
+
+  private void processHits(MicaSearch.QueryResultDto.Builder builder, SearchHits hits) {
     MicaSearch.StudyResultDto.Builder resBuilder = MicaSearch.StudyResultDto.newBuilder();
     for(SearchHit hit : hits) {
       resBuilder.addSummaries(dtos.asSummaryDto(publishedStudyService.findById(hit.getId())));
