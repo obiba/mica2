@@ -7,7 +7,6 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
@@ -44,11 +43,6 @@ public class Attribute implements Serializable {
 
   public LocalizedString getValues() {
     return values;
-  }
-
-  @JsonIgnore
-  public String getMapKey() {
-    return getMapKey(name, namespace);
   }
 
   public boolean isLocalisedWith(@Nullable Locale locale) {
@@ -95,11 +89,11 @@ public class Attribute implements Serializable {
     }
 
     public static Builder newAttribute(String name) {
-      if(!name.contains("__")) return new Builder(name);
-      else {
-        String namespace = name.substring(0, name.indexOf("__"));
-        return new Builder(name.substring(name.indexOf("__") + 2)).namespace(namespace);
-      }
+      return newAttribute(AttributeKey.from(name));
+    }
+
+    public static Builder newAttribute(AttributeKey key) {
+      return new Builder(key.getName()).namespace(key.getNamespace());
     }
 
     public static Builder newAttribute(org.obiba.magma.Attribute attr) {

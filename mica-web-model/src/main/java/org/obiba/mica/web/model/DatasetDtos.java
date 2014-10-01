@@ -10,18 +10,27 @@
 
 package org.obiba.mica.web.model;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.obiba.mica.core.domain.Attributes;
+import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetCategory;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
-import org.obiba.mica.core.domain.StudyTable;
+import org.obiba.opal.core.domain.taxonomy.Taxonomy;
+import org.obiba.opal.core.domain.taxonomy.Term;
+import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 
 @Component
 class DatasetDtos {
@@ -55,8 +64,8 @@ class DatasetDtos {
     hbuilder.setProject(dataset.getProject());
     hbuilder.setTable(dataset.getTable());
     if(!dataset.getStudyTables().isEmpty()) {
-      dataset.getStudyTables().forEach(studyTable -> hbuilder.addStudyTables(asDto(studyTable)
-          .setStudySummary(studySummaryDtos.asDto(studyTable.getStudyId()))));
+      dataset.getStudyTables().forEach(studyTable -> hbuilder
+          .addStudyTables(asDto(studyTable).setStudySummary(studySummaryDtos.asDto(studyTable.getStudyId()))));
     }
     builder.setExtension(Mica.HarmonizationDatasetDto.type, hbuilder.build());
 
@@ -81,6 +90,11 @@ class DatasetDtos {
 
   @NotNull
   Mica.DatasetVariableDto asDto(@NotNull DatasetVariable variable) {
+    return asDto(variable, Collections.emptyList());
+  }
+
+  @NotNull
+  Mica.DatasetVariableDto asDto(@NotNull DatasetVariable variable, @NotNull List<Taxonomy> taxonomies) {
     Mica.DatasetVariableDto.Builder builder = Mica.DatasetVariableDto.newBuilder() //
         .setId(variable.getId()) //
         .setDatasetId(variable.getDatasetId()) //
@@ -119,6 +133,12 @@ class DatasetDtos {
     if(variable.getAttributes() != null) {
       variable.getAttributes().asAttributeList()
           .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
+      if(taxonomies != null) {
+        taxonomies.forEach(taxonomy -> {
+          Mica.TermAttributesDto dto = asDto(taxonomy, variable.getAttributes());
+          if(dto.getVocabularyTermsCount() > 0) builder.addTermAttributes(dto);
+        });
+      }
     }
 
     if(variable.getCategories() != null) {
@@ -137,6 +157,44 @@ class DatasetDtos {
       variable.getAttributes().asAttributeList()
           .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
     }
+
+    return builder.build();
+  }
+
+  private Mica.TermAttributesDto asDto(Taxonomy taxonomy, Attributes attributes) {
+    Mica.TermAttributesDto.Builder builder = Mica.TermAttributesDto.newBuilder() //
+        .setTaxonomy(Mica.TaxonomyEntityDto.newBuilder().setName(taxonomy.getName()) //
+            .addAllTitles(localizedStringDtos.asDto(taxonomy.getTitle())) //
+            .addAllDescriptions(localizedStringDtos.asDto(taxonomy.getDescription())));
+
+    Map<String, Mica.TermAttributeDto.Builder> terms = Maps.newHashMap();
+    attributes.getAttributes(taxonomy.getName()).forEach(attr -> {
+      if(taxonomy.hasVocabulary(attr.getName())) {
+
+        Vocabulary vocabulary = taxonomy.getVocabulary(attr.getName());
+        String termStr = attr.getValues().getUndtermined();
+        if(!Strings.isNullOrEmpty(termStr) && vocabulary.hasTerm(termStr)) {
+          Mica.TermAttributeDto.Builder termBuilder;
+          if(terms.containsKey(vocabulary.getName())) {
+            termBuilder = terms.get(vocabulary.getName());
+          } else {
+            termBuilder = Mica.TermAttributeDto.newBuilder();
+            terms.put(vocabulary.getName(), termBuilder);
+            termBuilder.setVocabulary(Mica.TaxonomyEntityDto.newBuilder().setName(vocabulary.getName()) //
+                    .addAllTitles(localizedStringDtos.asDto(vocabulary.getTitle())) //
+                    .addAllDescriptions(localizedStringDtos.asDto(vocabulary.getDescription())));
+          }
+
+          Term term = vocabulary.getTerm(termStr);
+          termBuilder.addTerms(Mica.TaxonomyEntityDto.newBuilder().setName(termStr)
+                  .addAllTitles(localizedStringDtos.asDto(term.getTitle())) //
+              .addAllDescriptions(localizedStringDtos.asDto(term.getDescription()))
+          );
+        }
+      }
+    });
+
+    terms.values().forEach(builder::addVocabularyTerms);
 
     return builder.build();
   }

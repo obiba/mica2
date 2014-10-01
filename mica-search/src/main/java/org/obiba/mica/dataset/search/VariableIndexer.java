@@ -10,7 +10,6 @@
 
 package org.obiba.mica.dataset.search;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 
@@ -147,7 +147,7 @@ public class VariableIndexer {
       Iterable<DatasetVariable> variables) {
     for(DatasetVariable variable : variables) {
       if(!map.containsKey(variable.getParentId())) {
-        map.put(variable.getParentId(), new ArrayList<DatasetVariable>());
+        map.put(variable.getParentId(), Lists.newArrayList());
       }
       map.get(variable.getParentId()).add(variable);
     }

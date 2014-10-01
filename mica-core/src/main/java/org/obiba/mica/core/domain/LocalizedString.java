@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.core.util.StringUtil;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
@@ -37,6 +38,16 @@ public class LocalizedString extends TreeMap<String, String> {
   public String put(@NotNull Locale locale, @NotNull String str) {
     if(Strings.isNullOrEmpty(str)) return null;
     return super.put(locale == null ? LanguageTag.UNDETERMINED : locale.toLanguageTag(), str);
+  }
+
+  /**
+   * Get the value for the undetermined language.
+   * @return null if not found
+   */
+  @JsonIgnore
+  @Nullable
+  public String getUndtermined() {
+    return get(LanguageTag.UNDETERMINED);
   }
 
   public LocalizedString forLocale(@NotNull Locale locale, @NotNull String str) {

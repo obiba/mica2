@@ -1,18 +1,21 @@
 package org.obiba.mica.web.model;
 
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
-import org.obiba.mica.core.domain.LocalizedString;
-import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.micaConfig.MicaConfig;
+import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
+import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.springframework.stereotype.Component;
 
 import static org.obiba.mica.web.model.Mica.MicaConfigDto;
@@ -110,6 +113,11 @@ public class Dtos {
   @NotNull
   public Mica.DatasetVariableDto asDto(@NotNull DatasetVariable variable) {
     return datasetDtos.asDto(variable);
+  }
+
+  @NotNull
+  public Mica.DatasetVariableDto asDto(@NotNull DatasetVariable variable, List<Taxonomy> taxonomies) {
+    return datasetDtos.asDto(variable, taxonomies);
   }
 
   @NotNull

@@ -13,6 +13,7 @@ package org.obiba.mica.core.domain;
 import java.io.Serializable;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -24,11 +25,11 @@ public class Attributes extends TreeMap<String, LocalizedString> implements Attr
   private static final long serialVersionUID = -2442237574490031195L;
 
   public void addAttribute(String name, @Nullable String namespace, LocalizedString values) {
-    String key = Attribute.getMapKey(name, namespace);
-    if(!containsKey(key)) {
-      put(key, values);
+    AttributeKey key = new AttributeKey(name, namespace);
+    if(!containsKey(key.toString())) {
+      put(key.toString(), values);
     } else {
-      get(key).merge(values);
+      get(key.toString()).merge(values);
     }
   }
 
@@ -65,9 +66,16 @@ public class Attributes extends TreeMap<String, LocalizedString> implements Attr
     return Attribute.Builder.newAttribute(attName).namespace(namespace).values(values).build();
   }
 
+  @JsonIgnore
+  public List<Attribute> getAttributes(@Nullable String namespace) {
+    return entrySet().stream().filter(e -> AttributeKey.from(e.getKey()).hasNamespace(namespace))
+        .map(e -> Attribute.Builder.newAttribute(e.getKey()).values(e.getValue()).build()).collect(Collectors.toList());
+  }
+
   public List<Attribute> asAttributeList() {
     List<Attribute> attributes = Lists.newArrayList();
-    entrySet().forEach(entry -> attributes.add(Attribute.Builder.newAttribute(entry.getKey()).values(entry.getValue()).build()));
+    entrySet().forEach(
+        entry -> attributes.add(Attribute.Builder.newAttribute(entry.getKey()).values(entry.getValue()).build()));
     return attributes;
   }
 
