@@ -18,7 +18,7 @@ import javax.inject.Inject;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
-import org.obiba.mica.core.domain.Attribute;
+import org.obiba.mica.core.domain.AttributeKey;
 import org.obiba.mica.micaConfig.OpalService;
 import org.obiba.mica.search.ElasticSearchIndexer;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
@@ -95,7 +95,7 @@ public class VariableIndexConfiguration implements ElasticSearchIndexer.IndexCon
   private void createMappingTaxonomy(XContentBuilder mapping, Taxonomy taxonomy) throws IOException {
     for(Vocabulary vocabulary : taxonomy.getVocabularies()) {
       String namespace = taxonomy.getName().equals("Default") ? null : taxonomy.getName();
-      String field = Attribute.getMapKey(vocabulary.getName(), namespace);
+      String field = AttributeKey.getMapKey(vocabulary.getName(), namespace);
       if(vocabulary.hasTerms()) {
         // not analyzed: we want exact match
         mapping.startObject(field);
