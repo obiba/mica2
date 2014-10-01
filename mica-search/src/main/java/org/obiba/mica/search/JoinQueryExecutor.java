@@ -10,21 +10,18 @@
 
 package org.obiba.mica.search;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.inject.Inject;
-
-import org.obiba.mica.search.queries.AbstractDocumentQuery;
-import org.obiba.mica.search.queries.DatasetQuery;
-import org.obiba.mica.search.queries.NetworkQuery;
-import org.obiba.mica.search.queries.StudyQuery;
+import org.obiba.mica.search.queries.*;
 import org.obiba.mica.web.model.MicaSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.obiba.mica.web.model.MicaSearch.JoinQueryDto;
 import static org.obiba.mica.web.model.MicaSearch.JoinQueryResultDto;
@@ -42,7 +39,7 @@ public class JoinQueryExecutor {
   }
 
   @Inject
-  private AbstractDocumentQuery variableQuery;
+  private VariableQuery variableQuery;
 
   @Inject
   private DatasetQuery datasetQuery;
@@ -76,9 +73,11 @@ public class JoinQueryExecutor {
         break;
       case DATASET:
         execute(datasetQuery, variableQuery, studyQuery, networkQuery);
+        getDatasetCountStats();
         break;
       case STUDY:
         execute(studyQuery, variableQuery, datasetQuery, networkQuery);
+        getStudyCountStats();
         break;
       case NETWORK:
         execute(networkQuery, variableQuery, datasetQuery, studyQuery);
@@ -91,6 +90,50 @@ public class JoinQueryExecutor {
     if (studyQuery.getResultQuery() != null) builder.setStudyResultDto(studyQuery.getResultQuery());
     if (networkQuery.getResultQuery() != null) builder.setNetworkResultDto(networkQuery.getResultQuery());
     return builder.build();
+  }
+
+  private void getDatasetCountStats() {
+//    MicaSearch.QueryResultDto resultDto = datasetQuery.getResultQuery();
+//    if (resultDto == null || !resultDto.hasExtension(MicaSearch.DatasetResultDto.result)) return;
+//
+//    Map<String, Integer> varCounts = variableQuery.getStudyCounts();
+//    Map<String, Integer> dsCounts = studyQuery.getStudyCounts();
+//    Map<String, Integer> netCounts = networkQuery.getStudyCounts();
+//    log.info(">>> Counts var: {}, ds: {}, net: {}", varCounts, dsCounts, netCounts);
+//    MicaSearch.DatasetResultDto datasets = resultDto.getExtension(MicaSearch.DatasetResultDto.result);
+////    datasets.getDatasetsList().forEach(ds -> ds.get);
+  }
+
+  private void getStudyCountStats() {
+    MicaSearch.QueryResultDto resultDto = studyQuery.getResultQuery();
+    if (resultDto == null || !resultDto.hasExtension(MicaSearch.StudyResultDto.result)) return;
+
+    Map<String, Integer> varCounts = variableQuery.getStudyCounts();
+    Map<String, Integer> dsCounts = datasetQuery.getStudyCounts();
+    Map<String, Integer> hdsCounts = datasetQuery.getHarmonizationStudyCounts();
+    Map<String, Integer> netCounts = networkQuery.getStudyCounts();
+    log.info(">>> Counts var: {}, ds: {}, net: {}", varCounts, dsCounts, netCounts);
+    MicaSearch.StudyResultDto studyResultDto = resultDto.getExtension(MicaSearch.StudyResultDto.result);
+    studyResultDto.getSummariesList().forEach(summary -> {
+      int vars= 0;
+      int dats = 0;
+      int hdats = 0;
+      int nets = 0;
+      Integer c;
+
+      String id = summary.getId();
+      c = varCounts.get(id);
+      vars += c == null ? 0 : c;
+      c = dsCounts.get(id);
+      dats += c == null ? 0 : c;
+      c = hdsCounts.get(id);
+      hdats += c == null ? 0 : c;
+      c = netCounts.get(id);
+      nets += c == null ? 0 : c;
+      log.info(">>>> {} : vars: {} dats: {} hdats: {} nets:{}", id, vars, dats, hdats, nets);
+    });
+
+
   }
 
   private void execute(AbstractDocumentQuery docQuery, AbstractDocumentQuery... subQueries) throws IOException {

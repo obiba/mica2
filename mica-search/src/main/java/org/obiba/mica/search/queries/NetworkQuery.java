@@ -10,7 +10,9 @@
 
 package org.obiba.mica.search.queries;
 
-import java.util.Properties;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -29,10 +31,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
 
   private static final String NETWORK_FACETS_YML = "network-facets.yml";
 
-  private static Properties joinFields = new Properties();
-  static {
-    joinFields.setProperty("studyIds", "");
-  };
+  private static final String JOIN_FIELD = "studyIds";
 
   @Inject
   Dtos dtos;
@@ -65,7 +64,13 @@ public class NetworkQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  protected Properties getJoinFields() {
-    return joinFields;
+  protected List<String> getJoinFields() {
+    return Arrays.asList(JOIN_FIELD);
   }
+
+  @Override
+  public Map<String, Integer> getStudyCounts() {
+    return getStudyCounts(JOIN_FIELD);
+  }
+
 }

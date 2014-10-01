@@ -10,7 +10,9 @@
 
 package org.obiba.mica.search.queries;
 
-import java.util.Properties;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -30,12 +32,9 @@ public class DatasetQuery extends AbstractDocumentQuery {
 
   private static final String DATASET_FACETS_YML = "dataset-facets.yml";
 
-  private static Properties joinFields = new Properties();
+  private static final String STUDY_JOIN_FIELD = "studyTable.studyId";
 
-  static {
-    joinFields.setProperty("studyTable.studyId", "");
-    joinFields.setProperty("studyTables.studyId", "");
-  }
+  private static final String HARMONIZATION_JOIN_FIELD = "studyTables.studyId";
 
   @Inject
   Dtos dtos;
@@ -61,15 +60,23 @@ public class DatasetQuery extends AbstractDocumentQuery {
   @Override
   public void processHits(MicaSearch.QueryResultDto.Builder builder, SearchHits hits) {
     MicaSearch.DatasetResultDto.Builder resBuilder = MicaSearch.DatasetResultDto.newBuilder();
-    for(SearchHit hit : hits) {
+    for (SearchHit hit : hits) {
       resBuilder.addDatasets(dtos.asDto(publishedDatasetService.findById(hit.getId())));
     }
     builder.setExtension(MicaSearch.DatasetResultDto.result, resBuilder.build());
   }
 
   @Override
-  protected Properties getJoinFields() {
-    return joinFields;
+  protected List<String> getJoinFields() {
+    return Arrays.asList(STUDY_JOIN_FIELD, HARMONIZATION_JOIN_FIELD);
+  }
+
+  public Map<String, Integer> getStudyCounts() {
+    return getStudyCounts(STUDY_JOIN_FIELD);
+  }
+
+  public Map<String, Integer> getHarmonizationStudyCounts() {
+    return getStudyCounts(HARMONIZATION_JOIN_FIELD);
   }
 
 }

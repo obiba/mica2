@@ -10,7 +10,9 @@
 
 package org.obiba.mica.search.queries;
 
-import java.util.Properties;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -35,11 +37,7 @@ public class StudyQuery extends AbstractDocumentQuery {
   @Inject
   Dtos dtos;
 
-  private static Properties joinFields = new Properties();
-
-  static {
-    joinFields.setProperty("id", "");
-  }
+  private static final String JOIN_FIELD = "id";
 
   @Override
   public String getSearchIndex() {
@@ -66,7 +64,12 @@ public class StudyQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  protected Properties getJoinFields() {
-    return joinFields;
+  public Map<String, Integer> getStudyCounts() {
+    return getStudyCounts(JOIN_FIELD);
+  }
+
+  @Override
+  protected List<String> getJoinFields() {
+    return Arrays.asList(JOIN_FIELD);
   }
 }

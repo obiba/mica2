@@ -11,12 +11,15 @@
 package org.obiba.mica.search.queries;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
@@ -38,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import static org.obiba.mica.web.model.MicaSearch.QueryDto;
 import static org.obiba.mica.web.model.MicaSearch.QueryResultDto;
@@ -63,7 +67,7 @@ public abstract class AbstractDocumentQuery {
 
   protected QueryDto queryDto;
 
-  private QueryResultDto resultDto;
+  protected QueryResultDto resultDto;
 
   public QueryDto getQuery() {
     return queryDto;
@@ -108,7 +112,7 @@ public abstract class AbstractDocumentQuery {
         .setQuery(QueryDtoParser.newParser().parse(queryDto)) //
         .setNoFields();
 
-    aggregationYamlParser.getAggregations(getJoinFields()).forEach(requestBuilder::addAggregation);
+    aggregationYamlParser.getAggregations(getJoinFieldsAsProperties()).forEach(requestBuilder::addAggregation);
     log.info("Request: {}", requestBuilder);
     SearchResponse response = requestBuilder.execute().actionGet();
     List<String> ids = Lists.newArrayList();
@@ -116,6 +120,17 @@ public abstract class AbstractDocumentQuery {
         .forEach(aggregation -> ((Terms) aggregation).getBuckets().forEach(bucket -> ids.add(bucket.getKey())));
 
     return ids;
+  }
+
+  private Properties getJoinFieldsAsProperties() {
+    Properties props = new Properties();
+    try {
+      props.load(new StringReader(getJoinFields().stream().reduce((t, s) -> t + "=\r" + s).get()));
+    } catch (IOException e) {
+      log.error("Failed to create properties from query join fields: {}", e);
+    }
+
+    return props;
   }
 
   /**
@@ -239,7 +254,7 @@ public abstract class AbstractDocumentQuery {
    *
    * @return
    */
-  protected abstract Properties getJoinFields();
+  protected abstract List<String> getJoinFields();
 
   protected void addStudyIdFilters(List<String> studyIds) {
     if(studyIds == null || studyIds.size() == 0) return;
@@ -258,12 +273,21 @@ public abstract class AbstractDocumentQuery {
   }
 
   private List<MicaSearch.FilterQueryDto> createTermFilterQueryDtos(List<String> studyIds) {
-    List<MicaSearch.FilterQueryDto> filters = Lists.newArrayList();
-    Properties joinFields = getJoinFields();
-    for(Map.Entry<Object, Object> entry : joinFields.entrySet()) {
-      filters.add(QueryDtoHelper.createTermFilter(entry.getKey().toString(), studyIds));
-    }
-    return filters;
+    return  getJoinFields() //
+        .stream() //
+        .map(field -> QueryDtoHelper.createTermFilter(field, studyIds)) //
+        .collect(Collectors.toList());
+  }
+
+  public abstract Map<String, Integer> getStudyCounts();
+
+  protected Map<String, Integer> getStudyCounts(String joinField) {
+    if (resultDto == null) return Maps.newHashMap();
+    return resultDto.getAggsList().stream() //
+        .filter(agg -> joinField.equals(AggregationYamlParser.unformatName(agg.getAggregation()))) //
+        .map(d -> d.getExtension(MicaSearch.TermsAggregationResultDto.terms)) //
+        .flatMap((d) -> d.stream()) //
+        .collect(Collectors.toMap(MicaSearch.TermsAggregationResultDto::getKey, term -> term.getCount()));
   }
 
   /**
@@ -272,15 +296,12 @@ public abstract class AbstractDocumentQuery {
    * @param aggDtos
    * @return
    */
-  private List<String> getResponseStudyIds(List<MicaSearch.AggregationResultDto> aggDtos) {
-    Properties joinFields = getJoinFields();
-    List<String> ids = Lists.newArrayList();
-    aggDtos.forEach(aggDto -> {
-      if(joinFields.getProperty(AggregationYamlParser.unformatName(aggDto.getAggregation())) != null) {
-        aggDto.getExtension(MicaSearch.TermsAggregationResultDto.terms).forEach(term -> ids.add(term.getKey()));
-      }
-    });
-
+  protected List<String> getResponseStudyIds(List<MicaSearch.AggregationResultDto> aggDtos) {
+    List<String> ids =
+     aggDtos.stream() //
+        .filter(agg -> getJoinFields().contains(AggregationYamlParser.unformatName(agg.getAggregation()))) //
+        .map(d -> d.getExtension(MicaSearch.TermsAggregationResultDto.terms)) //
+        .flatMap((d) -> d.stream()).map(MicaSearch.TermsAggregationResultDto::getKey).collect(Collectors.toList());
     return ids;
   }
 

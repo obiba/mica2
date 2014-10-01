@@ -13,6 +13,7 @@ package org.obiba.mica.search.queries;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -49,11 +50,7 @@ public class VariableQuery extends AbstractDocumentQuery {
 
   private static final String VARIABLE_FACETS_YML = "variable-facets.yml";
 
-  private static Properties joinFields = new Properties();
-
-  static {
-    joinFields.setProperty("studyIds", "");
-  }
+  private static final String JOIN_FIELD = "studyIds";
 
   @Inject
   private OpalService opalService;
@@ -155,6 +152,15 @@ public class VariableQuery extends AbstractDocumentQuery {
 
   @Nullable
   @Override
+  public Map<String, Integer> getStudyCounts() {
+    return getStudyCounts(JOIN_FIELD);
+  }
+
+  @Override
+  protected List<String> getJoinFields() {
+    return Arrays.asList(JOIN_FIELD);
+  }
+
   protected Properties getAggregationsProperties() {
     Properties properties = new Properties();
     getTaxonomies().forEach(taxonomy -> {
@@ -168,11 +174,6 @@ public class VariableQuery extends AbstractDocumentQuery {
       }
     });
     return properties;
-  }
-
-  @Override
-  protected Properties getJoinFields() {
-    return joinFields;
   }
 
   @NotNull
