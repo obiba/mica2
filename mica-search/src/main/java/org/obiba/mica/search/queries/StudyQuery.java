@@ -25,11 +25,13 @@ import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.MicaSearch;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 @Component
+@Scope("request")
 public class StudyQuery extends AbstractDocumentQuery {
 
   private static final String STUDY_FACETS_YML = "study-facets.yml";

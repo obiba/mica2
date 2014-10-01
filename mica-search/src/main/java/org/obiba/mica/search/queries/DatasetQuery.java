@@ -25,6 +25,7 @@ import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.CountStatsDtoBuilders;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.MicaSearch;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Component;
 
 
 @Component
+@Scope("request")
 public class DatasetQuery extends AbstractDocumentQuery {
 
 

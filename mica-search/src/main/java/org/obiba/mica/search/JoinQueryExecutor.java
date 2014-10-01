@@ -25,12 +25,14 @@ import org.obiba.mica.search.queries.VariableQuery;
 import org.obiba.mica.web.model.MicaSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import static org.obiba.mica.web.model.MicaSearch.JoinQueryDto;
 import static org.obiba.mica.web.model.MicaSearch.JoinQueryResultDto;
 
 @Component
+@Scope("request")
 public class JoinQueryExecutor {
 
   private static final Logger log = LoggerFactory.getLogger(AbstractDocumentQuery.class);
