@@ -37,6 +37,7 @@ import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
@@ -47,6 +48,7 @@ import com.google.common.collect.Maps;
 import sun.util.locale.LanguageTag;
 
 @Component
+@Scope("request")
 public class VariableQuery extends AbstractDocumentQuery {
 
   private static final String VARIABLE_FACETS_YML = "variable-facets.yml";

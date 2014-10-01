@@ -13,16 +13,13 @@ package org.obiba.mica.dataset.search.rest.variable;
 import java.io.IOException;
 
 import javax.inject.Inject;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.json.JSONException;
 import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.web.model.MicaSearch;
+import org.springframework.context.annotation.Scope;
 
 import com.codahale.metrics.annotation.Timed;
 
@@ -31,18 +28,11 @@ import com.codahale.metrics.annotation.Timed;
  */
 @Path("/variables/_search")
 @RequiresAuthentication
+@Scope("request")
 public class PublishedDatasetVariablesSearchResource {
 
   @Inject
   JoinQueryExecutor joinQueryExecutor;
-
-  @GET
-  @Timed
-  public MicaSearch.JoinQueryResultDto list(@QueryParam("from") @DefaultValue("0") int from,
-      @QueryParam("size") @DefaultValue("10") int size)
-      throws JSONException, IOException {
-    return joinQueryExecutor.query(from, size);
-  }
 
   @POST
   @Timed
