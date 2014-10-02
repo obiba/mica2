@@ -44,6 +44,9 @@ class DatasetDtos {
   @Inject
   private StudySummaryDtos studySummaryDtos;
 
+  @Inject
+  private TaxonomyDtos taxonomyDtos;
+
   @NotNull
   Mica.DatasetDto.Builder asDtoBuilder(@NotNull StudyDataset dataset) {
     Mica.DatasetDto.Builder builder = asBuilder(dataset);
@@ -173,16 +176,14 @@ class DatasetDtos {
 
   private Mica.TermAttributesDto asDto(Taxonomy taxonomy, Attributes attributes) {
     Mica.TermAttributesDto.Builder builder = Mica.TermAttributesDto.newBuilder() //
-        .setTaxonomy(Mica.TaxonomyEntityDto.newBuilder().setName(taxonomy.getName()) //
-            .addAllTitles(localizedStringDtos.asDto(taxonomy.getTitle())) //
-            .addAllDescriptions(localizedStringDtos.asDto(taxonomy.getDescription())));
+        .setTaxonomy(taxonomyDtos.asDto(taxonomy));
 
     Map<String, Mica.TermAttributeDto.Builder> terms = Maps.newHashMap();
     attributes.getAttributes(taxonomy.getName()).forEach(attr -> {
       if(taxonomy.hasVocabulary(attr.getName())) {
 
         Vocabulary vocabulary = taxonomy.getVocabulary(attr.getName());
-        String termStr = attr.getValues().getUndtermined();
+        String termStr = attr.getValues().getUndetermined();
         if(!Strings.isNullOrEmpty(termStr) && vocabulary.hasTerm(termStr)) {
           Mica.TermAttributeDto.Builder termBuilder;
           if(terms.containsKey(vocabulary.getName())) {
@@ -190,16 +191,11 @@ class DatasetDtos {
           } else {
             termBuilder = Mica.TermAttributeDto.newBuilder();
             terms.put(vocabulary.getName(), termBuilder);
-            termBuilder.setVocabulary(Mica.TaxonomyEntityDto.newBuilder().setName(vocabulary.getName()) //
-                    .addAllTitles(localizedStringDtos.asDto(vocabulary.getTitle())) //
-                    .addAllDescriptions(localizedStringDtos.asDto(vocabulary.getDescription())));
+            termBuilder.setVocabulary(taxonomyDtos.asDto(vocabulary));
           }
 
           Term term = vocabulary.getTerm(termStr);
-          termBuilder.addTerms(Mica.TaxonomyEntityDto.newBuilder().setName(termStr)
-                  .addAllTitles(localizedStringDtos.asDto(term.getTitle())) //
-              .addAllDescriptions(localizedStringDtos.asDto(term.getDescription()))
-          );
+          termBuilder.addTerms(taxonomyDtos.asDto(term));
         }
       }
     });

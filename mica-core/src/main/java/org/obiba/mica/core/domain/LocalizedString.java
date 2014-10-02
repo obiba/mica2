@@ -46,7 +46,7 @@ public class LocalizedString extends TreeMap<String, String> {
    */
   @JsonIgnore
   @Nullable
-  public String getUndtermined() {
+  public String getUndetermined() {
     return get(LanguageTag.UNDETERMINED);
   }
 
