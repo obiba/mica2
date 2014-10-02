@@ -71,7 +71,7 @@ public class PublishedDatasetVariablesSearchResource {
   @POST
   @Timed
   @Path("_coverage")
-  public List<MicaSearch.TaxonomyCoverageDto> coverage(@QueryParam("taxonomy") List<String> taxonomyNames,
+  public MicaSearch.TaxonomiesCoverageDto coverage(@QueryParam("taxonomy") List<String> taxonomyNames,
       MicaSearch.JoinQueryDto joinQueryDto) throws IOException {
 
     MicaSearch.JoinQueryResultDto result = joinQueryExecutor.query(JoinQueryExecutor.QueryType.VARIABLE, joinQueryDto);
@@ -93,7 +93,12 @@ public class PublishedDatasetVariablesSearchResource {
         taxonomy -> taxonomyNames == null || taxonomyNames.isEmpty() || taxonomyNames.contains(taxonomy.getName()))
         .forEach(taxonomy -> addTaxonomyCoverage(coverages, taxonomy, aggsMap));
 
-    return coverages;
+    MicaSearch.TaxonomiesCoverageDto.Builder builder = MicaSearch.TaxonomiesCoverageDto.newBuilder()//
+        .setTotalCount(result.getVariableResultDto().getTotalCount()) //
+        .setTotalHits(result.getVariableResultDto().getTotalHits()) //
+        .addAllTaxonomies(coverages);
+
+    return builder.build();
   }
 
   private void addTaxonomyCoverage(List<MicaSearch.TaxonomyCoverageDto> coverages, Taxonomy taxonomy,
@@ -113,6 +118,11 @@ public class PublishedDatasetVariablesSearchResource {
       MicaSearch.VocabularyCoverageDto.Builder vocBuilder = MicaSearch.VocabularyCoverageDto.newBuilder();
       vocBuilder.setVocabulary(dtos.asDto(vocabulary));
       vocabulary.getTerms().forEach(term -> addTermCoverage(vocBuilder, term, counts));
+      // only one term can be applied at a time, then the sum of the term counts is the number of variables
+      // that cover this vocabulary
+      if(!vocabulary.isRepeatable() && counts != null) {
+        vocBuilder.setCount(counts.values().stream().mapToInt(c -> c).sum());
+      }
       taxoBuilder.addVocabularies(vocBuilder);
     }
   }

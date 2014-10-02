@@ -183,7 +183,7 @@ class DatasetDtos {
       if(taxonomy.hasVocabulary(attr.getName())) {
 
         Vocabulary vocabulary = taxonomy.getVocabulary(attr.getName());
-        String termStr = attr.getValues().getUndtermined();
+        String termStr = attr.getValues().getUndetermined();
         if(!Strings.isNullOrEmpty(termStr) && vocabulary.hasTerm(termStr)) {
           Mica.TermAttributeDto.Builder termBuilder;
           if(terms.containsKey(vocabulary.getName())) {
