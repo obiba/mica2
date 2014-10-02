@@ -74,7 +74,7 @@ public class PublishedDatasetVariablesSearchResource {
   public MicaSearch.TaxonomiesCoverageDto coverage(@QueryParam("taxonomy") List<String> taxonomyNames,
       MicaSearch.JoinQueryDto joinQueryDto) throws IOException {
 
-    MicaSearch.JoinQueryResultDto result = joinQueryExecutor.query(JoinQueryExecutor.QueryType.VARIABLE, joinQueryDto);
+    MicaSearch.JoinQueryResultDto result = joinQueryExecutor.queryAggregations(JoinQueryExecutor.QueryType.VARIABLE, joinQueryDto);
     List<MicaSearch.AggregationResultDto> aggregations = result.getVariableResultDto().getAggsList();
 
     Map<String, Map<String, Integer>> aggsMap = Maps.newHashMap();

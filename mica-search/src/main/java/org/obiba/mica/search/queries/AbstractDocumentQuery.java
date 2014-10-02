@@ -25,7 +25,6 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
@@ -44,6 +43,7 @@ import org.springframework.core.io.Resource;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.NONE;
 import static org.obiba.mica.web.model.MicaSearch.QueryDto;
 import static org.obiba.mica.web.model.MicaSearch.QueryResultDto;
 
@@ -92,6 +92,12 @@ public abstract class AbstractDocumentQuery {
   public abstract String getSearchType();
 
   protected abstract Resource getAggregationsDescription();
+
+  public enum Scope {
+    NONE,
+    DIGEST,
+    DETAIL
+  }
 
   @Nullable
   protected Properties getAggregationsProperties() {
@@ -150,53 +156,31 @@ public abstract class AbstractDocumentQuery {
   }
 
   /**
-   * Executes a 'match all' query to retrieve documents and aggregations
-   *
-   * @throws IOException
-   */
-  public void query(int from, int size, CountStatsData counts) throws IOException {
-    execute(QueryBuilders.matchAllQuery(), from, size, true, counts);
-  }
-
-  /**
    * Executes a filtered query to retrieve documents and aggregations
    *
    * @param studyIds
    * @return List of study IDs
    * @throws IOException
    */
-  public List<String> query(List<String> studyIds, CountStatsData counts) throws IOException {
+  public List<String> query(List<String> studyIds, CountStatsData counts, Scope scope) throws IOException {
     QueryDto tempQueryDto = queryDto == null ? createStudyIdFilters(studyIds) : addStudyIdFilters(studyIds);
-    return execute(QueryDtoParser.newParser().parse(tempQueryDto), tempQueryDto.getFrom(), tempQueryDto.getSize(), true,
+    return execute(QueryDtoParser.newParser().parse(tempQueryDto), tempQueryDto.getFrom(), tempQueryDto.getSize(), scope,
         counts);
-  }
-
-  /**
-   * Executes a filtered query to retrieve documents and aggregations, former being optional dependinggg on the type of
-   * query.
-   *
-   * @param studyIds
-   * @throws IOException
-   */
-  public List<String> queryAggrations(List<String> studyIds) throws IOException {
-    return queryAggregations(studyIds, true);
-  }
-
-  protected List<String> queryAggregations(List<String> studyIds, boolean details) throws IOException {
-    QueryDto tempQueryDto = queryDto == null ? createStudyIdFilters(studyIds) : addStudyIdFilters(studyIds);
-    return execute(QueryDtoParser.newParser().parse(tempQueryDto), tempQueryDto.getFrom(), tempQueryDto.getSize(),
-        details, null);
   }
 
   /**
    * Executes a query to retrieve documents and aggregations
    *
    * @param queryBuilder
-   * @param details
+   * @param from
+   * @param size
+   * @param scope
+   * @param counts
    * @return
    * @throws IOException
    */
-  protected List<String> execute(QueryBuilder queryBuilder, int from, int size, boolean details, CountStatsData counts) throws IOException {
+  protected List<String> execute(QueryBuilder queryBuilder, int from, int size, Scope scope, CountStatsData counts)
+      throws IOException {
     if(queryBuilder == null) return null;
 
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
@@ -218,7 +202,7 @@ public abstract class AbstractDocumentQuery {
     if(response.getHits().totalHits() > 0) {
       QueryResultDto.Builder builder = QueryResultDto.newBuilder()
           .setTotalHits((int) response.getHits().getTotalHits());
-      if(details) processHits(builder, response.getHits(), counts);
+      if(scope != NONE) processHits(builder, response.getHits(), scope, counts);
       processAggregations(builder, response.getAggregations());
       resultDto = builder.build();
     }
@@ -242,7 +226,7 @@ public abstract class AbstractDocumentQuery {
    * @param hits
    * @throws IOException
    */
-  protected abstract void processHits(QueryResultDto.Builder builder, SearchHits hits, CountStatsData counts) throws
+  protected abstract void processHits(QueryResultDto.Builder builder, SearchHits hits, Scope scope, CountStatsData counts) throws
       IOException;
 
   /**

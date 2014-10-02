@@ -101,6 +101,7 @@ message DatasetVariableResultDto {
 
 message DatasetResultDto {
   repeated obiba.mica.DatasetDto datasets = 1;
+  repeated obiba.mica.DocumentDigestDto digests = 2;
 
   extend QueryResultDto {
     optional DatasetResultDto result = 1001;
@@ -110,6 +111,7 @@ message DatasetResultDto {
 message StudyResultDto {
   repeated obiba.mica.StudySummaryDto summaries = 1;
   repeated obiba.mica.StudyDto studies = 2;
+  repeated obiba.mica.DocumentDigestDto digests = 3;
 
   extend QueryResultDto {
     optional StudyResultDto result = 1002;
@@ -138,6 +140,7 @@ message CountStatsDto {
 
 message NetworkResultDto {
   repeated obiba.mica.NetworkDto networks = 1;
+  repeated obiba.mica.DocumentDigestDto digests = 2;
 
   extend QueryResultDto {
     optional NetworkResultDto result = 1003;

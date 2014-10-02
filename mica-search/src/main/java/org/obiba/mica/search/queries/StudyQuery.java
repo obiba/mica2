@@ -13,22 +13,27 @@ package org.obiba.mica.search.queries;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.inject.Inject;
 
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.obiba.mica.search.CountStatsData;
-import org.obiba.mica.search.CountStatsDtoBuilders;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.web.model.Dtos;
+import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
+
+import static org.obiba.mica.search.CountStatsDtoBuilders.StudyCountStatsBuilder;
+import static org.obiba.mica.web.model.MicaSearch.QueryResultDto;
+import static org.obiba.mica.web.model.MicaSearch.StudyResultDto;
 
 @Component
 @Scope("request")
@@ -55,32 +60,32 @@ public class StudyQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  public void processHits(MicaSearch.QueryResultDto.Builder builder, SearchHits hits, CountStatsData counts) {
-    if(counts == null) {
-      processHits(builder, hits);
-      return;
-    }
+  public void processHits(QueryResultDto.Builder builder, SearchHits hits, Scope scope, CountStatsData counts) {
+    StudyResultDto.Builder resBuilder = StudyResultDto.newBuilder();
+    StudyCountStatsBuilder studyCountStatsBuilder = counts == null ? null : StudyCountStatsBuilder.newBuilder(counts);
 
-    MicaSearch.StudyResultDto.Builder resBuilder = MicaSearch.StudyResultDto.newBuilder();
-    CountStatsDtoBuilders.StudyCountStatsBuilder studyCountStatsBuilder = CountStatsDtoBuilders.StudyCountStatsBuilder
-        .newBuilder(counts);
+    Consumer<Study> addDto = getStudyConsumer(scope, resBuilder, studyCountStatsBuilder);
 
     for(SearchHit hit : hits) {
-      Study study = publishedStudyService.findById(hit.getId());
-      resBuilder.addSummaries(dtos.asSummaryDtoBuilder(study)
-          .setExtension(MicaSearch.CountStatsDto.studyCountStats, studyCountStatsBuilder.build(study)).build());
-
+      addDto.accept(publishedStudyService.findById(hit.getId()));
     }
 
-    builder.setExtension(MicaSearch.StudyResultDto.result, resBuilder.build());
+    builder.setExtension(StudyResultDto.result, resBuilder.build());
   }
 
-  private void processHits(MicaSearch.QueryResultDto.Builder builder, SearchHits hits) {
-    MicaSearch.StudyResultDto.Builder resBuilder = MicaSearch.StudyResultDto.newBuilder();
-    for(SearchHit hit : hits) {
-      resBuilder.addSummaries(dtos.asSummaryDto(publishedStudyService.findById(hit.getId())));
-    }
-    builder.setExtension(MicaSearch.StudyResultDto.result, resBuilder.build());
+  private Consumer<Study> getStudyConsumer(Scope scope, StudyResultDto.Builder resBuilder,
+      StudyCountStatsBuilder studyCountStatsBuilder) {
+
+    return scope == Scope.DETAIL
+      ? (study) -> {
+        Mica.StudySummaryDto.Builder summaryBuilder = dtos.asSummaryDtoBuilder(study);
+        if(studyCountStatsBuilder != null) {
+          summaryBuilder.setExtension(MicaSearch.CountStatsDto.studyCountStats, studyCountStatsBuilder.build(study))
+              .build();
+        }
+        resBuilder.addSummaries(summaryBuilder.build());
+      }
+      : (study) -> resBuilder.addDigests(dtos.asDigestDtoBuilder(study).build());
   }
 
   @Override

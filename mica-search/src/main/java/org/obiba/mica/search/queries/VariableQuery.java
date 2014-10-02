@@ -47,6 +47,9 @@ import com.google.common.collect.Maps;
 
 import sun.util.locale.LanguageTag;
 
+import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.DETAIL;
+import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.NONE;
+
 @Component
 @Scope("request")
 public class VariableQuery extends AbstractDocumentQuery {
@@ -78,7 +81,8 @@ public class VariableQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  protected void processHits(MicaSearch.QueryResultDto.Builder builder, SearchHits hits, CountStatsData counts) throws IOException {
+  protected void processHits(MicaSearch.QueryResultDto.Builder builder, SearchHits hits, Scope scope,
+      CountStatsData counts) throws IOException {
     MicaSearch.DatasetVariableResultDto.Builder resBuilder = MicaSearch.DatasetVariableResultDto.newBuilder();
     Map<String, Study> studyMap = Maps.newHashMap();
 
@@ -144,8 +148,8 @@ public class VariableQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  public List<String> queryAggrations(List<String> studyIds) throws IOException {
-    return queryAggregations(studyIds, false);
+  public List<String> query(List<String> studyIds, CountStatsData counts, Scope scope) throws IOException {
+    return super.query(studyIds, null, scope == DETAIL ? DETAIL : NONE);
   }
 
   @Override

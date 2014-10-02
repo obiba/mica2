@@ -20,6 +20,7 @@ import org.obiba.opal.core.domain.taxonomy.Term;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.springframework.stereotype.Component;
 
+import static org.obiba.mica.web.model.Mica.DocumentDigestDto;
 import static org.obiba.mica.web.model.Mica.MicaConfigDto;
 import static org.obiba.mica.web.model.Mica.MicaConfigDtoOrBuilder;
 import static org.obiba.mica.web.model.Mica.NetworkDto;
@@ -45,6 +46,9 @@ public class Dtos {
   private StudySummaryDtos studySummaryDtos;
 
   @Inject
+  private DocumentDigestDtos documentDigestDtos;
+
+  @Inject
   private TempFileDtos tempFileDtos;
 
   @Inject
@@ -59,6 +63,36 @@ public class Dtos {
   @NotNull
   public StudyDto asDto(@NotNull Study study) {
     return studyDtos.asDto(study);
+  }
+
+  @NotNull
+  public DocumentDigestDto.Builder asDigestDtoBuilder(@NotNull Dataset dataset) {
+    return documentDigestDtos.asDtoBuilder(dataset);
+  }
+
+  @NotNull
+  public DocumentDigestDto asDigestDto(@NotNull Dataset dataset) {
+    return documentDigestDtos.asDto(dataset);
+  }
+
+  @NotNull
+  public DocumentDigestDto.Builder asDigestDtoBuilder(@NotNull Study study) {
+    return documentDigestDtos.asDtoBuilder(study);
+  }
+
+  @NotNull
+  public DocumentDigestDto asDigestDto(@NotNull Study study) {
+    return documentDigestDtos.asDto(study);
+  }
+
+  @NotNull
+  public DocumentDigestDto.Builder asDigestDtoBuilder(@NotNull Network network) {
+    return documentDigestDtos.asDtoBuilder(network);
+  }
+
+  @NotNull
+  public DocumentDigestDto asDigestDto(@NotNull Network network) {
+    return documentDigestDtos.asDto(network);
   }
 
   @NotNull

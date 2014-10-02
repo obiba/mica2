@@ -13,6 +13,7 @@ package org.obiba.mica.search.queries;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.inject.Inject;
 
@@ -22,15 +23,17 @@ import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.search.DatasetIndexer;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
 import org.obiba.mica.search.CountStatsData;
-import org.obiba.mica.search.CountStatsDtoBuilders;
 import org.obiba.mica.web.model.Dtos;
+import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
-
+import static org.obiba.mica.search.CountStatsDtoBuilders.DatasetCountStatsBuilder;
+import static org.obiba.mica.web.model.MicaSearch.DatasetResultDto;
+import static org.obiba.mica.web.model.MicaSearch.QueryResultDto;
 
 @Component
 @Scope("request")
@@ -65,31 +68,36 @@ public class DatasetQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  public void processHits(MicaSearch.QueryResultDto.Builder builder, SearchHits hits, CountStatsData counts) {
-    if (counts == null) {
-      processHits(builder, hits);
-      return;
-    }
+  public void processHits(QueryResultDto.Builder builder, SearchHits hits, Scope scope,
+      CountStatsData counts) {
+    DatasetResultDto.Builder resBuilder = DatasetResultDto.newBuilder();
+    DatasetCountStatsBuilder datasetCountStatsBuilder = counts == null
+        ? null
+        : DatasetCountStatsBuilder.newBuilder(counts);
 
-    MicaSearch.DatasetResultDto.Builder resBuilder = MicaSearch.DatasetResultDto.newBuilder();
-    CountStatsDtoBuilders.DatasetCountStatsBuilder datasetCountStatsBuilder
-        = CountStatsDtoBuilders.DatasetCountStatsBuilder.newBuilder(counts);
+    Consumer<Dataset> addDto = getDatasetConsumer(scope, resBuilder, datasetCountStatsBuilder);
 
     for (SearchHit hit : hits) {
-      Dataset dataset = publishedDatasetService.findById(hit.getId());
-      resBuilder.addDatasets(dtos.asDtoBuilder(dataset)
-          .setExtension(MicaSearch.CountStatsDto.datasetCountStats, datasetCountStatsBuilder.build(dataset)).build());
+      addDto.accept(publishedDatasetService.findById(hit.getId()));
     }
 
-    builder.setExtension(MicaSearch.DatasetResultDto.result, resBuilder.build());
+    builder.setExtension(DatasetResultDto.result, resBuilder.build());
   }
 
-  private void processHits(MicaSearch.QueryResultDto.Builder builder, SearchHits hits) {
-    MicaSearch.DatasetResultDto.Builder resBuilder = MicaSearch.DatasetResultDto.newBuilder();
-    for (SearchHit hit : hits) {
-      resBuilder.addDatasets(dtos.asDto(publishedDatasetService.findById(hit.getId())));
-    }
-    builder.setExtension(MicaSearch.DatasetResultDto.result, resBuilder.build());
+  private Consumer<Dataset> getDatasetConsumer(Scope scope, DatasetResultDto.Builder resBuilder,
+      DatasetCountStatsBuilder datasetCountStatsBuilder) {
+
+    return scope == Scope.DETAIL
+      ? (dataset) -> {
+        Mica.DatasetDto.Builder datasetBuilder = dtos.asDtoBuilder(dataset);
+        if(datasetCountStatsBuilder != null) {
+          datasetBuilder
+              .setExtension(MicaSearch.CountStatsDto.datasetCountStats, datasetCountStatsBuilder.build(dataset))
+              .build();
+        }
+        resBuilder.addDatasets(datasetBuilder.build());
+      }
+      : (dataset) -> resBuilder.addDigests(dtos.asDigestDtoBuilder(dataset).build());
   }
 
   @Override
