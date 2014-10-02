@@ -16,6 +16,8 @@ import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
+import org.obiba.opal.core.domain.taxonomy.Term;
+import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.springframework.stereotype.Component;
 
 import static org.obiba.mica.web.model.Mica.MicaConfigDto;
@@ -47,6 +49,9 @@ public class Dtos {
 
   @Inject
   private DatasetDtos datasetDtos;
+
+  @Inject
+  private TaxonomyDtos taxonomyDtos;
 
   @Inject
   private LocalizedStringDtos localizedStringDtos;
@@ -118,7 +123,7 @@ public class Dtos {
   @NotNull
   public Mica.DatasetDto.Builder asDtoBuilder(@NotNull Dataset dataset) {
     if (dataset instanceof StudyDataset) {
-      return datasetDtos.asDtoBuilder((StudyDataset)dataset);
+      return datasetDtos.asDtoBuilder((StudyDataset) dataset);
     } else {
       return datasetDtos.asDtoBuilder((HarmonizationDataset) dataset);
     }
@@ -147,6 +152,19 @@ public class Dtos {
   @NotNull
   public Mica.DatasetVariableResolverDto.Builder asDto(@NotNull DatasetVariable.IdResolver variableResolver) {
     return datasetDtos.asDto(variableResolver);
+  }
+
+  @NotNull
+  public Mica.TaxonomyEntityDto asDto(@NotNull Taxonomy taxonomy) {
+    return taxonomyDtos.asDto(taxonomy);
+  }
+  @NotNull
+  public Mica.TaxonomyEntityDto asDto(@NotNull Vocabulary vocabulary) {
+    return taxonomyDtos.asDto(vocabulary);
+  }
+  @NotNull
+  public Mica.TaxonomyEntityDto asDto(@NotNull Term term) {
+    return taxonomyDtos.asDto(term);
   }
 
   @NotNull
