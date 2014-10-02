@@ -120,8 +120,8 @@ public class PublishedDatasetVariablesSearchResource {
       vocabulary.getTerms().forEach(term -> addTermCoverage(vocBuilder, term, counts));
       // only one term can be applied at a time, then the sum of the term counts is the number of variables
       // that cover this vocabulary
-      if(!vocabulary.isRepeatable() && counts != null) {
-        vocBuilder.setCount(counts.values().stream().mapToInt(c -> c).sum());
+      if(!vocabulary.isRepeatable()) {
+        vocBuilder.setCount(counts == null ? 0 : counts.values().stream().mapToInt(c -> c).sum());
       }
       taxoBuilder.addVocabularies(vocBuilder);
     }
