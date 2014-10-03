@@ -184,18 +184,19 @@ message StatsAggregationResultDto {
 
 message TermCoverageDto {
   required obiba.mica.TaxonomyEntityDto term = 1;
-  optional int32 count = 2;
+  required int32 hits = 2;
 }
 
 message VocabularyCoverageDto {
   required obiba.mica.TaxonomyEntityDto vocabulary = 1;
-  optional int32 count = 2;
-  repeated TermCoverageDto terms = 3;
+  required int32 hits = 2;
+  optional int32 count = 3; // sum of the hits of vocabulary allows multiple terms
+  repeated TermCoverageDto terms = 4;
 }
 
 message TaxonomyCoverageDto {
   required obiba.mica.TaxonomyEntityDto taxonomy = 1;
-  optional int32 count = 2;
+  required int32 hits = 2;
   repeated VocabularyCoverageDto vocabularies = 3;
 }
 

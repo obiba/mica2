@@ -106,33 +106,40 @@ public class PublishedDatasetVariablesSearchResource {
     if(taxonomy.hasVocabularies()) {
       MicaSearch.TaxonomyCoverageDto.Builder taxoBuilder = MicaSearch.TaxonomyCoverageDto.newBuilder();
       taxoBuilder.setTaxonomy(dtos.asDto(taxonomy));
-      taxonomy.getVocabularies().forEach(vocabulary -> addVocabularyCoverage(taxoBuilder, vocabulary,
-          aggsMap.get(AttributeKey.getMapKey(vocabulary.getName(), taxonomy.getName()))));
+      List<Integer> hits = Lists.newArrayList();
+      String namespace = taxonomy.getName().equals("Default") ? null : taxonomy.getName();
+      taxonomy.getVocabularies().forEach(vocabulary -> hits.add(addVocabularyCoverage(taxoBuilder, vocabulary,
+          aggsMap.get(AttributeKey.getMapKey(vocabulary.getName(), namespace)))));
+      taxoBuilder.setHits(hits.isEmpty() ? 0 : hits.stream().mapToInt(x -> x).sum());
       coverages.add(taxoBuilder.build());
     }
   }
 
-  private void addVocabularyCoverage(MicaSearch.TaxonomyCoverageDto.Builder taxoBuilder, Vocabulary vocabulary,
-      Map<String, Integer> counts) {
+  private int addVocabularyCoverage(MicaSearch.TaxonomyCoverageDto.Builder taxoBuilder, Vocabulary vocabulary,
+      Map<String, Integer> hits) {
+    int sumOfHits = 0;
     if(vocabulary.hasTerms()) {
       MicaSearch.VocabularyCoverageDto.Builder vocBuilder = MicaSearch.VocabularyCoverageDto.newBuilder();
       vocBuilder.setVocabulary(dtos.asDto(vocabulary));
-      vocabulary.getTerms().forEach(term -> addTermCoverage(vocBuilder, term, counts));
-      // only one term can be applied at a time, then the sum of the term counts is the number of variables
+      vocabulary.getTerms().forEach(term -> addTermCoverage(vocBuilder, term, hits));
+      // only one term can be applied at a time, then the sum of the term hits is the number of variables
       // that cover this vocabulary
+      sumOfHits = hits == null ? 0 : hits.values().stream().mapToInt(x -> x).sum();
+      vocBuilder.setHits(sumOfHits);
       if(!vocabulary.isRepeatable()) {
-        vocBuilder.setCount(counts == null ? 0 : counts.values().stream().mapToInt(c -> c).sum());
+        vocBuilder.setCount(sumOfHits);
       }
       taxoBuilder.addVocabularies(vocBuilder);
     }
+    return sumOfHits;
   }
 
   private void addTermCoverage(MicaSearch.VocabularyCoverageDto.Builder vocBuilder, Term term,
-      Map<String, Integer> counts) {
+      Map<String, Integer> hits) {
     MicaSearch.TermCoverageDto.Builder termBuilder = MicaSearch.TermCoverageDto.newBuilder();
     termBuilder.setTerm(dtos.asDto(term));
-    termBuilder.setCount(0);
-    if(counts != null && counts.containsKey(term.getName())) termBuilder.setCount(counts.get(term.getName()));
+    termBuilder.setHits(0);
+    if(hits != null && hits.containsKey(term.getName())) termBuilder.setHits(hits.get(term.getName()));
     vocBuilder.addTerms(termBuilder);
   }
 
