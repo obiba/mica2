@@ -136,6 +136,11 @@ message StudyDto {
   }
 }
 
+message DocumentDigestDto {
+  required string id = 1;
+  repeated LocalizedStringDto name = 2;
+}
+
 message NetworkDto {
   optional string id = 1;
   optional TimestampsDto timestamps = 2;

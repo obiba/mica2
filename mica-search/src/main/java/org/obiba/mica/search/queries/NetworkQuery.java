@@ -13,6 +13,7 @@ package org.obiba.mica.search.queries;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.inject.Inject;
 
@@ -22,13 +23,17 @@ import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.search.NetworkIndexer;
 import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.search.CountStatsData;
-import org.obiba.mica.search.CountStatsDtoBuilders;
 import org.obiba.mica.web.model.Dtos;
+import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
+
+import static org.obiba.mica.search.CountStatsDtoBuilders.NetworkCountStatsBuilder;
+import static org.obiba.mica.web.model.MicaSearch.NetworkResultDto;
+import static org.obiba.mica.web.model.MicaSearch.QueryResultDto;
 
 @Component
 @Scope("request")
@@ -60,31 +65,35 @@ public class NetworkQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  public void processHits(MicaSearch.QueryResultDto.Builder builder, SearchHits hits, CountStatsData counts) {
-    if (counts == null) {
-      processHits(builder, hits);
-      return;
-    }
+  public void processHits(QueryResultDto.Builder builder, SearchHits hits, Scope scope, CountStatsData counts) {
+    NetworkResultDto.Builder resBuilder = NetworkResultDto.newBuilder();
+    NetworkCountStatsBuilder networkCountStatsBuilder = counts == null
+        ? null
+        : NetworkCountStatsBuilder.newBuilder(counts);
 
-    MicaSearch.NetworkResultDto.Builder resBuilder = MicaSearch.NetworkResultDto.newBuilder();
-    CountStatsDtoBuilders.NetworkCountStatsBuilder networkCountStatsBuilder
-        = CountStatsDtoBuilders.NetworkCountStatsBuilder.newBuilder(counts);
+    Consumer<Network> addDto = getNetworkConsumer(scope, resBuilder, networkCountStatsBuilder);
 
     for(SearchHit hit : hits) {
-      Network network = publishedNetworkService.findById(hit.getId());
-      resBuilder.addNetworks(dtos.asDtoBuilder(network)
-          .setExtension(MicaSearch.CountStatsDto.networkCountStats, networkCountStatsBuilder.build(network)).build());
+      addDto.accept(publishedNetworkService.findById(hit.getId()));
     }
 
-    builder.setExtension(MicaSearch.NetworkResultDto.result, resBuilder.build());
+    builder.setExtension(NetworkResultDto.result, resBuilder.build());
   }
 
-  private void processHits(MicaSearch.QueryResultDto.Builder builder, SearchHits hits) {
-    MicaSearch.NetworkResultDto.Builder resBuilder = MicaSearch.NetworkResultDto.newBuilder();
-    for(SearchHit hit : hits) {
-      resBuilder.addNetworks(dtos.asDto(publishedNetworkService.findById(hit.getId())));
-    }
-    builder.setExtension(MicaSearch.NetworkResultDto.result, resBuilder.build());
+  private Consumer<Network> getNetworkConsumer(Scope scope, NetworkResultDto.Builder resBuilder,
+      NetworkCountStatsBuilder networkCountStatsBuilder) {
+
+    return scope == Scope.DETAIL
+      ? (network) -> {
+        Mica.NetworkDto.Builder networkBuilder = dtos.asDtoBuilder(network);
+        if(networkCountStatsBuilder != null) {
+          networkBuilder
+              .setExtension(MicaSearch.CountStatsDto.networkCountStats, networkCountStatsBuilder.build(network))
+              .build();
+        }
+        resBuilder.addNetworks(networkBuilder.build());
+      }
+      : (network) -> resBuilder.addDigests(dtos.asDigestDtoBuilder(network).build());
   }
 
 
