@@ -168,6 +168,8 @@ public class VariableQuery extends AbstractDocumentQuery {
     return Arrays.asList(JOIN_FIELD);
   }
 
+  @NotNull
+  @Override
   protected Properties getAggregationsProperties() {
     Properties properties = new Properties();
     getTaxonomies().forEach(taxonomy -> {

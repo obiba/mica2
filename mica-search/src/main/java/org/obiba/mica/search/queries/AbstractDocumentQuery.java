@@ -111,12 +111,13 @@ public abstract class AbstractDocumentQuery {
    * @throws IOException
    */
   public List<String> queryStudyIds() throws IOException {
-    if (queryDto == null) return null;
+    if(queryDto == null) return null;
     return queryStudyIds(queryDto);
   }
 
   /**
    * Used on a document query to extract studsy IDs without details
+   *
    * @param studyIds
    * @return
    * @throws IOException
@@ -148,7 +149,7 @@ public abstract class AbstractDocumentQuery {
     Properties props = new Properties();
     try {
       props.load(new StringReader(getJoinFields().stream().reduce((t, s) -> t + "=\r" + s).get()));
-    } catch (IOException e) {
+    } catch(IOException e) {
       log.error("Failed to create properties from query join fields: {}", e);
     }
 
@@ -164,8 +165,8 @@ public abstract class AbstractDocumentQuery {
    */
   public List<String> query(List<String> studyIds, CountStatsData counts, Scope scope) throws IOException {
     QueryDto tempQueryDto = queryDto == null ? createStudyIdFilters(studyIds) : addStudyIdFilters(studyIds);
-    return execute(QueryDtoParser.newParser().parse(tempQueryDto), tempQueryDto.getFrom(), tempQueryDto.getSize(), scope,
-        counts);
+    return execute(QueryDtoParser.newParser().parse(tempQueryDto), tempQueryDto.getFrom(), tempQueryDto.getSize(),
+        scope, counts);
   }
 
   /**
@@ -194,11 +195,18 @@ public abstract class AbstractDocumentQuery {
     if(ignoreFields()) requestBuilder.setNoFields();
 
     aggregationYamlParser.setLocales(micaConfigService.getConfig().getLocales());
-    aggregationYamlParser.getAggregations(getAggregationsDescription()).forEach(requestBuilder::addAggregation);
-    aggregationYamlParser.getAggregations(getAggregationsProperties()).forEach(requestBuilder::addAggregation);
+    Map<String, Properties> subAggregations = Maps.newHashMap();
+    Properties aggregationProperties = getAggregationsProperties();
+    if(queryDto != null && queryDto.getAggsByCount() > 0) {
+      queryDto.getAggsByList().forEach(field -> subAggregations.put(field, aggregationProperties));
+    }
+    aggregationYamlParser.getAggregations(getAggregationsDescription(), subAggregations)
+        .forEach(requestBuilder::addAggregation);
+    aggregationYamlParser.getAggregations(aggregationProperties).forEach(requestBuilder::addAggregation);
 
     log.info("Request: {}", requestBuilder.toString());
     SearchResponse response = requestBuilder.execute().actionGet();
+    log.info("Response: {}", response.toString());
     if(response.getHits().totalHits() > 0) {
       QueryResultDto.Builder builder = QueryResultDto.newBuilder()
           .setTotalHits((int) response.getHits().getTotalHits());
@@ -226,8 +234,8 @@ public abstract class AbstractDocumentQuery {
    * @param hits
    * @throws IOException
    */
-  protected abstract void processHits(QueryResultDto.Builder builder, SearchHits hits, Scope scope, CountStatsData counts) throws
-      IOException;
+  protected abstract void processHits(QueryResultDto.Builder builder, SearchHits hits, Scope scope,
+      CountStatsData counts) throws IOException;
 
   /**
    * Creates domain aggregation DTOs
@@ -250,12 +258,13 @@ public abstract class AbstractDocumentQuery {
 
   protected QueryDto addStudyIdFilters(List<String> studyIds) {
     if(studyIds == null || studyIds.size() == 0) return queryDto;
-    return  QueryDtoHelper.addShouldBoolFilters(QueryDto.newBuilder(queryDto).build(), createTermFilterQueryDtos(studyIds));
+    return QueryDtoHelper
+        .addShouldBoolFilters(QueryDto.newBuilder(queryDto).build(), createTermFilterQueryDtos(studyIds));
   }
 
   protected QueryDto createStudyIdFilters(List<String> studyIds) {
     QueryDto.Builder builder = QueryDto.newBuilder().setSize(DEFAULT_SIZE).setFrom(DEFAULT_FROM);
-    if (studyIds != null && studyIds.size() > 0) {
+    if(studyIds != null && studyIds.size() > 0) {
       MicaSearch.BoolFilterQueryDto.Builder boolBuilder = MicaSearch.BoolFilterQueryDto.newBuilder();
       boolBuilder.addAllShould(createTermFilterQueryDtos(studyIds));
       builder.setFilteredQuery(MicaSearch.FilteredQueryDto.newBuilder().setFilter(boolBuilder));
@@ -265,7 +274,7 @@ public abstract class AbstractDocumentQuery {
   }
 
   private List<MicaSearch.FilterQueryDto> createTermFilterQueryDtos(List<String> studyIds) {
-    return  getJoinFields() //
+    return getJoinFields() //
         .stream() //
         .map(field -> QueryDtoHelper.createTermFilter(field, studyIds)) //
         .collect(Collectors.toList());
@@ -274,7 +283,7 @@ public abstract class AbstractDocumentQuery {
   public abstract Map<String, Integer> getStudyCounts();
 
   protected Map<String, Integer> getStudyCounts(String joinField) {
-    if (resultDto == null) return Maps.newHashMap();
+    if(resultDto == null) return Maps.newHashMap();
     return resultDto.getAggsList().stream() //
         .filter(agg -> joinField.equals(AggregationYamlParser.unformatName(agg.getAggregation()))) //
         .map(d -> d.getExtension(MicaSearch.TermsAggregationResultDto.terms)) //
@@ -289,8 +298,7 @@ public abstract class AbstractDocumentQuery {
    * @return
    */
   protected List<String> getResponseStudyIds(List<MicaSearch.AggregationResultDto> aggDtos) {
-    List<String> ids =
-     aggDtos.stream() //
+    List<String> ids = aggDtos.stream() //
         .filter(agg -> getJoinFields().contains(AggregationYamlParser.unformatName(agg.getAggregation()))) //
         .map(d -> d.getExtension(MicaSearch.TermsAggregationResultDto.terms)) //
         .flatMap((d) -> d.stream()).map(MicaSearch.TermsAggregationResultDto::getKey).collect(Collectors.toList());

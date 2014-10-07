@@ -14,6 +14,7 @@ message QueryDto {
   required int32 from = 1 [default = 0];
   required int32 size = 2 [default = 10];
   optional FilteredQueryDto filteredQuery = 3;
+  repeated string aggsBy = 4; // sub aggregations for the listed fields
 }
 
 message FilteredQueryDto {
@@ -164,6 +165,7 @@ message AggregationResultDto {
 message TermsAggregationResultDto {
   required string key = 1;
   required int32 count = 2;
+  repeated AggregationResultDto aggs = 3;
 
   extend AggregationResultDto {
     repeated TermsAggregationResultDto terms = 1000;

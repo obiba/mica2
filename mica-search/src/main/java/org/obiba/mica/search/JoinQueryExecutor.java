@@ -22,7 +22,6 @@ import org.obiba.mica.search.queries.DatasetQuery;
 import org.obiba.mica.search.queries.NetworkQuery;
 import org.obiba.mica.search.queries.StudyQuery;
 import org.obiba.mica.search.queries.VariableQuery;
-import org.obiba.mica.web.model.MicaSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -30,7 +29,6 @@ import org.springframework.stereotype.Component;
 
 import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.DETAIL;
 import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.DIGEST;
-import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.NONE;
 import static org.obiba.mica.web.model.MicaSearch.JoinQueryDto;
 import static org.obiba.mica.web.model.MicaSearch.JoinQueryResultDto;
 
@@ -59,11 +57,11 @@ public class JoinQueryExecutor {
   @Inject
   private NetworkQuery networkQuery;
 
-  public MicaSearch.JoinQueryResultDto queryAggregations(QueryType type, JoinQueryDto joinQueryDto) throws IOException {
-    return query(type, joinQueryDto, null, NONE);
+  public JoinQueryResultDto queryAggregations(QueryType type, JoinQueryDto joinQueryDto) throws IOException {
+    return query(type, joinQueryDto, null, DIGEST);
   }
 
-  public MicaSearch.JoinQueryResultDto query(QueryType type, JoinQueryDto joinQueryDto) throws IOException {
+  public JoinQueryResultDto query(QueryType type, JoinQueryDto joinQueryDto) throws IOException {
     return query(type, joinQueryDto, CountStatsData.newBuilder(), DETAIL);
   }
 
