@@ -17,14 +17,15 @@ import javax.annotation.Nullable;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.yaml.YamlPropertiesFactoryBean;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 
 @Component
 public class AggregationYamlParser {
@@ -59,32 +60,44 @@ public class AggregationYamlParser {
 
   private List<Locale> locales;
 
-  public Iterable<AbstractAggregationBuilder> getAggregations(String file) throws IOException {
-    return getAggregations(new ClassPathResource(file));
-  }
-
   public void setLocales(List<Locale> locales) {
     this.locales = locales;
   }
 
-  public Iterable<AbstractAggregationBuilder> getAggregations(@Nullable Resource description) throws IOException {
-    if (description == null) return Collections.emptyList();
+  public Iterable<AbstractAggregationBuilder> getAggregations(@Nullable Resource description,
+      @Nullable Map<String, Properties> subProperties) throws IOException {
+    if(description == null) return Collections.emptyList();
 
     YamlPropertiesFactoryBean yamlPropertiesFactoryBean = new YamlPropertiesFactoryBean();
     yamlPropertiesFactoryBean.setResources(new Resource[] { description });
-    return getAggregations(yamlPropertiesFactoryBean.getObject());
+    return getAggregations(yamlPropertiesFactoryBean.getObject(), subProperties);
   }
 
   public Iterable<AbstractAggregationBuilder> getAggregations(@Nullable Properties properties) throws IOException {
-    if (properties == null) return Collections.emptyList();
+    return getAggregations(properties, null);
+  }
 
+  public Iterable<AbstractAggregationBuilder> getAggregations(@Nullable Properties properties,
+      @Nullable Map<String, Properties> subProperties) throws IOException {
+    if(properties == null) return Collections.emptyList();
+
+    Map<String, Iterable<AbstractAggregationBuilder>> subAggregations = Maps.newHashMap();
+    if(subProperties != null) {
+      subProperties.forEach((key, subs) -> subAggregations.put(key, parseAggregations(subs, null)));
+    }
+
+    return parseAggregations(properties, subAggregations);
+  }
+
+  public Iterable<AbstractAggregationBuilder> parseAggregations(@Nullable Properties properties,
+      Map<String, Iterable<AbstractAggregationBuilder>> subAggregations) {
     Collection<AbstractAggregationBuilder> termsBuilders = new ArrayList<>();
     SortedMap<String, ?> sortedSystemProperties = new TreeMap(properties);
     String prevKey = null;
     for(Map.Entry<String, ?> entry : sortedSystemProperties.entrySet()) {
       String key = entry.getKey().replaceAll("\\" + PROPERTIES + ".*$", "");
       if(!key.equals(prevKey)) {
-        parseAggregation(termsBuilders, properties, key);
+        parseAggregation(termsBuilders, properties, key, subAggregations);
         prevKey = key;
       }
     }
@@ -93,21 +106,24 @@ public class AggregationYamlParser {
   }
 
   private void parseAggregation(Collection<AbstractAggregationBuilder> termsBuilders, Properties properties,
-      String key) {
+      String key, Map<String, Iterable<AbstractAggregationBuilder>> subAggregations) {
     Boolean localized = Boolean.valueOf(properties.getProperty(key + LOCALIZED));
     String type = getAggregationType(properties.getProperty(key + TYPE), localized);
-    createAggregation(termsBuilders, getFields(key, localized), type);
+    createAggregation(termsBuilders, getFields(key, localized), type, subAggregations);
   }
 
   private void createAggregation(Collection<AbstractAggregationBuilder> termsBuilders, Map<String, String> fields,
-      String type) {
+      String type, Map<String, Iterable<AbstractAggregationBuilder>> subAggregations) {
     fields.entrySet().forEach(entry -> {
       log.info("Building aggregation '{}' of type '{}'", entry.getKey(), type);
 
       switch(type) {
         case AGG_TERMS:
-          termsBuilders
-              .add(AggregationBuilders.terms(entry.getKey()).field(entry.getValue()).order(Terms.Order.term(true)).size(0));
+          TermsBuilder termBuilder = AggregationBuilders.terms(entry.getKey()).field(entry.getValue());
+          if (subAggregations != null && subAggregations.containsKey(entry.getKey())) {
+            subAggregations.get(entry.getKey()).forEach(termBuilder::subAggregation);
+          }
+          termsBuilders.add(termBuilder.order(Terms.Order.term(true)).size(0));
           break;
         case AGG_STATS:
           termsBuilders.add(AggregationBuilders.stats(entry.getKey()).field(entry.getValue()));
@@ -139,6 +155,7 @@ public class AggregationYamlParser {
 
   /**
    * Default the type to 'terms' if localized is true, otherwise use valid input type
+   *
    * @param type
    * @param localized
    * @return

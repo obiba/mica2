@@ -128,7 +128,7 @@ public class AggregationYamlParserTest {
         .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
         .setQuery(QueryBuilders.matchAllQuery());
 
-    aggregationYamlParser.getAggregations(new ClassPathResource(resource))
+    aggregationYamlParser.getAggregations(new ClassPathResource(resource), null)
         .forEach(requestBuilder::addAggregation);
 
     return getRequestAsJSon(requestBuilder).get("aggregations");

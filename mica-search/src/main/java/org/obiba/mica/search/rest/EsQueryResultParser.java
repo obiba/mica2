@@ -40,7 +40,7 @@ public class EsQueryResultParser {
     List<AggregationResultDto> aggResults = new ArrayList();
     aggregations.forEach(aggregation -> {
 
-      MicaSearch.AggregationResultDto.Builder aggResultBuilder = MicaSearch.AggregationResultDto.newBuilder();
+      AggregationResultDto.Builder aggResultBuilder = MicaSearch.AggregationResultDto.newBuilder();
       aggResultBuilder.setAggregation(aggregation.getName());
       String aggType = ((InternalAggregation) aggregation).type().name();
 
@@ -55,9 +55,15 @@ public class EsQueryResultParser {
           break;
         case "terms":
           ((Terms) aggregation).getBuckets().forEach(
-              bucket -> aggResultBuilder.addExtension(TermsAggregationResultDto.terms,
-                  TermsAggregationResultDto.newBuilder().setKey(bucket.getKey()).setCount((int) bucket.getDocCount())
-                      .build()));
+              bucket -> {
+                TermsAggregationResultDto.Builder termsBuilder = TermsAggregationResultDto.newBuilder();
+                if (bucket.getAggregations() != null) {
+                  termsBuilder.addAllAggs(parseAggregations(bucket.getAggregations()));
+                }
+                aggResultBuilder.addExtension(TermsAggregationResultDto.terms,
+                  termsBuilder.setKey(bucket.getKey()).setCount((int) bucket.getDocCount())
+                      .build());
+              });
           break;
         case "global":
           totalCount = ((Global)aggregation).getDocCount();
@@ -67,6 +73,8 @@ public class EsQueryResultParser {
         default:
           throw new RuntimeException("Unsupported aggregation type " + aggType);
       }
+
+
 
       aggResults.add(aggResultBuilder.build());
 
