@@ -15,6 +15,26 @@ message QueryDto {
   required int32 size = 2 [default = 10];
   optional FilteredQueryDto filteredQuery = 3;
   repeated string aggsBy = 4; // sub aggregations for the listed fields
+  extensions 1000 to max;
+}
+
+message ExtendedQueryDto {
+  optional SortDto sort = 1;
+  optional string query =4;
+
+  message SortDto {
+    enum Order {
+      ASC = 0;
+      DESC = 1;
+    }
+
+    required string field = 1;
+    required Order order = 2 [default = ASC];
+  }
+
+  extend QueryDto {
+    optional ExtendedQueryDto extended = 1001;
+  }
 }
 
 message FilteredQueryDto {

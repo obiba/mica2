@@ -35,6 +35,13 @@ public final class QueryDtoHelper {
         .build();
   }
 
+  public static boolean hasQuery(QueryDto queryDto) {
+    return queryDto != null && (queryDto.hasFilteredQuery() ||
+        (queryDto.hasExtension(MicaSearch.ExtendedQueryDto.extended) &&
+            queryDto.getExtension(MicaSearch.ExtendedQueryDto.extended).hasQuery()));
+  }
+
+
   public static QueryDto addShouldBoolFilters(QueryDto queryDto, List<FilterQueryDto> filters) {
     BoolFilterQueryDto.Builder boolFilter = BoolFilterQueryDto.newBuilder(queryDto.getFilteredQuery().getFilter());
     boolFilter.addAllShould(filters);
