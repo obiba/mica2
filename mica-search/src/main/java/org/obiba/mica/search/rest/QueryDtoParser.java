@@ -22,7 +22,6 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.obiba.mica.web.model.MicaSearch;
 
 import static org.obiba.mica.web.model.MicaSearch.BoolFilterQueryDto;
-import static org.obiba.mica.web.model.MicaSearch.ExtendedQueryDto;
 import static org.obiba.mica.web.model.MicaSearch.FilterQueryDto;
 import static org.obiba.mica.web.model.MicaSearch.FilteredQueryDto;
 import static org.obiba.mica.web.model.MicaSearch.ParentChildFilterDto;
@@ -41,24 +40,18 @@ public class QueryDtoParser {
   public BaseQueryBuilder parse(QueryDto queryDto) {
     BaseQueryBuilder query = null;
 
-    if(queryDto.hasExtension(ExtendedQueryDto.extended)) {
-      ExtendedQueryDto extendedQueryDto = queryDto.getExtension(ExtendedQueryDto.extended);
-      if(extendedQueryDto.hasQuery()) {
-        query = QueryBuilders.queryString(extendedQueryDto.getQuery());
-      }
+    if(queryDto.hasQuery()) {
+      query = QueryBuilders.queryString(queryDto.getQuery());
     }
 
     return parseFilterQuery(query == null ? QueryBuilders.matchAllQuery() : query, queryDto.getFilteredQuery());
   }
 
   public SortBuilder parseSort(QueryDto queryDto) {
-    if(queryDto.hasExtension(ExtendedQueryDto.extended)) {
-      ExtendedQueryDto extendedQueryDto = queryDto.getExtension(ExtendedQueryDto.extended);
-      if(extendedQueryDto.hasSort()) {
-        MicaSearch.ExtendedQueryDto.SortDto sortDto;
-        sortDto = extendedQueryDto.getSort();
-        return SortBuilders.fieldSort(sortDto.getField()).order(SortOrder.valueOf(sortDto.getOrder().name()));
-      }
+
+    if(queryDto.hasSort()) {
+      QueryDto.SortDto sortDto = queryDto.getSort();
+      return SortBuilders.fieldSort(sortDto.getField()).order(SortOrder.valueOf(sortDto.getOrder().name()));
     }
 
     return null;

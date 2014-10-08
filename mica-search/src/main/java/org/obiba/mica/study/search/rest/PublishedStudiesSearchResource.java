@@ -10,26 +10,22 @@
 
 package org.obiba.mica.study.search.rest;
 
-import java.io.IOException;
-
-import javax.inject.Inject;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
-
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.elasticsearch.search.sort.SortOrder;
-import org.obiba.mica.search.JoinQueryExecutor;
-import org.obiba.mica.search.rest.QueryDtoBuilders;
-import org.obiba.mica.web.model.MicaSearch;
-import org.springframework.context.annotation.Scope;
-
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
 
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.mica.search.JoinQueryExecutor;
+import org.obiba.mica.search.rest.QueryDtoHelper;
+import org.obiba.mica.web.model.MicaSearch;
+import org.springframework.context.annotation.Scope;
+
+import javax.inject.Inject;
+import javax.ws.rs.*;
+
+import java.io.IOException;
+
 import static org.obiba.mica.web.model.MicaSearch.JoinQueryResultDto;
+import static org.obiba.mica.web.model.MicaSearch.QueryDto;
 
 @Path("/studies/_search")
 @RequiresAuthentication
@@ -45,19 +41,8 @@ public class PublishedStudiesSearchResource {
       @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
       @QueryParam("order") String order, @QueryParam("query") String query) throws IOException {
 
-    QueryDtoBuilders.ExtendedQueryDtoBuilder builder = QueryDtoBuilders.ExtendedQueryDtoBuilder.newBuilder().from(from)
-        .size(limit);
-
-    if (!Strings.isNullOrEmpty(query)) {
-      builder.queryString(query);
-    }
-
-    if (!Strings.isNullOrEmpty(sort)) {
-      builder.sort(sort, order == null ? SortOrder.ASC.name() : order);
-    }
-
-    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.STUDY,
-        MicaSearch.JoinQueryDto.newBuilder().setStudyQueryDto(builder.build()).build());
+    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.STUDY, MicaSearch.JoinQueryDto.newBuilder()
+            .setStudyQueryDto(QueryDtoHelper.createQueryDto(from, limit, sort, order, query)).build());
   }
 
   @POST

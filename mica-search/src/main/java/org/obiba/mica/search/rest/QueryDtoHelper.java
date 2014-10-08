@@ -10,14 +10,14 @@
 
 package org.obiba.mica.search.rest;
 
-import java.util.List;
+import com.google.common.base.Strings;
 
+import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.web.model.MicaSearch;
 
-import static org.obiba.mica.web.model.MicaSearch.BoolFilterQueryDto;
-import static org.obiba.mica.web.model.MicaSearch.FilterQueryDto;
-import static org.obiba.mica.web.model.MicaSearch.FilteredQueryDto;
-import static org.obiba.mica.web.model.MicaSearch.QueryDto;
+import java.util.List;
+
+import static org.obiba.mica.web.model.MicaSearch.*;
 
 public final class QueryDtoHelper {
 
@@ -36,11 +36,8 @@ public final class QueryDtoHelper {
   }
 
   public static boolean hasQuery(QueryDto queryDto) {
-    return queryDto != null && (queryDto.hasFilteredQuery() ||
-        (queryDto.hasExtension(MicaSearch.ExtendedQueryDto.extended) &&
-            queryDto.getExtension(MicaSearch.ExtendedQueryDto.extended).hasQuery()));
+    return queryDto != null && (queryDto.hasFilteredQuery() || queryDto.hasQuery());
   }
-
 
   public static QueryDto addShouldBoolFilters(QueryDto queryDto, List<FilterQueryDto> filters) {
     BoolFilterQueryDto.Builder boolFilter = BoolFilterQueryDto.newBuilder(queryDto.getFilteredQuery().getFilter());
@@ -48,6 +45,23 @@ public final class QueryDtoHelper {
 
     return QueryDto.newBuilder(queryDto).setFilteredQuery(FilteredQueryDto.newBuilder().setFilter(boolFilter.build()))
         .build();
+  }
+
+  public static QueryDto createQueryDto(int from, int limit, String sort, String order, String queryString) {
+    QueryDto.Builder builder = QueryDto.newBuilder().setFrom(from).setSize(limit);
+
+    if(!Strings.isNullOrEmpty(queryString)) {
+      builder.setQuery(queryString);
+    }
+
+    if(!Strings.isNullOrEmpty(sort)) {
+      builder.setSort(QueryDto.SortDto.newBuilder() //
+          .setField(sort) //
+          .setOrder(order == null ? QueryDto.SortDto.Order.ASC : QueryDto.SortDto.Order.valueOf(order.toUpperCase()))
+          .build());
+    }
+
+    return builder.build();
   }
 
 }
