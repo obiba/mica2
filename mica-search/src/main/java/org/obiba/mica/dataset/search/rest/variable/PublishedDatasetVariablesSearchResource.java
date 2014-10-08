@@ -14,7 +14,9 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.POST;
@@ -74,8 +76,12 @@ public class PublishedDatasetVariablesSearchResource {
   public MicaSearch.TaxonomiesCoverageDto coverage(@QueryParam("taxonomy") List<String> taxonomyNames,
       MicaSearch.JoinQueryDto joinQueryDto) throws IOException {
 
-    MicaSearch.JoinQueryResultDto result = joinQueryExecutor.queryAggregations(JoinQueryExecutor.QueryType.VARIABLE, joinQueryDto);
+    MicaSearch.JoinQueryResultDto result = joinQueryExecutor
+        .queryAggregations(JoinQueryExecutor.QueryType.VARIABLE, joinQueryDto);
     List<MicaSearch.AggregationResultDto> aggregations = result.getVariableResultDto().getAggsList();
+
+    Map<String, List<BucketResult>> bucketResultsByTaxonomy = extractBucketResults(joinQueryDto, aggregations).stream()
+        .collect(Collectors.groupingBy(BucketResult::getTaxonomy));
 
     Map<String, Map<String, Integer>> aggsMap = Maps.newHashMap();
     aggregations.forEach(agg -> {
@@ -91,7 +97,8 @@ public class PublishedDatasetVariablesSearchResource {
     List<MicaSearch.TaxonomyCoverageDto> coverages = Lists.newArrayList();
     getTaxonomies().stream().filter(
         taxonomy -> taxonomyNames == null || taxonomyNames.isEmpty() || taxonomyNames.contains(taxonomy.getName()))
-        .forEach(taxonomy -> addTaxonomyCoverage(coverages, taxonomy, aggsMap));
+        .forEach(taxonomy -> addTaxonomyCoverage(coverages, taxonomy, aggsMap,
+            bucketResultsByTaxonomy.get(taxonomy.getName())));
 
     MicaSearch.TaxonomiesCoverageDto.Builder builder = MicaSearch.TaxonomiesCoverageDto.newBuilder()//
         .setTotalCount(result.getVariableResultDto().getTotalCount()) //
@@ -101,27 +108,95 @@ public class PublishedDatasetVariablesSearchResource {
     return builder.build();
   }
 
+  /**
+   * Extract the hits per taxonomy term and bucket.
+   *
+   * @param joinQueryDto
+   * @param aggregations
+   * @return
+   */
+  @NotNull
+  private List<BucketResult> extractBucketResults(MicaSearch.JoinQueryDto joinQueryDto,
+      List<MicaSearch.AggregationResultDto> aggregations) {
+    if(joinQueryDto == null || !joinQueryDto.hasVariableQueryDto() ||
+        joinQueryDto.getVariableQueryDto().getAggsByCount() == 0) return Collections.emptyList();
+
+    List<String> aggsBy = joinQueryDto.getVariableQueryDto().getAggsByList();
+
+    List<BucketResult> termResults = Lists.newArrayList();
+
+    aggregations.stream().filter(agg -> aggsBy.contains(agg.getAggregation())).forEach(bucket -> {
+      String bucketField = bucket.getAggregation(); // studyIds for instance
+      bucket.getExtension(MicaSearch.TermsAggregationResultDto.terms).stream() //
+          .filter(agg -> agg.getAggsCount() > 0) //
+          .forEach(agg -> agg.getAggsList().stream() //
+              .filter(t -> !t.getExtension(MicaSearch.TermsAggregationResultDto.terms).isEmpty()) //
+              .forEach(t -> termResults.addAll(BucketResult.list(bucketField, agg.getKey(), t))));
+    });
+
+    return termResults;
+  }
+
+  /**
+   * for a {@link org.obiba.opal.core.domain.taxonomy.Taxonomy}, report the number of hits and optionally the
+   * number of hits for each bucket.
+   *
+   * @param coverages
+   * @param taxonomy
+   * @param aggsMap
+   * @param bucketResults
+   */
   private void addTaxonomyCoverage(List<MicaSearch.TaxonomyCoverageDto> coverages, Taxonomy taxonomy,
-      Map<String, Map<String, Integer>> aggsMap) {
+      Map<String, Map<String, Integer>> aggsMap, @Nullable List<BucketResult> bucketResults) {
     if(taxonomy.hasVocabularies()) {
       MicaSearch.TaxonomyCoverageDto.Builder taxoBuilder = MicaSearch.TaxonomyCoverageDto.newBuilder();
       taxoBuilder.setTaxonomy(dtos.asDto(taxonomy));
       List<Integer> hits = Lists.newArrayList();
       String namespace = taxonomy.getName().equals("Default") ? null : taxonomy.getName();
+      Map<String, List<BucketResult>> bucketResultsByVocabulary = bucketResults == null
+          ? Maps.newHashMap()
+          : bucketResults.stream().collect(Collectors.groupingBy(BucketResult::getVocabulary));
+
       taxonomy.getVocabularies().forEach(vocabulary -> hits.add(addVocabularyCoverage(taxoBuilder, vocabulary,
-          aggsMap.get(AttributeKey.getMapKey(vocabulary.getName(), namespace)))));
+          aggsMap.get(AttributeKey.getMapKey(vocabulary.getName(), namespace)),
+          bucketResults == null ? null : bucketResultsByVocabulary.get(vocabulary.getName()))));
       taxoBuilder.setHits(hits.isEmpty() ? 0 : hits.stream().mapToInt(x -> x).sum());
+      // compute the sum of the hits for all vocabularies per bucket
+      if(bucketResults != null) {
+        Map<String, List<BucketResult>> bucketResultsByBucketField = bucketResults.stream()
+            .collect(Collectors.groupingBy(BucketResult::getBucketField));
+
+        bucketResultsByBucketField.keySet().forEach(field -> bucketResultsByBucketField.get(field).stream()
+            .collect(Collectors.groupingBy(BucketResult::getBucketValue)).forEach((value, buckets) -> taxoBuilder
+                    .addBuckets(MicaSearch.BucketCoverageDto.newBuilder().setField(field).setValue(value)
+                        .setHits(buckets.stream().mapToInt(BucketResult::getHits).sum()))));
+      }
       coverages.add(taxoBuilder.build());
     }
   }
 
+  /**
+   * For a taxonomy {@link org.obiba.opal.core.domain.taxonomy.Vocabulary}, report the number of hits and optionally the
+   * number of hits for each bucket.
+   *
+   * @param taxoBuilder
+   * @param vocabulary
+   * @param hits
+   * @param bucketResults
+   * @return
+   */
   private int addVocabularyCoverage(MicaSearch.TaxonomyCoverageDto.Builder taxoBuilder, Vocabulary vocabulary,
-      Map<String, Integer> hits) {
+      Map<String, Integer> hits, @Nullable List<BucketResult> bucketResults) {
     int sumOfHits = 0;
     if(vocabulary.hasTerms()) {
+      Map<String, List<BucketResult>> bucketResultsByTerm = bucketResults == null
+          ? Maps.newHashMap()
+          : bucketResults.stream().collect(Collectors.groupingBy(BucketResult::getTerm));
+
       MicaSearch.VocabularyCoverageDto.Builder vocBuilder = MicaSearch.VocabularyCoverageDto.newBuilder();
       vocBuilder.setVocabulary(dtos.asDto(vocabulary));
-      vocabulary.getTerms().forEach(term -> addTermCoverage(vocBuilder, term, hits));
+      vocabulary.getTerms()
+          .forEach(term -> addTermCoverage(vocBuilder, term, hits, bucketResultsByTerm.get(term.getName())));
       // only one term can be applied at a time, then the sum of the term hits is the number of variables
       // that cover this vocabulary
       sumOfHits = hits == null ? 0 : hits.values().stream().mapToInt(x -> x).sum();
@@ -129,16 +204,44 @@ public class PublishedDatasetVariablesSearchResource {
       if(!vocabulary.isRepeatable()) {
         vocBuilder.setCount(sumOfHits);
       }
+      // compute the sum of the hits for all terms per bucket
+      if(bucketResults != null) {
+        Map<String, List<BucketResult>> bucketResultsByBucketField = bucketResults.stream()
+            .collect(Collectors.groupingBy(BucketResult::getBucketField));
+
+        bucketResultsByBucketField.keySet().forEach(field -> bucketResultsByBucketField.get(field).stream()
+            .collect(Collectors.groupingBy(BucketResult::getBucketValue)).forEach((value, buckets) -> {
+              MicaSearch.BucketCoverageDto.Builder builder = MicaSearch.BucketCoverageDto.newBuilder().setField(field)
+                  .setValue(value).setHits(buckets.stream().mapToInt(BucketResult::getHits).sum());
+              if(!vocabulary.isRepeatable()) builder.setCount(builder.getHits());
+              vocBuilder.addBuckets(builder);
+            }));
+      }
       taxoBuilder.addVocabularies(vocBuilder);
     }
     return sumOfHits;
   }
 
+  /**
+   * For a taxonomy {@link org.obiba.opal.core.domain.taxonomy.Term}, report the number of hits and optionally
+   * the number of hits for each bucket.
+   *
+   * @param vocBuilder
+   * @param term
+   * @param hits
+   * @param bucketResults
+   */
   private void addTermCoverage(MicaSearch.VocabularyCoverageDto.Builder vocBuilder, Term term,
-      Map<String, Integer> hits) {
+      Map<String, Integer> hits, @Nullable List<BucketResult> bucketResults) {
     MicaSearch.TermCoverageDto.Builder termBuilder = MicaSearch.TermCoverageDto.newBuilder();
     termBuilder.setTerm(dtos.asDto(term));
     termBuilder.setHits(0);
+    // add the hits per buckets
+    if(bucketResults != null) {
+      termBuilder.addAllBuckets(bucketResults.stream().map(
+          b -> MicaSearch.BucketCoverageDto.newBuilder().setField(b.getBucketField()).setValue(b.getBucketValue())
+              .setHits(b.getHits()).build()).collect(Collectors.toList()));
+    }
     if(hits != null && hits.containsKey(term.getName())) termBuilder.setHits(hits.get(term.getName()));
     vocBuilder.addTerms(termBuilder);
   }
@@ -152,5 +255,72 @@ public class PublishedDatasetVariablesSearchResource {
       // ignore
     }
     return taxonomies == null ? Collections.emptyList() : taxonomies;
+  }
+
+  /**
+   * The number of variable hits per bucket and taxonomy term.
+   */
+  private static class BucketResult {
+
+    private final String bucketField;
+
+    private final String bucketValue;
+
+    private final String taxonomy;
+
+    private final String vocabulary;
+
+    private final String term;
+
+    private final int hits;
+
+    private BucketResult(@Nullable String bucketField, @Nullable String bucketValue, String taxonomy, String vocabulary,
+        String term, int hits) {
+      this.bucketField = bucketField;
+      this.bucketValue = bucketValue;
+      this.taxonomy = taxonomy;
+      this.vocabulary = vocabulary;
+      this.term = term;
+      this.hits = hits;
+    }
+
+    private static List<BucketResult> list(@Nullable String bucketField, @Nullable String bucketValue,
+        MicaSearch.AggregationResultDto agg) {
+      String key = agg.getAggregation().replaceAll("^attributes-", "").replaceAll("-und$", "");
+      AttributeKey attrKey = AttributeKey.from(key);
+      String taxonomy = attrKey.hasNamespace(null) ? "Default" : attrKey.getNamespace();
+      String vocabulary = attrKey.getName();
+      return agg.getExtension(MicaSearch.TermsAggregationResultDto.terms).stream()
+          .map(t -> new BucketResult(bucketField, bucketValue, taxonomy, vocabulary, t.getKey(), t.getCount()))
+          .collect(Collectors.toList());
+    }
+
+    public String getBucketField() {
+      return bucketField;
+    }
+
+    public String getBucketValue() {
+      return bucketValue;
+    }
+
+    public String getTaxonomy() {
+      return taxonomy;
+    }
+
+    public String getVocabulary() {
+      return vocabulary;
+    }
+
+    public String getTerm() {
+      return term;
+    }
+
+    public int getHits() {
+      return hits;
+    }
+
+    public String toString() {
+      return "[" + bucketField + "," + bucketValue + "," + taxonomy + "," + vocabulary + "," + term + "]=" + hits;
+    }
   }
 }

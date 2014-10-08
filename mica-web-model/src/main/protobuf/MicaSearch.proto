@@ -184,28 +184,39 @@ message StatsAggregationResultDto {
   }
 }
 
+message BucketCoverageDto {
+  required string field = 1;
+  required string value = 2;
+  required int32 hits = 3;
+  optional int32 count = 4;
+}
+
 message TermCoverageDto {
   required obiba.mica.TaxonomyEntityDto term = 1;
   required int32 hits = 2;
+  repeated BucketCoverageDto buckets = 3;
 }
 
 message VocabularyCoverageDto {
   required obiba.mica.TaxonomyEntityDto vocabulary = 1;
   required int32 hits = 2;
   optional int32 count = 3; // sum of the hits of vocabulary allows multiple terms
-  repeated TermCoverageDto terms = 4;
+  repeated BucketCoverageDto buckets = 4;
+  repeated TermCoverageDto terms = 5;
 }
 
 message TaxonomyCoverageDto {
   required obiba.mica.TaxonomyEntityDto taxonomy = 1;
   required int32 hits = 2;
-  repeated VocabularyCoverageDto vocabularies = 3;
+  repeated BucketCoverageDto buckets = 3;
+  repeated VocabularyCoverageDto vocabularies = 4;
 }
 
 message TaxonomiesCoverageDto {
   repeated TaxonomyCoverageDto taxonomies = 1;
   required int32 totalHits = 2;
   required int64 totalCount = 3;
+  repeated string by = 4;
 }
 
 
