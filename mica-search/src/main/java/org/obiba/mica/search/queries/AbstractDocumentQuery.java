@@ -24,11 +24,11 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.search.sort.SortBuilder;
 import org.obiba.mica.micaConfig.MicaConfigService;
 import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.rest.AggregationYamlParser;
@@ -75,7 +75,7 @@ public abstract class AbstractDocumentQuery {
   }
 
   public boolean hasQueryFilters() {
-    return queryDto != null && queryDto.hasFilteredQuery() && queryDto.getFilteredQuery().hasFilter();
+    return QueryDtoHelper.hasQuery(queryDto);
   }
 
   public void initialize(QueryDto query) {
@@ -165,14 +165,14 @@ public abstract class AbstractDocumentQuery {
    */
   public List<String> query(List<String> studyIds, CountStatsData counts, Scope scope) throws IOException {
     QueryDto tempQueryDto = queryDto == null ? createStudyIdFilters(studyIds) : addStudyIdFilters(studyIds);
-    return execute(QueryDtoParser.newParser().parse(tempQueryDto), tempQueryDto.getFrom(), tempQueryDto.getSize(),
+    return execute(tempQueryDto, tempQueryDto.getFrom(), tempQueryDto.getSize(),
         scope, counts);
   }
 
   /**
    * Executes a query to retrieve documents and aggregations
    *
-   * @param queryBuilder
+   * @param queryDto
    * @param from
    * @param size
    * @param scope
@@ -180,19 +180,22 @@ public abstract class AbstractDocumentQuery {
    * @return
    * @throws IOException
    */
-  protected List<String> execute(QueryBuilder queryBuilder, int from, int size, Scope scope, CountStatsData counts)
+  protected List<String> execute(QueryDto queryDto, int from, int size, Scope scope, CountStatsData counts)
       throws IOException {
-    if(queryBuilder == null) return null;
-
+    if(queryDto == null) return null;
+    QueryDtoParser queryDtoParser = QueryDtoParser.newParser();
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
         .setTypes(getSearchType()) //
         .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
-        .setQuery(queryBuilder) //
+        .setQuery(queryDtoParser.parse(queryDto)) //
         .setFrom(from) //
         .setSize(size) //
         .addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT));
 
     if(ignoreFields()) requestBuilder.setNoFields();
+    SortBuilder sortBuilder = queryDtoParser.parseSort(queryDto);
+    if(sortBuilder != null) requestBuilder.addSort(queryDtoParser.parseSort(queryDto));
+
 
     aggregationYamlParser.setLocales(micaConfigService.getConfig().getLocales());
     Map<String, Properties> subAggregations = Maps.newHashMap();
