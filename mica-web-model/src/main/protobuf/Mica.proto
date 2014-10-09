@@ -139,6 +139,15 @@ message StudyDto {
 message DocumentDigestDto {
   required string id = 1;
   repeated LocalizedStringDto name = 2;
+  extensions 1000 to max;
+}
+
+message NetworkDigestDto {
+  repeated string ids = 1;
+
+  extend DocumentDigestDto {
+    optional NetworkDigestDto studies = 1000;
+  }
 }
 
 message NetworkDto {
