@@ -78,6 +78,7 @@ public class PublishedDatasetSearchResource {
   }
 
   @POST
+  @Path("/_search")
   @Timed
   public MicaSearch.JoinQueryResultDto list(MicaSearch.JoinQueryDto joinQueryDto) throws IOException {
     return joinQueryExecutor.query(JoinQueryExecutor.QueryType.DATASET, joinQueryDto);
