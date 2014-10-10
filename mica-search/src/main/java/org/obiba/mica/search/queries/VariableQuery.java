@@ -138,6 +138,7 @@ public class VariableQuery extends AbstractDocumentQuery {
       }
     }
 
+    builder.addAllDatasetAcronym(dtos.asDto(variable.getDatasetAcronym()));
     builder.addAllDatasetName(dtos.asDto(variable.getDatasetName()));
 
     if(variable.hasAttribute("label", null)) {

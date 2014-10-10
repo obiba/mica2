@@ -76,6 +76,9 @@ public class DatasetVariable implements Indexable, AttributeAware {
   private int index;
 
   @NotNull
+  private LocalizedString datasetAcronym;
+
+  @NotNull
   private LocalizedString datasetName;
 
   public DatasetVariable() {}
@@ -98,6 +101,7 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   private DatasetVariable(Dataset dataset, Type type, Variable variable) {
     datasetId = dataset.getId();
+    datasetAcronym = dataset.getAcronym();
     datasetName = dataset.getName();
     variableType = type;
     name = variable.getName();
@@ -138,6 +142,10 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   public String getDatasetId() {
     return datasetId;
+  }
+
+  public LocalizedString getDatasetAcronym() {
+    return datasetAcronym;
   }
 
   public LocalizedString getDatasetName() {

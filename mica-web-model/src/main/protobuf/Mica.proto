@@ -362,9 +362,10 @@ message DatasetVariableResolverDto {
   required string variableType = 4;
   optional string studyId = 5;
   repeated LocalizedStringDto datasetName = 6;
-  repeated LocalizedStringDto variableLabel = 7;
-  repeated LocalizedStringDto studyName = 8;
-  repeated LocalizedStringDto studyAcronym = 9;
+  repeated LocalizedStringDto datasetAcronym = 7;
+  repeated LocalizedStringDto variableLabel = 8;
+  repeated LocalizedStringDto studyName = 9;
+  repeated LocalizedStringDto studyAcronym = 10;
 }
 
 message DatasetVariableSummaryDto {
