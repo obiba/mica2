@@ -10,14 +10,16 @@
 
 package org.obiba.mica.search.rest;
 
-import com.google.common.base.Strings;
-
-import org.obiba.mica.search.JoinQueryExecutor;
-import org.obiba.mica.web.model.MicaSearch;
-
 import java.util.List;
 
-import static org.obiba.mica.web.model.MicaSearch.*;
+import org.obiba.mica.web.model.MicaSearch;
+
+import com.google.common.base.Strings;
+
+import static org.obiba.mica.web.model.MicaSearch.BoolFilterQueryDto;
+import static org.obiba.mica.web.model.MicaSearch.FilterQueryDto;
+import static org.obiba.mica.web.model.MicaSearch.FilteredQueryDto;
+import static org.obiba.mica.web.model.MicaSearch.QueryDto;
 
 public final class QueryDtoHelper {
 

@@ -42,9 +42,9 @@ public class DatasetQuery extends AbstractDocumentQuery {
 
   private static final String DATASET_FACETS_YML = "dataset-facets.yml";
 
-  private static final String STUDY_JOIN_FIELD = "studyTable.studyId";
+  public static final String STUDY_JOIN_FIELD = "studyTable.studyId";
 
-  private static final String HARMONIZATION_JOIN_FIELD = "studyTables.studyId";
+  public static final String HARMONIZATION_JOIN_FIELD = "studyTables.studyId";
 
   @Inject
   Dtos dtos;
