@@ -41,7 +41,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
 
   private static final String NETWORK_FACETS_YML = "network-facets.yml";
 
-  private static final String JOIN_FIELD = "studyIds";
+  public static final String JOIN_FIELD = "studyIds";
 
   @Inject
   Dtos dtos;

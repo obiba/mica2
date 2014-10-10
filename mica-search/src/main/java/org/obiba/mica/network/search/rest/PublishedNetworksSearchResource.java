@@ -12,6 +12,8 @@ package org.obiba.mica.network.search.rest;
 
 import java.io.IOException;
 
+import java.util.Arrays;
+
 import javax.inject.Inject;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -21,11 +23,13 @@ import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.search.JoinQueryExecutor;
+import org.obiba.mica.search.queries.NetworkQuery;
 import org.obiba.mica.search.rest.QueryDtoHelper;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
 
 import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Strings;
 
 import static org.obiba.mica.web.model.MicaSearch.JoinQueryDto;
 import static org.obiba.mica.web.model.MicaSearch.JoinQueryResultDto;
@@ -42,10 +46,17 @@ public class PublishedNetworksSearchResource {
   @Timed
   public JoinQueryResultDto query(@QueryParam("from") @DefaultValue("0") int from,
       @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
-      @QueryParam("order") String order, @QueryParam("query") String query) throws IOException {
+      @QueryParam("order") String order, @QueryParam("study") String studyId, @QueryParam("query") String query)
+      throws IOException {
+
+    MicaSearch.QueryDto queryDto = QueryDtoHelper.createQueryDto(from, limit, sort, order, query);
+    if (!Strings.isNullOrEmpty(studyId)) {
+      queryDto = QueryDtoHelper.addShouldBoolFilters(queryDto,
+          Arrays.asList(QueryDtoHelper.createTermFilter(NetworkQuery.JOIN_FIELD, Arrays.asList(studyId))));
+    }
 
     return joinQueryExecutor.query(JoinQueryExecutor.QueryType.NETWORK, MicaSearch.JoinQueryDto.newBuilder()
-        .setNetworkQueryDto(QueryDtoHelper.createQueryDto(from, limit, sort, order, query)).build());
+        .setNetworkQueryDto(queryDto).build());
   }
 
   @POST

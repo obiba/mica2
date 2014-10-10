@@ -142,7 +142,7 @@ public abstract class AbstractDocumentQuery {
     response.getAggregations()
         .forEach(aggregation -> ((Terms) aggregation).getBuckets().forEach(bucket -> ids.add(bucket.getKey())));
 
-    return ids;
+    return ids.stream().distinct().collect(Collectors.toList());
   }
 
   private Properties getJoinFieldsAsProperties() {
@@ -304,7 +304,7 @@ public abstract class AbstractDocumentQuery {
     List<String> ids = aggDtos.stream() //
         .filter(agg -> getJoinFields().contains(AggregationYamlParser.unformatName(agg.getAggregation()))) //
         .map(d -> d.getExtension(MicaSearch.TermsAggregationResultDto.terms)) //
-        .flatMap((d) -> d.stream()).map(MicaSearch.TermsAggregationResultDto::getKey).collect(Collectors.toList());
+        .flatMap((d) -> d.stream()).map(MicaSearch.TermsAggregationResultDto::getKey).distinct().collect(Collectors.toList());
     return ids;
   }
 
