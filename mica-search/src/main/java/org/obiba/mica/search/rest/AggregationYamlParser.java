@@ -92,6 +92,8 @@ public class AggregationYamlParser {
   public Iterable<AbstractAggregationBuilder> parseAggregations(@Nullable Properties properties,
       Map<String, Iterable<AbstractAggregationBuilder>> subAggregations) {
     Collection<AbstractAggregationBuilder> termsBuilders = new ArrayList<>();
+    if (properties == null) return termsBuilders;
+    
     SortedMap<String, ?> sortedSystemProperties = new TreeMap(properties);
     String prevKey = null;
     for(Map.Entry<String, ?> entry : sortedSystemProperties.entrySet()) {
