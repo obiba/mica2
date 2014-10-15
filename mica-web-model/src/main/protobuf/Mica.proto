@@ -17,7 +17,19 @@ message StudySummaryDto {
   optional AttachmentDto logo = 8;
   repeated LocalizedStringDto objectives = 9;
   repeated string dataSources = 10;
+  repeated PopulationSummaryDto populationSummaries = 11;
   extensions 1000 to max;
+}
+
+message PopulationSummaryDto {
+  required string id = 1;
+  repeated LocalizedStringDto name = 2;
+  repeated DataCollectionEventSummaryDto dataCollectionEventSummaries = 3;
+}
+
+message DataCollectionEventSummaryDto {
+  required string id = 1;
+  repeated LocalizedStringDto name = 2;
 }
 
 message StudySummariesDto {

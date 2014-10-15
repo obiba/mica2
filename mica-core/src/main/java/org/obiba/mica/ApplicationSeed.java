@@ -338,6 +338,7 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
 
   private DataCollectionEvent createEvent(Integer year) {
     DataCollectionEvent event = new DataCollectionEvent();
+    event.setId(year + "");
     event.setName(en(year + " Recruitment"));
     event.setDescription(en(year + " data collection"));
     event.setStart(YearMonth.of(year, 1));
