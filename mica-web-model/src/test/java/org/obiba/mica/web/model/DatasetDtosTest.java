@@ -86,6 +86,8 @@ public class DatasetDtosTest {
     studyDataset.setEntityType("Participant");
     StudyTable table = new StudyTable();
     table.setStudyId("1111111111111111");
+    table.setPopulationId("1");
+    table.setDataCollectionEventId("1");
     table.setProject("study1");
     table.setTable("FNAC");
     studyDataset.setStudyTable(table);
@@ -108,6 +110,8 @@ public class DatasetDtosTest {
     harmonizationDataset.setTable("HOP");
     StudyTable table = new StudyTable();
     table.setStudyId("222222222222222");
+    table.setPopulationId("2");
+    table.setDataCollectionEventId("2");
     table.setProject("study1");
     table.setTable("HOP");
     harmonizationDataset.addStudyTable(table);

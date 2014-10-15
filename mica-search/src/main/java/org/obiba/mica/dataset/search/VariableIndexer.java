@@ -129,7 +129,7 @@ public class VariableIndexer {
 
       for(StudyTable studyTable : dataset.getStudyTables()) {
         try {
-          populateHarmonizedVariablesMap(harmonizedVariables, getVariables(dataset, studyTable.getStudyId()));
+          populateHarmonizedVariablesMap(harmonizedVariables, getVariables(dataset, studyTable));
         } catch(NoSuchValueTableException e) {
           // ignore (case the study does not implement this harmonization dataset
         }
@@ -183,9 +183,9 @@ public class VariableIndexer {
    * @param studyId
    * @return
    */
-  protected Iterable<DatasetVariable> getVariables(HarmonizationDataset dataset, String studyId)
+  protected Iterable<DatasetVariable> getVariables(HarmonizationDataset dataset, StudyTable studyTable)
       throws NoSuchStudyException, NoSuchValueTableException {
-    return harmonizationDatasetService.getDatasetVariables(dataset, studyId);
+    return harmonizationDatasetService.getDatasetVariables(dataset, studyTable);
   }
 
   /**

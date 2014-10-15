@@ -61,6 +61,7 @@ public class DatasetIndexConfiguration implements ElasticSearchIndexer.IndexConf
   }
 
   private void appendStudyIdProperty(XContentBuilder mapping) throws IOException {
+    mapping.startObject("id").field("type", "string").field("index", "not_analyzed").endObject();
     mapping.startObject("studyId").field("type", "string").field("index", "not_analyzed").endObject();
   }
 

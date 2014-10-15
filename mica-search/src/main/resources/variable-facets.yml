@@ -24,6 +24,7 @@ repeatable:
 occurrenceGroup:
 datasetId:
 studyIds:
+studyTableIds:
 
 categories:
   missing:

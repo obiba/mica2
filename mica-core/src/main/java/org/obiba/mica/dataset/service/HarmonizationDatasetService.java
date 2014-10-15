@@ -184,9 +184,9 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
     return new DatasetVariable(dataset, getVariableValueSource(dataset, variableName).getVariable());
   }
 
-  public Iterable<DatasetVariable> getDatasetVariables(HarmonizationDataset dataset, String studyId)
+  public Iterable<DatasetVariable> getDatasetVariables(HarmonizationDataset dataset, StudyTable studyTable)
       throws NoSuchStudyException, NoSuchValueTableException {
-    return Iterables.transform(getVariables(dataset, studyId), input -> new DatasetVariable(dataset, input, studyId));
+    return Iterables.transform(getVariables(studyTable), input -> new DatasetVariable(dataset, input, studyTable));
   }
 
   public DatasetVariable getDatasetVariable(HarmonizationDataset dataset, String variableName, String studyId)
@@ -240,16 +240,21 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   // Private methods
   //
 
-  private Iterable<Variable> getVariables(@NotNull HarmonizationDataset dataset, String studyId)
+  private Iterable<Variable> getVariables(StudyTable studyTable)
       throws NoSuchDatasetException, NoSuchStudyException, NoSuchValueTableException {
-    return getTable(dataset, studyId).getVariables();
+    return getTable(studyTable).getVariables();
+  }
+
+  private RestValueTable getTable(@NotNull StudyTable studyTable)
+      throws NoSuchStudyException, NoSuchValueTableException {
+    return execute(studyTable, ds -> (RestValueTable) ds.getValueTable(studyTable.getTable()));
   }
 
   private RestValueTable getTable(@NotNull HarmonizationDataset dataset, String studyId)
       throws NoSuchStudyException, NoSuchValueTableException {
     for(StudyTable studyTable : dataset.getStudyTables()) {
       if(studyTable.getStudyId().equals(studyId)) {
-        return execute(studyTable, ds -> (RestValueTable) ds.getValueTable(studyTable.getTable()));
+        return getTable(studyTable);
       }
     }
     throw NoSuchStudyException.withId(studyId);

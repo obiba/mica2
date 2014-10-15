@@ -23,11 +23,23 @@ public class StudyTable implements Serializable {
 
   private String studyId;
 
+  private String populationId;
+
+  private String dataCollectionEventId;
+
   @NotNull
   private String project;
 
   @NotNull
   private String table;
+
+  public String getId() {
+    return getStudyId() + ":" + getPopulationId() + ":" + getDataCollectionEventId();
+  }
+
+  public void setId(String ignored) {
+    
+  }
 
   public String getStudyId() {
     return studyId;
@@ -35,6 +47,22 @@ public class StudyTable implements Serializable {
 
   public void setStudyId(String studyId) {
     this.studyId = studyId;
+  }
+
+  public String getPopulationId() {
+    return populationId;
+  }
+
+  public void setPopulationId(String populationId) {
+    this.populationId = populationId;
+  }
+
+  public String getDataCollectionEventId() {
+    return dataCollectionEventId;
+  }
+
+  public void setDataCollectionEventId(String dataCollectionEventId) {
+    this.dataCollectionEventId = dataCollectionEventId;
   }
 
   public String getProject() {

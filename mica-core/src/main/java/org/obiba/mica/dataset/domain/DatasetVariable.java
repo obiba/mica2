@@ -23,6 +23,7 @@ import org.obiba.mica.core.domain.AttributeAware;
 import org.obiba.mica.core.domain.Attributes;
 import org.obiba.mica.core.domain.Indexable;
 import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.core.domain.StudyTable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
@@ -48,6 +49,8 @@ public class DatasetVariable implements Indexable, AttributeAware {
   private String datasetId;
 
   private List<String> studyIds;
+
+  private List<String> studyTableIds;
 
   private Type variableType;
 
@@ -86,17 +89,21 @@ public class DatasetVariable implements Indexable, AttributeAware {
   public DatasetVariable(StudyDataset dataset, Variable variable) {
     this(dataset, Type.Study, variable);
     studyIds = Lists.newArrayList(dataset.getStudyTable().getStudyId());
+    studyTableIds = Lists.newArrayList(dataset.getStudyTable().getId());
   }
 
   public DatasetVariable(HarmonizationDataset dataset, Variable variable) {
     this(dataset, Type.Dataschema, variable);
     studyIds = Lists.newArrayList();
     dataset.getStudyTables().forEach(table -> studyIds.add(table.getStudyId()));
+    studyTableIds = Lists.newArrayList();
+    dataset.getStudyTables().forEach(table -> studyTableIds.add(table.getId()));
   }
 
-  public DatasetVariable(HarmonizationDataset dataset, Variable variable, String studyId) {
+  public DatasetVariable(HarmonizationDataset dataset, Variable variable, StudyTable studyTable) {
     this(dataset, Type.Harmonized, variable);
-    studyIds = Lists.newArrayList(studyId);
+    studyIds = Lists.newArrayList(studyTable.getStudyId());
+    studyTableIds = Lists.newArrayList(studyTable.getId());
   }
 
   private DatasetVariable(Dataset dataset, Type type, Variable variable) {
@@ -154,6 +161,10 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   public List<String> getStudyIds() {
     return studyIds;
+  }
+
+  public List<String> getStudyTableIds() {
+    return studyTableIds;
   }
 
   public Type getVariableType() {
@@ -281,6 +292,7 @@ public class DatasetVariable implements Indexable, AttributeAware {
     public static IdResolver from(String id) {
       return new IdResolver(id);
     }
+
     public static IdResolver from(String datasetId, String variableName, Type variableType, String studyId) {
       return from(encode(datasetId, variableName, variableType, studyId));
     }
