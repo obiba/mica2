@@ -51,8 +51,9 @@ public class PublishedNetworksSearchResource {
 
     MicaSearch.QueryDto queryDto = QueryDtoHelper.createQueryDto(from, limit, sort, order, query);
     if (!Strings.isNullOrEmpty(studyId)) {
-      queryDto = QueryDtoHelper.addShouldBoolFilters(queryDto,
-          Arrays.asList(QueryDtoHelper.createTermFilter(NetworkQuery.JOIN_FIELD, Arrays.asList(studyId))));
+      queryDto = QueryDtoHelper.addTermFilters(queryDto,
+          Arrays.asList(QueryDtoHelper.createTermFilter(NetworkQuery.JOIN_FIELD, Arrays.asList(studyId))),
+          QueryDtoHelper.BoolQueryType.SHOULD);
     }
 
     return joinQueryExecutor.query(JoinQueryExecutor.QueryType.NETWORK, MicaSearch.JoinQueryDto.newBuilder()

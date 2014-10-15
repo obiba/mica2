@@ -11,10 +11,13 @@
 package org.obiba.mica.search.rest;
 
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.obiba.mica.web.model.MicaSearch;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 
 import static org.obiba.mica.web.model.MicaSearch.BoolFilterQueryDto;
 import static org.obiba.mica.web.model.MicaSearch.FilterQueryDto;
@@ -23,6 +26,16 @@ import static org.obiba.mica.web.model.MicaSearch.QueryDto;
 
 public final class QueryDtoHelper {
 
+  public static final int DEFAULT_FROM = 0;
+
+  public static final int DEFAULT_SIZE = 10;
+
+  public enum BoolQueryType {
+    MUST,
+    SHOULD,
+    NOT
+  }
+
   private QueryDtoHelper() {}
 
   public static FilterQueryDto createTermFilter(String filterName, List values) {
@@ -30,23 +43,82 @@ public final class QueryDtoHelper {
         MicaSearch.TermsFilterQueryDto.newBuilder().addAllValues(values).build()).build();
   }
 
-  public static QueryDto addTermFilters(QueryDto queryDto, List<FilterQueryDto> filters) {
-    return QueryDto.newBuilder(queryDto).setFilteredQuery(FilteredQueryDto.newBuilder().setFilter(BoolFilterQueryDto
-        .newBuilder(
-            BoolFilterQueryDto.newBuilder(queryDto.getFilteredQuery().getFilter()).addAllMust(filters).build())))
-        .build();
+  public static QueryDto addTermFilters(QueryDto queryDto, List<FilterQueryDto> filters, BoolQueryType type) {
+    return QueryDto.newBuilder(queryDto).setFilteredQuery(FilteredQueryDto.newBuilder()
+        .setFilter(createBoolQueryDto(queryDto.getFilteredQuery().getFilter(), filters, type))).build();
+  }
+
+  public static QueryDto createTermFiltersQuery(List<String> fields, List<String> values, BoolQueryType type) {
+    QueryDto.Builder builder = QueryDto.newBuilder().setSize(DEFAULT_SIZE).setFrom(DEFAULT_FROM);
+    if(values != null && values.size() > 0) {
+      List<FilterQueryDto> filters = createTermFilters(fields, values);
+      builder.setFilteredQuery(
+          MicaSearch.FilteredQueryDto.newBuilder().setFilter(createBoolQueryDto(null, filters, type)));
+    }
+
+    return builder.build();
+  }
+
+  public static BoolFilterQueryDto createBoolQueryDto(BoolFilterQueryDto template, List<FilterQueryDto> filters,
+      BoolQueryType type) {
+    MicaSearch.BoolFilterQueryDto.Builder boolBuilder = template == null
+        ? MicaSearch.BoolFilterQueryDto.newBuilder()
+        : MicaSearch.BoolFilterQueryDto.newBuilder(template);
+
+    switch (type) {
+      case MUST:
+        boolBuilder.addAllMust(filters);
+        break;
+      case SHOULD:
+        boolBuilder.addAllShould(filters);
+        break;
+      case NOT:
+        boolBuilder.addAllMustNot(filters);
+        break;
+    }
+
+    return boolBuilder.build();
+  }
+
+  public static List<MicaSearch.FilterQueryDto> createTermFilters(List<String> fields, List<String> studyIds) {
+    return fields //
+        .stream() //
+        .map(field -> createTermFilter(field, studyIds)) //
+        .collect(Collectors.toList());
+  }
+
+  public static List<String> getTermsFilterValues(QueryDto queryDto, String field,
+      Function<QueryDto, List<FilterQueryDto>> filters) {
+
+    List<String> values = filters.apply(queryDto).stream().filter(q -> q.getField().equals(field))
+        .map(q -> q.getExtension(MicaSearch.TermsFilterQueryDto.terms).getValuesList()).flatMap((t) -> t.stream())
+        .collect(Collectors.toList());
+
+    return values;
+  }
+
+  public static Function<QueryDto, List<FilterQueryDto>> getTermsMustFilters() {
+    return queryDto -> {
+      if(queryDto.hasFilteredQuery() && queryDto.getFilteredQuery().hasFilter()) {
+        return queryDto.getFilteredQuery().getFilter().getMustList();
+      }
+
+      return Lists.newArrayList();
+    };
+  }
+
+  public static Function<QueryDto, List<FilterQueryDto>> getTermsShouldFilters() {
+    return queryDto -> {
+      if(queryDto.hasFilteredQuery() && queryDto.getFilteredQuery().hasFilter()) {
+        return queryDto.getFilteredQuery().getFilter().getShouldList();
+      }
+
+      return Lists.newArrayList();
+    };
   }
 
   public static boolean hasQuery(QueryDto queryDto) {
     return queryDto != null && (queryDto.hasFilteredQuery() || queryDto.hasQuery());
-  }
-
-  public static QueryDto addShouldBoolFilters(QueryDto queryDto, List<FilterQueryDto> filters) {
-    BoolFilterQueryDto.Builder boolFilter = BoolFilterQueryDto.newBuilder(queryDto.getFilteredQuery().getFilter());
-    boolFilter.addAllShould(filters);
-
-    return QueryDto.newBuilder(queryDto).setFilteredQuery(FilteredQueryDto.newBuilder().setFilter(boolFilter.build()))
-        .build();
   }
 
   public static QueryDto createQueryDto(int from, int limit, String sort, String order, String queryString) {

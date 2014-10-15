@@ -83,7 +83,7 @@ public class PublishedDatasetSearchResource {
       List<MicaSearch.FilterQueryDto> filters = Lists.newArrayList();
       filters.add(QueryDtoHelper.createTermFilter(DatasetQuery.STUDY_JOIN_FIELD, Arrays.asList(studyId)));
       filters.add(QueryDtoHelper.createTermFilter(DatasetQuery.HARMONIZATION_JOIN_FIELD, Arrays.asList(studyId)));
-      queryDto = QueryDtoHelper.addShouldBoolFilters(queryDto, filters);
+      queryDto = QueryDtoHelper.addTermFilters(queryDto, filters, QueryDtoHelper.BoolQueryType.SHOULD);
     }
 
     return joinQueryExecutor.query(JoinQueryExecutor.QueryType.DATASET,
