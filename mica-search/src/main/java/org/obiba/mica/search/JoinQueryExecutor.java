@@ -22,6 +22,8 @@ import org.obiba.mica.search.queries.DatasetQuery;
 import org.obiba.mica.search.queries.NetworkQuery;
 import org.obiba.mica.search.queries.StudyQuery;
 import org.obiba.mica.search.queries.VariableQuery;
+import org.obiba.mica.search.rest.QueryDtoHelper;
+import org.obiba.mica.web.model.MicaSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -70,9 +72,12 @@ public class JoinQueryExecutor {
       throws IOException {
 
     variableQuery.initialize(joinQueryDto.hasVariableQueryDto() ? joinQueryDto.getVariableQueryDto() : null);
-    datasetQuery.initialize(joinQueryDto.hasDatasetQueryDto() ? joinQueryDto.getDatasetQueryDto() : null);
+    MicaSearch.QueryDto datasetQueryDto = getDatasetQuery(
+        joinQueryDto.hasDatasetQueryDto() ? joinQueryDto.getDatasetQueryDto() : null, variableQuery.getDatasetIds());
+    datasetQuery.initialize(datasetQueryDto);
     studyQuery.initialize(joinQueryDto.hasStudyQueryDto() ? joinQueryDto.getStudyQueryDto() : null);
     networkQuery.initialize(joinQueryDto.hasNetworkQueryDto() ? joinQueryDto.getNetworkQueryDto() : null);
+    
 
     List<String> joinedIds = execute(type, scope);
     CountStatsData countStats = countBuilder != null ? getCountStatsData(type) : null;
@@ -82,12 +87,23 @@ public class JoinQueryExecutor {
     }
 
     JoinQueryResultDto.Builder builder = JoinQueryResultDto.newBuilder();
-    if (variableQuery.getResultQuery() != null) builder.setVariableResultDto(variableQuery.getResultQuery());
+    if (variableQuery.getResultQuery() != null) builder.setVariableResultDto  (variableQuery.getResultQuery());
     if (datasetQuery.getResultQuery() != null) builder.setDatasetResultDto(datasetQuery.getResultQuery());
     if (studyQuery.getResultQuery() != null) builder.setStudyResultDto(studyQuery.getResultQuery());
     if (networkQuery.getResultQuery() != null) builder.setNetworkResultDto(networkQuery.getResultQuery());
 
     return builder.build();
+  }
+
+  private MicaSearch.QueryDto getDatasetQuery(MicaSearch.QueryDto datasetQueryDto, List<String> datasetIds) {
+    if (datasetIds.size() > 0) {
+      return datasetQueryDto == null //
+          ? QueryDtoHelper.createTermFiltersQuery(Arrays.asList("id"), datasetIds, QueryDtoHelper.BoolQueryType.MUST) //
+          : QueryDtoHelper.addTermFilters(datasetQueryDto,
+              QueryDtoHelper.createTermFilters(Arrays.asList("id"), datasetIds), QueryDtoHelper.BoolQueryType.MUST);
+    }
+
+    return datasetQueryDto;
   }
 
   private List<String> execute(QueryType type, AbstractDocumentQuery.Scope scope) throws IOException {

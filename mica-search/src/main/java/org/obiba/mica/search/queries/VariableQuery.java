@@ -18,6 +18,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -30,6 +32,7 @@ import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.search.VariableIndexer;
 import org.obiba.mica.micaConfig.OpalService;
 import org.obiba.mica.search.CountStatsData;
+import org.obiba.mica.search.rest.QueryDtoHelper;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
@@ -43,6 +46,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import sun.util.locale.LanguageTag;
@@ -57,6 +61,8 @@ public class VariableQuery extends AbstractDocumentQuery {
   private static final String VARIABLE_FACETS_YML = "variable-facets.yml";
 
   private static final String JOIN_FIELD = "studyIds";
+
+  private static final String DATASET_ID = "datasetId";
 
   @Inject
   private OpalService opalService;
@@ -78,6 +84,17 @@ public class VariableQuery extends AbstractDocumentQuery {
   @Override
   public String getSearchType() {
     return VariableIndexer.VARIABLE_TYPE;
+  }
+
+  public List<String> getDatasetIds() {
+    if (queryDto != null) {
+      return Stream.concat( //
+          QueryDtoHelper.getTermsFilterValues(queryDto, DATASET_ID, QueryDtoHelper.getTermsMustFilters()).stream(), //
+          QueryDtoHelper.getTermsFilterValues(queryDto, DATASET_ID, QueryDtoHelper.getTermsShouldFilters()).stream()) //
+          .collect(Collectors.toList());
+    }
+
+    return Lists.newArrayList();
   }
 
   @Override
