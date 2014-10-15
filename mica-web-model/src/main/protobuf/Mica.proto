@@ -288,10 +288,13 @@ message DatasetDto {
   extensions 1000 to max;
 
   message StudyTableDto {
-    required string studyId = 1;
-    required string project = 2;
-    required string table = 3;
-    optional StudySummaryDto studySummary = 4;
+    required string id = 1;
+    required string studyId = 2;
+    required string populationId = 3;
+    required string dataCollectionEventId = 4;
+    required string project = 5;
+    required string table = 6;
+    optional StudySummaryDto studySummary = 7;
   }
 }
 

@@ -86,6 +86,8 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
     studyDataset.setEntityType("Participant");
     StudyTable table = new StudyTable();
     table.setStudyId(study.getId());
+    table.setPopulationId(study.getPopulations().first().getId());
+    table.setDataCollectionEventId(study.getPopulations().first().getDataCollectionEvents().first().getId());
     table.setProject("study1");
     table.setTable("FNAC");
     studyDataset.setStudyTable(table);
@@ -102,8 +104,26 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
     harmonizationDataset.setTable("HOP");
     table = new StudyTable();
     table.setStudyId(study.getId());
+    table.setPopulationId(study.getPopulations().first().getId());
+    table.setDataCollectionEventId(study.getPopulations().first().getDataCollectionEvents().first().getId());
     table.setProject("study1");
     table.setTable("HOP");
+    harmonizationDataset.addStudyTable(table);
+    harmonizationDatasetService.save(harmonizationDataset);
+    harmonizationDatasetService.publish(harmonizationDataset.getId(), true);
+
+    harmonizationDataset = new HarmonizationDataset();
+    harmonizationDataset.setName(en("Smoking").forFr("Enfumage"));
+    harmonizationDataset.setAcronym(en("SMK"));
+    harmonizationDataset.setEntityType("Participant");
+    harmonizationDataset.setProject("mica");
+    harmonizationDataset.setTable("SMK");
+    table = new StudyTable();
+    table.setStudyId(study.getId());
+    table.setPopulationId(study.getPopulations().first().getId());
+    table.setDataCollectionEventId(study.getPopulations().first().getDataCollectionEvents().first().getId());
+    table.setProject("study1");
+    table.setTable("SMK");
     harmonizationDataset.addStudyTable(table);
     harmonizationDatasetService.save(harmonizationDataset);
     harmonizationDatasetService.publish(harmonizationDataset.getId(), true);
@@ -112,7 +132,8 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
     studyService.save(study);
     network.addStudy(study);
 
-    study = createStudy("LBLS", null, "Long Beach Longitudinal Study", "Long Beach Longitudinal Study");
+    study = createStudy("LBLS", null, "Long Beach Longitudinal Study", "Long Beach Longitudinal Study", 1978, 1981,
+        1994, 1997, 2000, 2003, 2008);
     studyService.save(study);
     studyService.publish(study.getId());
     network.addStudy(study);
@@ -135,6 +156,8 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
     studyDataset.setEntityType("Participant");
     StudyTable table = new StudyTable();
     table.setStudyId(study.getId());
+    table.setPopulationId(study.getPopulations().first().getId());
+    table.setDataCollectionEventId(name.asString());
     table.setProject(study.getAcronym().get("en"));
     table.setTable(name.get("en"));
     studyDataset.setStudyTable(table);
@@ -144,7 +167,7 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
   }
 
   @SuppressWarnings("OverlyLongMethod")
-  private Study createStudy(String acronymEn, String acronymFr, String nameEn, String nameFr) {
+  private Study createStudy(String acronymEn, String acronymFr, String nameEn, String nameFr, Integer... years) {
     Study study = new Study();
     study.setName(en(nameEn).forFr(nameFr));
     study.setAcronym(en(acronymEn).forFr(acronymFr));
@@ -173,7 +196,7 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
         "Raina PS, Wolfson C, Kirkland SA, Griffith LE, Oremus M, Patterson C, Tuokko H, Penning M, Balion CM, Hogan D, Wister A, Payette H, Shannon H, and Brazil K, The Canadian longitudinal study on aging (CLSA). Can J Aging, 2009. 28(3): p. 221-9.");
     study.setPubmedId("19860977");
 
-    study.addPopulation(createPopulation());
+    study.addPopulation(createPopulation(years));
     study.setSpecificAuthorization(createAuthorization("mica-server"));
     study.setMaelstromAuthorization(createAuthorization("mica"));
     study.addAttachment(createAttachment());
@@ -254,16 +277,22 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
     return contact;
   }
 
-  private Population createPopulation() {
+  private Population createPopulation(Integer... years) {
     Population population = new Population();
     population.setName(en("CLSA Population"));
     population.setDescription(en("This is a population"));
     population.setNumberOfParticipants(createNumberOfParticipants());
     population.setSelectionCriteria(createSelectionCriteria());
     population.setRecruitment(createRecruitment());
-    population.addDataCollectionEvent(createEvent1());
-    population.addDataCollectionEvent(createEvent2());
-    population.addDataCollectionEvent(createEvent3());
+    if(years == null || years.length == 0) {
+      population.addDataCollectionEvent(createEvent1());
+      population.addDataCollectionEvent(createEvent2());
+      population.addDataCollectionEvent(createEvent3());
+    } else {
+      for(Integer year : years) {
+        population.addDataCollectionEvent(createEvent(year));
+      }
+    }
     population.addAttribute(
         Attribute.Builder.newAttribute("att1").namespace("mica").value(Locale.FRENCH, "value fr").build());
     population.addAttribute(
@@ -305,6 +334,27 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
         "<li>Individuals with cognitive impairment at baseline</li>\n" +
         "</ul>"));
     return criteria;
+  }
+
+  private DataCollectionEvent createEvent(Integer year) {
+    DataCollectionEvent event = new DataCollectionEvent();
+    event.setName(en(year + " Recruitment"));
+    event.setDescription(en(year + " data collection"));
+    event.setStart(YearMonth.of(year, 1));
+    event.setEnd(YearMonth.of(year, 12));
+    event.addDataSource("questionnaires");
+    event.addDataSource("physical_measures");
+    event.addDataSource("biological_samples");
+    event.addBioSample("BioSamples.blood");
+    event.addBioSample("BioSamples.urine");
+    event.addBioSample("BioSamples.others");
+    event.setAdministrativeDatabases(Arrays.asList("aDB1"));
+    event.setOtherBioSamples(en("Other biological sample"));
+    event.addAttribute(
+        Attribute.Builder.newAttribute("att1").namespace("mica").value(Locale.FRENCH, "value fr").build());
+    event.addAttribute(
+        Attribute.Builder.newAttribute("att1").namespace("mica").value(Locale.ENGLISH, "value en").build());
+    return event;
   }
 
   private DataCollectionEvent createEvent1() {

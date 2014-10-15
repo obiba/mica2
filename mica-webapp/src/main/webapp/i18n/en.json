@@ -330,6 +330,7 @@
     "documents": "Documents",
     "documents-help": "If applicable, please provide relevant documentation about the study (e.g.: Study Protocol).",
     "timeline": "Study Timeline",
+    "population": "Population",
     "populations": "Populations",
     "authorization": {
       "label": "Authorization",
@@ -363,6 +364,7 @@
       "participant": "Number of participants",
       "sample": "Number of participants with biological samples"
     },
+    "data-collection-event": "Data Collection Event",
     "data-collection-events": "Data Collection Events",
     "start": "Start",
     "end": "End",

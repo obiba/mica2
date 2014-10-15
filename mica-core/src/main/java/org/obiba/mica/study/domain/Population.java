@@ -11,11 +11,11 @@ import java.util.stream.Collectors;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-import org.bson.types.ObjectId;
 import org.obiba.mica.core.domain.AbstractAttributeAware;
 import org.obiba.mica.core.domain.AttributeAware;
 import org.obiba.mica.core.domain.LocalizedString;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -24,7 +24,7 @@ public class Population extends AbstractAttributeAware implements Serializable, 
 
   private static final long serialVersionUID = 6559914069652243954L;
 
-  private String id = new ObjectId().toString();
+  private String id;
 
   @NotNull
   private LocalizedString name;
@@ -40,6 +40,11 @@ public class Population extends AbstractAttributeAware implements Serializable, 
   private LocalizedString info;
 
   private SortedSet<DataCollectionEvent> dataCollectionEvents;
+
+  @JsonIgnore
+  public boolean isNew() {
+    return Strings.isNullOrEmpty(id);
+  }
 
   public String getId() {
     return id;
@@ -103,11 +108,30 @@ public class Population extends AbstractAttributeAware implements Serializable, 
 
   public void addDataCollectionEvent(@NotNull DataCollectionEvent dataCollectionEvent) {
     if(dataCollectionEvents == null) dataCollectionEvents = new TreeSet<>();
+    if(dataCollectionEvent.isNew()) {
+      String newId = dataCollectionEvent.getName().asAcronym().asString().toLowerCase();
+      if(hasDataCollectionEvent(newId)) {
+        for(int i = 1; i < 1000; i++) {
+          if(!hasDataCollectionEvent(newId + "_" + i)) {
+            dataCollectionEvent.setId(newId + "_" + i);
+            break;
+          }
+        }
+      } else dataCollectionEvent.setId(newId);
+    }
     dataCollectionEvents.add(dataCollectionEvent);
   }
 
+  public boolean hasDataCollectionEvent(String dceId) {
+    if(dataCollectionEvents == null) return false;
+    for(DataCollectionEvent dce : dataCollectionEvents) {
+      if(dce.getId().equals(dceId)) return true;
+    }
+    return false;
+  }
+
   public List<String> getAllDataSources() {
-    if (dataCollectionEvents != null) {
+    if(dataCollectionEvents != null) {
       List<String> dataSources = Lists.newArrayList();
       dataCollectionEvents.stream().filter(dce -> dce.getDataSources() != null)
           .forEach(dce -> dataSources.addAll(dce.getDataSources()));

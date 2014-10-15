@@ -57,6 +57,7 @@ public class VariableIndexConfiguration implements ElasticSearchIndexer.IndexCon
     mapping.startObject("properties");
     mapping.startObject("id").field("type", "string").field("index", "not_analyzed").endObject();
     mapping.startObject("studyIds").field("type", "string").field("index", "not_analyzed").endObject();
+    mapping.startObject("studyTableIds").field("type", "string").field("index", "not_analyzed").endObject();
     mapping.startObject("datasetId").field("type", "string").field("index", "not_analyzed").endObject();
 
     // attributes from taxonomies

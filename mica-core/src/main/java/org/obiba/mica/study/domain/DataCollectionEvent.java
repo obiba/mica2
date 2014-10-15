@@ -10,7 +10,6 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
-import org.bson.types.ObjectId;
 import org.obiba.mica.core.domain.AbstractAttributeAware;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.file.Attachment;
@@ -25,7 +24,7 @@ public class DataCollectionEvent extends AbstractAttributeAware
 
   private static final long serialVersionUID = 6559914069652243954L;
 
-  private String id = new ObjectId().toString();
+  private String id;
 
   @NotNull
   private LocalizedString name;
@@ -58,7 +57,7 @@ public class DataCollectionEvent extends AbstractAttributeAware
   @JsonIgnore
   @Override
   public boolean isNew() {
-    return false;
+    return Strings.isNullOrEmpty(id);
   }
 
   public void setId(String id) {
