@@ -38,7 +38,7 @@ mica.dataset
           return;
         }
         if ($scope.dataset.id) {
-          updateStudy();
+          updateDataset();
         } else {
           createDataset();
         }
@@ -48,7 +48,7 @@ mica.dataset
         $location.path('/study-dataset' + ($scope.dataset.id ? '/' + $scope.dataset.id : '')).replace();
       };
 
-      var updateStudy = function () {
+      var updateDataset = function () {
         $scope.dataset.$save(
           function (dataset) {
             $location.path('/study-dataset/' + dataset.id).replace();
