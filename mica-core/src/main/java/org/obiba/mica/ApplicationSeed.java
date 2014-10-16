@@ -80,14 +80,16 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
     studyService.publish(study.getId());
     network.addStudy(study);
 
+    Population population = getPopulationWithDCE(study);
+
     StudyDataset studyDataset = new StudyDataset();
     studyDataset.setName(en("FNAC").forFr("FNAC"));
     studyDataset.setAcronym(en("FNAC"));
     studyDataset.setEntityType("Participant");
     StudyTable table = new StudyTable();
     table.setStudyId(study.getId());
-    table.setPopulationId(study.getPopulations().first().getId());
-    table.setDataCollectionEventId(study.getPopulations().first().getDataCollectionEvents().first().getId());
+    table.setPopulationId(population.getId());
+    table.setDataCollectionEventId(population.getDataCollectionEvents().first().getId());
     table.setProject("study1");
     table.setTable("FNAC");
     studyDataset.setStudyTable(table);
@@ -104,8 +106,8 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
     harmonizationDataset.setTable("HOP");
     table = new StudyTable();
     table.setStudyId(study.getId());
-    table.setPopulationId(study.getPopulations().first().getId());
-    table.setDataCollectionEventId(study.getPopulations().first().getDataCollectionEvents().first().getId());
+    table.setPopulationId(population.getId());
+    table.setDataCollectionEventId(population.getDataCollectionEvents().first().getId());
     table.setProject("study1");
     table.setTable("HOP");
     harmonizationDataset.addStudyTable(table);
@@ -120,8 +122,8 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
     harmonizationDataset.setTable("SMK");
     table = new StudyTable();
     table.setStudyId(study.getId());
-    table.setPopulationId(study.getPopulations().first().getId());
-    table.setDataCollectionEventId(study.getPopulations().first().getDataCollectionEvents().first().getId());
+    table.setPopulationId(population.getId());
+    table.setDataCollectionEventId(population.getDataCollectionEvents().first().getId());
     table.setProject("study1");
     table.setTable("SMK");
     harmonizationDataset.addStudyTable(table);
@@ -149,6 +151,13 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
     networkService.save(network);
   }
 
+  private Population getPopulationWithDCE(Study study) {
+    for(Population population : study.getPopulations()) {
+      if(population.hasDataCollectionEvents()) return population;
+    }
+    return null;
+  }
+
   private StudyDataset createStudyDataset(Study study, LocalizedString name) {
     StudyDataset studyDataset = new StudyDataset();
     studyDataset.setName(name);
@@ -156,7 +165,7 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
     studyDataset.setEntityType("Participant");
     StudyTable table = new StudyTable();
     table.setStudyId(study.getId());
-    table.setPopulationId(study.getPopulations().first().getId());
+    table.setPopulationId(getPopulationWithDCE(study).getId());
     table.setDataCollectionEventId(name.asString());
     table.setProject(study.getAcronym().get("en"));
     table.setTable(name.get("en"));
@@ -197,6 +206,7 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
     study.setPubmedId("19860977");
 
     study.addPopulation(createPopulation(years));
+    if(years == null || years.length == 0) study.addPopulation(createPopulation2());
     study.setSpecificAuthorization(createAuthorization("mica-server"));
     study.setMaelstromAuthorization(createAuthorization("mica"));
     study.addAttachment(createAttachment());
@@ -279,8 +289,9 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
 
   private Population createPopulation(Integer... years) {
     Population population = new Population();
-    population.setName(en("CLSA Population"));
-    population.setDescription(en("This is a population"));
+    population.setId("core");
+    population.setName(en("Core Population"));
+    population.setDescription(en("This is the core population"));
     population.setNumberOfParticipants(createNumberOfParticipants());
     population.setSelectionCriteria(createSelectionCriteria());
     population.setRecruitment(createRecruitment());
@@ -297,6 +308,17 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
         Attribute.Builder.newAttribute("att1").namespace("mica").value(Locale.FRENCH, "value fr").build());
     population.addAttribute(
         Attribute.Builder.newAttribute("att1").namespace("mica").value(Locale.ENGLISH, "value en").build());
+    return population;
+  }
+
+  private Population createPopulation2() {
+    Population population = new Population();
+    population.setId("add");
+    population.setName(en("Additional Population"));
+    population.setDescription(en("This is the additional population"));
+    population.setNumberOfParticipants(createNumberOfParticipants());
+    population.setSelectionCriteria(createSelectionCriteria(Population.SelectionCriteria.Gender.men));
+    population.setRecruitment(createRecruitment());
     return population;
   }
 
@@ -317,22 +339,27 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
   }
 
   private Population.SelectionCriteria createSelectionCriteria() {
+    return createSelectionCriteria(null);
+  }
+
+  private Population.SelectionCriteria createSelectionCriteria(Population.SelectionCriteria.Gender gender) {
     Population.SelectionCriteria criteria = new Population.SelectionCriteria();
     criteria.setAgeMin(45);
     criteria.setAgeMax(85);
-    criteria.setGender(Population.SelectionCriteria.Gender.women);
+    criteria.setGender(gender == null ? Population.SelectionCriteria.Gender.women : gender);
     criteria.addCountryIso(Locale.CANADA.getISO3Country());
     criteria.addCriteria("criteria1");
     criteria.addEthnicOrigin(en("Serbian"));
     criteria.addHealthStatus(en("Good"));
-    criteria.setOtherCriteria(en("<p>Language: Individuals who are able to respond in either French or English.</p>\n" +
-        "<p>Exclusion criteria: The CLSA uses the same exclusion criteria as the Statistics Canada Canadian Community Health Survey – Healthy Aging. Excluded from the study are:</p>\n" +
-        "<ul><li>Residents of the three territories</li>\n" +
-        "<li>Full-time members of the Canadian Forces</li>\n" +
-        "<li>Individuals living in long-term care institutions (i.e., those providing 24-hour nursing care). However, those living in households and transitional housing arrangements (e.g., seniors’ residences, in which only minimal care is provided) will be included. CLSA cohort participants who become institutionalized during the course of the study will continue to be followed either through personal or proxy interview.</li>\n" +
-        "<li>Persons living on reserves and other Aboriginal settlements. However, individuals who are of First Nations descent who live outside reserves are included in the study.</li>\n" +
-        "<li>Individuals with cognitive impairment at baseline</li>\n" +
-        "</ul>"));
+    if(gender == null) criteria
+        .setOtherCriteria(en("<p>Language: Individuals who are able to respond in either French or English.</p>\n" +
+            "<p>Exclusion criteria: The CLSA uses the same exclusion criteria as the Statistics Canada Canadian Community Health Survey – Healthy Aging. Excluded from the study are:</p>\n" +
+            "<ul><li>Residents of the three territories</li>\n" +
+            "<li>Full-time members of the Canadian Forces</li>\n" +
+            "<li>Individuals living in long-term care institutions (i.e., those providing 24-hour nursing care). However, those living in households and transitional housing arrangements (e.g., seniors’ residences, in which only minimal care is provided) will be included. CLSA cohort participants who become institutionalized during the course of the study will continue to be followed either through personal or proxy interview.</li>\n" +
+            "<li>Persons living on reserves and other Aboriginal settlements. However, individuals who are of First Nations descent who live outside reserves are included in the study.</li>\n" +
+            "<li>Individuals with cognitive impairment at baseline</li>\n" +
+            "</ul>"));
     return criteria;
   }
 
