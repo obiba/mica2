@@ -106,6 +106,10 @@ public class Population extends AbstractAttributeAware implements Serializable, 
     return dataCollectionEvents;
   }
 
+  public boolean hasDataCollectionEvents() {
+    return dataCollectionEvents != null && !dataCollectionEvents.isEmpty();
+  }
+
   public void addDataCollectionEvent(@NotNull DataCollectionEvent dataCollectionEvent) {
     if(dataCollectionEvents == null) dataCollectionEvents = new TreeSet<>();
     if(dataCollectionEvent.isNew()) {
@@ -158,8 +162,8 @@ public class Population extends AbstractAttributeAware implements Serializable, 
 
   @Override
   public int compareTo(Population pop) {
-    if(dataCollectionEvents == null || dataCollectionEvents.isEmpty()) return -1;
-    if(pop.dataCollectionEvents == null || pop.dataCollectionEvents.isEmpty()) return 1;
+    if(!hasDataCollectionEvents()) return 1;
+    if(!pop.hasDataCollectionEvents()) return -1;
     return Iterables.get(dataCollectionEvents, 0).compareTo(Iterables.get(pop.dataCollectionEvents, 0));
   }
 
