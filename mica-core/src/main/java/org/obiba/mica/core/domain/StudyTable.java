@@ -33,12 +33,18 @@ public class StudyTable implements Serializable {
   @NotNull
   private String table;
 
-  public String getId() {
+  /**
+   * {@link org.obiba.mica.study.domain.DataCollectionEvent} unique ID (including {@link org.obiba.mica.study.domain.Study} ID
+   * and {@link org.obiba.mica.study.domain.Population} ID.
+   *
+   * @return
+   */
+  public String getDataCollectionEventUId() {
     return getStudyId() + ":" + getPopulationId() + ":" + getDataCollectionEventId();
   }
 
-  public void setId(String ignored) {
-    
+  public void setDataCollectionEventUId(String ignored) {
+    // for jackson serializer
   }
 
   public String getStudyId() {

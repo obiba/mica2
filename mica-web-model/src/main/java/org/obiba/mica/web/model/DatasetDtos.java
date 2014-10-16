@@ -220,12 +220,12 @@ class DatasetDtos {
 
   private Mica.DatasetDto.StudyTableDto.Builder asDto(StudyTable studyTable) {
     Mica.DatasetDto.StudyTableDto.Builder builder = Mica.DatasetDto.StudyTableDto.newBuilder() //
-        .setId(studyTable.getId()) //
         .setStudyId(studyTable.getStudyId()) //
         .setPopulationId(studyTable.getPopulationId()) //
         .setDataCollectionEventId(studyTable.getDataCollectionEventId()) //
         .setProject(studyTable.getProject()) //
-        .setTable(studyTable.getTable());
+        .setTable(studyTable.getTable()) //
+        .setDceId(studyTable.getDataCollectionEventUId());
 
     return builder;
   }

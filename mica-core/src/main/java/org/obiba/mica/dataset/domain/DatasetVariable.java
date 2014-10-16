@@ -50,7 +50,7 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   private List<String> studyIds;
 
-  private List<String> studyTableIds;
+  private List<String> dceIds;
 
   private Type variableType;
 
@@ -89,21 +89,21 @@ public class DatasetVariable implements Indexable, AttributeAware {
   public DatasetVariable(StudyDataset dataset, Variable variable) {
     this(dataset, Type.Study, variable);
     studyIds = Lists.newArrayList(dataset.getStudyTable().getStudyId());
-    studyTableIds = Lists.newArrayList(dataset.getStudyTable().getId());
+    dceIds = Lists.newArrayList(dataset.getStudyTable().getDataCollectionEventUId());
   }
 
   public DatasetVariable(HarmonizationDataset dataset, Variable variable) {
     this(dataset, Type.Dataschema, variable);
     studyIds = Lists.newArrayList();
     dataset.getStudyTables().forEach(table -> studyIds.add(table.getStudyId()));
-    studyTableIds = Lists.newArrayList();
-    dataset.getStudyTables().forEach(table -> studyTableIds.add(table.getId()));
+    dceIds = Lists.newArrayList();
+    dataset.getStudyTables().forEach(table -> dceIds.add(table.getDataCollectionEventUId()));
   }
 
   public DatasetVariable(HarmonizationDataset dataset, Variable variable, StudyTable studyTable) {
     this(dataset, Type.Harmonized, variable);
     studyIds = Lists.newArrayList(studyTable.getStudyId());
-    studyTableIds = Lists.newArrayList(studyTable.getId());
+    dceIds = Lists.newArrayList(studyTable.getDataCollectionEventUId());
   }
 
   private DatasetVariable(Dataset dataset, Type type, Variable variable) {
@@ -163,8 +163,8 @@ public class DatasetVariable implements Indexable, AttributeAware {
     return studyIds;
   }
 
-  public List<String> getStudyTableIds() {
-    return studyTableIds;
+  public List<String> getDceIds() {
+    return dceIds;
   }
 
   public Type getVariableType() {
