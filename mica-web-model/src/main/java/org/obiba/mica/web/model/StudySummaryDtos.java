@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
@@ -27,7 +28,7 @@ class StudySummaryDtos {
 
   @Inject
   private AttachmentDtos attachmentDtos;
-  
+
   @Inject
   private PublishedStudyService publishedStudyService;
 
@@ -63,12 +64,34 @@ class StudySummaryDtos {
       populations.stream().filter(population -> population.getAllDataSources() != null)
           .forEach(population -> dataSources.addAll(population.getAllDataSources()));
 
-      if (dataSources.size()> 0) {
+      if(dataSources.size() > 0) {
         builder.addAllDataSources(dataSources.stream().distinct().collect(Collectors.toList()));
       }
+
+      populations.forEach(population -> builder.addPopulationSummaries(asDto(population)));
     }
     builder.addAllCountries(countries);
     return builder;
+  }
+
+  @NotNull
+  Mica.PopulationSummaryDto asDto(@NotNull Population population) {
+    Mica.PopulationSummaryDto.Builder builder = Mica.PopulationSummaryDto.newBuilder();
+
+    builder.setId(population.getId()) //
+        .addAllName(localizedStringDtos.asDto(population.getName()));
+
+    if(population.getDataCollectionEvents() != null) {
+      population.getDataCollectionEvents().forEach(dce -> builder.addDataCollectionEventSummaries(asDto(dce)));
+    }
+
+    return builder.build();
+  }
+
+  @NotNull
+  Mica.DataCollectionEventSummaryDto asDto(@NotNull DataCollectionEvent dce) {
+    return Mica.DataCollectionEventSummaryDto.newBuilder().setId(dce.getId()) //
+        .addAllName(localizedStringDtos.asDto(dce.getName())).build();
   }
 
   @NotNull
