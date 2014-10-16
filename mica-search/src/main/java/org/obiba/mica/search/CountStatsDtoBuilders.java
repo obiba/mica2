@@ -51,16 +51,16 @@ public class CountStatsDtoBuilders {
     }
 
     public CountStatsDto build(Dataset dataset) {
-      return calculateCounts(getStudyIds(dataset));
+      return calculateCounts(dataset.getId(), getStudyIds(dataset));
     }
 
-    private CountStatsDto calculateCounts(List<String> ids) {
+    private CountStatsDto calculateCounts(String datasetId, List<String> ids) {
       int variables = 0;
       int studies = 0;
       int networks = 0;
 
       for(String id : ids) {
-        variables += countStatsData.getVariables(id);
+        variables += countStatsData.getVariables(datasetId);
         studies += countStatsData.getStudies(id);
         networks += countStatsData.getNetworks(id);
       }

@@ -271,7 +271,17 @@ public abstract class AbstractDocumentQuery {
 
   public abstract Map<String, Integer> getStudyCounts();
 
-  protected Map<String, Integer> getStudyCounts(String joinField) {
+  /**
+   * Iterate through response aggregations and retrieve the studyIds that were included
+   *
+   * @param aggDtos
+   * @return
+   */
+  protected List<String> getResponseStudyIds(List<MicaSearch.AggregationResultDto> aggDtos) {
+    return getResponseDocumentIds(getJoinFields(), aggDtos);
+  }
+
+  protected Map<String, Integer> getDocumentCounts(String joinField) {
     if(resultDto == null) return Maps.newHashMap();
     return resultDto.getAggsList().stream() //
         .filter(agg -> joinField.equals(AggregationYamlParser.unformatName(agg.getAggregation()))) //
@@ -280,15 +290,9 @@ public abstract class AbstractDocumentQuery {
         .collect(Collectors.toMap(MicaSearch.TermsAggregationResultDto::getKey, term -> term.getCount()));
   }
 
-  /**
-   * Iterate through response aggregations and retrieve the studyIds that were included
-   *
-   * @param aggDtos
-   * @return
-   */
-  protected List<String> getResponseStudyIds(List<MicaSearch.AggregationResultDto> aggDtos) {
+  protected List<String> getResponseDocumentIds(List<String> fields, List<MicaSearch.AggregationResultDto> aggDtos) {
     List<String> ids = aggDtos.stream() //
-        .filter(agg -> getJoinFields().contains(AggregationYamlParser.unformatName(agg.getAggregation()))) //
+        .filter(agg -> fields.contains(AggregationYamlParser.unformatName(agg.getAggregation()))) //
         .map(d -> d.getExtension(MicaSearch.TermsAggregationResultDto.terms)) //
         .flatMap((d) -> d.stream()).map(MicaSearch.TermsAggregationResultDto::getKey).distinct().collect(Collectors.toList());
     return ids;

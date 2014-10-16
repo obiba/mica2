@@ -18,8 +18,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -32,7 +30,7 @@ import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.search.VariableIndexer;
 import org.obiba.mica.micaConfig.OpalService;
 import org.obiba.mica.search.CountStatsData;
-import org.obiba.mica.search.rest.QueryDtoHelper;
+import org.obiba.mica.search.DatasetIdProvider;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
@@ -76,6 +74,8 @@ public class VariableQuery extends AbstractDocumentQuery {
   @Inject
   private ObjectMapper objectMapper;
 
+  private DatasetIdProvider datasetIdProvider;
+
   @Override
   public String getSearchIndex() {
     return VariableIndexer.PUBLISHED_VARIABLE_INDEX;
@@ -86,15 +86,9 @@ public class VariableQuery extends AbstractDocumentQuery {
     return VariableIndexer.VARIABLE_TYPE;
   }
 
-  public List<String> getDatasetIds() {
-    if (queryDto != null) {
-      return Stream.concat( //
-          QueryDtoHelper.getTermsFilterValues(queryDto, DATASET_ID, QueryDtoHelper.getTermsMustFilters()).stream(), //
-          QueryDtoHelper.getTermsFilterValues(queryDto, DATASET_ID, QueryDtoHelper.getTermsShouldFilters()).stream()) //
-          .collect(Collectors.toList());
-    }
-
-    return Lists.newArrayList();
+  public void initialize(MicaSearch.QueryDto query, DatasetIdProvider provider) {
+    datasetIdProvider = provider;
+    initialize(query);
   }
 
   @Override
@@ -167,7 +161,21 @@ public class VariableQuery extends AbstractDocumentQuery {
 
   @Override
   public List<String> query(List<String> studyIds, CountStatsData counts, Scope scope) throws IOException {
-    return super.query(studyIds, null, scope == DETAIL ? DETAIL : NONE);
+    List<String> ids = super.query(studyIds, null, scope == DETAIL ? DETAIL : NONE);
+    datasetIdProvider.setDatasetIds(getDatasetIds());
+    return ids;
+  }
+
+  public Map<String, Integer> getDatasetCounts() {
+    return getDocumentCounts(DATASET_ID);
+  }
+
+  private List<String> getDatasetIds() {
+    if (resultDto != null) {
+      return getResponseDocumentIds(Arrays.asList(DATASET_ID), resultDto.getAggsList());
+    }
+
+    return Lists.newArrayList();
   }
 
   @Override
@@ -178,7 +186,7 @@ public class VariableQuery extends AbstractDocumentQuery {
   @Nullable
   @Override
   public Map<String, Integer> getStudyCounts() {
-    return getStudyCounts(JOIN_FIELD);
+    return getDocumentCounts(JOIN_FIELD);
   }
 
   @Override
