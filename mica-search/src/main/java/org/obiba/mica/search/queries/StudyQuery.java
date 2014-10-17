@@ -95,7 +95,7 @@ public class StudyQuery extends AbstractDocumentQuery {
 
   @Override
   public Map<String, Integer> getStudyCounts() {
-    return getStudyCounts(JOIN_FIELD);
+    return getDocumentCounts(JOIN_FIELD);
   }
 
   @Override

@@ -10,6 +10,7 @@
 
 package org.obiba.mica.search.queries;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,8 @@ import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.search.DatasetIndexer;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
 import org.obiba.mica.search.CountStatsData;
+import org.obiba.mica.search.DatasetIdProvider;
+import org.obiba.mica.search.rest.QueryDtoHelper;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
@@ -52,6 +55,8 @@ public class DatasetQuery extends AbstractDocumentQuery {
   @Inject
   PublishedDatasetService publishedDatasetService;
 
+  private DatasetIdProvider datasetIdProvider;
+
   @Override
   public String getSearchIndex() {
     return DatasetIndexer.PUBLISHED_DATASET_INDEX;
@@ -60,6 +65,17 @@ public class DatasetQuery extends AbstractDocumentQuery {
   @Override
   public String getSearchType() {
     return DatasetIndexer.DATASET_TYPE;
+  }
+
+  public void initialize(MicaSearch.QueryDto query, DatasetIdProvider provider) {
+    datasetIdProvider = provider;
+    initialize(query);
+  }
+
+  @Override
+  public List<String> query(List<String> studyIds, CountStatsData counts, Scope scope) throws IOException {
+    updateDatasetQuery();
+    return super.query(studyIds, counts, scope);
   }
 
   @Override
@@ -84,6 +100,20 @@ public class DatasetQuery extends AbstractDocumentQuery {
     builder.setExtension(DatasetResultDto.result, resBuilder.build());
   }
 
+  private void updateDatasetQuery() {
+    List<String> datasetIds = datasetIdProvider.getDatasetIds();
+    if(datasetIds.size() > 0) {
+      if(queryDto == null) {
+        queryDto = QueryDtoHelper
+            .createTermFiltersQuery(Arrays.asList("id"), datasetIds, QueryDtoHelper.BoolQueryType.MUST);
+      } else {
+        queryDto = QueryDtoHelper
+            .addTermFilters(queryDto, QueryDtoHelper.createTermFilters(Arrays.asList("id"), datasetIds),
+                QueryDtoHelper.BoolQueryType.MUST);
+      }
+    }
+  }
+
   private Consumer<Dataset> getDatasetConsumer(Scope scope, DatasetResultDto.Builder resBuilder,
       DatasetCountStatsBuilder datasetCountStatsBuilder) {
 
@@ -106,11 +136,11 @@ public class DatasetQuery extends AbstractDocumentQuery {
   }
 
   public Map<String, Integer> getStudyCounts() {
-    return getStudyCounts(STUDY_JOIN_FIELD);
+    return getDocumentCounts(STUDY_JOIN_FIELD);
   }
 
   public Map<String, Integer> getHarmonizationStudyCounts() {
-    return getStudyCounts(HARMONIZATION_JOIN_FIELD);
+    return getDocumentCounts(HARMONIZATION_JOIN_FIELD);
   }
 
 }

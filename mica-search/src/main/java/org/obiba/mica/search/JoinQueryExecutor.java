@@ -68,42 +68,32 @@ public class JoinQueryExecutor {
   }
 
   private JoinQueryResultDto query(QueryType type, JoinQueryDto joinQueryDto, CountStatsData.Builder countBuilder,
-      AbstractDocumentQuery.Scope scope)
-      throws IOException {
+      AbstractDocumentQuery.Scope scope) throws IOException {
+    DatasetIdProvider datasetIdProvider = new DatasetIdProvider();
 
-    variableQuery.initialize(joinQueryDto.hasVariableQueryDto() ? joinQueryDto.getVariableQueryDto() : null);
-    MicaSearch.QueryDto datasetQueryDto = getDatasetQuery(
-        joinQueryDto.hasDatasetQueryDto() ? joinQueryDto.getDatasetQueryDto() : null, variableQuery.getDatasetIds());
-    datasetQuery.initialize(datasetQueryDto);
+    variableQuery.initialize(joinQueryDto.hasVariableQueryDto() ? joinQueryDto.getVariableQueryDto() : null, datasetIdProvider);
+    datasetQuery.initialize(joinQueryDto.hasDatasetQueryDto() ? joinQueryDto.getDatasetQueryDto() : null, datasetIdProvider);
     studyQuery.initialize(joinQueryDto.hasStudyQueryDto() ? joinQueryDto.getStudyQueryDto() : null);
     networkQuery.initialize(joinQueryDto.hasNetworkQueryDto() ? joinQueryDto.getNetworkQueryDto() : null);
-    
 
     List<String> joinedIds = execute(type, scope);
     CountStatsData countStats = countBuilder != null ? getCountStatsData(type) : null;
 
-    if (joinedIds != null && joinedIds.size() > 0) {
+    if(joinedIds != null && joinedIds.size() > 0) {
       getDocumentQuery(type).query(joinedIds, countStats, scope);
+      if (type == QueryType.VARIABLE) {
+        // need to update dataset and redo agg query
+        datasetQuery.query(joinedIds, null, DIGEST);
+      }
     }
 
     JoinQueryResultDto.Builder builder = JoinQueryResultDto.newBuilder();
-    if (variableQuery.getResultQuery() != null) builder.setVariableResultDto  (variableQuery.getResultQuery());
-    if (datasetQuery.getResultQuery() != null) builder.setDatasetResultDto(datasetQuery.getResultQuery());
-    if (studyQuery.getResultQuery() != null) builder.setStudyResultDto(studyQuery.getResultQuery());
-    if (networkQuery.getResultQuery() != null) builder.setNetworkResultDto(networkQuery.getResultQuery());
+    if(variableQuery.getResultQuery() != null) builder.setVariableResultDto(variableQuery.getResultQuery());
+    if(datasetQuery.getResultQuery() != null) builder.setDatasetResultDto(datasetQuery.getResultQuery());
+    if(studyQuery.getResultQuery() != null) builder.setStudyResultDto(studyQuery.getResultQuery());
+    if(networkQuery.getResultQuery() != null) builder.setNetworkResultDto(networkQuery.getResultQuery());
 
     return builder.build();
-  }
-
-  private MicaSearch.QueryDto getDatasetQuery(MicaSearch.QueryDto datasetQueryDto, List<String> datasetIds) {
-    if (datasetIds.size() > 0) {
-      return datasetQueryDto == null //
-          ? QueryDtoHelper.createTermFiltersQuery(Arrays.asList("id"), datasetIds, QueryDtoHelper.BoolQueryType.MUST) //
-          : QueryDtoHelper.addTermFilters(datasetQueryDto,
-              QueryDtoHelper.createTermFilters(Arrays.asList("id"), datasetIds), QueryDtoHelper.BoolQueryType.MUST);
-    }
-
-    return datasetQueryDto;
   }
 
   private List<String> execute(QueryType type, AbstractDocumentQuery.Scope scope) throws IOException {
@@ -146,7 +136,7 @@ public class JoinQueryExecutor {
     CountStatsData countStats = null;
     switch(type) {
       case DATASET:
-        countStats = CountStatsData.newBuilder().variables(variableQuery.getStudyCounts())
+        countStats = CountStatsData.newBuilder().variables(variableQuery.getDatasetCounts())
             .studies(studyQuery.getStudyCounts()).networks(networkQuery.getStudyCounts()).build();
         break;
       case STUDY:
@@ -173,7 +163,7 @@ public class JoinQueryExecutor {
 
     List<String> studyIds = null;
     List<String> joinedStudyIds = null;
-    if (queries.size() > 0) studyIds = queryStudyIds(queries);
+    if(queries.size() > 0) studyIds = queryStudyIds(queries);
     if(studyIds == null || studyIds.size() > 0) joinedStudyIds = docQuery.queryStudyIds(studyIds);
     if(joinedStudyIds != null && joinedStudyIds.size() > 0) {
       queryAggragations(docQuery.hasQueryFilters() ? joinedStudyIds : studyIds, subQueries);
