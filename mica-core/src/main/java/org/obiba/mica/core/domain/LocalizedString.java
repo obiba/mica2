@@ -4,6 +4,8 @@ import java.text.Normalizer;
 import java.util.List;
 import java.util.Locale;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
@@ -94,7 +96,21 @@ public class LocalizedString extends TreeMap<String, String> {
       for (char c : decompose(name).toCharArray()) {
         if (Character.isUpperCase(c)) buffer.append(c);
       }
-      acronym.put(entry.getKey(), buffer.toString());
+
+      // default strategy
+      String value = name.toUpperCase();
+
+      if (buffer.length() > 0) {
+        value = buffer.toString();
+      } else {
+        // extract first character of each word
+        String[] letters = name.split("(?<=[\\S])[\\S]*\\s*");
+        if (letters.length > 1) {
+          value = Stream.of(letters).map(s -> s.toUpperCase()).collect(Collectors.joining());
+        }
+      }
+
+      acronym.put(entry.getKey(), value);
     });
     return acronym;
   }
