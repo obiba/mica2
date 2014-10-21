@@ -334,8 +334,16 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
     return false;
   }
 
-  public void setPopulations(SortedSet<Population> populations) {
-    this.populations = populations;
+  public void setPopulations(SortedSet<Population> newPopulations) {
+    if (newPopulations == null) {
+      // during serialization input can be null
+      populations = newPopulations;
+      return;
+    }
+
+    // make sure we don't keep old entries
+    populations = new TreeSet<>();
+    newPopulations.forEach(population -> addPopulation(population));
   }
 
   @Override
