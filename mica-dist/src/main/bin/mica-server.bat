@@ -18,9 +18,7 @@ set MICA_SERVER_LOG=%MICA_SERVER_HOME%\logs
 IF NOT EXIST "%MICA_SERVER_LOG%" mkdir "%MICA_SERVER_LOG%"
 echo MICA_SERVER_LOG=%MICA_SERVER_LOG%
 
-rem Java 7 supports wildcard classpaths
-rem http://docs.oracle.com/javase/7/docs/technotes/tools/windows/classpath.html
-set CLASSPATH=%MICA_SERVER_HOME%\conf;%MICA_SERVER_DIST%\lib\*
+set CLASSPATH=%MICA_SERVER_HOME%\conf;%MICA_SERVER_DIST%\webapp\WEB-INF\classes;%MICA_SERVER_DIST%\webapp\WEB-INF\lib\*
 
 set JAVA_DEBUG=-agentlib:jdwp=transport=dt_socket,server=y,address=8000,suspend=n
 

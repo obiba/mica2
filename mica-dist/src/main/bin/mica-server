@@ -41,8 +41,6 @@ if $cygwin; then
   export MICA_SERVER_HOME=`cygpath --absolute --windows "$MICA_SERVER_HOME"`
 fi
 
-# Java 6 supports wildcard classpath entries
-# http://download.oracle.com/javase/6/docs/technotes/tools/solaris/classpath.html
 CLASSPATH=$MICA_SERVER_HOME/conf:$MICA_SERVER_DIST/WEB-INF/classes:$MICA_SERVER_DIST/WEB-INF/lib/*
 if $cygwin; then
   CLASSPATH=$MICA_SERVER_HOME/conf;$MICA_SERVER_DIST/WEB-INF/classes;$MICA_SERVER_DIST/WEB-INF/lib/*

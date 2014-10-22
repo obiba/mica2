@@ -37,7 +37,7 @@ SCRIPTNAME=/etc/init.d/$NAME
 . /lib/lsb/init-functions
 
 DAEMON_ARGS="--name=$NAME --user=$MICA_SERVER_USER --pidfile=$PIDFILE --inherit --env=MICA_SERVER_HOME=$MICA_SERVER_HOME --env=MICA_SERVER_LOG=$MICA_SERVER_LOG --output=$MICA_SERVER_LOG/stdout.log --chdir=$MICA_SERVER_HOME"
-CLASSPATH="$MICA_SERVER_HOME/conf:$MICA_SERVER_DIST/lib/*"
+CLASSPATH="$MICA_SERVER_HOME/conf:$MICA_SERVER_DIST/webapp/WEB-INF/classes:$MICA_SERVER_DIST/webapp/WEB-INF/lib/*"
 
 # Get the status of the daemon process
 get_daemon_status()
