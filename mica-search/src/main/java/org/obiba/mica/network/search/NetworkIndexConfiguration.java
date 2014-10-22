@@ -11,15 +11,20 @@
 package org.obiba.mica.network.search;
 
 import java.io.IOException;
+import java.util.stream.Stream;
 
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
+import org.obiba.mica.search.AbstractIndexConfiguration;
 import org.obiba.mica.search.ElasticSearchIndexer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class NetworkIndexConfiguration implements ElasticSearchIndexer.IndexConfigurationListener {
+public class NetworkIndexConfiguration extends AbstractIndexConfiguration implements ElasticSearchIndexer.IndexConfigurationListener {
+  private static final Logger log = LoggerFactory.getLogger(NetworkIndexConfiguration.class);
 
   @Override
   public void onIndexCreated(Client client, String indexName) {
@@ -40,8 +45,9 @@ public class NetworkIndexConfiguration implements ElasticSearchIndexer.IndexConf
 
     // properties
     mapping.startObject("properties");
-    mapping.startObject("id").field("type", "string").field("index","not_analyzed").endObject();
-    mapping.startObject("studyIds").field("type", "string").field("index","not_analyzed").endObject();
+      mapping.startObject("id").field("type", "string").field("index","not_analyzed").endObject();
+      mapping.startObject("studyIds").field("type", "string").field("index","not_analyzed").endObject();
+      Stream.of(NetworkIndexer.ANALYZED_FIELDS).forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
     mapping.endObject();
 
     mapping.endObject().endObject();

@@ -15,6 +15,7 @@ import org.elasticsearch.index.query.BoolFilterBuilder;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.index.query.RangeFilterBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
@@ -40,8 +41,10 @@ public class QueryDtoParser {
   public BaseQueryBuilder parse(QueryDto queryDto) {
     BaseQueryBuilder query = null;
 
-    if(queryDto.hasQuery()) {
-      query = QueryBuilders.queryString(queryDto.getQuery());
+    if(queryDto.hasQueryString()) {
+      QueryStringQueryBuilder queryStringBuilder = QueryBuilders.queryString(queryDto.getQueryString().getQuery());
+      queryDto.getQueryString().getFieldsList().forEach(queryStringBuilder::field);
+      query = queryStringBuilder;
     }
 
     return parseFilterQuery(query == null ? QueryBuilders.matchAllQuery() : query, queryDto.getFilteredQuery());

@@ -11,15 +11,17 @@
 package org.obiba.mica.study.search;
 
 import java.io.IOException;
+import java.util.stream.Stream;
 
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
+import org.obiba.mica.search.AbstractIndexConfiguration;
 import org.obiba.mica.search.ElasticSearchIndexer;
 import org.springframework.stereotype.Component;
 
 @Component
-public class StudyIndexConfiguration implements ElasticSearchIndexer.IndexConfigurationListener {
+public class StudyIndexConfiguration extends AbstractIndexConfiguration implements ElasticSearchIndexer.IndexConfigurationListener {
 
   @Override
   public void onIndexCreated(Client client, String indexName) {
@@ -41,10 +43,25 @@ public class StudyIndexConfiguration implements ElasticSearchIndexer.IndexConfig
     // properties
     mapping.startObject("properties");
     mapping.startObject("id").field("type", "string").field("index","not_analyzed").endObject();
+
+    // don't analyze YearMonth fields, preserve values as yyyy-mm
+    mapping.startObject("populations")
+      .startObject("properties")
+        .startObject("dataCollectionEvents")
+          .startObject("properties")
+            .startObject("start").field("type", "string").field("index","not_analyzed").endObject()
+            .startObject("end").field("type", "string").field("index","not_analyzed").endObject()
+          .endObject()
+        .endObject()
+      .endObject()
+    .endObject();
+
+    Stream.of(StudyIndexer.ANALYZED_FIELDS).forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
+    mapping.endObject();
     mapping.endObject();
 
-    mapping.endObject().endObject();
     return mapping;
   }
+
 
 }

@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.Year;
 import java.time.YearMonth;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
@@ -18,6 +19,7 @@ import org.obiba.mica.core.domain.Authorization;
 import org.obiba.mica.core.domain.Contact;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
+import org.obiba.mica.micaConfig.MicaConfigService;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.core.domain.StudyTable;
@@ -50,6 +52,9 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
   private static final Logger log = LoggerFactory.getLogger(ApplicationSeed.class);
 
   @Inject
+  private MicaConfigService micaConfigService;
+
+  @Inject
   private StudyService studyService;
 
   @Inject
@@ -64,6 +69,8 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
   @Inject
   private NetworkService networkService;
 
+  private List<String> locales;
+
   @Override
   public void onApplicationEvent(ContextRefreshedEvent event) {
     log.debug("Create new study - ContextStartedEvent");
@@ -72,6 +79,7 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
 
   public void create() {
 
+    locales = micaConfigService.getConfig().getLocalesAsString();
     Network network = createNetwork();
 
     Study study = createStudy("CLSA", "ELCV", "Canadian Longitudinal Study on Aging",
@@ -83,7 +91,7 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
     Population population = getPopulationWithDCE(study);
 
     StudyDataset studyDataset = new StudyDataset();
-    studyDataset.setName(en("FNAC").forFr("FNAC"));
+    studyDataset.setName(getLocalizedString("FNAC", "FNAC"));
     studyDataset.setAcronym(en("FNAC"));
     studyDataset.setEntityType("Participant");
     StudyTable table = new StudyTable();
@@ -97,7 +105,7 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
     studyDatasetService.publish(studyDataset.getId(), true);
 
     HarmonizationDataset harmonizationDataset = new HarmonizationDataset();
-    harmonizationDataset.setName(en("Healthy Obese Project").forFr("Projet des obeses en sante"));
+    harmonizationDataset.setName(getLocalizedString("Healthy Obese Project", "Projet des obeses en sante"));
     harmonizationDataset.setAcronym(en("HOP"));
     harmonizationDataset.setDescription(
         en("The Healthy Obese Project (HOP) is a BioSHaRE-EU core project  which aims to evaluate the prevalence of the metabolically healthy obese, assess lifestyle determinants and clinical consequences of healthy obesity and explore genetic modifications and advanced metabolic profiling related to both the determinants and consequences of healthy obesity. The Healthy Obese Project (HOP) is separated into study phases that each assess a specific research question."));
@@ -115,7 +123,7 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
     harmonizationDatasetService.publish(harmonizationDataset.getId(), true);
 
     harmonizationDataset = new HarmonizationDataset();
-    harmonizationDataset.setName(en("Smoking").forFr("Enfumage"));
+    harmonizationDataset.setName(getLocalizedString("Smoking", "Enfumage"));
     harmonizationDataset.setAcronym(en("SMK"));
     harmonizationDataset.setEntityType("Participant");
     harmonizationDataset.setProject("mica");
@@ -151,6 +159,12 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
     networkService.save(network);
   }
 
+  private LocalizedString getLocalizedString(String enValue, String frValue) {
+    LocalizedString ls = en(enValue);
+    if (locales.contains("fr")) ls.forFr(frValue);
+    return ls;
+  }
+
   private Population getPopulationWithDCE(Study study) {
     for(Population population : study.getPopulations()) {
       if(population.hasDataCollectionEvents()) return population;
@@ -178,12 +192,11 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
   @SuppressWarnings("OverlyLongMethod")
   private Study createStudy(String acronymEn, String acronymFr, String nameEn, String nameFr, Integer... years) {
     Study study = new Study();
-    study.setName(en(nameEn).forFr(nameFr));
-    study.setAcronym(en(acronymEn).forFr(acronymFr));
-    study.setObjectives(
-        en("The Canadian Longitudinal Study on Aging (CLSA) is a large, national, long-term study that will follow approximately 50,000 men and women between the ages of 45 and 85 for at least 20 years. The study will collect information on the changing biological, medical, psychological, social, lifestyle and economic aspects of people’s lives. These factors will be studied in order to understand how, individually and in combination, they have an impact in both maintaining health and in the development of disease and disability as people age.")
-            .forFr(
-                "L’Étude longitudinale canadienne sur le vieillissement (ÉLCV) est une vaste étude nationale à long terme qui permettra de suivre environ 50 000 Canadiennes et Canadiens âgé(e)s de 45 à 85 ans pendant une période d’au moins 20 ans. L’ÉLCV recueillera des renseignements sur les changements biologiques, médicaux, psychologiques, sociaux et sur les habitudes de vie qui se produisent chez les gens. On étudiera ces facteurs pour comprendre la façon dont ils influencent, individuellement et collectivement, le maintien en santé et le développement de maladies et d’incapacités au fur et à mesure que les gens vieillissent. L’ÉLCV sera l’une des études les plus complètes du genre entreprises jusqu’à ce jour, non seulement au Canada, mais aussi au niveau international."));
+    study.setName(getLocalizedString(nameEn, nameFr));
+    study.setAcronym(getLocalizedString(acronymEn, acronymFr));
+    study.setObjectives(getLocalizedString(
+        "The Canadian Longitudinal Study on Aging (CLSA) is a large, national, long-term study that will follow approximately 50,000 men and women between the ages of 45 and 85 for at least 20 years. The study will collect information on the changing biological, medical, psychological, social, lifestyle and economic aspects of people’s lives. These factors will be studied in order to understand how, individually and in combination, they have an impact in both maintaining health and in the development of disease and disability as people age.",
+        "L’Étude longitudinale canadienne sur le vieillissement (ÉLCV) est une vaste étude nationale à long terme qui permettra de suivre environ 50 000 Canadiennes et Canadiens âgé(e)s de 45 à 85 ans pendant une période d’au moins 20 ans. L’ÉLCV recueillera des renseignements sur les changements biologiques, médicaux, psychologiques, sociaux et sur les habitudes de vie qui se produisent chez les gens. On étudiera ces facteurs pour comprendre la façon dont ils influencent, individuellement et collectivement, le maintien en santé et le développement de maladies et d’incapacités au fur et à mesure que les gens vieillissent. L’ÉLCV sera l’une des études les plus complètes du genre entreprises jusqu’à ce jour, non seulement au Canada, mais aussi au niveau international."));
     study.setWebsite("http://www.clsa-elcv.ca");
     study.setOpal("https://localhost:8443");
 
@@ -332,8 +345,8 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
     recruitment.addSpecificPopulationSource("clinic_patients");
     recruitment.addSpecificPopulationSource("other");
     recruitment.setOtherSpecificPopulationSource(en("Other specific population"));
-    recruitment.addStudy(en("Canadian Community Health Survey (CCHS) – Healthy Aging")
-        .forFr("Enquête sur la santé dans les collectivités canadiennes (ESCC) - Vieillissement en santé"));
+    recruitment.addStudy(getLocalizedString("Canadian Community Health Survey (CCHS) – Healthy Aging",
+        "Enquête sur la santé dans les collectivités canadiennes (ESCC) - Vieillissement en santé"));
     recruitment.addStudy(en("CARTaGENE"));
     return recruitment;
   }

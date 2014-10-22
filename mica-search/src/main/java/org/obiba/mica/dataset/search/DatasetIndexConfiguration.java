@@ -11,15 +11,17 @@
 package org.obiba.mica.dataset.search;
 
 import java.io.IOException;
+import java.util.stream.Stream;
 
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
+import org.obiba.mica.search.AbstractIndexConfiguration;
 import org.obiba.mica.search.ElasticSearchIndexer;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DatasetIndexConfiguration implements ElasticSearchIndexer.IndexConfigurationListener {
+public class DatasetIndexConfiguration extends AbstractIndexConfiguration implements ElasticSearchIndexer.IndexConfigurationListener {
 
   @Override
   public void onIndexCreated(Client client, String indexName) {
@@ -41,6 +43,7 @@ public class DatasetIndexConfiguration implements ElasticSearchIndexer.IndexConf
     // properties
     mapping.startObject("properties");
     mapping.startObject("id").field("type", "string").field("index","not_analyzed").endObject();
+    Stream.of(DatasetIndexer.ANALYZED_FIELDS).forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
 
     mapping.startObject("studyTables") //
         .startObject("properties");

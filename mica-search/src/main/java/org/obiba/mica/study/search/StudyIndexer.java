@@ -26,6 +26,8 @@ public class StudyIndexer {
 
   public static final String STUDY_TYPE = "Study";
 
+  public static final String[] ANALYZED_FIELDS = {"acronym", "name", "objectives"};
+
   @Inject
   private ElasticSearchIndexer elasticSearchIndexer;
 

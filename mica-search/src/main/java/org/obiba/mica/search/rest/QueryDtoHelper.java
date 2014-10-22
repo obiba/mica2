@@ -13,6 +13,7 @@ package org.obiba.mica.search.rest;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.obiba.mica.web.model.MicaSearch;
 
@@ -23,6 +24,7 @@ import static org.obiba.mica.web.model.MicaSearch.BoolFilterQueryDto;
 import static org.obiba.mica.web.model.MicaSearch.FilterQueryDto;
 import static org.obiba.mica.web.model.MicaSearch.FilteredQueryDto;
 import static org.obiba.mica.web.model.MicaSearch.QueryDto;
+import static org.obiba.mica.web.model.MicaSearch.QueryDto.QueryString;
 
 public final class QueryDtoHelper {
 
@@ -118,14 +120,22 @@ public final class QueryDtoHelper {
   }
 
   public static boolean hasQuery(QueryDto queryDto) {
-    return queryDto != null && (queryDto.hasFilteredQuery() || queryDto.hasQuery());
+    return queryDto != null && (queryDto.hasFilteredQuery() || queryDto.hasQueryString());
   }
 
-  public static QueryDto createQueryDto(int from, int limit, String sort, String order, String queryString) {
+  public static QueryDto createQueryDto(int from, int limit, String sort, String order, String queryString,
+      String locale, Stream<String> queryFields) {
     QueryDto.Builder builder = QueryDto.newBuilder().setFrom(from).setSize(limit);
 
     if(!Strings.isNullOrEmpty(queryString)) {
-      builder.setQuery(queryString);
+      QueryString.Builder qsBuilder = QueryString.newBuilder().setQuery(queryString);
+
+      if (queryFields != null) {
+        String postfix = "." + (Strings.isNullOrEmpty(locale) ? "*" : locale) + ".analyzed";
+        queryFields.forEach(field -> qsBuilder.addFields(field + postfix));
+      }
+
+      builder.setQueryString(qsBuilder);
     }
 
     if(!Strings.isNullOrEmpty(sort)) {

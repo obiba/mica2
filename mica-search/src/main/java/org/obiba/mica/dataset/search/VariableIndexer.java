@@ -59,6 +59,8 @@ public class VariableIndexer {
 
   public static final String HARMONIZED_VARIABLE_TYPE = DatasetVariable.HMAPPING_NAME;
 
+  public static final String[] ANALYZED_FIELDS = {"label", "description"};
+
   @Inject
   private HarmonizationDatasetService harmonizationDatasetService;
 
