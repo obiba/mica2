@@ -18,14 +18,12 @@ set MICA_SERVER_LOG=%MICA_SERVER_HOME%\logs
 IF NOT EXIST "%MICA_SERVER_LOG%" mkdir "%MICA_SERVER_LOG%"
 echo MICA_SERVER_LOG=%MICA_SERVER_LOG%
 
-rem Java 7 supports wildcard classpaths
-rem http://docs.oracle.com/javase/7/docs/technotes/tools/windows/classpath.html
-set CLASSPATH=%MICA_SERVER_HOME%\conf;%MICA_SERVER_DIST%\lib\*
+set CLASSPATH=%MICA_SERVER_HOME%\conf;%MICA_SERVER_DIST%\webapp\WEB-INF\classes;%MICA_SERVER_DIST%\webapp\WEB-INF\lib\*
 
 set JAVA_DEBUG=-agentlib:jdwp=transport=dt_socket,server=y,address=8000,suspend=n
 
 rem Add %JAVA_DEBUG% to this line to enable remote JVM debugging (for developers)
-java %JAVA_OPTS% -cp "%CLASSPATH%" -DMICA_SERVER_HOME="%MICA_SERVER_HOME%" -DMICA_SERVER_DIST=%MICA_SERVER_DIST% -Dnewrelic.config.file="%MICA_SERVER_HOME%\conf\newrelic.yml" -javaagent:%MICA_SERVER_DIST%\lib\newrelic-agent-${newrelic.version}.jar org.obiba.mica.Application %*
+java %JAVA_OPTS% -cp "%CLASSPATH%" -DMICA_SERVER_HOME="%MICA_SERVER_HOME%" -DMICA_SERVER_DIST=%MICA_SERVER_DIST% org.obiba.mica.Application %*
 goto :END
 
 :DEFAULT_JAVA_OPTS
