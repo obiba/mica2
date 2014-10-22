@@ -53,4 +53,4 @@ fi
 JAVA_DEBUG=-agentlib:jdwp=transport=dt_socket,server=y,address=8000,suspend=n
 
 # Add $JAVA_DEBUG to this line to enable remote JVM debugging (for developers)
-java $JAVA_OPTS -cp "$CLASSPATH" -DMICA_SERVER_HOME="${MICA_SERVER_HOME}" -DMICA_SERVER_DIST=${MICA_SERVER_DIST} -DMICA_SERVER_LOG=${MICA_SERVER_LOG} -Dnewrelic.config.file=${MICA_SERVER_HOME}/conf/newrelic.yml -javaagent:$MICA_SERVER_DIST/WEB-INF/lib/newrelic-agent-${newrelic.version}.jar org.obiba.mica.Application $@
+java $JAVA_OPTS -cp "$CLASSPATH" -DMICA_SERVER_HOME="${MICA_SERVER_HOME}" -DMICA_SERVER_DIST=${MICA_SERVER_DIST} -DMICA_SERVER_LOG=${MICA_SERVER_LOG} org.obiba.mica.Application $@

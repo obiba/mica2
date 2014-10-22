@@ -51,11 +51,6 @@
       <artifactId>spring-boot-starter-jetty</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>com.newrelic.agent.java</groupId>
-      <artifactId>newrelic-agent</artifactId>
-    </dependency>
-
   </dependencies>
 
   <build>

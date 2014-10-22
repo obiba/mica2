@@ -90,7 +90,6 @@
                       <filterset>
                         <filter token="project.version" value="${deb.version}"/>
                         <filter token="date" value="${deb.date}"/>
-                        <filter token="newrelic_version" value="${newrelic.version}"/>
                       </filterset>
                     </copy>
 
@@ -124,8 +123,8 @@
                   <target>
                     <property name="deb.version" value="${project.version}-b${buildNumber}"/>
                     <!-- Deploy deb file in deb repo -->
-                    <copy file="target/mica_server_${deb.version}_all.deb"
-                        todir="${obiba.deb.dir}/${mica-server.deploy.dir}"/>
+                    <copy file="target/mica-server_${deb.version}_all.deb"
+                        tofile="${obiba.deb.dir}/${mica-server.deploy.dir}/mica-server_${project.version}_all.deb"/>
                   </target>
                 </configuration>
               </execution>
@@ -138,8 +137,8 @@
                 <configuration>
                   <target>
                     <!-- Deploy Mica Server package file in download repo -->
-                    <copy file="target/mica-server-${project.version}-dist.zip"
-                        todir="${obiba.download.dir}/mica-server/${mica-server.deploy.dir}"/>
+                    <copy file="target/mica-dist-${project.version}-dist.zip"
+                        tofile="${obiba.download.dir}/mica-server/${mica-server.deploy.dir}/mica-server-${project.version}-dist.zip"/>
                   </target>
                 </configuration>
               </execution>

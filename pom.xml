@@ -22,6 +22,8 @@
   </modules>
 
   <properties>
+    <mica-server.deploy.dir>unstable</mica-server.deploy.dir>
+
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -45,7 +47,6 @@
     <jsr305.version>2.0.3</jsr305.version>
     <metrics-spring.version>3.0.0</metrics-spring.version>
     <mongeez.version>0.9.4</mongeez.version>
-    <newrelic.version>3.4.2</newrelic.version>
     <nosqlunit.version>0.7.9</nosqlunit.version>
     <obiba-commons.version>1.7-SNAPSHOT</obiba-commons.version>
     <opal.version>2.3-SNAPSHOT</opal.version>
@@ -458,13 +459,6 @@
         <artifactId>de.flapdoodle.embed.mongo</artifactId>
         <version>${embed-mongo.version}</version>
         <scope>test</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>com.newrelic.agent.java</groupId>
-        <artifactId>newrelic-agent</artifactId>
-        <version>${newrelic.version}</version>
-        <scope>runtime</scope>
       </dependency>
 
     </dependencies>
