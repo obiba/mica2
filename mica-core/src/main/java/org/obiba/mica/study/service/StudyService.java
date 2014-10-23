@@ -218,10 +218,11 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
         if(!out.exists()) out.mkdirs();
         try {
           Files.move(json, new File(out, json.getName()));
+          // release lock only if move succeeded
+          lock.delete();
         } catch(IOException e) {
           log.error("Failed moving seed file to: {}", out.getAbsolutePath());
         }
-        lock.delete();
       }
     }
   }
