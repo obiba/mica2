@@ -24,6 +24,7 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
@@ -161,8 +162,7 @@ public abstract class AbstractDocumentQuery {
    */
   public List<String> query(List<String> studyIds, CountStatsData counts, Scope scope) throws IOException {
     QueryDto tempQueryDto = queryDto == null ? createStudyIdFilters(studyIds) : addStudyIdFilters(studyIds);
-    return execute(tempQueryDto, tempQueryDto.getFrom(), tempQueryDto.getSize(),
-        scope, counts);
+    return execute(tempQueryDto, tempQueryDto.getFrom(), tempQueryDto.getSize(), scope, counts);
   }
 
   /**
@@ -192,7 +192,6 @@ public abstract class AbstractDocumentQuery {
     SortBuilder sortBuilder = queryDtoParser.parseSort(queryDto);
     if(sortBuilder != null) requestBuilder.addSort(queryDtoParser.parseSort(queryDto));
 
-
     aggregationYamlParser.setLocales(micaConfigService.getConfig().getLocales());
     Map<String, Properties> subAggregations = Maps.newHashMap();
     Properties aggregationProperties = getAggregationsProperties();
@@ -204,17 +203,23 @@ public abstract class AbstractDocumentQuery {
     aggregationYamlParser.getAggregations(aggregationProperties).forEach(requestBuilder::addAggregation);
 
     log.info("Request: {}", requestBuilder.toString());
-    SearchResponse response = requestBuilder.execute().actionGet();
-    log.info("Response: {}", response.toString());
-    if(response.getHits().totalHits() > 0) {
-      QueryResultDto.Builder builder = QueryResultDto.newBuilder()
-          .setTotalHits((int) response.getHits().getTotalHits());
-      if(scope != NONE) processHits(builder, response.getHits(), scope, counts);
-      processAggregations(builder, response.getAggregations());
-      resultDto = builder.build();
-    }
+    SearchResponse response;
+    try {
+      response = requestBuilder.execute().actionGet();
+      log.info("Response: {}", response.toString());
+      if(response.getHits().totalHits() > 0) {
+        QueryResultDto.Builder builder = QueryResultDto.newBuilder()
+            .setTotalHits((int) response.getHits().getTotalHits());
+        if(scope != NONE) processHits(builder, response.getHits(), scope, counts);
+        processAggregations(builder, response.getAggregations());
+        resultDto = builder.build();
+      }
 
-    return resultDto == null ? null : getResponseStudyIds(resultDto.getAggsList());
+      return resultDto == null ? null : getResponseStudyIds(resultDto.getAggsList());
+    } catch(IndexMissingException e) {
+      log.error("Missing index: {}", e.getMessage(), e);
+      return null;
+    }
   }
 
   /**
@@ -290,7 +295,8 @@ public abstract class AbstractDocumentQuery {
     List<String> ids = aggDtos.stream() //
         .filter(agg -> fields.contains(AggregationYamlParser.unformatName(agg.getAggregation()))) //
         .map(d -> d.getExtension(MicaSearch.TermsAggregationResultDto.terms)) //
-        .flatMap((d) -> d.stream()).map(MicaSearch.TermsAggregationResultDto::getKey).distinct().collect(Collectors.toList());
+        .flatMap((d) -> d.stream()).map(MicaSearch.TermsAggregationResultDto::getKey).distinct()
+        .collect(Collectors.toList());
     return ids;
   }
 
