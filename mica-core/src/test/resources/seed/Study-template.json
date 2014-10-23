@@ -1,7 +1,7 @@
 [
   '{{repeat(1, 100)}}',
   {  
-    "id":null,
+    "id":'{{"test-" + index(1)}}',
    "name":{  
       "en":'{{lorem(1, "sentence")}}',
       "fr":'{{lorem(1, "sentence")}}'
@@ -82,7 +82,7 @@
       "date":[  
          '{{integer(2000,2014)}}',
          '{{integer(1,12)}}',
-         '{{integer(1,30)}}'
+         '{{integer(1,28)}}'
       ]
    },
    "maelstromAuthorization":{  
@@ -91,7 +91,7 @@
       "date":[  
          '{{integer(2000,2014)}}',
          '{{integer(1,12)}}',
-         '{{integer(1,30)}}'
+         '{{integer(1,28)}}'
       ]
    },
    "methods":{  
