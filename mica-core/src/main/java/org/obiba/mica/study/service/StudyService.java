@@ -86,16 +86,25 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
 
   @NotNull
   private StudyState findStudyState(Study study) {
+    StudyState studyState;
+
     if(study.isNew()) {
-      StudyState studyState = new StudyState();
+      studyState = new StudyState();
       studyState.setName(study.getName());
       studyState.setId(generateId(study));
       studyStateRepository.save(studyState);
       study.setId(studyState.getId());
       return studyState;
     }
-    StudyState studyState = studyStateRepository.findOne(study.getId());
-    if(studyState == null) throw NoSuchStudyException.withId(study.getId());
+
+    studyState = studyStateRepository.findOne(study.getId());
+    if(studyState == null) {
+      studyState = new StudyState();
+      studyState.setName(study.getName());
+      studyState.setId(study.getId());
+      studyStateRepository.save(studyState);
+    }
+
     return studyState;
   }
 
