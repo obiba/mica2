@@ -66,7 +66,7 @@ class MicaClient:
     def credentials(self, user, password):
         u = self.__ensure_entry('User name', user)
         p = self.__ensure_entry('Password', password, True)
-        return self.header('Authorization', 'X-Mica-Auth ' + base64.b64encode(u + ':' + p))
+        return self.header('Authorization', 'Basic ' + base64.b64encode(u + ':' + p))
 
     def keys(self, cert_file, key_file, key_pwd=None, ca_certs=None):
         self.curl_option(pycurl.SSLCERT, cert_file)
