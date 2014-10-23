@@ -124,7 +124,7 @@
                     <property name="deb.version" value="${project.version}-b${buildNumber}"/>
                     <!-- Deploy deb file in deb repo -->
                     <copy file="target/mica-server_${deb.version}_all.deb"
-                        tofile="${obiba.deb.dir}/${mica-server.deploy.dir}/mica-server_${project.version}_all.deb"/>
+                        todir="${obiba.deb.dir}/${mica-server.deploy.dir}"/>
                   </target>
                 </configuration>
               </execution>
