@@ -51,10 +51,6 @@ public abstract class AbstractDocumentQuery {
 
   private static final String AGG_TOTAL_COUNT = "totalCount";
 
-  private static final int DEFAULT_FROM = 0;
-
-  private static final int DEFAULT_SIZE = 10;
-
   @Inject
   private Client client;
 

@@ -13,6 +13,7 @@ package org.obiba.mica.dataset.search.rest;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 import javax.ws.rs.DefaultValue;
@@ -24,6 +25,7 @@ import javax.ws.rs.QueryParam;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.dataset.search.DatasetIndexer;
 import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.search.queries.DatasetQuery;
 import org.obiba.mica.search.rest.QueryDtoHelper;
@@ -47,9 +49,10 @@ public class PublishedDatasetSearchResource {
   @Timed
   public MicaSearch.JoinQueryResultDto queryStudy(@QueryParam("from") @DefaultValue("0") int from,
       @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
-      @QueryParam("order") String order, @QueryParam("query") String query) throws IOException {
+      @QueryParam("order") String order, @QueryParam("query") String query,
+      @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
 
-    return queryInternal(from, limit, sort, order, query, StudyDataset.class.getSimpleName(), null);
+    return queryInternal(from, limit, sort, order, query, locale, StudyDataset.class.getSimpleName(), null);
   }
 
   @GET
@@ -57,9 +60,10 @@ public class PublishedDatasetSearchResource {
   @Timed
   public MicaSearch.JoinQueryResultDto queryHarmonization(@QueryParam("from") @DefaultValue("0") int from,
       @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
-      @QueryParam("order") String order, @QueryParam("query") String query) throws IOException {
+      @QueryParam("order") String order, @QueryParam("query") String query,
+      @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
 
-    return queryInternal(from, limit, sort, order, query, HarmonizationDataset.class.getSimpleName(), null);
+    return queryInternal(from, limit, sort, order, query, locale, HarmonizationDataset.class.getSimpleName(), null);
   }
 
   @GET
@@ -67,17 +71,18 @@ public class PublishedDatasetSearchResource {
   @Timed
   public MicaSearch.JoinQueryResultDto query(@QueryParam("from") @DefaultValue("0") int from,
       @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
-      @QueryParam("order") String order, @QueryParam("study") String studyId, @QueryParam("query") String query)
+      @QueryParam("order") String order, @QueryParam("study") String studyId, @QueryParam("query") String query,
+      @QueryParam("locale") @DefaultValue("en") String locale)
       throws IOException {
 
-    return queryInternal(from, limit, sort, order, query, null, studyId);
+    return queryInternal(from, limit, sort, order, query, locale, null, studyId);
   }
 
   private MicaSearch.JoinQueryResultDto queryInternal(int from, int limit, String sort, String order, String query,
-      String type, String studyId) throws IOException {
+      String locale, String type, String studyId) throws IOException {
 
-    MicaSearch.QueryDto queryDto = QueryDtoHelper
-        .createQueryDto(from, limit, sort, order, mergeQueries(createTypeQuery(type), query));
+    MicaSearch.QueryDto queryDto = QueryDtoHelper.createQueryDto(from, limit, sort, order,
+        mergeQueries(createTypeQuery(type), query), locale, Stream.of(DatasetIndexer.ANALYZED_FIELDS));
     
     if(!Strings.isNullOrEmpty(studyId)) {
       List<MicaSearch.FilterQueryDto> filters = Lists.newArrayList();

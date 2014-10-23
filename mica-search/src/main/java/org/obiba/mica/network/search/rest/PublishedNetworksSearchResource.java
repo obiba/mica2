@@ -11,8 +11,8 @@
 package org.obiba.mica.network.search.rest;
 
 import java.io.IOException;
-
 import java.util.Arrays;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 import javax.ws.rs.DefaultValue;
@@ -22,6 +22,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.mica.network.search.NetworkIndexer;
 import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.search.queries.NetworkQuery;
 import org.obiba.mica.search.rest.QueryDtoHelper;
@@ -46,10 +47,12 @@ public class PublishedNetworksSearchResource {
   @Timed
   public JoinQueryResultDto query(@QueryParam("from") @DefaultValue("0") int from,
       @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
-      @QueryParam("order") String order, @QueryParam("study") String studyId, @QueryParam("query") String query)
+      @QueryParam("order") String order, @QueryParam("study") String studyId, @QueryParam("query") String query,
+      @QueryParam("locale") @DefaultValue("en") String locale)
       throws IOException {
 
-    MicaSearch.QueryDto queryDto = QueryDtoHelper.createQueryDto(from, limit, sort, order, query);
+    MicaSearch.QueryDto queryDto = QueryDtoHelper
+        .createQueryDto(from, limit, sort, order, query, locale, Stream.of(NetworkIndexer.ANALYZED_FIELDS));
     if (!Strings.isNullOrEmpty(studyId)) {
       queryDto = QueryDtoHelper.addTermFilters(queryDto,
           Arrays.asList(QueryDtoHelper.createTermFilter(NetworkQuery.JOIN_FIELD, Arrays.asList(studyId))),

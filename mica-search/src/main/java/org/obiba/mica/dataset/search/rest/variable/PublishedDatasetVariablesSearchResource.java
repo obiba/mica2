@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -27,6 +28,8 @@ import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.core.domain.AttributeKey;
+import org.obiba.mica.dataset.search.DatasetIndexer;
+import org.obiba.mica.dataset.search.VariableIndexer;
 import org.obiba.mica.micaConfig.OpalService;
 import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.search.rest.QueryDtoHelper;
@@ -62,10 +65,12 @@ public class PublishedDatasetVariablesSearchResource {
   @Timed
   public MicaSearch.JoinQueryResultDto query(@QueryParam("from") @DefaultValue("0") int from,
       @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
-      @QueryParam("order") String order, @QueryParam("query") String query) throws IOException {
+      @QueryParam("order") String order, @QueryParam("query") String query,
+      @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
 
     return joinQueryExecutor.query(JoinQueryExecutor.QueryType.VARIABLE, MicaSearch.JoinQueryDto.newBuilder()
-        .setVariableQueryDto(QueryDtoHelper.createQueryDto(from, limit, sort, order, query)).build());
+        .setVariableQueryDto(QueryDtoHelper.createQueryDto(from, limit, sort, order, query, locale, Stream.of(
+            VariableIndexer.ANALYZED_FIELDS))).build());
   }
 
   @POST

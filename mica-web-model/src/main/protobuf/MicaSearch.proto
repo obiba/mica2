@@ -14,9 +14,15 @@ message QueryDto {
   required int32 from = 1 [default = 0];
   required int32 size = 2 [default = 10];
   optional SortDto sort = 3;
-  optional string query = 4; // all valid query types, query_string, match, etc
+  optional QueryString queryString = 4;
   optional FilteredQueryDto filteredQuery = 5;
   repeated string aggsBy = 6; // sub aggregations for the listed fields
+  optional string locale = 7 [default = "en"];
+
+  message QueryString {
+    required string query = 1;
+    repeated string fields = 2;
+  }
 
   message SortDto {
     enum Order {

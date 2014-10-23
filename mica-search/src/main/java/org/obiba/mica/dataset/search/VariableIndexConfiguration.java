@@ -12,6 +12,7 @@ package org.obiba.mica.dataset.search;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
@@ -20,13 +21,14 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.obiba.mica.core.domain.AttributeKey;
 import org.obiba.mica.micaConfig.OpalService;
+import org.obiba.mica.search.AbstractIndexConfiguration;
 import org.obiba.mica.search.ElasticSearchIndexer;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.springframework.stereotype.Component;
 
 @Component
-public class VariableIndexConfiguration implements ElasticSearchIndexer.IndexConfigurationListener {
+public class VariableIndexConfiguration extends AbstractIndexConfiguration implements ElasticSearchIndexer.IndexConfigurationListener {
 
   @Inject
   private OpalService opalService;
@@ -67,6 +69,7 @@ public class VariableIndexConfiguration implements ElasticSearchIndexer.IndexCon
         mapping.startObject("attributes");
         mapping.startObject("properties");
         createMappingTaxonomies(mapping, taxonomies);
+        Stream.of(VariableIndexer.ANALYZED_FIELDS).forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
         mapping.endObject(); // properties
         mapping.endObject(); // attributes
       }
