@@ -1,0 +1,45 @@
+#! /usr/bin/env python
+#
+import argparse
+
+import mica.rest
+import mica.system
+
+
+def add_mica_arguments(parser):
+    """
+    Add Mica access arguments
+    """
+    parser.add_argument('--mica', '-m', required=False, help='Mica server base url')
+    parser.add_argument('--user', '-u', required=False, help='User name')
+    parser.add_argument('--password', '-p', required=False, help='User password')
+    parser.add_argument('--ssl-cert', '-sc', required=False, help='Certificate (public key) file')
+    parser.add_argument('--ssl-key', '-sk', required=False, help='Private key file')
+    parser.add_argument('--verbose', '-v', action='store_true', help='Verbose output')
+
+
+def add_subcommand(name, help, add_args_func, default_func):
+    """
+    Make a sub-parser, add default arguments to it, add sub-command arguments and set the sub-command callback function.
+    """
+    subparser = subparsers.add_parser(name, help=help)
+    add_mica_arguments(subparser)
+    add_args_func(subparser)
+    subparser.set_defaults(func=default_func)
+
+
+# Parse arguments
+parser = argparse.ArgumentParser(description='Mica command line.')
+subparsers = parser.add_subparsers(title='sub-commands',
+                                   help='Available sub-commands. Use --help option on the sub-command '
+                                        'for more details.')
+
+# Add subcommands
+add_subcommand('system', 'Query for system status and configuration', mica.system.add_arguments, mica.system.do_command)
+add_subcommand('rest', 'Request directly the Mica REST API, for advanced users.', mica.rest.add_arguments,
+               mica.rest.do_command)
+
+
+# Execute selected command
+args = parser.parse_args()
+args.func(args)
