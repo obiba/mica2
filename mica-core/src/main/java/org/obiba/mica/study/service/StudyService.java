@@ -2,6 +2,7 @@ package org.obiba.mica.study.service;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -33,6 +34,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
@@ -193,21 +195,55 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
     try {
       if(lock.exists() || !lock.createNewFile()) return;
 
-      log.info("Seeding studies with file: {}", json.getAbsolutePath());
-      InputStream inputStream = new FileInputStream(json);
-      List<Study> studies = objectMapper.readValue(inputStream, new TypeReference<List<Study>>() {});
-      for(Study study : studies) {
-        save(study);
-        publish(study.getId());
+      if(json.getName().toLowerCase().startsWith("studies")) {
+        importStudies(json);
+      } else if(json.getName().toLowerCase().startsWith("study")) {
+        importStudy(json);
       }
-      File out = new File(seedRepository, "out");
-      if (!out.exists()) out.mkdirs();
-      Files.move(json, new File(out, json.getName()));
+
     } catch(IOException e) {
       log.error("Failed importing study seed: {}", json.getAbsolutePath(), e);
     } finally {
-      if(lock.exists()) lock.delete();
+      if(lock.exists()) {
+        File out = new File(seedRepository, "out");
+        if(!out.exists()) out.mkdirs();
+        try {
+          Files.move(json, new File(out, json.getName()));
+        } catch(IOException e) {
+          log.error("Failed moving seed file to: {}", out.getAbsolutePath());
+        }
+        lock.delete();
+      }
     }
+  }
+
+  /**
+   * Import Studies from a jackson file.
+   *
+   * @param json
+   * @throws IOException
+   */
+  private void importStudies(File json) throws IOException {
+    log.info("Seeding studies with file: {}", json.getAbsolutePath());
+    InputStream inputStream = new FileInputStream(json);
+    List<Study> studies = objectMapper.readValue(inputStream, new TypeReference<List<Study>>() {});
+    for(Study study : studies) {
+      save(study);
+      publish(study.getId());
+    }
+  }
+
+  /**
+   * Import a Study from a jackson file.
+   *
+   * @param json
+   */
+  private void importStudy(File json) throws IOException {
+    log.info("Seeding study with file: {}", json.getAbsolutePath());
+    InputStream inputStream = new FileInputStream(json);
+    Study study = objectMapper.readValue(inputStream, Study.class);
+    save(study);
+    publish(study.getId());
   }
 
   @Nullable
