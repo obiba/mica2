@@ -60,7 +60,7 @@ study:
 
       administrativeDatabases:
         - health_databases
-        - vital_statisctics_databases
+        - vital_statistics_databases
         - socioeconomic_databases
         - environmental_databases
 
