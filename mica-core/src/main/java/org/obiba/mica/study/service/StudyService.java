@@ -1,9 +1,15 @@
 package org.obiba.mica.study.service;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -17,15 +23,21 @@ import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
 import org.obiba.mica.study.event.IndexStudiesEvent;
 import org.obiba.mica.study.event.StudyPublishedEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
+import com.google.common.io.Files;
 
 import static org.obiba.mica.core.domain.RevisionStatus.DRAFT;
 
@@ -33,7 +45,9 @@ import static org.obiba.mica.core.domain.RevisionStatus.DRAFT;
 @Validated
 public class StudyService implements ApplicationListener<ContextRefreshedEvent> {
 
-//  private static final Logger log = LoggerFactory.getLogger(StudyService.class);
+  private static final Logger log = LoggerFactory.getLogger(StudyService.class);
+
+  private static final String PATH_SEED = "${MICA_SERVER_HOME}/seed";
 
   @Inject
   private StudyStateRepository studyStateRepository;
@@ -43,6 +57,18 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
 
   @Inject
   private EventBus eventBus;
+
+  @Inject
+  private ObjectMapper objectMapper;
+
+  private File seedRepository;
+
+  @PostConstruct
+  public void init() {
+    if(seedRepository == null && !Strings.isNullOrEmpty(System.getProperty("MICA_SERVER_HOME"))) {
+      seedRepository = new File(PATH_SEED.replace("${MICA_SERVER_HOME}", System.getProperty("MICA_SERVER_HOME")));
+    }
+  }
 
   @CacheEvict(value = "studies-draft", key = "#study.id")
   public void save(@NotNull @Valid Study study) {
@@ -141,6 +167,48 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
 //  public void delete(@NotNull String id) {
 //    studyRepository.delete(id);
 //  }
+
+  // Every 10s
+  @Scheduled(fixedDelay = 10 * 1000)
+  public void importSeed() {
+    if(seedRepository == null || !seedRepository.exists() || !seedRepository.isDirectory()) return;
+
+    File seedIn = new File(seedRepository, "in");
+    if(seedIn.exists() && seedIn.isDirectory()) {
+      Arrays.asList(seedIn.listFiles(pathname -> {
+        String name = pathname.getName().toLowerCase();
+        File lock = new File(pathname.getAbsolutePath() + ".lock");
+        return !lock.exists() && name.endsWith(".json") && name.startsWith("stud");
+      })).forEach(this::importSeed);
+    }
+  }
+
+  //
+  // Private methods
+  //
+
+  private void importSeed(File json) {
+    File lock = new File(json.getAbsolutePath() + ".lock");
+
+    try {
+      if(lock.exists() || !lock.createNewFile()) return;
+
+      log.info("Seeding studies with file: {}", json.getAbsolutePath());
+      InputStream inputStream = new FileInputStream(json);
+      List<Study> studies = objectMapper.readValue(inputStream, new TypeReference<List<Study>>() {});
+      for(Study study : studies) {
+        save(study);
+        publish(study.getId());
+      }
+      File out = new File(seedRepository, "out");
+      if (!out.exists()) out.mkdirs();
+      Files.move(json, new File(out, json.getName()));
+    } catch(IOException e) {
+      log.error("Failed importing study seed: {}", json.getAbsolutePath(), e);
+    } finally {
+      if(lock.exists()) lock.delete();
+    }
+  }
 
   @Nullable
   private String generateId(@NotNull Study study) {

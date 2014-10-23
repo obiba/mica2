@@ -55,6 +55,10 @@ proto:
 rest:
 	cd mica-rest && ${mvn_exec} install
 
+seed:
+	mkdir -p mica-webapp/target/mica_server_home/seed/in && \
+	cp mica-core/src/test/resources/seed/studies.json mica-webapp/target/mica_server_home/seed/in
+
 run:
 	cd mica-webapp && \
 	${mvn_exec} spring-boot:run -Pdev -DMICA_SERVER_HOME="${mica_server_home}" -DMICA_SERVER_LOG="${mica_server_log}"
