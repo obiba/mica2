@@ -83,7 +83,7 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
     Network network = createNetwork();
 
     Study study = createStudy("CLSA", "ELCV", "Canadian Longitudinal Study on Aging",
-        "Étude longitudinale canadienne sur le vieillissement");
+        "Étude longitudinale canadienne sur le vieillissement", "");
     studyService.save(study);
     studyService.publish(study.getId());
     network.addStudy(study);
@@ -138,11 +138,29 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
     harmonizationDatasetService.save(harmonizationDataset);
     harmonizationDatasetService.publish(harmonizationDataset.getId(), true);
 
-    study = createStudy("NCDS", null, "National Child Development Study", "National Child Development Study");
+    study = createStudy("CLS", null, "Canberra Longitudinal Study", "Canberra Longitudinal Study", "Wave", 1, 2, 3, 4);
     studyService.save(study);
+    studyService.publish(study.getId());
     network.addStudy(study);
 
-    study = createStudy("LBLS", null, "Long Beach Longitudinal Study", "Long Beach Longitudinal Study", 1978, 1981,
+    createStudyDataset(study, en("Wave1"));
+    createStudyDataset(study, en("Wave2"));
+    createStudyDataset(study, en("Wave3"));
+    createStudyDataset(study, en("Wave4"));
+
+    study = createStudy("ULSAM", null, "Uppsala Longitudinal Study of Adult Men", "Uppsala Longitudinal Study of Adult Men", "ULSAM", 50, 60, 70, 77, 82, 88);
+    studyService.save(study);
+    studyService.publish(study.getId());
+    network.addStudy(study);
+
+    createStudyDataset(study, en("ULSAM50"));
+    createStudyDataset(study, en("ULSAM60"));
+    createStudyDataset(study, en("ULSAM70"));
+    createStudyDataset(study, en("ULSAM77"));
+    createStudyDataset(study, en("ULSAM82"));
+    createStudyDataset(study, en("ULSAM88"));
+
+    study = createStudy("LBLS", null, "Long Beach Longitudinal Study", "Long Beach Longitudinal Study", "", 1978, 1981,
         1994, 1997, 2000, 2003, 2008);
     studyService.save(study);
     studyService.publish(study.getId());
@@ -190,7 +208,7 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
   }
 
   @SuppressWarnings("OverlyLongMethod")
-  private Study createStudy(String acronymEn, String acronymFr, String nameEn, String nameFr, Integer... years) {
+  private Study createStudy(String acronymEn, String acronymFr, String nameEn, String nameFr, String prefix, Integer... years) {
     Study study = new Study();
     study.setName(getLocalizedString(nameEn, nameFr));
     study.setAcronym(getLocalizedString(acronymEn, acronymFr));
@@ -218,7 +236,7 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
         "Raina PS, Wolfson C, Kirkland SA, Griffith LE, Oremus M, Patterson C, Tuokko H, Penning M, Balion CM, Hogan D, Wister A, Payette H, Shannon H, and Brazil K, The Canadian longitudinal study on aging (CLSA). Can J Aging, 2009. 28(3): p. 221-9.");
     study.setPubmedId("19860977");
 
-    study.addPopulation(createPopulation(years));
+    study.addPopulation(createPopulation(prefix, years));
     if(years == null || years.length == 0) study.addPopulation(createPopulation2());
     study.setSpecificAuthorization(createAuthorization("mica-server"));
     study.setMaelstromAuthorization(createAuthorization("mica"));
@@ -300,7 +318,7 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
     return contact;
   }
 
-  private Population createPopulation(Integer... years) {
+  private Population createPopulation(String prefix, Integer... years) {
     Population population = new Population();
     population.setId("core");
     population.setName(en("Core Population"));
@@ -314,7 +332,7 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
       population.addDataCollectionEvent(createEvent3());
     } else {
       for(Integer year : years) {
-        population.addDataCollectionEvent(createEvent(year));
+        population.addDataCollectionEvent(createEvent(prefix, year));
       }
     }
     population.addAttribute(
@@ -376,13 +394,14 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
     return criteria;
   }
 
-  private DataCollectionEvent createEvent(Integer year) {
+  private DataCollectionEvent createEvent(String prefix, Integer year) {
     DataCollectionEvent event = new DataCollectionEvent();
-    event.setId(year + "");
-    event.setName(en(year + " Recruitment"));
-    event.setDescription(en(year + " data collection"));
-    event.setStart(YearMonth.of(year, 1));
-    event.setEnd(YearMonth.of(year, 12));
+    int realYear = year > 1900 ? year : year < 50 ? 2000 + year : 1900 + year;
+    event.setId(prefix + year);
+    event.setName(en(prefix + year + " Recruitment"));
+    event.setDescription(en(prefix + year + " data collection"));
+    event.setStart(YearMonth.of(realYear, 1));
+    event.setEnd(YearMonth.of(realYear, 12));
     event.addDataSource("questionnaires");
     event.addDataSource("physical_measures");
     event.addDataSource("biological_samples");
