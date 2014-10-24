@@ -18,6 +18,7 @@ mongodb:
   password:
 
 opal:
+  url: https://localhost:8443
   username: administrator
   password: password
 

@@ -19,7 +19,6 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 
 import org.obiba.magma.DatasourceFactory;
 import org.obiba.magma.support.Initialisables;
@@ -42,8 +41,6 @@ public class OpalService implements EnvironmentAware {
 
   private static final Logger log = LoggerFactory.getLogger(OpalService.class);
 
-  @Inject
-  private MicaConfigService micaConfigService;
 
   private Map<String, RestDatasource> datasourceMap = new HashMap<>();
 
@@ -95,7 +92,7 @@ public class OpalService implements EnvironmentAware {
    * @return
    */
   public String getDefaultOpal() {
-    return micaConfigService.getConfig().getOpal();
+    return opalPropertyResolver.getProperty("url");
   }
 
   //
