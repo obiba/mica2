@@ -90,10 +90,10 @@ public class StudySeedService {
     File seedIn = new File(seedRepository, "in");
     if(seedIn.exists() && seedIn.isDirectory()) {
       Arrays.asList(seedIn.listFiles(pathname -> {
-        String name = pathname.getName().toLowerCase();
         File lock = new File(pathname.getAbsolutePath() + ".lock");
-        return !lock.exists() && name.endsWith(".json") && name.startsWith("stud");
+        return !lock.exists();
       })).forEach(this::importSeed);
+
     }
   }
 
@@ -101,7 +101,40 @@ public class StudySeedService {
   // Private methods
   //
 
-  private void importSeed(File json) {
+  private void importSeed(File seed) {
+    String name = seed.getName().toLowerCase();
+    if(name.endsWith(".json") && name.startsWith("stud")) {
+      importJsonSeed(seed);
+    } else if (seed.getName().endsWith(".zip")) {
+      importPackageSeed(seed);
+    }
+  }
+
+  private void importPackageSeed(File zip) {
+    File lock = new File(zip.getAbsolutePath() + ".lock");
+
+    try {
+      if(lock.exists() || !lock.createNewFile()) return;
+      
+      studyPackageImportService.importZip(new FileInputStream(zip), true);
+    } catch (IOException e) {
+      log.error("Failed importing study package seed: {}", zip.getAbsolutePath(), e);
+    } finally {
+      if(lock.exists()) {
+        File out = new File(seedRepository, "out");
+        if(!out.exists()) out.mkdirs();
+        try {
+          Files.move(zip, new File(out, zip.getName()));
+          // release lock only if move succeeded
+          lock.delete();
+        } catch(IOException e) {
+          log.error("Failed moving seed file to: {}", out.getAbsolutePath());
+        }
+      }
+    }
+  }
+
+  private void importJsonSeed(File json) {
     File lock = new File(json.getAbsolutePath() + ".lock");
 
     try {
