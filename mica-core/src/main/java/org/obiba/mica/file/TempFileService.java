@@ -47,17 +47,30 @@ public class TempFileService {
 
   @NotNull
   public TempFile addTempFile(@NotNull String fileName, @NotNull InputStream uploadedInputStream) throws IOException {
-
     TempFile tempFile = new TempFile();
     tempFile.setName(fileName);
-    tempFile = tempFileRepository.save(tempFile);
 
-    File file = getFile(tempFile.getId());
+    return addTempFile(tempFile, uploadedInputStream);
+  }
+
+  @NotNull
+  public TempFile addTempFile(@NotNull TempFile tempFile, @NotNull InputStream uploadedInputStream) throws IOException {
+    TempFile savedTempFile;
+    if (tempFile.getId() != null) {
+      savedTempFile = tempFileRepository.findOne(tempFile.getId());
+      if (savedTempFile == null) {
+        savedTempFile = tempFileRepository.save(tempFile);
+      }
+    } else {
+      savedTempFile = tempFileRepository.save(tempFile);
+    }
+
+    File file = getFile(savedTempFile.getId());
     ByteStreams.copy(uploadedInputStream, new FileOutputStream(file));
-    tempFile.setSize(file.length());
-    tempFile.setMd5(Files.hash(file, Hashing.md5()).toString());
-    tempFileRepository.save(tempFile);
-    return tempFile;
+    savedTempFile.setSize(file.length());
+    savedTempFile.setMd5(Files.hash(file, Hashing.md5()).toString());
+    tempFileRepository.save(savedTempFile);
+    return savedTempFile;
   }
 
   @NotNull

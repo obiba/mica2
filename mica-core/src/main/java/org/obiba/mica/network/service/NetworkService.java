@@ -51,9 +51,13 @@ public class NetworkService {
     if(network.isNew()) {
       generateId(saved);
     } else {
-      saved = findById(network.getId());
-      BeanUtils.copyProperties(network, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
-          "lastModifiedDate");
+      saved = networkRepository.findOne(network.getId());
+      if (saved != null) {
+        BeanUtils.copyProperties(network, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
+            "lastModifiedDate");
+      } else {
+        saved = network;
+      }
     }
     networkRepository.save(saved);
     eventBus.post(new NetworkUpdatedEvent(saved));

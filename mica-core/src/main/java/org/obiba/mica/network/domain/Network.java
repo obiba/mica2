@@ -7,6 +7,7 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.URL;
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
+import org.obiba.mica.core.domain.AttachmentAware;
 import org.obiba.mica.core.domain.Authorization;
 import org.obiba.mica.core.domain.Contact;
 import org.obiba.mica.core.domain.LocalizedString;
@@ -16,7 +17,7 @@ import org.obiba.mica.study.domain.Study;
 /**
  * A Network.
  */
-public class Network extends AbstractAuditableDocument {
+public class Network extends AbstractAuditableDocument implements AttachmentAware {
 
   private static final long serialVersionUID = -4271967393906681773L;
 
@@ -116,16 +117,24 @@ public class Network extends AbstractAuditableDocument {
     this.website = website;
   }
 
+  @Override
   @NotNull
   public List<Attachment> getAttachments() {
     if(attachments == null) attachments = new ArrayList<>();
     return attachments;
   }
 
+  @Override
+  public boolean hasAttachments() {
+    return attachments != null && !attachments.isEmpty();
+  }
+
+  @Override
   public void addAttachment(@NotNull Attachment attachment) {
     getAttachments().add(attachment);
   }
 
+  @Override
   public void setAttachments(List<Attachment> attachments) {
     this.attachments = attachments;
   }

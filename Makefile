@@ -80,6 +80,12 @@ debug:
 	cd mica-webapp && \
 	${mvn_exec} spring-boot:run -Pdev -Dspring.profiles.active=dev -DMICA_SERVER_HOME="${mica_server_home}" -DMICA_SERVER_LOG="${mica_server_log}"
 
+run-python:
+	cd mica-python-client/target/mica-python/bin && \
+	chmod +x ./scripts/mica && \
+	export PYTHONPATH=${current_dir}/mica-python-client/target/mica-python/bin && \
+	./scripts/mica ${args}
+
 grunt:
 	cd mica-webapp && \
 	grunt server
