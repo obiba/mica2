@@ -2,6 +2,9 @@ package org.obiba.mica.core.domain;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Authorization implements Serializable {
 
@@ -11,7 +14,7 @@ public class Authorization implements Serializable {
 
   private String authorizer;
 
-  private LocalDate date;
+  private Date date;
 
   public boolean isAuthorized() {
     return authorized;
@@ -29,11 +32,21 @@ public class Authorization implements Serializable {
     this.authorizer = authorizer;
   }
 
-  public LocalDate getDate() {
+  public Date getDate() {
     return date;
   }
 
-  public void setDate(LocalDate date) {
+  public void setDate(Date date) {
     this.date = date;
+  }
+
+  @JsonIgnore
+  public void setDate(LocalDate date) {
+    this.date = new Date();
+    this.date.setTime(date.toEpochDay());
+  }
+
+  public LocalDate asLocalDate() {
+    return LocalDate.ofEpochDay(getDate().getTime());
   }
 }

@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.core.domain.AbstractAttributeAware;
+import org.obiba.mica.core.domain.AttachmentAware;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.file.Attachment;
 import org.springframework.data.domain.Persistable;
@@ -20,7 +21,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ComparisonChain;
 
 public class DataCollectionEvent extends AbstractAttributeAware
-    implements Serializable, Persistable<String>, Comparable<DataCollectionEvent> {
+    implements Serializable, Persistable<String>, Comparable<DataCollectionEvent>, AttachmentAware {
 
   private static final long serialVersionUID = 6559914069652243954L;
 
@@ -167,15 +168,23 @@ public class DataCollectionEvent extends AbstractAttributeAware
     this.otherBioSamples = otherBioSamples;
   }
 
+  @Override
+  public boolean hasAttachments() {
+    return attachments != null && !attachments.isEmpty();
+  }
+
+  @Override
   public List<Attachment> getAttachments() {
     return attachments;
   }
 
+  @Override
   public void addAttachment(@NotNull Attachment attachment) {
     if(attachments == null) attachments = new ArrayList<>();
     attachments.add(attachment);
   }
 
+  @Override
   public void setAttachments(List<Attachment> attachments) {
     this.attachments = attachments;
   }

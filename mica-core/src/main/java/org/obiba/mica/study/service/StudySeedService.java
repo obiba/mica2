@@ -68,6 +68,9 @@ public class StudySeedService {
   private StudyService studyService;
 
   @Inject
+  private StudyPackageImportService studyPackageImportService;
+
+  @Inject
   private ObjectMapper objectMapper;
 
   private File seedRepository;

@@ -15,6 +15,7 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.URL;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
+import org.obiba.mica.core.domain.AttachmentAware;
 import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.AttributeAware;
 import org.obiba.mica.core.domain.Attributes;
@@ -26,11 +27,13 @@ import org.obiba.mica.file.PersistableWithAttachments;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
+import com.google.common.base.Strings;
 
 /**
  * A Study.
  */
-public class Study extends AbstractGitPersistable implements AttributeAware, PersistableWithAttachments {
+public class Study extends AbstractGitPersistable implements AttributeAware, PersistableWithAttachments,
+    AttachmentAware {
 
   private static final long serialVersionUID = 6559914069652243954L;
 
@@ -147,6 +150,9 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
 
   public void setWebsite(String website) {
     this.website = website;
+    if (!Strings.isNullOrEmpty(website) && !website.startsWith("http")) {
+      this.website = "http://" + website;
+    }
   }
 
   public String getOpal() {
@@ -242,15 +248,23 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
     this.pubmedId = pubmedId;
   }
 
+  @Override
+  public boolean hasAttachments() {
+    return attachments != null && !attachments.isEmpty();
+  }
+
+  @Override
   public List<Attachment> getAttachments() {
     return attachments;
   }
 
+  @Override
   public void addAttachment(@NotNull Attachment anAttachment) {
     if(attachments == null) attachments = new ArrayList<>();
     attachments.add(anAttachment);
   }
 
+  @Override
   public void setAttachments(List<Attachment> attachments) {
     this.attachments = attachments;
   }
@@ -332,6 +346,10 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
       if(population.getId().equals(populationId)) return true;
     }
     return false;
+  }
+
+  public boolean hasPopulations() {
+    return populations != null && !populations.isEmpty();
   }
 
   public void setPopulations(SortedSet<Population> newPopulations) {

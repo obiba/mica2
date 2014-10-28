@@ -1,79 +1,61 @@
+/*
+ * Copyright (c) 2014 OBiBa. All rights reserved.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package org.obiba.mica.study.rest;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.io.IOException;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.service.StudyService;
-import org.obiba.mica.web.model.Dtos;
-import org.obiba.mica.web.model.Mica;
-import org.springframework.context.ApplicationContext;
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.obiba.mica.core.security.Roles;
+import org.obiba.mica.study.service.StudyPackageImportService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.codahale.metrics.annotation.Timed;
-
-@Path("/draft")
-@RequiresAuthentication
+@Path("/draft/studies/_import")
+@RequiresRoles(Roles.MICA_ADMIN)
 public class DraftStudiesImportResource {
 
-  @Inject
-  private StudyService studyService;
+  private static final Logger log = LoggerFactory.getLogger(DraftStudiesImportResource.class);
 
-  @Inject
-  private Dtos dtos;
+@Inject
+private StudyPackageImportService studyPackageImportService;
 
-  @Inject
-  private ApplicationContext applicationContext;
-
-  @GET
-  @Path("/studies")
-  @Timed
-  public List<Mica.StudyDto> list() {
-    return studyService.findAllDraftStudies().stream().map(dtos::asDto).collect(Collectors.toList());
-  }
 
   @POST
-  @Path("/studies")
-  @Timed
-  public Response create(@SuppressWarnings("TypeMayBeWeakened") Mica.StudyDto studyDto, @Context UriInfo uriInfo) {
-    Study study = dtos.fromDto(studyDto);
-    studyService.save(study);
-    return Response.created(uriInfo.getBaseUriBuilder().path(DraftStudiesImportResource.class, "study").build(study.getId()))
-        .build();
-  }
+  @Consumes(MediaType.MULTIPART_FORM_DATA)
+  public Response importZip(@Context HttpServletRequest request,
+      @QueryParam("publish") @DefaultValue("false") boolean publish) throws FileUploadException, IOException {
+    FileItem uploadedFile = getUploadedFile(request);
 
-  @POST
-  @Path("/{path:.*}")
-  @Consumes("multipart/form-data")
-  @Produces("text/html")
-  public Response importZip() {
+    studyPackageImportService.importZip(uploadedFile.getInputStream(), publish);
 
     return Response.ok().build();
   }
 
-  @Path("/study/{id}")
-  public DraftStudyResource study(@PathParam("id") String id) {
-    DraftStudyResource studyResource = applicationContext.getBean(DraftStudyResource.class);
-    studyResource.setId(id);
-    return studyResource;
-  }
+
 
   /**
    * Returns the first {@code FileItem} that is represents a file upload field. If no such field exists, this method

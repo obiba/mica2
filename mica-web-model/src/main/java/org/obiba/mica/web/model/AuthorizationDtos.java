@@ -1,6 +1,7 @@
 package org.obiba.mica.web.model;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 import javax.validation.constraints.NotNull;
 
@@ -19,7 +20,8 @@ class AuthorizationDtos {
     AuthorizationDto.Builder builder = AuthorizationDto.newBuilder();
     builder.setAuthorized(authorization.isAuthorized());
     if(!Strings.isNullOrEmpty(authorization.getAuthorizer())) builder.setAuthorizer(authorization.getAuthorizer());
-    if(authorization.getDate() != null) builder.setDate(authorization.getDate().toString());
+    if(authorization.getDate() != null)
+      builder.setDate(authorization.asLocalDate().toString());
     return builder.build();
   }
 
@@ -28,8 +30,34 @@ class AuthorizationDtos {
     Authorization authorization = new Authorization();
     if(dto.hasAuthorizer()) authorization.setAuthorizer(dto.getAuthorizer());
     if(dto.hasAuthorized()) authorization.setAuthorized(dto.getAuthorized());
-    if(dto.hasDate()) authorization.setDate(LocalDate.parse(dto.getDate()));
+    if(dto.hasDate()) {
+      LocalDate date = getISO8601Date(dto.getDate());
+      if(date == null) date = getEpochDate(dto.getDate());
+      if(date != null) authorization.setDate(date);
+    }
+
     return authorization;
+  }
+
+  private static LocalDate getISO8601Date(String date) {
+    try {
+      String day = date;
+      int tz = date.indexOf('T');
+      if(tz > -1) {
+        day = date.substring(0, tz);
+      }
+      return LocalDate.parse(day);
+    } catch(DateTimeParseException e) {
+      return null;
+    }
+  }
+
+  private static LocalDate getEpochDate(String date) {
+    try {
+      return LocalDate.ofEpochDay(Long.parseLong(date));
+    } catch(NumberFormatException e) {
+      return null;
+    }
   }
 
 }
