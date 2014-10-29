@@ -60,8 +60,19 @@ public class AggregationYamlParser {
 
   private List<Locale> locales;
 
+  private long minDocCount = 0;
+
   public void setLocales(List<Locale> locales) {
     this.locales = locales;
+  }
+
+  /**
+   * Makes Bucket aggregataions to return at least the given number of documents. Zero returns empty buckets as well.
+   * A value of -1 will exclude this property
+   * @param value
+   */
+  public void setMinDocCount(long value) {
+    minDocCount = value;
   }
 
   public Iterable<AbstractAggregationBuilder> getAggregations(@Nullable Resource description,
@@ -89,7 +100,7 @@ public class AggregationYamlParser {
     return parseAggregations(properties, subAggregations);
   }
 
-  public Iterable<AbstractAggregationBuilder> parseAggregations(@Nullable Properties properties,
+  private Iterable<AbstractAggregationBuilder> parseAggregations(@Nullable Properties properties,
       Map<String, Iterable<AbstractAggregationBuilder>> subAggregations) {
     Collection<AbstractAggregationBuilder> termsBuilders = new ArrayList<>();
     if (properties == null) return termsBuilders;
@@ -122,6 +133,7 @@ public class AggregationYamlParser {
       switch(type) {
         case AGG_TERMS:
           TermsBuilder termBuilder = AggregationBuilders.terms(entry.getKey()).field(entry.getValue());
+          if (minDocCount > -1) termBuilder.minDocCount(minDocCount);
           if (subAggregations != null && subAggregations.containsKey(entry.getKey())) {
             subAggregations.get(entry.getKey()).forEach(termBuilder::subAggregation);
           }

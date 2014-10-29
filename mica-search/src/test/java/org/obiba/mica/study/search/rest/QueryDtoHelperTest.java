@@ -12,6 +12,7 @@ package org.obiba.mica.study.search.rest;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.obiba.mica.search.rest.QueryDtoHelper.addTermFilters;
 import static org.obiba.mica.web.model.MicaSearch.FilterQueryDto;
 import static org.obiba.mica.web.model.MicaSearch.QueryDto;
+import static org.obiba.mica.web.model.MicaSearch.QueryDto.QueryStringDto;
 import static org.obiba.mica.web.model.MicaSearch.TermsFilterQueryDto;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -121,6 +123,62 @@ public class QueryDtoHelperTest {
         .setSize(10).build();
   }
 
+  @Test
+  public void test_query_string_no_existing_fields() {
+    QueryStringDto queryStringDto = QueryStringDto.newBuilder().setQuery("toto").build();
+    QueryStringDto.Builder builder = QueryStringDto.newBuilder(queryStringDto);
+    QueryDtoHelper.addQueryStringDtoFields(builder, "de", Stream.of("field1", "field2"));
+    assertThat(builder.getFieldsCount()).isEqualTo(2);
+    assertThat(builder.getFields(0)).isEqualTo("field1.de.analyzed");
+  }
+
+  @Test
+  public void test_query_string_duplicated_fields() {
+    QueryStringDto queryStringDto = QueryStringDto.newBuilder().setQuery("toto")
+        .addAllFields(Arrays.asList("field1.de.analyzed", "field2.de.analyzed")).build();
+
+    QueryStringDto.Builder builder = QueryStringDto.newBuilder(queryStringDto);
+    QueryDtoHelper.addQueryStringDtoFields(builder, "de", Stream.of("field2", "field3"));
+    assertThat(builder.getFieldsCount()).isEqualTo(3);
+    assertThat(builder.getFields(0)).isEqualTo("field1.de.analyzed");
+    assertThat(builder.getFields(1)).isEqualTo("field2.de.analyzed");
+    assertThat(builder.getFields(2)).isEqualTo("field3.de.analyzed");
+  }
+
+  @Test
+  public void test_query_with_query_string() {
+    QueryDto queryDto = QueryDtoHelper.createQueryDto(0, 20, null, null, "tata", "fr", Stream.of("field1", "field2"));
+    assertThat(queryDto.getFrom()).isEqualTo(0);
+    assertThat(queryDto.getSize()).isEqualTo(20);
+    assertThat(queryDto.hasQueryString()).isTrue();
+    QueryStringDto qsDto = queryDto.getQueryString();
+    assertThat(qsDto.getQuery()).isEqualTo("tata");
+    assertThat(qsDto.getFieldsCount()).isEqualTo(2);
+    assertThat(qsDto.getFields(0)).isEqualTo("field1.fr.analyzed");
+    assertThat(qsDto.getFields(1)).isEqualTo("field2.fr.analyzed");
+  }
+
+  @Test
+  public void test_ensure_query_string_fields() {
+    QueryDto queryDto = QueryDto.newBuilder().setFrom(0).setSize(20)
+        .setQueryString(QueryStringDto.newBuilder().setQuery("zombie")).build();
+    assertThat(queryDto.getFrom()).isEqualTo(0);
+    assertThat(queryDto.getSize()).isEqualTo(20);
+    assertThat(queryDto.hasQueryString()).isTrue();
+    QueryStringDto qsDto = queryDto.getQueryString();
+    assertThat(qsDto.getQuery()).isEqualTo("zombie");
+    assertThat(qsDto.getFieldsCount()).isEqualTo(0);
+
+    queryDto = QueryDtoHelper.ensureQueryStringDtoFields(queryDto, "nl", Stream.of("field1", "field2"));
+    assertThat(queryDto.getFrom()).isEqualTo(0);
+    assertThat(queryDto.getSize()).isEqualTo(20);
+    assertThat(queryDto.hasQueryString()).isTrue();
+    qsDto = queryDto.getQueryString();
+    assertThat(qsDto.getQuery()).isEqualTo("zombie");
+    assertThat(qsDto.getFieldsCount()).isEqualTo(2);
+    assertThat(qsDto.getFields(0)).isEqualTo("field1.nl.analyzed");
+    assertThat(qsDto.getFields(1)).isEqualTo("field2.nl.analyzed");
+  }
 
   @Configuration
   static class Config {}

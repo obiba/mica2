@@ -24,7 +24,7 @@ import static org.obiba.mica.web.model.MicaSearch.BoolFilterQueryDto;
 import static org.obiba.mica.web.model.MicaSearch.FilterQueryDto;
 import static org.obiba.mica.web.model.MicaSearch.FilteredQueryDto;
 import static org.obiba.mica.web.model.MicaSearch.QueryDto;
-import static org.obiba.mica.web.model.MicaSearch.QueryDto.QueryString;
+import static org.obiba.mica.web.model.MicaSearch.QueryDto.QueryStringDto;
 
 public final class QueryDtoHelper {
 
@@ -67,7 +67,7 @@ public final class QueryDtoHelper {
         ? MicaSearch.BoolFilterQueryDto.newBuilder()
         : MicaSearch.BoolFilterQueryDto.newBuilder(template);
 
-    switch (type) {
+    switch(type) {
       case MUST:
         boolBuilder.addAllMust(filters);
         break;
@@ -128,14 +128,7 @@ public final class QueryDtoHelper {
     QueryDto.Builder builder = QueryDto.newBuilder().setFrom(from).setSize(limit);
 
     if(!Strings.isNullOrEmpty(queryString)) {
-      QueryString.Builder qsBuilder = QueryString.newBuilder().setQuery(queryString);
-
-      if (queryFields != null) {
-        String postfix = "." + (Strings.isNullOrEmpty(locale) ? "*" : locale) + ".analyzed";
-        queryFields.forEach(field -> qsBuilder.addFields(field + postfix));
-      }
-
-      builder.setQueryString(qsBuilder);
+      addQueryStringDto(builder, queryString, locale, queryFields);
     }
 
     if(!Strings.isNullOrEmpty(sort)) {
@@ -146,6 +139,37 @@ public final class QueryDtoHelper {
     }
 
     return builder.build();
+  }
+
+  public static QueryDto ensureQueryStringDtoFields(QueryDto queryDto, String locale, Stream<String> queryFields) {
+    if(queryDto != null && queryDto.hasQueryString()) {
+      QueryStringDto queryStringDto = queryDto.getQueryString();
+
+      QueryStringDto.Builder qsBuilder = QueryStringDto.newBuilder(queryStringDto);
+      addQueryStringDtoFields(qsBuilder, locale, queryFields);
+      QueryDto.Builder builder = QueryDto.newBuilder(queryDto).setQueryString(qsBuilder);
+      return builder.build();
+    }
+
+    return queryDto;
+  }
+
+  public static void addQueryStringDto(QueryDto.Builder builder, String queryString, String locale,
+      Stream<String> queryFields) {
+    QueryStringDto.Builder qsBuilder = QueryStringDto.newBuilder().setQuery(queryString);
+    addQueryStringDtoFields(qsBuilder, locale, queryFields);
+    builder.setQueryString(qsBuilder);
+  }
+
+  public static void addQueryStringDtoFields(QueryStringDto.Builder builder, String locale,
+      Stream<String> queryFields) {
+
+    if(queryFields != null) {
+      List<String> currentFields = builder.getFieldsList();
+      String postfix = "." + (Strings.isNullOrEmpty(locale) ? "*" : locale) + ".analyzed";
+      queryFields.filter((s) -> currentFields.indexOf(s + postfix) == -1)
+          .forEach(field -> builder.addFields(field + postfix));
+    }
   }
 
 }

@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -75,8 +76,8 @@ public abstract class AbstractDocumentQuery {
     return QueryDtoHelper.hasQuery(queryDto);
   }
 
-  public void initialize(QueryDto query) {
-    queryDto = query;
+  public void initialize(QueryDto query, String locale) {
+    queryDto = QueryDtoHelper.ensureQueryStringDtoFields(query, locale, getQueryStringFields());
     resultDto = null;
   }
 
@@ -87,6 +88,8 @@ public abstract class AbstractDocumentQuery {
   public abstract String getSearchIndex();
 
   public abstract String getSearchType();
+
+  public abstract Stream<String> getQueryStringFields();
 
   protected abstract Resource getAggregationsDescription();
 
@@ -207,15 +210,12 @@ public abstract class AbstractDocumentQuery {
     try {
       response = requestBuilder.execute().actionGet();
       log.info("Response: {}", response.toString());
-      if(response.getHits().totalHits() > 0) {
-        QueryResultDto.Builder builder = QueryResultDto.newBuilder()
-            .setTotalHits((int) response.getHits().getTotalHits());
-        if(scope != NONE) processHits(builder, response.getHits(), scope, counts);
-        processAggregations(builder, response.getAggregations());
-        resultDto = builder.build();
-      }
-
-      return resultDto == null ? null : getResponseStudyIds(resultDto.getAggsList());
+      QueryResultDto.Builder builder = QueryResultDto.newBuilder()
+          .setTotalHits((int) response.getHits().getTotalHits());
+      if(scope != NONE) processHits(builder, response.getHits(), scope, counts);
+      processAggregations(builder, response.getAggregations());
+      resultDto = builder.build();
+      return getResponseStudyIds(resultDto.getAggsList());
     } catch(IndexMissingException e) {
       log.error("Missing index: {}", e.getMessage(), e);
       return null;

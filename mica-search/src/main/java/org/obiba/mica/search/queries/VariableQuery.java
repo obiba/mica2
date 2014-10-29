@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -31,6 +32,7 @@ import org.obiba.mica.dataset.search.VariableIndexer;
 import org.obiba.mica.micaConfig.OpalService;
 import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.DatasetIdProvider;
+import org.obiba.mica.search.rest.QueryDtoHelper;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
@@ -86,9 +88,14 @@ public class VariableQuery extends AbstractDocumentQuery {
     return VariableIndexer.VARIABLE_TYPE;
   }
 
-  public void initialize(MicaSearch.QueryDto query, DatasetIdProvider provider) {
+  @Override
+  public Stream<String> getQueryStringFields() {
+    return Stream.of(VariableIndexer.ANALYZED_FIELDS).map(f -> "attributes." + f);
+  }
+
+  public void initialize(MicaSearch.QueryDto query, String locale, DatasetIdProvider provider) {
     datasetIdProvider = provider;
-    initialize(query);
+    initialize(query, locale);
   }
 
   @Override
@@ -161,11 +168,25 @@ public class VariableQuery extends AbstractDocumentQuery {
 
   @Override
   public List<String> query(List<String> studyIds, CountStatsData counts, Scope scope) throws IOException {
+    updateDatasetQuery();
     List<String> ids = super.query(studyIds, null, scope == DETAIL ? DETAIL : NONE);
     datasetIdProvider.setDatasetIds(getDatasetIds());
     return ids;
   }
 
+  private void updateDatasetQuery() {
+    List<String> datasetIds = datasetIdProvider.getDatasetIds();
+    if(datasetIds.size() > 0) {
+      if(queryDto == null) {
+        queryDto = QueryDtoHelper
+            .createTermFiltersQuery(Arrays.asList(DATASET_ID), datasetIds, QueryDtoHelper.BoolQueryType.MUST);
+      } else {
+        queryDto = QueryDtoHelper
+            .addTermFilters(queryDto, QueryDtoHelper.createTermFilters(Arrays.asList(DATASET_ID), datasetIds),
+                QueryDtoHelper.BoolQueryType.MUST);
+      }
+    }
+  }
   public Map<String, Integer> getDatasetCounts() {
     return getDocumentCounts(DATASET_ID);
   }

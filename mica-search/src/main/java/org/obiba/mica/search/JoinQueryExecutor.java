@@ -22,8 +22,6 @@ import org.obiba.mica.search.queries.DatasetQuery;
 import org.obiba.mica.search.queries.NetworkQuery;
 import org.obiba.mica.search.queries.StudyQuery;
 import org.obiba.mica.search.queries.VariableQuery;
-import org.obiba.mica.search.rest.QueryDtoHelper;
-import org.obiba.mica.web.model.MicaSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -70,20 +68,23 @@ public class JoinQueryExecutor {
   private JoinQueryResultDto query(QueryType type, JoinQueryDto joinQueryDto, CountStatsData.Builder countBuilder,
       AbstractDocumentQuery.Scope scope) throws IOException {
     DatasetIdProvider datasetIdProvider = new DatasetIdProvider();
+    String locale = joinQueryDto.getLocale();
 
-    variableQuery.initialize(joinQueryDto.hasVariableQueryDto() ? joinQueryDto.getVariableQueryDto() : null, datasetIdProvider);
-    datasetQuery.initialize(joinQueryDto.hasDatasetQueryDto() ? joinQueryDto.getDatasetQueryDto() : null, datasetIdProvider);
-    studyQuery.initialize(joinQueryDto.hasStudyQueryDto() ? joinQueryDto.getStudyQueryDto() : null);
-    networkQuery.initialize(joinQueryDto.hasNetworkQueryDto() ? joinQueryDto.getNetworkQueryDto() : null);
+    variableQuery.initialize(joinQueryDto.hasVariableQueryDto() ? joinQueryDto.getVariableQueryDto() : null, locale, datasetIdProvider);
+    datasetQuery.initialize(joinQueryDto.hasDatasetQueryDto() ? joinQueryDto.getDatasetQueryDto() : null, locale, datasetIdProvider);
+    studyQuery.initialize(joinQueryDto.hasStudyQueryDto() ? joinQueryDto.getStudyQueryDto() : null, locale);
+    networkQuery.initialize(joinQueryDto.hasNetworkQueryDto() ? joinQueryDto.getNetworkQueryDto() : null, locale);
 
     List<String> joinedIds = execute(type, scope);
     CountStatsData countStats = countBuilder != null ? getCountStatsData(type) : null;
 
     if(joinedIds != null && joinedIds.size() > 0) {
       getDocumentQuery(type).query(joinedIds, countStats, scope);
+      // need to update dataset and variable and redo agg query
       if (type == QueryType.VARIABLE) {
-        // need to update dataset and redo agg query
         datasetQuery.query(joinedIds, null, DIGEST);
+      } else if (type == QueryType.DATASET) {
+        variableQuery.query(joinedIds, null, DIGEST);
       }
     }
 
@@ -162,11 +163,23 @@ public class JoinQueryExecutor {
         .filter(AbstractDocumentQuery::hasQueryFilters).collect(Collectors.toList());
 
     List<String> studyIds = null;
-    List<String> joinedStudyIds = null;
+    List<String> docQueryStudyIds = null;
     if(queries.size() > 0) studyIds = queryStudyIds(queries);
-    if(studyIds == null || studyIds.size() > 0) joinedStudyIds = docQuery.queryStudyIds(studyIds);
-    if(joinedStudyIds != null && joinedStudyIds.size() > 0) {
-      queryAggragations(docQuery.hasQueryFilters() ? joinedStudyIds : studyIds, subQueries);
+    if(studyIds == null || studyIds.size() > 0) docQueryStudyIds = docQuery.queryStudyIds(studyIds);
+
+    List<String> aggStudyIds =
+        (docQuery.hasQueryFilters() && docQueryStudyIds != null)
+            ? joinStudyIds(studyIds, docQueryStudyIds)
+            : studyIds;
+
+    if(aggStudyIds == null || aggStudyIds.size() > 0) queryAggragations(aggStudyIds, subQueries);
+
+    return docQueryStudyIds;
+  }
+
+  private List<String> joinStudyIds(List<String> studyIds, List<String> joinedStudyIds) {
+    if (studyIds != null) {
+      joinedStudyIds.retainAll(studyIds);
     }
 
     return joinedStudyIds;

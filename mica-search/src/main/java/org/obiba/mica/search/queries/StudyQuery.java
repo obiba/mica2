@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
@@ -57,6 +58,11 @@ public class StudyQuery extends AbstractDocumentQuery {
   @Override
   public String getSearchType() {
     return StudyIndexer.STUDY_TYPE;
+  }
+
+  @Override
+  public Stream<String> getQueryStringFields() {
+    return Stream.of(StudyIndexer.ANALYZED_FIELDS);
   }
 
   @Override
