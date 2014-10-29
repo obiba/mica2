@@ -63,9 +63,13 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
       generateId(dataset);
       saved.setId(getNextId(saved.getAcronym()));
     } else {
-      saved = findById(dataset.getId());
-      BeanUtils.copyProperties(dataset, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
-          "lastModifiedDate");
+      saved = studyDatasetRepository.findOne(dataset.getId());
+      if (saved != null) {
+        BeanUtils.copyProperties(dataset, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
+            "lastModifiedDate");
+      } else {
+        saved = dataset;
+      }
     }
     studyDatasetRepository.save(saved);
     eventBus.post(new DatasetUpdatedEvent(saved));

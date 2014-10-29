@@ -164,7 +164,7 @@ public class Dtos {
   }
 
   @NotNull
-  public Dataset fromDto(Mica.DatasetDto dto) {
+  public Dataset fromDto(Mica.DatasetDtoOrBuilder dto) {
     return datasetDtos.fromDto(dto);
   }
 
