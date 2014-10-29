@@ -10,25 +10,13 @@
 
 package org.obiba.mica.search.rest;
 
-import org.elasticsearch.index.query.BaseQueryBuilder;
-import org.elasticsearch.index.query.BoolFilterBuilder;
-import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.QueryStringQueryBuilder;
-import org.elasticsearch.index.query.RangeFilterBuilder;
+import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.obiba.mica.web.model.MicaSearch;
 
-import static org.obiba.mica.web.model.MicaSearch.BoolFilterQueryDto;
-import static org.obiba.mica.web.model.MicaSearch.FilterQueryDto;
-import static org.obiba.mica.web.model.MicaSearch.FilteredQueryDto;
-import static org.obiba.mica.web.model.MicaSearch.ParentChildFilterDto;
-import static org.obiba.mica.web.model.MicaSearch.QueryDto;
-import static org.obiba.mica.web.model.MicaSearch.RangeConditionDto;
-import static org.obiba.mica.web.model.MicaSearch.RangeFilterQueryDto;
+import static org.obiba.mica.web.model.MicaSearch.*;
 
 public class QueryDtoParser {
 

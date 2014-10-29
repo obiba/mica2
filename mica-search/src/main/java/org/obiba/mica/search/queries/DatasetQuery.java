@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
@@ -33,6 +34,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Lists;
 
 import static org.obiba.mica.search.CountStatsDtoBuilders.DatasetCountStatsBuilder;
 import static org.obiba.mica.web.model.MicaSearch.DatasetResultDto;
@@ -67,15 +70,22 @@ public class DatasetQuery extends AbstractDocumentQuery {
     return DatasetIndexer.DATASET_TYPE;
   }
 
-  public void initialize(MicaSearch.QueryDto query, DatasetIdProvider provider) {
+  @Override
+  public Stream<String> getQueryStringFields() {
+    return Stream.of(DatasetIndexer.ANALYZED_FIELDS);
+  }
+
+  public void initialize(MicaSearch.QueryDto query, String locale, DatasetIdProvider provider) {
     datasetIdProvider = provider;
-    initialize(query);
+    initialize(query, locale);
   }
 
   @Override
   public List<String> query(List<String> studyIds, CountStatsData counts, Scope scope) throws IOException {
     updateDatasetQuery();
-    return super.query(studyIds, counts, scope);
+    List<String> ids = super.query(studyIds, counts, scope);
+    datasetIdProvider.setDatasetIds(getDatasetIds());
+    return ids;
   }
 
   @Override
@@ -100,6 +110,14 @@ public class DatasetQuery extends AbstractDocumentQuery {
     builder.setExtension(DatasetResultDto.result, resBuilder.build());
   }
 
+  private List<String> getDatasetIds() {
+    if (resultDto != null) {
+      return getResponseDocumentIds(Arrays.asList("id"), resultDto.getAggsList());
+    }
+
+    return Lists.newArrayList();
+  }
+  
   private void updateDatasetQuery() {
     List<String> datasetIds = datasetIdProvider.getDatasetIds();
     if(datasetIds.size() > 0) {
