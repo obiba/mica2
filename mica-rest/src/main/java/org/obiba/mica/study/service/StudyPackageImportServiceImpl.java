@@ -25,6 +25,12 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.jersey.protobuf.AbstractProtobufProvider;
 import org.obiba.mica.core.domain.AttachmentAware;
+import org.obiba.mica.dataset.NoSuchDatasetException;
+import org.obiba.mica.dataset.domain.Dataset;
+import org.obiba.mica.dataset.domain.HarmonizationDataset;
+import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.dataset.service.HarmonizationDatasetService;
+import org.obiba.mica.dataset.service.StudyDatasetService;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.file.TempFileService;
@@ -41,8 +47,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Charsets;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.io.ByteStreams;
 import com.googlecode.protobuf.format.JsonFormat;
 
 @Service
@@ -60,6 +68,12 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
   private NetworkService networkService;
 
   @Inject
+  private StudyDatasetService studyDatasetService;
+
+  @Inject
+  private HarmonizationDatasetService harmonizationDatasetService;
+
+  @Inject
   private Dtos dtos;
 
   @Override
@@ -70,9 +84,8 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
         importStudyAttachment(studyPackage.study, entry.getKey(), entry.getValue());
       }
       importStudy(studyPackage.study, publish);
-      for(Network network : studyPackage.networks) {
-        importNetwork(network, publish);
-      }
+      studyPackage.networks.forEach(net -> importNetwork(net, publish));
+      studyPackage.datasets.forEach(ds -> importDataset(ds, publish));
     }
   }
 
@@ -137,11 +150,41 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
       network.getStudyIds().stream().filter(sid -> !existing.getStudyIds().contains(sid))
           .forEach(sid -> existing.getStudyIds().add(sid));
       networkService.save(existing);
-    } catch (NoSuchNetworkException e) {
+    } catch(NoSuchNetworkException e) {
       networkService.save(network);
     }
 
-    if (publish) networkService.publish(network.getId(), publish);
+    if(publish) networkService.publish(network.getId(), publish);
+  }
+
+  private void importDataset(Dataset dataset, boolean publish) {
+    if(dataset instanceof StudyDataset) {
+      importDataset((StudyDataset) dataset, publish);
+    } else {
+      importDataset((HarmonizationDataset) dataset, publish);
+    }
+  }
+
+  private void importDataset(StudyDataset dataset, boolean publish) {
+    if (Strings.isNullOrEmpty(dataset.getStudyTable().getStudyId())) return;
+    try {
+      studyDatasetService.findById(dataset.getId());
+      studyDatasetService.save(dataset);
+    } catch(NoSuchDatasetException e) {
+      studyDatasetService.save(dataset);
+    }
+    if (publish) studyDatasetService.publish(dataset.getId(), publish);
+  }
+
+  private void importDataset(HarmonizationDataset dataset, boolean publish) {
+    try {
+      HarmonizationDataset existing = harmonizationDatasetService.findById(dataset.getId());
+      // TODO merge study tables
+      harmonizationDatasetService.save(existing);
+    } catch(NoSuchDatasetException e) {
+      harmonizationDatasetService.save(dataset);
+    }
+    if (publish) harmonizationDatasetService.publish(dataset.getId(), publish);
   }
 
   private final class StudyPackage {
@@ -149,6 +192,8 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     private Study study = null;
 
     private final List<Network> networks = Lists.newArrayList();
+
+    private final List<Dataset> datasets = Lists.newArrayList();
 
     private final Map<String, ByteArrayInputStream> attachments = Maps.newHashMap();
 
@@ -184,7 +229,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
         if(name.startsWith("study-")) {
           study = readStudy(zipIn);
         } else if(name.startsWith("dataset-")) {
-          // TODO
+          datasets.add(readDataset(zipIn));
         } else if(name.startsWith("network-")) {
           networks.add(readNetwork(zipIn));
         }
@@ -206,11 +251,16 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
       return dtos.fromDto(builder);
     }
 
+    private Dataset readDataset(InputStream inputStream) throws IOException {
+      Mica.DatasetDto.Builder builder = Mica.DatasetDto.newBuilder();
+      Readable input = new InputStreamReader(inputStream, Charsets.UTF_8);
+      JsonFormat.merge(input, builder);
+      return dtos.fromDto(builder);
+    }
+
     private byte[] readBytes(ZipInputStream zipIn) throws IOException {
       ByteArrayOutputStream entryOut = new ByteArrayOutputStream();
-      for(int c = zipIn.read(); c != -1; c = zipIn.read()) {
-        entryOut.write(c);
-      }
+      ByteStreams.copy(zipIn, entryOut);
       entryOut.close();
       return entryOut.toByteArray();
     }

@@ -51,7 +51,7 @@ class DatasetDtos {
   Mica.DatasetDto.Builder asDtoBuilder(@NotNull StudyDataset dataset) {
     Mica.DatasetDto.Builder builder = asBuilder(dataset);
 
-    if(dataset.hasStudyTable()) {
+    if(dataset.hasStudyTable() && !Strings.isNullOrEmpty(dataset.getStudyTable().getStudyId())) {
       Mica.StudyDatasetDto.Builder sbuilder = Mica.StudyDatasetDto.newBuilder().setStudyTable(
           asDto(dataset.getStudyTable()).setStudySummary(studySummaryDtos.asDto(dataset.getStudyTable().getStudyId())));
       builder.setExtension(Mica.StudyDatasetDto.type, sbuilder.build());
@@ -247,7 +247,7 @@ class DatasetDtos {
   }
 
   @NotNull
-  public Dataset fromDto(Mica.DatasetDto dto) {
+  public Dataset fromDto(Mica.DatasetDtoOrBuilder dto) {
     Dataset dataset;
     if(dto.hasExtension(Mica.HarmonizationDatasetDto.type)) {
       HarmonizationDataset harmonizationDataset = new HarmonizationDataset();

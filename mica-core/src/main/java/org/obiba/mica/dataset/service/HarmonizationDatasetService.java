@@ -64,9 +64,13 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
     if(saved.isNew()) {
       generateId(saved);
     } else {
-      saved = findById(dataset.getId());
-      BeanUtils.copyProperties(dataset, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
-          "lastModifiedDate");
+      saved = harmonizationDatasetRepository.findOne(dataset.getId());
+      if (saved != null) {
+        BeanUtils.copyProperties(dataset, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
+            "lastModifiedDate");
+      } else {
+        saved = dataset;
+      }
     }
     harmonizationDatasetRepository.save(saved);
     eventBus.post(new DatasetUpdatedEvent(saved));

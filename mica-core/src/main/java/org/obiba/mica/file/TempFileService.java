@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -66,7 +67,9 @@ public class TempFileService {
     }
 
     File file = getFile(savedTempFile.getId());
-    ByteStreams.copy(uploadedInputStream, new FileOutputStream(file));
+    OutputStream fileOut = new FileOutputStream(file);
+    ByteStreams.copy(uploadedInputStream, fileOut);
+    fileOut.close();
     savedTempFile.setSize(file.length());
     savedTempFile.setMd5(Files.hash(file, Hashing.md5()).toString());
     tempFileRepository.save(savedTempFile);
