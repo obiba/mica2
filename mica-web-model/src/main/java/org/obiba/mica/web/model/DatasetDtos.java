@@ -265,6 +265,7 @@ class DatasetDtos {
       dataset = studyDataset;
     }
     if(dto.hasId()) dataset.setId(dto.getId());
+    dataset.setAcronym(localizedStringDtos.fromDto(dto.getAcronymList()));
     dataset.setName(localizedStringDtos.fromDto(dto.getNameList()));
     dataset.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
     dataset.setEntityType(dto.getEntityType());
