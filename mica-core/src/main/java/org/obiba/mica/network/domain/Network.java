@@ -14,6 +14,8 @@ import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.study.domain.Study;
 
+import com.google.common.base.Strings;
+
 /**
  * A Network.
  */
@@ -115,6 +117,9 @@ public class Network extends AbstractAuditableDocument implements AttachmentAwar
 
   public void setWebsite(String website) {
     this.website = website;
+    if (!Strings.isNullOrEmpty(website) && !website.startsWith("http")) {
+      this.website = "http://" + website;
+    }
   }
 
   @Override

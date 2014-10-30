@@ -210,7 +210,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     }
 
     private void readZipEntry(ZipInputStream zipIn, ZipEntry entry) throws IOException {
-      if(entry.getName().endsWith("attachments/")) {
+      if(entry.getName().endsWith("attachments/") || entry.getSize() == 0) {
         zipIn.closeEntry();
         return;
       }

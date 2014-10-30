@@ -139,8 +139,10 @@ public abstract class AbstractDocumentQuery {
     log.info("Request: {}", requestBuilder);
     SearchResponse response = requestBuilder.execute().actionGet();
     List<String> ids = Lists.newArrayList();
-    response.getAggregations()
-        .forEach(aggregation -> ((Terms) aggregation).getBuckets().forEach(bucket -> ids.add(bucket.getKey())));
+
+    response.getAggregations().forEach(aggregation -> ((Terms) aggregation).getBuckets().stream().forEach(bucket -> {
+        if(bucket.getDocCount() > 0) ids.add(bucket.getKey());
+    }));
 
     return ids.stream().distinct().collect(Collectors.toList());
   }
@@ -288,6 +290,7 @@ public abstract class AbstractDocumentQuery {
         .filter(agg -> joinField.equals(AggregationYamlParser.unformatName(agg.getAggregation()))) //
         .map(d -> d.getExtension(MicaSearch.TermsAggregationResultDto.terms)) //
         .flatMap((d) -> d.stream()) //
+        .filter(s -> s.getCount() > 0) //
         .collect(Collectors.toMap(MicaSearch.TermsAggregationResultDto::getKey, term -> term.getCount()));
   }
 
@@ -295,8 +298,10 @@ public abstract class AbstractDocumentQuery {
     List<String> ids = aggDtos.stream() //
         .filter(agg -> fields.contains(AggregationYamlParser.unformatName(agg.getAggregation()))) //
         .map(d -> d.getExtension(MicaSearch.TermsAggregationResultDto.terms)) //
-        .flatMap((d) -> d.stream()).map(MicaSearch.TermsAggregationResultDto::getKey).distinct()
-        .collect(Collectors.toList());
+        .flatMap((d) -> d.stream()) //
+        .filter(s -> s.getCount() > 0) //
+        .map(MicaSearch.TermsAggregationResultDto::getKey) //
+        .collect(Collectors.toList()); //
     return ids;
   }
 
