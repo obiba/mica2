@@ -117,7 +117,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
 
     return Lists.newArrayList();
   }
-  
+
   private void updateDatasetQuery() {
     List<String> datasetIds = datasetIdProvider.getDatasetIds();
     if(datasetIds.size() > 0) {

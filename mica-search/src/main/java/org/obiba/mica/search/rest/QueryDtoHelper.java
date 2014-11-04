@@ -11,20 +11,12 @@
 package org.obiba.mica.search.rest;
 
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.obiba.mica.web.model.MicaSearch;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-
-import static org.obiba.mica.web.model.MicaSearch.BoolFilterQueryDto;
-import static org.obiba.mica.web.model.MicaSearch.FilterQueryDto;
-import static org.obiba.mica.web.model.MicaSearch.FilteredQueryDto;
-import static org.obiba.mica.web.model.MicaSearch.QueryDto;
-import static org.obiba.mica.web.model.MicaSearch.QueryDto.QueryStringDto;
 
 public final class QueryDtoHelper {
 
@@ -40,136 +32,124 @@ public final class QueryDtoHelper {
 
   private QueryDtoHelper() {}
 
-  public static FilterQueryDto createTermFilter(String filterName, List values) {
-    return FilterQueryDto.newBuilder().setField(filterName).setExtension(MicaSearch.TermsFilterQueryDto.terms,
+  public static MicaSearch.FieldFilterQueryDto createTermFilter(String filterName, List values) {
+    return MicaSearch.FieldFilterQueryDto.newBuilder().setField(filterName)
+      .setExtension(MicaSearch.TermsFilterQueryDto.terms,
         MicaSearch.TermsFilterQueryDto.newBuilder().addAllValues(values).build()).build();
   }
 
-  public static QueryDto addTermFilters(QueryDto queryDto, List<FilterQueryDto> filters, BoolQueryType type) {
-    return QueryDto.newBuilder(queryDto).setFilteredQuery(FilteredQueryDto.newBuilder()
-        .setFilter(createBoolQueryDto(queryDto.getFilteredQuery().getFilter(), filters, type))).build();
+  public static MicaSearch.QueryDto addTermFilters(MicaSearch.QueryDto queryDto,
+    List<MicaSearch.FieldFilterQueryDto> filters, BoolQueryType type) {
+
+    return MicaSearch.QueryDto.newBuilder(queryDto).setFilteredQuery(MicaSearch.FilteredQueryDto.newBuilder()
+      .setExtension(MicaSearch.BoolFilterQueryDto.filter, createBoolQueryDto(filters, type))).build();
   }
 
-  public static QueryDto createTermFiltersQuery(List<String> fields, List<String> values, BoolQueryType type) {
-    QueryDto.Builder builder = QueryDto.newBuilder().setSize(DEFAULT_SIZE).setFrom(DEFAULT_FROM);
+  public static MicaSearch.QueryDto createTermFiltersQuery(List<String> fields, List<String> values,
+    BoolQueryType type) {
+    MicaSearch.QueryDto.Builder builder = MicaSearch.QueryDto.newBuilder().setSize(DEFAULT_SIZE).setFrom(DEFAULT_FROM);
     if(values != null && values.size() > 0) {
-      List<FilterQueryDto> filters = createTermFilters(fields, values);
-      builder.setFilteredQuery(
-          MicaSearch.FilteredQueryDto.newBuilder().setFilter(createBoolQueryDto(null, filters, type)));
+      List<MicaSearch.FieldFilterQueryDto> filters = createTermFilters(fields, values);
+      builder
+        .setFilteredQuery(MicaSearch.FilteredQueryDto.newBuilder()
+          .setExtension(MicaSearch.BoolFilterQueryDto.filter, createBoolQueryDto(filters, type)));
     }
 
     return builder.build();
   }
 
-  public static BoolFilterQueryDto createBoolQueryDto(BoolFilterQueryDto template, List<FilterQueryDto> filters,
-      BoolQueryType type) {
-    MicaSearch.BoolFilterQueryDto.Builder boolBuilder = template == null
-        ? MicaSearch.BoolFilterQueryDto.newBuilder()
-        : MicaSearch.BoolFilterQueryDto.newBuilder(template);
+  public static MicaSearch.BoolFilterQueryDto createBoolQueryDto(List<MicaSearch.FieldFilterQueryDto> filters, BoolQueryType type) {
+    MicaSearch.BoolFilterQueryDto.Builder boolBuilder = MicaSearch.BoolFilterQueryDto.newBuilder();
 
     switch(type) {
       case MUST:
-        boolBuilder.addAllMust(filters);
+        boolBuilder.setOp(MicaSearch.BoolFilterQueryDto.Operator.MUST);
         break;
       case SHOULD:
-        boolBuilder.addAllShould(filters);
+        boolBuilder.setOp(MicaSearch.BoolFilterQueryDto.Operator.SHOULD);
         break;
       case NOT:
-        boolBuilder.addAllMustNot(filters);
+        boolBuilder.setOp(MicaSearch.BoolFilterQueryDto.Operator.MUST_NOT);
         break;
     }
+
+    filters.forEach(filter -> boolBuilder.addFilteredQuery(MicaSearch.FilteredQueryDto.newBuilder().setExtension(MicaSearch.FieldFilterQueryDto.filter, filter)));
 
     return boolBuilder.build();
   }
 
-  public static List<MicaSearch.FilterQueryDto> createTermFilters(List<String> fields, List<String> studyIds) {
+  public static List<MicaSearch.FieldFilterQueryDto> createTermFilters(List<String> fields, List<String> studyIds) {
     return fields //
-        .stream() //
-        .map(field -> createTermFilter(field, studyIds)) //
-        .collect(Collectors.toList());
+      .stream() //
+      .map(field -> createTermFilter(field, studyIds)) //
+      .collect(Collectors.toList());
   }
 
-  public static List<String> getTermsFilterValues(QueryDto queryDto, String field,
-      Function<QueryDto, List<FilterQueryDto>> filters) {
-
-    List<String> values = filters.apply(queryDto).stream().filter(q -> q.getField().equals(field))
-        .map(q -> q.getExtension(MicaSearch.TermsFilterQueryDto.terms).getValuesList()).flatMap((t) -> t.stream())
-        .collect(Collectors.toList());
-
-    return values;
-  }
-
-  public static Function<QueryDto, List<FilterQueryDto>> getTermsMustFilters() {
-    return queryDto -> {
-      if(queryDto.hasFilteredQuery() && queryDto.getFilteredQuery().hasFilter()) {
-        return queryDto.getFilteredQuery().getFilter().getMustList();
-      }
-
-      return Lists.newArrayList();
-    };
-  }
-
-  public static Function<QueryDto, List<FilterQueryDto>> getTermsShouldFilters() {
-    return queryDto -> {
-      if(queryDto.hasFilteredQuery() && queryDto.getFilteredQuery().hasFilter()) {
-        return queryDto.getFilteredQuery().getFilter().getShouldList();
-      }
-
-      return Lists.newArrayList();
-    };
-  }
-
-  public static boolean hasQuery(QueryDto queryDto) {
+  public static boolean hasQuery(MicaSearch.QueryDto queryDto) {
     return queryDto != null && (queryDto.hasFilteredQuery() || queryDto.hasQueryString());
   }
 
-  public static QueryDto createQueryDto(int from, int limit, String sort, String order, String queryString,
-      String locale, Stream<String> queryFields) {
-    QueryDto.Builder builder = QueryDto.newBuilder().setFrom(from).setSize(limit);
+  public static MicaSearch.QueryDto createQueryDto(int from, int limit, String sort, String order, String queryString,
+    String locale, Stream<String> queryFields) {
+    MicaSearch.QueryDto.Builder builder = MicaSearch.QueryDto.newBuilder().setFrom(from).setSize(limit);
 
     if(!Strings.isNullOrEmpty(queryString)) {
       addQueryStringDto(builder, queryString, locale, queryFields);
     }
 
     if(!Strings.isNullOrEmpty(sort)) {
-      builder.setSort(QueryDto.SortDto.newBuilder() //
-          .setField(sort) //
-          .setOrder(order == null ? QueryDto.SortDto.Order.ASC : QueryDto.SortDto.Order.valueOf(order.toUpperCase()))
-          .build());
+      builder.setSort(MicaSearch.QueryDto.SortDto.newBuilder() //
+        .setField(sort) //
+        .setOrder(order == null
+          ? MicaSearch.QueryDto.SortDto.Order.ASC
+          : MicaSearch.QueryDto.SortDto.Order.valueOf(order.toUpperCase())).build());
     }
 
     return builder.build();
   }
 
-  public static QueryDto ensureQueryStringDtoFields(QueryDto queryDto, String locale, Stream<String> queryFields) {
+  public static MicaSearch.QueryDto ensureQueryStringDtoFields(MicaSearch.QueryDto queryDto, String locale,
+    Stream<String> queryFields) {
     if(queryDto != null && queryDto.hasQueryString()) {
-      QueryStringDto queryStringDto = queryDto.getQueryString();
+      MicaSearch.QueryDto.QueryStringDto queryStringDto = queryDto.getQueryString();
 
-      QueryStringDto.Builder qsBuilder = QueryStringDto.newBuilder(queryStringDto);
+      MicaSearch.QueryDto.QueryStringDto.Builder qsBuilder = MicaSearch.QueryDto.QueryStringDto
+        .newBuilder(queryStringDto);
       addQueryStringDtoFields(qsBuilder, locale, queryFields);
-      QueryDto.Builder builder = QueryDto.newBuilder(queryDto).setQueryString(qsBuilder);
+      MicaSearch.QueryDto.Builder builder = MicaSearch.QueryDto.newBuilder(queryDto).setQueryString(qsBuilder);
       return builder.build();
     }
 
     return queryDto;
   }
 
-  public static void addQueryStringDto(QueryDto.Builder builder, String queryString, String locale,
-      Stream<String> queryFields) {
-    QueryStringDto.Builder qsBuilder = QueryStringDto.newBuilder().setQuery(queryString);
+  public static void addQueryStringDto(MicaSearch.QueryDto.Builder builder, String queryString, String locale,
+    Stream<String> queryFields) {
+    MicaSearch.QueryDto.QueryStringDto.Builder qsBuilder = MicaSearch.QueryDto.QueryStringDto.newBuilder()
+      .setQuery(queryString);
     addQueryStringDtoFields(qsBuilder, locale, queryFields);
     builder.setQueryString(qsBuilder);
   }
 
-  public static void addQueryStringDtoFields(QueryStringDto.Builder builder, String locale,
-      Stream<String> queryFields) {
+  public static void addQueryStringDtoFields(MicaSearch.QueryDto.QueryStringDto.Builder builder, String locale,
+    Stream<String> queryFields) {
 
     if(queryFields != null) {
       List<String> currentFields = builder.getFieldsList();
       String postfix = "." + (Strings.isNullOrEmpty(locale) ? "*" : locale) + ".analyzed";
       queryFields.filter((s) -> currentFields.indexOf(s + postfix) == -1)
-          .forEach(field -> builder.addFields(field + postfix));
+        .forEach(field -> builder.addFields(field + postfix));
     }
+  }
+
+  public static MicaSearch.FilteredQueryDto createFilteredQuery(MicaSearch.FieldFilterQueryDto fieldFilter) {
+    return MicaSearch.FilteredQueryDto.newBuilder() //
+    .setExtension(MicaSearch.FieldFilterQueryDto.filter, fieldFilter).build();
+  }
+
+  public static MicaSearch.FilteredQueryDto createFilteredQuery(MicaSearch.BoolFilterQueryDto boolFilter) {
+    return MicaSearch.FilteredQueryDto.newBuilder() //
+      .setExtension(MicaSearch.BoolFilterQueryDto.filter, boolFilter).build();
   }
 
 }
