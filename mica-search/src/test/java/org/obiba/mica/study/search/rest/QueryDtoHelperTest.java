@@ -24,7 +24,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.obiba.mica.search.rest.QueryDtoHelper.addTermFilters;
-import static org.obiba.mica.web.model.MicaSearch.FilterQueryDto;
 import static org.obiba.mica.web.model.MicaSearch.QueryDto;
 import static org.obiba.mica.web.model.MicaSearch.QueryDto.QueryStringDto;
 import static org.obiba.mica.web.model.MicaSearch.TermsFilterQueryDto;
@@ -35,7 +34,8 @@ public class QueryDtoHelperTest {
 
   @Test
   public void test_create_term_filter() {
-    FilterQueryDto filteredQuery = QueryDtoHelper.createTermFilter("studyId", Arrays.asList("100", "200", "300"));
+    MicaSearch.FieldFilterQueryDto filteredQuery = QueryDtoHelper
+      .createTermFilter("studyId", Arrays.asList("100", "200", "300"));
     assertThat(filteredQuery.getField()).isEqualTo("studyId");
     TermsFilterQueryDto terms = filteredQuery.getExtension(TermsFilterQueryDto.terms);
     assertThat(terms).isNotNull();
@@ -45,8 +45,8 @@ public class QueryDtoHelperTest {
 
   @Test
   public void test_create_term_filters() {
-    List<FilterQueryDto> filterQueries = QueryDtoHelper
-        .createTermFilters(Arrays.asList("id1", "id2"), Arrays.asList("100", "200", "300"));
+    List<MicaSearch.FieldFilterQueryDto> filterQueries = QueryDtoHelper
+      .createTermFilters(Arrays.asList("id1", "id2"), Arrays.asList("100", "200", "300"));
 
     assertThat(filterQueries.size()).isEqualTo(2);
     assertThat(filterQueries.get(0).getField()).isEqualTo("id1");
@@ -59,15 +59,25 @@ public class QueryDtoHelperTest {
 
   @Test
   public void test_add_term_filters() {
-    List<FilterQueryDto> filterQueries = QueryDtoHelper
-        .createTermFilters(Arrays.asList("id1", "id2"), Arrays.asList("100", "200", "300"));
+    List<MicaSearch.FieldFilterQueryDto> filterQueries = QueryDtoHelper
+      .createTermFilters(Arrays.asList("id1", "id2"), Arrays.asList("100", "200", "300"));
     QueryDto queryDto = addTermFilters(createDummyQueryDto(QueryDtoHelper.BoolQueryType.SHOULD), filterQueries,
-        QueryDtoHelper.BoolQueryType.SHOULD);
+      QueryDtoHelper.BoolQueryType.SHOULD);
     assertThat(queryDto.getFilteredQuery()).isNotNull();
-    assertThat(queryDto.getFilteredQuery().getFilter().getShouldCount()).isEqualTo(4);
-    assertThat(queryDto.getFilteredQuery().getFilter().getShould(2).getField()).isEqualTo("id1");
-    TermsFilterQueryDto terms = queryDto.getFilteredQuery().getFilter().getShould(3)
-        .getExtension(TermsFilterQueryDto.terms);
+    assertThat(queryDto.getFilteredQuery().hasExtension(MicaSearch.BoolFilterQueryDto.filter)).isTrue();
+    MicaSearch.BoolFilterQueryDto boolQuery = queryDto.getFilteredQuery()
+      .getExtension(MicaSearch.BoolFilterQueryDto.filter);
+    assertThat(boolQuery.getOp()).isEqualTo(MicaSearch.BoolFilterQueryDto.Operator.SHOULD);
+    assertThat(boolQuery.getFilteredQueryCount()).isEqualTo(2);
+    assertThat(boolQuery.getFilteredQuery(0).hasExtension(MicaSearch.FieldFilterQueryDto.filter)).isTrue();
+    MicaSearch.FieldFilterQueryDto fieldFilterQuery = boolQuery.getFilteredQuery(0)
+      .getExtension(MicaSearch.FieldFilterQueryDto.filter);
+    assertThat(fieldFilterQuery.getField()).isEqualTo("id1");
+
+    assertThat(boolQuery.getFilteredQuery(1).hasExtension(MicaSearch.FieldFilterQueryDto.filter)).isTrue();
+    fieldFilterQuery = boolQuery.getFilteredQuery(1).getExtension(MicaSearch.FieldFilterQueryDto.filter);
+    assertThat(fieldFilterQuery.hasExtension(TermsFilterQueryDto.terms)).isTrue();
+    TermsFilterQueryDto terms = fieldFilterQuery.getExtension(TermsFilterQueryDto.terms);
     assertThat(terms.getValuesCount()).isEqualTo(3);
     assertThat(terms.getValues(1)).isEqualTo("200");
   }
@@ -75,52 +85,58 @@ public class QueryDtoHelperTest {
   @Test
   public void test_create_term_filters_query() {
     QueryDto queryDto = QueryDtoHelper
-        .createTermFiltersQuery(Arrays.asList("id1", "id2"), Arrays.asList("100", "200", "300"),
-            QueryDtoHelper.BoolQueryType.MUST);
+      .createTermFiltersQuery(Arrays.asList("id1", "id2"), Arrays.asList("100", "200", "300"),
+        QueryDtoHelper.BoolQueryType.MUST);
 
     assertThat(queryDto.getFilteredQuery()).isNotNull();
-    assertThat(queryDto.getFilteredQuery().getFilter().getMustCount()).isEqualTo(2);
-    TermsFilterQueryDto terms = queryDto.getFilteredQuery().getFilter().getMust(1)
-        .getExtension(TermsFilterQueryDto.terms);
-    assertThat(terms.getValuesCount()).isEqualTo(3);
-    assertThat(terms.getValues(1)).isEqualTo("200");
+    assertThat(queryDto.getFilteredQuery().hasExtension(MicaSearch.BoolFilterQueryDto.filter)).isTrue();
+    MicaSearch.BoolFilterQueryDto boolQuery = queryDto.getFilteredQuery()
+      .getExtension(MicaSearch.BoolFilterQueryDto.filter);
+    assertThat(boolQuery.getOp()).isEqualTo(MicaSearch.BoolFilterQueryDto.Operator.MUST);
+    assertThat(boolQuery.getFilteredQueryCount()).isEqualTo(2);
   }
 
   @Test
   public void test() {
-    List<FilterQueryDto> filterQueries = QueryDtoHelper
-        .createTermFilters(Arrays.asList("id1", "id2"), Arrays.asList("100", "200", "300"));
-    QueryDto queryDto = QueryDtoHelper
-        .addTermFilters(createDummyQueryDto(QueryDtoHelper.BoolQueryType.SHOULD), filterQueries,
-            QueryDtoHelper.BoolQueryType.SHOULD);
+    List<MicaSearch.FieldFilterQueryDto> filterQueries = QueryDtoHelper
+      .createTermFilters(Arrays.asList("id1", "id2"), Arrays.asList("100", "200", "300"));
+    QueryDto queryDto = addTermFilters(createDummyQueryDto(QueryDtoHelper.BoolQueryType.SHOULD), filterQueries,
+      QueryDtoHelper.BoolQueryType.SHOULD);
 
     System.out.println(queryDto);
-    queryDto = QueryDtoHelper.addTermFilters(createDummyQueryDto(QueryDtoHelper.BoolQueryType.SHOULD), filterQueries, QueryDtoHelper.BoolQueryType.SHOULD);
+    queryDto = addTermFilters(createDummyQueryDto(QueryDtoHelper.BoolQueryType.SHOULD), filterQueries,
+      QueryDtoHelper.BoolQueryType.SHOULD);
     System.out.println(queryDto);
   }
 
   private QueryDto createDummyQueryDto(QueryDtoHelper.BoolQueryType boolType) {
-    FilterQueryDto termsDto1 = FilterQueryDto.newBuilder().setField("access").setExtension(
-        TermsFilterQueryDto.terms,
+    MicaSearch.FieldFilterQueryDto termsDto1 = MicaSearch.FieldFilterQueryDto.newBuilder().setField("access")
+      .setExtension(TermsFilterQueryDto.terms,
         TermsFilterQueryDto.newBuilder().addAllValues(Arrays.asList("data", "bio-samples")).build()).build();
 
-    FilterQueryDto termsDto2 = FilterQueryDto.newBuilder().setField("start").setExtension(
-        TermsFilterQueryDto.terms,
+    MicaSearch.FieldFilterQueryDto termsDto2 = MicaSearch.FieldFilterQueryDto.newBuilder().setField("start")
+      .setExtension(TermsFilterQueryDto.terms,
         TermsFilterQueryDto.newBuilder().addAllValues(Arrays.asList("2002")).build()).build();
 
     MicaSearch.BoolFilterQueryDto.Builder boolDtoBuilder = MicaSearch.BoolFilterQueryDto.newBuilder();
     switch(boolType) {
       case MUST:
-        boolDtoBuilder.addMust(termsDto1).addMust(termsDto2);
+        boolDtoBuilder.setOp(MicaSearch.BoolFilterQueryDto.Operator.MUST);
         break;
       case SHOULD:
-        boolDtoBuilder.addShould(termsDto1).addShould(termsDto2);
+        boolDtoBuilder.setOp(MicaSearch.BoolFilterQueryDto.Operator.SHOULD);
         break;
     }
 
-    return QueryDto.newBuilder()
-        .setFilteredQuery(MicaSearch.FilteredQueryDto.newBuilder().setFilter(boolDtoBuilder.build()).build()).setFrom(0)
-        .setSize(10).build();
+    boolDtoBuilder //
+      .addFilteredQuery(
+        MicaSearch.FilteredQueryDto.newBuilder().setExtension(MicaSearch.FieldFilterQueryDto.filter, termsDto1)) //
+      .addFilteredQuery(
+        MicaSearch.FilteredQueryDto.newBuilder().setExtension(MicaSearch.FieldFilterQueryDto.filter, termsDto2));
+
+    return QueryDto.newBuilder().setFilteredQuery(
+      MicaSearch.FilteredQueryDto.newBuilder().setExtension(MicaSearch.BoolFilterQueryDto.filter, boolDtoBuilder.build())
+        .build()).setFrom(0).setSize(10).build();
   }
 
   @Test
@@ -135,7 +151,7 @@ public class QueryDtoHelperTest {
   @Test
   public void test_query_string_duplicated_fields() {
     QueryStringDto queryStringDto = QueryStringDto.newBuilder().setQuery("toto")
-        .addAllFields(Arrays.asList("field1.de.analyzed", "field2.de.analyzed")).build();
+      .addAllFields(Arrays.asList("field1.de.analyzed", "field2.de.analyzed")).build();
 
     QueryStringDto.Builder builder = QueryStringDto.newBuilder(queryStringDto);
     QueryDtoHelper.addQueryStringDtoFields(builder, "de", Stream.of("field2", "field3"));
@@ -161,7 +177,7 @@ public class QueryDtoHelperTest {
   @Test
   public void test_ensure_query_string_fields() {
     QueryDto queryDto = QueryDto.newBuilder().setFrom(0).setSize(20)
-        .setQueryString(QueryStringDto.newBuilder().setQuery("zombie")).build();
+      .setQueryString(QueryStringDto.newBuilder().setQuery("zombie")).build();
     assertThat(queryDto.getFrom()).isEqualTo(0);
     assertThat(queryDto.getSize()).isEqualTo(20);
     assertThat(queryDto.hasQueryString()).isTrue();

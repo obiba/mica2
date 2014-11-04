@@ -83,9 +83,9 @@ public class PublishedDatasetSearchResource {
 
     MicaSearch.QueryDto queryDto = QueryDtoHelper.createQueryDto(from, limit, sort, order,
         mergeQueries(createTypeQuery(type), query), locale, Stream.of(DatasetIndexer.ANALYZED_FIELDS));
-    
+
     if(!Strings.isNullOrEmpty(studyId)) {
-      List<MicaSearch.FilterQueryDto> filters = Lists.newArrayList();
+      List<MicaSearch.FieldFilterQueryDto> filters = Lists.newArrayList();
       filters.add(QueryDtoHelper.createTermFilter(DatasetQuery.STUDY_JOIN_FIELD, Arrays.asList(studyId)));
       filters.add(QueryDtoHelper.createTermFilter(DatasetQuery.HARMONIZATION_JOIN_FIELD, Arrays.asList(studyId)));
       queryDto = QueryDtoHelper.addTermFilters(queryDto, filters, QueryDtoHelper.BoolQueryType.SHOULD);

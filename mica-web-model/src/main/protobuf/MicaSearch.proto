@@ -36,36 +36,37 @@ message QueryDto {
 }
 
 message FilteredQueryDto {
-  required BoolFilterQueryDto filter = 1;
+  extensions 1000 to max;
 }
 
 message BoolFilterQueryDto {
-  repeated FilterQueryDto must = 1;
-  repeated FilterQueryDto must_not = 2;
-  repeated FilterQueryDto should = 3;
-  optional ParentChildFilterDto parentChildFilter = 4;
-}
-
-message ParentChildFilterDto {
-  enum Relationship {
-    PARENT = 0;
-    CHILD = 1;
+  enum Operator {
+    MUST = 0;
+    SHOULD = 1;
+    MUST_NOT = 2;
   }
 
-  required Relationship relationship = 1;
-  required string type = 2;
-  required FilteredQueryDto filteredQuery = 3;
+  required Operator op = 1;
+  repeated FilteredQueryDto filteredQuery = 2;
+
+  extend FilteredQueryDto {
+    optional BoolFilterQueryDto filter = 1000;
+  }
 }
 
-  message FilterQueryDto {
+message FieldFilterQueryDto {
   required string field = 1;
   extensions 1000 to max;
+
+  extend FilteredQueryDto {
+    optional FieldFilterQueryDto filter = 1001;
+  }
 }
 
 message TermsFilterQueryDto {
   repeated string values = 2;
 
-  extend FilterQueryDto {
+  extend FieldFilterQueryDto {
     optional TermsFilterQueryDto terms = 1000;
   }
 }
@@ -87,7 +88,7 @@ message RangeFilterQueryDto {
   optional RangeConditionDto from = 1;
   optional RangeConditionDto to = 2;
 
-  extend FilterQueryDto {
+  extend FieldFilterQueryDto {
     optional RangeFilterQueryDto range = 1001;
   }
 }
