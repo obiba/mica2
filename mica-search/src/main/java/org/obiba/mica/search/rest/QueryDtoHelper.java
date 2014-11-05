@@ -12,6 +12,7 @@ package org.obiba.mica.search.rest;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.obiba.mica.web.model.MicaSearch;
@@ -41,8 +42,51 @@ public final class QueryDtoHelper {
   public static MicaSearch.QueryDto addTermFilters(MicaSearch.QueryDto queryDto,
     List<MicaSearch.FieldFilterQueryDto> filters, BoolQueryType type) {
 
+    MicaSearch.FilteredQueryDto filteredQueryDto = queryDto.getFilteredQuery();
+
+    if (filteredQueryDto.hasExtension(MicaSearch.LogicalFilterQueryDto.filter)) {
+      return addLogicalTermFilters(queryDto, filters, type, filteredQueryDto);
+    }
+
+    return addBoolTermFilters(queryDto, filters, type, filteredQueryDto);
+  }
+
+  private static MicaSearch.QueryDto addBoolTermFilters(MicaSearch.QueryDto queryDto,
+      List<MicaSearch.FieldFilterQueryDto> filters, BoolQueryType type, MicaSearch.FilteredQueryDto filteredQueryDto) {
     return MicaSearch.QueryDto.newBuilder(queryDto).setFilteredQuery(MicaSearch.FilteredQueryDto.newBuilder()
-      .setExtension(MicaSearch.BoolFilterQueryDto.filter, createBoolQueryDto(filters, type))).build();
+        .setExtension(MicaSearch.BoolFilterQueryDto.filter,
+            createBoolQueryDto(filters, type, filteredQueryDto.getExtension(MicaSearch.BoolFilterQueryDto.filter))))
+        .build();
+  }
+
+  /**
+   * This is for simple cases when the input boolean query is not nested and has one operator
+   * @param queryDto
+   * @param filters
+   * @param type
+   * @param filteredQueryDto
+   * @return
+   */
+  public static MicaSearch.QueryDto addLogicalTermFilters(MicaSearch.QueryDto queryDto,
+      List<MicaSearch.FieldFilterQueryDto> filters, BoolQueryType type, MicaSearch.FilteredQueryDto filteredQueryDto) {
+    MicaSearch.LogicalFilterQueryDto.Builder builder = MicaSearch.LogicalFilterQueryDto
+        .newBuilder(filteredQueryDto.getExtension(MicaSearch.LogicalFilterQueryDto.filter));
+
+    MicaSearch.FieldStatementDto.Operator logicalOp = type == BoolQueryType.MUST
+        ? MicaSearch.FieldStatementDto.Operator._AND
+        : MicaSearch.FieldStatementDto.Operator._OR;
+
+    // make sure the last field statement has the input operator complying with LogicalFilterQueryDto rule
+    if (builder.getFieldsCount() > 0) {
+      int lastField = builder.getFieldsCount() - 1;
+      MicaSearch.FieldStatementDto b = builder.getFields(lastField);
+      builder.setFields(lastField, MicaSearch.FieldStatementDto.newBuilder(b).setOp(logicalOp));
+    }
+
+    filters.forEach(f -> builder.addFields(MicaSearch.FieldStatementDto.newBuilder().setOp(logicalOp).setField(f)));
+
+    return MicaSearch.QueryDto.newBuilder(queryDto).setFilteredQuery(MicaSearch.FilteredQueryDto.newBuilder()
+        .setExtension(MicaSearch.LogicalFilterQueryDto.filter, builder.build())).build();
   }
 
   public static MicaSearch.QueryDto createTermFiltersQuery(List<String> fields, List<String> values,
@@ -52,14 +96,17 @@ public final class QueryDtoHelper {
       List<MicaSearch.FieldFilterQueryDto> filters = createTermFilters(fields, values);
       builder
         .setFilteredQuery(MicaSearch.FilteredQueryDto.newBuilder()
-          .setExtension(MicaSearch.BoolFilterQueryDto.filter, createBoolQueryDto(filters, type)));
+          .setExtension(MicaSearch.BoolFilterQueryDto.filter, createBoolQueryDto(filters, type, null)));
     }
 
     return builder.build();
   }
 
-  public static MicaSearch.BoolFilterQueryDto createBoolQueryDto(List<MicaSearch.FieldFilterQueryDto> filters, BoolQueryType type) {
-    MicaSearch.BoolFilterQueryDto.Builder boolBuilder = MicaSearch.BoolFilterQueryDto.newBuilder();
+  public static MicaSearch.BoolFilterQueryDto createBoolQueryDto(List<MicaSearch.FieldFilterQueryDto> filters,
+      BoolQueryType type, MicaSearch.BoolFilterQueryDto existingBool) {
+
+    MicaSearch.BoolFilterQueryDto.Builder boolBuilder = existingBool == null ? MicaSearch.BoolFilterQueryDto
+        .newBuilder() : MicaSearch.BoolFilterQueryDto.newBuilder(existingBool);
 
     switch(type) {
       case MUST:
@@ -73,7 +120,8 @@ public final class QueryDtoHelper {
         break;
     }
 
-    filters.forEach(filter -> boolBuilder.addFilteredQuery(MicaSearch.FilteredQueryDto.newBuilder().setExtension(MicaSearch.FieldFilterQueryDto.filter, filter)));
+    filters.forEach(filter -> boolBuilder.addFilteredQuery(
+        MicaSearch.FilteredQueryDto.newBuilder().setExtension(MicaSearch.FieldFilterQueryDto.filter, filter)));
 
     return boolBuilder.build();
   }
