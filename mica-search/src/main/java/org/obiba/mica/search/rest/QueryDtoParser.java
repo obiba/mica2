@@ -72,8 +72,13 @@ public class QueryDtoParser {
       return parseFilter(fieldFilterDto);
     }
 
+    if(filteredQueryDto.hasExtension(MicaSearch.LogicalFilterQueryDto.filter)) {
+      MicaSearch.LogicalFilterQueryDto logicalFilterDto = filteredQueryDto
+        .getExtension(MicaSearch.LogicalFilterQueryDto.filter);
+      return parseFilter(logicalFilterDto);
+    }
+
     return null;
-    //throw new IllegalArgumentException("Invalid filtered query extension");
   }
 
   private FilterBuilder parseFilter(MicaSearch.BoolFilterQueryDto boolFilterDto) {
@@ -94,6 +99,53 @@ public class QueryDtoParser {
     }
 
     return boolFilter;
+  }
+
+  private FilterBuilder parseFilter(MicaSearch.LogicalFilterQueryDto logicalFilterDto) {
+    if(logicalFilterDto.getFieldsCount() == 0) return null;
+    if(logicalFilterDto.getFieldsCount() == 1) return parseFilter(logicalFilterDto.getFields(0).getField());
+
+    BoolFilterBuilder currentFilter = null;
+    MicaSearch.LogicalFilterQueryDto.Operator lastOperator = null;
+
+    for(MicaSearch.LogicalFilterQueryDto.FieldStatementDto statement : logicalFilterDto.getFieldsList()) {
+      if(currentFilter == null) {
+        currentFilter = FilterBuilders.boolFilter();
+      }
+
+      if(lastOperator == null) append(currentFilter, statement.getOp(), parseFilter(statement.getField()));
+      else if(lastOperator == MicaSearch.LogicalFilterQueryDto.Operator._AND_NOT)
+        append(currentFilter, lastOperator, FilterBuilders.boolFilter().mustNot(parseFilter(statement.getField())));
+      else append(currentFilter, lastOperator, parseFilter(statement.getField()));
+
+      if(!statement.hasOp()) {
+        break;
+      }
+
+      if(lastOperator != null && statement.getOp() != lastOperator) {
+        BoolFilterBuilder nextFilter = FilterBuilders.boolFilter();
+        append(nextFilter, statement.getOp(), currentFilter);
+        currentFilter = nextFilter;
+      }
+      lastOperator = statement.getOp();
+    }
+
+    return currentFilter;
+  }
+
+  private void append(BoolFilterBuilder boolFilter, MicaSearch.LogicalFilterQueryDto.Operator operator,
+    FilterBuilder filterBuilder) {
+    switch(operator) {
+      case _AND:
+        boolFilter.must(filterBuilder);
+        break;
+      case _OR:
+        boolFilter.should(filterBuilder);
+        break;
+      case _AND_NOT:
+        boolFilter.must(filterBuilder);
+        break;
+    }
   }
 
   private FilterBuilder parseFilter(MicaSearch.FieldFilterQueryDto filter) {

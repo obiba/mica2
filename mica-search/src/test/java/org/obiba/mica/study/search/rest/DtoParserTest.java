@@ -27,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.obiba.mica.web.model.MicaSearch.BoolFilterQueryDto;
 import static org.obiba.mica.web.model.MicaSearch.FieldFilterQueryDto;
 import static org.obiba.mica.web.model.MicaSearch.FilteredQueryDto;
+import static org.obiba.mica.web.model.MicaSearch.LogicalFilterQueryDto;
 import static org.obiba.mica.web.model.MicaSearch.QueryDto;
 import static org.obiba.mica.web.model.MicaSearch.RangeConditionDto;
 import static org.obiba.mica.web.model.MicaSearch.RangeFilterQueryDto;
@@ -172,6 +173,147 @@ public class DtoParserTest {
       "                }\n" +
       "              }\n" +
       "            }\n" +
+      "          }\n" +
+      "        }, {\n" +
+      "          \"bool\" : {\n" +
+      "            \"must_not\" : {\n" +
+      "              \"terms\" : {\n" +
+      "                \"Study.populations.dataCollectionEvents.id\" : [ \"aaaaaa\" ]\n" +
+      "              }\n" +
+      "            }\n" +
+      "          }\n" +
+      "        } ]\n" +
+      "      }\n" +
+      "    }\n" +
+      "  }\n" +
+      "}");
+    JsonNode actual = mapper.readTree(parser.parse(queryDto).toString());
+    assertThat(actual).isEqualTo(expected);
+  }
+
+
+  @Test
+  public void test_query_dto_parser_logical_or_and() throws IOException {
+    FieldFilterQueryDto termsDto = FieldFilterQueryDto.newBuilder()
+      .setField("Study.populations.dataCollectionEvents.id").setExtension(TermsFilterQueryDto.terms,
+        TermsFilterQueryDto.newBuilder().addAllValues(Arrays.asList("53f4b8ab6cf07b0996deb4f7")).build()).build();
+
+    FieldFilterQueryDto rangeDto = FieldFilterQueryDto.newBuilder()
+      .setField("Study.populations.dataCollectionEvents.end").setExtension(RangeFilterQueryDto.range,
+        RangeFilterQueryDto.newBuilder()
+          .setFrom(RangeConditionDto.newBuilder().setOp(RangeConditionDto.Operator.GTE).setValue("2002"))
+          .setTo(RangeConditionDto.newBuilder().setOp(RangeConditionDto.Operator.LTE).setValue("2012")).build())
+      .build();
+
+    FieldFilterQueryDto badTermsDto = FieldFilterQueryDto.newBuilder()
+      .setField("Study.populations.dataCollectionEvents.id").setExtension(TermsFilterQueryDto.terms,
+        TermsFilterQueryDto.newBuilder().addAllValues(Arrays.asList("aaaaaa")).build()).build();
+
+    LogicalFilterQueryDto logicalDto = LogicalFilterQueryDto.newBuilder() //
+      .addFields(LogicalFilterQueryDto.FieldStatementDto.newBuilder().setField(termsDto)
+        .setOp(LogicalFilterQueryDto.Operator._OR)) //
+      .addFields(LogicalFilterQueryDto.FieldStatementDto.newBuilder().setField(rangeDto).setOp(
+        LogicalFilterQueryDto.Operator._AND)) //
+      .addFields(LogicalFilterQueryDto.FieldStatementDto.newBuilder().setField(badTermsDto)) //
+      .build();
+
+    FilteredQueryDto filteredDto = QueryDtoHelper.createFilteredQuery(logicalDto);
+    QueryDto queryDto = QueryDto.newBuilder().setFilteredQuery(filteredDto).setFrom(0).setSize(10).build();
+
+    QueryDtoParser parser = QueryDtoParser.newParser();
+    System.out.println(parser.parse(queryDto).toString());
+    ObjectMapper mapper = new ObjectMapper();
+    JsonNode expected = mapper.readTree("{\n" +
+      "  \"filtered\" : {\n" +
+      "    \"query\" : {\n" +
+      "      \"match_all\" : { }\n" +
+      "    },\n" +
+      "    \"filter\" : {\n" +
+      "      \"bool\" : {\n" +
+      "        \"must\" : [ {\n" +
+      "          \"bool\" : {\n" +
+      "            \"should\" : [ {\n" +
+      "              \"terms\" : {\n" +
+      "                \"Study.populations.dataCollectionEvents.id\" : [ \"53f4b8ab6cf07b0996deb4f7\" ]\n" +
+      "              }\n" +
+      "            }, {\n" +
+      "              \"range\" : {\n" +
+      "                \"Study.populations.dataCollectionEvents.end\" : {\n" +
+      "                  \"from\" : \"2002\",\n" +
+      "                  \"to\" : \"2012\",\n" +
+      "                  \"include_lower\" : true,\n" +
+      "                  \"include_upper\" : true\n" +
+      "                }\n" +
+      "              }\n" +
+      "            } ]\n" +
+      "          }\n" +
+      "        }, {\n" +
+      "          \"terms\" : {\n" +
+      "            \"Study.populations.dataCollectionEvents.id\" : [ \"aaaaaa\" ]\n" +
+      "          }\n" +
+      "        } ]\n" +
+      "      }\n" +
+      "    }\n" +
+      "  }\n" +
+      "}");
+    JsonNode actual = mapper.readTree(parser.parse(queryDto).toString());
+    assertThat(actual).isEqualTo(expected);
+  }
+
+  @Test
+  public void test_query_dto_parser_logical_or_and_not() throws IOException {
+    FieldFilterQueryDto termsDto = FieldFilterQueryDto.newBuilder()
+      .setField("Study.populations.dataCollectionEvents.id").setExtension(TermsFilterQueryDto.terms,
+        TermsFilterQueryDto.newBuilder().addAllValues(Arrays.asList("53f4b8ab6cf07b0996deb4f7")).build()).build();
+
+    FieldFilterQueryDto rangeDto = FieldFilterQueryDto.newBuilder()
+      .setField("Study.populations.dataCollectionEvents.end").setExtension(RangeFilterQueryDto.range,
+        RangeFilterQueryDto.newBuilder()
+          .setFrom(RangeConditionDto.newBuilder().setOp(RangeConditionDto.Operator.GTE).setValue("2002"))
+          .setTo(RangeConditionDto.newBuilder().setOp(RangeConditionDto.Operator.LTE).setValue("2012")).build())
+      .build();
+
+    FieldFilterQueryDto badTermsDto = FieldFilterQueryDto.newBuilder()
+      .setField("Study.populations.dataCollectionEvents.id").setExtension(TermsFilterQueryDto.terms,
+        TermsFilterQueryDto.newBuilder().addAllValues(Arrays.asList("aaaaaa")).build()).build();
+
+    LogicalFilterQueryDto logicalDto = LogicalFilterQueryDto.newBuilder() //
+      .addFields(LogicalFilterQueryDto.FieldStatementDto.newBuilder().setField(termsDto)
+        .setOp(LogicalFilterQueryDto.Operator._OR)) //
+      .addFields(LogicalFilterQueryDto.FieldStatementDto.newBuilder().setField(rangeDto).setOp(
+        LogicalFilterQueryDto.Operator._AND_NOT)) //
+      .addFields(LogicalFilterQueryDto.FieldStatementDto.newBuilder().setField(badTermsDto)) //
+      .build();
+
+    FilteredQueryDto filteredDto = QueryDtoHelper.createFilteredQuery(logicalDto);
+    QueryDto queryDto = QueryDto.newBuilder().setFilteredQuery(filteredDto).setFrom(0).setSize(10).build();
+
+    QueryDtoParser parser = QueryDtoParser.newParser();
+    System.out.println(parser.parse(queryDto).toString());
+    ObjectMapper mapper = new ObjectMapper();
+    JsonNode expected = mapper.readTree("{\n" +
+      "  \"filtered\" : {\n" +
+      "    \"query\" : {\n" +
+      "      \"match_all\" : { }\n" +
+      "    },\n" +
+      "    \"filter\" : {\n" +
+      "      \"bool\" : {\n" +
+      "        \"must\" : [ {\n" +
+      "          \"bool\" : {\n" +
+      "            \"should\" : [ {\n" +
+      "              \"terms\" : {\n" +
+      "                \"Study.populations.dataCollectionEvents.id\" : [ \"53f4b8ab6cf07b0996deb4f7\" ]\n" +
+      "              }\n" +
+      "            }, {\n" +
+      "              \"range\" : {\n" +
+      "                \"Study.populations.dataCollectionEvents.end\" : {\n" +
+      "                  \"from\" : \"2002\",\n" +
+      "                  \"to\" : \"2012\",\n" +
+      "                  \"include_lower\" : true,\n" +
+      "                  \"include_upper\" : true\n" +
+      "                }\n" +
+      "              }\n" +
+      "            } ]\n" +
       "          }\n" +
       "        }, {\n" +
       "          \"bool\" : {\n" +
