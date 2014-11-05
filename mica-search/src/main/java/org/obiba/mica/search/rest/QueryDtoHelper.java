@@ -152,4 +152,9 @@ public final class QueryDtoHelper {
       .setExtension(MicaSearch.BoolFilterQueryDto.filter, boolFilter).build();
   }
 
+  public static MicaSearch.FilteredQueryDto createFilteredQuery(MicaSearch.LogicalFilterQueryDto logicalFilter) {
+    return MicaSearch.FilteredQueryDto.newBuilder() //
+      .setExtension(MicaSearch.LogicalFilterQueryDto.filter, logicalFilter).build();
+  }
+
 }

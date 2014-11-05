@@ -56,9 +56,9 @@ message BoolFilterQueryDto {
 
 message LogicalFilterQueryDto {
   enum Operator {
-    AND = 0; // must
-    OR = 1;  // should
-    NOT = 2; // must_not
+    _AND = 0; // must
+    _OR = 1;  // should
+    _AND_NOT = 2; // must_not
   }
 
   message FieldStatementDto {
