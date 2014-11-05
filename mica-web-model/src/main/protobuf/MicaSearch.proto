@@ -54,17 +54,18 @@ message BoolFilterQueryDto {
   }
 }
 
-message LogicalFilterQueryDto {
+message FieldStatementDto {
   enum Operator {
     _AND = 0; // must
     _OR = 1;  // should
     _AND_NOT = 2; // must_not
   }
 
-  message FieldStatementDto {
-    required FieldFilterQueryDto field = 1;
-    optional Operator op = 2;
-  }
+  required FieldFilterQueryDto field = 1;
+  optional Operator op = 2;
+}
+
+message LogicalFilterQueryDto {
 
   repeated FieldStatementDto fields = 1;
 

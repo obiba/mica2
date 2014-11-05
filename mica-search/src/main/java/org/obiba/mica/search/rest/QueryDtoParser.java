@@ -106,15 +106,15 @@ public class QueryDtoParser {
     if(logicalFilterDto.getFieldsCount() == 1) return parseFilter(logicalFilterDto.getFields(0).getField());
 
     BoolFilterBuilder currentFilter = null;
-    MicaSearch.LogicalFilterQueryDto.Operator lastOperator = null;
+    MicaSearch.FieldStatementDto.Operator lastOperator = null;
 
-    for(MicaSearch.LogicalFilterQueryDto.FieldStatementDto statement : logicalFilterDto.getFieldsList()) {
+    for(MicaSearch.FieldStatementDto statement : logicalFilterDto.getFieldsList()) {
       if(currentFilter == null) {
         currentFilter = FilterBuilders.boolFilter();
       }
 
       if(lastOperator == null) append(currentFilter, statement.getOp(), parseFilter(statement.getField()));
-      else if(lastOperator == MicaSearch.LogicalFilterQueryDto.Operator._AND_NOT)
+      else if(lastOperator == MicaSearch.FieldStatementDto.Operator._AND_NOT)
         append(currentFilter, lastOperator, FilterBuilders.boolFilter().mustNot(parseFilter(statement.getField())));
       else append(currentFilter, lastOperator, parseFilter(statement.getField()));
 
@@ -133,7 +133,7 @@ public class QueryDtoParser {
     return currentFilter;
   }
 
-  private void append(BoolFilterBuilder boolFilter, MicaSearch.LogicalFilterQueryDto.Operator operator,
+  private void append(BoolFilterBuilder boolFilter, MicaSearch.FieldStatementDto.Operator operator,
     FilterBuilder filterBuilder) {
     switch(operator) {
       case _AND:

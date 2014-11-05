@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.obiba.mica.search.rest.QueryDtoHelper;
 import org.obiba.mica.search.rest.QueryDtoParser;
+import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -26,6 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.obiba.mica.web.model.MicaSearch.BoolFilterQueryDto;
 import static org.obiba.mica.web.model.MicaSearch.FieldFilterQueryDto;
+import static org.obiba.mica.web.model.MicaSearch.FieldStatementDto;
 import static org.obiba.mica.web.model.MicaSearch.FilteredQueryDto;
 import static org.obiba.mica.web.model.MicaSearch.LogicalFilterQueryDto;
 import static org.obiba.mica.web.model.MicaSearch.QueryDto;
@@ -210,11 +212,11 @@ public class DtoParserTest {
         TermsFilterQueryDto.newBuilder().addAllValues(Arrays.asList("aaaaaa")).build()).build();
 
     LogicalFilterQueryDto logicalDto = LogicalFilterQueryDto.newBuilder() //
-      .addFields(LogicalFilterQueryDto.FieldStatementDto.newBuilder().setField(termsDto)
-        .setOp(LogicalFilterQueryDto.Operator._OR)) //
-      .addFields(LogicalFilterQueryDto.FieldStatementDto.newBuilder().setField(rangeDto).setOp(
-        LogicalFilterQueryDto.Operator._AND)) //
-      .addFields(LogicalFilterQueryDto.FieldStatementDto.newBuilder().setField(badTermsDto)) //
+      .addFields(FieldStatementDto.newBuilder().setField(termsDto)
+        .setOp(FieldStatementDto.Operator._OR)) //
+      .addFields(FieldStatementDto.newBuilder().setField(rangeDto).setOp(
+        FieldStatementDto.Operator._AND)) //
+      .addFields(FieldStatementDto.newBuilder().setField(badTermsDto)) //
       .build();
 
     FilteredQueryDto filteredDto = QueryDtoHelper.createFilteredQuery(logicalDto);
@@ -278,11 +280,11 @@ public class DtoParserTest {
         TermsFilterQueryDto.newBuilder().addAllValues(Arrays.asList("aaaaaa")).build()).build();
 
     LogicalFilterQueryDto logicalDto = LogicalFilterQueryDto.newBuilder() //
-      .addFields(LogicalFilterQueryDto.FieldStatementDto.newBuilder().setField(termsDto)
-        .setOp(LogicalFilterQueryDto.Operator._OR)) //
-      .addFields(LogicalFilterQueryDto.FieldStatementDto.newBuilder().setField(rangeDto).setOp(
-        LogicalFilterQueryDto.Operator._AND_NOT)) //
-      .addFields(LogicalFilterQueryDto.FieldStatementDto.newBuilder().setField(badTermsDto)) //
+      .addFields(FieldStatementDto.newBuilder().setField(termsDto)
+        .setOp(FieldStatementDto.Operator._OR)) //
+      .addFields(FieldStatementDto.newBuilder().setField(rangeDto).setOp(
+        FieldStatementDto.Operator._AND_NOT)) //
+      .addFields(FieldStatementDto.newBuilder().setField(badTermsDto)) //
       .build();
 
     FilteredQueryDto filteredDto = QueryDtoHelper.createFilteredQuery(logicalDto);
