@@ -54,12 +54,31 @@ message BoolFilterQueryDto {
   }
 }
 
+message LogicalFilterQueryDto {
+  enum Operator {
+    AND = 0; // must
+    OR = 1;  // should
+    NOT = 2; // must_not
+  }
+
+  message FieldStatementDto {
+    required FieldFilterQueryDto field = 1;
+    optional Operator op = 2;
+  }
+
+  repeated FieldStatementDto fields = 1;
+
+  extend FilteredQueryDto {
+    optional LogicalFilterQueryDto filter = 1001;
+  }
+}
+
 message FieldFilterQueryDto {
   required string field = 1;
   extensions 1000 to max;
 
   extend FilteredQueryDto {
-    optional FieldFilterQueryDto filter = 1001;
+    optional FieldFilterQueryDto filter = 1002;
   }
 }
 
