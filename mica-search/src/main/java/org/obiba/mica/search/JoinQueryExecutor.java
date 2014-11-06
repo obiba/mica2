@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
@@ -70,22 +71,31 @@ public class JoinQueryExecutor {
     DatasetIdProvider datasetIdProvider = new DatasetIdProvider();
     String locale = joinQueryDto.getLocale();
 
-    variableQuery.initialize(joinQueryDto.hasVariableQueryDto() ? joinQueryDto.getVariableQueryDto() : null, locale, datasetIdProvider);
-    datasetQuery.initialize(joinQueryDto.hasDatasetQueryDto() ? joinQueryDto.getDatasetQueryDto() : null, locale, datasetIdProvider);
+    variableQuery.initialize(joinQueryDto.hasVariableQueryDto() ? joinQueryDto.getVariableQueryDto() : null, locale);
+    datasetQuery.initialize(joinQueryDto.hasDatasetQueryDto() ? joinQueryDto.getDatasetQueryDto() : null, locale);
     studyQuery.initialize(joinQueryDto.hasStudyQueryDto() ? joinQueryDto.getStudyQueryDto() : null, locale);
     networkQuery.initialize(joinQueryDto.hasNetworkQueryDto() ? joinQueryDto.getNetworkQueryDto() : null, locale);
 
-    List<String> joinedIds = execute(type, scope);
-    CountStatsData countStats = countBuilder != null ? getCountStatsData(type) : null;
+    boolean queriesHaveFilters = Stream.of(variableQuery, datasetQuery, studyQuery, networkQuery)
+        .filter(AbstractDocumentQuery::hasQueryFilters).collect(Collectors.toList()).size() > 0;
 
-    if(joinedIds != null && joinedIds.size() > 0) {
-      getDocumentQuery(type).query(joinedIds, countStats, scope);
-      // need to update dataset and variable and redo agg query
-      if (type == QueryType.VARIABLE) {
-        datasetQuery.query(joinedIds, null, DIGEST);
-      } else if (type == QueryType.DATASET) {
-        variableQuery.query(joinedIds, null, DIGEST);
+    if (queriesHaveFilters) {
+      variableQuery.setDatasetIdProvider(datasetIdProvider);
+      variableQuery.setDatasetIdProvider(datasetIdProvider);
+      List<String> joinedIds = executeJoin(type, scope);
+      CountStatsData countStats = countBuilder != null ? getCountStatsData(type) : null;
+
+      if(joinedIds != null && joinedIds.size() > 0) {
+        getDocumentQuery(type).query(joinedIds, countStats, scope);
+        // need to update dataset and variable and redo agg query
+        if(type == QueryType.VARIABLE) {
+          datasetQuery.query(joinedIds, null, DIGEST);
+        } else if(type == QueryType.DATASET) {
+          variableQuery.query(joinedIds, null, DIGEST);
+        }
       }
+    } else {
+      execute(type, scope, countBuilder);
     }
 
     JoinQueryResultDto.Builder builder = JoinQueryResultDto.newBuilder();
@@ -97,7 +107,36 @@ public class JoinQueryExecutor {
     return builder.build();
   }
 
-  private List<String> execute(QueryType type, AbstractDocumentQuery.Scope scope) throws IOException {
+  private void execute(QueryType type, AbstractDocumentQuery.Scope scope, CountStatsData.Builder countBuilder)
+      throws IOException {
+
+    CountStatsData countStats;
+
+    switch(type) {
+      case VARIABLE:
+        queryAggragations(null, studyQuery, datasetQuery, networkQuery);
+        countStats = countBuilder != null ? getCountStatsData(type) : null;
+        variableQuery.query(null, countStats, scope);
+        break;
+      case DATASET:
+        queryAggragations(null, variableQuery, studyQuery, networkQuery);
+        countStats = countBuilder != null ? getCountStatsData(type) : null;
+        datasetQuery.query(null, countStats, scope);
+        break;
+      case STUDY:
+        queryAggragations(null, variableQuery, datasetQuery, networkQuery);
+        countStats = countBuilder != null ? getCountStatsData(type) : null;
+        studyQuery.query(null, countStats, scope);
+        break;
+      case NETWORK:
+        queryAggragations(null, variableQuery, datasetQuery, studyQuery);
+        countStats = countBuilder != null ? getCountStatsData(type) : null;
+        networkQuery.query(null, countStats, scope);
+        break;
+    }
+  }
+
+  private List<String> executeJoin(QueryType type, AbstractDocumentQuery.Scope scope) throws IOException {
     List<String> joinedIds = null;
     switch(type) {
 

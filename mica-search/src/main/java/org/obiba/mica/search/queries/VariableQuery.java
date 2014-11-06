@@ -93,9 +93,8 @@ public class VariableQuery extends AbstractDocumentQuery {
     return Stream.of(VariableIndexer.ANALYZED_FIELDS).map(f -> "attributes." + f);
   }
 
-  public void initialize(MicaSearch.QueryDto query, String locale, DatasetIdProvider provider) {
+  public void setDatasetIdProvider(DatasetIdProvider provider) {
     datasetIdProvider = provider;
-    initialize(query, locale);
   }
 
   @Override
@@ -170,11 +169,12 @@ public class VariableQuery extends AbstractDocumentQuery {
   public List<String> query(List<String> studyIds, CountStatsData counts, Scope scope) throws IOException {
     updateDatasetQuery();
     List<String> ids = super.query(studyIds, null, scope == DETAIL ? DETAIL : NONE);
-    datasetIdProvider.setDatasetIds(getDatasetIds());
+    if (datasetIdProvider != null & hasQueryFilters()) datasetIdProvider.setDatasetIds(getDatasetIds());
     return ids;
   }
 
   private void updateDatasetQuery() {
+    if (datasetIdProvider == null) return;
     List<String> datasetIds = datasetIdProvider.getDatasetIds();
     if(datasetIds.size() > 0) {
       if(queryDto == null) {

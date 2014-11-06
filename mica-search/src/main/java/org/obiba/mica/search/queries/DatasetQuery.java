@@ -14,22 +14,31 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
+import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.obiba.mica.dataset.domain.Dataset;
+import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.search.DatasetIndexer;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
 import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.DatasetIdProvider;
 import org.obiba.mica.search.rest.QueryDtoHelper;
+import org.obiba.mica.search.rest.QueryDtoParser;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -38,6 +47,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.collect.Lists;
 
 import static org.obiba.mica.search.CountStatsDtoBuilders.DatasetCountStatsBuilder;
+import static org.obiba.mica.search.rest.QueryDtoHelper.BoolQueryType;
 import static org.obiba.mica.web.model.MicaSearch.DatasetResultDto;
 import static org.obiba.mica.web.model.MicaSearch.QueryResultDto;
 
@@ -45,12 +55,21 @@ import static org.obiba.mica.web.model.MicaSearch.QueryResultDto;
 @Scope("request")
 public class DatasetQuery extends AbstractDocumentQuery {
 
+  private static final Logger log = LoggerFactory.getLogger(DatasetQuery.class);
 
   private static final String DATASET_FACETS_YML = "dataset-facets.yml";
 
   public static final String STUDY_JOIN_FIELD = "studyTable.studyId";
 
   public static final String HARMONIZATION_JOIN_FIELD = "studyTables.studyId";
+
+  private static final String CLASS_NAME_AGG = "className";
+
+  private enum DatasetType {
+    STUDY,
+    HARMONIZATION,
+    DATASET
+  }
 
   @Inject
   Dtos dtos;
@@ -75,16 +94,15 @@ public class DatasetQuery extends AbstractDocumentQuery {
     return Stream.of(DatasetIndexer.ANALYZED_FIELDS);
   }
 
-  public void initialize(MicaSearch.QueryDto query, String locale, DatasetIdProvider provider) {
+  public void setDatasetIdProvider(DatasetIdProvider provider) {
     datasetIdProvider = provider;
-    initialize(query, locale);
   }
 
   @Override
   public List<String> query(List<String> studyIds, CountStatsData counts, Scope scope) throws IOException {
     updateDatasetQuery();
     List<String> ids = super.query(studyIds, counts, scope);
-    datasetIdProvider.setDatasetIds(getDatasetIds());
+    if (datasetIdProvider != null) datasetIdProvider.setDatasetIds(getDatasetIds());
     return ids;
   }
 
@@ -119,15 +137,16 @@ public class DatasetQuery extends AbstractDocumentQuery {
   }
 
   private void updateDatasetQuery() {
+    if (datasetIdProvider == null) return;
     List<String> datasetIds = datasetIdProvider.getDatasetIds();
     if(datasetIds.size() > 0) {
       if(queryDto == null) {
         queryDto = QueryDtoHelper
-            .createTermFiltersQuery(Arrays.asList("id"), datasetIds, QueryDtoHelper.BoolQueryType.MUST);
+            .createTermFiltersQuery(Arrays.asList("id"), datasetIds, BoolQueryType.MUST);
       } else {
         queryDto = QueryDtoHelper
             .addTermFilters(queryDto, QueryDtoHelper.createTermFilters(Arrays.asList("id"), datasetIds),
-                QueryDtoHelper.BoolQueryType.MUST);
+                BoolQueryType.MUST);
       }
     }
   }
@@ -151,6 +170,76 @@ public class DatasetQuery extends AbstractDocumentQuery {
   @Override
   protected List<String> getJoinFields() {
     return Arrays.asList(STUDY_JOIN_FIELD, HARMONIZATION_JOIN_FIELD);
+  }
+
+  protected MicaSearch.QueryDto addStudyIdFilters(List<String> studyIds) {
+    if((datasetIdProvider != null && datasetIdProvider.getDatasetIds().size() > 0)
+        || studyIds == null
+        || studyIds.size() == 0) {
+      return queryDto;
+    }
+
+    List<String> joinFields = getJoinFieldsByType(findType());
+    BoolQueryType operator = joinFields.size() == 1 ? BoolQueryType.MUST : BoolQueryType.SHOULD;
+    return QueryDtoHelper.addTermFilters(MicaSearch.QueryDto.newBuilder(queryDto).build(),
+        QueryDtoHelper.createTermFilters(joinFields, studyIds), operator);
+  }
+
+  protected MicaSearch.QueryDto createStudyIdFilters(List<String> studyIds) {
+    List<String> joinFields = getJoinFieldsByType(findType());
+    BoolQueryType operator = joinFields.size() == 1 ? BoolQueryType.MUST : BoolQueryType.SHOULD;
+    return QueryDtoHelper.createTermFiltersQuery(joinFields, studyIds, operator);
+  }
+
+  private List<String> getJoinFieldsByType(DatasetType type) {
+    switch (type) {
+      case STUDY:
+        return Arrays.asList(STUDY_JOIN_FIELD);
+      case HARMONIZATION:
+        return Arrays.asList(HARMONIZATION_JOIN_FIELD);
+      case DATASET:
+        return getJoinFields();
+    }
+
+    throw new IllegalArgumentException("Invaid Dataset type: " + type.name());
+  }
+
+  protected DatasetType findType() {
+    if(queryDto == null) return DatasetType.DATASET;
+    QueryDtoParser queryDtoParser = QueryDtoParser.newParser();
+    SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
+        .setTypes(getSearchType()) //
+        .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
+        .setQuery(queryDtoParser.parse(queryDto)) //
+        .setNoFields();
+
+    Properties classNameAggregation = new Properties();
+    classNameAggregation.setProperty(CLASS_NAME_AGG, "");
+
+    try {
+      aggregationYamlParser.getAggregations(classNameAggregation).forEach(requestBuilder::addAggregation);
+    } catch(IOException e) {
+      log.error("Failed to add aggregation for finding Dataset types: '{}'", e);
+      return DatasetType.DATASET;
+    }
+
+    log.info("Request: {}", requestBuilder);
+    SearchResponse response = requestBuilder.execute().actionGet();
+    List<String> classNames = Lists.newArrayList();
+
+    response.getAggregations().forEach(aggregation -> ((Terms) aggregation).getBuckets().stream().forEach(bucket -> {
+      if(bucket.getDocCount() > 0) classNames.add(bucket.getKey());
+    }));
+
+    int count = classNames.size();
+
+    if (count == 1) {
+      return classNames.get(0).equals(HarmonizationDataset.class.getSimpleName().toLowerCase())
+          ? DatasetType.HARMONIZATION
+          : DatasetType.STUDY;
+    }
+
+    return DatasetType.DATASET;
   }
 
   public Map<String, Integer> getStudyCounts() {
