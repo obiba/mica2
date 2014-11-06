@@ -68,18 +68,18 @@ public class QueryDtoHelperTest {
     MicaSearch.BoolFilterQueryDto boolQuery = queryDto.getFilteredQuery()
       .getExtension(MicaSearch.BoolFilterQueryDto.filter);
     assertThat(boolQuery.getOp()).isEqualTo(MicaSearch.BoolFilterQueryDto.Operator.SHOULD);
-    assertThat(boolQuery.getFilteredQueryCount()).isEqualTo(2);
+    assertThat(boolQuery.getFilteredQueryCount()).isEqualTo(4);
     assertThat(boolQuery.getFilteredQuery(0).hasExtension(MicaSearch.FieldFilterQueryDto.filter)).isTrue();
     MicaSearch.FieldFilterQueryDto fieldFilterQuery = boolQuery.getFilteredQuery(0)
       .getExtension(MicaSearch.FieldFilterQueryDto.filter);
-    assertThat(fieldFilterQuery.getField()).isEqualTo("id1");
+    assertThat(fieldFilterQuery.getField()).isEqualTo("access");
 
     assertThat(boolQuery.getFilteredQuery(1).hasExtension(MicaSearch.FieldFilterQueryDto.filter)).isTrue();
     fieldFilterQuery = boolQuery.getFilteredQuery(1).getExtension(MicaSearch.FieldFilterQueryDto.filter);
     assertThat(fieldFilterQuery.hasExtension(TermsFilterQueryDto.terms)).isTrue();
     TermsFilterQueryDto terms = fieldFilterQuery.getExtension(TermsFilterQueryDto.terms);
-    assertThat(terms.getValuesCount()).isEqualTo(3);
-    assertThat(terms.getValues(1)).isEqualTo("200");
+    assertThat(terms.getValuesCount()).isEqualTo(1);
+    assertThat(terms.getValues(0)).isEqualTo("2002");
   }
 
   @Test

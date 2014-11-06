@@ -265,11 +265,11 @@ public abstract class AbstractDocumentQuery {
   protected QueryDto addStudyIdFilters(List<String> studyIds) {
     if(studyIds == null || studyIds.size() == 0) return queryDto;
     return QueryDtoHelper.addTermFilters(QueryDto.newBuilder(queryDto).build(),
-        QueryDtoHelper.createTermFilters(getJoinFields(), studyIds), QueryDtoHelper.BoolQueryType.SHOULD);
+        QueryDtoHelper.createTermFilters(getJoinFields(), studyIds), QueryDtoHelper.BoolQueryType.MUST);
   }
 
   protected QueryDto createStudyIdFilters(List<String> studyIds) {
-    return QueryDtoHelper.createTermFiltersQuery(getJoinFields(), studyIds, QueryDtoHelper.BoolQueryType.SHOULD);
+    return QueryDtoHelper.createTermFiltersQuery(getJoinFields(), studyIds, QueryDtoHelper.BoolQueryType.MUST);
   }
 
   public abstract Map<String, Integer> getStudyCounts();
