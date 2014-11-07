@@ -107,7 +107,7 @@ public class PublishedDatasetSearchResource {
   }
 
   private static String mergeQueries(String typeQuery, String query) {
-    return Strings.isNullOrEmpty(query) ? typeQuery : String.format("%s AND %s", typeQuery, query);
+    return Strings.isNullOrEmpty(typeQuery) ? query : String.format("%s AND %s", typeQuery, query);
   }
 
 }
