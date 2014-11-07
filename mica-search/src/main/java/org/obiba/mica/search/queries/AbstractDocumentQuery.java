@@ -21,10 +21,12 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
+import org.elasticsearch.action.search.MultiSearchResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
@@ -185,13 +187,23 @@ public abstract class AbstractDocumentQuery {
       throws IOException {
     if(queryDto == null) return null;
     QueryDtoParser queryDtoParser = QueryDtoParser.newParser();
+
+    SearchRequestBuilder defaultRequestBuilder = client.prepareSearch(getSearchIndex()) //
+        .setTypes(getSearchType()) //
+        .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
+        .setQuery(QueryBuilders.matchAllQuery()) //
+        .setFrom(from) //
+        .setSize(size) //
+        .setNoFields()
+        .addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT)); //
+
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
         .setTypes(getSearchType()) //
         .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
         .setQuery(queryDtoParser.parse(queryDto)) //
         .setFrom(from) //
         .setSize(size) //
-        .addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT));
+        .addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT)); // ;
 
     if(ignoreFields()) requestBuilder.setNoFields();
     SortBuilder sortBuilder = queryDtoParser.parseSort(queryDto);
@@ -203,19 +215,34 @@ public abstract class AbstractDocumentQuery {
     if(queryDto != null && queryDto.getAggsByCount() > 0) {
       queryDto.getAggsByList().forEach(field -> subAggregations.put(field, aggregationProperties));
     }
+
     aggregationYamlParser.getAggregations(getAggregationsDescription(), subAggregations)
-        .forEach(requestBuilder::addAggregation);
-    aggregationYamlParser.getAggregations(aggregationProperties).forEach(requestBuilder::addAggregation);
+      .forEach(agg -> {
+        defaultRequestBuilder.addAggregation(agg);
+        requestBuilder.addAggregation(agg);
+      });
+
+    aggregationYamlParser.getAggregations(aggregationProperties).forEach(agg -> {
+      defaultRequestBuilder.addAggregation(agg);
+      requestBuilder.addAggregation(agg);
+    });
 
     log.info("Request: {}", requestBuilder.toString());
-    SearchResponse response;
     try {
-      response = requestBuilder.execute().actionGet();
+
+      List<SearchResponse> responses = Stream
+          .of(client.prepareMultiSearch().add(defaultRequestBuilder).add(requestBuilder).execute().actionGet())
+          .map(MultiSearchResponse::getResponses).flatMap((d) -> Stream.of(d))
+          .map(MultiSearchResponse.Item::getResponse).collect(Collectors.toList());
+
+
+      SearchResponse aggResponse = responses.get(0);
+      SearchResponse response = responses.get(1);
       log.info("Response: {}", response.toString());
       QueryResultDto.Builder builder = QueryResultDto.newBuilder()
           .setTotalHits((int) response.getHits().getTotalHits());
       if(scope != NONE) processHits(builder, response.getHits(), scope, counts);
-      processAggregations(builder, response.getAggregations());
+      processAggregations(builder, aggResponse.getAggregations(), response.getAggregations());
       resultDto = builder.build();
       return getResponseStudyIds(resultDto.getAggsList());
     } catch(IndexMissingException e) {
@@ -249,9 +276,9 @@ public abstract class AbstractDocumentQuery {
    * @param builder
    * @param aggregations
    */
-  protected void processAggregations(QueryResultDto.Builder builder, Aggregations aggregations) {
+  protected void processAggregations(QueryResultDto.Builder builder, Aggregations defaults, Aggregations aggregations) {
     EsQueryResultParser parser = EsQueryResultParser.newParser();
-    builder.addAllAggs(parser.parseAggregations(aggregations));
+    builder.addAllAggs(parser.parseAggregations(defaults, aggregations));
     builder.setTotalCount(parser.getTotalCount());
   }
 

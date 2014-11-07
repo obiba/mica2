@@ -202,20 +202,26 @@ message AggregationResultDto {
 
 message TermsAggregationResultDto {
   required string key = 1;
-  required int32 count = 2;
-  repeated AggregationResultDto aggs = 3;
+  required int32 default = 2;
+  required int32 count = 3;
+  repeated AggregationResultDto aggs = 4;
 
   extend AggregationResultDto {
     repeated TermsAggregationResultDto terms = 1000;
   }
 }
 
-message StatsAggregationResultDto {
+message StatsAggregationResultDataDto {
   required int64 count = 1;
   required double min = 2;
   required double max = 3;
   required double avg = 4;
   required double sum = 5;
+}
+
+message StatsAggregationResultDto {
+  required StatsAggregationResultDataDto default = 1;
+  required StatsAggregationResultDataDto data = 2;
 
   extend AggregationResultDto {
     optional StatsAggregationResultDto stats = 1001;
