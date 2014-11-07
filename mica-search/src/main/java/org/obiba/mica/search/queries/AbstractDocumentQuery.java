@@ -54,10 +54,10 @@ public abstract class AbstractDocumentQuery {
   private static final String AGG_TOTAL_COUNT = "totalCount";
 
   @Inject
-  private Client client;
+  protected Client client;
 
   @Inject
-  private AggregationYamlParser aggregationYamlParser;
+  protected AggregationYamlParser aggregationYamlParser;
 
   @Inject
   MicaConfigService micaConfigService;

@@ -86,8 +86,8 @@ public class PublishedDatasetSearchResource {
 
     if(!Strings.isNullOrEmpty(studyId)) {
       List<MicaSearch.FieldFilterQueryDto> filters = Lists.newArrayList();
-      filters.add(QueryDtoHelper.createTermFilter(DatasetQuery.STUDY_JOIN_FIELD, Arrays.asList(studyId)));
-      filters.add(QueryDtoHelper.createTermFilter(DatasetQuery.HARMONIZATION_JOIN_FIELD, Arrays.asList(studyId)));
+      if (type.equals(StudyDataset.class.getSimpleName())) filters.add(QueryDtoHelper.createTermFilter(DatasetQuery.STUDY_JOIN_FIELD, Arrays.asList(studyId)));
+      else filters.add(QueryDtoHelper.createTermFilter(DatasetQuery.HARMONIZATION_JOIN_FIELD, Arrays.asList(studyId)));
       queryDto = QueryDtoHelper.addTermFilters(queryDto, filters, QueryDtoHelper.BoolQueryType.SHOULD);
     }
 
