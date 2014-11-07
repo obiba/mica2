@@ -86,9 +86,19 @@ public class PublishedDatasetSearchResource {
 
     if(!Strings.isNullOrEmpty(studyId)) {
       List<MicaSearch.FieldFilterQueryDto> filters = Lists.newArrayList();
-      if (type.equals(StudyDataset.class.getSimpleName())) filters.add(QueryDtoHelper.createTermFilter(DatasetQuery.STUDY_JOIN_FIELD, Arrays.asList(studyId)));
-      else filters.add(QueryDtoHelper.createTermFilter(DatasetQuery.HARMONIZATION_JOIN_FIELD, Arrays.asList(studyId)));
-      queryDto = QueryDtoHelper.addTermFilters(queryDto, filters, QueryDtoHelper.BoolQueryType.SHOULD);
+
+      if (type != null) {
+        if(type.equals(StudyDataset.class.getSimpleName())) {
+          filters.add(QueryDtoHelper.createTermFilter(DatasetQuery.STUDY_JOIN_FIELD, Arrays.asList(studyId)));
+        } else {
+          filters.add(QueryDtoHelper.createTermFilter(DatasetQuery.HARMONIZATION_JOIN_FIELD, Arrays.asList(studyId)));
+        }
+        queryDto = QueryDtoHelper.addTermFilters(queryDto, filters, QueryDtoHelper.BoolQueryType.MUST);
+      } else {
+        filters.add(QueryDtoHelper.createTermFilter(DatasetQuery.STUDY_JOIN_FIELD, Arrays.asList(studyId)));
+        filters.add(QueryDtoHelper.createTermFilter(DatasetQuery.HARMONIZATION_JOIN_FIELD, Arrays.asList(studyId)));
+        queryDto = QueryDtoHelper.addTermFilters(queryDto, filters, QueryDtoHelper.BoolQueryType.SHOULD);
+      }
     }
 
     return joinQueryExecutor.query(JoinQueryExecutor.QueryType.DATASET,
@@ -107,7 +117,9 @@ public class PublishedDatasetSearchResource {
   }
 
   private static String mergeQueries(String typeQuery, String query) {
-    return Strings.isNullOrEmpty(typeQuery) ? query : String.format("%s AND %s", typeQuery, query);
+    return Strings.isNullOrEmpty(typeQuery)
+        ? query
+        : Strings.isNullOrEmpty(query) ? typeQuery : String.format("%s AND %s", typeQuery, query);
   }
 
 }
