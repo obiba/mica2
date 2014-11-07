@@ -138,6 +138,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     if(study.getAcronym() == null) {
       study.setAcronym(study.getName().asAcronym());
     }
+    study.rebuildPopulationIds();
     studyService.save(study);
     if(publish) {
       studyService.publish(study.getId());
