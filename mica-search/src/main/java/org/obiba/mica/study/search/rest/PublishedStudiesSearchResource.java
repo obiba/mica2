@@ -46,10 +46,9 @@ public class PublishedStudiesSearchResource {
       @QueryParam("order") String order, @QueryParam("query") String query,
       @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
 
-
-    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.STUDY, MicaSearch.JoinQueryDto.newBuilder()
-            .setStudyQueryDto(QueryDtoHelper.createQueryDto(from, limit, sort, order, query, locale, Stream
-                .of(StudyIndexer.ANALYZED_FIELDS))).build());
+    return joinQueryExecutor.listQuery(JoinQueryExecutor.QueryType.STUDY,
+        QueryDtoHelper.createQueryDto(from, limit, sort, order, query, locale, Stream.of(StudyIndexer.ANALYZED_FIELDS)),
+        locale);
   }
 
   @POST

@@ -59,8 +59,7 @@ public class PublishedNetworksSearchResource {
           QueryDtoHelper.BoolQueryType.SHOULD);
     }
 
-    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.NETWORK, MicaSearch.JoinQueryDto.newBuilder()
-        .setNetworkQueryDto(queryDto).build());
+    return joinQueryExecutor.listQuery(JoinQueryExecutor.QueryType.NETWORK, queryDto, locale);
   }
 
   @POST

@@ -67,9 +67,8 @@ public class PublishedDatasetVariablesSearchResource {
     @QueryParam("order") String order, @QueryParam("query") String query,
     @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
 
-    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.VARIABLE, MicaSearch.JoinQueryDto.newBuilder()
-      .setVariableQueryDto(QueryDtoHelper
-        .createQueryDto(from, limit, sort, order, query, locale, Stream.of(VariableIndexer.ANALYZED_FIELDS))).build());
+    return joinQueryExecutor.listQuery(JoinQueryExecutor.QueryType.VARIABLE, QueryDtoHelper
+        .createQueryDto(from, limit, sort, order, query, locale, Stream.of(VariableIndexer.ANALYZED_FIELDS)), locale);
   }
 
   @POST
