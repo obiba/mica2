@@ -101,8 +101,7 @@ public class PublishedDatasetSearchResource {
       }
     }
 
-    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.DATASET,
-        MicaSearch.JoinQueryDto.newBuilder().setDatasetQueryDto(queryDto).build());
+    return joinQueryExecutor.listQuery(JoinQueryExecutor.QueryType.DATASET, queryDto, locale);
   }
 
   @POST

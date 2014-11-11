@@ -55,12 +55,11 @@ public class CountStatsDtoBuilders {
     }
 
     private CountStatsDto calculateCounts(String datasetId, List<String> ids) {
-      int variables = 0;
       int studies = 0;
       int networks = 0;
+      int variables = countStatsData.getVariables(datasetId);
 
       for(String id : ids) {
-        variables += countStatsData.getVariables(datasetId);
         studies += countStatsData.getStudies(id);
         networks += countStatsData.getNetworks(id);
       }

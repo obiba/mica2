@@ -23,6 +23,7 @@ import org.obiba.mica.search.queries.DatasetQuery;
 import org.obiba.mica.search.queries.NetworkQuery;
 import org.obiba.mica.search.queries.StudyQuery;
 import org.obiba.mica.search.queries.VariableQuery;
+import org.obiba.mica.web.model.MicaSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -62,6 +63,45 @@ public class JoinQueryExecutor {
     return query(type, joinQueryDto, null, DIGEST);
   }
 
+  public JoinQueryResultDto listQuery(QueryType type, MicaSearch.QueryDto queryDto , String locale) throws IOException {
+    JoinQueryDto joinQueryDto = createJoinQueryByType(type, queryDto);
+    variableQuery.initialize(joinQueryDto.hasVariableQueryDto() ? joinQueryDto.getVariableQueryDto() : null, locale);
+    datasetQuery.initialize(joinQueryDto.hasDatasetQueryDto() ? joinQueryDto.getDatasetQueryDto() : null, locale);
+    studyQuery.initialize(joinQueryDto.hasStudyQueryDto() ? joinQueryDto.getStudyQueryDto() : null, locale);
+    networkQuery.initialize(joinQueryDto.hasNetworkQueryDto() ? joinQueryDto.getNetworkQueryDto() : null, locale);
+
+    execute(type, DETAIL, CountStatsData.newBuilder());
+
+    JoinQueryResultDto.Builder builder = JoinQueryResultDto.newBuilder();
+    if(variableQuery.getResultQuery() != null) builder.setVariableResultDto(variableQuery.getResultQuery());
+    if(datasetQuery.getResultQuery() != null) builder.setDatasetResultDto(datasetQuery.getResultQuery());
+    if(studyQuery.getResultQuery() != null) builder.setStudyResultDto(studyQuery.getResultQuery());
+    if(networkQuery.getResultQuery() != null) builder.setNetworkResultDto(networkQuery.getResultQuery());
+
+    return builder.build();
+  }
+
+  private JoinQueryDto createJoinQueryByType(QueryType type, MicaSearch.QueryDto queryDto) {
+    JoinQueryDto.Builder builder = JoinQueryDto.newBuilder();
+
+    switch(type) {
+      case VARIABLE:
+        builder.setVariableQueryDto(queryDto).build();
+        break;
+      case DATASET:
+        builder.setDatasetQueryDto(queryDto).build();
+        break;
+      case STUDY:
+        builder.setStudyQueryDto(queryDto).build();
+        break;
+      case NETWORK:
+        builder.setNetworkQueryDto(queryDto);
+        break;
+    }
+
+    return builder.build();
+  }
+
   public JoinQueryResultDto query(QueryType type, JoinQueryDto joinQueryDto) throws IOException {
     return query(type, joinQueryDto, CountStatsData.newBuilder(), DETAIL);
   }
@@ -81,7 +121,7 @@ public class JoinQueryExecutor {
 
     if (queriesHaveFilters) {
       variableQuery.setDatasetIdProvider(datasetIdProvider);
-      variableQuery.setDatasetIdProvider(datasetIdProvider);
+      datasetQuery.setDatasetIdProvider(datasetIdProvider);
       List<String> joinedIds = executeJoin(type, scope);
       CountStatsData countStats = countBuilder != null ? getCountStatsData(type) : null;
 
