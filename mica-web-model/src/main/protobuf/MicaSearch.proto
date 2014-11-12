@@ -202,9 +202,10 @@ message AggregationResultDto {
 
 message TermsAggregationResultDto {
   required string key = 1;
-  required int32 default = 2;
-  required int32 count = 3;
-  repeated AggregationResultDto aggs = 4;
+  optional string title = 2;
+  required int32 default = 3;
+  required int32 count = 4;
+  repeated AggregationResultDto aggs = 5;
 
   extend AggregationResultDto {
     repeated TermsAggregationResultDto terms = 1000;

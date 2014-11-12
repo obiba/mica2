@@ -23,19 +23,30 @@ import org.elasticsearch.search.aggregations.InternalAggregation;
 import org.elasticsearch.search.aggregations.bucket.global.Global;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.metrics.stats.Stats;
+import org.obiba.mica.search.AggregationTitleResolver;
 import org.obiba.mica.web.model.MicaSearch;
+
+import com.google.common.base.Strings;
 
 import static org.obiba.mica.web.model.MicaSearch.AggregationResultDto;
 import static org.obiba.mica.web.model.MicaSearch.StatsAggregationResultDto;
 import static org.obiba.mica.web.model.MicaSearch.TermsAggregationResultDto;
 
 public class EsQueryResultParser {
+
+  private final String locale;
+
+  private final AggregationTitleResolver aggregationTitleResolver;
+
   private long totalCount;
 
-  private EsQueryResultParser() {}
+  private EsQueryResultParser(AggregationTitleResolver titleResolver, String localeName) {
+    aggregationTitleResolver = titleResolver;
+    locale = localeName;
+  }
 
-  public static EsQueryResultParser newParser() {
-    return new EsQueryResultParser();
+  public static EsQueryResultParser newParser(AggregationTitleResolver aggregationTitleResolver, String locale) {
+    return new EsQueryResultParser(aggregationTitleResolver, locale);
   }
 
   public List<AggregationResultDto> parseAggregations(@NotNull Aggregations defaults, @NotNull Aggregations queried) {
@@ -86,8 +97,12 @@ public class EsQueryResultParser {
               termsBuilder
                   .addAllAggs(parseAggregations(defaultBucket.getAggregations(), queriedBucket.getAggregations()));
             }
+
+            String key = defaultBucket.getKey();
+            termsBuilder.setTitle(aggregationTitleResolver.getTitle(defaultAgg.getName(), key, locale));
+
             aggResultBuilder.addExtension(TermsAggregationResultDto.terms, //
-                termsBuilder.setKey(defaultBucket.getKey()) //
+                termsBuilder.setKey(key) //
                     .setDefault((int) defaultBucket.getDocCount()) //
                     .setCount((int) queriedBucket.getDocCount()).build()); //
           });
