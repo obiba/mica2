@@ -390,6 +390,7 @@ message DatasetVariableResolverDto {
 message DatasetVariableSummaryDto {
   required DatasetVariableResolverDto resolver = 1;
   repeated AttributeDto attributes = 2;
+  optional DatasetDto.StudyTableDto studyTable = 3;
 }
 
 message DatasetVariableHarmonizationDto {

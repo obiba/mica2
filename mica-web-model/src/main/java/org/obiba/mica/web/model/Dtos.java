@@ -6,6 +6,7 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
@@ -179,8 +180,8 @@ public class Dtos {
   }
 
   @NotNull
-  public Mica.DatasetVariableSummaryDto asSummaryDto(@NotNull DatasetVariable variable) {
-    return datasetDtos.asSummaryDto(variable);
+  public Mica.DatasetVariableSummaryDto asSummaryDto(@NotNull DatasetVariable variable, StudyTable studyTable) {
+    return datasetDtos.asSummaryDto(variable, studyTable);
   }
 
   @NotNull
