@@ -97,6 +97,12 @@ class DatasetDtos {
     if(resolver.hasStudyId()) {
       builder.setStudyId(resolver.getStudyId());
     }
+    if(resolver.hasProject()) {
+      builder.setProject(resolver.getProject());
+    }
+    if(resolver.hasTable()) {
+      builder.setTable(resolver.getTable());
+    }
 
     return builder;
   }
@@ -227,6 +233,9 @@ class DatasetDtos {
         .setTable(studyTable.getTable()) //
         .setDceId(studyTable.getDataCollectionEventUId());
 
+    builder.addAllName(localizedStringDtos.asDto(studyTable.getName()));
+    builder.addAllDescription(localizedStringDtos.asDto(studyTable.getDescription()));
+
     return builder;
   }
 
@@ -283,6 +292,10 @@ class DatasetDtos {
     table.setDataCollectionEventId(dto.getDataCollectionEventId());
     table.setProject(dto.getProject());
     table.setTable(dto.getTable());
+
+    table.setName(localizedStringDtos.fromDto(dto.getNameList()));
+    table.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
+
     return table;
   }
 }

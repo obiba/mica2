@@ -78,6 +78,10 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
   private int index;
 
+  private String project;
+
+  private String table;
+
   @NotNull
   private LocalizedString datasetAcronym;
 
@@ -104,6 +108,8 @@ public class DatasetVariable implements Indexable, AttributeAware {
     this(dataset, Type.Harmonized, variable);
     studyIds = Lists.newArrayList(studyTable.getStudyId());
     dceIds = Lists.newArrayList(studyTable.getDataCollectionEventUId());
+    project = studyTable.getProject();
+    table = studyTable.getTable();
   }
 
   private DatasetVariable(Dataset dataset, Type type, Variable variable) {
@@ -134,8 +140,8 @@ public class DatasetVariable implements Indexable, AttributeAware {
   @Override
   public String getId() {
     String id = datasetId + ID_SEPARATOR + name + ID_SEPARATOR + variableType;
-    if(Type.Harmonized.equals(variableType)) {
-      id = id + ID_SEPARATOR + studyIds.get(0);
+    if(Type.Harmonized == variableType) {
+      id = id + ID_SEPARATOR + studyIds.get(0) + ID_SEPARATOR + project + ID_SEPARATOR + table;
     }
     return id;
   }
@@ -145,6 +151,9 @@ public class DatasetVariable implements Indexable, AttributeAware {
     variableType = resolver.getType();
     datasetId = resolver.getDatasetId();
     name = resolver.getName();
+    if(resolver.hasStudyId()) studyIds = Lists.newArrayList(resolver.getStudyId());
+    if(resolver.hasProject()) project = resolver.getProject();
+    if(resolver.hasTable()) table = resolver.getTable();
   }
 
   public String getDatasetId() {
@@ -273,8 +282,8 @@ public class DatasetVariable implements Indexable, AttributeAware {
   @JsonIgnore
   public String getParentId() {
     return variableType.equals(Type.Harmonized)
-        ? datasetId + ID_SEPARATOR + name + ID_SEPARATOR + Type.Dataschema
-        : null;
+      ? datasetId + ID_SEPARATOR + name + ID_SEPARATOR + Type.Dataschema
+      : null;
   }
 
   public static class IdResolver {
@@ -289,20 +298,32 @@ public class DatasetVariable implements Indexable, AttributeAware {
 
     private final String studyId;
 
+    private final String project;
+
+    private final String table;
+
     public static IdResolver from(String id) {
       return new IdResolver(id);
     }
 
-    public static IdResolver from(String datasetId, String variableName, Type variableType, String studyId) {
-      return from(encode(datasetId, variableName, variableType, studyId));
+    public static IdResolver from(String datasetId, String variableName, Type variableType) {
+      return from(encode(datasetId, variableName, variableType, null));
     }
 
-    public static String encode(String datasetId, String variableName, Type variableType, String studyId) {
+    public static String encode(String datasetId, String variableName, Type variableType, String studyId,
+      String project, String table) {
       String id = datasetId + ID_SEPARATOR + variableName + ID_SEPARATOR + variableType;
-      if(Type.Harmonized.equals(variableType)) {
-        id = id + ID_SEPARATOR + studyId;
+      if(Type.Harmonized == variableType && studyId != null) {
+        id = id + ID_SEPARATOR + studyId + ID_SEPARATOR + project + ID_SEPARATOR + table;
       }
       return id;
+    }
+
+    public static String encode(String datasetId, String variableName, Type variableType, StudyTable studyTable) {
+      return studyTable == null
+        ? encode(datasetId, variableName, variableType, null, null, null)
+        : encode(datasetId, variableName, variableType, studyTable.getStudyId(), studyTable.getProject(),
+          studyTable.getTable());
     }
 
     private IdResolver(String id) {
@@ -315,11 +336,9 @@ public class DatasetVariable implements Indexable, AttributeAware {
       datasetId = tokens[0];
       name = tokens[1];
       type = Type.valueOf(tokens[2]);
-      if(tokens.length > 3) {
-        studyId = tokens[3];
-      } else {
-        studyId = null;
-      }
+      studyId = tokens.length > 3 ? tokens[3] : null;
+      project = tokens.length > 4 ? tokens[4] : null;
+      table = tokens.length > 5 ? tokens[5] : null;
     }
 
     public String getId() {
@@ -346,9 +365,25 @@ public class DatasetVariable implements Indexable, AttributeAware {
       return !Strings.isNullOrEmpty(studyId);
     }
 
+    public String getProject() {
+      return project;
+    }
+
+    public boolean hasProject() {
+      return !Strings.isNullOrEmpty(project);
+    }
+
+    public String getTable() {
+      return table;
+    }
+
+    public boolean hasTable() {
+      return !Strings.isNullOrEmpty(table);
+    }
+
     @Override
     public String toString() {
-      return "[" + datasetId + "," + name + "," + type + ", " + studyId + "]";
+      return "[" + datasetId + "," + name + "," + type + ", " + studyId + ", " + project + ", " + table + "]";
     }
   }
 }

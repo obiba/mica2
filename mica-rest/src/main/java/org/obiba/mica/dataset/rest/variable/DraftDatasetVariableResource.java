@@ -48,6 +48,8 @@ public class DraftDatasetVariableResource {
       case Harmonized:
         resource = applicationContext.getBean(DraftHarmonizedDatasetVariableResource.class);
         ((DraftHarmonizedDatasetVariableResource)resource).setStudyId(resolver.getStudyId());
+        ((DraftHarmonizedDatasetVariableResource)resource).setProject(resolver.getProject());
+        ((DraftHarmonizedDatasetVariableResource)resource).setTable(resolver.getTable());
         break;
     }
 

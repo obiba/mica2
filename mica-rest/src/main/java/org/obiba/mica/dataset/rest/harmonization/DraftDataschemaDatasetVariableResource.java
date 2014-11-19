@@ -58,7 +58,8 @@ public class DraftDataschemaDatasetVariableResource implements DatasetVariableRe
     HarmonizationDataset dataset = getDataset();
     dataset.getStudyTables().forEach(table -> {
       try {
-        builder.add(datasetService.getVariableSummary(dataset, variableName, table.getStudyId()));
+        builder.add(datasetService
+          .getVariableSummary(dataset, variableName, table.getStudyId(), table.getProject(), table.getTable()));
       } catch(NoSuchVariableException | NoSuchValueTableException e) {
         // ignore (case the study has not implemented this dataschema variable)
       }
@@ -73,7 +74,8 @@ public class DraftDataschemaDatasetVariableResource implements DatasetVariableRe
     HarmonizationDataset dataset = getDataset();
     dataset.getStudyTables().forEach(table -> {
       try {
-        builder.add(datasetService.getVariableFacet(dataset, variableName, table.getStudyId()));
+        builder.add(datasetService
+          .getVariableFacet(variableName, table));
       } catch(NoSuchVariableException | NoSuchValueTableException e) {
         // ignore (case the study has not implemented this dataschema variable)
       }
@@ -88,7 +90,7 @@ public class DraftDataschemaDatasetVariableResource implements DatasetVariableRe
     HarmonizationDataset dataset = getDataset();
     dataset.getStudyTables().forEach(table -> {
       try {
-        builder.add(dtos.asDto(datasetService.getDatasetVariable(dataset, variableName, table.getStudyId())));
+        builder.add(dtos.asDto(datasetService.getDatasetVariable(dataset, variableName, table)));
       } catch(NoSuchVariableException | NoSuchValueTableException e) {
         // ignore (case the study has not implemented this dataschema variable)
       }

@@ -31,8 +31,8 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("request")
 @RequiresAuthentication
-public class PublishedHarmonizedDatasetVariableResource
-    extends AbstractPublishedDatasetResource<HarmonizationDataset> implements DatasetVariableResource {
+public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishedDatasetResource<HarmonizationDataset>
+  implements DatasetVariableResource {
 
   private String datasetId;
 
@@ -40,24 +40,30 @@ public class PublishedHarmonizedDatasetVariableResource
 
   private String studyId;
 
+  private String project;
+
+  private String table;
+
   @Inject
   private HarmonizationDatasetService datasetService;
 
   @GET
   public Mica.DatasetVariableDto getVariable() {
-    return getDatasetVariableDto(datasetId, variableName, DatasetVariable.Type.Harmonized, studyId);
+    return getDatasetVariableDto(datasetId, variableName, DatasetVariable.Type.Harmonized, studyId, project, table);
   }
 
   @GET
   @Path("/summary")
   public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary() {
-    return datasetService.getVariableSummary(getDataset(HarmonizationDataset.class, datasetId), variableName, studyId);
+    return datasetService
+      .getVariableSummary(getDataset(HarmonizationDataset.class, datasetId), variableName, studyId, project, table);
   }
 
   @GET
   @Path("/facet")
   public Search.QueryResultDto getVariableFacet() {
-    return datasetService.getVariableFacet(getDataset(HarmonizationDataset.class, datasetId), variableName, studyId);
+    return datasetService
+      .getVariableFacet(getDataset(HarmonizationDataset.class, datasetId), variableName, studyId, project, table);
   }
 
   @Override
@@ -72,5 +78,13 @@ public class PublishedHarmonizedDatasetVariableResource
 
   public void setStudyId(String studyId) {
     this.studyId = studyId;
+  }
+
+  public void setProject(String project) {
+    this.project = project;
+  }
+
+  public void setTable(String table) {
+    this.table = table;
   }
 }

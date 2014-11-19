@@ -65,9 +65,9 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
       generateId(saved);
     } else {
       saved = harmonizationDatasetRepository.findOne(dataset.getId());
-      if (saved != null) {
+      if(saved != null) {
         BeanUtils.copyProperties(dataset, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
-            "lastModifiedDate");
+          "lastModifiedDate");
       } else {
         saved = dataset;
       }
@@ -184,34 +184,46 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
 
   @Override
   public DatasetVariable getDatasetVariable(HarmonizationDataset dataset, String variableName)
-      throws NoSuchValueTableException, NoSuchVariableException {
+    throws NoSuchValueTableException, NoSuchVariableException {
     return new DatasetVariable(dataset, getVariableValueSource(dataset, variableName).getVariable());
   }
 
   public Iterable<DatasetVariable> getDatasetVariables(HarmonizationDataset dataset, StudyTable studyTable)
-      throws NoSuchStudyException, NoSuchValueTableException {
+    throws NoSuchStudyException, NoSuchValueTableException {
     return Iterables.transform(getVariables(studyTable), input -> new DatasetVariable(dataset, input, studyTable));
   }
 
-  public DatasetVariable getDatasetVariable(HarmonizationDataset dataset, String variableName, String studyId)
-      throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
-    return new DatasetVariable(dataset, getTable(dataset, studyId).getVariableValueSource(variableName).getVariable());
+  public DatasetVariable getDatasetVariable(HarmonizationDataset dataset, String variableName, StudyTable studyTable)
+    throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
+    return new DatasetVariable(dataset, getTable(studyTable).getVariableValueSource(variableName).getVariable());
+  }
+
+  public DatasetVariable getDatasetVariable(HarmonizationDataset dataset, String variableName, String studyId,
+    String project, String table) throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
+    return new DatasetVariable(dataset,
+      getTable(dataset, studyId, project, table).getVariableValueSource(variableName).getVariable());
   }
 
   public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary(@NotNull HarmonizationDataset dataset,
-      String variableName, String studyId)
-      throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
-    return getVariableValueSource(dataset, variableName, studyId).getSummary();
+    String variableName, String studyId, String project, String table)
+    throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
+    return getVariableValueSource(dataset, variableName, studyId, project, table).getSummary();
+  }
+
+  public Search.QueryResultDto getVariableFacet(String variableName, StudyTable studyTable)
+    throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
+    return getVariableValueSource(variableName, studyTable).getFacet();
   }
 
   public Search.QueryResultDto getVariableFacet(@NotNull HarmonizationDataset dataset, String variableName,
-      String studyId) throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
-    return getVariableValueSource(dataset, variableName, studyId).getFacet();
+    String studyId, String project, String table)
+    throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
+    return getVariableValueSource(dataset, variableName, studyId, project, table).getFacet();
   }
 
-  public Search.QueryResultDto getFacets(@NotNull HarmonizationDataset dataset, Search.QueryTermsDto query,
-      String studyId) throws NoSuchStudyException, NoSuchValueTableException {
-    return getTable(dataset, studyId).getFacets(query);
+  public Search.QueryResultDto getFacets(Search.QueryTermsDto query, StudyTable studyTable)
+    throws NoSuchStudyException, NoSuchValueTableException {
+    return getTable(studyTable).getFacets(query);
   }
 
   /**
@@ -245,19 +257,19 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   //
 
   private Iterable<Variable> getVariables(StudyTable studyTable)
-      throws NoSuchDatasetException, NoSuchStudyException, NoSuchValueTableException {
+    throws NoSuchDatasetException, NoSuchStudyException, NoSuchValueTableException {
     return getTable(studyTable).getVariables();
   }
 
   private RestValueTable getTable(@NotNull StudyTable studyTable)
-      throws NoSuchStudyException, NoSuchValueTableException {
+    throws NoSuchStudyException, NoSuchValueTableException {
     return execute(studyTable, ds -> (RestValueTable) ds.getValueTable(studyTable.getTable()));
   }
 
-  private RestValueTable getTable(@NotNull HarmonizationDataset dataset, String studyId)
-      throws NoSuchStudyException, NoSuchValueTableException {
+  private RestValueTable getTable(@NotNull HarmonizationDataset dataset, String studyId, String project, String table)
+    throws NoSuchStudyException, NoSuchValueTableException {
     for(StudyTable studyTable : dataset.getStudyTables()) {
-      if(studyTable.getStudyId().equals(studyId)) {
+      if(studyTable.isFor(studyId, project, table)) {
         return getTable(studyTable);
       }
     }
@@ -265,14 +277,19 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   }
 
   private RestValueTable.RestVariableValueSource getVariableValueSource(@NotNull HarmonizationDataset dataset,
-      String variableName, String studyId)
-      throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
+    String variableName, String studyId, String project, String table)
+    throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
     for(StudyTable studyTable : dataset.getStudyTables()) {
-      if(studyTable.getStudyId().equals(studyId)) {
-        return (RestValueTable.RestVariableValueSource) getTable(dataset, studyId).getVariableValueSource(variableName);
+      if(studyTable.isFor(studyId, project, table)) {
+        return getVariableValueSource(variableName, studyTable);
       }
     }
     throw NoSuchStudyException.withId(studyId);
+  }
+
+  private RestValueTable.RestVariableValueSource getVariableValueSource(String variableName, StudyTable studyTable)
+    throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
+    return (RestValueTable.RestVariableValueSource) getTable(studyTable).getVariableValueSource(variableName);
   }
 
   /**
