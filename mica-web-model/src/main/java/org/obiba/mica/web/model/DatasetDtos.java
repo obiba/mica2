@@ -168,7 +168,7 @@ class DatasetDtos {
   }
 
   @NotNull
-  Mica.DatasetVariableSummaryDto asSummaryDto(@NotNull DatasetVariable variable) {
+  Mica.DatasetVariableSummaryDto asSummaryDto(@NotNull DatasetVariable variable, StudyTable studyTable) {
     Mica.DatasetVariableSummaryDto.Builder builder = Mica.DatasetVariableSummaryDto.newBuilder() //
         .setResolver(asDto(DatasetVariable.IdResolver.from(variable.getId())));
 
@@ -176,6 +176,8 @@ class DatasetDtos {
       variable.getAttributes().asAttributeList()
           .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
     }
+
+    builder.setStudyTable(asDto(studyTable));
 
     return builder.build();
   }

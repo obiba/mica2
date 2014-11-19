@@ -99,9 +99,13 @@ public class DatasetVariable implements Indexable, AttributeAware {
   public DatasetVariable(HarmonizationDataset dataset, Variable variable) {
     this(dataset, Type.Dataschema, variable);
     studyIds = Lists.newArrayList();
-    dataset.getStudyTables().forEach(table -> studyIds.add(table.getStudyId()));
+    dataset.getStudyTables().forEach(table -> {
+      if(!studyIds.contains(table.getStudyId())) studyIds.add(table.getStudyId());
+    });
     dceIds = Lists.newArrayList();
-    dataset.getStudyTables().forEach(table -> dceIds.add(table.getDataCollectionEventUId()));
+    dataset.getStudyTables().forEach(table -> {
+      if(!dceIds.contains(table.getDataCollectionEventUId())) dceIds.add(table.getDataCollectionEventUId());
+    });
   }
 
   public DatasetVariable(HarmonizationDataset dataset, Variable variable, StudyTable studyTable) {
