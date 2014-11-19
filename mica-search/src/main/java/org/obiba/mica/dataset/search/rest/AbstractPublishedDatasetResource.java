@@ -23,12 +23,12 @@ import javax.validation.constraints.NotNull;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.obiba.magma.NoSuchVariableException;
+import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
@@ -36,7 +36,6 @@ import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.search.DatasetIndexer;
 import org.obiba.mica.dataset.search.VariableIndexer;
 import org.obiba.mica.micaConfig.OpalService;
-import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
@@ -45,7 +44,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
 
 /**
  * Retrieve the {@link org.obiba.mica.dataset.domain.Dataset} from the published dataset index.
@@ -74,12 +72,12 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   protected T getDataset(Class<T> clazz, @NotNull String datasetId) throws NoSuchDatasetException {
     QueryBuilder query = QueryBuilders.queryString(clazz.getSimpleName()).field("className");
     query = QueryBuilders.boolQuery().must(query)
-        .must(QueryBuilders.idsQuery(DatasetIndexer.DATASET_TYPE).addIds(datasetId));
+      .must(QueryBuilders.idsQuery(DatasetIndexer.DATASET_TYPE).addIds(datasetId));
 
     SearchRequestBuilder search = client.prepareSearch() //
-        .setIndices(DatasetIndexer.PUBLISHED_DATASET_INDEX) //
-        .setTypes(DatasetIndexer.DATASET_TYPE) //
-        .setQuery(query);
+      .setIndices(DatasetIndexer.PUBLISHED_DATASET_INDEX) //
+      .setTypes(DatasetIndexer.DATASET_TYPE) //
+      .setQuery(query);
 
     log.debug("Request: {}", search.toString());
     SearchResponse response = search.execute().actionGet();
@@ -100,20 +98,20 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   }
 
   protected Mica.DatasetVariablesDto getDatasetVariableDtos(@NotNull String datasetId, int from, int limit,
-      @Nullable String sort, @Nullable String order) {
+    @Nullable String sort, @Nullable String order) {
 
     QueryBuilder query = QueryBuilders.termQuery("datasetId", datasetId);
 
     SearchRequestBuilder search = new SearchRequestBuilder(client) //
-        .setIndices(VariableIndexer.PUBLISHED_VARIABLE_INDEX) //
-        .setTypes(VariableIndexer.VARIABLE_TYPE) //
-        .setQuery(query) //
-        .setFrom(from) //
-        .setSize(limit);
+      .setIndices(VariableIndexer.PUBLISHED_VARIABLE_INDEX) //
+      .setTypes(VariableIndexer.VARIABLE_TYPE) //
+      .setQuery(query) //
+      .setFrom(from) //
+      .setSize(limit);
 
     if(sort != null) {
       search.addSort(
-          SortBuilders.fieldSort(sort).order(order == null ? SortOrder.ASC : SortOrder.valueOf(order.toUpperCase())));
+        SortBuilders.fieldSort(sort).order(order == null ? SortOrder.ASC : SortOrder.valueOf(order.toUpperCase())));
     }
 
     log.info(search.toString());
@@ -121,9 +119,9 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
     log.info(response.toString());
 
     Mica.DatasetVariablesDto.Builder builder = Mica.DatasetVariablesDto.newBuilder() //
-        .setTotal(Long.valueOf(response.getHits().getTotalHits()).intValue()) //
-        .setFrom(from) //
-        .setLimit(limit);
+      .setTotal(Long.valueOf(response.getHits().getTotalHits()).intValue()) //
+      .setFrom(from) //
+      .setLimit(limit);
 
     List<Taxonomy> taxonomies = getTaxonomies();
     response.getHits().forEach(hit -> {
@@ -139,23 +137,31 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   }
 
   protected Mica.DatasetVariableHarmonizationDto getVariableHarmonizationDto(HarmonizationDataset dataset,
-      String variableName) {
-    DatasetVariable.IdResolver variableResolver = DatasetVariable.IdResolver.from(dataset.getId(), variableName,
-        DatasetVariable.Type.Dataschema, null);
+    String variableName) {
+    DatasetVariable.IdResolver variableResolver = DatasetVariable.IdResolver
+      .from(dataset.getId(), variableName, DatasetVariable.Type.Dataschema);
     Mica.DatasetVariableHarmonizationDto.Builder builder = Mica.DatasetVariableHarmonizationDto.newBuilder();
     builder.setResolver(dtos.asDto(variableResolver));
 
     dataset.getStudyTables().forEach(table -> {
       try {
         builder.addDatasetVariableSummaries(
-            getDatasetVariableSummaryDto(dataset.getId(), variableResolver.getName(), DatasetVariable.Type.Harmonized,
-                table.getStudyId()));
+          getDatasetVariableSummaryDto(dataset.getId(), variableResolver.getName(), DatasetVariable.Type.Harmonized,
+            table));
       } catch(NoSuchVariableException e) {
         // ignore (case the study has not implemented this dataschema variable)
       }
     });
 
     return builder.build();
+  }
+
+  protected DatasetVariable getDatasetVariable(@NotNull String datasetId, @NotNull String variableName,
+    DatasetVariable.Type variableType, StudyTable studyTable) {
+    String studyId = studyTable != null ? studyTable.getStudyId() : null;
+    String project = studyTable != null ? studyTable.getProject() : null;
+    String table = studyTable != null ? studyTable.getTable() : null;
+    return getDatasetVariable(datasetId, variableName, variableType, studyId, project, table);
   }
 
   /**
@@ -165,23 +171,27 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
    * @param datasetId
    * @param variableName
    * @param studyId
+   * @param project
+   * @param table
    * @return
    * @throws NoSuchVariableException
    */
   protected DatasetVariable getDatasetVariable(@NotNull String datasetId, @NotNull String variableName,
-      DatasetVariable.Type variableType, @Nullable String studyId) throws NoSuchVariableException {
+    DatasetVariable.Type variableType, @Nullable String studyId, @Nullable String project, @Nullable String table)
+    throws NoSuchVariableException {
 
-    String variableId = DatasetVariable.IdResolver.encode(datasetId, variableName, variableType, studyId);
+    String variableId = DatasetVariable.IdResolver
+      .encode(datasetId, variableName, variableType, studyId, project, table);
     String indexType = variableType.equals(DatasetVariable.Type.Harmonized)
-        ? VariableIndexer.HARMONIZED_VARIABLE_TYPE
-        : VariableIndexer.VARIABLE_TYPE;
+      ? VariableIndexer.HARMONIZED_VARIABLE_TYPE
+      : VariableIndexer.VARIABLE_TYPE;
 
     QueryBuilder query = QueryBuilders.idsQuery(indexType).addIds(variableId);
 
     SearchRequestBuilder search = client.prepareSearch() //
-        .setIndices(VariableIndexer.PUBLISHED_VARIABLE_INDEX) //
-        .setTypes(indexType) //
-        .setQuery(query);
+      .setIndices(VariableIndexer.PUBLISHED_VARIABLE_INDEX) //
+      .setTypes(indexType) //
+      .setQuery(query);
 
     log.debug("Request: {}", search.toString());
     SearchResponse response = search.execute().actionGet();
@@ -198,18 +208,19 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   }
 
   protected Mica.DatasetVariableDto getDatasetVariableDto(@NotNull String datasetId, @NotNull String variableName,
-      DatasetVariable.Type variableType) {
-    return getDatasetVariableDto(datasetId, variableName, variableType, null);
+    DatasetVariable.Type variableType) {
+    return getDatasetVariableDto(datasetId, variableName, variableType, null, null, null);
   }
 
   protected Mica.DatasetVariableDto getDatasetVariableDto(@NotNull String datasetId, @NotNull String variableName,
-      DatasetVariable.Type variableType, @Nullable String studyId) {
-    return dtos.asDto(getDatasetVariable(datasetId, variableName, variableType, studyId), getTaxonomies());
+    DatasetVariable.Type variableType, @Nullable String studyId, @Nullable String project, @Nullable String table) {
+    return dtos
+      .asDto(getDatasetVariable(datasetId, variableName, variableType, studyId, project, table), getTaxonomies());
   }
 
   protected Mica.DatasetVariableSummaryDto getDatasetVariableSummaryDto(@NotNull String datasetId,
-      @NotNull String variableName, DatasetVariable.Type variableType, @Nullable String studyId) {
-    return dtos.asSummaryDto(getDatasetVariable(datasetId, variableName, variableType, studyId));
+    @NotNull String variableName, DatasetVariable.Type variableType, @Nullable StudyTable studyTable) {
+    return dtos.asSummaryDto(getDatasetVariable(datasetId, variableName, variableType, studyTable));
   }
 
   @NotNull

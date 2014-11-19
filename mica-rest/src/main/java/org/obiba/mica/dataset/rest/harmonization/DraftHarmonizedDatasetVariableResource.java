@@ -41,25 +41,37 @@ public class DraftHarmonizedDatasetVariableResource implements DatasetVariableRe
 
   private String studyId;
 
+  private String project;
+
+  private String table;
+
   @GET
   public Mica.DatasetVariableDto getVariable() {
-    return dtos.asDto(datasetService.getDatasetVariable(getDataset(), variableName, studyId));
+    return dtos.asDto(datasetService.getDatasetVariable(getDataset(), variableName, studyId, project, table));
   }
 
   @GET
   @Path("/summary")
   public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary() {
-    return datasetService.getVariableSummary(getDataset(), variableName, studyId);
+    return datasetService.getVariableSummary(getDataset(), variableName, studyId, project, table);
   }
 
   @GET
   @Path("/facet")
   public Search.QueryResultDto getVariableFacet() {
-    return datasetService.getVariableFacet(getDataset(), variableName, studyId);
+    return datasetService.getVariableFacet(getDataset(), variableName, studyId, project, table);
   }
 
   public void setStudyId(String studyId) {
     this.studyId = studyId;
+  }
+
+  public void setProject(String project) {
+    this.project = project;
+  }
+
+  public void setTable(String table) {
+    this.table = table;
   }
 
   private HarmonizationDataset getDataset() {

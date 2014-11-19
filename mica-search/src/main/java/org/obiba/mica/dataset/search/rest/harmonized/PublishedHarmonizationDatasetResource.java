@@ -131,7 +131,7 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
     ImmutableList.Builder<Search.QueryResultDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, id);
     for(StudyTable table : dataset.getStudyTables()) {
-      builder.add(datasetService.getFacets(dataset, query, table.getStudyId()));
+      builder.add(datasetService.getFacets(query, table));
     }
     return builder.build();
   }

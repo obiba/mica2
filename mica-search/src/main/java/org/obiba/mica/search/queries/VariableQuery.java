@@ -99,7 +99,7 @@ public class VariableQuery extends AbstractDocumentQuery {
 
   @Override
   protected void processHits(MicaSearch.QueryResultDto.Builder builder, SearchHits hits, Scope scope,
-      CountStatsData counts) throws IOException {
+    CountStatsData counts) throws IOException {
     MicaSearch.DatasetVariableResultDto.Builder resBuilder = MicaSearch.DatasetVariableResultDto.newBuilder();
     Map<String, Study> studyMap = Maps.newHashMap();
 
@@ -128,13 +128,12 @@ public class VariableQuery extends AbstractDocumentQuery {
    * @return
    */
   private Mica.DatasetVariableResolverDto processHit(DatasetVariable.IdResolver resolver, DatasetVariable variable,
-      Map<String, Study> studyMap) {
+    Map<String, Study> studyMap) {
     Mica.DatasetVariableResolverDto.Builder builder = dtos.asDto(resolver);
 
     String studyId = resolver.hasStudyId() ? resolver.getStudyId() : null;
 
-    if(resolver.getType().equals(DatasetVariable.Type.Study) ||
-        resolver.getType().equals(DatasetVariable.Type.Harmonized)) {
+    if(resolver.getType() == DatasetVariable.Type.Study || resolver.getType() == DatasetVariable.Type.Harmonized) {
       studyId = variable.getStudyIds().get(0);
     }
 
@@ -169,30 +168,31 @@ public class VariableQuery extends AbstractDocumentQuery {
   public List<String> query(List<String> studyIds, CountStatsData counts, Scope scope) throws IOException {
     updateDatasetQuery();
     List<String> ids = super.query(studyIds, null, scope == DETAIL ? DETAIL : NONE);
-    if (datasetIdProvider != null & hasQueryFilters()) datasetIdProvider.setDatasetIds(getDatasetIds());
+    if(datasetIdProvider != null & hasQueryFilters()) datasetIdProvider.setDatasetIds(getDatasetIds());
     return ids;
   }
 
   private void updateDatasetQuery() {
-    if (datasetIdProvider == null) return;
+    if(datasetIdProvider == null) return;
     List<String> datasetIds = datasetIdProvider.getDatasetIds();
     if(datasetIds.size() > 0) {
       if(queryDto == null) {
         queryDto = QueryDtoHelper
-            .createTermFiltersQuery(Arrays.asList(DATASET_ID), datasetIds, QueryDtoHelper.BoolQueryType.MUST);
+          .createTermFiltersQuery(Arrays.asList(DATASET_ID), datasetIds, QueryDtoHelper.BoolQueryType.MUST);
       } else {
         queryDto = QueryDtoHelper
-            .addTermFilters(queryDto, QueryDtoHelper.createTermFilters(Arrays.asList(DATASET_ID), datasetIds),
-                QueryDtoHelper.BoolQueryType.MUST);
+          .addTermFilters(queryDto, QueryDtoHelper.createTermFilters(Arrays.asList(DATASET_ID), datasetIds),
+            QueryDtoHelper.BoolQueryType.MUST);
       }
     }
   }
+
   public Map<String, Integer> getDatasetCounts() {
     return getDocumentCounts(DATASET_ID);
   }
 
   private List<String> getDatasetIds() {
-    if (resultDto != null) {
+    if(resultDto != null) {
       return getResponseDocumentIds(Arrays.asList(DATASET_ID), resultDto.getAggsList());
     }
 
@@ -224,7 +224,7 @@ public class VariableQuery extends AbstractDocumentQuery {
         taxonomy.getVocabularies().forEach(vocabulary -> {
           if(vocabulary.hasTerms()) {
             properties.put("attributes." + AttributeKey.getMapKey(vocabulary.getName(), taxonomy.getName()) + "." +
-                LanguageTag.UNDETERMINED, "");
+              LanguageTag.UNDETERMINED, "");
           }
         });
       }

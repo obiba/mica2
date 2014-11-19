@@ -33,6 +33,10 @@ public class StudyTable implements Serializable {
   @NotNull
   private String table;
 
+  private LocalizedString name;
+
+  private LocalizedString description;
+
   /**
    * {@link org.obiba.mica.study.domain.DataCollectionEvent} unique ID (including {@link org.obiba.mica.study.domain.Study} ID
    * and {@link org.obiba.mica.study.domain.Population} ID.
@@ -85,5 +89,25 @@ public class StudyTable implements Serializable {
 
   public void setTable(String table) {
     this.table = table;
+  }
+
+  public void setName(LocalizedString name) {
+    this.name = name;
+  }
+
+  public LocalizedString getName() {
+    return name;
+  }
+
+  public void setDescription(LocalizedString description) {
+    this.description = description;
+  }
+
+  public LocalizedString getDescription() {
+    return description;
+  }
+
+  public boolean isFor(String studyId, String project, String table) {
+    return this.studyId.equals(studyId) && this.project.equals(project) && this.table.equals(table);
   }
 }

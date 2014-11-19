@@ -38,8 +38,8 @@ import com.google.common.collect.ImmutableList;
 @Component
 @Scope("request")
 @RequiresAuthentication
-public class PublishedDataschemaDatasetVariableResource
-    extends AbstractPublishedDatasetResource<HarmonizationDataset> implements DatasetVariableResource {
+public class PublishedDataschemaDatasetVariableResource extends AbstractPublishedDatasetResource<HarmonizationDataset>
+  implements DatasetVariableResource {
 
   private String datasetId;
 
@@ -60,7 +60,8 @@ public class PublishedDataschemaDatasetVariableResource
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
     dataset.getStudyTables().forEach(table -> {
       try {
-        builder.add(datasetService.getVariableSummary(dataset, variableName, table.getStudyId()));
+        builder.add(datasetService
+          .getVariableSummary(dataset, variableName, table.getStudyId(), table.getProject(), table.getTable()));
       } catch(NoSuchVariableException | NoSuchValueTableException e) {
         // case the study has not implemented this dataschema variable
         builder.add(Math.SummaryStatisticsDto.newBuilder().setResource(variableName).build());
@@ -76,7 +77,7 @@ public class PublishedDataschemaDatasetVariableResource
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
     dataset.getStudyTables().forEach(table -> {
       try {
-        builder.add(datasetService.getVariableFacet(dataset, variableName, table.getStudyId()));
+        builder.add(datasetService.getVariableFacet(variableName, table));
       } catch(NoSuchVariableException | NoSuchValueTableException e) {
         // case the study has not implemented this dataschema variable
         builder.add(Search.QueryResultDto.newBuilder().setTotalHits(0).build());
