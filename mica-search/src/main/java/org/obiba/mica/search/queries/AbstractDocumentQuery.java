@@ -34,6 +34,7 @@ import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.obiba.mica.micaConfig.MicaConfigService;
+import org.obiba.mica.search.AggregationTitleResolver;
 import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.rest.AggregationYamlParser;
 import org.obiba.mica.search.rest.EsQueryResultParser;
@@ -64,11 +65,16 @@ public abstract class AbstractDocumentQuery {
   @Inject
   MicaConfigService micaConfigService;
 
+  @Inject
+  AggregationTitleResolver aggregationTitleResolver;
+
   private static final Logger log = LoggerFactory.getLogger(AbstractDocumentQuery.class);
 
   protected QueryDto queryDto;
 
   protected QueryResultDto resultDto;
+
+  private String locale;
 
   public QueryDto getQuery() {
     return queryDto;
@@ -78,7 +84,8 @@ public abstract class AbstractDocumentQuery {
     return QueryDtoHelper.hasQuery(queryDto);
   }
 
-  public void initialize(QueryDto query, String locale) {
+  public void initialize(QueryDto query, String localeName) {
+    locale = localeName;
     queryDto = QueryDtoHelper.ensureQueryStringDtoFields(query, locale, getQueryStringFields());
     resultDto = null;
   }
@@ -277,7 +284,7 @@ public abstract class AbstractDocumentQuery {
    * @param aggregations
    */
   protected void processAggregations(QueryResultDto.Builder builder, Aggregations defaults, Aggregations aggregations) {
-    EsQueryResultParser parser = EsQueryResultParser.newParser();
+    EsQueryResultParser parser = EsQueryResultParser.newParser(aggregationTitleResolver, locale);
     builder.addAllAggs(parser.parseAggregations(defaults, aggregations));
     builder.setTotalCount(parser.getTotalCount());
   }
