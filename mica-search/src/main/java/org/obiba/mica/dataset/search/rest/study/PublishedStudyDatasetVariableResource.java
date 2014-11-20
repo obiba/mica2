@@ -15,11 +15,14 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.dataset.service.StudyDatasetService;
+import org.obiba.magma.NoSuchValueTableException;
+import org.obiba.magma.NoSuchVariableException;
+import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetResource;
+import org.obiba.mica.dataset.service.StudyDatasetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Search;
@@ -29,8 +32,8 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("request")
 @RequiresAuthentication
-public class PublishedStudyDatasetVariableResource extends AbstractPublishedDatasetResource<StudyDataset> implements
-    DatasetVariableResource {
+public class PublishedStudyDatasetVariableResource extends AbstractPublishedDatasetResource<StudyDataset>
+  implements DatasetVariableResource {
 
   private String datasetId;
 
@@ -57,6 +60,22 @@ public class PublishedStudyDatasetVariableResource extends AbstractPublishedData
   @Path("/facet")
   public Search.QueryResultDto getVariableFacet() {
     return datasetService.getVariableFacet(getDataset(StudyDataset.class, datasetId), variableName);
+  }
+
+  @GET
+  @Path("/aggregation")
+  public Mica.DatasetVariableAggregationDto getVariableAggregations() {
+    StudyDataset dataset = getDataset(StudyDataset.class, datasetId);
+    StudyTable studyTable = dataset.getStudyTable();
+    Mica.DatasetVariableAggregationDto.Builder aggDto = Mica.DatasetVariableAggregationDto.newBuilder() //
+      .setStudyTable(dtos.asDto(studyTable));
+    try {
+      Search.QueryResultDto result = datasetService.getVariableFacet(dataset, variableName);
+      return dtos.asDto(studyTable, result).build();
+    } catch(NoSuchVariableException | NoSuchValueTableException e) {
+      // case the study has not implemented this dataschema variable
+      return dtos.asDto(studyTable, null).build();
+    }
   }
 
   @Override

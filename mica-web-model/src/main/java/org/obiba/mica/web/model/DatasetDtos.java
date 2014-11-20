@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
@@ -27,6 +28,7 @@ import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Term;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
+import org.obiba.opal.web.model.Search;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
@@ -226,7 +228,7 @@ class DatasetDtos {
     return builder.build();
   }
 
-  private Mica.DatasetDto.StudyTableDto.Builder asDto(StudyTable studyTable) {
+  public Mica.DatasetDto.StudyTableDto.Builder asDto(StudyTable studyTable) {
     Mica.DatasetDto.StudyTableDto.Builder builder = Mica.DatasetDto.StudyTableDto.newBuilder() //
         .setStudyId(studyTable.getStudyId()) //
         .setPopulationId(studyTable.getPopulationId()) //
@@ -239,6 +241,37 @@ class DatasetDtos {
     builder.addAllDescription(localizedStringDtos.asDto(studyTable.getDescription()));
 
     return builder;
+  }
+
+  public Mica.DatasetVariableAggregationDto.Builder asDto(@NotNull StudyTable studyTable,
+    @Nullable Search.QueryResultDto result) {
+    Mica.DatasetVariableAggregationDto.Builder aggDto = Mica.DatasetVariableAggregationDto.newBuilder() //
+      .setStudyTable(asDto(studyTable));
+
+    if(result != null && result.getFacetsCount() > 0) {
+      Search.FacetResultDto facetDto = result.getFacets(0);
+      if(facetDto.getFrequenciesCount() > 0) {
+        facetDto.getFrequenciesList().forEach(freq -> aggDto.addFrequencies(
+          Mica.DatasetVariableAggregationDto.FrequencyDto.newBuilder().setTerm(freq.getTerm())
+            .setCount(freq.getCount())));
+      }
+      if(facetDto.hasStatistics()) {
+        aggDto.setStatistics(Mica.DatasetVariableAggregationDto.StatisticsDto.newBuilder() //
+          .setCount(facetDto.getStatistics().getCount()) //
+          .setTotal(facetDto.getStatistics().getTotal()) //
+          .setMin(facetDto.getStatistics().getMin()) //
+          .setMax(facetDto.getStatistics().getMax()) //
+          .setMean(facetDto.getStatistics().getMean()) //
+          .setSumOfSquares(facetDto.getStatistics().getSumOfSquares()) //
+          .setVariance(facetDto.getStatistics().getVariance()) //
+          .setStdDeviation(facetDto.getStatistics().getStdDeviation()));
+      }
+      aggDto.setTotal(result.getTotalHits());
+    } else {
+      aggDto.setTotal(0);
+    }
+
+    return aggDto;
   }
 
   private Mica.DatasetDto.Builder asBuilder(Dataset dataset) {

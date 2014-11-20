@@ -2,6 +2,7 @@ package org.obiba.mica.web.model;
 
 import java.util.List;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
@@ -19,6 +20,7 @@ import org.obiba.mica.study.domain.StudyState;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Term;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
+import org.obiba.opal.web.model.Search;
 import org.springframework.stereotype.Component;
 
 import static org.obiba.mica.web.model.Mica.DocumentDigestDto;
@@ -148,8 +150,8 @@ public class Dtos {
 
   @NotNull
   public Mica.DatasetDto asDto(@NotNull Dataset dataset) {
-    if (dataset instanceof StudyDataset) {
-      return datasetDtos.asDto((StudyDataset)dataset);
+    if(dataset instanceof StudyDataset) {
+      return datasetDtos.asDto((StudyDataset) dataset);
     } else {
       return datasetDtos.asDto((HarmonizationDataset) dataset);
     }
@@ -157,7 +159,7 @@ public class Dtos {
 
   @NotNull
   public Mica.DatasetDto.Builder asDtoBuilder(@NotNull Dataset dataset) {
-    if (dataset instanceof StudyDataset) {
+    if(dataset instanceof StudyDataset) {
       return datasetDtos.asDtoBuilder((StudyDataset) dataset);
     } else {
       return datasetDtos.asDtoBuilder((HarmonizationDataset) dataset);
@@ -190,13 +192,26 @@ public class Dtos {
   }
 
   @NotNull
+  public Mica.DatasetDto.StudyTableDto.Builder asDto(@NotNull StudyTable studyTable) {
+    return datasetDtos.asDto(studyTable);
+  }
+
+  @NotNull
+  public Mica.DatasetVariableAggregationDto.Builder asDto(@NotNull StudyTable studyTable,
+    @Nullable Search.QueryResultDto result) {
+    return datasetDtos.asDto(studyTable, result);
+  }
+
+  @NotNull
   public Mica.TaxonomyEntityDto asDto(@NotNull Taxonomy taxonomy) {
     return taxonomyDtos.asDto(taxonomy);
   }
+
   @NotNull
   public Mica.TaxonomyEntityDto asDto(@NotNull Vocabulary vocabulary) {
     return taxonomyDtos.asDto(vocabulary);
   }
+
   @NotNull
   public Mica.TaxonomyEntityDto asDto(@NotNull Term term) {
     return taxonomyDtos.asDto(term);
