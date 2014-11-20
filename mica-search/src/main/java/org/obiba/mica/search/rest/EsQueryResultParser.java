@@ -26,8 +26,6 @@ import org.elasticsearch.search.aggregations.metrics.stats.Stats;
 import org.obiba.mica.search.AggregationTitleResolver;
 import org.obiba.mica.web.model.MicaSearch;
 
-import com.google.common.base.Strings;
-
 import static org.obiba.mica.web.model.MicaSearch.AggregationResultDto;
 import static org.obiba.mica.web.model.MicaSearch.StatsAggregationResultDto;
 import static org.obiba.mica.web.model.MicaSearch.TermsAggregationResultDto;
@@ -89,11 +87,15 @@ public class EsQueryResultParser {
           List<Terms.Bucket> queriedBuckets = ((Terms) queriedAgg).getBuckets().stream().collect(Collectors.toList());
 
           IntStream.range(0, defaultBuckets.size()).forEach(j -> {
+            // It appears that 'min_document_count' does not apply to sub-aggregations,
+            // hence the disparity in bucket sizes
+            Terms.Bucket queriedBucket = queriedBuckets.size() > 0 ? queriedBuckets.get(j) : null;
+
+            int queriedBucketCount = queriedBucket != null ? (int)queriedBucket.getDocCount() : 0;
             Terms.Bucket defaultBucket = defaultBuckets.get(j);
-            Terms.Bucket queriedBucket = queriedBuckets.get(j);
             TermsAggregationResultDto.Builder termsBuilder = TermsAggregationResultDto.newBuilder();
 
-            if(defaultBucket.getAggregations() != null) {
+            if(defaultBucket.getAggregations() != null && queriedBucket != null) {
               termsBuilder
                   .addAllAggs(parseAggregations(defaultBucket.getAggregations(), queriedBucket.getAggregations()));
             }
@@ -104,7 +106,7 @@ public class EsQueryResultParser {
             aggResultBuilder.addExtension(TermsAggregationResultDto.terms, //
                 termsBuilder.setKey(key) //
                     .setDefault((int) defaultBucket.getDocCount()) //
-                    .setCount((int) queriedBucket.getDocCount()).build()); //
+                    .setCount(queriedBucketCount).build()); //
           });
 
           break;
