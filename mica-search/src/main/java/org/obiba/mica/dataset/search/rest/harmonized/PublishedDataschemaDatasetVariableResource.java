@@ -19,11 +19,11 @@ import javax.ws.rs.Path;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
-import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetResource;
+import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Math;
 import org.obiba.opal.web.model.Search;
@@ -47,6 +47,9 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
 
   @Inject
   private HarmonizationDatasetService datasetService;
+
+  @Inject
+  private org.obiba.mica.web.model.Dtos dtos;
 
   @GET
   public Mica.DatasetVariableDto getVariable() {
@@ -81,6 +84,23 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
       } catch(NoSuchVariableException | NoSuchValueTableException e) {
         // case the study has not implemented this dataschema variable
         builder.add(Search.QueryResultDto.newBuilder().setTotalHits(0).build());
+      }
+    });
+    return builder.build();
+  }
+
+  @GET
+  @Path("/aggregation")
+  public List<Mica.DatasetVariableAggregationDto> getVariableAggregations() {
+    ImmutableList.Builder<Mica.DatasetVariableAggregationDto> builder = ImmutableList.builder();
+    HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
+    dataset.getStudyTables().forEach(table -> {
+      try {
+        Search.QueryResultDto result = datasetService.getVariableFacet(variableName, table);
+        builder.add(dtos.asDto(table, result).build());
+      } catch(NoSuchVariableException | NoSuchValueTableException e) {
+        // case the study has not implemented this dataschema variable
+        builder.add(dtos.asDto(table, null).build());
       }
     });
     return builder.build();

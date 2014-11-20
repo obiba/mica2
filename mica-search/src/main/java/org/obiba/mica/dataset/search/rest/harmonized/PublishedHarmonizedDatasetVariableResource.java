@@ -15,11 +15,14 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.dataset.service.HarmonizationDatasetService;
+import org.obiba.magma.NoSuchValueTableException;
+import org.obiba.magma.NoSuchVariableException;
+import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetResource;
+import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Search;
 import org.springframework.context.annotation.Scope;
@@ -64,6 +67,24 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   public Search.QueryResultDto getVariableFacet() {
     return datasetService
       .getVariableFacet(getDataset(HarmonizationDataset.class, datasetId), variableName, studyId, project, table);
+  }
+
+  @GET
+  @Path("/aggregation")
+  public Mica.DatasetVariableAggregationDto getVariableAggregations() {
+    HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
+    for(StudyTable studyTable : dataset.getStudyTables()) {
+      if(studyTable.isFor(studyId, project, table)) {
+        try {
+          Search.QueryResultDto result = datasetService.getVariableFacet(variableName, studyTable);
+          return dtos.asDto(studyTable, result).build();
+        } catch(NoSuchVariableException | NoSuchValueTableException e) {
+          // case the study has not implemented this dataschema variable
+          return dtos.asDto(studyTable, null).build();
+        }
+      }
+    }
+    throw new NoSuchValueTableException(project, table);
   }
 
   @Override

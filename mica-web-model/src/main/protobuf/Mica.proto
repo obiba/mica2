@@ -404,3 +404,24 @@ message DatasetVariablesHarmonizationsDto {
   required int32 limit = 3;
   repeated DatasetVariableHarmonizationDto variableHarmonizations = 4;
 }
+
+message DatasetVariableAggregationDto {
+  message FrequencyDto {
+    required string term = 1;
+    required int32 count = 2;
+  }
+  message StatisticsDto {
+    required int64 count = 1 [default = 0];
+    optional float total = 2;
+    optional float min = 3;
+    optional float max = 4;
+    optional float mean = 5;
+    optional float sumOfSquares = 6;
+    optional float variance = 7;
+    optional float stdDeviation = 8;
+  }
+  required DatasetDto.StudyTableDto studyTable = 1;
+  required int32 total = 2;
+  repeated FrequencyDto frequencies = 3;
+  optional StatisticsDto statistics = 4;
+}
