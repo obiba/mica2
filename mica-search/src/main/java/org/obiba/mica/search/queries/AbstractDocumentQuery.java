@@ -219,7 +219,7 @@ public abstract class AbstractDocumentQuery {
     aggregationYamlParser.setLocales(micaConfigService.getConfig().getLocales());
     Map<String, Properties> subAggregations = Maps.newHashMap();
     Properties aggregationProperties = getAggregationsProperties();
-    if(queryDto != null && queryDto.getAggsByCount() > 0) {
+    if(queryDto.getAggsByCount() > 0) {
       queryDto.getAggsByList().forEach(field -> subAggregations.put(field, aggregationProperties));
     }
 

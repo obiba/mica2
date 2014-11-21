@@ -10,6 +10,8 @@
 
 package org.obiba.mica.dataset.search.rest.harmonized;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -18,19 +20,22 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.core.domain.StudyTable;
-import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetResource;
+import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Search;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 @Component
 @Scope("request")
@@ -95,6 +100,24 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
         variable -> builder.addVariableHarmonizations(getVariableHarmonizationDto(dataset, variable.getName())));
 
     return builder.build();
+  }
+
+  @GET
+  @Path("/variables/harmonizations/_export")
+  @Produces("text/csv")
+  public Response getVariableHarmonizationsAsCsv(@QueryParam("locale") @DefaultValue("en") String locale)
+      throws IOException {
+
+    HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, id);
+    Mica.DatasetVariablesHarmonizationsDto harmonizationVariables = getVariableHarmonizations(0, 999999,
+        null, null);
+
+    CsvHarmonizationVariablesWriter writer = new CsvHarmonizationVariablesWriter(
+        Lists.newArrayList("maelstrom", "Mlstr_harmo"));
+    ByteArrayOutputStream values = writer.write(dataset, harmonizationVariables, locale);
+
+    return Response.ok(values.toByteArray(), "text/csv").header("Content-Disposition",
+        "attachment; filename=\"" + id + ".csv\"").build();
   }
 
   @Path("/variable/{variable}")
