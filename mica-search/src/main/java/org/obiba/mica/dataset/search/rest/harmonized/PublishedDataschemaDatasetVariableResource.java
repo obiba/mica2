@@ -91,19 +91,26 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
 
   @GET
   @Path("/aggregation")
-  public List<Mica.DatasetVariableAggregationDto> getVariableAggregations() {
+  public Mica.DatasetVariableAggregationsDto getVariableAggregations() {
     ImmutableList.Builder<Mica.DatasetVariableAggregationDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
+    Mica.DatasetVariableAggregationsDto.Builder aggDto = Mica.DatasetVariableAggregationsDto.newBuilder();
+
     dataset.getStudyTables().forEach(table -> {
       try {
         Search.QueryResultDto result = datasetService.getVariableFacet(variableName, table);
-        builder.add(dtos.asDto(table, result).build());
+        Mica.DatasetVariableAggregationDto tableAggDto = dtos.asDto(table, result).build();
+        builder.add(tableAggDto);
+        mergeAggregations(aggDto, tableAggDto);
       } catch(NoSuchVariableException | NoSuchValueTableException e) {
         // case the study has not implemented this dataschema variable
         builder.add(dtos.asDto(table, null).build());
       }
     });
-    return builder.build();
+
+    aggDto.addAllAggregations(builder.build());
+
+    return aggDto.build();
   }
 
   /**
@@ -127,4 +134,64 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
   public void setVariableName(String variableName) {
     this.variableName = variableName;
   }
+
+  private void mergeAggregations(Mica.DatasetVariableAggregationsDto.Builder aggDto,
+    Mica.DatasetVariableAggregationDto tableAggDto) {
+    aggDto.setTotal(aggDto.getTotal() + tableAggDto.getTotal());
+    mergeAggregationFrequencies(aggDto, tableAggDto);
+    mergeAggregationStatistics(aggDto, tableAggDto);
+  }
+
+  private void mergeAggregationFrequencies(Mica.DatasetVariableAggregationsDto.Builder aggDto,
+    Mica.DatasetVariableAggregationDto tableAggDto) {
+    if(tableAggDto.getFrequenciesCount() == 0) return;
+
+    for(Mica.DatasetVariableAggregationDto.FrequencyDto tableFreq : tableAggDto.getFrequenciesList()) {
+      boolean found = false;
+      for(int i = 0; i < aggDto.getFrequenciesCount(); i++) {
+        Mica.DatasetVariableAggregationDto.FrequencyDto freq = aggDto.getFrequencies(i);
+        if(freq.getTerm().equals(tableFreq.getTerm())) {
+          aggDto.setFrequencies(i, freq.toBuilder().setCount(freq.getCount() + tableFreq.getCount()).build());
+          found = true;
+          break;
+        }
+      }
+      if(!found) {
+        aggDto.addFrequencies(tableFreq.toBuilder());
+      }
+    }
+  }
+
+  private void mergeAggregationStatistics(Mica.DatasetVariableAggregationsDto.Builder aggDto,
+    Mica.DatasetVariableAggregationDto tableAggDto) {
+    if(!tableAggDto.hasStatistics()) return;
+
+    if(!aggDto.hasStatistics()) {
+      aggDto.setStatistics(tableAggDto.getStatistics().toBuilder());
+    } else {
+      Mica.DatasetVariableAggregationDto.StatisticsDto.Builder builder = aggDto.getStatistics().toBuilder();
+      Mica.DatasetVariableAggregationDto.StatisticsDto stats = aggDto.getStatistics();
+      Mica.DatasetVariableAggregationDto.StatisticsDto tableStats = tableAggDto.getStatistics();
+
+      builder.setCount(stats.getCount() + tableStats.getCount());
+      float total = (stats.hasTotal() ? stats.getTotal() : 0) + (tableStats.hasTotal() ? tableAggDto.getTotal() : 0);
+      builder.setTotal(total);
+      builder.setMean(total / (stats.getCount() + tableStats.getCount()));
+
+      if(tableStats.hasMin()) {
+        builder.setMin(stats.hasMin() ? java.lang.Math.min(stats.getMin(), tableStats.getMin()) : tableStats.getMin());
+      }
+      if(tableStats.hasMax()) {
+        builder.setMax(stats.hasMax() ? java.lang.Math.max(stats.getMax(), tableStats.getMax()) : tableStats.getMax());
+      }
+      if (tableStats.hasSumOfSquares()) {
+        builder.setSumOfSquares((stats.hasSumOfSquares() ? 0 : stats.getSumOfSquares()) + tableStats.getSumOfSquares());
+      }
+
+      // TODO combine stdev and var
+
+      aggDto.setStatistics(builder);
+    }
+  }
+
 }

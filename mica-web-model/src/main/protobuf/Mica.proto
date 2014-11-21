@@ -425,3 +425,10 @@ message DatasetVariableAggregationDto {
   repeated FrequencyDto frequencies = 3;
   optional StatisticsDto statistics = 4;
 }
+
+message DatasetVariableAggregationsDto {
+  repeated DatasetVariableAggregationDto aggregations = 1;
+  required int32 total = 2;
+  repeated DatasetVariableAggregationDto.FrequencyDto frequencies = 3;
+  optional DatasetVariableAggregationDto.StatisticsDto statistics = 4;
+}
