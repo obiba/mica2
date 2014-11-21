@@ -19,9 +19,13 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 
-import org.obiba.magma.DatasourceFactory;
+import com.google.common.base.Strings;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.obiba.magma.support.Initialisables;
+import org.obiba.mica.dataset.service.KeyStoreService;
 import org.obiba.opal.core.cfg.NoSuchTaxonomyException;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.rest.client.magma.OpalJavaClient;
@@ -29,6 +33,7 @@ import org.obiba.opal.rest.client.magma.RestDatasource;
 import org.obiba.opal.rest.client.magma.RestDatasourceFactory;
 import org.obiba.opal.web.model.Opal;
 import org.obiba.opal.web.taxonomy.Dtos;
+import org.obiba.security.KeyStoreManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
@@ -39,14 +44,24 @@ import org.springframework.stereotype.Component;
 @Component
 public class OpalService implements EnvironmentAware {
 
+  public static final String OPAL_KEYSTORE = "opal";
+
   private static final Logger log = LoggerFactory.getLogger(OpalService.class);
 
-
-  private Map<String, RestDatasource> datasourceMap = new HashMap<>();
+  private Map<String, Pair<OpalCredential, RestDatasource>> cachedDatasources = new HashMap<>();
 
   private RelaxedPropertyResolver opalPropertyResolver;
 
   private OpalJavaClient opalJavaClient;
+
+  @Inject
+  private MicaConfigService micaConfigService;
+
+  @Inject
+  private KeyStoreService keyStoreService;
+
+  @Inject
+  private OpalCredentialService opalCredentialService;
 
   @Override
   public void setEnvironment(Environment environment) {
@@ -61,19 +76,49 @@ public class OpalService implements EnvironmentAware {
    * @return
    */
   public synchronized RestDatasource getDatasource(@Nullable String opalUrl, String project) {
-    String baseUrl = opalUrl == null ? getDefaultOpal() : opalUrl;
-    while(baseUrl.endsWith("/")) {
-      baseUrl = baseUrl.substring(0, baseUrl.length() - 1);
+    final String projectUrl = getOpalProjectUrl(opalUrl, project);
+    opalUrl = Strings.isNullOrEmpty(opalUrl) ? getDefaultOpal() : opalUrl;
+
+    OpalCredential opalCredential = opalCredentialService.findOpalCredentialById(opalUrl).orElse(
+      new OpalCredential(getDefaultOpal(), AuthType.USERNAME, getOpalUsername(), getOpalPassword()));
+
+    if (cachedDatasources.containsKey(projectUrl))
+    {
+      Pair<OpalCredential, RestDatasource> p = cachedDatasources.get(projectUrl);
+
+      if (p.getLeft().equals(opalCredential)) {
+        log.debug("Using cached rest datasource to " + projectUrl);
+        return p.getRight();
+      }
+
+      log.debug("Opal credential changed, evicting rest datasource for " + projectUrl);
+
+      cachedDatasources.remove(projectUrl); //opal credential changed
     }
-    String projectUrl = baseUrl + "/ws/datasource/" + project;
-    if(!datasourceMap.containsKey(projectUrl)) {
-      DatasourceFactory factory = new RestDatasourceFactory(project, baseUrl, getOpalUsername(), getOpalPassword(),
-          project);
-      RestDatasource datasource = (RestDatasource) factory.create();
-      Initialisables.initialise(datasource);
-      datasourceMap.put(projectUrl, datasource);
+
+    RestDatasource datasource = createRestDatasource(opalCredential, projectUrl, opalUrl, project);
+    Initialisables.initialise(datasource);
+    cachedDatasources.put(projectUrl, Pair.of(opalCredential, datasource));
+
+    log.debug("Initializaed rest datasource for " + projectUrl);
+
+    return datasource;
+  }
+
+  private RestDatasource createRestDatasource(OpalCredential opalCredential, String projectUrl,
+    String opalUrl, String project) {
+    if(opalCredential.getAuthType() == AuthType.CERTIFICATE) {
+      KeyStoreManager kms = keyStoreService.getKeyStore(OPAL_KEYSTORE);
+
+      if(!kms.aliasExists(opalCredential.getOpalUrl()))
+        throw new IllegalStateException("Trying to use opal certificate credential but could not be found in keystore.");
+
+      return (RestDatasource) new RestDatasourceFactory(projectUrl, opalUrl, kms.getKeyStore(), opalUrl,
+        micaConfigService.getConfig().getSecretKey(), project).create();
     }
-    return datasourceMap.get(projectUrl);
+
+    return (RestDatasource) new RestDatasourceFactory(projectUrl, opalUrl, opalCredential.getUsername(),
+        opalCredential.getPassword(), project).create();
   }
 
   /**
@@ -84,6 +129,12 @@ public class OpalService implements EnvironmentAware {
    */
   public RestDatasource getDatasource(String project) {
     return getDatasource(getDefaultOpal(), project);
+  }
+
+  private String getOpalProjectUrl(String opalUrl, String project) {
+    String baseUrl = opalUrl == null ? getDefaultOpal() : opalUrl;
+
+    return String.format("%s/ws/datasource/%s", StringUtils.stripEnd(baseUrl, "/"), project);
   }
 
   /**

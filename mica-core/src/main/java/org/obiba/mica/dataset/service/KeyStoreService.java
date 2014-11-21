@@ -56,4 +56,8 @@ public class KeyStoreService {
     keyStoreRepository.saveKeyStore(keyStore);
   }
 
+  @NotNull
+  public KeyStoreManager getKeyStore(@NotNull String name) {
+    return keyStoreRepository.getOrCreateKeyStore(name);
+  }
 }

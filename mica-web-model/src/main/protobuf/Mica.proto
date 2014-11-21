@@ -74,6 +74,8 @@ message StudyDto {
   repeated PopulationDto populations = 22;
   repeated AttributeDto attributes = 24;
   optional string opal = 25;
+  optional string opalUsername = 26;
+  optional string opalPassword = 27;
 
   message StudyMethodsDto {
     repeated string designs = 1;
@@ -146,6 +148,56 @@ message StudyDto {
       repeated AttributeDto attributes = 15;
     }
   }
+}
+
+enum OpalCredentialType {
+  USERNAME = 0;
+  PUBLIC_KEY_CERTIFICATE = 1;
+}
+
+message OpalCredentialDto {
+  required OpalCredentialType type = 1;
+  required string opalUrl = 2;
+  optional string username = 3;
+  optional string password = 4;
+  optional KeyForm keyForm = 5;
+}
+
+enum KeyType {
+  KEY_PAIR = 0;
+  CERTIFICATE = 1;
+}
+
+message KeyDto {
+  required string alias = 1;
+  required string certificate = 2;
+  required KeyType keyType = 3;
+}
+
+message KeyForm {
+  optional string alias = 1;
+  optional PrivateKeyForm privateForm = 2;
+  optional string privateImport = 3;
+
+  optional PublicKeyForm publicForm = 4;
+  optional string publicImport = 5;
+  optional string certificateFile = 6;
+
+  required KeyType keyType = 7;
+}
+
+message PrivateKeyForm {
+  required string algo = 1;
+  required int32 size = 2;
+}
+
+message PublicKeyForm {
+  required string name = 1;
+  required string organizationalUnit = 2;
+  required string organization = 3;
+  required string locality = 4;
+  required string state = 5;
+  required string country = 6;
 }
 
 message DocumentDigestDto {

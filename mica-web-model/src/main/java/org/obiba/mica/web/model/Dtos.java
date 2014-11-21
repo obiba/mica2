@@ -14,6 +14,7 @@ import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.micaConfig.MicaConfig;
+import org.obiba.mica.micaConfig.OpalCredential;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
@@ -142,6 +143,9 @@ public class Dtos {
   public MicaConfig fromDto(@NotNull MicaConfigDtoOrBuilder dto) {
     return micaConfigDtos.fromDto(dto);
   }
+
+  @NotNull
+  public Mica.OpalCredentialDto asDto(@NotNull OpalCredential opalCredential) { return micaConfigDtos.asDto(opalCredential); }
 
   @NotNull
   public Mica.TempFileDto asDto(@NotNull TempFile tempFile) {
