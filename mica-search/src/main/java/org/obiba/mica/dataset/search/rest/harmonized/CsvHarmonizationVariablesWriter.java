@@ -32,6 +32,8 @@ public class CsvHarmonizationVariablesWriter {
 
   private final List<String> namespaces;
 
+  private static final String EMPTY_STATUS = "";
+
   public CsvHarmonizationVariablesWriter(List<String> namespaces) {
     this.namespaces = namespaces;
   }
@@ -73,6 +75,7 @@ public class CsvHarmonizationVariablesWriter {
           List<String> row = Lists.newArrayList();
           dataset.getStudyTables().forEach(
             studyTable -> {
+              final boolean[] found = { false };
               variableHarmonization.getDatasetVariableSummariesList().forEach(
                 summary -> {
                   Mica.DatasetVariableResolverDto resolver = summary.getResolver();
@@ -81,12 +84,13 @@ public class CsvHarmonizationVariablesWriter {
                       && resolver.getTable().equals(studyTable.getTable())) {
 
                     row.add(getStatus(summary, locale));
+                    found[0] = true;
                     return;
                   }
                 });
 
-              if (row.size() == 0) {
-                row.add("-");
+              if (row.size() == 0 || !found[0]) {
+                row.add(EMPTY_STATUS);
               }
             }
           );
@@ -107,7 +111,7 @@ public class CsvHarmonizationVariablesWriter {
         }).findFirst();
 
 
-    return result.isPresent() ? result.get().getValue()  : "-";
+    return result.isPresent() ? result.get().getValue()  : EMPTY_STATUS;
   }
 
 }
