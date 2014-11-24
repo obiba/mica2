@@ -173,18 +173,19 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
       Mica.DatasetVariableAggregationDto.StatisticsDto stats = aggDto.getStatistics();
       Mica.DatasetVariableAggregationDto.StatisticsDto tableStats = tableAggDto.getStatistics();
 
-      builder.setCount(stats.getCount() + tableStats.getCount());
+      long count = stats.getCount() + tableStats.getCount();
+      builder.setCount(count);
       float total = (stats.hasTotal() ? stats.getTotal() : 0) + (tableStats.hasTotal() ? tableAggDto.getTotal() : 0);
       builder.setTotal(total);
-      builder.setMean(total / (stats.getCount() + tableStats.getCount()));
+      if(count > 0) builder.setMean(total / (stats.getCount() + tableStats.getCount()));
 
-      if(tableStats.hasMin()) {
+      if(tableStats.hasMin() && tableStats.getMin() != Float.POSITIVE_INFINITY) {
         builder.setMin(stats.hasMin() ? java.lang.Math.min(stats.getMin(), tableStats.getMin()) : tableStats.getMin());
       }
-      if(tableStats.hasMax()) {
+      if(tableStats.hasMax() && tableStats.getMax() != Float.NEGATIVE_INFINITY) {
         builder.setMax(stats.hasMax() ? java.lang.Math.max(stats.getMax(), tableStats.getMax()) : tableStats.getMax());
       }
-      if (tableStats.hasSumOfSquares()) {
+      if(tableStats.hasSumOfSquares()) {
         builder.setSumOfSquares((stats.hasSumOfSquares() ? 0 : stats.getSumOfSquares()) + tableStats.getSumOfSquares());
       }
 

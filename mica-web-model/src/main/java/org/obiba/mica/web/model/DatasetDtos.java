@@ -55,7 +55,7 @@ class DatasetDtos {
 
     if(dataset.hasStudyTable() && !Strings.isNullOrEmpty(dataset.getStudyTable().getStudyId())) {
       Mica.StudyDatasetDto.Builder sbuilder = Mica.StudyDatasetDto.newBuilder().setStudyTable(
-          asDto(dataset.getStudyTable()).setStudySummary(studySummaryDtos.asDto(dataset.getStudyTable().getStudyId())));
+        asDto(dataset.getStudyTable()).setStudySummary(studySummaryDtos.asDto(dataset.getStudyTable().getStudyId())));
       builder.setExtension(Mica.StudyDatasetDto.type, sbuilder.build());
     }
     return builder;
@@ -75,7 +75,7 @@ class DatasetDtos {
     hbuilder.setTable(dataset.getTable());
     if(!dataset.getStudyTables().isEmpty()) {
       dataset.getStudyTables().forEach(studyTable -> hbuilder
-          .addStudyTables(asDto(studyTable).setStudySummary(studySummaryDtos.asDto(studyTable.getStudyId()))));
+        .addStudyTables(asDto(studyTable).setStudySummary(studySummaryDtos.asDto(studyTable.getStudyId()))));
     }
     builder.setExtension(Mica.HarmonizationDatasetDto.type, hbuilder.build());
 
@@ -92,9 +92,9 @@ class DatasetDtos {
     Mica.DatasetVariableResolverDto.Builder builder = Mica.DatasetVariableResolverDto.newBuilder();
 
     builder.setId(resolver.getId()) //
-        .setDatasetId(resolver.getDatasetId()) //
-        .setName(resolver.getName()) //
-        .setVariableType(resolver.getType().name());
+      .setDatasetId(resolver.getDatasetId()) //
+      .setName(resolver.getName()) //
+      .setVariableType(resolver.getType().name());
 
     if(resolver.hasStudyId()) {
       builder.setStudyId(resolver.getStudyId());
@@ -117,16 +117,16 @@ class DatasetDtos {
   @NotNull
   Mica.DatasetVariableDto asDto(@NotNull DatasetVariable variable, @NotNull List<Taxonomy> taxonomies) {
     Mica.DatasetVariableDto.Builder builder = Mica.DatasetVariableDto.newBuilder() //
-        .setId(variable.getId()) //
-        .setDatasetId(variable.getDatasetId()) //
-        .addAllDatasetName(localizedStringDtos.asDto(variable.getDatasetName())) //
-        .setName(variable.getName()) //
-        .setEntityType(variable.getEntityType()) //
-        .setValueType(variable.getValueType())//
-        .setVariableType(variable.getVariableType().name()) //
-        .setRepeatable(variable.isRepeatable()) //
-        .setNature(variable.getNature()) //
-        .setIndex(variable.getIndex());
+      .setId(variable.getId()) //
+      .setDatasetId(variable.getDatasetId()) //
+      .addAllDatasetName(localizedStringDtos.asDto(variable.getDatasetName())) //
+      .setName(variable.getName()) //
+      .setEntityType(variable.getEntityType()) //
+      .setValueType(variable.getValueType())//
+      .setVariableType(variable.getVariableType().name()) //
+      .setRepeatable(variable.isRepeatable()) //
+      .setNature(variable.getNature()) //
+      .setIndex(variable.getIndex());
 
     if(variable.getStudyIds() != null) {
       builder.addAllStudyIds(variable.getStudyIds());
@@ -153,7 +153,7 @@ class DatasetDtos {
 
     if(variable.getAttributes() != null) {
       variable.getAttributes().asAttributeList()
-          .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
+        .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
       if(taxonomies != null) {
         taxonomies.forEach(taxonomy -> {
           Mica.TermAttributesDto dto = asDto(taxonomy, variable.getAttributes());
@@ -172,11 +172,11 @@ class DatasetDtos {
   @NotNull
   Mica.DatasetVariableSummaryDto asSummaryDto(@NotNull DatasetVariable variable, StudyTable studyTable) {
     Mica.DatasetVariableSummaryDto.Builder builder = Mica.DatasetVariableSummaryDto.newBuilder() //
-        .setResolver(asDto(DatasetVariable.IdResolver.from(variable.getId())));
+      .setResolver(asDto(DatasetVariable.IdResolver.from(variable.getId())));
 
     if(variable.getAttributes() != null) {
       variable.getAttributes().asAttributeList()
-          .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
+        .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
     }
 
     builder.setStudyTable(asDto(studyTable));
@@ -186,7 +186,7 @@ class DatasetDtos {
 
   private Mica.TermAttributesDto asDto(Taxonomy taxonomy, Attributes attributes) {
     Mica.TermAttributesDto.Builder builder = Mica.TermAttributesDto.newBuilder() //
-        .setTaxonomy(taxonomyDtos.asDto(taxonomy));
+      .setTaxonomy(taxonomyDtos.asDto(taxonomy));
 
     Map<String, Mica.TermAttributeDto.Builder> terms = Maps.newHashMap();
     attributes.getAttributes(taxonomy.getName()).forEach(attr -> {
@@ -217,12 +217,12 @@ class DatasetDtos {
 
   private Mica.DatasetCategoryDto asDto(DatasetCategory category) {
     Mica.DatasetCategoryDto.Builder builder = Mica.DatasetCategoryDto.newBuilder() //
-        .setName(category.getName()) //
-        .setMissing(category.isMissing());
+      .setName(category.getName()) //
+      .setMissing(category.isMissing());
 
     if(category.getAttributes() != null) {
       category.getAttributes().asAttributeList()
-          .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
+        .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
     }
 
     return builder.build();
@@ -230,12 +230,12 @@ class DatasetDtos {
 
   public Mica.DatasetDto.StudyTableDto.Builder asDto(StudyTable studyTable) {
     Mica.DatasetDto.StudyTableDto.Builder builder = Mica.DatasetDto.StudyTableDto.newBuilder() //
-        .setStudyId(studyTable.getStudyId()) //
-        .setPopulationId(studyTable.getPopulationId()) //
-        .setDataCollectionEventId(studyTable.getDataCollectionEventId()) //
-        .setProject(studyTable.getProject()) //
-        .setTable(studyTable.getTable()) //
-        .setDceId(studyTable.getDataCollectionEventUId());
+      .setStudyId(studyTable.getStudyId()) //
+      .setPopulationId(studyTable.getPopulationId()) //
+      .setDataCollectionEventId(studyTable.getDataCollectionEventId()) //
+      .setProject(studyTable.getProject()) //
+      .setTable(studyTable.getTable()) //
+      .setDceId(studyTable.getDataCollectionEventUId());
 
     builder.addAllName(localizedStringDtos.asDto(studyTable.getName()));
     builder.addAllDescription(localizedStringDtos.asDto(studyTable.getDescription()));
@@ -256,15 +256,24 @@ class DatasetDtos {
             .setCount(freq.getCount())));
       }
       if(facetDto.hasStatistics()) {
-        aggDto.setStatistics(Mica.DatasetVariableAggregationDto.StatisticsDto.newBuilder() //
-          .setCount(facetDto.getStatistics().getCount()) //
-          .setTotal(facetDto.getStatistics().getTotal()) //
-          .setMin(facetDto.getStatistics().getMin()) //
-          .setMax(facetDto.getStatistics().getMax()) //
-          .setMean(facetDto.getStatistics().getMean()) //
-          .setSumOfSquares(facetDto.getStatistics().getSumOfSquares()) //
-          .setVariance(facetDto.getStatistics().getVariance()) //
-          .setStdDeviation(facetDto.getStatistics().getStdDeviation()));
+        Search.FacetResultDto.StatisticalResultDto facetStats = facetDto.getStatistics();
+
+        Mica.DatasetVariableAggregationDto.StatisticsDto.Builder builder
+          = Mica.DatasetVariableAggregationDto.StatisticsDto.newBuilder() //
+          .setCount(facetStats.getCount());
+
+        if(facetStats.hasTotal()) builder.setTotal(facetStats.getTotal());
+        if(facetStats.hasMin() && facetStats.getMin() != Float.POSITIVE_INFINITY) builder.setMin(facetStats.getMin());
+        if(facetStats.hasMax() && facetStats.getMax() != Float.NEGATIVE_INFINITY) builder.setMax(facetStats.getMax());
+        if(facetStats.hasMean() && !Float.isNaN(facetStats.getMean())) builder.setMean(facetStats.getMean());
+        if(facetStats.hasSumOfSquares() && !Float.isNaN(facetStats.getSumOfSquares()))
+          builder.setSumOfSquares(facetStats.getSumOfSquares());
+        if(facetStats.hasVariance() && !Float.isNaN(facetStats.getVariance()))
+          builder.setVariance(facetStats.getVariance());
+        if(facetStats.hasStdDeviation() && !Float.isNaN(facetStats.getStdDeviation()))
+          builder.setStdDeviation(facetStats.getStdDeviation());
+
+        aggDto.setStatistics(builder);
       }
       aggDto.setTotal(result.getTotalHits());
     } else {
@@ -285,7 +294,7 @@ class DatasetDtos {
     builder.setPublished(dataset.isPublished());
     if(dataset.getAttributes() != null) {
       dataset.getAttributes().asAttributeList()
-          .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
+        .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
     }
     return builder;
   }
