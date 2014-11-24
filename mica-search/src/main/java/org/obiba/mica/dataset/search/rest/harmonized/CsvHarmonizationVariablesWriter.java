@@ -63,7 +63,7 @@ public class CsvHarmonizationVariablesWriter {
         })
         .collect(Collectors.toList());
 
-    headers.add(0, "");
+    headers.add(0, "Variable");
     writer.writeNext(headers.toArray(new String[headers.size()]));
   }
 
