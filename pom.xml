@@ -56,6 +56,7 @@
     <protobuf-java-format.version>1.2.1-obiba</protobuf-java-format.version>
     <shiro.version>1.2.3-java8</shiro.version>
     <shiro-extras.version>1.0.3-obiba</shiro-extras.version>
+    <opencsv.version>2.3</opencsv.version>
 
     <maven-antrun-plugin.version>1.7</maven-antrun-plugin.version>
     <maven-assembly-plugin.version>2.4</maven-assembly-plugin.version>
@@ -466,6 +467,12 @@
         <artifactId>de.flapdoodle.embed.mongo</artifactId>
         <version>${embed-mongo.version}</version>
         <scope>test</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>net.sf.opencsv</groupId>
+        <artifactId>opencsv</artifactId>
+        <version>${opencsv.version}</version>
       </dependency>
 
     </dependencies>
