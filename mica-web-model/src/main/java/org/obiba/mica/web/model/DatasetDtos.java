@@ -210,7 +210,12 @@ class DatasetDtos {
       }
     });
 
-    terms.values().forEach(builder::addVocabularyTerms);
+    // keep vocabulary order
+    taxonomy.getVocabularies().forEach(vocabulary -> {
+      if (terms.containsKey(vocabulary.getName())) {
+        builder.addVocabularyTerms(terms.get(vocabulary.getName()));
+      }
+    });
 
     return builder.build();
   }
