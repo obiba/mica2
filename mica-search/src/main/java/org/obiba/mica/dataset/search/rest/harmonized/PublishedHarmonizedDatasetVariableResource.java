@@ -16,7 +16,6 @@ import javax.ws.rs.Path;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.magma.NoSuchValueTableException;
-import org.obiba.magma.NoSuchVariableException;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.DatasetVariable;
@@ -25,6 +24,8 @@ import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetResource;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Search;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -36,6 +37,8 @@ import org.springframework.stereotype.Component;
 @RequiresAuthentication
 public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishedDatasetResource<HarmonizationDataset>
   implements DatasetVariableResource {
+
+  private static final Logger log = LoggerFactory.getLogger(PublishedHarmonizedDatasetVariableResource.class);
 
   private String datasetId;
 
@@ -78,8 +81,8 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
         try {
           Search.QueryResultDto result = datasetService.getVariableFacet(variableName, studyTable);
           return dtos.asDto(studyTable, result).build();
-        } catch(NoSuchVariableException | NoSuchValueTableException e) {
-          // case the study has not implemented this dataschema variable
+        } catch(Exception e) {
+          log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
           return dtos.asDto(studyTable, null).build();
         }
       }

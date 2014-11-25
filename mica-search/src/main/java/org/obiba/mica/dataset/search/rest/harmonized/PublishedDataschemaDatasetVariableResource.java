@@ -27,6 +27,8 @@ import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Math;
 import org.obiba.opal.web.model.Search;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -40,6 +42,8 @@ import com.google.common.collect.ImmutableList;
 @RequiresAuthentication
 public class PublishedDataschemaDatasetVariableResource extends AbstractPublishedDatasetResource<HarmonizationDataset>
   implements DatasetVariableResource {
+
+  private static final Logger log = LoggerFactory.getLogger(PublishedDataschemaDatasetVariableResource.class);
 
   private String datasetId;
 
@@ -102,8 +106,8 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
         Mica.DatasetVariableAggregationDto tableAggDto = dtos.asDto(table, result).build();
         builder.add(tableAggDto);
         mergeAggregations(aggDto, tableAggDto);
-      } catch(NoSuchVariableException | NoSuchValueTableException e) {
-        // case the study has not implemented this dataschema variable
+      } catch(Exception e) {
+        log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
         builder.add(dtos.asDto(table, null).build());
       }
     });
