@@ -11,6 +11,7 @@
 package org.obiba.mica.dataset.search.rest.harmonized;
 
 import java.util.List;
+import java.util.concurrent.Future;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -19,6 +20,7 @@ import javax.ws.rs.Path;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
+import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
@@ -30,9 +32,12 @@ import org.obiba.opal.web.model.Search;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 /**
  * Dataschema variable resource: variable describing an harmonization dataset.
@@ -100,9 +105,14 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
     Mica.DatasetVariableAggregationsDto.Builder aggDto = Mica.DatasetVariableAggregationsDto.newBuilder();
 
-    dataset.getStudyTables().forEach(table -> {
+    List<Future<Search.QueryResultDto>> results = Lists.newArrayList();
+    dataset.getStudyTables().forEach(table -> results.add(getVariableFacet(table)));
+
+    for(int i = 0; i < dataset.getStudyTables().size(); i++) {
+      StudyTable table = dataset.getStudyTables().get(i);
+      Future<Search.QueryResultDto> futureResult = results.get(i);
       try {
-        Search.QueryResultDto result = datasetService.getVariableFacet(variableName, table);
+        Search.QueryResultDto result = futureResult.get();
         Mica.DatasetVariableAggregationDto tableAggDto = dtos.asDto(table, result).build();
         builder.add(tableAggDto);
         mergeAggregations(aggDto, tableAggDto);
@@ -110,7 +120,7 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
         log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
         builder.add(dtos.asDto(table, null).build());
       }
-    });
+    }
 
     aggDto.addAllAggregations(builder.build());
 
@@ -137,6 +147,16 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
   @Override
   public void setVariableName(String variableName) {
     this.variableName = variableName;
+  }
+
+  @Async
+  private Future<Search.QueryResultDto> getVariableFacet(StudyTable table) {
+    try {
+      return new AsyncResult<>(datasetService.getVariableFacet(variableName, table));
+    } catch(Exception e) {
+      log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
+      return new AsyncResult<>(null);
+    }
   }
 
   private void mergeAggregations(Mica.DatasetVariableAggregationsDto.Builder aggDto,
