@@ -29,7 +29,7 @@ public abstract class DatasetIndexer<T extends Dataset> {
 
   public static final String DATASET_TYPE = Dataset.MAPPING_NAME;
 
-  public static final String[] ANALYZED_FIELDS = {"acronym", "name", "description"};
+  public static final String[] LOCALIZED_ANALYZED_FIELDS = {"acronym", "name", "description"};
 
   @Inject
   protected StudyService studyService;

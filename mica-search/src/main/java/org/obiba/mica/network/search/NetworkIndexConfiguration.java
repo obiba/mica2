@@ -47,7 +47,7 @@ public class NetworkIndexConfiguration extends AbstractIndexConfiguration implem
     mapping.startObject("properties");
       mapping.startObject("id").field("type", "string").field("index","not_analyzed").endObject();
       mapping.startObject("studyIds").field("type", "string").field("index","not_analyzed").endObject();
-      Stream.of(NetworkIndexer.ANALYZED_FIELDS).forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
+      Stream.of(NetworkIndexer.LOCALIZED_ANALYZED_FIELDS).forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
     mapping.endObject();
 
     mapping.endObject().endObject();

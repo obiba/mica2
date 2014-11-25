@@ -90,8 +90,8 @@ public class DatasetQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  public Stream<String> getQueryStringFields() {
-    return Stream.of(DatasetIndexer.ANALYZED_FIELDS);
+  public Stream<String> getLocalizedQueryStringFields() {
+    return Stream.of(DatasetIndexer.LOCALIZED_ANALYZED_FIELDS);
   }
 
   public void setDatasetIdProvider(DatasetIdProvider provider) {

@@ -61,8 +61,8 @@ public class StudyQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  public Stream<String> getQueryStringFields() {
-    return Stream.of(StudyIndexer.ANALYZED_FIELDS);
+  public Stream<String> getLocalizedQueryStringFields() {
+    return Stream.of(StudyIndexer.LOCALIZED_ANALYZED_FIELDS);
   }
 
   @Override

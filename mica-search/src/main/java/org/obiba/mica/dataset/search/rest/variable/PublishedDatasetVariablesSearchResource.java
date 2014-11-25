@@ -68,7 +68,7 @@ public class PublishedDatasetVariablesSearchResource {
     @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
 
     return joinQueryExecutor.listQuery(JoinQueryExecutor.QueryType.VARIABLE, QueryDtoHelper
-        .createQueryDto(from, limit, sort, order, query, locale, Stream.of(VariableIndexer.ANALYZED_FIELDS)), locale);
+        .createQueryDto(from, limit, sort, order, query, locale, null, null), locale);
   }
 
   @POST
