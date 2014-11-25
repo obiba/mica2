@@ -47,7 +47,7 @@ public class PublishedStudiesSearchResource {
       @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
 
     return joinQueryExecutor.listQuery(JoinQueryExecutor.QueryType.STUDY,
-        QueryDtoHelper.createQueryDto(from, limit, sort, order, query, locale, Stream.of(StudyIndexer.ANALYZED_FIELDS)),
+        QueryDtoHelper.createQueryDto(from, limit, sort, order, query, locale, Stream.of(StudyIndexer.LOCALIZED_ANALYZED_FIELDS)),
         locale);
   }
 

@@ -89,8 +89,13 @@ public class VariableQuery extends AbstractDocumentQuery {
   }
 
   @Override
+  public Stream<String> getLocalizedQueryStringFields() {
+    return Stream.of(VariableIndexer.LOCALIZED_ANALYZED_FIELDS).map(f -> "attributes." + f);
+  }
+
+  @Override
   public Stream<String> getQueryStringFields() {
-    return Stream.of(VariableIndexer.ANALYZED_FIELDS).map(f -> "attributes." + f);
+    return Stream.of(VariableIndexer.ANALYZED_FIELDS);
   }
 
   public void setDatasetIdProvider(DatasetIdProvider provider) {

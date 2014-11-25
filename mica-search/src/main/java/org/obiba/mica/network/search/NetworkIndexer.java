@@ -37,7 +37,7 @@ public class NetworkIndexer {
 
   public static final String NETWORK_TYPE = "Network";
 
-  public static final String[] ANALYZED_FIELDS = {"acronym", "name", "description"};
+  public static final String[] LOCALIZED_ANALYZED_FIELDS = {"acronym", "name", "description"};
 
   @Inject
   private NetworkService networkService;

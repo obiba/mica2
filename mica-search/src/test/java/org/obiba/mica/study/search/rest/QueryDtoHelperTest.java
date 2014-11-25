@@ -143,9 +143,19 @@ public class QueryDtoHelperTest {
   public void test_query_string_no_existing_fields() {
     QueryStringDto queryStringDto = QueryStringDto.newBuilder().setQuery("toto").build();
     QueryStringDto.Builder builder = QueryStringDto.newBuilder(queryStringDto);
-    QueryDtoHelper.addQueryStringDtoFields(builder, "de", Stream.of("field1", "field2"));
+    QueryDtoHelper.addQueryStringDtoFields(builder, "de", Stream.of("field1", "field2"), null);
     assertThat(builder.getFieldsCount()).isEqualTo(2);
     assertThat(builder.getFields(0)).isEqualTo("field1.de.analyzed");
+  }
+  @Test
+  public void test_query_with_query_string_with_non_localized_fields() {
+    QueryStringDto queryStringDto = QueryStringDto.newBuilder().setQuery("toto").build();
+    QueryStringDto.Builder builder = QueryStringDto.newBuilder(queryStringDto);
+    QueryDtoHelper.addQueryStringDtoFields(builder, "de", Stream.of("field1", "field2"), Stream.of("name"));
+    assertThat(builder.getFieldsCount()).isEqualTo(3);
+    assertThat(builder.getFields(0)).isEqualTo("field1.de.analyzed");
+    assertThat(builder.getFields(2)).isEqualTo("name.analyzed");
+    System.out.println(builder.build());
   }
 
   @Test
@@ -154,7 +164,7 @@ public class QueryDtoHelperTest {
       .addAllFields(Arrays.asList("field1.de.analyzed", "field2.de.analyzed")).build();
 
     QueryStringDto.Builder builder = QueryStringDto.newBuilder(queryStringDto);
-    QueryDtoHelper.addQueryStringDtoFields(builder, "de", Stream.of("field2", "field3"));
+    QueryDtoHelper.addQueryStringDtoFields(builder, "de", Stream.of("field2", "field3"), null);
     assertThat(builder.getFieldsCount()).isEqualTo(3);
     assertThat(builder.getFields(0)).isEqualTo("field1.de.analyzed");
     assertThat(builder.getFields(1)).isEqualTo("field2.de.analyzed");
@@ -163,7 +173,7 @@ public class QueryDtoHelperTest {
 
   @Test
   public void test_query_with_query_string() {
-    QueryDto queryDto = QueryDtoHelper.createQueryDto(0, 20, null, null, "tata", "fr", Stream.of("field1", "field2"));
+    QueryDto queryDto = QueryDtoHelper.createQueryDto(0, 20, null, null, "tata", "fr", Stream.of("field1", "field2"), null);
     assertThat(queryDto.getFrom()).isEqualTo(0);
     assertThat(queryDto.getSize()).isEqualTo(20);
     assertThat(queryDto.hasQueryString()).isTrue();
@@ -185,7 +195,7 @@ public class QueryDtoHelperTest {
     assertThat(qsDto.getQuery()).isEqualTo("zombie");
     assertThat(qsDto.getFieldsCount()).isEqualTo(0);
 
-    queryDto = QueryDtoHelper.ensureQueryStringDtoFields(queryDto, "nl", Stream.of("field1", "field2"));
+    queryDto = QueryDtoHelper.ensureQueryStringDtoFields(queryDto, "nl", Stream.of("field1", "field2"), null);
     assertThat(queryDto.getFrom()).isEqualTo(0);
     assertThat(queryDto.getSize()).isEqualTo(20);
     assertThat(queryDto.hasQueryString()).isTrue();

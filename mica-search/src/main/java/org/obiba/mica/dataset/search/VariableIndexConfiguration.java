@@ -57,10 +57,11 @@ public class VariableIndexConfiguration extends AbstractIndexConfiguration imple
 
     // properties
     mapping.startObject("properties");
-    mapping.startObject("id").field("type", "string").field("index", "not_analyzed").endObject();
+      mapping.startObject("id").field("type", "string").field("index", "not_analyzed").endObject();
     mapping.startObject("studyIds").field("type", "string").field("index", "not_analyzed").endObject();
     mapping.startObject("dceIds").field("type", "string").field("index", "not_analyzed").endObject();
     mapping.startObject("datasetId").field("type", "string").field("index", "not_analyzed").endObject();
+    createMappingWithAndWithoutAnalyzer(mapping, "name");
 
     // attributes from taxonomies
     try {
@@ -69,7 +70,7 @@ public class VariableIndexConfiguration extends AbstractIndexConfiguration imple
         mapping.startObject("attributes");
         mapping.startObject("properties");
         createMappingTaxonomies(mapping, taxonomies);
-        Stream.of(VariableIndexer.ANALYZED_FIELDS).forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
+        Stream.of(VariableIndexer.LOCALIZED_ANALYZED_FIELDS).forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
         mapping.endObject(); // properties
         mapping.endObject(); // attributes
       }

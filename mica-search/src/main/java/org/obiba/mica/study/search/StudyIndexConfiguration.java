@@ -56,7 +56,7 @@ public class StudyIndexConfiguration extends AbstractIndexConfiguration implemen
       .endObject()
     .endObject();
 
-    Stream.of(StudyIndexer.ANALYZED_FIELDS).forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
+    Stream.of(StudyIndexer.LOCALIZED_ANALYZED_FIELDS).forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
     mapping.endObject();
     mapping.endObject();
 

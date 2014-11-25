@@ -86,7 +86,8 @@ public abstract class AbstractDocumentQuery {
 
   public void initialize(QueryDto query, String localeName) {
     locale = localeName;
-    queryDto = QueryDtoHelper.ensureQueryStringDtoFields(query, locale, getQueryStringFields());
+    queryDto = QueryDtoHelper
+        .ensureQueryStringDtoFields(query, locale, getLocalizedQueryStringFields(), getQueryStringFields());
     resultDto = null;
   }
 
@@ -98,7 +99,10 @@ public abstract class AbstractDocumentQuery {
 
   public abstract String getSearchType();
 
-  public abstract Stream<String> getQueryStringFields();
+  public abstract Stream<String> getLocalizedQueryStringFields();
+  public Stream<String> getQueryStringFields() {
+    return null;
+  }
 
   protected abstract Resource getAggregationsDescription();
 

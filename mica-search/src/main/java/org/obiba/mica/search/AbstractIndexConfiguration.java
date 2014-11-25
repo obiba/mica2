@@ -45,6 +45,16 @@ public class AbstractIndexConfiguration {
     }
   }
 
+  protected void createMappingWithAndWithoutAnalyzer(XContentBuilder mapping, String name) {
+    try {
+      mapping.startObject(name).field("type", "multi_field");
+      createMappingWithAnalyzers(mapping, name);
+      mapping.endObject();
+    } catch(IOException e) {
+      log.error("Failed to create localized mappings: '{}'", e);
+    }
+  }
+
   protected void createMappingWithAnalyzers(XContentBuilder mapping, String name) throws IOException {
     mapping
       .startObject("fields")

@@ -61,8 +61,8 @@ public class NetworkQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  public Stream<String> getQueryStringFields() {
-    return Stream.of(NetworkIndexer.ANALYZED_FIELDS);
+  public Stream<String> getLocalizedQueryStringFields() {
+    return Stream.of(NetworkIndexer.LOCALIZED_ANALYZED_FIELDS);
   }
 
   @Override

@@ -12,7 +12,6 @@ package org.obiba.mica.search.rest;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.obiba.mica.web.model.MicaSearch;
@@ -138,11 +137,16 @@ public final class QueryDtoHelper {
   }
 
   public static MicaSearch.QueryDto createQueryDto(int from, int limit, String sort, String order, String queryString,
-    String locale, Stream<String> queryFields) {
+    String locale, Stream<String> localizedQueryFields) {
+    return createQueryDto(from, limit, sort, order, queryString, locale, localizedQueryFields, null);
+  }
+
+  public static MicaSearch.QueryDto createQueryDto(int from, int limit, String sort, String order, String queryString,
+    String locale, Stream<String> localizedQueryFields, Stream<String> queryFields) {
     MicaSearch.QueryDto.Builder builder = MicaSearch.QueryDto.newBuilder().setFrom(from).setSize(limit);
 
     if(!Strings.isNullOrEmpty(queryString)) {
-      addQueryStringDto(builder, queryString, locale, queryFields);
+      addQueryStringDto(builder, queryString, locale, localizedQueryFields, queryFields);
     }
 
     if(!Strings.isNullOrEmpty(sort)) {
@@ -157,13 +161,13 @@ public final class QueryDtoHelper {
   }
 
   public static MicaSearch.QueryDto ensureQueryStringDtoFields(MicaSearch.QueryDto queryDto, String locale,
-    Stream<String> queryFields) {
+    Stream<String> localizedQueryFields, Stream<String> queryFields) {
     if(queryDto != null && queryDto.hasQueryString()) {
       MicaSearch.QueryDto.QueryStringDto queryStringDto = queryDto.getQueryString();
 
       MicaSearch.QueryDto.QueryStringDto.Builder qsBuilder = MicaSearch.QueryDto.QueryStringDto
         .newBuilder(queryStringDto);
-      addQueryStringDtoFields(qsBuilder, locale, queryFields);
+      addQueryStringDtoFields(qsBuilder, locale, localizedQueryFields, queryFields);
       MicaSearch.QueryDto.Builder builder = MicaSearch.QueryDto.newBuilder(queryDto).setQueryString(qsBuilder);
       return builder.build();
     }
@@ -172,19 +176,25 @@ public final class QueryDtoHelper {
   }
 
   public static void addQueryStringDto(MicaSearch.QueryDto.Builder builder, String queryString, String locale,
-    Stream<String> queryFields) {
+    Stream<String> localizedQueryFields, Stream<String> queryFields) {
     MicaSearch.QueryDto.QueryStringDto.Builder qsBuilder = MicaSearch.QueryDto.QueryStringDto.newBuilder()
       .setQuery(queryString);
-    addQueryStringDtoFields(qsBuilder, locale, queryFields);
+    addQueryStringDtoFields(qsBuilder, locale, localizedQueryFields, queryFields);
     builder.setQueryString(qsBuilder);
   }
 
   public static void addQueryStringDtoFields(MicaSearch.QueryDto.QueryStringDto.Builder builder, String locale,
-    Stream<String> queryFields) {
+    Stream<String> localizedQueryFields, Stream<String> queryFields) {
 
-    if(queryFields != null) {
+    if(localizedQueryFields != null) {
       List<String> currentFields = builder.getFieldsList();
       String postfix = "." + (Strings.isNullOrEmpty(locale) ? "*" : locale) + ".analyzed";
+      localizedQueryFields.filter((s) -> currentFields.indexOf(s + postfix) == -1)
+        .forEach(field -> builder.addFields(field + postfix));
+    }
+    if(queryFields != null) {
+      List<String> currentFields = builder.getFieldsList();
+      String postfix = ".analyzed";
       queryFields.filter((s) -> currentFields.indexOf(s + postfix) == -1)
         .forEach(field -> builder.addFields(field + postfix));
     }

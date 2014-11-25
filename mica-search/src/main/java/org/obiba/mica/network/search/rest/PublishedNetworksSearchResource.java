@@ -52,7 +52,7 @@ public class PublishedNetworksSearchResource {
       throws IOException {
 
     MicaSearch.QueryDto queryDto = QueryDtoHelper
-        .createQueryDto(from, limit, sort, order, query, locale, Stream.of(NetworkIndexer.ANALYZED_FIELDS));
+        .createQueryDto(from, limit, sort, order, query, locale, Stream.of(NetworkIndexer.LOCALIZED_ANALYZED_FIELDS));
     if (!Strings.isNullOrEmpty(studyId)) {
       queryDto = QueryDtoHelper.addTermFilters(queryDto,
           Arrays.asList(QueryDtoHelper.createTermFilter(NetworkQuery.JOIN_FIELD, Arrays.asList(studyId))),
