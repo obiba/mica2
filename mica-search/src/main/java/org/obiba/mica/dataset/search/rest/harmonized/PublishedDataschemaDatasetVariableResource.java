@@ -57,9 +57,6 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
   @Inject
   private HarmonizationDatasetService datasetService;
 
-  @Inject
-  private org.obiba.mica.web.model.Dtos dtos;
-
   @GET
   public Mica.DatasetVariableDto getVariable() {
     return getDatasetVariableDto(datasetId, variableName, DatasetVariable.Type.Dataschema);
@@ -105,15 +102,14 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
     Mica.DatasetVariableAggregationsDto.Builder aggDto = Mica.DatasetVariableAggregationsDto.newBuilder();
 
-    List<Future<Search.QueryResultDto>> results = Lists.newArrayList();
+    List<Future<Math.SummaryStatisticsDto>> results = Lists.newArrayList();
     dataset.getStudyTables().forEach(table -> results.add(getVariableFacet(table)));
 
     for(int i = 0; i < dataset.getStudyTables().size(); i++) {
       StudyTable table = dataset.getStudyTables().get(i);
-      Future<Search.QueryResultDto> futureResult = results.get(i);
+      Future<Math.SummaryStatisticsDto> futureResult = results.get(i);
       try {
-        Search.QueryResultDto result = futureResult.get();
-        Mica.DatasetVariableAggregationDto tableAggDto = dtos.asDto(table, result).build();
+        Mica.DatasetVariableAggregationDto tableAggDto = dtos.asDto(table, futureResult.get()).build();
         builder.add(tableAggDto);
         mergeAggregations(aggDto, tableAggDto);
       } catch(Exception e) {
@@ -150,9 +146,9 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
   }
 
   @Async
-  private Future<Search.QueryResultDto> getVariableFacet(StudyTable table) {
+  private Future<Math.SummaryStatisticsDto> getVariableFacet(StudyTable table) {
     try {
-      return new AsyncResult<>(datasetService.getVariableFacet(variableName, table));
+      return new AsyncResult<>(datasetService.getVariableSummary(variableName, table));
     } catch(Exception e) {
       log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
       return new AsyncResult<>(null);
@@ -162,6 +158,7 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
   private void mergeAggregations(Mica.DatasetVariableAggregationsDto.Builder aggDto,
     Mica.DatasetVariableAggregationDto tableAggDto) {
     aggDto.setTotal(aggDto.getTotal() + tableAggDto.getTotal());
+    aggDto.setN(aggDto.getN() + tableAggDto.getN());
     mergeAggregationFrequencies(aggDto, tableAggDto);
     mergeAggregationStatistics(aggDto, tableAggDto);
   }
@@ -174,7 +171,7 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
       boolean found = false;
       for(int i = 0; i < aggDto.getFrequenciesCount(); i++) {
         Mica.DatasetVariableAggregationDto.FrequencyDto freq = aggDto.getFrequencies(i);
-        if(freq.getTerm().equals(tableFreq.getTerm())) {
+        if(freq.getValue().equals(tableFreq.getValue())) {
           aggDto.setFrequencies(i, freq.toBuilder().setCount(freq.getCount() + tableFreq.getCount()).build());
           found = true;
           break;
@@ -197,11 +194,12 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
       Mica.DatasetVariableAggregationDto.StatisticsDto stats = aggDto.getStatistics();
       Mica.DatasetVariableAggregationDto.StatisticsDto tableStats = tableAggDto.getStatistics();
 
-      long count = stats.getCount() + tableStats.getCount();
-      builder.setCount(count);
-      float total = (stats.hasTotal() ? stats.getTotal() : 0) + (tableStats.hasTotal() ? tableAggDto.getTotal() : 0);
-      builder.setTotal(total);
-      if(count > 0) builder.setMean(total / (stats.getCount() + tableStats.getCount()));
+      int count = aggDto.getN() + tableAggDto.getN();
+      aggDto.setN(count);
+
+      float total = (stats.hasSum() ? stats.getSum() : 0) + (tableStats.hasSum() ? tableAggDto.getTotal() : 0);
+      builder.setSum(total);
+      if(count > 0) builder.setMean(total / count);
 
       if(tableStats.hasMin() && tableStats.getMin() != Float.POSITIVE_INFINITY) {
         builder.setMin(stats.hasMin() ? java.lang.Math.min(stats.getMin(), tableStats.getMin()) : tableStats.getMin());

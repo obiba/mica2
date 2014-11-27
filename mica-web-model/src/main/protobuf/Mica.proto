@@ -407,28 +407,30 @@ message DatasetVariablesHarmonizationsDto {
 
 message DatasetVariableAggregationDto {
   message FrequencyDto {
-    required string term = 1;
+    required string value = 1;
     required int32 count = 2;
+    required bool missing = 3;
   }
   message StatisticsDto {
-    required int64 count = 1 [default = 0];
-    optional float total = 2;
-    optional float min = 3;
-    optional float max = 4;
-    optional float mean = 5;
-    optional float sumOfSquares = 6;
-    optional float variance = 7;
-    optional float stdDeviation = 8;
+    optional float sum = 1;
+    optional float min = 2;
+    optional float max = 3;
+    optional float mean = 4;
+    optional float sumOfSquares = 5;
+    optional float variance = 6;
+    optional float stdDeviation = 7;
   }
   required DatasetDto.StudyTableDto studyTable = 1;
   required int32 total = 2;
-  repeated FrequencyDto frequencies = 3;
-  optional StatisticsDto statistics = 4;
+  required int32 n = 3;
+  repeated FrequencyDto frequencies = 4;
+  optional StatisticsDto statistics = 5;
 }
 
 message DatasetVariableAggregationsDto {
   repeated DatasetVariableAggregationDto aggregations = 1;
   required int32 total = 2;
-  repeated DatasetVariableAggregationDto.FrequencyDto frequencies = 3;
-  optional DatasetVariableAggregationDto.StatisticsDto statistics = 4;
+  required int32 n = 3;
+  repeated DatasetVariableAggregationDto.FrequencyDto frequencies = 4;
+  optional DatasetVariableAggregationDto.StatisticsDto statistics = 5;
 }
