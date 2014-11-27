@@ -20,7 +20,7 @@ import org.obiba.mica.study.domain.StudyState;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Term;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
-import org.obiba.opal.web.model.Search;
+import org.obiba.opal.web.model.Math;
 import org.springframework.stereotype.Component;
 
 import static org.obiba.mica.web.model.Mica.DocumentDigestDto;
@@ -198,8 +198,8 @@ public class Dtos {
 
   @NotNull
   public Mica.DatasetVariableAggregationDto.Builder asDto(@NotNull StudyTable studyTable,
-    @Nullable Search.QueryResultDto result) {
-    return datasetDtos.asDto(studyTable, result);
+    @Nullable Math.SummaryStatisticsDto summary) {
+    return datasetDtos.asDto(studyTable, summary);
   }
 
   @NotNull

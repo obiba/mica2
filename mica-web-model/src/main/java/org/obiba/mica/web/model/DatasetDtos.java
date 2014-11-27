@@ -28,7 +28,7 @@ import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Term;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
-import org.obiba.opal.web.model.Search;
+import org.obiba.opal.web.model.Math;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
@@ -212,7 +212,7 @@ class DatasetDtos {
 
     // keep vocabulary order
     taxonomy.getVocabularies().forEach(vocabulary -> {
-      if (terms.containsKey(vocabulary.getName())) {
+      if(terms.containsKey(vocabulary.getName())) {
         builder.addVocabularyTerms(terms.get(vocabulary.getName()));
       }
     });
@@ -249,40 +249,56 @@ class DatasetDtos {
   }
 
   public Mica.DatasetVariableAggregationDto.Builder asDto(@NotNull StudyTable studyTable,
-    @Nullable Search.QueryResultDto result) {
+    @Nullable Math.SummaryStatisticsDto summary) {
     Mica.DatasetVariableAggregationDto.Builder aggDto = Mica.DatasetVariableAggregationDto.newBuilder() //
       .setStudyTable(asDto(studyTable));
 
-    if(result != null && result.getFacetsCount() > 0) {
-      Search.FacetResultDto facetDto = result.getFacets(0);
-      if(facetDto.getFrequenciesCount() > 0) {
-        facetDto.getFrequenciesList().forEach(freq -> aggDto.addFrequencies(
-          Mica.DatasetVariableAggregationDto.FrequencyDto.newBuilder().setTerm(freq.getTerm())
-            .setCount(freq.getCount())));
-      }
-      if(facetDto.hasStatistics()) {
-        Search.FacetResultDto.StatisticalResultDto facetStats = facetDto.getStatistics();
+    if(summary != null) {
+      if(summary.hasExtension(Math.CategoricalSummaryDto.categorical)) {
+        Math.CategoricalSummaryDto catSummary = summary.getExtension(Math.CategoricalSummaryDto.categorical);
+        aggDto.setTotal(Long.valueOf(catSummary.getN()).intValue());
+        int n = 0;
+        if(catSummary.getFrequenciesCount() > 0) {
+          for(Math.FrequencyDto freq : catSummary.getFrequenciesList()) {
+            aggDto.addFrequencies(Mica.DatasetVariableAggregationDto.FrequencyDto.newBuilder().setValue(freq.getValue())
+              .setCount(Long.valueOf(freq.getFreq()).intValue()).setMissing(freq.getMissing()));
+            if(freq.getMissing()) n += freq.getFreq();
+          }
+        }
+        aggDto.setN(n);
+      } else if(summary.hasExtension(Math.ContinuousSummaryDto.continuous)) {
+        Math.ContinuousSummaryDto contSummary = summary.getExtension(Math.ContinuousSummaryDto.continuous);
+        Math.DescriptiveStatsDto stats = contSummary.getSummary();
+
+        aggDto.setN(Long.valueOf(stats.getN()).intValue());
 
         Mica.DatasetVariableAggregationDto.StatisticsDto.Builder builder
-          = Mica.DatasetVariableAggregationDto.StatisticsDto.newBuilder() //
-          .setCount(facetStats.getCount());
+          = Mica.DatasetVariableAggregationDto.StatisticsDto.newBuilder();
 
-        if(facetStats.hasTotal()) builder.setTotal(facetStats.getTotal());
-        if(facetStats.hasMin() && facetStats.getMin() != Float.POSITIVE_INFINITY) builder.setMin(facetStats.getMin());
-        if(facetStats.hasMax() && facetStats.getMax() != Float.NEGATIVE_INFINITY) builder.setMax(facetStats.getMax());
-        if(facetStats.hasMean() && !Float.isNaN(facetStats.getMean())) builder.setMean(facetStats.getMean());
-        if(facetStats.hasSumOfSquares() && !Float.isNaN(facetStats.getSumOfSquares()))
-          builder.setSumOfSquares(facetStats.getSumOfSquares());
-        if(facetStats.hasVariance() && !Float.isNaN(facetStats.getVariance()))
-          builder.setVariance(facetStats.getVariance());
-        if(facetStats.hasStdDeviation() && !Float.isNaN(facetStats.getStdDeviation()))
-          builder.setStdDeviation(facetStats.getStdDeviation());
+        if(stats.hasSum()) builder.setSum(Double.valueOf(stats.getSum()).floatValue());
+        if(stats.hasMin() && stats.getMin() != Double.POSITIVE_INFINITY)
+          builder.setMin(Double.valueOf(stats.getMin()).floatValue());
+        if(stats.hasMax() && stats.getMax() != Double.NEGATIVE_INFINITY)
+          builder.setMax(Double.valueOf(stats.getMax()).floatValue());
+        if(stats.hasMean() && !Double.isNaN(stats.getMean()))
+          builder.setMean(Double.valueOf(stats.getMean()).floatValue());
+        if(stats.hasSumsq() && !Double.isNaN(stats.getSumsq()))
+          builder.setSumOfSquares(Double.valueOf(stats.getSumsq()).floatValue());
+        if(stats.hasVariance() && !Double.isNaN(stats.getVariance()))
+          builder.setVariance(Double.valueOf(stats.getVariance()).floatValue());
+        if(stats.hasStdDev() && !Double.isNaN(stats.getStdDev()))
+          builder.setStdDeviation(Double.valueOf(stats.getStdDev()).floatValue());
 
         aggDto.setStatistics(builder);
+
+        int total = 0;
+        if(contSummary.getFrequenciesCount() > 0) {
+          for(Math.FrequencyDto freq : contSummary.getFrequenciesList()) {
+            total += freq.getFreq();
+          }
+        }
+        aggDto.setTotal(total);
       }
-      aggDto.setTotal(result.getTotalHits());
-    } else {
-      aggDto.setTotal(0);
     }
 
     return aggDto;

@@ -210,6 +210,11 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
     return getVariableValueSource(dataset, variableName, studyId, project, table).getSummary();
   }
 
+  public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary(String variableName,
+    StudyTable studyTable) throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
+    return getVariableValueSource(variableName, studyTable).getSummary();
+  }
+
   public Search.QueryResultDto getVariableFacet(String variableName, StudyTable studyTable)
     throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
     return getVariableValueSource(variableName, studyTable).getFacet();

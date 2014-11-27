@@ -21,7 +21,6 @@ import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetResource;
 import org.obiba.mica.dataset.service.StudyDatasetService;
-import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Search;
 import org.slf4j.Logger;
@@ -43,9 +42,6 @@ public class PublishedStudyDatasetVariableResource extends AbstractPublishedData
 
   @Inject
   private StudyDatasetService datasetService;
-
-  @Inject
-  private Dtos dtos;
 
   @GET
   public Mica.DatasetVariableDto getVariable() {
@@ -72,8 +68,7 @@ public class PublishedStudyDatasetVariableResource extends AbstractPublishedData
     Mica.DatasetVariableAggregationDto.Builder aggDto = Mica.DatasetVariableAggregationDto.newBuilder() //
       .setStudyTable(dtos.asDto(studyTable));
     try {
-      Search.QueryResultDto result = datasetService.getVariableFacet(dataset, variableName);
-      return dtos.asDto(studyTable, result).build();
+      return dtos.asDto(studyTable, datasetService.getVariableSummary(dataset, variableName)).build();
     } catch(Exception e) {
       log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
       return dtos.asDto(studyTable, null).build();
