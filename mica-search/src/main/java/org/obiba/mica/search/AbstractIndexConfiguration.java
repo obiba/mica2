@@ -11,6 +11,7 @@
 package org.obiba.mica.search;
 
 import java.io.IOException;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
@@ -18,6 +19,8 @@ import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.obiba.mica.micaConfig.MicaConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import sun.util.locale.LanguageTag;
 
 public class AbstractIndexConfiguration {
   private static final Logger log = LoggerFactory.getLogger(AbstractIndexConfiguration.class);
@@ -29,7 +32,8 @@ public class AbstractIndexConfiguration {
     try {
       mapping.startObject(name);
       mapping.startObject("properties");
-      micaConfigService.getConfig().getLocalesAsString().forEach(locale -> {
+      Stream.concat(micaConfigService.getConfig().getLocalesAsString().stream(), Stream.of(
+        LanguageTag.UNDETERMINED)).forEach(locale -> {
         try {
           mapping.startObject(locale).field("type", "multi_field");
           createMappingWithAnalyzers(mapping, locale);
