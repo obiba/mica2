@@ -276,7 +276,7 @@ class DatasetDtos {
   private Mica.DatasetVariableAggregationDto.Builder asDto(Math.CategoricalSummaryDto summary) {
     Mica.DatasetVariableAggregationDto.Builder aggDto = Mica.DatasetVariableAggregationDto.newBuilder();
     aggDto.setTotal(Long.valueOf(summary.getN()).intValue());
-    addFrequenciesDto(aggDto, summary.getFrequenciesList());
+    addFrequenciesDto(aggDto, summary.getFrequenciesList(), summary.hasOtherFrequency() ? Long.valueOf(summary.getOtherFrequency()).intValue() : 0);
     return aggDto;
   }
 
@@ -290,7 +290,7 @@ class DatasetDtos {
   private Mica.DatasetVariableAggregationDto.Builder asDto(Math.TextSummaryDto summary) {
     Mica.DatasetVariableAggregationDto.Builder aggDto = Mica.DatasetVariableAggregationDto.newBuilder();
     aggDto.setTotal(Long.valueOf(summary.getN()).intValue());
-    addFrequenciesDto(aggDto, summary.getFrequenciesList());
+    addFrequenciesDto(aggDto, summary.getFrequenciesList(), summary.hasOtherFrequency() ? Long.valueOf(summary.getOtherFrequency()).intValue() : 0);
     return aggDto;
   }
 
@@ -314,11 +314,15 @@ class DatasetDtos {
   }
 
   private void addFrequenciesDto(Mica.DatasetVariableAggregationDto.Builder aggDto, List<Math.FrequencyDto> frequencies) {
-    int n = 0;
+    addFrequenciesDto(aggDto, frequencies, 0);
+  }
+
+  private void addFrequenciesDto(Mica.DatasetVariableAggregationDto.Builder aggDto, List<Math.FrequencyDto> frequencies, int otherFrequency) {
+    int n = otherFrequency;
     if (frequencies != null) {
       for(Math.FrequencyDto freq : frequencies) {
         aggDto.addFrequencies(asDto(freq));
-        if(freq.getMissing()) n += freq.getFreq();
+        if(!freq.getMissing()) n += freq.getFreq();
       }
     }
     aggDto.setN(n);
