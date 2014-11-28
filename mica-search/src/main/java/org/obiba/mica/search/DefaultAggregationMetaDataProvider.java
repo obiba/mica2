@@ -14,10 +14,10 @@ import org.apache.commons.lang.WordUtils;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DefaultAggregationTitleProvider implements AggregationTitleProvider {
+public class DefaultAggregationMetaDataProvider implements AggregationMetaDataProvider {
 
   @Override
-  public String getTitle(String aggregation, String termKey, String locale) {
-    return WordUtils.capitalize(termKey.replaceAll("[-_]", " "));
+  public MetaData getTitle(String aggregation, String termKey, String locale) {
+    return MetaData.newBuilder().title(WordUtils.capitalize(termKey.replaceAll("[-_]", " "))).description("").build();
   }
 }

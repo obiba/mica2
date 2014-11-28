@@ -29,7 +29,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 @Component
-public class TaxonomyAggregationTitleProvider implements AggregationTitleProvider {
+public class TaxonomyAggregationMetaDataProvider implements AggregationMetaDataProvider {
 
   @Inject
   OpalService opalService;
@@ -44,7 +44,7 @@ public class TaxonomyAggregationTitleProvider implements AggregationTitleProvide
     cache = Maps.newHashMap();
   }
 
-  public String getTitle(String aggregation, String termKey, String locale) {
+  public MetaData getTitle(String aggregation, String termKey, String locale) {
     Optional<Vocabulary> vocabulary = Optional.ofNullable(cache.get(aggregation));
     if (!vocabulary.isPresent()) {
       vocabulary = getVocabulary(aggregation);
@@ -53,7 +53,10 @@ public class TaxonomyAggregationTitleProvider implements AggregationTitleProvide
 
     if (vocabulary.isPresent()) {
       Optional<Term> term = getTerm(vocabulary.get(), termKey);
-      if (term.isPresent()) return term.get().getTitle().get(locale);
+      if (term.isPresent()) {
+        Term t = term.get();
+        return MetaData.newBuilder().title(t.getTitle().get(locale)).description(t.getDescription().get(locale)).build();
+      }
     }
 
     return null;
