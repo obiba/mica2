@@ -23,7 +23,8 @@ import org.elasticsearch.search.aggregations.InternalAggregation;
 import org.elasticsearch.search.aggregations.bucket.global.Global;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.metrics.stats.Stats;
-import org.obiba.mica.search.AggregationTitleResolver;
+import org.obiba.mica.search.AggregationMetaDataProvider;
+import org.obiba.mica.search.AggregationMetaDataResolver;
 import org.obiba.mica.web.model.MicaSearch;
 
 import static org.obiba.mica.web.model.MicaSearch.AggregationResultDto;
@@ -34,16 +35,16 @@ public class EsQueryResultParser {
 
   private final String locale;
 
-  private final AggregationTitleResolver aggregationTitleResolver;
+  private final AggregationMetaDataResolver aggregationTitleResolver;
 
   private long totalCount;
 
-  private EsQueryResultParser(AggregationTitleResolver titleResolver, String localeName) {
+  private EsQueryResultParser(AggregationMetaDataResolver titleResolver, String localeName) {
     aggregationTitleResolver = titleResolver;
     locale = localeName;
   }
 
-  public static EsQueryResultParser newParser(AggregationTitleResolver aggregationTitleResolver, String locale) {
+  public static EsQueryResultParser newParser(AggregationMetaDataResolver aggregationTitleResolver, String locale) {
     return new EsQueryResultParser(aggregationTitleResolver, locale);
   }
 
@@ -101,7 +102,8 @@ public class EsQueryResultParser {
             }
 
             String key = defaultBucket.getKey();
-            termsBuilder.setTitle(aggregationTitleResolver.getTitle(defaultAgg.getName(), key, locale));
+            AggregationMetaDataProvider.MetaData metaData = aggregationTitleResolver.getTitle(defaultAgg.getName(), key, locale);
+            termsBuilder.setTitle(metaData.getTitle()).setDescription(metaData.getDescription());
 
             aggResultBuilder.addExtension(TermsAggregationResultDto.terms, //
                 termsBuilder.setKey(key) //

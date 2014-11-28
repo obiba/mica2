@@ -34,7 +34,7 @@ import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.obiba.mica.micaConfig.MicaConfigService;
-import org.obiba.mica.search.AggregationTitleResolver;
+import org.obiba.mica.search.AggregationMetaDataResolver;
 import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.rest.AggregationYamlParser;
 import org.obiba.mica.search.rest.EsQueryResultParser;
@@ -66,7 +66,7 @@ public abstract class AbstractDocumentQuery {
   MicaConfigService micaConfigService;
 
   @Inject
-  AggregationTitleResolver aggregationTitleResolver;
+  AggregationMetaDataResolver aggregationTitleResolver;
 
   private static final Logger log = LoggerFactory.getLogger(AbstractDocumentQuery.class);
 
