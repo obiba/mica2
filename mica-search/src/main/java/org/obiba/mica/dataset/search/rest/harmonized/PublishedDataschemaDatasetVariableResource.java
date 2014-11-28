@@ -157,10 +157,10 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
 
   private void mergeAggregations(Mica.DatasetVariableAggregationsDto.Builder aggDto,
     Mica.DatasetVariableAggregationDto tableAggDto) {
-    aggDto.setTotal(aggDto.getTotal() + tableAggDto.getTotal());
-    aggDto.setN(aggDto.getN() + tableAggDto.getN());
     mergeAggregationFrequencies(aggDto, tableAggDto);
     mergeAggregationStatistics(aggDto, tableAggDto);
+    aggDto.setTotal(aggDto.getTotal() + tableAggDto.getTotal());
+    aggDto.setN(aggDto.getN() + tableAggDto.getN());
   }
 
   private void mergeAggregationFrequencies(Mica.DatasetVariableAggregationsDto.Builder aggDto,
@@ -195,7 +195,6 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
       Mica.DatasetVariableAggregationDto.StatisticsDto tableStats = tableAggDto.getStatistics();
 
       int count = aggDto.getN() + tableAggDto.getN();
-      aggDto.setN(count);
 
       if (count > 0) {
         Mica.DatasetVariableAggregationDto.StatisticsDto.Builder builder = aggDto.getStatistics().toBuilder();
@@ -224,11 +223,11 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
 
         // GM = grand mean = sum(n(i) * mean(i))
         float tableMean = tableStats.hasMean() ? tableStats.getMean() : 0;
-        float gm = mean * aggDto.getN() + tableMean * tableAggDto.getN();
+        float gm = (mean * aggDto.getN() + tableMean * tableAggDto.getN()) / count;
 
         // GSS = group sum of squares = (mean(i) - gm)^2 * n(i)
         float gss = Double.valueOf(java.lang.Math.pow(mean - gm, 2)).floatValue() * aggDto.getN();
-        float tableGss = Double.valueOf(java.lang.Math.pow(mean - gm, 2)).floatValue() * tableAggDto.getN();
+        float tableGss = Double.valueOf(java.lang.Math.pow(tableMean - gm, 2)).floatValue() * tableAggDto.getN();
         float tgss = gss + tableGss;
 
         // GV = grand variance
