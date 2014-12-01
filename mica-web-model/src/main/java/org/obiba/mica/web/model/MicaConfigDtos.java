@@ -4,7 +4,9 @@ import java.util.Locale;
 
 import javax.validation.constraints.NotNull;
 
+import org.obiba.mica.micaConfig.AuthType;
 import org.obiba.mica.micaConfig.MicaConfig;
+import org.obiba.mica.micaConfig.OpalCredential;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
@@ -36,4 +38,14 @@ class MicaConfigDtos {
     return config;
   }
 
+  @NotNull
+  Mica.OpalCredentialDto asDto(@NotNull OpalCredential credential) {
+    Mica.OpalCredentialDto.Builder builder = Mica.OpalCredentialDto.newBuilder()
+      .setType(credential.getAuthType() == AuthType.USERNAME ? Mica.OpalCredentialType.USERNAME : Mica.OpalCredentialType.PUBLIC_KEY_CERTIFICATE)
+      .setOpalUrl(credential.getOpalUrl());
+
+    if(!Strings.isNullOrEmpty(credential.getUsername())) builder.setUsername(credential.getUsername());
+
+    return builder.build();
+  }
 }
