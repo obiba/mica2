@@ -18,6 +18,8 @@ import org.obiba.mica.web.model.MicaSearch;
 
 import com.google.common.base.Strings;
 
+import sun.util.locale.LanguageTag;
+
 public final class QueryDtoHelper {
 
   public static final int DEFAULT_FROM = 0;
@@ -167,7 +169,8 @@ public final class QueryDtoHelper {
 
       MicaSearch.QueryDto.QueryStringDto.Builder qsBuilder = MicaSearch.QueryDto.QueryStringDto
         .newBuilder(queryStringDto);
-      addQueryStringDtoFields(qsBuilder, locale, localizedQueryFields, queryFields);
+      addQueryStringDtoFields(qsBuilder, Stream.of(Strings.nullToEmpty(locale), LanguageTag.UNDETERMINED),
+        localizedQueryFields, queryFields);
       MicaSearch.QueryDto.Builder builder = MicaSearch.QueryDto.newBuilder(queryDto).setQueryString(qsBuilder);
       return builder.build();
     }
@@ -179,18 +182,26 @@ public final class QueryDtoHelper {
     Stream<String> localizedQueryFields, Stream<String> queryFields) {
     MicaSearch.QueryDto.QueryStringDto.Builder qsBuilder = MicaSearch.QueryDto.QueryStringDto.newBuilder()
       .setQuery(queryString);
-    addQueryStringDtoFields(qsBuilder, locale, localizedQueryFields, queryFields);
+    addQueryStringDtoFields(qsBuilder, Stream.of(Strings.nullToEmpty(locale), LanguageTag.UNDETERMINED),
+      localizedQueryFields, queryFields);
     builder.setQueryString(qsBuilder);
   }
 
-  public static void addQueryStringDtoFields(MicaSearch.QueryDto.QueryStringDto.Builder builder, String locale,
+  public static void addQueryStringDtoFields(MicaSearch.QueryDto.QueryStringDto.Builder builder, Stream<String> locales,
     Stream<String> localizedQueryFields, Stream<String> queryFields) {
 
     if(localizedQueryFields != null) {
+      List<String> fields = localizedQueryFields.collect(Collectors.toList());
       List<String> currentFields = builder.getFieldsList();
-      String postfix = "." + (Strings.isNullOrEmpty(locale) ? "*" : locale) + ".analyzed";
-      localizedQueryFields.filter((s) -> currentFields.indexOf(s + postfix) == -1)
-        .forEach(field -> builder.addFields(field + postfix));
+
+      locales.forEach(locale -> {
+        String postfix = "." + (Strings.isNullOrEmpty(locale) ? "*" : locale) + ".analyzed";
+        for(String field : fields) {
+          if(currentFields.indexOf(field + postfix) == -1) {
+            builder.addFields(field + postfix);
+          }
+        }
+      });
     }
     if(queryFields != null) {
       List<String> currentFields = builder.getFieldsList();
