@@ -21,6 +21,9 @@
           <tab heading="{{'study.methods' | translate}}">
             <div ng-include="'app/study/views/study-methods-form.html'"></div>
           </tab>
+          <tab heading="{{'attributes' | translate}}">
+            <div ng-include="'app/study/views/study-attributes-form.html'"></div>
+          </tab>
           <tab heading="{{'study.access.label' | translate}}">
             <div ng-include="'app/study/views/study-access-form.html'"></div>
           </tab>
@@ -30,7 +33,12 @@
           <tab heading="{{'study.documents' | translate}}">
             <div ng-include="'app/study/views/study-document-form.html'"></div>
           </tab>
-          <tab heading="{{'suppl-info' | translate}}">
+          <!--TODO -->
+          <!-- <tab heading="{{'suppl-info' | translate}}">
+            <div ng-include="'app/study/views/study-supplementary-info-form.html'"></div>
+          </tab> -->
+          <tab heading="{{'datasets' | translate}}">
+            <div ng-include="'app/study/views/study-datasets-form.html'"></div>
           </tab>
         </tabset>
 

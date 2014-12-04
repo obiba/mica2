@@ -14,7 +14,7 @@
     <div class="form-group"
         ng-class="{'has-error': (form.languages.$dirty || form.saveAttempted) && form.languages.$invalid}">
     <label for="languages" class="control-label">
-        <span translat>config.languages</span> *
+        <span translate>config.languages</span> *
       </label>
       <select chosen multiple id="languages" name="languages" ng-model="micaConfig.languages"
           ng-options="code as name for (code, name) in availableLanguages" class="chosen-select" required>

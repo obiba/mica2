@@ -22,6 +22,7 @@ mica.localized
         model: '=',
         label: '@',
         required: '@',
+        disabled: '=',
         lang: '=',
         help: '@'
       },
@@ -32,9 +33,25 @@ mica.localized
             {lang: $scope.lang, value: ''}
           ];
         }
+
+        $scope.$watch('model', function(newModel) {
+          if (angular.isUndefined(newModel)) {
+            return;
+          }
+
+          var currentLang = newModel.filter(function(e) {
+            if (e.lang === $scope.lang) {
+              return e;
+            }
+          });
+
+          if (currentLang.length === 0) {
+              newModel.push({lang:$scope.lang, value: ''});
+          }
+        }, true);
+
         $scope.fieldName = $scope.name + '-' + $scope.lang;
         $scope.form = ctrl;
-//        console.log('localizedInput', $scope);
       }
     };
   }])
@@ -48,6 +65,7 @@ mica.localized
         model: '=',
         label: '@',
         required: '@',
+        disabled: '=',
         lang: '=',
         help: '@',
         rows: '@'
@@ -59,9 +77,25 @@ mica.localized
             {lang: $scope.lang, value: ''}
           ];
         }
+
+        $scope.$watch('model', function(newModel) {
+          if (angular.isUndefined(newModel)) {
+            return;
+          }
+
+          var currentLang = newModel.filter(function(e) {
+            if (e.lang === $scope.lang) {
+              return e;
+            }
+          });
+
+          if (currentLang.length === 0) {
+              newModel.push({lang:$scope.lang, value: ''});
+          }
+        }, true);
+
         $scope.fieldName = $scope.name + '-' + $scope.lang;
         $scope.form = ctrl;
-//        console.log('localizedTextarea', $scope);
       }
     };
   }]);

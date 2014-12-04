@@ -7,11 +7,8 @@ mica.study
   })
 
   .controller('StudyListController', ['$scope', 'StudyStatesResource', 'DraftStudyResource',
-
     function ($scope, StudyStatesResource, DraftStudyResource) {
-
       $scope.studies = StudyStatesResource.query();
-
       $scope.deleteStudy = function (id) {
         //TODO ask confirmation
         DraftStudyResource.delete({id: id},
@@ -19,10 +16,9 @@ mica.study
             $scope.studies = StudyStatesResource.query();
           });
       };
-
     }])
-  .controller('StudyViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', 'StudyStateResource', 'DraftStudyResource', 'DraftStudyPublicationResource', 'MicaConfigResource', 'STUDY_EVENTS', 'NOTIFICATION_EVENTS', 'CONTACT_EVENTS',
 
+  .controller('StudyViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', 'StudyStateResource', 'DraftStudyResource', 'DraftStudyPublicationResource', 'MicaConfigResource', 'STUDY_EVENTS', 'NOTIFICATION_EVENTS', 'CONTACT_EVENTS',
     function ($rootScope, $scope, $routeParams, $log, $locale, $location, StudyStateResource, DraftStudyResource, DraftStudyPublicationResource, MicaConfigResource, STUDY_EVENTS, NOTIFICATION_EVENTS, CONTACT_EVENTS) {
 
       MicaConfigResource.get(function (micaConfig) {
@@ -61,6 +57,7 @@ mica.study
             });
         }
       });
+
       $scope.publish = function () {
         DraftStudyPublicationResource.publish({id: $scope.study.id}, function () {
           $scope.studySummary = StudyStateResource.get({id: $routeParams.id});
@@ -122,13 +119,101 @@ mica.study
         }
       });
 
+      $scope.editPopulation = function (study, population) {
+        $location.url($location.url() + '/population/' + population.id + '/edit');
+      };
+
+      $scope.deletePopulation = function (population, index) {
+        $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
+            {title: 'Delete population', message: 'Are you sure to delete the population?'}, population);
+
+        $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, population) {
+          if ($scope.study.populations[index] === population) {
+            $scope.study.populations.splice(index, 1);
+            $scope.emitStudyUpdated();
+          }
+        });
+      };
+
+      $scope.addPopulation = function () {
+        $location.url($location.url() + '/population/add');
+      };
+
     }])
 
-  .controller('StudyEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$location', '$upload', '$timeout', 'DraftStudyResource', 'DraftStudiesResource', 'MicaConfigResource', 'StringUtils', 'FormServerValidation', 'TempFileResource',
+  .controller('StudyPopulationController', ['$rootScope', '$scope', '$routeParams', '$location', '$log', 'DraftStudyResource', 'MicaConfigResource', 'FormServerValidation', 'MicaConstants',
+     function($rootScope, $scope, $routeParams, $location, $log, DraftStudyResource, MicaConfigResource, FormServerValidation, MicaConstants) {
+    $scope.population = {selectionCriteria: {healthStatus: [], ethnicOrigin: []}};
+    $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}, function() {
+      if ($routeParams.pid) {
+        $scope.population = $scope.study.populations.filter(function(p){
+              return p.id === $routeParams.pid;
+            })[0];
+      } else {
+        $scope.study.populations.push($scope.population);
+      }
+    }) : {};
 
-    function ($rootScope, $scope, $routeParams, $log, $location, $upload, $timeout, DraftStudyResource, DraftStudiesResource, MicaConfigResource, StringUtils, FormServerValidation, TempFileResource) {
+    //TODO: possible values should be retreived from a resource. Hardcoded here for the moment.
+    $scope.specificPopulationTypes = ['clinic_patients', 'other', 'specific_association'];
+    $scope.selectionCriteriaGenders = ['N/A', 'men', 'women'];
+    $scope.generalPopulationTypes = ['volunteer', 'selected_samples', 'random'];
+    $scope.availableSelectionCriteria = ['criteria1', 'criteria2'];
+    $scope.dataSourceTypes = ['questionnaires', 'administratives_databases', 'others'];
+    $scope.availableCountries = MicaConstants.COUNTRIES_ISO_CODES;
 
-      $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}) : {};
+    MicaConfigResource.get(function (micaConfig) {
+      $scope.tabs = [];
+      micaConfig.languages.forEach(function (lang) {
+        $scope.tabs.push({ lang: lang, labelKey: 'language.' + lang });
+      });
+    });
+
+    $scope.save = function () {
+      if (!$scope.form.$valid) {
+        $scope.form.saveAttempted = true;
+        return;
+      }
+
+      updateStudy();
+    };
+
+    $scope.addHealthStatus = function () {
+      $scope.population.selectionCriteria.healthStatus.push({localizedStrings: []});
+    };
+
+    $scope.addEthnicOrigin = function () {
+      $scope.population.selectionCriteria.ethnicOrigin.push({localizedStrings: []});
+    };
+
+    $scope.cancel = function () {
+      redirectToStudy();
+    };
+
+    var updateStudy = function () {
+      $log.debug('Update study', $scope.study);
+      $scope.study.$save(redirectToStudy, saveErrorHandler);
+    };
+
+    var saveErrorHandler = function (response) {
+      FormServerValidation.error(response, $scope.form, $scope.languages);
+    };
+
+    var redirectToStudy = function() {
+      $location.path('/study/' + $scope.study.id).replace();
+    };
+  }])
+
+  .controller('StudyEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$location', '$upload', '$timeout', '$modal', 'DraftStudyResource', 'DraftStudiesResource', 'MicaConfigResource', 'StringUtils', 'FormServerValidation', 'TempFileResource',
+
+    function ($rootScope, $scope, $routeParams, $log, $location, $upload, $timeout, $modal, DraftStudyResource, DraftStudiesResource, MicaConfigResource, StringUtils, FormServerValidation, TempFileResource) {
+      $scope.accessTypes = ['data', 'bio_samples', 'other'];
+      $scope.methodDesignTypes = ['case_control', 'case_only', 'clinical_trial', 'cohort_study', 'cross_sectional', 'other'];
+      $scope.methodRecruitmentTypes = ['individuals', 'families', 'other'];
+
+      $scope.study = $routeParams.id ? DraftStudyResource.get({
+        id: $routeParams.id}) : {};
+
       $log.debug('Edit study', $scope.study);
 
       MicaConfigResource.get(function (micaConfig) {
@@ -188,7 +273,6 @@ mica.study
       };
 
       $scope.deleteTempFile = function (tempFileId) {
-//        $log.debug('Delete ', tempFileId);
         TempFileResource.delete(
           {id: tempFileId},
           function () {
