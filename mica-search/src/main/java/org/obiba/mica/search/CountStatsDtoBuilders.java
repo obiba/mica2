@@ -22,6 +22,7 @@ import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.web.model.MicaSearch;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 import static org.obiba.mica.web.model.MicaSearch.CountStatsDto;
@@ -56,15 +57,17 @@ public class CountStatsDtoBuilders {
 
     private CountStatsDto calculateCounts(String datasetId, List<String> ids) {
       int studies = 0;
-      int networks = 0;
       int variables = countStatsData.getVariables(datasetId);
 
+      List<String> networks = Lists.newArrayList();
       for(String id : ids) {
         studies += countStatsData.getStudies(id);
-        networks += countStatsData.getNetworks(id);
+        String network = countStatsData.getNetworksMap(id);
+        if (!Strings.isNullOrEmpty(network)) networks.add(network);
       }
 
-      return CountStatsDto.newBuilder().setVariables(variables).setStudies(studies).setNetworks(networks).build();
+      return CountStatsDto.newBuilder().setVariables(variables).setStudies(studies)
+        .setNetworks((int) networks.stream().distinct().count()).build();
     }
 
     private List<String> getStudyIds(Dataset dataset) {
@@ -77,7 +80,7 @@ public class CountStatsDtoBuilders {
         HarmonizationDataset hDataset = (HarmonizationDataset) dataset;
         List<StudyTable> tables = hDataset.getStudyTables();
         if(tables.size() > 0) {
-          return tables.stream().map(StudyTable::getStudyId).collect(Collectors.toList());
+          return tables.stream().map(StudyTable::getStudyId).distinct().collect(Collectors.toList());
         }
       }
 

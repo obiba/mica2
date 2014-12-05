@@ -12,6 +12,7 @@ package org.obiba.mica.search.rest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -26,12 +27,16 @@ import org.elasticsearch.search.aggregations.metrics.stats.Stats;
 import org.obiba.mica.search.AggregationMetaDataProvider;
 import org.obiba.mica.search.AggregationMetaDataResolver;
 import org.obiba.mica.web.model.MicaSearch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.obiba.mica.web.model.MicaSearch.AggregationResultDto;
 import static org.obiba.mica.web.model.MicaSearch.StatsAggregationResultDto;
 import static org.obiba.mica.web.model.MicaSearch.TermsAggregationResultDto;
 
 public class EsQueryResultParser {
+
+  private static final Logger log = LoggerFactory.getLogger(EsQueryResultParser.class);
 
   private final String locale;
 
@@ -90,15 +95,27 @@ public class EsQueryResultParser {
           IntStream.range(0, defaultBuckets.size()).forEach(j -> {
             // It appears that 'min_document_count' does not apply to sub-aggregations,
             // hence the disparity in bucket sizes
-            Terms.Bucket queriedBucket = queriedBuckets.size() > 0 ? queriedBuckets.get(j) : null;
-
-            int queriedBucketCount = queriedBucket != null ? (int)queriedBucket.getDocCount() : 0;
+            int queriedBucketsSize = queriedBuckets.size();
             Terms.Bucket defaultBucket = defaultBuckets.get(j);
+            Optional<Terms.Bucket> queriedBucket =
+              queriedBucketsSize == defaultBuckets.size()
+                ? Optional.of(queriedBuckets.get(j))
+                : queriedBucketsSize > 0 ? findQueriedBucket(queriedBuckets, defaultBucket.getKey()) : Optional.empty();
+
+            int queriedBucketCount = 0;
+            Optional<Aggregations> queriedAggregations = Optional.empty();
+
+            if (queriedBucket.isPresent()) {
+              Terms.Bucket bucket = queriedBucket.get();
+              queriedBucketCount = (int)bucket.getDocCount();
+              queriedAggregations = Optional.of(bucket.getAggregations());
+            }
+
             TermsAggregationResultDto.Builder termsBuilder = TermsAggregationResultDto.newBuilder();
 
-            if(defaultBucket.getAggregations() != null && queriedBucket != null) {
+            if(defaultBucket.getAggregations() != null && queriedAggregations.isPresent()) {
               termsBuilder
-                  .addAllAggs(parseAggregations(defaultBucket.getAggregations(), queriedBucket.getAggregations()));
+                  .addAllAggs(parseAggregations(defaultBucket.getAggregations(), queriedAggregations.get()));
             }
 
             String key = defaultBucket.getKey();
@@ -125,6 +142,14 @@ public class EsQueryResultParser {
     });
 
     return aggResults;
+  }
+
+  private Optional<Terms.Bucket> findQueriedBucket(List<Terms.Bucket> queriedBuckets, String key) {
+    return queriedBuckets.stream().filter(bucket -> {
+      String qKey = bucket.getKey();
+      log.info("{} == {}", qKey, key);
+      return bucket.getKey().equals(key);
+    }).findFirst();
   }
 
   public long getTotalCount() {

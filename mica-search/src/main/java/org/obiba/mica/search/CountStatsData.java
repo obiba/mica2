@@ -10,7 +10,9 @@
 
 package org.obiba.mica.search;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class CountStatsData {
   private Map<String, Integer> variables;
@@ -18,6 +20,7 @@ public class CountStatsData {
   private Map<String, Integer> harmonizationDatasets;
   private Map<String, Integer> studies;
   private Map<String, Integer> networks;
+  private Map<String, List<String>> networksMap;
 
   public static Builder newBuilder() {
     return new Builder();
@@ -41,6 +44,12 @@ public class CountStatsData {
 
   public int getNetworks(String studyId) {
     return getCount(networks, studyId);
+  }
+
+  public String getNetworksMap(String studyId) {
+    Optional<Map.Entry<String, List<String>>> result = networksMap.entrySet().stream()
+      .filter(entry -> entry.getValue().contains(studyId)).findFirst();
+    return result.isPresent() ? result.get().getKey() : null;
   }
 
   private static int getCount(Map<String, Integer> map, String studyId) {
@@ -76,6 +85,11 @@ public class CountStatsData {
 
     public Builder networks(Map<String, Integer> value) {
       data.networks = value;
+      return this;
+    }
+
+    public Builder networksMap(Map<String, List<String>> value) {
+      data.networksMap = value;
       return this;
     }
 
