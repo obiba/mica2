@@ -15,7 +15,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -28,7 +27,6 @@ import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.core.domain.AttributeKey;
-import org.obiba.mica.dataset.search.VariableIndexer;
 import org.obiba.mica.micaConfig.OpalService;
 import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.search.rest.QueryDtoHelper;
@@ -93,7 +91,7 @@ public class PublishedDatasetVariablesSearchResource {
     MicaSearch.JoinQueryDto joinQueryDto) throws IOException {
 
     MicaSearch.JoinQueryResultDto result = joinQueryExecutor
-      .queryAggregations(JoinQueryExecutor.QueryType.VARIABLE, joinQueryDto);
+      .queryCoverage(JoinQueryExecutor.QueryType.VARIABLE, joinQueryDto);
     List<MicaSearch.AggregationResultDto> aggregations = result.getVariableResultDto().getAggsList();
 
     Map<String, List<BucketResult>> bucketResultsByTaxonomy = extractBucketResults(joinQueryDto, aggregations).stream()

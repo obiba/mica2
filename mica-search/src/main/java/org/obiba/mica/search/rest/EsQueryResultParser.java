@@ -144,6 +144,61 @@ public class EsQueryResultParser {
     return aggResults;
   }
 
+  public List<AggregationResultDto> parseAggregations(@NotNull Aggregations aggregations) {
+    List<AggregationResultDto> aggResults = new ArrayList();
+    aggregations.forEach(aggregation -> {
+
+      AggregationResultDto.Builder aggResultBuilder = MicaSearch.AggregationResultDto.newBuilder();
+      aggResultBuilder.setAggregation(aggregation.getName());
+      String aggType = ((InternalAggregation) aggregation).type().name();
+
+      switch(aggType) {
+        case "stats":
+          Stats stats = (Stats) aggregation;
+          if(stats.getCount() > 0) {
+            aggResultBuilder.setExtension(StatsAggregationResultDto.stats, //
+              StatsAggregationResultDto.newBuilder() //
+                .setDefault(MicaSearch.StatsAggregationResultDataDto.newBuilder() //
+                  .setCount(-1) //
+                  .setMin(-1) //
+                  .setMax(-1) //
+                  .setAvg(-1) //
+                  .setSum(-1).build()) //
+                .setData(MicaSearch.StatsAggregationResultDataDto.newBuilder() //
+                  .setCount(stats.getCount()) //
+                  .setMin(stats.getMin()) //
+                  .setMax(stats.getMax()) //
+                  .setAvg(stats.getAvg()) //
+                  .setSum(stats.getSum()).build()) //
+                .build()); //
+          }
+          break;
+        case "terms":
+          ((Terms) aggregation).getBuckets().forEach(bucket -> {
+              TermsAggregationResultDto.Builder termsBuilder = TermsAggregationResultDto.newBuilder();
+              if(bucket.getAggregations() != null) {
+                termsBuilder.addAllAggs(parseAggregations(bucket.getAggregations()));
+              }
+              aggResultBuilder.addExtension(TermsAggregationResultDto.terms,
+                termsBuilder.setKey(bucket.getKey()).setDefault(-1).setCount((int) bucket.getDocCount()).build());
+            });
+          break;
+        case "global":
+          totalCount = ((Global) aggregation).getDocCount();
+          // do not include in the list of aggregations
+          return;
+
+        default:
+          throw new RuntimeException("Unsupported aggregation type " + aggType);
+      }
+
+      aggResults.add(aggResultBuilder.build());
+
+    });
+
+    return aggResults;
+  }
+
   private Optional<Terms.Bucket> findQueriedBucket(List<Terms.Bucket> queriedBuckets, String key) {
     return queriedBuckets.stream().filter(bucket -> {
       String qKey = bucket.getKey();

@@ -48,6 +48,8 @@ import org.springframework.core.io.Resource;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import static org.obiba.mica.search.queries.AbstractDocumentQuery.Mode.COVERAGE;
+import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.DIGEST;
 import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.NONE;
 import static org.obiba.mica.web.model.MicaSearch.QueryDto;
 import static org.obiba.mica.web.model.MicaSearch.QueryResultDto;
@@ -70,6 +72,19 @@ public abstract class AbstractDocumentQuery {
 
   private static final Logger log = LoggerFactory.getLogger(AbstractDocumentQuery.class);
 
+  public enum Mode {
+    SEARCH,
+    COVERAGE
+  }
+
+  public enum Scope {
+    NONE,
+    DIGEST,
+    DETAIL
+  }
+
+  protected Mode mode = Mode.SEARCH;
+
   protected QueryDto queryDto;
 
   protected QueryResultDto resultDto;
@@ -84,7 +99,8 @@ public abstract class AbstractDocumentQuery {
     return QueryDtoHelper.hasQuery(queryDto);
   }
 
-  public void initialize(QueryDto query, String localeName) {
+  public void initialize(QueryDto query, String localeName, Mode mode) {
+    this.mode = mode;
     locale = localeName;
     queryDto = QueryDtoHelper
         .ensureQueryStringDtoFields(query, locale, getLocalizedQueryStringFields(), getQueryStringFields());
@@ -105,12 +121,6 @@ public abstract class AbstractDocumentQuery {
   }
 
   protected abstract Resource getAggregationsDescription();
-
-  public enum Scope {
-    NONE,
-    DIGEST,
-    DETAIL
-  }
 
   @Nullable
   protected Properties getAggregationsProperties() {
@@ -180,8 +190,9 @@ public abstract class AbstractDocumentQuery {
    */
   public List<String> query(List<String> studyIds, CountStatsData counts, Scope scope) throws IOException {
     QueryDto tempQueryDto = queryDto == null ? createStudyIdFilters(studyIds) : addStudyIdFilters(studyIds);
-    QueryDto subtempQueryDto = queryDto == null ? createStudyIdFilters(studyIds) : addStudyIdFilters(studyIds);
-    return execute(tempQueryDto, tempQueryDto.getFrom(), tempQueryDto.getSize(), scope, counts);
+    return mode == COVERAGE
+      ? executeCoverage(tempQueryDto, tempQueryDto.getFrom(), tempQueryDto.getSize(), DIGEST, counts)
+      : execute(tempQueryDto, tempQueryDto.getFrom(), tempQueryDto.getSize(), scope, counts);
   }
 
   /**
@@ -264,6 +275,60 @@ public abstract class AbstractDocumentQuery {
   }
 
   /**
+   * Executes a query to retrieve documents and aggregations for coverage
+   *
+   * @param queryDto
+   * @param from
+   * @param size
+   * @param scope
+   * @param counts
+   * @return
+   * @throws IOException
+   */
+  protected List<String> executeCoverage(QueryDto queryDto, int from, int size, Scope scope, CountStatsData counts)
+    throws IOException {
+    if(queryDto == null) return null;
+    QueryDtoParser queryDtoParser = QueryDtoParser.newParser();
+    SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
+      .setTypes(getSearchType()) //
+      .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
+      .setQuery(queryDtoParser.parse(queryDto)) //
+      .setFrom(from) //
+      .setSize(size) //
+      .addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT));
+
+    if(ignoreFields()) requestBuilder.setNoFields();
+    SortBuilder sortBuilder = queryDtoParser.parseSort(queryDto);
+    if(sortBuilder != null) requestBuilder.addSort(queryDtoParser.parseSort(queryDto));
+
+    aggregationYamlParser.setLocales(micaConfigService.getConfig().getLocales());
+    Map<String, Properties> subAggregations = Maps.newHashMap();
+    Properties aggregationProperties = getAggregationsProperties();
+    if(queryDto != null && queryDto.getAggsByCount() > 0) {
+      queryDto.getAggsByList().forEach(field -> subAggregations.put(field, aggregationProperties));
+    }
+    aggregationYamlParser.getAggregations(getAggregationsDescription(), subAggregations)
+      .forEach(requestBuilder::addAggregation);
+    aggregationYamlParser.getAggregations(aggregationProperties).forEach(requestBuilder::addAggregation);
+
+    log.info("Request: {}", requestBuilder.toString());
+    SearchResponse response;
+    try {
+      response = requestBuilder.execute().actionGet();
+      log.info("Response: {}", response.toString());
+      QueryResultDto.Builder builder = QueryResultDto.newBuilder()
+        .setTotalHits((int) response.getHits().getTotalHits());
+      if(scope != NONE) processHits(builder, response.getHits(), scope, counts);
+      processAggregations(builder, null, response.getAggregations());
+      resultDto = builder.build();
+      return getResponseStudyIds(resultDto.getAggsList());
+    } catch(IndexMissingException e) {
+      log.error("Missing index: {}", e.getMessage(), e);
+      return null;
+    }
+  }
+
+  /**
    * Returning 'false' will include documents in the query result
    *
    * @return
@@ -290,7 +355,9 @@ public abstract class AbstractDocumentQuery {
    */
   protected void processAggregations(QueryResultDto.Builder builder, Aggregations defaults, Aggregations aggregations) {
     EsQueryResultParser parser = EsQueryResultParser.newParser(aggregationTitleResolver, locale);
-    builder.addAllAggs(parser.parseAggregations(defaults, aggregations));
+    builder.addAllAggs(defaults == null //
+      ? parser.parseAggregations(aggregations) //
+      : parser.parseAggregations(defaults, aggregations)); //
     builder.setTotalCount(parser.getTotalCount());
   }
 
