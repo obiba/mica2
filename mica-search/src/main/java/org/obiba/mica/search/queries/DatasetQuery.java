@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -23,8 +24,11 @@ import javax.inject.Inject;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.aggregations.Aggregation;
+import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
@@ -32,6 +36,7 @@ import org.obiba.mica.dataset.search.DatasetIndexer;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
 import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.DatasetIdProvider;
+import org.obiba.mica.search.rest.AggregationYamlParser;
 import org.obiba.mica.search.rest.QueryDtoHelper;
 import org.obiba.mica.search.rest.QueryDtoParser;
 import org.obiba.mica.web.model.Dtos;
@@ -45,6 +50,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import static org.obiba.mica.search.CountStatsDtoBuilders.DatasetCountStatsBuilder;
 import static org.obiba.mica.search.rest.QueryDtoHelper.BoolQueryType;
@@ -240,6 +246,46 @@ public class DatasetQuery extends AbstractDocumentQuery {
     }
 
     return DatasetType.DATASET;
+  }
+
+  public Map<String, Map<String, List<String>>> getStudyCountsByDataset() {
+    SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
+      .setTypes(getSearchType()) //
+      .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
+      .setQuery(queryDto == null ? QueryBuilders.matchAllQuery() : QueryDtoParser.newParser().parse(queryDto)) //
+      .setNoFields();
+
+    Properties props = new Properties();
+    props.setProperty("id", "");
+    Properties subProps = new Properties();
+    getJoinFields().forEach(joinField -> subProps.setProperty(joinField, ""));
+    Map<String, Properties> subAggregations = Maps.newHashMap();
+    subAggregations.put("id", subProps);
+    try {
+      aggregationYamlParser.getAggregations(props, subAggregations).forEach(requestBuilder::addAggregation);
+    } catch(IOException e) {
+      log.error("Failed to add Study By dataset aggregations");
+      return Maps.newHashMap();
+    }
+
+    SearchResponse response = requestBuilder.execute().actionGet();
+    Map<String, Map<String, List<String>>> map = Maps.newHashMap();
+
+    Aggregation idAgg = response.getAggregations().get("id");
+
+    ((Terms) idAgg).getBuckets().stream().filter(bucket -> bucket.getDocCount() > 0)
+        .forEach(bucket -> map.put(bucket.getKey(), getStudyCounts(bucket.getAggregations())));
+
+    return map;
+  }
+
+  private Map<String, List<String>> getStudyCounts(Aggregations aggregations) {
+    Map<String, List<String>> map = Maps.newHashMap();
+    aggregations.forEach(aggregation -> map.put(AggregationYamlParser.unformatName(aggregation.getName()),
+        ((Terms) aggregation).getBuckets().stream().filter(bucket -> bucket.getDocCount() > 0)
+          .map(bucket -> bucket.getKey()).collect(Collectors.toList())));
+
+    return map;
   }
 
   public Map<String, Integer> getStudyCounts() {

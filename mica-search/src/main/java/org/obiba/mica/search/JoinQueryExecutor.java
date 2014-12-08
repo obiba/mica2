@@ -217,7 +217,7 @@ public class JoinQueryExecutor {
     switch(type) {
       case DATASET:
         countStats = CountStatsData.newBuilder().variables(variableQuery.getDatasetCounts())
-            .studies(studyQuery.getStudyCounts()).networks(networkQuery.getStudyCounts()).build();
+            .studies(studyQuery.getStudyCounts()).networksMap(networkQuery.getStudyCountsByNetwork()).build();
         break;
       case STUDY:
         countStats = CountStatsData.newBuilder().variables(variableQuery.getStudyCounts())
@@ -227,8 +227,8 @@ public class JoinQueryExecutor {
         break;
       case NETWORK:
         countStats = CountStatsData.newBuilder().variables(variableQuery.getStudyCounts())
-            .studyDatasets(datasetQuery.getStudyCounts())
-            .harmonizationDatasets(datasetQuery.getHarmonizationStudyCounts()).studies(studyQuery.getStudyCounts())
+            .datasetsMap(datasetQuery.getStudyCountsByDataset())
+            .studies(studyQuery.getStudyCounts())
             .build();
         break;
     }
