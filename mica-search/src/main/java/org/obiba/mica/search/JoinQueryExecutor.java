@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 import javax.inject.Inject;
 
 import org.obiba.mica.search.queries.AbstractDocumentQuery;
+import org.obiba.mica.search.queries.AbstractDocumentQuery.Mode;
 import org.obiba.mica.search.queries.DatasetQuery;
 import org.obiba.mica.search.queries.NetworkQuery;
 import org.obiba.mica.search.queries.StudyQuery;
@@ -59,16 +60,16 @@ public class JoinQueryExecutor {
   @Inject
   private NetworkQuery networkQuery;
 
-  public JoinQueryResultDto queryAggregations(QueryType type, JoinQueryDto joinQueryDto) throws IOException {
-    return query(type, joinQueryDto, null, DIGEST);
+  public JoinQueryResultDto queryCoverage(QueryType type, JoinQueryDto joinQueryDto) throws IOException {
+    return query(type, joinQueryDto, null, DIGEST, Mode.COVERAGE);
   }
 
   public JoinQueryResultDto listQuery(QueryType type, MicaSearch.QueryDto queryDto , String locale) throws IOException {
     JoinQueryDto joinQueryDto = createJoinQueryByType(type, queryDto);
-    variableQuery.initialize(joinQueryDto.hasVariableQueryDto() ? joinQueryDto.getVariableQueryDto() : null, locale);
-    datasetQuery.initialize(joinQueryDto.hasDatasetQueryDto() ? joinQueryDto.getDatasetQueryDto() : null, locale);
-    studyQuery.initialize(joinQueryDto.hasStudyQueryDto() ? joinQueryDto.getStudyQueryDto() : null, locale);
-    networkQuery.initialize(joinQueryDto.hasNetworkQueryDto() ? joinQueryDto.getNetworkQueryDto() : null, locale);
+    variableQuery.initialize(joinQueryDto.hasVariableQueryDto() ? joinQueryDto.getVariableQueryDto() : null, locale, Mode.SEARCH);
+    datasetQuery.initialize(joinQueryDto.hasDatasetQueryDto() ? joinQueryDto.getDatasetQueryDto() : null, locale, Mode.SEARCH);
+    studyQuery.initialize(joinQueryDto.hasStudyQueryDto() ? joinQueryDto.getStudyQueryDto() : null, locale, Mode.SEARCH);
+    networkQuery.initialize(joinQueryDto.hasNetworkQueryDto() ? joinQueryDto.getNetworkQueryDto() : null, locale, Mode.SEARCH);
 
     execute(type, DETAIL, CountStatsData.newBuilder());
 
@@ -103,18 +104,18 @@ public class JoinQueryExecutor {
   }
 
   public JoinQueryResultDto query(QueryType type, JoinQueryDto joinQueryDto) throws IOException {
-    return query(type, joinQueryDto, CountStatsData.newBuilder(), DETAIL);
+    return query(type, joinQueryDto, CountStatsData.newBuilder(), DETAIL, Mode.SEARCH);
   }
 
   private JoinQueryResultDto query(QueryType type, JoinQueryDto joinQueryDto, CountStatsData.Builder countBuilder,
-      AbstractDocumentQuery.Scope scope) throws IOException {
+      AbstractDocumentQuery.Scope scope, AbstractDocumentQuery.Mode mode) throws IOException {
     DatasetIdProvider datasetIdProvider = new DatasetIdProvider();
     String locale = joinQueryDto.getLocale();
 
-    variableQuery.initialize(joinQueryDto.hasVariableQueryDto() ? joinQueryDto.getVariableQueryDto() : null, locale);
-    datasetQuery.initialize(joinQueryDto.hasDatasetQueryDto() ? joinQueryDto.getDatasetQueryDto() : null, locale);
-    studyQuery.initialize(joinQueryDto.hasStudyQueryDto() ? joinQueryDto.getStudyQueryDto() : null, locale);
-    networkQuery.initialize(joinQueryDto.hasNetworkQueryDto() ? joinQueryDto.getNetworkQueryDto() : null, locale);
+    variableQuery.initialize(joinQueryDto.hasVariableQueryDto() ? joinQueryDto.getVariableQueryDto() : null, locale, mode);
+    datasetQuery.initialize(joinQueryDto.hasDatasetQueryDto() ? joinQueryDto.getDatasetQueryDto() : null, locale, mode);
+    studyQuery.initialize(joinQueryDto.hasStudyQueryDto() ? joinQueryDto.getStudyQueryDto() : null, locale, mode);
+    networkQuery.initialize(joinQueryDto.hasNetworkQueryDto() ? joinQueryDto.getNetworkQueryDto() : null, locale, mode);
 
     boolean queriesHaveFilters = Stream.of(variableQuery, datasetQuery, studyQuery, networkQuery)
         .filter(AbstractDocumentQuery::hasQueryFilters).collect(Collectors.toList()).size() > 0;
