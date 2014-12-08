@@ -12,6 +12,7 @@ package org.obiba.mica.search;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.obiba.mica.core.domain.StudyTable;
@@ -19,8 +20,8 @@ import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.network.domain.Network;
+import org.obiba.mica.search.queries.DatasetQuery;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.web.model.MicaSearch;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -62,7 +63,7 @@ public class CountStatsDtoBuilders {
       List<String> networks = Lists.newArrayList();
       for(String id : ids) {
         studies += countStatsData.getStudies(id);
-        String network = countStatsData.getNetworksMap(id);
+        String network = countStatsData.getNetwork(id);
         if (!Strings.isNullOrEmpty(network)) networks.add(network);
       }
 
@@ -103,21 +104,30 @@ public class CountStatsDtoBuilders {
       return calculateCounts(network.getStudyIds());
     }
 
-    private MicaSearch.CountStatsDto calculateCounts(List<String> ids) {
+    private CountStatsDto calculateCounts(List<String> ids) {
       int variables = 0;
-      int studyDatasets = 0;
-      int harmonizationDatasets = 0;
+      List<String> studyDatasets = Lists.newArrayList();
+      List<String> harmonizationDatasets = Lists.newArrayList();
       int studies = 0;
 
       for(String id : ids) {
         variables += countStatsData.getVariables(id);
-        studyDatasets += countStatsData.getStudyDatasets(id);
-        harmonizationDatasets += countStatsData.getHarmonizationDatasets(id);
+        Map<String, List<String>> datasets = countStatsData.getDataset(id);
+        if (datasets.containsKey(DatasetQuery.STUDY_JOIN_FIELD)) {
+          studyDatasets.addAll(datasets.get(DatasetQuery.STUDY_JOIN_FIELD));
+        }
+
+        if (datasets.containsKey(DatasetQuery.HARMONIZATION_JOIN_FIELD)) {
+          harmonizationDatasets.addAll(datasets.get(DatasetQuery.HARMONIZATION_JOIN_FIELD));
+        }
         studies += countStatsData.getStudies(id);
       }
 
-      return MicaSearch.CountStatsDto.newBuilder().setVariables(variables).setStudyDatasets(studyDatasets)
-          .setHarmonizationDatasets(harmonizationDatasets).setStudies(studies).build();
+      return CountStatsDto.newBuilder()
+        .setVariables(variables)
+        .setStudyDatasets((int)studyDatasets.stream().distinct().count())
+        .setHarmonizationDatasets((int)harmonizationDatasets.stream().distinct().count())
+        .setStudies(studies).build();
     }
   }
 
@@ -133,7 +143,7 @@ public class CountStatsDtoBuilders {
 
     public CountStatsDto build(Study study) {
       String id = study.getId();
-      return MicaSearch.CountStatsDto.newBuilder().setVariables(countStatsData.getVariables(id))
+      return CountStatsDto.newBuilder().setVariables(countStatsData.getVariables(id))
           .setStudyDatasets(countStatsData.getStudyDatasets(id))
           .setHarmonizationDatasets(countStatsData.getHarmonizationDatasets(id))
           .setNetworks(countStatsData.getNetworks(id)).build();

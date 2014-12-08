@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+
 public class CountStatsData {
   private Map<String, Integer> variables;
   private Map<String, Integer> studyDatasets;
@@ -21,6 +24,7 @@ public class CountStatsData {
   private Map<String, Integer> studies;
   private Map<String, Integer> networks;
   private Map<String, List<String>> networksMap;
+  private Map<String, Map<String, List<String>>> datasetsMap;
 
   public static Builder newBuilder() {
     return new Builder();
@@ -46,7 +50,7 @@ public class CountStatsData {
     return getCount(networks, studyId);
   }
 
-  public String getNetworksMap(String studyId) {
+  public String getNetwork(String studyId) {
     Optional<Map.Entry<String, List<String>>> result = networksMap.entrySet().stream()
       .filter(entry -> entry.getValue().contains(studyId)).findFirst();
     return result.isPresent() ? result.get().getKey() : null;
@@ -60,11 +64,35 @@ public class CountStatsData {
     return map.get(studyId);
   }
 
+  public Map<String, List<String>> getDataset(String studyId) {
+    Map<String, List<String>> map = Maps.newHashMap();
+    datasetsMap.entrySet().forEach(
+      entry -> {
+        Optional<Map.Entry<String, List<String>>> result = entry.getValue().entrySet().stream()
+          .filter(subentry -> subentry.getValue().contains(studyId)).findFirst();
+
+        if (result.isPresent()) {
+          String key = result.get().getKey();
+          List<String> list = map.containsKey(key) ? map.get(key) : Lists.newArrayList();
+          list.add(entry.getKey());
+          map.put(key, list);
+        }
+      }
+    );
+
+    return map;
+  }
+
   public static class Builder {
     private CountStatsData data = new CountStatsData();
 
     public Builder variables(Map<String, Integer> value) {
       data.variables = value;
+      return this;
+    }
+
+    public Builder datasetsMap(Map<String, Map<String, List<String>>> value) {
+      data.datasetsMap = value;
       return this;
     }
 

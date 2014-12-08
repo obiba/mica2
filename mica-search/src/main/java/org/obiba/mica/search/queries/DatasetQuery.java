@@ -264,7 +264,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
     try {
       aggregationYamlParser.getAggregations(props, subAggregations).forEach(requestBuilder::addAggregation);
     } catch(IOException e) {
-      log.error("Failed to add Study By Network aggregations");
+      log.error("Failed to add Study By dataset aggregations");
       return Maps.newHashMap();
     }
 

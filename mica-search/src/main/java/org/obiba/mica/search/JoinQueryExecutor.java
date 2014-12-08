@@ -13,7 +13,6 @@ package org.obiba.mica.search;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -227,10 +226,9 @@ public class JoinQueryExecutor {
             .build();
         break;
       case NETWORK:
-        Map<String, Map<String, List<String>>> map = datasetQuery.getStudyCountsByDataset();
         countStats = CountStatsData.newBuilder().variables(variableQuery.getStudyCounts())
-            .studyDatasets(datasetQuery.getStudyCounts())
-            .harmonizationDatasets(datasetQuery.getHarmonizationStudyCounts()).studies(studyQuery.getStudyCounts())
+            .datasetsMap(datasetQuery.getStudyCountsByDataset())
+            .studies(studyQuery.getStudyCounts())
             .build();
         break;
     }
