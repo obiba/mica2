@@ -1,7 +1,6 @@
 package org.obiba.mica.study.domain;
 
 import java.io.Serializable;
-import java.time.Year;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -24,6 +23,7 @@ import org.obiba.mica.core.domain.Contact;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.PersistableWithAttachments;
+import org.obiba.mica.study.date.PersitableYear;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
@@ -61,9 +61,9 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
 
   private NumberOfParticipants numberOfParticipants;
 
-  private Year start;
+  private PersitableYear start;
 
-  private Year end;
+  private PersitableYear end;
 
   private List<String> access;
 
@@ -195,20 +195,24 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
     this.numberOfParticipants = numberOfParticipants;
   }
 
-  public Year getStart() {
-    return start;
+  public Integer getStart() {
+    return start == null ? null : start.getYear();
   }
 
-  public void setStart(Year start) {
-    this.start = start;
+  public void setStart(Integer value) {
+    if (value == null) return;
+    if (start == null) start = new PersitableYear();
+    start.setYear(value);
   }
 
-  public Year getEnd() {
-    return end;
+  public Integer getEnd() {
+    return end == null ? null : end.getYear();
   }
 
-  public void setEnd(Year end) {
-    this.end = end;
+  public void setEnd(Integer value) {
+    if (value == null) return;
+    if (end == null) end = new PersitableYear();
+    end.setYear(value);
   }
 
   public List<String> getAccess() {

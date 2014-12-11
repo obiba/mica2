@@ -8,6 +8,7 @@ import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
 import org.obiba.mica.study.event.IndexStudiesEvent;
 import org.obiba.mica.study.event.StudyDeletedEvent;
 import org.obiba.mica.study.event.StudyPublishedEvent;
+import org.obiba.mica.study.event.StudyUnpublishedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
@@ -43,6 +44,14 @@ public class StudyIndexer {
   public void studyPublished(StudyPublishedEvent event) {
     log.info("Study {} was published", event.getPersistable());
     elasticSearchIndexer.index(PUBLISHED_STUDY_INDEX, event.getPersistable());
+  }
+
+  @Async
+  @Subscribe
+  public void studyUnpublished(StudyUnpublishedEvent event) {
+    log.info("Study {} was unpublished", event.getPersistable());
+    elasticSearchIndexer.delete(PUBLISHED_STUDY_INDEX, event.getPersistable());
+    elasticSearchIndexer.index(DRAFT_STUDY_INDEX, event.getPersistable());
   }
 
   @Async

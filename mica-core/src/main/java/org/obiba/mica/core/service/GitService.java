@@ -16,6 +16,7 @@ import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.PersonIdent;
@@ -82,6 +83,11 @@ public class GitService {
   @VisibleForTesting
   public void setClonesRoot(File clonesRoot) {
     this.clonesRoot = clonesRoot;
+  }
+
+  public boolean hasGitRepository(String id) {
+    return FileUtils.fileExists(getRepositoryPath(id).getAbsolutePath())
+      || FileUtils.fileExists(getCloneRepositoryPath(id).getAbsolutePath());
   }
 
   public <TGitPersistable extends AbstractGitPersistable> void save(@NotNull @Valid TGitPersistable persistable) {
@@ -202,6 +208,10 @@ public class GitService {
 
   private File getRepositoryPath(String id) {
     return new File(repositoriesRoot, id + ".git");
+  }
+
+  private File getCloneRepositoryPath(String id) {
+    return new File(repositoriesRoot, id );
   }
 
   private String getJsonFileName(Class<?> clazz) {
