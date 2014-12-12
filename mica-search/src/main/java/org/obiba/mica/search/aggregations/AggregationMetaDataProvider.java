@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.search;
+package org.obiba.mica.search.aggregations;
 
 public interface AggregationMetaDataProvider {
   /**
@@ -19,6 +19,8 @@ public interface AggregationMetaDataProvider {
    * @return
    */
   MetaData getTitle(String aggregation, String termKey, String locale);
+
+  void refresh();
 
   class MetaData {
     private String title;

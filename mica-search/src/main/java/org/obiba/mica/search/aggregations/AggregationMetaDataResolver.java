@@ -8,7 +8,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.search;
+package org.obiba.mica.search.aggregations;
+
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
@@ -22,9 +25,22 @@ public class AggregationMetaDataResolver implements AggregationMetaDataProvider 
   @Inject
   private DefaultAggregationMetaDataProvider defaultAggregationTitleProvider;
 
+  @Inject
+  private DatasetAggregationMetaDataProvider datasetAggregationMetaDataProvider;
+
   @Override
   public MetaData getTitle(String aggregation, String termKey, String locale) {
-    MetaData title = taxonomyAggregationTitleProvider.getTitle(aggregation, termKey, locale);
-    return title == null ? defaultAggregationTitleProvider.getTitle(aggregation, termKey, locale) : title;
+    Optional<MetaData> title = Stream
+      .of(taxonomyAggregationTitleProvider, datasetAggregationMetaDataProvider, defaultAggregationTitleProvider)
+      .map(provider -> provider.getTitle(aggregation, termKey, locale)).filter(metaData -> metaData != null)
+      .findFirst();
+
+    return title.get();
+  }
+
+  @Override
+  public void refresh() {
+    Stream.of(taxonomyAggregationTitleProvider, datasetAggregationMetaDataProvider, defaultAggregationTitleProvider)
+      .forEach(AggregationMetaDataProvider::refresh);
   }
 }

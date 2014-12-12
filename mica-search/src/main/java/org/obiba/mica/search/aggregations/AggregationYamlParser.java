@@ -1,4 +1,4 @@
-package org.obiba.mica.search.rest;
+package org.obiba.mica.search.aggregations;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -104,7 +104,7 @@ public class AggregationYamlParser {
       Map<String, Iterable<AbstractAggregationBuilder>> subAggregations) {
     Collection<AbstractAggregationBuilder> termsBuilders = new ArrayList<>();
     if (properties == null) return termsBuilders;
-    
+
     SortedMap<String, ?> sortedSystemProperties = new TreeMap(properties);
     String prevKey = null;
     for(Map.Entry<String, ?> entry : sortedSystemProperties.entrySet()) {

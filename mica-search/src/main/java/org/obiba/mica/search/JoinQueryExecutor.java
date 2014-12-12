@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
+import org.obiba.mica.search.aggregations.AggregationMetaDataResolver;
 import org.obiba.mica.search.queries.AbstractDocumentQuery;
 import org.obiba.mica.search.queries.AbstractDocumentQuery.Mode;
 import org.obiba.mica.search.queries.DatasetQuery;
@@ -59,6 +60,9 @@ public class JoinQueryExecutor {
 
   @Inject
   private NetworkQuery networkQuery;
+
+  @Inject
+  private AggregationMetaDataResolver aggregationMetaDataResolver;
 
   public JoinQueryResultDto queryCoverage(QueryType type, JoinQueryDto joinQueryDto) throws IOException {
     return query(type, joinQueryDto, null, DIGEST, Mode.COVERAGE);
@@ -152,6 +156,7 @@ public class JoinQueryExecutor {
       throws IOException {
 
     CountStatsData countStats;
+    aggregationMetaDataResolver.refresh(); // do it once before the queries
 
     switch(type) {
       case VARIABLE:
@@ -179,8 +184,10 @@ public class JoinQueryExecutor {
 
   private List<String> executeJoin(QueryType type, AbstractDocumentQuery.Scope scope) throws IOException {
     List<String> joinedIds = null;
-    switch(type) {
 
+    aggregationMetaDataResolver.refresh(); // do it once before the queries
+
+    switch(type) {
       case VARIABLE:
         joinedIds = execute(scope, variableQuery, studyQuery, datasetQuery, networkQuery);
         break;

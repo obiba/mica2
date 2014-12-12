@@ -8,14 +8,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.search;
+package org.obiba.mica.search.aggregations;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.obiba.mica.core.domain.AttributeKey;
@@ -38,8 +37,8 @@ public class TaxonomyAggregationMetaDataProvider implements AggregationMetaDataP
 
   private Map<String, Vocabulary> cache;
 
-  @PostConstruct
-  public void init() {
+  @Override
+  public void refresh() {
     getTaxonomies();
     cache = Maps.newHashMap();
   }
