@@ -1,6 +1,5 @@
 package org.obiba.mica.web.model;
 
-import java.time.Year;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
@@ -48,8 +47,8 @@ class StudyDtos {
 
     if(study.getLogo() != null) builder.setLogo(attachmentDtos.asDto(study.getLogo()));
 
-    if(study.getStart() != null) builder.setStartYear(study.getStart().getValue());
-    if(study.getEnd() != null) builder.setEndYear(study.getEnd().getValue());
+    if(study.getStart() != null) builder.setStartYear(study.getStart());
+    if(study.getEnd() != null) builder.setEndYear(study.getEnd());
     if(study.getAccess() != null) {
       study.getAccess().forEach(builder::addAccess);
     }
@@ -100,8 +99,8 @@ class StudyDtos {
     Study study = new Study();
     if(dto.hasId()) study.setId(dto.getId());
     if(dto.hasTimestamps()) TimestampsDtos.fromDto(dto.getTimestamps(), study);
-    if(dto.hasStartYear()) study.setStart(Year.of(dto.getStartYear()));
-    if(dto.hasEndYear()) study.setEnd(Year.of(dto.getEndYear()));
+    if(dto.hasStartYear()) study.setStart(dto.getStartYear());
+    if(dto.hasEndYear()) study.setEnd(dto.getEndYear());
     if(dto.getAccessCount() > 0) study.setAccess(dto.getAccessList());
     if(dto.getOtherAccessCount() > 0) study.setOtherAccess(localizedStringDtos.fromDto(dto.getOtherAccessList()));
     if(dto.hasMarkerPaper()) study.setMarkerPaper(dto.getMarkerPaper());

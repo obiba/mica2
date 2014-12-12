@@ -16,29 +16,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.core.domain.LocalizedString;
-import org.obiba.mica.core.service.GitService;
-import org.obiba.mica.study.NoSuchStudyException;
-import org.obiba.mica.study.StudyStateRepository;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.domain.StudyState;
-import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
-import org.obiba.mica.study.event.IndexStudiesEvent;
-import org.obiba.mica.study.event.StudyPublishedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -46,10 +30,7 @@ import org.springframework.validation.annotation.Validated;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
-import com.google.common.eventbus.EventBus;
 import com.google.common.io.Files;
-
-import static org.obiba.mica.core.domain.RevisionStatus.DRAFT;
 
 /**
  * Import studies (save and publish) from JSON files found in MICA_SERVER_HOME/seed/in directory.
@@ -115,7 +96,7 @@ public class StudySeedService {
 
     try {
       if(lock.exists() || !lock.createNewFile()) return;
-      
+
       studyPackageImportService.importZip(new FileInputStream(zip), true);
     } catch (IOException e) {
       log.error("Failed importing study package seed: {}", zip.getAbsolutePath(), e);

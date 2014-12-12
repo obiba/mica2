@@ -2,7 +2,6 @@ package org.obiba.mica.study.domain;
 
 import java.io.Serializable;
 import java.time.Month;
-import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -14,6 +13,7 @@ import org.obiba.mica.core.domain.AbstractAttributeAware;
 import org.obiba.mica.core.domain.AttachmentAware;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.file.Attachment;
+import org.obiba.mica.study.date.PersistableYearMonth;
 import org.springframework.data.domain.Persistable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -32,9 +32,9 @@ public class DataCollectionEvent extends AbstractAttributeAware
 
   private LocalizedString description;
 
-  private YearMonth start;
+  private PersistableYearMonth start;
 
-  private YearMonth end;
+  private PersistableYearMonth end;
 
   private List<String> dataSources;
 
@@ -81,28 +81,29 @@ public class DataCollectionEvent extends AbstractAttributeAware
     this.description = description;
   }
 
-  public YearMonth getStart() {
+  public PersistableYearMonth getStart() {
     return start;
   }
 
-  public void setStart(YearMonth start) {
+  public void setStart(PersistableYearMonth start)
+  {
     this.start = start;
   }
 
   public void setStart(int year, @Nullable Integer month) {
-    start = YearMonth.of(year, month == null ? Month.JANUARY.getValue() : month);
+    start = PersistableYearMonth.of(year, month == null ? Month.JANUARY.getValue() : month);
   }
 
-  public YearMonth getEnd() {
+  public PersistableYearMonth getEnd() {
     return end;
   }
 
-  public void setEnd(YearMonth end) {
+  public void setEnd(PersistableYearMonth end) {
     this.end = end;
   }
 
   public void setEnd(int year, @Nullable Integer month) {
-    end = YearMonth.of(year, month == null ? Month.DECEMBER.getValue() : month);
+    end = PersistableYearMonth.of(year, month == null ? Month.DECEMBER.getValue() : month);
   }
 
   public List<String> getDataSources() {

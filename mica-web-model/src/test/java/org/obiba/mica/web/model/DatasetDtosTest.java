@@ -26,6 +26,7 @@ import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.micaConfig.MicaConfig;
 import org.obiba.mica.micaConfig.MicaConfigService;
+import org.obiba.mica.study.StudyRepository;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.study.domain.StudyState;
@@ -137,6 +138,11 @@ public class DatasetDtosTest {
     @Bean
     public PublishedStudyService publishedStudyService() {
       return Mockito.mock(PublishedStudyService.class);
+    }
+
+    @Bean
+    public StudyRepository studyRepository() {
+      return Mockito.mock(StudyRepository.class);
     }
 
     @Bean

@@ -3,23 +3,27 @@ package org.obiba.mica.study;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.mgt.DefaultSecurityManager;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.obiba.core.util.FileUtil;
 import org.obiba.git.command.GitCommandHandler;
 import org.obiba.mica.config.JsonConfiguration;
 import org.obiba.mica.config.MongoDbConfiguration;
-import org.obiba.mica.file.TempFileService;
 import org.obiba.mica.core.service.GitService;
+import org.obiba.mica.file.TempFileService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
+import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.StudyService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -129,7 +133,6 @@ public class StudyServiceTest {
 
   @Test
   public void test_publish_current() throws Exception {
-
     Study study = new Study();
     study.setName(en("name en").forFr("name fr"));
     studyService.save(study);
@@ -148,8 +151,88 @@ public class StudyServiceTest {
     draft.setName(en("new name en").forFr("new name fr"));
     studyService.save(draft);
 
-    assertThat(studyService.findPublishedStudy(study.getId())).areFieldsEqualToEachOther(study);
+    assertThat(studyService.findPublishedStudyByTag(study.getId(), publishedState.getPublishedTag())).areFieldsEqualToEachOther(study);
     assertThat(studyService.findDraftStudy(study.getId())).areFieldsEqualToEachOther(draft);
+  }
+
+  @Test
+  public void test_find_all_draft_studies() {
+    Stream.of("cancer", "gout", "diabetes").forEach(name -> {
+      Study draft = new Study();
+      draft.setName(en(name +" en").forFr(name + " fr"));
+      studyService.save(draft);
+    });
+
+    List<Study> drafts = studyService.findAllDraftStudies();
+    assertThat(drafts.size()).isEqualTo(3);
+    assertThat(drafts.get(2).getName().get("en")).isEqualTo("diabetes en");
+  }
+
+  @Test
+  public void test_loosing_git_base_repo() throws IOException {
+    Study study = new Study();
+    Stream.of("a", "b", "c").forEach(name -> {
+      study.setName(en(name+ " en").forFr(name + " fr"));
+      studyService.save(study);
+      studyService.publish(study.getId());
+    });
+
+    FileUtil.delete(Config.BASE_REPO);
+    Study draft = studyService.findDraftStudy(study.getId());
+    draft.setName(en("d en").forFr("d fr"));
+    studyService.save(draft);
+    studyService.publish(draft.getId());
+    StudyState studyState = studyService.findStateById(draft.getId());
+    assertThat(studyState.isPublished()).isTrue();
+    assertThat(studyState.getPublishedTag()).isEqualTo("4");
+  }
+
+  @Test
+  public void test_loosing_git_clone_repo() throws IOException {
+    Study study = new Study();
+    Stream.of("a", "b", "c").forEach(name -> {
+      study.setName(en(name+ " en").forFr(name + " fr"));
+      studyService.save(study);
+      studyService.publish(study.getId());
+    });
+
+    FileUtil.delete(Config.BASE_CLONE);
+    Study draft = studyService.findDraftStudy(study.getId());
+    draft.setName(en("d en").forFr("d fr"));
+    studyService.save(draft);
+    studyService.publish(draft.getId());
+    StudyState studyState = studyService.findStateById(draft.getId());
+    assertThat(studyState.isPublished()).isTrue();
+    assertThat(studyState.getPublishedTag()).isEqualTo("4");
+  }
+
+  @Test
+  public void test_loosing_git_base_and_clone_repos() throws IOException {
+    Study study = new Study();
+    Stream.of("a", "b", "c").forEach(name -> {
+      study.setName(en(name+ " en").forFr(name + " fr"));
+      studyService.save(study);
+      studyService.publish(study.getId());
+    });
+
+    FileUtil.delete(Config.BASE_REPO);
+    FileUtil.delete(Config.BASE_CLONE);
+
+    Study draft = studyService.findDraftStudy(study.getId());
+    draft.setName(en("d en").forFr("d fr"));
+    studyService.save(draft);
+    studyService.publish(draft.getId());
+    StudyState studyState = studyService.findStateById(draft.getId());
+    assertThat(studyState.isPublished()).isTrue();
+    assertThat(studyState.getPublishedTag()).isEqualTo("1");
+  }
+
+
+  @After
+  public void cleanup() throws IOException {
+    FileUtil.delete(Config.BASE_REPO);
+    FileUtil.delete(Config.BASE_CLONE);
+    FileUtil.delete(Config.TEMP);
   }
 
   @Configuration
@@ -196,6 +279,11 @@ public class StudyServiceTest {
     @Bean
     public GitCommandHandler gitCommandHandler() throws IOException {
       return new GitCommandHandler();
+    }
+
+    @Bean
+    public PublishedStudyService publishedStudyService() {
+      return mock(PublishedStudyService.class);
     }
 
     @Bean

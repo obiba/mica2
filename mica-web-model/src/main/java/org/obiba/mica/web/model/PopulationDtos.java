@@ -6,6 +6,7 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.file.Attachment;
+import org.obiba.mica.study.date.PersistableYearMonth;
 import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.Population;
 import org.springframework.stereotype.Component;
@@ -188,10 +189,12 @@ class PopulationDtos {
     if(dce.getName() != null) builder.addAllName(localizedStringDtos.asDto(dce.getName()));
     if(dce.getDescription() != null) builder.addAllDescription(localizedStringDtos.asDto(dce.getDescription()));
     if(dce.getStart() != null) {
-      builder.setStartYear(dce.getStart().getYear()).setStartMonth(dce.getStart().getMonthValue());
+      PersistableYearMonth.YearMonthData startData = dce.getStart().getYearMonthData();
+      builder.setStartYear(startData.getYear()).setStartMonth(startData.getMonth());
     }
     if(dce.getEnd() != null) {
-      builder.setEndYear(dce.getEnd().getYear()).setEndMonth(dce.getEnd().getMonthValue());
+      PersistableYearMonth.YearMonthData endData = dce.getEnd().getYearMonthData();
+      builder.setEndYear(endData.getYear()).setEndMonth(endData.getMonth());
     }
     if(dce.getDataSources() != null) dce.getDataSources().forEach(builder::addDataSources);
     if(dce.getAdministrativeDatabases() != null) {

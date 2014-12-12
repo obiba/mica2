@@ -1,7 +1,6 @@
 package org.obiba.mica.web.model;
 
 import java.time.LocalDate;
-import java.time.Year;
 import java.util.Arrays;
 import java.util.Locale;
 
@@ -19,19 +18,19 @@ import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.Authorization;
 import org.obiba.mica.core.domain.Contact;
 import org.obiba.mica.core.domain.Timestamped;
+import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.TempFileRepository;
 import org.obiba.mica.file.TempFileService;
 import org.obiba.mica.micaConfig.MicaConfig;
 import org.obiba.mica.micaConfig.MicaConfigRepository;
 import org.obiba.mica.micaConfig.MicaConfigService;
-import org.obiba.mica.core.service.GitService;
-import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.study.StudyStateRepository;
 import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.NumberOfParticipants;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.service.StudyService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -124,8 +123,8 @@ public class StudyDtosTest {
     study.addContact(contact);
     study.addInvestigator(contact);
 
-    study.setStart(Year.of(2002));
-    study.setEnd(Year.of(2050));
+    study.setStart(2002);
+    study.setEnd(2050);
 
     study.setMethods(createMethods());
     study.setNumberOfParticipants(createNumberOfParticipants());

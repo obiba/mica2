@@ -11,12 +11,16 @@ import javax.validation.constraints.NotNull;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.study.NoSuchStudyException;
+import org.obiba.mica.study.StudyRepository;
 import org.obiba.mica.study.StudyStateRepository;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
 import org.obiba.mica.study.event.IndexStudiesEvent;
 import org.obiba.mica.study.event.StudyPublishedEvent;
+import org.obiba.mica.study.event.StudyUnpublishedEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationListener;
@@ -24,7 +28,6 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 
@@ -34,10 +37,16 @@ import static org.obiba.mica.core.domain.RevisionStatus.DRAFT;
 @Validated
 public class StudyService implements ApplicationListener<ContextRefreshedEvent> {
 
-  //private static final Logger log = LoggerFactory.getLogger(StudyService.class);
+  private static final Logger log = LoggerFactory.getLogger(StudyService.class);
+
+  @Inject
+  private PublishedStudyService publishedStudyService;
 
   @Inject
   private StudyStateRepository studyStateRepository;
+
+  @Inject
+  private StudyRepository studyRepository;
 
   @Inject
   private GitService gitService;
@@ -45,17 +54,18 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
   @Inject
   private EventBus eventBus;
 
-  @Inject
-  private ObjectMapper objectMapper;
-
   @CacheEvict(value = "studies-draft", key = "#study.id")
   public void save(@NotNull @Valid Study study) {
+    boolean newStudy = study.isNew();
     StudyState studyState = findStudyState(study);
+    log.info("Saving study: {}", study.getId());
+    if (!newStudy) ensureStudyGitRepository(studyState);
     gitService.save(study);
 
     studyState.setName(study.getName());
     studyState.incrementRevisionsAhead();
     studyStateRepository.save(studyState);
+    studyRepository.save(study);
 
     eventBus.post(new DraftStudyUpdatedEvent(study));
   }
@@ -86,6 +96,12 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
 
   @NotNull
   public StudyState findStateById(@NotNull String id) throws NoSuchStudyException {
+    StudyState studyState = getStudyStateInternal(id);
+    ensureStudyGitRepositoryAndSave(studyState);
+    return studyState;
+  }
+
+  private StudyState getStudyStateInternal(String id) {
     StudyState studyState = studyStateRepository.findOne(id);
     if(studyState == null) throw NoSuchStudyException.withId(id);
     return studyState;
@@ -95,15 +111,20 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
   @Cacheable(value = "studies-draft", key = "#id")
   public Study findDraftStudy(@NotNull String id) throws NoSuchStudyException {
     // ensure study exists
-    findStateById(id);
-    return gitService.readHead(id, Study.class);
+    getStudyStateInternal(id);
+    return studyRepository.findOne(id);
   }
 
-  @NotNull
+  @Nullable
+  @Cacheable(value = "studies-published", key = "#id")
+  public Study findPublishedStudyByTag(@NotNull String id, @NotNull String tag) throws NoSuchStudyException {
+    if (gitService.hasGitRepository(id)) return gitService.readFromTag(id, tag, Study.class);
+    throw NoSuchStudyException.withId(id);
+  }
+
   @Cacheable(value = "studies-published", key = "#id")
   public Study findPublishedStudy(@NotNull String id) throws NoSuchStudyException {
-    StudyState studyState = findStateById(id);
-    return gitService.readFromTag(id, studyState.getPublishedTag(), Study.class);
+    return publishedStudyService.findById(id);
   }
 
   public boolean isPublished(@NotNull String id) throws NoSuchStudyException {
@@ -115,8 +136,7 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
   }
 
   public List<Study> findAllDraftStudies() {
-    return studyStateRepository.findAll().stream()
-        .map(studyState -> gitService.readHead(studyState.getId(), Study.class)).collect(Collectors.toList());
+    return studyRepository.findAll();
   }
 
   public List<StudyState> findPublishedStates() {
@@ -132,20 +152,25 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
    */
   @CacheEvict(value = { "studies-draft", "studies-published" }, key = "#id")
   public StudyState publish(@NotNull String id) throws NoSuchStudyException {
+    log.info("Publish study: {}", id);
     StudyState studyState = findStateById(id);
     studyState.setRevisionStatus(DRAFT);
     studyState.setPublishedTag(gitService.tag(id));
     studyState.resetRevisionsAhead();
     studyStateRepository.save(studyState);
-    eventBus.post(new StudyPublishedEvent(findPublishedStudy(id)));
+    eventBus.post(new StudyPublishedEvent(studyRepository.findOne(id)));
     return studyState;
   }
 
   @Override
   public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-    List<Study> publishedStudies = findPublishedStates().stream()
-        .map(studyState -> gitService.readFromTag(studyState.getId(), studyState.getPublishedTag(), Study.class))
-        .collect(Collectors.toList());
+    log.info("Gather published and draft studies to be indexed");
+    List<Study> publishedStudies = findPublishedStates().stream() //
+      .filter(studyState -> { //
+          return gitService.hasGitRepository(studyState.getId()) && !Strings.isNullOrEmpty(studyState.getPublishedTag()); //
+        }) //
+      .map(studyState -> gitService.readFromTag(studyState.getId(), studyState.getPublishedTag(), Study.class)) //
+      .collect(Collectors.toList()); //
 
     eventBus.post(new IndexStudiesEvent(publishedStudies, findAllDraftStudies()));
   }
@@ -172,14 +197,50 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
     if(Strings.isNullOrEmpty(prefix)) return null;
     String next = prefix;
     try {
-      findStateById(next);
+      getStudyStateInternal(next);
       for(int i = 1; i <= 1000; i++) {
         next = prefix + "-" + i;
-        findStateById(next);
+        getStudyStateInternal(next);
       }
       return null;
     } catch(NoSuchStudyException e) {
       return next;
+    }
+  }
+
+  @Nullable
+  private Study unpublish(StudyState studyState) {
+    log.info("Unpublish state since there are no Git repo for study: {}", studyState.getId());
+    studyState.resetRevisionsAhead();
+    studyState.setPublishedTag(null);
+    studyState.setRevisionStatus(DRAFT);
+    studyStateRepository.save(studyState);
+    Study study = studyRepository.findOne(studyState.getId());
+    if (study != null) eventBus.post(new StudyUnpublishedEvent(study));
+    return study;
+  }
+
+  /**
+   * If there are no git repo for input study, the publish state is no longer valid, unpublish the study
+   * @param studyState
+   */
+  private void ensureStudyGitRepository(@NotNull StudyState studyState) {
+    if (!gitService.hasGitRepository(studyState.getId())) {
+      unpublish(studyState);
+    }
+  }
+
+  /**
+   * If there are no git repo for input study, the publish state is no longer valid, unpublish the study
+   * @param studyState
+   */
+  private void ensureStudyGitRepositoryAndSave(@NotNull StudyState studyState) {
+    if (!gitService.hasGitRepository(studyState.getId())) {
+      Study study = unpublish(studyState);
+      if (study != null) {
+        log.info("Recuperated Study '{}' from repository is saved backed to Git repo.", studyState.getId());
+        gitService.save(study);
+      }
     }
   }
 
