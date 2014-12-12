@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.search;
+package org.obiba.mica.search.aggregations;
 
 import org.apache.commons.lang.WordUtils;
 import org.springframework.stereotype.Component;
@@ -19,5 +19,9 @@ public class DefaultAggregationMetaDataProvider implements AggregationMetaDataPr
   @Override
   public MetaData getTitle(String aggregation, String termKey, String locale) {
     return MetaData.newBuilder().title(WordUtils.capitalize(termKey.replaceAll("[-_]", " "))).description("").build();
+  }
+
+  @Override
+  public void refresh() {
   }
 }

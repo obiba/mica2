@@ -36,7 +36,7 @@ import org.obiba.mica.dataset.search.DatasetIndexer;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
 import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.DatasetIdProvider;
-import org.obiba.mica.search.rest.AggregationYamlParser;
+import org.obiba.mica.search.aggregations.AggregationYamlParser;
 import org.obiba.mica.search.rest.QueryDtoHelper;
 import org.obiba.mica.search.rest.QueryDtoParser;
 import org.obiba.mica.web.model.Dtos;
