@@ -32,6 +32,10 @@ import org.obiba.mica.dataset.search.VariableIndexer;
 import org.obiba.mica.micaConfig.OpalService;
 import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.DatasetIdProvider;
+import org.obiba.mica.search.aggregations.AggregationMetaDataProvider;
+import org.obiba.mica.search.aggregations.DataCollectionEventAggregationMetaDataProvider;
+import org.obiba.mica.search.aggregations.DatasetAggregationMetaDataProvider;
+import org.obiba.mica.search.aggregations.TaxonomyAggregationMetaDataProvider;
 import org.obiba.mica.search.rest.QueryDtoHelper;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.domain.Study;
@@ -72,6 +76,15 @@ public class VariableQuery extends AbstractDocumentQuery {
 
   @Inject
   private Dtos dtos;
+
+  @Inject
+  private DatasetAggregationMetaDataProvider datasetAggregationMetaDataProvider;
+
+  @Inject
+  private TaxonomyAggregationMetaDataProvider taxonomyAggregationMetaDataProvider;
+
+  @Inject
+  private DataCollectionEventAggregationMetaDataProvider dceAggregationMetaDataProvider;
 
   @Inject
   private ObjectMapper objectMapper;
@@ -116,6 +129,11 @@ public class VariableQuery extends AbstractDocumentQuery {
     }
 
     builder.setExtension(MicaSearch.DatasetVariableResultDto.result, resBuilder.build());
+  }
+
+  @Override
+  protected List<AggregationMetaDataProvider> getAggregationMetaDataProviders() {
+    return Arrays.asList(taxonomyAggregationMetaDataProvider, datasetAggregationMetaDataProvider, dceAggregationMetaDataProvider);
   }
 
   @Override

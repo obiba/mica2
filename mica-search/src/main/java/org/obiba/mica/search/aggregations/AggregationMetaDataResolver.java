@@ -10,37 +10,52 @@
 
 package org.obiba.mica.search.aggregations;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
+import java.util.Set;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.springframework.stereotype.Component;
 
 @Component
 public class AggregationMetaDataResolver implements AggregationMetaDataProvider {
-  @Inject
-  private TaxonomyAggregationMetaDataProvider taxonomyAggregationTitleProvider;
 
   @Inject
   private DefaultAggregationMetaDataProvider defaultAggregationTitleProvider;
 
-  @Inject
-  private DatasetAggregationMetaDataProvider datasetAggregationMetaDataProvider;
+  private Set<AggregationMetaDataProvider> providers;
+
+  @PostConstruct
+  public void init() {
+    providers = new HashSet<>();
+  }
 
   @Override
   public MetaData getTitle(String aggregation, String termKey, String locale) {
-    Optional<MetaData> title = Stream
-      .of(taxonomyAggregationTitleProvider, datasetAggregationMetaDataProvider, defaultAggregationTitleProvider)
+    Optional<MetaData> title = providers.stream()
       .map(provider -> provider.getTitle(aggregation, termKey, locale)).filter(metaData -> metaData != null)
       .findFirst();
 
-    return title.get();
+    return title.isPresent() ? title.get() : defaultAggregationTitleProvider.getTitle(aggregation, termKey, locale);
   }
 
   @Override
   public void refresh() {
-    Stream.of(taxonomyAggregationTitleProvider, datasetAggregationMetaDataProvider, defaultAggregationTitleProvider)
-      .forEach(AggregationMetaDataProvider::refresh);
+    providers.stream().forEach(AggregationMetaDataProvider::refresh);
+  }
+
+  public void registerProviders(List<AggregationMetaDataProvider> aggregationMetaDataProviders) {
+    providers.addAll(aggregationMetaDataProviders);
+  }
+
+  public void unregisterProviders(List<AggregationMetaDataProvider> aggregationMetaDataProviders) {
+    providers.removeAll(aggregationMetaDataProviders);
+  }
+
+  public void unregisterAllProviders() {
+    providers = new HashSet<>();
   }
 }

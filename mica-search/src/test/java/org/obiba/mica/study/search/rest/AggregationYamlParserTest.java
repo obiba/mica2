@@ -122,6 +122,16 @@ public class AggregationYamlParserTest {
     assertThat(agg_fr.get("terms")).isNotNull();
   }
 
+  @Test
+  public void test_aggs_with_aliases() throws IOException {
+    JsonNode agg_alias = getJsonNode("aggregation-with-alias.yml");
+    System.out.println(agg_alias.toString());
+    assertThat(agg_alias).isNotNull();
+    assertThat(agg_alias.get("textId")).isNotNull();
+    assertThat(agg_alias.get("text2-id")).isNotNull();
+    assertThat(agg_alias.get("text3-id")).isNotNull();
+  }
+
   private JsonNode getJsonNode(String resource) throws IOException {
     SearchRequestBuilder requestBuilder = client.prepareSearch("test_index") //
         .setTypes("test_type") //
@@ -137,13 +147,13 @@ public class AggregationYamlParserTest {
   private static Node newNode(String dataDirectory) {
     Node build = NodeBuilder.nodeBuilder().local(true).data(false).settings(ImmutableSettings.builder() //
         .put(ClusterName.SETTING, nodeName()) //
-        .put("node.name", nodeName()) //
-        .put(IndexMetaData.SETTING_NUMBER_OF_SHARDS, 1) //
-        .put(IndexMetaData.SETTING_NUMBER_OF_REPLICAS, 0) //
-        .put(EsExecutors.PROCESSORS, 1) // limit the number of threads created
+      .put("node.name", nodeName()) //
+      .put(IndexMetaData.SETTING_NUMBER_OF_SHARDS, 1) //
+      .put(IndexMetaData.SETTING_NUMBER_OF_REPLICAS, 0) //
+      .put(EsExecutors.PROCESSORS, 1) // limit the number of threads created
         .put("http.enabled", false) //
-        .put("index.store.type", "ram") //
-        .put("config.ignore_system_properties", true) // make sure we get what we set :)
+      .put("index.store.type", "ram") //
+      .put("config.ignore_system_properties", true) // make sure we get what we set :)
         .put("path.data", dataDirectory.toString()).put("gateway.type", "none")) //
 
       .build();

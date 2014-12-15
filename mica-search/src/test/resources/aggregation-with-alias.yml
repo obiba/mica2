@@ -1,0 +1,13 @@
+text:
+  properties:
+    alias: "textId"
+
+text2:
+  properties:
+    alias: "text2.id"
+
+
+text3:
+  properties:
+    alias: "text3-id"
+
