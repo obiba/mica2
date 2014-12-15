@@ -35,18 +35,18 @@ public class VariableIndexConfiguration extends AbstractIndexConfiguration imple
 
   @Override
   public void onIndexCreated(Client client, String indexName) {
-    if(VariableIndexer.DRAFT_VARIABLE_INDEX.equals(indexName) ||
-        VariableIndexer.PUBLISHED_VARIABLE_INDEX.equals(indexName)) {
+    if(VariableIndexerImpl.DRAFT_VARIABLE_INDEX.equals(indexName) ||
+        VariableIndexerImpl.PUBLISHED_VARIABLE_INDEX.equals(indexName)) {
       setMappingProperties(client, indexName);
     }
   }
 
   private void setMappingProperties(Client client, String indexName) {
     try {
-      client.admin().indices().preparePutMapping(indexName).setType(VariableIndexer.VARIABLE_TYPE)
-          .setSource(createMappingProperties(VariableIndexer.VARIABLE_TYPE)).execute().actionGet();
-      client.admin().indices().preparePutMapping(indexName).setType(VariableIndexer.HARMONIZED_VARIABLE_TYPE)
-          .setSource(createMappingProperties(VariableIndexer.HARMONIZED_VARIABLE_TYPE)).execute().actionGet();
+      client.admin().indices().preparePutMapping(indexName).setType(VariableIndexerImpl.VARIABLE_TYPE)
+          .setSource(createMappingProperties(VariableIndexerImpl.VARIABLE_TYPE)).execute().actionGet();
+      client.admin().indices().preparePutMapping(indexName).setType(VariableIndexerImpl.HARMONIZED_VARIABLE_TYPE)
+          .setSource(createMappingProperties(VariableIndexerImpl.HARMONIZED_VARIABLE_TYPE)).execute().actionGet();
     } catch(IOException e) {
       throw new RuntimeException(e);
     }
@@ -70,7 +70,7 @@ public class VariableIndexConfiguration extends AbstractIndexConfiguration imple
         mapping.startObject("attributes");
         mapping.startObject("properties");
         createMappingTaxonomies(mapping, taxonomies);
-        Stream.of(VariableIndexer.LOCALIZED_ANALYZED_FIELDS).forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
+        Stream.of(VariableIndexerImpl.LOCALIZED_ANALYZED_FIELDS).forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
         mapping.endObject(); // properties
         mapping.endObject(); // attributes
       }
@@ -81,8 +81,8 @@ public class VariableIndexConfiguration extends AbstractIndexConfiguration imple
     mapping.endObject(); // properties
 
     // parent
-    if(VariableIndexer.HARMONIZED_VARIABLE_TYPE.equals(type)) {
-      mapping.startObject("_parent").field("type", VariableIndexer.VARIABLE_TYPE).endObject();
+    if(VariableIndexerImpl.HARMONIZED_VARIABLE_TYPE.equals(type)) {
+      mapping.startObject("_parent").field("type", VariableIndexerImpl.VARIABLE_TYPE).endObject();
     }
 
     mapping.endObject().endObject();

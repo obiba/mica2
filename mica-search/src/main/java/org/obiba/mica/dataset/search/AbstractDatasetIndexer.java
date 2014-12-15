@@ -14,14 +14,14 @@ import javax.inject.Inject;
 
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.core.domain.Indexable;
+import org.obiba.mica.dataset.service.DatasetIndexer;
 import org.obiba.mica.search.ElasticSearchIndexer;
-import org.obiba.mica.study.service.StudyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class DatasetIndexer<T extends Dataset> {
+public abstract class AbstractDatasetIndexer<T extends Dataset> implements DatasetIndexer<T> {
 
-  private static final Logger log = LoggerFactory.getLogger(DatasetIndexer.class);
+  private static final Logger log = LoggerFactory.getLogger(AbstractDatasetIndexer.class);
 
   public static final String DRAFT_DATASET_INDEX = "dataset-draft";
 
@@ -30,9 +30,6 @@ public abstract class DatasetIndexer<T extends Dataset> {
   public static final String DATASET_TYPE = Dataset.MAPPING_NAME;
 
   public static final String[] LOCALIZED_ANALYZED_FIELDS = {"acronym", "name", "description"};
-
-  @Inject
-  protected StudyService studyService;
 
   @Inject
   protected ElasticSearchIndexer elasticSearchIndexer;
@@ -50,11 +47,9 @@ public abstract class DatasetIndexer<T extends Dataset> {
   }
 
   protected void reIndexDraft(T dataset, String studyId) {
-
   }
 
   protected void reIndexPublished(T dataset, String studyId) {
-
   }
 
   protected void deleteFromDatasetIndices(T dataset) {
@@ -66,9 +61,9 @@ public abstract class DatasetIndexer<T extends Dataset> {
     elasticSearchIndexer.delete(indexName, (Indexable) dataset);
   }
 
-  protected void reIndexAll() {
-    reIndexAll(DRAFT_DATASET_INDEX, findAllDatasets());
-    reIndexAll(PUBLISHED_DATASET_INDEX, findAllPublishedDatasets());
+  protected void reIndexAll(Iterable<T> datasets, Iterable<T> publishedDatasets) {
+    reIndexAll(DRAFT_DATASET_INDEX, datasets);
+    reIndexAll(PUBLISHED_DATASET_INDEX, publishedDatasets);
   }
 
   private void reIndexAll(String indexName, Iterable<T> datasets) {
@@ -76,8 +71,4 @@ public abstract class DatasetIndexer<T extends Dataset> {
     // TODO delete dataset by their className and delete their children as-well
     elasticSearchIndexer.indexAllIndexables(indexName, datasets);
   }
-
-  protected abstract Iterable<T> findAllDatasets();
-
-  protected abstract Iterable<T> findAllPublishedDatasets();
 }

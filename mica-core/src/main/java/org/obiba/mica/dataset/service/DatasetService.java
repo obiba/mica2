@@ -13,6 +13,7 @@ package org.obiba.mica.dataset.service;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
+import org.obiba.magma.MagmaRuntimeException;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.magma.Variable;
@@ -174,6 +175,16 @@ public abstract class DatasetService<T extends Dataset> {
 
   protected RestDatasource getDatasource(@NotNull String project) {
     return getOpalService().getDatasource(project);
+  }
+
+  protected Iterable<DatasetVariable> wrappedGetDatasetVariables(T dataset) {
+    try {
+      return getDatasetVariables(dataset);
+    } catch (NoSuchValueTableException e) {
+      throw new InvalidDatasetException(e);
+    } catch (MagmaRuntimeException e) {
+      throw new DatasourceNotAvailableException(e);
+    }
   }
 
 }

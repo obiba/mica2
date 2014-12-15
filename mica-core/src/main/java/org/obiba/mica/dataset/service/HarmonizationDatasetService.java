@@ -11,11 +11,15 @@
 package org.obiba.mica.dataset.service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Future;
+import java.util.concurrent.ExecutionException;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.obiba.magma.MagmaRuntimeException;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.magma.Variable;
@@ -33,19 +37,27 @@ import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.study.event.StudyDeletedEvent;
 import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.obiba.opal.web.model.Search;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.scheduling.annotation.AsyncResult;
 
 import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 @Service
 @Validated
 public class HarmonizationDatasetService extends DatasetService<HarmonizationDataset> {
+
+  private static final Logger log = LoggerFactory.getLogger(HarmonizationDatasetService.class);
 
   @Inject
   private StudyService studyService;
@@ -59,21 +71,17 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   @Inject
   private EventBus eventBus;
 
+  @Inject
+  private DatasetIndexer<HarmonizationDataset> datasetIndexer;
+
+  @Inject
+  private VariableIndexer variableIndexer;
+
+  @Inject
+  private HarmonizationDatasetServiceHelper helper;
+
   public void save(@NotNull HarmonizationDataset dataset) {
-    HarmonizationDataset saved = dataset;
-    if(saved.isNew()) {
-      generateId(saved);
-    } else {
-      saved = harmonizationDatasetRepository.findOne(dataset.getId());
-      if(saved != null) {
-        BeanUtils.copyProperties(dataset, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
-          "lastModifiedDate");
-      } else {
-        saved = dataset;
-      }
-    }
-    harmonizationDatasetRepository.save(saved);
-    eventBus.post(new DatasetUpdatedEvent(saved));
+    save(dataset, false);
   }
 
   /**
@@ -137,13 +145,14 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
    */
   public void index(@NotNull String id) {
     HarmonizationDataset dataset = findById(id);
-    eventBus.post(new DatasetUpdatedEvent(dataset));
+    updateIndices(dataset, wrappedGetDatasetVariables(dataset), populateHarmonizedVariablesMap(dataset), false);
   }
 
   /**
    * Index or re-index all datasets with their variables.
    */
   public void indexAll() {
+    datasetIndexer.indexAll(findAllDatasets(), findAllPublishedDatasets());
     getEventBus().post(new IndexHarmonizationDatasetsEvent());
   }
 
@@ -156,7 +165,7 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   public void publish(@NotNull String id, boolean published) {
     HarmonizationDataset dataset = findById(id);
     dataset.setPublished(published);
-    save(dataset);
+    save(dataset, true);
     eventBus.post(new DatasetPublishedEvent(dataset));
   }
 
@@ -261,6 +270,49 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   // Private methods
   //
 
+  private void save(HarmonizationDataset dataset, boolean updatePublishIndices) {
+    HarmonizationDataset saved = dataset;
+
+    if(saved.isNew()) {
+      generateId(saved);
+    } else {
+      saved = harmonizationDatasetRepository.findOne(dataset.getId());
+
+      if(saved != null) {
+        BeanUtils.copyProperties(dataset, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
+          "lastModifiedDate");
+      } else {
+        saved = dataset;
+      }
+    }
+
+    Iterable<DatasetVariable> variables = wrappedGetDatasetVariables(dataset);
+    Map<String, List<DatasetVariable>> harmonizationVariables = populateHarmonizedVariablesMap(dataset);
+
+    harmonizationDatasetRepository.save(saved);
+    tryUpdateIndices(saved, variables, harmonizationVariables, updatePublishIndices);
+  }
+
+  private void updateIndices(HarmonizationDataset dataset, Iterable<DatasetVariable> variables,
+    Map<String, List<DatasetVariable>> harmonizationVariables, boolean updatePublishIndices) {
+    variableIndexer.onDatasetUpdated(variables, harmonizationVariables);
+    datasetIndexer.onDatasetUpdated(dataset);
+    if (updatePublishIndices) {
+      variableIndexer.onDatasetPublished(dataset, variables, harmonizationVariables);
+      datasetIndexer.onDatasetPublished(dataset);
+    }
+  }
+
+  private void tryUpdateIndices(HarmonizationDataset dataset, Iterable<DatasetVariable> variables,
+    Map<String, List<DatasetVariable>> harmonizationVariables, boolean updatePublishIndices) {
+
+    try {
+      updateIndices(dataset, variables, harmonizationVariables, updatePublishIndices);
+    } catch(Exception e) {
+      log.error("Error updating indices.", e);
+    }
+  }
+
   private Iterable<Variable> getVariables(StudyTable studyTable)
     throws NoSuchDatasetException, NoSuchStudyException, NoSuchValueTableException {
     return getTable(studyTable).getVariables();
@@ -297,6 +349,42 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
     return (RestValueTable.RestVariableValueSource) getTable(studyTable).getVariableValueSource(variableName);
   }
 
+  protected Map<String, List<DatasetVariable>> populateHarmonizedVariablesMap(
+    HarmonizationDataset dataset) {
+    Iterable<DatasetVariable> res = dataset.getStudyTables().stream()
+      .map(s -> helper.asyncGetDatasetVariables(() -> getDatasetVariables(dataset, s)))
+      .map(f -> {
+        try {
+          return f.get();
+        } catch(ExecutionException e) {
+          if(e.getCause() instanceof NoSuchValueTableException) {
+            return Lists.<DatasetVariable>newArrayList();  // ignore (case the study does not implement this harmonization dataset))
+          } else if(e.getCause() instanceof MagmaRuntimeException) {
+            throw new DatasourceNotAvailableException(e.getCause());
+          }
+
+          throw Throwables.propagate(e.getCause());
+        } catch(InterruptedException ie) {
+          throw Throwables.propagate(ie);
+        }
+      })
+      .reduce(Iterables::concat).get();
+
+    Map<String, List<DatasetVariable>> map = Maps.newHashMap();
+
+    for(DatasetVariable variable: res) {
+      if(!map.containsKey(variable.getParentId())) {
+        map.put(variable.getParentId(), Lists.newArrayList());
+      }
+
+      map.get(variable.getParentId()).add(variable);
+    }
+
+    return map;
+  }
+
+
+
   /**
    * Build or reuse the {@link org.obiba.opal.rest.client.magma.RestDatasource} and execute the callback with it.
    *
@@ -320,5 +408,4 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   private <T> T execute(StudyTable studyTable, DatasourceCallback<T> callback) {
     return execute(getDatasource(studyTable), callback);
   }
-
 }
