@@ -1,41 +1,95 @@
 package org.obiba.mica.search.aggregations;
 
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.SortedSet;
 
 import javax.inject.Inject;
 
-import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.core.domain.StudyTable;
+import org.obiba.mica.study.domain.DataCollectionEvent;
+import org.obiba.mica.study.domain.Population;
+import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
+import org.obiba.mica.study.service.StudyService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Maps;
 
 @Component
 public class DataCollectionEventAggregationMetaDataProvider implements AggregationMetaDataProvider {
 
+  private static final Logger log = LoggerFactory.getLogger(DataCollectionEventAggregationMetaDataProvider.class);
+
   @Inject
   PublishedStudyService publishedStudyService;
 
-  private Map<String, LocalizedString> cache;
+  @Inject
+  StudyService studyService;
+
+  private Map<String, MonikerData> cache;
+
+  public void refresh() {
+    cache = Maps.newHashMap();
+    publishedStudyService.findAll().forEach(
+      study -> {
+        SortedSet<Population> pops = study.getPopulations();
+        if (pops == null) return;
+        pops.forEach(population -> {
+          SortedSet<DataCollectionEvent> dces = population.getDataCollectionEvents();
+          if(dces == null) return;
+          dces.forEach(dce -> cache
+            .put(StudyTable.getDataCollectionEventUId(study.getId(), population.getId(), dce.getId()),
+              MonikerData.newBuilder().study(study).population(population).dataCollectionEvent(dce).build()));
+      });
+    });
+  }
 
   public MetaData getTitle(String aggregation, String termKey, String locale) {
     return aggregation.equals("dceIds")
-      ? MetaData.newBuilder().title(cache.get(parseDataCollectionEventUId(termKey)).get(locale)).description("").build()
+      ? MetaData.newBuilder().title(cache.get(termKey).getMoniker(locale)).description("").build()
       : null;
   }
 
-  @Override
-  public void refresh() {
-//    cache = publishedStudyService.findAll()
-//      .stream().map(Study::getPopulations).flatMap((pops) -> pops.stream()).map(Population::getDataCollectionEvents)
-//      .flatMap((dces) -> dces.stream())
-//      .collect();
-  }
+  private static class MonikerData {
+    private Study study;
+    private Population population;
+    private DataCollectionEvent dataCollectionEvent;
 
-  private String parseDataCollectionEventUId(String uid) {
-    Pattern pattern = Pattern.compile("[^:.*]+$");
-    Matcher matcher = pattern.matcher(uid);
-    return matcher.find() ? matcher.group() : uid;
+    public static Builder newBuilder() {
+      return new Builder();
+    }
+
+    public String getMoniker(String locale) {
+      return String.format("%s:%s:%s", study.getAcronym().get(locale), population.getName().get(locale),
+        dataCollectionEvent.getName().get(locale));
+    }
+
+    static class Builder {
+      private MonikerData data = new MonikerData();
+
+      public Builder study(Study value) {
+        data.study = value;
+        return this;
+      }
+
+      public Builder population(Population value) {
+        data.population = value;
+        return this;
+      }
+
+      public Builder dataCollectionEvent(DataCollectionEvent value) {
+        data.dataCollectionEvent = value;
+        return this;
+      }
+
+      public MonikerData build() {
+        return data;
+      }
+
+    }
+
   }
 
 }

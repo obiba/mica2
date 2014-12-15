@@ -44,7 +44,12 @@ public class StudyTable implements Serializable {
    * @return
    */
   public String getDataCollectionEventUId() {
-    return getStudyId() + ":" + getPopulationId() + ":" + getDataCollectionEventId();
+    return getDataCollectionEventUId(getStudyId(), getPopulationId(), getDataCollectionEventId());
+  }
+
+  public static String getDataCollectionEventUId(String studyId, String populationId, String dataCollectionEventId) {
+    return new StringBuffer(studyId).append(":").append(populationId).append(":").append(dataCollectionEventId)
+      .toString();
   }
 
   public void setDataCollectionEventUId(String ignored) {

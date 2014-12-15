@@ -18,25 +18,28 @@ import javax.inject.Inject;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DatasetAggregationMetaDataProvider implements AggregationMetaDataProvider {
+
+  private static final Logger log = LoggerFactory.getLogger(DatasetAggregationMetaDataProvider.class);
 
   @Inject
   PublishedDatasetService publishedDatasetService;
 
   private Map<String, LocalizedString> cache;
 
+  public void refresh() {
+    cache = publishedDatasetService.findAll().stream().collect(Collectors.toMap(Dataset::getId, Dataset::getName));
+  }
+
   public MetaData getTitle(String aggregation, String termKey, String locale) {
     return aggregation.equals("datasetId")
       ? MetaData.newBuilder().title(cache.get(termKey).get(locale)).description("").build()
       : null;
-  }
-
-  @Override
-  public void refresh() {
-    cache = publishedDatasetService.findAll().stream().collect(Collectors.toMap(Dataset::getId, Dataset::getName));
   }
 
 }

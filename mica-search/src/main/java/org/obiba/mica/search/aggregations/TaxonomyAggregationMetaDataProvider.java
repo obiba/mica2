@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.obiba.mica.core.domain.AttributeKey;
@@ -37,10 +38,15 @@ public class TaxonomyAggregationMetaDataProvider implements AggregationMetaDataP
 
   private Map<String, Vocabulary> cache;
 
-  @Override
-  public void refresh() {
+  @PostConstruct
+  public void init() {
     getTaxonomies();
     cache = Maps.newHashMap();
+  }
+
+  @Override
+  public void refresh() {
+    // TODO wait until OpalService caches taxonomies
   }
 
   public MetaData getTitle(String aggregation, String termKey, String locale) {

@@ -10,7 +10,6 @@ import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.service.PublishedNetworkService;
 import org.springframework.stereotype.Component;
 
-
 @Component
 public class NetworkAggregationMetaDataProvider implements AggregationMetaDataProvider {
 
@@ -19,15 +18,14 @@ public class NetworkAggregationMetaDataProvider implements AggregationMetaDataPr
 
   private Map<String, LocalizedString> cache;
 
+  public void refresh() {
+    cache = publishedNetworkService.findAll().stream().collect(Collectors.toMap(Network::getId, Network::getName));
+  }
+
   public MetaData getTitle(String aggregation, String termKey, String locale) {
     return aggregation.equals("networktId")
       ? MetaData.newBuilder().title(cache.get(termKey).get(locale)).description("").build()
       : null;
-  }
-
-  @Override
-  public void refresh() {
-    cache = publishedNetworkService.findAll().stream().collect(Collectors.toMap(Network::getId, Network::getName));
   }
 
 }

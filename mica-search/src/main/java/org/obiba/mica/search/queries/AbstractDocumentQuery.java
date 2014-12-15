@@ -73,8 +73,6 @@ public abstract class AbstractDocumentQuery {
 
   private static final Logger log = LoggerFactory.getLogger(AbstractDocumentQuery.class);
 
-  private List<AggregationMetaDataProvider> aggregationMetaDataProviders;
-
   public enum Mode {
     SEARCH,
     COVERAGE
