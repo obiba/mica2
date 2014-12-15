@@ -5,6 +5,7 @@ mica.study = angular.module('mica.study', [
   'obiba.form',
   'mica.localized',
   'mica.file',
+  'mica.attributes',
   'obiba.notification',
   'mica.publish',
   'mica.contact',

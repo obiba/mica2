@@ -250,6 +250,9 @@
         <div ng-repeat="population in study.populations">
           <div ng-include="'app/study/views/population/population-view.html'"></div>
         </div>
+        <button type="button" class="btn btn-default btn-sm" ng-click="addPopulation()">
+          <i class="fa fa-plus"></i> <span translate>study.add-population</span>
+        </button>
 
         <h3 translate ng-show="study.specificAuthorization || study.maelstromAuthorization">
           study.authorization.label</h3>

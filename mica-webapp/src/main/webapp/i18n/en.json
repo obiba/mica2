@@ -306,6 +306,7 @@
     "objectives-help": "What are the principal objectives of the study?",
     "website": "Website",
     "investigators": "Investigators",
+    "add-population": "Add Population",
     "add-investigator": "Add Investigator",
     "contacts": "Contacts",
     "add-contact": "Add Contact",
@@ -339,7 +340,8 @@
         "false": "Not authorized"
       },
       "maelstrom": "Authorization from contributors to the Maelstrom catalogues",
-      "specific": "Authorization from contributors to the [specific network] catalogues"
+      "specific": "Authorization from contributors to the [specific network] catalogues",
+      "authorizer": "Authorizer"
     },
     "selection-criteria": {
       "label": "Selection criteria",
@@ -358,7 +360,9 @@
       "label": "Sources of recruitment",
       "general-population": "General Population",
       "specific-population": "Specific Population",
-      "studies": "Participants from existing studies"
+      "studies": "Participants from existing studies",
+      "other": "Other sources",
+      "other-specific-population": "Other specific population"
     },
     "participants-number": {
       "participant": "Number of participants",
@@ -375,7 +379,8 @@
       "published": "Published",
       "revisions-ahead": "Revisions ahead"
     },
-    "opal" : "Opal Server"
+    "opal" : "Opal Server",
+    "opal-help": "URL of the opal server for this study"
   },
   "contact": {
     "label": "Contact",
@@ -432,6 +437,19 @@
     "add-attribute": "Add Attribute",
     "edit-attribute": "Edit Attribute"
   },
+  "population": {
+    "id": "Id",
+    "name": "Name",
+    "description": "Description",
+    "gender": "Gender",
+    "ageMin": "Minimum age",
+    "ageMax": "Maximum age",
+    "otherCriteria": "Other criteria",
+    "add-health-status-help": "Add health status",
+    "add-ethnic-origin-help": "Add ethnic origin",
+    "countries": "Countries ISO",
+    "numberOfParticipants-noLimit": "No limit"
+  },
   "study-datasets" : "Study Datasets",
   "study-dataset" : "Study Dataset",
   "harmonization-datasets" : "Harmonization Datasets",
@@ -469,5 +487,6 @@
   "dnd-reorder": "Drag and drop to reorder",
   "loading": "Loading...",
   "error": "Error",
-  "actions": "Actions"
+  "actions": "Actions",
+  "authorizer": "Authorizer"
 }

@@ -19,5 +19,13 @@ mica.study
         .when('/study/:id/edit', {
           templateUrl: 'app/study/views/study-form.html',
           controller: 'StudyEditController'
+        })
+        .when('/study/:id/population/add', {
+          templateUrl: 'app/study/views/population/population-form.html',
+          controller: 'StudyPopulationController'
+        })
+        .when('/study/:id/population/:pid/edit', {
+          templateUrl: 'app/study/views/population/population-form.html',
+          controller: 'StudyPopulationController'
         });
     }]);

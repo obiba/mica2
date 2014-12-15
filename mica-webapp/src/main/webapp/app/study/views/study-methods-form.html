@@ -1,0 +1,14 @@
+<h3 translate>study.design</h3>
+<div class="form-group">
+  <div form-checkbox-group options="methodDesignTypes" model="study.methods.designs"></div>
+  <div localized-input disabled="study.methods.designs.indexOf('other') < 0" name="study.methods.otherDesign" model="study.methods.otherDesign" lang="tab.lang" label="other"></div>
+  <div localized-input disabled="study.methods.designs.indexOf('other') >= 0" name="study.methods.followUpInfo" model="study.methods.followUpInfo" lang="tab.lang" label="study.follow-up"></div>
+</div>
+<h3 translate>study.recruitment-sources.label</h3>
+<div class="form-group">
+  <p class="help-block" translate>study.recruitments-help</p>
+  <div form-checkbox-group options="methodRecruitmentTypes" model="study.methods.recruitments"></div>
+  <div localized-input disabled="study.methods.recruitments.indexOf('other') < 0" name="study.methods.otherRecruitment" model="study.methods.otherRecruitment" lang="tab.lang" label="study.recruitment-sources.other"></div>
+</div>
+<h3 translate>suppl-info</h3>
+<div localized-input name="study.methods.info" model="study.methods.info" lang="tab.lang" help="suppl-info"></div>

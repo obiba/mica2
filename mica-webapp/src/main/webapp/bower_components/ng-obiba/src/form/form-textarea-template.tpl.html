@@ -5,15 +5,14 @@
     <span ng-show="required">*</span>
   </label>
 
-  <input
+  <textarea
       ng-model="model"
-      type="{{type}}"
       class="form-control"
       id="{{name}}"
       name="{{name}}"
       form-server-error
       ng-disabled="disabled"
-      ng-required="required">
+      ng-required="required"></textarea>
 
   <ul class="input-error list-unstyled" ng-show="form[name].$dirty && form[name].$invalid">
     <li ng-show="form[name].$error.required" translate>required</li>
