@@ -41,7 +41,7 @@ public class AggregationMetaDataResolver implements AggregationMetaDataProvider 
       .map(provider -> provider.getTitle(aggregation, termKey, locale)).filter(metaData -> metaData != null)
       .findFirst();
 
-    return title.isPresent() ? title.get() : defaultAggregationTitleProvider.getTitle(aggregation, termKey, locale);
+    return title.orElse(defaultAggregationTitleProvider.getTitle(aggregation, termKey, locale));
   }
 
   @Override
