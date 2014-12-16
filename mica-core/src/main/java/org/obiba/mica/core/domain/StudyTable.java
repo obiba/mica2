@@ -48,7 +48,7 @@ public class StudyTable implements Serializable {
   }
 
   public static String getDataCollectionEventUId(String studyId, String populationId, String dataCollectionEventId) {
-    return new StringBuffer(studyId).append(":").append(populationId).append(":").append(dataCollectionEventId)
+    return new StringBuilder(studyId).append(":").append(populationId).append(":").append(dataCollectionEventId)
       .toString();
   }
 
