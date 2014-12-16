@@ -37,7 +37,7 @@ public class DatasetAggregationMetaDataProvider implements AggregationMetaDataPr
   }
 
   public MetaData getTitle(String aggregation, String termKey, String locale) {
-    return aggregation.equals("datasetId")
+    return "datasetId".equals(aggregation)
       ? MetaData.newBuilder().title(cache.get(termKey).get(locale)).description("").build()
       : null;
   }

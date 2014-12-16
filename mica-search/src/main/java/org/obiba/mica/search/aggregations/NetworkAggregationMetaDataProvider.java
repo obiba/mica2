@@ -23,7 +23,7 @@ public class NetworkAggregationMetaDataProvider implements AggregationMetaDataPr
   }
 
   public MetaData getTitle(String aggregation, String termKey, String locale) {
-    return aggregation.equals("networktId")
+    return "networkId".equals(aggregation)
       ? MetaData.newBuilder().title(cache.get(termKey).get(locale)).description("").build()
       : null;
   }

@@ -35,6 +35,7 @@ import org.obiba.mica.search.DatasetIdProvider;
 import org.obiba.mica.search.aggregations.AggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.DataCollectionEventAggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.DatasetAggregationMetaDataProvider;
+import org.obiba.mica.search.aggregations.StudyAggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.TaxonomyAggregationMetaDataProvider;
 import org.obiba.mica.search.rest.QueryDtoHelper;
 import org.obiba.mica.study.NoSuchStudyException;
@@ -87,6 +88,9 @@ public class VariableQuery extends AbstractDocumentQuery {
   private DataCollectionEventAggregationMetaDataProvider dceAggregationMetaDataProvider;
 
   @Inject
+  StudyAggregationMetaDataProvider studyAggregationMetaDataProvider;
+
+  @Inject
   private ObjectMapper objectMapper;
 
   private DatasetIdProvider datasetIdProvider;
@@ -133,7 +137,9 @@ public class VariableQuery extends AbstractDocumentQuery {
 
   @Override
   protected List<AggregationMetaDataProvider> getAggregationMetaDataProviders() {
-    return Arrays.asList(taxonomyAggregationMetaDataProvider, datasetAggregationMetaDataProvider, dceAggregationMetaDataProvider);
+    return Arrays
+      .asList(taxonomyAggregationMetaDataProvider, datasetAggregationMetaDataProvider, dceAggregationMetaDataProvider,
+        studyAggregationMetaDataProvider);
   }
 
   @Override
