@@ -18,9 +18,11 @@ import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
+@Scope("prototype")
 public class AggregationMetaDataResolver implements AggregationMetaDataProvider {
 
   @Inject
