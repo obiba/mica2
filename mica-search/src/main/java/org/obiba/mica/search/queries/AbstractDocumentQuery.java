@@ -34,8 +34,9 @@ import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.obiba.mica.micaConfig.MicaConfigService;
-import org.obiba.mica.search.aggregations.AggregationMetaDataResolver;
 import org.obiba.mica.search.CountStatsData;
+import org.obiba.mica.search.aggregations.AggregationMetaDataProvider;
+import org.obiba.mica.search.aggregations.AggregationMetaDataResolver;
 import org.obiba.mica.search.aggregations.AggregationYamlParser;
 import org.obiba.mica.search.rest.EsQueryResultParser;
 import org.obiba.mica.search.rest.QueryDtoHelper;
@@ -122,6 +123,10 @@ public abstract class AbstractDocumentQuery {
 
   protected abstract Resource getAggregationsDescription();
 
+  protected List<AggregationMetaDataProvider> getAggregationMetaDataProviders() {
+    return Lists.newArrayList();
+  }
+
   @Nullable
   protected Properties getAggregationsProperties() {
     return null;
@@ -206,27 +211,28 @@ public abstract class AbstractDocumentQuery {
    * @return
    * @throws IOException
    */
-  protected List<String> execute(QueryDto queryDto, int from, int size, Scope scope, CountStatsData counts)
-      throws IOException {
+  protected List<String> execute(QueryDto queryDto, int from, int size, Scope scope, CountStatsData counts) throws IOException {
     if(queryDto == null) return null;
     QueryDtoParser queryDtoParser = QueryDtoParser.newParser();
 
+    aggregationTitleResolver.registerProviders(getAggregationMetaDataProviders());
+    aggregationTitleResolver.refresh();
+
     SearchRequestBuilder defaultRequestBuilder = client.prepareSearch(getSearchIndex()) //
-        .setTypes(getSearchType()) //
-        .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
-        .setQuery(QueryBuilders.matchAllQuery()) //
-        .setFrom(from) //
-        .setSize(size) //
-        .setNoFields()
-        .addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT)); //
+      .setTypes(getSearchType()) //
+      .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
+      .setQuery(QueryBuilders.matchAllQuery()) //
+      .setFrom(from) //
+      .setSize(size) //
+      .setNoFields().addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT)); //
 
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
-        .setTypes(getSearchType()) //
-        .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
-        .setQuery(queryDtoParser.parse(queryDto)) //
-        .setFrom(from) //
-        .setSize(size) //
-        .addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT)); // ;
+      .setTypes(getSearchType()) //
+      .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
+      .setQuery(queryDtoParser.parse(queryDto)) //
+      .setFrom(from) //
+      .setSize(size) //
+      .addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT)); // ;
 
     if(ignoreFields()) requestBuilder.setNoFields();
     SortBuilder sortBuilder = queryDtoParser.parseSort(queryDto);
@@ -239,11 +245,10 @@ public abstract class AbstractDocumentQuery {
       queryDto.getAggsByList().forEach(field -> subAggregations.put(field, aggregationProperties));
     }
 
-    aggregationYamlParser.getAggregations(getAggregationsDescription(), subAggregations)
-      .forEach(agg -> {
-        defaultRequestBuilder.addAggregation(agg);
-        requestBuilder.addAggregation(agg);
-      });
+    aggregationYamlParser.getAggregations(getAggregationsDescription(), subAggregations).forEach(agg -> {
+      defaultRequestBuilder.addAggregation(agg);
+      requestBuilder.addAggregation(agg);
+    });
 
     aggregationYamlParser.getAggregations(aggregationProperties).forEach(agg -> {
       defaultRequestBuilder.addAggregation(agg);
@@ -254,16 +259,14 @@ public abstract class AbstractDocumentQuery {
     try {
 
       List<SearchResponse> responses = Stream
-          .of(client.prepareMultiSearch().add(defaultRequestBuilder).add(requestBuilder).execute().actionGet())
-          .map(MultiSearchResponse::getResponses).flatMap((d) -> Stream.of(d))
-          .map(MultiSearchResponse.Item::getResponse).collect(Collectors.toList());
-
+        .of(client.prepareMultiSearch().add(defaultRequestBuilder).add(requestBuilder).execute().actionGet())
+        .map(MultiSearchResponse::getResponses).flatMap((d) -> Stream.of(d)).map(MultiSearchResponse.Item::getResponse)
+        .collect(Collectors.toList());
 
       SearchResponse aggResponse = responses.get(0);
       SearchResponse response = responses.get(1);
       log.info("Response: {}", response.toString());
-      QueryResultDto.Builder builder = QueryResultDto.newBuilder()
-          .setTotalHits((int) response.getHits().getTotalHits());
+      QueryResultDto.Builder builder = QueryResultDto.newBuilder().setTotalHits((int) response.getHits().getTotalHits());
       if(scope != NONE) processHits(builder, response.getHits(), scope, counts);
       processAggregations(builder, aggResponse.getAggregations(), response.getAggregations());
       resultDto = builder.build();
@@ -271,7 +274,10 @@ public abstract class AbstractDocumentQuery {
     } catch(IndexMissingException e) {
       log.error("Missing index: {}", e.getMessage(), e);
       return null;
+    } finally {
+      aggregationTitleResolver.unregisterProviders(getAggregationMetaDataProviders());
     }
+
   }
 
   /**

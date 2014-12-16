@@ -52,6 +52,8 @@ public class AggregationYamlParser {
 
   private static final String TYPE = PROPERTIES + FIELD_SEPARATOR + "type";
 
+  private static final String ALIAS = PROPERTIES + FIELD_SEPARATOR + "alias";
+
   private static final String LOCALIZED = PROPERTIES + FIELD_SEPARATOR + "localized";
 
   private static final String AGG_TERMS = "terms";
@@ -76,7 +78,7 @@ public class AggregationYamlParser {
   }
 
   public Iterable<AbstractAggregationBuilder> getAggregations(@Nullable Resource description,
-      @Nullable Map<String, Properties> subProperties) throws IOException {
+    @Nullable Map<String, Properties> subProperties) throws IOException {
     if(description == null) return Collections.emptyList();
 
     YamlPropertiesFactoryBean yamlPropertiesFactoryBean = new YamlPropertiesFactoryBean();
@@ -89,7 +91,7 @@ public class AggregationYamlParser {
   }
 
   public Iterable<AbstractAggregationBuilder> getAggregations(@Nullable Properties properties,
-      @Nullable Map<String, Properties> subProperties) throws IOException {
+    @Nullable Map<String, Properties> subProperties) throws IOException {
     if(properties == null) return Collections.emptyList();
 
     Map<String, Iterable<AbstractAggregationBuilder>> subAggregations = Maps.newHashMap();
@@ -101,7 +103,7 @@ public class AggregationYamlParser {
   }
 
   private Iterable<AbstractAggregationBuilder> parseAggregations(@Nullable Properties properties,
-      Map<String, Iterable<AbstractAggregationBuilder>> subAggregations) {
+    Map<String, Iterable<AbstractAggregationBuilder>> subAggregations) {
     Collection<AbstractAggregationBuilder> termsBuilders = new ArrayList<>();
     if (properties == null) return termsBuilders;
 
@@ -119,14 +121,15 @@ public class AggregationYamlParser {
   }
 
   private void parseAggregation(Collection<AbstractAggregationBuilder> termsBuilders, Properties properties,
-      String key, Map<String, Iterable<AbstractAggregationBuilder>> subAggregations) {
+    String key, Map<String, Iterable<AbstractAggregationBuilder>> subAggregations) {
     Boolean localized = Boolean.valueOf(properties.getProperty(key + LOCALIZED));
+    String alias = properties.getProperty(key + ALIAS);
     String type = getAggregationType(properties.getProperty(key + TYPE), localized);
-    createAggregation(termsBuilders, getFields(key, localized), type, subAggregations);
+    createAggregation(termsBuilders, getFields(key, alias, localized), type, subAggregations);
   }
 
   private void createAggregation(Collection<AbstractAggregationBuilder> termsBuilders, Map<String, String> fields,
-      String type, Map<String, Iterable<AbstractAggregationBuilder>> subAggregations) {
+    String type, Map<String, Iterable<AbstractAggregationBuilder>> subAggregations) {
     fields.entrySet().forEach(entry -> {
       log.info("Building aggregation '{}' of type '{}'", entry.getKey(), type);
 
@@ -148,15 +151,15 @@ public class AggregationYamlParser {
     });
   }
 
-  private Map<String, String> getFields(String field, Boolean localized) {
-    String name = formatName(field);
+  private Map<String, String> getFields(String field, String alias, Boolean localized) {
+    String name = formatName(Strings.isNullOrEmpty(alias) ? field : alias);
     final Map<String, String> fields = new HashMap<>();
     if(localized) {
       fields.put(name + UND_LOCALE_NAME, field + UND_LOCALE_FIELD);
 
       if(locales != null) {
         locales.stream()
-            .forEach(locale -> fields.put(name + NAME_SEPARATOR + locale, field + FIELD_SEPARATOR + locale));
+          .forEach(locale -> fields.put(name + NAME_SEPARATOR + locale, field + FIELD_SEPARATOR + locale));
       } else {
         fields.put(name + DEFAULT_LOCALE_NAME, field + DEFAULT_LOCALE_FIELD);
       }
@@ -176,8 +179,8 @@ public class AggregationYamlParser {
    */
   private String getAggregationType(String type, Boolean localized) {
     return !localized && !Strings.isNullOrEmpty(type) && type.matches(String.format("^(%s|%s)$", AGG_STATS, AGG_TERMS))
-        ? type
-        : AGG_TERMS;
+      ? type
+      : AGG_TERMS;
   }
 
   public static String formatName(String name) {
