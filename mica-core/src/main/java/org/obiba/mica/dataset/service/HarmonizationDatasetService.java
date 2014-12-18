@@ -12,7 +12,6 @@ package org.obiba.mica.dataset.service;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Future;
 import java.util.concurrent.ExecutionException;
 
 import javax.annotation.Nullable;
@@ -28,8 +27,6 @@ import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
-import org.obiba.mica.dataset.event.DatasetPublishedEvent;
-import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.event.IndexHarmonizationDatasetsEvent;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.study.NoSuchStudyException;
@@ -43,7 +40,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.scheduling.annotation.AsyncResult;
 
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
@@ -166,7 +162,6 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
     HarmonizationDataset dataset = findById(id);
     dataset.setPublished(published);
     save(dataset, true);
-    eventBus.post(new DatasetPublishedEvent(dataset));
   }
 
   /**
