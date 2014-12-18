@@ -73,7 +73,11 @@ public class ApplicationSeed implements ApplicationListener<ContextRefreshedEven
   @Override
   public void onApplicationEvent(ContextRefreshedEvent event) {
     log.debug("Create new study - ContextStartedEvent");
-    create();
+    try {
+      create();
+    } catch (Exception e) {
+      log.error("Failed creating seed data. Ignoring.", e);
+    }
   }
 
   public void create() {

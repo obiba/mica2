@@ -10,87 +10,40 @@
 
 package org.obiba.mica.dataset.search;
 
-import java.util.List;
-
-import javax.inject.Inject;
-
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
-import org.obiba.mica.dataset.event.DatasetDeletedEvent;
-import org.obiba.mica.dataset.event.DatasetPublishedEvent;
-import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
-import org.obiba.mica.dataset.event.IndexDatasetsEvent;
-import org.obiba.mica.dataset.event.IndexHarmonizationDatasetsEvent;
-import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.eventbus.Subscribe;
-
 @Component
-public class HarmonizationDatasetIndexer extends DatasetIndexer<HarmonizationDataset> {
+public class HarmonizationDatasetIndexer extends AbstractDatasetIndexer<HarmonizationDataset> {
 
   private static final Logger log = LoggerFactory.getLogger(HarmonizationDatasetIndexer.class);
 
-  @Inject
-  private HarmonizationDatasetService harmonizationDatasetService;
-
-  @Async
-  @Subscribe
-  public void datasetUpdated(DatasetUpdatedEvent event) {
-    if(event.isStudyDataset()) return;
-    log.info("Dataset {} was updated", event.getPersistable());
-    HarmonizationDataset harmonizationDataset = (HarmonizationDataset) event.getPersistable();
-    reIndexDraft(harmonizationDataset);
-    harmonizationDataset
-        .getStudyTables().forEach(studyTable -> reIndexDraft(harmonizationDataset, studyTable.getStudyId()));
-  }
-
-  @Async
-  @Subscribe
-  public void datasetPublished(DatasetPublishedEvent event) {
-    if(event.isStudyDataset()) return;
-    log.info("Dataset {} was published: {}", event.getPersistable(), event.isPublished());
-    HarmonizationDataset harmonizationDataset = (HarmonizationDataset) event.getPersistable();
-    reIndexPublished(harmonizationDataset);
-    harmonizationDataset
-        .getStudyTables().forEach(studyTable -> reIndexPublished(harmonizationDataset, studyTable.getStudyId()));
-  }
-
-  @Async
-  @Subscribe
-  public void datasetDeleted(DatasetDeletedEvent event) {
-    if(event.isStudyDataset()) return;
-    log.info("Dataset {} was deleted", event.getPersistable());
-    HarmonizationDataset harmonizationDataset = (HarmonizationDataset) event.getPersistable();
-    deleteFromDatasetIndices(harmonizationDataset);
-  }
-
-  @Async
-  @Subscribe
-  public void indexAll(IndexDatasetsEvent event) {
-    reIndexAll();
-  }
-
-  @Async
-  @Subscribe
-  public void indexAll(IndexHarmonizationDatasetsEvent event) {
-    reIndexAll();
+  @Override
+  public void onDatasetUpdated(HarmonizationDataset dataset) {
+    log.info("Dataset {} was updated", dataset);
+    reIndexDraft(dataset);
+    dataset
+        .getStudyTables().forEach(studyTable -> reIndexDraft(dataset, studyTable.getStudyId()));
   }
 
   @Override
-  protected Iterable<HarmonizationDataset> findAllDatasets() {
-    List<HarmonizationDataset> datasets = Lists.newArrayList();
-    Iterables.addAll(datasets, harmonizationDatasetService.findAllDatasets());
-    return datasets;
+  public void onDatasetPublished(HarmonizationDataset dataset) {
+    log.info("Dataset {} was published", dataset);
+    reIndexPublished(dataset);
+    dataset
+        .getStudyTables().forEach(studyTable -> reIndexPublished(dataset, studyTable.getStudyId()));
   }
 
-  protected Iterable<HarmonizationDataset> findAllPublishedDatasets() {
-    List<HarmonizationDataset> datasets = Lists.newArrayList();
-    Iterables.addAll(datasets, harmonizationDatasetService.findAllPublishedDatasets());
-    return datasets;
+  @Override
+  public void onDatasetDeleted(HarmonizationDataset dataset) {
+    log.info("Dataset {} was deleted", dataset);
+    deleteFromDatasetIndices(dataset);
+  }
+
+  @Override
+  public void indexAll(Iterable<HarmonizationDataset> datasets, Iterable<HarmonizationDataset> publishedDatasets) {
+    reIndexAll(datasets, publishedDatasets);
   }
 }

@@ -13,31 +13,22 @@ package org.obiba.mica.dataset.search;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
-import org.elasticsearch.search.sort.SortBuilders;
-import org.elasticsearch.search.sort.SortOrder;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
-import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.search.AbstractPublishedDocumentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
 
 @Service
 class EsPublishedDatasetService extends AbstractPublishedDocumentService<Dataset>
@@ -56,12 +47,12 @@ class EsPublishedDatasetService extends AbstractPublishedDocumentService<Dataset
 
   @Override
   protected String getIndexName() {
-    return DatasetIndexer.PUBLISHED_DATASET_INDEX;
+    return AbstractDatasetIndexer.PUBLISHED_DATASET_INDEX;
   }
 
   @Override
   protected String getType() {
-    return DatasetIndexer.DATASET_TYPE;
+    return AbstractDatasetIndexer.DATASET_TYPE;
   }
 
   private Class getClass(String className) {

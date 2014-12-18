@@ -23,14 +23,14 @@ import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.StudyDatasetRepository;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.StudyDataset;
-import org.obiba.mica.dataset.event.DatasetPublishedEvent;
-import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.event.IndexStudyDatasetsEvent;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.study.event.StudyDeletedEvent;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.obiba.opal.web.model.Search;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -44,6 +44,7 @@ import com.google.common.eventbus.Subscribe;
 @Service
 @Validated
 public class StudyDatasetService extends DatasetService<StudyDataset> {
+  private static final Logger log = LoggerFactory.getLogger(StudyDatasetService.class);
 
   @Inject
   private StudyService studyService;
@@ -57,22 +58,14 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
   @Inject
   private EventBus eventBus;
 
+  @Inject
+  private DatasetIndexer<StudyDataset> datasetIndexer;
+
+  @Inject
+  private VariableIndexer variableIndexer;
+
   public void save(@NotNull StudyDataset dataset) {
-    StudyDataset saved = dataset;
-    if(saved.isNew()) {
-      generateId(dataset);
-      saved.setId(getNextId(saved.getAcronym()));
-    } else {
-      saved = studyDatasetRepository.findOne(dataset.getId());
-      if (saved != null) {
-        BeanUtils.copyProperties(dataset, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
-            "lastModifiedDate");
-      } else {
-        saved = dataset;
-      }
-    }
-    studyDatasetRepository.save(saved);
-    eventBus.post(new DatasetUpdatedEvent(saved));
+    save(dataset, false);
   }
 
   /**
@@ -138,8 +131,7 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
   public void publish(@NotNull String id, boolean published) {
     StudyDataset dataset = findById(id);
     dataset.setPublished(published);
-    save(dataset);
-    eventBus.post(new DatasetPublishedEvent(dataset));
+    save(dataset, true);
   }
 
   /**
@@ -160,13 +152,14 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
    */
   public void index(@NotNull String id) {
     StudyDataset dataset = findById(id);
-    eventBus.post(new DatasetUpdatedEvent(dataset));
+    updateIndices(dataset, wrappedGetDatasetVariables(dataset), false);
   }
 
   /**
    * Index or re-index all datasets with their variables.
    */
   public void indexAll() {
+    datasetIndexer.indexAll(findAllDatasets(), findAllPublishedDatasets());
     getEventBus().post(new IndexStudyDatasetsEvent());
   }
 
@@ -249,4 +242,42 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
     return execute(getDatasource(studyTable), callback);
   }
 
+  private void save(StudyDataset dataset, boolean updatePublishIndices) {
+    StudyDataset saved = dataset;
+
+    if(saved.isNew()) {
+      generateId(dataset);
+      saved.setId(getNextId(saved.getAcronym()));
+    } else {
+      saved = studyDatasetRepository.findOne(dataset.getId());
+      if (saved != null) {
+        BeanUtils.copyProperties(dataset, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
+          "lastModifiedDate");
+      } else {
+        saved = dataset;
+      }
+    }
+
+    Iterable<DatasetVariable> variables = wrappedGetDatasetVariables(dataset);
+    studyDatasetRepository.save(saved);
+    tryUpdateIndices(saved, variables, updatePublishIndices);
+  }
+
+  private void updateIndices(StudyDataset dataset, Iterable<DatasetVariable> variables, boolean updatePublishIndices) {
+    variableIndexer.onDatasetUpdated(variables);
+    datasetIndexer.onDatasetUpdated(dataset);
+
+    if (updatePublishIndices) {
+      variableIndexer.onDatasetPublished(dataset, variables);
+      datasetIndexer.onDatasetPublished(dataset);
+    }
+  }
+
+  private void tryUpdateIndices(StudyDataset dataset, Iterable<DatasetVariable> variables, boolean updatePublishIndices) {
+    try {
+      updateIndices(dataset, variables, updatePublishIndices);
+    } catch (Exception e) {
+      log.error("Error updating indices.", e);
+    }
+  }
 }

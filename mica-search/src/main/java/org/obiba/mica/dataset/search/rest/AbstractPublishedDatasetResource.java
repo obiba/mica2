@@ -33,8 +33,8 @@ import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
-import org.obiba.mica.dataset.search.DatasetIndexer;
-import org.obiba.mica.dataset.search.VariableIndexer;
+import org.obiba.mica.dataset.search.AbstractDatasetIndexer;
+import org.obiba.mica.dataset.search.VariableIndexerImpl;
 import org.obiba.mica.micaConfig.OpalService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -72,11 +72,11 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   protected T getDataset(Class<T> clazz, @NotNull String datasetId) throws NoSuchDatasetException {
     QueryBuilder query = QueryBuilders.queryString(clazz.getSimpleName()).field("className");
     query = QueryBuilders.boolQuery().must(query)
-      .must(QueryBuilders.idsQuery(DatasetIndexer.DATASET_TYPE).addIds(datasetId));
+      .must(QueryBuilders.idsQuery(AbstractDatasetIndexer.DATASET_TYPE).addIds(datasetId));
 
     SearchRequestBuilder search = client.prepareSearch() //
-      .setIndices(DatasetIndexer.PUBLISHED_DATASET_INDEX) //
-      .setTypes(DatasetIndexer.DATASET_TYPE) //
+      .setIndices(AbstractDatasetIndexer.PUBLISHED_DATASET_INDEX) //
+      .setTypes(AbstractDatasetIndexer.DATASET_TYPE) //
       .setQuery(query);
 
     log.debug("Request: {}", search.toString());
@@ -103,8 +103,8 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
     QueryBuilder query = QueryBuilders.termQuery("datasetId", datasetId);
 
     SearchRequestBuilder search = new SearchRequestBuilder(client) //
-      .setIndices(VariableIndexer.PUBLISHED_VARIABLE_INDEX) //
-      .setTypes(VariableIndexer.VARIABLE_TYPE) //
+      .setIndices(VariableIndexerImpl.PUBLISHED_VARIABLE_INDEX) //
+      .setTypes(VariableIndexerImpl.VARIABLE_TYPE) //
       .setQuery(query) //
       .setFrom(from) //
       .setSize(limit);
@@ -183,13 +183,13 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
     String variableId = DatasetVariable.IdResolver
       .encode(datasetId, variableName, variableType, studyId, project, table);
     String indexType = variableType.equals(DatasetVariable.Type.Harmonized)
-      ? VariableIndexer.HARMONIZED_VARIABLE_TYPE
-      : VariableIndexer.VARIABLE_TYPE;
+      ? VariableIndexerImpl.HARMONIZED_VARIABLE_TYPE
+      : VariableIndexerImpl.VARIABLE_TYPE;
 
     QueryBuilder query = QueryBuilders.idsQuery(indexType).addIds(variableId);
 
     SearchRequestBuilder search = client.prepareSearch() //
-      .setIndices(VariableIndexer.PUBLISHED_VARIABLE_INDEX) //
+      .setIndices(VariableIndexerImpl.PUBLISHED_VARIABLE_INDEX) //
       .setTypes(indexType) //
       .setQuery(query);
 

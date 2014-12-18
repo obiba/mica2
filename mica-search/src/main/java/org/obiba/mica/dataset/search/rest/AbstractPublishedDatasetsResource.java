@@ -13,7 +13,6 @@ package org.obiba.mica.dataset.search.rest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -28,14 +27,13 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.obiba.mica.dataset.domain.Dataset;
-import org.obiba.mica.dataset.search.DatasetIndexer;
+import org.obiba.mica.dataset.search.AbstractDatasetIndexer;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
 
 /**
  * Retrieve the {@link org.obiba.mica.dataset.domain.Dataset}s from the published dataset index.
@@ -67,8 +65,8 @@ public abstract class AbstractPublishedDatasetsResource<T extends Dataset> {
     }
 
     SearchRequestBuilder search = client.prepareSearch() //
-        .setIndices(DatasetIndexer.PUBLISHED_DATASET_INDEX) //
-        .setTypes(DatasetIndexer.DATASET_TYPE) //
+        .setIndices(AbstractDatasetIndexer.PUBLISHED_DATASET_INDEX) //
+        .setTypes(AbstractDatasetIndexer.DATASET_TYPE) //
         .setQuery(query) //
         .setPostFilter(filter) //
         .setFrom(from) //

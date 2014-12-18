@@ -10,85 +10,39 @@
 
 package org.obiba.mica.dataset.search;
 
-import java.util.List;
-
-import javax.inject.Inject;
-
 import org.obiba.mica.dataset.domain.StudyDataset;
-import org.obiba.mica.dataset.event.DatasetDeletedEvent;
-import org.obiba.mica.dataset.event.DatasetPublishedEvent;
-import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
-import org.obiba.mica.dataset.event.IndexDatasetsEvent;
-import org.obiba.mica.dataset.event.IndexStudyDatasetsEvent;
-import org.obiba.mica.dataset.service.StudyDatasetService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.eventbus.Subscribe;
 
 @Component
-public class StudyDatasetIndexer extends DatasetIndexer<StudyDataset> {
+public class StudyDatasetIndexer extends AbstractDatasetIndexer<StudyDataset> {
 
   private static final Logger log = LoggerFactory.getLogger(StudyDatasetIndexer.class);
 
-  @Inject
-  private StudyDatasetService studyDatasetService;
-
-  @Async
-  @Subscribe
-  public void datasetUpdated(DatasetUpdatedEvent event) {
-    if(!event.isStudyDataset()) return;
-    log.info("Dataset {} was updated", event.getPersistable());
-    StudyDataset studyDataset = (StudyDataset) event.getPersistable();
-    reIndexDraft(studyDataset);
-    reIndexDraft(studyDataset, studyDataset.getStudyTable().getStudyId());
-  }
-
-  @Async
-  @Subscribe
-  public void datasetPublished(DatasetPublishedEvent event) {
-    if(!event.isStudyDataset()) return;
-    log.info("Dataset {} was published: {}", event.getPersistable(), event.isPublished());
-    StudyDataset studyDataset = (StudyDataset) event.getPersistable();
-    reIndexPublished(studyDataset);
-    reIndexPublished(studyDataset, studyDataset.getStudyTable().getStudyId());
-  }
-
-  @Async
-  @Subscribe
-  public void datasetDeleted(DatasetDeletedEvent event) {
-    if(!event.isStudyDataset()) return;
-    log.info("Dataset {} was deleted", event.getPersistable());
-    StudyDataset studyDataset = (StudyDataset) event.getPersistable();
-    deleteFromDatasetIndices(studyDataset);
-  }
-
-  @Async
-  @Subscribe
-  public void indexAll(IndexDatasetsEvent event) {
-    reIndexAll();
-  }
-
-  @Async
-  @Subscribe
-  public void indexAll(IndexStudyDatasetsEvent event) {
-    reIndexAll();
+  @Override
+  public void onDatasetUpdated(StudyDataset dataset) {
+    log.info("Dataset {} was updated", dataset);
+    reIndexDraft(dataset);
+    reIndexDraft(dataset, dataset.getStudyTable().getStudyId());
   }
 
   @Override
-  protected Iterable<StudyDataset> findAllDatasets() {
-    List<StudyDataset> datasets = Lists.newArrayList();
-    Iterables.addAll(datasets, studyDatasetService.findAllDatasets());
-    return datasets;
+  public void onDatasetPublished(StudyDataset dataset) {
+    log.info("Dataset {} was published", dataset);
+    reIndexPublished(dataset);
+    reIndexPublished(dataset, dataset.getStudyTable().getStudyId());
   }
 
-  protected Iterable<StudyDataset> findAllPublishedDatasets() {
-    List<StudyDataset> datasets = Lists.newArrayList();
-    Iterables.addAll(datasets, studyDatasetService.findAllPublishedDatasets());
-    return datasets;
+  @Override
+  public void onDatasetDeleted(StudyDataset dataset) {
+    log.info("Dataset {} was deleted", dataset);
+    deleteFromDatasetIndices(dataset);
+  }
+
+  @Override
+  public void indexAll(Iterable<StudyDataset> datasets, Iterable<StudyDataset> publishedDatasets) {
+    reIndexAll(datasets, publishedDatasets);
   }
 }
