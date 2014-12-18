@@ -11,16 +11,12 @@ import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.StudyService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Maps;
 
 @Component
 public class DataCollectionEventAggregationMetaDataProvider implements AggregationMetaDataProvider {
-
-  private static final Logger log = LoggerFactory.getLogger(DataCollectionEventAggregationMetaDataProvider.class);
 
   @Inject
   PublishedStudyService publishedStudyService;
@@ -47,7 +43,7 @@ public class DataCollectionEventAggregationMetaDataProvider implements Aggregati
   }
 
   public MetaData getTitle(String aggregation, String termKey, String locale) {
-    return aggregation.equals("dceIds")
+    return "dceIds".equals(aggregation) && cache.containsKey(termKey)
       ? MetaData.newBuilder().title(cache.get(termKey).getMoniker(locale)).description("").build()
       : null;
   }

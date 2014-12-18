@@ -248,13 +248,13 @@ public class JoinQueryExecutor {
     if(studyIds == null || studyIds.size() > 0) docQueryStudyIds = docQuery.queryStudyIds(studyIds);
 
     List<String> aggStudyIds =
-        (docQuery.hasQueryFilters() && docQueryStudyIds != null)
+        docQuery.hasQueryFilters() && docQueryStudyIds != null
             ? joinStudyIds(studyIds, docQueryStudyIds)
             : studyIds;
 
     if(aggStudyIds == null || aggStudyIds.size() > 0) queryAggragations(aggStudyIds, subQueries);
 
-    return docQueryStudyIds;
+    return aggStudyIds;
   }
 
   private List<String> joinStudyIds(List<String> studyIds, List<String> joinedStudyIds) {
@@ -278,7 +278,7 @@ public class JoinQueryExecutor {
         } catch(IOException e) {
           log.error("Failed to query study IDs '{}'", e);
         }
-        if(studyIds.size() == 0) return;
+        if(studyIds.isEmpty()) return;
       }
     });
 

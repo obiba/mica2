@@ -6,24 +6,24 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.obiba.mica.core.domain.LocalizedString;
-import org.obiba.mica.network.domain.Network;
-import org.obiba.mica.network.service.PublishedNetworkService;
+import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.service.PublishedStudyService;
 import org.springframework.stereotype.Component;
 
 @Component
-public class NetworkAggregationMetaDataProvider implements AggregationMetaDataProvider {
+public class StudyAggregationMetaDataProvider implements AggregationMetaDataProvider {
 
   @Inject
-  PublishedNetworkService publishedNetworkService;
+  PublishedStudyService publishedStudyService;
 
   private Map<String, LocalizedString> cache;
 
   public void refresh() {
-    cache = publishedNetworkService.findAll().stream().collect(Collectors.toMap(Network::getId, Network::getName));
+    cache = publishedStudyService.findAll().stream().collect(Collectors.toMap(Study::getId, Study::getName));
   }
 
   public MetaData getTitle(String aggregation, String termKey, String locale) {
-    return "networkId".equals(aggregation) && cache.containsKey(termKey)
+    return "studyIds".equals(aggregation) && cache.containsKey(termKey)
       ? MetaData.newBuilder().title(cache.get(termKey).get(locale)).description("").build()
       : null;
   }
