@@ -21,8 +21,6 @@
 #
 
 id:
-  properties:
-    alias: "studyId"
 start:
 end:
 access:
