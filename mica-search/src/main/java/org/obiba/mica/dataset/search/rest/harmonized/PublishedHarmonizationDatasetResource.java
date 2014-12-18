@@ -71,8 +71,8 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
   @GET
   @Path("/variables")
   public Mica.DatasetVariablesDto getVariables(@QueryParam("from") @DefaultValue("0") int from,
-      @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
-      @QueryParam("order") String order) {
+    @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
+    @QueryParam("order") String order) {
     return getDatasetVariableDtos(id, from, limit, sort, order);
   }
 
@@ -88,16 +88,16 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
   @GET
   @Path("/variables/harmonizations")
   public Mica.DatasetVariablesHarmonizationsDto getVariableHarmonizations(
-      @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit,
-      @QueryParam("sort") String sort, @QueryParam("order") String order) {
+    @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit,
+    @QueryParam("sort") @DefaultValue("index") String sort, @QueryParam("order") @DefaultValue("asc") String order) {
     Mica.DatasetVariablesHarmonizationsDto.Builder builder = Mica.DatasetVariablesHarmonizationsDto.newBuilder();
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, id);
     Mica.DatasetVariablesDto variablesDto = getDatasetVariableDtos(id, from, limit, sort, order);
 
     builder.setTotal(variablesDto.getTotal()).setLimit(variablesDto.getLimit()).setFrom(variablesDto.getFrom());
 
-    variablesDto.getVariablesList().forEach(
-        variable -> builder.addVariableHarmonizations(getVariableHarmonizationDto(dataset, variable.getName())));
+    variablesDto.getVariablesList()
+      .forEach(variable -> builder.addVariableHarmonizations(getVariableHarmonizationDto(dataset, variable.getName())));
 
     return builder.build();
   }
@@ -105,25 +105,26 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
   @GET
   @Path("/variables/harmonizations/_export")
   @Produces("text/csv")
-  public Response getVariableHarmonizationsAsCsv(@QueryParam("locale") @DefaultValue("en") String locale)
-      throws IOException {
+  public Response getVariableHarmonizationsAsCsv(@QueryParam("sort") @DefaultValue("index") String sort,
+    @QueryParam("order") @DefaultValue("asc") String order, @QueryParam("locale") @DefaultValue("en") String locale)
+    throws IOException {
 
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, id);
-    Mica.DatasetVariablesHarmonizationsDto harmonizationVariables = getVariableHarmonizations(0, 999999,
-        null, null);
+    Mica.DatasetVariablesHarmonizationsDto harmonizationVariables = getVariableHarmonizations(0, 999999, sort,
+      order);
 
     CsvHarmonizationVariablesWriter writer = new CsvHarmonizationVariablesWriter(
-        Lists.newArrayList("maelstrom", "Mlstr_harmo"));
+      Lists.newArrayList("maelstrom", "Mlstr_harmo"));
     ByteArrayOutputStream values = writer.write(dataset, harmonizationVariables, locale);
 
-    return Response.ok(values.toByteArray(), "text/csv").header("Content-Disposition",
-        "attachment; filename=\"" + id + ".csv\"").build();
+    return Response.ok(values.toByteArray(), "text/csv")
+      .header("Content-Disposition", "attachment; filename=\"" + id + ".csv\"").build();
   }
 
   @Path("/variable/{variable}")
   public PublishedDataschemaDatasetVariableResource getVariable(@PathParam("variable") String variable) {
     PublishedDataschemaDatasetVariableResource resource = applicationContext
-        .getBean(PublishedDataschemaDatasetVariableResource.class);
+      .getBean(PublishedDataschemaDatasetVariableResource.class);
     resource.setDatasetId(id);
     resource.setVariableName(variable);
     return resource;
@@ -132,16 +133,16 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
   @GET
   @Path("/study/{study}/variables")
   public Mica.DatasetVariablesDto getVariables(@PathParam("study") String studyId,
-      @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit,
-      @QueryParam("sort") String sort, @QueryParam("order") String order) {
+    @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit,
+    @QueryParam("sort") String sort, @QueryParam("order") String order) {
     return getDatasetVariableDtos(id, from, limit, sort, order);
   }
 
   @Path("/study/{study}/variable/{variable}")
   public PublishedHarmonizedDatasetVariableResource getVariable(@PathParam("study") String studyId,
-      @PathParam("variable") String variable) {
+    @PathParam("variable") String variable) {
     PublishedHarmonizedDatasetVariableResource resource = applicationContext
-        .getBean(PublishedHarmonizedDatasetVariableResource.class);
+      .getBean(PublishedHarmonizedDatasetVariableResource.class);
     resource.setDatasetId(id);
     resource.setVariableName(variable);
     resource.setStudyId(studyId);

@@ -26,6 +26,7 @@ import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.sort.SortBuilders;
@@ -63,11 +64,11 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
   }
 
   @Override
-  public Documents<T> find(int from, int limit, @Nullable String sort, @Nullable String order,
-      @Nullable String studyId, @Nullable String queryString) {
+  public Documents<T> find(int from, int limit, @Nullable String sort, @Nullable String order, @Nullable String studyId,
+    @Nullable String queryString) {
 
     QueryBuilder query = null;
-    if (queryString != null) {
+    if(queryString != null) {
       query = QueryBuilders.queryString(queryString);
     }
 
@@ -77,16 +78,16 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
     }
 
     SearchRequestBuilder search = client.prepareSearch() //
-        .setIndices(getIndexName()) //
-        .setTypes(getType()) //
-        .setQuery(query) //
-        .setPostFilter(filter) //
-        .setFrom(from) //
-        .setSize(limit);
+      .setIndices(getIndexName()) //
+      .setTypes(getType()) //
+      .setQuery(query) //
+      .setPostFilter(filter) //
+      .setFrom(from) //
+      .setSize(limit);
 
     if(sort != null) {
       search.addSort(
-          SortBuilders.fieldSort(sort).order(order == null ? SortOrder.ASC : SortOrder.valueOf(order.toUpperCase())));
+        SortBuilders.fieldSort(sort).order(order == null ? SortOrder.ASC : SortOrder.valueOf(order.toUpperCase())));
     }
 
     log.debug("Request: {}", search.toString());
@@ -130,14 +131,18 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
 
   private List<T> executeQuery(QueryBuilder queryBuilder, int from, int size) {
     SearchRequestBuilder requestBuilder = client.prepareSearch(getIndexName()) //
-        .setTypes(getType()) //
-        .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
-        .setQuery(queryBuilder) //
-        .setFrom(from) //
-        .setSize(size);
+      .setTypes(getType()) //
+      .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
+      .setQuery(queryBuilder) //
+      .setFrom(from) //
+      .setSize(size);
 
-    SearchResponse response = requestBuilder.execute().actionGet();
-    return processHits(response.getHits());
+    try {
+      SearchResponse response = requestBuilder.execute().actionGet();
+      return processHits(response.getHits());
+    } catch(IndexMissingException e) {
+      return Lists.newArrayList();
+    }
   }
 
   protected List<T> processHits(SearchHits hits) {

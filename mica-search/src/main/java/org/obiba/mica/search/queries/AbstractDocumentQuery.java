@@ -104,7 +104,7 @@ public abstract class AbstractDocumentQuery {
     this.mode = mode;
     locale = localeName;
     queryDto = QueryDtoHelper
-        .ensureQueryStringDtoFields(query, locale, getLocalizedQueryStringFields(), getQueryStringFields());
+      .ensureQueryStringDtoFields(query, locale, getLocalizedQueryStringFields(), getQueryStringFields());
     resultDto = null;
   }
 
@@ -117,6 +117,7 @@ public abstract class AbstractDocumentQuery {
   public abstract String getSearchType();
 
   public abstract Stream<String> getLocalizedQueryStringFields();
+
   public Stream<String> getQueryStringFields() {
     return null;
   }
@@ -158,10 +159,10 @@ public abstract class AbstractDocumentQuery {
     if(queryDto == null) return null;
 
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
-        .setTypes(getSearchType()) //
-        .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
-        .setQuery(QueryDtoParser.newParser().parse(queryDto)) //
-        .setNoFields();
+      .setTypes(getSearchType()) //
+      .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
+      .setQuery(QueryDtoParser.newParser().parse(queryDto)) //
+      .setNoFields();
 
     aggregationYamlParser.getAggregations(getJoinFieldsAsProperties()).forEach(requestBuilder::addAggregation);
     log.info("Request: {}", requestBuilder);
@@ -195,9 +196,8 @@ public abstract class AbstractDocumentQuery {
    */
   public List<String> query(List<String> studyIds, CountStatsData counts, Scope scope) throws IOException {
     QueryDto tempQueryDto = queryDto == null ? createStudyIdFilters(studyIds) : addStudyIdFilters(studyIds);
-    return mode == COVERAGE
-      ? executeCoverage(tempQueryDto, tempQueryDto.getFrom(), tempQueryDto.getSize(), DIGEST, counts)
-      : execute(tempQueryDto, tempQueryDto.getFrom(), tempQueryDto.getSize(), scope, counts);
+    return mode == COVERAGE ? executeCoverage(tempQueryDto, tempQueryDto.getFrom(), tempQueryDto.getSize(), DIGEST,
+      counts) : execute(tempQueryDto, tempQueryDto.getFrom(), tempQueryDto.getSize(), scope, counts);
   }
 
   /**
@@ -211,7 +211,8 @@ public abstract class AbstractDocumentQuery {
    * @return
    * @throws IOException
    */
-  protected List<String> execute(QueryDto queryDto, int from, int size, Scope scope, CountStatsData counts) throws IOException {
+  protected List<String> execute(QueryDto queryDto, int from, int size, Scope scope, CountStatsData counts)
+    throws IOException {
     if(queryDto == null) return null;
     QueryDtoParser queryDtoParser = QueryDtoParser.newParser();
 
@@ -265,8 +266,12 @@ public abstract class AbstractDocumentQuery {
 
       SearchResponse aggResponse = responses.get(0);
       SearchResponse response = responses.get(1);
-      log.info("Response: {}", response.toString());
-      QueryResultDto.Builder builder = QueryResultDto.newBuilder().setTotalHits((int) response.getHits().getTotalHits());
+      log.info("Response: {}", response);
+      if(response == null) {
+        return null;
+      }
+      QueryResultDto.Builder builder = QueryResultDto.newBuilder()
+        .setTotalHits((int) response.getHits().getTotalHits());
       if(scope != NONE) processHits(builder, response.getHits(), scope, counts);
       processAggregations(builder, aggResponse.getAggregations(), response.getAggregations());
       resultDto = builder.build();
@@ -351,7 +356,7 @@ public abstract class AbstractDocumentQuery {
    * @throws IOException
    */
   protected abstract void processHits(QueryResultDto.Builder builder, SearchHits hits, Scope scope,
-      CountStatsData counts) throws IOException;
+    CountStatsData counts) throws IOException;
 
   /**
    * Creates domain aggregation DTOs
@@ -377,7 +382,7 @@ public abstract class AbstractDocumentQuery {
   protected QueryDto addStudyIdFilters(List<String> studyIds) {
     if(studyIds == null || studyIds.size() == 0) return queryDto;
     return QueryDtoHelper.addTermFilters(QueryDto.newBuilder(queryDto).build(),
-        QueryDtoHelper.createTermFilters(getJoinFields(), studyIds), QueryDtoHelper.BoolQueryType.MUST);
+      QueryDtoHelper.createTermFilters(getJoinFields(), studyIds), QueryDtoHelper.BoolQueryType.MUST);
   }
 
   protected QueryDto createStudyIdFilters(List<String> studyIds) {
@@ -399,21 +404,21 @@ public abstract class AbstractDocumentQuery {
   protected Map<String, Integer> getDocumentCounts(String joinField) {
     if(resultDto == null) return Maps.newHashMap();
     return resultDto.getAggsList().stream() //
-        .filter(agg -> joinField.equals(AggregationYamlParser.unformatName(agg.getAggregation()))) //
-        .map(d -> d.getExtension(MicaSearch.TermsAggregationResultDto.terms)) //
-        .flatMap((d) -> d.stream()) //
-        .filter(s -> s.getCount() > 0) //
-        .collect(Collectors.toMap(MicaSearch.TermsAggregationResultDto::getKey, term -> term.getCount()));
+      .filter(agg -> joinField.equals(AggregationYamlParser.unformatName(agg.getAggregation()))) //
+      .map(d -> d.getExtension(MicaSearch.TermsAggregationResultDto.terms)) //
+      .flatMap((d) -> d.stream()) //
+      .filter(s -> s.getCount() > 0) //
+      .collect(Collectors.toMap(MicaSearch.TermsAggregationResultDto::getKey, term -> term.getCount()));
   }
 
   protected List<String> getResponseDocumentIds(List<String> fields, List<MicaSearch.AggregationResultDto> aggDtos) {
     List<String> ids = aggDtos.stream() //
-        .filter(agg -> fields.contains(AggregationYamlParser.unformatName(agg.getAggregation()))) //
-        .map(d -> d.getExtension(MicaSearch.TermsAggregationResultDto.terms)) //
-        .flatMap((d) -> d.stream()) //
-        .filter(s -> s.getCount() > 0) //
-        .map(MicaSearch.TermsAggregationResultDto::getKey) //
-        .collect(Collectors.toList()); //
+      .filter(agg -> fields.contains(AggregationYamlParser.unformatName(agg.getAggregation()))) //
+      .map(d -> d.getExtension(MicaSearch.TermsAggregationResultDto.terms)) //
+      .flatMap((d) -> d.stream()) //
+      .filter(s -> s.getCount() > 0) //
+      .map(MicaSearch.TermsAggregationResultDto::getKey) //
+      .collect(Collectors.toList()); //
     return ids;
   }
 

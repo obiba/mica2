@@ -24,6 +24,7 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.Aggregations;
@@ -57,6 +58,7 @@ import static org.obiba.mica.web.model.MicaSearch.QueryResultDto;
 public class NetworkQuery extends AbstractDocumentQuery {
 
   private static final Logger log = LoggerFactory.getLogger(NetworkQuery.class);
+
   private static final String NETWORK_FACETS_YML = "network-facets.yml";
 
   public static final String JOIN_FIELD = "studyIds";
@@ -94,8 +96,8 @@ public class NetworkQuery extends AbstractDocumentQuery {
   public void processHits(QueryResultDto.Builder builder, SearchHits hits, Scope scope, CountStatsData counts) {
     NetworkResultDto.Builder resBuilder = NetworkResultDto.newBuilder();
     NetworkCountStatsBuilder networkCountStatsBuilder = counts == null
-        ? null
-        : NetworkCountStatsBuilder.newBuilder(counts);
+      ? null
+      : NetworkCountStatsBuilder.newBuilder(counts);
 
     Consumer<Network> addDto = getNetworkConsumer(scope, resBuilder, networkCountStatsBuilder);
 
@@ -107,21 +109,17 @@ public class NetworkQuery extends AbstractDocumentQuery {
   }
 
   private Consumer<Network> getNetworkConsumer(Scope scope, NetworkResultDto.Builder resBuilder,
-      NetworkCountStatsBuilder networkCountStatsBuilder) {
+    NetworkCountStatsBuilder networkCountStatsBuilder) {
 
-    return scope == Scope.DETAIL
-      ? (network) -> {
-        Mica.NetworkDto.Builder networkBuilder = dtos.asDtoBuilder(network);
-        if(networkCountStatsBuilder != null) {
-          networkBuilder
-              .setExtension(MicaSearch.CountStatsDto.networkCountStats, networkCountStatsBuilder.build(network))
-              .build();
-        }
-        resBuilder.addNetworks(networkBuilder.build());
+    return scope == Scope.DETAIL ? (network) -> {
+      Mica.NetworkDto.Builder networkBuilder = dtos.asDtoBuilder(network);
+      if(networkCountStatsBuilder != null) {
+        networkBuilder.setExtension(MicaSearch.CountStatsDto.networkCountStats, networkCountStatsBuilder.build(network))
+          .build();
       }
-      : (network) -> resBuilder.addDigests(dtos.asDigestDtoBuilder(network).build());
+      resBuilder.addNetworks(networkBuilder.build());
+    } : (network) -> resBuilder.addDigests(dtos.asDigestDtoBuilder(network).build());
   }
-
 
   @Override
   protected List<String> getJoinFields() {
@@ -153,12 +151,16 @@ public class NetworkQuery extends AbstractDocumentQuery {
       return Maps.newHashMap();
     }
 
-    SearchResponse response = requestBuilder.execute().actionGet();
     Map<String, List<String>> map = Maps.newHashMap();
+    try {
+      SearchResponse response = requestBuilder.execute().actionGet();
 
-    response.getAggregations().forEach(
-      aggregation -> ((Terms) aggregation).getBuckets().stream().filter(bucket -> bucket.getDocCount() > 0)
-        .forEach(bucket -> map.put(bucket.getKey(), getStudyCounts(bucket.getAggregations()))));
+      response.getAggregations().forEach(
+        aggregation -> ((Terms) aggregation).getBuckets().stream().filter(bucket -> bucket.getDocCount() > 0)
+          .forEach(bucket -> map.put(bucket.getKey(), getStudyCounts(bucket.getAggregations()))));
+    } catch(IndexMissingException e) {
+      // ignore
+    }
 
     return map;
   }
