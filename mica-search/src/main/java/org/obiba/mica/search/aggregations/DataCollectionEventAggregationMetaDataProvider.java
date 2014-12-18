@@ -43,7 +43,7 @@ public class DataCollectionEventAggregationMetaDataProvider implements Aggregati
   }
 
   public MetaData getTitle(String aggregation, String termKey, String locale) {
-    return "dceIds".equals(aggregation)
+    return "dceIds".equals(aggregation) && cache.containsKey(termKey)
       ? MetaData.newBuilder().title(cache.get(termKey).getMoniker(locale)).description("").build()
       : null;
   }
