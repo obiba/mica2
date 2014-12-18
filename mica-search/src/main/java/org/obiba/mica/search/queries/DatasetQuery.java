@@ -25,6 +25,7 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.Aggregation;
@@ -108,7 +109,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
   public List<String> query(List<String> studyIds, CountStatsData counts, Scope scope) throws IOException {
     updateDatasetQuery();
     List<String> ids = super.query(studyIds, counts, scope);
-    if (datasetIdProvider != null) datasetIdProvider.setDatasetIds(getDatasetIds());
+    if(datasetIdProvider != null) datasetIdProvider.setDatasetIds(getDatasetIds());
     return ids;
   }
 
@@ -118,16 +119,15 @@ public class DatasetQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  public void processHits(QueryResultDto.Builder builder, SearchHits hits, Scope scope,
-      CountStatsData counts) {
+  public void processHits(QueryResultDto.Builder builder, SearchHits hits, Scope scope, CountStatsData counts) {
     DatasetResultDto.Builder resBuilder = DatasetResultDto.newBuilder();
     DatasetCountStatsBuilder datasetCountStatsBuilder = counts == null
-        ? null
-        : DatasetCountStatsBuilder.newBuilder(counts);
+      ? null
+      : DatasetCountStatsBuilder.newBuilder(counts);
 
     Consumer<Dataset> addDto = getDatasetConsumer(scope, resBuilder, datasetCountStatsBuilder);
 
-    for (SearchHit hit : hits) {
+    for(SearchHit hit : hits) {
       addDto.accept(publishedDatasetService.findById(hit.getId()));
     }
 
@@ -135,7 +135,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
   }
 
   private List<String> getDatasetIds() {
-    if (resultDto != null) {
+    if(resultDto != null) {
       return getResponseDocumentIds(Arrays.asList("id"), resultDto.getAggsList());
     }
 
@@ -143,34 +143,30 @@ public class DatasetQuery extends AbstractDocumentQuery {
   }
 
   private void updateDatasetQuery() {
-    if (datasetIdProvider == null) return;
+    if(datasetIdProvider == null) return;
     List<String> datasetIds = datasetIdProvider.getDatasetIds();
     if(datasetIds.size() > 0) {
       if(queryDto == null) {
-        queryDto = QueryDtoHelper
-            .createTermFiltersQuery(Arrays.asList("id"), datasetIds, BoolQueryType.MUST);
+        queryDto = QueryDtoHelper.createTermFiltersQuery(Arrays.asList("id"), datasetIds, BoolQueryType.MUST);
       } else {
         queryDto = QueryDtoHelper
-            .addTermFilters(queryDto, QueryDtoHelper.createTermFilters(Arrays.asList("id"), datasetIds),
-                BoolQueryType.MUST);
+          .addTermFilters(queryDto, QueryDtoHelper.createTermFilters(Arrays.asList("id"), datasetIds),
+            BoolQueryType.MUST);
       }
     }
   }
 
   private Consumer<Dataset> getDatasetConsumer(Scope scope, DatasetResultDto.Builder resBuilder,
-      DatasetCountStatsBuilder datasetCountStatsBuilder) {
+    DatasetCountStatsBuilder datasetCountStatsBuilder) {
 
-    return scope == Scope.DETAIL
-      ? (dataset) -> {
-        Mica.DatasetDto.Builder datasetBuilder = dtos.asDtoBuilder(dataset);
-        if(datasetCountStatsBuilder != null) {
-          datasetBuilder
-              .setExtension(MicaSearch.CountStatsDto.datasetCountStats, datasetCountStatsBuilder.build(dataset))
-              .build();
-        }
-        resBuilder.addDatasets(datasetBuilder.build());
+    return scope == Scope.DETAIL ? (dataset) -> {
+      Mica.DatasetDto.Builder datasetBuilder = dtos.asDtoBuilder(dataset);
+      if(datasetCountStatsBuilder != null) {
+        datasetBuilder.setExtension(MicaSearch.CountStatsDto.datasetCountStats, datasetCountStatsBuilder.build(dataset))
+          .build();
       }
-      : (dataset) -> resBuilder.addDigests(dtos.asDigestDtoBuilder(dataset).build());
+      resBuilder.addDatasets(datasetBuilder.build());
+    } : (dataset) -> resBuilder.addDigests(dtos.asDigestDtoBuilder(dataset).build());
   }
 
   @Override
@@ -179,16 +175,15 @@ public class DatasetQuery extends AbstractDocumentQuery {
   }
 
   protected MicaSearch.QueryDto addStudyIdFilters(List<String> studyIds) {
-    if((datasetIdProvider != null && datasetIdProvider.getDatasetIds().size() > 0)
-        || studyIds == null
-        || studyIds.size() == 0) {
+    if((datasetIdProvider != null && datasetIdProvider.getDatasetIds().size() > 0) || studyIds == null ||
+      studyIds.size() == 0) {
       return queryDto;
     }
 
     List<String> joinFields = getJoinFieldsByType(findType());
     BoolQueryType operator = joinFields.size() == 1 ? BoolQueryType.MUST : BoolQueryType.SHOULD;
     return QueryDtoHelper.addTermFilters(MicaSearch.QueryDto.newBuilder(queryDto).build(),
-        QueryDtoHelper.createTermFilters(joinFields, studyIds), operator);
+      QueryDtoHelper.createTermFilters(joinFields, studyIds), operator);
   }
 
   protected MicaSearch.QueryDto createStudyIdFilters(List<String> studyIds) {
@@ -198,7 +193,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
   }
 
   private List<String> getJoinFieldsByType(DatasetType type) {
-    switch (type) {
+    switch(type) {
       case STUDY:
         return Arrays.asList(STUDY_JOIN_FIELD);
       case HARMONIZATION:
@@ -214,10 +209,10 @@ public class DatasetQuery extends AbstractDocumentQuery {
     if(queryDto == null) return DatasetType.DATASET;
     QueryDtoParser queryDtoParser = QueryDtoParser.newParser();
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
-        .setTypes(getSearchType()) //
-        .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
-        .setQuery(queryDtoParser.parse(queryDto)) //
-        .setNoFields();
+      .setTypes(getSearchType()) //
+      .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
+      .setQuery(queryDtoParser.parse(queryDto)) //
+      .setNoFields();
 
     Properties classNameAggregation = new Properties();
     classNameAggregation.setProperty(CLASS_NAME_AGG, "");
@@ -239,10 +234,10 @@ public class DatasetQuery extends AbstractDocumentQuery {
 
     int count = classNames.size();
 
-    if (count == 1) {
+    if(count == 1) {
       return classNames.get(0).equals(HarmonizationDataset.class.getSimpleName().toLowerCase())
-          ? DatasetType.HARMONIZATION
-          : DatasetType.STUDY;
+        ? DatasetType.HARMONIZATION
+        : DatasetType.STUDY;
     }
 
     return DatasetType.DATASET;
@@ -268,13 +263,17 @@ public class DatasetQuery extends AbstractDocumentQuery {
       return Maps.newHashMap();
     }
 
-    SearchResponse response = requestBuilder.execute().actionGet();
     Map<String, Map<String, List<String>>> map = Maps.newHashMap();
+    try {
+      SearchResponse response = requestBuilder.execute().actionGet();
 
-    Aggregation idAgg = response.getAggregations().get("id");
+      Aggregation idAgg = response.getAggregations().get("id");
 
-    ((Terms) idAgg).getBuckets().stream().filter(bucket -> bucket.getDocCount() > 0)
+      ((Terms) idAgg).getBuckets().stream().filter(bucket -> bucket.getDocCount() > 0)
         .forEach(bucket -> map.put(bucket.getKey(), getStudyCounts(bucket.getAggregations())));
+    } catch(IndexMissingException e) {
+      // ignore
+    }
 
     return map;
   }
@@ -282,8 +281,8 @@ public class DatasetQuery extends AbstractDocumentQuery {
   private Map<String, List<String>> getStudyCounts(Aggregations aggregations) {
     Map<String, List<String>> map = Maps.newHashMap();
     aggregations.forEach(aggregation -> map.put(AggregationYamlParser.unformatName(aggregation.getName()),
-        ((Terms) aggregation).getBuckets().stream().filter(bucket -> bucket.getDocCount() > 0)
-          .map(bucket -> bucket.getKey()).collect(Collectors.toList())));
+      ((Terms) aggregation).getBuckets().stream().filter(bucket -> bucket.getDocCount() > 0)
+        .map(bucket -> bucket.getKey()).collect(Collectors.toList())));
 
     return map;
   }
