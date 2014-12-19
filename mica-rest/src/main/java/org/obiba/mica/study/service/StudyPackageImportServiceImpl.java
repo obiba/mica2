@@ -25,6 +25,7 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.jersey.protobuf.AbstractProtobufProvider;
 import org.obiba.mica.core.domain.AttachmentAware;
+import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
@@ -204,6 +205,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
         while((entry = zipIn.getNextEntry()) != null) {
           readZipEntry(zipIn, entry);
         }
+        makeIdMapping();
       } catch(Exception e) {
         log.error("Failed importing from zip", e);
         throw new RuntimeException("Failed importing from zip", e);
@@ -236,6 +238,26 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
         }
         zipIn.closeEntry();
       }
+    }
+
+    private void makeIdMapping() {
+      study.setAcronym(ensureAcronym(study.getAcronym(), study.getName()));
+      String sId = study.getAcronym().asString().toLowerCase();
+      study.setId(sId);
+      study.setOpal(null);
+      for (Network network : networks) {
+        network.setAcronym(ensureAcronym(network.getAcronym(), network.getName()));
+        String nId = network.getAcronym().asString().toLowerCase();
+        network.setId(nId);
+        network.setStudyIds(Lists.newArrayList(study.getId()));
+      }
+    }
+
+    private LocalizedString ensureAcronym(LocalizedString acronym, LocalizedString name) {
+      if(acronym == null || acronym.isEmpty()) {
+        return name.asAcronym();
+      }
+      return acronym;
     }
 
     private Study readStudy(InputStream inputStream) throws IOException {
