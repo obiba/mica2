@@ -13,7 +13,7 @@
 
 # PATH should only include /usr/* if it runs after the mountnfs.sh script
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
-DESC=mica2                    # Introduce a short description here
+DESC="Mica server"            # Introduce a short description here
 NAME=mica2                    # Introduce the short server's name here
 MICA_SERVER_USER=mica         # User to use to run the service
 DAEMON=/usr/bin/daemon        # Introduce the server's location here
