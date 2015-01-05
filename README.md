@@ -1,4 +1,4 @@
-# Mica-Server
+# Mica2 Server
 
 ## For developers
 
@@ -10,7 +10,7 @@ sudo apt-get install -y nodejs devscripts
 npm install -g grunt-cli bower
 ```
 
-If you run mica-server for the first time, run `make npm-install`.
+If you run mica2 server for the first time, run `make npm-install`.
 
 Make sure you use **Java 8**:
 
