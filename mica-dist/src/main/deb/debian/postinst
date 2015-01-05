@@ -29,39 +29,39 @@ case "$1" in
       if [ -z "$2" ] && [ "$RET" != "" ] ; then
         echo Updating administrator password.
         # hash the password and escape the possible '$/&' characters
-        adminpw=$(echo -n $RET | xargs java -jar /usr/share/mica-server-*/tools/lib/obiba-password-hasher-*-cli.jar | sed -e 's/\([\$\/\/]\)/\\\1/g' | cut -d ' ' -f 1)
+        adminpw=$(echo -n $RET | xargs java -jar /usr/share/mica2-*/tools/lib/obiba-password-hasher-*-cli.jar | sed -e 's/\([\$\/\/]\)/\\\1/g' | cut -d ' ' -f 1)
         tfile=`mktemp`
         if [ ! -f "$tfile" ]; then
           return 1
         fi
-        cat /etc/mica-server/shiro.ini | sed -e "s/^administrator\s*=.*,/administrator=$adminpw,/" > $tfile && \
-          mv $tfile /etc/mica-server/shiro.ini
+        cat /etc/mica2/shiro.ini | sed -e "s/^administrator\s*=.*,/administrator=$adminpw,/" > $tfile && \
+          mv $tfile /etc/mica2/shiro.ini
         # clear password in db_get so it won't be re-encoded during next upgrade
         db_set mica-server/admin_password ""
       fi
 
-    	# Create mica-server user if it doesn't exist.
-      if ! id mica-server > /dev/null 2>&1 ; then
-        adduser --system --home /var/lib/mica-server --no-create-home --disabled-password mica-server
+    	# Create mica user if it doesn't exist.
+      if ! id mica > /dev/null 2>&1 ; then
+        adduser --system --home /var/lib/mica2 --no-create-home --disabled-password mica
       fi
 
       # Mica Server file structure on Debian
-      # /etc/mica-server: configuration
-      # /usr/share/mica-server: executable
-      # /var/lib/mica-server: data runtime
-      # /var/log: logs
+      # /etc/mica2: configuration
+      # /usr/share/mica2: executable
+      # /var/lib/mica2: data runtime
+      # /var/log/mica2: logs
 
-      rm -f /usr/share/mica-server
-      ln -s /usr/share/mica-server-* /usr/share/mica-server
+      rm -f /usr/share/mica2
+      ln -s /usr/share/mica2-* /usr/share/mica2
 
-      if [ ! -e /var/lib/mica-server/conf ] ; then
-        ln -s /etc/mica-server /var/lib/mica-server/conf
+      if [ ! -e /var/lib/mica2/conf ] ; then
+        ln -s /etc/mica2 /var/lib/mica2/conf
       fi
 
-      chown -R mica-server:adm /var/lib/mica-server /var/log/mica-server /etc/mica-server /tmp/mica-server
-      chmod -R 750      /var/lib/mica-server /var/log/mica-server /etc/mica-server/ /tmp/mica-server
-      chmod +x /usr/share/mica-server/tools/shiro-hasher
-      find /etc/mica-server/ -type f | xargs chmod 640
+      chown -R mica:adm /var/lib/mica2 /var/log/mica2 /etc/mica2 /tmp/mica2
+      chmod -R 750      /var/lib/mica2 /var/log/mica2 /etc/mica2 /tmp/mica2
+      chmod +x /usr/share/mica2/tools/shiro-hasher
+      find /etc/mica2 -type f | xargs chmod 640
 
     ;;
 

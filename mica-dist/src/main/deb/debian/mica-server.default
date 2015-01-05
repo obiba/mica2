@@ -1,9 +1,9 @@
-# Defaults for mica-server initscript
-# sourced by /etc/init.d/mica-server
-# installed at /etc/default/mica-server by the maintainer scripts
+# Defaults for mica2 server initscript
+# sourced by /etc/init.d/mica2
+# installed at /etc/default/mica2 by the maintainer scripts
 
 # pulled in from the init script; makes things easier.
-NAME=mica-server
+NAME=mica2
 
 # location of java
 JAVA=/usr/bin/java
@@ -14,18 +14,18 @@ JAVA=/usr/bin/java
 MAXOPENFILES=16384
 
 # user id (or id:gid) to be run as
-MICA_SERVER_USER=mica-server
+MICA_SERVER_USER=mica
 
 # location of the mica-server distribution file
-MICA_SERVER_DIST=/usr/share/mica-server
+MICA_SERVER_DIST=/usr/share/mica2
 
 # Mica Server home location
-MICA_SERVER_HOME=/var/lib/mica-server
+MICA_SERVER_HOME=/var/lib/mica2
 
 # Mica Server log directory or syslog facility
-MICA_SERVER_LOG=/var/log/mica-server
+MICA_SERVER_LOG=/var/log/mica2
 
-# arguments to pass to mica-server.
+# arguments to pass to mica server.
 MICA_SERVER_ARGS=""
 
 # arguments to pass to java

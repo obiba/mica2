@@ -109,9 +109,9 @@
   </distributionManagement>
 
   <scm>
-    <connection>scm:git:git://github.com/obiba/mica-server.git</connection>
-    <developerConnection>scm:git:https://github.com/obiba/mica-server.git</developerConnection>
-    <url>https://github.com/obiba/mica-server</url>
+    <connection>scm:git:git://github.com/obiba/mica2.git</connection>
+    <developerConnection>scm:git:https://github.com/obiba/mica2.git</developerConnection>
+    <url>https://github.com/obiba/mica2</url>
   </scm>
 
   <issueManagement>
@@ -121,7 +121,7 @@
 
   <ciManagement>
     <system>Jenkins</system>
-    <url>http://ci.obiba.org/view/OMica/job/mica-server</url>
+    <url>http://ci.obiba.org/view/Mica/job/Mica2</url>
   </ciManagement>
 
   <mailingLists>

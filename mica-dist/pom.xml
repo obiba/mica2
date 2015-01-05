@@ -96,11 +96,11 @@
                     <mkdir dir="${deb.dir}/usr/share"/>
                     <unzip src="${basedir}/target/mica-dist-${project.version}-dist.zip" dest="${deb.dir}/usr/share"/>
                     <move file="${deb.dir}/usr/share/mica-dist-${project.version}"
-                        tofile="${deb.dir}/usr/share/mica-server-${project.version}"/>
+                        tofile="${deb.dir}/usr/share/mica2-${project.version}"/>
 
                     <mkdir dir="${deb.dir}/etc"/>
-                    <move todir="${deb.dir}/etc/mica-server">
-                      <fileset dir="${deb.dir}/usr/share/mica-server-${project.version}/conf"/>
+                    <move todir="${deb.dir}/etc/mica2">
+                      <fileset dir="${deb.dir}/usr/share/mica2-${project.version}/conf"/>
                     </move>
 
                     <exec executable="debuild" dir="${deb.dir}" failonerror="true" osfamily="unix">
@@ -123,7 +123,7 @@
                   <target>
                     <property name="deb.version" value="${project.version}-b${buildNumber}"/>
                     <!-- Deploy deb file in deb repo -->
-                    <copy file="target/mica-server_${deb.version}_all.deb"
+                    <copy file="target/mica2_${deb.version}_all.deb"
                         todir="${obiba.deb.dir}/${mica-server.deploy.dir}"/>
                   </target>
                 </configuration>
@@ -138,7 +138,7 @@
                   <target>
                     <!-- Deploy Mica Server package file in download repo -->
                     <copy file="target/mica-dist-${project.version}-dist.zip"
-                        tofile="${obiba.download.dir}/mica-server/${mica-server.deploy.dir}/mica-server-${project.version}-dist.zip"/>
+                        tofile="${obiba.download.dir}/mica/${mica-server.deploy.dir}/mica2-${project.version}-dist.zip"/>
                   </target>
                 </configuration>
               </execution>

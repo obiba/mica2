@@ -1,5 +1,5 @@
 mica-server (@project.version@) unstable; urgency=low
 
-  * See http://jira.obiba.org/jira/browse/MICASERVER#selectedTab=com.atlassian.jira.plugin.system.project%3Achangelog-panel
+  * See http://jira.obiba.org/jira/browse/MK/?selectedTab=com.atlassian.jira.jira-projects-plugin:changelog-panel
 
  -- OBiBa <info@obiba.org>  @date@

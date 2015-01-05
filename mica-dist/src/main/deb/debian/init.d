@@ -1,6 +1,6 @@
 #!/bin/bash
 ### BEGIN INIT INFO
-# Provides:          mica-server
+# Provides:          mica2
 # Required-Start:    $network $local_fs $remote_fs
 # Required-Stop:     $remote_fs
 # Default-Start:     2 3 4 5
@@ -13,9 +13,9 @@
 
 # PATH should only include /usr/* if it runs after the mountnfs.sh script
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
-DESC=mica-server              # Introduce a short description here
-NAME=mica-server              # Introduce the short server's name here
-MICA_SERVER_USER=mica-server  # User to use to run the service
+DESC=mica2                    # Introduce a short description here
+NAME=mica2                    # Introduce the short server's name here
+MICA_SERVER_USER=mica         # User to use to run the service
 DAEMON=/usr/bin/daemon        # Introduce the server's location here
 DAEMON_ARGS=""                # Arguments to run the daemon with
 MAIN_CLASS=org.obiba.mica.Application
@@ -45,20 +45,20 @@ get_daemon_status()
     $DAEMON $DAEMON_ARGS --running || return 1
 }
 
-get_running() 
+get_running()
 {
     return `ps -U $MICA_SERVER_USER --no-headers -f | egrep -e '(java|daemon)' | grep -c . `
 }
 
-get_running_daemon() 
+get_running_daemon()
 {
     return `ps -U $MICA_SERVER_USER --no-headers -f | egrep -e '(daemon)' | grep -c . `
 }
 
-force_stop() 
+force_stop()
 {
     get_running
-    if [ $? -ne 0 ]; then 
+    if [ $? -ne 0 ]; then
         killall -u $MICA_SERVER_USER java || return 3
     fi
 }
@@ -77,7 +77,7 @@ do_start()
     if [ -n "$MAXOPENFILES" ]; then
         ulimit -n $MAXOPENFILES
     fi
-    
+
     $DAEMON $DAEMON_ARGS -- $JAVA $JAVA_ARGS -cp $CLASSPATH -DMICA_SERVER_HOME=$MICA_SERVER_HOME -DMICA_SERVER_DIST=$MICA_SERVER_DIST -DMICA_SERVER_LOG=$MICA_SERVER_LOG $MAIN_CLASS $MICA_SERVER_ARGS || return 2
 }
 
@@ -91,9 +91,9 @@ do_stop()
     #   1 if daemon was already stopped
     #   2 if daemon could not be stopped
     #   other if a failure occurred
-    get_daemon_status 
+    get_daemon_status
     case "$?" in
-        0) 
+        0)
             $DAEMON $DAEMON_ARGS --stop || return 2
         # wait for the process to really terminate
         echo -n "   "
@@ -131,9 +131,9 @@ do_reload() {
 }
 
 #
-# Make sure mica-server tmp dir exists, otherwise daemon calls will fail
+# Make sure mica server tmp dir exists, otherwise daemon calls will fail
 #
-if [ ! -d $TMPDIR ]; then 
+if [ ! -d $TMPDIR ]; then
   mkdir $TMPDIR
   chown -R $MICA_SERVER_USER:adm $TMPDIR
   chmod -R 750 $TMPDIR
@@ -180,23 +180,23 @@ case "$1" in
     ;;
   status)
       get_daemon_status
-      case "$?" in 
+      case "$?" in
          0) echo "$DESC is running with the pid `cat $PIDFILE`";;
-         *) 
+         *)
               get_running_daemon
               procs=$?
-              if [ $procs -eq 0 ]; then 
+              if [ $procs -eq 0 ]; then
                   echo -n "$DESC is not running"
-                  if [ -f $PIDFILE ]; then 
+                  if [ -f $PIDFILE ]; then
                       echo ", but the pidfile ($PIDFILE) still exists"
-                  else 
+                  else
                       echo
                   fi
-              elif [ $procs -eq 1 ]; then 
-                  echo "An instance of mica-server is running at the moment"
+              elif [ $procs -eq 1 ]; then
+                  echo "An instance of mica server is running at the moment"
                   echo "but the pidfile $PIDFILE is missing"
-              else 
-                  echo "$procs instances of mica-server are running at the moment"
+              else
+                  echo "$procs instances of mica server are running at the moment"
                   echo "but the pidfile $PIDFILE is missing"
               fi
               ;;
