@@ -9,14 +9,14 @@ NAME=mica2
 JAVA=/usr/bin/java
 
 # ulimit
-# Increase maximum open files for the mica-server process
+# Increase maximum open files for the mica server process
 # Comment this out to use the system default
 MAXOPENFILES=16384
 
 # user id (or id:gid) to be run as
 MICA_SERVER_USER=mica
 
-# location of the mica-server distribution file
+# location of the mica server distribution file
 MICA_SERVER_DIST=/usr/share/mica2
 
 # Mica Server home location

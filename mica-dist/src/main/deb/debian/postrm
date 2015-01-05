@@ -1,5 +1,5 @@
 #!/bin/sh
-# postrm script for mica-server
+# postrm script for mica2
 #
 # see: dh_installdeb(1)
 
