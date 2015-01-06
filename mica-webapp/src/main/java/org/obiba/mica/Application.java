@@ -52,7 +52,7 @@ public class Application {
    */
   public static void main(String... args) throws InterruptedException {
 
-    checkSystemProperty("MICA_SERVER_HOME");
+    checkSystemProperty("MICA_HOME");
 
     SpringApplication app = new SpringApplication(Application.class);
     app.setShowBanner(false);

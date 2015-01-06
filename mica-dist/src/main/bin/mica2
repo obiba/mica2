@@ -13,42 +13,42 @@ then
 fi
 
 # The directory containing the mica-server shell script
-MICA_SERVER_BIN_DIR=`dirname $0`
+MICA_BIN_DIR=`dirname $0`
 # resolve links - $0 may be a softlink
-MICA_SERVER_DIST=$(readlink -f $MICA_SERVER_BIN_DIR/../webapp)
+MICA_DIST=$(readlink -f $MICA_BIN_DIR/../webapp)
 
-export MICA_SERVER_DIST
+export MICA_DIST
 
-export MICA_SERVER_LOG=$MICA_SERVER_HOME/logs
+export MICA_LOG=$MICA_HOME/logs
 
 echo "JAVA_OPTS=$JAVA_OPTS"
-echo "MICA_SERVER_HOME=$MICA_SERVER_HOME"
-echo "MICA_SERVER_DIST=$MICA_SERVER_DIST"
+echo "MICA_HOME=$MICA_HOME"
+echo "MICA_DIST=$MICA_DIST"
 
-if [ -z "$MICA_SERVER_HOME" ]
+if [ -z "$MICA_HOME" ]
 then
-  echo "MICA_SERVER_HOME not set."
+  echo "MICA_HOME not set."
   exit 2;
 fi
 
 if $cygwin; then
   # For Cygwin, ensure paths are in UNIX format before anything is touched
-  [ -n "$MICA_SERVER_DIST" ] && MICA_SERVER_BIN=`cygpath --unix "$MICA_SERVER_DIST"`
-  [ -n "$MICA_SERVER_HOME" ] && MICA_SERVER_HOME=`cygpath --unix "$MICA_SERVER_HOME"`
-  
-  # For Cygwin, switch paths to Windows format before running java  
-  export MICA_SERVER_DIST=`cygpath --absolute --windows "$MICA_SERVER_DIST"`
-  export MICA_SERVER_HOME=`cygpath --absolute --windows "$MICA_SERVER_HOME"`
+  [ -n "$MICA_DIST" ] && MICA_BIN=`cygpath --unix "$MICA_DIST"`
+  [ -n "$MICA_HOME" ] && MICA_HOME=`cygpath --unix "$MICA_HOME"`
+
+  # For Cygwin, switch paths to Windows format before running java
+  export MICA_DIST=`cygpath --absolute --windows "$MICA_DIST"`
+  export MICA_HOME=`cygpath --absolute --windows "$MICA_HOME"`
 fi
 
-CLASSPATH=$MICA_SERVER_HOME/conf:$MICA_SERVER_DIST/WEB-INF/classes:$MICA_SERVER_DIST/WEB-INF/lib/*
+CLASSPATH=$MICA_HOME/conf:$MICA_DIST/WEB-INF/classes:$MICA_DIST/WEB-INF/lib/*
 if $cygwin; then
-  CLASSPATH=$MICA_SERVER_HOME/conf;$MICA_SERVER_DIST/WEB-INF/classes;$MICA_SERVER_DIST/WEB-INF/lib/*
+  CLASSPATH=$MICA_HOME/conf;$MICA_DIST/WEB-INF/classes;$MICA_DIST/WEB-INF/lib/*
 fi
 
-[ -e "$MICA_SERVER_HOME/logs" ] || mkdir "$MICA_SERVER_HOME/logs"
+[ -e "$MICA_HOME/logs" ] || mkdir "$MICA_HOME/logs"
 
 JAVA_DEBUG=-agentlib:jdwp=transport=dt_socket,server=y,address=8000,suspend=n
 
 # Add $JAVA_DEBUG to this line to enable remote JVM debugging (for developers)
-java $JAVA_OPTS -cp "$CLASSPATH" -DMICA_SERVER_HOME="${MICA_SERVER_HOME}" -DMICA_SERVER_DIST=${MICA_SERVER_DIST} -DMICA_SERVER_LOG=${MICA_SERVER_LOG} org.obiba.mica.Application $@
+java $JAVA_OPTS -cp "$CLASSPATH" -DMICA_HOME="${MICA_HOME}" -DMICA_DIST=${MICA_DIST} -DMICA_LOG=${MICA_LOG} org.obiba.mica.Application $@

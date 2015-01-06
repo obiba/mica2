@@ -24,7 +24,7 @@ public class TempFileService {
 
   private static final Logger log = LoggerFactory.getLogger(TempFileService.class);
 
-  private static final String TMP_ROOT = "${MICA_SERVER_HOME}/work/tmp";
+  private static final String TMP_ROOT = "${MICA_HOME}/work/tmp";
 
   @Inject
   private TempFileRepository tempFileRepository;
@@ -34,7 +34,7 @@ public class TempFileService {
   @PostConstruct
   public void init() throws IOException {
     if(tmpRoot == null) {
-      tmpRoot = new File(TMP_ROOT.replace("${MICA_SERVER_HOME}", System.getProperty("MICA_SERVER_HOME")));
+      tmpRoot = new File(TMP_ROOT.replace("${MICA_HOME}", System.getProperty("MICA_HOME")));
       if(!tmpRoot.exists() && !tmpRoot.mkdirs()) {
         throw new IOException("Cannot create temp dir for new temp file: " + tmpRoot.getAbsolutePath());
       }

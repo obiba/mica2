@@ -15,7 +15,7 @@
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
 DESC="Mica server"            # Introduce a short description here
 NAME=mica2                    # Introduce the short server's name here
-MICA_SERVER_USER=mica         # User to use to run the service
+MICA_USER=mica         # User to use to run the service
 DAEMON=/usr/bin/daemon        # Introduce the server's location here
 DAEMON_ARGS=""                # Arguments to run the daemon with
 MAIN_CLASS=org.obiba.mica.Application
@@ -36,8 +36,8 @@ SCRIPTNAME=/etc/init.d/$NAME
 # Depend on lsb-base (>= 3.0-6) to ensure that this file is present.
 . /lib/lsb/init-functions
 
-DAEMON_ARGS="--name=$NAME --user=$MICA_SERVER_USER --pidfile=$PIDFILE --inherit --env=MICA_SERVER_HOME=$MICA_SERVER_HOME --env=MICA_SERVER_LOG=$MICA_SERVER_LOG --output=$MICA_SERVER_LOG/stdout.log --chdir=$MICA_SERVER_HOME"
-CLASSPATH="$MICA_SERVER_HOME/conf:$MICA_SERVER_DIST/webapp/WEB-INF/classes:$MICA_SERVER_DIST/webapp/WEB-INF/lib/*"
+DAEMON_ARGS="--name=$NAME --user=$MICA_USER --pidfile=$PIDFILE --inherit --env=MICA_HOME=$MICA_HOME --env=MICA_LOG=$MICA_LOG --output=$MICA_LOG/stdout.log --chdir=$MICA_HOME"
+CLASSPATH="$MICA_HOME/conf:$MICA_DIST/webapp/WEB-INF/classes:$MICA_DIST/webapp/WEB-INF/lib/*"
 
 # Get the status of the daemon process
 get_daemon_status()
@@ -47,19 +47,19 @@ get_daemon_status()
 
 get_running()
 {
-    return `ps -U $MICA_SERVER_USER --no-headers -f | egrep -e '(java|daemon)' | grep -c . `
+    return `ps -U $MICA_USER --no-headers -f | egrep -e '(java|daemon)' | grep -c . `
 }
 
 get_running_daemon()
 {
-    return `ps -U $MICA_SERVER_USER --no-headers -f | egrep -e '(daemon)' | grep -c . `
+    return `ps -U $MICA_USER --no-headers -f | egrep -e '(daemon)' | grep -c . `
 }
 
 force_stop()
 {
     get_running
     if [ $? -ne 0 ]; then
-        killall -u $MICA_SERVER_USER java || return 3
+        killall -u $MICA_USER java || return 3
     fi
 }
 
@@ -78,7 +78,7 @@ do_start()
         ulimit -n $MAXOPENFILES
     fi
 
-    $DAEMON $DAEMON_ARGS -- $JAVA $JAVA_ARGS -cp $CLASSPATH -DMICA_SERVER_HOME=$MICA_SERVER_HOME -DMICA_SERVER_DIST=$MICA_SERVER_DIST -DMICA_SERVER_LOG=$MICA_SERVER_LOG $MAIN_CLASS $MICA_SERVER_ARGS || return 2
+    $DAEMON $DAEMON_ARGS -- $JAVA $JAVA_ARGS -cp $CLASSPATH -DMICA_HOME=$MICA_HOME -DMICA_DIST=$MICA_DIST -DMICA_LOG=$MICA_LOG $MAIN_CLASS $MICA_ARGS || return 2
 }
 
 #
@@ -135,7 +135,7 @@ do_reload() {
 #
 if [ ! -d $TMPDIR ]; then
   mkdir $TMPDIR
-  chown -R $MICA_SERVER_USER:adm $TMPDIR
+  chown -R $MICA_USER:adm $TMPDIR
   chmod -R 750 $TMPDIR
 fi
 

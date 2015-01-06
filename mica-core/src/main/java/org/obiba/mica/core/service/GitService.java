@@ -46,9 +46,9 @@ import com.google.common.io.ByteStreams;
 @Validated
 public class GitService {
 
-  private static final String PATH_DATA = "${MICA_SERVER_HOME}/data/git";
+  private static final String PATH_DATA = "${MICA_HOME}/data/git";
 
-  private static final String PATH_CLONES = "${MICA_SERVER_HOME}/work/git";
+  private static final String PATH_CLONES = "${MICA_HOME}/work/git";
 
   private static final String ATTACHMENTS_PATH = "attachments/";
 
@@ -68,10 +68,10 @@ public class GitService {
   @PostConstruct
   public void init() {
     if(repositoriesRoot == null) {
-      repositoriesRoot = new File(PATH_DATA.replace("${MICA_SERVER_HOME}", System.getProperty("MICA_SERVER_HOME")));
+      repositoriesRoot = new File(PATH_DATA.replace("${MICA_HOME}", System.getProperty("MICA_HOME")));
     }
     if(clonesRoot == null) {
-      clonesRoot = new File(PATH_CLONES.replace("${MICA_SERVER_HOME}", System.getProperty("MICA_SERVER_HOME")));
+      clonesRoot = new File(PATH_CLONES.replace("${MICA_HOME}", System.getProperty("MICA_HOME")));
     }
   }
 

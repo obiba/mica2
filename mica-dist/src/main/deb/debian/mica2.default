@@ -14,19 +14,19 @@ JAVA=/usr/bin/java
 MAXOPENFILES=16384
 
 # user id (or id:gid) to be run as
-MICA_SERVER_USER=mica
+MICA_USER=mica
 
 # location of the mica server distribution file
-MICA_SERVER_DIST=/usr/share/mica2
+MICA_DIST=/usr/share/mica2
 
 # Mica Server home location
-MICA_SERVER_HOME=/var/lib/mica2
+MICA_HOME=/var/lib/mica2
 
 # Mica Server log directory or syslog facility
-MICA_SERVER_LOG=/var/log/mica2
+MICA_LOG=/var/log/mica2
 
 # arguments to pass to mica server.
-MICA_SERVER_ARGS=""
+MICA_ARGS=""
 
 # arguments to pass to java
 JAVA_ARGS="-Xms1G -Xmx2G -XX:MaxPermSize=256M -XX:+UseG1GC"

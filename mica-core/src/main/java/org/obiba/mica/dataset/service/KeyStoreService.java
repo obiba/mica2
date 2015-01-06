@@ -29,7 +29,7 @@ public class KeyStoreService {
 
   private static final String SYSTEM_KEY_STORE = "system";
 
-  private static final String PATH_KEYSTORE = "${MICA_SERVER_HOME}/data/keystores";
+  private static final String PATH_KEYSTORE = "${MICA_HOME}/data/keystores";
 
   @Inject
   private CallbackHandler callbackHandler;
@@ -41,7 +41,7 @@ public class KeyStoreService {
   @PostConstruct
   public void init() {
     if(keystoresRoot == null) {
-      keystoresRoot = new File(PATH_KEYSTORE.replace("${MICA_SERVER_HOME}", System.getProperty("MICA_SERVER_HOME")));
+      keystoresRoot = new File(PATH_KEYSTORE.replace("${MICA_HOME}", System.getProperty("MICA_HOME")));
     }
     keyStoreRepository.setKeyStoresDirectory(keystoresRoot);
     keyStoreRepository.setCallbackHandler(callbackHandler);

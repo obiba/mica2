@@ -2,12 +2,12 @@ skipTests = false
 version=0.1-SNAPSHOT
 mvn_exec = mvn -Dmaven.test.skip=${skipTests}
 current_dir = $(shell pwd)
-ifdef MICA_SERVER_HOME
-	mica_server_home = ${MICA_SERVER_HOME}
+ifdef MICA_HOME
+	mica_home = ${MICA_HOME}
 else
-	mica_server_home = ${current_dir}/mica-webapp/target/mica_server_home
+	mica_home = ${current_dir}/mica-webapp/target/mica_home
 endif
-mica_server_log = ${mica_server_home}/logs
+mica_server_log = ${mica_home}/logs
 
 help:
 	@echo
@@ -50,18 +50,18 @@ search:
 	cd mica-search && ${mvn_exec} install
 
 proto:
-	cd mica-web-model && ${mvn_exec} install	
+	cd mica-web-model && ${mvn_exec} install
 
 rest:
 	cd mica-rest && ${mvn_exec} install
 
 seed:
-	mkdir -p mica-webapp/target/mica_server_home/seed/in && \
-	cp mica-core/src/test/resources/seed/studies.json mica-webapp/target/mica_server_home/seed/in
+	mkdir -p mica-webapp/target/mica_home/seed/in && \
+	cp mica-core/src/test/resources/seed/studies.json mica-webapp/target/mica_home/seed/in
 
 run:
 	cd mica-webapp && \
-	${mvn_exec} spring-boot:run -Pdev -DMICA_SERVER_HOME="${mica_server_home}" -DMICA_SERVER_LOG="${mica_server_log}"
+	${mvn_exec} spring-boot:run -Pdev -DMICA_HOME="${mica_home}" -DMICA_LOG="${mica_server_log}"
 
 run-prod:
 	cd mica-webapp && \
@@ -70,15 +70,15 @@ run-prod:
 	mvn clean package && \
 	cd target && \
 	unzip mica-dist-${version}-dist.zip && \
-	mkdir mica_server_home && \
-	mv mica-dist-${version}/conf mica_server_home/conf && \
-	export MICA_SERVER_HOME="${current_dir}/mica-dist/target/mica_server_home" && \
+	mkdir mica_home && \
+	mv mica-dist-${version}/conf mica_home/conf && \
+	export MICA_HOME="${current_dir}/mica-dist/target/mica_home" && \
 	mica-dist-${version}/bin/mica-server
 
 debug:
 	export MAVEN_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,address=8002,suspend=n && \
 	cd mica-webapp && \
-	${mvn_exec} spring-boot:run -Pdev -Dspring.profiles.active=dev -DMICA_SERVER_HOME="${mica_server_home}" -DMICA_SERVER_LOG="${mica_server_log}"
+	${mvn_exec} spring-boot:run -Pdev -Dspring.profiles.active=dev -DMICA_HOME="${mica_home}" -DMICA_LOG="${mica_server_log}"
 
 run-python:
 	cd mica-python-client/target/mica-python/bin && \
@@ -101,7 +101,7 @@ drop-mongo:
 	mongo mica --eval "db.dropDatabase()"
 
 drop-data: drop-mongo
-	rm -rf ${mica_server_home}
+	rm -rf ${mica_home}
 
 dependencies-tree:
 	mvn dependency:tree
@@ -117,7 +117,7 @@ elasticsearch-head:
 	mkdir -p .work && \
 	cd .work && \
 	git clone git://github.com/mobz/elasticsearch-head.git
-	@echo  
-	@echo "ElasticSearch-Head is available at:" 
-	@echo "file://${current_dir}/.work/elasticsearch-head/index.html" 
-	@echo  
+	@echo
+	@echo "ElasticSearch-Head is available at:"
+	@echo "file://${current_dir}/.work/elasticsearch-head/index.html"
+	@echo

@@ -33,7 +33,7 @@ import com.google.common.base.Strings;
 import com.google.common.io.Files;
 
 /**
- * Import studies (save and publish) from JSON files found in MICA_SERVER_HOME/seed/in directory.
+ * Import studies (save and publish) from JSON files found in MICA_HOME/seed/in directory.
  * The {@link org.obiba.mica.study.domain.Study} (or the list of Studies) should be deserializable by Jackson's
  * {@link com.fasterxml.jackson.databind.ObjectMapper}.
  */
@@ -43,7 +43,7 @@ public class StudySeedService {
 
   private static final Logger log = LoggerFactory.getLogger(StudySeedService.class);
 
-  private static final String PATH_SEED = "${MICA_SERVER_HOME}/seed";
+  private static final String PATH_SEED = "${MICA_HOME}/seed";
 
   @Inject
   private StudyService studyService;
@@ -58,8 +58,8 @@ public class StudySeedService {
 
   @PostConstruct
   public void init() {
-    if(seedRepository == null && !Strings.isNullOrEmpty(System.getProperty("MICA_SERVER_HOME"))) {
-      seedRepository = new File(PATH_SEED.replace("${MICA_SERVER_HOME}", System.getProperty("MICA_SERVER_HOME")));
+    if(seedRepository == null && !Strings.isNullOrEmpty(System.getProperty("MICA_HOME"))) {
+      seedRepository = new File(PATH_SEED.replace("${MICA_HOME}", System.getProperty("MICA_HOME")));
     }
   }
 
