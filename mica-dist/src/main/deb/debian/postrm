@@ -21,7 +21,7 @@ set -e
 
 case "$1" in
 	purge)
-        userdel -f mica || true
+        deluser mica || true
         rm -rf /var/lib/mica2 /var/log/mica2 /tmp/mica2 /etc/mica2 /usr/share/mica2
     ;;
 
