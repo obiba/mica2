@@ -210,7 +210,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
     QueryDtoParser queryDtoParser = QueryDtoParser.newParser();
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
-      .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
+      .setSearchType(SearchType.COUNT) //
       .setQuery(queryDtoParser.parse(queryDto)) //
       .setNoFields();
 
@@ -246,7 +246,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
   public Map<String, Map<String, List<String>>> getStudyCountsByDataset() {
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
-      .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
+      .setSearchType(SearchType.COUNT) //
       .setQuery(queryDto == null ? QueryBuilders.matchAllQuery() : QueryDtoParser.newParser().parse(queryDto)) //
       .setNoFields();
 
@@ -266,9 +266,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
     Map<String, Map<String, List<String>>> map = Maps.newHashMap();
     try {
       SearchResponse response = requestBuilder.execute().actionGet();
-
       Aggregation idAgg = response.getAggregations().get("id");
-
       ((Terms) idAgg).getBuckets().stream().filter(bucket -> bucket.getDocCount() > 0)
         .forEach(bucket -> map.put(bucket.getKey(), getStudyCounts(bucket.getAggregations())));
     } catch(IndexMissingException e) {
