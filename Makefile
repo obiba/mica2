@@ -7,7 +7,7 @@ ifdef MICA_HOME
 else
 	mica_home = ${current_dir}/mica-webapp/target/mica_home
 endif
-mica_server_log = ${mica_home}/logs
+mica_log = ${mica_home}/logs
 
 help:
 	@echo
@@ -27,7 +27,7 @@ help:
 	@echo "  grunt       : Start grunt on port 9000"
 	@echo "  npm-install : Download all NodeJS dependencies"
 	@echo
-	@echo "  clear-log   : Delete logs from ${mica_server_log}"
+	@echo "  clear-log   : Delete logs from ${mica_log}"
 	@echo "  drop-mongo  : Drop MongoDB mica database"
 	@echo
 	@echo "  dependencies-tree   : Displays the dependency tree"
@@ -61,7 +61,7 @@ seed:
 
 run:
 	cd mica-webapp && \
-	${mvn_exec} spring-boot:run -Pdev -DMICA_HOME="${mica_home}" -DMICA_LOG="${mica_server_log}"
+	${mvn_exec} spring-boot:run -Pdev -DMICA_HOME="${mica_home}" -DMICA_LOG="${mica_log}"
 
 run-prod:
 	cd mica-webapp && \
@@ -78,7 +78,7 @@ run-prod:
 debug:
 	export MAVEN_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,address=8002,suspend=n && \
 	cd mica-webapp && \
-	${mvn_exec} spring-boot:run -Pdev -Dspring.profiles.active=dev -DMICA_HOME="${mica_home}" -DMICA_LOG="${mica_server_log}"
+	${mvn_exec} spring-boot:run -Pdev -Dspring.profiles.active=dev -DMICA_HOME="${mica_home}" -DMICA_LOG="${mica_log}"
 
 run-python:
 	cd mica-python-client/target/mica-python/bin && \
@@ -95,7 +95,7 @@ npm-install:
 	npm install
 
 clear-log:
-	rm -rf ${mica_server_log}
+	rm -rf ${mica_log}
 
 drop-mongo:
 	mongo mica --eval "db.dropDatabase()"
