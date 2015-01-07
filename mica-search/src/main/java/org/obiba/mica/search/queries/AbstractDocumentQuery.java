@@ -50,8 +50,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 import static org.obiba.mica.search.queries.AbstractDocumentQuery.Mode.COVERAGE;
+import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.DETAIL;
 import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.DIGEST;
-import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.NONE;
 import static org.obiba.mica.web.model.MicaSearch.QueryDto;
 import static org.obiba.mica.web.model.MicaSearch.QueryResultDto;
 
@@ -160,7 +160,7 @@ public abstract class AbstractDocumentQuery {
 
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
-      .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
+      .setSearchType(SearchType.COUNT) //
       .setQuery(QueryDtoParser.newParser().parse(queryDto)) //
       .setNoFields();
 
@@ -221,7 +221,7 @@ public abstract class AbstractDocumentQuery {
 
     SearchRequestBuilder defaultRequestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
-      .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
+      .setSearchType(scope == DETAIL ? SearchType.DFS_QUERY_THEN_FETCH : SearchType.COUNT) //
       .setQuery(QueryBuilders.matchAllQuery()) //
       .setFrom(from) //
       .setSize(size) //
@@ -229,7 +229,7 @@ public abstract class AbstractDocumentQuery {
 
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
-      .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
+      .setSearchType(scope == DETAIL ? SearchType.DFS_QUERY_THEN_FETCH : SearchType.COUNT) //
       .setQuery(queryDtoParser.parse(queryDto)) //
       .setFrom(from) //
       .setSize(size) //
@@ -257,8 +257,8 @@ public abstract class AbstractDocumentQuery {
     });
 
     log.info("Request: {}", requestBuilder.toString());
-    try {
 
+    try {
       List<SearchResponse> responses = Stream
         .of(client.prepareMultiSearch().add(defaultRequestBuilder).add(requestBuilder).execute().actionGet())
         .map(MultiSearchResponse::getResponses).flatMap((d) -> Stream.of(d)).map(MultiSearchResponse.Item::getResponse)
@@ -267,14 +267,19 @@ public abstract class AbstractDocumentQuery {
       SearchResponse aggResponse = responses.get(0);
       SearchResponse response = responses.get(1);
       log.info("Response: {}", response);
+
       if(response == null) {
         return null;
       }
+
       QueryResultDto.Builder builder = QueryResultDto.newBuilder()
         .setTotalHits((int) response.getHits().getTotalHits());
-      if(scope != NONE) processHits(builder, response.getHits(), scope, counts);
+
+      if(scope == DETAIL) processHits(builder, response.getHits(), scope, counts);
+
       processAggregations(builder, aggResponse.getAggregations(), response.getAggregations());
       resultDto = builder.build();
+
       return getResponseStudyIds(resultDto.getAggsList());
     } catch(IndexMissingException e) {
       log.error("Missing index: {}", e.getMessage(), e);
@@ -315,21 +320,24 @@ public abstract class AbstractDocumentQuery {
     aggregationYamlParser.setLocales(micaConfigService.getConfig().getLocales());
     Map<String, Properties> subAggregations = Maps.newHashMap();
     Properties aggregationProperties = getAggregationsProperties();
+
     if(queryDto != null && queryDto.getAggsByCount() > 0) {
       queryDto.getAggsByList().forEach(field -> subAggregations.put(field, aggregationProperties));
     }
+
     aggregationYamlParser.getAggregations(getAggregationsDescription(), subAggregations)
       .forEach(requestBuilder::addAggregation);
     aggregationYamlParser.getAggregations(aggregationProperties).forEach(requestBuilder::addAggregation);
 
     log.info("Request: {}", requestBuilder.toString());
-    SearchResponse response;
+
     try {
-      response = requestBuilder.execute().actionGet();
+      SearchResponse response = requestBuilder.execute().actionGet();
       log.info("Response: {}", response.toString());
-      QueryResultDto.Builder builder = QueryResultDto.newBuilder()
-        .setTotalHits((int) response.getHits().getTotalHits());
-      if(scope != NONE) processHits(builder, response.getHits(), scope, counts);
+      QueryResultDto.Builder builder = QueryResultDto.newBuilder().setTotalHits((int) response.getHits().getTotalHits());
+
+      if(scope == DETAIL) processHits(builder, response.getHits(), scope, counts);
+
       processAggregations(builder, null, response.getAggregations());
       resultDto = builder.build();
       return getResponseStudyIds(resultDto.getAggsList());

@@ -123,7 +123,7 @@ public class JoinQueryExecutor {
     if (queriesHaveFilters) {
       variableQuery.setDatasetIdProvider(datasetIdProvider);
       datasetQuery.setDatasetIdProvider(datasetIdProvider);
-      List<String> joinedIds = executeJoin(type, scope);
+      List<String> joinedIds = executeJoin(type);
       CountStatsData countStats = countBuilder != null ? getCountStatsData(type) : null;
 
       if(joinedIds != null && joinedIds.size() > 0) {
@@ -177,21 +177,21 @@ public class JoinQueryExecutor {
     }
   }
 
-  private List<String> executeJoin(QueryType type, AbstractDocumentQuery.Scope scope) throws IOException {
+  private List<String> executeJoin(QueryType type) throws IOException {
     List<String> joinedIds = null;
 
     switch(type) {
       case VARIABLE:
-        joinedIds = execute(scope, variableQuery, studyQuery, datasetQuery, networkQuery);
+        joinedIds = execute(variableQuery, studyQuery, datasetQuery, networkQuery);
         break;
       case DATASET:
-        joinedIds = execute(scope, datasetQuery, variableQuery, studyQuery, networkQuery);
+        joinedIds = execute(datasetQuery, variableQuery, studyQuery, networkQuery);
         break;
       case STUDY:
-        joinedIds = execute(scope, studyQuery, variableQuery, datasetQuery, networkQuery);
+        joinedIds = execute(studyQuery, variableQuery, datasetQuery, networkQuery);
         break;
       case NETWORK:
-        joinedIds = execute(scope, networkQuery, variableQuery, datasetQuery, studyQuery);
+        joinedIds = execute(networkQuery, variableQuery, datasetQuery, studyQuery);
         break;
     }
 
@@ -237,8 +237,7 @@ public class JoinQueryExecutor {
     return countStats;
   }
 
-  private List<String> execute(AbstractDocumentQuery.Scope scope, AbstractDocumentQuery docQuery,
-      AbstractDocumentQuery... subQueries) throws IOException {
+  private List<String> execute(AbstractDocumentQuery docQuery, AbstractDocumentQuery... subQueries) throws IOException {
     List<AbstractDocumentQuery> queries = Arrays.asList(subQueries).stream()
         .filter(AbstractDocumentQuery::hasQueryFilters).collect(Collectors.toList());
 

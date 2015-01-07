@@ -36,6 +36,7 @@ import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Term;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.collect.Lists;
@@ -44,6 +45,7 @@ import com.google.common.collect.Maps;
 /**
  * Search for variables in the published variable index.
  */
+@Component
 @Path("/variables")
 @RequiresAuthentication
 @Scope("request")

@@ -134,7 +134,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
   public Map<String, List<String>> getStudyCountsByNetwork() {
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
-      .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
+      .setSearchType(SearchType.COUNT) //
       .setQuery(queryDto == null ? QueryBuilders.matchAllQuery() : QueryDtoParser.newParser().parse(queryDto)) //
       .setNoFields();
 
