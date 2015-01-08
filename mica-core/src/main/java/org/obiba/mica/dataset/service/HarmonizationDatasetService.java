@@ -292,7 +292,7 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
     Map<String, List<DatasetVariable>> harmonizationVariables, boolean updatePublishIndices) {
     variableIndexer.onDatasetUpdated(variables, harmonizationVariables);
     datasetIndexer.onDatasetUpdated(dataset);
-    if (updatePublishIndices) {
+    if(updatePublishIndices) {
       variableIndexer.onDatasetPublished(dataset, variables, harmonizationVariables);
       datasetIndexer.onDatasetPublished(dataset);
     }
@@ -344,41 +344,40 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
     return (RestValueTable.RestVariableValueSource) getTable(studyTable).getVariableValueSource(variableName);
   }
 
-  protected Map<String, List<DatasetVariable>> populateHarmonizedVariablesMap(
-    HarmonizationDataset dataset) {
-    Iterable<DatasetVariable> res = dataset.getStudyTables().stream()
-      .map(s -> helper.asyncGetDatasetVariables(() -> getDatasetVariables(dataset, s)))
-      .map(f -> {
-        try {
-          return f.get();
-        } catch(ExecutionException e) {
-          if(e.getCause() instanceof NoSuchValueTableException) {
-            return Lists.<DatasetVariable>newArrayList();  // ignore (case the study does not implement this harmonization dataset))
-          } else if(e.getCause() instanceof MagmaRuntimeException) {
-            throw new DatasourceNotAvailableException(e.getCause());
-          }
-
-          throw Throwables.propagate(e.getCause());
-        } catch(InterruptedException ie) {
-          throw Throwables.propagate(ie);
-        }
-      })
-      .reduce(Iterables::concat).get();
-
+  protected Map<String, List<DatasetVariable>> populateHarmonizedVariablesMap(HarmonizationDataset dataset) {
     Map<String, List<DatasetVariable>> map = Maps.newHashMap();
 
-    for(DatasetVariable variable: res) {
-      if(!map.containsKey(variable.getParentId())) {
-        map.put(variable.getParentId(), Lists.newArrayList());
-      }
+    if(!dataset.getStudyTables().isEmpty()) {
 
-      map.get(variable.getParentId()).add(variable);
+      Iterable<DatasetVariable> res = dataset.getStudyTables().stream()
+        .map(s -> helper.asyncGetDatasetVariables(() -> getDatasetVariables(dataset, s))).map(f -> {
+          try {
+            return f.get();
+          } catch(ExecutionException e) {
+            if(e.getCause() instanceof NoSuchValueTableException) {
+              return Lists
+                .<DatasetVariable>newArrayList();  // ignore (case the study does not implement this harmonization dataset))
+            } else if(e.getCause() instanceof MagmaRuntimeException) {
+              throw new DatasourceNotAvailableException(e.getCause());
+            }
+
+            throw Throwables.propagate(e.getCause());
+          } catch(InterruptedException ie) {
+            throw Throwables.propagate(ie);
+          }
+        }).reduce(Iterables::concat).get();
+
+      for(DatasetVariable variable : res) {
+        if(!map.containsKey(variable.getParentId())) {
+          map.put(variable.getParentId(), Lists.newArrayList());
+        }
+
+        map.get(variable.getParentId()).add(variable);
+      }
     }
 
     return map;
   }
-
-
 
   /**
    * Build or reuse the {@link org.obiba.opal.rest.client.magma.RestDatasource} and execute the callback with it.
