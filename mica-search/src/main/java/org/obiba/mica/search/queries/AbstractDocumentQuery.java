@@ -196,8 +196,9 @@ public abstract class AbstractDocumentQuery {
    */
   public List<String> query(List<String> studyIds, CountStatsData counts, Scope scope) throws IOException {
     QueryDto tempQueryDto = queryDto == null ? createStudyIdFilters(studyIds) : addStudyIdFilters(studyIds);
-    return mode == COVERAGE ? executeCoverage(tempQueryDto, tempQueryDto.getFrom(), tempQueryDto.getSize(), DIGEST,
-      counts) : execute(tempQueryDto, tempQueryDto.getFrom(), tempQueryDto.getSize(), scope, counts);
+    return mode == COVERAGE ?
+      executeCoverage(tempQueryDto, tempQueryDto.getFrom(), tempQueryDto.getSize(), DIGEST, counts)
+      : execute(tempQueryDto, tempQueryDto.getFrom(), tempQueryDto.getSize(), scope, counts);
   }
 
   /**
@@ -214,8 +215,8 @@ public abstract class AbstractDocumentQuery {
   protected List<String> execute(QueryDto queryDto, int from, int size, Scope scope, CountStatsData counts)
     throws IOException {
     if(queryDto == null) return null;
-    QueryDtoParser queryDtoParser = QueryDtoParser.newParser();
 
+    QueryDtoParser queryDtoParser = QueryDtoParser.newParser();
     aggregationTitleResolver.registerProviders(getAggregationMetaDataProviders());
     aggregationTitleResolver.refresh();
 
@@ -236,7 +237,9 @@ public abstract class AbstractDocumentQuery {
       .addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT)); // ;
 
     if(ignoreFields()) requestBuilder.setNoFields();
+
     SortBuilder sortBuilder = queryDtoParser.parseSort(queryDto);
+
     if(sortBuilder != null) requestBuilder.addSort(queryDtoParser.parseSort(queryDto));
 
     aggregationYamlParser.setLocales(micaConfigService.getConfig().getLocales());
@@ -304,6 +307,7 @@ public abstract class AbstractDocumentQuery {
   protected List<String> executeCoverage(QueryDto queryDto, int from, int size, Scope scope, CountStatsData counts)
     throws IOException {
     if(queryDto == null) return null;
+
     QueryDtoParser queryDtoParser = QueryDtoParser.newParser();
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
@@ -389,6 +393,7 @@ public abstract class AbstractDocumentQuery {
 
   protected QueryDto addStudyIdFilters(List<String> studyIds) {
     if(studyIds == null || studyIds.size() == 0) return queryDto;
+
     return QueryDtoHelper.addTermFilters(QueryDto.newBuilder(queryDto).build(),
       QueryDtoHelper.createTermFilters(getJoinFields(), studyIds), QueryDtoHelper.BoolQueryType.MUST);
   }

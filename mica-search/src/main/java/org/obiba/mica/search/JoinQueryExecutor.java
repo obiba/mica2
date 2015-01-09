@@ -11,6 +11,7 @@
 package org.obiba.mica.search;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -124,9 +125,10 @@ public class JoinQueryExecutor {
       variableQuery.setDatasetIdProvider(datasetIdProvider);
       datasetQuery.setDatasetIdProvider(datasetIdProvider);
       List<String> joinedIds = executeJoin(type);
+
       CountStatsData countStats = countBuilder != null ? getCountStatsData(type) : null;
 
-      if(joinedIds != null && joinedIds.size() > 0) {
+      if (joinedIds != null && joinedIds.size() > 0) {
         getDocumentQuery(type).query(joinedIds, countStats, scope);
         // need to update dataset and variable and redo agg query
         if(type == QueryType.VARIABLE) {
@@ -134,6 +136,21 @@ public class JoinQueryExecutor {
         } else if(type == QueryType.DATASET) {
           variableQuery.query(joinedIds, null, DIGEST);
         }
+      } else {
+        variableQuery.query(joinedIds, null, DIGEST); //to set datasetprovider datasets if any
+
+        if (type != QueryType.DATASET) {
+          datasetQuery.query(joinedIds, null, DIGEST);
+        }
+
+        if (type == QueryType.VARIABLE || type == QueryType.DATASET) {
+          getDocumentQuery(type).query(joinedIds, countStats, scope);
+        }
+
+        /* //TODO: invalid json is generated when aggregations have Infinity or NaN values.
+        List<String> tmp = new ArrayList<>();
+        tmp.add(""); //fake study id to not match all studies
+        studyQuery.query(tmp, null, DIGEST); */
       }
     } else {
       execute(type, scope, countBuilder);
@@ -155,22 +172,22 @@ public class JoinQueryExecutor {
 
     switch(type) {
       case VARIABLE:
-        queryAggragations(null, studyQuery, datasetQuery, networkQuery);
+        queryAggregations(null, studyQuery, datasetQuery, networkQuery);
         countStats = countBuilder != null ? getCountStatsData(type) : null;
         variableQuery.query(null, countStats, scope);
         break;
       case DATASET:
-        queryAggragations(null, variableQuery, studyQuery, networkQuery);
+        queryAggregations(null, variableQuery, studyQuery, networkQuery);
         countStats = countBuilder != null ? getCountStatsData(type) : null;
         datasetQuery.query(null, countStats, scope);
         break;
       case STUDY:
-        queryAggragations(null, variableQuery, datasetQuery, networkQuery);
+        queryAggregations(null, variableQuery, datasetQuery, networkQuery);
         countStats = countBuilder != null ? getCountStatsData(type) : null;
         studyQuery.query(null, countStats, scope);
         break;
       case NETWORK:
-        queryAggragations(null, variableQuery, datasetQuery, studyQuery);
+        queryAggregations(null, variableQuery, datasetQuery, studyQuery);
         countStats = countBuilder != null ? getCountStatsData(type) : null;
         networkQuery.query(null, countStats, scope);
         break;
@@ -251,7 +268,9 @@ public class JoinQueryExecutor {
             ? joinStudyIds(studyIds, docQueryStudyIds)
             : studyIds;
 
-    if(aggStudyIds == null || aggStudyIds.size() > 0) queryAggragations(aggStudyIds, subQueries);
+    if(aggStudyIds == null || aggStudyIds.size() > 0) {
+      queryAggregations(aggStudyIds, subQueries);
+    }
 
     return aggStudyIds;
   }
@@ -264,7 +283,7 @@ public class JoinQueryExecutor {
     return joinedStudyIds;
   }
 
-  private void queryAggragations(List<String> studyIds, AbstractDocumentQuery... queries) throws IOException {
+  private void queryAggregations(List<String> studyIds, AbstractDocumentQuery... queries) throws IOException {
     for(AbstractDocumentQuery query : queries) query.query(studyIds, null, DIGEST);
   }
 
