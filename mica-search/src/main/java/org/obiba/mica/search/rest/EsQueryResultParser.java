@@ -71,21 +71,12 @@ public class EsQueryResultParser {
           Stats defaultStats = (Stats) defaultAgg;
           Stats queriedStats = (Stats) queriedAgg;
           if(defaultStats.getCount() > 0) {
+            MicaSearch.StatsAggregationResultDataDto defaultStatsDto = buildStatsDto(defaultStats);
+            MicaSearch.StatsAggregationResultDataDto dataStatsDto = buildStatsDto(queriedStats);
             aggResultBuilder.setExtension(StatsAggregationResultDto.stats, //
               StatsAggregationResultDto.newBuilder() //
-                .setDefault(MicaSearch.StatsAggregationResultDataDto.newBuilder() //
-                  .setCount(defaultStats.getCount()) //
-                  .setMin(defaultStats.getMin()) //
-                  .setMax(defaultStats.getMax()) //
-                  .setAvg(defaultStats.getAvg()) //
-                  .setSum(defaultStats.getSum()).build()) //
-                .setData(MicaSearch.StatsAggregationResultDataDto.newBuilder() //
-                  .setCount(queriedStats.getCount()) //
-                  .setMin(queriedStats.getMin()) //
-                  .setMax(queriedStats.getMax()) //
-                  .setAvg(queriedStats.getAvg()) //
-                  .setSum(queriedStats.getSum()).build()) //
-                .build()); //
+                .setDefault(defaultStatsDto) //
+                .setData(dataStatsDto).build()); //
           }
           break;
         case "terms":
@@ -205,6 +196,27 @@ public class EsQueryResultParser {
       log.info("{} == {}", qKey, key);
       return bucket.getKey().equals(key);
     }).findFirst();
+  }
+
+  private MicaSearch.StatsAggregationResultDataDto buildStatsDto(Stats stats) {
+    MicaSearch.StatsAggregationResultDataDto.Builder builder = MicaSearch.StatsAggregationResultDataDto.newBuilder()
+      .setCount(stats.getCount());
+
+    if(!Double.isInfinite(stats.getMin())) {
+      builder.setMin(stats.getMin());
+    }
+
+    if(!Double.isInfinite(stats.getMax())) {
+      builder.setMax(stats.getMax());
+    }
+
+    if (!Double.isNaN(stats.getAvg())) {
+      builder.setAvg(stats.getAvg());
+    }
+
+    builder.setSum(stats.getSum());
+
+    return builder.build();
   }
 
   public long getTotalCount() {
