@@ -10,6 +10,8 @@
 
 package org.obiba.mica.search.aggregations;
 
+import com.google.common.base.Strings;
+
 public interface AggregationMetaDataProvider {
   /**
    * Given a agregation name and a terms aggregation bucket key, returns the correspoding metadata
@@ -28,8 +30,16 @@ public interface AggregationMetaDataProvider {
 
     private MetaData() {}
 
+    public boolean hasTitle() {
+      return !Strings.isNullOrEmpty(title);
+    }
+
     public String getTitle() {
       return title;
+    }
+
+    public boolean hasDescription() {
+      return !Strings.isNullOrEmpty(description);
     }
 
     public String getDescription() {

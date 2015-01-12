@@ -97,35 +97,35 @@ public class EsQueryResultParser {
             // hence the disparity in bucket sizes
             int queriedBucketsSize = queriedBuckets.size();
             Terms.Bucket defaultBucket = defaultBuckets.get(j);
-            Optional<Terms.Bucket> queriedBucket =
-              queriedBucketsSize == defaultBuckets.size()
-                ? Optional.of(queriedBuckets.get(j))
-                : queriedBucketsSize > 0 ? findQueriedBucket(queriedBuckets, defaultBucket.getKey()) : Optional.empty();
+            Optional<Terms.Bucket> queriedBucket = queriedBucketsSize == defaultBuckets.size()
+              ? Optional.of(queriedBuckets.get(j))
+              : queriedBucketsSize > 0 ? findQueriedBucket(queriedBuckets, defaultBucket.getKey()) : Optional.empty();
 
             int queriedBucketCount = 0;
             Optional<Aggregations> queriedAggregations = Optional.empty();
 
-            if (queriedBucket.isPresent()) {
+            if(queriedBucket.isPresent()) {
               Terms.Bucket bucket = queriedBucket.get();
-              queriedBucketCount = (int)bucket.getDocCount();
+              queriedBucketCount = (int) bucket.getDocCount();
               queriedAggregations = Optional.of(bucket.getAggregations());
             }
 
             TermsAggregationResultDto.Builder termsBuilder = TermsAggregationResultDto.newBuilder();
 
             if(defaultBucket.getAggregations() != null && queriedAggregations.isPresent()) {
-              termsBuilder
-                  .addAllAggs(parseAggregations(defaultBucket.getAggregations(), queriedAggregations.get()));
+              termsBuilder.addAllAggs(parseAggregations(defaultBucket.getAggregations(), queriedAggregations.get()));
             }
 
             String key = defaultBucket.getKey();
-            AggregationMetaDataProvider.MetaData metaData = aggregationTitleResolver.getTitle(defaultAgg.getName(), key, locale);
-            termsBuilder.setTitle(metaData.getTitle()).setDescription(metaData.getDescription());
+            AggregationMetaDataProvider.MetaData metaData = aggregationTitleResolver
+              .getTitle(defaultAgg.getName(), key, locale);
+            if(metaData.hasTitle()) termsBuilder.setTitle(metaData.getTitle());
+            if(metaData.hasDescription()) termsBuilder.setDescription(metaData.getDescription());
 
             aggResultBuilder.addExtension(TermsAggregationResultDto.terms, //
-                termsBuilder.setKey(key) //
-                    .setDefault((int) defaultBucket.getDocCount()) //
-                    .setCount(queriedBucketCount).build()); //
+              termsBuilder.setKey(key) //
+                .setDefault((int) defaultBucket.getDocCount()) //
+                .setCount(queriedBucketCount).build()); //
           });
 
           break;
@@ -175,13 +175,13 @@ public class EsQueryResultParser {
           break;
         case "terms":
           ((Terms) aggregation).getBuckets().forEach(bucket -> {
-              TermsAggregationResultDto.Builder termsBuilder = TermsAggregationResultDto.newBuilder();
-              if(bucket.getAggregations() != null) {
-                termsBuilder.addAllAggs(parseAggregations(bucket.getAggregations()));
-              }
-              aggResultBuilder.addExtension(TermsAggregationResultDto.terms,
-                termsBuilder.setKey(bucket.getKey()).setDefault(-1).setCount((int) bucket.getDocCount()).build());
-            });
+            TermsAggregationResultDto.Builder termsBuilder = TermsAggregationResultDto.newBuilder();
+            if(bucket.getAggregations() != null) {
+              termsBuilder.addAllAggs(parseAggregations(bucket.getAggregations()));
+            }
+            aggResultBuilder.addExtension(TermsAggregationResultDto.terms,
+              termsBuilder.setKey(bucket.getKey()).setDefault(-1).setCount((int) bucket.getDocCount()).build());
+          });
           break;
         case "global":
           totalCount = ((Global) aggregation).getDocCount();
