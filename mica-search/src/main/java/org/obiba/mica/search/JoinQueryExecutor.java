@@ -136,21 +136,22 @@ public class JoinQueryExecutor {
         } else if(type == QueryType.DATASET) {
           variableQuery.query(joinedIds, null, DIGEST);
         }
-      } else {
+      } else if(!studyQuery.hasQueryFilters()) {
         variableQuery.query(joinedIds, null, DIGEST); //to set datasetprovider datasets if any
 
-        if (type != QueryType.DATASET) {
-          datasetQuery.query(joinedIds, null, DIGEST);
+        if(!datasetIdProvider.getDatasetIds().isEmpty()) {
+          if(type != QueryType.DATASET) {
+            datasetQuery.query(joinedIds, null, DIGEST);
+          }
+
+          if(type == QueryType.VARIABLE || type == QueryType.DATASET) {
+            getDocumentQuery(type).query(joinedIds, countStats, scope);
+          }
         }
 
-        if (type == QueryType.VARIABLE || type == QueryType.DATASET) {
-          getDocumentQuery(type).query(joinedIds, countStats, scope);
-        }
-
-        /* //TODO: invalid json is generated when aggregations have Infinity or NaN values.
         List<String> tmp = new ArrayList<>();
-        tmp.add(""); //fake study id to not match all studies
-        studyQuery.query(tmp, null, DIGEST); */
+        tmp.add(""); //fake study id to get only aggregations summary
+        studyQuery.query(tmp, null, DIGEST);
       }
     } else {
       execute(type, scope, countBuilder);
