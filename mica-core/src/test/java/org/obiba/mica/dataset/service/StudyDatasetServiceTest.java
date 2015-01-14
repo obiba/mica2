@@ -59,13 +59,11 @@ public class StudyDatasetServiceTest {
   }
 
   @Test
-  public void testDatasourceConnectionError() {
+  public void testDatasourceConnectionErrorIsIgnoredForDraft() {
     RestDatasource r = mock(RestDatasource.class);
     when(r.getValueTable(anyString())).thenThrow(new MagmaRuntimeException());
     when(opalService.getDatasource(anyString(), anyString())).thenReturn(r);
     when(studyService.findDraftStudy(anyString())).thenReturn(study);
-
-    exception.expect(DatasourceNotAvailableException.class);
 
     studyDatasetService.save(dataset);
   }
@@ -76,6 +74,7 @@ public class StudyDatasetServiceTest {
     when(r.getValueTable(anyString())).thenThrow(NoSuchValueTableException.class);
     when(opalService.getDatasource(anyString(), anyString())).thenReturn(r);
     when(studyService.findDraftStudy(anyString())).thenReturn(study);
+    dataset.setPublished(true);
 
     exception.expect(InvalidDatasetException.class);
 

@@ -281,8 +281,25 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
       }
     }
 
-    Iterable<DatasetVariable> variables = wrappedGetDatasetVariables(dataset);
-    Map<String, List<DatasetVariable>> harmonizationVariables = populateHarmonizedVariablesMap(dataset);
+    Iterable<DatasetVariable> variables;
+    Map<String, List<DatasetVariable>> harmonizationVariables;
+
+    try {
+      //getting variables first to fail fast when dataset is being published
+      variables = wrappedGetDatasetVariables(dataset);
+      harmonizationVariables = populateHarmonizedVariablesMap(dataset);
+    } catch(DatasourceNotAvailableException | InvalidDatasetException e) {
+      if(dataset.isPublished()) {
+        throw e;
+      }
+
+      if(e instanceof DatasourceNotAvailableException) {
+        log.warn("Datasource not available.", e);
+      }
+
+      variables = Lists.newArrayList();
+      harmonizationVariables = Maps.newHashMap();
+    }
 
     harmonizationDatasetRepository.save(saved);
     tryUpdateIndices(saved, variables, harmonizationVariables, updatePublishIndices);
@@ -292,6 +309,7 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
     Map<String, List<DatasetVariable>> harmonizationVariables, boolean updatePublishIndices) {
     variableIndexer.onDatasetUpdated(variables, harmonizationVariables);
     datasetIndexer.onDatasetUpdated(dataset);
+
     if(updatePublishIndices) {
       variableIndexer.onDatasetPublished(dataset, variables, harmonizationVariables);
       datasetIndexer.onDatasetPublished(dataset);
