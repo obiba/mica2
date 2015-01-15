@@ -38,6 +38,7 @@ import org.springframework.validation.annotation.Validated;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
@@ -250,6 +251,7 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
       saved.setId(getNextId(saved.getAcronym()));
     } else {
       saved = studyDatasetRepository.findOne(dataset.getId());
+
       if (saved != null) {
         BeanUtils.copyProperties(dataset, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
           "lastModifiedDate");
@@ -258,7 +260,23 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
       }
     }
 
-    Iterable<DatasetVariable> variables = wrappedGetDatasetVariables(dataset);
+    Iterable<DatasetVariable> variables;
+
+    try {
+      //getting variables first to fail fast when dataset is being published
+      variables = wrappedGetDatasetVariables(dataset);
+    } catch(DatasourceNotAvailableException | InvalidDatasetException e) {
+      if(dataset.isPublished()) {
+        throw e;
+      }
+
+      if(e instanceof DatasourceNotAvailableException) {
+        log.warn("Datasource not available.", e);
+      }
+
+      variables = Lists.newArrayList();
+    }
+
     studyDatasetRepository.save(saved);
     tryUpdateIndices(saved, variables, updatePublishIndices);
   }
