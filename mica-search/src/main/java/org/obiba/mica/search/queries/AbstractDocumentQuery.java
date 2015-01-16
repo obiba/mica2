@@ -170,7 +170,9 @@ public abstract class AbstractDocumentQuery {
     List<String> ids = Lists.newArrayList();
 
     response.getAggregations().forEach(aggregation -> ((Terms) aggregation).getBuckets().stream().forEach(bucket -> {
-      if(bucket.getDocCount() > 0) ids.add(bucket.getKey());
+      if(bucket.getDocCount() > 0){
+        ids.add(bucket.getKey());
+      }
     }));
 
     return ids.stream().distinct().collect(Collectors.toList());
@@ -178,6 +180,7 @@ public abstract class AbstractDocumentQuery {
 
   private Properties getJoinFieldsAsProperties() {
     Properties props = new Properties();
+
     try {
       props.load(new StringReader(getJoinFields().stream().reduce((t, s) -> t + "=\r" + s).get()));
     } catch(IOException e) {

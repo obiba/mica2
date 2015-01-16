@@ -124,8 +124,8 @@ public class JoinQueryExecutor {
     if (queriesHaveFilters) {
       variableQuery.setDatasetIdProvider(datasetIdProvider);
       datasetQuery.setDatasetIdProvider(datasetIdProvider);
-      List<String> joinedIds = executeJoin(type);
 
+      List<String> joinedIds = executeJoin(type);
       CountStatsData countStats = countBuilder != null ? getCountStatsData(type) : null;
 
       if (joinedIds != null && joinedIds.size() > 0) {
@@ -245,7 +245,7 @@ public class JoinQueryExecutor {
             .build();
         break;
       case NETWORK:
-        countStats = CountStatsData.newBuilder().variables(variableQuery.getStudyCounts())
+        countStats = CountStatsData.newBuilder().variables(variableQuery.getDatasetCounts())
             .datasetsMap(datasetQuery.getStudyCountsByDataset())
             .studies(studyQuery.getStudyCounts())
             .build();
@@ -285,19 +285,25 @@ public class JoinQueryExecutor {
   }
 
   private void queryAggregations(List<String> studyIds, AbstractDocumentQuery... queries) throws IOException {
-    for(AbstractDocumentQuery query : queries) query.query(studyIds, null, DIGEST);
+    for(AbstractDocumentQuery query : queries) {
+      query.query(studyIds, null, DIGEST);
+    }
   }
 
   private List<String> queryStudyIds(List<AbstractDocumentQuery> queries) throws IOException {
     List<String> studyIds = queries.get(0).queryStudyIds();
-    queries.subList(1, queries.size()).forEach(query -> {
+
+    queries.stream().skip(1).forEach(query -> {
       if(studyIds.size() > 0) {
         try {
           studyIds.retainAll(query.queryStudyIds());
         } catch(IOException e) {
           log.error("Failed to query study IDs '{}'", e);
         }
-        if(studyIds.isEmpty()) return;
+
+        if(studyIds.isEmpty()) {
+          return;
+        }
       }
     });
 

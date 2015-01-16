@@ -24,7 +24,9 @@ import org.obiba.mica.search.queries.DatasetQuery;
 import org.obiba.mica.study.domain.Study;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import static org.obiba.mica.web.model.MicaSearch.CountStatsDto;
 
@@ -105,14 +107,14 @@ public class CountStatsDtoBuilders {
     }
 
     private CountStatsDto calculateCounts(List<String> ids) {
-      int variables = 0;
       List<String> studyDatasets = Lists.newArrayList();
       List<String> harmonizationDatasets = Lists.newArrayList();
+
       int studies = 0;
 
       for(String id : ids) {
-        variables += countStatsData.getVariables(id);
         Map<String, List<String>> datasets = countStatsData.getDataset(id);
+
         if (datasets.containsKey(DatasetQuery.STUDY_JOIN_FIELD)) {
           studyDatasets.addAll(datasets.get(DatasetQuery.STUDY_JOIN_FIELD));
         }
@@ -120,8 +122,12 @@ public class CountStatsDtoBuilders {
         if (datasets.containsKey(DatasetQuery.HARMONIZATION_JOIN_FIELD)) {
           harmonizationDatasets.addAll(datasets.get(DatasetQuery.HARMONIZATION_JOIN_FIELD));
         }
+
         studies += countStatsData.getStudies(id);
       }
+
+      int variables = Sets.union(ImmutableSet.copyOf(studyDatasets), ImmutableSet.copyOf(harmonizationDatasets))
+        .stream().mapToInt(d -> countStatsData.getVariables(d)).sum();
 
       return CountStatsDto.newBuilder()
         .setVariables(variables)
