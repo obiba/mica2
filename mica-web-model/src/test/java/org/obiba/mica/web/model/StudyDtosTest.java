@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.obiba.git.command.GitCommandHandler;
+import org.obiba.mica.config.AggregationsConfiguration;
 import org.obiba.mica.config.JsonConfiguration;
 import org.obiba.mica.core.domain.Address;
 import org.obiba.mica.core.domain.Attribute;
@@ -311,6 +312,11 @@ public class StudyDtosTest {
   @Configuration
   @ComponentScan("org.obiba.mica.web.model")
   static class Config {
+
+    @Bean
+    public AggregationsConfiguration aggregationsConfiguration() {
+      return  Mockito.mock(AggregationsConfiguration.class);
+    }
 
     @Bean
     public StudyService studyService() {

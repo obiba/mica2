@@ -2,7 +2,6 @@ package obiba.mica;
 option java_package = "org.obiba.mica.web.model";
 import "Mica.proto";
 
-
 message JoinQueryDto {
   optional string locale = 7 [default = "en"];
   optional QueryDto variableQueryDto = 1;
@@ -197,6 +196,7 @@ message StudySummariesResultDto {
 
 message AggregationResultDto {
   required string aggregation = 1;
+  repeated LocalizedStringDto title = 2;
   extensions 1000 to max;
 }
 

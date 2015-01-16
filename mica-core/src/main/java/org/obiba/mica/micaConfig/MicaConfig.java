@@ -40,6 +40,8 @@ public class MicaConfig extends AbstractAuditableDocument {
   @NotBlank
   private String opal = DEFAULT_OPAL;
 
+  private AggregationsConfig aggregations;
+
   private String publicUrl;
 
   private String secretKey;
@@ -104,5 +106,13 @@ public class MicaConfig extends AbstractAuditableDocument {
         .add("locales", locales) //
         .add("defaultCharacterSet", defaultCharacterSet) //
         .add("publicUrl", publicUrl);
+  }
+
+  public AggregationsConfig getAggregations() {
+    return aggregations;
+  }
+
+  public void setAggregations(AggregationsConfig aggregations) {
+    this.aggregations = aggregations;
   }
 }

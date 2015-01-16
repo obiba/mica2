@@ -13,6 +13,7 @@ import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.file.TempFile;
+import org.obiba.mica.micaConfig.AggregationsConfig;
 import org.obiba.mica.micaConfig.MicaConfig;
 import org.obiba.mica.micaConfig.OpalCredential;
 import org.obiba.mica.network.domain.Network;
@@ -141,6 +142,16 @@ public class Dtos {
 
   @NotNull
   public MicaConfig fromDto(@NotNull MicaConfigDtoOrBuilder dto) {
+    return micaConfigDtos.fromDto(dto);
+  }
+
+  @NotNull
+  public Mica.AggregationsConfigDto asDto(@NotNull AggregationsConfig aggregationsConfig) {
+    return micaConfigDtos.asDto(aggregationsConfig);
+  }
+
+  @NotNull
+  public AggregationsConfig fromDto(@NotNull Mica.AggregationsConfigDtoOrBuilder dto) {
     return micaConfigDtos.fromDto(dto);
   }
 

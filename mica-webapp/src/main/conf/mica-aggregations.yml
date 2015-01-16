@@ -1,0 +1,88 @@
+study:
+- id: populations-recruitment-dataSources
+  title: {en: Study-RECRUITEMENT DATASOURCE}
+- id: populations-selectionCriteria-countriesIso
+  title: {en: Study-COUNTRY OF RESIDENCE}
+- id: numberOfParticipants-sample-number
+  title: {en: Study-TARGET NUMBER OF PARTICIPANTS WITH SAMPLES}
+- id: populations-dataCollectionEvents-dataSources
+  title: {en: Study-DATA SOURCES}
+- id: populations-selectionCriteria-ageMax
+  title: {en: Study-MAXIMUM AGE}
+- id: methods-designs
+  title: {en: Study-STUDY DESIGN}
+- id: end
+  title: {en: Study-DATE END}
+- id: populations-dataCollectionEvents-bioSamples
+  title: {en: Study-Bio-SAMPLES}
+- id: populations-selectionCriteria-criteria
+  title: {en: Study-SELECTION CRITERIA}
+- id: access
+  title: {en: Study-ACCESS}
+- id: start
+  title: {en: Study-DATE START}
+- id: methods-recruitments
+  title: {en: Study-RECRUITMENT TARGET}
+- id: populations-selectionCriteria-gender
+  title: {en: Study-GENDER}
+- id: populations-recruitment-generalPopulationSources
+  title: {en: Study-GENERAL POPULATION SOURCES}
+- id: populations-selectionCriteria-ageMin
+  title: {en: Study-MINIMUM AGE}
+- id: numberOfParticipants-participant-number
+  title: {en: Study-TARGET NUMBER OF PARTICIPANTS}
+- id: networkId
+  title: {en: network-NETWORK}
+variable:
+- id: attributes-Mlstr_area__Medication_supplements-und
+  title: {en: dataset-Medication}
+- id: variableType
+  title: {en: dataset-VARIABLE TYPE}
+- id: valueType
+  title: {en: dataset-VALUE TYPE}
+- id: entityType
+  title: {en: dataset-ENTITY TYPE}
+- id: attributes-Mlstr_area__Infancy_childhood-und
+  title: {en: dataset-Infancy_childhood}
+- id: occurrenceGroup
+  title: {en: dataset-OCCURRENCE GROUP}
+- id: attributes-Mlstr_area__Administrative_information-und
+  title: {en: dataset-Administrative information}
+- id: studyIds
+  title: {en: Study-STUDY}
+- id: attributes-Mlstr_area__Health_community_care_utilization-und
+  title: {en: dataset-Health Community Care}
+- id: attributes-Mlstr_area__End_of_life-und
+  title: {en: dataset-End of life}
+- id: attributes-Mlstr_area__Laboratory_measures-und
+  title: {en: dataset-Laboratory measures}
+- id: attributes-Mlstr_area__Symptoms_signs-und
+  title: {en: dataset-Symptoms}
+- id: attributes-Mlstr_area__Source-und
+  title: {en: dataset-Source}
+- id: attributes-Mlstr_area__Physical_measures-und
+  title: {en: dataset-Physical measures}
+- id: attributes-Mlstr_area__Cognitive_psychological_measures-und
+  title: {en: dataset-Cognitive psychological measures}
+- id: attributes-Mlstr_area__Diseases-und
+  title: {en: dataset-Diseases}
+- id: attributes-Mlstr_area__Physical_environment-und
+  title: {en: dataset-Physical environment}
+- id: datasetId
+  title: {en: dataset-DATASET}
+- id: attributes-Mlstr_area__Lifestyle_behaviours-und
+  title: {en: dataset-Lifestyle}
+- id: attributes-Mlstr_area__Target-und
+  title: {en: dataset-Target}
+- id: attributes-Mlstr_area__Sociodemographic_economic_characteristics-und
+  title: {en: dataset-Socio demographic and economic}
+- id: dceIds
+  title: {en: Study-Data Collection Event}
+- id: attributes-Mlstr_area__Health_status_functional_limitations-und
+  title: {en: dataset-Health Status}
+- id: attributes-Mlstr_area__Social_environment-und
+  title: {en: dataset-Social environment}
+- id: attributes-Mlstr_area__Reproduction-und
+  title: {en: dataset-Reproduction}
+- id: attributes-Mlstr_area__Non_pharmacological_interventions-und
+  title: {en: dataset-Non Pharmacological Interventions}
