@@ -115,6 +115,12 @@ public class PublishedDatasetVariablesSearchResource {
       .queryCoverage(JoinQueryExecutor.QueryType.VARIABLE, joinQueryDto);
     List<MicaSearch.AggregationResultDto> aggregations = result.getVariableResultDto().getAggsList();
 
+    Map<String, Map<String, String>> aggTermsTitlesMap = aggregations.stream().collect(
+      Collectors.toMap(MicaSearch.AggregationResultDto::getAggregation,
+        a -> a.getExtension(MicaSearch.TermsAggregationResultDto.terms).stream().collect(
+          Collectors.toMap(MicaSearch.TermsAggregationResultDto::getKey, t -> t.getTitle())
+      )));
+
     Map<String, List<BucketResult>> bucketResultsByTaxonomy = extractBucketResults(joinQueryDto, aggregations).stream()
       .collect(Collectors.groupingBy(BucketResult::getTaxonomy));
 
@@ -133,7 +139,12 @@ public class PublishedDatasetVariablesSearchResource {
     getTaxonomies().stream().filter(
       taxonomy -> taxonomyNames == null || taxonomyNames.isEmpty() || taxonomyNames.contains(taxonomy.getName()))
       .forEach(
-        taxonomy -> addTaxonomyCoverage(coverages, taxonomy, aggsMap, bucketResultsByTaxonomy.get(taxonomy.getName())));
+        taxonomy -> addTaxonomyCoverage(
+          coverages,
+          taxonomy,
+          aggsMap,
+          bucketResultsByTaxonomy.get(taxonomy.getName()),
+          aggTermsTitlesMap));
 
     MicaSearch.TaxonomiesCoverageDto.Builder builder = MicaSearch.TaxonomiesCoverageDto.newBuilder()//
       .setTotalCount(result.getVariableResultDto().getTotalCount()) //
@@ -184,7 +195,8 @@ public class PublishedDatasetVariablesSearchResource {
    * @param bucketResults
    */
   private void addTaxonomyCoverage(List<MicaSearch.TaxonomyCoverageDto> coverages, Taxonomy taxonomy,
-    Map<String, Map<String, Integer>> aggsMap, @Nullable List<BucketResult> bucketResults) {
+    Map<String, Map<String, Integer>> aggsMap, @Nullable List<BucketResult> bucketResults,
+    Map<String, Map<String, String>> aggTermsTitlesMap) {
     if(taxonomy.hasVocabularies()) {
       MicaSearch.TaxonomyCoverageDto.Builder taxoBuilder = MicaSearch.TaxonomyCoverageDto.newBuilder();
       taxoBuilder.setTaxonomy(dtos.asDto(taxonomy));
@@ -194,9 +206,15 @@ public class PublishedDatasetVariablesSearchResource {
         ? Maps.newHashMap()
         : bucketResults.stream().collect(Collectors.groupingBy(BucketResult::getVocabulary));
 
-      taxonomy.getVocabularies().forEach(vocabulary -> hits.add(addVocabularyCoverage(taxoBuilder, vocabulary,
-        aggsMap.get(AttributeKey.getMapKey(vocabulary.getName(), namespace)),
-        bucketResults == null ? null : bucketResultsByVocabulary.get(vocabulary.getName()))));
+      taxonomy.getVocabularies().forEach(vocabulary -> hits.add(
+        addVocabularyCoverage(
+          taxoBuilder,
+          vocabulary,
+          aggsMap.get(AttributeKey.getMapKey(vocabulary.getName(), namespace)),
+          bucketResults == null ? null : bucketResultsByVocabulary.get(vocabulary.getName()),
+          aggTermsTitlesMap
+          )));
+
       taxoBuilder.setHits(hits.isEmpty() ? 0 : hits.stream().mapToInt(x -> x).sum());
       // compute the sum of the hits for all vocabularies per bucket
       if(bucketResults != null) {
@@ -212,12 +230,16 @@ public class PublishedDatasetVariablesSearchResource {
             int sumOfHits = buckets.stream().mapToInt(BucketResult::getHits).sum();
             if(sumOfHits > 0) {
               taxoBuilder.addBuckets(
-                MicaSearch.BucketCoverageDto.newBuilder().setField(field).setValue(value).setHits(sumOfHits));
+                MicaSearch.BucketCoverageDto.newBuilder()
+                  .setField(field)
+                  .setValue(value)
+                  .setHits(sumOfHits)
+                  .setTitle(aggTermsTitlesMap.get(field).get(value)));
             }
-
           });
         });
       }
+
       coverages.add(taxoBuilder.build());
     }
   }
@@ -233,7 +255,7 @@ public class PublishedDatasetVariablesSearchResource {
    * @return
    */
   private int addVocabularyCoverage(MicaSearch.TaxonomyCoverageDto.Builder taxoBuilder, Vocabulary vocabulary,
-    Map<String, Integer> hits, @Nullable List<BucketResult> bucketResults) {
+    Map<String, Integer> hits, @Nullable List<BucketResult> bucketResults, Map<String, Map<String, String>> aggTermsTitlesMap) {
     int sumOfHits = 0;
     if(vocabulary.hasTerms()) {
       Map<String, List<BucketResult>> bucketResultsByTerm = bucketResults == null
@@ -243,14 +265,22 @@ public class PublishedDatasetVariablesSearchResource {
       MicaSearch.VocabularyCoverageDto.Builder vocBuilder = MicaSearch.VocabularyCoverageDto.newBuilder();
       vocBuilder.setVocabulary(dtos.asDto(vocabulary));
       vocabulary.getTerms()
-        .forEach(term -> addTermCoverage(vocBuilder, term, hits, bucketResultsByTerm.get(term.getName())));
+        .forEach(term -> addTermCoverage(
+          vocBuilder,
+          term,
+          hits,
+          bucketResultsByTerm.get(term.getName()),
+          aggTermsTitlesMap
+          ));
       // only one term can be applied at a time, then the sum of the term hits is the number of variables
       // that cover this vocabulary
       sumOfHits = hits == null ? 0 : hits.values().stream().mapToInt(x -> x).sum();
       vocBuilder.setHits(sumOfHits);
+
       if(!vocabulary.isRepeatable()) {
         vocBuilder.setCount(sumOfHits);
       }
+
       // compute the sum of the hits for all terms per bucket
       if(bucketResults != null) {
         Map<String, List<BucketResult>> bucketResultsByBucketField = bucketResults.stream()
@@ -264,8 +294,11 @@ public class PublishedDatasetVariablesSearchResource {
             List<BucketResult> buckets = bucketResultsByBucketValue.get(value);
             int sumOfBucketHits = buckets.stream().mapToInt(BucketResult::getHits).sum();
             if(sumOfBucketHits > 0) {
-              MicaSearch.BucketCoverageDto.Builder builder = MicaSearch.BucketCoverageDto.newBuilder().setField(field)
-                .setValue(value).setHits(sumOfBucketHits);
+              MicaSearch.BucketCoverageDto.Builder builder = MicaSearch.BucketCoverageDto.newBuilder()
+                .setField(field)
+                .setValue(value)
+                .setHits(sumOfBucketHits)
+                .setTitle(aggTermsTitlesMap.get(field).get(value));
               if(!vocabulary.isRepeatable()) builder.setCount(builder.getHits());
               vocBuilder.addBuckets(builder);
             }
@@ -287,7 +320,7 @@ public class PublishedDatasetVariablesSearchResource {
    * @param bucketResults
    */
   private void addTermCoverage(MicaSearch.VocabularyCoverageDto.Builder vocBuilder, Term term,
-    Map<String, Integer> hits, @Nullable List<BucketResult> bucketResults) {
+    Map<String, Integer> hits, @Nullable List<BucketResult> bucketResults, Map<String, Map<String, String>> aggTermsTitlesMap) {
     MicaSearch.TermCoverageDto.Builder termBuilder = MicaSearch.TermCoverageDto.newBuilder();
     termBuilder.setTerm(dtos.asDto(term));
     termBuilder.setHits(0);
@@ -295,8 +328,12 @@ public class PublishedDatasetVariablesSearchResource {
     if(bucketResults != null) {
       termBuilder.addAllBuckets(bucketResults.stream().map(
         b -> MicaSearch.BucketCoverageDto.newBuilder().setField(b.getBucketField()).setValue(b.getBucketValue())
-          .setHits(b.getHits()).build()).collect(Collectors.toList()));
+          .setHits(b.getHits())
+          .setTitle(aggTermsTitlesMap.get(b.getBucketField()).get(b.getBucketValue()))
+          .build())
+        .collect(Collectors.toList()));
     }
+
     if(hits != null && hits.containsKey(term.getName())) termBuilder.setHits(hits.get(term.getName()));
     vocBuilder.addTerms(termBuilder);
   }

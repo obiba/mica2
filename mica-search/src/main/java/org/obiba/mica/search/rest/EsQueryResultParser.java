@@ -170,6 +170,12 @@ public class EsQueryResultParser {
             if(bucket.getAggregations() != null) {
               termsBuilder.addAllAggs(parseAggregations(bucket.getAggregations()));
             }
+
+            AggregationMetaDataProvider.MetaData metaData = aggregationTitleResolver
+              .getTitle(aggregation.getName(), bucket.getKey(), locale);
+            if(metaData.hasTitle()) termsBuilder.setTitle(metaData.getTitle());
+            if(metaData.hasDescription()) termsBuilder.setDescription(metaData.getDescription());
+
             aggResultBuilder.addExtension(TermsAggregationResultDto.terms,
               termsBuilder.setKey(bucket.getKey()).setDefault(-1).setCount((int) bucket.getDocCount()).build());
           });
