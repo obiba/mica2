@@ -66,11 +66,11 @@ variable:
   title: {en: dataset-social environment}
 - id: attributes-Mlstr_area__Sociodemographic_economic_characteristics-und
   title: {en: dataset-socio demographic and economic}
-- id: attributes-Mlstr_area__Source-und
-  title: {en: dataset-source}
 - id: attributes-Mlstr_area__Symptoms_signs-und
   title: {en: dataset-symptoms}
-- id: attributes-Mlstr_area__Target-und
+- id: attributes-Mlstr_source__Source-und
+  title: {en: dataset-source}
+- id: attributes-Mlstr_target__Target-und
   title: {en: dataset-target}
 - id: variableType
   title: {en: dataset-variable type}

@@ -10,6 +10,7 @@
 
 package org.obiba.mica.dataset.search.rest.variable;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,7 +25,9 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.core.domain.AttributeKey;
@@ -77,6 +80,21 @@ public class PublishedDatasetVariablesSearchResource {
   @Path("_search")
   public MicaSearch.JoinQueryResultDto list(MicaSearch.JoinQueryDto joinQueryDto) throws IOException {
     return joinQueryExecutor.query(JoinQueryExecutor.QueryType.VARIABLE, joinQueryDto);
+  }
+
+  @POST
+  @Timed
+  @Path("_coverage")
+  @Produces("text/csv")
+  public Response coverageCsv(@QueryParam("taxonomy") List<String> taxonomyNames, MicaSearch.JoinQueryDto joinQueryDto)
+    throws IOException {
+
+    MicaSearch.TaxonomiesCoverageDto coverage = coverage(taxonomyNames, joinQueryDto);
+    CsvTaxonomyCoverageWriter writer = new CsvTaxonomyCoverageWriter();
+    ByteArrayOutputStream values = writer.write(coverage);
+
+    return Response.ok(values.toByteArray(), "text/csv")
+      .header("Content-Disposition", "attachment; filename=\"coverage.csv\"").build();
   }
 
   /**
