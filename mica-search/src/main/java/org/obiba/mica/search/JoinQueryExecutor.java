@@ -19,17 +19,24 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
+import org.obiba.mica.micaConfig.AggregationInfo;
+import org.obiba.mica.micaConfig.AggregationsConfig;
+import org.obiba.mica.micaConfig.MicaConfigService;
 import org.obiba.mica.search.queries.AbstractDocumentQuery;
 import org.obiba.mica.search.queries.AbstractDocumentQuery.Mode;
 import org.obiba.mica.search.queries.DatasetQuery;
 import org.obiba.mica.search.queries.NetworkQuery;
 import org.obiba.mica.search.queries.StudyQuery;
 import org.obiba.mica.search.queries.VariableQuery;
+import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.MicaSearch;
+import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import com.google.common.collect.ImmutableList;
 
 import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.DETAIL;
 import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.DIGEST;
@@ -50,6 +57,9 @@ public class JoinQueryExecutor {
   }
 
   @Inject
+  private MicaConfigService micaConfigService;
+
+  @Inject
   private VariableQuery variableQuery;
 
   @Inject
@@ -60,6 +70,9 @@ public class JoinQueryExecutor {
 
   @Inject
   private NetworkQuery networkQuery;
+
+  @Inject
+  private Dtos dtos;
 
   public JoinQueryResultDto queryCoverage(QueryType type, JoinQueryDto joinQueryDto) throws IOException {
     return query(type, joinQueryDto, null, DIGEST, Mode.COVERAGE);
@@ -158,12 +171,64 @@ public class JoinQueryExecutor {
     }
 
     JoinQueryResultDto.Builder builder = JoinQueryResultDto.newBuilder();
-    if(variableQuery.getResultQuery() != null) builder.setVariableResultDto(variableQuery.getResultQuery());
-    if(datasetQuery.getResultQuery() != null) builder.setDatasetResultDto(datasetQuery.getResultQuery());
-    if(studyQuery.getResultQuery() != null) builder.setStudyResultDto(studyQuery.getResultQuery());
-    if(networkQuery.getResultQuery() != null) builder.setNetworkResultDto(networkQuery.getResultQuery());
+    AggregationsConfig aggregationsConfig = micaConfigService.getConfig().getAggregations();
+
+    if (aggregationsConfig == null) {
+      aggregationsConfig = micaConfigService.getDefaultAggregationsConfig();
+    }
+
+    builder.setVariableResultDto(addAggregationTitles(variableQuery.getResultQuery(),
+      aggregationsConfig.getVariableAggregations()));
+
+    if(datasetQuery.getResultQuery() != null) {
+      builder.setDatasetResultDto(datasetQuery.getResultQuery());
+    }
+
+    builder.setStudyResultDto(addAggregationTitles(studyQuery.getResultQuery(),
+      aggregationsConfig.getStudyAggregations()));
+
+    if(networkQuery.getResultQuery() != null) {
+      builder.setNetworkResultDto(networkQuery.getResultQuery());
+    }
 
     return builder.build();
+  }
+
+  private MicaSearch.QueryResultDto addAggregationTitles(MicaSearch.QueryResultDto queryResultDto, List<AggregationInfo> aggregationsList) {
+    if (queryResultDto != null) {
+      final MicaSearch.QueryResultDto.Builder builder = MicaSearch.QueryResultDto.newBuilder().mergeFrom(queryResultDto);
+      List<MicaSearch.AggregationResultDto.Builder> builders = ImmutableList.copyOf(builder.getAggsBuilderList());
+      builder.clearAggs();
+
+      aggregationsList.forEach(a -> {
+        boolean found = false;
+        for(MicaSearch.AggregationResultDto.Builder b: builders) {
+          if(b.getAggregation().equals(a.getId())) {
+            b.addAllTitle(dtos.asDto(a.getTitle()));
+            builder.addAggs(b.build());
+            found = true;
+            break;
+          }
+        }
+
+        if (!found) {
+          builder.addAggs(MicaSearch.AggregationResultDto.newBuilder().setAggregation(a.getId()).addAllTitle(
+            dtos.asDto(a.getTitle())).build());
+        }
+      });
+
+      return builder.build();
+    } else {
+      final MicaSearch.QueryResultDto.Builder builder = MicaSearch.QueryResultDto.newBuilder();
+
+      aggregationsList.forEach(a -> builder.addAggs(
+          MicaSearch.AggregationResultDto.newBuilder().setAggregation(a.getId()).addAllTitle(dtos.asDto(a.getTitle())).build())
+      );
+
+      builder.setTotalHits(0).setTotalCount(0);
+
+      return builder.build();
+    }
   }
 
   private void execute(QueryType type, AbstractDocumentQuery.Scope scope, CountStatsData.Builder countBuilder)

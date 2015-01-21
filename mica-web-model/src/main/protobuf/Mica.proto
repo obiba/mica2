@@ -318,6 +318,16 @@ message MicaConfigDto {
   required string opal = 5;
 }
 
+message AggregationsConfigDto {
+  repeated AggregationInfoDto study = 1;
+  repeated AggregationInfoDto variable = 2;
+}
+
+message AggregationInfoDto {
+  required string id = 1;
+  repeated LocalizedStringDto title = 2;
+}
+
 message AttributeDto {
   optional string namespace = 1;
   required string name = 2;

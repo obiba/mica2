@@ -10,7 +10,9 @@ import org.apache.shiro.codec.CodecSupport;
 import org.apache.shiro.codec.Hex;
 import org.apache.shiro.crypto.AesCipherService;
 import org.apache.shiro.util.ByteSource;
+import org.obiba.mica.config.AggregationsConfiguration;
 import org.springframework.beans.BeanUtils;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -20,7 +22,11 @@ import com.google.common.eventbus.EventBus;
 
 @Service
 @Validated
+@EnableConfigurationProperties(AggregationsConfiguration.class)
 public class MicaConfigService {
+
+  @Inject
+  private AggregationsConfiguration aggregationsConfiguration;
 
   @Inject
   private MicaConfigRepository micaConfigRepository;
@@ -29,6 +35,14 @@ public class MicaConfigService {
   private EventBus eventBus;
 
   private final AesCipherService cipherService = new AesCipherService();
+
+  public AggregationsConfig getDefaultAggregationsConfig() {
+    AggregationsConfig aggregationsConfig = new AggregationsConfig();
+    aggregationsConfig.setStudyAggregations(aggregationsConfiguration.getStudy());
+    aggregationsConfig.setVariableAggregations(aggregationsConfiguration.getVariable());
+
+    return aggregationsConfig;
+  }
 
   @Cacheable(value = "micaConfig", key = "#root.methodName")
   public MicaConfig getConfig() {

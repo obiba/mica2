@@ -19,6 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.obiba.mica.config.AggregationsConfiguration;
 import org.obiba.mica.config.JsonConfiguration;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
@@ -129,6 +130,10 @@ public class DatasetDtosTest {
   @ComponentScan("org.obiba.mica.web.model")
   static class Config {
 
+    @Bean
+    public AggregationsConfiguration aggregationsConfiguration() {
+      return  Mockito.mock(AggregationsConfiguration.class);
+    }
 
     @Bean
     public MicaConfigService micaConfigService() {
