@@ -11,6 +11,7 @@
 package org.obiba.mica.dataset.search.rest.variable;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -67,8 +68,8 @@ public class PublishedDatasetVariablesSearchResource {
     @QueryParam("order") String order, @QueryParam("query") String query,
     @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
 
-    return joinQueryExecutor.listQuery(JoinQueryExecutor.QueryType.VARIABLE, QueryDtoHelper
-        .createQueryDto(from, limit, sort, order, query, locale, null, null), locale);
+    return joinQueryExecutor.listQuery(JoinQueryExecutor.QueryType.VARIABLE,
+      QueryDtoHelper.createQueryDto(from, limit, sort, order, query, locale, null, null), locale);
   }
 
   @POST
@@ -132,7 +133,7 @@ public class PublishedDatasetVariablesSearchResource {
    * @return
    */
   @NotNull
-  private List<BucketResult> extractBucketResults(MicaSearch.JoinQueryDto joinQueryDto,
+  private Collection<BucketResult> extractBucketResults(MicaSearch.JoinQueryDto joinQueryDto,
     List<MicaSearch.AggregationResultDto> aggregations) {
     if(joinQueryDto == null || !joinQueryDto.hasVariableQueryDto() ||
       joinQueryDto.getVariableQueryDto().getAggsByCount() == 0) return Collections.emptyList();
@@ -150,11 +151,13 @@ public class PublishedDatasetVariablesSearchResource {
           .forEach(t -> termResults.addAll(BucketResult.list(bucketField, agg.getKey(), t))));
     });
 
+    Collections.sort(termResults);
+
     return termResults;
   }
 
   /**
-   * for a {@link org.obiba.opal.core.domain.taxonomy.Taxonomy}, report the number of hits and optionally the
+   * For a {@link org.obiba.opal.core.domain.taxonomy.Taxonomy}, report the number of hits and optionally the
    * number of hits for each bucket.
    *
    * @param coverages
@@ -182,14 +185,20 @@ public class PublishedDatasetVariablesSearchResource {
         Map<String, List<BucketResult>> bucketResultsByBucketField = bucketResults.stream()
           .collect(Collectors.groupingBy(BucketResult::getBucketField));
 
-        bucketResultsByBucketField.keySet().forEach(field -> bucketResultsByBucketField.get(field).stream()
-          .collect(Collectors.groupingBy(BucketResult::getBucketValue)).forEach((value, buckets) -> {
+        bucketResultsByBucketField.keySet().forEach(field -> {
+          Map<String, List<BucketResult>> bucketResultsByBucketValue = bucketResultsByBucketField.get(field).stream()
+            .collect(Collectors.groupingBy(BucketResult::getBucketValue));
+
+          bucketResultsByBucketValue.keySet().stream().sorted().forEach(value -> {
+            List<BucketResult> buckets = bucketResultsByBucketValue.get(value);
             int sumOfHits = buckets.stream().mapToInt(BucketResult::getHits).sum();
             if(sumOfHits > 0) {
               taxoBuilder.addBuckets(
                 MicaSearch.BucketCoverageDto.newBuilder().setField(field).setValue(value).setHits(sumOfHits));
             }
-          }));
+
+          });
+        });
       }
       coverages.add(taxoBuilder.build());
     }
@@ -229,16 +238,21 @@ public class PublishedDatasetVariablesSearchResource {
         Map<String, List<BucketResult>> bucketResultsByBucketField = bucketResults.stream()
           .collect(Collectors.groupingBy(BucketResult::getBucketField));
 
-        bucketResultsByBucketField.keySet().forEach(field -> bucketResultsByBucketField.get(field).stream()
-          .collect(Collectors.groupingBy(BucketResult::getBucketValue)).forEach((value, buckets) -> {
+        bucketResultsByBucketField.keySet().forEach(field -> {
+          Map<String, List<BucketResult>> bucketResultsByBucketValue = bucketResultsByBucketField.get(field).stream()
+            .collect(Collectors.groupingBy(BucketResult::getBucketValue));
+
+          bucketResultsByBucketValue.keySet().stream().sorted().forEach(value -> {
+            List<BucketResult> buckets = bucketResultsByBucketValue.get(value);
             int sumOfBucketHits = buckets.stream().mapToInt(BucketResult::getHits).sum();
-            if (sumOfBucketHits > 0) {
+            if(sumOfBucketHits > 0) {
               MicaSearch.BucketCoverageDto.Builder builder = MicaSearch.BucketCoverageDto.newBuilder().setField(field)
                 .setValue(value).setHits(sumOfBucketHits);
               if(!vocabulary.isRepeatable()) builder.setCount(builder.getHits());
               vocBuilder.addBuckets(builder);
             }
-          }));
+          });
+        });
       }
       taxoBuilder.addVocabularies(vocBuilder);
     }
@@ -283,7 +297,7 @@ public class PublishedDatasetVariablesSearchResource {
   /**
    * The number of variable hits per bucket and taxonomy term.
    */
-  private static class BucketResult {
+  private static class BucketResult implements Comparable<BucketResult> {
 
     private final String bucketField;
 
@@ -307,7 +321,7 @@ public class PublishedDatasetVariablesSearchResource {
       this.hits = hits;
     }
 
-    private static List<BucketResult> list(@Nullable String bucketField, @Nullable String bucketValue,
+    private static Collection<BucketResult> list(@Nullable String bucketField, @Nullable String bucketValue,
       MicaSearch.AggregationResultDto agg) {
       String key = agg.getAggregation().replaceAll("^attributes-", "").replaceAll("-und$", "");
       AttributeKey attrKey = AttributeKey.from(key);
@@ -344,6 +358,21 @@ public class PublishedDatasetVariablesSearchResource {
 
     public String toString() {
       return "[" + bucketField + "," + bucketValue + "," + taxonomy + "," + vocabulary + "," + term + "]=" + hits;
+    }
+
+    @Override
+    public int hashCode() {
+      return getBucketField().hashCode() + getBucketValue().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      return obj instanceof BucketResult && obj.toString().equals(toString());
+    }
+
+    @Override
+    public int compareTo(BucketResult o) {
+      return getBucketValue().compareTo(o.getBucketValue());
     }
   }
 }
