@@ -312,6 +312,9 @@ public abstract class AbstractDocumentQuery {
     if(queryDto == null) return null;
 
     QueryDtoParser queryDtoParser = QueryDtoParser.newParser();
+    aggregationTitleResolver.registerProviders(getAggregationMetaDataProviders());
+    aggregationTitleResolver.refresh();
+
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
       .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
