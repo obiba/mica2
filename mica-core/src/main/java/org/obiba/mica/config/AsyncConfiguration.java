@@ -14,6 +14,8 @@ import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.aop.interceptor.SimpleAsyncUncaughtExceptionHandler;
+import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 
 @Configuration
 @EnableAsync
@@ -33,6 +35,11 @@ public class AsyncConfiguration implements AsyncConfigurer, EnvironmentAware {
   @Override
   public void setEnvironment(Environment environment) {
     propertyResolver = new RelaxedPropertyResolver(environment, "async.");
+  }
+
+  @Override
+  public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
+    return new SimpleAsyncUncaughtExceptionHandler();
   }
 
   @Bean

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import javax.servlet.ServletOutputStream;
+import javax.servlet.WriteListener;
 
 class GZipServletOutputStream extends ServletOutputStream {
   private final OutputStream stream;
@@ -36,5 +37,14 @@ class GZipServletOutputStream extends ServletOutputStream {
   @Override
   public void write(int b) throws IOException {
     stream.write(b);
+  }
+
+  @Override
+  public boolean isReady() {
+    return true;
+  }
+
+  @Override
+  public void setWriteListener(WriteListener writeListener) {
   }
 }

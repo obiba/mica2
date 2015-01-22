@@ -13,7 +13,7 @@ import javax.servlet.ServletRegistration;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ssl.SslSelectChannelConnector;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.obiba.mica.web.filter.CachingHttpHeadersFilter;
 import org.obiba.mica.web.filter.StaticResourcesProductionFilter;
@@ -111,10 +111,9 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
     jettySsl.setWantClientAuth(true);
     jettySsl.setNeedClientAuth(false);
 
-    Connector sslConnector = new SslSelectChannelConnector(jettySsl);
+    ServerConnector sslConnector = new ServerConnector(server, jettySsl);
     sslConnector.setPort(httpsPort);
-    sslConnector.setMaxIdleTime(MAX_IDLE_TIME);
-    sslConnector.setRequestHeaderSize(REQUEST_HEADER_SIZE);
+    sslConnector.setIdleTimeout(MAX_IDLE_TIME);
 
     server.addConnector(sslConnector);
   }
@@ -139,9 +138,17 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
   private void initAuthenticationFilter(ServletContext servletContext) {
     log.debug("Registering Authentication Filter");
     FilterRegistration.Dynamic filterRegistration = servletContext
-        .addFilter("authenticationFilter", authenticationFilter);
-    filterRegistration
-        .addMappingForUrlPatterns(EnumSet.of(REQUEST, FORWARD, ASYNC, INCLUDE, ERROR), true, WS_ROOT + "/*");
+      .addFilter("authenticationFilter", authenticationFilter);
+
+    if (filterRegistration == null) {
+      filterRegistration =
+        (FilterRegistration.Dynamic)servletContext.getFilterRegistration("authenticationFilter");
+    }
+
+    log.debug("Adding mappging to authentication filter registration");
+
+    filterRegistration.addMappingForUrlPatterns(
+      EnumSet.of(REQUEST, FORWARD, ASYNC, INCLUDE, ERROR), true, WS_ROOT + "/*");
     filterRegistration.setAsyncSupported(true);
   }
 
@@ -168,7 +175,7 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
 
     log.debug("Registering static resources production Filter");
     FilterRegistration.Dynamic resourcesFilter = servletContext
-        .addFilter("staticResourcesProductionFilter", new StaticResourcesProductionFilter());
+      .addFilter("staticResourcesProductionFilter", new StaticResourcesProductionFilter());
 
     resourcesFilter.addMappingForUrlPatterns(disps, true, "/");
     resourcesFilter.addMappingForUrlPatterns(disps, true, "/index.html");
@@ -186,7 +193,7 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
   private void initCachingHttpHeadersFilter(ServletContext servletContext, EnumSet<DispatcherType> disps) {
     log.debug("Registering Caching HTTP Headers Filter");
     FilterRegistration.Dynamic cachingFilter = servletContext
-        .addFilter("cachingHttpHeadersFilter", new CachingHttpHeadersFilter());
+      .addFilter("cachingHttpHeadersFilter", new CachingHttpHeadersFilter());
 
     cachingFilter.addMappingForUrlPatterns(disps, true, "/images/*");
     cachingFilter.addMappingForUrlPatterns(disps, true, "/fonts/*");
@@ -205,7 +212,7 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
 
     log.debug("Registering Metrics Filter");
     FilterRegistration.Dynamic metricsFilter = servletContext
-        .addFilter("webappMetricsFilter", new InstrumentedFilter());
+      .addFilter("webappMetricsFilter", new InstrumentedFilter());
 
     metricsFilter.addMappingForUrlPatterns(disps, true, "/*");
     metricsFilter.setAsyncSupported(true);

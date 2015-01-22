@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>1.0.2.RELEASE</version>
+    <version>1.2.1.RELEASE</version>
   </parent>
 
   <modules>
@@ -57,7 +57,7 @@
     <shiro.version>1.2.3-java8</shiro.version>
     <shiro-extras.version>1.0.3-obiba</shiro-extras.version>
     <opencsv.version>2.3</opencsv.version>
-
+    <codahale-metrics.version>3.0.2</codahale-metrics.version>
     <maven-antrun-plugin.version>1.7</maven-antrun-plugin.version>
     <maven-assembly-plugin.version>2.4</maven-assembly-plugin.version>
     <maven-buildnumber-plugin.version>1.2</maven-buildnumber-plugin.version>
@@ -173,10 +173,19 @@
         <artifactId>elasticsearch</artifactId>
         <version>${elasticsearch.version}</version>
       </dependency>
-
+      <dependency>
+        <groupId>com.codahale.metrics</groupId>
+        <artifactId>metrics-core</artifactId>
+        <version>${codahale-metrics.version}</version>
+      </dependency>
       <dependency>
         <groupId>com.codahale.metrics</groupId>
         <artifactId>metrics-ehcache</artifactId>
+        <version>${codahale-metrics.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.codahale.metrics</groupId>
+        <artifactId>metrics-graphite</artifactId>
         <version>${codahale-metrics.version}</version>
       </dependency>
       <dependency>
@@ -480,7 +489,10 @@
   </dependencyManagement>
 
   <dependencies>
-
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-jersey</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>

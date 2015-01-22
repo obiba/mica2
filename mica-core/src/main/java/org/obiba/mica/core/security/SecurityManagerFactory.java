@@ -48,6 +48,7 @@ import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.DependsOn;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
@@ -55,6 +56,7 @@ import com.google.common.collect.ImmutableList;
 import static org.obiba.mica.core.security.AuthoritiesConstants.ADMIN;
 
 @Component
+@DependsOn("cacheConfiguration")
 public class SecurityManagerFactory implements FactoryBean<SecurityManager> {
 
   public static final String INI_REALM = "mica-ini-realm";
