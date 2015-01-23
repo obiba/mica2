@@ -149,6 +149,7 @@ public class PublishedDatasetVariablesSearchResource {
     MicaSearch.TaxonomiesCoverageDto.Builder builder = MicaSearch.TaxonomiesCoverageDto.newBuilder()//
       .setTotalCount(result.getVariableResultDto().getTotalCount()) //
       .setTotalHits(result.getVariableResultDto().getTotalHits()) //
+      .setQueryResult(result)
       .addAllTaxonomies(coverages);
 
     return builder.build();
