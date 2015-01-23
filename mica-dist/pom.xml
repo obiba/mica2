@@ -124,7 +124,7 @@
                     <property name="deb.version" value="${project.version}-b${buildNumber}"/>
                     <!-- Deploy deb file in deb repo -->
                     <copy file="target/mica2_${deb.version}_all.deb"
-                        todir="${obiba.deb.dir}/${mica-server.deploy.dir}"/>
+                        todir="${obiba.deb.dir}/${mica.deploy.dir}"/>
                   </target>
                 </configuration>
               </execution>
@@ -138,7 +138,7 @@
                   <target>
                     <!-- Deploy Mica Server package file in download repo -->
                     <copy file="target/mica-dist-${project.version}-dist.zip"
-                        tofile="${obiba.download.dir}/mica/${mica-server.deploy.dir}/mica2-${project.version}-dist.zip"/>
+                        tofile="${obiba.download.dir}/mica/${mica.deploy.dir}/mica2-${project.version}-dist.zip"/>
                   </target>
                 </configuration>
               </execution>

@@ -23,7 +23,7 @@
   </modules>
 
   <properties>
-    <mica-server.deploy.dir>unstable</mica-server.deploy.dir>
+    <mica.deploy.dir>unstable</mica.deploy.dir>
 
 
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
