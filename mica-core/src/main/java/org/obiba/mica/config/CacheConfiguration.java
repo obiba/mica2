@@ -16,7 +16,7 @@ import org.springframework.core.env.Environment;
 
 import com.codahale.metrics.MetricRegistry;
 
-@Configuration
+@Configuration("cacheConfiguration")
 @EnableCaching
 @AutoConfigureAfter(value = { MetricsConfiguration.class })
 public class CacheConfiguration {
@@ -37,10 +37,11 @@ public class CacheConfiguration {
   }
 
   @Bean
-  public EhCacheManagerFactoryBean cacheManager() {
+  public EhCacheManagerFactoryBean cacheManagerFactory() {
     log.debug("Starting Ehcache");
     EhCacheManagerFactoryBean factoryBean = new EhCacheManagerFactoryBean();
     factoryBean.setCacheManagerName("mica");
+
     return factoryBean;
   }
 
@@ -49,6 +50,7 @@ public class CacheConfiguration {
     log.debug("Starting Spring Cache");
     EhCacheCacheManager ehCacheManager = new EhCacheCacheManager();
     ehCacheManager.setCacheManager(cacheManager);
+
     return ehCacheManager;
   }
 }

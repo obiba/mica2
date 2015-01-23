@@ -3,7 +3,7 @@
 <configuration scan="true">
 
   <!-- console log config -->
-  <include resource="org/springframework/boot/logging/logback/basic.xml"/>
+  <include resource="org/springframework/boot/logging/logback/base.xml"/>
 
   <logger name="org.obiba" level="debug"/>
 

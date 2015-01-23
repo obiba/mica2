@@ -1,31 +1,22 @@
 package org.obiba.mica.config.metrics;
 
+import javax.inject.Inject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.stereotype.Component;
 
 /**
  * SpringBoot Actuator HealthIndicator check for the Database.
  */
-public class DatabaseHealthCheckIndicator extends HealthCheckIndicator {
+@Component
+public class DatabaseHealthIndicator extends HealthCheckIndicator {
 
-  public static final String DATABASE_HEALTH_INDICATOR = "database";
+  private static final Logger log = LoggerFactory.getLogger(DatabaseHealthIndicator.class);
 
-  private static final Logger log = LoggerFactory.getLogger(DatabaseHealthCheckIndicator.class);
-
+  @Inject
   private MongoTemplate mongoTemplate;
-
-  public DatabaseHealthCheckIndicator() {
-  }
-
-  public void setMongoTemplate(MongoTemplate mongoTemplate) {
-    this.mongoTemplate = mongoTemplate;
-  }
-
-  @Override
-  protected String getHealthCheckIndicatorName() {
-    return DATABASE_HEALTH_INDICATOR;
-  }
 
   @Override
   protected Result check() {

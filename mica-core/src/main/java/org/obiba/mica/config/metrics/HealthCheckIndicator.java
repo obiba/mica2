@@ -5,18 +5,17 @@ import java.util.Map;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.Status;
+
+import com.google.common.base.Strings;
 
 /**
  * A health indicator check for a component of your application
  */
-public abstract class HealthCheckIndicator implements HealthIndicator<Map<String, HealthCheckIndicator.Result>> {
+public abstract class HealthCheckIndicator implements HealthIndicator {
 
   private static final Result HEALTHY = new Result(true, null, null);
-
-  /**
-   * @return the name of the indicator
-   */
-  protected abstract String getHealthCheckIndicatorName();
 
   /**
    * Perform a check of the application component.
@@ -29,14 +28,27 @@ public abstract class HealthCheckIndicator implements HealthIndicator<Map<String
   protected abstract Result check();
 
   @Override
-  final public Map<String, Result> health() {
-    Map<String, Result> results = new LinkedHashMap<>();
+  final public Health health() {
     try {
-      results.put(getHealthCheckIndicatorName(), check());
+      return buildHealth(check());
     } catch(Exception e) {
-      results.put(getHealthCheckIndicatorName(), unhealthy(e));
+      return buildHealth(unhealthy(e));
     }
-    return results;
+  }
+
+  private Health buildHealth(Result result) {
+    Health.Builder builder = new Health.Builder().status(result.isHealthy() ? Status.UP : Status.UNKNOWN)
+      .withDetail("healthy", result.isHealthy());
+
+    if (!Strings.isNullOrEmpty(result.getMessage())){
+      builder.withDetail("message", result.getMessage());
+    }
+
+    if (!Strings.isNullOrEmpty(result.getException())) {
+      builder.withDetail("exception", result.getException());
+    }
+
+    return builder.build();
   }
 
   /**
