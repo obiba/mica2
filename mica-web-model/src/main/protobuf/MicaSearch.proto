@@ -264,6 +264,7 @@ message TaxonomiesCoverageDto {
   required int32 totalHits = 2;
   required int64 totalCount = 3;
   repeated string by = 4;
+  required JoinQueryResultDto queryResult = 5;
 }
 
 
