@@ -315,15 +315,24 @@ public abstract class AbstractDocumentQuery {
     aggregationTitleResolver.registerProviders(getAggregationMetaDataProviders());
     aggregationTitleResolver.refresh();
 
+    SearchRequestBuilder defaultRequestBuilder = client.prepareSearch(getSearchIndex()) //
+      .setTypes(getSearchType()) //
+      .setSearchType(SearchType.COUNT) //
+      .setQuery(QueryBuilders.matchAllQuery()) //
+      .setFrom(from) //
+      .setSize(size) //
+      .setNoFields().addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT));
+
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
-      .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
+      .setSearchType(SearchType.COUNT) //
       .setQuery(queryDtoParser.parse(queryDto)) //
       .setFrom(from) //
       .setSize(size) //
       .addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT));
 
     if(ignoreFields()) requestBuilder.setNoFields();
+
     SortBuilder sortBuilder = queryDtoParser.parseSort(queryDto);
     if(sortBuilder != null) requestBuilder.addSort(queryDtoParser.parseSort(queryDto));
 
@@ -336,19 +345,33 @@ public abstract class AbstractDocumentQuery {
     }
 
     aggregationYamlParser.getAggregations(getAggregationsDescription(), subAggregations)
-      .forEach(requestBuilder::addAggregation);
-    aggregationYamlParser.getAggregations(aggregationProperties).forEach(requestBuilder::addAggregation);
+      .forEach(agg -> {
+        requestBuilder.addAggregation(agg);
+        defaultRequestBuilder.addAggregation(agg);
+      });
+
+    aggregationYamlParser.getAggregations(aggregationProperties).forEach(agg -> {
+      requestBuilder.addAggregation(agg);
+      defaultRequestBuilder.addAggregation(agg);
+    });
 
     log.info("Request: {}", requestBuilder.toString());
 
     try {
-      SearchResponse response = requestBuilder.execute().actionGet();
+      List<SearchResponse> responses = Stream
+        .of(client.prepareMultiSearch().add(defaultRequestBuilder).add(requestBuilder).execute().actionGet())
+        .map(MultiSearchResponse::getResponses).flatMap((d) -> Stream.of(d)).map(MultiSearchResponse.Item::getResponse)
+        .collect(Collectors.toList());
+
+      SearchResponse defaultResponse = responses.get(0);
+      SearchResponse response = responses.get(1);
+
       log.info("Response: {}", response.toString());
       QueryResultDto.Builder builder = QueryResultDto.newBuilder().setTotalHits((int) response.getHits().getTotalHits());
 
       if(scope == DETAIL) processHits(builder, response.getHits(), scope, counts);
 
-      processAggregations(builder, null, response.getAggregations());
+      processAggregations(builder, defaultResponse.getAggregations(), response.getAggregations());
       resultDto = builder.build();
       return getResponseStudyIds(resultDto.getAggsList());
     } catch(IndexMissingException e) {
