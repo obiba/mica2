@@ -2,6 +2,7 @@ package org.obiba.mica.network.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import javax.validation.constraints.NotNull;
 
@@ -12,14 +13,16 @@ import org.obiba.mica.core.domain.Authorization;
 import org.obiba.mica.core.domain.Contact;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.file.Attachment;
+import org.obiba.mica.file.PersistableWithAttachments;
 import org.obiba.mica.study.domain.Study;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
 
 /**
  * A Network.
  */
-public class Network extends AbstractAuditableDocument implements AttachmentAware {
+public class Network extends AbstractAuditableDocument implements AttachmentAware, PersistableWithAttachments {
 
   private static final long serialVersionUID = -4271967393906681773L;
 
@@ -46,6 +49,8 @@ public class Network extends AbstractAuditableDocument implements AttachmentAwar
   private List<String> studyIds;
 
   private Authorization maelstromAuthorization;
+
+  private Attachment logo;
 
   //
   // Accessors
@@ -183,4 +188,23 @@ public class Network extends AbstractAuditableDocument implements AttachmentAwar
     return super.toStringHelper().add("name", name);
   }
 
+  public Attachment getLogo() {
+    return this.logo;
+  }
+
+  public void setLogo(Attachment attachment) {
+    this.logo = attachment;
+  }
+
+  @JsonIgnore
+  @Override
+  public Iterable<Attachment> getAllAttachments() {
+    return () -> Stream.concat(getAttachments().stream(), Stream.of(this.logo)).filter(a -> a != null).iterator();
+  }
+
+  @Override
+  public Attachment findAttachmentById(String attachmentId) {
+    return Stream.concat(getAttachments().stream(), Stream.of(this.logo))
+      .filter(a -> a != null && a.getId().equals(attachmentId)).findAny().orElse(null);
+  }
 }

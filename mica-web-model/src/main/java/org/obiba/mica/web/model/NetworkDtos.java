@@ -60,6 +60,10 @@ class NetworkDtos {
       builder.setMaelstromAuthorization(AuthorizationDtos.asDto(network.getMaelstromAuthorization()));
     }
 
+    if (network.getLogo() != null) {
+      builder.setLogo(attachmentDtos.asDto(network.getLogo()));
+    }
+
     return builder;
   }
 
@@ -92,6 +96,10 @@ class NetworkDtos {
 
     if(dto.hasMaelstromAuthorization())
       network.setMaelstromAuthorization(AuthorizationDtos.fromDto(dto.getMaelstromAuthorization()));
+
+    if(dto.hasLogo()) {
+      network.setLogo(attachmentDtos.fromDto(dto.getLogo()));
+    }
 
     return network;
   }

@@ -17,6 +17,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -49,6 +50,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
@@ -79,13 +81,18 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
 
   @Override
   public void importZip(InputStream inputStream, boolean publish) throws IOException {
-    StudyPackage studyPackage = new StudyPackage(inputStream);
+    final StudyPackage studyPackage = new StudyPackage(inputStream);
     if(studyPackage.study != null) {
       for(Map.Entry<String, ByteArrayInputStream> entry : studyPackage.attachments.entrySet()) {
         importStudyAttachment(studyPackage.study, entry.getKey(), entry.getValue());
       }
+
       importStudy(studyPackage.study, publish);
-      studyPackage.networks.forEach(net -> importNetwork(net, publish));
+
+      for(Network net: studyPackage.networks) {
+        importNetwork(net, publish, studyPackage);
+      }
+
       studyPackage.datasets.forEach(ds -> importDataset(ds, publish));
     }
   }
@@ -95,10 +102,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     Attachment attachment = getAttachment(study, attId);
     if(attachment == null) return;
 
-    TempFile tempFile = new TempFile();
-    tempFile.setId(attachment.getId());
-    tempFile.setName(attachment.getName());
-    tempFileService.addTempFile(tempFile, content);
+    saveTempFile(attachment, content);
   }
 
   private Attachment getAttachment(@NotNull Study study, @NotNull String attId) {
@@ -146,17 +150,44 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     }
   }
 
-  private void importNetwork(Network network, boolean publish) {
+  private void importNetwork(Network network, boolean publish, StudyPackage studyPackage) throws IOException{
+    Network updated;
+    List<Attachment> attachments = ImmutableList.copyOf(network.getAllAttachments());
+
     try {
       Network existing = networkService.findById(network.getId());
       network.getStudyIds().stream().filter(sid -> !existing.getStudyIds().contains(sid))
           .forEach(sid -> existing.getStudyIds().add(sid));
-      networkService.save(existing);
+      updated = existing;
     } catch(NoSuchNetworkException e) {
-      networkService.save(network);
+      updated = network;
     }
 
-    if(publish) networkService.publish(network.getId(), publish);
+    for(Map.Entry<String, ByteArrayInputStream> e: studyPackage.attachments.entrySet()) {
+      Optional<Attachment> attachmentOpt = attachments.stream().filter(a -> a.getId().equals(e.getKey())).findAny();
+
+      if(attachmentOpt.isPresent()) {
+        Attachment attachment = attachmentOpt.get();
+        saveTempFile(attachment, e.getValue());
+
+        if (attachment.getType().equals("logo")) {
+          updated.setLogo(attachment);
+        } else if(updated.findAttachmentById(attachment.getId()) == null) {
+          updated.addAttachment(attachment);
+        }
+      }
+    }
+
+    networkService.save(updated);
+
+    if(publish) networkService.publish(updated.getId(), publish);
+  }
+
+  private void saveTempFile(Attachment att, ByteArrayInputStream content) throws IOException {
+    TempFile tempFile = new TempFile();
+    tempFile.setId(att.getId());
+    tempFile.setName(att.getName());
+    tempFileService.addTempFile(tempFile, content);
   }
 
   private void importDataset(Dataset dataset, boolean publish) {
