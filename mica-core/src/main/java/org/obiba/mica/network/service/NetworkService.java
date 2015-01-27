@@ -17,6 +17,7 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.network.NoSuchNetworkException;
 import org.obiba.mica.network.domain.Network;
@@ -41,6 +42,9 @@ public class NetworkService {
   @Inject
   private EventBus eventBus;
 
+  @Inject
+  private GitService gitService;
+
   /**
    * Create or update provided {@link org.obiba.mica.network.domain.Network}.
    *
@@ -59,6 +63,8 @@ public class NetworkService {
         saved = network;
       }
     }
+
+    gitService.save(saved);
     networkRepository.save(saved);
     eventBus.post(new NetworkUpdatedEvent(saved));
   }

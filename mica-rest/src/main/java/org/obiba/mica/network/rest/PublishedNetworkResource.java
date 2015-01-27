@@ -12,11 +12,15 @@ package org.obiba.mica.network.rest;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.mica.file.rest.FileResource;
 import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -34,6 +38,9 @@ public class PublishedNetworkResource {
   private PublishedNetworkService publishedNetworkService;
 
   @Inject
+  private ApplicationContext applicationContext;
+
+  @Inject
   private Dtos dtos;
 
   private String id;
@@ -48,4 +55,12 @@ public class PublishedNetworkResource {
     return dtos.asDto(publishedNetworkService.findById(id));
   }
 
+  @Path("/file/{fileId}")
+  public FileResource study(@PathParam("fileId") String fileId) {
+    FileResource studyResource = applicationContext.getBean(FileResource.class);
+    studyResource.setPersistable(publishedNetworkService.findById(id));
+    studyResource.setFileId(fileId);
+
+    return studyResource;
+  }
 }

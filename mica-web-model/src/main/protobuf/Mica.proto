@@ -229,6 +229,7 @@ message NetworkDto {
   repeated string studyIds = 12;
   repeated StudySummaryDto studySummaries = 13;
   required bool published = 14;
+  optional AttachmentDto logo = 15;
   extensions 1000 to max;
 }
 

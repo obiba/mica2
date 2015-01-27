@@ -29,7 +29,7 @@ import org.obiba.git.command.AddDeleteFilesCommand;
 import org.obiba.git.command.GitCommandHandler;
 import org.obiba.git.command.ListFilesCommand;
 import org.obiba.git.command.ReadFileCommand;
-import org.obiba.mica.core.domain.AbstractGitPersistable;
+import org.obiba.mica.core.domain.Timestamped;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.PersistableWithAttachments;
 import org.obiba.mica.file.TempFile;
@@ -90,9 +90,8 @@ public class GitService {
       || FileUtils.fileExists(getCloneRepositoryPath(id).getAbsolutePath());
   }
 
-  public <TGitPersistable extends AbstractGitPersistable> void save(@NotNull @Valid TGitPersistable persistable) {
+  public <TGitPersistable extends Persistable<String> & Timestamped> void save(@NotNull @Valid TGitPersistable persistable) {
     try {
-
       persistable.setLastModifiedDate(DateTime.now());
 
       AddDeleteFilesCommand.Builder builder = new AddDeleteFilesCommand.Builder(getRepositoryPath(persistable.getId()),
@@ -118,7 +117,7 @@ public class GitService {
     }
   }
 
-  private <TGitPersistable extends AbstractGitPersistable> File serializePersistable(TGitPersistable persistable)
+  private <TGitPersistable extends Persistable<String> & Timestamped> File serializePersistable(TGitPersistable persistable)
       throws IOException {
     File jsonFile = File.createTempFile("mica", "json");
     jsonFile.deleteOnExit();
