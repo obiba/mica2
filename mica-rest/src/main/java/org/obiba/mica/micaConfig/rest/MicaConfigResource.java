@@ -19,9 +19,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.obiba.mica.micaConfig.MicaConfigService;
-import org.obiba.mica.micaConfig.OpalCredentialService;
-import org.obiba.mica.micaConfig.OpalService;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.micaConfig.service.OpalCredentialService;
+import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Opal;

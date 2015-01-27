@@ -19,9 +19,9 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
-import org.obiba.mica.micaConfig.AggregationInfo;
-import org.obiba.mica.micaConfig.AggregationsConfig;
-import org.obiba.mica.micaConfig.MicaConfigService;
+import org.obiba.mica.micaConfig.domain.AggregationInfo;
+import org.obiba.mica.micaConfig.domain.AggregationsConfig;
+import org.obiba.mica.micaConfig.service.AggregationsService;
 import org.obiba.mica.search.queries.AbstractDocumentQuery;
 import org.obiba.mica.search.queries.AbstractDocumentQuery.Mode;
 import org.obiba.mica.search.queries.DatasetQuery;
@@ -30,7 +30,6 @@ import org.obiba.mica.search.queries.StudyQuery;
 import org.obiba.mica.search.queries.VariableQuery;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.MicaSearch;
-import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -57,7 +56,7 @@ public class JoinQueryExecutor {
   }
 
   @Inject
-  private MicaConfigService micaConfigService;
+  private AggregationsService aggregationsService;
 
   @Inject
   private VariableQuery variableQuery;
@@ -171,11 +170,7 @@ public class JoinQueryExecutor {
     }
 
     JoinQueryResultDto.Builder builder = JoinQueryResultDto.newBuilder();
-    AggregationsConfig aggregationsConfig = micaConfigService.getConfig().getAggregations();
-
-    if (aggregationsConfig == null) {
-      aggregationsConfig = micaConfigService.getDefaultAggregationsConfig();
-    }
+    AggregationsConfig aggregationsConfig = aggregationsService.getAggregationsConfig();
 
     builder.setVariableResultDto(addAggregationTitles(variableQuery.getResultQuery(),
       aggregationsConfig.getVariableAggregations()));

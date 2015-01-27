@@ -1,6 +1,7 @@
-package org.obiba.mica.micaConfig;
+package org.obiba.mica.micaConfig.event;
 
 import org.obiba.mica.core.event.PersistableUpdatedEvent;
+import org.obiba.mica.micaConfig.domain.MicaConfig;
 
 public class MicaConfigUpdatedEvent extends PersistableUpdatedEvent<MicaConfig> {
 

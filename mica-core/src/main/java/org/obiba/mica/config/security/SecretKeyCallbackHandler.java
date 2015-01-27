@@ -18,7 +18,7 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 
-import org.obiba.mica.micaConfig.MicaConfigService;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.springframework.stereotype.Component;
 
 /**

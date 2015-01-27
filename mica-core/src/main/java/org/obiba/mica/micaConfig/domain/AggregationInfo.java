@@ -1,4 +1,4 @@
-package org.obiba.mica.micaConfig;
+package org.obiba.mica.micaConfig.domain;
 
 import org.obiba.mica.core.domain.LocalizedString;
 

@@ -1,88 +1,50 @@
 study:
 - id: methods-designs
-  title: {en: Study-study design}
+  title: {en: study design}
 - id: populations-recruitment-dataSources
-  title: {en: Study-recruitement datasource}
+  title: {en: recruitement datasource}
 - id: populations-selectionCriteria-countriesIso
-  title: {en: Study-country of residence}
+  title: {en: country of residence}
 - id: populations-selectionCriteria-ageMin
-  title: {en: Study-minimum age}
+  title: {en: minimum age}
 - id: populations-selectionCriteria-ageMax
-  title: {en: Study-maximum age}
+  title: {en: maximum age}
 - id: populations-selectionCriteria-gender
-  title: {en: Study-gender}
+  title: {en: gender}
 - id: populations-selectionCriteria-criteria
-  title: {en: Study-selection criteria}
+  title: {en: selection criteria}
 - id: numberOfParticipants-participant-number
-  title: {en: Study-target number of participants}
+  title: {en: target number of participants}
 - id: numberOfParticipants-sample-number
-  title: {en: Study-target number of participants with samples}
+  title: {en: target number of participants with samples}
 - id: methods-recruitments
-  title: {en: Study-recruitment target}
+  title: {en: recruitment target}
 - id: populations-recruitment-generalPopulationSources
-  title: {en: Study-general population sources}
+  title: {en: general population sources}
 - id: populations-dataCollectionEvents-dataSources
-  title: {en: Study-data sources}
+  title: {en: data sources}
 - id: access
-  title: {en: Study-access}
+  title: {en: access}
 - id: populations-dataCollectionEvents-bioSamples
-  title: {en: Study-bio-samples}
+  title: {en: bio-samples}
 - id: start
-  title: {en: Study-date start}
+  title: {en: date start}
 - id: end
-  title: {en: Study-date end}
+  title: {en: date end}
 - id: networkId
-  title: {en: network-network}
+  title: {en: network}
 variable:
-- id: attributes-Mlstr_area__Administrative_information-und
-  title: {en: dataset-administrative information}
-- id: attributes-Mlstr_area__Cognitive_psychological_measures-und
-  title: {en: dataset-cognitive psychological measures}
-- id: attributes-Mlstr_area__Diseases-und
-  title: {en: dataset-diseases}
-- id: attributes-Mlstr_area__End_of_life-und
-  title: {en: dataset-end of life}
-- id: attributes-Mlstr_area__Health_community_care_utilization-und
-  title: {en: dataset-health community care}
-- id: attributes-Mlstr_area__Health_status_functional_limitations-und
-  title: {en: dataset-health status}
-- id: attributes-Mlstr_area__Infancy_childhood-und
-  title: {en: dataset-infancy_childhood}
-- id: attributes-Mlstr_area__Laboratory_measures-und
-  title: {en: dataset-laboratory measures}
-- id: attributes-Mlstr_area__Lifestyle_behaviours-und
-  title: {en: dataset-lifestyle}
-- id: attributes-Mlstr_area__Medication_supplements-und
-  title: {en: dataset-medication}
-- id: attributes-Mlstr_area__Non_pharmacological_interventions-und
-  title: {en: dataset-non pharmacological interventions}
-- id: attributes-Mlstr_area__Physical_environment-und
-  title: {en: dataset-physical environment}
-- id: attributes-Mlstr_area__Physical_measures-und
-  title: {en: dataset-physical measures}
-- id: attributes-Mlstr_area__Reproduction-und
-  title: {en: dataset-reproduction}
-- id: attributes-Mlstr_area__Social_environment-und
-  title: {en: dataset-social environment}
-- id: attributes-Mlstr_area__Sociodemographic_economic_characteristics-und
-  title: {en: dataset-socio demographic and economic}
-- id: attributes-Mlstr_area__Symptoms_signs-und
-  title: {en: dataset-symptoms}
-- id: attributes-Mlstr_source__Source-und
-  title: {en: dataset-source}
-- id: attributes-Mlstr_target__Target-und
-  title: {en: dataset-target}
-- id: variableType
-  title: {en: dataset-variable type}
-- id: entityType
-  title: {en: dataset-entity type}
-- id: valueType
-  title: {en: dataset-value type}
 - id: studyIds
-  title: {en: Study-study}
-- id: occurrenceGroup
-  title: {en: dataset-occurrence group}
+  title: {en: study}
 - id: dceIds
-  title: {en: Study-data collection event}
+  title: {en: data collection event}
 - id: datasetId
-  title: {en: dataset-dataset}
+  title: {en: dataset}
+- id: variableType
+  title: {en: variable type}
+- id: entityType
+  title: {en: entity type}
+- id: valueType
+  title: {en: value type}
+- id: occurrenceGroup
+  title: {en: occurrence group}

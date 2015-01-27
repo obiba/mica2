@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 import javax.inject.Inject;
 
 import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.obiba.mica.micaConfig.MicaConfigService;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

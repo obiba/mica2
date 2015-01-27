@@ -6,11 +6,11 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.micaConfig.AggregationInfo;
-import org.obiba.mica.micaConfig.AggregationsConfig;
+import org.obiba.mica.micaConfig.domain.AggregationInfo;
+import org.obiba.mica.micaConfig.domain.AggregationsConfig;
 import org.obiba.mica.micaConfig.AuthType;
-import org.obiba.mica.micaConfig.MicaConfig;
-import org.obiba.mica.micaConfig.OpalCredential;
+import org.obiba.mica.micaConfig.domain.MicaConfig;
+import org.obiba.mica.micaConfig.domain.OpalCredential;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;

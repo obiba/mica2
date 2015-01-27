@@ -1,4 +1,4 @@
-package org.obiba.mica.micaConfig;
+package org.obiba.mica.micaConfig.service;
 
 import java.security.Key;
 
@@ -11,6 +11,10 @@ import org.apache.shiro.codec.Hex;
 import org.apache.shiro.crypto.AesCipherService;
 import org.apache.shiro.util.ByteSource;
 import org.obiba.mica.config.AggregationsConfiguration;
+import org.obiba.mica.micaConfig.domain.AggregationsConfig;
+import org.obiba.mica.micaConfig.domain.MicaConfig;
+import org.obiba.mica.micaConfig.repository.MicaConfigRepository;
+import org.obiba.mica.micaConfig.event.MicaConfigUpdatedEvent;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.annotation.CacheEvict;
@@ -36,10 +40,13 @@ public class MicaConfigService {
 
   private final AesCipherService cipherService = new AesCipherService();
 
-  public AggregationsConfig getDefaultAggregationsConfig() {
-    AggregationsConfig aggregationsConfig = new AggregationsConfig();
-    aggregationsConfig.setStudyAggregations(aggregationsConfiguration.getStudy());
-    aggregationsConfig.setVariableAggregations(aggregationsConfiguration.getVariable());
+  @NotNull
+  public AggregationsConfig getAggregationsConfig() {
+    AggregationsConfig aggregationsConfig = getConfig().getAggregations();
+
+    if (aggregationsConfig == null) {
+      aggregationsConfig = getDefaultAggregationsConfig();
+    }
 
     return aggregationsConfig;
   }
@@ -86,6 +93,14 @@ public class MicaConfigService {
 
   private byte[] getSecretKey() {
     return Hex.decode(getOrCreateMicaConfig().getSecretKey());
+  }
+
+  private AggregationsConfig getDefaultAggregationsConfig() {
+    AggregationsConfig aggregationsConfig = new AggregationsConfig();
+    aggregationsConfig.setStudyAggregations(aggregationsConfiguration.getStudy());
+    aggregationsConfig.setVariableAggregations(aggregationsConfiguration.getVariable());
+
+    return aggregationsConfig;
   }
 
 }

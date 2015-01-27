@@ -1,4 +1,4 @@
-package org.obiba.mica.micaConfig;
+package org.obiba.mica.micaConfig.service;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -16,6 +16,10 @@ import javax.validation.constraints.NotNull;
 
 import org.bouncycastle.openssl.PEMWriter;
 import org.obiba.mica.dataset.service.KeyStoreService;
+import org.obiba.mica.micaConfig.AuthType;
+import org.obiba.mica.micaConfig.NoSuchOpalCredential;
+import org.obiba.mica.micaConfig.domain.OpalCredential;
+import org.obiba.mica.micaConfig.repository.OpalCredentialRepository;
 import org.obiba.security.KeyStoreManager;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;

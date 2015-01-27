@@ -5,9 +5,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
-import org.obiba.mica.micaConfig.AggregationsConfig;
-import org.obiba.mica.micaConfig.MicaConfig;
-import org.obiba.mica.micaConfig.MicaConfigService;
+import org.obiba.mica.micaConfig.domain.AggregationsConfig;
+import org.obiba.mica.micaConfig.domain.MicaConfig;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -24,11 +24,7 @@ public class AggregationsConfigResource {
 
   @GET
   public Mica.AggregationsConfigDto getAggregationsConfig() {
-    AggregationsConfig aggregations = micaConfigService.getConfig().getAggregations();
-
-    if(aggregations == null) {
-      return null;
-    }
+    AggregationsConfig aggregations = micaConfigService.getAggregationsConfig();
 
     return  dtos.asDto(aggregations);
   }
