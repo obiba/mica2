@@ -21,7 +21,7 @@ import javax.inject.Inject;
 
 import org.obiba.mica.micaConfig.domain.AggregationInfo;
 import org.obiba.mica.micaConfig.domain.AggregationsConfig;
-import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.micaConfig.service.AggregationsService;
 import org.obiba.mica.search.queries.AbstractDocumentQuery;
 import org.obiba.mica.search.queries.AbstractDocumentQuery.Mode;
 import org.obiba.mica.search.queries.DatasetQuery;
@@ -56,7 +56,7 @@ public class JoinQueryExecutor {
   }
 
   @Inject
-  private MicaConfigService micaConfigService;
+  private AggregationsService aggregationsService;
 
   @Inject
   private VariableQuery variableQuery;
@@ -170,7 +170,7 @@ public class JoinQueryExecutor {
     }
 
     JoinQueryResultDto.Builder builder = JoinQueryResultDto.newBuilder();
-    AggregationsConfig aggregationsConfig = micaConfigService.getAggregationsConfig();
+    AggregationsConfig aggregationsConfig = aggregationsService.getAggregationsConfig();
 
     builder.setVariableResultDto(addAggregationTitles(variableQuery.getResultQuery(),
       aggregationsConfig.getVariableAggregations()));
