@@ -19,7 +19,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.obiba.mica.core.domain.AttributeKey;
-import org.obiba.mica.micaConfig.OpalService;
+import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Term;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
@@ -46,21 +46,22 @@ public class TaxonomyAggregationMetaDataProvider implements AggregationMetaDataP
 
   @Override
   public void refresh() {
-    // TODO wait until OpalService caches taxonomies
+    getTaxonomies();
   }
 
   public MetaData getTitle(String aggregation, String termKey, String locale) {
     Optional<Vocabulary> vocabulary = Optional.ofNullable(cache.get(aggregation));
-    if (!vocabulary.isPresent()) {
+    if(!vocabulary.isPresent()) {
       vocabulary = getVocabulary(aggregation);
-      if (vocabulary.isPresent()) cache.put(aggregation, vocabulary.get());
+      if(vocabulary.isPresent()) cache.put(aggregation, vocabulary.get());
     }
 
-    if (vocabulary.isPresent()) {
+    if(vocabulary.isPresent()) {
       Optional<Term> term = getTerm(vocabulary.get(), termKey);
-      if (term.isPresent()) {
+      if(term.isPresent()) {
         Term t = term.get();
-        return MetaData.newBuilder().title(t.getTitle().get(locale)).description(t.getDescription().get(locale)).build();
+        return MetaData.newBuilder().title(t.getTitle().get(locale)).description(t.getDescription().get(locale))
+          .build();
       }
     }
 
@@ -74,19 +75,18 @@ public class TaxonomyAggregationMetaDataProvider implements AggregationMetaDataP
     String targetVocabulary = attrKey.getName();
 
     return taxonomies.stream() //
-        .filter(taxonomy -> !Strings.isNullOrEmpty(targetTaxonomy) && taxonomy.getName().equals(targetTaxonomy)) //
-        .map(Taxonomy::getVocabularies) //
-        .flatMap((v) -> v.stream()) //
-        .filter(vocabulary -> vocabulary.getName().equals(targetVocabulary)) //
-        .findFirst();
+      .filter(taxonomy -> !Strings.isNullOrEmpty(targetTaxonomy) && taxonomy.getName().equals(targetTaxonomy)) //
+      .map(Taxonomy::getVocabularies) //
+      .flatMap((v) -> v.stream()) //
+      .filter(vocabulary -> vocabulary.getName().equals(targetVocabulary)) //
+      .findFirst();
   }
 
   private Optional<Term> getTerm(Vocabulary vocabulary, String key) {
-    if (vocabulary == null) return null;
+    if(vocabulary == null) return null;
 
     return vocabulary.getTerms().stream() //
-        .filter(term -> term.getName().equals(key))
-        .findFirst(); //
+      .filter(term -> term.getName().equals(key)).findFirst(); //
   }
 
   protected List<Taxonomy> getTaxonomies() {

@@ -1,9 +1,10 @@
-package org.obiba.mica.micaConfig;
+package org.obiba.mica.micaConfig.domain;
 
 import java.util.Arrays;
 import java.util.Objects;
 
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
+import org.obiba.mica.micaConfig.AuthType;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
@@ -16,19 +17,12 @@ public class OpalCredential extends AbstractAuditableDocument {
 
   private AuthType authType;
 
-  protected OpalCredential() {
-    super();
-  }
-
   public OpalCredential(String opalUrl, AuthType authType) {
-    super();
     setId(opalUrl);
     this.authType = authType;
   }
 
   public OpalCredential(String opalUrl, AuthType authType, String username, String password) {
-    super();
-
     if (authType == AuthType.CERTIFICATE && (username != null || password != null)) {
       throw new IllegalArgumentException();
     } else if (authType == AuthType.USERNAME && (username == null || password == null)) {

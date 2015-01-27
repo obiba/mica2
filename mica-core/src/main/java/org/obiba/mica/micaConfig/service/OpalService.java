@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.micaConfig;
+package org.obiba.mica.micaConfig.service;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -26,6 +26,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.obiba.magma.support.Initialisables;
 import org.obiba.mica.dataset.service.KeyStoreService;
+import org.obiba.mica.micaConfig.AuthType;
+import org.obiba.mica.micaConfig.domain.OpalCredential;
 import org.obiba.opal.core.cfg.NoSuchTaxonomyException;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.rest.client.magma.OpalJavaClient;

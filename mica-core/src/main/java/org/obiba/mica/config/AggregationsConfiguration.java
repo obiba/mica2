@@ -2,7 +2,7 @@ package org.obiba.mica.config;
 
 import java.util.List;
 
-import org.obiba.mica.micaConfig.AggregationInfo;
+import org.obiba.mica.micaConfig.domain.AggregationInfo;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(locations = "classpath:/mica-aggregations.yml")

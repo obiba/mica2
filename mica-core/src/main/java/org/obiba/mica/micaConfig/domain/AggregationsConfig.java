@@ -1,4 +1,4 @@
-package org.obiba.mica.micaConfig;
+package org.obiba.mica.micaConfig.domain;
 
 import java.util.List;
 

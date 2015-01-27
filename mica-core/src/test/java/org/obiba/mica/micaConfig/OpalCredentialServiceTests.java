@@ -10,6 +10,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.obiba.mica.dataset.service.KeyStoreService;
+import org.obiba.mica.micaConfig.domain.OpalCredential;
+import org.obiba.mica.micaConfig.repository.OpalCredentialRepository;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.micaConfig.service.OpalCredentialService;
 import org.obiba.security.KeyStoreManager;
 
 import static org.hamcrest.core.Is.is;

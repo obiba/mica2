@@ -29,7 +29,7 @@ import org.elasticsearch.search.SearchHits;
 import org.obiba.mica.core.domain.AttributeKey;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.search.VariableIndexerImpl;
-import org.obiba.mica.micaConfig.OpalService;
+import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.DatasetIdProvider;
 import org.obiba.mica.search.aggregations.AggregationMetaDataProvider;

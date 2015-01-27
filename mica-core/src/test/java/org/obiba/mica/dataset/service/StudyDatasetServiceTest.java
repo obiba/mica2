@@ -15,7 +15,7 @@ import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.StudyDatasetRepository;
 import org.obiba.mica.dataset.domain.StudyDataset;
-import org.obiba.mica.micaConfig.OpalService;
+import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.StudyService;
 

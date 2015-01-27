@@ -4,7 +4,7 @@ import java.util.Locale;
 
 import javax.inject.Inject;
 
-import org.obiba.mica.micaConfig.MicaConfigService;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.springframework.stereotype.Component;
 
 @Component

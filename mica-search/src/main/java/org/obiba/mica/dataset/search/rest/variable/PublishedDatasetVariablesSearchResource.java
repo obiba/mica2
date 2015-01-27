@@ -31,7 +31,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.core.domain.AttributeKey;
-import org.obiba.mica.micaConfig.OpalService;
+import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.search.rest.QueryDtoHelper;
 import org.obiba.mica.web.model.Dtos;
