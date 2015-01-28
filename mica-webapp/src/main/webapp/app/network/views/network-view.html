@@ -47,15 +47,16 @@
               <localized value="network.description" lang="tab.lang"></localized>
             </td>
           </tr>
+          <tr>
+            <td translate>network.logo</td>
+            <td>
+              <img ng-show="network.logo" ng-src="ws/network/{{network.id}}/file/{{network.logo.id}}/_download"/>
+            </td>
+          </tr>
           </tbody>
         </table>
-
         <attributes-list attributes="network.attributes"></attributes-list>
-
       </div>
-
     </tab>
   </tabset>
-
-
 </div>

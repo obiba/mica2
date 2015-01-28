@@ -28,12 +28,17 @@ mica.network
 
     }])
 
-  .controller('NetworkEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', 'NetworkResource', 'DraftNetworksResource', 'NetworkPublicationResource', 'MicaConfigResource', 'FormServerValidation',
-
-    function ($rootScope, $scope, $routeParams, $log, $locale, $location, NetworkResource, DraftNetworksResource, NetworkPublicationResource, MicaConfigResource, FormServerValidation) {
-
+  .controller('NetworkEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location',
+    'NetworkResource', 'DraftNetworksResource', 'NetworkPublicationResource', 'MicaConfigResource',
+    'FormServerValidation',
+    function ($rootScope, $scope, $routeParams, $log, $locale, $location, NetworkResource, DraftNetworksResource,
+              NetworkPublicationResource, MicaConfigResource, FormServerValidation) {
+      $scope.files = [];
       $scope.network = $routeParams.id ?
-        NetworkResource.get({id: $routeParams.id}) : {published: false, 'obiba.mica.NetworkDto.type': {} };
+        NetworkResource.get({id: $routeParams.id}, function(response) {
+          $scope.files = response.logo ? [response.logo] : [];
+          return response;
+        }) : {published: false, 'obiba.mica.NetworkDto.type': {} };
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
@@ -43,6 +48,12 @@ mica.network
       });
 
       $scope.save = function () {
+        $scope.network.logo = $scope.files.length > 0 ? $scope.files[0] : null;
+
+        if(!$scope.network.logo) { //protobuf doesnt like null values
+          delete $scope.network.logo;
+        }
+
         if (!$scope.form.$valid) {
           $scope.form.saveAttempted = true;
           return;
@@ -78,7 +89,6 @@ mica.network
       var saveErrorHandler = function (response) {
         FormServerValidation.error(response, $scope.form, $scope.languages);
       };
-
     }])
 
   .controller('NetworkViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', 'NetworkResource', 'NetworkPublicationResource', 'MicaConfigResource',
