@@ -18,6 +18,7 @@ message StudySummaryDto {
   repeated LocalizedStringDto objectives = 9;
   repeated string dataSources = 10;
   repeated PopulationSummaryDto populationSummaries = 11;
+  required bool published = 12;
   extensions 1000 to max;
 }
 

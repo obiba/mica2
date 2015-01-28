@@ -37,7 +37,15 @@ class StudySummaryDtos {
 
   @NotNull
   public Mica.StudySummaryDto.Builder asDtoBuilder(@NotNull Study study) {
+    StudyState studyState = studyService.findStateById(study.getId());
+
+    return asDtoBuilder(study, studyState);
+  }
+
+  @NotNull
+  private Mica.StudySummaryDto.Builder asDtoBuilder(@NotNull Study study, @NotNull StudyState studyState) {
     Mica.StudySummaryDto.Builder builder = Mica.StudySummaryDto.newBuilder();
+    builder.setPublished(studyState.isPublished());
 
     builder.setId(study.getId()) //
         .setTimestamps(TimestampsDtos.asDto(study)) //
@@ -71,6 +79,7 @@ class StudySummaryDtos {
       populations.forEach(population -> builder.addPopulationSummaries(asDto(population)));
     }
     builder.addAllCountries(countries);
+
     return builder;
   }
 
@@ -122,13 +131,16 @@ class StudySummaryDtos {
       builder = asDtoBuilder(study);
     }
 
+    builder.setPublished(studyState.isPublished());
+
     return builder.setExtension(Mica.StudyStateDto.state, stateBuilder.build()).build();
   }
 
   Mica.StudySummaryDto asDto(String studyId) {
     StudyState studyState = studyService.findStateById(studyId);
+
     if(studyState.isPublished()) {
-      return asDto(publishedStudyService.findById(studyId));
+      return asDtoBuilder(publishedStudyService.findById(studyId), studyState).build();
     }
 
     return asDto(studyState);
