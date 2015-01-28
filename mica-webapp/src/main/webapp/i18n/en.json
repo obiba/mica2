@@ -462,7 +462,8 @@
     "general-info": "General Information",
     "description" : "Description",
     "index": "Index",
-    "add-study": "Add Study"
+    "add-study": "Add Study",
+    "logo": "Logo"
   },
   "name": "Name",
   "value": "Value",
