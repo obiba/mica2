@@ -31,6 +31,7 @@ import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.NumberOfParticipants;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.service.StudyService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -43,6 +44,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 
 import com.google.common.eventbus.EventBus;
 
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.obiba.mica.assertj.Assertions.assertThat;
 import static org.obiba.mica.core.domain.LocalizedString.en;
@@ -62,11 +64,15 @@ public class StudyDtosTest {
   @Inject
   private Dtos dtos;
 
+  @Inject
+  private StudyService studyService;
+
   @Before
   public void before() {
     MicaConfig config = new MicaConfig();
     config.setLocales(Arrays.asList(Locale.ENGLISH, Locale.FRENCH));
     when(micaConfigService.getConfig()).thenReturn(config);
+    when(studyService.findStateById(anyString())).thenReturn(new StudyState());
   }
 
   @Test
