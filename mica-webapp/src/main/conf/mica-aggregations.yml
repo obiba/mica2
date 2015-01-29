@@ -1,3 +1,6 @@
+network:
+- id: networkId
+  title: {en: Network}
 study:
 - id: methods-designs
   title: {en: Study design}
@@ -31,8 +34,6 @@ study:
   title: {en: Date start}
 - id: end
   title: {en: Date end}
-- id: networkId
-  title: {en: Network}
 variable:
 - id: studyIds
   title: {en: Study}

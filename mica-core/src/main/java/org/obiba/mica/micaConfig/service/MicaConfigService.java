@@ -97,7 +97,9 @@ public class MicaConfigService {
 
   private AggregationsConfig getDefaultAggregationsConfig() {
     AggregationsConfig aggregationsConfig = new AggregationsConfig();
+    aggregationsConfig.setNetworkAggregations(aggregationsConfiguration.getNetwork());
     aggregationsConfig.setStudyAggregations(aggregationsConfiguration.getStudy());
+    aggregationsConfig.setDatasetAggregations(aggregationsConfiguration.getDataset());
     aggregationsConfig.setVariableAggregations(aggregationsConfiguration.getVariable());
 
     return aggregationsConfig;
