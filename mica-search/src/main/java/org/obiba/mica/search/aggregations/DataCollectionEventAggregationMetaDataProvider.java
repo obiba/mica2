@@ -44,7 +44,8 @@ public class DataCollectionEventAggregationMetaDataProvider implements Aggregati
 
   public MetaData getTitle(String aggregation, String termKey, String locale) {
     return "dceIds".equals(aggregation) && cache.containsKey(termKey)
-      ? MetaData.newBuilder().title(cache.get(termKey).getMoniker(locale)).description("").build()
+      ? MetaData.newBuilder().title(cache.get(termKey).getTitle(locale)).description(
+      cache.get(termKey).getDescription(locale)).build()
       : null;
   }
 
@@ -57,7 +58,12 @@ public class DataCollectionEventAggregationMetaDataProvider implements Aggregati
       return new Builder();
     }
 
-    public String getMoniker(String locale) {
+    public String getTitle(String locale) {
+      return String.format("%s:%s:%s", study.getAcronym().get(locale), population.getId(),
+        dataCollectionEvent.getId());
+    }
+
+    public String getDescription(String locale) {
       return String.format("%s:%s:%s", study.getAcronym().get(locale), population.getName().get(locale),
         dataCollectionEvent.getName().get(locale));
     }

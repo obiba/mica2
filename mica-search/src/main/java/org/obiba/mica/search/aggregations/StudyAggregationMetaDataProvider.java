@@ -16,15 +16,20 @@ public class StudyAggregationMetaDataProvider implements AggregationMetaDataProv
   @Inject
   PublishedStudyService publishedStudyService;
 
-  private Map<String, LocalizedString> cache;
+  private Map<String, LocalizedString> cacheTitles;
+
+  private Map<String, LocalizedString> cacheDescriptions;
 
   public void refresh() {
-    cache = publishedStudyService.findAll().stream().collect(Collectors.toMap(Study::getId, Study::getName));
+    cacheTitles = publishedStudyService.findAll().stream().collect(Collectors.toMap(Study::getId, Study::getAcronym));
+    cacheDescriptions = publishedStudyService.findAll().stream()
+      .collect(Collectors.toMap(Study::getId, Study::getName));
   }
 
   public MetaData getTitle(String aggregation, String termKey, String locale) {
-    return "studyIds".equals(aggregation) && cache.containsKey(termKey)
-      ? MetaData.newBuilder().title(cache.get(termKey).get(locale)).description("").build()
+    return "studyIds".equals(aggregation) && cacheTitles.containsKey(termKey)
+      ? MetaData.newBuilder().title(cacheTitles.get(termKey).get(locale))
+      .description(cacheDescriptions.get(termKey).get(locale)).build()
       : null;
   }
 

@@ -1,50 +1,50 @@
 study:
 - id: methods-designs
-  title: {en: study design}
+  title: {en: Study design}
 - id: populations-recruitment-dataSources
-  title: {en: recruitement datasource}
+  title: {en: Recruitement datasource}
 - id: populations-selectionCriteria-countriesIso
-  title: {en: country of residence}
+  title: {en: Country of residence}
 - id: populations-selectionCriteria-ageMin
-  title: {en: minimum age}
+  title: {en: Minimum age}
 - id: populations-selectionCriteria-ageMax
-  title: {en: maximum age}
+  title: {en: Maximum age}
 - id: populations-selectionCriteria-gender
-  title: {en: gender}
+  title: {en: Gender}
 - id: populations-selectionCriteria-criteria
-  title: {en: selection criteria}
+  title: {en: Selection criteria}
 - id: numberOfParticipants-participant-number
-  title: {en: target number of participants}
+  title: {en: Target number of participants}
 - id: numberOfParticipants-sample-number
-  title: {en: target number of participants with samples}
+  title: {en: Target number of participants with samples}
 - id: methods-recruitments
-  title: {en: recruitment target}
+  title: {en: Recruitment target}
 - id: populations-recruitment-generalPopulationSources
-  title: {en: general population sources}
+  title: {en: General population sources}
 - id: populations-dataCollectionEvents-dataSources
-  title: {en: data sources}
+  title: {en: Data sources}
 - id: access
-  title: {en: access}
+  title: {en: Access}
 - id: populations-dataCollectionEvents-bioSamples
-  title: {en: bio-samples}
+  title: {en: Bio-samples}
 - id: start
-  title: {en: date start}
+  title: {en: Date start}
 - id: end
-  title: {en: date end}
+  title: {en: Date end}
 - id: networkId
-  title: {en: network}
+  title: {en: Network}
 variable:
 - id: studyIds
-  title: {en: study}
+  title: {en: Study}
 - id: dceIds
-  title: {en: data collection event}
+  title: {en: Data collection event}
 - id: datasetId
-  title: {en: dataset}
-- id: variableType
-  title: {en: variable type}
-- id: entityType
-  title: {en: entity type}
-- id: valueType
-  title: {en: value type}
-- id: occurrenceGroup
-  title: {en: occurrence group}
+  title: {en: Dataset}
+#- id: variableType
+#  title: {en: Variable type}
+#- id: entityType
+#  title: {en: Entity type}
+#- id: valueType
+#  title: {en: Value type}
+#- id: occurrenceGroup
+#  title: {en: Occurrence group}

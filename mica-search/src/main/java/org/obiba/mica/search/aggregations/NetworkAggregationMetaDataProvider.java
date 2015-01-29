@@ -16,15 +16,21 @@ public class NetworkAggregationMetaDataProvider implements AggregationMetaDataPr
   @Inject
   PublishedNetworkService publishedNetworkService;
 
-  private Map<String, LocalizedString> cache;
+  private Map<String, LocalizedString> cacheTitles;
+
+  private Map<String, LocalizedString> cacheDescriptions;
 
   public void refresh() {
-    cache = publishedNetworkService.findAll().stream().collect(Collectors.toMap(Network::getId, Network::getName));
+    cacheTitles = publishedNetworkService.findAll().stream()
+      .collect(Collectors.toMap(Network::getId, Network::getAcronym));
+    cacheDescriptions = publishedNetworkService.findAll().stream()
+      .collect(Collectors.toMap(Network::getId, Network::getName));
   }
 
   public MetaData getTitle(String aggregation, String termKey, String locale) {
-    return "networkId".equals(aggregation) && cache.containsKey(termKey)
-      ? MetaData.newBuilder().title(cache.get(termKey).get(locale)).description("").build()
+    return "networkId".equals(aggregation) && cacheTitles.containsKey(termKey)
+      ? MetaData.newBuilder().title(cacheTitles.get(termKey).get(locale))
+      .description(cacheDescriptions.get(termKey).get(locale)).build()
       : null;
   }
 
