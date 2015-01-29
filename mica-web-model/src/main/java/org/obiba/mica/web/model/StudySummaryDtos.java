@@ -13,6 +13,7 @@ import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
+import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.StudyService;
 import org.springframework.stereotype.Component;
@@ -33,6 +34,9 @@ class StudySummaryDtos {
   private PublishedStudyService publishedStudyService;
 
   @Inject
+  private PublishedDatasetVariableService datasetVariableService;
+
+  @Inject
   private StudyService studyService;
 
   @NotNull
@@ -51,7 +55,8 @@ class StudySummaryDtos {
         .setTimestamps(TimestampsDtos.asDto(study)) //
         .addAllName(localizedStringDtos.asDto(study.getName())) //
         .addAllAcronym(localizedStringDtos.asDto(study.getAcronym())) //
-        .addAllObjectives(localizedStringDtos.asDto(study.getObjectives()));
+        .addAllObjectives(localizedStringDtos.asDto(study.getObjectives()))
+        .setVariables(studyState.isPublished() ? datasetVariableService.getCountByStudyId(study.getId()) : 0);
 
     if(study.getLogo() != null) builder.setLogo(attachmentDtos.asDto(study.getLogo()));
 
