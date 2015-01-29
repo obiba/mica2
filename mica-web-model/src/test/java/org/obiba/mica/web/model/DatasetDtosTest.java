@@ -21,16 +21,17 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.obiba.mica.config.AggregationsConfiguration;
 import org.obiba.mica.config.JsonConfiguration;
-import org.obiba.mica.dataset.domain.HarmonizationDataset;
-import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.StudyTable;
+import org.obiba.mica.dataset.domain.HarmonizationDataset;
+import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.study.StudyRepository;
+import org.obiba.mica.study.domain.StudyState;
+import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.StudyService;
-import org.obiba.mica.study.domain.StudyState;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -140,6 +141,11 @@ public class DatasetDtosTest {
     @Bean
     public MicaConfigService micaConfigService() {
       return Mockito.mock(MicaConfigService.class);
+    }
+
+    @Bean
+    public PublishedDatasetVariableService datasetVariableService() {
+      return Mockito.mock(PublishedDatasetVariableService.class);
     }
 
     @Bean
