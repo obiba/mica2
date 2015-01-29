@@ -77,12 +77,16 @@ public class JoinQueryExecutor {
     return query(type, joinQueryDto, null, DIGEST, Mode.COVERAGE);
   }
 
-  public JoinQueryResultDto listQuery(QueryType type, MicaSearch.QueryDto queryDto , String locale) throws IOException {
+  public JoinQueryResultDto listQuery(QueryType type, MicaSearch.QueryDto queryDto, String locale) throws IOException {
     JoinQueryDto joinQueryDto = createJoinQueryByType(type, queryDto);
-    variableQuery.initialize(joinQueryDto.hasVariableQueryDto() ? joinQueryDto.getVariableQueryDto() : null, locale, Mode.SEARCH);
-    datasetQuery.initialize(joinQueryDto.hasDatasetQueryDto() ? joinQueryDto.getDatasetQueryDto() : null, locale, Mode.SEARCH);
-    studyQuery.initialize(joinQueryDto.hasStudyQueryDto() ? joinQueryDto.getStudyQueryDto() : null, locale, Mode.SEARCH);
-    networkQuery.initialize(joinQueryDto.hasNetworkQueryDto() ? joinQueryDto.getNetworkQueryDto() : null, locale, Mode.SEARCH);
+    variableQuery
+      .initialize(joinQueryDto.hasVariableQueryDto() ? joinQueryDto.getVariableQueryDto() : null, locale, Mode.SEARCH);
+    datasetQuery
+      .initialize(joinQueryDto.hasDatasetQueryDto() ? joinQueryDto.getDatasetQueryDto() : null, locale, Mode.SEARCH);
+    studyQuery
+      .initialize(joinQueryDto.hasStudyQueryDto() ? joinQueryDto.getStudyQueryDto() : null, locale, Mode.SEARCH);
+    networkQuery
+      .initialize(joinQueryDto.hasNetworkQueryDto() ? joinQueryDto.getNetworkQueryDto() : null, locale, Mode.SEARCH);
 
     execute(type, DETAIL, CountStatsData.newBuilder());
 
@@ -121,26 +125,28 @@ public class JoinQueryExecutor {
   }
 
   private JoinQueryResultDto query(QueryType type, JoinQueryDto joinQueryDto, CountStatsData.Builder countBuilder,
-      AbstractDocumentQuery.Scope scope, AbstractDocumentQuery.Mode mode) throws IOException {
+    AbstractDocumentQuery.Scope scope, AbstractDocumentQuery.Mode mode) throws IOException {
     DatasetIdProvider datasetIdProvider = new DatasetIdProvider();
     String locale = joinQueryDto.getLocale();
 
-    variableQuery.initialize(joinQueryDto.hasVariableQueryDto() ? joinQueryDto.getVariableQueryDto() : null, locale, mode);
+    variableQuery
+      .initialize(joinQueryDto.hasVariableQueryDto() ? joinQueryDto.getVariableQueryDto() : null, locale, mode);
     datasetQuery.initialize(joinQueryDto.hasDatasetQueryDto() ? joinQueryDto.getDatasetQueryDto() : null, locale, mode);
     studyQuery.initialize(joinQueryDto.hasStudyQueryDto() ? joinQueryDto.getStudyQueryDto() : null, locale, mode);
     networkQuery.initialize(joinQueryDto.hasNetworkQueryDto() ? joinQueryDto.getNetworkQueryDto() : null, locale, mode);
 
-    boolean queriesHaveFilters = Stream.of(variableQuery, datasetQuery, studyQuery, networkQuery)
-        .filter(AbstractDocumentQuery::hasQueryFilters).collect(Collectors.toList()).size() > 0;
+    boolean queriesHaveFilters =
+      Stream.of(variableQuery, datasetQuery, studyQuery, networkQuery).filter(AbstractDocumentQuery::hasQueryFilters)
+        .collect(Collectors.toList()).size() > 0;
 
-    if (queriesHaveFilters) {
+    if(queriesHaveFilters) {
       variableQuery.setDatasetIdProvider(datasetIdProvider);
       datasetQuery.setDatasetIdProvider(datasetIdProvider);
 
       List<String> joinedIds = executeJoin(type);
       CountStatsData countStats = countBuilder != null ? getCountStatsData(type) : null;
 
-      if (joinedIds != null && joinedIds.size() > 0) {
+      if(joinedIds != null && joinedIds.size() > 0) {
         getDocumentQuery(type).query(joinedIds, countStats, scope);
         // need to update dataset and variable and redo agg query
         if(type == QueryType.VARIABLE) {
@@ -172,32 +178,36 @@ public class JoinQueryExecutor {
     JoinQueryResultDto.Builder builder = JoinQueryResultDto.newBuilder();
     AggregationsConfig aggregationsConfig = aggregationsService.getAggregationsConfig();
 
-    builder.setVariableResultDto(addAggregationTitles(variableQuery.getResultQuery(),
-      aggregationsConfig.getVariableAggregations()));
+    builder.setVariableResultDto(
+      addAggregationTitles(variableQuery.getResultQuery(), aggregationsConfig.getVariableAggregations()));
 
     if(datasetQuery.getResultQuery() != null) {
-      builder.setDatasetResultDto(datasetQuery.getResultQuery());
+      builder.setDatasetResultDto(
+        addAggregationTitles(datasetQuery.getResultQuery(), aggregationsConfig.getDatasetAggregations()));
     }
 
-    builder.setStudyResultDto(addAggregationTitles(studyQuery.getResultQuery(),
-      aggregationsConfig.getStudyAggregations()));
+    builder
+      .setStudyResultDto(addAggregationTitles(studyQuery.getResultQuery(), aggregationsConfig.getStudyAggregations()));
 
     if(networkQuery.getResultQuery() != null) {
-      builder.setNetworkResultDto(networkQuery.getResultQuery());
+      builder.setNetworkResultDto(
+        addAggregationTitles(networkQuery.getResultQuery(), aggregationsConfig.getNetworkAggregations()));
     }
 
     return builder.build();
   }
 
-  private MicaSearch.QueryResultDto addAggregationTitles(MicaSearch.QueryResultDto queryResultDto, List<AggregationInfo> aggregationsList) {
-    if (queryResultDto != null) {
-      final MicaSearch.QueryResultDto.Builder builder = MicaSearch.QueryResultDto.newBuilder().mergeFrom(queryResultDto);
+  private MicaSearch.QueryResultDto addAggregationTitles(MicaSearch.QueryResultDto queryResultDto,
+    List<AggregationInfo> aggregationsList) {
+    if(queryResultDto != null) {
+      final MicaSearch.QueryResultDto.Builder builder = MicaSearch.QueryResultDto.newBuilder()
+        .mergeFrom(queryResultDto);
       List<MicaSearch.AggregationResultDto.Builder> builders = ImmutableList.copyOf(builder.getAggsBuilderList());
       builder.clearAggs();
 
       aggregationsList.forEach(a -> {
         boolean found = false;
-        for(MicaSearch.AggregationResultDto.Builder b: builders) {
+        for(MicaSearch.AggregationResultDto.Builder b : builders) {
           if(b.getAggregation().equals(a.getId())) {
             b.addAllTitle(dtos.asDto(a.getTitle()));
             builder.addAggs(b.build());
@@ -206,9 +216,10 @@ public class JoinQueryExecutor {
           }
         }
 
-        if (!found) {
-          builder.addAggs(MicaSearch.AggregationResultDto.newBuilder().setAggregation(a.getId()).addAllTitle(
-            dtos.asDto(a.getTitle())).build());
+        if(!found) {
+          builder.addAggs(
+            MicaSearch.AggregationResultDto.newBuilder().setAggregation(a.getId()).addAllTitle(dtos.asDto(a.getTitle()))
+              .build());
         }
       });
 
@@ -217,8 +228,8 @@ public class JoinQueryExecutor {
       final MicaSearch.QueryResultDto.Builder builder = MicaSearch.QueryResultDto.newBuilder();
 
       aggregationsList.forEach(a -> builder.addAggs(
-          MicaSearch.AggregationResultDto.newBuilder().setAggregation(a.getId()).addAllTitle(dtos.asDto(a.getTitle())).build())
-      );
+          MicaSearch.AggregationResultDto.newBuilder().setAggregation(a.getId()).addAllTitle(dtos.asDto(a.getTitle()))
+            .build()));
 
       builder.setTotalHits(0).setTotalCount(0);
 
@@ -227,7 +238,7 @@ public class JoinQueryExecutor {
   }
 
   private void execute(QueryType type, AbstractDocumentQuery.Scope scope, CountStatsData.Builder countBuilder)
-      throws IOException {
+    throws IOException {
 
     CountStatsData countStats;
 
@@ -296,19 +307,17 @@ public class JoinQueryExecutor {
     switch(type) {
       case DATASET:
         countStats = CountStatsData.newBuilder().variables(variableQuery.getDatasetCounts())
-            .studies(studyQuery.getStudyCounts()).networksMap(networkQuery.getStudyCountsByNetwork()).build();
+          .studies(studyQuery.getStudyCounts()).networksMap(networkQuery.getStudyCountsByNetwork()).build();
         break;
       case STUDY:
         countStats = CountStatsData.newBuilder().variables(variableQuery.getStudyCounts())
-            .studyDatasets(datasetQuery.getStudyCounts())
-            .harmonizationDatasets(datasetQuery.getHarmonizationStudyCounts()).networks(networkQuery.getStudyCounts())
-            .build();
+          .studyDatasets(datasetQuery.getStudyCounts())
+          .harmonizationDatasets(datasetQuery.getHarmonizationStudyCounts()).networks(networkQuery.getStudyCounts())
+          .build();
         break;
       case NETWORK:
         countStats = CountStatsData.newBuilder().variables(variableQuery.getDatasetCounts())
-            .datasetsMap(datasetQuery.getStudyCountsByDataset())
-            .studies(studyQuery.getStudyCounts())
-            .build();
+          .datasetsMap(datasetQuery.getStudyCountsByDataset()).studies(studyQuery.getStudyCounts()).build();
         break;
     }
 
@@ -317,17 +326,15 @@ public class JoinQueryExecutor {
 
   private List<String> execute(AbstractDocumentQuery docQuery, AbstractDocumentQuery... subQueries) throws IOException {
     List<AbstractDocumentQuery> queries = Arrays.asList(subQueries).stream()
-        .filter(AbstractDocumentQuery::hasQueryFilters).collect(Collectors.toList());
+      .filter(AbstractDocumentQuery::hasQueryFilters).collect(Collectors.toList());
 
     List<String> studyIds = null;
     List<String> docQueryStudyIds = null;
     if(queries.size() > 0) studyIds = queryStudyIds(queries);
     if(studyIds == null || studyIds.size() > 0) docQueryStudyIds = docQuery.queryStudyIds(studyIds);
 
-    List<String> aggStudyIds =
-        docQuery.hasQueryFilters() && docQueryStudyIds != null
-            ? joinStudyIds(studyIds, docQueryStudyIds)
-            : studyIds;
+    List<String> aggStudyIds = docQuery.hasQueryFilters() && docQueryStudyIds != null ? joinStudyIds(studyIds,
+      docQueryStudyIds) : studyIds;
 
     if(aggStudyIds == null || aggStudyIds.size() > 0) {
       queryAggregations(aggStudyIds, subQueries);
@@ -337,7 +344,7 @@ public class JoinQueryExecutor {
   }
 
   private List<String> joinStudyIds(List<String> studyIds, List<String> joinedStudyIds) {
-    if (studyIds != null) {
+    if(studyIds != null) {
       joinedStudyIds.retainAll(studyIds);
     }
 
