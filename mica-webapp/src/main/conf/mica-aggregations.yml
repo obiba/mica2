@@ -40,11 +40,11 @@ variable:
   title: {en: Data collection event}
 - id: datasetId
   title: {en: Dataset}
-- id: variableType
-  title: {en: Variable type}
-- id: entityType
-  title: {en: Entity type}
-- id: valueType
-  title: {en: Value type}
-- id: occurrenceGroup
-  title: {en: Occurrence group}
+#- id: variableType
+#  title: {en: Variable type}
+#- id: entityType
+#  title: {en: Entity type}
+#- id: valueType
+#  title: {en: Value type}
+#- id: occurrenceGroup
+#  title: {en: Occurrence group}

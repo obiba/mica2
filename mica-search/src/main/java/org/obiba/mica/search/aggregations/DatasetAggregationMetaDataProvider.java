@@ -30,15 +30,21 @@ public class DatasetAggregationMetaDataProvider implements AggregationMetaDataPr
   @Inject
   PublishedDatasetService publishedDatasetService;
 
-  private Map<String, LocalizedString> cache;
+  private Map<String, LocalizedString> cacheTitles;
+
+  private Map<String, LocalizedString> cacheDescriptions;
 
   public void refresh() {
-    cache = publishedDatasetService.findAll().stream().collect(Collectors.toMap(Dataset::getId, Dataset::getName));
+    cacheTitles = publishedDatasetService.findAll().stream()
+      .collect(Collectors.toMap(Dataset::getId, Dataset::getAcronym));
+    cacheDescriptions = publishedDatasetService.findAll().stream()
+      .collect(Collectors.toMap(Dataset::getId, Dataset::getName));
   }
 
   public MetaData getTitle(String aggregation, String termKey, String locale) {
-    return "datasetId".equals(aggregation) && cache.containsKey(termKey)
-      ? MetaData.newBuilder().title(cache.get(termKey).get(locale)).description("").build()
+    return "datasetId".equals(aggregation) && cacheTitles.containsKey(termKey)
+      ? MetaData.newBuilder().title(cacheTitles.get(termKey).get(locale))
+      .description(cacheDescriptions.get(termKey).get(locale)).build()
       : null;
   }
 
