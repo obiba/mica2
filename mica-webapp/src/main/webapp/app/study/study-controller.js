@@ -6,16 +6,25 @@ mica.study
     studyUpdated: 'event:study-updated'
   })
 
-  .controller('StudyListController', ['$scope', 'StudyStatesResource', 'DraftStudyResource',
-    function ($scope, StudyStatesResource, DraftStudyResource) {
+  .controller('StudyListController', ['$rootScope', '$scope', 'StudyStatesResource', 'DraftStudyResource', 'NOTIFICATION_EVENTS',
+    function ($rootScope, $scope, StudyStatesResource, DraftStudyResource, NOTIFICATION_EVENTS) {
       $scope.studies = StudyStatesResource.query();
       $scope.deleteStudy = function (id) {
-        //TODO ask confirmation
-        DraftStudyResource.delete({id: id},
-          function () {
-            $scope.studies = StudyStatesResource.query();
-          });
+        $scope.studyToDelete = id;
+        $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
+          {title: 'Delete study', message: 'Are you sure to delete the study?'}, id);
       };
+
+      $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, id) {
+        if ($scope.studyToDelete === id) {
+          DraftStudyResource.delete({id: id},
+            function () {
+              $scope.studies = StudyStatesResource.query();
+            });
+        }
+
+        delete $scope.studyToDelete;
+      });
     }])
 
   .controller('StudyViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', 'StudyStateResource', 'DraftStudyResource', 'DraftStudyPublicationResource', 'MicaConfigResource', 'STUDY_EVENTS', 'NOTIFICATION_EVENTS', 'CONTACT_EVENTS',

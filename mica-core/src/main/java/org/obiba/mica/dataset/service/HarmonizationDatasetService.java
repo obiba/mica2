@@ -31,13 +31,11 @@ import org.obiba.mica.dataset.event.IndexHarmonizationDatasetsEvent;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.service.StudyService;
-import org.obiba.mica.study.event.StudyDeletedEvent;
 import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.obiba.opal.web.model.Search;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -47,7 +45,6 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 
 @Service
 @Validated
@@ -175,6 +172,18 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
     return dataset.isPublished();
   }
 
+  public void delete(String id) {
+    HarmonizationDataset dataset = harmonizationDatasetRepository.findOne(id);
+
+    if(dataset == null) {
+      throw NoSuchDatasetException.withId(id);
+    }
+
+    datasetIndexer.onDatasetDeleted(dataset);
+    variableIndexer.onDatasetDeleted(dataset);
+    harmonizationDatasetRepository.delete(id);
+  }
+
   @Override
   @NotNull
   protected RestValueTable getTable(@NotNull HarmonizationDataset dataset) throws NoSuchValueTableException {
@@ -233,17 +242,6 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   public Search.QueryResultDto getFacets(Search.QueryTermsDto query, StudyTable studyTable)
     throws NoSuchStudyException, NoSuchValueTableException {
     return getTable(studyTable).getFacets(query);
-  }
-
-  /**
-   * On study deletion, go through all datasets related to this study and remove the dependency.
-   *
-   * @param event
-   */
-  @Async
-  @Subscribe
-  public void studyDeleted(StudyDeletedEvent event) {
-
   }
 
   @Override

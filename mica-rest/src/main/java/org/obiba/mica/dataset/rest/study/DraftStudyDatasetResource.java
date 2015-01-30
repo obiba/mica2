@@ -65,6 +65,13 @@ public class DraftStudyDatasetResource {
     return dtos.asDto(getDataset());
   }
 
+  @DELETE
+  @Timed
+  @RequiresRoles(Roles.MICA_ADMIN)
+  public void delete() {
+    datasetService.delete(id);
+  }
+
   @PUT
   @Timed
   @RequiresRoles(Roles.MICA_ADMIN)

@@ -197,7 +197,7 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
     Study study = studyRepository.findOne(id);
 
     if(study == null) {
-      return;
+      throw NoSuchStudyException.withId(id);
     }
 
     checkStudyConstraints(study);

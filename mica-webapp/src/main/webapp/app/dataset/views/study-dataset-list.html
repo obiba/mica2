@@ -39,7 +39,7 @@
               <a ng-href="#/study-dataset/{{dataset.id}}/edit" translate>edit</a>
             </li>
             <li>
-              <a ng-href="#/study-dataset/{{dataset.id}}/delete" translate>delete</a>
+              <a href ng-click="deleteStudyDataset(dataset.id)" translate>delete</a>
             </li>
           </ul>
         </td>
