@@ -39,7 +39,7 @@
               <a ng-href="#/harmonization-dataset/{{dataset.id}}/edit" translate>edit</a>
             </li>
             <li>
-              <a ng-href="#/harmonization-dataset/{{dataset.id}}/delete" translate>delete</a>
+              <a href ng-click="deleteHarmonizedDataset(dataset.id)" translate>delete</a>
             </li>
           </ul>
         </td>

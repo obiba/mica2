@@ -65,6 +65,12 @@ public class DraftHarmonizationDatasetResource {
     return dtos.asDto(datasetService.findById(id));
   }
 
+  @DELETE
+  @RequiresRoles(Roles.MICA_ADMIN)
+  public void delete(){
+    datasetService.delete(id);
+  }
+
   @PUT
   @Timed
   @RequiresRoles(Roles.MICA_ADMIN)
