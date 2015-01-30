@@ -52,7 +52,7 @@
                     ng-show="study.investigators.length">
                   <li ng-repeat="investigator in study.investigators">
                     <a ng-click="viewContact(investigator)" title="{{'dnd-reorder' | translate}}">
-                      {{investigator.title}} {{investigator.firstName}} {{investigator.lastName}}
+                      {{investigator.title}} {{investigator.firstName}} {{investigator.lastName}} {{investigator.academicLevel}}
                       <span ng-show="investigator.institution.name.length">
                         (<localized value="investigator.institution.name" lang="tab.lang"></localized>)
                       </span>
@@ -79,7 +79,7 @@
                     ng-show="study.contacts.length">
                   <li ng-repeat="contact in study.contacts">
                     <a ng-click="viewContact(contact)" title="{{'dnd-reorder' | translate}}">
-                      {{contact.title}} {{contact.firstName}} {{contact.lastName}}
+                      {{contact.title}} {{contact.firstName}} {{contact.lastName}} {{contact.academicLevel}}
                       <span ng-show="contact.institution.name.length">
                         (<localized value="contact.institution.name" lang="tab.lang"></localized>)
                       </span>

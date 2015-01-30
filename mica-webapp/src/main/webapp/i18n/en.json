@@ -401,6 +401,7 @@
     "title": "Title",
     "firstName": "First Name",
     "lastName": "Last Name",
+    "academicLevel": "Academic Level",
     "email": "Email",
     "phone": "Phone",
     "dataAccessCommitteeMember": "Data Access Committee Member",
