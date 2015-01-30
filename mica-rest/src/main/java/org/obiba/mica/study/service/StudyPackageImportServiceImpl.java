@@ -143,6 +143,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     if(study.getAcronym() == null) {
       study.setAcronym(study.getName().asAcronym());
     }
+    study.cleanContacts();
     study.rebuildPopulationIds();
     studyService.save(study);
     if(publish) {
@@ -177,7 +178,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
         }
       }
     }
-
+    updated.cleanContacts();
     networkService.save(updated);
 
     if(publish) networkService.publish(updated.getId(), publish);

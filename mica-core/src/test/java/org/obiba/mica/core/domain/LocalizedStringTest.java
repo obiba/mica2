@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.domain;
+package org.obiba.mica.core.domain;
 
 import java.util.Locale;
 
@@ -17,7 +17,6 @@ import javax.inject.Inject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.obiba.mica.config.JsonConfiguration;
-import org.obiba.mica.core.domain.LocalizedString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.annotation.DirtiesContext;

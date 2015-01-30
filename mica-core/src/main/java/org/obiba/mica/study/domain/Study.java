@@ -386,6 +386,19 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
     }
   }
 
+  /**
+   * For each {@link org.obiba.mica.core.domain.Contact} and investigators: trim strings, make sure institution is
+   * not repeated in contact name etc.
+   */
+  public void cleanContacts() {
+    cleanContacts(contacts);
+    cleanContacts(investigators);
+  }
+
+  private void cleanContacts(List<Contact> contactList) {
+    if (contactList == null) return;
+    contactList.forEach(Contact::cleanContact);
+  }
 
   @Override
   protected Objects.ToStringHelper toStringHelper() {

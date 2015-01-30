@@ -207,4 +207,18 @@ public class Network extends AbstractAuditableDocument implements AttachmentAwar
     return Stream.concat(getAttachments().stream(), Stream.of(this.logo))
       .filter(a -> a != null && a.getId().equals(attachmentId)).findAny().orElse(null);
   }
+
+  /**
+   * For each {@link org.obiba.mica.core.domain.Contact} and investigators: trim strings, make sure institution is
+   * not repeated in contact name etc.
+   */
+  public void cleanContacts() {
+    cleanContacts(contacts);
+    cleanContacts(investigators);
+  }
+
+  private void cleanContacts(List<Contact> contactList) {
+    if (contactList == null) return;
+    contactList.forEach(Contact::cleanContact);
+  }
 }

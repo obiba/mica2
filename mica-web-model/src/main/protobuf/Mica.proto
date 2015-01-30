@@ -270,10 +270,11 @@ message ContactDto {
   optional string title = 1;
   optional string firstName = 2;
   required string lastName = 3;
-  optional string email = 4;
-  optional string phone = 5;
-  optional bool dataAccessCommitteeMember = 6;
-  optional InstitutionDto institution = 7;
+  optional string academicLevel = 4;
+  optional string email = 5;
+  optional string phone = 6;
+  optional bool dataAccessCommitteeMember = 7;
+  optional InstitutionDto institution = 8;
   message InstitutionDto {
     repeated LocalizedStringDto name = 1;
     repeated LocalizedStringDto department = 2;

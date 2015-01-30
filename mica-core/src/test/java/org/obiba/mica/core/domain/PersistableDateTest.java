@@ -1,4 +1,4 @@
-package org.obiba.mica.domain;
+package org.obiba.mica.core.domain;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
