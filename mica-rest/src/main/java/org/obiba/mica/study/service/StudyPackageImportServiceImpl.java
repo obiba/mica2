@@ -143,6 +143,12 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     if(study.getAcronym() == null) {
       study.setAcronym(study.getName().asAcronym());
     }
+    study.getAcronym().entrySet().forEach(entry -> {
+      if (study.getName().containsKey(entry.getKey())) {
+        String newName = study.getName().get(entry.getKey()).replace("(" + entry.getValue() + ")", "").trim();
+        study.getName().put(entry.getKey(), newName);
+      }
+    });
     study.cleanContacts();
     study.rebuildPopulationIds();
     studyService.save(study);
