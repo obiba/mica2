@@ -98,6 +98,8 @@ public class TempFileService {
   }
 
   public void delete(@NotNull String id) {
+    tempFileRepository.delete(id);
+
     if(!getFile(id).delete()) {
       log.debug("Could not delete temp file {}", id);
     }
