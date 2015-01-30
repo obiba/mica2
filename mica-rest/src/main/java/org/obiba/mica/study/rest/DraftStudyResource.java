@@ -1,6 +1,9 @@
 package org.obiba.mica.study.rest;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -73,12 +76,13 @@ public class DraftStudyResource {
   /**
    * DELETE  /ws/studies/:id -> delete the "id" study.
    */
-//  @DELETE
-//  @Timed
-//  public Response delete() {
-//    studyService.delete(id);
-//    return Response.noContent().build();
-//  }
+  @DELETE
+  @Timed
+  public Response delete() {
+    studyService.delete(id);
+    return Response.noContent().build();
+  }
+
   @Path("/file/{fileId}")
   public FileResource study(@PathParam("fileId") String fileId) {
     FileResource studyResource = applicationContext.getBean(FileResource.class);

@@ -1,7 +1,9 @@
 package org.obiba.mica.study.service;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -10,6 +12,10 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.service.GitService;
+import org.obiba.mica.dataset.HarmonizationDatasetRepository;
+import org.obiba.mica.dataset.StudyDatasetRepository;
+import org.obiba.mica.network.NetworkRepository;
+import org.obiba.mica.study.ConstraintException;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.StudyRepository;
 import org.obiba.mica.study.StudyStateRepository;
@@ -17,6 +23,7 @@ import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
 import org.obiba.mica.study.event.IndexStudiesEvent;
+import org.obiba.mica.study.event.StudyDeletedEvent;
 import org.obiba.mica.study.event.StudyPublishedEvent;
 import org.obiba.mica.study.event.StudyUnpublishedEvent;
 import org.slf4j.Logger;
@@ -31,6 +38,7 @@ import org.springframework.validation.annotation.Validated;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 
+import static java.util.stream.Collectors.toList;
 import static org.obiba.mica.core.domain.RevisionStatus.DRAFT;
 
 @Service
@@ -50,6 +58,15 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
 
   @Inject
   private GitService gitService;
+
+  @Inject
+  private NetworkRepository networkRepository;
+
+  @Inject
+  private StudyDatasetRepository studyDatasetRepository;
+
+  @Inject
+  private HarmonizationDatasetRepository harmonizationDatasetRepository;
 
   @Inject
   private EventBus eventBus;
@@ -170,19 +187,46 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
           return gitService.hasGitRepository(studyState.getId()) && !Strings.isNullOrEmpty(studyState.getPublishedTag()); //
         }) //
       .map(studyState -> gitService.readFromTag(studyState.getId(), studyState.getPublishedTag(), Study.class)) //
-      .collect(Collectors.toList()); //
+      .collect(toList()); //
 
     eventBus.post(new IndexStudiesEvent(publishedStudies, findAllDraftStudies()));
   }
 
-//  @CacheEvict(value = { "studies-draft", "studies-published" }, key = "#id")
-//  public void delete(@NotNull String id) {
-//    studyRepository.delete(id);
-//  }
+  @CacheEvict(value = { "studies-draft", "studies-published" }, key = "#id")
+  public void delete(@NotNull String id) {
+    Study study = studyRepository.findOne(id);
+
+    if(study == null) {
+      return;
+    }
+
+    checkStudyConstraints(study);
+
+    gitService.deleteGitRepository(id);
+    eventBus.post(new StudyDeletedEvent(study));
+    studyStateRepository.delete(id);
+    studyRepository.delete(id);
+  }
 
   //
   // Private methods
   //
+
+  private void checkStudyConstraints(Study study) {
+    List<String> harmonizationDatasetsIds = harmonizationDatasetRepository.findByStudyTablesStudyId(study.getId()).stream().map(h -> h.getId()).collect(toList());
+    List<String> studyDatasetIds = studyDatasetRepository.findByStudyTableStudyId(study.getId()).stream().map(h -> h.getId()).collect(toList());
+    List<String> networkIds = networkRepository.findByStudyIds(study.getId()).stream().map(n -> n.getId()).collect(toList());
+
+    if(!harmonizationDatasetsIds.isEmpty() || !studyDatasetIds.isEmpty() || !networkIds.isEmpty()) {
+      Map<String, List<String>> conflicts = new HashMap() {{
+        put("harmonizationDataset", harmonizationDatasetsIds);
+        put("studyDataset", studyDatasetIds);
+        put("network", networkIds);
+      }};
+
+      throw new ConstraintException(conflicts);
+    }
+  }
 
   @Nullable
   private String generateId(@NotNull Study study) {

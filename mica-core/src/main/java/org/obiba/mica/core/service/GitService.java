@@ -34,17 +34,22 @@ import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.PersistableWithAttachments;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.file.TempFileService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Persistable;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Throwables;
 import com.google.common.io.ByteStreams;
 
 @Component
 @Validated
 public class GitService {
+
+  private static final Logger log = LoggerFactory.getLogger(GitService.class);
 
   private static final String PATH_DATA = "${MICA_HOME}/data/git";
 
@@ -88,6 +93,15 @@ public class GitService {
   public boolean hasGitRepository(String id) {
     return FileUtils.fileExists(getRepositoryPath(id).getAbsolutePath())
       || FileUtils.fileExists(getCloneRepositoryPath(id).getAbsolutePath());
+  }
+
+  public void deleteGitRepository(String id) {
+    try {
+      FileUtils.deleteDirectory(getRepositoryPath(id));
+      FileUtils.deleteDirectory(getCloneRepositoryPath(id));
+    } catch (IOException e) {
+      Throwables.propagate(e);
+    }
   }
 
   public <TGitPersistable extends Persistable<String> & Timestamped> void save(@NotNull @Valid TGitPersistable persistable) {

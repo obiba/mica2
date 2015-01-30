@@ -2,6 +2,7 @@ package org.obiba.mica.study;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -12,7 +13,9 @@ import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.obiba.core.util.FileUtil;
 import org.obiba.git.command.GitCommandHandler;
@@ -20,6 +23,8 @@ import org.obiba.mica.config.JsonConfiguration;
 import org.obiba.mica.config.MongoDbConfiguration;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.file.TempFileService;
+import org.obiba.mica.network.NetworkRepository;
+import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
@@ -61,12 +66,20 @@ import static org.obiba.mica.core.domain.LocalizedString.en;
 public class StudyServiceTest {
 
 //  private static final Logger log = LoggerFactory.getLogger(StudyServiceTest.class);
+  @Rule
+  public ExpectedException exception = ExpectedException.none();
 
   @Inject
   private StudyService studyService;
 
   @Inject
   private StudyStateRepository studyStateRepository;
+
+  @Inject
+  private StudyRepository studyRepository;
+
+  @Inject
+  private NetworkRepository networkRepository;
 
   @Inject
   private EventBus eventBus;
@@ -227,6 +240,36 @@ public class StudyServiceTest {
     assertThat(studyState.getPublishedTag()).isEqualTo("1");
   }
 
+  @Test
+  public void test_delete_study() {
+    Study study = new Study();
+    study.setName(en("name en").forFr("name fr"));
+    studyService.save(study);
+
+    assertThat(studyStateRepository.findAll()).hasSize(1);
+
+    studyService.delete(study.getId());
+
+    assertThat(studyRepository.findAll()).hasSize(0);
+    assertThat(studyStateRepository.findAll()).hasSize(0);
+  }
+
+  @Test
+  public void test_delete_study_conflict() {
+    Study study = new Study();
+    study.setName(en("name en").forFr("name fr"));
+    studyService.save(study);
+    Network network = new Network();
+    network.setId("test");
+    network.setStudyIds(new ArrayList() {{ add(study.getId()); }});
+    networkRepository.save(network);
+
+    assertThat(studyStateRepository.findAll()).hasSize(1);
+
+    exception.expect(ConstraintException.class);
+
+    studyService.delete(study.getId());
+  }
 
   @After
   public void cleanup() throws IOException {
