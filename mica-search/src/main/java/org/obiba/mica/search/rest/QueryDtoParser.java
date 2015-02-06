@@ -47,10 +47,16 @@ public class QueryDtoParser {
   }
 
   public SortBuilder parseSort(MicaSearch.QueryDto queryDto) {
-
     if(queryDto.hasSort()) {
       MicaSearch.QueryDto.SortDto sortDto = queryDto.getSort();
-      return SortBuilders.fieldSort(sortDto.getField()).order(SortOrder.valueOf(sortDto.getOrder().name()));
+
+      if(sortDto.hasScript()) {
+        return SortBuilders.scriptSort(sortDto.getScript(), sortDto.getType())
+          .order(SortOrder.valueOf(sortDto.getOrder().name()));
+      } else {
+        return SortBuilders.fieldSort(sortDto.getField())
+          .order(SortOrder.valueOf(sortDto.getOrder().name()));
+      }
     }
 
     return null;

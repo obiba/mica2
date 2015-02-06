@@ -140,23 +140,35 @@ public final class QueryDtoHelper {
 
   public static MicaSearch.QueryDto createQueryDto(int from, int limit, String sort, String order, String queryString,
     String locale, Stream<String> localizedQueryFields) {
-    return createQueryDto(from, limit, sort, order, queryString, locale, localizedQueryFields, null);
+    return createQueryDto(from, limit, sort, order, null, null, queryString, locale, localizedQueryFields, null);
   }
 
-  public static MicaSearch.QueryDto createQueryDto(int from, int limit, String sort, String order, String queryString,
-    String locale, Stream<String> localizedQueryFields, Stream<String> queryFields) {
+  public static MicaSearch.QueryDto createQueryDto(int from, int limit, String sortScript, String sortType, String order, String queryString,
+    String locale, Stream<String> localizedQueryFields) {
+    return createQueryDto(from, limit, null, order, sortScript, sortType, queryString, locale, localizedQueryFields, null);
+  }
+
+  public static MicaSearch.QueryDto createQueryDto(int from, int limit, String sort, String order, String script,
+    String type, String queryString, String locale, Stream<String> localizedQueryFields, Stream<String> queryFields) {
     MicaSearch.QueryDto.Builder builder = MicaSearch.QueryDto.newBuilder().setFrom(from).setSize(limit);
 
     if(!Strings.isNullOrEmpty(queryString)) {
       addQueryStringDto(builder, queryString, locale, localizedQueryFields, queryFields);
     }
 
-    if(!Strings.isNullOrEmpty(sort)) {
-      builder.setSort(MicaSearch.QueryDto.SortDto.newBuilder() //
-        .setField(sort) //
-        .setOrder(order == null
-          ? MicaSearch.QueryDto.SortDto.Order.ASC
-          : MicaSearch.QueryDto.SortDto.Order.valueOf(order.toUpperCase())).build());
+    if(!Strings.isNullOrEmpty(sort) || !Strings.isNullOrEmpty(script)) {
+      MicaSearch.QueryDto.SortDto.Builder sortBuilder = MicaSearch.QueryDto.SortDto.newBuilder();
+      sortBuilder.setField(!Strings.isNullOrEmpty(sort) ? sort : "_script");
+
+      sortBuilder.setOrder(order == null
+        ? MicaSearch.QueryDto.SortDto.Order.ASC
+        : MicaSearch.QueryDto.SortDto.Order.valueOf(order.toUpperCase()));
+
+      if(!Strings.isNullOrEmpty(script)) {
+        sortBuilder.setScript(script).setType(type);
+      }
+
+      builder.setSort(sortBuilder);
     }
 
     return builder.build();

@@ -167,10 +167,14 @@
         <version>${project.version}</version>
         <type>war</type>
       </dependency>
-
       <dependency>
         <groupId>org.elasticsearch</groupId>
         <artifactId>elasticsearch</artifactId>
+        <version>${elasticsearch.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.elasticsearch</groupId>
+        <artifactId>elasticsearch-groovy</artifactId>
         <version>${elasticsearch.version}</version>
       </dependency>
       <dependency>

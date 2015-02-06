@@ -173,7 +173,8 @@ public class QueryDtoHelperTest {
 
   @Test
   public void test_query_with_query_string() {
-    QueryDto queryDto = QueryDtoHelper.createQueryDto(0, 20, null, null, "tata", "fr", Stream.of("field1", "field2"), null);
+    QueryDto queryDto = QueryDtoHelper.createQueryDto(0, 20, null, null, "tata", "fr",
+      Stream.of("field1", "field2"));
     assertThat(queryDto.getFrom()).isEqualTo(0);
     assertThat(queryDto.getSize()).isEqualTo(20);
     assertThat(queryDto.hasQueryString()).isTrue();
