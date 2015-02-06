@@ -13,7 +13,6 @@
   <artifactId>mica-search</artifactId>
 
   <dependencies>
-
     <dependency>
       <groupId>org.obiba.mica</groupId>
       <artifactId>mica-core</artifactId>
@@ -22,10 +21,13 @@
       <groupId>org.obiba.mica</groupId>
       <artifactId>mica-web-model</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.elasticsearch</groupId>
       <artifactId>elasticsearch</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.elasticsearch</groupId>
+      <artifactId>elasticsearch-groovy</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.ws.rs</groupId>

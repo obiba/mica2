@@ -31,6 +31,8 @@ message QueryDto {
 
     required string field = 1;
     required Order order = 2 [default = ASC];
+    optional string script = 3;
+    optional string type = 4;
   }
 }
 

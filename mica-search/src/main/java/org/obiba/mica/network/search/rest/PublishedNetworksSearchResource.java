@@ -47,12 +47,22 @@ public class PublishedNetworksSearchResource {
   @Timed
   public JoinQueryResultDto query(@QueryParam("from") @DefaultValue("0") int from,
       @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
-      @QueryParam("order") String order, @QueryParam("study") String studyId, @QueryParam("query") String query,
+      @QueryParam("order") @DefaultValue("desc") String order, @QueryParam("study") String studyId, @QueryParam("query") String query,
       @QueryParam("locale") @DefaultValue("en") String locale)
       throws IOException {
+    String sortScript = "doc['studyIds'].values.size()"; //groovy sort script
+    String type = "number";
 
-    MicaSearch.QueryDto queryDto = QueryDtoHelper
+    MicaSearch.QueryDto queryDto;
+
+    if (!Strings.isNullOrEmpty(sort)) {
+      queryDto = QueryDtoHelper
         .createQueryDto(from, limit, sort, order, query, locale, Stream.of(NetworkIndexer.LOCALIZED_ANALYZED_FIELDS));
+    } else {
+      queryDto = QueryDtoHelper
+        .createQueryDto(from, limit, sortScript, type, order, query, locale, Stream.of(NetworkIndexer.LOCALIZED_ANALYZED_FIELDS));
+    }
+
     if (!Strings.isNullOrEmpty(studyId)) {
       queryDto = QueryDtoHelper.addTermFilters(queryDto,
           Arrays.asList(QueryDtoHelper.createTermFilter(NetworkQuery.JOIN_FIELD, Arrays.asList(studyId))),
