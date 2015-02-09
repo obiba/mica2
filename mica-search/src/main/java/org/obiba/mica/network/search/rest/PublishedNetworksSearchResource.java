@@ -40,13 +40,16 @@ import static org.obiba.mica.web.model.MicaSearch.JoinQueryResultDto;
 @Scope("request")
 public class PublishedNetworksSearchResource {
 
+  public static final String DEFAULT_SORT = "script";
+
+
   @Inject
   JoinQueryExecutor joinQueryExecutor;
 
   @GET
   @Timed
   public JoinQueryResultDto query(@QueryParam("from") @DefaultValue("0") int from,
-      @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
+      @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") @DefaultValue(DEFAULT_SORT)  String sort,
       @QueryParam("order") @DefaultValue("desc") String order, @QueryParam("study") String studyId, @QueryParam("query") String query,
       @QueryParam("locale") @DefaultValue("en") String locale)
       throws IOException {
@@ -55,7 +58,7 @@ public class PublishedNetworksSearchResource {
 
     MicaSearch.QueryDto queryDto;
 
-    if (!Strings.isNullOrEmpty(sort)) {
+    if (!Strings.isNullOrEmpty(sort) && !sort.equals(DEFAULT_SORT)) {
       queryDto = QueryDtoHelper
         .createQueryDto(from, limit, sort, order, query, locale, Stream.of(NetworkIndexer.LOCALIZED_ANALYZED_FIELDS));
     } else {
