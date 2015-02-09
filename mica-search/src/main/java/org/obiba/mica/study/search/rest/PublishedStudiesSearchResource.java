@@ -28,6 +28,7 @@ import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
 
 import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Strings;
 
 import static org.obiba.mica.web.model.MicaSearch.JoinQueryResultDto;
 
@@ -43,12 +44,12 @@ public class PublishedStudiesSearchResource {
   @Timed
   public JoinQueryResultDto query(@QueryParam("from") @DefaultValue("0") int from,
       @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
-      @QueryParam("order") String order, @QueryParam("query") String query,
+      @QueryParam("order") @DefaultValue("asc") String order, @QueryParam("query") String query,
       @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
 
-    return joinQueryExecutor.listQuery(JoinQueryExecutor.QueryType.STUDY,
-        QueryDtoHelper.createQueryDto(from, limit, sort, order, query, locale, Stream.of(StudyIndexer.LOCALIZED_ANALYZED_FIELDS)),
-        locale);
+    return joinQueryExecutor.listQuery(JoinQueryExecutor.QueryType.STUDY, QueryDtoHelper
+      .createQueryDto(from, limit, Strings.isNullOrEmpty(sort) ? StudyIndexer.DEFAULT_SORT_FIELD + "." + locale : sort,
+        order, query, locale, Stream.of(StudyIndexer.LOCALIZED_ANALYZED_FIELDS)), locale);
   }
 
   @POST
