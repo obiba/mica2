@@ -29,6 +29,8 @@ public class StudyIndexer {
 
   public static final String[] LOCALIZED_ANALYZED_FIELDS = {"acronym", "name", "objectives"};
 
+  public static final String DEFAULT_SORT_FIELD  = "name";
+
   @Inject
   private ElasticSearchIndexer elasticSearchIndexer;
 
