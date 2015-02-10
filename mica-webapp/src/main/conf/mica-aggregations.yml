@@ -5,7 +5,7 @@ study:
 - id: methods-designs
   title: {en: Study design}
 - id: populations-recruitment-dataSources
-  title: {en: Recruitement datasource}
+  title: {en: Recruitment datasource}
 - id: populations-selectionCriteria-countriesIso
   title: {en: Country of residence}
 - id: populations-selectionCriteria-ageMin
