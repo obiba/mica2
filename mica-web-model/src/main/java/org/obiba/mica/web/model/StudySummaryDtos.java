@@ -43,20 +43,20 @@ class StudySummaryDtos {
   public Mica.StudySummaryDto.Builder asDtoBuilder(@NotNull Study study) {
     StudyState studyState = studyService.findStateById(study.getId());
 
-    return asDtoBuilder(study, studyState);
+    return asDtoBuilder(study, studyState.isPublished());
   }
 
   @NotNull
-  private Mica.StudySummaryDto.Builder asDtoBuilder(@NotNull Study study, @NotNull StudyState studyState) {
+  public Mica.StudySummaryDto.Builder asDtoBuilder(@NotNull Study study, boolean isPublished) {
     Mica.StudySummaryDto.Builder builder = Mica.StudySummaryDto.newBuilder();
-    builder.setPublished(studyState.isPublished());
+    builder.setPublished(isPublished);
 
     builder.setId(study.getId()) //
         .setTimestamps(TimestampsDtos.asDto(study)) //
         .addAllName(localizedStringDtos.asDto(study.getName())) //
         .addAllAcronym(localizedStringDtos.asDto(study.getAcronym())) //
         .addAllObjectives(localizedStringDtos.asDto(study.getObjectives()))
-        .setVariables(studyState.isPublished() ? datasetVariableService.getCountByStudyId(study.getId()) : 0);
+        .setVariables(isPublished ? datasetVariableService.getCountByStudyId(study.getId()) : 0);
 
     if(study.getLogo() != null) builder.setLogo(attachmentDtos.asDto(study.getLogo()));
 
@@ -68,6 +68,7 @@ class StudySummaryDtos {
     }
     Collection<String> countries = new HashSet<>();
     SortedSet<Population> populations = study.getPopulations();
+
     if(populations != null) {
       populations.stream() //
           .filter(population -> population.getSelectionCriteria().getCountriesIso() != null)
@@ -83,6 +84,7 @@ class StudySummaryDtos {
 
       populations.forEach(population -> builder.addPopulationSummaries(asDto(population)));
     }
+
     builder.addAllCountries(countries);
 
     return builder;
@@ -145,7 +147,7 @@ class StudySummaryDtos {
     StudyState studyState = studyService.findStateById(studyId);
 
     if(studyState.isPublished()) {
-      return asDtoBuilder(publishedStudyService.findById(studyId), studyState).build();
+      return asDtoBuilder(publishedStudyService.findById(studyId), true).build();
     }
 
     return asDto(studyState);

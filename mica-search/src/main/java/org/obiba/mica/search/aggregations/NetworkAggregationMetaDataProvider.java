@@ -1,5 +1,6 @@
 package org.obiba.mica.search.aggregations;
 
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -21,9 +22,10 @@ public class NetworkAggregationMetaDataProvider implements AggregationMetaDataPr
   private Map<String, LocalizedString> cacheDescriptions;
 
   public void refresh() {
-    cacheTitles = publishedNetworkService.findAll().stream()
+    List<Network> networks = publishedNetworkService.findAll();
+    cacheTitles = networks.stream()
       .collect(Collectors.toMap(Network::getId, Network::getAcronym));
-    cacheDescriptions = publishedNetworkService.findAll().stream()
+    cacheDescriptions = networks.stream()
       .collect(Collectors.toMap(Network::getId, Network::getName));
   }
 

@@ -168,6 +168,7 @@ public class VariableQuery extends AbstractDocumentQuery {
 
     if(studyId != null) {
       builder.setStudyId(studyId);
+
       try {
         Study study;
         if(studyMap.containsKey(studyId)) {

@@ -1,5 +1,6 @@
 package org.obiba.mica.search.aggregations;
 
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -21,8 +22,9 @@ public class StudyAggregationMetaDataProvider implements AggregationMetaDataProv
   private Map<String, LocalizedString> cacheDescriptions;
 
   public void refresh() {
-    cacheTitles = publishedStudyService.findAll().stream().collect(Collectors.toMap(Study::getId, Study::getAcronym));
-    cacheDescriptions = publishedStudyService.findAll().stream()
+    List<Study> studies = publishedStudyService.findAll();
+    cacheTitles = studies.stream().collect(Collectors.toMap(Study::getId, Study::getAcronym));
+    cacheDescriptions = studies.stream()
       .collect(Collectors.toMap(Study::getId, Study::getName));
   }
 
