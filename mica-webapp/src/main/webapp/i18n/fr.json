@@ -275,8 +275,7 @@
     "title": "Page d'erreur!",
     "403": "Vous n'avez pas les droits pour accéder à cette page."
   },
-  "footer": "Ceci est votre pied de page"
-}
+  "footer": "Ceci est votre pied de page",
   "config": {
     "short-title": "Configuration",
     "title": "General Configuration",
@@ -315,6 +314,7 @@
     "objectives-help": "What are the principal objectives of the study?",
     "website": "Website",
     "investigators": "Investigators",
+    "add-population": "Add Population",
     "add-investigator": "Add Investigator",
     "contacts": "Contacts",
     "add-contact": "Add Contact",
@@ -339,6 +339,7 @@
     "documents": "Documents",
     "documents-help": "If applicable, please provide relevant documentation about the study (e.g.: Study Protocol).",
     "timeline": "Study Timeline",
+    "population": "Population",
     "populations": "Populations",
     "authorization": {
       "label": "Authorization",
@@ -347,7 +348,8 @@
         "false": "Not authorized"
       },
       "maelstrom": "Authorization from contributors to the Maelstrom catalogues",
-      "specific": "Authorization from contributors to the [specific network] catalogues"
+      "specific": "Authorization from contributors to the [specific network] catalogues",
+      "authorizer": "Authorizer"
     },
     "selection-criteria": {
       "label": "Selection criteria",
@@ -366,12 +368,15 @@
       "label": "Sources of recruitment",
       "general-population": "General Population",
       "specific-population": "Specific Population",
-      "studies": "Participants from existing studies"
+      "studies": "Participants from existing studies",
+      "other": "Other sources",
+      "other-specific-population": "Other specific population"
     },
     "participants-number": {
       "participant": "Number of participants",
       "sample": "Number of participants with biological samples"
     },
+    "data-collection-event": "Data Collection Event",
     "data-collection-events": "Data Collection Events",
     "start": "Start",
     "end": "End",
@@ -382,7 +387,8 @@
       "published": "Published",
       "revisions-ahead": "Revisions ahead"
     },
-    "opal" : "Opal Server"
+    "opal" : "Opal Server",
+    "opal-help": "URL of the opal server for this study"
   },
   "contact": {
     "label": "Contact",
@@ -403,6 +409,7 @@
     "title": "Title",
     "firstName": "First Name",
     "lastName": "Last Name",
+    "academicLevel": "Academic Level",
     "email": "Email",
     "phone": "Phone",
     "dataAccessCommitteeMember": "Data Access Committee Member",
@@ -419,10 +426,11 @@
   "networks": "Networks",
   "datasets" : "Datasets",
   "dataset" : {
-    "name" : "Nom",
-    "add" : "Ajouter Dataset",
-    "label-edit" : "Modifier Dataset",
-    "general-info": "Information général",
+    "name" : "Name",
+    "acronym": "Acronym",
+    "add" : "Add Dataset",
+    "label-edit" : "Edit Dataset",
+    "general-info": "General Information",
     "description" : "Description",
     "entity-type" : "Type d'entité",
     "study-table" : "Table d'étude",
@@ -437,6 +445,32 @@
   "attribute": {
     "add-attribute": "Add Attribute",
     "edit-attribute": "Edit Attribute"
+  },
+  "population": {
+    "label-edit": "Edit Population",
+    "id": "Id",
+    "name": "Name",
+    "description": "Description",
+    "gender": "Gender",
+    "ageMin": "Minimum age",
+    "ageMax": "Maximum age",
+    "otherCriteria": "Other criteria",
+    "add-health-status-help": "Add health status",
+    "add-ethnic-origin-help": "Add ethnic origin",
+    "add-data-collection-event": "Add Data Collection Event",
+    "countries": "Countries ISO",
+    "numberOfParticipants-noLimit": "No limit"
+  },
+  "data-collection-event": {
+    "label-edit": "Edit Data Collection Even",
+    "id": "Id",
+    "name": "Name",
+    "description": "Description",
+    "start-year": "Start Year",
+    "start-month": "Start Month",
+    "end-year": "End Year",
+    "end-month": "End Month"
+
   },
   "study-datasets" : "Study Datasets",
   "study-dataset" : "Study Dataset",
@@ -476,5 +510,6 @@
   "dnd-reorder": "Drag and drop to reorder",
   "loading": "Loading...",
   "error": "Error",
-  "actions": "Actions"
+  "actions": "Actions",
+  "authorizer": "Authorizer"
 }

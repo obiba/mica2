@@ -145,7 +145,7 @@
       <span ng-show="population.numberOfParticipants.participant.noLimit" translate>study.target-number.no-limit</span>
     </dd>
 
-    <dt translate ng-show="population.numberOfParticipants.sample">study.participants-number.sample</dt>
+    <dt translate ng-show="populationpopulation.numberOfParticipants.sample">study.participants-number.sample</dt>
     <dd ng-show="population.numberOfParticipants.sample">
       {{population.numberOfParticipants.sample | number}}
       <span ng-show="population.numberOfParticipants.sample.noLimit" translate>study.target-number.no-limit</span>
@@ -158,7 +158,11 @@
 
   <div class="clearfix"></div>
 
-  <h5 translate ng-show="population.dataCollectionEvents.length">study.data-collection-events</h5>
+
+  <h4 class="voffset3">
+    <span translate>study.data-collection-events</span>
+    <span><a ng-click="addDataCollectionEvent(study, population)" class="hand action"> <span></span> <i class="fa fa-plus-square"></i></a></span>
+  </h4>
 
   <table class="table table-striped" ng-show="population.dataCollectionEvents.length">
     <thead>
@@ -167,6 +171,7 @@
       <th translate>study.description</th>
       <th translate>study.start</th>
       <th translate>study.end</th>
+      <th translate>actions</th>
     </tr>
     </thead>
     <tbody>
@@ -182,6 +187,10 @@
       </td>
       <td>
         {{dce.endYear}} <span ng-show="dce.endMonth">({{months[dce.endMonth - 1]}})</span>
+      </td>
+      <td>
+        <a ng-click="editDataCollectionEvent(study, population, dce)" class="hand action"><i class="fa fa-pencil"></i></a>
+        <a ng-click="deleteDataCollectionEvent(study, $parent.$index, dce, $index)" class="hand action"><i class="fa fa-trash-o"></i></a>
       </td>
     </tr>
     </tbody>

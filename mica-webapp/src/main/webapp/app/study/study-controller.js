@@ -144,6 +144,26 @@ mica.study
         });
       };
 
+      $scope.addDataCollectionEvent = function (study, population) {
+        $location.url($location.url() + '/population/' + population.id + '/dce/add');
+      };
+
+      $scope.editDataCollectionEvent = function (study, population, dce) {
+        $location.url($location.url() + '/population/' + population.id + '/dce/' + dce.id + '/edit');
+      };
+
+      $scope.deleteDataCollectionEvent = function (study, popIndex, dce, dceIndex) {
+        $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
+          {title: 'Delete Data Collection Event', message: 'Are you sure you want to delete the population data collection event?'}, dce);
+
+        $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, dce) {
+          if ($scope.study.populations[popIndex].dataCollectionEvents[dceIndex] === dce) {
+            $scope.study.populations[popIndex].dataCollectionEvents.splice(dceIndex, 1);
+            $scope.emitStudyUpdated();
+          }
+        });
+      };
+
       $scope.addPopulation = function () {
         $location.url($location.url() + '/population/add');
       };
@@ -211,6 +231,64 @@ mica.study
     var redirectToStudy = function() {
       $location.path('/study/' + $scope.study.id).replace();
     };
+  }])
+
+  .controller('StudyPopulationDceController', ['$rootScope', '$scope', '$routeParams', '$location', '$log', 'DraftStudyResource', 'MicaConfigResource', 'FormServerValidation', 'MicaConstants',
+     function($rootScope, $scope, $routeParams, $location, $log, DraftStudyResource, MicaConfigResource, FormServerValidation) {
+       $scope.dce = {};
+       $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}, function() {
+         if ($routeParams.pid) {
+           $scope.population = $scope.study.populations.filter(function(p){
+             return p.id === $routeParams.pid;
+           })[0];
+
+           if ($routeParams.dceId) {
+             $scope.dce = $scope.population.dataCollectionEvents.filter(function(d){
+                 return d.id === $routeParams.dceId;
+               })[0];
+           } else {
+             $scope.population.dataCollectionEvents.push($scope.dce);
+           }
+
+         } else {
+           // TODO add error popup
+           $log.error('Failed to retrieve population.');
+         }
+       }) : {};
+
+       MicaConfigResource.get(function (micaConfig) {
+         $scope.tabs = [];
+         micaConfig.languages.forEach(function (lang) {
+           $scope.tabs.push({ lang: lang, labelKey: 'language.' + lang });
+         });
+       });
+
+       $scope.cancel = function () {
+         redirectToStudy();
+       };
+
+       $scope.save = function () {
+         if (!$scope.form.$valid) {
+           $scope.form.saveAttempted = true;
+           return;
+         }
+
+         updateStudy();
+       };
+
+       var updateStudy = function () {
+         $log.debug('Update study', $scope.study);
+         $scope.study.$save(redirectToStudy, saveErrorHandler);
+       };
+
+       var saveErrorHandler = function (response) {
+         FormServerValidation.error(response, $scope.form, $scope.languages);
+       };
+
+       var redirectToStudy = function() {
+         $location.path('/study/' + $scope.study.id).replace();
+       };
+
   }])
 
   .controller('StudyEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$location', '$upload', '$timeout', '$modal', 'DraftStudyResource', 'DraftStudiesResource', 'MicaConfigResource', 'StringUtils', 'FormServerValidation', 'TempFileResource',

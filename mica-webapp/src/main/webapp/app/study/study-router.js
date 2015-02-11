@@ -27,5 +27,13 @@ mica.study
         .when('/study/:id/population/:pid/edit', {
           templateUrl: 'app/study/views/population/population-form.html',
           controller: 'StudyPopulationController'
+        })
+        .when('/study/:id/population/:pid/dce/add', {
+          templateUrl: 'app/study/views/population/dce/data-collection-event-form.html',
+          controller: 'StudyPopulationDceController'
+        })
+        .when('/study/:id/population/:pid/dce/:dceId/edit', {
+          templateUrl: 'app/study/views/population/dce/data-collection-event-form.html',
+          controller: 'StudyPopulationDceController'
         });
     }]);

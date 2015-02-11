@@ -439,6 +439,7 @@
     "edit-attribute": "Edit Attribute"
   },
   "population": {
+    "label-edit": "Edit Population",
     "id": "Id",
     "name": "Name",
     "description": "Description",
@@ -448,8 +449,20 @@
     "otherCriteria": "Other criteria",
     "add-health-status-help": "Add health status",
     "add-ethnic-origin-help": "Add ethnic origin",
+    "add-data-collection-event": "Add Data Collection Event",
     "countries": "Countries ISO",
     "numberOfParticipants-noLimit": "No limit"
+  },
+  "data-collection-event": {
+    "label-edit": "Edit Data Collection Even",
+    "id": "Id",
+    "name": "Name",
+    "description": "Description",
+    "start-year": "Start Year",
+    "start-month": "Start Month",
+    "end-year": "End Year",
+    "end-month": "End Month"
+
   },
   "study-datasets" : "Study Datasets",
   "study-dataset" : "Study Dataset",

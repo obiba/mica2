@@ -1,0 +1,37 @@
+<!--
+  ~ Copyright (c) 2014 OBiBa. All rights reserved.
+  ~
+  ~ This program and the accompanying materials
+  ~ are made available under the terms of the GNU Public License v3.0.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<div>
+  <h2 translate>data-collection-event.label-edit</h2>
+  <form name="form" role="form" novalidate
+    class="ng-scope ng-invalid ng-invalid-required ng-dirty" ng-submit="save()">
+    <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
+    <tabset>
+      <tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active" disabled="tab.disabled">
+        <div ng-if="population">
+          <h3 translate>Data Collection Event</h3>
+          <div form-input model="dce.id" required="true" label="data-collection-event.id"></div>
+          <div localized-input name="data-collection-event.name" required="true" model="dce.name" lang="tab.lang" label="data-collection-event.name"></div>
+          <div form-input type="number" name="data-collection-event.start-year" required="true" model="dce.startYear" lang="tab.lang" label="data-collection-event.start-year"></div>
+          <div form-input type="number" name="data-collection-event.start-month" model="dce.startMonth" lang="tab.lang" label="data-collection-event.start-month"></div>
+          <div form-input type="number" name="data-collection-event.end-year" model="dce.endYear" lang="tab.lang" label="data-collection-event.end-year"></div>
+          <div form-input type="number" name="data-collection-event.end-month" model="dce.endMonth" lang="tab.lang" label="data-collection-event.end-month"></div>
+          <div date-picker="start" view="year" class="ng-isolate-scope"></div>
+        </div>
+      </tab>
+    </tabset>
+    <button type="button" class="btn btn-default" ng-click="cancel()">
+      <span class="glyphicon glyphicon-ban-circle"></span><span translate>cancel</span>
+    </button>
+    <button type="submit" class="btn btn-primary">
+      <span class="glyphicon glyphicon-save"></span><span translate>save</span>
+    </button>
+  </form>
+</div>
