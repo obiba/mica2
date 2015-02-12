@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Nullable;
 
@@ -64,6 +65,8 @@ public class AggregationYamlParser {
 
   private long minDocCount = 0;
 
+  private Map<String, Properties> yamlPropertiesCache = new ConcurrentHashMap<>();
+
   public void setLocales(List<Locale> locales) {
     this.locales = locales;
   }
@@ -81,9 +84,15 @@ public class AggregationYamlParser {
     @Nullable Map<String, Properties> subProperties) throws IOException {
     if(description == null) return Collections.emptyList();
 
-    YamlPropertiesFactoryBean yamlPropertiesFactoryBean = new YamlPropertiesFactoryBean();
-    yamlPropertiesFactoryBean.setResources(new Resource[] { description });
-    return getAggregations(yamlPropertiesFactoryBean.getObject(), subProperties);
+    String descriptionUri = description.getURI().toString();
+
+    if (!yamlPropertiesCache.containsKey(descriptionUri)) {
+      YamlPropertiesFactoryBean yamlPropertiesFactoryBean = new YamlPropertiesFactoryBean();
+      yamlPropertiesFactoryBean.setResources(new Resource[] { description });
+      yamlPropertiesCache.put(descriptionUri.toString(), yamlPropertiesFactoryBean.getObject());
+    }
+
+    return getAggregations(yamlPropertiesCache.get(descriptionUri), subProperties);
   }
 
   public Iterable<AbstractAggregationBuilder> getAggregations(@Nullable Properties properties) throws IOException {

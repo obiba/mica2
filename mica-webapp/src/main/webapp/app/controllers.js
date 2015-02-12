@@ -99,8 +99,12 @@ mica.controller('SessionsController', ['$scope', 'resolvedSessions', 'Sessions',
     };
   }]);
 
-mica.controller('MetricsController', ['$scope', 'MetricsService', 'HealthCheckService', 'ThreadDumpService',
-  function ($scope, MetricsService, HealthCheckService, ThreadDumpService) {
+mica.controller('MetricsController', ['$rootScope', '$scope', 'MetricsService', 'HealthCheckService', 'ThreadDumpService',
+  'CacheService', function ($rootScope, $scope, MetricsService, HealthCheckService, ThreadDumpService, CacheService) {
+    $scope.refreshCache = function () {
+      CacheService.clear();
+      $scope.refresh();
+    };
 
     $scope.refresh = function () {
       HealthCheckService.check().then(function (data) {

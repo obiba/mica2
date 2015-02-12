@@ -158,6 +158,13 @@ mica.factory('LogsService', ['$resource',
     });
   }]);
 
+mica.factory('CacheService', ['$resource',
+  function ($resource) {
+    return $resource('ws/cache/clear', {}, {
+      'clear': { method: 'POST'}
+    });
+  }]);
+
 mica.factory('AuditsService', ['$http',
   function ($http) {
     return {
