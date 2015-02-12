@@ -43,11 +43,15 @@ class StudySummaryDtos {
   public Mica.StudySummaryDto.Builder asDtoBuilder(@NotNull Study study) {
     StudyState studyState = studyService.findStateById(study.getId());
 
-    return asDtoBuilder(study, studyState.isPublished());
+    if (studyState.isPublished()) {
+      return asDtoBuilder(study, studyState.isPublished(), datasetVariableService.getCountByStudyId(study.getId()));
+    }
+
+    return asDtoBuilder(study, studyState.isPublished(), 0);
   }
 
   @NotNull
-  public Mica.StudySummaryDto.Builder asDtoBuilder(@NotNull Study study, boolean isPublished) {
+  public Mica.StudySummaryDto.Builder asDtoBuilder(@NotNull Study study, boolean isPublished, long variablesCount) {
     Mica.StudySummaryDto.Builder builder = Mica.StudySummaryDto.newBuilder();
     builder.setPublished(isPublished);
 
@@ -56,7 +60,7 @@ class StudySummaryDtos {
         .addAllName(localizedStringDtos.asDto(study.getName())) //
         .addAllAcronym(localizedStringDtos.asDto(study.getAcronym())) //
         .addAllObjectives(localizedStringDtos.asDto(study.getObjectives()))
-        .setVariables(isPublished ? datasetVariableService.getCountByStudyId(study.getId()) : 0);
+        .setVariables(isPublished ? variablesCount : 0);
 
     if(study.getLogo() != null) builder.setLogo(attachmentDtos.asDto(study.getLogo()));
 
@@ -147,7 +151,8 @@ class StudySummaryDtos {
     StudyState studyState = studyService.findStateById(studyId);
 
     if(studyState.isPublished()) {
-      return asDtoBuilder(publishedStudyService.findById(studyId), true).build();
+      return asDtoBuilder(publishedStudyService.findById(studyId), true,
+        datasetVariableService.getCountByStudyId(studyId)).build();
     }
 
     return asDto(studyState);

@@ -14,6 +14,9 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -26,6 +29,11 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
+import org.elasticsearch.search.aggregations.AggregationBuilder;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms;
+import org.elasticsearch.transport.TransportResponse;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.search.AbstractPublishedDocumentService;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
@@ -43,11 +51,30 @@ public class EsPublishedDatasetVariableService extends AbstractPublishedDocument
 
   private static final String VARIABLE_PUBLISHED = "variable-published";
   private static final String VARIABLE_TYPE = "Variable";
-
+  private static final String STUDY_IDS_FIELD= "studyIds";
 
   @Override
   public long getCountByStudyId(String studyId) {
-    return executeCountQuery(buildStudyFilteredQuery(studyId));
+    SearchResponse response = executeCountQuery(buildStudyFilteredQuery(studyId), null);
+
+    if (response == null) {
+      return 0;
+    }
+
+    return response.getHits().totalHits();
+  }
+
+  public Map<String, Long> getCountByStudyIds(List<String> studyIds) {
+    SearchResponse response = executeCountQuery(buildStudiesFilteredQuery(studyIds),
+      AggregationBuilders.terms(STUDY_IDS_FIELD).field(STUDY_IDS_FIELD));
+
+    if (response == null) {
+      return studyIds.stream().collect(Collectors.toMap(s -> s, s -> 0L));
+    }
+
+    Terms aggregation = response.getAggregations().get(STUDY_IDS_FIELD);
+    return studyIds.stream().collect(Collectors.toMap(s -> s, s -> Optional.ofNullable(aggregation.getBucketByKey(s)).map(
+      Terms.Bucket::getDocCount).orElse(0L)));
   }
 
   @Inject
@@ -70,16 +97,16 @@ public class EsPublishedDatasetVariableService extends AbstractPublishedDocument
   }
 
   private QueryBuilder buildStudiesFilteredQuery(List<String> ids) {
-    BoolFilterBuilder boolFilter = FilterBuilders.boolFilter().must(FilterBuilders.termsFilter("studyIds", ids));
+    BoolFilterBuilder boolFilter = FilterBuilders.boolFilter().must(FilterBuilders.termsFilter(STUDY_IDS_FIELD, ids));
     return QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), boolFilter);
   }
 
   private QueryBuilder buildStudyFilteredQuery(String id) {
-    BoolFilterBuilder boolFilter = FilterBuilders.boolFilter().must(FilterBuilders.termFilter("studyIds", id));
+    BoolFilterBuilder boolFilter = FilterBuilders.boolFilter().must(FilterBuilders.termFilter(STUDY_IDS_FIELD, id));
     return QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), boolFilter);
   }
 
-  private long executeCountQuery(QueryBuilder queryBuilder) {
+  private SearchResponse executeCountQuery(QueryBuilder queryBuilder, AbstractAggregationBuilder aggregationBuilder) {
     SearchRequestBuilder requestBuilder = client.prepareSearch(getIndexName()) //
       .setTypes(getType()) //
       .setSearchType(SearchType.COUNT) //
@@ -87,12 +114,15 @@ public class EsPublishedDatasetVariableService extends AbstractPublishedDocument
       .setFrom(0) //
       .setSize(0);
 
+    if(aggregationBuilder != null) {
+      requestBuilder.addAggregation(aggregationBuilder);
+    }
+
     try {
-      SearchResponse response = requestBuilder.execute().actionGet();
-      return response.getHits().totalHits();
+      return requestBuilder.execute().actionGet();
     } catch(IndexMissingException e) {
       log.error("Failed to execute variables count: {}", e);
-      return 0;
+      return null;
     }
   }
 }

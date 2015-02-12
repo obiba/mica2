@@ -1,6 +1,8 @@
 package org.obiba.mica.web.model;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -10,6 +12,7 @@ import org.obiba.mica.core.domain.Contact;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +20,8 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
+
+import jersey.repackaged.com.google.common.collect.Lists;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.obiba.mica.web.model.Mica.ContactDto;
@@ -40,6 +45,9 @@ class NetworkDtos {
 
   @Inject
   private PublishedStudyService publishedStudyService;
+
+  @Inject
+  private PublishedDatasetVariableService datasetVariableService;
 
   @NotNull
   Mica.NetworkDto.Builder asDtoBuilder(@NotNull Network network) {
@@ -65,13 +73,19 @@ class NetworkDtos {
     if(!isNullOrEmpty(network.getWebsite())) builder.setWebsite(network.getWebsite());
 
     List<Study> publishedStudies = publishedStudyService.findByIds(network.getStudyIds());
+    Set<String> publishedStudyIds = publishedStudies.stream().map(s -> s.getId()).collect(Collectors.toSet());
     Sets.SetView<String> unpublishedStudyIds = Sets.difference(ImmutableSet.copyOf(network.getStudyIds()),
-      publishedStudies.stream().map(s -> s.getId()).collect(Collectors.toSet()));
+      publishedStudyIds);
 
-    publishedStudies.forEach(study -> {
-      builder.addStudyIds(study.getId());
-      builder.addStudySummaries(studySummaryDtos.asDtoBuilder(study, true));
-    });
+    if (!publishedStudies.isEmpty()) {
+      Map<String, Long> datasetVariableCounts = datasetVariableService.getCountByStudyIds(
+        Lists.newArrayList(publishedStudyIds));
+
+      publishedStudies.forEach(study -> {
+        builder.addStudyIds(study.getId());
+        builder.addStudySummaries(studySummaryDtos.asDtoBuilder(study, true, datasetVariableCounts.get(study.getId())));
+      });
+    }
 
     unpublishedStudyIds.forEach(studyId -> {
       builder.addStudyIds(studyId);
