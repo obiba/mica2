@@ -1,6 +1,7 @@
 package org.obiba.mica.study.service;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 
 import static java.util.stream.Collectors.toList;
@@ -150,6 +152,10 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
 
   public List<StudyState> findAllStates() {
     return studyStateRepository.findAll();
+  }
+
+  public List<StudyState> findAllStates(String... ids) {
+    return Lists.newArrayList(studyStateRepository.findAll(Arrays.asList(ids)));
   }
 
   public List<Study> findAllDraftStudies() {

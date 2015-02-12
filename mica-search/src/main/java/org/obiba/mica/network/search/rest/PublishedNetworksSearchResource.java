@@ -28,6 +28,7 @@ import org.obiba.mica.search.queries.NetworkQuery;
 import org.obiba.mica.search.rest.QueryDtoHelper;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
@@ -38,6 +39,7 @@ import static org.obiba.mica.web.model.MicaSearch.JoinQueryResultDto;
 @Path("/networks/_search")
 @RequiresAuthentication
 @Scope("request")
+@Component
 public class PublishedNetworksSearchResource {
 
   public static final String DEFAULT_SORT = "script";

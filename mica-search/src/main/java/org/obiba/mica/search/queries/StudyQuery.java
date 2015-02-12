@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -71,11 +72,9 @@ public class StudyQuery extends AbstractDocumentQuery {
     StudyCountStatsBuilder studyCountStatsBuilder = counts == null ? null : StudyCountStatsBuilder.newBuilder(counts);
 
     Consumer<Study> addDto = getStudyConsumer(scope, resBuilder, studyCountStatsBuilder);
-
-    for(SearchHit hit : hits) {
-      addDto.accept(publishedStudyService.findById(hit.getId()));
-    }
-
+    List<Study> publishedStudies =
+      publishedStudyService.findByIds(Stream.of(hits.hits()).map(h -> h.getId()).collect(Collectors.toList()));
+    publishedStudies.forEach(addDto::accept);
     builder.setExtension(StudyResultDto.result, resBuilder.build());
   }
 

@@ -10,9 +10,14 @@
 
 package org.obiba.mica.study.service;
 
+import java.util.List;
+import java.util.Map;
+
 import org.obiba.mica.core.service.PublishedDocumentService;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 
 public interface PublishedDatasetVariableService extends PublishedDocumentService<DatasetVariable> {
   long getCountByStudyId(String studyId);
+
+  Map<String, Long> getCountByStudyIds(List<String> studyIds);
 }

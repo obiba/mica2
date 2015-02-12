@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -100,11 +101,9 @@ public class NetworkQuery extends AbstractDocumentQuery {
       : NetworkCountStatsBuilder.newBuilder(counts);
 
     Consumer<Network> addDto = getNetworkConsumer(scope, resBuilder, networkCountStatsBuilder);
-
-    for(SearchHit hit : hits) {
-      addDto.accept(publishedNetworkService.findById(hit.getId()));
-    }
-
+    List<Network> networks = publishedNetworkService.findByIds(
+      Stream.of(hits.hits()).map(h -> h.getId()).collect(Collectors.toList()));
+    networks.forEach(addDto::accept);
     builder.setExtension(NetworkResultDto.result, resBuilder.build());
   }
 

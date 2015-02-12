@@ -262,7 +262,7 @@ public abstract class AbstractDocumentQuery {
       requestBuilder.addAggregation(agg);
     });
 
-    log.info("Request: {}", requestBuilder.toString());
+    log.debug("Request: {}", requestBuilder.toString());
 
     try {
       List<SearchResponse> responses = Stream
@@ -272,7 +272,8 @@ public abstract class AbstractDocumentQuery {
 
       SearchResponse aggResponse = responses.get(0);
       SearchResponse response = responses.get(1);
-      log.info("Response: {}", response);
+
+      log.debug("Response: {}", response);
 
       if(response == null) {
         return null;
@@ -366,7 +367,7 @@ public abstract class AbstractDocumentQuery {
       SearchResponse defaultResponse = responses.get(0);
       SearchResponse response = responses.get(1);
 
-      log.info("Response: {}", response.toString());
+      log.info("Response: {}", response);
       QueryResultDto.Builder builder = QueryResultDto.newBuilder().setTotalHits((int) response.getHits().getTotalHits());
 
       if(scope == DETAIL) processHits(builder, response.getHits(), scope, counts);

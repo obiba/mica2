@@ -10,6 +10,7 @@
 
 package org.obiba.mica.search.aggregations;
 
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -35,9 +36,10 @@ public class DatasetAggregationMetaDataProvider implements AggregationMetaDataPr
   private Map<String, LocalizedString> cacheDescriptions;
 
   public void refresh() {
-    cacheTitles = publishedDatasetService.findAll().stream()
+    List<Dataset> datasets = publishedDatasetService.findAll();
+    cacheTitles = datasets.stream()
       .collect(Collectors.toMap(Dataset::getId, Dataset::getAcronym));
-    cacheDescriptions = publishedDatasetService.findAll().stream()
+    cacheDescriptions = datasets.stream()
       .collect(Collectors.toMap(Dataset::getId, Dataset::getName));
   }
 

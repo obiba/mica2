@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.codahale.metrics.annotation.Timed;
 import com.google.common.collect.ImmutableList;
 
 import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.DETAIL;
@@ -73,10 +74,12 @@ public class JoinQueryExecutor {
   @Inject
   private Dtos dtos;
 
+  @Timed
   public JoinQueryResultDto queryCoverage(QueryType type, JoinQueryDto joinQueryDto) throws IOException {
     return query(type, joinQueryDto, null, DIGEST, Mode.COVERAGE);
   }
 
+  @Timed
   public JoinQueryResultDto listQuery(QueryType type, MicaSearch.QueryDto queryDto, String locale) throws IOException {
     JoinQueryDto joinQueryDto = createJoinQueryByType(type, queryDto);
     variableQuery
@@ -120,6 +123,7 @@ public class JoinQueryExecutor {
     return builder.build();
   }
 
+  @Timed
   public JoinQueryResultDto query(QueryType type, JoinQueryDto joinQueryDto) throws IOException {
     return query(type, joinQueryDto, CountStatsData.newBuilder(), DETAIL, Mode.SEARCH);
   }
