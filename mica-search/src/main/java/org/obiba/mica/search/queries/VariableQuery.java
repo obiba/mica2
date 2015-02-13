@@ -265,11 +265,13 @@ public class VariableQuery extends AbstractDocumentQuery {
   @NotNull
   protected List<Taxonomy> getTaxonomies() {
     List<Taxonomy> taxonomies = null;
+
     try {
       taxonomies = opalService.getTaxonomies();
     } catch(Exception e) {
       // ignore
     }
+
     return taxonomies == null ? Collections.emptyList() : taxonomies;
   }
 }
