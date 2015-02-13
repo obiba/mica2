@@ -462,15 +462,22 @@
     "numberOfParticipants-noLimit": "No limit"
   },
   "data-collection-event": {
-    "label-edit": "Edit Data Collection Even",
+    "label-edit": "Edit Data Collection Event",
     "id": "Id",
     "name": "Name",
     "description": "Description",
     "start-year": "Start Year",
     "start-month": "Start Month",
     "end-year": "End Year",
-    "end-month": "End Month"
-
+    "end-month": "End Month",
+    "data-sources": "Data sources",
+    "other-data-sources": "Other data sources",
+    "bio-samples": "Biological samples",
+    "other-bio-samples": "Other biological samples",
+    "admin-databases": "Administrative databases",
+    "tissue-types": "Tissue types",
+    "delete-dialog-title": "Delete Data Collection Event",
+    "delete-dialog-message": "Are you sure you want to delete the collection event?"
   },
   "study-datasets" : "Study Datasets",
   "study-dataset" : "Study Dataset",
@@ -484,8 +491,7 @@
     "general-info": "General Information",
     "description" : "Description",
     "index": "Index",
-    "add-study": "Add Study",
-    "logo": "Logo"
+    "add-study": "Add Study"
   },
   "name": "Name",
   "value": "Value",
@@ -511,5 +517,8 @@
   "loading": "Loading...",
   "error": "Error",
   "actions": "Actions",
-  "authorizer": "Authorizer"
+  "authorizer": "Authorizer",
+  "logo": "Logo",
+  "attachments": "Attachments",
+  "allowed-file-types": "Allowed file types:"
 }
