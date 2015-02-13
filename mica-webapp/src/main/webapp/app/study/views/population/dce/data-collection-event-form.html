@@ -1,0 +1,63 @@
+<!--
+  ~ Copyright (c) 2014 OBiBa. All rights reserved.
+  ~
+  ~ This program and the accompanying materials
+  ~ are made available under the terms of the GNU Public License v3.0.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<div>
+  <h2 translate>data-collection-event.label-edit</h2>
+  <form name="form" role="form" novalidate
+    class="ng-scope ng-invalid ng-invalid-required ng-dirty" ng-submit="save()">
+    <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
+    <tabset>
+      <tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active" disabled="tab.disabled">
+        <div ng-if="population">
+          <h3 translate>study.data-collection-event</h3>
+          <div form-input model="dce.id" required="true" label="data-collection-event.id"></div>
+          <div localized-input name="data-collection-event.name" required="true" model="dce.name" lang="tab.lang" label="data-collection-event.name"></div>
+          <div localized-textarea name="data-collection-event.description" model="dce.description" lang="tab.lang" label="data-collection-event.description"></div>
+          <div form-input type="number" name="data-collection-event.start-year" min="{{defaultMinYear}}" max="{{defaultMaxYear}}" required="true" model="dce.startYear" lang="tab.lang" label="data-collection-event.start-year"></div>
+          <div form-input type="number" name="data-collection-event.start-month" min="1" max="12" model="dce.startMonth" lang="tab.lang" label="data-collection-event.start-month"></div>
+          <div form-input type="number" min="{{dce.startYear}}" name="data-collection-event.end-year" max="{{dce.startYear + 200}}" model="dce.endYear" lang="tab.lang" label="data-collection-event.end-year"></div>
+          <div form-input type="number" name="data-collection-event.end-month" min="1" max="12" model="dce.endMonth" lang="tab.lang" label="data-collection-event.end-month"></div>
+
+          <h4 class="voffset4" translate>data-collection-event.data-sources</h4>
+          <div form-checkbox-group options="dataSources" model="dce.dataSources"></div>
+          <div ng-show="dce.dataSources.indexOf('others') > -1" localized-input name="data-collection-event.other-data-sources" model="dce.otherDataSources" lang="tab.lang" label="data-collection-event.other-data-sources"></div>
+
+          <div class="voffset4" ng-show="dce.dataSources.indexOf('biological_samples') > -1">
+            <h4 translate>data-collection-event.bio-samples</h4>
+            <div form-checkbox-group options="bioSamples" model="dce.bioSamples"></div>
+            <div ng-show="dce.bioSamples.indexOf('others') > -1" localized-input name="data-collection-event.other-bio-samples" model="dce.otherBioSamples" lang="tab.lang" label="data-collection-event.other-bio-samples"></div>
+          </div>
+
+          <div ng-show="dce.bioSamples.indexOf('tissues') > -1" localized-input name="data-collection-event.tissue-types" model="dce.tissueTypes" lang="tab.lang" label="data-collection-event.tissue-types"></div>
+
+          <div class="voffset4" ng-show="dce.dataSources.indexOf('administratives_databases') > -1">
+            <h4 translate>data-collection-event.admin-databases</h4>
+            <div form-checkbox-group options="administrativeDatabases" model="dce.administrativeDatabases"></div>
+          </div>
+
+          <div class="voffset4">
+            <h4 translate>attachments</h4>
+            <attachment-input files="attachments" accept="fileTypes" multiple="true"></attachment-input>
+            <div class="help-block">
+              <span>{{'allowed-file-types' | translate}} <span><strong>{{fileTypes}}</strong></span></span>
+            </div>
+          </div>
+
+        </div>
+      </tab>
+    </tabset>
+    <button type="button" class="btn btn-default" ng-click="cancel()">
+      <span class="glyphicon glyphicon-ban-circle"></span><span translate>cancel</span>
+    </button>
+    <button type="submit" class="btn btn-primary">
+      <span class="glyphicon glyphicon-save"></span><span translate>save</span>
+    </button>
+  </form>
+</div>

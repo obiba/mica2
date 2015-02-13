@@ -28,6 +28,8 @@ angular.module('obiba.form')
         type: '@',
         label: '@',
         required: '@',
+        min: '@',
+        max: '@',
         help: '@'
       },
       templateUrl: 'form/form-input-template.tpl.html',

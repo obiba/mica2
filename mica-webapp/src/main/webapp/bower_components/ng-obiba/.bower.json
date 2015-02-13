@@ -21,11 +21,11 @@
     "angular-scenario": "1.2.16"
   },
   "homepage": "https://github.com/obiba/ng-obiba",
-  "_release": "f0b24b55ac",
+  "_release": "d405438bd5",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "f0b24b55acc4b3fbe18ae74cd90ae2e99b602a9e"
+    "commit": "d405438bd550d32c0fcaa1b425f285a4d2f2886b"
   },
   "_source": "git@github.com:obiba/ng-obiba.git",
   "_target": "*",

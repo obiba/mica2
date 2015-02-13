@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba
 
  * License: GNU Public License version 3
- * Date: 2014-12-15
+ * Date: 2015-02-12
  */
 'use strict';
 
@@ -205,6 +205,8 @@ angular.module('obiba.form')
         type: '@',
         label: '@',
         required: '@',
+        min: '@',
+        max: '@',
         help: '@'
       },
       templateUrl: 'form/form-input-template.tpl.html',
@@ -365,6 +367,8 @@ angular.module("form/form-input-template.tpl.html", []).run(["$templateCache", f
     "      id=\"{{name}}\"\n" +
     "      name=\"{{name}}\"\n" +
     "      form-server-error\n" +
+    "      ng-attr-min=\"{{min}}\"\n" +
+    "      ng-attr-max=\"{{max}}\"\n" +
     "      ng-disabled=\"disabled\"\n" +
     "      ng-required=\"required\">\n" +
     "\n" +

@@ -9,7 +9,7 @@
       <h3 translate>Population</h3>
       <div form-input model="population.id" required="true" label="population.id"></div>
       <div localized-input name="population.name" model="population.name" lang="tab.lang" label="population.name"></div>
-      <div localized-input name="population.description" model="population.description" lang="tab.lang" label="population.description"></div>
+      <div localized-textarea name="population.description" model="population.description" lang="tab.lang" label="population.description"></div>
       <h4 translate>Selection criteria</h4>
       <label for="gender" class="control-label"><span translate>population.gender</span></label>
       <select id="gender" name="gender" class="form-control" ng-model="population.selectionCriteria.gender" ng-options="g for g in selectionCriteriaGenders"></select>
