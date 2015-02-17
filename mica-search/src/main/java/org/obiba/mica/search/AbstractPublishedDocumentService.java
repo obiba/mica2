@@ -13,6 +13,9 @@ package org.obiba.mica.search;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -60,7 +63,7 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
   }
 
   public List<T> findByIds(List<String> ids) {
-    return executeQuery(buildFilteredQuery(ids), 0, MAX_SIZE);
+    return executeQueryByIds(buildFilteredQuery(ids), 0, MAX_SIZE, ids);
   }
 
   @Override
@@ -130,6 +133,14 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
   protected abstract String getType();
 
   private List<T> executeQuery(QueryBuilder queryBuilder, int from, int size) {
+    return executeQueryInternal(queryBuilder, from, size, null);
+  }
+
+  private List<T> executeQueryByIds(QueryBuilder queryBuilder, int from, int size, List<String> ids) {
+    return executeQueryInternal(queryBuilder, from, size, ids);
+  }
+
+  private List<T> executeQueryInternal(QueryBuilder queryBuilder, int from, int size, List<String> ids) {
     SearchRequestBuilder requestBuilder = client.prepareSearch(getIndexName()) //
       .setTypes(getType()) //
       .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
@@ -139,10 +150,28 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
 
     try {
       SearchResponse response = requestBuilder.execute().actionGet();
-      return processHits(response.getHits());
+      SearchHits hits = response.getHits();
+      return ids == null || ids.size() != hits.totalHits()
+        ? processHits(response.getHits())
+        : processHitsOrderByIds(response.getHits(), ids);
     } catch(IndexMissingException e) {
       return Lists.newArrayList();
     }
+  }
+
+  protected List<T> processHitsOrderByIds(SearchHits hits, List<String> ids) {
+    TreeMap<Integer, T> documents = new TreeMap<>();
+
+    hits.forEach(hit -> {
+      try {
+        int position = ids.indexOf(hit.getId());
+        if (position != -1) documents.put(position, processHit(hit));
+      } catch(IOException e) {
+        throw new RuntimeException(e);
+      }
+    });
+
+    return documents.entrySet().stream().map(Map.Entry::getValue).collect(Collectors.toList());
   }
 
   protected List<T> processHits(SearchHits hits) {
