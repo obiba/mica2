@@ -11,6 +11,8 @@
 package org.obiba.mica.micaConfig.service;
 
 import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,9 +21,6 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -43,6 +42,9 @@ import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 
 @Component
 public class OpalService implements EnvironmentAware {
@@ -159,7 +161,16 @@ public class OpalService implements EnvironmentAware {
   public List<Taxonomy> getTaxonomies() {
     Map<String, Taxonomy> taxonomies = getTaxonomiesInternal();
 
-    return Lists.newArrayList(taxonomies.values());
+    List<Taxonomy> taxonomyList = Lists.newArrayList(taxonomies.values());
+
+    Collections.sort(taxonomyList, new Comparator<Taxonomy>() {
+      @Override
+      public int compare(Taxonomy o1, Taxonomy o2) {
+        return o1.getName().compareTo(o2.getName());
+      }
+    });
+
+    return taxonomyList;
   }
 
   public List<Opal.TaxonomyDto> getTaxonomyDtos() {
@@ -172,9 +183,7 @@ public class OpalService implements EnvironmentAware {
    * @return
    */
   public Opal.TaxonomiesDto getTaxonomySummaryDtos() {
-    Map<String, Taxonomy> taxonomies = getTaxonomiesInternal();
-
-    List<Opal.TaxonomiesDto.TaxonomySummaryDto> summaries = taxonomies.values().stream()
+    List<Opal.TaxonomiesDto.TaxonomySummaryDto> summaries = getTaxonomies().stream()
       .map(Dtos::asSummaryDto).collect(Collectors.toList());
 
     return Opal.TaxonomiesDto.newBuilder().addAllSummaries(summaries).build();
