@@ -17,7 +17,12 @@ public class OpalCredential extends AbstractAuditableDocument {
 
   private AuthType authType;
 
+  public OpalCredential() {
+    super();
+  }
+
   public OpalCredential(String opalUrl, AuthType authType) {
+    super();
     setId(opalUrl);
     this.authType = authType;
   }
