@@ -182,6 +182,7 @@ public class ElasticSearchIndexer {
   }
 
   private synchronized void createIndexIfNeeded(String indexName) {
+    log.info("Ensuring index existance for index {}", indexName);
     IndicesAdminClient indicesAdmin = client.admin().indices();
     if(!hasIndex(indexName)) {
       log.info("Creating index {}", indexName);
