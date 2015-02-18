@@ -121,8 +121,7 @@ public class EsPublishedDatasetVariableService extends AbstractPublishedDocument
     try {
       return requestBuilder.execute().actionGet();
     } catch(IndexMissingException e) {
-      log.error("Failed to execute variables count: {}", e);
-      return null;
+      return null; //ignoring
     }
   }
 }
