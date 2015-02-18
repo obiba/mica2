@@ -155,7 +155,7 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
         ? processHits(response.getHits())
         : processHitsOrderByIds(response.getHits(), ids);
     } catch(IndexMissingException e) {
-      return Lists.newArrayList();
+      return Lists.newArrayList(); //ignoring
     }
   }
 

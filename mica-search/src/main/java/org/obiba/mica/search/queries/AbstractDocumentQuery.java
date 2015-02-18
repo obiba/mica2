@@ -289,8 +289,7 @@ public abstract class AbstractDocumentQuery {
 
       return getResponseStudyIds(resultDto.getAggsList());
     } catch(IndexMissingException e) {
-      log.error("Missing index: {}", e.getMessage(), e);
-      return null;
+      return null; //ignoring
     } finally {
       aggregationTitleResolver.unregisterProviders(getAggregationMetaDataProviders());
     }
@@ -376,8 +375,7 @@ public abstract class AbstractDocumentQuery {
       resultDto = builder.build();
       return getResponseStudyIds(resultDto.getAggsList());
     } catch(IndexMissingException e) {
-      log.error("Missing index: {}", e.getMessage(), e);
-      return null;
+      return null; //ignoring
     }
   }
 
