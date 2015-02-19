@@ -119,13 +119,15 @@ angular.module('obiba.form')
         options: '=',
         model: '='
       },
-      template: '<div form-checkbox ng-repeat="item in items" model="item.value" label="{{item.label}}">',
+      template: '<div form-checkbox ng-repeat="item in items" name="{{item.name}}" model="item.value" label="{{item.label}}">',
       link: function ($scope) {
         $scope.$watch('model', function(selected) {
           $scope.items = $scope.options.map(function(n) {
-            return angular.isArray(selected) && selected.indexOf(n) > - 1 ? {name: n.name || n, label: n.label || n, value: true} : {name: n.name || n, label: n.label || n, value: false};
+              var value = angular.isArray(selected) && (selected.indexOf(n) > -1 ||
+                  selected.indexOf(n.name) > -1);
+              return {name: n.name || n, label: n.label || n, value: value};
           });
-        });
+        }, true);
 
         $scope.$watch('items', function(items) {
           if (angular.isArray(items)) {

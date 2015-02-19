@@ -27,8 +27,14 @@ mica.study
       });
     }])
 
-  .controller('StudyViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', '$translate', 'StudyStateResource', 'DraftStudyResource', 'DraftStudyPublicationResource', 'MicaConfigResource', 'STUDY_EVENTS', 'NOTIFICATION_EVENTS', 'CONTACT_EVENTS',
-    function ($rootScope, $scope, $routeParams, $log, $locale, $location, $translate, StudyStateResource, DraftStudyResource, DraftStudyPublicationResource, MicaConfigResource, STUDY_EVENTS, NOTIFICATION_EVENTS, CONTACT_EVENTS) {
+  .controller('StudyViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location',
+    '$translate', 'StudyStateResource', 'DraftStudyResource', 'DraftStudyPublicationResource', 'MicaConfigResource', 'STUDY_EVENTS', 'NOTIFICATION_EVENTS', 'CONTACT_EVENTS',
+    'MicaStudiesConfigResource', function ($rootScope, $scope, $routeParams, $log, $locale, $location, $translate, StudyStateResource, DraftStudyResource, DraftStudyPublicationResource, MicaConfigResource, STUDY_EVENTS, NOTIFICATION_EVENTS, CONTACT_EVENTS, MicaStudiesConfigResource) {
+      var getActiveTab = function () {
+        return $scope.tabs.filter(function (tab) {
+          return tab.active;
+        })[0];
+      };
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
@@ -36,6 +42,22 @@ mica.study
           $scope.tabs.push({lang: lang});
         });
       });
+
+      $scope.studiesConfig = MicaStudiesConfigResource.get();
+
+      $scope.getLabel = function(vocabulary, term) {
+        if (!term) {
+          return;
+        }
+
+        return ((($scope.studiesConfig.vocabularies.filter(function(v) {
+          return v.name === vocabulary;
+        }) || [{terms: []}])[0].terms.filter(function(t) {
+            return t.name === term;
+          }) || [{title : []}])[0].title.filter(function(v) {
+            return v.locale === getActiveTab().lang;
+          }) || [{text: term}])[0].text;
+      };
 
       $scope.study = DraftStudyResource.get(
         {id: $routeParams.id},
@@ -175,9 +197,24 @@ mica.study
 
     }])
 
-  .controller('StudyPopulationController', ['$rootScope', '$scope', '$routeParams', '$location', '$log', 'DraftStudyResource', 'MicaConfigResource', 'FormServerValidation', 'MicaConstants',
-     function($rootScope, $scope, $routeParams, $location, $log, DraftStudyResource, MicaConfigResource, FormServerValidation, MicaConstants) {
-    $scope.population = {selectionCriteria: {healthStatus: [], ethnicOrigin: []}};
+  .controller('StudyPopulationController', ['$rootScope', '$scope', '$routeParams', '$location', '$log',
+    'DraftStudyResource', 'MicaConfigResource', 'FormServerValidation', 'MicaConstants', 'MicaStudiesConfigResource',
+     function($rootScope, $scope, $routeParams, $location, $log, DraftStudyResource, MicaConfigResource, FormServerValidation, MicaConstants,
+              MicaStudiesConfigResource) {
+    var getActiveTab = function () {
+      return $scope.tabs.filter(function (tab) {
+        return tab.active;
+      })[0];
+    };
+
+    var getLabel = function(localizedString) {
+      return (localizedString.filter(function(t){
+        return t.locale === getActiveTab().lang;
+      }) || [{text: null}])[0].text;
+    };
+
+    $scope.population = {selectionCriteria: {healthStatus: [], ethnicOrigin: []}, recruitment:{dataSources: []}};
+
     $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}, function() {
       if ($routeParams.pid) {
         $scope.population = $scope.study.populations.filter(function(p){
@@ -188,19 +225,40 @@ mica.study
       }
     }) : {};
 
-    //TODO: possible values should be retreived from a resource. Hardcoded here for the moment.
-    $scope.specificPopulationTypes = ['clinic_patients', 'other', 'specific_association'];
-    $scope.selectionCriteriaGenders = ['N/A', 'men', 'women'];
-    $scope.generalPopulationTypes = ['volunteer', 'selected_samples', 'random'];
-    $scope.availableSelectionCriteria = ['criteria1', 'criteria2'];
-    $scope.dataSourceTypes = ['questionnaires', 'administratives_databases', 'others'];
     $scope.availableCountries = MicaConstants.COUNTRIES_ISO_CODES;
+    $scope.selectionCriteriaGenders = [];
+    $scope.availableSelectionCriteria = [];
+    $scope.recruitmentSourcesTypes = [];
+    $scope.generalPopulationTypes = [];
+    $scope.specificPopulationTypes = [];
 
     MicaConfigResource.get(function (micaConfig) {
       $scope.tabs = [];
       micaConfig.languages.forEach(function (lang) {
         $scope.tabs.push({ lang: lang, labelKey: 'language.' + lang });
       });
+    });
+
+    MicaStudiesConfigResource.get(function (studiesConfig) {
+      function extractVocabulary(options) {
+        var opts = studiesConfig.vocabularies.map(function (v) {
+          if (v.name === options) {
+            return v.terms.map(function (t) {
+              return {name: t.name, label: getLabel(t.title) || t.name};
+            });
+          }
+        }).filter(function(x) { return x; });
+
+        return opts ? opts[0] : [];
+      }
+
+      $scope.selectionCriteriaGenders = extractVocabulary('selectionCriteriaGender').map(function(obj) {
+        return {id: obj.name, label: obj.label};
+      });
+      $scope.availableSelectionCriteria = extractVocabulary('selectionCriteriaCriteria');
+      $scope.recruitmentSourcesTypes = extractVocabulary('recruitmentDatasources');
+      $scope.generalPopulationTypes = extractVocabulary('recruitmentGeneralPopulation');
+      $scope.specificPopulationTypes = extractVocabulary('recruitmentSpecificPopulation');
     });
 
     $scope.save = function () {
@@ -212,12 +270,45 @@ mica.study
       updateStudy();
     };
 
+    function removeLocalizedString(target, item) {
+      var idx = -1;
+
+      for(var i = target.length; i--;){
+        if (target[i].localizedStrings === item) {
+          idx = i;
+        }
+      }
+
+      if (idx > -1) {
+        target.splice(idx, 1);
+      }
+    }
+
+    $scope.removeHealthStatus = function(item) {
+      removeLocalizedString($scope.population.selectionCriteria.healthStatus, item);
+    };
+
+    $scope.removeEthnicOrigin = function (item) {
+      removeLocalizedString($scope.population.selectionCriteria.ethnicOrigin, item);
+    };
+
     $scope.addHealthStatus = function () {
+      $scope.population.selectionCriteria.healthStatus = $scope.population.selectionCriteria.healthStatus || [];
       $scope.population.selectionCriteria.healthStatus.push({localizedStrings: []});
     };
 
     $scope.addEthnicOrigin = function () {
+      $scope.population.selectionCriteria.ethnicOrigin = $scope.population.selectionCriteria.ethnicOrigin || [];
       $scope.population.selectionCriteria.ethnicOrigin.push({localizedStrings: []});
+    };
+
+    $scope.removeRecruitmentStudy = function(item) {
+      removeLocalizedString($scope.population.recruitment.studies, item);
+    };
+
+    $scope.addRecruitmentStudy = function() {
+      $scope.population.recruitment.studies = $scope.population.recruitment.studies || [];
+      $scope.population.recruitment.studies.push({localizedStrings: []});
     };
 
     $scope.cancel = function () {
@@ -225,6 +316,10 @@ mica.study
     };
 
     var updateStudy = function () {
+      if(!$scope.population.selectionCriteria.gender) {
+        delete $scope.population.selectionCriteria.gender;
+      }
+
       $log.debug('Update study', $scope.study);
       $scope.study.$save(redirectToStudy, saveErrorHandler);
     };
@@ -241,7 +336,7 @@ mica.study
   .controller('StudyPopulationDceController', ['$rootScope', '$scope', '$routeParams', '$location', '$log', 'DraftStudyResource', 'MicaConfigResource', 'FormServerValidation', 'MicaConstants',
      function($rootScope, $scope, $routeParams, $location, $log, DraftStudyResource, MicaConfigResource, FormServerValidation) {
        $scope.dce = {};
-       $scope.fileTypes = ".doc, .docx, .odm, .odt, .gdoc, .pdf, .txt  .xml  .xls, .xlsx, .ppt";
+       $scope.fileTypes = '.doc, .docx, .odm, .odt, .gdoc, .pdf, .txt  .xml  .xls, .xlsx, .ppt';
        $scope.defaultMinYear = 1900;
        $scope.defaultMaxYear = new Date().getFullYear() + 200;
        $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}, function() {

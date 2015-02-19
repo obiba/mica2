@@ -35,4 +35,11 @@ mica.study
       return $resource('ws/draft/study/:id/_publish', {}, {
         'publish': {method: 'PUT', params: {id: '@id'}}
       });
+    }])
+
+  .factory('MicaStudiesConfigResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/config/studies', {}, {
+        'get': {method: 'GET'}
+      });
     }]);

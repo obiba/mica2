@@ -1,46 +1,90 @@
 <div>
   <h2 translate>population.label-edit</h2>
-  <form name="form" role="form" novalidate
-    class="ng-scope ng-invalid ng-invalid-required ng-dirty" ng-submit="save()">
+  <form name="form" role="form" novalidate ng-submit="save()">
     <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
     <tabset>
     <tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active" disabled="tab.disabled">
     <div ng-if="study">
       <h3 translate>Population</h3>
-      <div form-input model="population.id" required="true" label="population.id"></div>
+      <div form-input model="population.id" label="population.id"></div>
       <div localized-input name="population.name" model="population.name" lang="tab.lang" label="population.name"></div>
       <div localized-textarea name="population.description" model="population.description" lang="tab.lang" label="population.description"></div>
+
       <h4 translate>Selection criteria</h4>
       <label for="gender" class="control-label"><span translate>population.gender</span></label>
-      <select id="gender" name="gender" class="form-control" ng-model="population.selectionCriteria.gender" ng-options="g for g in selectionCriteriaGenders"></select>
+      <select id="gender" name="gender" class="form-control" ng-model="population.selectionCriteria.gender">
+        <option value="">N/A</option>
+        <option ng-repeat="g in selectionCriteriaGenders" value="{{g.id}}">{{g.label}}</option>
+      </select>
       <div form-input type="number" model="population.selectionCriteria.ageMin" lang="tab.lang" label="population.ageMin"></div>
       <div form-input type="number" model="population.selectionCriteria.ageMax" lang="tab.lang" label="population.ageMax"></div>
-      <div localized-input model="population.selectionCriteria.otherCriteria" lang="tab.lang" label="population.otherCriteria"></div>
+
+      <div localized-input name="population.selectionCriteria.otherCriteria" model="population.selectionCriteria.otherCriteria" lang="tab.lang" label="population.otherCriteria"></div>
+      <div localized-input name="population.selectionCriteria.info" model="population.selectionCriteria.info" lang="tab.lang" label="population.info"></div>
+
       <h5 translate>study.selection-criteria.health-status</h5>
-      <div ng-repeat="value in population.selectionCriteria.healthStatus" localized-input model="value.localizedStrings" lang="tab.lang"></div>
+      <div ng-repeat="value in population.selectionCriteria.healthStatus">
+        <div localized-input-group model="value.localizedStrings" lang="tab.lang" remove="removeHealthStatus"></div>
+      </div>
       <button type="button" class="btn btn-default btn-sm" ng-click="addHealthStatus()"><i class="fa fa-plus"></i><span translate>population.add-health-status-help</span></button>
+
       <h5 translate>study.selection-criteria.ethnic-origin</h5>
-      <div ng-repeat="value in population.selectionCriteria.ethnicOrigin" localized-input model="value.localizedStrings" lang="tab.lang"></div>
+      <div ng-repeat="value in population.selectionCriteria.ethnicOrigin">
+        <div localized-input-group model="value.localizedStrings" lang="tab.lang" remove="removeEthnicOrigin"></div>
+      </div>
       <button type="button" class="btn btn-default btn-sm" ng-click="addEthnicOrigin()"><i class="fa fa-plus"></i> <span translate>population.add-ethnic-origin-help</span></button>
+
       <h5 translate>Criteria</h5>
       <div form-checkbox-group options="availableSelectionCriteria" model="population.selectionCriteria.criteria"></div>
+
       <label for="languages" class="control-label"><span translate>population.countries</span></label>
       <select chosen multiple id="countries" name="countries" ng-model="population.selectionCriteria.countriesIso"
-          ng-options="c.code as c.code for c in availableCountries" class="chosen-select" required>
+          ng-options="c.code as c.code for c in availableCountries" class="chosen-select">
       </select>
-      <div form-checkbox model="population.numberOfParticipants.participant.noLimit" label="population.numberOfParticipants-noLimit"></div>
+
+      <div localized-input name="population.selectionCriteria.territory" model="population.selectionCriteria.territory" lang="tab.lang" label="study.selection-criteria.territory"></div>
+
+      <h4 translate>Number of participants</h4>
       <div form-input type="number" disabled="population.numberOfParticipants.participant.noLimit" model="population.numberOfParticipants.participant.number"  label="study.participants-number.participant"></div>
-      <div form-checkbox model="population.numberOfParticipants.sample.noLimit" label="population.numberOfParticipants-noLimit"></div>
+      <div form-checkbox model="population.numberOfParticipants.participant.noLimit" label="population.numberOfParticipants-noLimit"></div>
+
       <div form-input type="number" disabled="population.numberOfParticipants.sample.noLimit" model="population.numberOfParticipants.sample.number" label="study.participants-number.sample"></div>
-      <h4>Recruitment</h4>
-      <div form-checkbox-group options="dataSourceTypes" model="population.recruitment.dataSources"></div>
-      <h5 translate>study.recruitment-sources.general-population</h5>
-      <div form-checkbox-group options="generalPopulationTypes" model="population.recruitment.generalPopulationSources"></div>
-      <h5 translate>study.recruitment-sources.specific-population</h5>
-      <div form-checkbox-group options="specificPopulationTypes" model="population.recruitment.specificPopulationSources"></div>
-      <h5 translate>study.recruitment-sources.other</h5>
-      <div localized-input disabled="population.recruitments.specificPopulationSources | filter:'other'" model="population.recruitment.otherSource" lang="tab.lang" label="study.recruitment-sources.other"></div>
-      <div localized-input model="population.recruitment.otherSpecificPopulationSource" lang="tab.lang" label="study.recruitment-sources.other-specific-population"></div>
+      <div form-checkbox model="population.numberOfParticipants.sample.noLimit" label="population.numberOfParticipants-noLimit"></div>
+
+      <h4 translate>Recruitment</h4>
+      <div form-checkbox-group options="recruitmentSourcesTypes" model="population.recruitment.dataSources"></div>
+
+      <div ng-show="population.recruitment.dataSources.indexOf('general') > -1">
+        <h5 translate>study.recruitment-sources.general-population</h5>
+        <div form-checkbox-group options="generalPopulationTypes"
+          model="population.recruitment.generalPopulationSources"></div>
+      </div>
+
+      <div ng-show="population.recruitment.dataSources.indexOf('specific_population') > -1">
+        <h5 translate>study.recruitment-sources.specific-population</h5>
+        <div form-checkbox-group options="specificPopulationTypes"
+          model="population.recruitment.specificPopulationSources"></div>
+
+        <div localized-input ng-show="population.recruitment.specificPopulationSources.indexOf('other') > -1" name="population.recruitment.otherSpecificPopulationSource" model="population.recruitment.otherSpecificPopulationSource" lang="tab.lang"
+          label="study.recruitment-sources.other-specific-population"></div>
+      </div>
+
+      <div ng-show="population.recruitment.dataSources.indexOf('exist_studies') > -1">
+        <h5 translate>study.recruitment-sources.studies</h5>
+        <div ng-repeat="value in population.recruitment.studies">
+          <div localized-input-group model="value.localizedStrings" lang="tab.lang"
+            remove="removeRecruitmentStudy"></div>
+        </div>
+        <button type="button" class="btn btn-default btn-sm" ng-click="addRecruitmentStudy()"><i class="fa fa-plus"></i>
+          <span translate>study.recruitment-sources.add-study</span></button>
+      </div>
+
+      <div ng-show="population.recruitment.dataSources.indexOf('other') > -1">
+        <div localized-input model="population.recruitment.otherSource" lang="tab.lang" label="study.recruitment-sources.other"></div>
+      </div>
+
+      <div localized-input name="population.recruitment.info" model="population.recruitment.info" lang="tab.lang"
+        label="study.recruitment-sources.info"></div>
     </div>
     </tab>
     </tabset>

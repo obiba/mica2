@@ -1,0 +1,42 @@
+name: study
+vocabularies:
+  - name: recruitmentDatasources
+    terms:
+      - name: general
+        title: {en: General population}
+      - name: specific_population
+        title: {en: Specific population}
+      - name: exist_studies
+        title: {en: Participants from existing studies}
+      - name: other
+        title: {en: Other}
+  - name: recruitmentGeneralPopulation
+    terms:
+      - name: volunteer
+        title: {en: Volunteer enrolment}
+      - name: selected_samples
+        title: {en: Selected sample}
+      - name: random
+        title: {en: Random digit dialing}
+  - name: recruitmentSpecificPopulation
+    terms:
+      - name: clinic_patients
+        title: {en: Clinic patients}
+      - name: specific_association
+        title: {en: Members of specific association}
+      - name: other
+        title: {en: Other specific population}
+  - name: selectionCriteriaGender
+    terms:
+      - name: men
+        title: {en: Men}
+      - name: women
+        title: {en: Women}
+  - name: selectionCriteriaCriteria
+    terms:
+      - name: gravidity
+        title: {en: Gravidity}
+      - name: newborn
+        title: {en: Newborn}
+      - name: twin
+        title: {en: Twin}

@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import org.obiba.git.command.GitCommandHandler;
 import org.obiba.mica.config.AggregationsConfiguration;
 import org.obiba.mica.config.JsonConfiguration;
+import org.obiba.mica.config.StudiesConfiguration;
 import org.obiba.mica.core.domain.Address;
 import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.Authorization;
@@ -326,6 +327,11 @@ public class StudyDtosTest {
     @Bean
     public AggregationsConfiguration aggregationsConfiguration() {
       return  Mockito.mock(AggregationsConfiguration.class);
+    }
+
+    @Bean
+    public StudiesConfiguration studiesConfiguration() {
+      return  Mockito.mock(StudiesConfiguration.class);
     }
 
     @Bean
