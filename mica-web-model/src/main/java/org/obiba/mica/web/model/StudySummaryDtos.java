@@ -56,11 +56,11 @@ class StudySummaryDtos {
     builder.setPublished(isPublished);
 
     builder.setId(study.getId()) //
-        .setTimestamps(TimestampsDtos.asDto(study)) //
-        .addAllName(localizedStringDtos.asDto(study.getName())) //
-        .addAllAcronym(localizedStringDtos.asDto(study.getAcronym())) //
-        .addAllObjectives(localizedStringDtos.asDto(study.getObjectives()))
-        .setVariables(isPublished ? variablesCount : 0);
+      .setTimestamps(TimestampsDtos.asDto(study)) //
+      .addAllName(localizedStringDtos.asDto(study.getName())) //
+      .addAllAcronym(localizedStringDtos.asDto(study.getAcronym())) //
+      .addAllObjectives(localizedStringDtos.asDto(study.getObjectives()))
+      .setVariables(isPublished ? variablesCount : 0);
 
     if(study.getLogo() != null) builder.setLogo(attachmentDtos.asDto(study.getLogo()));
 
@@ -75,12 +75,13 @@ class StudySummaryDtos {
 
     if(populations != null) {
       populations.stream() //
-          .filter(population -> population.getSelectionCriteria().getCountriesIso() != null)
-          .forEach(population -> countries.addAll(population.getSelectionCriteria().getCountriesIso()));
+        .filter(population ->
+          population.getSelectionCriteria() != null && population.getSelectionCriteria().getCountriesIso() != null)
+        .forEach(population -> countries.addAll(population.getSelectionCriteria().getCountriesIso()));
 
       List<String> dataSources = Lists.newArrayList();
       populations.stream().filter(population -> population.getAllDataSources() != null)
-          .forEach(population -> dataSources.addAll(population.getAllDataSources()));
+        .forEach(population -> dataSources.addAll(population.getAllDataSources()));
 
       if(dataSources.size() > 0) {
         builder.addAllDataSources(dataSources.stream().distinct().collect(Collectors.toList()));
@@ -99,7 +100,7 @@ class StudySummaryDtos {
     Mica.PopulationSummaryDto.Builder builder = Mica.PopulationSummaryDto.newBuilder();
 
     builder.setId(population.getId()) //
-        .addAllName(localizedStringDtos.asDto(population.getName()));
+      .addAllName(localizedStringDtos.asDto(population.getName()));
 
     if(population.getDataCollectionEvents() != null) {
       population.getDataCollectionEvents().forEach(dce -> builder.addDataCollectionEventSummaries(asDto(dce)));
@@ -111,7 +112,7 @@ class StudySummaryDtos {
   @NotNull
   Mica.DataCollectionEventSummaryDto asDto(@NotNull DataCollectionEvent dce) {
     return Mica.DataCollectionEventSummaryDto.newBuilder().setId(dce.getId()) //
-        .addAllName(localizedStringDtos.asDto(dce.getName())).build();
+      .addAllName(localizedStringDtos.asDto(dce.getName())).build();
   }
 
   @NotNull
@@ -122,22 +123,22 @@ class StudySummaryDtos {
   @NotNull
   Mica.StudySummaryDto asDto(@NotNull StudyState studyState) {
     Mica.StudyStateDto.Builder stateBuilder = Mica.StudyStateDto.newBuilder()
-        .setRevisionsAhead(studyState.getRevisionsAhead());
+      .setRevisionsAhead(studyState.getRevisionsAhead());
 
     if(studyState.isPublished()) {
       stateBuilder.setPublishedTag(studyState.getPublishedTag());
     }
 
     Study study = studyState.isPublished()
-        ? publishedStudyService.findById(studyState.getId())
-        : studyService.findDraftStudy(studyState.getId());
+      ? publishedStudyService.findById(studyState.getId())
+      : studyService.findDraftStudy(studyState.getId());
 
     Mica.StudySummaryDto.Builder builder;
     if(study == null) {
       builder = Mica.StudySummaryDto.newBuilder();
       builder.setId(studyState.getId()) //
-          .setTimestamps(TimestampsDtos.asDto(studyState)) //
-          .addAllName(localizedStringDtos.asDto(studyState.getName()));
+        .setTimestamps(TimestampsDtos.asDto(studyState)) //
+        .addAllName(localizedStringDtos.asDto(studyState.getName()));
     } else {
       builder = asDtoBuilder(study);
     }
