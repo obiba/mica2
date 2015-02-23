@@ -241,7 +241,9 @@ public class PublishedDatasetVariablesSearchResource {
         });
       }
 
-      coverages.add(taxoBuilder.build());
+      if (!taxoBuilder.getVocabulariesList().isEmpty()) {
+        coverages.add(taxoBuilder.build());
+      }
     }
   }
 
@@ -306,7 +308,11 @@ public class PublishedDatasetVariablesSearchResource {
           });
         });
       }
-      taxoBuilder.addVocabularies(vocBuilder);
+      if (!vocBuilder.getTermsList().isEmpty()) {
+        taxoBuilder.addVocabularies(vocBuilder);
+      } else {
+        sumOfHits = 0;
+      }
     }
     return sumOfHits;
   }
@@ -336,7 +342,10 @@ public class PublishedDatasetVariablesSearchResource {
     }
 
     if(hits != null && hits.containsKey(term.getName())) termBuilder.setHits(hits.get(term.getName()));
-    vocBuilder.addTerms(termBuilder);
+
+    if (termBuilder.getHits() > 0) {
+      vocBuilder.addTerms(termBuilder);
+    }
   }
 
   @NotNull
