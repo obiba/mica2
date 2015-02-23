@@ -450,6 +450,7 @@
     "label-edit": "Edit Population",
     "id": "Id",
     "name": "Name",
+    "info": "Information",
     "description": "Description",
     "gender": "Gender",
     "ageMin": "Minimum age",

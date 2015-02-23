@@ -1,12 +1,12 @@
 <div>
   <h2 translate>population.label-edit</h2>
-  <form name="form" role="form" novalidate ng-submit="save()">
+  <form name="form" role="form" ng-submit="save()">
     <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
     <tabset>
     <tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active" disabled="tab.disabled">
     <div ng-if="study">
       <h3 translate>Population</h3>
-      <div form-input model="population.id" label="population.id"></div>
+      <div form-input model="population.id" label="population.id" required="true"></div>
       <div localized-input name="population.name" model="population.name" lang="tab.lang" label="population.name"></div>
       <div localized-textarea name="population.description" model="population.description" lang="tab.lang" label="population.description"></div>
 
@@ -52,39 +52,52 @@
       <div form-checkbox model="population.numberOfParticipants.sample.noLimit" label="population.numberOfParticipants-noLimit"></div>
 
       <h4 translate>Recruitment</h4>
-      <div form-checkbox-group options="recruitmentSourcesTypes" model="population.recruitment.dataSources"></div>
-
-      <div ng-show="population.recruitment.dataSources.indexOf('general') > -1">
-        <h5 translate>study.recruitment-sources.general-population</h5>
-        <div form-checkbox-group options="generalPopulationTypes"
-          model="population.recruitment.generalPopulationSources"></div>
-      </div>
-
-      <div ng-show="population.recruitment.dataSources.indexOf('specific_population') > -1">
-        <h5 translate>study.recruitment-sources.specific-population</h5>
-        <div form-checkbox-group options="specificPopulationTypes"
-          model="population.recruitment.specificPopulationSources"></div>
-
-        <div localized-input ng-show="population.recruitment.specificPopulationSources.indexOf('other') > -1" name="population.recruitment.otherSpecificPopulationSource" model="population.recruitment.otherSpecificPopulationSource" lang="tab.lang"
-          label="study.recruitment-sources.other-specific-population"></div>
-      </div>
-
-      <div ng-show="population.recruitment.dataSources.indexOf('exist_studies') > -1">
-        <h5 translate>study.recruitment-sources.studies</h5>
-        <div ng-repeat="value in population.recruitment.studies">
-          <div localized-input-group model="value.localizedStrings" lang="tab.lang"
-            remove="removeRecruitmentStudy"></div>
-        </div>
-        <button type="button" class="btn btn-default btn-sm" ng-click="addRecruitmentStudy()"><i class="fa fa-plus"></i>
-          <span translate>study.recruitment-sources.add-study</span></button>
-      </div>
-
-      <div ng-show="population.recruitment.dataSources.indexOf('other') > -1">
-        <div localized-input model="population.recruitment.otherSource" lang="tab.lang" label="study.recruitment-sources.other"></div>
-      </div>
-
       <div localized-input name="population.recruitment.info" model="population.recruitment.info" lang="tab.lang"
         label="study.recruitment-sources.info"></div>
+
+      <div form-checkbox-group options="recruitmentSourcesTypes" model="population.recruitment.dataSources"></div>
+
+      <tabset>
+        <tab heading="{{'study.recruitment-sources.general-population' | translate}}"
+          disabled="population.recruitment.dataSources.indexOf('general') < 0"
+          active="recruitmentTabs.general">
+          <div ng-show="population.recruitment.dataSources.indexOf('general') > -1">
+            <div form-checkbox-group options="generalPopulationTypes"
+              model="population.recruitment.generalPopulationSources"></div>
+          </div>
+        </tab>
+        <tab heading="{{'study.recruitment-sources.specific-population' | translate}}"
+          disabled="population.recruitment.dataSources.indexOf('specific_population') < 0"
+          active="recruitmentTabs.specific_population">
+          <div ng-show="population.recruitment.dataSources.indexOf('specific_population') > -1">
+          <div form-checkbox-group options="specificPopulationTypes"
+            model="population.recruitment.specificPopulationSources"></div>
+
+          <div localized-input ng-show="population.recruitment.specificPopulationSources.indexOf('other') > -1"
+            name="population.recruitment.otherSpecificPopulationSource"
+            model="population.recruitment.otherSpecificPopulationSource" lang="tab.lang"></div>
+          </div>
+        </tab>
+        <tab heading="{{'study.recruitment-sources.studies' | translate }}"
+          disabled="population.recruitment.dataSources.indexOf('exist_studies') < 0"
+          active="recruitmentTabs.exist_studies">
+          <div ng-show="population.recruitment.dataSources.indexOf('exist_studies') > -1">
+          <div ng-repeat="value in population.recruitment.studies">
+            <div localized-input-group model="value.localizedStrings" lang="tab.lang"
+              remove="removeRecruitmentStudy"></div>
+          </div>
+          <button type="button" class="btn btn-default btn-sm" ng-click="addRecruitmentStudy()"><i class="fa fa-plus"></i>
+            <span translate>study.recruitment-sources.add-study</span></button>
+            </div>
+        </tab>
+        <tab heading="{{'study.recruitment-sources.other' | translate }}"
+          disabled="population.recruitment.dataSources.indexOf('other') < 0"
+          active="recruitmentTabs.other">
+          <div ng-show="population.recruitment.dataSources.indexOf('other') > -1">
+          <div localized-input model="population.recruitment.otherSource" lang="tab.lang" label="study.recruitment-sources.other"></div>
+            </div>
+        </tab>
+      </tabset>
     </div>
     </tab>
     </tabset>
