@@ -190,6 +190,18 @@ public class OpalService implements EnvironmentAware {
   }
 
   /**
+   * Get a summary of the {@link org.obiba.opal.core.domain.taxonomy.Vocabulary}s from Opal master.
+   *
+   * @return
+   */
+  public Opal.TaxonomiesDto getTaxonomyVocabularySummaryDtos() {
+    List<Opal.TaxonomiesDto.TaxonomySummaryDto> summaries = getTaxonomies().stream()
+      .map(Dtos::asVocabularySummaryDto).collect(Collectors.toList());
+
+    return Opal.TaxonomiesDto.newBuilder().addAllSummaries(summaries).build();
+  }
+
+  /**
    * Get the {@link org.obiba.opal.core.domain.taxonomy.Taxonomy} from Opal master.
    *
    * @param name

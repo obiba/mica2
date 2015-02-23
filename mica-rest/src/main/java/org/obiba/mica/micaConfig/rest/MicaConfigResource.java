@@ -174,6 +174,12 @@ public class MicaConfigResource {
   }
 
   @GET
+  @Path("/taxonomies/vocabularies/summaries")
+  public Opal.TaxonomiesDto getTaxonomyVocabularySummaries() {
+    return opalService.getTaxonomyVocabularySummaryDtos();
+  }
+
+  @GET
   @Path("/taxonomy/{name}")
   public Opal.TaxonomyDto getTaxonomy(@PathParam("name") String name) {
     return opalService.getTaxonomyDto(name);
