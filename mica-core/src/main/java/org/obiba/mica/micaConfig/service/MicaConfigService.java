@@ -11,6 +11,7 @@ import org.apache.shiro.codec.Hex;
 import org.apache.shiro.crypto.AesCipherService;
 import org.apache.shiro.util.ByteSource;
 import org.obiba.mica.config.AggregationsConfiguration;
+import org.obiba.mica.config.StudiesConfiguration;
 import org.obiba.mica.micaConfig.domain.AggregationsConfig;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.repository.MicaConfigRepository;
@@ -26,11 +27,14 @@ import com.google.common.eventbus.EventBus;
 
 @Service
 @Validated
-@EnableConfigurationProperties(AggregationsConfiguration.class)
+@EnableConfigurationProperties({AggregationsConfiguration.class, StudiesConfiguration.class})
 public class MicaConfigService {
 
   @Inject
   private AggregationsConfiguration aggregationsConfiguration;
+
+  @Inject
+  private StudiesConfiguration studiesConfiguration;
 
   @Inject
   private MicaConfigRepository micaConfigRepository;
@@ -49,6 +53,11 @@ public class MicaConfigService {
     }
 
     return aggregationsConfig;
+  }
+
+  @NotNull
+  public StudiesConfiguration getStudiesConfiguration() {
+    return studiesConfiguration;
   }
 
   @Cacheable(value = "micaConfig", key = "#root.methodName")

@@ -19,6 +19,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.obiba.mica.config.StudiesConfiguration;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.OpalCredentialService;
 import org.obiba.mica.micaConfig.service.OpalService;
@@ -183,5 +184,11 @@ public class MicaConfigResource {
   @Path("/taxonomy/{name}")
   public Opal.TaxonomyDto getTaxonomy(@PathParam("name") String name) {
     return opalService.getTaxonomyDto(name);
+  }
+
+  @GET
+  @Path("/studies")
+  public Opal.TaxonomyDto getStudiesConfig() {
+    return org.obiba.opal.web.taxonomy.Dtos.asDto(micaConfigService.getStudiesConfiguration());
   }
 }

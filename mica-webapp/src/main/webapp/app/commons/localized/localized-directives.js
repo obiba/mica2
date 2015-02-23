@@ -35,18 +35,62 @@ mica.localized
         }
 
         $scope.$watch('model', function(newModel) {
-          if (angular.isUndefined(newModel)) {
-            return;
+          if (angular.isUndefined(newModel) || newModel === null) {
+            $scope.model = [{lang: $scope.lang, value: ''}];
           }
 
-          var currentLang = newModel.filter(function(e) {
+          var currentLang = $scope.model.filter(function(e) {
             if (e.lang === $scope.lang) {
               return e;
             }
           });
 
           if (currentLang.length === 0) {
-              newModel.push({lang:$scope.lang, value: ''});
+            $scope.model.push({lang:$scope.lang, value: ''});
+          }
+        }, true);
+
+        $scope.fieldName = $scope.name + '-' + $scope.lang;
+        $scope.form = ctrl;
+      }
+    };
+  }])
+
+  .directive('localizedInputGroup', [function () {
+    return {
+      restrict: 'AE',
+      require: '^form',
+      scope: {
+        name: '@',
+        model: '=',
+        label: '@',
+        required: '@',
+        disabled: '=',
+        lang: '=',
+        help: '@',
+        remove: '='
+      },
+      templateUrl: 'app/commons/localized/localized-input-group-template.html',
+      link: function ($scope, elem, attr, ctrl) {
+        if (angular.isUndefined($scope.model) || $scope.model === null) {
+          $scope.model = [
+            {lang: $scope.lang, value: ''}
+          ];
+        }
+
+        $scope.$watch('model', function(newModel) {
+          if (angular.isUndefined(newModel) || newModel === null) {
+            $scope.model = [{lang: $scope.lang, value: ''}];
+          }
+
+          var currentLang = $scope.model.filter(function(e) {
+            if (e.lang === $scope.lang) {
+              return e;
+            }
+          });
+
+          if (currentLang.length === 0) {
+            $scope.model.push({lang:$scope.lang, value: ''});
           }
         }, true);
 
@@ -79,18 +123,18 @@ mica.localized
         }
 
         $scope.$watch('model', function(newModel) {
-          if (angular.isUndefined(newModel)) {
-            return;
+          if (angular.isUndefined(newModel) || newModel === null) {
+            $scope.model = [{lang: $scope.lang, value: ''}];
           }
 
-          var currentLang = newModel.filter(function(e) {
+          var currentLang = $scope.model.filter(function(e) {
             if (e.lang === $scope.lang) {
               return e;
             }
           });
 
           if (currentLang.length === 0) {
-              newModel.push({lang:$scope.lang, value: ''});
+            $scope.model.push({lang:$scope.lang, value: ''});
           }
         }, true);
 

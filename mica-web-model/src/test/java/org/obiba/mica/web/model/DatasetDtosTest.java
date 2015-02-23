@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.obiba.mica.config.AggregationsConfiguration;
 import org.obiba.mica.config.JsonConfiguration;
+import org.obiba.mica.config.StudiesConfiguration;
 import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
@@ -136,6 +137,11 @@ public class DatasetDtosTest {
     @Bean
     public AggregationsConfiguration aggregationsConfiguration() {
       return  Mockito.mock(AggregationsConfiguration.class);
+    }
+
+    @Bean
+    public StudiesConfiguration studiesConfiguration() {
+      return  Mockito.mock(StudiesConfiguration.class);
     }
 
     @Bean
