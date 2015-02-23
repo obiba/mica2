@@ -160,8 +160,8 @@ mica.factory('LogsService', ['$resource',
 
 mica.factory('CacheService', ['$resource',
   function ($resource) {
-    return $resource('ws/cache/clear', {}, {
-      'clear': { method: 'POST'}
+    return $resource('ws/cache', {}, {
+      'clear': { method: 'DELETE'}
     });
   }]);
 

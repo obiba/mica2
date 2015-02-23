@@ -56,9 +56,10 @@
       timeToIdleSeconds="0"/>
 
   <cache name="opal-taxonomies"
-    overflowToDisk="true"
     timeToLiveSeconds="1800"
-    timeToIdleSeconds="0"/>
+    timeToIdleSeconds="0">
+    <pinning store="localMemory"/>
+  </cache>
 
 </ehcache>
 
