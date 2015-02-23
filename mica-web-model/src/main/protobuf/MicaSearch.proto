@@ -129,7 +129,6 @@ message QueryResultDto {
   extensions 1000 to max;
 }
 
-
 message DatasetVariableResultDto {
   repeated obiba.mica.DatasetVariableResolverDto summaries = 1;
   repeated obiba.mica.DatasetVariableDto variables = 2;
@@ -199,6 +198,7 @@ message StudySummariesResultDto {
 message AggregationResultDto {
   required string aggregation = 1;
   repeated LocalizedStringDto title = 2;
+  repeated AggregationResultDto children = 3;
   extensions 1000 to max;
 }
 
