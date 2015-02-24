@@ -120,20 +120,36 @@ angular.module('obiba.form')
         model: '='
       },
       template: '<div form-checkbox ng-repeat="item in items" name="{{item.name}}" model="item.value" label="{{item.label}}">',
-      link: function ($scope) {
+      link: function ($scope, elem, attrs) {
         $scope.$watch('model', function(selected) {
           $scope.items = $scope.options.map(function(n) {
-              var value = angular.isArray(selected) && (selected.indexOf(n) > -1 ||
-                  selected.indexOf(n.name) > -1);
-              return {name: n.name || n, label: n.label || n, value: value};
+            var value = angular.isArray(selected) && (selected.indexOf(n) > -1 ||
+              selected.indexOf(n.name) > -1);
+            return {
+              name: attrs.model + '.' + (n.name || n),
+              label: n.label || n,
+              value: value
+            };
           });
         }, true);
 
         $scope.$watch('items', function(items) {
           if (angular.isArray(items)) {
             $scope.model = items.filter(function(e) { return e.value; })
-              .map(function(e) { return e.name; });
+              .map(function(e) { return e.name.replace(attrs.model + '.', ''); });
           }
+        }, true);
+
+        $scope.$watch('options', function(opts) {
+          $scope.items = opts.map(function(n) {
+            var value = angular.isArray($scope.model) && ($scope.model.indexOf(n) > -1 ||
+              $scope.model.indexOf(n.name) > -1);
+            return {
+              name: attrs.model + '.' + (n.name || n),
+              label: n.label || n,
+              value: value
+            };
+          });
         }, true);
       }
     };

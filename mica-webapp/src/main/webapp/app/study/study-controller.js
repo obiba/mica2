@@ -199,139 +199,215 @@ mica.study
 
   .controller('StudyPopulationController', ['$rootScope', '$scope', '$routeParams', '$location', '$log',
     'DraftStudyResource', 'MicaConfigResource', 'FormServerValidation', 'MicaConstants', 'MicaStudiesConfigResource',
-     function($rootScope, $scope, $routeParams, $location, $log, DraftStudyResource, MicaConfigResource, FormServerValidation, MicaConstants,
+    function ($rootScope, $scope, $routeParams, $location, $log, DraftStudyResource, MicaConfigResource, FormServerValidation, MicaConstants,
               MicaStudiesConfigResource) {
-    var getActiveTab = function () {
-      return $scope.tabs.filter(function (tab) {
-        return tab.active;
-      })[0];
-    };
-
-    var getLabel = function(localizedString) {
-      return (localizedString.filter(function(t){
-        return t.locale === getActiveTab().lang;
-      }) || [{text: null}])[0].text;
-    };
-
-    $scope.population = {selectionCriteria: {healthStatus: [], ethnicOrigin: []}, recruitment:{dataSources: []}};
-
-    $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}, function() {
-      if ($routeParams.pid) {
-        $scope.population = $scope.study.populations.filter(function(p){
-              return p.id === $routeParams.pid;
-            })[0];
-      } else {
-        $scope.study.populations.push($scope.population);
-      }
-    }) : {};
-
-    $scope.availableCountries = MicaConstants.COUNTRIES_ISO_CODES;
-    $scope.selectionCriteriaGenders = [];
-    $scope.availableSelectionCriteria = [];
-    $scope.recruitmentSourcesTypes = [];
-    $scope.generalPopulationTypes = [];
-    $scope.specificPopulationTypes = [];
-
-    MicaConfigResource.get(function (micaConfig) {
+      $scope.availableCountries = MicaConstants.COUNTRIES_ISO_CODES;
+      $scope.selectionCriteriaGenders = [];
+      $scope.availableSelectionCriteria = [];
+      $scope.recruitmentSourcesTypes = [];
+      $scope.generalPopulationTypes = [];
+      $scope.specificPopulationTypes = [];
       $scope.tabs = [];
-      micaConfig.languages.forEach(function (lang) {
-        $scope.tabs.push({ lang: lang, labelKey: 'language.' + lang });
-      });
-    });
+      $scope.recruitmentTabs = {};
+      $scope.population = {selectionCriteria: {healthStatus: [], ethnicOrigin: []}, recruitment: {dataSources: []}};
 
-    MicaStudiesConfigResource.get(function (studiesConfig) {
-      function extractVocabulary(options) {
-        var opts = studiesConfig.vocabularies.map(function (v) {
-          if (v.name === options) {
-            return v.terms.map(function (t) {
-              return {name: t.name, label: getLabel(t.title) || t.name};
-            });
+      $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}, function () {
+        if ($routeParams.pid) {
+          $scope.population = $scope.study.populations.filter(function (p) {
+            return p.id === $routeParams.pid;
+          })[0];
+        } else {
+          $scope.study.populations.push($scope.population);
+        }
+      }) : {};
+
+      $scope.$watch('population.recruitment.dataSources', function (newVal, oldVal) {
+        if (oldVal === undefined || newVal === undefined) {
+          $scope.population.recruitment.dataSources = [];
+          return;
+        }
+
+        updateActiveDatasourceTab(newVal, oldVal);
+      }, true);
+
+      var getActiveTab = function () {
+        return $scope.tabs.filter(function (tab) {
+          return tab.active;
+        })[0];
+      };
+
+      var getLabel = function (localizedString) {
+        return (localizedString.filter(function (t) {
+          return t.locale === getActiveTab().lang;
+        }) || [{text: null}])[0].text;
+      };
+
+      var updateActiveDatasourceTab = function (newVal, oldVal) {
+        function arrayDiff(source, target) {
+          for (var i = 0; i < source.length; i++) {
+            if (target.indexOf(source[i]) < 0) {
+              return source[i];
+            }
           }
-        }).filter(function(x) { return x; });
+        }
 
-        return opts ? opts[0] : [];
-      }
+        if (newVal.length < oldVal.length) {
+          var rem = arrayDiff(oldVal, newVal);
 
-      $scope.selectionCriteriaGenders = extractVocabulary('selectionCriteriaGender').map(function(obj) {
-        return {id: obj.name, label: obj.label};
+          if (rem) {
+            if ($scope.recruitmentTabs[rem]) {
+              $scope.recruitmentTabs[newVal[0]] = true;
+            }
+
+            $scope.recruitmentTabs[rem] = false;
+          }
+        } else {
+          var added = arrayDiff(newVal, oldVal);
+
+          if (added) {
+            for (var k in $scope.recruitmentTabs) {
+              $scope.recruitmentTabs[k] = false;
+            }
+
+            $scope.recruitmentTabs[added] = true;
+          }
+        }
+      };
+
+      MicaConfigResource.get(function (micaConfig) {
+        micaConfig.languages.forEach(function (lang) {
+          $scope.tabs.push({lang: lang, labelKey: 'language.' + lang});
+        });
       });
-      $scope.availableSelectionCriteria = extractVocabulary('selectionCriteriaCriteria');
-      $scope.recruitmentSourcesTypes = extractVocabulary('recruitmentDatasources');
-      $scope.generalPopulationTypes = extractVocabulary('recruitmentGeneralPopulation');
-      $scope.specificPopulationTypes = extractVocabulary('recruitmentSpecificPopulation');
-    });
 
-    $scope.save = function () {
-      if (!$scope.form.$valid) {
-        $scope.form.saveAttempted = true;
-        return;
-      }
+      MicaStudiesConfigResource.get(function (studiesConfig) {
+        function extractVocabulary(options) {
+          var opts = studiesConfig.vocabularies.map(function (v) {
+            if (v.name === options) {
+              return v.terms.map(function (t) {
+                return {name: t.name, label: getLabel(t.title) || t.name};
+              });
+            }
+          }).filter(function (x) { return x; });
 
-      updateStudy();
-    };
+          return opts ? opts[0] : [];
+        }
 
-    function removeLocalizedString(target, item) {
-      var idx = -1;
+        $scope.selectionCriteriaGenders = extractVocabulary('selectionCriteriaGender').map(function (obj) {
+          return {id: obj.name, label: obj.label};
+        });
+        $scope.availableSelectionCriteria = extractVocabulary('selectionCriteriaCriteria');
+        $scope.recruitmentSourcesTypes = extractVocabulary('recruitmentDatasources');
+        $scope.generalPopulationTypes = extractVocabulary('recruitmentGeneralPopulation');
+        $scope.specificPopulationTypes = extractVocabulary('recruitmentSpecificPopulation');
+      });
 
-      for(var i = target.length; i--;){
-        if (target[i].localizedStrings === item) {
-          idx = i;
+      $scope.save = function () {
+        if (!$scope.form.$valid) {
+          $scope.form.saveAttempted = true;
+          return;
+        }
+
+        var selectedDatasources = [];
+
+        if ($scope.population.recruitment.dataSources.indexOf('general') < 0) {
+          delete $scope.population.recruitment.generalPopulationSources;
+        } else if ($scope.population.recruitment.generalPopulationSources &&
+          $scope.population.recruitment.generalPopulationSources.length) {
+          selectedDatasources.push('general');
+        }
+
+        if ($scope.population.recruitment.dataSources.indexOf('specific_population') < 0) {
+          delete $scope.population.recruitment.specificPopulationSources;
+        } else if ($scope.population.recruitment.specificPopulationSources &&
+          $scope.population.recruitment.specificPopulationSources.length) {
+          selectedDatasources.push('specific_population');
+        }
+
+        if (!$scope.population.recruitment.specificPopulationSources ||
+          $scope.population.recruitment.specificPopulationSources.indexOf('other') < 0) {
+          $scope.population.recruitment.otherSpecificPopulationSource = [];
+        }
+
+        if ($scope.population.recruitment.dataSources.indexOf('exist_studies') < 0) {
+          delete $scope.population.recruitment.studies;
+        } else if ($scope.population.recruitment.studies && $scope.population.recruitment.studies.length) {
+          selectedDatasources.push('exist_studies');
+        }
+
+        if ($scope.population.recruitment.dataSources.indexOf('other') < 0) {
+          delete $scope.population.recruitment.otherSource;
+        } else if ($scope.population.recruitment.otherSource) {
+          selectedDatasources.push('other');
+        }
+
+        $scope.population.recruitment.dataSources = selectedDatasources;
+
+        if (!$scope.population.selectionCriteria.gender) {
+          delete $scope.population.selectionCriteria.gender;
+        }
+
+        updateStudy();
+      };
+
+      function removeLocalizedString(target, item) {
+        var idx = -1;
+
+        for (var i = target.length; i--;) {
+          if (target[i].localizedStrings === item) {
+            idx = i;
+          }
+        }
+
+        if (idx > -1) {
+          target.splice(idx, 1);
         }
       }
 
-      if (idx > -1) {
-        target.splice(idx, 1);
-      }
-    }
+      $scope.removeHealthStatus = function (item) {
+        removeLocalizedString($scope.population.selectionCriteria.healthStatus, item);
+      };
 
-    $scope.removeHealthStatus = function(item) {
-      removeLocalizedString($scope.population.selectionCriteria.healthStatus, item);
-    };
+      $scope.removeEthnicOrigin = function (item) {
+        removeLocalizedString($scope.population.selectionCriteria.ethnicOrigin, item);
+      };
 
-    $scope.removeEthnicOrigin = function (item) {
-      removeLocalizedString($scope.population.selectionCriteria.ethnicOrigin, item);
-    };
+      $scope.addHealthStatus = function () {
+        $scope.population.selectionCriteria.healthStatus = $scope.population.selectionCriteria.healthStatus || [];
+        $scope.population.selectionCriteria.healthStatus.push({localizedStrings: []});
+      };
 
-    $scope.addHealthStatus = function () {
-      $scope.population.selectionCriteria.healthStatus = $scope.population.selectionCriteria.healthStatus || [];
-      $scope.population.selectionCriteria.healthStatus.push({localizedStrings: []});
-    };
+      $scope.addEthnicOrigin = function () {
+        $scope.population.selectionCriteria.ethnicOrigin = $scope.population.selectionCriteria.ethnicOrigin || [];
+        $scope.population.selectionCriteria.ethnicOrigin.push({localizedStrings: []});
+      };
 
-    $scope.addEthnicOrigin = function () {
-      $scope.population.selectionCriteria.ethnicOrigin = $scope.population.selectionCriteria.ethnicOrigin || [];
-      $scope.population.selectionCriteria.ethnicOrigin.push({localizedStrings: []});
-    };
+      $scope.removeRecruitmentStudy = function (item) {
+        removeLocalizedString($scope.population.recruitment.studies, item);
+      };
 
-    $scope.removeRecruitmentStudy = function(item) {
-      removeLocalizedString($scope.population.recruitment.studies, item);
-    };
+      $scope.addRecruitmentStudy = function () {
+        $scope.population.recruitment.studies = $scope.population.recruitment.studies || [];
+        $scope.population.recruitment.studies.push({localizedStrings: []});
+      };
 
-    $scope.addRecruitmentStudy = function() {
-      $scope.population.recruitment.studies = $scope.population.recruitment.studies || [];
-      $scope.population.recruitment.studies.push({localizedStrings: []});
-    };
+      $scope.cancel = function () {
+        redirectToStudy();
+      };
 
-    $scope.cancel = function () {
-      redirectToStudy();
-    };
+      var updateStudy = function () {
+        $log.debug('Update study', $scope.study);
+        $scope.study.$save(redirectToStudy, saveErrorHandler);
+      };
 
-    var updateStudy = function () {
-      if(!$scope.population.selectionCriteria.gender) {
-        delete $scope.population.selectionCriteria.gender;
-      }
+      var saveErrorHandler = function (response) {
+        FormServerValidation.error(response, $scope.form, $scope.languages);
+      };
 
-      $log.debug('Update study', $scope.study);
-      $scope.study.$save(redirectToStudy, saveErrorHandler);
-    };
-
-    var saveErrorHandler = function (response) {
-      FormServerValidation.error(response, $scope.form, $scope.languages);
-    };
-
-    var redirectToStudy = function() {
-      $location.path('/study/' + $scope.study.id).replace();
-    };
-  }])
+      var redirectToStudy = function () {
+        $location.path('/study/' + $scope.study.id).replace();
+      };
+    }])
 
   .controller('StudyPopulationDceController', ['$rootScope', '$scope', '$routeParams', '$location', '$log', 'DraftStudyResource', 'MicaConfigResource', 'FormServerValidation', 'MicaConstants',
      function($rootScope, $scope, $routeParams, $location, $log, DraftStudyResource, MicaConfigResource, FormServerValidation) {
