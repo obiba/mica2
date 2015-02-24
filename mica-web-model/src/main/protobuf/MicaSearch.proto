@@ -238,6 +238,7 @@ message BucketCoverageDto {
   required int32 hits = 3;
   optional int32 count = 4;
   optional string title = 5;
+  optional string description = 6;
 }
 
 message TermCoverageDto {
