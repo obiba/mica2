@@ -14,6 +14,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,6 +26,7 @@ import javax.inject.Inject;
 import org.obiba.mica.micaConfig.domain.AggregationInfo;
 import org.obiba.mica.micaConfig.domain.AggregationsConfig;
 import org.obiba.mica.micaConfig.service.AggregationsService;
+import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.search.queries.AbstractDocumentQuery;
 import org.obiba.mica.search.queries.AbstractDocumentQuery.Mode;
 import org.obiba.mica.search.queries.DatasetQuery;
@@ -29,7 +34,9 @@ import org.obiba.mica.search.queries.NetworkQuery;
 import org.obiba.mica.search.queries.StudyQuery;
 import org.obiba.mica.search.queries.VariableQuery;
 import org.obiba.mica.web.model.Dtos;
+import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
+import org.obiba.opal.web.model.Opal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -37,6 +44,7 @@ import org.springframework.stereotype.Component;
 
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.DETAIL;
 import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.DIGEST;
@@ -73,6 +81,9 @@ public class JoinQueryExecutor {
 
   @Inject
   private Dtos dtos;
+
+  @Inject
+  private OpalService opalService;
 
   @Timed
   public JoinQueryResultDto queryCoverage(QueryType type, JoinQueryDto joinQueryDto) throws IOException {
@@ -183,30 +194,34 @@ public class JoinQueryExecutor {
     AggregationsConfig aggregationsConfig = aggregationsService.getAggregationsConfig();
 
     builder.setVariableResultDto(
-      addAggregationTitles(variableQuery.getResultQuery(), aggregationsConfig.getVariableAggregations()));
+      addAggregationTitles(variableQuery.getResultQuery(), aggregationsConfig.getVariableAggregations(),
+        mode == Mode.COVERAGE ? null : aggregationPostProcessor()));
 
     if(datasetQuery.getResultQuery() != null) {
       builder.setDatasetResultDto(
-        addAggregationTitles(datasetQuery.getResultQuery(), aggregationsConfig.getDatasetAggregations()));
+        addAggregationTitles(datasetQuery.getResultQuery(), aggregationsConfig.getDatasetAggregations(), null));
     }
 
     builder
-      .setStudyResultDto(addAggregationTitles(studyQuery.getResultQuery(), aggregationsConfig.getStudyAggregations()));
+      .setStudyResultDto(addAggregationTitles(studyQuery.getResultQuery(), aggregationsConfig.getStudyAggregations(), null));
 
     if(networkQuery.getResultQuery() != null) {
       builder.setNetworkResultDto(
-        addAggregationTitles(networkQuery.getResultQuery(), aggregationsConfig.getNetworkAggregations()));
+        addAggregationTitles(networkQuery.getResultQuery(), aggregationsConfig.getNetworkAggregations(), null));
     }
 
     return builder.build();
   }
 
   private MicaSearch.QueryResultDto addAggregationTitles(MicaSearch.QueryResultDto queryResultDto,
-    List<AggregationInfo> aggregationsList) {
+    List<AggregationInfo> aggregationsList,
+    Function<List<MicaSearch.AggregationResultDto>, List<MicaSearch.AggregationResultDto>> postProcessor) {
+
     if(queryResultDto != null) {
       final MicaSearch.QueryResultDto.Builder builder = MicaSearch.QueryResultDto.newBuilder()
         .mergeFrom(queryResultDto);
       List<MicaSearch.AggregationResultDto.Builder> builders = ImmutableList.copyOf(builder.getAggsBuilderList());
+      List<MicaSearch.AggregationResultDto> aggregationResultDtos = Lists.newArrayList();
       builder.clearAggs();
 
       aggregationsList.forEach(a -> {
@@ -214,18 +229,20 @@ public class JoinQueryExecutor {
         for(MicaSearch.AggregationResultDto.Builder b : builders) {
           if(b.getAggregation().equals(a.getId())) {
             b.addAllTitle(dtos.asDto(a.getTitle()));
-            builder.addAggs(b.build());
+            aggregationResultDtos.add(b.build());
             found = true;
             break;
           }
         }
 
         if(!found) {
-          builder.addAggs(
+          aggregationResultDtos.add(
             MicaSearch.AggregationResultDto.newBuilder().setAggregation(a.getId()).addAllTitle(dtos.asDto(a.getTitle()))
               .build());
         }
       });
+
+      builder.addAllAggs(postProcessor == null ? aggregationResultDtos : postProcessor.apply(aggregationResultDtos));
 
       return builder.build();
     } else {
@@ -239,6 +256,37 @@ public class JoinQueryExecutor {
 
       return builder.build();
     }
+  }
+
+  protected Function<List<MicaSearch.AggregationResultDto>, List<MicaSearch.AggregationResultDto>> aggregationPostProcessor() {
+    return (aggregationResultDtos) -> {
+      Map<String, MicaSearch.AggregationResultDto.Builder> buildres = opalService.getTaxonomySummaryDtos()
+        .getSummariesList().stream().collect(Collectors.toMap(Opal.TaxonomiesDto.TaxonomySummaryDto::getName,
+          t -> MicaSearch.AggregationResultDto.newBuilder().setAggregation(t.getName()).addAllTitle(
+            t.getTitleList().stream().map(
+              title -> Mica.LocalizedStringDto.newBuilder().setLang(title.getLocale()).setValue(title.getText()).build()).collect(
+              Collectors.toList()))));
+
+      Pattern pattern = Pattern.compile("attributes-(\\w+)__(\\w+)-\\w+$");
+      List<MicaSearch.AggregationResultDto> newList = Lists.newArrayList();
+      aggregationResultDtos.forEach(dto -> {
+        Matcher matcher = pattern.matcher(dto.getAggregation());
+        if(matcher.find()) {
+          String taxonomy = matcher.group(1);
+          MicaSearch.AggregationResultDto.Builder builder = buildres.get(taxonomy);
+          builder.addChildren(dto);
+        } else {
+          newList.add(dto);
+        }
+      });
+
+      newList.addAll(buildres.values().stream() //
+        .sorted((b1, b2) -> b1.getAggregation().compareTo(b2.getAggregation())) //
+        .map(builder -> builder.build()) //
+        .collect(Collectors.toList())); //
+
+      return newList;
+    };
   }
 
   private void execute(QueryType type, AbstractDocumentQuery.Scope scope, CountStatsData.Builder countBuilder)
