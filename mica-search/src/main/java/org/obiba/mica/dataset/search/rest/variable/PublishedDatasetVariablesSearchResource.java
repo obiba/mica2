@@ -113,7 +113,8 @@ public class PublishedDatasetVariablesSearchResource {
 
     MicaSearch.JoinQueryResultDto result = joinQueryExecutor
       .queryCoverage(JoinQueryExecutor.QueryType.VARIABLE, joinQueryDto);
-    List<MicaSearch.AggregationResultDto> aggregations = result.getVariableResultDto().getAggsList();
+    List<MicaSearch.AggregationResultDto> aggregations = ungroupAggregations(
+      result.getVariableResultDto().getAggsList());
 
     Map<String, Map<String, MicaSearch.TermsAggregationResultDto>> aggTermsTitlesMap = aggregations.stream().collect(
       Collectors.toMap(MicaSearch.AggregationResultDto::getAggregation,
@@ -153,6 +154,19 @@ public class PublishedDatasetVariablesSearchResource {
       .addAllTaxonomies(coverages);
 
     return builder.build();
+  }
+
+  private List<MicaSearch.AggregationResultDto> ungroupAggregations(List<MicaSearch.AggregationResultDto> aggsList) {
+    List<MicaSearch.AggregationResultDto> newList = Lists.newArrayList();
+    aggsList.stream().forEach(agg -> {
+      if (agg.getChildrenCount() > 0) {
+        newList.addAll(agg.getChildrenList());
+      } else {
+        newList.add(agg);
+      }
+    });
+
+    return newList;
   }
 
   /**

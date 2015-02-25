@@ -195,7 +195,7 @@ public class JoinQueryExecutor {
 
     builder.setVariableResultDto(
       addAggregationTitles(variableQuery.getResultQuery(), aggregationsConfig.getVariableAggregations(),
-        mode == Mode.COVERAGE ? null : aggregationPostProcessor()));
+        aggregationPostProcessor()));
 
     if(datasetQuery.getResultQuery() != null) {
       builder.setDatasetResultDto(
