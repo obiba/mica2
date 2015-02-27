@@ -344,7 +344,7 @@ public class PublishedDatasetVariablesSearchResource {
     termBuilder.setHits(0);
     // add the hits per buckets
     if(bucketResults != null) {
-      termBuilder.addAllBuckets(bucketResults.stream().map(
+      termBuilder.addAllBuckets(bucketResults.stream().filter(b -> b.getHits()>0).map(
         b -> getBucketCoverageDtoBuilder(b.getBucketField(), b.getBucketValue(), b.getHits(),
           aggTermsTitlesMap.get(b.getBucketField()).get(b.getBucketValue())).build()).collect(Collectors.toList()));
     }
