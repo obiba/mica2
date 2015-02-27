@@ -1,12 +1,11 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.obiba.mica</groupId>
     <artifactId>mica</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.1.0</version>
     <relativePath>../</relativePath>
   </parent>
 
@@ -77,38 +76,37 @@
                 </goals>
                 <configuration>
                   <target>
-                    <property name="deb.dir" value="${basedir}/target/deb"/>
-                    <property name="deb.version" value="${project.version}-b${buildNumber}"/>
+                    <property name="deb.dir" value="${basedir}/target/deb" />
+                    <property name="deb.version" value="${project.version}-b${buildNumber}" />
                     <tstamp>
                       <!-- http://www.debian.org/doc/debian-policy/ch-source.html -->
-                      <format property="deb.date" pattern="EEE, d MMM yyyy HH:mm:ss Z" locale="en"/>
+                      <format property="deb.date" pattern="EEE, d MMM yyyy HH:mm:ss Z" locale="en" />
                     </tstamp>
 
-                    <mkdir dir="${deb.dir}"/>
+                    <mkdir dir="${deb.dir}" />
                     <copy todir="${deb.dir}">
-                      <fileset dir="src/main/deb"/>
+                      <fileset dir="src/main/deb" />
                       <filterset>
-                        <filter token="project.version" value="${deb.version}"/>
-                        <filter token="date" value="${deb.date}"/>
+                        <filter token="project.version" value="${deb.version}" />
+                        <filter token="date" value="${deb.date}" />
                       </filterset>
                     </copy>
 
-                    <mkdir dir="${deb.dir}/usr/share"/>
-                    <unzip src="${basedir}/target/mica-dist-${project.version}-dist.zip" dest="${deb.dir}/usr/share"/>
-                    <move file="${deb.dir}/usr/share/mica-dist-${project.version}"
-                        tofile="${deb.dir}/usr/share/mica2-${project.version}"/>
+                    <mkdir dir="${deb.dir}/usr/share" />
+                    <unzip src="${basedir}/target/mica-dist-${project.version}-dist.zip" dest="${deb.dir}/usr/share" />
+                    <move file="${deb.dir}/usr/share/mica-dist-${project.version}" tofile="${deb.dir}/usr/share/mica2-${project.version}" />
 
-                    <mkdir dir="${deb.dir}/etc"/>
+                    <mkdir dir="${deb.dir}/etc" />
                     <move todir="${deb.dir}/etc/mica2">
-                      <fileset dir="${deb.dir}/usr/share/mica2-${project.version}/conf"/>
+                      <fileset dir="${deb.dir}/usr/share/mica2-${project.version}/conf" />
                     </move>
 
                     <exec executable="debuild" dir="${deb.dir}" failonerror="true" osfamily="unix">
-                      <arg value="-b"/>
+                      <arg value="-b" />
                       <!-- Uncomment following options to package locally  -->
-                      <!--<arg value="-i"/>-->
-                      <!--<arg value="-us"/>-->
-                      <!--<arg value="-uc"/>-->
+                      <!--<arg value="-i" />-->
+                      <!--<arg value="-us" />-->
+                      <!--<arg value="-uc" />-->
                     </exec>
                   </target>
                 </configuration>
@@ -121,10 +119,9 @@
                 </goals>
                 <configuration>
                   <target>
-                    <property name="deb.version" value="${project.version}-b${buildNumber}"/>
+                    <property name="deb.version" value="${project.version}-b${buildNumber}" />
                     <!-- Deploy deb file in deb repo -->
-                    <copy file="target/mica2_${deb.version}_all.deb"
-                        todir="${obiba.deb.dir}/${mica.deploy.dir}"/>
+                    <copy file="target/mica2_${deb.version}_all.deb" todir="${obiba.deb.dir}/${mica.deploy.dir}" />
                   </target>
                 </configuration>
               </execution>
@@ -137,8 +134,7 @@
                 <configuration>
                   <target>
                     <!-- Deploy Mica Server package file in download repo -->
-                    <copy file="target/mica-dist-${project.version}-dist.zip"
-                        tofile="${obiba.download.dir}/mica/${mica.deploy.dir}/mica2-${project.version}-dist.zip"/>
+                    <copy file="target/mica-dist-${project.version}-dist.zip" tofile="${obiba.download.dir}/mica/${mica.deploy.dir}/mica2-${project.version}-dist.zip" />
                   </target>
                 </configuration>
               </execution>
