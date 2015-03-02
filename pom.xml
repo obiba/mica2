@@ -488,6 +488,11 @@
         <version>${opencsv.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-servlets</artifactId>
+        <version>${jetty.version}</version>
+      </dependency>
     </dependencies>
 
   </dependencyManagement>
@@ -672,7 +677,7 @@
           </execution>
         </executions>
       </plugin>
-      
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
