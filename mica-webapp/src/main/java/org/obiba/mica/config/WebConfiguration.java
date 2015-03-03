@@ -14,6 +14,7 @@ import javax.servlet.ServletRegistration;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.servlets.GzipFilter;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.obiba.mica.web.filter.CachingHttpHeadersFilter;
 import org.obiba.mica.web.filter.StaticResourcesProductionFilter;
@@ -126,10 +127,12 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
 
     EnumSet<DispatcherType> disps = EnumSet.of(REQUEST, FORWARD, ASYNC);
     initMetrics(servletContext, disps);
+
     if(env.acceptsProfiles(Profiles.PROD)) {
       initStaticResourcesProductionFilter(servletContext, disps);
       initCachingHttpHeadersFilter(servletContext, disps);
     }
+
     initGzipFilter(servletContext, disps);
 
     log.info("Web application fully configured");
@@ -158,13 +161,13 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
   private void initGzipFilter(ServletContext servletContext, EnumSet<DispatcherType> disps) {
     log.debug("Registering GZip Filter");
 
-    FilterRegistration.Dynamic compressingFilter = servletContext.addFilter("gzipFilter", new GZipServletFilter());
+    FilterRegistration.Dynamic compressingFilter = servletContext.addFilter("gzipFilter", new GzipFilter());
     compressingFilter.addMappingForUrlPatterns(disps, true, "*.css");
     compressingFilter.addMappingForUrlPatterns(disps, true, "*.json");
     compressingFilter.addMappingForUrlPatterns(disps, true, "*.html");
     compressingFilter.addMappingForUrlPatterns(disps, true, "*.js");
     compressingFilter.addMappingForUrlPatterns(disps, true, "/metrics/*");
-    // don't compress WS_ROOT/* or Jersey ExceptionMapper won't work
+    compressingFilter.addMappingForUrlPatterns(disps, true, WS_ROOT + "/*");
     compressingFilter.setAsyncSupported(true);
   }
 
