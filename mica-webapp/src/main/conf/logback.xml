@@ -20,9 +20,10 @@
   <!--<logger name="org.glassfish" level="warn"/>-->
   <!--<logger name="com.fasterxml" level="warn"/>-->
   <!--<logger name="com.google.protobuf" level="warn"/>-->
-  <!--<logger name="org.apache.shiro" level="info"/>-->
+  <!--<logger name="org.apache.shiro" level="trace"/>-->
   <!--<logger name="net.sf.ehcache" level="trace"/>-->
   <!--<logger name="org.elasticsearch" level="debug"/>-->
+  <!--<logger name="org.eclipse.jetty.io" level="debug"/>-->
 
   <appender name="mica.log" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <file>${MICA_LOG}/mica.log</file>
