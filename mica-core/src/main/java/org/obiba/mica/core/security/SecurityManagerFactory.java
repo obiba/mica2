@@ -199,9 +199,11 @@ public class SecurityManagerFactory implements FactoryBean<SecurityManager> {
 
       if(!Strings.isNullOrEmpty(obibaRealmUrl)) {
         ObibaRealm oRealm = new ObibaRealm();
+        oRealm.setAuthenticationCachingEnabled(true);
         oRealm.setBaseUrl(obibaRealmUrl);
         oRealm.setServiceName(serviceName);
         oRealm.setServiceKey(serviceKey);
+
         builder.add(oRealm);
       }
       super.applyRealmsToSecurityManager(builder.build(), securityManager);
