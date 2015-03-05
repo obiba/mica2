@@ -12,10 +12,8 @@ package org.obiba.mica.search.aggregations;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.obiba.mica.core.domain.AttributeKey;
@@ -26,7 +24,6 @@ import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
 
 @Component
 public class TaxonomyAggregationMetaDataProvider implements AggregationMetaDataProvider {
@@ -34,27 +31,12 @@ public class TaxonomyAggregationMetaDataProvider implements AggregationMetaDataP
   @Inject
   OpalService opalService;
 
-  private List<Taxonomy> taxonomies;
-
-  private Map<String, Vocabulary> cache;
-
-  @PostConstruct
-  public void init() {
-    getTaxonomies();
-    cache = Maps.newHashMap();
-  }
-
   @Override
   public void refresh() {
-    getTaxonomies();
   }
 
   public MetaData getTitle(String aggregation, String termKey, String locale) {
-    Optional<Vocabulary> vocabulary = Optional.ofNullable(cache.get(aggregation));
-    if(!vocabulary.isPresent()) {
-      vocabulary = getVocabulary(aggregation);
-      if(vocabulary.isPresent()) cache.put(aggregation, vocabulary.get());
-    }
+    Optional<Vocabulary> vocabulary = getVocabulary(aggregation);
 
     if(vocabulary.isPresent()) {
       Optional<Term> term = getTerm(vocabulary.get(), termKey);
@@ -74,7 +56,7 @@ public class TaxonomyAggregationMetaDataProvider implements AggregationMetaDataP
     String targetTaxonomy = attrKey.hasNamespace(null) ? "Default" : attrKey.getNamespace();
     String targetVocabulary = attrKey.getName();
 
-    return taxonomies.stream() //
+    return getTaxonomies().stream() //
       .filter(taxonomy -> !Strings.isNullOrEmpty(targetTaxonomy) && taxonomy.getName().equals(targetTaxonomy)) //
       .map(Taxonomy::getVocabularies) //
       .flatMap((v) -> v.stream()) //
@@ -91,11 +73,11 @@ public class TaxonomyAggregationMetaDataProvider implements AggregationMetaDataP
 
   protected List<Taxonomy> getTaxonomies() {
     try {
-      taxonomies = opalService.getTaxonomies();
+      return opalService.getTaxonomies();
     } catch(Exception e) {
       // ignore
     }
-    return taxonomies == null ? Collections.emptyList() : taxonomies;
+    return Collections.emptyList();
   }
 
 }
