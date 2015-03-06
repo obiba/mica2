@@ -29,7 +29,7 @@ study:
 - id: access
   title: {en: Access}
 - id: populations-dataCollectionEvents-bioSamples
-  title: {en: Bio-samples}
+  title: {en: Biosamples}
 - id: start
   title: {en: Date start}
 - id: end

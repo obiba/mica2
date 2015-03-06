@@ -23,7 +23,7 @@ public class AggregationsConfiguration {
   public void setNetwork(List<AggregationInfo> network) {
     this.network = network;
   }
-  
+
   @NotNull
   public List<AggregationInfo> getNetwork() {
     return network == null ? network = Lists.newArrayList() : network;
