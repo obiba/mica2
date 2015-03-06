@@ -28,6 +28,7 @@ import org.obiba.mica.study.date.PersitableYear;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 
 /**
  * A Study.
@@ -313,7 +314,8 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
               .filter(dce -> dce.getAttachments() != null) //
               .forEach(dce -> all.addAll(dce.getAttachments())));
     }
-    return all;
+
+    return Sets.newHashSet(all);
   }
 
   public LocalizedString getInfo() {

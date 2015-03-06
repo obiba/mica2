@@ -2,6 +2,7 @@ package org.obiba.mica.file;
 
 import java.io.Serializable;
 import java.util.Locale;
+import java.util.Objects;
 
 import javax.validation.constraints.NotNull;
 
@@ -96,5 +97,19 @@ public class Attachment implements Serializable {
 
   public void setJustUploaded(boolean justUploaded) {
     this.justUploaded = justUploaded;
+  }
+
+  @Override
+  public int hashCode() {
+    return id.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if(this == obj) return true;
+
+    if(obj == null || getClass() != obj.getClass()) return false;
+
+    return Objects.equals(id, ((Attachment) obj).id);
   }
 }
