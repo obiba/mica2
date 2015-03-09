@@ -40,3 +40,23 @@ vocabularies:
         title: {en: Newborn}
       - name: twin
         title: {en: Twin}
+  - name: populations-dataCollectionEvents-dataSources
+    terms:
+      - name: questionnaires
+        title: {en: Questionnaires}
+      - name: physical_measures
+        title: {en: Physical Measures}
+      - name: biological_samples
+        title: {en: Biosamples}
+      - name: administratives_databases
+        title: {en: Administratives Databases}
+      - name: others
+        title: {en: Others}
+  - name: access
+    terms:
+      - name: data
+        title: {en: Data}
+      - name: bio_samples
+        title: {en: Biosamples}
+      - name: other
+        title: {en: Other}

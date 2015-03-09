@@ -178,9 +178,9 @@ public class Population extends AbstractAttributeAware implements Serializable, 
   public int compareTo(Population pop) {
     if(!hasDataCollectionEvents()) return 1;
     if(!pop.hasDataCollectionEvents()) return -1;
-    int sizeDiff = pop.getDataCollectionEvents().size() - getDataCollectionEvents().size();
-    if (sizeDiff != 0) return sizeDiff;
-    return Iterables.get(dataCollectionEvents, 0).compareTo(Iterables.get(pop.dataCollectionEvents, 0));
+    int result = Iterables.get(dataCollectionEvents, 0).compareTo(Iterables.get(pop.dataCollectionEvents, 0));
+
+    return result != 0 ? result : this.getId().compareTo(pop.getId());
   }
 
 

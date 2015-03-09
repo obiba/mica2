@@ -19,9 +19,10 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
-import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.obiba.mica.search.CountStatsData;
+import org.obiba.mica.search.aggregations.AggregationMetaDataProvider;
+import org.obiba.mica.search.aggregations.StudyTaxonomyMetaDataProvider;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.mica.study.service.PublishedStudyService;
@@ -49,6 +50,9 @@ public class StudyQuery extends AbstractDocumentQuery {
   @Inject
   Dtos dtos;
 
+  @Inject
+  private StudyTaxonomyMetaDataProvider studyTaxonomyMetaDataProvider;
+
   private static final String JOIN_FIELD = "id";
 
   @Override
@@ -64,6 +68,11 @@ public class StudyQuery extends AbstractDocumentQuery {
   @Override
   public Stream<String> getLocalizedQueryStringFields() {
     return Stream.of(StudyIndexer.LOCALIZED_ANALYZED_FIELDS);
+  }
+
+  @Override
+  protected List<AggregationMetaDataProvider> getAggregationMetaDataProviders() {
+    return Arrays.asList(studyTaxonomyMetaDataProvider);
   }
 
   @Override
