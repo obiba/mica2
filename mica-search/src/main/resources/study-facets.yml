@@ -46,6 +46,9 @@ populations:
     ageMin:
       properties:
         type: "stats"
+    ageMax:
+      properties:
+        type: "stats"
     gender:
 
   recruitment:
