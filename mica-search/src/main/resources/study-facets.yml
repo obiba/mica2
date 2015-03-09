@@ -22,7 +22,11 @@
 
 id:
 start:
+  properties:
+    type: "stats"
 end:
+  properties:
+    type: "stats"
 access:
 
 methods:
