@@ -1,7 +1,5 @@
 package org.obiba.mica.study.rest;
 
-import java.io.IOException;
-
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -12,10 +10,10 @@ import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.obiba.mica.file.rest.FileResource;
 import org.obiba.mica.core.security.Roles;
-import org.obiba.mica.study.service.StudyService;
+import org.obiba.mica.file.rest.FileResource;
 import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.ApplicationContext;
@@ -67,9 +65,18 @@ public class DraftStudyResource {
 
   @PUT
   @Path("/_publish")
+  @RequiresRoles(Roles.MICA_ADMIN)
   @Timed
   public Response publish() {
     studyService.publish(id);
+    return Response.noContent().build();
+  }
+
+  @DELETE
+  @Path("/_publish")
+  @RequiresRoles(Roles.MICA_ADMIN)
+  public Response unPublish() {
+    studyService.unpublish(id);
     return Response.noContent().build();
   }
 
@@ -77,6 +84,7 @@ public class DraftStudyResource {
    * DELETE  /ws/studies/:id -> delete the "id" study.
    */
   @DELETE
+  @RequiresRoles(Roles.MICA_ADMIN)
   @Timed
   public Response delete() {
     studyService.delete(id);

@@ -1,6 +1,5 @@
 package org.obiba.mica.study.service;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -259,7 +258,14 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
   }
 
   @Nullable
-  private Study unpublish(StudyState studyState) {
+  public Study unpublish(String id) {
+    StudyState studyState = studyStateRepository.findOne(id);
+    return studyState == null ? null : unpublish(studyState);
+  }
+
+  @CacheEvict(value = { "studies-draft", "studies-published" }, key = "#id")
+  @Nullable
+  public Study unpublish(StudyState studyState) {
     log.info("Unpublish state since there are no Git repo for study: {}", studyState.getId());
     studyState.resetRevisionsAhead();
     studyState.setPublishedTag(null);
