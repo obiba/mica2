@@ -293,7 +293,7 @@ mica.study
           return opts ? opts[0] : [];
         }
 
-        $scope.selectionCriteriaGenders = extractVocabulary('selectionCriteriaGender').map(function (obj) {
+        $scope.selectionCriteriaGenders = extractVocabulary('populations-selectionCriteria-gender').map(function (obj) {
           return {id: obj.name, label: obj.label};
         });
         $scope.availableSelectionCriteria = extractVocabulary('selectionCriteriaCriteria');
