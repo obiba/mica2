@@ -26,12 +26,12 @@ vocabularies:
         title: {en: Members of specific association}
       - name: other
         title: {en: Other specific population}
-  - name: selectionCriteriaGender
+  - name: populations-selectionCriteria-gender
     terms:
       - name: men
-        title: {en: Men}
+        title: {en: Men only}
       - name: women
-        title: {en: Women}
+        title: {en: Women only}
   - name: selectionCriteriaCriteria
     terms:
       - name: gravidity

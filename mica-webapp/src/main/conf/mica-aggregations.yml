@@ -4,8 +4,6 @@ network:
 study:
 - id: methods-designs
   title: {en: Study design}
-- id: populations-recruitment-dataSources
-  title: {en: Recruitment datasource}
 - id: populations-selectionCriteria-countriesIso
   title: {en: Country of residence}
 - id: populations-selectionCriteria-ageMin
@@ -22,12 +20,14 @@ study:
   title: {en: Target number of participants with samples}
 - id: methods-recruitments
   title: {en: Recruitment target}
+- id: populations-recruitment-dataSources
+  title: {en: Sources of recruitment}
 - id: populations-recruitment-generalPopulationSources
   title: {en: General population sources}
 - id: populations-dataCollectionEvents-dataSources
   title: {en: Data sources}
 - id: access
-  title: {en: Access}
+  title: {en: Access permitted}
 - id: populations-dataCollectionEvents-bioSamples
   title: {en: Biosamples}
 - id: start

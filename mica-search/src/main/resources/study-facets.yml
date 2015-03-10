@@ -22,7 +22,11 @@
 
 id:
 start:
+  properties:
+    type: "stats"
 end:
+  properties:
+    type: "stats"
 access:
 
 methods:
@@ -44,6 +48,9 @@ populations:
     criteria:
     countriesIso:
     ageMin:
+      properties:
+        type: "stats"
+    ageMax:
       properties:
         type: "stats"
     gender:
