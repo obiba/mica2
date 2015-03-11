@@ -49,7 +49,7 @@ vocabularies:
       - name: biological_samples
         title: {en: Biosamples}
       - name: administratives_databases
-        title: {en: Administratives Databases}
+        title: {en: Administrative Databases}
       - name: others
         title: {en: Others}
   - name: access
