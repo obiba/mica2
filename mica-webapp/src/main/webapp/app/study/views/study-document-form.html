@@ -1,40 +1,8 @@
 <div class="form-group">
-
-  <label for="file" class="control-label" translate>study.documents</label>
-
-  <input id="file" name="file" type="file" ng-file-select="onFileSelect($files)" multiple>
-
-  <p class="help-block" translate>study.documents-help</p>
-
-  <table ng-show="study.attachments.length" class="table table-striped">
-    <tbody>
-    <tr ng-repeat="file in study.attachments">
-      <td>
-        <progressbar ng-show="file.showProgressBar" class="progress-striped" value="file.progress">
-          {{file.progress}}%
-        </progressbar>
-      </td>
-      <td>
-        {{file.fileName}}
-      </td>
-      <td>
-        {{file.size | bytes}}
-      </td>
-      <td>
-        <small ng-show="file.md5">md5: {{file.md5}}</small>
-      </td>
-      <td>
-        <a ng-show="file.id" ng-click="deleteFile(file.id)" class="action">
-          <i class="fa fa-trash-o"></i>
-        </a>
-        <a ng-show="file.tempId" ng-click="deleteTempFile(file.tempId)" class="action">
-          <i class="fa fa-trash-o"></i>
-        </a>
-      </td>
-    </tr>
-    </tbody>
-  </table>
-
+  <attachment-input files="study.attachments" accept="fileTypes" multiple="true"></attachment-input>
+  <div class="help-block">
+    <span>{{'allowed-file-types' | translate}} <span><strong>{{fileTypes}}</strong></span></span>
+  </div>
 </div>
 
 
