@@ -10,15 +10,18 @@
 
 package org.obiba.mica.search.aggregations;
 
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import org.obiba.mica.config.StudiesConfiguration;
-import org.obiba.opal.core.domain.taxonomy.Term;
+import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Maps;
 
 @Component
 public class StudyTaxonomyMetaDataProvider implements AggregationMetaDataProvider {
@@ -26,27 +29,57 @@ public class StudyTaxonomyMetaDataProvider implements AggregationMetaDataProvide
   @Inject
   private StudiesConfiguration studiesConfiguration;
 
+  Map<String, Map<String, LocalizedMetaData>> cache;
+
   @Override
-  public MetaData getTitle(String aggregation, String termKey, String locale) {
-    Optional<Term> term = studiesConfiguration.getVocabularies().stream() //
-      .filter(v -> v.getName().equals(aggregation)) //
-      .map(Vocabulary::getTerms) //
-      .flatMap((v) -> v.stream()) //
-      .filter(t -> t.getName().equals(termKey)) //
-      .findFirst(); //
-
-    MetaData metaData = null;
-
-    if (term.isPresent()) {
-      Term t = term.get();
-      metaData = MetaData.newBuilder().title(t.getTitle().get(locale)).description(t.getDescription().get(locale))
-        .build();
+  public MetaData getMetadata(String aggregation, String termKey, String locale) {
+    if (!cache.containsKey(aggregation)) {
+      cache.put(aggregation, getAllLocalizedMetadata(aggregation));
     }
 
-    return metaData;
+    Map<String, LocalizedMetaData> aggs = cache.get(aggregation);
+
+    if (aggs == null) return null;
+
+    LocalizedMetaData md = aggs.get(termKey);
+
+    if (md == null) return  null;
+
+    return MetaData.newBuilder()
+      .title(md.getTitle().get(locale))
+      .description(md.getDescription().get(locale))
+      .build();
+  }
+
+  @Override
+  public boolean containsAggregation(String aggregation) {
+    if (!cache.containsKey(aggregation)) {
+      cache.put(aggregation, getAllLocalizedMetadata(aggregation));
+    }
+
+    return cache.get(aggregation) != null;
   }
 
   @Override
   public void refresh() {
+    cache = Maps.newHashMap();
+  }
+
+  private Map<String, AggregationMetaDataProvider.LocalizedMetaData> getAllLocalizedMetadata(String aggregation) {
+    Map<String, AggregationMetaDataProvider.LocalizedMetaData> r = null;
+    Optional<Vocabulary> v = studiesConfiguration.getVocabularies().stream().filter(v1 -> v1.getName().equals(aggregation)).findFirst();
+
+    if(v.isPresent())
+    {
+      r = v.get().getTerms().stream().collect(Collectors.toMap(e -> e.getName(), t -> {
+        LocalizedString n = new LocalizedString();
+        n.putAll(t.getTitle());
+        LocalizedString m = new LocalizedString();
+        m.putAll(t.getDescription());
+        return new AggregationMetaDataProvider.LocalizedMetaData(n, m);
+      }));
+    }
+
+    return r;
   }
 }

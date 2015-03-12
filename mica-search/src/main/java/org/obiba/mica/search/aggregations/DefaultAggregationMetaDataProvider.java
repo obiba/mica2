@@ -17,8 +17,13 @@ import org.springframework.stereotype.Component;
 public class DefaultAggregationMetaDataProvider implements AggregationMetaDataProvider {
 
   @Override
-  public MetaData getTitle(String aggregation, String termKey, String locale) {
+  public MetaData getMetadata(String aggregation, String termKey, String locale) {
     return MetaData.newBuilder().title(WordUtils.capitalize(termKey.replaceAll("[-_]", " "))).description("").build();
+  }
+
+  @Override
+  public boolean containsAggregation(String aggregation) {
+    return true;
   }
 
   @Override

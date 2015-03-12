@@ -54,23 +54,26 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
   private ObjectMapper objectMapper;
 
   public T findById(String id) {
+    log.debug("findById {} {}", this.getClass(), id);
     List<T> results = findByIds(Arrays.asList(id));
     return (results != null && results.size() > 0) ? results.get(0) : null;
   }
 
   public List<T> findAll() {
+    log.debug("findAll {}", this.getClass());
     return executeQuery(QueryBuilders.matchAllQuery(), 0, MAX_SIZE);
   }
 
   public List<T> findByIds(List<String> ids) {
+    log.debug("findByIds {} {} ids", this.getClass(), ids.size());
     return executeQueryByIds(buildFilteredQuery(ids), 0, MAX_SIZE, ids);
   }
 
   @Override
   public Documents<T> find(int from, int limit, @Nullable String sort, @Nullable String order, @Nullable String studyId,
     @Nullable String queryString) {
-
     QueryBuilder query = null;
+
     if(queryString != null) {
       query = QueryBuilders.queryString(queryString);
     }
@@ -98,11 +101,13 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
 
     Documents<T> documents = new Documents<>(Long.valueOf(response.getHits().getTotalHits()).intValue(), from, limit);
 
+    log.debug("found {} hits", response.getHits().getTotalHits());
+
     response.getHits().forEach(hit -> {
       try {
         documents.add(processHit(hit));
       } catch(IOException e) {
-        log.error("Failed retrieving a network", e);
+        log.error("Failed processing found hits.", e);
       }
     });
 

@@ -141,6 +141,8 @@ public class JoinQueryExecutor {
 
   private JoinQueryResultDto query(QueryType type, JoinQueryDto joinQueryDto, CountStatsData.Builder countBuilder,
     AbstractDocumentQuery.Scope scope, AbstractDocumentQuery.Mode mode) throws IOException {
+    log.debug("Start query");
+
     DatasetIdProvider datasetIdProvider = new DatasetIdProvider();
     String locale = joinQueryDto.getLocale();
 
@@ -190,6 +192,8 @@ public class JoinQueryExecutor {
       execute(type, scope, countBuilder);
     }
 
+    log.debug("Building result");
+
     JoinQueryResultDto.Builder builder = JoinQueryResultDto.newBuilder();
     AggregationsConfig aggregationsConfig = aggregationsService.getAggregationsConfig();
 
@@ -209,6 +213,8 @@ public class JoinQueryExecutor {
       builder.setNetworkResultDto(
         addAggregationTitles(networkQuery.getResultQuery(), aggregationsConfig.getNetworkAggregations(), null));
     }
+
+    log.debug("Finished query");
 
     return builder.build();
   }
@@ -428,5 +434,4 @@ public class JoinQueryExecutor {
 
     return studyIds;
   }
-
 }

@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
@@ -172,7 +173,8 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
    * @return
    * @throws NoSuchStudyException
    */
-  @CacheEvict(value = { "studies-draft", "studies-published" }, key = "#id")
+  @Caching(evict = { @CacheEvict(value = "aggregations-metadata", allEntries = true),
+    @CacheEvict(value = { "studies-draft", "studies-published" }, key = "#id") })
   public StudyState publish(@NotNull String id) throws NoSuchStudyException {
     log.info("Publish study: {}", id);
     StudyState studyState = findStateById(id);
@@ -197,7 +199,9 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
     eventBus.post(new IndexStudiesEvent(publishedStudies, findAllDraftStudies()));
   }
 
-  @CacheEvict(value = { "studies-draft", "studies-published" }, key = "#id")
+  @Caching(evict = {
+    @CacheEvict(value = "aggregations-metadata", allEntries = true),
+    @CacheEvict(value = { "studies-draft", "studies-published" }, key = "#id")})
   public void delete(@NotNull String id) {
     Study study = studyRepository.findOne(id);
 
@@ -263,7 +267,8 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
     return studyState == null ? null : unpublish(studyState);
   }
 
-  @CacheEvict(value = { "studies-draft", "studies-published" }, key = "#id")
+  @Caching(evict = { @CacheEvict(value = "aggregations-metadata", allEntries = true),
+    @CacheEvict(value = { "studies-draft", "studies-published" }, key = "#id") })
   @Nullable
   public Study unpublish(StudyState studyState) {
     log.info("Unpublish state since there are no Git repo for study: {}", studyState.getId());

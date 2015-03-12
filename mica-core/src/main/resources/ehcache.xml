@@ -61,5 +61,11 @@
     <pinning store="localMemory"/>
   </cache>
 
+  <cache name="aggregations-metadata"
+    timeToLiveSeconds="1800"
+    timeToIdleSeconds="0">
+    <pinning store="localMemory"/>
+  </cache>
+
 </ehcache>
 

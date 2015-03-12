@@ -16,38 +16,53 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DatasetAggregationMetaDataProvider implements AggregationMetaDataProvider {
 
   private static final Logger log = LoggerFactory.getLogger(DatasetAggregationMetaDataProvider.class);
+  private static final String AGGREGATION_NAME = "datasetId";
 
   @Inject
-  PublishedDatasetService publishedDatasetService;
+  AggregationMetaDataHelper helper;
 
-  private Map<String, LocalizedString> cacheTitles;
-
-  private Map<String, LocalizedString> cacheDescriptions;
-
+  @Override
   public void refresh() {
-    List<Dataset> datasets = publishedDatasetService.findAll();
-    cacheTitles = datasets.stream()
-      .collect(Collectors.toMap(Dataset::getId, Dataset::getAcronym));
-    cacheDescriptions = datasets.stream()
-      .collect(Collectors.toMap(Dataset::getId, Dataset::getName));
   }
 
-  public MetaData getTitle(String aggregation, String termKey, String locale) {
-    return "datasetId".equals(aggregation) && cacheTitles.containsKey(termKey)
-      ? MetaData.newBuilder().title(cacheTitles.get(termKey).get(locale))
-      .description(cacheDescriptions.get(termKey).get(locale)).build()
+  @Override
+  public MetaData getMetadata(String aggregation, String termKey, String locale) {
+    Map<String, LocalizedMetaData> datasetsDictionary = helper.getDatasets();
+
+    return AGGREGATION_NAME.equals(aggregation) && datasetsDictionary.containsKey(termKey)
+      && datasetsDictionary.get(termKey).getTitle() != null
+      ? MetaData.newBuilder().title(datasetsDictionary.get(termKey).getTitle().get(locale))
+      .description(datasetsDictionary.get(termKey).getDescription().get(locale)).build()
       : null;
   }
 
+  @Override
+  public boolean containsAggregation(String aggregation) {
+    return AGGREGATION_NAME.equals(aggregation);
+  }
+
+  @Component
+  public static class AggregationMetaDataHelper {
+
+    @Inject
+    PublishedDatasetService publishedDatasetService;
+
+    @Cacheable(value="aggregations-metadata", key = "'dataset'")
+    public Map<String, LocalizedMetaData> getDatasets() {
+      List<Dataset> datasets= publishedDatasetService.findAll();
+      return datasets.stream()
+        .collect(Collectors.toMap(Dataset::getId, d -> new LocalizedMetaData(d.getName(), d.getDescription())));
+    }
+  }
 }
