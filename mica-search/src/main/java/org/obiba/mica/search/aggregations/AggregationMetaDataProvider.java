@@ -10,6 +10,8 @@
 
 package org.obiba.mica.search.aggregations;
 
+import org.obiba.mica.core.domain.LocalizedString;
+
 import com.google.common.base.Strings;
 
 public interface AggregationMetaDataProvider {
@@ -20,15 +22,40 @@ public interface AggregationMetaDataProvider {
    * @param locale
    * @return
    */
-  MetaData getTitle(String aggregation, String termKey, String locale);
+  MetaData getMetadata(String aggregation, String termKey, String locale);
+
+  boolean containsAggregation(String aggregation);
 
   void refresh();
+
+  class LocalizedMetaData {
+    private LocalizedString title;
+    private LocalizedString description;
+
+    public LocalizedMetaData(LocalizedString title, LocalizedString description) {
+      this.title = title;
+      this.description = description;
+    }
+
+    public LocalizedString getTitle() {
+      return title;
+    }
+
+    public LocalizedString getDescription() {
+      return description;
+    }
+  }
 
   class MetaData {
     private String title;
     private String description;
 
     private MetaData() {}
+
+    public MetaData(String title, String description) {
+      this.title = title;
+      this.description = description;
+    }
 
     public boolean hasTitle() {
       return !Strings.isNullOrEmpty(title);
@@ -69,8 +96,6 @@ public interface AggregationMetaDataProvider {
       public MetaData build() {
         return metaData;
       }
-
     }
-
   }
 }

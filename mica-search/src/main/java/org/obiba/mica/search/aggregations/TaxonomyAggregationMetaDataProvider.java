@@ -12,11 +12,13 @@ package org.obiba.mica.search.aggregations;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.inject.Inject;
 
 import org.obiba.mica.core.domain.AttributeKey;
+import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Term;
@@ -24,6 +26,7 @@ import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 
 @Component
 public class TaxonomyAggregationMetaDataProvider implements AggregationMetaDataProvider {
@@ -31,20 +34,60 @@ public class TaxonomyAggregationMetaDataProvider implements AggregationMetaDataP
   @Inject
   OpalService opalService;
 
+  Map<String, Map<String, LocalizedMetaData>> cache;
+
   @Override
   public void refresh() {
+    cache = Maps.newHashMap();
   }
 
-  public MetaData getTitle(String aggregation, String termKey, String locale) {
+  @Override
+  public boolean containsAggregation(String aggregation) {
+    if (!cache.containsKey(aggregation)) {
+      cache.put(aggregation, getAllLocalizedMetadata(aggregation));
+    }
+
+    return cache.get(aggregation) != null;
+  }
+
+  @Override
+  public MetaData getMetadata(String aggregation, String termKey, String locale) {
+    if (!cache.containsKey(aggregation)) {
+      cache.put(aggregation, getAllLocalizedMetadata(aggregation));
+    }
+
+    Map<String, LocalizedMetaData> aggs = cache.get(aggregation);
+
+    if (aggs == null) return null;
+
+    LocalizedMetaData md = aggs.get(termKey);
+
+    if (md == null) return  null;
+
+    return MetaData.newBuilder()
+      .title(md.getTitle().get(locale))
+      .description(md.getDescription().get(locale))
+      .build();
+  }
+
+  private Map<String, AggregationMetaDataProvider.LocalizedMetaData> getAllLocalizedMetadata(String aggregation) {
     Optional<Vocabulary> vocabulary = getVocabulary(aggregation);
 
     if(vocabulary.isPresent()) {
-      Optional<Term> term = getTerm(vocabulary.get(), termKey);
-      if(term.isPresent()) {
-        Term t = term.get();
-        return MetaData.newBuilder().title(t.getTitle().get(locale)).description(t.getDescription().get(locale))
-          .build();
+      Map<String, LocalizedMetaData> r = Maps.newHashMap();
+
+      for(Term t:vocabulary.get().getTerms()) {
+        LocalizedString n = new LocalizedString();
+        n.putAll(t.getTitle());
+        LocalizedString m = new LocalizedString();
+        m.putAll(t.getDescription());
+
+        if(!r.containsKey(t.getName())) {
+          r.put(t.getName(), new AggregationMetaDataProvider.LocalizedMetaData(n, m));
+        }
       }
+
+      return r;
     }
 
     return null;
@@ -64,13 +107,6 @@ public class TaxonomyAggregationMetaDataProvider implements AggregationMetaDataP
       .findFirst();
   }
 
-  private Optional<Term> getTerm(Vocabulary vocabulary, String key) {
-    if(vocabulary == null) return null;
-
-    return vocabulary.getTerms().stream() //
-      .filter(term -> term.getName().equals(key)).findFirst(); //
-  }
-
   protected List<Taxonomy> getTaxonomies() {
     try {
       return opalService.getTaxonomies();
@@ -79,5 +115,4 @@ public class TaxonomyAggregationMetaDataProvider implements AggregationMetaDataP
     }
     return Collections.emptyList();
   }
-
 }

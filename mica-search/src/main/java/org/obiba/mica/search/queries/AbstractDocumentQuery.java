@@ -165,7 +165,7 @@ public abstract class AbstractDocumentQuery {
       .setNoFields();
 
     aggregationYamlParser.getAggregations(getJoinFieldsAsProperties()).forEach(requestBuilder::addAggregation);
-    log.info("Request: {}", requestBuilder);
+    log.info("Request /{}/{}: {}", getSearchIndex(), getSearchType(), requestBuilder);
     SearchResponse response = requestBuilder.execute().actionGet();
     List<String> ids = Lists.newArrayList();
 
@@ -262,7 +262,7 @@ public abstract class AbstractDocumentQuery {
       requestBuilder.addAggregation(agg);
     });
 
-    log.debug("Request: {}", requestBuilder.toString());
+    log.debug("Request /{}/{}: {}", getSearchIndex(), getSearchType(), requestBuilder.toString());
 
     try {
       List<SearchResponse> responses = Stream
@@ -355,7 +355,7 @@ public abstract class AbstractDocumentQuery {
       defaultRequestBuilder.addAggregation(agg);
     });
 
-    log.info("Request: {}", requestBuilder.toString());
+    log.info("Request /{}/{}: {}", getSearchIndex(), getSearchType(), requestBuilder.toString());
 
     try {
       List<SearchResponse> responses = Stream
@@ -366,7 +366,12 @@ public abstract class AbstractDocumentQuery {
       SearchResponse defaultResponse = responses.get(0);
       SearchResponse response = responses.get(1);
 
-      log.info("Response: {}", response);
+      log.debug("Response: {}", response);
+
+      if (response == null) {
+        return null;
+      }
+
       QueryResultDto.Builder builder = QueryResultDto.newBuilder().setTotalHits((int) response.getHits().getTotalHits());
 
       if(scope == DETAIL) processHits(builder, response.getHits(), scope, counts);
@@ -405,6 +410,7 @@ public abstract class AbstractDocumentQuery {
    * @param aggregations
    */
   protected void processAggregations(QueryResultDto.Builder builder, Aggregations defaults, Aggregations aggregations) {
+    log.debug("start processAggregations");
     EsQueryResultParser parser = EsQueryResultParser.newParser(aggregationTitleResolver, locale);
     builder.addAllAggs(defaults == null //
       ? parser.parseAggregations(aggregations) //
@@ -453,6 +459,7 @@ public abstract class AbstractDocumentQuery {
   }
 
   protected List<String> getResponseDocumentIds(List<String> fields, List<MicaSearch.AggregationResultDto> aggDtos) {
+    log.debug("start getResponseDocumentIds");
     List<String> ids = aggDtos.stream() //
       .filter(agg -> fields.contains(AggregationYamlParser.unformatName(agg.getAggregation()))) //
       .map(d -> d.getExtension(MicaSearch.TermsAggregationResultDto.terms)) //
