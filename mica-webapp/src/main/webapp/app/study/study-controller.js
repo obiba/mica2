@@ -488,12 +488,17 @@ mica.study
   .controller('StudyEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$location', '$upload', '$timeout', '$modal', 'DraftStudyResource', 'DraftStudiesResource', 'MicaConfigResource', 'StringUtils', 'FormServerValidation', 'TempFileResource',
 
     function ($rootScope, $scope, $routeParams, $log, $location, $upload, $timeout, $modal, DraftStudyResource, DraftStudiesResource, MicaConfigResource, StringUtils, FormServerValidation, TempFileResource) {
+      $scope.fileTypes = '.doc, .docx, .odm, .odt, .gdoc, .pdf, .txt  .xml  .xls, .xlsx, .ppt';
       $scope.accessTypes = ['data', 'bio_samples', 'other'];
       $scope.methodDesignTypes = ['case_control', 'case_only', 'clinical_trial', 'cohort_study', 'cross_sectional', 'other'];
       $scope.methodRecruitmentTypes = ['individuals', 'families', 'other'];
 
-      $scope.study = $routeParams.id ? DraftStudyResource.get({
-        id: $routeParams.id}) : {};
+      $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}, function() {
+        if ($routeParams.id) {
+          $scope.study.attachments =
+            $scope.study.attachments && $scope.study.attachments.length > 0 ? $scope.study.attachments : [];
+        }
+      }) : {};
 
       $log.debug('Edit study', $scope.study);
 
@@ -505,71 +510,6 @@ mica.study
           $scope.languages.push(lang);
         });
       });
-
-      $scope.files = [];
-      $scope.onFileSelect = function ($files) {
-        $scope.uploadedFiles = $files;
-        $scope.uploadedFiles.forEach(function (file) {
-          uploadFile(file);
-        });
-      };
-
-      var uploadFile = function (file) {
-        $log.debug('file', file);
-
-        var attachment = {
-          showProgressBar: true,
-          lang: getActiveTab().lang,
-          progress: 0,
-          file: file,
-          fileName: file.name,
-          size: file.size
-        };
-        $scope.study.attachments.push(attachment);
-
-        $scope.upload = $upload
-          .upload({
-            url: '/ws/files/temp',
-            method: 'POST',
-            file: file
-          })
-          .progress(function (evt) {
-            attachment.progress = parseInt(100.0 * evt.loaded / evt.total);
-          })
-          .success(function (data, status, getResponseHeaders) {
-            var parts = getResponseHeaders().location.split('/');
-            var fileId = parts[parts.length - 1];
-            TempFileResource.get(
-              {id: fileId},
-              function (tempFile) {
-                $log.debug('tempFile', tempFile);
-                attachment.id = tempFile.id;
-                attachment.md5 = tempFile.md5;
-                attachment.justUploaded = true;
-                // wait for 1 second before hiding progress bar
-                $timeout(function () { attachment.showProgressBar = false; }, 1000);
-              }
-            );
-          });
-      };
-
-      $scope.deleteTempFile = function (tempFileId) {
-        TempFileResource.delete(
-          {id: tempFileId},
-          function () {
-            for (var i = $scope.study.attachments.length - 1; i--;) {
-              var attachment = $scope.study.attachments[i];
-              if (attachment.justUploaded && attachment.id === tempFileId) {
-                $scope.study.attachments.splice(i, 1);
-              }
-            }
-          }
-        );
-      };
-
-      $scope.deleteFile = function (fileId) {
-        $log.debug('Delete ', fileId);
-      };
 
       $scope.save = function () {
         if (!$scope.form.$valid) {
