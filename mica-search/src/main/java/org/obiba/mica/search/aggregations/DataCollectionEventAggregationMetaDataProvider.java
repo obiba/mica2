@@ -67,14 +67,14 @@ public class DataCollectionEventAggregationMetaDataProvider implements Aggregati
             MonikerData md = new MonikerData(population.getId(), dce.getId(), study.getAcronym(), population.getName(),
               dce.getName());
 
-            LocalizedString n = new LocalizedString();
-            study.getAcronym().entrySet().forEach(e -> n.put(e.getKey(), md.getTitle(e.getKey())));
+            LocalizedString title = new LocalizedString();
+            study.getAcronym().entrySet().forEach(e -> title.put(e.getKey(), md.getTitle(e.getKey())));
 
-            LocalizedString m = new LocalizedString();
-            study.getAcronym().entrySet().forEach(e -> m.put(e.getKey(), md.getDescription(e.getKey())));
+            LocalizedString description = new LocalizedString();
+            study.getAcronym().entrySet().forEach(e -> description.put(e.getKey(), md.getDescription(e.getKey())));
 
             res.put(StudyTable.getDataCollectionEventUId(study.getId(), population.getId(), dce.getId()),
-              new LocalizedMetaData(n, m));
+              new LocalizedMetaData(title, description));
           });
         });
       });

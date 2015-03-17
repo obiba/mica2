@@ -65,18 +65,18 @@ public class StudyTaxonomyMetaDataProvider implements AggregationMetaDataProvide
     cache = Maps.newHashMap();
   }
 
-  private Map<String, AggregationMetaDataProvider.LocalizedMetaData> getAllLocalizedMetadata(String aggregation) {
-    Map<String, AggregationMetaDataProvider.LocalizedMetaData> r = null;
+  private Map<String, LocalizedMetaData> getAllLocalizedMetadata(String aggregation) {
+    Map<String, LocalizedMetaData> r = null;
     Optional<Vocabulary> v = studiesConfiguration.getVocabularies().stream().filter(v1 -> v1.getName().equals(aggregation)).findFirst();
 
     if(v.isPresent())
     {
       r = v.get().getTerms().stream().collect(Collectors.toMap(e -> e.getName(), t -> {
-        LocalizedString n = new LocalizedString();
-        n.putAll(t.getTitle());
-        LocalizedString m = new LocalizedString();
-        m.putAll(t.getDescription());
-        return new AggregationMetaDataProvider.LocalizedMetaData(n, m);
+        LocalizedString title = new LocalizedString();
+        title.putAll(t.getTitle());
+        LocalizedString description = new LocalizedString();
+        description.putAll(t.getDescription());
+        return new LocalizedMetaData(title, description);
       }));
     }
 

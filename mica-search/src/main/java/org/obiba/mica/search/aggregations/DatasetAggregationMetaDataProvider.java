@@ -62,7 +62,7 @@ public class DatasetAggregationMetaDataProvider implements AggregationMetaDataPr
     public Map<String, LocalizedMetaData> getDatasets() {
       List<Dataset> datasets= publishedDatasetService.findAll();
       return datasets.stream()
-        .collect(Collectors.toMap(Dataset::getId, d -> new LocalizedMetaData(d.getName(), d.getDescription())));
+        .collect(Collectors.toMap(Dataset::getId, d -> new LocalizedMetaData(d.getAcronym(), d.getName())));
     }
   }
 }
