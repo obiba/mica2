@@ -47,7 +47,7 @@ public class StudyAggregationMetaDataProvider implements AggregationMetaDataProv
     public Map<String, LocalizedMetaData> getStudies() {
       List<Study> studies = publishedStudyService.findAll();
       return studies.stream().collect(Collectors
-        .toMap(s -> s.getId(), r -> new LocalizedMetaData(r.getName(), r.getAcronym())));
+        .toMap(s -> s.getId(), m -> new LocalizedMetaData(m.getAcronym(), m.getName())));
     }
   }
 }

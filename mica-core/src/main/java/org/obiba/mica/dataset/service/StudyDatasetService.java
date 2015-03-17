@@ -31,6 +31,8 @@ import org.obiba.opal.web.model.Search;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -126,6 +128,7 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
    * @param id
    * @param published
    */
+  @Caching(evict = { @CacheEvict(value = "aggregations-metadata", key = "'dataset'") })
   public void publish(@NotNull String id, boolean published) {
     StudyDataset dataset = findById(id);
     dataset.setPublished(published);

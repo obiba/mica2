@@ -70,20 +70,20 @@ public class TaxonomyAggregationMetaDataProvider implements AggregationMetaDataP
       .build();
   }
 
-  private Map<String, AggregationMetaDataProvider.LocalizedMetaData> getAllLocalizedMetadata(String aggregation) {
+  private Map<String, LocalizedMetaData> getAllLocalizedMetadata(String aggregation) {
     Optional<Vocabulary> vocabulary = getVocabulary(aggregation);
 
     if(vocabulary.isPresent()) {
       Map<String, LocalizedMetaData> r = Maps.newHashMap();
 
       for(Term t:vocabulary.get().getTerms()) {
-        LocalizedString n = new LocalizedString();
-        n.putAll(t.getTitle());
-        LocalizedString m = new LocalizedString();
-        m.putAll(t.getDescription());
+        LocalizedString title = new LocalizedString();
+        title.putAll(t.getTitle());
+        LocalizedString description = new LocalizedString();
+        description.putAll(t.getDescription());
 
         if(!r.containsKey(t.getName())) {
-          r.put(t.getName(), new AggregationMetaDataProvider.LocalizedMetaData(n, m));
+          r.put(t.getName(), new LocalizedMetaData(title, description));
         }
       }
 
