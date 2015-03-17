@@ -26,7 +26,6 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.indices.IndexMissingException;
-import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.Aggregations;
@@ -221,7 +220,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
       return DatasetType.DATASET;
     }
 
-    log.info("Request: {}", requestBuilder);
+    log.info("Request /{}/{}: {}", getSearchIndex(), getSearchType(), requestBuilder);
     SearchResponse response = requestBuilder.execute().actionGet();
     List<String> classNames = Lists.newArrayList();
 

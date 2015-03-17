@@ -12,6 +12,7 @@ package org.obiba.mica.search.rest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -54,9 +55,9 @@ public class EsQueryResultParser {
   }
 
   public List<AggregationResultDto> parseAggregations(@NotNull Aggregations defaults, @NotNull Aggregations queried) {
-    List<AggregationResultDto> aggResults = new ArrayList();
     List<Aggregation> defaultAggs = defaults.asList();
     List<Aggregation> queriedAggs = queried.asList();
+    List<AggregationResultDto> aggResults = new ArrayList();
 
     IntStream.range(0, defaultAggs.size()).forEach(i -> {
       Aggregation defaultAgg = defaultAggs.get(i);
@@ -83,14 +84,17 @@ public class EsQueryResultParser {
           List<Terms.Bucket> defaultBuckets = ((Terms) defaultAgg).getBuckets().stream().collect(Collectors.toList());
           List<Terms.Bucket> queriedBuckets = ((Terms) queriedAgg).getBuckets().stream().collect(Collectors.toList());
 
+          Map<String, Terms.Bucket> queriedBucketsMap = queriedBuckets.stream()
+            .collect(Collectors.toMap(q -> q.getKey(), r -> r));
+          int queriedBucketsSize = queriedBuckets.size();
+
           IntStream.range(0, defaultBuckets.size()).forEach(j -> {
             // It appears that 'min_document_count' does not apply to sub-aggregations,
             // hence the disparity in bucket sizes
-            int queriedBucketsSize = queriedBuckets.size();
             Terms.Bucket defaultBucket = defaultBuckets.get(j);
             Optional<Terms.Bucket> queriedBucket = queriedBucketsSize == defaultBuckets.size()
-              ? Optional.of(queriedBuckets.get(j))
-              : queriedBucketsSize > 0 ? findQueriedBucket(queriedBuckets, defaultBucket.getKey()) : Optional.empty();
+              ? Optional.ofNullable(queriedBuckets.get(j))
+              : queriedBucketsSize > 0 ? Optional.ofNullable(queriedBucketsMap.get(defaultBucket.getKey())) : Optional.empty();
 
             int queriedBucketCount = 0;
             Optional<Aggregations> queriedAggregations = Optional.empty();
@@ -98,7 +102,7 @@ public class EsQueryResultParser {
             if(queriedBucket.isPresent()) {
               Terms.Bucket bucket = queriedBucket.get();
               queriedBucketCount = (int) bucket.getDocCount();
-              queriedAggregations = Optional.of(bucket.getAggregations());
+              queriedAggregations = Optional.ofNullable(bucket.getAggregations());
             }
 
             TermsAggregationResultDto.Builder termsBuilder = TermsAggregationResultDto.newBuilder();
@@ -108,6 +112,7 @@ public class EsQueryResultParser {
             }
 
             String key = defaultBucket.getKey();
+
             AggregationMetaDataProvider.MetaData metaData = aggregationTitleResolver
               .getTitle(defaultAgg.getName(), key, locale);
             if(metaData.hasTitle()) termsBuilder.setTitle(metaData.getTitle());
@@ -137,6 +142,7 @@ public class EsQueryResultParser {
 
   public List<AggregationResultDto> parseAggregations(@NotNull Aggregations aggregations) {
     List<AggregationResultDto> aggResults = new ArrayList();
+
     aggregations.forEach(aggregation -> {
 
       AggregationResultDto.Builder aggResultBuilder = MicaSearch.AggregationResultDto.newBuilder();
@@ -167,6 +173,7 @@ public class EsQueryResultParser {
         case "terms":
           ((Terms) aggregation).getBuckets().forEach(bucket -> {
             TermsAggregationResultDto.Builder termsBuilder = TermsAggregationResultDto.newBuilder();
+
             if(bucket.getAggregations() != null) {
               termsBuilder.addAllAggs(parseAggregations(bucket.getAggregations()));
             }
@@ -194,14 +201,6 @@ public class EsQueryResultParser {
     });
 
     return aggResults;
-  }
-
-  private Optional<Terms.Bucket> findQueriedBucket(List<Terms.Bucket> queriedBuckets, String key) {
-    return queriedBuckets.stream().filter(bucket -> {
-      String qKey = bucket.getKey();
-      log.info("{} == {}", qKey, key);
-      return bucket.getKey().equals(key);
-    }).findFirst();
   }
 
   private MicaSearch.StatsAggregationResultDataDto buildStatsDto(Stats stats) {

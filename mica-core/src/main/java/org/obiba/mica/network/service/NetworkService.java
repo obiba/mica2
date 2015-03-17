@@ -26,6 +26,8 @@ import org.obiba.mica.network.event.NetworkDeletedEvent;
 import org.obiba.mica.network.event.NetworkPublishedEvent;
 import org.obiba.mica.network.event.NetworkUpdatedEvent;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -127,6 +129,7 @@ public class NetworkService {
    * @param published
    * @throws NoSuchNetworkException
    */
+  @Caching(evict = { @CacheEvict(value = "aggregations-metadata", key = "'network'") })
   public void publish(@NotNull String id, boolean published) throws NoSuchNetworkException {
     Network network = findById(id);
     network.setPublished(published);

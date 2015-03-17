@@ -12,7 +12,7 @@ package org.obiba.mica.search.aggregations;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -21,31 +21,53 @@ import javax.inject.Inject;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+
 @Component
 @Scope("prototype")
-public class AggregationMetaDataResolver implements AggregationMetaDataProvider {
+public class AggregationMetaDataResolver {
 
   @Inject
   private DefaultAggregationMetaDataProvider defaultAggregationTitleProvider;
 
   private Set<AggregationMetaDataProvider> providers;
 
+  private Map<String, AggregationMetaDataProvider> aggregationProviderMap;
+
   @PostConstruct
   public void init() {
     providers = new HashSet<>();
+    aggregationProviderMap = Maps.newHashMap();
   }
 
-  @Override
-  public MetaData getTitle(String aggregation, String termKey, String locale) {
-    Optional<MetaData> title = providers.stream()
-      .map(provider -> provider.getTitle(aggregation, termKey, locale)).filter(metaData -> metaData != null)
-      .findFirst();
+  public AggregationMetaDataProvider.MetaData getTitle(String aggregation, String termKey, String locale) {
+    if (!aggregationProviderMap.containsKey(aggregation)) {
+      boolean found = false;
 
-    return title.orElse(defaultAggregationTitleProvider.getTitle(aggregation, termKey, locale));
+      for (AggregationMetaDataProvider provider: providers) {
+        if (provider.containsAggregation(aggregation)) {
+          aggregationProviderMap.put(aggregation, provider);
+          found = true;
+          break;
+        }
+      }
+
+      if (!found) aggregationProviderMap.put(aggregation, null);
+    }
+
+    AggregationMetaDataProvider provider = aggregationProviderMap.get(aggregation);
+
+    if(provider == null)
+      return defaultAggregationTitleProvider.getMetadata(aggregation, termKey, locale);
+
+    AggregationMetaDataProvider.MetaData md = provider.getMetadata(aggregation, termKey, locale);
+
+    return md != null ? md : defaultAggregationTitleProvider.getMetadata(aggregation, termKey, locale);
   }
 
-  @Override
   public void refresh() {
+    aggregationProviderMap = Maps.newHashMap();
     providers.stream().forEach(AggregationMetaDataProvider::refresh);
   }
 
@@ -58,6 +80,6 @@ public class AggregationMetaDataResolver implements AggregationMetaDataProvider 
   }
 
   public void unregisterAllProviders() {
-    providers = new HashSet<>();
+    providers = Sets.newHashSet();
   }
 }
