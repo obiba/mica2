@@ -100,12 +100,7 @@ mica.controller('SessionsController', ['$scope', 'resolvedSessions', 'Sessions',
   }]);
 
 mica.controller('MetricsController', ['$rootScope', '$scope', 'MetricsService', 'HealthCheckService', 'ThreadDumpService',
-  'CacheService', function ($rootScope, $scope, MetricsService, HealthCheckService, ThreadDumpService, CacheService) {
-    $scope.refreshCache = function () {
-      CacheService.clear();
-      $scope.refresh();
-    };
-
+  function ($rootScope, $scope, MetricsService, HealthCheckService, ThreadDumpService) {
     $scope.refresh = function () {
       HealthCheckService.check().then(function (data) {
         $scope.healthCheck = data;
@@ -191,6 +186,44 @@ mica.controller('LogsController', ['$scope', 'resolvedLogs', 'LogsService',
         $scope.loggers = LogsService.findAll();
       });
     };
+  }]);
+
+mica.controller('CachingController', ['$scope', '$rootScope', 'CacheService', 'NOTIFICATION_EVENTS',
+  function ($scope, $rootScope, CacheService, NOTIFICATION_EVENTS) {
+
+    $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (ev, callback) {
+      callback();
+    });
+
+    function withConfirm(onConfirm) {
+      $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
+        {title: 'Clear cache', message: 'Are you sure to clear this cache?'}, onConfirm);
+    }
+
+    $scope.clearAll = function () {
+      withConfirm(function () {
+        CacheService.caches.clear();
+      });
+    };
+
+    $scope.clearMicaConfig = function () {
+      withConfirm(function () {
+        CacheService.cache.clear({id: 'micaConfig'});
+      });
+    };
+
+    $scope.clearOpalTaxonomies = function () {
+      withConfirm(function () {
+        CacheService.cache.clear({id: 'opalTaxonomies'});
+      });
+    };
+
+    $scope.clearAggregationsMetadata = function () {
+      withConfirm(function () {
+        CacheService.cache.clear({id: 'aggregationsMetadata'});
+      });
+    };
+
   }]);
 
 mica.controller('AuditsController', ['$scope', '$translate', '$filter', 'AuditsService',

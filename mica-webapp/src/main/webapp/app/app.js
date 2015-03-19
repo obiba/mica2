@@ -71,6 +71,13 @@ mica
             authorizedRoles: [USER_ROLES.admin]
           }
         })
+        .when('/caching', {
+          templateUrl: 'app/views/caching.html',
+          controller: 'CachingController',
+          access: {
+            authorizedRoles: [USER_ROLES.admin]
+          }
+        })
         .when('/logs', {
           templateUrl: 'app/views/logs.html',
           controller: 'LogsController',
