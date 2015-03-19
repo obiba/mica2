@@ -53,6 +53,56 @@
               <img ng-show="network.logo" ng-src="ws/network/{{network.id}}/file/{{network.logo.id}}/_download"/>
             </td>
           </tr>
+          <tr>
+            <td translate>network.investigators</td>
+            <td>
+              <div ng-controller="ContactController">
+                <ul ui-sortable="sortableOptions" ng-model="network.investigators" class="list-unstyled sortable"
+                  ng-show="network.investigators.length">
+                  <li ng-repeat="investigator in network.investigators">
+                    <a ng-click="viewContact(investigator)" title="{{'dnd-reorder' | translate}}">
+                      {{investigator.title}} {{investigator.firstName}} {{investigator.lastName}} {{investigator.academicLevel}}
+                      <span ng-show="investigator.institution.name.length">
+                        (<localized value="investigator.institution.name" lang="tab.lang"></localized>)
+                      </span>
+                    </a>
+                    <a ng-click="editInvestigator(network, investigator)" class="action">
+                      <i class="fa fa-pencil"></i>
+                    </a>
+                    <a ng-click="deleteInvestigator(network, investigator)" class="action">
+                      <i class="fa fa-trash-o"></i>
+                    </a>
+                  </li>
+                </ul>
+                <button type="button" class="btn btn-default btn-sm" ng-click="addInvestigator(network)">
+                  <i class="fa fa-plus"></i> <span translate>network.add-investigator</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td translate>network.contacts</td>
+            <td>
+              <div ng-controller="ContactController">
+                <ul ui-sortable="sortableOptions" ng-model="network.contacts" class="list-unstyled sortable"
+                  ng-show="network.contacts.length">
+                  <li ng-repeat="contact in network.contacts">
+                    <a ng-click="viewContact(contact)" title="{{'dnd-reorder' | translate}}">
+                      {{contact.title}} {{contact.firstName}} {{contact.lastName}} {{contact.academicLevel}}
+                      <span ng-show="contact.institution.name.length">
+                        (<localized value="contact.institution.name" lang="tab.lang"></localized>)
+                      </span>
+                    </a>
+                    <a ng-click="editContact(network, contact)" class="action"><i class="fa fa-pencil"></i></a>
+                    <a ng-click="deleteContact(network, contact)" class="action"><i class="fa fa-trash-o"></i></a>
+                  </li>
+                </ul>
+                <button type="button" class="btn btn-default btn-sm" ng-click="addContact(network)">
+                  <i class="fa fa-plus"></i> <span translate>network.add-contact</span>
+                </button>
+              </div>
+            </td>
+          </tr>
           </tbody>
         </table>
         <attributes-list attributes="network.attributes"></attributes-list>

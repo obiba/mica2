@@ -64,7 +64,7 @@ public class DraftNetworkResource {
   @Timed
   @RequiresRoles(Roles.MICA_ADMIN)
   public Response update(@SuppressWarnings("TypeMayBeWeakened") Mica.NetworkDto networkDto) {
-    // ensure study exists
+    // ensure network exists
     networkService.findById(id);
 
     Network network = dtos.fromDto(networkDto);
