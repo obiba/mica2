@@ -309,7 +309,7 @@ mica.study
         }
 
         var selectedDatasources = [];
-        var hasRecruitmentDatasources = null != $scope.population.recruitment.dataSources;
+        var hasRecruitmentDatasources = null !== $scope.population.recruitment.dataSources;
 
         if (hasRecruitmentDatasources && $scope.population.recruitment.dataSources.indexOf('general') < 0) {
           delete $scope.population.recruitment.generalPopulationSources;
@@ -486,9 +486,9 @@ mica.study
 
   }])
 
-  .controller('StudyEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$location', '$upload', '$timeout', '$modal', 'DraftStudyResource', 'DraftStudiesResource', 'MicaConfigResource', 'StringUtils', 'FormServerValidation', 'TempFileResource',
+  .controller('StudyEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$location', '$upload', '$timeout', '$modal', 'DraftStudyResource', 'DraftStudiesResource', 'MicaConfigResource', 'StringUtils', 'FormServerValidation',
 
-    function ($rootScope, $scope, $routeParams, $log, $location, $upload, $timeout, $modal, DraftStudyResource, DraftStudiesResource, MicaConfigResource, StringUtils, FormServerValidation, TempFileResource) {
+    function ($rootScope, $scope, $routeParams, $log, $location, $upload, $timeout, $modal, DraftStudyResource, DraftStudiesResource, MicaConfigResource, StringUtils, FormServerValidation) {
       $scope.fileTypes = '.doc, .docx, .odm, .odt, .gdoc, .pdf, .txt  .xml  .xls, .xlsx, .ppt';
       $scope.accessTypes = ['data', 'bio_samples', 'other'];
       $scope.methodDesignTypes = ['case_control', 'case_only', 'clinical_trial', 'cohort_study', 'cross_sectional', 'other'];
@@ -522,12 +522,6 @@ mica.study
         } else {
           createStudy();
         }
-      };
-
-      var getActiveTab = function () {
-        return $scope.tabs.filter(function (tab) {
-          return tab.active;
-        })[0];
       };
 
       var createStudy = function () {

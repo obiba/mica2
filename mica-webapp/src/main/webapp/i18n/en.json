@@ -17,6 +17,7 @@
         "sessions": "Sessions",
         "tracker": "User tracker",
         "metrics": "Metrics",
+        "caching": "Caching",
         "logs": "Logs",
         "audits": "Audits",
         "login": "Sign In",
@@ -227,6 +228,14 @@
       "evictioncount": "Eviction count",
       "mean": "Mean get time (ms)"
     }
+  },
+  "caching": {
+    "title": "Caching",
+    "all": "All",
+    "clear": "Clear",
+    "opalTaxonomies": "Opal taxonomies",
+    "micaConfig": "Mica configuration",
+    "aggregationsMetadata": "Aggregations metadata"
   },
   "logs": {
     "title": "Logs",
