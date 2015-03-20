@@ -1,10 +1,23 @@
 <div>
 
-  <h2 translate>study-datasets</h2>
-
+  <h2 class="voffset5">
+    <span translate>study-datasets</span>
+  </h2>
   <a ng-href="#/study-dataset/new" class="btn btn-primary">
     <i class="fa fa-plus"></i> <span translate>dataset.add</span>
   </a>
+
+  <div class="row voffset4">
+    <div class="col-xs-4">
+      <span class="input-group input-group-sm no-padding-top">
+        <span class="input-group-addon" id="dataset-search"><i class="glyphicon glyphicon-search"></i></span>
+        <input ng-model="searchText" type="text" class="form-control width25" aria-describedby="dataset-search">
+      </span>
+    </div>
+    <div class="col-xs-8">
+      <dir-pagination-controls class="pull-right"></dir-pagination-controls>
+    </div>
+  </div>
 
   <div class="table-responsive">
     <table class="table table-striped">
@@ -12,11 +25,11 @@
       <tr>
         <th translate>dataset.name</th>
         <th>Published</th>
-        <th></th>
+        <th>Actions</th>
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="dataset in studyDatasets">
+      <tr dir-paginate="dataset in studyDatasets | itemsPerPage: 20 | filter:searchText">
         <td>
           <ul class="list-unstyled">
             <li ng-repeat="name in dataset.name">

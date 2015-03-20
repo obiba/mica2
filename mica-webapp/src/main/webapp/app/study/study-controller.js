@@ -180,7 +180,7 @@ mica.study
         $translate([titleKey, messageKey])
           .then(function (translation) {
             $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
-              {title: translation[titleKey], message: translation[messageKey]});
+              {title: translation[titleKey], message: translation[messageKey]}, dce);
           });
 
         $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, dce) {

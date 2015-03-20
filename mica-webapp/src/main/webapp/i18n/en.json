@@ -300,6 +300,7 @@
   },
   "studies": "Studies",
   "study": {
+    "input-placeholder": "Study name",
     "add": "Add Study",
     "label": "Study",
     "label-edit": "Edit Study",
@@ -496,11 +497,14 @@
     "general-info": "General Information",
     "description" : "Description",
     "index": "Index",
+    "details": "Details",
     "add-study": "Add Study",
     "contacts": "Contacts",
     "investigators": "Investigators",
     "add-contact": "Add Contact",
-    "add-investigator": "Add Investigator"
+    "add-investigator": "Add Investigator",
+    "delete-dialog-title": "Delete Study",
+    "delete-dialog-message": "Are you sure you want to delete the study?"
   },
   "name": "Name",
   "value": "Value",
@@ -529,5 +533,7 @@
   "authorizer": "Authorizer",
   "logo": "Logo",
   "attachments": "Attachments",
-  "allowed-file-types": "Allowed file types:"
+  "allowed-file-types": "Allowed file types:",
+  "total": "Total",
+  "type": "Type"
 }

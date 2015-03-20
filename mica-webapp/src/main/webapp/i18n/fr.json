@@ -378,8 +378,10 @@
       "general-population": "General Population",
       "specific-population": "Specific Population",
       "studies": "Participants from existing studies",
+      "add-study": "Add study",
       "other": "Other sources",
-      "other-specific-population": "Other specific population"
+      "other-specific-population": "Other specific population",
+      "info": "Information"
     },
     "participants-number": {
       "participant": "Number of participants",
@@ -502,11 +504,14 @@
     "general-info": "Informations Générales",
     "description" : "Description",
     "index": "Index",
+    "details": "Details",
     "add-study": "Ajouter une étude",
     "contacts": "Contacts",
     "investigators": "Investigateurs",
     "add-contact": "Ajouter contact",
-    "add-investigator": "Ajouter investigateur"
+    "add-investigator": "Ajouter investigateur",
+    "delete-dialog-title": "Delete Study",
+    "delete-dialog-message": "Are you sure you want to delete the study?"
   },
   "name": "Name",
   "value": "Value",
@@ -535,5 +540,6 @@
   "authorizer": "Authorizer",
   "logo": "Logo",
   "attachments": "Attachments",
-  "allowed-file-types": "Allowed file types:"
+  "allowed-file-types": "Allowed file types:",
+  "total": "Total"
 }
