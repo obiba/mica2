@@ -162,6 +162,10 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
     return studyRepository.findAll();
   }
 
+  public List<Study> findAllDraftStudies(Iterable<String> ids) {
+    return Lists.newArrayList(studyRepository.findAll(ids));
+  }
+
   public List<StudyState> findPublishedStates() {
     return studyStateRepository.findByPublishedTagNotNull();
   }
