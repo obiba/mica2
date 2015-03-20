@@ -489,13 +489,18 @@
   "harmonization-dataset" : "Harmonization Dataset",
   "network" : {
     "name" : "Name",
+    "logo": "Logo",
     "acronym": "Acronym",
     "add" : "Add Network",
     "label-edit" : "Edit Network",
     "general-info": "General Information",
     "description" : "Description",
     "index": "Index",
-    "add-study": "Add Study"
+    "add-study": "Add Study",
+    "contacts": "Contacts",
+    "investigators": "Investigators",
+    "add-contact": "Add Contact",
+    "add-investigator": "Add Investigator"
   },
   "name": "Name",
   "value": "Value",

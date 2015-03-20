@@ -12,6 +12,10 @@
 
 mica.network
 
+  .constant('NETWORK_EVENTS', {
+    networkUpdated: 'event:network-updated'
+  })
+
   .controller('NetworkListController', ['$scope', 'NetworksResource', 'NetworkResource',
 
     function ($scope, NetworksResource, NetworkResource) {
@@ -91,9 +95,9 @@ mica.network
       };
     }])
 
-  .controller('NetworkViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', 'NetworkResource', 'NetworkPublicationResource', 'MicaConfigResource',
+  .controller('NetworkViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', 'NetworkResource', 'NetworkPublicationResource', 'MicaConfigResource','CONTACT_EVENTS', 'NETWORK_EVENTS', 'NOTIFICATION_EVENTS',
 
-    function ($rootScope, $scope, $routeParams, $log, $locale, $location, NetworkResource, NetworkPublicationResource, MicaConfigResource) {
+    function ($rootScope, $scope, $routeParams, $log, $locale, $location, NetworkResource, NetworkPublicationResource, MicaConfigResource, CONTACT_EVENTS, NETWORK_EVENTS, NOTIFICATION_EVENTS) {
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
@@ -119,5 +123,74 @@ mica.network
           });
         }
       };
+
+      $scope.emitNetworkUpdated = function () {
+        $scope.$emit(NETWORK_EVENTS.networkUpdated, $scope.network);
+      };
+
+      $scope.$on(NETWORK_EVENTS.networkUpdated, function (event, networkUpdated) {
+        if (networkUpdated === $scope.network) {
+          $log.debug('save network', networkUpdated);
+
+          $scope.network.$save(function () {
+              $scope.network = NetworkResource.get({id: $scope.network.id});
+            },
+            function (response) {
+              $log.error('Error on network save:', response);
+              $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
+                message: response.data ? response.data : angular.fromJson(response)
+              });
+            });
+        }
+      });
+
+      $scope.$on(CONTACT_EVENTS.addInvestigator, function (event, study, contact) {
+        if (study === $scope.network) {
+          if (!$scope.network.investigators) {
+            $scope.network.investigators = [];
+          }
+          $scope.network.investigators.push(contact);
+          $scope.emitNetworkUpdated();
+        }
+      });
+
+      $scope.$on(CONTACT_EVENTS.addContact, function (event, network, contact) {
+        if (network === $scope.network) {
+          if (!$scope.network.contacts) {
+            $scope.network.contacts = [];
+          }
+          $scope.network.contacts.push(contact);
+          $scope.emitNetworkUpdated();
+        }
+      });
+
+      $scope.$on(CONTACT_EVENTS.contactUpdated, function (event, study) {
+        if (study === $scope.network) {
+          $scope.emitNetworkUpdated();
+        }
+      });
+
+      $scope.$on(CONTACT_EVENTS.contactEditionCanceled, function (event, study) {
+        if (study === $scope.network) {
+          $scope.network = NetworkResource.get({id: $scope.network.id});
+        }
+      });
+
+      $scope.$on(CONTACT_EVENTS.contactDeleted, function (event, study, contact, isInvestigator) {
+        if (study === $scope.network) {
+          if (isInvestigator) {
+            var investigatorsIndex = $scope.network.investigators.indexOf(contact);
+            if (investigatorsIndex !== -1) {
+              $scope.network.investigators.splice(investigatorsIndex, 1);
+            }
+          } else {
+            var contactsIndex = $scope.network.contacts.indexOf(contact);
+            if (contactsIndex !== -1) {
+              $scope.network.contacts.splice(contactsIndex, 1);
+            }
+          }
+          $scope.emitNetworkUpdated();
+        }
+      });
 
     }]);
