@@ -8,6 +8,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -39,6 +40,22 @@ public class DraftStudiesResource {
   @Timed
   public List<Mica.StudyDto> list() {
     return studyService.findAllDraftStudies().stream().map(dtos::asDto).collect(Collectors.toList());
+  }
+
+  @GET
+  @Path("/studies/summaries")
+  @Timed
+  public List<Mica.StudySummaryDto> listSummaries(@QueryParam("id") List<String> ids) {
+    List<Study> studies = ids.isEmpty() ? studyService.findAllDraftStudies() : studyService.findAllDraftStudies(ids);
+    return studies.stream().map(dtos::asSummaryDto).collect(Collectors.toList());
+  }
+
+  @GET
+  @Path("/studies/digests")
+  @Timed
+  public List<Mica.DocumentDigestDto> listDigests(@QueryParam("id") List<String> ids) {
+    List<Study> studies = ids.isEmpty() ? studyService.findAllDraftStudies() : studyService.findAllDraftStudies(ids);
+    return studies.stream().map(dtos::asDigestDto).collect(Collectors.toList());
   }
 
   @POST
