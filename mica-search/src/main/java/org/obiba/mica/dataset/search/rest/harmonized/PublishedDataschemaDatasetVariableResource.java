@@ -22,6 +22,7 @@ import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.DatasetVariableResource;
+import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetResource;
@@ -57,6 +58,9 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
   @Inject
   private HarmonizationDatasetService datasetService;
 
+  @Inject
+  private Helper helper;
+
   @GET
   public Mica.DatasetVariableDto getVariable() {
     return getDatasetVariableDto(datasetId, variableName, DatasetVariable.Type.Dataschema);
@@ -86,7 +90,7 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
     dataset.getStudyTables().forEach(table -> {
       try {
-        builder.add(datasetService.getVariableFacet(variableName, table));
+        builder.add(datasetService.getVariableFacet(dataset, variableName, table.getStudyId(), table.getProject(), table.getTable()));
       } catch(NoSuchVariableException | NoSuchValueTableException e) {
         // case the study has not implemented this dataschema variable
         builder.add(Search.QueryResultDto.newBuilder().setTotalHits(0).build());
@@ -103,7 +107,7 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
     Mica.DatasetVariableAggregationsDto.Builder aggDto = Mica.DatasetVariableAggregationsDto.newBuilder();
 
     List<Future<Math.SummaryStatisticsDto>> results = Lists.newArrayList();
-    dataset.getStudyTables().forEach(table -> results.add(getVariableFacet(table)));
+    dataset.getStudyTables().forEach(table -> results.add(helper.getVariableFacet(dataset, variableName, table)));
 
     for(int i = 0; i < dataset.getStudyTables().size(); i++) {
       StudyTable table = dataset.getStudyTables().get(i);
@@ -143,16 +147,6 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
   @Override
   public void setVariableName(String variableName) {
     this.variableName = variableName;
-  }
-
-  @Async
-  private Future<Math.SummaryStatisticsDto> getVariableFacet(StudyTable table) {
-    try {
-      return new AsyncResult<>(datasetService.getVariableSummary(variableName, table));
-    } catch(Exception e) {
-      log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
-      return new AsyncResult<>(null);
-    }
   }
 
   private void mergeAggregations(Mica.DatasetVariableAggregationsDto.Builder aggDto,
@@ -240,6 +234,19 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
     }
   }
 
+  @Component
+  public static class Helper {
+    @Inject
+    private HarmonizationDatasetService datasetService;
 
-
+    @Async
+    private Future<Math.SummaryStatisticsDto> getVariableFacet(HarmonizationDataset dataset, String variableName, StudyTable table) {
+      try {
+        return new AsyncResult<>(datasetService.getVariableSummary(dataset, variableName, table.getStudyId(), table.getProject(), table.getTable()));
+      } catch(Exception e) {
+        log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
+        return new AsyncResult<>(null);
+      }
+    }
+  }
 }

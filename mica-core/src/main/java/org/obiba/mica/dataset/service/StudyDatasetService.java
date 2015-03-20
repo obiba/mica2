@@ -32,7 +32,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -63,6 +66,10 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
 
   @Inject
   private VariableIndexer variableIndexer;
+
+  @Inject
+  @Lazy
+  private Helper helper;
 
   public void save(@NotNull StudyDataset dataset) {
     save(dataset, false);
@@ -128,10 +135,13 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
    * @param id
    * @param published
    */
-  @Caching(evict = { @CacheEvict(value = "aggregations-metadata", key = "'dataset'") })
+  @Caching(evict = {
+    @CacheEvict(value = "aggregations-metadata", key = "'dataset'")
+  })
   public void publish(@NotNull String id, boolean published) {
     StudyDataset dataset = findById(id);
     dataset.setPublished(published);
+    helper.evictCache(dataset);
     save(dataset, true);
   }
 
@@ -182,13 +192,16 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
     return new DatasetVariable(dataset, getVariableValueSource(dataset, variableName).getVariable());
   }
 
+  @Cacheable(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver", key = "#variableName")
   public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary(@NotNull StudyDataset dataset,
       String variableName) throws NoSuchValueTableException, NoSuchVariableException {
+    log.info("Caching variable summary {} {}", dataset.getId(), variableName);
     return getVariableValueSource(dataset, variableName).getSummary();
   }
 
   public Search.QueryResultDto getVariableFacet(@NotNull StudyDataset dataset, String variableName)
       throws NoSuchValueTableException, NoSuchVariableException {
+    log.debug("Getting variable facet {} {}", dataset.getId(), variableName);
     return getVariableValueSource(dataset, variableName).getFacet();
   }
 
@@ -204,6 +217,7 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
       throw NoSuchDatasetException.withId(id);
     }
 
+    helper.evictCache(studyDataset);
     datasetIndexer.onDatasetDeleted(studyDataset);
     variableIndexer.onDatasetDeleted(studyDataset);
     studyDatasetRepository.delete(id);
@@ -293,6 +307,19 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
       updateIndices(dataset, variables, updatePublishIndices);
     } catch (Exception e) {
       log.error("Error updating indices.", e);
+    }
+  }
+
+  @Component
+  public static class Helper {
+    private static final Logger log = LoggerFactory.getLogger(StudyDatasetService.Helper.class);
+
+    @Inject
+    StudyDatasetService service;
+
+    @CacheEvict(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver", allEntries = true, beforeInvocation = true)
+    public void evictCache(StudyDataset dataset) {
+      log.info("clearing dataset variables cache dataset-{}", dataset.getId());
     }
   }
 }

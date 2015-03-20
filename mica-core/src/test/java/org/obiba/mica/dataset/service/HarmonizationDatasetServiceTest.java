@@ -46,7 +46,7 @@ public class HarmonizationDatasetServiceTest {
   private VariableIndexer varIndexer;
 
   @Mock
-  private HarmonizationDatasetServiceHelper helper;
+  private HarmonizationDatasetService.Helper helper;
 
   @Mock
   private DatasetIndexer<HarmonizationDataset> dsIndexer;

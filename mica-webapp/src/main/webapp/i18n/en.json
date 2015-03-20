@@ -231,11 +231,14 @@
   },
   "caching": {
     "title": "Caching",
+    "titleBuild": "Build Cache",
     "all": "All",
     "clear": "Clear",
+    "run": "Run",
     "opalTaxonomies": "Opal taxonomies",
     "micaConfig": "Mica configuration",
-    "aggregationsMetadata": "Aggregations metadata"
+    "aggregationsMetadata": "Aggregations metadata",
+    "datasetVariables": "Dataset variables statistics"
   },
   "logs": {
     "title": "Logs",

@@ -13,6 +13,8 @@ package org.obiba.mica.dataset.service;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.function.Supplier;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -37,7 +39,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -73,7 +80,8 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   private VariableIndexer variableIndexer;
 
   @Inject
-  private HarmonizationDatasetServiceHelper helper;
+  @Lazy
+  private Helper helper;
 
   public void save(@NotNull HarmonizationDataset dataset) {
     save(dataset, false);
@@ -157,10 +165,13 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
    * @param id
    * @param published
    */
-  @Caching(evict = { @CacheEvict(value = "aggregations-metadata", key = "'dataset'") })
+  @Caching(evict = {
+    @CacheEvict(value = "aggregations-metadata", key = "'dataset'")
+  })
   public void publish(@NotNull String id, boolean published) {
     HarmonizationDataset dataset = findById(id);
     dataset.setPublished(published);
+    helper.evictCache(dataset);
     save(dataset, true);
   }
 
@@ -182,6 +193,7 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
       throw NoSuchDatasetException.withId(id);
     }
 
+    helper.evictCache(dataset);
     datasetIndexer.onDatasetDeleted(dataset);
     variableIndexer.onDatasetDeleted(dataset);
     harmonizationDatasetRepository.delete(id);
@@ -220,25 +232,19 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
       getTable(dataset, studyId, project, table).getVariableValueSource(variableName).getVariable());
   }
 
-  public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary(@NotNull HarmonizationDataset dataset,
-    String variableName, String studyId, String project, String table)
+  @Cacheable(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver",
+    key = "#variableName + ':' + #studyId + ':' + #project + ':' + #table")
+  public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary(
+    @NotNull HarmonizationDataset dataset, String variableName, String studyId, String project, String table)
     throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
+    log.info("Caching variable summary {} {} {} {} {}", dataset.getId(), variableName, studyId, project, table);
     return getVariableValueSource(dataset, variableName, studyId, project, table).getSummary();
-  }
-
-  public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary(String variableName,
-    StudyTable studyTable) throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
-    return getVariableValueSource(variableName, studyTable).getSummary();
-  }
-
-  public Search.QueryResultDto getVariableFacet(String variableName, StudyTable studyTable)
-    throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
-    return getVariableValueSource(variableName, studyTable).getFacet();
   }
 
   public Search.QueryResultDto getVariableFacet(@NotNull HarmonizationDataset dataset, String variableName,
     String studyId, String project, String table)
     throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
+    log.debug("Getting variable facet {} {}", dataset.getId(), variableName);
     return getVariableValueSource(dataset, variableName, studyId, project, table).getFacet();
   }
 
@@ -314,7 +320,13 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
     if(updatePublishIndices) {
       variableIndexer.onDatasetPublished(dataset, variables, harmonizationVariables);
       datasetIndexer.onDatasetPublished(dataset);
+
+      if (dataset.isPublished()) {
+        helper.asyncBuildDatasetVariablesCache(dataset, harmonizationVariables);
+      }
     }
+
+    log.info("done updating indices");
   }
 
   private void tryUpdateIndices(HarmonizationDataset dataset, Iterable<DatasetVariable> variables,
@@ -420,5 +432,45 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
    */
   private <T> T execute(StudyTable studyTable, DatasourceCallback<T> callback) {
     return execute(getDatasource(studyTable), callback);
+  }
+
+  @Component
+  public static class Helper {
+
+    private static final Logger log = LoggerFactory.getLogger(HarmonizationDatasetService.Helper.class);
+
+    @Inject
+    HarmonizationDatasetService service;
+
+    @CacheEvict(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver", allEntries = true, beforeInvocation = true)
+    public void evictCache(HarmonizationDataset dataset) {
+      log.info("cleared dataset variables cache dataset-{}", dataset.getId());
+    }
+
+    @Async
+    public Future<Iterable<DatasetVariable>> asyncGetDatasetVariables(Supplier<Iterable<DatasetVariable>> supp) {
+      log.info("Getting dataset variables asynchronously.");
+      return new AsyncResult<>(supp.get());
+    }
+
+    @Async
+    public void asyncBuildDatasetVariablesCache(HarmonizationDataset dataset,
+      Map<String, List<DatasetVariable>> harmonizationVariables) {
+      log.info("building variable summaries cache");
+
+      dataset.getStudyTables().forEach(st -> {
+        harmonizationVariables.forEach((k, v) -> {
+          v.forEach(var-> {
+            try {
+              service.getVariableSummary(dataset, var.getName(), st.getStudyId(), st.getProject(), st.getTable());
+            } catch(Exception e) {
+              //ignoring
+            }
+          });
+        });
+      });
+
+      log.info("done building variable summaries cache");
+    }
   }
 }
