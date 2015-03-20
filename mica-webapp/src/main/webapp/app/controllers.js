@@ -195,9 +195,12 @@ mica.controller('CachingController', ['$scope', '$rootScope', 'CacheService', 'N
       callback();
     });
 
-    function withConfirm(onConfirm) {
+    function withConfirm(onConfirm, opts) {
+      var defaults = {message : 'Are you sure to clear this cache?'};
+      var args = angular.extend({}, defaults, opts)
+
       $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
-        {title: 'Clear cache', message: 'Are you sure to clear this cache?'}, onConfirm);
+        {title: 'Clear cache', message: args.message}, onConfirm);
     }
 
     $scope.clearAll = function () {
@@ -224,6 +227,17 @@ mica.controller('CachingController', ['$scope', '$rootScope', 'CacheService', 'N
       });
     };
 
+    $scope.clearDatasetVariables = function () {
+      withConfirm(function () {
+        CacheService.cache.clear({id: 'datasetVariables'});
+      });
+    };
+
+    $scope.buildDatasetVariables = function () {
+      withConfirm(function () {
+        CacheService.cache.build({id: 'datasetVariables'});
+      }, {message: 'Are you sure you want to build this cache?'});
+    };
   }]);
 
 mica.controller('AuditsController', ['$scope', '$translate', '$filter', 'AuditsService',

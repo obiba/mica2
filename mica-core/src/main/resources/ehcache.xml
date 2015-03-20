@@ -67,5 +67,11 @@
     <pinning store="localMemory"/>
   </cache>
 
+  <!-- TODO: fix extensions in protobuf objects are not serialized correctly. Using in memory cache only -->
+  <cache name="dataset-variables"
+    eternal="true"
+    overflowToDisk="false"
+    diskPersistent="false"/>
+
 </ehcache>
 

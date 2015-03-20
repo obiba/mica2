@@ -164,8 +164,9 @@ mica.factory('CacheService', ['$resource',
       caches: $resource('ws/caches', {}, {
         'clear': {method: 'DELETE'}
       }),
-      cache: $resource('ws/cache/:id', {}, {
-        'clear': {method: 'DELETE'}
+      cache: $resource('ws/cache/:id', {id : '@id'}, {
+        'clear': {method: 'DELETE'},
+        'build': {method: 'PUT'}
       })
     };
   }]);
