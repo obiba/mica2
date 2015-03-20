@@ -42,4 +42,11 @@ mica.study
       return $resource('ws/config/studies', {}, {
         'get': {method: 'GET'}
       });
+    }])
+
+  .factory('DraftStudiesSummariesResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/draft/studies/summaries?', {}, {
+        'summaries': {method: 'GET', isArray: true, params: {id: '@id'}}
+      });
     }]);

@@ -95,9 +95,9 @@ mica.network
       };
     }])
 
-  .controller('NetworkViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', 'NetworkResource', 'NetworkPublicationResource', 'MicaConfigResource','CONTACT_EVENTS', 'NETWORK_EVENTS', 'NOTIFICATION_EVENTS',
+  .controller('NetworkViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', '$translate', 'NetworkResource', 'NetworkPublicationResource', 'MicaConfigResource','CONTACT_EVENTS', 'NETWORK_EVENTS', 'NOTIFICATION_EVENTS', 'DraftStudiesSummariesResource',
 
-    function ($rootScope, $scope, $routeParams, $log, $locale, $location, NetworkResource, NetworkPublicationResource, MicaConfigResource, CONTACT_EVENTS, NETWORK_EVENTS, NOTIFICATION_EVENTS) {
+    function ($rootScope, $scope, $routeParams, $log, $locale, $location, $translate, NetworkResource, NetworkPublicationResource, MicaConfigResource, CONTACT_EVENTS, NETWORK_EVENTS, NOTIFICATION_EVENTS, DraftStudiesSummariesResource) {
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
@@ -106,7 +106,14 @@ mica.network
         });
       });
 
-      $scope.network = NetworkResource.get({id: $routeParams.id});
+      $scope.studySummaries = [];
+      $scope.network = NetworkResource.get({id: $routeParams.id}, function(network){
+        if (network.studyIds && network.studyIds.length > 0) {
+          DraftStudiesSummariesResource.summaries({id: network.studyIds},function (summaries){            $log.debug('>>>>>', summaries);
+            $scope.studySummaries = summaries;
+          });
+        }
+      });
 
       $scope.isPublished = function() {
         return $scope.network.published;
@@ -192,5 +199,32 @@ mica.network
           $scope.emitNetworkUpdated();
         }
       });
+
+      $scope.addStudyEvent = function (network) {
+        $log.debug('TODO - Adding study for ', network.id);
+      };
+
+      $scope.deleteStudyEvent = function (network, summary, index) {
+        var titleKey = 'network.delete-dialog-title';
+        var messageKey = 'network.delete-dialog-message';
+        $translate([titleKey, messageKey])
+          .then(function (translation) {
+            $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
+              {title: translation[titleKey], message: translation[messageKey]}, summary);
+          });
+
+        $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, summary) {
+          if ($scope.studySummaries[index] === summary) {
+            var deleteIndex = $scope.network.studyIds.indexOf(summary.id);
+            if (deleteIndex > -1) {
+              $scope.studySummaries.splice(index, 1);
+              $scope.network.studyIds.splice(deleteIndex, 1);
+              $scope.emitNetworkUpdated();
+            } else {
+              $log.error('The study id was not found: ', summary.id);
+            }
+          }
+        });
+      };
 
     }]);
