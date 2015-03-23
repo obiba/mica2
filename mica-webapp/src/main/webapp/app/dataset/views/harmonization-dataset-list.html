@@ -1,10 +1,24 @@
 <div>
 
-  <h2 translate>harmonization-datasets</h2>
+  <h2 class="voffset5">
+    <span translate>harmonization-datasets</span>
+  </h2>
 
   <a ng-href="#/harmonization-dataset/new" class="btn btn-primary">
     <i class="fa fa-plus"></i> <span translate>dataset.add</span>
   </a>
+
+  <div class="row voffset4">
+    <div class="col-xs-4">
+      <span class="input-group input-group-sm no-padding-top">
+        <span class="input-group-addon" id="harmo-dataset-search"><i class="glyphicon glyphicon-search"></i></span>
+        <input ng-model="searchText" type="text" class="form-control width25" aria-describedby="harmo-dataset-search">
+      </span>
+    </div>
+    <div class="col-xs-8">
+      <dir-pagination-controls class="pull-right"></dir-pagination-controls>
+    </div>
+  </div>
 
   <div class="table-responsive">
     <table class="table table-striped">
@@ -16,7 +30,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr ng-repeat="dataset in harmonizedDatasets">
+      <tr dir-paginate="dataset in harmonizedDatasets | itemsPerPage: 20 | filter:searchText">
         <td>
           <ul class="list-unstyled">
             <li ng-repeat="name in dataset.name">

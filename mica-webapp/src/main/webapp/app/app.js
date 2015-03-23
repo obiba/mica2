@@ -18,12 +18,13 @@ var mica = angular.module('mica', [
   'pascalprecht.translate',
   'tmh.dynamicLocale',
   'ui.bootstrap',
-  'angularFileUpload'
+  'angularFileUpload',
+  'angularUtils.directives.dirPagination'
 ]);
 
 mica
-  .config(['$routeProvider', '$httpProvider', '$translateProvider', 'tmhDynamicLocaleProvider', 'USER_ROLES',
-    function ($routeProvider, $httpProvider, $translateProvider, tmhDynamicLocaleProvider, USER_ROLES) {
+  .config(['$routeProvider', '$httpProvider', '$translateProvider', 'tmhDynamicLocaleProvider', 'USER_ROLES', 'paginationTemplateProvider',
+    function ($routeProvider, $httpProvider, $translateProvider, tmhDynamicLocaleProvider, USER_ROLES, paginationTemplateProvider) {
       $routeProvider
         .when('/login', {
           templateUrl: 'app/views/login.html',
@@ -128,6 +129,7 @@ mica
         .fallbackLanguage('en')
         .useCookieStorage();
 
+      paginationTemplateProvider.setPath('app/views/pagination-template.html');
       tmhDynamicLocaleProvider.localeLocationPattern('bower_components/angular-i18n/angular-locale_{{locale}}.js');
       tmhDynamicLocaleProvider.useCookieStorage('NG_TRANSLATE_LANG_KEY');
     }])

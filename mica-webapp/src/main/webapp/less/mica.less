@@ -88,11 +88,16 @@ footer {
 
 .table {
   margin-top: 5px;
+  tbody {
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  thead {
+    background-color: rgba(5, 87, 71, 0.15);
+  }
 }
 
-.table thead {
-  background-color: #EEEEEE;
-}
+
 
 .development {
   position: absolute;
@@ -229,8 +234,30 @@ ul#strength {
   }
 }
 
+.no-margin-top {
+  margin-top: 0 !important;
+}
+
 .no-margin-bottom {
-  margin-bottom: 0;
+  margin-bottom: 0 !important;
+}
+
+.no-margin {
+  .no-margin-top;
+  .no-margin-bottom;
+}
+
+.no-padding-top {
+  padding-top: 0 !important;
+}
+
+.no-padding-bottom {
+  padding-top: 0 !important;
+}
+
+.no-padding {
+  .no-padding-top;
+  .no-padding-bottom;
 }
 
 form .tab-content {
@@ -249,6 +276,10 @@ ul.sortable {
   }
 }
 
+.width5 {
+  width: 25%;
+}
+
 .width25 {
   width: 25%;
 }
@@ -256,3 +287,22 @@ ul.sortable {
 .width75 {
   width: 75%;
 }
+
+img.desaturate {
+  @filterString: ~"grayscale(1)";
+
+  -webkit-filter: @filterString;
+  -moz-filter: @filterString;
+  -o-filter: @filterString;
+  -ms-filter: @filterString;
+  filter: @filterString;
+}
+
+
+li>a.pagination-total {
+  font-weight: normal;
+  font-size: @font-size-small;
+  background-color: transparent;
+  color: black;
+}
+
