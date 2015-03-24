@@ -23,6 +23,7 @@
     <table class="table table-striped">
       <thead>
       <tr>
+        <th translate>study.acronym</th>
         <th translate>study.name</th>
         <th>Published</th>
         <th></th>
@@ -31,6 +32,13 @@
       <tbody>
 
       <tr dir-paginate="study in studies | itemsPerPage: 20 | filter:searchText">
+        <td>
+          <ul class="list-unstyled">
+            <li ng-repeat="acronym in study.acronym">
+              <span class="badge">{{acronym.lang}}</span> {{acronym.value}}
+            </li>
+          </ul>
+        </td>
         <td>
           <ul class="list-unstyled">
             <li ng-repeat="name in study.name">
@@ -43,15 +51,15 @@
               ahead="study['obiba.mica.StudyStateDto.state'].revisionsAhead"></div>
         </td>
         <td>
-          <ul class="list-inline">
+          <ul class="list-inline pull-right">
             <li>
-              <a ng-href="#/study/{{study.id}}" translate>view</a>
+              <a ng-href="#/study/{{study.id}}" translate><i class="fa fa-eye"></i></a>
             </li>
             <li>
-              <a ng-href="#/study/{{study.id}}/edit" translate>edit</a>
+              <a ng-href="#/study/{{study.id}}/edit" translate><i class="fa fa-pencil"></i></a>
             </li>
             <li>
-              <a href ng-click="deleteStudy(study.id)" translate>delete</a>
+              <a href ng-click="deleteStudy(study.id)" translate><i class="fa fa-trash-o"></i></a>
             </li>
           </ul>
         </td>
