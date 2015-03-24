@@ -24,6 +24,7 @@
     <table class="table table-striped">
       <thead>
       <tr>
+        <th translate>dataset.acronym</th>
         <th translate>dataset.name</th>
         <th>Published</th>
         <th></th>
@@ -31,6 +32,13 @@
       </thead>
       <tbody>
       <tr dir-paginate="dataset in harmonizedDatasets | itemsPerPage: 20 | filter:searchText">
+        <td>
+          <ul class="list-unstyled">
+            <li ng-repeat="acronym in dataset.acronym">
+              <span class="badge">{{acronym.lang}}</span> {{acronym.value}}
+            </li>
+          </ul>
+        </td>
         <td>
           <ul class="list-unstyled">
             <li ng-repeat="name in dataset.name">
@@ -45,15 +53,15 @@
               title="{{'publish.published' | translate}}"></i>
         </td>
         <td>
-          <ul class="list-inline">
+          <ul class="list-inline pull-right">
             <li>
-              <a ng-href="#/harmonization-dataset/{{dataset.id}}" translate>view</a>
+              <a ng-href="#/harmonization-dataset/{{dataset.id}}" translate><i class="fa fa-eye"></i></a>
             </li>
             <li>
-              <a ng-href="#/harmonization-dataset/{{dataset.id}}/edit" translate>edit</a>
+              <a ng-href="#/harmonization-dataset/{{dataset.id}}/edit" translate><i class="fa fa-pencil"></i></a>
             </li>
             <li>
-              <a href ng-click="deleteHarmonizedDataset(dataset.id)" translate>delete</a>
+              <a href ng-click="deleteHarmonizedDataset(dataset.id)" translate><i class="fa fa-trash-o"></i></a>
             </li>
           </ul>
         </td>
