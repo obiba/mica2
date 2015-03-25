@@ -74,8 +74,7 @@ public class DraftDataschemaDatasetVariableResource implements DatasetVariableRe
     HarmonizationDataset dataset = getDataset();
     dataset.getStudyTables().forEach(table -> {
       try {
-        builder.add(datasetService
-          .getVariableFacet(variableName, table));
+        builder.add(datasetService.getVariableFacet(dataset, variableName, table.getStudyId(), table.getProject(), table.getTable()));
       } catch(NoSuchVariableException | NoSuchValueTableException e) {
         // ignore (case the study has not implemented this dataschema variable)
       }

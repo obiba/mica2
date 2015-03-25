@@ -79,7 +79,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
     for(StudyTable studyTable : dataset.getStudyTables()) {
       if(studyTable.isFor(studyId, project, table)) {
         try {
-          return dtos.asDto(studyTable, datasetService.getVariableSummary(variableName, studyTable)).build();
+          return dtos.asDto(studyTable, datasetService.getVariableSummary(dataset, variableName, studyId, project, table)).build();
         } catch(Exception e) {
           log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
           return dtos.asDto(studyTable, null).build();
