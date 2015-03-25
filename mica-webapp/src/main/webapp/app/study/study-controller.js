@@ -430,6 +430,9 @@ mica.study
                  return d.id === $routeParams.dceId;
                })[0];
            } else {
+             if ($scope.population.dataCollectionEvents === undefined) {
+               $scope.population.dataCollectionEvents = [];
+             }
              $scope.population.dataCollectionEvents.push($scope.dce);
            }
            $scope.attachments =
@@ -460,7 +463,7 @@ mica.study
        };
 
        $scope.save = function () {
-         $scope.dce.attachments = $scope.attachments.length > 0 ? $scope.attachments : null;
+         $scope.dce.attachments = $scope.attachments === undefined || $scope.attachments.length > 0 ? $scope.attachments : null;
 
          if(!$scope.dce.attachments) { //protobuf doesnt like null values
            delete $scope.dce.attachments;
@@ -475,7 +478,7 @@ mica.study
        };
 
        var updateStudy = function () {
-         $log.debug('Update study', $scope.study);
+         $log.info('Update study', $scope.study);
          $scope.study.$save(redirectToStudy, saveErrorHandler);
        };
 
