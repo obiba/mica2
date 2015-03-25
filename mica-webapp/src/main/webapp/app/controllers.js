@@ -197,7 +197,7 @@ mica.controller('CachingController', ['$scope', '$rootScope', 'CacheService', 'N
 
     function withConfirm(onConfirm, opts) {
       var defaults = {message : 'Are you sure to clear this cache?'};
-      var args = angular.extend({}, defaults, opts)
+      var args = angular.extend({}, defaults, opts);
 
       $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
         {title: 'Clear cache', message: args.message}, onConfirm);
