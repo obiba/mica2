@@ -21,31 +21,31 @@
         <table class="table table-striped">
           <tbody>
           <tr ng-show="study.name.length">
-            <td translate>study.name</td>
+            <th translate>study.name</th>
             <td>
               <localized value="study.name" lang="tab.lang"></localized>
             </td>
           </tr>
           <tr ng-show="study.acronym.length">
-            <td translate>study.acronym</td>
+            <th translate>study.acronym</th>
             <td>
               <localized value="study.acronym" lang="tab.lang"></localized>
             </td>
           </tr>
           <tr ng-show="study.objectives.length">
-            <td translate>study.objectives</td>
+            <th translate>study.objectives</th>
             <td>
               <localized value="study.objectives" lang="tab.lang"></localized>
             </td>
           </tr>
           <tr ng-show="study.website">
-            <td translate>study.website</td>
+            <th translate>study.website</th>
             <td>
               <a href="{{study.website}}" target="_blank">{{study.website}}</a>
             </td>
           </tr>
           <tr>
-            <td translate>study.investigators</td>
+            <th translate>study.investigators</th>
             <td>
               <div ng-controller="ContactController">
                 <ul ui-sortable="sortableOptions" ng-model="study.investigators" class="list-unstyled sortable"
@@ -72,7 +72,7 @@
             </td>
           </tr>
           <tr>
-            <td translate>study.contacts</td>
+            <th translate>study.contacts</th>
             <td>
               <div ng-controller="ContactController">
                 <ul ui-sortable="sortableOptions" ng-model="study.contacts" class="list-unstyled sortable"
@@ -95,15 +95,15 @@
             </td>
           </tr>
           <tr ng-show="study.startYear">
-            <td translate>study.start-year</td>
+            <th translate>study.start-year</th>
             <td>{{study.startYear}}</td>
           </tr>
           <tr ng-show="study.endYear">
-            <td translate>study.end-year</td>
+            <th translate>study.end-year</th>
             <td>{{study.endYear}}</td>
           </tr>
           <tr ng-show="study.networks.length">
-            <td translate>networks</td>
+            <th translate>networks</th>
             <td>{{study.networks}}</td>
           </tr>
           </tbody>
@@ -113,7 +113,7 @@
         <table class="table table-striped" ng-show="study.methods">
           <tbody>
           <tr ng-show="study.methods.designs.length || study.methods.otherDesign.length">
-            <td translate>study.design</td>
+            <th translate>study.design</th>
             <td>
               <ul class="list-unstyled">
                 <li ng-repeat="design in study.methods.designs">
@@ -126,13 +126,13 @@
             </td>
           </tr>
           <tr ng-show="study.methods.followUpInfo.length">
-            <td translate>study.follow-up</td>
+            <th translate>study.follow-up</th>
             <td>
               <localized value="study.methods.followUpInfo" lang="tab.lang"></localized>
             </td>
           </tr>
           <tr ng-show="study.methods.recruitments.length || study.methods.otherRecruitment.length">
-            <td translate>study.recruitment-target</td>
+            <th translate>study.recruitment-target</th>
             <td>
               <ul class="list-unstyled">
                 <li ng-repeat="recruitment in study.methods.recruitments">
@@ -145,7 +145,7 @@
             </td>
           </tr>
           <tr ng-show="study.numberOfParticipants.participant">
-            <td translate>study.target-number.participants</td>
+            <th translate>study.target-number.participants</th>
             <td>
               {{study.numberOfParticipants.participant.number | number}}
               <span ng-show="study.numberOfParticipants.participant.noLimit"
@@ -153,20 +153,20 @@
             </td>
           </tr>
           <tr ng-show="study.numberOfParticipants.sample">
-            <td translate>study.target-number.sample</td>
+            <th translate>study.target-number.sample</th>
             <td>
               {{study.numberOfParticipants.sample.number | number}}
               <span ng-show="study.numberOfParticipants.sample.noLimit" translate>study.target-number.no-limit</span>
             </td>
           </tr>
           <tr ng-show="study.numberOfParticipants.info.length">
-            <td translate>study.target-number.suppl-info</td>
+            <th translate>study.target-number.suppl-info</th>
             <td>
               <localized value="study.numberOfParticipants.info" lang="tab.lang"></localized>
             </td>
           </tr>
           <tr ng-show="study.methods.info.length">
-            <td translate>suppl-info</td>
+            <th translate>suppl-info</th>
             <td>
               <localized value="study.methods.info" lang="tab.lang"></localized>
             </td>
@@ -178,7 +178,7 @@
         <table class="table table-striped" ng-show="study.access.length || study.otherAccess.length">
           <tbody>
           <tr>
-            <td translate>study.access.for</td>
+            <th translate>study.access.for</th>
             <td>
               <ul class="list-unstyled">
                 <li ng-repeat="access in study.access">
@@ -197,11 +197,11 @@
         <table class="table table-striped" ng-show="study.markerPaper || study.pubmedId">
           <tbody>
           <tr ng-show="study.markerPaper">
-            <td translate>study.marker-paper</td>
+            <th translate>study.marker-paper</th>
             <td>{{study.markerPaper}}</td>
           </tr>
           <tr ng-show="study.pubmedId">
-            <td translate>study.pubmed-id</td>
+            <th translate>study.pubmed-id</th>
             <td>
               <a ng-href="http://www.ncbi.nlm.nih.gov/pubmed/{{study.pubmedId}}" target="_blank">
                 PUBMED {{study.pubmedId}}
@@ -215,12 +215,12 @@
         <table class="table table-striped" ng-show="study.attachments.length">
           <tbody>
           <tr ng-repeat="attachment in study.attachments | filter:{lang:lang}">
-            <td>
+            <th>
               <a target="_self" ng-href="/ws/draft/study/{{study.id}}/file/{{attachment.id}}/_download"
                   download="{{attachment.fileName}}">
               {{attachment.fileName}}
               </a>
-            </td>
+            </th>
             <td>
               {{attachment.size | bytes}}
             </td>

@@ -168,7 +168,7 @@ mica
 
   .run(['$rootScope', '$location', '$http', 'AuthenticationSharedService', 'Session', 'USER_ROLES',
     function ($rootScope, $location, $http, AuthenticationSharedService, Session, USER_ROLES) {
-      $rootScope.$on('$routeChangeStart', function (event, next) {
+      $rootScope.$on('$routeChangeStart', function (event) {
         $rootScope.authenticated = AuthenticationSharedService.isAuthenticated();
         $rootScope.hasRole = AuthenticationSharedService.isAuthorized;
         $rootScope.userRoles = USER_ROLES;
