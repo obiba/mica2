@@ -217,6 +217,9 @@ mica.study
             return p.id === $routeParams.pid;
           })[0];
         } else {
+          if ($scope.study.populations === undefined) {
+            $scope.study.populations = [];
+          }
           $scope.study.populations.push($scope.population);
         }
       }) : {};

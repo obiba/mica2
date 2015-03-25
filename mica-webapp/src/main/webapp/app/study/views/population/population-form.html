@@ -26,13 +26,13 @@
       <div ng-repeat="value in population.selectionCriteria.healthStatus">
         <div localized-input-group model="value.localizedStrings" lang="tab.lang" remove="removeHealthStatus"></div>
       </div>
-      <button type="button" class="btn btn-default btn-sm" ng-click="addHealthStatus()"><i class="fa fa-plus"></i><span translate>population.add-health-status-help</span></button>
+      <button type="button" class="btn btn-info btn-sm" ng-click="addHealthStatus()"><i class="fa fa-plus"></i><span translate>population.add-health-status-help</span></button>
 
       <h5 translate>study.selection-criteria.ethnic-origin</h5>
       <div ng-repeat="value in population.selectionCriteria.ethnicOrigin">
         <div localized-input-group model="value.localizedStrings" lang="tab.lang" remove="removeEthnicOrigin"></div>
       </div>
-      <button type="button" class="btn btn-default btn-sm" ng-click="addEthnicOrigin()"><i class="fa fa-plus"></i> <span translate>population.add-ethnic-origin-help</span></button>
+      <button type="button" class="btn btn-info btn-sm" ng-click="addEthnicOrigin()"><i class="fa fa-plus"></i> <span translate>population.add-ethnic-origin-help</span></button>
 
       <h5 translate>Criteria</h5>
       <div form-checkbox-group options="availableSelectionCriteria" model="population.selectionCriteria.criteria"></div>
@@ -86,7 +86,7 @@
             <div localized-input-group model="value.localizedStrings" lang="tab.lang"
               remove="removeRecruitmentStudy"></div>
           </div>
-          <button type="button" class="btn btn-default btn-sm" ng-click="addRecruitmentStudy()"><i class="fa fa-plus"></i>
+          <button type="button" class="btn btn-info btn-sm" ng-click="addRecruitmentStudy()"><i class="fa fa-plus"></i>
             <span translate>study.recruitment-sources.add-study</span></button>
             </div>
         </tab>
@@ -102,10 +102,10 @@
     </tab>
     </tabset>
     <button type="button" class="btn btn-default" ng-click="cancel()">
-      <span class="glyphicon glyphicon-ban-circle"></span><span translate>cancel</span>
+      <span translate>cancel</span>
     </button>
     <button type="submit" class="btn btn-primary">
-      <span class="glyphicon glyphicon-save"></span><span translate>save</span>
+      <span translate>save</span>
     </button>
   </form>
 </div>
