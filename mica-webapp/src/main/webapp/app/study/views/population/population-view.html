@@ -1,4 +1,4 @@
-<div id="population-{{population.id}}">
+
 
   <h4>
     <localized value="population.name" lang="tab.lang"></localized>
@@ -151,10 +151,12 @@
 
   <h4 class="voffset3">
     <span translate>study.data-collection-events</span>
-    <span><a ng-click="addDataCollectionEvent(study, population)" class="hand action"> <span></span> <i class="fa fa-plus-square"></i></a></span>
-    <span ng-show="population.dataCollectionEvents.length > 1" class="label label-default pull-right"><span translate>total</span> <span>{{population.dataCollectionEvents.length}}</span></span>
-  </h4>
 
+  </h4>
+  <a ng-click="addDataCollectionEvent(study, population)" class="btn btn-info btn-sm">
+    <i class="fa fa-plus"></i> <span translate>study.add-data-collection-event</span>
+  </a>
+  <span ng-show="population.dataCollectionEvents.length > 1" class="label label-default pull-right"><span translate>total</span> <span>{{population.dataCollectionEvents.length}}</span></span>
   <table class="table table-striped" ng-show="population.dataCollectionEvents.length">
     <thead>
     <tr>
@@ -187,4 +189,3 @@
     </tbody>
   </table>
 
-</div>

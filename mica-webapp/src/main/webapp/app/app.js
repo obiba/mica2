@@ -174,10 +174,9 @@ mica
         $rootScope.userRoles = USER_ROLES;
         $rootScope.subject = Session;
 
-        var authorizedRoles = next.access.authorizedRoles;
-        if (!AuthenticationSharedService.isAuthorized(authorizedRoles)) {
+        if (!$rootScope.hasRole) {
           event.preventDefault();
-          if (AuthenticationSharedService.isAuthenticated()) {
+          if ($rootScope.authenticated) {
             // user is not allowed
             $rootScope.$broadcast('event:auth-notAuthorized');
           } else {

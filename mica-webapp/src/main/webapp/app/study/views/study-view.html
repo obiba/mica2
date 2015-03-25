@@ -65,7 +65,7 @@
                     </a>
                   </li>
                 </ul>
-                <button type="button" class="btn btn-default btn-sm" ng-click="addInvestigator(study)">
+                <button type="button" class="btn btn-info btn-sm" ng-click="addInvestigator(study)">
                   <i class="fa fa-plus"></i> <span translate>study.add-investigator</span>
                 </button>
               </div>
@@ -88,7 +88,7 @@
                     <a ng-click="deleteContact(study, contact)" class="action"><i class="fa fa-trash-o"></i></a>
                   </li>
                 </ul>
-                <button type="button" class="btn btn-default btn-sm" ng-click="addContact(study)">
+                <button type="button" class="btn btn-info btn-sm" ng-click="addContact(study)">
                   <i class="fa fa-plus"></i> <span translate>study.add-contact</span>
                 </button>
               </div>
@@ -246,10 +246,19 @@
         <div id="timeline"></div>
 
 
-        <h3 ng-show="study.populations.length">
+        <h3>
           <span translate>study.populations</span>
-          <span><a ng-click="addPopulation()" class="hand action"> <span></span> <i class="fa fa-plus-square"></i></a></span>
         </h3>
+
+        <a ng-click="addPopulation()" class="btn btn-info">
+          <i class="fa fa-plus"></i> <span translate>study.add-population</span>
+        </a>
+
+        <!--<tabset vertical="true">-->
+          <!--<tab ng-repeat="population in study.populations" heading="{{population.id}}" active="{{$index === 0}}">-->
+            <!--<div ng-include="'app/study/views/population/population-view.html'"></div>-->
+          <!--</tab>-->
+        <!--</tabset>-->
 
         <div ng-repeat="population in study.populations">
           <div ng-include="'app/study/views/population/population-view.html'"></div>
