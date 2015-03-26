@@ -48,7 +48,7 @@ public class DraftStudyDatasetVariableResource implements DatasetVariableResourc
   @GET
   @Path("/summary")
   public Math.SummaryStatisticsDto getVariableSummary() {
-    return datasetService.getVariableSummary(getDataset(), variableName);
+    return datasetService.getVariableSummary(getDataset(), variableName).getWrappedDto();
   }
 
   @GET

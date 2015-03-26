@@ -22,7 +22,6 @@ import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.DatasetVariableResource;
-import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetResource;
@@ -74,7 +73,8 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
     dataset.getStudyTables().forEach(table -> {
       try {
         builder.add(datasetService
-          .getVariableSummary(dataset, variableName, table.getStudyId(), table.getProject(), table.getTable()));
+          .getVariableSummary(dataset, variableName, table.getStudyId(), table.getProject(), table.getTable())
+          .getWrappedDto());
       } catch(NoSuchVariableException | NoSuchValueTableException e) {
         // case the study has not implemented this dataschema variable
         builder.add(Math.SummaryStatisticsDto.newBuilder().setResource(variableName).build());
@@ -240,9 +240,12 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
     private HarmonizationDatasetService datasetService;
 
     @Async
-    private Future<Math.SummaryStatisticsDto> getVariableFacet(HarmonizationDataset dataset, String variableName, StudyTable table) {
+    private Future<Math.SummaryStatisticsDto> getVariableFacet(HarmonizationDataset dataset, String variableName,
+      StudyTable table) {
       try {
-        return new AsyncResult<>(datasetService.getVariableSummary(dataset, variableName, table.getStudyId(), table.getProject(), table.getTable()));
+        return new AsyncResult<>(datasetService
+          .getVariableSummary(dataset, variableName, table.getStudyId(), table.getProject(), table.getTable())
+          .getWrappedDto());
       } catch(Exception e) {
         log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
         return new AsyncResult<>(null);
