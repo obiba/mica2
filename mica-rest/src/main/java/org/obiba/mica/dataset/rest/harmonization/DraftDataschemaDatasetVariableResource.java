@@ -59,7 +59,8 @@ public class DraftDataschemaDatasetVariableResource implements DatasetVariableRe
     dataset.getStudyTables().forEach(table -> {
       try {
         builder.add(datasetService
-          .getVariableSummary(dataset, variableName, table.getStudyId(), table.getProject(), table.getTable()));
+          .getVariableSummary(dataset, variableName, table.getStudyId(), table.getProject(), table.getTable())
+          .getWrappedDto());
       } catch(NoSuchVariableException | NoSuchValueTableException e) {
         // ignore (case the study has not implemented this dataschema variable)
       }

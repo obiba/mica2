@@ -10,6 +10,10 @@
 
 package org.obiba.mica.dataset.service;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
@@ -27,11 +31,13 @@ import org.obiba.mica.study.service.StudyService;
 import org.obiba.opal.rest.client.magma.RestDatasource;
 import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.obiba.opal.web.model.Magma;
+import org.obiba.opal.web.model.Math;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
+import com.google.protobuf.GeneratedMessage;
 
 /**
  * {@link org.obiba.mica.dataset.domain.Dataset} management service.
@@ -187,4 +193,63 @@ public abstract class DatasetService<T extends Dataset> {
     }
   }
 
+  /**
+   * Helper class to serialize protobuf object extension.
+   */
+  public static class SummaryStatisticsWrapper implements Serializable {
+    private org.obiba.opal.web.model.Math.SummaryStatisticsDto summary;
+
+    public SummaryStatisticsWrapper(Math.SummaryStatisticsDto summary) {
+      this.summary = summary;
+    }
+
+    public Math.SummaryStatisticsDto getWrappedDto() {
+      return summary;
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+      summary = (Math.SummaryStatisticsDto)in.readObject();
+      GeneratedMessage ext = (GeneratedMessage)in.readObject();
+
+      if (ext == null) return;
+
+      Math.SummaryStatisticsDto.Builder builder = summary.toBuilder();
+
+      if(ext instanceof Math.CategoricalSummaryDto)
+        builder.setExtension(Math.CategoricalSummaryDto.categorical, (Math.CategoricalSummaryDto) ext);
+      else if(ext instanceof Math.ContinuousSummaryDto)
+        builder.setExtension(Math.ContinuousSummaryDto.continuous, (Math.ContinuousSummaryDto) ext);
+      else if(ext instanceof Math.DefaultSummaryDto)
+        builder.setExtension(Math.DefaultSummaryDto.defaultSummary, (Math.DefaultSummaryDto) ext);
+      else if(ext instanceof Math.TextSummaryDto)
+        builder.setExtension(Math.TextSummaryDto.textSummary, (Math.TextSummaryDto) ext);
+      else if(ext instanceof Math.GeoSummaryDto)
+        builder.setExtension(Math.GeoSummaryDto.geoSummary, (Math.GeoSummaryDto) ext);
+      else if(ext instanceof Math.BinarySummaryDto)
+        builder.setExtension(Math.BinarySummaryDto.binarySummary, (Math.BinarySummaryDto) ext);
+
+      summary = builder.build();
+    }
+
+    private void writeObject(java.io.ObjectOutputStream stream)
+      throws IOException {
+      stream.writeObject(summary);
+      GeneratedMessage ext = null;
+
+      if(summary.hasExtension(Math.CategoricalSummaryDto.categorical))
+        ext = summary.getExtension(Math.CategoricalSummaryDto.categorical);
+      else if(summary.hasExtension(Math.ContinuousSummaryDto.continuous))
+        ext = summary.getExtension(Math.ContinuousSummaryDto.continuous);
+      else if(summary.hasExtension(Math.DefaultSummaryDto.defaultSummary))
+        ext = summary.getExtension(Math.DefaultSummaryDto.defaultSummary);
+      else if(summary.hasExtension(Math.TextSummaryDto.textSummary))
+        ext = summary.getExtension(Math.TextSummaryDto.textSummary);
+      else if(summary.hasExtension(Math.GeoSummaryDto.geoSummary))
+        ext = summary.getExtension(Math.GeoSummaryDto.geoSummary);
+      else if(summary.hasExtension(Math.BinarySummaryDto.binarySummary))
+        ext = summary.getExtension(Math.BinarySummaryDto.binarySummary);
+
+      stream.writeObject(ext);
+    }
+  }
 }

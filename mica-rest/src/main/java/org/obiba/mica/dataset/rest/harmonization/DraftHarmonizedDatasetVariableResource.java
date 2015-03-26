@@ -20,7 +20,7 @@ import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
-import org.obiba.opal.web.model.*;
+import org.obiba.opal.web.model.Search;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -53,7 +53,7 @@ public class DraftHarmonizedDatasetVariableResource implements DatasetVariableRe
   @GET
   @Path("/summary")
   public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary() {
-    return datasetService.getVariableSummary(getDataset(), variableName, studyId, project, table);
+    return datasetService.getVariableSummary(getDataset(), variableName, studyId, project, table).getWrappedDto();
   }
 
   @GET
