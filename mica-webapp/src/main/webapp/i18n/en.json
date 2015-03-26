@@ -445,6 +445,8 @@
     "study-tables" : "Study Tables",
     "project" : "Project",
     "table" : "Table",
+    "table-name" : "Table Name",
+    "table-description" : "Table Description",
     "data-schema" : "Data Schema",
     "index": "Index",
     "add-study-table": "Add Study Table"

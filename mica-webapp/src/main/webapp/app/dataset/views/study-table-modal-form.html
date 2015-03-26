@@ -24,15 +24,19 @@
 
       <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
 
-      <div form-input name="study.label" model="studyTable.studyId" label="study.label" required="true"></div>
+      <div form-input name="studyTable.studyId" model="studyTable.studyId" label="study.label" required="true"></div>
 
-      <div form-input name="study.label" model="studyTable.populationId" label="study.population" required="true"></div>
+      <div form-input name="studyTable.populationId" model="studyTable.populationId" label="study.population" required="true"></div>
 
-      <div form-input name="study.label" model="studyTable.dataCollectionEventId" label="study.data-collection-event" required="true"></div>
+      <div form-input name="studyTable.dataCollectionEventId" model="studyTable.dataCollectionEventId" label="study.data-collection-event" required="true"></div>
 
-      <div form-input name="dataset.project" model="studyTable.project" label="dataset.project" required="true"></div>
+      <div form-input name="studyTable.project" model="studyTable.project" label="dataset.project" required="true"></div>
 
-      <div form-input name="dataset.table" model="studyTable.table" label="dataset.table" required="true"></div>
+      <div form-input name="studyTable.table" model="studyTable.table" label="dataset.table" required="true"></div>
+
+      <div localized-input name="studyTable.name" model="studyTable.name" label="dataset.table-name" lang="tab.lang"></div>
+
+      <div localized-textarea name="studyTable.description" model="studyTable.description" label="dataset.table-description" lang="tab.lang"></div>
 
     </div>
 

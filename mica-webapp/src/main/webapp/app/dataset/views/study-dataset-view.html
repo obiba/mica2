@@ -13,7 +13,7 @@
   <h2 class="voffset5" translate>study-dataset</h2>
 
   <div class="btn-group pull-right">
-    <a ng-href="#/study-dataset/{{dataset.id}}†¡™/edit" class="btn btn-primary">
+    <a ng-href="#/study-dataset/{{dataset.id}}/edit" class="btn btn-primary">
       <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
     </a>
     <publish-switch status="isPublished()" publish="publish()"></publish-switch>
@@ -75,6 +75,18 @@
             <td translate>dataset.table</td>
             <td>
               {{dataset['obiba.mica.StudyDatasetDto.type'].studyTable.table}}
+            </td>
+          </tr>
+          <tr>
+            <td translate>dataset.table-name</td>
+            <td>
+              <localized value="dataset['obiba.mica.StudyDatasetDto.type'].studyTable.name" lang="tab.lang"></localized>
+            </td>
+          </tr>
+          <tr>
+            <td translate>dataset.table-description</td>
+            <td>
+              <localized value="dataset['obiba.mica.StudyDatasetDto.type'].studyTable.description" lang="tab.lang"></localized>
             </td>
           </tr>
           </tbody>
