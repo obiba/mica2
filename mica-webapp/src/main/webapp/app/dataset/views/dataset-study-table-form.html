@@ -9,12 +9,16 @@
   -->
 
 
-<div form-input name="study.label" model="dataset['obiba.mica.StudyDatasetDto.type'].studyTable.studyId" label="study.label" required="true"></div>
+<div form-input name="studyTable.studyId" model="dataset['obiba.mica.StudyDatasetDto.type'].studyTable.studyId" label="study.label" required="true"></div>
 
-<div form-input name="study.label" model="dataset['obiba.mica.StudyDatasetDto.type'].studyTable.populationId" label="study.population" required="true"></div>
+<div form-input name="studyTable.populationId" model="dataset['obiba.mica.StudyDatasetDto.type'].studyTable.populationId" label="study.population" required="true"></div>
 
-<div form-input name="study.label" model="dataset['obiba.mica.StudyDatasetDto.type'].studyTable.dataCollectionEventId" label="study.data-collection-event" required="true"></div>
+<div form-input name="studyTable.dataCollectionEventId" model="dataset['obiba.mica.StudyDatasetDto.type'].studyTable.dataCollectionEventId" label="study.data-collection-event" required="true"></div>
 
-<div form-input name="dataset.project" model="dataset['obiba.mica.StudyDatasetDto.type'].studyTable.project" label="dataset.project" required="true"></div>
+<div form-input name="studyTable.project" model="dataset['obiba.mica.StudyDatasetDto.type'].studyTable.project" label="dataset.project" required="true"></div>
 
-<div form-input name="dataset.table" model="dataset['obiba.mica.StudyDatasetDto.type'].studyTable.table" label="dataset.table" required="true"></div>
+<div form-input name="studyTable.table" model="dataset['obiba.mica.StudyDatasetDto.type'].studyTable.table" label="dataset.table" required="true"></div>
+
+<div localized-input name="studyTable.name" model="dataset['obiba.mica.StudyDatasetDto.type'].studyTable.name" label="dataset.table-name" lang="tab.lang"></div>
+
+<div localized-textarea name="studyTable.description" model="dataset['obiba.mica.StudyDatasetDto.type'].studyTable.description" label="dataset.table-description" lang="tab.lang"></div>
