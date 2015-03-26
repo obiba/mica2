@@ -31,7 +31,7 @@ mica.dataset
     function ($rootScope, $scope, $routeParams, $log, $locale, $location, StudyDatasetResource, DraftStudyDatasetsResource, StudyDatasetPublicationResource, MicaConfigResource, FormServerValidation) {
 
       $scope.dataset = $routeParams.id ?
-        StudyDatasetResource.get({id: $routeParams.id}) : {published: false, 'obiba.mica.StudyDatasetDto.type': {} };
+        StudyDatasetResource.get({id: $routeParams.id}) : {published: false, 'obiba.mica.StudyDatasetDto.type': {}};
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
@@ -83,7 +83,10 @@ mica.dataset
 
     function ($rootScope, $scope, $routeParams, $log, $locale, $location, $modal, HarmonizationDatasetResource, DraftHarmonizationDatasetsResource, HarmonizationDatasetPublicationResource, MicaConfigResource, FormServerValidation) {
 
-      $scope.dataset = $routeParams.id ? HarmonizationDatasetResource.get({id: $routeParams.id}) : {published: false, 'obiba.mica.HarmonizationDatasetDto.type': {} };
+      $scope.dataset = $routeParams.id ? HarmonizationDatasetResource.get({id: $routeParams.id}) : {
+        published: false,
+        'obiba.mica.HarmonizationDatasetDto.type': {}
+      };
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
@@ -104,7 +107,7 @@ mica.dataset
         }
       };
 
-      $scope.addStudyTable = function() {
+      $scope.addStudyTable = function () {
         $modal
           .open({
             templateUrl: 'app/dataset/views/study-table-modal-form.html',
@@ -124,12 +127,15 @@ mica.dataset
           });
       };
 
-      $scope.editStudyTable = function(index) {
+      $scope.editStudyTable = function (index, tab) {
         $modal
           .open({
             templateUrl: 'app/dataset/views/study-table-modal-form.html',
             controller: 'StudyTableModalController',
             resolve: {
+              tab: function () {
+                return tab;
+              },
               studyTable: function () {
                 return $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables[index];
               }
@@ -141,7 +147,7 @@ mica.dataset
           });
       };
 
-      $scope.deleteStudyTable = function(index) {
+      $scope.deleteStudyTable = function (index) {
         $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables.splice(index);
         if ($scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables.length === 0) {
           $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables = undefined;
@@ -188,7 +194,7 @@ mica.dataset
 
       $scope.dataset = StudyDatasetResource.get({id: $routeParams.id});
 
-      $scope.isPublished = function() {
+      $scope.isPublished = function () {
         return $scope.dataset.published;
       };
 
@@ -246,7 +252,7 @@ mica.dataset
         $scope.datasetTable = dataset['obiba.mica.HarmonizationDatasetDto.type'].table;
       });
 
-      $scope.isPublished = function() {
+      $scope.isPublished = function () {
         return $scope.dataset.published;
       };
 
@@ -264,16 +270,10 @@ mica.dataset
 
     }])
 
-  .controller('StudyTableModalController', ['$scope', '$modalInstance', '$log', 'MicaConfigResource', 'studyTable',
-    function ($scope, $modalInstance, $log, MicaConfigResource, studyTable) {
-      $scope.studyTable =  $.extend(true, {}, studyTable);
-
-      MicaConfigResource.get(function (micaConfig) {
-        $scope.tabs = [];
-        micaConfig.languages.forEach(function (lang) {
-          $scope.tabs.push({ lang: lang, labelKey: 'language.' + lang });
-        });
-      });
+  .controller('StudyTableModalController', ['$scope', '$modalInstance', '$log', 'MicaConfigResource', 'studyTable', 'tab',
+    function ($scope, $modalInstance, $log, MicaConfigResource, studyTable, tab) {
+      $scope.studyTable = $.extend(true, {}, studyTable);
+      $scope.tab = tab;
 
       $scope.save = function (form) {
         if (form.$valid) {

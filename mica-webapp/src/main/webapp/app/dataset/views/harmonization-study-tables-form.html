@@ -24,6 +24,8 @@
         <th translate>study.label</th>
         <th translate>dataset.project</th>
         <th translate>dataset.table</th>
+        <th translate>dataset.table-name</th>
+        <th translate>dataset.table-description</th>
         <th translate>actions</th>
       </tr>
       </thead>
@@ -41,7 +43,13 @@
           {{studyTable.table}}
         </td>
         <td>
-          <a href="" ng-click="editStudyTable($index)" class="action"><i class="fa fa-pencil"></i></a>
+          <localized value="studyTable.name" lang="tab.lang"></localized>
+        </td>
+        <td>
+          <localized value="studyTable.description" lang="tab.lang"></localized>
+        </td>
+        <td>
+          <a href="" ng-click="editStudyTable($index, tab)" class="action"><i class="fa fa-pencil"></i></a>
           <a href="" ng-click="deleteStudyTable($index)" class="action"><i class="fa fa-trash-o"></i></a>
         </td>
       </tr>
