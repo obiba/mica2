@@ -50,7 +50,7 @@
     <mongeez.version>0.9.4</mongeez.version>
     <nosqlunit.version>0.7.9</nosqlunit.version>
     <obiba-commons.version>1.7.0</obiba-commons.version>
-    <opal.version>2.3.0</opal.version>
+    <opal.version>2.3.2</opal.version>
     <opencsv.version>2.3</opencsv.version>
     <protobuf.version>2.5.0</protobuf.version>
     <protobuf-java-format.version>1.2.1-obiba</protobuf-java-format.version>
