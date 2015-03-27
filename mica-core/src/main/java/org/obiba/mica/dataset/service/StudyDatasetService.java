@@ -193,10 +193,10 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
   }
 
   @Cacheable(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver", key = "#variableName")
-  public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary(@NotNull StudyDataset dataset,
+  public SummaryStatisticsWrapper getVariableSummary(@NotNull StudyDataset dataset,
       String variableName) throws NoSuchValueTableException, NoSuchVariableException {
     log.info("Caching variable summary {} {}", dataset.getId(), variableName);
-    return getVariableValueSource(dataset, variableName).getSummary();
+    return new SummaryStatisticsWrapper(getVariableValueSource(dataset, variableName).getSummary());
   }
 
   public Search.QueryResultDto getVariableFacet(@NotNull StudyDataset dataset, String variableName)

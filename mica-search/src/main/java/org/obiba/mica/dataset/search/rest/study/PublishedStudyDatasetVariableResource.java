@@ -51,7 +51,7 @@ public class PublishedStudyDatasetVariableResource extends AbstractPublishedData
   @GET
   @Path("/summary")
   public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary() {
-    return datasetService.getVariableSummary(getDataset(StudyDataset.class, datasetId), variableName);
+    return datasetService.getVariableSummary(getDataset(StudyDataset.class, datasetId), variableName).getWrappedDto();
   }
 
   @GET
@@ -68,7 +68,7 @@ public class PublishedStudyDatasetVariableResource extends AbstractPublishedData
     Mica.DatasetVariableAggregationDto.Builder aggDto = Mica.DatasetVariableAggregationDto.newBuilder() //
       .setStudyTable(dtos.asDto(studyTable));
     try {
-      return dtos.asDto(studyTable, datasetService.getVariableSummary(dataset, variableName)).build();
+      return dtos.asDto(studyTable, datasetService.getVariableSummary(dataset, variableName).getWrappedDto()).build();
     } catch(Exception e) {
       log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
       return dtos.asDto(studyTable, null).build();

@@ -55,6 +55,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 
+
 @Service
 @Validated
 public class HarmonizationDatasetService extends DatasetService<HarmonizationDataset> {
@@ -234,11 +235,12 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
 
   @Cacheable(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver",
     key = "#variableName + ':' + #studyId + ':' + #project + ':' + #table")
-  public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary(
+  public SummaryStatisticsWrapper getVariableSummary(
     @NotNull HarmonizationDataset dataset, String variableName, String studyId, String project, String table)
     throws NoSuchStudyException, NoSuchValueTableException, NoSuchVariableException {
     log.info("Caching variable summary {} {} {} {} {}", dataset.getId(), variableName, studyId, project, table);
-    return getVariableValueSource(dataset, variableName, studyId, project, table).getSummary();
+
+    return new SummaryStatisticsWrapper(getVariableValueSource(dataset, variableName, studyId, project, table).getSummary());
   }
 
   public Search.QueryResultDto getVariableFacet(@NotNull HarmonizationDataset dataset, String variableName,

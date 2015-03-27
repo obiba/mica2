@@ -62,7 +62,8 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   @Path("/summary")
   public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary() {
     return datasetService
-      .getVariableSummary(getDataset(HarmonizationDataset.class, datasetId), variableName, studyId, project, table);
+      .getVariableSummary(getDataset(HarmonizationDataset.class, datasetId), variableName, studyId, project, table)
+      .getWrappedDto();
   }
 
   @GET
@@ -79,7 +80,8 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
     for(StudyTable studyTable : dataset.getStudyTables()) {
       if(studyTable.isFor(studyId, project, table)) {
         try {
-          return dtos.asDto(studyTable, datasetService.getVariableSummary(dataset, variableName, studyId, project, table)).build();
+          return dtos.asDto(studyTable,
+            datasetService.getVariableSummary(dataset, variableName, studyId, project, table).getWrappedDto()).build();
         } catch(Exception e) {
           log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
           return dtos.asDto(studyTable, null).build();
