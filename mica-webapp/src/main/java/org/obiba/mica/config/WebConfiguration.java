@@ -11,14 +11,12 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
-import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlets.GzipFilter;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.obiba.mica.web.filter.CachingHttpHeadersFilter;
 import org.obiba.mica.web.filter.StaticResourcesProductionFilter;
-import org.obiba.mica.web.filter.gzip.GZipServletFilter;
 import org.obiba.shiro.web.filter.AuthenticationFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,10 +109,12 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
     };
     jettySsl.setWantClientAuth(true);
     jettySsl.setNeedClientAuth(false);
+    jettySsl.addExcludeProtocols("SSLv2","SSLv3");
 
     ServerConnector sslConnector = new ServerConnector(server, jettySsl);
     sslConnector.setPort(httpsPort);
     sslConnector.setIdleTimeout(MAX_IDLE_TIME);
+
 
     server.addConnector(sslConnector);
   }
@@ -180,7 +180,8 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
     FilterRegistration.Dynamic resourcesFilter = servletContext
       .addFilter("staticResourcesProductionFilter", new StaticResourcesProductionFilter());
 
-    resourcesFilter.addMappingForUrlPatterns(disps, true, "/");
+    resourcesFilter.addMappingForUrlPatterns(disps, true, "/favicon.ico");
+    resourcesFilter.addMappingForUrlPatterns(disps, true, "/robots.txt");
     resourcesFilter.addMappingForUrlPatterns(disps, true, "/index.html");
     resourcesFilter.addMappingForUrlPatterns(disps, true, "/images/*");
     resourcesFilter.addMappingForUrlPatterns(disps, true, "/fonts/*");
