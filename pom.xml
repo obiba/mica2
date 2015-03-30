@@ -42,6 +42,7 @@
     <javax.inject.version>1</javax.inject.version>
     <javax-rs.version>2.0</javax-rs.version>
     <jersey.version>2.15</jersey.version>
+    <jetty.version>9.2.9.v20150224</jetty.version>
     <jgit.version>3.6.2.201501210735-r</jgit.version>
     <jhipsterloaded.version>0.7</jhipsterloaded.version>
     <json-path.version>0.9.1</json-path.version>
