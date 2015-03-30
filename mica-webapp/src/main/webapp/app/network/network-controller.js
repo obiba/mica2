@@ -95,9 +95,52 @@ mica.network
       };
     }])
 
-  .controller('NetworkViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', '$translate', 'NetworkResource', 'NetworkPublicationResource', 'MicaConfigResource','CONTACT_EVENTS', 'NETWORK_EVENTS', 'NOTIFICATION_EVENTS', 'DraftStudiesSummariesResource',
+  .controller('NetworkStudiesModalController', ['$scope', '$modalInstance', 'StudyStatesResource', 'currentStudies', 'lang',
+    function ($scope, $modalInstance, StudyStatesResource, currentStudies, lang) {
+      $scope.lang = lang;
+      $scope.studies = [];
 
-    function ($rootScope, $scope, $routeParams, $log, $locale, $location, $translate, NetworkResource, NetworkPublicationResource, MicaConfigResource, CONTACT_EVENTS, NETWORK_EVENTS, NOTIFICATION_EVENTS, DraftStudiesSummariesResource) {
+      StudyStatesResource.query().$promise.then(function(studies) {
+        $scope.studies = studies.filter(function(s) { return currentStudies.indexOf(s.id) < 0; });
+      });
+
+      $scope.hasSelectedStudies = function() {
+        for(var i= $scope.studies.length; i--; ){
+          if($scope.studies[i].selected) return true;
+        }
+
+        return false;
+      };
+
+      $scope.removeSelectedStudy = function(study) {
+        study.selected = false;
+      };
+
+      $scope.save = function () {
+        var selectedIds = $scope.studies //
+          .filter(function(s){ return s.selected; }) //
+          .map(function(s) { return s.id; });
+
+        $modalInstance.close(selectedIds);
+      };
+
+      $scope.cancel = function () {
+        $modalInstance.dismiss('cancel');
+      };
+    }])
+
+  .controller('NetworkViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale',
+    '$location', '$translate', 'NetworkResource', 'NetworkPublicationResource', 'MicaConfigResource',
+    'CONTACT_EVENTS', 'NETWORK_EVENTS', 'NOTIFICATION_EVENTS', 'DraftStudiesSummariesResource', '$modal',
+
+    function ($rootScope, $scope, $routeParams, $log, $locale, $location, $translate, NetworkResource,
+              NetworkPublicationResource, MicaConfigResource, CONTACT_EVENTS, NETWORK_EVENTS, NOTIFICATION_EVENTS,
+              DraftStudiesSummariesResource, $modal) {
+      var getActiveTab = function () {
+        return $scope.tabs.filter(function (tab) {
+          return tab.active;
+        })[0];
+      };
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
@@ -109,7 +152,7 @@ mica.network
       $scope.studySummaries = [];
       $scope.network = NetworkResource.get({id: $routeParams.id}, function(network){
         if (network.studyIds && network.studyIds.length > 0) {
-          DraftStudiesSummariesResource.summaries({id: network.studyIds},function (summaries){            $log.debug('>>>>>', summaries);
+          DraftStudiesSummariesResource.summaries({id: network.studyIds},function (summaries){
             $scope.studySummaries = summaries;
           });
         }
@@ -140,7 +183,13 @@ mica.network
           $log.debug('save network', networkUpdated);
 
           $scope.network.$save(function () {
-              $scope.network = NetworkResource.get({id: $scope.network.id});
+              $scope.network = NetworkResource.get({id: $routeParams.id}, function(network){
+                if (network.studyIds && network.studyIds.length > 0) {
+                  DraftStudiesSummariesResource.summaries({id: network.studyIds},function (summaries){
+                    $scope.studySummaries = summaries;
+                  });
+                }
+              });
             },
             function (response) {
               $log.error('Error on network save:', response);
@@ -201,7 +250,21 @@ mica.network
       });
 
       $scope.addStudyEvent = function (network) {
-        $log.debug('TODO - Adding study for ', network.id);
+        $modal.open({
+          templateUrl: 'app/network/views/network-modal-add-studies.html',
+          controller: 'NetworkStudiesModalController',
+          resolve: {
+            currentStudies: function() {
+              return $scope.network.studyIds;
+            },
+            lang: function() {
+              return getActiveTab().lang;
+            }
+          }
+        }).result.then(function(selectedIds) {
+            $scope.network.studyIds = ($scope.network.studyIds || []).concat(selectedIds);
+            $scope.emitNetworkUpdated();
+          });
       };
 
       $scope.deleteStudyEvent = function (network, summary, index) {
