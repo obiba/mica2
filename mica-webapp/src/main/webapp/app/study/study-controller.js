@@ -499,11 +499,12 @@ mica.study
       $scope.accessTypes = ['data', 'bio_samples', 'other'];
       $scope.methodDesignTypes = ['case_control', 'case_only', 'clinical_trial', 'cohort_study', 'cross_sectional', 'other'];
       $scope.methodRecruitmentTypes = ['individuals', 'families', 'other'];
-
-      $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}, function() {
+      $scope.files = [];
+      $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}, function(response) {
         if ($routeParams.id) {
+          $scope.files = response.logo ? [response.logo] : [];
           $scope.study.attachments =
-            $scope.study.attachments && $scope.study.attachments.length > 0 ? $scope.study.attachments : [];
+            response.attachments && response.attachments.length > 0 ? response.attachments : [];
         }
       }) : {};
 
@@ -519,6 +520,12 @@ mica.study
       });
 
       $scope.save = function () {
+        $scope.study.logo = $scope.files.length > 0 ? $scope.files[0] : null;
+
+        if(!$scope.study.logo) { //protobuf doesnt like null values
+          delete $scope.study.logo;
+        }
+
         if (!$scope.form.$valid) {
           $scope.form.saveAttempted = true;
           return;

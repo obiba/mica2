@@ -15,14 +15,16 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.obiba.mica.core.security.Roles;
+import org.obiba.mica.file.rest.FileResource;
 import org.obiba.mica.network.NoSuchNetworkException;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.service.NetworkService;
-import org.obiba.mica.core.security.Roles;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.ApplicationContext;
@@ -108,4 +110,14 @@ public class DraftNetworkResource {
     }
     return Response.noContent().build();
   }
+
+  @Path("/file/{fileId}")
+  public FileResource study(@PathParam("fileId") String fileId) {
+    FileResource studyResource = applicationContext.getBean(FileResource.class);
+    studyResource.setPersistable(networkService.findById(id));
+    studyResource.setFileId(fileId);
+
+    return studyResource;
+  }
+
 }
