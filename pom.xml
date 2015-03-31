@@ -414,7 +414,42 @@
         <groupId>org.obiba.opal</groupId>
         <artifactId>opal-web-model</artifactId>
         <version>${opal.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.orientechnologies</groupId>
+            <artifactId>orient-commons</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.orientechnologies</groupId>
+            <artifactId>orientdb-server</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.obiba.magma</groupId>
+            <artifactId>magma-crypt</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.obiba.magma</groupId>
+            <artifactId>magma-datasource-fs</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.obiba.magma</groupId>
+            <artifactId>magma-datasource-hibernate</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.obiba.magma</groupId>
+            <artifactId>magma-datasource-jdbc</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.obiba.magma</groupId>
+            <artifactId>magma-datasource-mongodb</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
+
       <dependency>
         <groupId>org.obiba.opal</groupId>
         <artifactId>opal-rest-client</artifactId>
@@ -502,6 +537,12 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-jersey</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-tomcat</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
