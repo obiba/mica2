@@ -152,6 +152,7 @@ mica.network
       $scope.studySummaries = [];
       $scope.network = NetworkResource.get({id: $routeParams.id}, function(network){
         if (network.studyIds && network.studyIds.length > 0) {
+          $scope.logoUrl = 'ws/draft/network/'+network.id+'/file/'+network.logo.id+'/_download';
           DraftStudiesSummariesResource.summaries({id: network.studyIds},function (summaries){
             $scope.studySummaries = summaries;
           });
