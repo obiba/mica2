@@ -62,6 +62,7 @@ mica.study
       $scope.study = DraftStudyResource.get(
         {id: $routeParams.id},
         function (study) {
+          $scope.logoUrl = 'ws/draft/study/'+study.id+'/file/'+study.logo.id+'/_download';
           new $.MicaTimeline(new $.StudyDtoParser()).create('#timeline', study).addLegend();
         });
 

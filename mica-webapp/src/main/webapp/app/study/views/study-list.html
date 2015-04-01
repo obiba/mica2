@@ -31,7 +31,7 @@
       </thead>
       <tbody>
 
-      <tr dir-paginate="study in studies | itemsPerPage: 20 | filter:searchText">
+      <tr dir-paginate="study in studies| filter:searchText | itemsPerPage: 20">
         <td>
           <ul class="list-unstyled">
             <li ng-repeat="acronym in study.acronym">

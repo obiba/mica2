@@ -41,7 +41,7 @@
       </thead>
       <tbody>
 
-      <tr dir-paginate="network in networks | itemsPerPage: 20 | filter:searchText">
+      <tr dir-paginate="network in networks| filter:searchText | itemsPerPage: 20">
         <td>
           <ul class="list-unstyled">
             <li ng-repeat="acronym in network.acronym">
