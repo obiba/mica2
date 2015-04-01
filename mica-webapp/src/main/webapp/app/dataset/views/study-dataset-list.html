@@ -30,7 +30,7 @@
       </tr>
       </thead>
       <tbody>
-      <tr dir-paginate="dataset in studyDatasets | itemsPerPage: 20 | filter:searchText">
+      <tr dir-paginate="dataset in studyDatasets | filter:searchText | itemsPerPage: 20">
         <td>
           <ul class="list-unstyled">
             <li ng-repeat="acronym in dataset.acronym">
