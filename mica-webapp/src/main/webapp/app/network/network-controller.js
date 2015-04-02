@@ -106,7 +106,9 @@ mica.network
 
       $scope.hasSelectedStudies = function() {
         for(var i= $scope.studies.length; i--; ){
-          if($scope.studies[i].selected) return true;
+          if($scope.studies[i].selected) {
+            return true;
+          }
         }
 
         return false;
@@ -252,7 +254,7 @@ mica.network
         }
       });
 
-      $scope.addStudyEvent = function (network) {
+      $scope.addStudyEvent = function () {
         $modal.open({
           templateUrl: 'app/network/views/network-modal-add-studies.html',
           controller: 'NetworkStudiesModalController',
