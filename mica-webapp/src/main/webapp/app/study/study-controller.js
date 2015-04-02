@@ -62,7 +62,9 @@ mica.study
       $scope.study = DraftStudyResource.get(
         {id: $routeParams.id},
         function (study) {
-          $scope.logoUrl = 'ws/draft/study/'+study.id+'/file/'+study.logo.id+'/_download';
+          if (study.logo) {
+            $scope.logoUrl = 'ws/draft/study/'+study.id+'/file/'+study.logo.id+'/_download';
+          }
           new $.MicaTimeline(new $.StudyDtoParser()).create('#timeline', study).addLegend();
         });
 
@@ -217,6 +219,8 @@ mica.study
           $scope.population = $scope.study.populations.filter(function (p) {
             return p.id === $routeParams.pid;
           })[0];
+          $scope.numberOfParticipants = $scope.population.numberOfParticipants;
+          $scope.numberOfParticipantsTemplate = 'app/study/views/common/number-of-participants.html';
         } else {
           if ($scope.study.populations === undefined) {
             $scope.study.populations = [];
@@ -313,7 +317,7 @@ mica.study
         }
 
         var selectedDatasources = [];
-        var hasRecruitmentDatasources = null !== $scope.population.recruitment.dataSources;
+        var hasRecruitmentDatasources = null != $scope.population.recruitment.dataSources; // null or undefined
 
         if (hasRecruitmentDatasources && $scope.population.recruitment.dataSources.indexOf('general') < 0) {
           delete $scope.population.recruitment.generalPopulationSources;
@@ -503,6 +507,8 @@ mica.study
       $scope.files = [];
       $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}, function(response) {
         if ($routeParams.id) {
+          $scope.numberOfParticipants = response.numberOfParticipants;
+          $scope.numberOfParticipantsTemplate = 'app/study/views/common/number-of-participants.html';
           $scope.files = response.logo ? [response.logo] : [];
           $scope.study.attachments =
             response.attachments && response.attachments.length > 0 ? response.attachments : [];

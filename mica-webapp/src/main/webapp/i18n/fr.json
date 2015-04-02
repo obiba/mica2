@@ -8,6 +8,8 @@
     "browsehappy": "Vous utilisez un <strong>ancien</strong> navigateur. Veuillez <a href=\"http://browsehappy.com/\">mettre à jour votre navigateur</a> pour une meilleure expérience.",
     "menu": {
       "home": "Accueil",
+      "myProfile": "My Profile",
+      "logout": "Sign Out",
       "account": {
         "main": "Compte",
         "settings": "Profil",
@@ -30,25 +32,13 @@
       "de": "Allemand"
     }
   },
-  "index": {
-    "title": "index"
-  },
   "main": {
     "title": "Bienvenue chez Micado!",
     "subtitle": "Ceci est votre page d'accueil",
     "logged": {
       "message": "Vous êtes connecté en tant que \"{{username}}\".",
       "authenticated": "Si vous voulez vous <a href=\"#/login\">connecter</a>, vous pouvez utiliser les comptes par défaut : <br/> - Administrateur (nom d'utilisateur=\"admin\" et mot de passe =\"admin\") <br/> - Utilisateur (nom d'utilisateur=\"user\" et mot de passe =\"user\")."
-    },
-    "question": "Si vous avez des questions à propos de JHipster:",
-    "link": {
-      "homepage": "Page d'accueil de JHipster",
-      "stackoverflow": "JHipster sur Stack Overflow",
-      "bugtracker": "JHipster bug tracker",
-      "contact": "Contactez-nous sur Twitter @java_hipster"
-    },
-    "like": "Si vous aimez JHipster, donnez nous une étoile sur",
-    "github": "Github"
+    }
   },
   "login": {
     "title": "Authentification",
@@ -240,11 +230,14 @@
   },
   "caching": {
     "title": "Caching",
+    "titleBuild": "Build Cache",
     "all": "All",
     "clear": "Clear",
+    "run": "Run",
     "opalTaxonomies": "Opal taxonomies",
     "micaConfig": "Mica configuration",
-    "aggregationsMetadata": "Aggregations metadata"
+    "aggregationsMetadata": "Aggregations metadata",
+    "datasetVariables": "Dataset variables statistics"
   },
   "logs": {
     "title": "Logs",
@@ -307,7 +300,15 @@
     "revisions-ahead": "Revisions ahead"
   },
   "studies": "Studies",
+  "numberOfParticipants": {
+    "label": "Number of participants",
+    "participants": "Target number of participants",
+    "sample": "Target number of participants with biological samples",
+    "no-limit": "No Limit",
+    "suppl-info": "Supplementary information about target number of participants"
+  },
   "study": {
+    "input-placeholder": "Study name",
     "add": "Add Study",
     "label": "Study",
     "label-edit": "Edit Study",
@@ -324,6 +325,7 @@
     "website": "Website",
     "investigators": "Investigators",
     "add-population": "Add Population",
+    "add-data-collection-event": "Add Data Collection Event",
     "add-investigator": "Add Investigator",
     "contacts": "Contacts",
     "add-contact": "Add Contact",
@@ -333,12 +335,6 @@
     "design": "Study Design",
     "follow-up": "Follow Up",
     "recruitment-target": "Recruitment target",
-    "target-number": {
-      "participants": "Target number of participants",
-      "sample": "Target number of participants with biological samples",
-      "no-limit": "No Limit",
-      "suppl-info": "Supplementary information about target number of participants"
-    },
     "access": {
       "label": "Access",
       "for": "Access to external researchers or third parties provided or foreseen for"
@@ -382,10 +378,6 @@
       "other": "Other sources",
       "other-specific-population": "Other specific population",
       "info": "Information"
-    },
-    "participants-number": {
-      "participant": "Number of participants",
-      "sample": "Number of participants with biological samples"
     },
     "data-collection-event": "Data Collection Event",
     "data-collection-events": "Data Collection Events",
@@ -448,6 +440,8 @@
     "study-tables" : "Tables d'études",
     "project" : "Project",
     "table" : "Table",
+    "table-name" : "Table Name",
+    "table-description" : "Table Description",
     "data-schema" : "Data Schema",
     "index": "Index",
     "add-study-table": "Add Study Table"
@@ -541,5 +535,6 @@
   "logo": "Logo",
   "attachments": "Attachments",
   "allowed-file-types": "Allowed file types:",
-  "total": "Total"
+  "total": "Total",
+  "type": "Type"
 }
