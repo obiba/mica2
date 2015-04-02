@@ -132,7 +132,6 @@
       "success": "<strong>Session invalidated!</strong>",
       "error": "<strong>An error has occured!</strong> The session could not be invalidated."
     }
-
   },
   "tracker": {
     "title": "Real-time user activities",
@@ -273,7 +272,6 @@
         "remoteAddress": "Remote Address:"
       }
     }
-
   },
   "errors": {
     "title": "Error page!",
@@ -302,6 +300,13 @@
     "revisions-ahead": "Revisions ahead"
   },
   "studies": "Studies",
+  "numberOfParticipants": {
+    "label": "Number of participants",
+    "participants": "Target number of participants",
+    "sample": "Target number of participants with biological samples",
+    "no-limit": "No Limit",
+    "suppl-info": "Supplementary information about target number of participants"
+  },
   "study": {
     "input-placeholder": "Study name",
     "add": "Add Study",
@@ -330,12 +335,6 @@
     "design": "Study Design",
     "follow-up": "Follow Up",
     "recruitment-target": "Recruitment target",
-    "target-number": {
-      "participants": "Target number of participants",
-      "sample": "Target number of participants with biological samples",
-      "no-limit": "No Limit",
-      "suppl-info": "Supplementary information about target number of participants"
-    },
     "access": {
       "label": "Access",
       "for": "Access to external researchers or third parties provided or foreseen for"
@@ -379,10 +378,6 @@
       "other": "Other sources",
       "other-specific-population": "Other specific population",
       "info": "Information"
-    },
-    "participants-number": {
-      "participant": "Number of participants",
-      "sample": "Number of participants with biological samples"
     },
     "data-collection-event": "Data Collection Event",
     "data-collection-events": "Data Collection Events",
