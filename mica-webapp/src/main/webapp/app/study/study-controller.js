@@ -317,7 +317,7 @@ mica.study
         }
 
         var selectedDatasources = [];
-        var hasRecruitmentDatasources = null != $scope.population.recruitment.dataSources; // null or undefined
+        var hasRecruitmentDatasources = null !== $scope.population.recruitment.dataSources; // null or undefined
 
         if (hasRecruitmentDatasources && $scope.population.recruitment.dataSources.indexOf('general') < 0) {
           delete $scope.population.recruitment.generalPopulationSources;

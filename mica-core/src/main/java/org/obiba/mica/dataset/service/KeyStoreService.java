@@ -10,13 +10,23 @@
 
 package org.obiba.mica.dataset.service;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.KeyStoreException;
+import java.security.cert.Certificate;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.security.auth.callback.CallbackHandler;
 import javax.validation.constraints.NotNull;
 
+import org.bouncycastle.openssl.PEMWriter;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.security.KeyStoreManager;
 import org.obiba.security.KeyStoreRepository;
 import org.springframework.stereotype.Service;
@@ -27,9 +37,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class KeyStoreService {
 
-  private static final String SYSTEM_KEY_STORE = "system";
+  public static final String SYSTEM_KEY_STORE = "system";
 
   private static final String PATH_KEYSTORE = "${MICA_HOME}/data/keystores";
+
+  @Inject
+  private MicaConfigService micaConfigService;
 
   @Inject
   private CallbackHandler callbackHandler;
@@ -59,5 +72,74 @@ public class KeyStoreService {
   @NotNull
   public KeyStoreManager getKeyStore(@NotNull String name) {
     return keyStoreRepository.getOrCreateKeyStore(name);
+  }
+
+  @NotNull
+  public String getPEMCertificate(@NotNull String name, String alias) throws KeyStoreException, IOException {
+    Certificate certificate = Optional.ofNullable(getKeyStore(name).getKeyStore().getCertificate(alias))
+      .orElseThrow(() -> new IllegalArgumentException("Cannot find certificate for alias: " + alias));
+
+    StringWriter writer = new StringWriter();
+    PEMWriter pemWriter = new PEMWriter(writer);
+    pemWriter.writeObject(certificate);
+    pemWriter.flush();
+
+    return writer.getBuffer().toString();
+  }
+
+  public void createOrUpdateCertificate(String name, String alias, String publicCertificate) {
+    KeyStoreManager ksm = getKeyStore(name);
+    ksm.importCertificate(alias, new ByteArrayInputStream(publicCertificate.getBytes()));
+    saveKeyStore(ksm);
+  }
+
+  public void createOrUpdateCertificate(String name, String alias, String algo, int size, String cn, String ou,
+    String o, String locality, String state, String country) {
+    KeyStoreManager ksm = getKeyStore(name);
+    ksm.createOrUpdateKey(alias, algo, size, getCertificateInfo(cn, ou, o, locality, state, country));
+    saveKeyStore(ksm);
+  }
+
+  public void createOrUpdateCertificate(String name, String alias, String privateKey, String cn, String ou, String o, String locality,
+    String state, String country) {
+    KeyStoreManager ksm = getKeyStore(name);
+    ksm.importKey(alias, new ByteArrayInputStream(privateKey.getBytes()),
+        getCertificateInfo(cn, ou, o, locality, state, country));
+    saveKeyStore(ksm);
+  }
+
+  public void createOrUpdateCertificate(String name, String alias, String privateKey, String publicCertificate) {
+    KeyStoreManager ksm = getKeyStore(name);
+    ksm.importKey(alias, new ByteArrayInputStream(privateKey.getBytes()),
+        new ByteArrayInputStream(publicCertificate.getBytes()));
+    saveKeyStore(ksm);
+  }
+
+  public void deleteKeyPair(String name, String alias) {
+    KeyStoreManager ksm = getKeyStore(name);
+
+    if (ksm.hasKeyPair(alias)) {
+      ksm.deleteKey(alias);
+      saveKeyStore(ksm);
+    }
+  }
+
+  private String getCertificateInfo(String cn, String ou, String o, String locality, String state, String country) {
+    return validateNameAndOrganizationInfo(cn, ou, o) + ", L=" + locality + ", ST=" + state + ", C=" + country;
+  }
+
+  private String validateNameAndOrganizationInfo(String cn, String ou, String o) {
+    Optional<String> hostname = Optional.empty();
+
+    if(cn.isEmpty() || o.isEmpty()) {
+      try {
+        hostname = Optional.of(new URL(micaConfigService.getConfig().getPublicUrl()).getHost());
+      } catch(MalformedURLException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
+    return String.format("CN=%s, OU=%s, O=%s", cn.isEmpty() ? hostname.get() : cn, ou.isEmpty() ? "opal" : ou,
+      o.isEmpty() ? hostname.get() : o);
   }
 }
