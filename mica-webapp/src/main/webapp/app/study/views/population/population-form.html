@@ -9,7 +9,7 @@
       <div localized-input name="population.name" model="population.name" lang="tab.lang" label="population.name"></div>
       <div localized-textarea name="population.description" model="population.description" lang="tab.lang" label="population.description"></div>
 
-      <h4 translate>Selection criteria</h4>
+      <h4 class="voffset5" translate>Selection criteria</h4>
       <label for="gender" class="control-label"><span translate>population.gender</span></label>
       <select id="gender" name="gender" class="form-control" ng-model="population.selectionCriteria.gender">
         <option value="">N/A</option>
@@ -43,14 +43,10 @@
 
       <div localized-input name="population.selectionCriteria.territory" model="population.selectionCriteria.territory" lang="tab.lang" label="study.selection-criteria.territory"></div>
 
-      <h4 translate>Number of participants</h4>
-      <div form-input type="number" disabled="population.numberOfParticipants.participant.noLimit" model="population.numberOfParticipants.participant.number"  label="study.participants-number.participant"></div>
-      <div form-checkbox model="population.numberOfParticipants.participant.noLimit" label="population.numberOfParticipants-noLimit"></div>
+      <h4 class="voffset5" translate>numberOfParticipants.label</h4>
+      <ng-include src="numberOfParticipantsTemplate"></ng-include>
 
-      <div form-input type="number" disabled="population.numberOfParticipants.sample.noLimit" model="population.numberOfParticipants.sample.number" label="study.participants-number.sample"></div>
-      <div form-checkbox model="population.numberOfParticipants.sample.noLimit" label="population.numberOfParticipants-noLimit"></div>
-
-      <h4 translate>Recruitment</h4>
+      <h4 class="voffset5" translate>Recruitment</h4>
       <div localized-input name="population.recruitment.info" model="population.recruitment.info" lang="tab.lang"
         label="study.recruitment-sources.info"></div>
 
