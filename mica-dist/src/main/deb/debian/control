@@ -9,7 +9,7 @@ Homepage: http://www.obiba.org
 Package: mica2
 Architecture: all
 Pre-Depends: debconf, coreutils (>= 6.10)
-Depends: ${shlibs:Depends}, ${misc:Depends}, daemon, adduser, psmisc, oracle-java8-installer
+Depends: ${shlibs:Depends}, ${misc:Depends}, daemon, adduser, psmisc, oracle-java8-installer | openjdk-8-jdk
 Suggests: opal
 Description: OBiBa portal for biobanks
  Mica Server.
