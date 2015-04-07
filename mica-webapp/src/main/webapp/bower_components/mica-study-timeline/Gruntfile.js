@@ -57,10 +57,14 @@ module.exports = function (grunt) {
     },
     concat: {
       options: {
-        banner: "/*! <%= meta.pkg.name %> - v<%= meta.pkg.version %>\n" +
-          " *  License: <%= meta.pkg.license %>\n" +
-          " *  Date: <%= grunt.template.today('yyyy-mm-dd') %>\n" +
-          " */\n"
+        banner: "/*Copyright (c) 2015 OBiBa. All rights reserved.\n" +
+        "* This program and the accompanying materials\n"+
+        "* are made available under the terms of the GNU Public License v3.0.\n"+
+        "* You should have received a copy of the GNU General Public License\n"+
+        "* along with this program.  If not, see  <http://www.gnu.org/licenses>\n\n"+
+        "* <%= meta.pkg.name %> - v<%= meta.pkg.version %>\n" +
+        "* Date: <%= grunt.template.today('yyyy-mm-dd') %>\n" +
+        " */\n"
       },
       dist: {
         files: [
@@ -70,8 +74,8 @@ module.exports = function (grunt) {
       },
       release: {
         files: [
-          { "<%= meta.pkg.name %>.js": "<%= meta.srcFiles %>" },
-          { "<%= meta.pkg.name %>.css": "<%= meta.cssFiles %>" }
+          { "dist/<%= meta.pkg.name %>.js": "<%= meta.srcFiles %>" },
+          { "dist/<%= meta.pkg.name %>.css": "<%= meta.cssFiles %>" }
         ]
       }
     },
@@ -82,12 +86,12 @@ module.exports = function (grunt) {
       },
       dist: {
         files: {
-          "dist/<%= meta.pkg.name %>.min.js": "dist/<%= meta.pkg.name %>.js"
+          "dist/<%= meta.pkg.name %>.min.js": "<%= meta.srcFiles %>"
         }
       },
       release: {
         files: {
-          "<%= meta.pkg.name %>.min.js": "<%= meta.pkg.name %>.js"
+          "dist/<%= meta.pkg.name %>.min.js": "<%= meta.srcFiles %>"
         }
       }
     }

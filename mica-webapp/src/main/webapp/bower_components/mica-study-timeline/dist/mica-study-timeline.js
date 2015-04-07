@@ -1,6 +1,11 @@
-/*! mica-study-timeline - v1.0.0-SNAPSHOT
- *  License: GNU Public License version 3
- *  Date: 2014-06-26
+/*Copyright (c) 2015 OBiBa. All rights reserved.
+* This program and the accompanying materials
+* are made available under the terms of the GNU Public License v3.0.
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see  <http://www.gnu.org/licenses>
+
+* mica-study-timeline - v1.0.0-SNAPSHOT
+* Date: 2015-04-02
  */
 (function () {
 
@@ -10,25 +15,27 @@
     var DISPLAY_TYPES = ["circle", "rect"];
 
     var hover = function () {},
-        click = function () {},
-        scroll = function () {},
-        orient = "bottom",
-        width = null,
-        height = null,
-        tickFormat = { format: d3.format("d"),
-          tickTime: 1,
-          tickNumber: 1,
-          tickSize: 10 },
-        colorCycle = d3.scale.category20(),
-        display = "rect",
-        startYear = 0,
-        beginning = 0,
-        ending = 0,
-        margin = {left: 30, right: 30, top: 30, bottom: 30},
-        stacked = false,
-        rotateTicks = false,
-        itemHeight = 10,
-        itemMargin = 5;
+      click = function () {},
+      scroll = function () {},
+      orient = "bottom",
+      width = null,
+      height = null,
+      tickFormat = {
+        format: d3.format("d"),
+        tickTime: 1,
+        tickNumber: 1,
+        tickSize: 10
+      },
+      colorCycle = d3.scale.category20(),
+      display = "rect",
+      startYear = 0,
+      beginning = 0,
+      ending = 0,
+      margin = {left: 30, right: 30, top: 30, bottom: 30},
+      stacked = false,
+      rotateTicks = false,
+      itemHeight = 10,
+      itemMargin = 5;
 
     function timeline(gParent) {
       var g = gParent.append("g");
@@ -36,9 +43,9 @@
       var gParentItem = d3.select(gParent[0][0]);
 
       var yAxisMapping = {},
-          maxStack = 1,
-          minTime = 0,
-          maxTime = 0;
+        maxStack = 1,
+        minTime = 0,
+        maxTime = 0;
 
       setWidth();
 
@@ -83,22 +90,22 @@
 
       // draw the axis
       var xScale = d3.time.scale()
-          .domain([beginning, ending])
-          .range([margin.left, width - margin.right]);
+        .domain([beginning, ending])
+        .range([margin.left, width - margin.right]);
 
       var xAxis = d3.svg.axis()
-          .scale(xScale)
-          .orient(orient)
-          .tickFormat(formatByYear)
-          .tickSubdivide(1)
-          .tickValues(d3.range(beginning, ending + 1, 12))
-          .tickSize(tickFormat.tickSize, tickFormat.tickSize / 2, 0);
+        .scale(xScale)
+        .orient(orient)
+        .tickFormat(formatByYear)
+        .tickSubdivide(1)
+        .tickValues(d3.range(beginning, ending + 1, 12))
+        .tickSize(tickFormat.tickSize, tickFormat.tickSize / 2, 0);
 
       // draw axis
       g.append("g")
-          .attr("class", "axis")
-          .attr("transform", "translate(" + 0 + "," + (margin.top + (itemHeight + itemMargin) * maxStack) + ")")
-          .call(xAxis);
+        .attr("class", "axis")
+        .attr("transform", "translate(" + 0 + "," + (margin.top + (itemHeight + itemMargin) * maxStack) + ")")
+        .call(xAxis);
 
 
       // draw the chart
@@ -107,39 +114,40 @@
           var data = datum.population.events;
           var hasLabel = (typeof(datum.label) != "undefined");
           g.selectAll("svg").data(data).enter()
-              .append("path")
-              .attr("d", function drawRect(d, i) {
-                var rectX = getXPos(d, i);
-                var rectY = getStackPosition(d, i);
-                var rectWidth = getWidth(d, i);
-                return rightRoundedRect(rectX, rectY, rectWidth, itemHeight, 5);
-              })
-              .style("fill", datum.population.color)
-              .on("mouseover", function (d, i) {
-                hover(d, index, datum);
-              })
-              .on("click", function (d, i) {
-                click(d, index, datum);
-              })
-              .append("title").text(function (d) {
-                return d.title;
-              });
+            .append("path")
+            .attr('id', 'line-path')
+            .attr("d", function drawRect(d, i) {
+              var rectX = getXPos(d, i);
+              var rectY = getStackPosition(d, i);
+              var rectWidth = getWidth(d, i);
+              return rightRoundedRect(rectX, rectY, rectWidth, itemHeight, 5);
+            })
+            .style("fill", datum.population.color)
+            .on("mouseover", function (d, i) {
+              hover(d, index, datum);
+            })
+            .on("click", function (d, i) {
+              click(d, index, datum);
+            })
+            .append("title").text(function (d) {
+              return d.title;
+            });
 
           // add the label
           if (hasLabel) {
             gParent.append('text')
-                .attr("class", "timeline-label")
-                .attr("transform", "translate(" + 0 + "," + (itemHeight / 2 + margin.top + (itemHeight + itemMargin) * yAxisMapping[index]) + ")")
-                .text(hasLabel ? datum.label : datum.id);
+              .attr("class", "timeline-label")
+              .attr("transform", "translate(" + 0 + "," + (itemHeight / 2 + margin.top + (itemHeight + itemMargin) * yAxisMapping[index]) + ")")
+              .text(hasLabel ? datum.label : datum.id);
           }
 
           if (typeof(datum.icon) != "undefined") {
             gParent.append('image')
-                .attr("class", "timeline-label")
-                .attr("transform", "translate(" + 0 + "," + (margin.top + (itemHeight + itemMargin) * yAxisMapping[index]) + ")")
-                .attr("xlink:href", datum.icon)
-                .attr("width", margin.left)
-                .attr("height", itemHeight);
+              .attr("class", "timeline-label")
+              .attr("transform", "translate(" + 0 + "," + (margin.top + (itemHeight + itemMargin) * yAxisMapping[index]) + ")")
+              .attr("xlink:href", datum.icon)
+              .attr("width", margin.left)
+              .attr("height", itemHeight);
           }
 
           function getStackPosition(d, i) {
@@ -150,11 +158,11 @@
 
       if (rotateTicks) {
         g.selectAll("text")
-            .attr("transform", function (d) {
-              return "rotate(" + rotateTicks + ")translate(" +
-                  (this.getBBox().width / 2 + 10) + "," + // TODO: change this 10
-                  this.getBBox().height / 2 + ")";
-            });
+          .attr("transform", function (d) {
+            return "rotate(" + rotateTicks + ")translate(" +
+              (this.getBBox().width / 2 + 10) + "," + // TODO: change this 10
+              this.getBBox().height / 2 + ")";
+          });
       }
 
       var gSize = g[0][0].getBoundingClientRect();
@@ -202,12 +210,12 @@
 
       function rightRoundedRect(x, y, width, height, radius) {
         return "M" + x + "," + y +
-            "h" + (width - radius) +
-            "a" + radius + "," + radius + " 0 0 1 " + radius + "," + radius +
-            "v" + (height - 2 * radius) +
-            "a" + radius + "," + radius + " 0 0 1 " + -radius + "," + radius +
-            "h" + (radius - width) +
-            "z";
+          "h" + (width - radius) +
+          "a" + radius + "," + radius + " 0 0 1 " + radius + "," + radius +
+          "v" + (height - 2 * radius) +
+          "a" + radius + "," + radius + " 0 0 1 " + -radius + "," + radius +
+          "h" + (radius - width) +
+          "z";
       }
 
     }
@@ -328,8 +336,11 @@
   $.StudyDtoParser.prototype = {
 
     parse: function (studyDto) {
-      var bounds = findBounds(studyDto.populations);
-      return parseStudy(studyDto, bounds);
+      if (studyDto.populations) {
+        return parseStudy(studyDto, findBounds(studyDto.populations));
+      }
+
+      return null;
     }
   };
 
@@ -346,7 +357,7 @@
       if (population.hasOwnProperty('dataCollectionEvents')) {
         $.each(population.dataCollectionEvents, function (j, dce) {
           startYear = Math.min(startYear, dce.startYear);
-          maxYear = Math.max(maxYear, convertToMonths(dce.endYear - startYear, dce.hasOwnProperty('endMonth') ? dce.endMonth : 12));
+          maxYear = Math.max(maxYear, convertToMonths(dce.hasOwnProperty('endYear') ? dce.endYear - startYear : 0, dce.hasOwnProperty('endMonth') ? dce.endMonth : 12));
         });
       }
     });
@@ -445,10 +456,14 @@
     function parseEvents(lines, populationData, dto, bounds) {
       if (jQuery.isEmptyObject(dto)) return;
 
-      lines.push(createPopulationItem(populationData, dto[0], bounds));
+      var parsedFirstDce = false;
+      if (dto[0].endYear) {
+        parsedFirstDce = true;
+        lines.push(createPopulationItem(populationData, dto[0], bounds));
+      }
 
       $.each(dto, function (i, dceDto) {
-        if (i === 0) return true; // first line is altreay populated
+        if (!dceDto.endYear || (parsedFirstDce && i === 0)) return true; // first line is already populated
         var addLine = true;
         $.each(lines, function (j, line) {
           var last = line.population.events[line.population.events.length - 1];
@@ -460,7 +475,7 @@
             return false;
           }
         });
-        if (addLine) {
+        if (addLine && dceDto.endYear) {
           lines.push(createPopulationItem(populationData, dceDto, bounds));
         }
       });
@@ -536,7 +551,7 @@
       function getEndingTime(dceDto, bounds) {
         var start = dceDto.hasOwnProperty('endYear') ? dceDto.endYear : 0;
         var end = dceDto.hasOwnProperty('endMonth') ? dceDto.endMonth : 12;
-        return convertToMonths(start - bounds.start, start > 0 ? end : 0);
+        return convertToMonths(start > 0 ? start - bounds.start : 1, start > 0 ? end : 0);
       }
 
       /**
@@ -615,8 +630,10 @@
    * Constructor
    * @constructor
    */
-  $.MicaTimeline = function (dtoParser) {
+  $.MicaTimeline = function (dtoParser, popupIdFormatter, useBootstrapTooltip) {
     this.parser = dtoParser;
+    this.popupIdFormatter = popupIdFormatter;
+    this.useBootstrapTooltip = useBootstrapTooltip;
   };
 
   /**
@@ -628,35 +645,12 @@
     create: function (selectee, studyDto) {
       if (this.parser === null || studyDto === null) return;
       var timelineData = this.parser.parse(studyDto);
-      var width = $(selectee).width();
-      var chart = d3.timeline()
-        .startYear(timelineData.start)
-        .beginning(timelineData.min)
-        .ending(timelineData.max)
-        .width(width)
-        .stack()
-        .tickFormat({
-          format: d3.format("d"),
-          tickTime: 1,
-          tickNumber: 1,
-          tickSize: 10
-        })
-        .margin({left: 15, right: 15, top: 0, bottom: 20})
-        .rotateTicks(timelineData.max > $.MicaTimeline.defaultOptions.maxMonths ? 45 : 0)
-        .click(function (d, i, datum) {
-          $('#event-' + d.id).modal();
-        });
-
-      d3.select(selectee).append("svg").attr("width", width).datum(timelineData.data).call(chart);
-
-      this.timelineData = timelineData;
-      this.selectee = selectee;
-
+      if (timelineData) createTimeline(this, timelineData, selectee, studyDto);
       return this;
     },
 
     addLegend: function () {
-      if (!this.timelineData.hasOwnProperty('data') || this.timelineData.data.length === 0) return;
+      if (!this.timelineData || !this.timelineData.hasOwnProperty('data') || this.timelineData.data.length === 0) return;
       var ul = $("<ul id='legend' class='timeline-legend'>");
 
       $(this.selectee).after(ul);
@@ -673,6 +667,45 @@
       return this;
     }
   };
+
+  function createTimeline(timeline, timelineData, selectee, studyDto) {
+    var width = $(selectee).width();
+    var chart = d3.timeline()
+      .startYear(timelineData.start)
+      .beginning(timelineData.min)
+      .ending(timelineData.max)
+      .width(width)
+      .stack()
+      .tickFormat({
+        format: d3.format("d"),
+        tickTime: 1,
+        tickNumber: 1,
+        tickSize: 10
+      })
+      .margin({left: 15, right: 15, top: 0, bottom: 20})
+      .rotateTicks(timelineData.max > $.MicaTimeline.defaultOptions.maxMonths ? 45 : 0)
+      .click(function (d, i, datum) {
+        if (timeline.popupIdFormatter) {
+          var popup = $(timeline.popupIdFormatter(studyDto, datum.population, d));
+          if (popup.length > 0) popup.modal();
+        }
+      });
+
+    d3.select(selectee).append("svg").attr("width", width).datum(timelineData.data).call(chart);
+
+    if (timeline.useBootstrapTooltip === true) {
+      d3.select(selectee).selectAll('#line-path')
+        .attr('data-placement', 'top')
+        .attr('data-toggle', 'tooltip')
+        .attr('data-original-title', function(d){
+          return d.title;
+        })
+        .selectAll('title').remove(); // remove default tooltip
+    }
+
+    timeline.timelineData = timelineData;
+    timeline.selectee = selectee;
+  }
 
   /**
    * @param color

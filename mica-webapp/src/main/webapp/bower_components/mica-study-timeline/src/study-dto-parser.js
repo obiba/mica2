@@ -16,8 +16,11 @@
   $.StudyDtoParser.prototype = {
 
     parse: function (studyDto) {
-      var bounds = findBounds(studyDto.populations);
-      return parseStudy(studyDto, bounds);
+      if (studyDto.populations) {
+        return parseStudy(studyDto, findBounds(studyDto.populations));
+      }
+
+      return null;
     }
   };
 
@@ -34,7 +37,7 @@
       if (population.hasOwnProperty('dataCollectionEvents')) {
         $.each(population.dataCollectionEvents, function (j, dce) {
           startYear = Math.min(startYear, dce.startYear);
-          maxYear = Math.max(maxYear, convertToMonths(dce.endYear - startYear, dce.hasOwnProperty('endMonth') ? dce.endMonth : 12));
+          maxYear = Math.max(maxYear, convertToMonths(dce.hasOwnProperty('endYear') ? dce.endYear - startYear : 0, dce.hasOwnProperty('endMonth') ? dce.endMonth : 12));
         });
       }
     });
@@ -133,10 +136,14 @@
     function parseEvents(lines, populationData, dto, bounds) {
       if (jQuery.isEmptyObject(dto)) return;
 
-      lines.push(createPopulationItem(populationData, dto[0], bounds));
+      var parsedFirstDce = false;
+      if (dto[0].endYear) {
+        parsedFirstDce = true;
+        lines.push(createPopulationItem(populationData, dto[0], bounds));
+      }
 
       $.each(dto, function (i, dceDto) {
-        if (i === 0) return true; // first line is altreay populated
+        if (!dceDto.endYear || (parsedFirstDce && i === 0)) return true; // first line is already populated
         var addLine = true;
         $.each(lines, function (j, line) {
           var last = line.population.events[line.population.events.length - 1];
@@ -148,7 +155,7 @@
             return false;
           }
         });
-        if (addLine) {
+        if (addLine && dceDto.endYear) {
           lines.push(createPopulationItem(populationData, dceDto, bounds));
         }
       });
@@ -224,7 +231,7 @@
       function getEndingTime(dceDto, bounds) {
         var start = dceDto.hasOwnProperty('endYear') ? dceDto.endYear : 0;
         var end = dceDto.hasOwnProperty('endMonth') ? dceDto.endMonth : 12;
-        return convertToMonths(start - bounds.start, start > 0 ? end : 0);
+        return convertToMonths(start > 0 ? start - bounds.start : 1, start > 0 ? end : 0);
       }
 
       /**
