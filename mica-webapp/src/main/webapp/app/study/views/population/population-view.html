@@ -142,15 +142,14 @@
       <tr>
         <th translate>numberOfParticipants.participants</th>
         <td>
-          {{population.numberOfParticipants.participant.number}}
-          <span ng-show="population.numberOfParticipants.participant.noLimit"
-            translate>numberOfParticipants.no-limit</span>
+          <span ng-hide="population.numberOfParticipants.participant.noLimit">{{population.numberOfParticipants.participant.number}}</span>
+          <span ng-show="population.numberOfParticipants.participant.noLimit" translate>numberOfParticipants.no-limit</span>
         </td>
       </tr>
       <tr>
         <th translate>numberOfParticipants.sample</th>
         <td>
-          {{population.numberOfParticipants.sample.number}}
+          <span ng-hide="population.numberOfParticipants.sample.noLimit">{{population.numberOfParticipants.sample.number}}</span>
           <span ng-show="population.numberOfParticipants.sample.noLimit" translate>numberOfParticipants.no-limit</span>
         </td>
       </tr>
