@@ -1,5 +1,7 @@
 package org.obiba.mica.micaConfig.rest;
 
+import java.io.IOException;
+import java.security.KeyStoreException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -19,7 +21,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.obiba.mica.config.StudiesConfiguration;
+import org.obiba.mica.dataset.service.KeyStoreService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.OpalCredentialService;
 import org.obiba.mica.micaConfig.service.OpalService;
@@ -28,6 +30,7 @@ import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Opal;
 
 import com.codahale.metrics.annotation.Timed;
+import com.google.common.collect.Sets;
 
 import static java.util.stream.Collectors.toList;
 
@@ -44,6 +47,9 @@ public class MicaConfigResource {
   private OpalCredentialService opalCredentialService;
 
   @Inject
+  private KeyStoreService keyStoreService;
+
+  @Inject
   private Dtos dtos;
 
   @GET
@@ -57,6 +63,39 @@ public class MicaConfigResource {
   public Response create(@SuppressWarnings("TypeMayBeWeakened") Mica.MicaConfigDto dto) {
     micaConfigService.save(dtos.fromDto(dto));
     return Response.noContent().build();
+  }
+
+  @PUT
+  @Path("/keystore/{name}/{alias}")
+  @Timed
+  public Response updateEncryptionKey(@PathParam("name") String name, @PathParam("alias") String alias,
+    Mica.KeyForm keyForm) {
+    if(keyForm.getKeyType() == Mica.KeyType.KEY_PAIR) {
+      doCreateOrImportKeyPair(KeyStoreService.SYSTEM_KEY_STORE, "https", keyForm);
+    } else {
+      doImportCertificate(KeyStoreService.SYSTEM_KEY_STORE, "https", keyForm);
+    }
+
+    return Response.ok().build();
+  }
+
+  @GET
+  @Path("/keystore/{name}/{alias}")
+  @Timed
+  public Response getEncryptionKeyCertificate(@PathParam("name") String name, @PathParam("alias") String alias)
+    throws IOException, KeyStoreException {
+
+    if(!Sets.newHashSet(KeyStoreService.SYSTEM_KEY_STORE, OpalService.OPAL_KEYSTORE).contains(name)) {
+      return Response.status(Response.Status.BAD_REQUEST).build();
+    }
+
+    if(keyStoreService.getKeyStore(name).aliasExists(alias)) {
+      return Response.ok(keyStoreService.getPEMCertificate(name, alias), MediaType.TEXT_PLAIN_TYPE)
+        .header("Content-disposition", String.format("attachment; filename=%s-%s-certificate.pem", name, alias))
+        .build();
+    }
+
+    return Response.status(Response.Status.NOT_FOUND).build();
   }
 
   @GET
@@ -114,39 +153,41 @@ public class MicaConfigResource {
       opalCredentialService.createOrUpdateOpalCredential(opalCredentialDto.getOpalUrl(),
         opalCredentialDto.getUsername(), opalCredentialDto.getPassword());
     } else {
+      opalCredentialService.saveOrUpdateOpalCertificateCredential(opalCredentialDto.getOpalUrl());
+
       if (opalCredentialDto.getKeyForm().getKeyType() == Mica.KeyType.KEY_PAIR)
-         doCreateOrImportKeyPair(opalCredentialDto.getOpalUrl(), opalCredentialDto.getKeyForm());
+        doCreateOrImportKeyPair(OpalService.OPAL_KEYSTORE, opalCredentialDto.getOpalUrl(), opalCredentialDto.getKeyForm());
       else
-        doImportCertificate(opalCredentialDto.getOpalUrl(), opalCredentialDto.getKeyForm());
+        doImportCertificate(OpalService.OPAL_KEYSTORE, opalCredentialDto.getOpalUrl(), opalCredentialDto.getKeyForm());
     }
   }
 
-  private void doImportCertificate(String opalUrl, Mica.KeyForm keyForm) {
-    opalCredentialService.createOrUpdateOpalCertificateCredential(opalUrl, keyForm.getPublicImport());
+  private void doImportCertificate(String name, String alias, Mica.KeyForm keyForm) {
+    keyStoreService.createOrUpdateCertificate(name, alias, keyForm.getPublicImport());
   }
 
-  private void doCreateOrImportKeyPair(String opalUrl, Mica.KeyForm keyForm) {
+  private void doCreateOrImportKeyPair(String name, String alias, Mica.KeyForm keyForm) {
     if(keyForm.hasPrivateForm() && keyForm.hasPublicForm()) {
       Mica.PublicKeyForm pkForm = keyForm.getPublicForm();
-      opalCredentialService.createOrUpdateOpalCertificateCredential(opalUrl, keyForm.getPrivateForm().getAlgo(),
-        keyForm.getPrivateForm().getSize(), pkForm.getName(), pkForm.getOrganizationalUnit(), pkForm.getOrganization(),
-        pkForm.getLocality(), pkForm.getState(), pkForm.getCountry());
-    } else if (keyForm.hasPrivateImport()){
-      doImportKeyPair(opalUrl, keyForm);
+      keyStoreService
+        .createOrUpdateCertificate(name, alias, keyForm.getPrivateForm().getAlgo(), keyForm.getPrivateForm().getSize(),
+          pkForm.getName(), pkForm.getOrganizationalUnit(), pkForm.getOrganization(), pkForm.getLocality(),
+          pkForm.getState(), pkForm.getCountry());
+    } else if(keyForm.hasPrivateImport()) {
+      doImportKeyPair(name, alias, keyForm);
     } else {
       throw new WebApplicationException("Missing private key", Response.Status.BAD_REQUEST);
     }
   }
 
-  private void doImportKeyPair(String opalUrl, Mica.KeyForm keyForm) {
+  private void doImportKeyPair(String name, String alias, Mica.KeyForm keyForm) {
     if(keyForm.hasPublicForm()) {
       Mica.PublicKeyForm pkForm = keyForm.getPublicForm();
-      opalCredentialService.createOrUpdateOpalCertificateCredential(opalUrl, keyForm.getPrivateImport(),
-        pkForm.getName(), pkForm.getOrganizationalUnit(), pkForm.getOrganization(), pkForm.getLocality(),
-        pkForm.getState(), pkForm.getCountry());
+      keyStoreService.createOrUpdateCertificate(name, alias, keyForm.getPrivateImport(), pkForm.getName(),
+        pkForm.getOrganizationalUnit(), pkForm.getOrganization(), pkForm.getLocality(), pkForm.getState(),
+        pkForm.getCountry());
     } else if(keyForm.hasPublicImport()) {
-      opalCredentialService.createOrUpdateOpalCertificateCredential(opalUrl, keyForm.getPrivateImport(),
-        keyForm.getPublicImport());
+      keyStoreService.createOrUpdateCertificate(name, alias, keyForm.getPrivateImport(), keyForm.getPublicImport());
     } else {
       throw new WebApplicationException("Missing public key", Response.Status.BAD_REQUEST);
     }

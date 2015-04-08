@@ -1,0 +1,27 @@
+<div class="modal-content">
+  <form name="form" role="form" ng-submit="save(form)">
+    <div class="modal-header">
+      <button type="button" class="close" aria-hidden="true" ng-click="cancel()">&times;</button>
+      <h4 class="modal-title">
+        <span translate>config.keys.titleImport</span>
+      </h4>
+    </div>
+
+    <div class="modal-body">
+        <div form-input type="url" model="credential.opalUrl" label="config.opalUrl" ng-show="isOpalCredential"  required="true" disabled="!isOpalCredential"></div>
+
+        <div form-textarea model="keyForm.privateImport" label="config.keys.private" required="true"></div>
+
+        <div form-textarea model="keyForm.publicImport" label="config.keys.public" required="true"></div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default" ng-click="cancel()">
+        <span translate>cancel</span>
+      </button>
+      <button type="submit" class="btn btn-primary">
+        <span translate>save</span>
+      </button>
+    </div>
+  </form>
+</div>

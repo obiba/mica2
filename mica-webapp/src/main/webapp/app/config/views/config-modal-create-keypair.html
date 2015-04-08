@@ -1,0 +1,44 @@
+<div class="modal-content">
+  <form name="form" role="form" ng-submit="save(form)">
+    <div class="modal-header">
+      <button type="button" class="close" aria-hidden="true" ng-click="cancel()">&times;</button>
+      <h4 class="modal-title">
+        <span translate>config.keys.titleCreate</span>
+      </h4>
+    </div>
+
+    <div class="modal-body">
+        <div form-input type="url" model="credential.opalUrl" label="config.opalUrl" ng-show="isOpalCredential" required="true" disabled="!isOpalCredential"></div>
+
+        <div form-input model="keyForm.publicForm.name" label="config.keys.name" required="true"></div>
+
+        <div form-input model="keyForm.publicForm.organization" label="config.keys.organization"></div>
+
+        <div form-input model="keyForm.publicForm.organizationalUnit" label="config.keys.organizationalUnit"></div>
+
+        <div form-input model="keyForm.publicForm.locality" label="config.keys.locality"></div>
+
+        <div form-input model="keyForm.publicForm.state" label="config.keys.state"></div>
+
+        <div form-input model="keyForm.publicForm.country" label="config.keys.country"></div>
+
+        <a href="" ng-click="showAdvanced = !showAdvanced">
+          <span ng-class="{'glyphicon-plus': !showAdvanced, 'glyphicon-minus': showAdvanced}" class="glyphicon"></span> <span translate>Advanced options</span></a>
+
+        <div collapse="!showAdvanced" class="voffset4">
+          <div form-input model="keyForm.privateForm.algo" label="config.keys.algo" required="true"></div>
+
+          <div form-input model="keyForm.privateForm.size" label="config.keys.size" required="true"></div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default" ng-click="cancel()">
+        <span translate>cancel</span>
+      </button>
+      <button type="submit" class="btn btn-primary">
+        <span translate>save</span>
+      </button>
+    </div>
+  </form>
+</div>
