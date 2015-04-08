@@ -158,15 +158,14 @@
             <tr ng-show="study.numberOfParticipants.participant">
               <th translate>numberOfParticipants.participants</th>
               <td>
-                {{study.numberOfParticipants.participant.number | number}}
-                <span ng-show="study.numberOfParticipants.participant.noLimit"
-                  translate>numberOfParticipants.no-limit</span>
+                <span ng-hide="study.numberOfParticipants.participant.noLimit">{{study.numberOfParticipants.participant.number | number}}</span>
+                <span ng-show="study.numberOfParticipants.participant.noLimit" translate>numberOfParticipants.no-limit</span>
               </td>
             </tr>
             <tr ng-show="study.numberOfParticipants.sample">
               <th translate>numberOfParticipants.sample</th>
               <td>
-                {{study.numberOfParticipants.sample.number | number}}
+                <span ng-hide="study.numberOfParticipants.sample.noLimit">{{study.numberOfParticipants.sample.number | number}}</span>
                 <span ng-show="study.numberOfParticipants.sample.noLimit" translate>numberOfParticipants.no-limit</span>
               </td>
             </tr>
