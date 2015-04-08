@@ -43,7 +43,9 @@
   <h2 translate>config.encryptionKeys</h2>
 
   <div class="btn-group dropdown" is-open="status.isopen">
-    <button type="button" class="btn btn-primary dropdown-toggle" ng-disabled="disabled"><span translate>config.addKeyPair</span> <span class="caret"></span></button>
+    <button type="button" class="btn btn-info dropdown-toggle" ng-disabled="disabled">
+      <i class="fa fa-plus"></i> <span translate>config.addKeyPair</span> <span class="caret"></span>
+    </button>
     <ul class="dropdown-menu" role="menu">
       <li><a href="" ng-click="createKeyPair()" translate>config.create</a></li>
       <li><a href="" ng-click="importKeyPair()" translate>config.import</a></li>
@@ -57,7 +59,9 @@
   <h2 translate>config.opalCredentials</h2>
 
   <div class="btn-group dropdown" is-open="status.isopen">
-    <button type="button" class="btn btn-primary dropdown-toggle" ng-disabled="disabled"><span translate>config.addOpalCredential</span> <span class="caret"></span></button>
+    <button type="button" class="btn btn-info dropdown-toggle" ng-disabled="disabled">
+      <i class="fa fa-plus"></i> <span translate>config.addOpalCredential</span> <span class="caret"></span>
+    </button>
     <ul class="dropdown-menu" role="menu">
       <li><a href="" ng-click="createOpalCredentialKeyPair()" translate>config.create</a></li>
       <li><a href="" ng-click="importOpalCredentialKeyPair()" translate>config.import</a></li>
