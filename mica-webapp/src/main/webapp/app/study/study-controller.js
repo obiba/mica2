@@ -219,8 +219,6 @@ mica.study
           $scope.population = $scope.study.populations.filter(function (p) {
             return p.id === $routeParams.pid;
           })[0];
-          $scope.numberOfParticipants = $scope.population.numberOfParticipants;
-          $scope.numberOfParticipantsTemplate = 'app/study/views/common/number-of-participants.html';
         } else {
           if ($scope.study.populations === undefined) {
             $scope.study.populations = [];
@@ -505,15 +503,13 @@ mica.study
       $scope.methodDesignTypes = ['case_control', 'case_only', 'clinical_trial', 'cohort_study', 'cross_sectional', 'other'];
       $scope.methodRecruitmentTypes = ['individuals', 'families', 'other'];
       $scope.files = [];
-      $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}, function(response) {
-        if ($routeParams.id) {
-          $scope.numberOfParticipants = response.numberOfParticipants;
-          $scope.numberOfParticipantsTemplate = 'app/study/views/common/number-of-participants.html';
-          $scope.files = response.logo ? [response.logo] : [];
-          $scope.study.attachments =
-            response.attachments && response.attachments.length > 0 ? response.attachments : [];
-        }
-      }) : {};
+      $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}, function (response) {
+          if ($routeParams.id) {
+            $scope.files = response.logo ? [response.logo] : [];
+            $scope.study.attachments =
+              response.attachments && response.attachments.length > 0 ? response.attachments : [];
+          }
+        }) : {};
 
       $log.debug('Edit study', $scope.study);
 
