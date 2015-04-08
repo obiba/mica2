@@ -107,7 +107,7 @@ mica.dataset
         }
       };
 
-      $scope.addStudyTable = function () {
+      $scope.addStudyTable = function (tab) {
         $modal
           .open({
             templateUrl: 'app/dataset/views/study-table-modal-form.html',
@@ -115,6 +115,9 @@ mica.dataset
             resolve: {
               studyTable: function () {
                 return {};
+              },
+              tab : function () {
+                return tab;
               }
             }
           })
