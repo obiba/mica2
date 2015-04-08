@@ -504,12 +504,12 @@ mica.study
       $scope.methodRecruitmentTypes = ['individuals', 'families', 'other'];
       $scope.files = [];
       $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}, function (response) {
-          if ($routeParams.id) {
-            $scope.files = response.logo ? [response.logo] : [];
-            $scope.study.attachments =
-              response.attachments && response.attachments.length > 0 ? response.attachments : [];
-          }
-        }) : {};
+        if ($routeParams.id) {
+          $scope.files = response.logo ? [response.logo] : [];
+          $scope.study.attachments =
+            response.attachments && response.attachments.length > 0 ? response.attachments : [];
+        }
+      }) : {attachments: []};
 
       $log.debug('Edit study', $scope.study);
 
