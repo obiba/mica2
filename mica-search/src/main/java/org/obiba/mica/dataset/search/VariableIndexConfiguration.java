@@ -54,10 +54,13 @@ public class VariableIndexConfiguration extends AbstractIndexConfiguration imple
 
   private XContentBuilder createMappingProperties(String type) throws IOException {
     XContentBuilder mapping = XContentFactory.jsonBuilder().startObject().startObject(type);
+    mapping.startArray("dynamic_templates").startObject().startObject("und").field("match", "und")
+      .field("match_mapping_type", "string").startObject("mapping").field("type", "string")
+      .field("index", "not_analyzed").endObject().endObject().endObject().endArray();
 
     // properties
     mapping.startObject("properties");
-      mapping.startObject("id").field("type", "string").field("index", "not_analyzed").endObject();
+    mapping.startObject("id").field("type", "string").field("index", "not_analyzed").endObject();
     mapping.startObject("studyIds").field("type", "string").field("index", "not_analyzed").endObject();
     mapping.startObject("dceIds").field("type", "string").field("index", "not_analyzed").endObject();
     mapping.startObject("datasetId").field("type", "string").field("index", "not_analyzed").endObject();
@@ -65,15 +68,12 @@ public class VariableIndexConfiguration extends AbstractIndexConfiguration imple
 
     // attributes from taxonomies
     try {
-      List<Taxonomy> taxonomies = opalService.getTaxonomies();
-      if(taxonomies != null && !taxonomies.isEmpty()) {
-        mapping.startObject("attributes");
-        mapping.startObject("properties");
-        createMappingTaxonomies(mapping, taxonomies);
-        Stream.of(VariableIndexerImpl.LOCALIZED_ANALYZED_FIELDS).forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
-        mapping.endObject(); // properties
-        mapping.endObject(); // attributes
-      }
+      mapping.startObject("attributes");
+      mapping.startObject("properties");
+      Stream.of(VariableIndexerImpl.LOCALIZED_ANALYZED_FIELDS)
+        .forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
+      mapping.endObject(); // properties
+      mapping.endObject(); // attributes
     } catch(Exception e) {
       // ignore
     }
@@ -88,28 +88,4 @@ public class VariableIndexConfiguration extends AbstractIndexConfiguration imple
     mapping.endObject().endObject();
     return mapping;
   }
-
-  private void createMappingTaxonomies(XContentBuilder mapping, List<Taxonomy> taxonomies) throws IOException {
-    for(Taxonomy taxonomy : taxonomies) {
-      if(taxonomy.hasVocabularies()) {
-        createMappingTaxonomy(mapping, taxonomy);
-      }
-    }
-  }
-
-  private void createMappingTaxonomy(XContentBuilder mapping, Taxonomy taxonomy) throws IOException {
-    for(Vocabulary vocabulary : taxonomy.getVocabularies()) {
-      String namespace = taxonomy.getName().equals("Default") ? null : taxonomy.getName();
-      String field = AttributeKey.getMapKey(vocabulary.getName(), namespace);
-      if(vocabulary.hasTerms()) {
-        // not analyzed: we want exact match
-        mapping.startObject(field);
-        mapping.startObject("properties");
-        mapping.startObject("und").field("type", "string").field("index", "not_analyzed").endObject();
-        mapping.endObject(); // properties
-        mapping.endObject(); // field
-      }
-    }
-  }
-
 }
