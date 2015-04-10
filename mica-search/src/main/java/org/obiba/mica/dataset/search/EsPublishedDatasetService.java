@@ -47,12 +47,12 @@ class EsPublishedDatasetService extends AbstractPublishedDocumentService<Dataset
 
   @Override
   protected String getIndexName() {
-    return AbstractDatasetIndexer.PUBLISHED_DATASET_INDEX;
+    return DatasetIndexerImpl.PUBLISHED_DATASET_INDEX;
   }
 
   @Override
   protected String getType() {
-    return AbstractDatasetIndexer.DATASET_TYPE;
+    return DatasetIndexerImpl.DATASET_TYPE;
   }
 
   private Class getClass(String className) {

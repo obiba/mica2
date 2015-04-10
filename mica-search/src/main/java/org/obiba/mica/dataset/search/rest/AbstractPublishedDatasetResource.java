@@ -33,7 +33,7 @@ import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
-import org.obiba.mica.dataset.search.AbstractDatasetIndexer;
+import org.obiba.mica.dataset.search.DatasetIndexerImpl;
 import org.obiba.mica.dataset.search.VariableIndexerImpl;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.web.model.Dtos;
@@ -72,11 +72,11 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   protected T getDataset(Class<T> clazz, @NotNull String datasetId) throws NoSuchDatasetException {
     QueryBuilder query = QueryBuilders.queryString(clazz.getSimpleName()).field("className");
     query = QueryBuilders.boolQuery().must(query)
-      .must(QueryBuilders.idsQuery(AbstractDatasetIndexer.DATASET_TYPE).addIds(datasetId));
+      .must(QueryBuilders.idsQuery(DatasetIndexerImpl.DATASET_TYPE).addIds(datasetId));
 
     SearchRequestBuilder search = client.prepareSearch() //
-      .setIndices(AbstractDatasetIndexer.PUBLISHED_DATASET_INDEX) //
-      .setTypes(AbstractDatasetIndexer.DATASET_TYPE) //
+      .setIndices(DatasetIndexerImpl.PUBLISHED_DATASET_INDEX) //
+      .setTypes(DatasetIndexerImpl.DATASET_TYPE) //
       .setQuery(query);
 
     log.debug("Request: {}", search.toString());

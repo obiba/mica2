@@ -25,7 +25,7 @@ import javax.ws.rs.QueryParam;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
-import org.obiba.mica.dataset.search.AbstractDatasetIndexer;
+import org.obiba.mica.dataset.search.DatasetIndexerImpl;
 import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.search.queries.DatasetQuery;
 import org.obiba.mica.search.rest.QueryDtoHelper;
@@ -84,7 +84,7 @@ public class PublishedDatasetSearchResource {
       String locale, String type, String studyId) throws IOException {
 
     MicaSearch.QueryDto queryDto = QueryDtoHelper.createQueryDto(from, limit, sort, order,
-        mergeQueries(createTypeQuery(type), query), locale, Stream.of(AbstractDatasetIndexer.LOCALIZED_ANALYZED_FIELDS));
+        mergeQueries(createTypeQuery(type), query), locale, Stream.of(DatasetIndexerImpl.LOCALIZED_ANALYZED_FIELDS));
 
     if(!Strings.isNullOrEmpty(studyId)) {
       List<MicaSearch.FieldFilterQueryDto> filters = Lists.newArrayList();

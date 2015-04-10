@@ -75,7 +75,7 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   private EventBus eventBus;
 
   @Inject
-  private DatasetIndexer<HarmonizationDataset> datasetIndexer;
+  private DatasetIndexer datasetIndexer;
 
   @Inject
   private VariableIndexer variableIndexer;
@@ -155,8 +155,18 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   /**
    * Index or re-index all datasets with their variables.
    */
-  public void indexAll() {
-    datasetIndexer.indexAll(findAllDatasets(), findAllPublishedDatasets());
+  public void indexAll(boolean includeVariables) {
+    List<HarmonizationDataset> allDatasets = findAllDatasets();
+    List<HarmonizationDataset> publishedDatasets = findAllPublishedDatasets();
+
+    if(!includeVariables) {
+      datasetIndexer.indexAll(allDatasets, publishedDatasets);
+    } else {
+      allDatasets.forEach(
+        dataset -> updateIndices(dataset, wrappedGetDatasetVariables(dataset), populateHarmonizedVariablesMap(dataset),
+          true));
+    }
+
     getEventBus().post(new IndexHarmonizationDatasetsEvent());
   }
 
