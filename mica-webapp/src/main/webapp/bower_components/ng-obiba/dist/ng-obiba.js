@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba
 
  * License: GNU Public License version 3
- * Date: 2015-02-24
+ * Date: 2015-04-13
  */
 'use strict';
 
@@ -207,6 +207,7 @@ angular.module('obiba.form')
         required: '@',
         min: '@',
         max: '@',
+        step: '@',
         help: '@'
       },
       templateUrl: 'form/form-input-template.tpl.html',
@@ -387,8 +388,9 @@ angular.module("form/form-input-template.tpl.html", []).run(["$templateCache", f
     "      form-server-error\n" +
     "      ng-attr-min=\"{{min}}\"\n" +
     "      ng-attr-max=\"{{max}}\"\n" +
+    "      ng-attr-step=\"{{step}}\"\n" +
     "      ng-disabled=\"disabled\"\n" +
-    "      ng-required=\"required\">\n" +
+    "      ng-required=\"required\"/>\n" +
     "\n" +
     "  <ul class=\"input-error list-unstyled\" ng-show=\"form[name].$dirty && form[name].$invalid\">\n" +
     "    <li ng-show=\"form[name].$error.required\" translate>required</li>\n" +
@@ -397,7 +399,8 @@ angular.module("form/form-input-template.tpl.html", []).run(["$templateCache", f
     "\n" +
     "  <p ng-show=\"help\" class=\"help-block\">{{help | translate}}</p>\n" +
     "\n" +
-    "</div>");
+    "</div>\n" +
+    "");
 }]);
 
 angular.module("form/form-localized-input-template.tpl.html", []).run(["$templateCache", function($templateCache) {

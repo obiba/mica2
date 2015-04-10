@@ -291,10 +291,10 @@ public class Population extends AbstractAttributeAware implements Serializable, 
     private Gender gender;
 
     @Min(0)
-    private Integer ageMin;
+    private Double ageMin;
 
     @Min(0)
-    private Integer ageMax;
+    private Double ageMax;
 
     private List<String> countriesIso;
 
@@ -318,19 +318,19 @@ public class Population extends AbstractAttributeAware implements Serializable, 
       this.gender = gender;
     }
 
-    public Integer getAgeMin() {
+    public Double getAgeMin() {
       return ageMin;
     }
 
-    public void setAgeMin(Integer ageMin) {
+    public void setAgeMin(Double ageMin) {
       this.ageMin = ageMin;
     }
 
-    public Integer getAgeMax() {
+    public Double getAgeMax() {
       return ageMax;
     }
 
-    public void setAgeMax(Integer ageMax) {
+    public void setAgeMax(Double ageMax) {
       this.ageMax = ageMax;
     }
 
