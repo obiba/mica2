@@ -262,8 +262,8 @@ public class StudyDtosTest {
 
   private Population.SelectionCriteria createSelectionCriteria() {
     Population.SelectionCriteria criteria = new Population.SelectionCriteria();
-    criteria.setAgeMin(45);
-    criteria.setAgeMax(85);
+    criteria.setAgeMin(45.0);
+    criteria.setAgeMax(85.0);
     criteria.setGender(Population.SelectionCriteria.Gender.women);
     criteria.addCountryIso(Locale.CANADA.getISO3Country());
     criteria.addCriteria("criteria1");

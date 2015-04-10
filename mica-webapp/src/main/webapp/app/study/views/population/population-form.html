@@ -1,6 +1,6 @@
 <div>
   <h2 translate>population.label-edit</h2>
-  <form name="form" role="form" ng-submit="save()">
+  <form name="form" role="form" ng-submit="save(form)">
     <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
     <tabset>
     <tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active" disabled="tab.disabled">
@@ -15,8 +15,8 @@
         <option value="">N/A</option>
         <option ng-repeat="g in selectionCriteriaGenders" value="{{g.id}}">{{g.label}}</option>
       </select>
-      <div form-input type="number" model="population.selectionCriteria.ageMin" lang="tab.lang" label="population.ageMin"></div>
-      <div form-input type="number" model="population.selectionCriteria.ageMax" lang="tab.lang" label="population.ageMax"></div>
+      <div form-input type="number" model="population.selectionCriteria.ageMin" lang="tab.lang" label="population.ageMin" min="0" step="0.01"></div>
+      <div form-input type="number" model="population.selectionCriteria.ageMax" lang="tab.lang" label="population.ageMax" min="0" step="0.01"></div>
 
       <div localized-input name="population.selectionCriteria.otherCriteria" model="population.selectionCriteria.otherCriteria" lang="tab.lang" label="population.otherCriteria"></div>
       <div localized-input name="population.selectionCriteria.info" model="population.selectionCriteria.info" lang="tab.lang" label="population.info"></div>

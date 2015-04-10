@@ -121,8 +121,8 @@ message StudyDto {
         women = 1;
       }
       optional Gender gender = 1;
-      optional int32 ageMin = 2;
-      optional int32 ageMax = 3;
+      optional double ageMin = 2;
+      optional double ageMax = 3;
       repeated string countriesIso = 4;
       repeated LocalizedStringDto territory = 5;
       repeated string criteria = 6;
