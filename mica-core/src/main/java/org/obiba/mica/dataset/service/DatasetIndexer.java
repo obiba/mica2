@@ -3,12 +3,14 @@ package org.obiba.mica.dataset.service;
 import org.obiba.mica.dataset.domain.Dataset;
 
 
-public interface DatasetIndexer<T extends Dataset> {
-  void onDatasetUpdated(T dataset);
+public interface DatasetIndexer {
+  void onDatasetUpdated(Dataset dataset);
 
-  void onDatasetPublished(T dataset);
+  void onDatasetPublished(Dataset dataset);
 
-  void onDatasetDeleted(T dataset);
+  void onDatasetDeleted(Dataset dataset);
 
-  void indexAll(Iterable<T> datasets, Iterable<T> publishedDatasets);
+  void indexAll(Iterable<? extends Dataset> datasets, Iterable<? extends Dataset> publishedDatasets);
+
+  void dropIndex();
 }

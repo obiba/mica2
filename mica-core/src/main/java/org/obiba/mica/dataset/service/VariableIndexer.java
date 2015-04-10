@@ -22,4 +22,6 @@ public interface VariableIndexer {
   void indexAll(Iterable<DatasetVariable> variables);
 
   void indexAll(Map<String, List<DatasetVariable>> harmonizedVariables);
+
+  void dropIndex();
 }
