@@ -62,7 +62,7 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
   private EventBus eventBus;
 
   @Inject
-  private DatasetIndexer<StudyDataset> datasetIndexer;
+  private DatasetIndexer datasetIndexer;
 
   @Inject
   private VariableIndexer variableIndexer;
@@ -169,8 +169,16 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
   /**
    * Index or re-index all datasets with their variables.
    */
-  public void indexAll() {
-    datasetIndexer.indexAll(findAllDatasets(), findAllPublishedDatasets());
+  public void indexAll(boolean includeVariables) {
+    List<StudyDataset> allDatasets = findAllDatasets();
+    List<StudyDataset> publishedDatasets = findAllPublishedDatasets();
+
+    if(!includeVariables) {
+      datasetIndexer.indexAll(allDatasets, publishedDatasets);
+    } else {
+      allDatasets.forEach(dataset -> updateIndices(dataset, wrappedGetDatasetVariables(dataset), true));
+    }
+
     getEventBus().post(new IndexStudyDatasetsEvent());
   }
 

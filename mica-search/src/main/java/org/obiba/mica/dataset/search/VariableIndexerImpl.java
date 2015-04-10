@@ -97,6 +97,12 @@ public class VariableIndexerImpl implements VariableIndexer {
 
   }
 
+  @Override
+  public void dropIndex() {
+    if(elasticSearchIndexer.hasIndex(DRAFT_VARIABLE_INDEX)) elasticSearchIndexer.dropIndex(DRAFT_VARIABLE_INDEX);
+    if(elasticSearchIndexer.hasIndex(PUBLISHED_VARIABLE_INDEX)) elasticSearchIndexer.dropIndex(PUBLISHED_VARIABLE_INDEX);
+  }
+
   //
   // Private methods
   //

@@ -49,7 +49,7 @@ public class HarmonizationDatasetServiceTest {
   private HarmonizationDatasetService.Helper helper;
 
   @Mock
-  private DatasetIndexer<HarmonizationDataset> dsIndexer;
+  private DatasetIndexer dsIndexer;
 
   private StudyTable st;
   private StudyTable st2;

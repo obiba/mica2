@@ -81,7 +81,7 @@ public class DraftHarmonizationDatasetsResource {
   @Path("/harmonization-datasets/_index")
   @Timed
   public Response reIndex() {
-    datasetService.indexAll();
+    datasetService.indexAll(false);
     return Response.noContent().build();
   }
 

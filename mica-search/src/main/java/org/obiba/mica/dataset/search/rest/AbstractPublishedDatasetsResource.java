@@ -27,7 +27,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.obiba.mica.dataset.domain.Dataset;
-import org.obiba.mica.dataset.search.AbstractDatasetIndexer;
+import org.obiba.mica.dataset.search.DatasetIndexerImpl;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
@@ -65,8 +65,8 @@ public abstract class AbstractPublishedDatasetsResource<T extends Dataset> {
     }
 
     SearchRequestBuilder search = client.prepareSearch() //
-        .setIndices(AbstractDatasetIndexer.PUBLISHED_DATASET_INDEX) //
-        .setTypes(AbstractDatasetIndexer.DATASET_TYPE) //
+        .setIndices(DatasetIndexerImpl.PUBLISHED_DATASET_INDEX) //
+        .setTypes(DatasetIndexerImpl.DATASET_TYPE) //
         .setQuery(query) //
         .setPostFilter(filter) //
         .setFrom(from) //
