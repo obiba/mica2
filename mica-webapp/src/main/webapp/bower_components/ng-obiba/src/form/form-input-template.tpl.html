@@ -14,8 +14,9 @@
       form-server-error
       ng-attr-min="{{min}}"
       ng-attr-max="{{max}}"
+      ng-attr-step="{{step}}"
       ng-disabled="disabled"
-      ng-required="required">
+      ng-required="required"/>
 
   <ul class="input-error list-unstyled" ng-show="form[name].$dirty && form[name].$invalid">
     <li ng-show="form[name].$error.required" translate>required</li>

@@ -45,16 +45,16 @@ mica.study
 
       $scope.studiesConfig = MicaStudiesConfigResource.get();
 
-      $scope.getLabel = function(vocabulary, term) {
-        if (!term) {
+      $scope.getLabel = function (vocabulary, term) {
+        if (!term || !$scope.studiesConfig.$resolved) {
           return;
         }
 
-        return ((($scope.studiesConfig.vocabularies.filter(function(v) {
+        return ((($scope.studiesConfig.vocabularies.filter(function (v) {
           return v.name === vocabulary;
-        }) || [{terms: []}])[0].terms.filter(function(t) {
+        }) || [{terms: []}])[0].terms.filter(function (t) {
             return t.name === term;
-          }) || [{title : []}])[0].title.filter(function(v) {
+          }) || [{title: []}])[0].title.filter(function (v) {
             return v.locale === getActiveTab().lang;
           }) || [{text: term}])[0].text;
       };
