@@ -4,7 +4,6 @@ mica.study = angular.module('mica.study', [
   'mica.config',
   'obiba.form',
   'mica.localized',
-  'mica.file',
   'mica.attributes',
   'obiba.notification',
   'mica.publish',
@@ -13,5 +12,6 @@ mica.study = angular.module('mica.study', [
   'ngRoute',
   'ui.bootstrap',
   'ui',
-  'pascalprecht.translate'
+  'pascalprecht.translate',
+  'mica.attachment'
 ]);
