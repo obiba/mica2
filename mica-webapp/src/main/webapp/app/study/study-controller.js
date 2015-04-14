@@ -495,9 +495,9 @@ mica.study
 
   }])
 
-  .controller('StudyEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$location', '$upload', '$timeout', '$modal', 'DraftStudyResource', 'DraftStudiesResource', 'MicaConfigResource', 'StringUtils', 'FormServerValidation',
+  .controller('StudyEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$location', '$modal', 'DraftStudyResource', 'DraftStudiesResource', 'MicaConfigResource', 'StringUtils', 'FormServerValidation',
 
-    function ($rootScope, $scope, $routeParams, $log, $location, $upload, $timeout, $modal, DraftStudyResource, DraftStudiesResource, MicaConfigResource, StringUtils, FormServerValidation) {
+    function ($rootScope, $scope, $routeParams, $log, $location, $modal, DraftStudyResource, DraftStudiesResource, MicaConfigResource, StringUtils, FormServerValidation) {
       $scope.fileTypes = '.doc, .docx, .odm, .odt, .gdoc, .pdf, .txt  .xml  .xls, .xlsx, .ppt';
       $scope.accessTypes = ['data', 'bio_samples', 'other'];
       $scope.methodDesignTypes = ['case_control', 'case_only', 'clinical_trial', 'cohort_study', 'cross_sectional', 'other'];
