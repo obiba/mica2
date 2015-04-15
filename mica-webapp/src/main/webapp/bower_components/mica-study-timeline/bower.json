@@ -5,7 +5,7 @@
     "Cedric Thiebault <cthiebault@p3g.com>"
   ],
   "description": "D3 Timeline for Mica Studies", 
-  "main": "mica-study-timeline.js",
+  "main": ["./dist/mica-study-timeline.js", "./dist/mica-study-timeline.css"],
   "dependencies": {
     "d3": "~3.4.6",
     "jquery": "~2.0.3"

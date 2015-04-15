@@ -53,7 +53,6 @@ module.exports = function (grunt) {
       }
     },
     autoprefixer: {
-      options: ['last 1 version'],
       dist: {
         files: [
           {
@@ -180,11 +179,10 @@ module.exports = function (grunt) {
         ]
       }
     },
-    // not used since Uglify task does concat,
-    // but still available if needed
-    /*concat: {
-     dist: {}
-     },*/
+    // generated dynamically by useminPrepare
+    //concat: {
+    //  dist: {}
+    //},
     rev: {
       dist: {
         files: {
@@ -200,7 +198,16 @@ module.exports = function (grunt) {
     useminPrepare: {
       html: 'src/main/webapp/{,*/}*.html',
       options: {
-        dest: '<%= yeoman.dist %>'
+        dest: '<%= yeoman.dist %>',
+        flow: {
+          html: {
+            steps: {
+              css: ['concat', 'cssmin'],
+              js: ['concat', 'uglifyjs']
+            },
+            post: {}
+          }
+        }
       }
     },
     usemin: {
@@ -234,19 +241,20 @@ module.exports = function (grunt) {
         ]
       }
     },
-    cssmin: {
-      // By default, your `index.html` <!-- Usemin Block --> will take care of
-      // minification. This option is pre-configured if you do not wish to use
-      // Usemin blocks.
-      // dist: {
-      //   files: {
-      //     '<%= yeoman.dist %>/styles/main.css': [
-      //       '.tmp/styles/{,*/}*.css',
-      //       'styles/{,*/}*.css'
-      //     ]
-      //   }
-      // }
-    },
+    // generated dynamically by useminPrepare
+    //cssmin: {
+    //  // By default, your `index.html` <!-- Usemin Block --> will take care of
+    //  // minification. This option is pre-configured if you do not wish to use
+    //  // Usemin blocks.
+    //  dist: {
+    //    files: {
+    //      '<%= yeoman.dist %>/styles/main.css': [
+    //        '.tmp/styles/{,*/}*.css',
+    //        'styles/{,*/}*.css'
+    //      ]
+    //    }
+    //  }
+    //},
     htmlmin: {
       dist: {
         options: {
@@ -328,18 +336,6 @@ module.exports = function (grunt) {
         html: ['<%= yeoman.dist %>/*.html']
       }
     },
-    ngmin: {
-      dist: {
-        files: [
-          {
-            expand: true,
-            cwd: '.tmp/concat/scripts',
-            src: '*.js',
-            dest: '.tmp/concat/scripts'
-          }
-        ]
-      }
-    },
     replace: {
       dist: {
         src: ['<%= yeoman.dist %>/index.html'],
@@ -352,15 +348,21 @@ module.exports = function (grunt) {
         ]
       }
     },
-    uglify: {
-      dist: {
-        files: {
-          '<%= yeoman.dist %>/app/scripts.js': [
-            '<%= yeoman.dist %>/app/scripts.js'
-          ]
-        }
+    wiredep: {
+      task: {
+        src: 'src/main/webapp/index.html'
       }
     }
+    // generated dynamically by useminPrepare
+    //uglify: {
+    //  dist: {
+    //    files: {
+    //      '<%= yeoman.dist %>/scripts/scripts.js': [
+    //        '<%= yeoman.dist %>/scripts/scripts.js'
+    //      ]
+    //    }
+    //  }
+    //}
   });
 
   grunt.registerTask('server', function (target) {
@@ -396,7 +398,6 @@ module.exports = function (grunt) {
     'autoprefixer',
     'concat',
     'copy:dist',
-    'ngmin',
     'cssmin',
     'replace',
     'uglify',
@@ -408,4 +409,6 @@ module.exports = function (grunt) {
     'test',
     'build'
   ]);
+
+  grunt.loadNpmTasks('grunt-wiredep');
 };
