@@ -1,6 +1,5 @@
 /*! JSON v3.3.0 | http://bestiejs.github.io/json3 | Copyright 2012-2014, Kit Cambridge | http://kit.mit-license.org */
-;
-(function (root) {
+;(function (root) {
   // Detect the `define` function exposed by asynchronous module loaders. The
   // strict `define` check is necessary for compatibility with `r.js`.
   var isLoader = typeof define === "function" && define.amd;
@@ -21,13 +20,13 @@
 
     // Native constructor aliases.
     var Number = context["Number"] || root["Number"],
-      String = context["String"] || root["String"],
-      Object = context["Object"] || root["Object"],
-      Date = context["Date"] || root["Date"],
-      SyntaxError = context["SyntaxError"] || root["SyntaxError"],
-      TypeError = context["TypeError"] || root["TypeError"],
-      Math = context["Math"] || root["Math"],
-      nativeJSON = context["JSON"] || root["JSON"];
+        String = context["String"] || root["String"],
+        Object = context["Object"] || root["Object"],
+        Date = context["Date"] || root["Date"],
+        SyntaxError = context["SyntaxError"] || root["SyntaxError"],
+        TypeError = context["TypeError"] || root["TypeError"],
+        Math = context["Math"] || root["Math"],
+        nativeJSON = context["JSON"] || root["JSON"];
 
     // Delegate to the native `stringify` and `parse` implementations.
     if (typeof nativeJSON == "object" && nativeJSON) {
@@ -37,8 +36,8 @@
 
     // Convenience aliases.
     var objectProto = Object.prototype,
-      getClass = objectProto.toString,
-      isProperty, forEach, undef;
+        getClass = objectProto.toString,
+        isProperty, forEach, undef;
 
     // Test the `Date#getUTC*` methods. Based on work by @Yaffle.
     var isExtended = new Date(-3509827334573292);
@@ -50,8 +49,7 @@
         // but clips the values returned by the date methods to the range of
         // signed 32-bit integers ([-2 ** 31, 2 ** 31 - 1]).
         isExtended.getUTCHours() == 10 && isExtended.getUTCMinutes() == 37 && isExtended.getUTCSeconds() == 6 && isExtended.getUTCMilliseconds() == 708;
-    } catch (exception) {
-    }
+    } catch (exception) {}
 
     // Internal: Determines whether the native `JSON.stringify` and `parse`
     // implementations are spec-compliant. Based on work by Ken Snyder.
@@ -155,16 +153,14 @@
                   try {
                     // Safari <= 5.1.2 and FF 3.1b1 allow unescaped tabs in strings.
                     parseSupported = !parse('"\t"');
-                  } catch (exception) {
-                  }
+                  } catch (exception) {}
                   if (parseSupported) {
                     try {
                       // FF 4.0 and 4.0.1 allow leading `+` signs and leading
                       // decimal points. FF 4.0, 4.0.1, and IE 9-10 also allow
                       // certain octal literals.
                       parseSupported = parse("01") !== 1;
-                    } catch (exception) {
-                    }
+                    } catch (exception) {}
                   }
                   if (parseSupported) {
                     try {
@@ -172,8 +168,7 @@
                       // points. These environments, along with FF 3.1b1 and 2,
                       // also allow trailing commas in JSON objects and arrays.
                       parseSupported = parse("1.") !== 1;
-                    } catch (exception) {
-                    }
+                    } catch (exception) {}
                   }
                 }
               }
@@ -190,11 +185,11 @@
     if (!has("json")) {
       // Common `[[Class]]` name aliases.
       var functionClass = "[object Function]",
-        dateClass = "[object Date]",
-        numberClass = "[object Number]",
-        stringClass = "[object String]",
-        arrayClass = "[object Array]",
-        booleanClass = "[object Boolean]";
+          dateClass = "[object Date]",
+          numberClass = "[object Number]",
+          stringClass = "[object String]",
+          arrayClass = "[object Array]",
+          booleanClass = "[object Boolean]";
 
       // Detect incomplete support for accessing string characters by index.
       var charIndexBuggy = has("bug-string-char-index");
@@ -377,13 +372,7 @@
             // If the character is a control character, append its Unicode or
             // shorthand escape sequence; otherwise, append the character as-is.
             switch (charCode) {
-              case 8:
-              case 9:
-              case 10:
-              case 12:
-              case 13:
-              case 34:
-              case 92:
+              case 8: case 9: case 10: case 12: case 13: case 34: case 92:
                 result += Escapes[charCode];
                 break;
               default:
@@ -404,8 +393,7 @@
           try {
             // Necessary for host object support.
             value = object[property];
-          } catch (exception) {
-          }
+          } catch (exception) {}
           if (typeof value == "object" && value) {
             className = getClass.call(value);
             if (className == dateClass && !isProperty.call(value, "toJSON")) {
@@ -591,20 +579,12 @@
           while (Index < length) {
             charCode = source.charCodeAt(Index);
             switch (charCode) {
-              case 9:
-              case 10:
-              case 13:
-              case 32:
+              case 9: case 10: case 13: case 32:
                 // Skip whitespace tokens, including tabs, carriage returns, line
                 // feeds, and space characters.
                 Index++;
                 break;
-              case 123:
-              case 125:
-              case 91:
-              case 93:
-              case 58:
-              case 44:
+              case 123: case 125: case 91: case 93: case 58: case 44:
                 // Parse a punctuator token (`{`, `}`, `[`, `]`, `:`, or `,`) at
                 // the current position.
                 value = charIndexBuggy ? source.charAt(Index) : source[Index];
@@ -627,14 +607,7 @@
                     // escape sequence.
                     charCode = source.charCodeAt(++Index);
                     switch (charCode) {
-                      case 92:
-                      case 34:
-                      case 47:
-                      case 98:
-                      case 116:
-                      case 110:
-                      case 102:
-                      case 114:
+                      case 92: case 34: case 47: case 98: case 116: case 110: case 102: case 114:
                         // Revive escaped control characters.
                         value += Unescapes[charCode];
                         Index++;
@@ -774,7 +747,7 @@
             if (value == "[") {
               // Parses a JSON array, returning a new JavaScript array.
               results = [];
-              for (; ; hasMembers || (hasMembers = true)) {
+              for (;; hasMembers || (hasMembers = true)) {
                 value = lex();
                 // A closing square bracket marks the end of the array literal.
                 if (value == "]") {
@@ -805,7 +778,7 @@
             } else if (value == "{") {
               // Parses a JSON object, returning a new JavaScript object.
               results = {};
-              for (; ; hasMembers || (hasMembers = true)) {
+              for (;; hasMembers || (hasMembers = true)) {
                 value = lex();
                 // A closing curly brace marks the end of the object literal.
                 if (value == "}") {

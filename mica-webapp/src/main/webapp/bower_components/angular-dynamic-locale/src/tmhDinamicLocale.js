@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function () {
+angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function() {
 
   var localeLocationPattern = 'angular/i18n/angular-locale_{{locale}}.js',
     storageFactory = 'tmhDynamicLocaleStorageCache',
@@ -20,7 +20,7 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function ()
     if (script.readyState) { // IE
       script.onreadystatechange = function () {
         if (script.readyState === 'loaded' ||
-          script.readyState === 'complete') {
+            script.readyState === 'complete') {
           script.onreadystatechange = null;
           callback();
         }
@@ -44,20 +44,20 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function ()
   function loadLocale(localeUrl, $locale, localeId, $rootScope, $q, localeCache, storage) {
 
     function overrideValues(oldObject, newObject) {
-      angular.forEach(newObject, function (value, key) {
+      angular.forEach(newObject, function(value, key) {
         if (angular.isArray(newObject[key]) || angular.isObject(newObject[key])) {
           overrideValues(oldObject[key], newObject[key]);
-        } else {
+        } else { 
           oldObject[key] = newObject[key];
-        }
+        } 
       });
-    }
+    } 
 
 
     var cachedLocale = localeCache.get(localeId),
       deferred = $q.defer();
     if (cachedLocale) {
-      $rootScope.$evalAsync(function () {
+      $rootScope.$evalAsync(function() {
         overrideValues($locale, cachedLocale);
         $rootScope.$broadcast('$localeChangeSuccess', localeId, $locale);
         storage.put(storeKey, localeId);
@@ -82,7 +82,7 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function ()
     return deferred.promise;
   }
 
-  this.localeLocationPattern = function (value) {
+  this.localeLocationPattern = function(value) {
     if (value) {
       localeLocationPattern = value;
       return this;
@@ -91,15 +91,15 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function ()
     }
   };
 
-  this.useStorage = function (storageName) {
+  this.useStorage = function(storageName) {
     storageFactory = storageName;
   };
 
-  this.useCookieStorage = function () {
+  this.useCookieStorage = function() {
     this.useStorage('$cookieStore');
   };
 
-  this.$get = ['$rootScope', '$injector', '$interpolate', '$locale', '$q', 'tmhDynamicLocaleCache', function ($rootScope, $injector, interpolate, locale, $q, tmhDynamicLocaleCache) {
+  this.$get = ['$rootScope', '$injector', '$interpolate', '$locale', '$q', 'tmhDynamicLocaleCache', function($rootScope, $injector, interpolate, locale, $q, tmhDynamicLocaleCache) {
     var localeLocation = interpolate(localeLocationPattern),
       storage = $injector.get(storageFactory),
       initialLocale;
@@ -116,18 +116,18 @@ angular.module('tmh.dynamicLocale', []).provider('tmhDynamicLocale', function ()
        *    a background task that will retrieve the new locale and configure the current $locale
        *    instance with the information from the new locale
        */
-      set: function (value) {
+      set: function(value) {
         return loadLocale(localeLocation({locale: value}), locale, value, $rootScope, $q, tmhDynamicLocaleCache, storage);
       }
     };
   }];
 
-}).provider('tmhDynamicLocaleCache', function () {
-  this.$get = ['$cacheFactory', function ($cacheFactory) {
+}).provider('tmhDynamicLocaleCache', function() {
+  this.$get = ['$cacheFactory', function($cacheFactory) {
     return $cacheFactory('tmh.dynamicLocales');
   }];
-}).provider('tmhDynamicLocaleStorageCache', function () {
-  this.$get = ['$cacheFactory', function ($cacheFactory) {
+}).provider('tmhDynamicLocaleStorageCache', function() {
+  this.$get = ['$cacheFactory', function($cacheFactory) {
     return $cacheFactory('tmh.dynamicLocales.store');
   }];
 });

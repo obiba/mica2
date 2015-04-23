@@ -1,3 +1,4 @@
+
 autoWatch = false;
 singleRun = true;
 logLevel = LOG_INFO;
