@@ -129,9 +129,7 @@ class StudySummaryDtos {
       stateBuilder.setPublishedTag(studyState.getPublishedTag());
     }
 
-    Study study = studyState.isPublished()
-      ? publishedStudyService.findById(studyState.getId())
-      : studyService.findDraftStudy(studyState.getId());
+    Study study = studyService.findStudy(studyState.getId());
 
     Mica.StudySummaryDto.Builder builder;
     if(study == null) {

@@ -134,6 +134,23 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
     return studyRepository.findOne(id);
   }
 
+  @NotNull
+  public Study findStudy(@NotNull String id) throws NoSuchStudyException {
+    // ensure study exists
+    StudyState studyState = getStudyStateInternal(id);
+    Study study = null;
+    if (studyState.isPublished()) {
+      study = publishedStudyService.findById(id);
+      if (study == null) {
+        // correct the discrepancy between state and the published index
+        study = studyRepository.findOne(id);
+        eventBus.post(new StudyPublishedEvent(study));
+      }
+    }
+
+    return study == null ? studyRepository.findOne(id) : study;
+  }
+
   @Nullable
   @Cacheable(value = "studies-published", key = "#id")
   public Study findPublishedStudyByTag(@NotNull String id, @NotNull String tag) throws NoSuchStudyException {
