@@ -9,7 +9,6 @@
     "commit": "f03781bf5d334c3fc2ec5cbd799e1650896c14db"
   },
   "_source": "git://github.com/gruntjs/grunt-contrib-less.git",
-  "_target": "~0.11.0",
-  "_originalSource": "grunt-contrib-less",
-  "_direct": true
+  "_target": "0.11.0",
+  "_originalSource": "grunt-contrib-less"
 }

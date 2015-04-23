@@ -280,7 +280,6 @@
 
             scope.setCurrent = function(num) {
                 if (isValidPageNumber(num)) {
-                    num = parseInt(num, 10);
                     paginationService.setCurrentPage(paginationId, num);
                 }
             };
