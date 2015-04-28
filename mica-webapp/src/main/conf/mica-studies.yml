@@ -3,60 +3,80 @@ vocabularies:
   - name: recruitmentDatasources
     terms:
       - name: general
-        title: {en: General population}
+        title: {en: General population, fr: Population générale}
       - name: specific_population
-        title: {en: Specific population}
+        title: {en: Specific population, fr: Population spécifique}
       - name: exist_studies
-        title: {en: Participants from existing studies}
+        title: {en: Participants from existing studies, fr: Participants provenant d'études existantes}
       - name: other
-        title: {en: Other}
+        title: {en: Other, fr: Autre}
   - name: recruitmentGeneralPopulation
     terms:
       - name: volunteer
-        title: {en: Volunteer enrolment}
+        title: {en: Volunteer enrolment, fr: Enrôlement volontaire}
       - name: selected_samples
-        title: {en: Selected sample}
+        title: {en: Selected sample, fr: Sous-échantillons}
       - name: random
-        title: {en: Random digit dialing}
+        title: {en: Random digit dialing, fr: Génération aléatoire de numéros}
   - name: recruitmentSpecificPopulation
     terms:
       - name: clinic_patients
-        title: {en: Clinic patients}
+        title: {en: Clinic patients, fr: Patients d'une clinique}
       - name: specific_association
-        title: {en: Members of specific association}
+        title: {en: Members of specific association, fr: Membres d'une association spécifique}
       - name: other
-        title: {en: Other specific population}
+        title: {en: Other specific population, fr: Autre population spécifique}
   - name: populations-selectionCriteria-gender
     terms:
       - name: men
-        title: {en: Men only}
+        title: {en: Men only, fr: Hommes seulement}
       - name: women
-        title: {en: Women only}
+        title: {en: Women only, fr: Femmes seulement}
   - name: selectionCriteriaCriteria
     terms:
       - name: gravidity
-        title: {en: Gravidity}
+        title: {en: Gravidity, fr: Femmes enceintes}
       - name: newborn
-        title: {en: Newborn}
+        title: {en: Newbornm, fr: Nouveaux-nés}
       - name: twin
-        title: {en: Twin}
+        title: {en: Twin, fr: Jumeaux}
   - name: populations-dataCollectionEvents-dataSources
     terms:
       - name: questionnaires
-        title: {en: Questionnaires}
+        title: {en: Questionnaires, fr: Questionnaires}
       - name: physical_measures
-        title: {en: Physical Measures}
+        title: {en: Physical Measures, fr: Mesures physiques}
       - name: biological_samples
-        title: {en: Biosamples}
+        title: {en: Biosamples, fr: Échantillons biologiques}
       - name: administratives_databases
-        title: {en: Administrative Databases}
+        title: {en: Administrative Databases, fr: Bases de données administratives}
       - name: others
-        title: {en: Others}
+        title: {en: Others, fr: Autres}
   - name: access
     terms:
       - name: data
-        title: {en: Data}
+        title: {en: Data, fr: Données}
       - name: bio_samples
-        title: {en: Biosamples}
+        title: {en: Biosamples, fr: Échantillons biologiques}
       - name: other
-        title: {en: Other}
+        title: {en: Other, fr: Autre}
+  - name: populations-dataCollectionEvents-bioSamples
+    terms:
+      - name: blood
+        title: {en: Blood, fr: Sang}
+      - name: urine
+        title: {en: Urine, fr: Urine}
+      - name: salivia
+        title: {en: Salivia, fr: Salive}
+      - name: hair
+        title: {en: Hair, fr: Cheveux}
+      - name: others
+        title: {en: Others, fr: Autres}
+      - name: cord_blood
+        title: {en: Cord Blood, fr: Sang de cordon}
+      - name: tissues
+        title: {en: Tissues, fr: Tissus}
+      - name: nail
+        title: {en: Nail, fr: Ongles}
+      - name: buccal_cells
+        title: {en: Buccal Cells, fr: Cellules buccales}
