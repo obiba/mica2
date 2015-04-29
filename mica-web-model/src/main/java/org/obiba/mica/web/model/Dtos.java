@@ -156,7 +156,9 @@ public class Dtos {
   }
 
   @NotNull
-  public Mica.OpalCredentialDto asDto(@NotNull OpalCredential opalCredential) { return micaConfigDtos.asDto(opalCredential); }
+  public Mica.OpalCredentialDto asDto(@NotNull OpalCredential opalCredential) {
+    return micaConfigDtos.asDto(opalCredential);
+  }
 
   @NotNull
   public Mica.TempFileDto asDto(@NotNull TempFile tempFile) {
@@ -218,18 +220,18 @@ public class Dtos {
   }
 
   @NotNull
-  public Mica.TaxonomyEntityDto asDto(@NotNull Taxonomy taxonomy) {
-    return taxonomyDtos.asDto(taxonomy);
+  public Mica.TaxonomyEntityDto asDto(@NotNull Taxonomy taxonomy, @Nullable String locale) {
+    return taxonomyDtos.asDto(taxonomy, locale);
   }
 
   @NotNull
-  public Mica.TaxonomyEntityDto asDto(@NotNull Vocabulary vocabulary) {
-    return taxonomyDtos.asDto(vocabulary);
+  public Mica.TaxonomyEntityDto asDto(@NotNull Vocabulary vocabulary, @Nullable String locale) {
+    return taxonomyDtos.asDto(vocabulary, locale);
   }
 
   @NotNull
-  public Mica.TaxonomyEntityDto asDto(@NotNull Term term) {
-    return taxonomyDtos.asDto(term);
+  public Mica.TaxonomyEntityDto asDto(@NotNull Term term, @Nullable String locale) {
+    return taxonomyDtos.asDto(term, locale);
   }
 
   @NotNull

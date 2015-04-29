@@ -10,6 +10,7 @@
 
 package org.obiba.mica.web.model;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
@@ -25,24 +26,24 @@ class TaxonomyDtos {
   private LocalizedStringDtos localizedStringDtos;
 
   @NotNull
-  public Mica.TaxonomyEntityDto asDto(Taxonomy taxonomy) {
+  public Mica.TaxonomyEntityDto asDto(@NotNull Taxonomy taxonomy, @Nullable String locale) {
     return Mica.TaxonomyEntityDto.newBuilder().setName(taxonomy.getName()) //
-        .addAllTitles(localizedStringDtos.asDto(taxonomy.getTitle())) //
-        .addAllDescriptions(localizedStringDtos.asDto(taxonomy.getDescription())).build();
+        .addAllTitles(localizedStringDtos.asDto(taxonomy.getTitle(), locale)) //
+        .addAllDescriptions(localizedStringDtos.asDto(taxonomy.getDescription(), locale)).build();
   }
 
   @NotNull
-  public Mica.TaxonomyEntityDto asDto(Vocabulary vocabulary) {
+  public Mica.TaxonomyEntityDto asDto(@NotNull Vocabulary vocabulary, @Nullable String locale) {
     return Mica.TaxonomyEntityDto.newBuilder().setName(vocabulary.getName()) //
-        .addAllTitles(localizedStringDtos.asDto(vocabulary.getTitle())) //
-        .addAllDescriptions(localizedStringDtos.asDto(vocabulary.getDescription())).build();
+        .addAllTitles(localizedStringDtos.asDto(vocabulary.getTitle(), locale)) //
+        .addAllDescriptions(localizedStringDtos.asDto(vocabulary.getDescription(), locale)).build();
   }
 
   @NotNull
-  public Mica.TaxonomyEntityDto asDto(Term term) {
+  public Mica.TaxonomyEntityDto asDto(@NotNull Term term, @Nullable String locale) {
     return Mica.TaxonomyEntityDto.newBuilder().setName(term.getName()).addAllTitles(
-        localizedStringDtos.asDto(term.getTitle())) //
-        .addAllDescriptions(localizedStringDtos.asDto(term.getDescription())).build();
+        localizedStringDtos.asDto(term.getTitle(), locale)) //
+        .addAllDescriptions(localizedStringDtos.asDto(term.getDescription(), locale)).build();
   }
 
 }

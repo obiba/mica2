@@ -3,11 +3,12 @@ option java_package = "org.obiba.mica.web.model";
 import "Mica.proto";
 
 message JoinQueryDto {
-  optional string locale = 7 [default = "en"];
   optional QueryDto variableQueryDto = 1;
   optional QueryDto datasetQueryDto = 2;
   optional QueryDto studyQueryDto = 3;
   optional QueryDto networkQueryDto = 4;
+  optional string locale = 5 [default = "en"];
+  optional bool withFacets = 6 [default = true];
 }
 
 message QueryDto {
@@ -267,7 +268,7 @@ message TaxonomiesCoverageDto {
   required int32 totalHits = 2;
   required int64 totalCount = 3;
   repeated string by = 4;
-  required JoinQueryResultDto queryResult = 5;
+  optional JoinQueryResultDto queryResult = 5;
 }
 
 
