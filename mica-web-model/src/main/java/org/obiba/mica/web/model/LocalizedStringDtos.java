@@ -49,7 +49,21 @@ class LocalizedStringDtos {
   }
 
   public Iterable<Mica.LocalizedStringDto> asDto(Map<String, String> localizedMap) {
+    return asDto(localizedMap, null);
+  }
+
+  /**
+   *
+   * @param localizedMap
+   * @param locale Preferred locale if exists, otherwise all locales are returned
+   * @return
+   */
+  public Iterable<Mica.LocalizedStringDto> asDto(Map<String, String> localizedMap, @Nullable String locale) {
     if (localizedMap == null || localizedMap.isEmpty()) return Collections.emptyList();
+    if (localizedMap.containsKey(locale)) {
+      return Collections.singleton(Mica.LocalizedStringDto.newBuilder().setLang(locale).setValue(localizedMap.get(locale))
+        .build());
+    }
     return localizedMap.entrySet().stream().map(
         entry -> Mica.LocalizedStringDto.newBuilder().setLang(entry.getKey()).setValue(entry.getValue())
             .build()

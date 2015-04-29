@@ -140,7 +140,7 @@ public class AggregationYamlParser {
   private void createAggregation(Collection<AbstractAggregationBuilder> termsBuilders, Map<String, String> fields,
     String type, Map<String, Iterable<AbstractAggregationBuilder>> subAggregations) {
     fields.entrySet().forEach(entry -> {
-      log.info("Building aggregation '{}' of type '{}'", entry.getKey(), type);
+      log.debug("Building aggregation '{}' of type '{}'", entry.getKey(), type);
 
       switch(type) {
         case AGG_TERMS:
