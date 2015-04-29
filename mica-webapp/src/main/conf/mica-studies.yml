@@ -2,7 +2,7 @@ name: study
 vocabularies:
   - name: recruitmentDatasources
     terms:
-      - name: general
+      - name: general_population
         title: {en: General population, fr: Population générale}
       - name: specific_population
         title: {en: Specific population, fr: Population spécifique}

@@ -206,7 +206,7 @@
           "dataSources": [
             "exist_studies",
             "exist_studies",
-            "general"
+            "general_population"
           ],
           "generalPopulationSources": [
             "random",
@@ -652,7 +652,7 @@
         },
         "recruitment": {
           "dataSources": [
-            "general",
+            "general_population",
             "specific_population",
             "specific_population"
           ],
@@ -1884,7 +1884,7 @@
         },
         "recruitment": {
           "dataSources": [
-            "general",
+            "general_population",
             "exist_studies",
             "specific_population"
           ],
@@ -2250,9 +2250,9 @@
         },
         "recruitment": {
           "dataSources": [
-            "general",
+            "general_population",
             "other",
-            "general"
+            "general_population"
           ],
           "generalPopulationSources": [
             "selected_samples",
@@ -2976,7 +2976,7 @@
         },
         "recruitment": {
           "dataSources": [
-            "general",
+            "general_population",
             "other"
           ],
           "generalPopulationSources": [
@@ -4107,7 +4107,7 @@
         "recruitment": {
           "dataSources": [
             "other",
-            "general"
+            "general_population"
           ],
           "generalPopulationSources": [
             "volunteer"
@@ -6078,7 +6078,7 @@
         "recruitment": {
           "dataSources": [
             "specific_population",
-            "general"
+            "general_population"
           ],
           "generalPopulationSources": [
             "random"
@@ -6526,7 +6526,7 @@
         "recruitment": {
           "dataSources": [
             "exist_studies",
-            "general"
+            "general_population"
           ],
           "generalPopulationSources": [
             "random",
@@ -8130,8 +8130,8 @@
         },
         "recruitment": {
           "dataSources": [
-            "general",
-            "general",
+            "general_population",
+            "general_population",
             "other"
           ],
           "generalPopulationSources": [
@@ -8934,7 +8934,7 @@
         },
         "recruitment": {
           "dataSources": [
-            "general",
+            "general_population",
             "specific_population"
           ],
           "generalPopulationSources": [
@@ -9384,8 +9384,8 @@
         "recruitment": {
           "dataSources": [
             "specific_population",
-            "general",
-            "general"
+            "general_population",
+            "general_population"
           ],
           "generalPopulationSources": [
             "random",
@@ -9777,9 +9777,9 @@
         },
         "recruitment": {
           "dataSources": [
-            "general",
+            "general_population",
             "other",
-            "general"
+            "general_population"
           ],
           "generalPopulationSources": [
             "selected_samples"
@@ -10200,8 +10200,8 @@
         },
         "recruitment": {
           "dataSources": [
-            "general",
-            "general",
+            "general_population",
+            "general_population",
             "exist_studies"
           ],
           "generalPopulationSources": [
@@ -11715,7 +11715,7 @@
         },
         "recruitment": {
           "dataSources": [
-            "general",
+            "general_population",
             "specific_population",
             "specific_population"
           ],
@@ -12108,7 +12108,7 @@
         },
         "recruitment": {
           "dataSources": [
-            "general"
+            "general_population"
           ],
           "generalPopulationSources": [
             "selected_samples",
@@ -12900,8 +12900,8 @@
         },
         "recruitment": {
           "dataSources": [
-            "general",
-            "general"
+            "general_population",
+            "general_population"
           ],
           "generalPopulationSources": [
             "volunteer"
@@ -14396,7 +14396,7 @@
         },
         "recruitment": {
           "dataSources": [
-            "general",
+            "general_population",
             "other"
           ],
           "generalPopulationSources": [
@@ -15104,7 +15104,7 @@
           "dataSources": [
             "other",
             "other",
-            "general"
+            "general_population"
           ],
           "generalPopulationSources": [
             "volunteer",
@@ -16254,7 +16254,7 @@
           "dataSources": [
             "exist_studies",
             "exist_studies",
-            "general"
+            "general_population"
           ],
           "generalPopulationSources": [
             "volunteer",
@@ -16990,7 +16990,7 @@
           "dataSources": [
             "other",
             "other",
-            "general"
+            "general_population"
           ],
           "generalPopulationSources": [
             "random",
@@ -17382,7 +17382,7 @@
           "dataSources": [
             "exist_studies",
             "exist_studies",
-            "general"
+            "general_population"
           ],
           "generalPopulationSources": [
             "selected_samples",
@@ -18201,7 +18201,7 @@
         "recruitment": {
           "dataSources": [
             "other",
-            "general",
+            "general_population",
             "other"
           ],
           "generalPopulationSources": [
@@ -18931,7 +18931,7 @@
         "recruitment": {
           "dataSources": [
             "specific_population",
-            "general"
+            "general_population"
           ],
           "generalPopulationSources": [
             "selected_samples"
@@ -20309,7 +20309,7 @@
         },
         "recruitment": {
           "dataSources": [
-            "general"
+            "general_population"
           ],
           "generalPopulationSources": [
             "volunteer"
@@ -21172,7 +21172,7 @@
           "dataSources": [
             "other",
             "specific_population",
-            "general"
+            "general_population"
           ],
           "generalPopulationSources": [
             "selected_samples"
@@ -21593,7 +21593,7 @@
           "dataSources": [
             "other",
             "exist_studies",
-            "general"
+            "general_population"
           ],
           "generalPopulationSources": [
             "selected_samples"
@@ -22040,7 +22040,7 @@
         },
         "recruitment": {
           "dataSources": [
-            "general",
+            "general_population",
             "exist_studies",
             "exist_studies"
           ],
@@ -23605,7 +23605,7 @@
         },
         "recruitment": {
           "dataSources": [
-            "general",
+            "general_population",
             "other"
           ],
           "generalPopulationSources": [
@@ -23968,7 +23968,7 @@
         },
         "recruitment": {
           "dataSources": [
-            "general",
+            "general_population",
             "specific_population",
             "other"
           ],
@@ -24392,7 +24392,7 @@
           "dataSources": [
             "other",
             "exist_studies",
-            "general"
+            "general_population"
           ],
           "generalPopulationSources": [
             "volunteer",
@@ -25513,8 +25513,8 @@
         "recruitment": {
           "dataSources": [
             "other",
-            "general",
-            "general"
+            "general_population",
+            "general_population"
           ],
           "generalPopulationSources": [
             "random",
@@ -27089,7 +27089,7 @@
         },
         "recruitment": {
           "dataSources": [
-            "general",
+            "general_population",
             "exist_studies",
             "specific_population"
           ],
@@ -27433,8 +27433,8 @@
         },
         "recruitment": {
           "dataSources": [
-            "general",
-            "general",
+            "general_population",
+            "general_population",
             "exist_studies"
           ],
           "generalPopulationSources": [
@@ -28138,8 +28138,8 @@
         "recruitment": {
           "dataSources": [
             "exist_studies",
-            "general",
-            "general"
+            "general_population",
+            "general_population"
           ],
           "generalPopulationSources": [
             "random",
@@ -28586,7 +28586,7 @@
         "recruitment": {
           "dataSources": [
             "specific_population",
-            "general"
+            "general_population"
           ],
           "generalPopulationSources": [
             "selected_samples",
@@ -30947,8 +30947,8 @@
         },
         "recruitment": {
           "dataSources": [
-            "general",
-            "general"
+            "general_population",
+            "general_population"
           ],
           "generalPopulationSources": [
             "volunteer",
@@ -32964,7 +32964,7 @@
         },
         "recruitment": {
           "dataSources": [
-            "general",
+            "general_population",
             "specific_population"
           ],
           "generalPopulationSources": [
@@ -33662,8 +33662,8 @@
         },
         "recruitment": {
           "dataSources": [
-            "general",
-            "general",
+            "general_population",
+            "general_population",
             "other"
           ],
           "generalPopulationSources": [
@@ -34007,7 +34007,7 @@
         "recruitment": {
           "dataSources": [
             "exist_studies",
-            "general",
+            "general_population",
             "other"
           ],
           "generalPopulationSources": [

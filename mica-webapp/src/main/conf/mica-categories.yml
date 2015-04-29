@@ -23,7 +23,7 @@ study:
   population:
 
     sourcesOfRecruitment:
-      - general
+      - general_population
       - exist_studies
       - specific_population
       - other
