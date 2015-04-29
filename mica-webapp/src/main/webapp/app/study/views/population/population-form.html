@@ -54,9 +54,9 @@
 
       <tabset>
         <tab heading="{{'study.recruitment-sources.general-population' | translate}}"
-          disabled="population.recruitment.dataSources.indexOf('general') < 0"
-          active="recruitmentTabs.general">
-          <div ng-show="population.recruitment.dataSources.indexOf('general') > -1">
+          disabled="population.recruitment.dataSources.indexOf('general_population') < 0"
+          active="recruitmentTabs.general_population">
+          <div ng-show="population.recruitment.dataSources.indexOf('general_population') > -1">
             <div form-checkbox-group options="generalPopulationTypes"
               model="population.recruitment.generalPopulationSources"></div>
           </div>

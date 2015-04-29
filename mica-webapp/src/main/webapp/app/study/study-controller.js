@@ -317,11 +317,11 @@ mica.study
         var selectedDatasources = [];
         var hasRecruitmentDatasources = null !== $scope.population.recruitment.dataSources; // null or undefined
 
-        if (hasRecruitmentDatasources && $scope.population.recruitment.dataSources.indexOf('general') < 0) {
+        if (hasRecruitmentDatasources && $scope.population.recruitment.dataSources.indexOf('general_population') < 0) {
           delete $scope.population.recruitment.generalPopulationSources;
         } else if ($scope.population.recruitment.generalPopulationSources &&
           $scope.population.recruitment.generalPopulationSources.length) {
-          selectedDatasources.push('general');
+          selectedDatasources.push('general_population');
         }
 
         if (hasRecruitmentDatasources && $scope.population.recruitment.dataSources.indexOf('specific_population') < 0) {
