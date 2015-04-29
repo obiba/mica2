@@ -197,25 +197,41 @@ public class JoinQueryExecutor {
     JoinQueryResultDto.Builder builder = JoinQueryResultDto.newBuilder();
     AggregationsConfig aggregationsConfig = aggregationsService.getAggregationsConfig();
 
-    builder.setVariableResultDto(
-      addAggregationTitles(variableQuery.getResultQuery(), aggregationsConfig.getVariableAggregations(),
+    builder.setVariableResultDto(!joinQueryDto.getWithFacets()
+      ? removeAggregations(variableQuery.getResultQuery())
+      : addAggregationTitles(variableQuery.getResultQuery(), aggregationsConfig.getVariableAggregations(),
         aggregationPostProcessor()));
 
     if(datasetQuery.getResultQuery() != null) {
-      builder.setDatasetResultDto(
-        addAggregationTitles(datasetQuery.getResultQuery(), aggregationsConfig.getDatasetAggregations(), null));
+      builder.setDatasetResultDto(!joinQueryDto.getWithFacets()
+        ? removeAggregations(datasetQuery.getResultQuery())
+        : addAggregationTitles(datasetQuery.getResultQuery(), aggregationsConfig.getDatasetAggregations(), null));
     }
 
-    builder
-      .setStudyResultDto(addAggregationTitles(studyQuery.getResultQuery(), aggregationsConfig.getStudyAggregations(), null));
+    builder.setStudyResultDto(!joinQueryDto.getWithFacets()
+      ? removeAggregations(studyQuery.getResultQuery())
+      : addAggregationTitles(studyQuery.getResultQuery(), aggregationsConfig.getStudyAggregations(), null));
 
     if(networkQuery.getResultQuery() != null) {
-      builder.setNetworkResultDto(
-        addAggregationTitles(networkQuery.getResultQuery(), aggregationsConfig.getNetworkAggregations(), null));
+      builder.setNetworkResultDto(!joinQueryDto.getWithFacets()
+        ? removeAggregations(networkQuery.getResultQuery())
+        : addAggregationTitles(networkQuery.getResultQuery(), aggregationsConfig.getNetworkAggregations(), null));
     }
 
     log.debug("Finished query");
 
+    return builder.build();
+  }
+
+  private MicaSearch.QueryResultDto removeAggregations(MicaSearch.QueryResultDto queryResultDto) {
+    MicaSearch.QueryResultDto.Builder builder;
+    if(queryResultDto != null) {
+      builder = MicaSearch.QueryResultDto.newBuilder().mergeFrom(queryResultDto);
+      builder.clearAggs();
+    } else {
+      builder = MicaSearch.QueryResultDto.newBuilder();
+      builder.setTotalHits(0).setTotalCount(0);
+    }
     return builder.build();
   }
 
@@ -224,8 +240,7 @@ public class JoinQueryExecutor {
     Function<List<MicaSearch.AggregationResultDto>, List<MicaSearch.AggregationResultDto>> postProcessor) {
 
     if(queryResultDto != null) {
-      final MicaSearch.QueryResultDto.Builder builder = MicaSearch.QueryResultDto.newBuilder()
-        .mergeFrom(queryResultDto);
+      MicaSearch.QueryResultDto.Builder builder = MicaSearch.QueryResultDto.newBuilder().mergeFrom(queryResultDto);
       List<MicaSearch.AggregationResultDto.Builder> builders = ImmutableList.copyOf(builder.getAggsBuilderList());
       List<MicaSearch.AggregationResultDto> aggregationResultDtos = Lists.newArrayList();
       builder.clearAggs();
@@ -252,11 +267,11 @@ public class JoinQueryExecutor {
 
       return builder.build();
     } else {
-      final MicaSearch.QueryResultDto.Builder builder = MicaSearch.QueryResultDto.newBuilder();
+      MicaSearch.QueryResultDto.Builder builder = MicaSearch.QueryResultDto.newBuilder();
 
       aggregationsList.forEach(a -> builder.addAggs(
-          MicaSearch.AggregationResultDto.newBuilder().setAggregation(a.getId()).addAllTitle(dtos.asDto(a.getTitle()))
-            .build()));
+        MicaSearch.AggregationResultDto.newBuilder().setAggregation(a.getId()).addAllTitle(dtos.asDto(a.getTitle()))
+          .build()));
 
       builder.setTotalHits(0).setTotalCount(0);
 
@@ -270,8 +285,8 @@ public class JoinQueryExecutor {
         .getSummariesList().stream().collect(Collectors.toMap(Opal.TaxonomiesDto.TaxonomySummaryDto::getName,
           t -> MicaSearch.AggregationResultDto.newBuilder().setAggregation(t.getName()).addAllTitle(
             t.getTitleList().stream().map(
-              title -> Mica.LocalizedStringDto.newBuilder().setLang(title.getLocale()).setValue(title.getText()).build()).collect(
-              Collectors.toList()))));
+              title -> Mica.LocalizedStringDto.newBuilder().setLang(title.getLocale()).setValue(title.getText())
+                .build()).collect(Collectors.toList()))));
 
       Pattern pattern = Pattern.compile("attributes-(\\w+)__(\\w+)-\\w+$");
       List<MicaSearch.AggregationResultDto> newList = Lists.newArrayList();
