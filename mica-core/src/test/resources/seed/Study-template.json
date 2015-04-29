@@ -1,37 +1,37 @@
 [
   '{{repeat(1, 100)}}',
-  {  
+  {
     "id":'{{"test-" + index(1)}}',
-   "name":{  
+   "name":{
       "en":'{{lorem(1, "sentence")}}',
       "fr":'{{lorem(1, "sentence")}}'
    },
-   "acronym":{  
+   "acronym":{
       "en":'{{lorem(1, "word").toUpperCase()}}',
       "fr":'{{lorem(1, "word").toUpperCase()}}'
    },
    "logo":null,
-   "investigators":[  
+   "investigators":[
   '{{repeat(1, 3)}}',
-      {  
+      {
          "title":'{{random("Dr.","Prof.")}}',
          "firstName":'{{firstName()}}',
          "lastName":'{{surname()}}',
          "email":'{{email()}}',
          "phone":'+1 {{phone()}}',
          "dataAccessCommitteeMember":'{{bool()}}',
-         "institution":{  
-            "name":{  
+         "institution":{
+            "name":{
               "en":'{{company()}}'
             },
-            "department":{  
+            "department":{
                "en":'{{random("Department of Clinical Epidemiology & Biostatistics","Epidemiology & Public Health")}}'
             },
-            "address":{  
+            "address":{
               "street":{
                 "en": '{{street()}}'
                },
-              "city":{  
+              "city":{
                  "en":'{{city()}}'
                },
               "zip": '{{random("H","W","K")}}' + '{{integer(1000,9000)}}',
@@ -41,27 +41,27 @@
          }
       }
    ],
-   "contacts":[  
+   "contacts":[
  '{{repeat(1, 3)}}',
-      {  
+      {
          "title":'{{random("Dr.","Prof.")}}',
          "firstName":'{{firstName()}}',
          "lastName":'{{surname()}}',
          "email":'{{email()}}',
          "phone":'+1 {{phone()}}',
          "dataAccessCommitteeMember":'{{bool()}}',
-         "institution":{  
-            "name":{  
+         "institution":{
+            "name":{
               "en":'{{company()}}'
             },
-            "department":{  
+            "department":{
                "en":'{{random("Department of Clinical Epidemiology & Biostatistics","Epidemiology & Public Health")}}'
             },
-            "address":{  
+            "address":{
               "street":{
                 "en": '{{street()}}'
                },
-               "city":{  
+               "city":{
                  "en":'{{city()}}'
                },
               "zip": '{{random("H","W","K")}}' + '{{integer(1000,9000)}}',
@@ -71,57 +71,57 @@
          }
       }
    ],
-   "objectives":{  
+   "objectives":{
       "en":'{{lorem(1, "paragraphs")}}',
       "fr":'{{lorem(1, "paragraphs")}}'
    },
    "website":"http://www." + '{{lorem(1, "word").toLowerCase()}}' + ".org",
-   "specificAuthorization":{  
+   "specificAuthorization":{
       "authorized":'{{bool()}}',
       "authorizer":"mica-server",
-      "date":[  
+      "date":[
          '{{integer(2000,2014)}}',
          '{{integer(1,12)}}',
          '{{integer(1,28)}}'
       ]
    },
-   "maelstromAuthorization":{  
+   "maelstromAuthorization":{
       "authorized":'{{bool()}}',
       "authorizer":"mica",
-      "date":[  
+      "date":[
          '{{integer(2000,2014)}}',
          '{{integer(1,12)}}',
          '{{integer(1,28)}}'
       ]
    },
-   "methods":{  
-      "designs":[  
+   "methods":{
+      "designs":[
         '{{repeat(1, 3)}}',
         '{{random("case_control","case_only","clinical_trial","cohort_study","cross_sectional","other")}}'
       ],
-      "otherDesign":{  
+      "otherDesign":{
          "en":"Cross-sectional prevalence study"
       },
-      "followUpInfo":{  
+      "followUpInfo":{
          "en":"General Information on Follow Up (profile and frequency)"
       },
-      "recruitments":[  
+      "recruitments":[
         '{{repeat(1, 3)}}',
         '{{random("individuals","families","other")}}'
       ],
-      "otherRecruitment":{  
+      "otherRecruitment":{
          "en":"Specific individuals"
       },
-      "info":{  
+      "info":{
          "en":"Supplementary information about study design"
       }
    },
-   "numberOfParticipants":{  
-      "participant":{  
+   "numberOfParticipants":{
+      "participant":{
         "noLimit":'{{bool()}}',
          "number":'{{integer() * 10000}}'
       },
-      "sample":{  
+      "sample":{
          "noLimit":'{{bool()}}',
          "number":'{{integer() * 10000}}'
       },
@@ -129,118 +129,118 @@
    },
    "start":'{{integer(0,7) + 2000}}',
    "end":'{{integer(8,15) + 2000}}',
-   "access":[  
+   "access":[
         '{{repeat(1, 3)}}',
         '{{random("data","bio_samples","other")}}'
    ],
-   "otherAccess":{  
+   "otherAccess":{
       "en":"Other access"
    },
     "markerPaper": '{{surname() + " " + firstName().substring(0,1)}}' + ", The Canadian longitudinal study on aging (CLSA). Can J Aging, 2009. 28(3): p. 221-9.",
     "pubmedId":'{{floating() * 100000}}',
    "attachments":null,
    "info":null,
-   "populations":[  
-      {  
+   "populations":[
+      {
          "id":"core",
-         "name":{  
+         "name":{
             "en":"Core Population"
          },
-         "description":{  
+         "description":{
             "en":"This is the core population"
          },
-         "recruitment":{  
-            "dataSources":[  
+         "recruitment":{
+            "dataSources":[
               '{{repeat(1,3)}}',
-              '{{random("general","exist_studies","specific_population","other")}}'
+              '{{random("general_population","exist_studies","specific_population","other")}}'
             ],
-            "generalPopulationSources":[  
+            "generalPopulationSources":[
               '{{repeat(1,3)}}',
               '{{random("volunteer","selected_samples","random")}}'
             ],
-            "specificPopulationSources":[  
+            "specificPopulationSources":[
               '{{repeat(1,3)}}',
               '{{random("clinic_patients","specific_association","other")}}'
             ],
-            "otherSpecificPopulationSource":{  
+            "otherSpecificPopulationSource":{
                "en":"Other specific population"
             },
-            "studies":[  
-               {  
+            "studies":[
+               {
                   "en":"Canadian Community Health Survey (CCHS) – Healthy Aging",
                   "fr":"Enquête sur la santé dans les collectivités canadiennes (ESCC) - Vieillissement en santé"
                },
-               {  
+               {
                   "en":"CARTaGENE"
                }
             ],
-            "otherSource":{  
+            "otherSource":{
                "en":"Other source of recruitment"
             },
             "info":null
          },
-         "selectionCriteria":{  
+         "selectionCriteria":{
            "gender":'{{random("women","men")}}',
            "ageMin":'{{integer(20,50)}}',
             "ageMax":'{{integer(60,90)}}',
-            "countriesIso":[  
+            "countriesIso":[
                '{{country(true)}}'
             ],
             "territory":null,
-            "criteria":[  
+            "criteria":[
                "criteria1"
             ],
-            "ethnicOrigin":[  
-               {  
+            "ethnicOrigin":[
+               {
                   "en":"Serbian"
                }
             ],
-            "healthStatus":[  
-               {  
+            "healthStatus":[
+               {
                   "en":"Good"
                }
             ],
-            "otherCriteria":{  
+            "otherCriteria":{
               "en":'{{lorem(1,"paragraphs")}}'
             },
             "info":null
          },
-         "numberOfParticipants":{  
-            "participant":{  
+         "numberOfParticipants":{
+            "participant":{
               "noLimit":'{{bool()}}',
               "number":'{{integer() * 10000}}'
             },
-            "sample":{  
+            "sample":{
                "noLimit":'{{bool()}}',
                "number":'{{integer() * 10000}}'
             },
             "info":null
          },
          "info":null,
-         "dataCollectionEvents":[  
-            {  
+         "dataCollectionEvents":[
+            {
                "attributes":null,
                "id":"ps",
-               "name":{  
+               "name":{
                   "en":"Pre-Selection"
                },
-               "description":{  
+               "description":{
                   "en":"Pre-selection for baseline"
                },
                "start":"1996-05",
                "end":"2000-11",
-               "dataSources":[  
+               "dataSources":[
               '{{repeat(1,3)}}',
               '{{random("questionnaires","physical_measures","biological_samples","administratives_databases","others")}}'
                ],
-               "administrativeDatabases":[  
+               "administrativeDatabases":[
                  '{{repeat(3,5)}}',
                 '{{random("health_databases","vital_statistics_databases","socioeconomic_databases","environmental_databases")}}'
                ],
-               "otherDataSources":{  
+               "otherDataSources":{
                   "en":"Other data sources"
                },
-               "bioSamples":[  
+               "bioSamples":[
                  '{{repeat(3,5)}}',
                 '{{random("blood","cord_blood","buccal_cells","tissues","saliva","urine","hair","nail","others")}}'
                ],
@@ -248,81 +248,81 @@
                "otherBioSamples":null,
                "attachments":null
             },
-            {  
+            {
                "attributes":null,
                "id":"fuo",
-               "name":{  
+               "name":{
                   "en":"Follow-Up One"
                },
-               "description":{  
+               "description":{
                   "en":"First follow-up from baseline data collection"
                },
                "start":"2000-01",
                "end":"2020-12",
-               "dataSources":[  
+               "dataSources":[
                   "questionnaires",
                   "physical_measures",
                   "administratives_databases",
                   "others"
                ],
-               "administrativeDatabases":[  
+               "administrativeDatabases":[
                   "aDB1",
                   "aDB2"
                ],
-               "otherDataSources":{  
+               "otherDataSources":{
                   "en":"Other data sources"
                },
-               "bioSamples":[  
+               "bioSamples":[
                  '{{repeat(3,5)}}',
                 '{{random("blood","cord_blood","buccal_cells","tissues","saliva","urine","hair","nail","others")}}'
                ],
-               "tissueTypes":{  
+               "tissueTypes":{
                   "en":"Liver Tissue"
                },
-               "otherBioSamples":{  
+               "otherBioSamples":{
                   "en":"Ear wax"
                },
                "attachments":null
             },
-            {  
-               "attributes":{  
-                  "mica__att1":{  
+            {
+               "attributes":{
+                  "mica__att1":{
                      "en":"value en",
                      "fr":"value fr"
                   }
                },
                "id":"br",
-               "name":{  
+               "name":{
                   "en":"Baseline Recruitment"
                },
-               "description":{  
+               "description":{
                   "en":"Baseline data collection"
                },
                "start":"2010-01",
                "end":"2015-12",
-               "dataSources":[  
+               "dataSources":[
               '{{repeat(1,3)}}',
               '{{random("questionnaires","physical_measures","biological_samples","administratives_databases","others")}}'
                ],
-               "administrativeDatabases":[  
+               "administrativeDatabases":[
                  '{{repeat(3,5)}}',
                 '{{random("health_databases","vital_statistics_databases","socioeconomic_databases","environmental_databases")}}'
                ],
-               "otherDataSources":{  
+               "otherDataSources":{
                   "en":"Other data sources"
                },
-               "bioSamples":[  
+               "bioSamples":[
                  '{{repeat(3,5)}}',
                 '{{random("blood","cord_blood","buccal_cells","tissues","saliva","urine","hair","nail","others")}}'
                ],
                "tissueTypes":null,
-               "otherBioSamples":{  
+               "otherBioSamples":{
                   "en":"Other biological sample"
                },
                "attachments":null
             }
          ],
-         "allDataSources":[  
+         "allDataSources":[
               '{{repeat(1,5)}}',
               '{{random("questionnaires","physical_measures","biological_samples","administratives_databases","others")}}'
          ]
