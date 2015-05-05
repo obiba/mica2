@@ -18,7 +18,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.core.security.Roles;
 import org.obiba.mica.file.rest.FileResource;
@@ -38,7 +37,7 @@ import com.codahale.metrics.annotation.Timed;
  */
 @Component
 @Scope("request")
-@RequiresAuthentication
+@RequiresRoles(Roles.MICA_ADMIN)
 public class DraftNetworkResource {
 
   @Inject
