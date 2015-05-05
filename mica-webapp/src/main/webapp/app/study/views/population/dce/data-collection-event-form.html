@@ -10,14 +10,13 @@
 
 <div>
   <h2 translate>data-collection-event.label-edit</h2>
-  <form name="form" role="form" novalidate
-    class="ng-scope ng-invalid ng-invalid-required ng-dirty" ng-submit="save()">
+  <form name="form" role="form" novalidate ng-submit="save(form)">
     <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
     <tabset>
       <tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active" disabled="tab.disabled">
         <div ng-if="population">
           <h3 translate>study.data-collection-event</h3>
-          <div form-input model="dce.id" required="true" label="data-collection-event.id"></div>
+          <div form-input name="dce_id" model="dce.id" required="true" label="data-collection-event.id"></div>
           <div localized-input name="data-collection-event.name" required="true" model="dce.name" lang="tab.lang" label="data-collection-event.name"></div>
           <div localized-textarea name="data-collection-event.description" model="dce.description" lang="tab.lang" label="data-collection-event.description"></div>
           <div form-input type="number" name="data-collection-event.start-year" min="{{defaultMinYear}}" max="{{defaultMaxYear}}" required="true" model="dce.startYear" lang="tab.lang" label="data-collection-event.start-year"></div>
