@@ -111,6 +111,7 @@ public class DraftNetworkResource {
   }
 
   @Path("/file/{fileId}")
+  @RequiresRoles(Roles.MICA_ADMIN)
   public FileResource study(@PathParam("fileId") String fileId) {
     FileResource studyResource = applicationContext.getBean(FileResource.class);
     studyResource.setPersistable(networkService.findById(id));
