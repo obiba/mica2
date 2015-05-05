@@ -34,14 +34,16 @@ angular.module('obiba.form')
         help: '@'
       },
       templateUrl: 'form/form-input-template.tpl.html',
-      link: function ($scope, elem, attr, ctrl) {
-        if (angular.isUndefined($scope.model) || $scope.model === null) {
-          $scope.model = '';
-        }
-        $scope.form = ctrl;
-      },
       compile: function(elem, attrs) {
         if (!attrs.type) { attrs.type = 'text'; }
+        return {
+          post: function (scope, elem, attr, ctrl) {
+            if (angular.isUndefined(scope.model) || scope.model === null) {
+              scope.model = '';
+            }
+            scope.form = ctrl;
+          }
+        };
       }
     };
   }])
@@ -59,14 +61,16 @@ angular.module('obiba.form')
         help: '@'
       },
       templateUrl: 'form/form-textarea-template.tpl.html',
-      link: function ($scope, elem, attr, ctrl) {
-        if (angular.isUndefined($scope.model) || $scope.model === null) {
-          $scope.model = '';
-        }
-        $scope.form = ctrl;
-      },
       compile: function(elem, attrs) {
         if (!attrs.type) { attrs.type = 'text'; }
+        return {
+          post: function ($scope, elem, attr, ctrl) {
+            if (angular.isUndefined($scope.model) || $scope.model === null) {
+              $scope.model = '';
+            }
+            $scope.form = ctrl;
+          }
+        };
       }
     };
   }])
