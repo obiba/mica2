@@ -14,9 +14,10 @@ import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.dataset.domain.HarmonizationDataset;
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.obiba.mica.core.security.Roles;
 import org.obiba.mica.dataset.DatasetVariableResource;
+import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -26,7 +27,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope("request")
-@RequiresAuthentication
+@RequiresRoles(Roles.MICA_ADMIN)
 public class DraftHarmonizedDatasetVariableResource implements DatasetVariableResource {
 
   private String datasetId;

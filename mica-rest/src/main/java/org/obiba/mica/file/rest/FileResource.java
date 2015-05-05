@@ -5,6 +5,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.PersistableWithAttachments;
 import org.obiba.mica.core.service.GitService;
@@ -15,6 +16,7 @@ import com.codahale.metrics.annotation.Timed;
 
 @Component
 @Scope("request")
+@RequiresAuthentication
 public class FileResource {
 
   @Inject

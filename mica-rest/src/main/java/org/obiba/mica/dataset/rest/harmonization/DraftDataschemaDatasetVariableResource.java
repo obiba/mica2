@@ -16,9 +16,10 @@ import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
+import org.obiba.mica.core.security.Roles;
 import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
@@ -33,7 +34,7 @@ import com.google.common.collect.ImmutableList;
 
 @Component
 @Scope("request")
-@RequiresAuthentication
+@RequiresRoles(Roles.MICA_ADMIN)
 public class DraftDataschemaDatasetVariableResource implements DatasetVariableResource {
 
   private String datasetId;
