@@ -38,9 +38,6 @@ angular.module('obiba.form')
         if (!attrs.type) { attrs.type = 'text'; }
         return {
           post: function (scope, elem, attr, ctrl) {
-            if (angular.isUndefined(scope.model) || scope.model === null) {
-              scope.model = '';
-            }
             scope.form = ctrl;
           }
         };
@@ -65,9 +62,6 @@ angular.module('obiba.form')
         if (!attrs.type) { attrs.type = 'text'; }
         return {
           post: function ($scope, elem, attr, ctrl) {
-            if (angular.isUndefined($scope.model) || $scope.model === null) {
-              $scope.model = '';
-            }
             $scope.form = ctrl;
           }
         };
@@ -89,9 +83,6 @@ angular.module('obiba.form')
       },
       templateUrl: 'form/form-localized-input-template.tpl.html',
       link: function ($scope, elem, attr, ctrl) {
-        if (angular.isUndefined($scope.model) || $scope.model === null) {
-          $scope.model = '';
-        }
         $scope.form = ctrl;
       }
     };
@@ -109,9 +100,6 @@ angular.module('obiba.form')
       },
       templateUrl: 'form/form-checkbox-template.tpl.html',
       link: function ($scope, elem, attr, ctrl) {
-        if (angular.isUndefined($scope.model) || $scope.model === null) {
-          $scope.model = false;
-        }
         $scope.form = ctrl;
       }
     };
