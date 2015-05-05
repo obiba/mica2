@@ -8,7 +8,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.obiba.mica.core.security.Roles;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -17,7 +18,7 @@ import org.springframework.context.ApplicationContext;
 import com.codahale.metrics.annotation.Timed;
 
 @Path("/draft")
-@RequiresAuthentication
+@RequiresRoles(Roles.MICA_ADMIN)
 public class StudyStatesResource {
 
   @Inject

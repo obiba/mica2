@@ -8,6 +8,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.obiba.mica.core.security.Roles;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.file.TempFileService;
 import org.obiba.mica.web.model.Dtos;
@@ -19,6 +21,7 @@ import com.codahale.metrics.annotation.Timed;
 
 @Component
 @Scope("request")
+@RequiresRoles(Roles.MICA_ADMIN)
 public class TempFileResource {
 
   @Inject

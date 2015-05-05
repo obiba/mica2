@@ -21,6 +21,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.obiba.mica.core.security.Roles;
 import org.obiba.mica.dataset.service.KeyStoreService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.OpalCredentialService;
@@ -35,6 +37,7 @@ import com.google.common.collect.Sets;
 import static java.util.stream.Collectors.toList;
 
 @Path("/config")
+@RequiresRoles(Roles.MICA_ADMIN)
 public class MicaConfigResource {
 
   @Inject

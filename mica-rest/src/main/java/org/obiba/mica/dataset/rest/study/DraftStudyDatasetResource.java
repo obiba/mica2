@@ -23,11 +23,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.obiba.mica.core.security.Roles;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
-import org.obiba.mica.core.security.Roles;
 import org.obiba.mica.dataset.service.StudyDatasetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -42,7 +41,7 @@ import com.google.common.collect.ImmutableList;
 
 @Component
 @Scope("request")
-@RequiresAuthentication
+@RequiresRoles(Roles.MICA_ADMIN)
 public class DraftStudyDatasetResource {
 
   @Inject

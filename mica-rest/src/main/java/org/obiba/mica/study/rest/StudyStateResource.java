@@ -6,7 +6,8 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.obiba.mica.core.security.Roles;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -20,7 +21,7 @@ import com.codahale.metrics.annotation.Timed;
  */
 @Component
 @Scope("request")
-@RequiresAuthentication
+@RequiresRoles(Roles.MICA_ADMIN)
 public class StudyStateResource {
 
   @Inject
