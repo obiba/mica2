@@ -5,7 +5,7 @@
     <tabset>
     <tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active" disabled="tab.disabled">
     <div ng-if="study">
-      <div form-input model="population.id" label="population.id" required="true"></div>
+      <div form-input name="population_id" model="population.id" label="population.id" required="true"></div>
       <div localized-input name="population.name" model="population.name" lang="tab.lang" label="population.name"></div>
       <div localized-textarea name="population.description" model="population.description" lang="tab.lang" label="population.description"></div>
 

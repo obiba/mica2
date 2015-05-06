@@ -202,8 +202,9 @@ mica.study
 
   .controller('StudyPopulationController', ['$rootScope', '$scope', '$routeParams', '$location', '$log',
     'DraftStudyResource', 'MicaConfigResource', 'FormServerValidation', 'MicaConstants', 'MicaStudiesConfigResource',
+    'MicaUtil',
     function ($rootScope, $scope, $routeParams, $location, $log, DraftStudyResource, MicaConfigResource, FormServerValidation, MicaConstants,
-              MicaStudiesConfigResource) {
+              MicaStudiesConfigResource, MicaUtil) {
       $scope.availableCountries = MicaConstants.COUNTRIES_ISO_CODES;
       $scope.selectionCriteriaGenders = [];
       $scope.availableSelectionCriteria = [];
@@ -215,14 +216,23 @@ mica.study
       $scope.population = {selectionCriteria: {healthStatus: [], ethnicOrigin: []}, recruitment: {dataSources: []}};
 
       $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}, function () {
+        var latestPopulationId;
+
         if ($routeParams.pid) {
           $scope.population = $scope.study.populations.filter(function (p) {
             return p.id === $routeParams.pid;
           })[0];
+
         } else {
+          if ($scope.study.populations.length) {
+            latestPopulationId = $scope.study.populations[$scope.study.populations.length - 1].id;
+            $scope.population.id = MicaUtil.generateNextId(latestPopulationId);
+          }
+
           if ($scope.study.populations === undefined) {
             $scope.study.populations = [];
           }
+
           $scope.study.populations.push($scope.population);
         }
       }) : {};
@@ -308,9 +318,9 @@ mica.study
         $scope.specificPopulationTypes = extractVocabulary('recruitmentSpecificPopulation');
       });
 
-      $scope.save = function () {
-        if (!$scope.form.$valid) {
-          $scope.form.saveAttempted = true;
+      $scope.save = function (form) {
+        if (!validate(form)) {
+          form.saveAttempted = true;
           return;
         }
 
@@ -407,6 +417,18 @@ mica.study
         $scope.study.$save(redirectToStudy, saveErrorHandler);
       };
 
+      var validate = function(form) {
+        if ($scope.study.populations.filter(function (p) {
+            return p.id === $scope.population.id;
+          }).length > 1) {
+          form.$setValidity('population_id', false);
+        } else {
+          form.$setValidity('population_id', true);
+        }
+
+        return form.$valid;
+      };
+
       var saveErrorHandler = function (response) {
         FormServerValidation.error(response, $scope.form, $scope.languages);
       };
@@ -416,8 +438,10 @@ mica.study
       };
     }])
 
-  .controller('StudyPopulationDceController', ['$rootScope', '$scope', '$routeParams', '$location', '$log', 'DraftStudyResource', 'MicaConfigResource', 'FormServerValidation', 'MicaConstants',
-     function($rootScope, $scope, $routeParams, $location, $log, DraftStudyResource, MicaConfigResource, FormServerValidation) {
+  .controller('StudyPopulationDceController', ['$rootScope', '$scope', '$routeParams', '$location', '$log',
+    'DraftStudyResource', 'MicaConfigResource', 'FormServerValidation', 'MicaUtil',
+     function($rootScope, $scope, $routeParams, $location, $log, DraftStudyResource, MicaConfigResource,
+              FormServerValidation, MicaUtil) {
        $scope.dce = {};
        $scope.fileTypes = '.doc, .docx, .odm, .odt, .gdoc, .pdf, .txt  .xml  .xls, .xlsx, .ppt';
        $scope.defaultMinYear = 1900;
@@ -433,9 +457,18 @@ mica.study
                  return d.id === $routeParams.dceId;
                })[0];
            } else {
+
              if ($scope.population.dataCollectionEvents === undefined) {
                $scope.population.dataCollectionEvents = [];
              }
+
+             if($scope.population.dataCollectionEvents.length) {
+               var latestDce = $scope.population.dataCollectionEvents[$scope.population.dataCollectionEvents.length - 1];
+               $scope.dce.id = MicaUtil.generateNextId(latestDce.id);
+               $scope.dce.name = MicaUtil.generateNextId(latestDce.name);
+               $scope.dce.description = latestDce.description;
+             }
+
              $scope.population.dataCollectionEvents.push($scope.dce);
            }
            $scope.attachments =
@@ -465,19 +498,31 @@ mica.study
          redirectToStudy();
        };
 
-       $scope.save = function () {
+       $scope.save = function (form) {
          $scope.dce.attachments = $scope.attachments === undefined || $scope.attachments.length > 0 ? $scope.attachments : null;
 
          if(!$scope.dce.attachments) { //protobuf doesnt like null values
            delete $scope.dce.attachments;
          }
 
-         if (!$scope.form.$valid) {
-           $scope.form.saveAttempted = true;
+         if (!validate(form)) {
+           form.saveAttempted = true;
            return;
          }
 
          updateStudy();
+       };
+
+       var validate = function (form) {
+         if ($scope.population.dataCollectionEvents.filter(function (d) {
+             return d.id === $scope.dce.id;
+           }).length > 1) {
+           form.$setValidity('dce_id', false);
+         } else {
+           form.$setValidity('dce_id', true);
+         }
+
+         return form.$valid;
        };
 
        var updateStudy = function () {

@@ -187,6 +187,35 @@ mica.factory('AuditsService', ['$http',
     };
   }]);
 
+mica.factory('MicaUtil', [function() {
+  var generateNextId = function(prevId) {
+    var r= /[0-9]+$/,
+      matches = r.exec(prevId);
+
+    if (matches && matches.length) {
+      return prevId.replace(r, parseInt(matches[0], 10) + 1);
+    }
+
+    return prevId ? prevId + '_1' : '';
+  };
+
+  return {
+    generateNextId: function(prevId) {
+      if(angular.isArray(prevId)) {
+        var res = [];
+
+        for(var i = 0; i < prevId.length; i++) {
+          res[i] = {lang: prevId[i].lang, value: generateNextId(prevId[i].value)};
+        }
+
+        return res;
+      }
+
+      return generateNextId(prevId);
+    }
+  };
+}]);
+
 mica.constant('MicaConstants', {
     COUNTRIES_ISO_CODES: [
       {code: 'GB', name: 'United Kingdom'},
