@@ -7,7 +7,11 @@
 <div localized-textarea name="study.objectives" model="study.objectives" label="study.objectives" lang="tab.lang"
     required="true" help="study.objectives-help"></div>
 
-<div form-input name="study.opal" model="study.website" type="url" label="study.website"></div>
+<div form-input name="study.startYear" model="study.startYear" type="number" label="study.start-year" min="{{defaultMinYear}}" max="{{defaultMaxYear}}"></div>
+
+<div form-input name="study.endYear" model="study.endYear" type="number" label="study.end-year" min="{{defaultMinYear}}" max="{{defaultMaxYear}}"></div>
+
+<div form-input name="study.website" model="study.website" type="url" label="study.website"></div>
 
 <label class="control-label" translate>logo</label>
 <attachment-input files="files" accept="image/*"/>
