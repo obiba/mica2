@@ -405,7 +405,7 @@
       "add-study": "Add study",
       "other": "Other sources",
       "other-specific-population": "Other specific population",
-      "info": "Information"
+      "info": "Supplementary information"
     },
     "data-collection-event": "Data Collection Event",
     "data-collection-events": "Data Collection Events",
@@ -483,7 +483,7 @@
     "label-edit": "Edit Population",
     "id": "Id",
     "name": "Name",
-    "info": "Information",
+    "info": "Supplementary information",
     "description": "Description",
     "gender": "Gender",
     "ageMin": "Minimum age",
