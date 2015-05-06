@@ -541,6 +541,8 @@ mica.study
   .controller('StudyEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$location', '$modal', 'DraftStudyResource', 'DraftStudiesResource', 'MicaConfigResource', 'StringUtils', 'FormServerValidation',
 
     function ($rootScope, $scope, $routeParams, $log, $location, $modal, DraftStudyResource, DraftStudiesResource, MicaConfigResource, StringUtils, FormServerValidation) {
+      $scope.defaultMinYear = 1900;
+      $scope.defaultMaxYear = 9999;
       $scope.fileTypes = '.doc, .docx, .odm, .odt, .gdoc, .pdf, .txt  .xml  .xls, .xlsx, .ppt';
       $scope.accessTypes = ['data', 'bio_samples', 'other'];
       $scope.methodDesignTypes = ['case_control', 'case_only', 'clinical_trial', 'cohort_study', 'cross_sectional', 'other'];
