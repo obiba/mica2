@@ -37,7 +37,7 @@ vocabularies:
       - name: gravidity
         title: {en: Gravidity, fr: Femmes enceintes}
       - name: newborn
-        title: {en: Newbornm, fr: Nouveaux-nés}
+        title: {en: Newborn, fr: Nouveaux-nés}
       - name: twin
         title: {en: Twin, fr: Jumeaux}
   - name: populations-dataCollectionEvents-dataSources
