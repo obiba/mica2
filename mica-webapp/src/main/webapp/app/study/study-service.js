@@ -25,7 +25,7 @@ mica.study
       return $resource('ws/draft/study/:id', {}, {
         // override $resource.save method because it uses POST by default
         'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true},
-        'delete': {method: 'DELETE', params: {id: '@id'}},
+        'delete': {method: 'DELETE', params: {id: '@id'}, errorHandler: true},
         'get': {method: 'GET'}
       });
     }])
