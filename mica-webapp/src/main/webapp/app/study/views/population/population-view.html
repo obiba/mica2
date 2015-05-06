@@ -1,4 +1,5 @@
 <h4>
+  <span class="badge">{{population.id}}</span>
   <localized value="population.name" lang="tab.lang"></localized>
   <a ng-click="editPopulation(study, population)" class="action"><i class="fa fa-pencil"></i></a>
   <a ng-click="deletePopulation(population, $index)" class="action"><i class="fa fa-trash-o"></i></a>
@@ -172,6 +173,7 @@
     <table class="table table-striped" ng-show="population.dataCollectionEvents.length">
       <thead>
       <tr>
+        <th>#</th>
         <th translate>study.name</th>
         <th translate>study.description</th>
         <th translate>study.start</th>
@@ -181,6 +183,9 @@
       </thead>
       <tbody>
       <tr ng-repeat="dce in population.dataCollectionEvents">
+        <td>
+          {{dce.id}}
+        </td>
         <td>
           <localized value="dce.name" lang="tab.lang"></localized>
         </td>

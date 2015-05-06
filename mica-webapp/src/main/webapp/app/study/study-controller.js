@@ -465,8 +465,6 @@ mica.study
              if($scope.population.dataCollectionEvents.length) {
                var latestDce = $scope.population.dataCollectionEvents[$scope.population.dataCollectionEvents.length - 1];
                $scope.dce.id = MicaUtil.generateNextId(latestDce.id);
-               $scope.dce.name = MicaUtil.generateNextId(latestDce.name);
-               $scope.dce.description = latestDce.description;
              }
 
              $scope.population.dataCollectionEvents.push($scope.dce);
