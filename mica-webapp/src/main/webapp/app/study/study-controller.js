@@ -6,8 +6,8 @@ mica.study
     studyUpdated: 'event:study-updated'
   })
 
-  .controller('StudyListController', ['$rootScope', '$scope', 'StudyStatesResource', 'DraftStudyResource', 'NOTIFICATION_EVENTS',
-    function ($rootScope, $scope, StudyStatesResource, DraftStudyResource, NOTIFICATION_EVENTS) {
+  .controller('StudyListController', ['$rootScope', '$scope', '$translate', '$interpolate', 'StudyStatesResource', 'DraftStudyResource', 'NOTIFICATION_EVENTS',
+    function ($rootScope, $scope, $translate, $interpolate, StudyStatesResource, DraftStudyResource, NOTIFICATION_EVENTS) {
       $scope.studies = StudyStatesResource.query();
       $scope.deleteStudy = function (id) {
         $scope.studyToDelete = id;
@@ -20,6 +20,33 @@ mica.study
           DraftStudyResource.delete({id: id},
             function () {
               $scope.studies = StudyStatesResource.query();
+            }, function (response) {
+              if (response.status === 409) {
+                var conflicts = '{{network ? networks + ": " + network + ". " : "" }}' +
+                  '{{harmonizationDataset ? harmonizationDatasets + ": " + harmonizationDataset + ". " : "" }}' +
+                  '{{studyDataset ? studyDatasets + ": " + studyDataset : "" }}';
+
+                $translate(['study.delete-conflict-message', 'networks', 'study-datasets', 'harmonization-datasets'])
+                  .then(function (translation) {
+                    $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
+                      titleKey: 'study.delete-conflict',
+                      message: translation['study.delete-conflict-message'] + ' ' + $interpolate(conflicts)(
+                        {
+                          networks: translation.networks,
+                          harmonizationDatasets: translation['harmonization-datasets'],
+                          studyDatasets: translation['study-datasets'],
+                          network: response.data.network.join(', '),
+                          harmonizationDataset: response.data.harmonizationDataset.join(', '),
+                          studyDataset: response.data.studyDataset.join(', ')
+                        })
+                    });
+                  });
+              } else {
+                $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
+                  titleKey: 'form-server-error',
+                  message: angular.toJson(response)
+                });
+              }
             });
         }
 
@@ -28,11 +55,8 @@ mica.study
     }])
 
   .controller('StudyViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location',
-    '$translate', 'StudyStateResource', 'DraftStudyResource', 'DraftStudyPublicationResource', 'MicaConfigResource',
-    'STUDY_EVENTS', 'NOTIFICATION_EVENTS', 'CONTACT_EVENTS', 'MicaStudiesConfigResource', '$modal',
-    function ($rootScope, $scope, $routeParams, $log, $locale, $location, $translate, StudyStateResource,
-              DraftStudyResource, DraftStudyPublicationResource, MicaConfigResource, STUDY_EVENTS, NOTIFICATION_EVENTS,
-              CONTACT_EVENTS, MicaStudiesConfigResource, $modal) {
+    '$translate', 'StudyStateResource', 'DraftStudyResource', 'DraftStudyPublicationResource', 'MicaConfigResource', 'STUDY_EVENTS', 'NOTIFICATION_EVENTS', 'CONTACT_EVENTS',
+    'MicaStudiesConfigResource', '$modal', function ($rootScope, $scope, $routeParams, $log, $locale, $location, $translate, StudyStateResource, DraftStudyResource, DraftStudyPublicationResource, MicaConfigResource, STUDY_EVENTS, NOTIFICATION_EVENTS, CONTACT_EVENTS, MicaStudiesConfigResource, $modal) {
       var getActiveTab = function () {
         return $scope.tabs.filter(function (tab) {
           return tab.active;
@@ -66,7 +90,7 @@ mica.study
         {id: $routeParams.id},
         function (study) {
           if (study.logo) {
-            $scope.logoUrl = 'ws/draft/study/'+study.id+'/file/'+study.logo.id+'/_download';
+            $scope.logoUrl = 'ws/draft/study/' + study.id + '/file/' + study.logo.id + '/_download';
           }
           new $.MicaTimeline(new $.StudyDtoParser()).create('#timeline', study).addLegend();
         });
@@ -162,7 +186,7 @@ mica.study
 
       $scope.deletePopulation = function (population, index) {
         $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
-            {title: 'Delete population', message: 'Are you sure to delete the population?'}, population);
+          {title: 'Delete population', message: 'Are you sure to delete the population?'}, population);
 
         $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, population) {
           if ($scope.study.populations[index] === population) {
@@ -180,8 +204,8 @@ mica.study
         $modal.open({
           templateUrl: 'app/study/views/population/dce/data-collection-event-view.html',
           controller: 'StudyPopulationDceModalController',
-          resolve : {
-            dce : function() {
+          resolve: {
+            dce: function () {
               return dce;
             }
           }
@@ -216,14 +240,14 @@ mica.study
     }])
 
   .controller('StudyPopulationDceModalController', ['$scope', '$modalInstance', '$locale', 'dce',
-    function($scope, $modalInstance, $locale, dce) {
+    function ($scope, $modalInstance, $locale, dce) {
       $scope.months = $locale.DATETIME_FORMATS.MONTH;
       $scope.dce = dce;
 
-      $scope.cancel = function() {
+      $scope.cancel = function () {
         $modalInstance.close();
       };
-  }])
+    }])
 
   .controller('StudyPopulationController', ['$rootScope', '$scope', '$routeParams', '$location', '$log',
     'DraftStudyResource', 'MicaConfigResource', 'FormServerValidation', 'MicaConstants', 'MicaStudiesConfigResource',
@@ -442,7 +466,7 @@ mica.study
         $scope.study.$save(redirectToStudy, saveErrorHandler);
       };
 
-      var validate = function(form) {
+      var validate = function (form) {
         if ($scope.study.populations.filter(function (p) {
             return p.id === $scope.population.id;
           }).length > 1) {
@@ -465,103 +489,103 @@ mica.study
 
   .controller('StudyPopulationDceController', ['$rootScope', '$scope', '$routeParams', '$location', '$log',
     'DraftStudyResource', 'MicaConfigResource', 'FormServerValidation', 'MicaUtil',
-     function($rootScope, $scope, $routeParams, $location, $log, DraftStudyResource, MicaConfigResource,
+    function ($rootScope, $scope, $routeParams, $location, $log, DraftStudyResource, MicaConfigResource,
               FormServerValidation, MicaUtil) {
-       $scope.dce = {};
-       $scope.fileTypes = '.doc, .docx, .odm, .odt, .gdoc, .pdf, .txt  .xml  .xls, .xlsx, .ppt';
-       $scope.defaultMinYear = 1900;
-       $scope.defaultMaxYear = new Date().getFullYear() + 200;
-       $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}, function() {
-         if ($routeParams.pid) {
-           $scope.population = $scope.study.populations.filter(function(p){
-             return p.id === $routeParams.pid;
-           })[0];
+      $scope.dce = {};
+      $scope.fileTypes = '.doc, .docx, .odm, .odt, .gdoc, .pdf, .txt  .xml  .xls, .xlsx, .ppt';
+      $scope.defaultMinYear = 1900;
+      $scope.defaultMaxYear = new Date().getFullYear() + 200;
+      $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}, function () {
+        if ($routeParams.pid) {
+          $scope.population = $scope.study.populations.filter(function (p) {
+            return p.id === $routeParams.pid;
+          })[0];
 
-           if ($routeParams.dceId) {
-             $scope.dce = $scope.population.dataCollectionEvents.filter(function(d){
-                 return d.id === $routeParams.dceId;
-               })[0];
-           } else {
+          if ($routeParams.dceId) {
+            $scope.dce = $scope.population.dataCollectionEvents.filter(function (d) {
+              return d.id === $routeParams.dceId;
+            })[0];
+          } else {
 
-             if ($scope.population.dataCollectionEvents === undefined) {
-               $scope.population.dataCollectionEvents = [];
-             }
+            if ($scope.population.dataCollectionEvents === undefined) {
+              $scope.population.dataCollectionEvents = [];
+            }
 
-             if($scope.population.dataCollectionEvents.length) {
-               var latestDce = $scope.population.dataCollectionEvents[$scope.population.dataCollectionEvents.length - 1];
-               $scope.dce.id = MicaUtil.generateNextId(latestDce.id);
-             }
+            if ($scope.population.dataCollectionEvents.length) {
+              var latestDce = $scope.population.dataCollectionEvents[$scope.population.dataCollectionEvents.length - 1];
+              $scope.dce.id = MicaUtil.generateNextId(latestDce.id);
+            }
 
-             $scope.population.dataCollectionEvents.push($scope.dce);
-           }
-           $scope.attachments =
-             $scope.dce.attachments && $scope.dce.attachments.length > 0 ? $scope.dce.attachments : [];
+            $scope.population.dataCollectionEvents.push($scope.dce);
+          }
+          $scope.attachments =
+            $scope.dce.attachments && $scope.dce.attachments.length > 0 ? $scope.dce.attachments : [];
 
-           $scope.dataSources =
-             ['questionnaires', 'physical_measures', 'administratives_databases', 'biological_samples', 'others'];
-           $scope.bioSamples =
-             [ 'blood', 'cord_blood', 'buccal_cells', 'tissues', 'saliva', 'urine', 'hair', 'nail', 'others'];
-           $scope.administrativeDatabases =
-             ['health_databases', 'vital_statistics_databases', 'socioeconomic_databases', 'environmental_databases'];
+          $scope.dataSources =
+            ['questionnaires', 'physical_measures', 'administratives_databases', 'biological_samples', 'others'];
+          $scope.bioSamples =
+            ['blood', 'cord_blood', 'buccal_cells', 'tissues', 'saliva', 'urine', 'hair', 'nail', 'others'];
+          $scope.administrativeDatabases =
+            ['health_databases', 'vital_statistics_databases', 'socioeconomic_databases', 'environmental_databases'];
 
-         } else {
-           // TODO add error popup
-           $log.error('Failed to retrieve population.');
-         }
-       }) : {};
+        } else {
+          // TODO add error popup
+          $log.error('Failed to retrieve population.');
+        }
+      }) : {};
 
-       MicaConfigResource.get(function (micaConfig) {
-         $scope.tabs = [];
-         micaConfig.languages.forEach(function (lang) {
-           $scope.tabs.push({ lang: lang, labelKey: 'language.' + lang });
-         });
-       });
+      MicaConfigResource.get(function (micaConfig) {
+        $scope.tabs = [];
+        micaConfig.languages.forEach(function (lang) {
+          $scope.tabs.push({lang: lang, labelKey: 'language.' + lang});
+        });
+      });
 
-       $scope.cancel = function () {
-         redirectToStudy();
-       };
+      $scope.cancel = function () {
+        redirectToStudy();
+      };
 
-       $scope.save = function (form) {
-         $scope.dce.attachments = $scope.attachments === undefined || $scope.attachments.length > 0 ? $scope.attachments : null;
+      $scope.save = function (form) {
+        $scope.dce.attachments = $scope.attachments === undefined || $scope.attachments.length > 0 ? $scope.attachments : null;
 
-         if(!$scope.dce.attachments) { //protobuf doesnt like null values
-           delete $scope.dce.attachments;
-         }
+        if (!$scope.dce.attachments) { //protobuf doesnt like null values
+          delete $scope.dce.attachments;
+        }
 
-         if (!validate(form)) {
-           form.saveAttempted = true;
-           return;
-         }
+        if (!validate(form)) {
+          form.saveAttempted = true;
+          return;
+        }
 
-         updateStudy();
-       };
+        updateStudy();
+      };
 
-       var validate = function (form) {
-         if ($scope.population.dataCollectionEvents.filter(function (d) {
-             return d.id === $scope.dce.id;
-           }).length > 1) {
-           form.$setValidity('dce_id', false);
-         } else {
-           form.$setValidity('dce_id', true);
-         }
+      var validate = function (form) {
+        if ($scope.population.dataCollectionEvents.filter(function (d) {
+            return d.id === $scope.dce.id;
+          }).length > 1) {
+          form.$setValidity('dce_id', false);
+        } else {
+          form.$setValidity('dce_id', true);
+        }
 
-         return form.$valid;
-       };
+        return form.$valid;
+      };
 
-       var updateStudy = function () {
-         $log.info('Update study', $scope.study);
-         $scope.study.$save(redirectToStudy, saveErrorHandler);
-       };
+      var updateStudy = function () {
+        $log.info('Update study', $scope.study);
+        $scope.study.$save(redirectToStudy, saveErrorHandler);
+      };
 
-       var saveErrorHandler = function (response) {
-         FormServerValidation.error(response, $scope.form, $scope.languages);
-       };
+      var saveErrorHandler = function (response) {
+        FormServerValidation.error(response, $scope.form, $scope.languages);
+      };
 
-       var redirectToStudy = function() {
-         $location.path('/study/' + $scope.study.id).replace();
-       };
+      var redirectToStudy = function () {
+        $location.path('/study/' + $scope.study.id).replace();
+      };
 
-  }])
+    }])
 
   .controller('StudyEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$location', '$modal', 'DraftStudyResource', 'DraftStudiesResource', 'MicaConfigResource', 'StringUtils', 'FormServerValidation',
 
@@ -587,7 +611,7 @@ mica.study
         $scope.tabs = [];
         $scope.languages = [];
         micaConfig.languages.forEach(function (lang) {
-          $scope.tabs.push({ lang: lang });
+          $scope.tabs.push({lang: lang});
           $scope.languages.push(lang);
         });
       });
@@ -595,7 +619,7 @@ mica.study
       $scope.save = function () {
         $scope.study.logo = $scope.files.length > 0 ? $scope.files[0] : null;
 
-        if(!$scope.study.logo) { //protobuf doesnt like null values
+        if (!$scope.study.logo) { //protobuf doesnt like null values
           delete $scope.study.logo;
         }
 
