@@ -28,8 +28,11 @@ mica.study
     }])
 
   .controller('StudyViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location',
-    '$translate', 'StudyStateResource', 'DraftStudyResource', 'DraftStudyPublicationResource', 'MicaConfigResource', 'STUDY_EVENTS', 'NOTIFICATION_EVENTS', 'CONTACT_EVENTS',
-    'MicaStudiesConfigResource', function ($rootScope, $scope, $routeParams, $log, $locale, $location, $translate, StudyStateResource, DraftStudyResource, DraftStudyPublicationResource, MicaConfigResource, STUDY_EVENTS, NOTIFICATION_EVENTS, CONTACT_EVENTS, MicaStudiesConfigResource) {
+    '$translate', 'StudyStateResource', 'DraftStudyResource', 'DraftStudyPublicationResource', 'MicaConfigResource',
+    'STUDY_EVENTS', 'NOTIFICATION_EVENTS', 'CONTACT_EVENTS', 'MicaStudiesConfigResource', '$modal',
+    function ($rootScope, $scope, $routeParams, $log, $locale, $location, $translate, StudyStateResource,
+              DraftStudyResource, DraftStudyPublicationResource, MicaConfigResource, STUDY_EVENTS, NOTIFICATION_EVENTS,
+              CONTACT_EVENTS, MicaStudiesConfigResource, $modal) {
       var getActiveTab = function () {
         return $scope.tabs.filter(function (tab) {
           return tab.active;
@@ -173,6 +176,18 @@ mica.study
         $location.url($location.url() + '/population/' + population.id + '/dce/add');
       };
 
+      $scope.showDataCollectionEvent = function (study, population, dce) {
+        $modal.open({
+          templateUrl: 'app/study/views/population/dce/data-collection-event-view.html',
+          controller: 'StudyPopulationDceModalController',
+          resolve : {
+            dce : function() {
+              return dce;
+            }
+          }
+        });
+      };
+
       $scope.editDataCollectionEvent = function (study, population, dce) {
         $location.url($location.url() + '/population/' + population.id + '/dce/' + dce.id + '/edit');
       };
@@ -199,6 +214,16 @@ mica.study
       };
 
     }])
+
+  .controller('StudyPopulationDceModalController', ['$scope', '$modalInstance', '$locale', 'dce',
+    function($scope, $modalInstance, $locale, dce) {
+      $scope.months = $locale.DATETIME_FORMATS.MONTH;
+      $scope.dce = dce;
+
+      $scope.cancel = function() {
+        $modalInstance.close();
+      };
+  }])
 
   .controller('StudyPopulationController', ['$rootScope', '$scope', '$routeParams', '$location', '$log',
     'DraftStudyResource', 'MicaConfigResource', 'FormServerValidation', 'MicaConstants', 'MicaStudiesConfigResource',
