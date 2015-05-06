@@ -199,6 +199,7 @@
           {{dce.endYear}} <span ng-show="dce.endMonth">({{months[dce.endMonth - 1]}})</span>
         </td>
         <td>
+          <a ng-click="showDataCollectionEvent(study, population, dce)" class="hand action"><i class="fa fa-eye"></i></a>
           <a ng-click="editDataCollectionEvent(study, population, dce)" class="hand action"><i class="fa fa-pencil"></i></a>
           <a ng-click="deleteDataCollectionEvent(study, $parent.$index, dce, $index)" class="hand action"><i
             class="fa fa-trash-o"></i></a>
