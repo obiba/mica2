@@ -1,0 +1,50 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <button type="button" class="close" aria-hidden="true" ng-click="cancel()">&times;</button>
+    <h4 class="modal-title">
+      <localized value="dce.name" lang="tab.lang"></localized>
+    </h4>
+  </div>
+
+  <div class="modal-body">
+    <div class="table-responsive">
+      <p>
+        <localized value="dce.description" lang="tab.lang"></localized>
+      </p>
+
+      <table class="table table-striped">
+        <tbody>
+        <tr ng-show="dce.startYear">
+          <th translate>study.start</th>
+          <td>
+            {{dce.startYear}} <span ng-show="dce.startMonth">({{months[dce.startMonth - 1]}})</span>
+          </td>
+        </tr>
+        <tr ng-show="dce.endYear">
+          <th translate>study.end</th>
+          <td>
+            {{dce.endYear}} <span ng-show="dce.endMonth">({{months[dce.endMonth - 1]}})</span>
+          </td>
+        </tr>
+        <tr ng-show="dce.dataSources">
+          <th translate>data-collection-event.data-sources</th>
+          <td>
+            <span>{{dce.dataSources.join(', ')}}</span>
+          </td>
+        </tr>
+        <tr ng-show="dce.bioSamples">
+          <th translate>data-collection-event.bio-samples</th>
+          <td>
+            <span>{{dce.bioSamples.join(', ')}}</span>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" ng-click="cancel()">
+      <span translate>cancel</span>
+    </button>
+  </div>
+</div>
