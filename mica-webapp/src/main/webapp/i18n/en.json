@@ -419,7 +419,9 @@
       "revisions-ahead": "Revisions ahead"
     },
     "opal" : "Opal Server",
-    "opal-help": "URL of the opal server for this study"
+    "opal-help": "URL of the opal server for this study",
+    "delete-conflict": "Conflict deleting study",
+    "delete-conflict-message": "Found conflicts when trying to delete study. Remove dependencies and try again."
   },
   "contact": {
     "label": "Contact",
