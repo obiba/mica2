@@ -15,7 +15,6 @@ public class PersistableYearMonth implements Serializable, Comparable<Persistabl
 
   private String yearMonth;
 
-
   public interface YearMonthData {
     int getYear();
     int getMonth();
@@ -25,10 +24,6 @@ public class PersistableYearMonth implements Serializable, Comparable<Persistabl
 
   public String getYearMonth() {
     return yearMonth;
-  }
-
-  public void setYearMonth(String value) {
-    yearMonth = value;
   }
 
   public static PersistableYearMonth of(int y, int m) {
