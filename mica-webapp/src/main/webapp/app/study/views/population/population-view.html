@@ -13,10 +13,12 @@
   <tab heading="{{'study.selection-criteria.label' | translate}}">
     <table class="table table-striped">
       <tbody>
-      <tr ng-repeat="criteria in population.selectionCriteria.criteria" class="dl-horizontal no-margin-bottom">
-        <th ng-bind="getLabel('selectionCriteriaCriteria', criteria)"></th>
+      <tr>
+        <th translate>study.selection-criteria.criteria</th>
         <td>
-          <i class="fa fa-check"></i>
+          <span ng-repeat="c in population.selectionCriteria.criteria">
+          {{getLabel('selectionCriteriaCriteria', c)}}{{$last ? '' : ', '}}
+          </span>
         </td>
       </tr>
       <tr>

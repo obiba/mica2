@@ -386,6 +386,7 @@
     },
     "selection-criteria": {
       "label": "Selection criteria",
+      "criteria": "Criteria",
       "gender": {
         "label": "Gender",
         "men": "Men",
