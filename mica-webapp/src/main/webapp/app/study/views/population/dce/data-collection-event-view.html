@@ -32,16 +32,64 @@
             <span>{{dce.dataSources.join(', ')}}</span>
           </td>
         </tr>
-        <tr ng-show="dce.bioSamples">
+
+        <tr ng-show="dce.otherDataSources && dce.dataSources.indexOf('others') > -1">
+          <th translate>data-collection-event.other-data-sources</th>
+          <td>
+            <localized value="dce.otherDataSources" lang="tab.lang"></localized>
+          </td>
+        </tr>
+
+        <tr ng-show="dce.administrativeDatabases && dce.dataSources.indexOf('administratives_databases') > -1">
+          <th translate>data-collection-event.admin-databases</th>
+          <td>
+            <span>{{dce.administrativeDatabases.join(', ')}}</span>
+          </td>
+        </tr>
+
+        <tr ng-show="dce.bioSamples && dce.dataSources.indexOf('biological_samples') > -1">
           <th translate>data-collection-event.bio-samples</th>
           <td>
             <span>{{dce.bioSamples.join(', ')}}</span>
           </td>
         </tr>
+        <tr ng-show="dce.tissueTypes && dce.dataSources.indexOf('biological_samples') > -1">
+          <th translate>data-collection-event.tissue-types</th>
+          <td>
+            <localized value="dce.tissueTypes" lang="tab.lang"></localized>
+          </td>
+        </tr>
+        <tr ng-show="dce.otherBioSamples && dce.dataSources.indexOf('biological_samples') > -1">
+          <th translate>data-collection-event.other-bio-samples</th>
+          <td>
+            <localized value="dce.otherBioSamples" lang="tab.lang"></localized>
+          </td>
+        </tr>
         </tbody>
       </table>
+    </div>
+    <div ng-show="dce.attachments">
+      <h3 translate>attachments</h3>
+      <table class="table table-striped">
+        <tbody>
+        <tr ng-repeat="attachment in dce.attachments | filter:{lang:lang}">
+          <th>
+            <a target="_self" ng-href="/ws/draft/study/{{study.id}}/file/{{attachment.id}}/_download"
+              download="{{attachment.fileName}}">
+              {{attachment.fileName}}
+            </a>
+          </th>
+          <td>
+            {{attachment.size | bytes}}
+          </td>
+          <td>
+            <small>MD5: {{attachment.md5}}</small>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
-
   <div class="modal-footer">
     <button type="button" class="btn btn-default" ng-click="cancel()">
       <span translate>cancel</span>

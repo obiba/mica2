@@ -26,20 +26,32 @@
 
           <h4 class="voffset4" translate>data-collection-event.data-sources</h4>
           <div form-checkbox-group options="dataSources" model="dce.dataSources"></div>
-          <div ng-show="dce.dataSources.indexOf('others') > -1" localized-input name="data-collection-event.other-data-sources" model="dce.otherDataSources" lang="tab.lang" label="data-collection-event.other-data-sources"></div>
 
-          <div class="voffset4" ng-show="dce.dataSources.indexOf('biological_samples') > -1">
-            <h4 translate>data-collection-event.bio-samples</h4>
-            <div form-checkbox-group options="bioSamples" model="dce.bioSamples"></div>
-            <div ng-show="dce.bioSamples.indexOf('others') > -1" localized-input name="data-collection-event.other-bio-samples" model="dce.otherBioSamples" lang="tab.lang" label="data-collection-event.other-bio-samples"></div>
-          </div>
-
-          <div ng-show="dce.bioSamples.indexOf('tissues') > -1" localized-input name="data-collection-event.tissue-types" model="dce.tissueTypes" lang="tab.lang" label="data-collection-event.tissue-types"></div>
-
-          <div class="voffset4" ng-show="dce.dataSources.indexOf('administratives_databases') > -1">
-            <h4 translate>data-collection-event.admin-databases</h4>
-            <div form-checkbox-group options="administrativeDatabases" model="dce.administrativeDatabases"></div>
-          </div>
+          <tabset>
+            <tab heading="{{'data-collection-event.admin-databases' | translate}}"
+              disabled="dce.dataSources.indexOf('administratives_databases') < 0"
+              active="dataSourcesTabs.administratives_databases">
+              <div ng-show="dce.dataSources.indexOf('administratives_databases') > -1">
+                <div form-checkbox-group options="administrativeDatabases" model="dce.administrativeDatabases"></div>
+              </div>
+            </tab>
+            <tab heading="{{'data-collection-event.bio-samples' | translate}}"
+              disabled="dce.dataSources.indexOf('biological_samples') < 0"
+              active="dataSourcesTabs.biological_samples">
+              <div ng-show="dce.dataSources.indexOf('biological_samples') > -1">
+                <div form-checkbox-group options="bioSamples" model="dce.bioSamples"></div>
+                <div ng-show="dce.bioSamples.indexOf('others') > -1" localized-input name="data-collection-event.other-bio-samples" model="dce.otherBioSamples" lang="tab.lang" label="data-collection-event.other-bio-samples"></div>
+                <div ng-show="dce.bioSamples.indexOf('tissues') > -1" localized-input name="data-collection-event.tissue-types" model="dce.tissueTypes" lang="tab.lang" label="data-collection-event.tissue-types"></div>
+              </div>
+            </tab>
+            <tab heading="{{'data-collection-event.other-data-sources' | translate }}"
+              disabled="dce.dataSources.indexOf('others') < 0"
+              active="dataSourcesTabs.others">
+              <div ng-show="dce.dataSources.indexOf('others') > -1">
+                <div localized-input name="data-collection-event.other-data-sources" model="dce.otherDataSources" lang="tab.lang" label="data-collection-event.other-data-sources"></div>
+              </div>
+            </tab>
+          </tabset>
 
           <div class="voffset4">
             <h4 translate>attachments</h4>
