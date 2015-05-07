@@ -207,6 +207,9 @@ mica.study
           resolve: {
             dce: function () {
               return dce;
+            },
+            study: function () {
+              return study;
             }
           }
         });
@@ -239,10 +242,11 @@ mica.study
 
     }])
 
-  .controller('StudyPopulationDceModalController', ['$scope', '$modalInstance', '$locale', 'dce',
-    function ($scope, $modalInstance, $locale, dce) {
+  .controller('StudyPopulationDceModalController', ['$scope', '$modalInstance', '$locale', 'dce', 'study',
+    function ($scope, $modalInstance, $locale, dce, study) {
       $scope.months = $locale.DATETIME_FORMATS.MONTH;
       $scope.dce = dce;
+      $scope.study = study;
 
       $scope.cancel = function () {
         $modalInstance.close();
@@ -495,6 +499,7 @@ mica.study
       $scope.fileTypes = '.doc, .docx, .odm, .odt, .gdoc, .pdf, .txt  .xml  .xls, .xlsx, .ppt';
       $scope.defaultMinYear = 1900;
       $scope.defaultMaxYear = new Date().getFullYear() + 200;
+      $scope.dataSourcesTabs = {};
       $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}, function () {
         if ($routeParams.pid) {
           $scope.population = $scope.study.populations.filter(function (p) {
@@ -583,6 +588,51 @@ mica.study
 
       var redirectToStudy = function () {
         $location.path('/study/' + $scope.study.id).replace();
+      };
+
+      $scope.$watch('dce.dataSources', function (newVal, oldVal) {
+        if (oldVal === undefined || newVal === undefined) {
+          $scope.dce.dataSources = [];
+          return;
+        }
+
+        var dsFilter = function(d) {
+          return d !== 'questionnaires' && d !=='physical_measures';
+        };
+
+        updateActiveDatasourceTab(angular.copy(newVal).filter(dsFilter), angular.copy(oldVal).filter(dsFilter));
+      }, true);
+
+      var updateActiveDatasourceTab = function (newVal, oldVal) {
+        function arrayDiff(source, target) {
+          for (var i = 0; i < source.length; i++) {
+            if (target.indexOf(source[i]) < 0) {
+              return source[i];
+            }
+          }
+        }
+
+        if (newVal.length < oldVal.length) {
+          var rem = arrayDiff(oldVal, newVal);
+
+          if (rem) {
+            if ($scope.dataSourcesTabs[rem]) {
+              $scope.dataSourcesTabs[newVal[0]] = true;
+            }
+
+            $scope.dataSourcesTabs[rem] = false;
+          }
+        } else {
+          var added = arrayDiff(newVal, oldVal);
+
+          if (added) {
+            for (var k in $scope.dataSourcesTabs) {
+              $scope.dataSourcesTabs[k] = false;
+            }
+
+            $scope.dataSourcesTabs[added] = true;
+          }
+        }
       };
 
     }])

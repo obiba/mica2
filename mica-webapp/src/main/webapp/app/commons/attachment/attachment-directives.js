@@ -31,7 +31,6 @@ mica.attachment
           showProgressBar: true,
           lang: 'en',
           progress: 0,
-          file: file,
           fileName: file.name,
           size: file.size
         };
