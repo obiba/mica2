@@ -12,7 +12,15 @@ package org.obiba.mica.core.security;
 
 public interface Roles {
 
+  // can edit/publish data and change system configuration
   String MICA_ADMIN = "mica-administrator";
 
+  // can edit draft data and publish them
+  String MICA_REVIEWER = "mica-reviewer";
+
+  // can edit data draft data
+  String MICA_EDITOR = "mica-editor";
+
+  // can view published data
   String MICA_USER = "mica-user";
 }

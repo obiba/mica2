@@ -52,8 +52,15 @@ public class CurrentSessionResource {
         .setUsername(subject.getPrincipal().toString());
 
     try {
-      subject.checkRole(Roles.MICA_ADMIN);
-      builder.setRole(Roles.MICA_ADMIN);
+      if (subject.hasRole(Roles.MICA_ADMIN)) {
+        builder.setRole(Roles.MICA_ADMIN);
+      } else if (subject.hasRole(Roles.MICA_REVIEWER)) {
+        builder.setRole(Roles.MICA_REVIEWER);
+      } else if (subject.hasRole(Roles.MICA_EDITOR)) {
+        builder.setRole(Roles.MICA_EDITOR);
+      } else {
+        builder.setRole(Roles.MICA_USER);
+      }
     } catch(AuthorizationException e) {
       builder.setRole(Roles.MICA_USER);
     }
