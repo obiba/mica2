@@ -382,7 +382,8 @@
       },
       "maelstrom": "Authorization from contributors to the Maelstrom catalogues",
       "specific": "Authorization from contributors to the [specific network] catalogues",
-      "authorizer": "Authorizer"
+      "authorizer": "Authorizer",
+      "date": "Date"
     },
     "selection-criteria": {
       "label": "Selection criteria",

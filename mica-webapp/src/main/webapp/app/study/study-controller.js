@@ -652,6 +652,9 @@ mica.study
           $scope.files = response.logo ? [response.logo] : [];
           $scope.study.attachments =
             response.attachments && response.attachments.length > 0 ? response.attachments : [];
+
+          $scope.study.maelstromAuthorization.date = response.maelstromAuthorization.date ? new Date(response.maelstromAuthorization.date.split('-').map(function(x) { return parseInt(x, 10);}))  : null;
+          $scope.study.specificAuthorization.date = response.specificAuthorization.date ? new Date(response.specificAuthorization.date.split('-').map(function(x) { return parseInt(x, 10);})) : null;
         }
       }) : {attachments: []};
 
@@ -710,5 +713,4 @@ mica.study
       $scope.cancel = function () {
         $location.path('/study' + ($scope.study.id ? '/' + $scope.study.id : '')).replace();
       };
-
     }]);
