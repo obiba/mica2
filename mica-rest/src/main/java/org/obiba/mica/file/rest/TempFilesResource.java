@@ -14,10 +14,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.obiba.mica.core.security.Roles;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.file.TempFileService;
 import org.slf4j.Logger;
@@ -27,7 +26,7 @@ import org.springframework.context.ApplicationContext;
 import com.codahale.metrics.annotation.Timed;
 
 @Path("/files/temp")
-@RequiresRoles(Roles.MICA_ADMIN)
+@RequiresPermissions({"mica:/files:UPLOAD"})
 public class TempFilesResource {
 
   private static final Logger log = LoggerFactory.getLogger(TempFilesResource.class);

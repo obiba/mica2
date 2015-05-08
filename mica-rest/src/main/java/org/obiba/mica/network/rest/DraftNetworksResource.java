@@ -24,10 +24,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.service.NetworkService;
-import org.obiba.mica.core.security.Roles;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.ApplicationContext;
@@ -39,7 +38,6 @@ import com.codahale.metrics.annotation.Timed;
 @Component
 @Scope("request")
 @Path("/draft")
-@RequiresRoles(Roles.MICA_ADMIN)
 public class DraftNetworksResource {
 
   @Inject
@@ -54,6 +52,7 @@ public class DraftNetworksResource {
   @GET
   @Path("/networks")
   @Timed
+  @RequiresPermissions({"mica:/draft:EDIT"})
   public List<Mica.NetworkDto> list(@QueryParam("study") String studyId) {
     return networkService.findAllNetworks(studyId).stream().map(dtos::asDto).collect(Collectors.toList());
   }
@@ -61,6 +60,7 @@ public class DraftNetworksResource {
   @POST
   @Path("/networks")
   @Timed
+  @RequiresPermissions({"mica:/draft:EDIT"})
   public Response create(Mica.NetworkDto networkDto, @Context UriInfo uriInfo) {
     Network network = dtos.fromDto(networkDto);
 
@@ -71,12 +71,14 @@ public class DraftNetworksResource {
   @PUT
   @Path("/networks/_index")
   @Timed
+  @RequiresPermissions({"mica:/draft:PUBLISH"})
   public Response reIndex() {
     networkService.indexAll();
     return Response.noContent().build();
   }
 
   @Path("/network/{id}")
+  @RequiresPermissions({"mica:/draft:EDIT"})
   public DraftNetworkResource dataset(@PathParam("id") String id) {
     DraftNetworkResource resource = applicationContext.getBean(DraftNetworkResource.class);
     resource.setId(id);

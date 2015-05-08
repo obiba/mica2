@@ -41,17 +41,17 @@
     </div>
     <div class="navbar-collapse collapse" id="navbar-main" ng-switch="authenticated">
       <ul class="nav navbar-nav">
-        <li ng-show="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+        <li ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
           <a href="#/network">
             <span translate>networks</span>
           </a>
         </li>
-        <li ng-show="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+        <li ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
           <a href="#/study">
             <span translate>studies</span>
           </a>
         </li>
-        <li class="dropdown" ng-show="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+        <li class="dropdown" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             <span translate>datasets</span>
             <i class="fa fa-caret-down"></i></a>
@@ -60,7 +60,7 @@
             <li><a href="#/harmonization-dataset"><span translate>harmonization-datasets</span></a></li>
           </ul>
         </li>
-        <li class="dropdown" ng-show="hasRole(['mica-administrator'])">
+        <li class="dropdown" ng-if="hasRole(['mica-administrator'])">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             <span translate>global.menu.admin</span>
             <i class="fa fa-caret-down"></i></a>

@@ -23,9 +23,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.core.domain.StudyTable;
-import org.obiba.mica.core.security.Roles;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
@@ -41,7 +40,6 @@ import com.google.common.collect.ImmutableList;
 
 @Component
 @Scope("request")
-@RequiresRoles(Roles.MICA_ADMIN)
 public class DraftHarmonizationDatasetResource {
 
   @Inject
@@ -60,19 +58,20 @@ public class DraftHarmonizationDatasetResource {
   }
 
   @GET
+  @RequiresPermissions({"mica:/draft:EDIT"})
   public Mica.DatasetDto get() {
     return dtos.asDto(datasetService.findById(id));
   }
 
   @DELETE
-  @RequiresRoles(Roles.MICA_ADMIN)
+  @RequiresPermissions({"mica:/draft:EDIT"})
   public void delete(){
     datasetService.delete(id);
   }
 
   @PUT
   @Timed
-  @RequiresRoles(Roles.MICA_ADMIN)
+  @RequiresPermissions({"mica:/draft:EDIT"})
   public Response update(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo) {
     if(!datasetDto.hasId() || !datasetDto.getId().equals(id))
       throw new IllegalArgumentException("Not the expected dataset id");
@@ -86,7 +85,7 @@ public class DraftHarmonizationDatasetResource {
   @PUT
   @Path("/_index")
   @Timed
-  @RequiresRoles(Roles.MICA_ADMIN)
+  @RequiresPermissions({"mica:/draft:PUBLISH"})
   public Response index() {
     datasetService.index(id);
     return Response.noContent().build();
@@ -94,7 +93,7 @@ public class DraftHarmonizationDatasetResource {
 
   @PUT
   @Path("/_publish")
-  @RequiresRoles(Roles.MICA_ADMIN)
+  @RequiresPermissions({"mica:/draft:PUBLISH"})
   public Response publish() {
     datasetService.publish(id, true);
     return Response.noContent().build();
@@ -102,7 +101,7 @@ public class DraftHarmonizationDatasetResource {
 
   @DELETE
   @Path("/_publish")
-  @RequiresRoles(Roles.MICA_ADMIN)
+  @RequiresPermissions({"mica:/draft:PUBLISH"})
   public Response unPublish() {
     datasetService.publish(id, false);
     return Response.noContent().build();
@@ -110,13 +109,14 @@ public class DraftHarmonizationDatasetResource {
 
   @GET
   @Path("/table")
-  @RequiresRoles(Roles.MICA_ADMIN)
+  @RequiresPermissions({"mica:/draft:EDIT"})
   public Magma.TableDto getTable() {
     return datasetService.getTableDto(getDataset());
   }
 
   @GET
   @Path("/variables")
+  @RequiresPermissions({"mica:/draft:EDIT"})
   public List<Mica.DatasetVariableDto> getVariables() {
     ImmutableList.Builder<Mica.DatasetVariableDto> builder = ImmutableList.builder();
     datasetService.getDatasetVariables(getDataset()).forEach(variable -> builder.add(dtos.asDto(variable)));
@@ -124,6 +124,7 @@ public class DraftHarmonizationDatasetResource {
   }
 
   @Path("/variable/{variable}")
+  @RequiresPermissions({"mica:/draft:EDIT"})
   public DraftDataschemaDatasetVariableResource getVariable(@PathParam("variable") String variable) {
     DraftDataschemaDatasetVariableResource resource = applicationContext.getBean(DraftDataschemaDatasetVariableResource.class);
     resource.setDatasetId(id);
@@ -132,6 +133,7 @@ public class DraftHarmonizationDatasetResource {
   }
 
   @Path("/study/{study}/variable/{variable}")
+  @RequiresPermissions({"mica:/draft:EDIT"})
   public DraftHarmonizedDatasetVariableResource getVariable(@PathParam("study") String studyId, @PathParam("variable") String variable) {
     DraftHarmonizedDatasetVariableResource resource = applicationContext.getBean(DraftHarmonizedDatasetVariableResource.class);
     resource.setDatasetId(id);
@@ -142,6 +144,7 @@ public class DraftHarmonizationDatasetResource {
 
   @POST
   @Path("/facets")
+  @RequiresPermissions({"mica:/draft:EDIT"})
   public List<Search.QueryResultDto> getFacets(Search.QueryTermsDto query) {
     ImmutableList.Builder<Search.QueryResultDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset();
