@@ -3,11 +3,13 @@
   <h2 class="voffset5" translate>study.details</h2>
 
   <div class="btn-group pull-right">
-    <a ng-href="#/study/{{study.id}}/edit" class="btn btn-primary">
+    <a ng-href="#/study/{{study.id}}/edit" class="btn btn-primary"
+      ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
       <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
     </a>
     <publish-button version="studySummary['obiba.mica.StudyStateDto.state'].publishedTag"
-      ahead="studySummary['obiba.mica.StudyStateDto.state'].revisionsAhead" publish="publish()"></publish-button>
+      ahead="studySummary['obiba.mica.StudyStateDto.state'].revisionsAhead" publish="publish()"
+      ng-if="hasRole(['mica-administrator','mica-reviewer'])"></publish-button>
   </div>
 
   <tabset>
@@ -68,15 +70,18 @@
                         (<localized value="investigator.institution.name" lang="tab.lang"></localized>)
                       </span>
                       </a>
-                      <a ng-click="editInvestigator(study, investigator)" class="action">
-                        <i class="fa fa-pencil"></i>
-                      </a>
-                      <a ng-click="deleteInvestigator(study, investigator)" class="action">
-                        <i class="fa fa-trash-o"></i>
-                      </a>
+                      <div class="inline" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+                        <a ng-click="editInvestigator(study, investigator)" class="action">
+                          <i class="fa fa-pencil"></i>
+                        </a>
+                        <a ng-click="deleteInvestigator(study, investigator)" class="action">
+                          <i class="fa fa-trash-o"></i>
+                        </a>
+                      </div>
                     </li>
                   </ul>
-                  <button type="button" class="btn btn-info btn-sm" ng-click="addInvestigator(study)">
+                  <button type="button" class="btn btn-info btn-sm" ng-click="addInvestigator(study)"
+                    ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
                     <i class="fa fa-plus"></i> <span translate>study.add-investigator</span>
                   </button>
                 </div>
@@ -95,11 +100,14 @@
                         (<localized value="contact.institution.name" lang="tab.lang"></localized>)
                       </span>
                       </a>
-                      <a ng-click="editContact(study, contact)" class="action"><i class="fa fa-pencil"></i></a>
-                      <a ng-click="deleteContact(study, contact)" class="action"><i class="fa fa-trash-o"></i></a>
+                      <div class="inline" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+                        <a ng-click="editContact(study, contact)" class="action"><i class="fa fa-pencil"></i></a>
+                        <a ng-click="deleteContact(study, contact)" class="action"><i class="fa fa-trash-o"></i></a>
+                      </div>
                     </li>
                   </ul>
-                  <button type="button" class="btn btn-info btn-sm" ng-click="addContact(study)">
+                  <button type="button" class="btn btn-info btn-sm" ng-click="addContact(study)"
+                    ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
                     <i class="fa fa-plus"></i> <span translate>study.add-contact</span>
                   </button>
                 </div>
@@ -159,7 +167,8 @@
               <th translate>numberOfParticipants.participants</th>
               <td>
                 <span ng-hide="study.numberOfParticipants.participant.noLimit">{{study.numberOfParticipants.participant.number | number}}</span>
-                <span ng-show="study.numberOfParticipants.participant.noLimit" translate>numberOfParticipants.no-limit</span>
+                <span ng-show="study.numberOfParticipants.participant.noLimit"
+                  translate>numberOfParticipants.no-limit</span>
               </td>
             </tr>
             <tr ng-show="study.numberOfParticipants.sample">
@@ -260,7 +269,8 @@
             <span translate>study.populations</span>
           </h3>
 
-          <a ng-click="addPopulation()" class="btn btn-info">
+          <a ng-click="addPopulation()" class="btn btn-info"
+            ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
             <i class="fa fa-plus"></i> <span translate>study.add-population</span>
           </a>
 

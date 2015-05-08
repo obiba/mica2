@@ -6,8 +6,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
-import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.obiba.mica.core.security.Roles;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -21,7 +20,6 @@ import com.codahale.metrics.annotation.Timed;
  */
 @Component
 @Scope("request")
-@RequiresRoles(Roles.MICA_ADMIN)
 public class StudyStateResource {
 
   @Inject
@@ -38,12 +36,14 @@ public class StudyStateResource {
 
   @GET
   @Timed
+  @RequiresPermissions({"mica:/draft:EDIT"})
   public Mica.StudySummaryDto get() {
     return dtos.asDto(studyService.findStateById(id));
   }
 
   @PUT
   @Path("/_publish")
+  @RequiresPermissions({"mica:/draft:PUBLISH"})
   public Response publish() {
     studyService.publish(id);
     return Response.noContent().build();

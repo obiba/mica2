@@ -14,8 +14,7 @@ import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
-import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.obiba.mica.core.security.Roles;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.service.StudyDatasetService;
@@ -28,7 +27,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope("request")
-@RequiresRoles(Roles.MICA_ADMIN)
+@RequiresPermissions({"mica:/draft:EDIT"})
 public class DraftStudyDatasetVariableResource implements DatasetVariableResource {
 
   private String datasetId;

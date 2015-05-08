@@ -13,15 +13,17 @@
   <h2 class="voffset5" translate>harmonization-dataset</h2>
 
   <div class="btn-group pull-right">
-    <a ng-href="#/harmonization-dataset/{{dataset.id}}/edit" class="btn btn-primary">
+    <a ng-href="#/harmonization-dataset/{{dataset.id}}/edit" class="btn btn-primary"
+      ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
       <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
     </a>
-    <publish-switch status="isPublished()" publish="publish()"></publish-switch>
+    <publish-switch status="isPublished()" publish="publish()"
+      ng-if="hasRole(['mica-administrator','mica-reviewer'])"></publish-switch>
   </div>
 
   <tabset>
     <tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active"
-        disabled="tab.disabled">
+      disabled="tab.disabled">
 
       <div class="table-responsive">
 
@@ -65,8 +67,9 @@
           <tr>
             <th translate>dataset.table</th>
             <td>
-              <a ng-href="{{opal + '/ui/index.html#!project;name=' + datasetProject + ';tab=TABLES;path=' + datasetProject + '.' + datasetTable}}"
-                  target="_blank">{{datasetTable}}</a>
+              <a
+                ng-href="{{opal + '/ui/index.html#!project;name=' + datasetProject + ';tab=TABLES;path=' + datasetProject + '.' + datasetTable}}"
+                target="_blank">{{datasetTable}}</a>
             </td>
           </tr>
           </tbody>

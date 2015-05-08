@@ -23,8 +23,9 @@ import org.apache.shiro.authc.credential.PasswordMatcher;
 import org.apache.shiro.authc.pam.FirstSuccessfulStrategy;
 import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
 import org.apache.shiro.authz.ModularRealmAuthorizer;
-import org.apache.shiro.authz.permission.PermissionResolver;
 import org.apache.shiro.authz.permission.PermissionResolverAware;
+import org.apache.shiro.authz.permission.RolePermissionResolver;
+import org.apache.shiro.authz.permission.RolePermissionResolverAware;
 import org.apache.shiro.cache.ehcache.EhCacheManager;
 import org.apache.shiro.config.Ini;
 import org.apache.shiro.config.IniSecurityManagerFactory;
@@ -45,10 +46,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.stereotype.Component;
-import org.springframework.context.annotation.DependsOn;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
@@ -77,13 +78,14 @@ public class SecurityManagerFactory implements FactoryBean<SecurityManager> {
 //  @Inject
 //  private Set<AuthenticationListener> authenticationListeners;
 
-//  @Inject
-//  private RolePermissionResolver rolePermissionResolver;
+  @Inject
+  private RolePermissionResolver rolePermissionResolver;
+
+  @Inject
+  private MicaPermissionResolver permissionResolver;
 
   @Inject
   private CacheManager cacheManager;
-
-  private final PermissionResolver permissionResolver = new MicaPermissionResolver();
 
   private SecurityManager securityManager;
 
@@ -175,7 +177,7 @@ public class SecurityManagerFactory implements FactoryBean<SecurityManager> {
 
     private void initializeAuthorizer(DefaultSecurityManager dsm) {
       if(dsm.getAuthorizer() instanceof ModularRealmAuthorizer) {
-//        ((RolePermissionResolverAware) dsm.getAuthorizer()).setRolePermissionResolver(rolePermissionResolver);
+        ((RolePermissionResolverAware) dsm.getAuthorizer()).setRolePermissionResolver(rolePermissionResolver);
         ((PermissionResolverAware) dsm.getAuthorizer()).setPermissionResolver(permissionResolver);
       }
     }
@@ -199,6 +201,7 @@ public class SecurityManagerFactory implements FactoryBean<SecurityManager> {
 
       if(!Strings.isNullOrEmpty(obibaRealmUrl)) {
         ObibaRealm oRealm = new ObibaRealm();
+        oRealm.setRolePermissionResolver(rolePermissionResolver);
         oRealm.setAuthenticationCachingEnabled(true);
         oRealm.setBaseUrl(obibaRealmUrl);
         oRealm.setServiceName(serviceName);
@@ -215,7 +218,7 @@ public class SecurityManagerFactory implements FactoryBean<SecurityManager> {
       // are applied by the ModularRealmAuthorizer
       IniRealm realm = new IniRealm();
       realm.setName(INI_REALM);
-//      realm.setRolePermissionResolver(rolePermissionResolver);
+      realm.setRolePermissionResolver(rolePermissionResolver);
       realm.setPermissionResolver(permissionResolver);
       realm.setResourcePath(getShiroIniPath());
       realm.setCredentialsMatcher(new PasswordMatcher());

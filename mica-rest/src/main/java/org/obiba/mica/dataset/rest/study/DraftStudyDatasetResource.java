@@ -23,8 +23,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.obiba.mica.core.security.Roles;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.service.StudyDatasetService;
@@ -41,7 +40,6 @@ import com.google.common.collect.ImmutableList;
 
 @Component
 @Scope("request")
-@RequiresRoles(Roles.MICA_ADMIN)
 public class DraftStudyDatasetResource {
 
   @Inject
@@ -60,20 +58,21 @@ public class DraftStudyDatasetResource {
   }
 
   @GET
+  @RequiresPermissions({"mica:/draft:EDIT"})
   public Mica.DatasetDto get() {
     return dtos.asDto(getDataset());
   }
 
   @DELETE
   @Timed
-  @RequiresRoles(Roles.MICA_ADMIN)
+  @RequiresPermissions({"mica:/draft:EDIT"})
   public void delete() {
     datasetService.delete(id);
   }
 
   @PUT
   @Timed
-  @RequiresRoles(Roles.MICA_ADMIN)
+  @RequiresPermissions({"mica:/draft:EDIT"})
   public Response update(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo) {
     if (!datasetDto.hasId() || !datasetDto.getId().equals(id)) throw new IllegalArgumentException("Not the expected dataset id");
     Dataset dataset = dtos.fromDto(datasetDto);
@@ -86,7 +85,7 @@ public class DraftStudyDatasetResource {
   @PUT
   @Path("/_index")
   @Timed
-  @RequiresRoles(Roles.MICA_ADMIN)
+  @RequiresPermissions({"mica:/draft:PUBLISH"})
   public Response index() {
     datasetService.index(id);
     return Response.noContent().build();
@@ -94,7 +93,7 @@ public class DraftStudyDatasetResource {
 
   @PUT
   @Path("/_publish")
-  @RequiresRoles(Roles.MICA_ADMIN)
+  @RequiresPermissions({"mica:/draft:PUBLISH"})
   public Response publish() {
     datasetService.publish(id, true);
     return Response.noContent().build();
@@ -102,7 +101,7 @@ public class DraftStudyDatasetResource {
 
   @DELETE
   @Path("/_publish")
-  @RequiresRoles(Roles.MICA_ADMIN)
+  @RequiresPermissions({"mica:/draft:PUBLISH"})
   public Response unPublish() {
     datasetService.publish(id, false);
     return Response.noContent().build();
@@ -110,7 +109,7 @@ public class DraftStudyDatasetResource {
 
   @GET
   @Path("/table")
-  @RequiresRoles(Roles.MICA_ADMIN)
+  @RequiresPermissions({"mica:/draft:EDIT"})
   public Magma.TableDto getTable() {
     Magma.TableDto dto = datasetService.getTableDto(getDataset());
     return dto;
@@ -118,6 +117,7 @@ public class DraftStudyDatasetResource {
 
   @GET
   @Path("/variables")
+  @RequiresPermissions({"mica:/draft:EDIT"})
   public List<Mica.DatasetVariableDto> getVariables() {
     ImmutableList.Builder<Mica.DatasetVariableDto> builder = ImmutableList.builder();
     datasetService.getDatasetVariables(getDataset()).forEach(variable -> builder.add(dtos.asDto(variable)));
@@ -125,6 +125,7 @@ public class DraftStudyDatasetResource {
   }
 
   @Path("/variable/{variable}")
+  @RequiresPermissions({"mica:/draft:EDIT"})
   public DraftStudyDatasetVariableResource getVariable(@PathParam("variable") String variable) {
     DraftStudyDatasetVariableResource resource = applicationContext.getBean(DraftStudyDatasetVariableResource.class);
     resource.setDatasetId(id);
@@ -134,6 +135,7 @@ public class DraftStudyDatasetResource {
 
   @POST
   @Path("/facets")
+  @RequiresPermissions({"mica:/draft:EDIT"})
   public Search.QueryResultDto getFacets(Search.QueryTermsDto query) {
     return datasetService.getFacets(getDataset(), query);
   }
