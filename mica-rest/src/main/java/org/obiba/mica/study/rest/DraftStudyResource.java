@@ -8,8 +8,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
-import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.obiba.mica.core.security.Roles;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.file.rest.FileResource;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.StudyService;
@@ -26,7 +25,6 @@ import com.codahale.metrics.annotation.Timed;
  */
 @Component
 @Scope("request")
-@RequiresRoles(Roles.MICA_ADMIN)
 public class DraftStudyResource {
 
   @Inject
@@ -46,13 +44,14 @@ public class DraftStudyResource {
 
   @GET
   @Timed
+  @RequiresPermissions({"mica:/draft:EDIT"})
   public Mica.StudyDto get() {
     return dtos.asDto(studyService.findDraftStudy(id));
   }
 
   @PUT
   @Timed
-  @RequiresRoles(Roles.MICA_ADMIN)
+  @RequiresPermissions({"mica:/draft:EDIT"})
   public Response update(@SuppressWarnings("TypeMayBeWeakened") Mica.StudyDto studyDto) {
     // ensure study exists
     studyService.findDraftStudy(id);
@@ -64,8 +63,8 @@ public class DraftStudyResource {
 
   @PUT
   @Path("/_publish")
-  @RequiresRoles(Roles.MICA_ADMIN)
   @Timed
+  @RequiresPermissions({"mica:/draft:PUBLISH"})
   public Response publish() {
     studyService.publish(id);
     return Response.noContent().build();
@@ -73,7 +72,7 @@ public class DraftStudyResource {
 
   @DELETE
   @Path("/_publish")
-  @RequiresRoles(Roles.MICA_ADMIN)
+  @RequiresPermissions({"mica:/draft:PUBLISH"})
   public Response unPublish() {
     studyService.unpublish(id);
     return Response.noContent().build();
@@ -83,15 +82,15 @@ public class DraftStudyResource {
    * DELETE  /ws/studies/:id -> delete the "id" study.
    */
   @DELETE
-  @RequiresRoles(Roles.MICA_ADMIN)
   @Timed
+  @RequiresPermissions({"mica:/draft:EDIT"})
   public Response delete() {
     studyService.delete(id);
     return Response.noContent().build();
   }
 
   @Path("/file/{fileId}")
-  @RequiresRoles(Roles.MICA_ADMIN)
+  @RequiresPermissions({"mica:/draft:EDIT"})
   public FileResource study(@PathParam("fileId") String fileId) {
     FileResource studyResource = applicationContext.getBean(FileResource.class);
     studyResource.setPersistable(studyService.findDraftStudy(id));

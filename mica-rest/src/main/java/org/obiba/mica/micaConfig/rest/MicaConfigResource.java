@@ -21,6 +21,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.core.security.Roles;
 import org.obiba.mica.dataset.service.KeyStoreService;
@@ -37,7 +38,6 @@ import com.google.common.collect.Sets;
 import static java.util.stream.Collectors.toList;
 
 @Path("/config")
-@RequiresRoles(Roles.MICA_ADMIN)
 public class MicaConfigResource {
 
   @Inject
@@ -57,12 +57,14 @@ public class MicaConfigResource {
 
   @GET
   @Timed
+  @RequiresAuthentication
   public Mica.MicaConfigDto get() {
     return dtos.asDto(micaConfigService.getConfig());
   }
 
   @PUT
   @Timed
+  @RequiresRoles(Roles.MICA_ADMIN)
   public Response create(@SuppressWarnings("TypeMayBeWeakened") Mica.MicaConfigDto dto) {
     micaConfigService.save(dtos.fromDto(dto));
     return Response.noContent().build();
@@ -71,6 +73,7 @@ public class MicaConfigResource {
   @PUT
   @Path("/keystore/{name}/{alias}")
   @Timed
+  @RequiresRoles(Roles.MICA_ADMIN)
   public Response updateEncryptionKey(@PathParam("name") String name, @PathParam("alias") String alias,
     Mica.KeyForm keyForm) {
     if(keyForm.getKeyType() == Mica.KeyType.KEY_PAIR) {
@@ -85,6 +88,7 @@ public class MicaConfigResource {
   @GET
   @Path("/keystore/{name}/{alias}")
   @Timed
+  @RequiresRoles(Roles.MICA_ADMIN)
   public Response getEncryptionKeyCertificate(@PathParam("name") String name, @PathParam("alias") String alias)
     throws IOException, KeyStoreException {
 
@@ -104,6 +108,7 @@ public class MicaConfigResource {
   @GET
   @Path("/opal-credentials")
   @Timed
+  @RequiresRoles(Roles.MICA_ADMIN)
   public List<Mica.OpalCredentialDto> getOpalCredentials(String opalUrl) {
     return opalCredentialService.findAllOpalCredentials().stream().map(dtos::asDto).collect(toList());
   }
@@ -111,6 +116,7 @@ public class MicaConfigResource {
   @GET
   @Path("/opal-credential/{id}")
   @Timed
+  @RequiresRoles(Roles.MICA_ADMIN)
   public Mica.OpalCredentialDto getOpalCredential(@PathParam("id")String opalUrl) {
     return dtos.asDto(opalCredentialService.getOpalCredential(opalUrl));
   }
@@ -118,6 +124,7 @@ public class MicaConfigResource {
   @GET
   @Path("/opal-credential/{id}/certificate")
   @Timed
+  @RequiresRoles(Roles.MICA_ADMIN)
   public Response getOpalCredentialCertificate(@PathParam("id")String opalUrl) {
     return Response.ok(opalCredentialService.getCertificate(opalUrl), MediaType.TEXT_PLAIN_TYPE).header(
       "Content-disposition", "attachment; filename=opal-mica-certificate.pem").build();
@@ -126,6 +133,7 @@ public class MicaConfigResource {
   @POST
   @Path("/opal-credentials")
   @Timed
+  @RequiresRoles(Roles.MICA_ADMIN)
   public Response createCredential(Mica.OpalCredentialDto opalCredentialDto, @Context UriInfo uriInfo) {
     createOrUpdateCredential(opalCredentialDto);
 
@@ -136,6 +144,7 @@ public class MicaConfigResource {
   @PUT
   @Path("/opal-credential/{id}")
   @Timed
+  @RequiresRoles(Roles.MICA_ADMIN)
   public Response updateOpalCredential(@PathParam("id")String id, Mica.OpalCredentialDto opalCredentialDto) {
     createOrUpdateCredential(opalCredentialDto);
 
@@ -145,6 +154,7 @@ public class MicaConfigResource {
   @DELETE
   @Path("/opal-credential/{id}")
   @Timed
+  @RequiresRoles(Roles.MICA_ADMIN)
   public Response updateOpalCredential(@PathParam("id")String id) {
     opalCredentialService.deleteOpalCredential(id);
 

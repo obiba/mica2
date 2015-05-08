@@ -18,8 +18,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
-import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.obiba.mica.core.security.Roles;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.file.rest.FileResource;
 import org.obiba.mica.network.NoSuchNetworkException;
 import org.obiba.mica.network.domain.Network;
@@ -37,7 +36,6 @@ import com.codahale.metrics.annotation.Timed;
  */
 @Component
 @Scope("request")
-@RequiresRoles(Roles.MICA_ADMIN)
 public class DraftNetworkResource {
 
   @Inject
@@ -57,13 +55,14 @@ public class DraftNetworkResource {
 
   @GET
   @Timed
+  @RequiresPermissions({"mica:/draft:EDIT"})
   public Mica.NetworkDto get() {
     return dtos.asDto(networkService.findById(id));
   }
 
   @PUT
   @Timed
-  @RequiresRoles(Roles.MICA_ADMIN)
+  @RequiresPermissions({"mica:/draft:EDIT"})
   public Response update(@SuppressWarnings("TypeMayBeWeakened") Mica.NetworkDto networkDto) {
     // ensure network exists
     networkService.findById(id);
@@ -76,7 +75,7 @@ public class DraftNetworkResource {
   @PUT
   @Path("/_index")
   @Timed
-  @RequiresRoles(Roles.MICA_ADMIN)
+  @RequiresPermissions({"mica:/draft:EDIT"})
   public Response index() {
     networkService.index(id);
     return Response.noContent().build();
@@ -84,7 +83,7 @@ public class DraftNetworkResource {
 
   @PUT
   @Path("/_publish")
-  @RequiresRoles(Roles.MICA_ADMIN)
+  @RequiresPermissions({"mica:/draft:PUBLISH"})
   public Response publish() {
     networkService.publish(id, true);
     return Response.noContent().build();
@@ -92,7 +91,7 @@ public class DraftNetworkResource {
 
   @DELETE
   @Path("/_publish")
-  @RequiresRoles(Roles.MICA_ADMIN)
+  @RequiresPermissions({"mica:/draft:PUBLISH"})
   public Response unPublish() {
     networkService.publish(id, false);
     return Response.noContent().build();
@@ -100,7 +99,7 @@ public class DraftNetworkResource {
 
   @DELETE
   @Timed
-  @RequiresRoles(Roles.MICA_ADMIN)
+  @RequiresPermissions({"mica:/draft:EDIT"})
   public Response delete() {
     try {
       networkService.delete(id);
@@ -111,7 +110,7 @@ public class DraftNetworkResource {
   }
 
   @Path("/file/{fileId}")
-  @RequiresRoles(Roles.MICA_ADMIN)
+  @RequiresPermissions({"mica:/draft:EDIT"})
   public FileResource study(@PathParam("fileId") String fileId) {
     FileResource studyResource = applicationContext.getBean(FileResource.class);
     studyResource.setPersistable(networkService.findById(id));

@@ -24,10 +24,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
-import org.obiba.mica.core.security.Roles;
 import org.obiba.mica.dataset.service.StudyDatasetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -40,7 +39,6 @@ import com.codahale.metrics.annotation.Timed;
 @Component
 @Scope("request")
 @Path("/draft")
-@RequiresRoles(Roles.MICA_ADMIN)
 public class DraftStudyDatasetsResource {
 
   @Inject
@@ -61,6 +59,7 @@ public class DraftStudyDatasetsResource {
   @GET
   @Path("/study-datasets")
   @Timed
+  @RequiresPermissions({"mica:/draft:EDIT"})
   public List<Mica.DatasetDto> list(@QueryParam("study") String studyId) {
     return datasetService.findAllDatasets(studyId).stream().map(dtos::asDto).collect(Collectors.toList());
   }
@@ -68,6 +67,7 @@ public class DraftStudyDatasetsResource {
   @POST
   @Path("/study-datasets")
   @Timed
+  @RequiresPermissions({"mica:/draft:EDIT"})
   public Response create(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo) {
     Dataset dataset = dtos.fromDto(datasetDto);
     if(!(dataset instanceof StudyDataset)) throw new IllegalArgumentException("An study dataset is expected");
@@ -80,12 +80,14 @@ public class DraftStudyDatasetsResource {
   @PUT
   @Path("/study-datasets/_index")
   @Timed
+  @RequiresPermissions({"mica:/draft:PUBLISH"})
   public Response reIndex() {
     datasetService.indexAll(false);
     return Response.noContent().build();
   }
 
   @Path("/study-dataset/{id}")
+  @RequiresPermissions({"mica:/draft:EDIT"})
   public DraftStudyDatasetResource dataset(@PathParam("id") String id) {
     DraftStudyDatasetResource resource = applicationContext.getBean(DraftStudyDatasetResource.class);
     resource.setId(id);

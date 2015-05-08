@@ -36,7 +36,7 @@ shiro:
   obibaRealm:
     url: https://localhost:8444
     service:
-      name: mica-server
+      name: mica
       key: changeit
   password:
     nbHashIterations: 10000

@@ -1,8 +1,10 @@
 <h4>
   <span class="badge">{{population.id}}</span>
   <localized value="population.name" lang="tab.lang"></localized>
-  <a ng-click="editPopulation(study, population)" class="action"><i class="fa fa-pencil"></i></a>
-  <a ng-click="deletePopulation(population, $index)" class="action"><i class="fa fa-trash-o"></i></a>
+  <div class="inline" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+    <a ng-click="editPopulation(study, population)" class="action"><i class="fa fa-pencil"></i></a>
+    <a ng-click="deletePopulation(population, $index)" class="action"><i class="fa fa-trash-o"></i></a>
+  </div>
 </h4>
 
 <p>
@@ -146,7 +148,8 @@
         <th translate>numberOfParticipants.participants</th>
         <td>
           <span ng-hide="population.numberOfParticipants.participant.noLimit">{{population.numberOfParticipants.participant.number}}</span>
-          <span ng-show="population.numberOfParticipants.participant.noLimit" translate>numberOfParticipants.no-limit</span>
+          <span ng-show="population.numberOfParticipants.participant.noLimit"
+            translate>numberOfParticipants.no-limit</span>
         </td>
       </tr>
       <tr>
@@ -201,10 +204,14 @@
           {{dce.endYear}} <span ng-show="dce.endMonth">({{months[dce.endMonth - 1]}})</span>
         </td>
         <td>
-          <a ng-click="showDataCollectionEvent(study, population, dce)" class="hand action"><i class="fa fa-eye"></i></a>
-          <a ng-click="editDataCollectionEvent(study, population, dce)" class="hand action"><i class="fa fa-pencil"></i></a>
-          <a ng-click="deleteDataCollectionEvent(study, $parent.$index, dce, $index)" class="hand action"><i
-            class="fa fa-trash-o"></i></a>
+          <a ng-click="showDataCollectionEvent(study, population, dce)" class="hand action"><i
+            class="fa fa-eye"></i></a>
+          <div class="inline" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+            <a ng-click="editDataCollectionEvent(study, population, dce)" class="hand action"><i
+              class="fa fa-pencil"></i></a>
+            <a ng-click="deleteDataCollectionEvent(study, $parent.$index, dce, $index)" class="hand action"><i
+              class="fa fa-trash-o"></i></a>
+          </div>
         </td>
       </tr>
       </tbody>

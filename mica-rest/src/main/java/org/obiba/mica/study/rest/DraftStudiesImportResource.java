@@ -28,14 +28,13 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.obiba.mica.core.security.Roles;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.study.service.StudyPackageImportService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Path("/draft/studies/_import")
-@RequiresRoles(Roles.MICA_ADMIN)
+@RequiresPermissions({"mica:/draft:EDIT"})
 public class DraftStudiesImportResource {
 
   private static final Logger log = LoggerFactory.getLogger(DraftStudiesImportResource.class);
