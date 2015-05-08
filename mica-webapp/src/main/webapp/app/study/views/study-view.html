@@ -292,10 +292,10 @@
               <td translate>study.authorization.maelstrom</td>
               <td>
                 {{'study.authorization.authorized.' + study.maelstromAuthorization.authorized | translate}}
-              <span ng-show="study.maelstromAuthorization.authorizer">
+              <span ng-show="study.maelstromAuthorization.authorized && study.maelstromAuthorization.authorizer">
                 <span translate>by</span> {{study.maelstromAuthorization.authorizer}}
               </span>
-              <span ng-show="study.maelstromAuthorization.date">
+              <span ng-show="study.maelstromAuthorization.authorized && study.maelstromAuthorization.date">
                 <span translate>on</span> {{study.maelstromAuthorization.date}}
               </span>
               </td>
@@ -304,10 +304,10 @@
               <td translate>study.authorization.specific</td>
               <td>
                 {{'study.authorization.authorized.' + study.specificAuthorization.authorized | translate}}
-              <span ng-show="study.specificAuthorization.authorizer">
+              <span ng-show="study.specificAuthorization.authorized && study.specificAuthorization.authorizer">
                 <span translate>by</span> {{study.specificAuthorization.authorizer}}
               </span>
-              <span ng-show="study.specificAuthorization.date">
+              <span ng-show="study.specificAuthorization.authorized && study.specificAuthorization.date">
                 <span translate>on</span> {{study.specificAuthorization.date}}
               </span>
               </td>
