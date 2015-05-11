@@ -182,29 +182,12 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
 
     String variableId = DatasetVariable.IdResolver
       .encode(datasetId, variableName, variableType, studyId, project, table);
-    String indexType = variableType.equals(DatasetVariable.Type.Harmonized)
-      ? VariableIndexerImpl.HARMONIZED_VARIABLE_TYPE
-      : VariableIndexerImpl.VARIABLE_TYPE;
 
-    QueryBuilder query = QueryBuilders.idsQuery(indexType).addIds(variableId);
-
-    SearchRequestBuilder search = client.prepareSearch() //
-      .setIndices(VariableIndexerImpl.PUBLISHED_VARIABLE_INDEX) //
-      .setTypes(indexType) //
-      .setQuery(query);
-
-    log.debug("Request: {}", search.toString());
-    SearchResponse response = search.execute().actionGet();
-
-    if(response.getHits().totalHits() == 0) throw new NoSuchVariableException(variableName);
-
-    InputStream inputStream = new ByteArrayInputStream(response.getHits().hits()[0].getSourceAsString().getBytes());
-    try {
-      return objectMapper.readValue(inputStream, DatasetVariable.class);
-    } catch(IOException e) {
-      log.error("Failed retrieving {}", DatasetVariable.class.getSimpleName(), e);
-      throw new NoSuchVariableException(variableName);
+    if(variableType.equals(DatasetVariable.Type.Harmonized)) {
+      return getHarmonizedDatasetVariable(datasetId, variableId, variableName);
     }
+
+    return getDatasetVariableInternal(VariableIndexerImpl.VARIABLE_TYPE, variableId, variableName);
   }
 
   protected Mica.DatasetVariableDto getDatasetVariableDto(@NotNull String datasetId, @NotNull String variableName,
@@ -233,5 +216,42 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
       // ignore
     }
     return taxonomies == null ? Collections.emptyList() : taxonomies;
+  }
+
+  private DatasetVariable getHarmonizedDatasetVariable(String datasetId, String variableId, String variableName) {
+    String dataSchemaVariableId = DatasetVariable.IdResolver
+      .encode(datasetId, variableName, DatasetVariable.Type.Dataschema, null, null, null);
+    DatasetVariable harmonizedDatasetVariable = getDatasetVariableInternal(VariableIndexerImpl.HARMONIZED_VARIABLE_TYPE,
+      variableId, variableName);
+    DatasetVariable dataSchemaVariable = getDatasetVariableInternal(VariableIndexerImpl.VARIABLE_TYPE,
+      dataSchemaVariableId, variableName);
+
+    dataSchemaVariable.getAttributes().asAttributeList().forEach(a -> {
+      if(!a.getName().startsWith("Mlstr_harmo")) harmonizedDatasetVariable.addAttribute(a);
+    });
+
+    return harmonizedDatasetVariable;
+  }
+
+  private DatasetVariable getDatasetVariableInternal(String indexType, String variableId, String variableName) {
+    QueryBuilder query = QueryBuilders.idsQuery(indexType).addIds(variableId);
+
+    SearchRequestBuilder search = client.prepareSearch() //
+      .setIndices(VariableIndexerImpl.PUBLISHED_VARIABLE_INDEX) //
+      .setTypes(indexType) //
+      .setQuery(query);
+
+    log.debug("Request: {}", search.toString());
+    SearchResponse response = search.execute().actionGet();
+
+    if(response.getHits().totalHits() == 0) throw new NoSuchVariableException(variableName);
+
+    InputStream inputStream = new ByteArrayInputStream(response.getHits().hits()[0].getSourceAsString().getBytes());
+    try {
+      return objectMapper.readValue(inputStream, DatasetVariable.class);
+    } catch(IOException e) {
+      log.error("Failed retrieving {}", DatasetVariable.class.getSimpleName(), e);
+      throw new NoSuchVariableException(variableName);
+    }
   }
 }
