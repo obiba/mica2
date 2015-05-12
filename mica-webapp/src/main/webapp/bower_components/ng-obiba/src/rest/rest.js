@@ -6,8 +6,8 @@ angular.module('obiba.rest', ['obiba.notification'])
     $httpProvider.responseInterceptors.push('httpErrorsInterceptor');
   }])
 
-  .factory('httpErrorsInterceptor', ['$q', '$rootScope', 'NOTIFICATION_EVENTS',
-    function ($q, $rootScope, NOTIFICATION_EVENTS) {
+  .factory('httpErrorsInterceptor', ['$q', '$rootScope', 'NOTIFICATION_EVENTS', 'ServerErrorUtils',
+    function ($q, $rootScope, NOTIFICATION_EVENTS, ServerErrorUtils) {
       return function (promise) {
         return promise.then(
           function (response) {
@@ -21,7 +21,7 @@ angular.module('obiba.rest', ['obiba.notification'])
               return $q.reject(response);
             }
             $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
-              message: response.data ? response.data : angular.fromJson(response)
+              message: ServerErrorUtils.buildMessage(response)
             });
             return $q.reject(response);
           });

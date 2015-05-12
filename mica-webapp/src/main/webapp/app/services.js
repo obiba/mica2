@@ -64,6 +64,19 @@ mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStor
         });
       },
       isAuthenticated: function () {
+        // WORKAROUND: until next angular update, cookieStore is currently buggy
+        function getMicaSidCookie() {
+          var regexp = /micasid=([^;]+)/g;
+          var result = regexp.exec(document.cookie);
+          return (result === null) ? null : result[1];
+        }
+
+        if (!getMicaSidCookie()) {
+          // session has terminated, cleanup
+          Session.destroy();
+          return false;
+        }
+
         // check for Session object state
         if (!Session.login) {
           // check if there is a cookie for the subject

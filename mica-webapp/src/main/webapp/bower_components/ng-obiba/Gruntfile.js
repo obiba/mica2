@@ -16,6 +16,9 @@ module.exports = function (grunt) {
           'src/form/form.js',
           'src/form/form-service.js',
           'src/form/form-directive.js',
+          'src/alert/alert.js',
+          'src/alert/alert-service.js',
+          'src/alert/alert-directive.js',
           'src/ng-obiba.js'
         ]
       }
