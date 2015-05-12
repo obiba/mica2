@@ -213,8 +213,12 @@ mica
 
       // Call when the 403 response is returned by the server
       $rootScope.$on('event:auth-notAuthorized', function () {
-        $rootScope.errorMessage = 'errors.403';
-        $location.path('/error').replace();
+        if (!$rootScope.authenticated) {
+          $location.path('/login').replace();
+        } else {
+          $rootScope.errorMessage = 'errors.403';
+          $location.path('/error').replace();
+        }
       });
 
       // Call when the user logs out
