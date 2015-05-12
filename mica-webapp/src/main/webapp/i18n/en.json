@@ -289,7 +289,7 @@
     "defaultCharSet": "Default Character Set",
     "languages": "Languages",
     "languages-help": "Supported languages for studies and networks description",
-    "opal" : "Primary Opal Server",
+    "opal": "Primary Opal Server",
     "opalCredentials": "Opal Credentials",
     "encryptionKeys": "Encyption Keys",
     "addKeyPair": "Add Keys",
@@ -299,9 +299,9 @@
     "opalUrl": "Opal URL",
     "actions": "Actions",
     "type": "Type",
-    "create" : "Create",
-    "import" : "Import",
-    "username" : "Username",
+    "create": "Create",
+    "import": "Import",
+    "username": "Username",
     "password": "Password",
     "confirm": "Confirm Password",
     "keys": {
@@ -320,8 +320,8 @@
     }
   },
   "publish": {
-    "label" : "Publish",
-    "un-publish" : "Unpublish",
+    "label": "Publish",
+    "un-publish": "Unpublish",
     "not-published": "Not published",
     "published-out-of-date": "Published, out of date",
     "published": "Published",
@@ -420,7 +420,7 @@
       "published": "Published",
       "revisions-ahead": "Revisions ahead"
     },
-    "opal" : "Opal Server",
+    "opal": "Opal Server",
     "opal-help": "URL of the opal server for this study",
     "delete-conflict": "Conflict deleting study",
     "delete-conflict-message": "Found conflicts when trying to delete study. Remove dependencies and try again."
@@ -459,22 +459,22 @@
     "country": "Country"
   },
   "networks": "Networks",
-  "datasets" : "Datasets",
-  "dataset" : {
-    "name" : "Name",
+  "datasets": "Datasets",
+  "dataset": {
+    "name": "Name",
     "acronym": "Acronym",
-    "add" : "Add Dataset",
-    "label-edit" : "Edit Dataset",
+    "add": "Add Dataset",
+    "label-edit": "Edit Dataset",
     "general-info": "General Information",
-    "description" : "Description",
-    "entity-type" : "Entity Type",
-    "study-table" : "Study Table",
-    "study-tables" : "Study Tables",
-    "project" : "Project",
-    "table" : "Table",
-    "table-name" : "Table Name",
-    "table-description" : "Table Description",
-    "data-schema" : "Data Schema",
+    "description": "Description",
+    "entity-type": "Entity Type",
+    "study-table": "Study Table",
+    "study-tables": "Study Tables",
+    "project": "Project",
+    "table": "Table",
+    "table-name": "Table Name",
+    "table-description": "Table Description",
+    "data-schema": "Data Schema",
     "index": "Index",
     "add-study-table": "Add Study Table"
   },
@@ -517,18 +517,18 @@
     "delete-dialog-title": "Delete Data Collection Event",
     "delete-dialog-message": "Are you sure you want to delete the collection event?"
   },
-  "study-datasets" : "Study Datasets",
-  "study-dataset" : "Study Dataset",
-  "harmonization-datasets" : "Harmonization Datasets",
-  "harmonization-dataset" : "Harmonization Dataset",
-  "network" : {
-    "name" : "Name",
+  "study-datasets": "Study Datasets",
+  "study-dataset": "Study Dataset",
+  "harmonization-datasets": "Harmonization Datasets",
+  "harmonization-dataset": "Harmonization Dataset",
+  "network": {
+    "name": "Name",
     "logo": "Logo",
     "acronym": "Acronym",
-    "add" : "Add Network",
-    "label-edit" : "Edit Network",
+    "add": "Add Network",
+    "label-edit": "Edit Network",
     "general-info": "General Information",
-    "description" : "Description",
+    "description": "Description",
     "index": "Index",
     "details": "Network",
     "add-study": "Add Study",
@@ -568,5 +568,10 @@
   "attachments": "Attachments",
   "allowed-file-types": "Allowed file types:",
   "total": "Total",
-  "type": "Type"
+  "type": "Type",
+  "server": {
+    "error": {
+      "403": "Server rejected your request, please make sure you are logged in and try again."
+    }
+  }
 }

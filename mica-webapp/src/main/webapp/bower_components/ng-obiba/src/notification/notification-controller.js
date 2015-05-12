@@ -59,10 +59,17 @@ angular.module('obiba.notification')
 
     }])
 
-  .controller('NotificationConfirmationController', ['$scope', '$modalInstance', 'confirm',
-    function ($scope, $modalInstance, confirm) {
+  .controller('NotificationConfirmationController', ['$scope', '$modalInstance', 'confirm', 'LocaleStringUtils',
+    function ($scope, $modalInstance, confirm, LocaleStringUtils) {
 
-      $scope.confirm = confirm;
+      function getMessage() {
+        return {
+          title: confirm.titleKey ? LocaleStringUtils.translate(confirm.titleKey) : confirm.title,
+          message: confirm.messageKey ? LocaleStringUtils.translate(confirm.messageKey, confirm.messageArgs) : confirm.message
+        };
+      }
+
+      $scope.confirm = getMessage();
 
       $scope.ok = function () {
         $modalInstance.close();

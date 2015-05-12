@@ -56,6 +56,9 @@
             $rootScope.$broadcast('event:auth-loginRequired', response);
             return deferred.promise;
           } else if (response.status === 403 && !response.config.ignoreAuthModule) {
+            if (!response.data.messageTemplate) {
+              response.data.messageTemplate = 'server.error.' + response.status;
+            }
             $rootScope.$broadcast('event:auth-notAuthorized', response);
           }
           // otherwise, default behaviour
