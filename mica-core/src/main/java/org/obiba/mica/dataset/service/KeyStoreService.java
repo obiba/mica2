@@ -139,7 +139,7 @@ public class KeyStoreService {
       }
     }
 
-    return String.format("CN=%s, OU=%s, O=%s", cn.isEmpty() ? hostname.get() : cn, ou.isEmpty() ? "opal" : ou,
+    return String.format("CN=%s, OU=%s, O=%s", cn.isEmpty() ? hostname.get() : cn, ou.isEmpty() ? "mica" : ou,
       o.isEmpty() ? hostname.get() : o);
   }
 }
