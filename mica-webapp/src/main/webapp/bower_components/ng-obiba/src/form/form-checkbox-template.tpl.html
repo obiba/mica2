@@ -1,17 +1,16 @@
 <div class="checkbox" ng-class="{'has-error': (form[fieldName].$dirty || form.saveAttempted) && form[name].$invalid}">
 
   <label for="{{name}}" class="control-label">
-    {{label | translate}}
     <span ng-show="required">*</span>
+    <input
+          ng-model="model"
+          type="checkbox"
+          id="{{name}}"
+          name="{{name}}"
+          form-server-error
+          ng-required="required">
+      {{label | translate}}
   </label>
-
-  <input
-      ng-model="model"
-      type="checkbox"
-      id="{{name}}"
-      name="{{name}}"
-      form-server-error
-      ng-required="required">
 
   <ul class="input-error list-unstyled" ng-show="form[name].$dirty && form[name].$invalid">
     <li ng-show="form[name].$error.required" translate>required</li>

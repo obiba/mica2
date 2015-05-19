@@ -1,7 +1,6 @@
 'use strict';
 
 var grunt = require('grunt');
-var fs = require('fs');
 
 var read = function(src) {
   return grunt.util.normalizelf(grunt.file.read(src));
@@ -10,10 +9,14 @@ var read = function(src) {
 
 exports.less = {
   compile: function(test) {
-    test.expect(2);
+    test.expect(3);
 
     var actual = read('tmp/less.css');
-    var expected = read('test/expected/less.css');
+    var expected = read('test/expected/string.css');
+    test.equal(expected, actual, 'should compile less with a string configuration');
+
+    actual = read('tmp/less.css');
+    expected = read('test/expected/less.css');
     test.equal(expected, actual, 'should compile less, with the ability to handle imported files from alternate include paths');
 
     actual = read('tmp/concat.css');
@@ -48,16 +51,16 @@ exports.less = {
     test.equal(expected, actual, 'should accept function that returns paths');
     test.done();
   },
-  cleancss: function(test) {
+  plugins: function(test) {
     test.expect(2);
 
-    var actual = read('tmp/cleancss.css');
-    var expected = read('test/expected/cleancss.css');
-    test.equal(expected, actual, 'should cleancss output when cleancss option is true');
+    var actual = read('tmp/plugins.css');
+    var expected = read('test/expected/plugins.css');
+    test.equal(expected, actual, 'using cleancss plugin, it should cleancss output when cleancss plugin is used and keepSpecialComments is disabled');
 
-    actual = read('tmp/cleancssReport.css');
-    expected = read('test/expected/cleancssReport.css');
-    test.equal(expected, actual, 'should cleancss output when cleancss option is true and concating is enable');
+    actual = read('tmp/pluginCleancss.css');
+    expected = read('test/expected/pluginCleancss.css');
+    test.equal(expected, actual, 'should cleancss output when cleancss option is true and concating is enabled');
 
     test.done();
   },
@@ -154,6 +157,19 @@ exports.less = {
     var actual = read('tmp/customFunctions.css');
     var expected = read('test/expected/customFunctions.css');
     test.equal(expected, actual, 'should execute custom functions');
+
+    test.done();
+  },
+  banner: function(test) {
+    test.expect(2);
+
+    var actual = read('tmp/banner.css');
+    var expected = read('test/expected/banner.css');
+    test.equal(expected, actual, 'should add a banner');
+
+    actual = read('tmp/banner2.css');
+    expected = read('test/expected/banner2.css');
+    test.equal(expected, actual, 'should add a banner to the second file');
 
     test.done();
   }

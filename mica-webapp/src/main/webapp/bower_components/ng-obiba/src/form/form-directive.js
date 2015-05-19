@@ -27,7 +27,7 @@ angular.module('obiba.form')
         disabled: '=',
         type: '@',
         label: '@',
-        required: '@',
+        required: '=',
         min: '@',
         max: '@',
         step: '@',
@@ -54,7 +54,7 @@ angular.module('obiba.form')
         model: '=',
         disabled: '=',
         label: '@',
-        required: '@',
+        required: '=',
         help: '@'
       },
       templateUrl: 'form/form-textarea-template.tpl.html',
@@ -78,7 +78,7 @@ angular.module('obiba.form')
         name: '@',
         model: '=',
         label: '@',
-        required: '@',
+        required: '=',
         help: '@'
       },
       templateUrl: 'form/form-localized-input-template.tpl.html',

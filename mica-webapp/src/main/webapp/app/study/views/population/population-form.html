@@ -37,10 +37,17 @@
       <h5 translate>Criteria</h5>
       <div form-checkbox-group options="availableSelectionCriteria" model="population.selectionCriteria.criteria"></div>
 
-      <label for="languages" class="control-label"><span translate>population.countries</span></label>
-      <select chosen multiple id="countries" name="countries" ng-model="population.selectionCriteria.countriesIso"
-          ng-options="c.code as c.code for c in availableCountries" class="chosen-select">
-      </select>
+      <div class="form-group">
+        <label class="control-label">
+          <span translate>population.countries</span>
+        </label>
+        <ui-select multiple theme="bootstrap" ng-model="population.selectionCriteria.countriesIso" reset-search-input="false">
+          <ui-select-match><span ng-bind-html="$item.code"></span></ui-select-match>
+          <ui-select-choices repeat="country.code as country in getAavailableCountries(tab.lang) | filter: $select.search">
+            {{country.name}} ({{country.code}})
+          </ui-select-choices>
+        </ui-select>
+      </div>
 
       <div localized-input name="population.selectionCriteria.territory" model="population.selectionCriteria.territory" lang="tab.lang" label="study.selection-criteria.territory"></div>
 

@@ -15,8 +15,8 @@ mica.attachment
       controller: 'AttachmentCtrl'
     };
   }])
-  .controller('AttachmentCtrl', ['$scope', '$timeout', '$log', '$upload', 'TempFileResource',
-    function ($scope, $timeout, $log, $upload, TempFileResource) {
+  .controller('AttachmentCtrl', ['$scope', '$timeout', '$log', 'Upload', 'TempFileResource',
+    function ($scope, $timeout, $log, Upload, TempFileResource) {
       $scope.onFileSelect = function (file) {
         $scope.uploadedFiles = file;
         $scope.uploadedFiles.forEach(function (f) {
@@ -42,7 +42,7 @@ mica.attachment
           $scope.files.push(attachment);
         }
 
-        $scope.upload = $upload
+        $scope.upload = Upload
           .upload({
             url: '/ws/files/temp',
             method: 'POST',

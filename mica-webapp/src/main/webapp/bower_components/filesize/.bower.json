@@ -1,14 +1,14 @@
 {
   "name": "filesize",
   "homepage": "https://github.com/avoidwork/filesize.js",
-  "version": "2.0.3",
-  "_release": "2.0.3",
+  "version": "3.1.2",
+  "_release": "3.1.2",
   "_resolution": {
     "type": "version",
-    "tag": "2.0.3",
-    "commit": "a8966f8ad4765a65883d43981e042cbcba304a83"
+    "tag": "3.1.2",
+    "commit": "a4448cdb63d1828c07ae3d2f8e1385d31f693135"
   },
   "_source": "git://github.com/avoidwork/filesize.js.git",
-  "_target": "2.0.3",
+  "_target": "3.1.2",
   "_originalSource": "filesize"
 }

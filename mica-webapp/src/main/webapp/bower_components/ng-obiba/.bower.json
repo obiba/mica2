@@ -12,21 +12,21 @@
     "coverage"
   ],
   "dependencies": {
-    "angular": "1.2.16",
-    "angular-bootstrap": "0.10.0",
-    "angular-translate": "2.1.0",
-    "angular-sanitize": "1.2.16"
+    "angular": "1.3.15",
+    "angular-bootstrap": "0.13.0",
+    "angular-translate": "2.7.0",
+    "angular-sanitize": "1.3.15"
   },
   "devDependencies": {
-    "angular-mocks": "1.2.16",
-    "angular-scenario": "1.2.16"
+    "angular-mocks": "1.3.15",
+    "angular-scenario": "1.3.15"
   },
   "homepage": "https://github.com/obiba/ng-obiba",
-  "_release": "05f9364457",
+  "_release": "5e5528c3b2",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "05f936445793e04692b392bb24b9c30a0d1946c0"
+    "commit": "5e5528c3b2a04b1e2cc76843212dc98b8d10428d"
   },
   "_source": "git@github.com:obiba/ng-obiba.git",
   "_target": "*",

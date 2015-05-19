@@ -258,6 +258,9 @@ mica.study
     'MicaUtil',
     function ($rootScope, $scope, $routeParams, $location, $log, DraftStudyResource, MicaConfigResource, FormServerValidation, MicaConstants,
               MicaStudiesConfigResource, MicaUtil) {
+      $scope.getAavailableCountries = function(lang) {
+        return MicaConstants.COUNTRIES_ISO_CODES[lang];
+      };
       $scope.availableCountries = MicaConstants.COUNTRIES_ISO_CODES;
       $scope.selectionCriteriaGenders = [];
       $scope.availableSelectionCriteria = [];
@@ -640,6 +643,26 @@ mica.study
   .controller('StudyEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$location', '$modal', 'DraftStudyResource', 'DraftStudiesResource', 'MicaConfigResource', 'StringUtils', 'FormServerValidation',
 
     function ($rootScope, $scope, $routeParams, $log, $location, $modal, DraftStudyResource, DraftStudiesResource, MicaConfigResource, StringUtils, FormServerValidation) {
+      // TODO this code needs simplification and possibly placed inside a directive
+      $scope.today = new Date();
+      $scope.$watch('authorization.maelstrom.date', function (newVal, oldVal) {
+        if (newVal !== $scope.today) {
+          $scope.study.maelstromAuthorization.date = newVal;
+        }
+      }, true);
+      $scope.$watch('authorization.specific.date', function (newVal, oldVal) {
+        if (newVal !== $scope.today) {
+          $scope.study.specificAuthorization.date = newVal;
+        }
+      }, true);
+      $scope.authorization = {maelstrom: {date: $scope.today}, specific: {date: $scope.today}};
+      $scope.datePicker = {maelstrom: {opened: false}, specific: {opened: false}};
+      $scope.openDatePicker = function($event, id) {
+        $event.preventDefault();
+        $event.stopPropagation();
+        $scope.datePicker[id].opened = true;
+      };
+
       $scope.defaultMinYear = 1900;
       $scope.defaultMaxYear = 9999;
       $scope.fileTypes = '.doc, .docx, .odm, .odt, .gdoc, .pdf, .txt  .xml  .xls, .xlsx, .ppt';
@@ -653,10 +676,16 @@ mica.study
           $scope.study.attachments =
             response.attachments && response.attachments.length > 0 ? response.attachments : [];
 
-          $scope.study.maelstromAuthorization.date = response.maelstromAuthorization.date ? new Date(response.maelstromAuthorization.date.split('-').map(function(x) { return parseInt(x, 10);}))  : null;
-          $scope.study.specificAuthorization.date = response.specificAuthorization.date ? new Date(response.specificAuthorization.date.split('-').map(function(x) { return parseInt(x, 10);})) : null;
+          if (response.maelstromAuthorization.date) {
+            $scope.authorization.maelstrom.date =
+              new Date(response.maelstromAuthorization.date.split('-').map(function (x) { return parseInt(x, 10);}));
+          }
+          if (response.specificAuthorization.date) {
+            $scope.authorization.specific.date =
+              new Date(response.specificAuthorization.date.split('-').map(function(x) { return parseInt(x, 10);}));
+          }
         }
-      }) : {attachments: []};
+      }) : {attachments: [], maelstromAuthorization: {date: null}, specificAuthorization: {date: null}};
 
       $log.debug('Edit study', $scope.study);
 

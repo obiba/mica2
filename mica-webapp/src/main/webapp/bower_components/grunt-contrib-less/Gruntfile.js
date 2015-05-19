@@ -35,6 +35,7 @@ module.exports = function(grunt) {
           paths: ['test/fixtures/include']
         },
         files: {
+          'tmp/string.css': 'test/fixtures/style.less',
           'tmp/less.css': ['test/fixtures/style.less'],
           'tmp/concat.css': ['test/fixtures/style.less', 'test/fixtures/style2.less', 'test/fixtures/style3.less']
         }
@@ -53,6 +54,15 @@ module.exports = function(grunt) {
           'tmp/nopaths.css': ['test/fixtures/nopaths.less']
         }
       },
+      banner: {
+        options: {
+          banner: '/* banner */\n'
+        },
+        files: {
+          'tmp/banner.css': 'test/fixtures/style3.less',
+          'tmp/banner2.css': 'test/fixtures/style4.less'
+        }
+      },
       pathsFunction: {
         options: {
           paths: function(srcFile) {
@@ -64,13 +74,13 @@ module.exports = function(grunt) {
           'tmp/pathsFunction.css': ['test/fixtures/pathsFunction.less']
         }
       },
-      cleancss: {
+      plugins: {
         options: {
           paths: ['test/fixtures/include'],
-          cleancss: true
+          plugins: [new (require("less-plugin-clean-css"))({keepSpecialComments: 0})]
         },
         files: {
-          'tmp/cleancss.css': ['test/fixtures/style.less']
+          'tmp/plugins.css': ['test/fixtures/plugins.less']
         }
       },
       ieCompatTrue: {
@@ -94,38 +104,39 @@ module.exports = function(grunt) {
       nofiles: {
       },
       nomatchedfiles: {
-        files: { "tmp/nomatchedfiles.css" : 'test/nonexistent/*.less' }
-      },
-      compressReport: {
-        options: {
-          paths: ['test/fixtures/include'],
-          compress: true,
-          report: 'min'
-        },
         files: {
-          'tmp/compressReport.css': ['test/fixtures/style.less', 'test/fixtures/style2.less']
+          'tmp/nomatchedfiles.css' : 'test/nonexistent/*.less'
         }
       },
-      cleancssReport: {
+      compressMultipleSource: {
         options: {
           paths: ['test/fixtures/include'],
-          cleancss: true,
-          report: 'gzip'
+          compress: true
         },
         files: {
-          'tmp/cleancssReport.css': ['test/fixtures/style.less', 'test/fixtures/style2.less', 'test/fixtures/style3.less']
+          'tmp/compressMultipleSource.css': ['test/fixtures/style.less', 'test/fixtures/style2.less']
+        }
+      },
+      pluginCleancss: {
+        options: {
+          paths: ['test/fixtures/include'],
+          plugins: [new (require("less-plugin-clean-css"))()],
+          compress: true
+        },
+        files: {
+          'tmp/pluginCleancss.css': ['test/fixtures/style.less', 'test/fixtures/style2.less', 'test/fixtures/style3.less']
         }
       },
       variablesAsLess: {
         src: 'test/fixtures/variablesAsLess.less',
-        dest: 'tmp/variablesAsLess.css',
+        dest: 'tmp/variablesAsLess.css'
       },
       sourceMap: {
         options: {
-          sourceMap: true,
+          sourceMap: true
         },
         src: 'test/fixtures/style3.less',
-        dest: 'tmp/sourceMap.css',
+        dest: 'tmp/sourceMap.css'
       },
       sourceMapFilename: {
         options: {
@@ -133,7 +144,7 @@ module.exports = function(grunt) {
           sourceMapFilename: 'tmp/sourceMapFilename.css.map'
         },
         src: 'test/fixtures/style3.less',
-        dest: 'tmp/sourceMapFilename.css',
+        dest: 'tmp/sourceMapFilename.css'
       },
       sourceMapURL: {
         options: {
@@ -142,7 +153,7 @@ module.exports = function(grunt) {
           sourceMapURL: 'custom/url/for/sourceMap.css.map'
         },
         src: 'test/fixtures/style3.less',
-        dest: 'tmp/sourceMapWithCustomURL.css',
+        dest: 'tmp/sourceMapWithCustomURL.css'
       },
       sourceMapBasepath: {
         options: {
@@ -151,7 +162,7 @@ module.exports = function(grunt) {
           sourceMapBasepath: 'test/fixtures/'
         },
         src: 'test/fixtures/style3.less',
-        dest: 'tmp/sourceMapBasepath.css',
+        dest: 'tmp/sourceMapBasepath.css'
       },
       sourceMapBasepathFunction: {
         options: {
@@ -163,7 +174,7 @@ module.exports = function(grunt) {
           }
         },
         src: 'test/fixtures/style3.less',
-        dest: 'tmp/sourceMapBasepath.css',
+        dest: 'tmp/sourceMapBasepath.css'
       },
       sourceMapRootpath: {
         options: {
@@ -172,28 +183,28 @@ module.exports = function(grunt) {
           sourceMapRootpath: 'http://example.org/'
         },
         src: 'test/fixtures/style3.less',
-        dest: 'tmp/sourceMapRootpath.css',
+        dest: 'tmp/sourceMapRootpath.css'
       },
       sourceMapLessInline: {
         options: {
           sourceMap: true,
           sourceMapFilename: 'tmp/sourceMapLessInline.css.map',
-          outputSourceFiles: true,
+          outputSourceFiles: true
         },
         src: 'test/fixtures/style3.less',
-        dest: 'tmp/sourceMapLessInline.css',
+        dest: 'tmp/sourceMapLessInline.css'
       },
       testCustomFunctions: {
         options: {
           customFunctions: {
-            'get-color': function(less, color) {
+            'get-color': function() {
               return 'red';
             },
             'multiple-args': function(less, arg1, arg2) {
               return (((arg1.value * 1) + (arg2.value))) + arg1.unit.numerator[0];
             },
-            'string-result': function(less, arg1) {
-                return "\"Hello\"";
+            'string-result': function() {
+                return '"Hello"';
             }
           }
         },
@@ -212,7 +223,7 @@ module.exports = function(grunt) {
         files: {
           'tmp/modifyVars.css': ['test/fixtures/modifyVars.less']
         }
-      },
+      }
     },
 
     // Unit tests.
@@ -232,9 +243,9 @@ module.exports = function(grunt) {
 
   // Whenever the "test" task is run, first clean the "tmp" dir, then run this
   // plugin's task(s), then test the result.
-  grunt.registerTask('test', ['clean', 'less', 'nodeunit']);
+  grunt.registerTask('test', ['jshint', 'clean', 'less', 'nodeunit']);
 
   // By default, lint and run all tests.
-  grunt.registerTask('default', ['jshint', 'test', 'build-contrib']);
+  grunt.registerTask('default', ['test', 'build-contrib']);
 
 };

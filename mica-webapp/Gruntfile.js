@@ -24,7 +24,8 @@ module.exports = function (grunt) {
         options: {
           compress: true,
           yuicompress: true,
-          optimization: 2
+          optimization: 2,
+          sourceMap: true
         },
         files: {
           // target.css file: source.less file

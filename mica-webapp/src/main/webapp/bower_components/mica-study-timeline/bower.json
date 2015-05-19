@@ -7,8 +7,8 @@
   "description": "D3 Timeline for Mica Studies", 
   "main": ["./dist/mica-study-timeline.js", "./dist/mica-study-timeline.css"],
   "dependencies": {
-    "d3": "~3.4.6",
-    "jquery": "~2.0.3"
+    "d3": "3.5.5",
+    "jquery": "2.1.4"
   },
   "ignore": [
     "**/.*",
