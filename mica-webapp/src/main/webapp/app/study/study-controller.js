@@ -280,13 +280,13 @@ mica.study
           })[0];
 
         } else {
+          if (!$scope.study.populations) {
+            $scope.study.populations = [];
+          }
+
           if ($scope.study.populations.length) {
             latestPopulationId = $scope.study.populations[$scope.study.populations.length - 1].id;
             $scope.population.id = MicaUtil.generateNextId(latestPopulationId);
-          }
-
-          if ($scope.study.populations === undefined) {
-            $scope.study.populations = [];
           }
 
           $scope.study.populations.push($scope.population);

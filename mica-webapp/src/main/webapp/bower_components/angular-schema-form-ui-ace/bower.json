@@ -1,0 +1,41 @@
+{
+  "name": "angular-schema-form-ui-ace",
+  "main": [
+    "bootstrap-ui-ace.min.js"
+  ],
+  "version": "0.1.0",
+  "authors": [
+    "NetworkNT",
+    "Steve Hu <stevehu@gmail.com>"
+  ],
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "angular-schema-form",
+    "schema-form",
+    "form",
+    "json",
+    "json-schema",
+    "schema",
+    "ace",
+    "ui-ace",
+    "angular-schema-form-ui-ace"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "coverage"
+  ],
+  "dependencies": {
+    "ace": ">= 1.1.7",
+    "angular-ui-ace": ">= 0.1.1"
+  },
+  "devDependencies": {
+    "angular-schema-form": ">= 0.7",
+    "angular-mocks": ">= 1.2"
+  }
+}

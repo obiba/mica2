@@ -10,6 +10,27 @@ mica.constant('USER_ROLES', {
 
 /* Services */
 
+mica.factory('BrowserDetector', ['$window',
+  function($window) {
+
+    this.detect = function() {
+
+      var userAgent = $window.navigator.userAgent;
+      var browsers = {chrome: /chrome/i, safari: /safari/i, firefox: /firefox/i, ie: /internet explorer|mozilla.*windows nt/i};
+
+      for(var key in browsers) {
+        if (browsers[key].test(userAgent)) {
+          return key;
+        }
+      }
+
+      return 'unknown';
+    };
+
+    return this;
+  }]);
+
+
 mica.factory('CurrentSession', ['$resource',
   function ($resource) {
     return $resource('ws/auth/session/_current');
