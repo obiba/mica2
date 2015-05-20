@@ -500,3 +500,12 @@ message DatasetVariableAggregationsDto {
   repeated DatasetVariableAggregationDto.FrequencyDto frequencies = 4;
   optional DatasetVariableAggregationDto.StatisticsDto statistics = 5;
 }
+
+message DataAccessRequestDto {
+  optional string id = 1;
+  required string applicant = 2;
+  required string status = 3 [default = "DRAFT"];
+  required string title = 4;
+  optional string content = 5;
+  repeated AttachmentDto attachments = 6;
+}
