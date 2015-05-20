@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.domain.Dataset;
@@ -58,6 +59,9 @@ public class Dtos {
 
   @Inject
   private DatasetDtos datasetDtos;
+
+  @Inject
+  private DataAccessRequestDtos dataAccessRequestDtos;
 
   @Inject
   private TaxonomyDtos taxonomyDtos;
@@ -217,6 +221,16 @@ public class Dtos {
   public Mica.DatasetVariableAggregationDto.Builder asDto(@NotNull StudyTable studyTable,
     @Nullable Math.SummaryStatisticsDto summary) {
     return datasetDtos.asDto(studyTable, summary);
+  }
+
+  @NotNull
+  public Mica.DataAccessRequestDto asDto(@NotNull DataAccessRequest request) {
+    return dataAccessRequestDtos.asDto(request);
+  }
+
+  @NotNull
+  public DataAccessRequest fromDto(@NotNull Mica.DataAccessRequestDto dto) {
+    return dataAccessRequestDtos.fromDto(dto);
   }
 
   @NotNull

@@ -581,6 +581,10 @@
       "button": "Choose file",
       "message": "No file chosen"
     }
+  },
+  "data-access-requests": "Data Access Requests",
+  "data-access-request": {
+    "applicant": "Applicant",
+    "title": "Title"
   }
-
 }

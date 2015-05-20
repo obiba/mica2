@@ -62,6 +62,11 @@
             <li><a href="#/harmonization-dataset"><span translate>harmonization-datasets</span></a></li>
           </ul>
         </li>
+        <li ng-if="authenticated">
+          <a href="#/data-access-requests">
+            <span translate>data-access-requests</span>
+          </a>
+        </li>
         <li class="dropdown" ng-if="hasRole(['mica-administrator'])">
           <a href="" class="dropdown-toggle" data-toggle="dropdown">
             <span translate>global.menu.admin</span>
@@ -218,6 +223,10 @@
 <script src="app/network/network-router.js"></script>
 <script src="app/network/network-controller.js"></script>
 <script src="app/network/network-service.js"></script>
+<script src="app/access/data-access-request.js"></script>
+<script src="app/access/data-access-request-router.js"></script>
+<script src="app/access/data-access-request-controller.js"></script>
+<script src="app/access/data-access-request-service.js"></script>
 <!-- endbuild -->
 </body>
 </html>
