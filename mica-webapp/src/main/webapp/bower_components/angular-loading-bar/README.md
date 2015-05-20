@@ -48,7 +48,7 @@ Additionally, Angular was created as a highly testable framework, so it pains me
 
 ## Configuration
 
-**Turn the spinner on or off:**  
+#### Turn the spinner on or off:
 The insertion of the spinner can be controlled through configuration.  It's on by default, but if you'd like to turn it off, simply configure the service:
 
 ```js
@@ -58,7 +58,7 @@ angular.module('myApp', ['angular-loading-bar'])
   }])
 ```
 
-**Turn the loading bar on or off:**  
+#### Turn the loading bar on or off:
 Like the spinner configuration above, the loading bar can also be turned off for cases where you only want the spinner:
 
 ```js
@@ -68,7 +68,17 @@ angular.module('myApp', ['angular-loading-bar'])
   }])
 ```
 
-**Ignoring particular XHR requests:**  
+#### Latency Threshold
+By default, the loading bar will only display after it has been waiting for a response for over 100ms.  This helps keep things feeling snappy, and avoids the annoyingness of showing a loading bar every few seconds on really chatty applications.  This threshold is totally configurable:
+
+```js
+angular.module('myApp', ['angular-loading-bar'])
+  .config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {
+    cfpLoadingBarProvider.latencyThreshold = 500;
+  }])
+```
+
+#### Ignoring particular XHR requests:
 The loading bar can also be forced to ignore certain requests, for example, when long-polling or periodically sending debugging information back to the server.
 
 ```js
@@ -134,6 +144,17 @@ cfpLoadingBar.complete()
 // Set the loading bar's progress to 100%, and then remove it from the DOM.
 
 ```
+
+## Events
+The loading bar broadcasts the following events over $rootScope allowing further customization:
+
+**`cfpLoadingBar:loading`** triggered upon each XHR request that is not already cached
+
+**`cfpLoadingBar:loaded`** triggered each time an XHR request recieves a response (either successful or error)
+
+**`cfpLoadingBar:started`** triggered once upon the first XHR request.  Will trigger again if another request goes out after `cfpLoadingBar:completed` has triggered.
+
+**`cfpLoadingBar:completed`** triggered once when the all XHR requests have returned (either successfully or not)
 
 ## Credits: 
 Credit goes to [rstacruz](https://github.com/rstacruz) for his excellent [nProgress](https://github.com/rstacruz/nprogress).

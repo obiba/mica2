@@ -19,12 +19,12 @@ module.exports = function(grunt) {
 					"<banner>",
 					"src/intro.js",
 					"src/filesize.js",
-					"src/si.js",
 					"src/outro.js"
 				],
-				dest : "lib/filesize.js"
+				dest : "lib/filesize.es6.js"
 			}
-		},exec : {
+		},
+		exec : {
 			closure : {
 				cmd : "cd lib\nclosure-compiler --js <%= pkg.name %>.js --js_output_file <%= pkg.name %>.min.js --create_source_map ./<%= pkg.name %>.map"
 			},
@@ -32,11 +32,15 @@ module.exports = function(grunt) {
 				cmd : "echo //@ sourceMappingURL=<%= pkg.name %>.map >> lib/<%= pkg.name %>.min.js"
 			}
 		},
-		jshint : {
-			options : {
-				jshintrc : ".jshintrc"
+		"babel": {
+			options: {
+				sourceMap: false
 			},
-			src : "lib/<%= pkg.name %>.js"
+			dist: {
+				files: {
+					"lib/<%= pkg.name %>.js": "lib/<%= pkg.name %>.es6.js"
+				}
+			}
 		},
 		nodeunit : {
 			all : ["test/*.js"]
@@ -46,6 +50,21 @@ module.exports = function(grunt) {
 				pattern : "{{VERSION}}",
 				replacement : "<%= pkg.version %>",
 				path : ["<%= concat.dist.dest %>"]
+			}
+		},
+		uglify: {
+			options: {
+				banner : "/*\n" +
+				" <%= grunt.template.today('yyyy') %> <%= pkg.author.name %>\n" +
+				" @version <%= pkg.version %>\n" +
+				" */",
+				sourceMap: true,
+				sourceMapIncludeSources: true
+			},
+			target: {
+				files: {
+					"lib/filesize.min.js" : ["lib/filesize.js"]
+				}
 			}
 		},
 		watch : {
@@ -62,15 +81,14 @@ module.exports = function(grunt) {
 
 	// tasks
 	grunt.loadNpmTasks("grunt-sed");
-	grunt.loadNpmTasks("grunt-exec");
 	grunt.loadNpmTasks("grunt-contrib-concat");
 	grunt.loadNpmTasks("grunt-contrib-nodeunit");
-	grunt.loadNpmTasks("grunt-contrib-jshint");
 	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks("grunt-contrib-uglify");
+	grunt.loadNpmTasks("grunt-babel");
 
 	// aliases
-	grunt.registerTask("lint", ["jshint"]);
-	grunt.registerTask("test", ["nodeunit"]);
-	grunt.registerTask("build", ["concat", "sed", "exec"]);
-	grunt.registerTask("default", ["build", "test", "lint"]);
+	grunt.registerTask("test", [ "nodeunit"]);
+	grunt.registerTask("build", ["concat", "sed", "babel"]);
+	grunt.registerTask("default", ["build", "test", "uglify"]);
 };

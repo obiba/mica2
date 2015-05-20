@@ -1,22 +1,38 @@
 <h3>Maelstrom authorization</h3>
 <div form-checkbox name="study.maelstromAuthorization.authorized" model="study.maelstromAuthorization.authorized"
-  lang="tab.lang" help="study.authorization.maelstrom"></div>
+  lang="tab.lang" label="study.authorization.maelstrom"></div>
 <div form-input name="study.maelstromAuthorization.authorizer"
   model="study.maelstromAuthorization.authorizer" label="study.authorization.authorizer"></div>
 <div class="input-group">
   <label translate>study.authorization.date</label>
-  <input type="date" name="study.maelstromAuthorization.date" class="form-control" datepicker-popup
-    ng-model="study.maelstromAuthorization.date"/>
+  <p class="input-group">
+    <input readonly type="text" class="form-control" datepicker-popup ng-model="authorization.maelstrom.date"
+      is-open="datePicker.maelstrom.opened"
+      current-text="{{'today' | translate}}"
+      clear-text="{{'clear' | translate}}"
+      close-text="{{'close' | translate}}" />
+    <span class="input-group-btn">
+      <button type="button" class="btn btn-default" ng-click="openDatePicker($event, 'maelstrom')"><i class="glyphicon glyphicon-calendar"></i></button>
+    </span>
+  </p>
 </div>
-
 
 <h3>Specific authorization</h3>
 <div form-checkbox name="study.specificAuthorization.authorized" model="study.specificAuthorization.authorized"
-  lang="tab.lang" help="study.authorization.specific"></div>
+  lang="tab.lang" label="study.authorization.specific"></div>
 <div form-input name="study.specificAuthorization.authorizer"
   model="study.specificAuthorization.authorizer" label="study.authorization.authorizer"></div>
 <div class="input-group">
   <label translate>study.authorization.date</label>
-  <input type="date" name="study.specificAuthorization.date" class="form-control" datepicker-popup
-    ng-model="study.specificAuthorization.date"/>
+  <p class="input-group">
+    <input readonly type="text" class="form-control" datepicker-popup ng-model="authorization.specific.date"
+      is-open="datePicker.specific.opened"
+      current-text="{{'today' | translate}}"
+      clear-text="{{'clear' | translate}}"
+      close-text="{{'close' | translate}}" />
+
+  <span class="input-group-btn">
+    <button type="button" class="btn btn-default" ng-click="openDatePicker($event, 'specific')"><i class="glyphicon glyphicon-calendar"></i></button>
+  </span>
+  </p>
 </div>

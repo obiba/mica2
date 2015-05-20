@@ -1,6 +1,35 @@
 Changelog
 ==========
 
+## 0.7.1
+- Merge correct PR for broken interceptor detection ([#133](https://github.com/chieffancypants/angular-loading-bar/pull/133), [#50](https://github.com/chieffancypants/angular-loading-bar/pull/50))
+
+## 0.7.0
+- Changes for animate.enter compatibility for 1.2 and 1.3 ([#170](https://github.com/chieffancypants/angular-loading-bar/pull/170))
+- Detect errors with other interceptors ([#133](https://github.com/chieffancypants/angular-loading-bar/pull/133), [#50](https://github.com/chieffancypants/angular-loading-bar/pull/50))
+- Provide more detail on response/responseError events ([#128](https://github.com/chieffancypants/angular-loading-bar/pull/128))
+- Change angular dependency in bower ([#126](https://github.com/chieffancypants/angular-loading-bar/issues/126))
+
+## 0.6.0
+- Customize progress bar template: ([#111](https://github.com/chieffancypants/angular-loading-bar/pull/111))
+- Only append bar to first parent found ([#108](https://github.com/chieffancypants/angular-loading-bar/pull/108))
+
+## 0.5.2:
+Fixes for Angular 1.3 breaking changes:
+- Circular dependencies: ([#98](https://github.com/chieffancypants/angular-loading-bar/issues/98)), ([#101](https://github.com/chieffancypants/angular-loading-bar/pull/101))
+- $animate no longer accepts callbacks: ([#102](https://github.com/chieffancypants/angular-loading-bar/pull/102))
+
+## 0.5.1
+- Reworked cache logic to allow cache:true ([#96](https://github.com/chieffancypants/angular-loading-bar/pull/96))
+
+## 0.5.0
+- Added spinner template configuration ([#82](https://github.com/chieffancypants/angular-loading-bar/pull/82))
+- $timeout was not canceled properly ([#79](https://github.com/chieffancypants/angular-loading-bar/pull/79))
+
+## 0.4.3
+- update z-index to work with other css frameworks ([#69](https://github.com/chieffancypants/angular-loading-bar/pull/69))
+- ignoreLoadingBar not ignored when calculating percentage complete ([#70](https://github.com/chieffancypants/angular-loading-bar/pull/70))
+
 ## 0.4.2
 - Split loading bar into different modules so they can be included separately ([#46](https://github.com/chieffancypants/angular-loading-bar/issues/46))
 

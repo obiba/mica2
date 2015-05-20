@@ -22,7 +22,9 @@
   <link rel="stylesheet" href="styles/mica.css">
   <link rel="stylesheet" href="styles/famfamfam-flags.css">
   <!-- bower:css -->
-  <link rel="stylesheet" href="bower_components/angular-loading-bar/src/loading-bar.css" />
+  <link rel="stylesheet" href="bower_components/angular-loading-bar/build/loading-bar.css" />
+  <link rel="stylesheet" href="bower_components/angular-ui-select/dist/select.css" />
+  <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.css" />
   <link rel="stylesheet" href="bower_components/mica-study-timeline/dist/mica-study-timeline.css" />
   <!-- endbower -->
   <!-- endbuild -->
@@ -52,7 +54,7 @@
           </a>
         </li>
         <li class="dropdown" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+          <a href="" class="dropdown-toggle" data-toggle="dropdown">
             <span translate>datasets</span>
             <i class="fa fa-caret-down"></i></a>
           <ul class="dropdown-menu pull-right">
@@ -61,7 +63,7 @@
           </ul>
         </li>
         <li class="dropdown" ng-if="hasRole(['mica-administrator'])">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+          <a href="" class="dropdown-toggle" data-toggle="dropdown">
             <span translate>global.menu.admin</span>
             <i class="fa fa-caret-down"></i></a>
           <ul class="dropdown-menu pull-right">
@@ -98,7 +100,7 @@
 
       <ul class="nav navbar-nav navbar-right" ng-hide="!authenticated">
         <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+          <a href="" class="dropdown-toggle" data-toggle="dropdown">
             <i class="fa fa-user"></i>
             {{subject.login}}
             <i class="fa fa-caret-down"></i></a>
@@ -152,29 +154,29 @@
 <!-- build:js scripts/scripts.js -->
 <!-- bower:js -->
 <script src="bower_components/modernizr/modernizr.js"></script>
-<script src="bower_components/jquery/jquery.js"></script>
+<script src="bower_components/jquery/dist/jquery.js"></script>
 <script src="bower_components/angular/angular.js"></script>
 <script src="bower_components/angular-animate/angular-animate.js"></script>
 <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
 <script src="bower_components/chosen/chosen.jquery.js"></script>
 <script src="bower_components/angular-chosen-localytics/chosen.js"></script>
 <script src="bower_components/angular-cookies/angular-cookies.js"></script>
-<script src="bower_components/angular-dynamic-locale/src/tmhDinamicLocale.js"></script>
-<script src="bower_components/angular-loading-bar/src/loading-bar.js"></script>
+<script src="bower_components/angular-dynamic-locale/src/tmhDynamicLocale.js"></script>
+<script src="bower_components/angular-loading-bar/build/loading-bar.js"></script>
 <script src="bower_components/angular-resource/angular-resource.js"></script>
 <script src="bower_components/angular-route/angular-route.js"></script>
 <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
 <script src="bower_components/angular-translate/angular-translate.js"></script>
 <script src="bower_components/angular-translate-loader-static-files/angular-translate-loader-static-files.js"></script>
 <script src="bower_components/angular-translate-storage-cookie/angular-translate-storage-cookie.js"></script>
+<script src="bower_components/angular-ui-select/dist/select.js"></script>
 <script src="bower_components/angular-ui/build/angular-ui.min.js"></script>
 <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-<script src="bower_components/jquery-ui/ui/jquery-ui.js"></script>
-<script src="bower_components/json3/lib/json3.min.js"></script>
+<script src="bower_components/jquery-ui/jquery-ui.js"></script>
+<script src="bower_components/json3/lib/json3.js"></script>
 <script src="bower_components/d3/d3.js"></script>
 <script src="bower_components/mica-study-timeline/dist/mica-study-timeline.js"></script>
-<script src="bower_components/ng-file-upload/angular-file-upload.js"></script>
-<script src="bower_components/ng-file-upload/angular-file-upload-shim.min.js"></script>
+<script src="bower_components/ng-file-upload/ng-file-upload.js"></script>
 <script src="bower_components/ng-obiba/dist/ng-obiba.js"></script>
 <script src="bower_components/filesize/lib/filesize.min.js"></script>
 <script src="bower_components/angular-utils-pagination/dirPagination.js"></script>

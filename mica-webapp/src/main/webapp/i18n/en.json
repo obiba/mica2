@@ -550,6 +550,8 @@
   "ok": "OK",
   "confirmation": "Confirmation",
   "close": "Close",
+  "clear": "Clear",
+  "today": "Today",
   "save": "Save",
   "apply": "Apply",
   "on": "On",
@@ -557,7 +559,7 @@
   "other": "Other",
   "notification": "Notification",
   "required": "Required",
-  "suppl-info": "Supplementary information",
+  "suppl-info": "Supplementary information about study design",
   "fix-error": "Please fix errors below",
   "dnd-reorder": "Drag and drop to reorder",
   "loading": "Loading...",
@@ -573,5 +575,12 @@
     "error": {
       "403": "Server rejected your request, please make sure you are logged in and try again."
     }
+  },
+  "file": {
+    "upload": {
+      "button": "Choose file",
+      "message": "No file chosen"
+    }
   }
+
 }

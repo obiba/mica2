@@ -3,7 +3,7 @@
 angular.module('obiba.rest', ['obiba.notification'])
 
   .config(['$httpProvider', function ($httpProvider) {
-    $httpProvider.responseInterceptors.push('httpErrorsInterceptor');
+    $httpProvider.interceptors.push('httpErrorsInterceptor');
   }])
 
   .factory('httpErrorsInterceptor', ['$q', '$rootScope', 'NOTIFICATION_EVENTS', 'ServerErrorUtils',

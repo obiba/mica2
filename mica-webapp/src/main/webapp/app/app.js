@@ -18,7 +18,7 @@ var mica = angular.module('mica', [
   'pascalprecht.translate',
   'tmh.dynamicLocale',
   'ui.bootstrap',
-  'angularFileUpload',
+  'ngFileUpload',
   'angularUtils.directives.dirPagination'
 ]);
 
@@ -168,31 +168,17 @@ mica
 
   .run(['$rootScope', '$location', '$http', 'AuthenticationSharedService', 'Session', 'USER_ROLES',
     function ($rootScope, $location, $http, AuthenticationSharedService, Session, USER_ROLES) {
-      $rootScope.$on('$routeChangeStart', function (event) {
+      $rootScope.$on('$routeChangeStart', function (event, next) {
         $rootScope.authenticated = AuthenticationSharedService.isAuthenticated();
         $rootScope.hasRole = AuthenticationSharedService.isAuthorized;
         $rootScope.userRoles = USER_ROLES;
         $rootScope.subject = Session;
 
-        if (!$rootScope.hasRole) {
-          event.preventDefault();
-          if ($rootScope.authenticated) {
-            // user is not allowed
-            $rootScope.$broadcast('event:auth-notAuthorized');
-          } else {
-            // user is not logged in
-            $rootScope.$broadcast('event:auth-loginRequired');
-          }
-        } else {
-          // Check if the customer is still authenticated on the server
-          // Try to load a protected 1 pixel image.
-//          $http({method: 'GET', url: '/protected/transparent.gif'}).
-//            error(function (response) {
-//              // Not authorized
-//              if (response.status === 401) {
-//                $rootScope.$broadcast("event:auth-notAuthorized");
-//              }
-//            })
+
+        if (!$rootScope.authenticated) {
+          $rootScope.$broadcast('event:auth-loginRequired');
+        } else if (!AuthenticationSharedService.isAuthorized(Session.role)) {
+          $rootScope.$broadcast('event:auth-notAuthorized');
         }
       });
 

@@ -37,19 +37,28 @@
       };
     }])
 
-  /**
-   * $http interceptor.
-   * On 401 response (without 'ignoreAuthModule' option) stores the request
-   * and broadcasts 'event:angular-auth-loginRequired'.
-   */
-    .config(['$httpProvider', function ($httpProvider) {
+    .factory('myHttpInterceptor', ['$rootScope', '$q', 'httpBuffer', function($rootScope, $q, httpBuffer) {
+      return {
+        // optional method
+        'request': function(config) {
+          // do something on success
+          return config;
+        },
 
-      var interceptor = ['$rootScope', '$q', 'httpBuffer', function ($rootScope, $q, httpBuffer) {
-        function success(response) {
+        // optional method
+        'requestError': function(rejection) {
+          // do something on error
+          return $q.reject(rejection);
+        },
+
+        // optional method
+        'response': function(response) {
+          // do something on success
           return response;
-        }
+        },
 
-        function error(response) {
+        // optional method
+        'responseError': function(response) {
           if (response.status === 401 && !response.config.ignoreAuthModule) {
             var deferred = $q.defer();
             httpBuffer.append(response.config, deferred);
@@ -64,13 +73,16 @@
           // otherwise, default behaviour
           return $q.reject(response);
         }
+      };
+    }])
 
-        return function (promise) {
-          return promise.then(success, error);
-        };
-
-      }];
-      $httpProvider.responseInterceptors.push(interceptor);
+  /**
+   * $http interceptor.
+   * On 401 response (without 'ignoreAuthModule' option) stores the request
+   * and broadcasts 'event:angular-auth-loginRequired'.
+   */
+    .config(['$httpProvider', function ($httpProvider) {
+      $httpProvider.interceptors.push('myHttpInterceptor');
     }]);
 
   /**
