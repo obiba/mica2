@@ -47,6 +47,7 @@ mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStor
   function ($rootScope, $http, $cookieStore, $cookies, authService, Session, CurrentSession) {
     return {
       login: function (param) {
+        $rootScope.authenticationError = false;
         var data = 'username=' + param.username + '&password=' + param.password;
         $http.post('ws/auth/sessions', data, {
           headers: {
@@ -60,6 +61,7 @@ mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStor
             authService.loginConfirmed(data);
           });
         }).error(function () {
+          $rootScope.authenticationError = true;
           Session.destroy();
         });
       },

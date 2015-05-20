@@ -166,8 +166,8 @@ mica
     }]);
   }])
 
-  .run(['$rootScope', '$location', '$http', 'AuthenticationSharedService', 'Session', 'USER_ROLES',
-    function ($rootScope, $location, $http, AuthenticationSharedService, Session, USER_ROLES) {
+  .run(['$rootScope', '$location', '$http', 'AuthenticationSharedService', 'Session', 'USER_ROLES', 'ServerErrorUtils',
+    function ($rootScope, $location, $http, AuthenticationSharedService, Session, USER_ROLES, ServerErrorUtils) {
       $rootScope.$on('$routeChangeStart', function (event, next) {
         $rootScope.authenticated = AuthenticationSharedService.isAuthenticated();
         $rootScope.hasRole = AuthenticationSharedService.isAuthorized;
@@ -177,7 +177,7 @@ mica
 
         if (!$rootScope.authenticated) {
           $rootScope.$broadcast('event:auth-loginRequired');
-        } else if (!AuthenticationSharedService.isAuthorized(Session.role)) {
+        } else if (!AuthenticationSharedService.isAuthorized(next.access.authorizedRoles)) {
           $rootScope.$broadcast('event:auth-notAuthorized');
         }
       });
@@ -205,6 +205,11 @@ mica
           $rootScope.errorMessage = 'errors.403';
           $location.path('/error').replace();
         }
+      });
+
+      $rootScope.$on('event:unhandled-server-error', function (event, response) {
+        $rootScope.errorMessage = ServerErrorUtils.buildMessage(response);
+        $location.path('/error').replace();
       });
 
       // Call when the user logs out
