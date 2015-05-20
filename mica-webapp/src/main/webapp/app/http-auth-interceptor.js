@@ -37,7 +37,7 @@
       };
     }])
 
-    .factory('myHttpInterceptor', ['$rootScope', '$q', 'httpBuffer', function($rootScope, $q, httpBuffer) {
+    .factory('MicaHttpInterceptor', ['$rootScope', '$q', 'httpBuffer', function($rootScope, $q, httpBuffer) {
       return {
         // optional method
         'request': function(config) {
@@ -64,12 +64,18 @@
             httpBuffer.append(response.config, deferred);
             $rootScope.$broadcast('event:auth-loginRequired', response);
             return deferred.promise;
-          } else if (response.status === 403 && !response.config.ignoreAuthModule) {
+          } else {
             if (!response.data.messageTemplate) {
               response.data.messageTemplate = 'server.error.' + response.status;
             }
-            $rootScope.$broadcast('event:auth-notAuthorized', response);
+
+            if (response.status === 403 && !response.config.ignoreAuthModule) {
+              $rootScope.$broadcast('event:auth-notAuthorized', response);
+            } else if (!response.config.errorHandler) {
+              $rootScope.$broadcast('event:unhandled-server-error', response);
+            }
           }
+
           // otherwise, default behaviour
           return $q.reject(response);
         }
@@ -82,7 +88,7 @@
    * and broadcasts 'event:angular-auth-loginRequired'.
    */
     .config(['$httpProvider', function ($httpProvider) {
-      $httpProvider.interceptors.push('myHttpInterceptor');
+      $httpProvider.interceptors.push('MicaHttpInterceptor');
     }]);
 
   /**
