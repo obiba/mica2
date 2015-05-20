@@ -1,6 +1,7 @@
 package org.obiba.mica.web.model;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -15,6 +16,7 @@ import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.micaConfig.domain.AggregationsConfig;
+import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.domain.OpalCredential;
 import org.obiba.mica.network.domain.Network;
@@ -26,6 +28,7 @@ import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.obiba.opal.web.model.Math;
 import org.springframework.stereotype.Component;
 
+import static java.util.stream.Collectors.toList;
 import static org.obiba.mica.web.model.Mica.DocumentDigestDto;
 import static org.obiba.mica.web.model.Mica.MicaConfigDto;
 import static org.obiba.mica.web.model.Mica.MicaConfigDtoOrBuilder;
@@ -253,4 +256,18 @@ public class Dtos {
     return localizedStringDtos.asDto(string);
   }
 
+  @NotNull
+  public Mica.DataAccessFormDto asDto(@NotNull DataAccessForm dataAccessForm) {
+    return micaConfigDtos.asDto(dataAccessForm);
+  }
+
+  @NotNull
+  public DataAccessForm fromDto(@NotNull Mica.DataAccessFormDto dto) {
+    return micaConfigDtos.fromDto(dto);
+  }
+
+  @NotNull
+  public List<Mica.DataAccessFormDto.LocalizedPropertyDto> asDtoList(@NotNull Map<String, LocalizedString> properties) {
+    return micaConfigDtos.asDtoList(properties);
+  }
 }

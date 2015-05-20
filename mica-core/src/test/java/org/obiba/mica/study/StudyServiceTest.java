@@ -164,7 +164,6 @@ public class StudyServiceTest {
     draft.setName(en("new name en").forFr("new name fr"));
     studyService.save(draft);
 
-    assertThat(studyService.findPublishedStudyByTag(study.getId(), publishedState.getPublishedTag())).areFieldsEqualToEachOther(study);
     assertThat(studyService.findDraftStudy(study.getId())).areFieldsEqualToEachOther(draft);
   }
 

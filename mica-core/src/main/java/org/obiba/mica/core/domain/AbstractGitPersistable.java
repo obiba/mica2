@@ -3,12 +3,11 @@ package org.obiba.mica.core.domain;
 import java.util.Objects;
 
 import org.joda.time.DateTime;
-import org.springframework.data.domain.Persistable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
 
-public abstract class AbstractGitPersistable implements Persistable<String>, Timestamped {
+public abstract class AbstractGitPersistable implements GitPersistable {
 
   private static final long serialVersionUID = -5039056351334888684L;
 
@@ -74,5 +73,4 @@ public abstract class AbstractGitPersistable implements Persistable<String>, Tim
   public final String toString() {
     return toStringHelper().toString();
   }
-
 }

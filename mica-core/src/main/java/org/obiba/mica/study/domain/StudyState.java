@@ -1,8 +1,12 @@
 package org.obiba.mica.study.domain;
 
+import java.io.Serializable;
+import java.util.Map;
+
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
+import org.obiba.mica.core.domain.GitPersistable;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -11,8 +15,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
 
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+
 @Document
-public class StudyState extends AbstractAuditableDocument {
+public class StudyState extends AbstractAuditableDocument implements GitPersistable {
 
   private static final long serialVersionUID = -4271967393906681773L;
 
@@ -78,4 +84,13 @@ public class StudyState extends AbstractAuditableDocument {
         .add("publishedTag", publishedTag);
   }
 
+  @Override
+  public String pathPrefix() {
+    return "studies";
+  }
+
+  @Override
+  public Map<String, Serializable> parts() {
+    throw new NotImplementedException();
+  }
 }

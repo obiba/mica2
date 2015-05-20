@@ -39,7 +39,7 @@ public class FileResource {
   @Timed
   public Response download() {
     Attachment attachment = persistable.findAttachmentById(fileId);
-    return Response.ok(gitService.readFileHead(persistable.getId(), fileId))
+    return Response.ok(gitService.readFileHead(persistable, fileId))
         .header("Content-Disposition", "attachment; filename=\"" + attachment.getName() + "\"").build();
   }
 

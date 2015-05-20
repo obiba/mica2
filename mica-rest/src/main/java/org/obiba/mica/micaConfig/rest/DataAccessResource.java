@@ -1,0 +1,86 @@
+package org.obiba.mica.micaConfig.rest;
+
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+
+import javax.inject.Inject;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
+
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.core.security.Roles;
+import org.obiba.mica.file.rest.FileResource;
+import org.obiba.mica.micaConfig.NoSuchDataAccessFormException;
+import org.obiba.mica.micaConfig.domain.DataAccessForm;
+import org.obiba.mica.micaConfig.service.DataAccessFormService;
+import org.obiba.mica.web.model.Dtos;
+import org.obiba.mica.web.model.Mica;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
+
+import sun.util.locale.LanguageTag;
+
+import static java.util.stream.Collectors.toMap;
+
+@Component
+@Scope("request")
+@Path("/config/data-access")
+@RequiresAuthentication
+public class DataAccessResource {
+
+  @Inject
+  DataAccessFormService dataAccessFormService;
+
+  @Inject
+  Dtos dtos;
+
+  @Inject
+  FileResource fileResource;
+
+  @GET
+  @Path("/form")
+  public Mica.DataAccessFormDto getDataAccessForm(@QueryParam("lang") String lang) {
+    Optional<DataAccessForm> d = dataAccessFormService.findDataAccessForm();
+
+    if(!d.isPresent()) throw NoSuchDataAccessFormException.withDefaultMessage();
+
+    DataAccessForm dataAccessForm = d.get();
+    Mica.DataAccessFormDto.Builder builder = Mica.DataAccessFormDto.newBuilder(dtos.asDto(dataAccessForm))
+      .clearProperties().clearPdfTemplates();
+
+    String langTag = !Strings.isNullOrEmpty(lang) ? Locale.forLanguageTag(lang).toLanguageTag() : LanguageTag.UNDETERMINED;
+
+    Map<String, LocalizedString> properties = dataAccessForm.getProperties().entrySet().stream()
+      .map(e -> Maps.immutableEntry(e.getKey(), new LocalizedString().forLanguageTag(langTag, e.getValue().get(langTag))))
+      .collect(toMap(e -> e.getKey(), x -> x.getValue()));
+
+    builder.addAllProperties(dtos.asDtoList(properties));
+
+    return builder.build();
+  }
+
+  @GET
+  @Path("/pdf")
+  public FileResource getDataAccessPdf(@QueryParam("lang") String lang) {
+    Optional<DataAccessForm> d = dataAccessFormService.findDataAccessForm();
+
+    if(!d.isPresent()) throw NoSuchDataAccessFormException.withDefaultMessage();
+
+    DataAccessForm dataAccessForm = d.get();
+    Locale locale = Locale.forLanguageTag(!Strings.isNullOrEmpty(lang) ? Locale.forLanguageTag(lang).toLanguageTag() : LanguageTag.UNDETERMINED);
+
+    if (!dataAccessForm.getPdfTemplates().containsKey(locale)) throw NoSuchDataAccessFormException.withDefaultMessage();
+
+    fileResource.setPersistable(dataAccessForm);
+    fileResource.setFileId(dataAccessForm.getPdfTemplates().get(locale).getId());
+
+    return fileResource;
+  }
+}

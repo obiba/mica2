@@ -1,7 +1,9 @@
 package org.obiba.mica.access.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
@@ -117,6 +119,16 @@ public class DataAccessRequest extends AbstractAuditableDocument
   @Override
   public Attachment findAttachmentById(String attachmentId) {
     return getAttachments().stream().filter(a -> a != null && a.getId().equals(attachmentId)).findAny().orElse(null);
+  }
+
+  @Override
+  public String pathPrefix() {
+    return null;
+  }
+
+  @Override
+  public Map<String, Serializable> parts() {
+    return null;
   }
 
   //

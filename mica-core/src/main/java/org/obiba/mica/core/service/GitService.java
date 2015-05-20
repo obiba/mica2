@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -29,14 +30,13 @@ import org.obiba.git.command.AddDeleteFilesCommand;
 import org.obiba.git.command.GitCommandHandler;
 import org.obiba.git.command.ListFilesCommand;
 import org.obiba.git.command.ReadFileCommand;
-import org.obiba.mica.core.domain.Timestamped;
+import org.obiba.mica.core.domain.GitPersistable;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.PersistableWithAttachments;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.file.TempFileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Persistable;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
@@ -90,56 +90,51 @@ public class GitService {
     this.clonesRoot = clonesRoot;
   }
 
-  public boolean hasGitRepository(String id) {
-    return FileUtils.fileExists(getRepositoryPath(id).getAbsolutePath()) ||
-      FileUtils.fileExists(getCloneRepositoryPath(id).getAbsolutePath());
+  public boolean hasGitRepository(GitPersistable persistable) {
+    return FileUtils.fileExists(getRepositoryPath(persistable).getAbsolutePath()) ||
+      FileUtils.fileExists(getCloneRepositoryPath(persistable).getAbsolutePath());
   }
 
-  public void deleteGitRepository(String id) {
+  public void deleteGitRepository(GitPersistable persistable) {
     try {
-      FileUtils.deleteDirectory(getRepositoryPath(id));
-      FileUtils.deleteDirectory(getCloneRepositoryPath(id));
+      FileUtils.deleteDirectory(getRepositoryPath(persistable));
+      FileUtils.deleteDirectory(getCloneRepositoryPath(persistable));
     } catch(IOException e) {
       Throwables.propagate(e);
     }
   }
 
-  public <TGitPersistable extends Persistable<String> & Timestamped> void save(
-    @NotNull @Valid TGitPersistable persistable) {
+  public void save(
+    @NotNull @Valid GitPersistable persistable) {
     try {
       persistable.setLastModifiedDate(DateTime.now());
 
-      AddDeleteFilesCommand.Builder builder = new AddDeleteFilesCommand.Builder(getRepositoryPath(persistable.getId()),
-        clonesRoot, "Update");
+      AddDeleteFilesCommand.Builder builder = new AddDeleteFilesCommand.Builder(getRepositoryPath(persistable),
+        new File(clonesRoot, persistable.pathPrefix()) , "Update");
 
       if(persistable instanceof PersistableWithAttachments) {
         processAttachments((PersistableWithAttachments) persistable, builder);
       }
 
-      File jsonFile = serializePersistable(persistable);
+      persistable.parts().entrySet().forEach(p -> {
+        try {
+          builder.addFile(getJsonFileName(p.getKey()), serializePersistable(p.getValue()));
+          //noinspection ResultOfMethodCallIgnored
+        }
+        catch(IOException e) {
+          throw new RuntimeException("Cannot persist " + persistable + " to " + persistable.getId() + " repo", e);
+        }
+      });
 
-      // add this temp JSON file to GIT
-      try(InputStream input = new FileInputStream(jsonFile)) {
-        builder.addFile(getJsonFileName(persistable.getClass()), input);
-        gitCommandHandler.execute(builder.build());
-      }
-
-      //noinspection ResultOfMethodCallIgnored
-      jsonFile.delete();
-
+      gitCommandHandler.execute(builder.build());
     } catch(IOException e) {
       throw new RuntimeException("Cannot persist " + persistable + " to " + persistable.getId() + " repo", e);
     }
   }
 
-  private <TGitPersistable extends Persistable<String> & Timestamped> File serializePersistable(
-    TGitPersistable persistable) throws IOException {
-    File jsonFile = File.createTempFile("mica", "json");
-    jsonFile.deleteOnExit();
-    try(FileOutputStream out = new FileOutputStream(jsonFile)) {
-      objectMapper.writeValue(out, persistable);
-    }
-    return jsonFile;
+  private ByteArrayInputStream serializePersistable(
+    Object persistable) throws IOException {
+    return new ByteArrayInputStream(objectMapper.writeValueAsBytes(persistable));
   }
 
   private void processAttachments(PersistableWithAttachments persistable, AddDeleteFilesCommand.Builder builder)
@@ -151,13 +146,13 @@ public class GitService {
     filesToDelete.forEach(builder::deleteFile);
   }
 
-  private Collection<String> getExistingPathsInRepo(Persistable<String> persistable) {
+  private Collection<String> getExistingPathsInRepo(GitPersistable persistable) {
     return gitCommandHandler.execute(
-      new ListFilesCommand.Builder(getRepositoryPath(persistable.getId()), clonesRoot).filter(ATTACHMENTS_PATH + "*")
+      new ListFilesCommand.Builder(getRepositoryPath(persistable), new File(clonesRoot, persistable.pathPrefix())).filter(ATTACHMENTS_PATH + "*")
         .recursive(true).build());
   }
 
-  private void processAttachment(Attachment attachment, Persistable<String> parent,
+  private void processAttachment(Attachment attachment, GitPersistable parent,
     AddDeleteFilesCommand.Builder builder, Collection<String> filesToDelete) {
     String pathInRepo = getPathInRepo(attachment.getId());
     if(attachment.isJustUploaded()) {
@@ -172,41 +167,33 @@ public class GitService {
     filesToDelete.remove(pathInRepo);
   }
 
-  public <T> T readHead(String id, Class<T> clazz) {
-    return read(id, null, clazz);
+  public <T> T readFromTag(GitPersistable persistable, String tag, Class<T> clazz) {
+    return read(persistable, tag, clazz);
   }
 
-  public <T> T readFromTag(String id, String tag, Class<T> clazz) {
-    return read(id, tag, clazz);
-  }
-
-  private <T> T read(String id, @Nullable String tag, Class<T> clazz) {
+  private <T> T read(GitPersistable persistable, @Nullable String tag, Class<T> clazz) {
     try {
       try(InputStream inputStream = gitCommandHandler
-        .execute(new ReadFileCommand.Builder(getRepositoryPath(id), getJsonFileName(clazz)).tag(tag).build())) {
+        .execute(new ReadFileCommand.Builder(getRepositoryPath(persistable), getJsonFileName(clazz.getSimpleName())).tag(tag).build())) {
         return objectMapper.readValue(inputStream, clazz);
       }
     } catch(IOException e) {
-      throw new RuntimeException("Cannot read " + clazz.getName() + " from " + id + " repo", e);
+      throw new RuntimeException("Cannot read " + clazz.getSimpleName() + " from " + persistable + " repo", e);
     }
   }
 
-  public byte[] readFileHead(String id, String fileId) {
-    return readFile(id, fileId, null);
+  public byte[] readFileHead(GitPersistable persistable, String fileId) {
+    return readFile(persistable, fileId, null);
   }
 
-  public byte[] readFileFromTag(String id, String fileId, String tag) {
-    return readFile(id, fileId, tag);
-  }
-
-  private byte[] readFile(String id, String fileId, @Nullable String tag) {
+  private byte[] readFile(GitPersistable persistable, String fileId, @Nullable String tag) {
     try {
       try(InputStream inputStream = gitCommandHandler
-        .execute(new ReadFileCommand.Builder(getRepositoryPath(id), getPathInRepo(fileId)).tag(tag).build())) {
+        .execute(new ReadFileCommand.Builder(getRepositoryPath(persistable), getPathInRepo(fileId)).tag(tag).build())) {
         return ByteStreams.toByteArray(inputStream);
       }
     } catch(IOException e) {
-      throw new RuntimeException("Cannot read file " + fileId + " from " + id + " repo", e);
+      throw new RuntimeException("Cannot read file " + fileId + " from " + persistable + " repo", e);
     }
   }
 
@@ -214,22 +201,23 @@ public class GitService {
     return ATTACHMENTS_PATH + attachmentId;
   }
 
-  public String tag(String id) {
-    IncrementTagCommand command = new IncrementTagCommand(getRepositoryPath(id), clonesRoot);
+  public String tag(GitPersistable persistable) {
+    IncrementTagCommand command = new IncrementTagCommand(getRepositoryPath(persistable), new File(clonesRoot, persistable.pathPrefix()));
     gitCommandHandler.execute(command);
+
     return String.valueOf(command.getNewTag());
   }
 
-  private File getRepositoryPath(String id) {
-    return new File(repositoriesRoot, id + ".git");
+  private File getRepositoryPath(GitPersistable persistable) {
+    return new File(repositoriesRoot, Paths.get(persistable.pathPrefix(), persistable.getId() + ".git").toString());
   }
 
-  private File getCloneRepositoryPath(String id) {
-    return new File(repositoriesRoot, id);
+  private File getCloneRepositoryPath(GitPersistable persistable) {
+    return new File(clonesRoot, Paths.get(persistable.pathPrefix(), persistable.getId()).toString());
   }
 
-  private String getJsonFileName(Class<?> clazz) {
-    return clazz.getSimpleName() + ".json";
+  private String getJsonFileName(String filename) {
+    return filename + ".json";
   }
 
   private static class IncrementTagCommand extends AbstractGitWriteCommand {
