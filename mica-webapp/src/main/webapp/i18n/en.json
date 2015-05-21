@@ -585,6 +585,7 @@
   "data-access-requests": "Data Access Requests",
   "data-access-request": {
     "applicant": "Applicant",
-    "title": "Title"
+    "title": "Title",
+    "add": "Add Request"
   }
 }
