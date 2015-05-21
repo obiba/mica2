@@ -2,9 +2,9 @@ package org.obiba.mica.file;
 
 import javax.validation.constraints.NotNull;
 
-import org.springframework.data.domain.Persistable;
+import org.obiba.mica.core.domain.GitPersistable;
 
-public interface PersistableWithAttachments extends Persistable<String> {
+public interface PersistableWithAttachments extends GitPersistable {
 
   Iterable<Attachment> getAllAttachments();
 

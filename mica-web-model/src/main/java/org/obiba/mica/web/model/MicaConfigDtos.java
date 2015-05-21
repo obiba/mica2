@@ -1,24 +1,33 @@
 package org.obiba.mica.web.model;
 
+import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.micaConfig.domain.AggregationInfo;
 import org.obiba.mica.micaConfig.domain.AggregationsConfig;
 import org.obiba.mica.micaConfig.AuthType;
+import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.domain.OpalCredential;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+
 @Component
 class MicaConfigDtos {
   @Inject
   private LocalizedStringDtos localizedStringDtos;
+
+  @Inject
+  private AttachmentDtos attachmentDtos;
 
   @NotNull
   Mica.MicaConfigDto asDto(@NotNull MicaConfig config) {
@@ -52,8 +61,8 @@ class MicaConfigDtos {
   @NotNull
   AggregationsConfig fromDto(@NotNull Mica.AggregationsConfigDtoOrBuilder dto){
     AggregationsConfig aggregationsConfig = new AggregationsConfig();
-    aggregationsConfig.setStudyAggregations(dto.getStudyList().stream().map(a -> fromDto(a)).collect(Collectors.toList()));
-    aggregationsConfig.setVariableAggregations(dto.getVariableList().stream().map(a -> fromDto(a)).collect(Collectors.toList()));
+    aggregationsConfig.setStudyAggregations(dto.getStudyList().stream().map(a -> fromDto(a)).collect(toList()));
+    aggregationsConfig.setVariableAggregations(dto.getVariableList().stream().map(a -> fromDto(a)).collect(toList()));
 
     return aggregationsConfig;
   }
@@ -101,5 +110,37 @@ class MicaConfigDtos {
     if(!Strings.isNullOrEmpty(credential.getUsername())) builder.setUsername(credential.getUsername());
 
     return builder.build();
+  }
+
+  @NotNull
+  Mica.DataAccessFormDto asDto(@NotNull DataAccessForm dataAccessForm) {
+    Mica.DataAccessFormDto.Builder builder = Mica.DataAccessFormDto.newBuilder()
+      .setDefinition(dataAccessForm.getDefinition()).setSchema(dataAccessForm.getSchema()).addAllPdfTemplates(
+        dataAccessForm.getPdfTemplates().values().stream().map(p -> attachmentDtos.asDto(p)).collect(toList()))
+      .addAllProperties(asDtoList(dataAccessForm.getProperties()));
+
+    return builder.build();
+  }
+
+  @NotNull
+  DataAccessForm fromDto(@NotNull Mica.DataAccessFormDto dto) {
+    DataAccessForm dataAccessForm = new DataAccessForm();
+    dataAccessForm.setSchema(dto.getSchema());
+    dataAccessForm.setDefinition(dto.getDefinition());
+
+    dataAccessForm.setProperties(dto.getPropertiesList().stream()
+      .collect(toMap(e -> e.getName(), e -> localizedStringDtos.fromDto(e.getValueList()))));
+
+    dataAccessForm.setPdfTemplates(
+      dto.getPdfTemplatesList().stream().map(t -> attachmentDtos.fromDto(t)).collect(toMap(a -> a.getLang(), x -> x)));
+
+    return dataAccessForm;
+  }
+
+  @NotNull
+  List<Mica.DataAccessFormDto.LocalizedPropertyDto> asDtoList(@NotNull Map<String, LocalizedString> properties) {
+    return properties.entrySet().stream().map(
+      e -> Mica.DataAccessFormDto.LocalizedPropertyDto.newBuilder().setName(e.getKey())
+        .addAllValue(localizedStringDtos.asDto(e.getValue())).build()).collect(toList());
   }
 }

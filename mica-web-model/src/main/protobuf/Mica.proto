@@ -509,3 +509,15 @@ message DataAccessRequestDto {
   optional string content = 5;
   repeated AttachmentDto attachments = 6;
 }
+
+message DataAccessFormDto {
+  message LocalizedPropertyDto {
+    required string name = 1;
+    repeated LocalizedStringDto value = 2;
+  }
+
+  required string schema = 1;
+  required string definition = 2;
+  repeated AttachmentDto pdfTemplates = 3;
+  repeated LocalizedPropertyDto properties = 4;
+}

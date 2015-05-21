@@ -1,6 +1,5 @@
 package org.obiba.mica.study.service;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,12 +74,12 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
 
   @CacheEvict(value = "studies-draft", key = "#study.id")
   public void save(@NotNull @Valid Study study) {
-    boolean newStudy = study.isNew();
-    StudyState studyState = findStudyState(study);
     log.info("Saving study: {}", study.getId());
-    if (!newStudy) ensureStudyGitRepository(studyState);
-    gitService.save(study);
+    StudyState studyState = findStudyState(study);
 
+    if (!study.isNew()) ensureStudyGitRepository(studyState);
+
+    gitService.save(study);
     studyState.setName(study.getName());
     studyState.incrementRevisionsAhead();
     studyStateRepository.save(studyState);
@@ -116,6 +115,7 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
   @NotNull
   public StudyState findStateById(@NotNull String id) throws NoSuchStudyException {
     StudyState studyState = getStudyStateInternal(id);
+
     ensureStudyGitRepositoryAndSave(studyState);
     return studyState;
   }
@@ -139,6 +139,7 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
     // ensure study exists
     StudyState studyState = getStudyStateInternal(id);
     Study study = null;
+
     if (studyState.isPublished()) {
       study = publishedStudyService.findById(id);
       if (study == null) {
@@ -151,28 +152,12 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
     return study == null ? studyRepository.findOne(id) : study;
   }
 
-  @Nullable
-  @Cacheable(value = "studies-published", key = "#id")
-  public Study findPublishedStudyByTag(@NotNull String id, @NotNull String tag) throws NoSuchStudyException {
-    if (gitService.hasGitRepository(id)) return gitService.readFromTag(id, tag, Study.class);
-    throw NoSuchStudyException.withId(id);
-  }
-
-  @Cacheable(value = "studies-published", key = "#id")
-  public Study findPublishedStudy(@NotNull String id) throws NoSuchStudyException {
-    return publishedStudyService.findById(id);
-  }
-
   public boolean isPublished(@NotNull String id) throws NoSuchStudyException {
     return findStateById(id).isPublished();
   }
 
   public List<StudyState> findAllStates() {
     return studyStateRepository.findAll();
-  }
-
-  public List<StudyState> findAllStates(String... ids) {
-    return Lists.newArrayList(studyStateRepository.findAll(Arrays.asList(ids)));
   }
 
   public List<Study> findAllDraftStudies() {
@@ -200,7 +185,7 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
     log.info("Publish study: {}", id);
     StudyState studyState = findStateById(id);
     studyState.setRevisionStatus(DRAFT);
-    studyState.setPublishedTag(gitService.tag(id));
+    studyState.setPublishedTag(gitService.tag(studyState));
     studyState.resetRevisionsAhead();
     studyStateRepository.save(studyState);
     eventBus.post(new StudyPublishedEvent(studyRepository.findOne(id)));
@@ -212,9 +197,9 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
     log.info("Gather published and draft studies to be indexed");
     List<Study> publishedStudies = findPublishedStates().stream() //
       .filter(studyState -> { //
-          return gitService.hasGitRepository(studyState.getId()) && !Strings.isNullOrEmpty(studyState.getPublishedTag()); //
-        }) //
-      .map(studyState -> gitService.readFromTag(studyState.getId(), studyState.getPublishedTag(), Study.class)) //
+        return gitService.hasGitRepository(studyState) && !Strings.isNullOrEmpty(studyState.getPublishedTag()); //
+      }) //
+      .map(studyState -> gitService.readFromTag(studyState, studyState.getPublishedTag(), Study.class)) //
       .collect(toList()); //
 
     eventBus.post(new IndexStudiesEvent(publishedStudies, findAllDraftStudies()));
@@ -232,7 +217,7 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
 
     checkStudyConstraints(study);
 
-    gitService.deleteGitRepository(id);
+    gitService.deleteGitRepository(study);
     eventBus.post(new StudyDeletedEvent(study));
     studyStateRepository.delete(id);
     studyRepository.delete(id);
@@ -304,21 +289,20 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
 
   /**
    * If there are no git repo for input study, the publish state is no longer valid, unpublish the study
-   * @param studyState
    */
   private void ensureStudyGitRepository(@NotNull StudyState studyState) {
-    if (!gitService.hasGitRepository(studyState.getId())) {
+    if (!gitService.hasGitRepository(studyState)) {
       unpublish(studyState);
     }
   }
 
   /**
    * If there are no git repo for input study, the publish state is no longer valid, unpublish the study
-   * @param studyState
    */
   private void ensureStudyGitRepositoryAndSave(@NotNull StudyState studyState) {
-    if (!gitService.hasGitRepository(studyState.getId())) {
+    if (!gitService.hasGitRepository(studyState)) {
       Study study = unpublish(studyState);
+
       if (study != null) {
         log.info("Recuperated Study '{}' from repository is saved backed to Git repo.", studyState.getId());
         gitService.save(study);

@@ -3,7 +3,9 @@ package org.obiba.mica.study.domain;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -28,6 +30,7 @@ import org.obiba.mica.study.date.PersitableYear;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 /**
@@ -432,6 +435,22 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
   @Override
   public boolean hasAttribute(String attName, @Nullable String namespace) {
     return attributes != null && attributes.hasAttribute(attName, namespace);
+  }
+
+  @Override
+  public String pathPrefix() {
+    return "studies";
+  }
+
+  @Override
+  public Map<String, Serializable> parts() {
+    Study self = this;
+
+    return new HashMap<String, Serializable>() {
+      {
+        put(self.getClass().getSimpleName(), self);
+      }
+    };
   }
 
   public static class StudyMethods implements Serializable {
