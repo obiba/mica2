@@ -36,14 +36,14 @@ public class StudyStateResource {
 
   @GET
   @Timed
-  @RequiresPermissions({"mica:/draft:EDIT"})
+  @RequiresPermissions({"/draft:EDIT"})
   public Mica.StudySummaryDto get() {
     return dtos.asDto(studyService.findStateById(id));
   }
 
   @PUT
   @Path("/_publish")
-  @RequiresPermissions({"mica:/draft:PUBLISH"})
+  @RequiresPermissions({"/draft:PUBLISH"})
   public Response publish() {
     studyService.publish(id);
     return Response.noContent().build();

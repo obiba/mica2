@@ -1,4 +1,4 @@
-package org.obiba.mica.core.security;
+package org.obiba.mica.security;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;

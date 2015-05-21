@@ -33,7 +33,7 @@ import com.google.common.collect.ImmutableList;
 
 @Component
 @Scope("request")
-@RequiresPermissions({"mica:/draft:EDIT"})
+@RequiresPermissions({"/draft:EDIT"})
 public class DraftDataschemaDatasetVariableResource implements DatasetVariableResource {
 
   private String datasetId;

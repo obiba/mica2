@@ -58,20 +58,20 @@ public class DraftHarmonizationDatasetResource {
   }
 
   @GET
-  @RequiresPermissions({"mica:/draft:EDIT"})
+  @RequiresPermissions({"/draft:EDIT"})
   public Mica.DatasetDto get() {
     return dtos.asDto(datasetService.findById(id));
   }
 
   @DELETE
-  @RequiresPermissions({"mica:/draft:EDIT"})
+  @RequiresPermissions({"/draft:EDIT"})
   public void delete(){
     datasetService.delete(id);
   }
 
   @PUT
   @Timed
-  @RequiresPermissions({"mica:/draft:EDIT"})
+  @RequiresPermissions({"/draft:EDIT"})
   public Response update(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo) {
     if(!datasetDto.hasId() || !datasetDto.getId().equals(id))
       throw new IllegalArgumentException("Not the expected dataset id");
@@ -85,7 +85,7 @@ public class DraftHarmonizationDatasetResource {
   @PUT
   @Path("/_index")
   @Timed
-  @RequiresPermissions({"mica:/draft:PUBLISH"})
+  @RequiresPermissions({"/draft:PUBLISH"})
   public Response index() {
     datasetService.index(id);
     return Response.noContent().build();
@@ -93,7 +93,7 @@ public class DraftHarmonizationDatasetResource {
 
   @PUT
   @Path("/_publish")
-  @RequiresPermissions({"mica:/draft:PUBLISH"})
+  @RequiresPermissions({"/draft:PUBLISH"})
   public Response publish() {
     datasetService.publish(id, true);
     return Response.noContent().build();
@@ -101,7 +101,7 @@ public class DraftHarmonizationDatasetResource {
 
   @DELETE
   @Path("/_publish")
-  @RequiresPermissions({"mica:/draft:PUBLISH"})
+  @RequiresPermissions({"/draft:PUBLISH"})
   public Response unPublish() {
     datasetService.publish(id, false);
     return Response.noContent().build();
@@ -109,14 +109,14 @@ public class DraftHarmonizationDatasetResource {
 
   @GET
   @Path("/table")
-  @RequiresPermissions({"mica:/draft:EDIT"})
+  @RequiresPermissions({"/draft:EDIT"})
   public Magma.TableDto getTable() {
     return datasetService.getTableDto(getDataset());
   }
 
   @GET
   @Path("/variables")
-  @RequiresPermissions({"mica:/draft:EDIT"})
+  @RequiresPermissions({"/draft:EDIT"})
   public List<Mica.DatasetVariableDto> getVariables() {
     ImmutableList.Builder<Mica.DatasetVariableDto> builder = ImmutableList.builder();
     datasetService.getDatasetVariables(getDataset()).forEach(variable -> builder.add(dtos.asDto(variable)));
@@ -124,7 +124,7 @@ public class DraftHarmonizationDatasetResource {
   }
 
   @Path("/variable/{variable}")
-  @RequiresPermissions({"mica:/draft:EDIT"})
+  @RequiresPermissions({"/draft:EDIT"})
   public DraftDataschemaDatasetVariableResource getVariable(@PathParam("variable") String variable) {
     DraftDataschemaDatasetVariableResource resource = applicationContext.getBean(DraftDataschemaDatasetVariableResource.class);
     resource.setDatasetId(id);
@@ -133,7 +133,7 @@ public class DraftHarmonizationDatasetResource {
   }
 
   @Path("/study/{study}/variable/{variable}")
-  @RequiresPermissions({"mica:/draft:EDIT"})
+  @RequiresPermissions({"/draft:EDIT"})
   public DraftHarmonizedDatasetVariableResource getVariable(@PathParam("study") String studyId, @PathParam("variable") String variable) {
     DraftHarmonizedDatasetVariableResource resource = applicationContext.getBean(DraftHarmonizedDatasetVariableResource.class);
     resource.setDatasetId(id);
@@ -144,7 +144,7 @@ public class DraftHarmonizationDatasetResource {
 
   @POST
   @Path("/facets")
-  @RequiresPermissions({"mica:/draft:EDIT"})
+  @RequiresPermissions({"/draft:EDIT"})
   public List<Search.QueryResultDto> getFacets(Search.QueryTermsDto query) {
     ImmutableList.Builder<Search.QueryResultDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset();

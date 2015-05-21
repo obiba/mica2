@@ -59,7 +59,7 @@ public class DraftStudyDatasetsResource {
   @GET
   @Path("/study-datasets")
   @Timed
-  @RequiresPermissions({"mica:/draft:EDIT"})
+  @RequiresPermissions({"/draft:EDIT"})
   public List<Mica.DatasetDto> list(@QueryParam("study") String studyId) {
     return datasetService.findAllDatasets(studyId).stream().map(dtos::asDto).collect(Collectors.toList());
   }
@@ -67,7 +67,7 @@ public class DraftStudyDatasetsResource {
   @POST
   @Path("/study-datasets")
   @Timed
-  @RequiresPermissions({"mica:/draft:EDIT"})
+  @RequiresPermissions({"/draft:EDIT"})
   public Response create(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo) {
     Dataset dataset = dtos.fromDto(datasetDto);
     if(!(dataset instanceof StudyDataset)) throw new IllegalArgumentException("An study dataset is expected");
@@ -80,14 +80,14 @@ public class DraftStudyDatasetsResource {
   @PUT
   @Path("/study-datasets/_index")
   @Timed
-  @RequiresPermissions({"mica:/draft:PUBLISH"})
+  @RequiresPermissions({"/draft:PUBLISH"})
   public Response reIndex() {
     datasetService.indexAll(false);
     return Response.noContent().build();
   }
 
   @Path("/study-dataset/{id}")
-  @RequiresPermissions({"mica:/draft:EDIT"})
+  @RequiresPermissions({"/draft:EDIT"})
   public DraftStudyDatasetResource dataset(@PathParam("id") String id) {
     DraftStudyDatasetResource resource = applicationContext.getBean(DraftStudyDatasetResource.class);
     resource.setId(id);

@@ -7,7 +7,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package org.obiba.mica.core.security;
+package org.obiba.mica.security;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -23,6 +23,7 @@ import org.apache.shiro.authc.credential.PasswordMatcher;
 import org.apache.shiro.authc.pam.FirstSuccessfulStrategy;
 import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
 import org.apache.shiro.authz.ModularRealmAuthorizer;
+import org.apache.shiro.authz.permission.PermissionResolver;
 import org.apache.shiro.authz.permission.PermissionResolverAware;
 import org.apache.shiro.authz.permission.RolePermissionResolver;
 import org.apache.shiro.authz.permission.RolePermissionResolverAware;
@@ -39,7 +40,6 @@ import org.apache.shiro.session.mgt.ExecutorServiceSessionValidationScheduler;
 import org.apache.shiro.session.mgt.SessionValidationScheduler;
 import org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO;
 import org.apache.shiro.util.LifecycleUtils;
-import org.obiba.mica.core.security.realm.MicaPermissionResolver;
 import org.obiba.shiro.SessionStorageEvaluator;
 import org.obiba.shiro.realm.ObibaRealm;
 import org.slf4j.Logger;
@@ -54,7 +54,7 @@ import org.springframework.stereotype.Component;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 
-import static org.obiba.mica.core.security.AuthoritiesConstants.ADMIN;
+import static org.obiba.mica.security.AuthoritiesConstants.ADMIN;
 
 @Component
 @DependsOn("cacheConfiguration")
@@ -82,7 +82,7 @@ public class SecurityManagerFactory implements FactoryBean<SecurityManager> {
   private RolePermissionResolver rolePermissionResolver;
 
   @Inject
-  private MicaPermissionResolver permissionResolver;
+  private PermissionResolver permissionResolver;
 
   @Inject
   private CacheManager cacheManager;

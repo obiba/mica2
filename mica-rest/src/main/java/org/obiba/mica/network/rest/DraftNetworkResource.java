@@ -55,14 +55,14 @@ public class DraftNetworkResource {
 
   @GET
   @Timed
-  @RequiresPermissions({"mica:/draft:EDIT"})
+  @RequiresPermissions({"/draft:EDIT"})
   public Mica.NetworkDto get() {
     return dtos.asDto(networkService.findById(id));
   }
 
   @PUT
   @Timed
-  @RequiresPermissions({"mica:/draft:EDIT"})
+  @RequiresPermissions({"/draft:EDIT"})
   public Response update(@SuppressWarnings("TypeMayBeWeakened") Mica.NetworkDto networkDto) {
     // ensure network exists
     networkService.findById(id);
@@ -75,7 +75,7 @@ public class DraftNetworkResource {
   @PUT
   @Path("/_index")
   @Timed
-  @RequiresPermissions({"mica:/draft:EDIT"})
+  @RequiresPermissions({"/draft:EDIT"})
   public Response index() {
     networkService.index(id);
     return Response.noContent().build();
@@ -83,7 +83,7 @@ public class DraftNetworkResource {
 
   @PUT
   @Path("/_publish")
-  @RequiresPermissions({"mica:/draft:PUBLISH"})
+  @RequiresPermissions({"/draft:PUBLISH"})
   public Response publish() {
     networkService.publish(id, true);
     return Response.noContent().build();
@@ -91,7 +91,7 @@ public class DraftNetworkResource {
 
   @DELETE
   @Path("/_publish")
-  @RequiresPermissions({"mica:/draft:PUBLISH"})
+  @RequiresPermissions({"/draft:PUBLISH"})
   public Response unPublish() {
     networkService.publish(id, false);
     return Response.noContent().build();
@@ -99,7 +99,7 @@ public class DraftNetworkResource {
 
   @DELETE
   @Timed
-  @RequiresPermissions({"mica:/draft:EDIT"})
+  @RequiresPermissions({"/draft:EDIT"})
   public Response delete() {
     try {
       networkService.delete(id);
@@ -110,7 +110,7 @@ public class DraftNetworkResource {
   }
 
   @Path("/file/{fileId}")
-  @RequiresPermissions({"mica:/draft:EDIT"})
+  @RequiresPermissions({"/draft:EDIT"})
   public FileResource study(@PathParam("fileId") String fileId) {
     FileResource studyResource = applicationContext.getBean(FileResource.class);
     studyResource.setPersistable(networkService.findById(id));

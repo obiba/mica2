@@ -59,7 +59,7 @@ public class DraftHarmonizationDatasetsResource {
   @GET
   @Path("/harmonization-datasets")
   @Timed
-  @RequiresPermissions({"mica:/draft:EDIT"})
+  @RequiresPermissions({"/draft:EDIT"})
   public List<Mica.DatasetDto> list(@QueryParam("study") String studyId) {
     return datasetService.findAllDatasets(studyId).stream().map(dtos::asDto).collect(Collectors.toList());
   }
@@ -67,7 +67,7 @@ public class DraftHarmonizationDatasetsResource {
   @POST
   @Path("/harmonization-datasets")
   @Timed
-  @RequiresPermissions({"mica:/draft:EDIT"})
+  @RequiresPermissions({"/draft:EDIT"})
   public Response create(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo) {
     Dataset dataset = dtos.fromDto(datasetDto);
     if(!(dataset instanceof HarmonizationDataset)) throw new IllegalArgumentException("An harmonization dataset is expected");
@@ -80,14 +80,14 @@ public class DraftHarmonizationDatasetsResource {
   @PUT
   @Path("/harmonization-datasets/_index")
   @Timed
-  @RequiresPermissions({"mica:/draft:PUBLISH"})
+  @RequiresPermissions({"/draft:PUBLISH"})
   public Response reIndex() {
     datasetService.indexAll(false);
     return Response.noContent().build();
   }
 
   @Path("/harmonization-dataset/{id}")
-  @RequiresPermissions({"mica:/draft:EDIT"})
+  @RequiresPermissions({"/draft:EDIT"})
   public DraftHarmonizationDatasetResource dataset(@PathParam("id") String id) {
     DraftHarmonizationDatasetResource resource = applicationContext.getBean(DraftHarmonizationDatasetResource.class);
     resource.setId(id);

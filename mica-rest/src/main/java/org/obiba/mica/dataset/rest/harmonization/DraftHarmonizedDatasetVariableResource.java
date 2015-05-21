@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope("request")
-@RequiresPermissions({"mica:/draft:EDIT"})
+@RequiresPermissions({"/draft:EDIT"})
 public class DraftHarmonizedDatasetVariableResource implements DatasetVariableResource {
 
   private String datasetId;

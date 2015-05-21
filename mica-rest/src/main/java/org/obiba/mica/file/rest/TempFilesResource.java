@@ -26,7 +26,7 @@ import org.springframework.context.ApplicationContext;
 import com.codahale.metrics.annotation.Timed;
 
 @Path("/files/temp")
-@RequiresPermissions({"mica:/files:UPLOAD"})
+@RequiresPermissions({"/files:UPLOAD"})
 public class TempFilesResource {
 
   private static final Logger log = LoggerFactory.getLogger(TempFilesResource.class);

@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.core.security;
+package org.obiba.mica.security;
 
 public interface Roles {
 
