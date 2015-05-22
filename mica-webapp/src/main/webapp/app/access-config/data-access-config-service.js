@@ -23,13 +23,14 @@ mica.dataAccesConfig
 
   .factory('DataAccessFormService', ['BrowserDetector',
     function (BrowserDetector) {
-      this.getEditorOptions = function() {
+      this.getEditorOptions = function(onLoadCallback) {
         return {
           options: {
             theme: 'monokai',
             mode: 'json',
             displayIndentGuides: true,
-            useElasticTabstops: true
+            useElasticTabstops: true,
+            onLoad: onLoadCallback
           }
         };
       };
@@ -53,6 +54,10 @@ mica.dataAccesConfig
         }
       };
 
+      this.prettifyJson = function(jsonData) {
+        var str = typeof jsonData === 'string' ? jsonData : JSON.stringify(jsonData, undefined, 2);
+        return str;
+      };
 
       this.isFormValid = function(dataAccessForm) {
         var isJsonValid = function(json) {

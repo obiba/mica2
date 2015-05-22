@@ -18,6 +18,8 @@ mica.dataAccesConfig
      var saveForm = function() {
 
         if (DataAccessFormService.isFormValid($scope.dataAccessForm)) {
+          $scope.dataAccessForm.definition = $scope.form.definition;
+          $scope.dataAccessForm.schema = $scope.form.schema;
           DataAccessFormResource.save($scope.dataAccessForm,
             function () {
               AlertService.alert({
@@ -37,36 +39,55 @@ mica.dataAccesConfig
         }
       };
 
+      var refreshPreview = function() {
+        try {
+          if ($scope.dirty) {
+            $scope.form.schemaJson = JSON.parse($scope.form.schema);
+            $scope.form.definitionJson = JSON.parse($scope.form.definition);
+            $scope.dirty = false;
+          }
+        } catch (e){
+        }
+      };
+
       var selectTab = function(id) {
         $scope.selectedTab = id;
+        switch (id) {
+          case 'form-preview':
+            refreshPreview();
+            break;
+          case 'form-model':
+            $scope.modelPreview = DataAccessFormService.prettifyJson($scope.form.model);
+            break;
+        }
       };
 
       var watchFormSchemaChanges = function(val,old){
         if (val && val !== old) {
-          try {
-            $scope.form.schemaJson = JSON.parse(val);
-            $scope.dataAccessForm.schema = val;
-          } catch (e){
-          }
+          $scope.dirty = true;
         }
       };
 
       var watchFormDefinitionChanges = function(val,old){
         if (val && val !== old) {
-          try {
-            $scope.form.definitionJson = JSON.parse(val);
-            $scope.dataAccessForm.definition = val;
-          } catch (e){
-          }
+          $scope.dirty = true;
         }
       };
 
-      $scope.dataAccessForm = DataAccessFormResource.get(
+      var aceEditorOnLoadCallback = function(editor) {
+        if (editor.container.id === 'form-model') {
+          editor.setReadOnly(true);
+        }
+      };
+
+      DataAccessFormResource.get(
         function(dataAccessForm){
+          $scope.dirty = true;
           $scope.form.definitionJson = dataAccessForm.definition ? JSON.parse(dataAccessForm.definition) : null;
-          $scope.form.definition = JSON.stringify($scope.form.definitionJson,undefined,2);
+          $scope.form.definition = DataAccessFormService.prettifyJson($scope.form.definitionJson);
           $scope.form.schemaJson = dataAccessForm.schema ? JSON.parse(dataAccessForm.schema) : null;
-          $scope.form.schema = JSON.stringify($scope.form.schemaJson,undefined,2);
+          $scope.form.schema = DataAccessFormService.prettifyJson($scope.form.schemaJson);
+          $scope.dataAccessForm = dataAccessForm;
         },
         function(response) {
           AlertService.alert({
@@ -74,19 +95,20 @@ mica.dataAccesConfig
             type: 'danger',
             msg: ServerErrorUtils.buildMessage(response)
           });
-        }) || {definition: null, schema: null};
+        });
 
       $scope.form = {
         definitionJson: null,
         definition: null,
         schemaJson: null,
-        schema: null
+        schema: null,
+        model: {}
       };
 
+      $scope.dirty = false;
       $scope.dataAccessForm = {schema: '', definition: ''};
-      $scope.modelData = {};
       $scope.selectedTab = 'form-definition';
-      $scope.ace = DataAccessFormService.getEditorOptions();
+      $scope.ace = DataAccessFormService.getEditorOptions(aceEditorOnLoadCallback);
       $scope.selectTab = selectTab;
       $scope.saveForm = saveForm;
       $scope.fullscreen = DataAccessFormService.gotoFullScreen;

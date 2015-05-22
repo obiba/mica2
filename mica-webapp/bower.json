@@ -55,6 +55,9 @@
     },
     "ng-obiba": {
       "main": "./dist/ng-obiba.js"
+    },
+    "ace-builds": {
+      "main": "./src-noconflict/ace.js"
     }
   }
 }
