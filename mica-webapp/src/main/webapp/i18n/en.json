@@ -606,7 +606,9 @@
     "preview": {
       "model-modal": "Model Preview",
       "tab": "Preview",
-      "show-model": "Model"
+      "show-model": "Model",
+      "test": "Test Form Validation",
+      "tested": "Form is validated successfully."
     },
     "model": {
       "tab": "Model",
