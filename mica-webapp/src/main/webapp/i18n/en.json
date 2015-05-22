@@ -604,7 +604,13 @@
       "info": "The form definition specifies how to display the schema and how to validate the data inputs."
     },
     "preview": {
-      "tab": "Preview"
+      "model-modal": "Model Preview",
+      "tab": "Preview",
+      "show-model": "Model"
+    },
+    "model": {
+      "tab": "Model",
+      "info": "The form model stores the valid input data, invalid values are excluded."
     }
   }
 }

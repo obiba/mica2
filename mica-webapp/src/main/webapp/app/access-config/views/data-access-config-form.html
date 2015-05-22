@@ -20,31 +20,37 @@
       <i class="glyphicon glyphicon-fullscreen"></i>
     </button>
 
-    <tab ng-click="selectTab('form-definition')" heading="{{'data-access-config.definition.tab' | translate}}">
-      <div id="form-definition" class="form-control form-definition"
-        ui-ace="ace.options"
-        ng-class="{red: !itParsesForm}"
-        ng-model="form.definition">
-      </div>
-      <div class="help-block" translate>data-access-config.definition.info</div>
-    </tab>
     <tab ng-click="selectTab('form-schema')" heading="{{'data-access-config.schema.tab' | translate}}">
       <div id="form-schema" ui-ace="ace.options"
-        ng-class="{red: !itParses}"
         ng-model="form.schema"
         class="form-control form-schema">
       </div>
       <div class="help-block" translate>data-access-config.schema.info</div>
     </tab>
+    <tab ng-click="selectTab('form-definition')" heading="{{'data-access-config.definition.tab' | translate}}">
+      <div id="form-definition" class="form-control form-definition"
+        ui-ace="ace.options"
+        ng-model="form.definition">
+      </div>
+      <div class="help-block" translate>data-access-config.definition.info</div>
+    </tab>
+
     <tab ng-click="selectTab('form-preview')" heading="{{'data-access-config.preview.tab' | translate}}">
       <form id="form-preview"
         name="form-preview"
         class="form-preview"
-        sf-model="formModel"
+        sf-model="form.model"
         sf-form="form.definitionJson"
         sf-schema="form.schemaJson"
         ng-submit="submitForm(form-preview,formModel)">
       </form>
+    </tab>
+    <tab ng-click="selectTab('form-model')" heading="{{'data-access-config.model.tab' | translate}}">
+      <div id="form-model" class="form-control form-definition"
+        ui-ace="ace.options"
+        ng-model="modelPreview">
+      </div>
+      <div class="help-block" translate>data-access-config.model.info</div>
     </tab>
   </tabset>
 
