@@ -13,12 +13,21 @@
   <p translate>data-access-config.info</p>
 
   <obiba-alert id="DataAccessConfigController"></obiba-alert>
+
   <tabset class="voffset4">
-    <button ng-click="fullscreen(selectedTab)"
-      class="btn btn-default btn-sm pull-right"
-      title="{{'fullscreen' | translate}}">
-      <i class="glyphicon glyphicon-fullscreen"></i>
-    </button>
+    <div class="pull-right">
+      <button ng-if="selectedTab === 'form-preview'"
+        ng-click="testPreview(formPreview)"
+        class="btn btn-default btn-sm">
+        <span translate>data-access-config.preview.test</span>
+      </button>
+
+      <button ng-click="fullscreen(selectedTab)"
+        class="btn btn-default btn-sm"
+        title="{{'fullscreen' | translate}}">
+        <i class="glyphicon glyphicon-fullscreen"></i>
+      </button>
+    </div>
 
     <tab ng-click="selectTab('form-schema')" heading="{{'data-access-config.schema.tab' | translate}}">
       <div id="form-schema" ui-ace="ace.options"
@@ -36,13 +45,12 @@
     </tab>
 
     <tab ng-click="selectTab('form-preview')" heading="{{'data-access-config.preview.tab' | translate}}">
-      <form id="form-preview"
-        name="form-preview"
-        class="form-preview"
-        sf-model="form.model"
-        sf-form="form.definitionJson"
-        sf-schema="form.schemaJson"
-        ng-submit="submitForm(form-preview,formModel)">
+      <form id="form-preview" name="formPreview" class="form-preview">
+        <div
+          sf-model="form.model"
+          sf-form="form.definitionJson"
+          sf-schema="form.schemaJson">
+        </div>
       </form>
     </tab>
     <tab ng-click="selectTab('form-model')" heading="{{'data-access-config.model.tab' | translate}}">

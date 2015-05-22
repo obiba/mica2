@@ -80,6 +80,19 @@ mica.dataAccesConfig
         }
       };
 
+      var testPreview = function(form) {
+        $scope.$broadcast('schemaFormValidate');
+        // Then we check if the form is valid
+        if (form.$valid) {
+          AlertService.alert({
+            id: 'DataAccessConfigController',
+            type: 'success',
+            msgKey: 'data-access-config.preview.tested',
+            delay: 5000
+          });
+        }
+      };
+
       DataAccessFormResource.get(
         function(dataAccessForm){
           $scope.dirty = true;
@@ -110,6 +123,7 @@ mica.dataAccesConfig
       $scope.selectedTab = 'form-definition';
       $scope.ace = DataAccessFormService.getEditorOptions(aceEditorOnLoadCallback);
       $scope.selectTab = selectTab;
+      $scope.testPreview = testPreview;
       $scope.saveForm = saveForm;
       $scope.fullscreen = DataAccessFormService.gotoFullScreen;
       $scope.$watch('form.definition', watchFormDefinitionChanges);
