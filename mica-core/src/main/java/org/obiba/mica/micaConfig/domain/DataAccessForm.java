@@ -18,6 +18,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Maps;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -62,7 +63,7 @@ public class DataAccessForm extends AbstractGitPersistable implements Persistabl
   }
 
   public Map<String, LocalizedString> getProperties() {
-    return properties;
+    return properties == null ? properties = Maps.newHashMap() : properties;
   }
 
   public void setProperties(Map<String, LocalizedString> properties) {
@@ -92,7 +93,7 @@ public class DataAccessForm extends AbstractGitPersistable implements Persistabl
   @JsonIgnore
   @Override
   public Iterable<Attachment> getAllAttachments() {
-    return Iterables.concat(pdfTemplates.values());
+    return Iterables.concat(getPdfTemplates().values());
   }
 
   @Override
@@ -101,7 +102,7 @@ public class DataAccessForm extends AbstractGitPersistable implements Persistabl
   }
 
   public Map<Locale, Attachment> getPdfTemplates() {
-    return pdfTemplates;
+    return pdfTemplates == null ? pdfTemplates = Maps.newHashMap() : pdfTemplates;
   }
 
   public void setPdfTemplates(Map<Locale, Attachment> pdfTemplates) {

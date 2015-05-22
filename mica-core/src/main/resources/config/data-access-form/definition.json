@@ -1,0 +1,20 @@
+[
+  {
+    "type": "help",
+    "helpvalue": "<h4>D. Names of authorized personnel (within your institution)</h4><p>Please provide the names of all investigators, collaborators, data managers and research staff that will have access to the research data in order to work on the research project. A valid institutional e-mail address for each name along with their job title and function is also required.</p>"
+  },
+  {
+    "key": "staff",
+    "add": "New",
+    "style": {
+      "add": "btn-info"
+    },
+    "title": "",
+    "items": [
+      "staff[].name",
+      "staff[].title",
+      "staff[].position",
+      "staff[].email"
+    ]
+  }
+]
