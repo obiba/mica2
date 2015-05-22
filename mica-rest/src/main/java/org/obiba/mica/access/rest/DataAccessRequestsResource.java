@@ -13,14 +13,12 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.service.DataAccessRequestService;
-import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -40,22 +38,17 @@ public class DataAccessRequestsResource {
   @Inject
   private Dtos dtos;
 
-  @Inject
-  private ApplicationContext applicationContext;
-
   @GET
   @Timed
   public List<Mica.DataAccessRequestDto> list(@QueryParam("applicant") String applicant) {
-    String applicantFilter = applicant;
-    Subject caller = SecurityUtils.getSubject();
-    if(!caller.hasRole(Roles.MICA_ADMIN) && !caller.hasRole(Roles.MICA_DAO)) {
-      applicantFilter = caller.getPrincipal().toString();
-    }
-    return dataAccessRequestService.findAll(applicantFilter).stream().map(dtos::asDto).collect(Collectors.toList());
+    return dataAccessRequestService.findAll(applicant).stream() //
+      .filter(req -> subjectAclService.isPermitted("/data-access-request", "VIEW", req.getId())) //
+      .map(dtos::asDto).collect(Collectors.toList());
   }
 
   @POST
   @Timed
+  @RequiresPermissions("/data-access-requests:ADD")
   public Response create(Mica.DataAccessRequestDto dto, @Context UriInfo uriInfo) {
     DataAccessRequest request = dtos.fromDto(dto);
 
@@ -63,11 +56,12 @@ public class DataAccessRequestsResource {
     String applicant = SecurityUtils.getSubject().getPrincipal().toString();
     request.setApplicant(applicant);
     request.setId(null);
-    request.setStatus(DataAccessRequest.Status.DRAFT);
+    request.setStatus(DataAccessRequest.Status.OPENED);
 
     dataAccessRequestService.save(request);
 
-    subjectAclService.addUserPermission(applicant, "/data-access-request", "EDIT", request.getId());
+    subjectAclService.addPermission("/data-access-request", "VIEW,EDIT", request.getId());
+    subjectAclService.addPermission("/data-access-request/" + request.getId() + "/comments", "ADD");
 
     return Response.created(uriInfo.getBaseUriBuilder().segment("data-access-request", request.getId()).build()).build();
   }

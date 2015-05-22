@@ -40,7 +40,7 @@ public class DataAccessRequest extends AbstractAuditableDocument
    */
   private String content;
 
-  private Status status = Status.DRAFT;
+  private Status status = Status.OPENED;
 
   private List<Attachment> attachments;
 
@@ -136,7 +136,7 @@ public class DataAccessRequest extends AbstractAuditableDocument
   //
 
   public enum Status {
-    DRAFT,     // request is being edited by the applicant
+    OPENED,     // request is being edited by the applicant
     SUBMITTED, // request is submitted by the applicant, ready for review
     REVIEWED,  // request is being reviewed
     APPROVED,  // request was reviewed and approved

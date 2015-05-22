@@ -26,7 +26,7 @@ public class DataAccessRequestService {
   public void save(@NotNull DataAccessRequest request) {
     DataAccessRequest saved = request;
     if(request.isNew()) {
-      saved.setStatus(DataAccessRequest.Status.DRAFT);
+      saved.setStatus(DataAccessRequest.Status.OPENED);
       //generateId(saved);
     } else {
       saved = dataAccessRequestRepository.findOne(request.getId());
@@ -36,7 +36,7 @@ public class DataAccessRequestService {
           "lastModifiedDate");
       } else {
         saved = request;
-        saved.setStatus(DataAccessRequest.Status.DRAFT);
+        saved.setStatus(DataAccessRequest.Status.OPENED);
       }
     }
 
@@ -61,12 +61,13 @@ public class DataAccessRequestService {
    * @param status
    * @throws NoSuchNetworkException
    */
-  public void updateStatus(@NotNull String id, @NotNull DataAccessRequest.Status status)
+  public DataAccessRequest updateStatus(@NotNull String id, @NotNull DataAccessRequest.Status status)
     throws NoSuchDataAccessRequestException {
     DataAccessRequest request = findById(id);
     checkStatusTransition(request.getStatus(), status);
     request.setStatus(status);
     save(request);
+    return request;
   }
 
   /**
@@ -77,7 +78,7 @@ public class DataAccessRequestService {
    */
   public void updateContent(@NotNull String id, String content) {
     DataAccessRequest request = findById(id);
-    if(request.getStatus() != DataAccessRequest.Status.DRAFT)
+    if(request.getStatus() != DataAccessRequest.Status.OPENED)
       throw new IllegalArgumentException("Data access request content can only be modified when status is draft");
     request.setContent(content);
     save(request);
@@ -121,19 +122,19 @@ public class DataAccessRequestService {
     if(from == to) return;
 
     switch(from) {
-      case DRAFT:
+      case OPENED:
         if(to != DataAccessRequest.Status.SUBMITTED)
-          throw new IllegalArgumentException("Draft data access request can only be submitted");
+          throw new IllegalArgumentException("Opened data access request can only be submitted");
         break;
       case SUBMITTED:
-        if(to != DataAccessRequest.Status.DRAFT && to != DataAccessRequest.Status.REVIEWED)
+        if(to != DataAccessRequest.Status.OPENED && to != DataAccessRequest.Status.REVIEWED)
           throw new IllegalArgumentException(
-            "Submitted data access request can only be reopened to draft or put under review");
+            "Submitted data access request can only be reopened or put under review");
         break;
       case REVIEWED:
-        if(to != DataAccessRequest.Status.DRAFT && to != DataAccessRequest.Status.APPROVED &&
+        if(to != DataAccessRequest.Status.OPENED && to != DataAccessRequest.Status.APPROVED &&
           to != DataAccessRequest.Status.REJECTED) throw new IllegalArgumentException(
-          "Reviewed data access request can only be reopened to draft or be approved/rejected");
+          "Reviewed data access request can only be reopened or be approved/rejected");
         break;
       case APPROVED:
         throw new IllegalArgumentException("Approved data access request cannot be modified");

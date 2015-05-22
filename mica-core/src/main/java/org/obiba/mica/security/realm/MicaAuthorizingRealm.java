@@ -34,8 +34,6 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
 
   private final RolePermissionResolver rolePermissionResolver = new GroupPermissionResolver();
 
-
-
   @Override
   public boolean supports(AuthenticationToken token) {
     // This realm is not used for authentication
@@ -68,7 +66,7 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
   @Override
   protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
     List<String> perms = loadUserPermissions(principals);
-    if(perms == null|| perms.isEmpty()) return null;
+    if(perms == null || perms.isEmpty()) return null;
     SimpleAuthorizationInfo sai = new SimpleAuthorizationInfo();
     sai.setStringPermissions(ImmutableSet.copyOf(perms));
     return sai;
@@ -109,7 +107,7 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
 
   @Subscribe
   public void onSubjectAclUpdate(SubjectAclUpdatedEvent event) {
-    if (isCachingEnabled()) {
+    if(isCachingEnabled()) {
       getAuthorizationCache().remove(event.getSubject());
     }
   }
@@ -123,8 +121,7 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
   }
 
   private List<String> loadSubjectPermissions(String name, SubjectAcl.Type type) {
-    return subjectAclService.find(name, type).stream().map(
-      SubjectAcl::getPermission).collect(Collectors.toList());
+    return subjectAclService.find(name, type).stream().map(SubjectAcl::getPermission).collect(Collectors.toList());
   }
 
   //
@@ -145,10 +142,11 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
         case Roles.MICA_EDITOR:
           return PermissionUtils.resolveDelimitedPermissions("/draft:EDIT,/files:UPLOAD", getPermissionResolver());
         case Roles.MICA_DAO:
-          return PermissionUtils
-            .resolveDelimitedPermissions("/data-access-request:EDIT,/files:UPLOAD", getPermissionResolver());
+          return PermissionUtils.resolveDelimitedPermissions("/data-access-requests,/data-access-request,/files:UPLOAD",
+            getPermissionResolver());
         case Roles.MICA_USER:
-          return null;
+          return PermissionUtils
+            .resolveDelimitedPermissions("/data-access-requests:ADD,/files:UPLOAD", getPermissionResolver());
       }
       // other groups
       List<String> permissions = loadSubjectPermissions(roleString, SubjectAcl.Type.GROUP);
