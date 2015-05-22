@@ -571,6 +571,7 @@
   "allowed-file-types": "Allowed file types:",
   "total": "Total",
   "type": "Type",
+  "fullscreen": "Switch to fullscreen mode",
   "server": {
     "error": {
       "403": "Server rejected your request, please make sure you are logged in and try again."
@@ -586,6 +587,24 @@
   "data-access-request": {
     "applicant": "Applicant",
     "title": "Title",
-    "add": "Add Request"
+    "add": "Add Request",
+    "title": "Title"
+  },
+  "data-access-config": {
+    "menu": "Data Access",
+    "title": "Data Access Configuration",
+    "info": "Configure the Data Access Form schema and definition, see <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details.",
+    "saved": "Data Access Form is successfully updated.",
+    "schema" : {
+      "tab": "Schema",
+      "info": "The form schema specifies the data structure."
+    },
+    "definition" : {
+      "tab": "Definition",
+      "info": "The form definition specifies how to display the schema and how to validate the data inputs."
+    },
+    "preview": {
+      "tab": "Preview"
+    }
   }
 }

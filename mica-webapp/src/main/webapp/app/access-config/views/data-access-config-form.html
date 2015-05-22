@@ -1,0 +1,55 @@
+<!--
+  ~ Copyright (c) 2015 OBiBa. All rights reserved.
+  ~
+  ~ This program and the accompanying materials
+  ~ are made available under the terms of the GNU Public License v3.0.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<div>
+  <h2 translate>data-access-config.title</h2>
+  <p translate>data-access-config.info</p>
+
+  <obiba-alert id="DataAccessConfigController"></obiba-alert>
+  <tabset class="voffset4">
+    <button ng-click="fullscreen(selectedTab)"
+      class="btn btn-default btn-sm pull-right"
+      title="{{'fullscreen' | translate}}">
+      <i class="glyphicon glyphicon-fullscreen"></i>
+    </button>
+
+    <tab ng-click="selectTab('form-definition')" heading="{{'data-access-config.definition.tab' | translate}}">
+      <div id="form-definition" class="form-control form-definition"
+        ui-ace="ace.options"
+        ng-class="{red: !itParsesForm}"
+        ng-model="form.definition">
+      </div>
+      <div class="help-block" translate>data-access-config.definition.info</div>
+    </tab>
+    <tab ng-click="selectTab('form-schema')" heading="{{'data-access-config.schema.tab' | translate}}">
+      <div id="form-schema" ui-ace="ace.options"
+        ng-class="{red: !itParses}"
+        ng-model="form.schema"
+        class="form-control form-schema">
+      </div>
+      <div class="help-block" translate>data-access-config.schema.info</div>
+    </tab>
+    <tab ng-click="selectTab('form-preview')" heading="{{'data-access-config.preview.tab' | translate}}">
+      <form id="form-preview"
+        name="form-preview"
+        class="form-preview"
+        sf-model="formModel"
+        sf-form="form.definitionJson"
+        sf-schema="form.schemaJson"
+        ng-submit="submitForm(form-preview,formModel)">
+      </form>
+    </tab>
+  </tabset>
+
+  <button ng-click="saveForm()" class="btn btn-primary voffset4">
+    <span translate>save</span>
+  </button>
+
+</div>

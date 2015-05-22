@@ -11,6 +11,7 @@ var mica = angular.module('mica', [
   'mica.network',
   'mica.study',
   'mica.dataset',
+  'mica.dataAccesConfig',
   'mica.data-access-request',
   'ngAnimate',
   'ngCookies',
@@ -178,7 +179,7 @@ mica
 
         if (!$rootScope.authenticated) {
           $rootScope.$broadcast('event:auth-loginRequired');
-        } else if (!AuthenticationSharedService.isAuthorized(next.access.authorizedRoles)) {
+        } else if (!AuthenticationSharedService.isAuthorized(next.access ? next.access.authorizedRoles : '*')) {
           $rootScope.$broadcast('event:auth-notAuthorized');
         }
       });

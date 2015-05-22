@@ -65,7 +65,7 @@
             $rootScope.$broadcast('event:auth-loginRequired', response);
             return deferred.promise;
           } else {
-            if (!response.data.messageTemplate) {
+            if (angular.isObject(response.data) && !response.data.messageTemplate) {
               response.data.messageTemplate = 'server.error.' + response.status;
             }
 
