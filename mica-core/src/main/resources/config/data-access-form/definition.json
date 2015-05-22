@@ -1,20 +1,705 @@
 [
   {
     "type": "help",
-    "helpvalue": "<h4>D. Names of authorized personnel (within your institution)</h4><p>Please provide the names of all investigators, collaborators, data managers and research staff that will have access to the research data in order to work on the research project. A valid institutional e-mail address for each name along with their job title and function is also required.</p>"
+    "helpvalue": "<h2>I - Contact and Research Project Information</h2>"
   },
   {
-    "key": "staff",
-    "add": "New",
-    "style": {
-      "add": "btn-info"
-    },
-    "title": "",
+    "type": "fieldset",
     "items": [
-      "staff[].name",
-      "staff[].title",
-      "staff[].position",
-      "staff[].email"
+      {
+        "type": "help",
+        "helpvalue": "<h3>A. Name, institution, and contact details of the Applicant (Principal Applicant)</h3><p>Please ensure that a full postal address and a valid institutional e-mail address are included. In case of more than one affiliation, applicants are asked to only provide their contact information pertaining to the institution they are affiliated with for the purpose of this research project.</p>"
+      },
+      {
+        "type": "section",
+        "htmlClass": "row",
+        "items": [
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "name",
+              "title",
+              "position",
+              "institution"
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "email",
+              "emailAlt",
+              "phone",
+              {
+                "key": "mailingAddress",
+                "type": "textarea"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "help",
+        "helpvalue": "<h3>B. Name, institution, and contact details of the authorized institutional representative</h3><p>Please include a full postal address and a valid institutional e-mail address.</p>"
+      },
+      {
+        "type": "section",
+        "htmlClass": "row",
+        "items": [
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "repName",
+              "repTitle",
+              "repPosition",
+              "repInstitution"
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "repEmail",
+              "repPhone",
+              {
+                "key": "repMailingAddress",
+                "type": "textarea"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "help",
+        "helpvalue": "<h3>C. Title of Research Project</h3>"
+      },
+      {
+        "key": "projectTitle",
+        "notitle": true,
+        "type": "textarea"
+      },
+      {
+        "type": "section",
+        "htmlClass": "row",
+        "items": [
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              {
+                "key": "projectWebsite",
+                "description": "If available, please provide the address of the research project website as well."
+              }
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "help",
+    "helpvalue": "<h3>D. Names of authorized personnel (within your institution)</h3><p>Please provide the names of all investigators, collaborators, data managers and research staff that will have access to the research data in order to work on the research project. A valid institutional e-mail address for each name along with their job title and function is also required.</p>"
+  },
+  {
+    "type": "section",
+    "htmlClass": "row",
+    "items": [
+      {
+        "type": "section",
+        "htmlClass": "col-xs-6",
+        "items": [
+          {
+            "key": "staff",
+            "add": "New",
+            "style": {
+              "add": "btn-info"
+            },
+            "title": "",
+            "items": [
+              "staff[].name",
+              "staff[].title",
+              "staff[].position",
+              "staff[].email"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "section",
+        "htmlClass": "col-xs-6",
+        "items": []
+      }
+    ]
+  },
+  {
+    "type": "help",
+    "helpvalue": "<h3>E. Names of authorized students (within your institution)</h3><p>Please provide the names of all students who will have access to the research data in order to work on the project. A valid e-mail address for each name is required. Students at other institutions should not be included in this list.</p>"
+  },
+  {
+    "type": "section",
+    "htmlClass": "row",
+    "items": [
+      {
+        "type": "section",
+        "htmlClass": "col-xs-6",
+        "items": [
+          {
+            "key": "students",
+            "add": "New",
+            "style": {
+              "add": "btn-info"
+            },
+            "title": "",
+            "items": [
+              "students[].name",
+              "students[].title",
+              "students[].position",
+              "students[].email"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "section",
+        "htmlClass": "col-xs-6",
+        "items": []
+      }
+    ]
+  },
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "help",
+        "helpvalue": "<h3>F. Research Category/Type</h3><p>Check the items that best describe the type of research study that will be conducted using our research data (more than one may apply).</p>"
+      },
+      {
+        "type": "section",
+        "htmlClass": "row",
+        "items": [
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "geneticAssStudy",
+              "genomeWideAssStudy",
+              "envAssStudy",
+              "geneInteractionStudy",
+              "genotypeCompStudy",
+              "caseControlStudy",
+              "descriptiveStudy",
+              "surveillanceStudy",
+              "biomarker"
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "riskScore",
+              "gisStudy",
+              "fundamentalStudy",
+              "dataPoolingStudy",
+              "prospectiveStudy",
+              "genealogicalStudy",
+              "multiStudy",
+              "otherResearch",
+              {
+                "key": "otherResearchSpecify",
+                "type": "textarea",
+                "condition": "model.otherResearch",
+                "description": "Specify what kind of other research."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "help",
+        "helpvalue": "<h3>G. Keywords</h3><p>Please provide 5-10 keywords that best describe your research project.</p>"
+      },
+      {
+        "key": "keywords",
+        "notitle": true,
+        "type": "textarea"
+      }
+    ]
+  },
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "help",
+        "helpvalue": "<h3>H. Research Project (scientific abstract)</h3><p>Please provide a clear scientific description of the research project, its specific aims, methodology and deliverables and how it meets our objectives, in <strong>no more than 500 words</strong>. Also, please ensure to clearly explain how our research data will be used in the research project.</p>"
+      },
+      {
+        "key": "abstract",
+        "notitle": true,
+        "type": "textarea"
+      }
+    ]
+  },
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "help",
+        "helpvalue": "<h3>I. Sample Description</h3><p>Please provide the following information about the sample population you require.</p>"
+      },
+      {
+        "type": "section",
+        "htmlClass": "row",
+        "items": [
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "totalNbParticipants",
+              "inclusionCriteria",
+              "exclusionCriteria"
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "matchingCriteria",
+              "caseControlRatio",
+              "stratification"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "help",
+        "helpvalue": "<h3>J. Lay summary of the project</h3><p>Please provide a short, accessible description of the project for the general public in <strong>no more than 200 words</strong>. Scientific jargon should be avoided to a reasonable extent. This description will be made available on the consortium public access registry and may be used in a variety of communications materials produced by the consortium (e.g. brochures, reports to stakeholders, press releases, blogs etc.).</p>"
+      },
+      {
+        "key": "summary",
+        "title": "",
+        "type": "textarea"
+      }
+    ]
+  },
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "help",
+        "helpvalue": "<h3>K. Funding and Scientific Review</h3><p>Please answer the following questions regarding the funding and scientific review of your research project.</p>"
+      },
+      {
+        "key": "funding",
+        "type": "radios",
+        "titleMap": [
+          {
+            "value": "yes",
+            "name": "Yes"
+          },
+          {
+            "value": "no",
+            "name": "No"
+          },
+          {
+            "value": "requested",
+            "name": "Requested"
+          }
+        ]
+      },
+      {
+        "key": "fundingBody",
+        "type": "textarea",
+        "description": "Please provide proof of funding and dates of funding.",
+        "condition": "model.funding == 'yes'"
+      },
+      {
+        "key": "noGrant",
+        "type": "textarea",
+        "description": "Please provide evidence and details on how the project will be funded.",
+        "condition": "model.funding == 'no'"
+      },
+      {
+        "key": "requestedFundingBody",
+        "type": "textarea",
+        "description": "Please provide approximate date of expected decision.",
+        "condition": "model.funding == 'requested'"
+      },
+      {
+        "key": "evaluation",
+        "type": "radios",
+        "titleMap": [
+          {
+            "value": "yes",
+            "name": "Yes"
+          },
+          {
+            "value": "no",
+            "name": "No"
+          }
+        ]
+      },
+      {
+        "key": "peerReview",
+        "type": "textarea",
+        "description": "Please provide a copy of the letter of acceptance and of the protocol submitted.",
+        "condition": "model.evaluation == 'yes'"
+      },
+      {
+        "key": "peerReviewPlan",
+        "type": "radios",
+        "titleMap": [
+          {
+            "value": "yes",
+            "name": "Yes"
+          },
+          {
+            "value": "no",
+            "name": "No"
+          }
+        ],
+        "condition": "model.evaluation == 'no'"
+      },
+      {
+        "key": "peerReviewdate",
+        "title": "Expected date of peer review",
+        "condition": "model.evaluation == 'no' && model.peerReviewPlan == 'yes'"
+      }
+    ]
+  },
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "help",
+        "helpvalue": "<h3>L. Ethics Approval</h3>"
+      },
+      {
+        "key": "ethicsApproval"
+      },
+      {
+        "type": "help",
+        "helpvalue": "<p>The Data Access Office reserves the right to request further documentation related to the Research Ethics Review from the Applicant, where necessary. It is the Applicant’s responsibility to ensure that all local/national ethical requirements have been met prior to submission.</p>"
+      }
+    ]
+  },
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "help",
+        "helpvalue": "<h3>M. Variables</h3>"
+      },
+      {
+        "type": "help",
+        "helpvalue": "<p>Select the domains of interest for which you want to request data. Supplementary details on the data requested can be added to the Additional information field. Please refer to the data portal for more information.</p>"
+      },
+      {
+        "type": "help",
+        "helpvalue": "<h4>Socio-demographics and economic characteristics</h4>"
+      },
+      {
+        "type": "section",
+        "htmlClass": "row",
+        "items": [
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "age",
+              "gender",
+              "twin",
+              "maritalStatus",
+              "education",
+              "birthPlace",
+              "ethnicity"
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "language",
+              "residence",
+              "familyStructure",
+              "labourRetirement",
+              "income",
+              "otherSocioDemoEco"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "help",
+        "helpvalue": "<h4>Lifestyle and health behaviours</h4>"
+      },
+      {
+        "type": "section",
+        "htmlClass": "row",
+        "items": [
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "tobacco",
+              "alcohol",
+              "nutrition"
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "physicalActivity",
+              "sleep"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "help",
+        "helpvalue": "<h4>Health status and functional limitations</h4>"
+      },
+      {
+        "type": "section",
+        "htmlClass": "row",
+        "items": [
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "perceptionHealth"
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": []
+          }
+        ]
+      },
+      {
+        "type": "help",
+        "helpvalue": "<h4>Diseases</h4>"
+      },
+      {
+        "type": "section",
+        "htmlClass": "row",
+        "items": [
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "neoplasms",
+              "endocrineMetabolicDiseases",
+              "mentalBehavDisorders",
+              "nervousSystemDiseases",
+              "circulatorySystemDiseases"
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "respiratorySystemDiseases",
+              "digestiveSystemDiseases",
+              "skinSubcutaneousDiseases",
+              "musculoskeletalSystemDiseases"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "help",
+        "helpvalue": "<h4>Non-pharmacological interventions</h4>"
+      },
+      {
+        "type": "section",
+        "htmlClass": "row",
+        "items": [
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "surgicalInterventions",
+              "radiologicalInterventions"
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "biosampleAnalyses",
+              "otherNonPharmacologicalInterventions"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "help",
+        "helpvalue": "<h4>Health and community care utilization</h4>"
+      },
+      {
+        "type": "section",
+        "htmlClass": "row",
+        "items": [
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "visitHealthProfessionals"
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": []
+          }
+        ]
+      },
+      {
+        "type": "help",
+        "helpvalue": "<h4>Reproduction</h4>"
+      },
+      {
+        "type": "section",
+        "htmlClass": "row",
+        "items": [
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "menstruationMenopauseAndropause",
+              "contraception",
+              "pregnancyDelivery"
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "gravidityFertility",
+              "breastfeeding",
+              "reproductiveSexualProblems"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "help",
+        "helpvalue": "<h4>Physical measures</h4>"
+      },
+      {
+        "type": "section",
+        "htmlClass": "row",
+        "items": [
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "physicalCharacteristics"
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "anthropometry"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "help",
+        "helpvalue": "<h4>Physical environment</h4>"
+      },
+      {
+        "type": "section",
+        "htmlClass": "row",
+        "items": [
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "radiationExposure"
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "chemicalExposure"
+            ]
+          }
+        ]
+      },
+      {
+        "key": "additionalInfo",
+        "type": "textarea"
+      }
+    ]
+  },
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "help",
+        "helpvalue": "<h3>N. Return of Data</h3><p>Please provide a list and the format of the data that will be returned to the consortium (<strong>100 words</strong>).</p>"
+      },
+      {
+        "key": "return",
+        "notitle": true,
+        "type": "textarea"
+      }
+    ]
+  },
+  {
+    "type": "help",
+    "helpvalue": "<h2>II - Information Technology (IT) Security Assessment</h2>"
+  },
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "help",
+        "helpvalue": "<p>In order to avoid any misuse or inadvertent disclosure of information that could indirectly identify research participants or disclose their private data to unauthorized individuals, the Data Access Oversight Committee requires that you follow basic IT security practices. If you make local copies of the consortium research data, you must effectively minimize the risk that this information might be disclosed to individuals who have not agreed to the consortium’s privacy protection conditions.</p>"
+      },
+      {
+        "type": "help",
+        "helpvalue": "<p><strong>You must agree to the following practices and procedures in order to have access to the consortium research data:</strong></p>"
+      },
+      "aggreementA",
+      "aggreementB",
+      "aggreementC",
+      "aggreementD",
+      "aggreementE",
+      "aggreementF"
     ]
   }
 ]

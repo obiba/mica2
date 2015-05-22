@@ -1,6 +1,76 @@
 {
   "type": "object",
   "properties": {
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "position": {
+      "title": "Position",
+      "type": "string"
+    },
+    "institution": {
+      "title": "Institution",
+      "type": "string"
+    },
+    "email": {
+      "title": "Institutional Email",
+      "type": "string",
+      "pattern": "^\\S+@\\S+$"
+    },
+    "emailAlt": {
+      "title": "Alternate Email",
+      "type": "string",
+      "pattern": "^\\S+@\\S+$"
+    },
+    "mailingAddress": {
+      "title": "Mailing address",
+      "type": "string"
+    },
+    "phone": {
+      "title": "Telephone Number",
+      "type": "string"
+    },
+    "repName": {
+      "title": "Name",
+      "type": "string"
+    },
+    "repTitle": {
+      "title": "Title",
+      "type": "string"
+    },
+    "repPosition": {
+      "title": "Position",
+      "type": "string"
+    },
+    "repInstitution": {
+      "title": "Institution",
+      "type": "string"
+    },
+    "repEmail": {
+      "title": "Institutional Email",
+      "type": "string",
+      "pattern": "^\\S+@\\S+$"
+    },
+    "repMailingAddress": {
+      "title": "Mailing address",
+      "type": "string"
+    },
+    "repPhone": {
+      "title": "Telephone Number",
+      "type": "string"
+    },
+    "projectTitle": {
+      "type": "string"
+    },
+    "projectWebsite": {
+      "title": "Project website",
+      "type": "string"
+    },
     "staff": {
       "type": "array",
       "items": {
@@ -29,6 +99,412 @@
           "email"
         ]
       }
+    },
+    "students": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "position": {
+            "title": "Position",
+            "type": "string"
+          },
+          "email": {
+            "title": "Email",
+            "type": "string",
+            "pattern": "^\\S+@\\S+$"
+          }
+        },
+        "required": [
+          "name",
+          "email"
+        ]
+      }
+    },
+    "geneticAssStudy": {
+      "title": "Genetic association study",
+      "type": "boolean"
+    },
+    "genomeWideAssStudy": {
+      "title": "Genome wide association study",
+      "type": "boolean"
+    },
+    "envAssStudy": {
+      "title": "Environment association study",
+      "type": "boolean"
+    },
+    "geneInteractionStudy": {
+      "title": "Gene by gene and gene by environment interaction study",
+      "type": "boolean"
+    },
+    "genotypeCompStudy": {
+      "title": "Genotype-based comparative study",
+      "type": "boolean"
+    },
+    "caseControlStudy": {
+      "title": "Case-control study",
+      "type": "boolean"
+    },
+    "descriptiveStudy": {
+      "title": "Descriptive study (e.g. health care utilisation)",
+      "type": "boolean"
+    },
+    "surveillanceStudy": {
+      "title": "Surveillance study (e.g. estimation of the prevalence or incidence)",
+      "type": "boolean"
+    },
+    "biomarker": {
+      "title": "Biomarker validation or discovery",
+      "type": "boolean"
+    },
+    "riskScore": {
+      "title": "Risk score or index development",
+      "type": "boolean"
+    },
+    "gisStudy": {
+      "title": "GIS-based or mapping study",
+      "type": "boolean"
+    },
+    "fundamentalStudy": {
+      "title": "Fundamental research study (e.g. in vitro)",
+      "type": "boolean"
+    },
+    "dataPoolingStudy": {
+      "title": "Study using harmonized data from multiple cohorts (e.g. data pooling project)",
+      "type": "boolean"
+    },
+    "prospectiveStudy": {
+      "title": "Prospective study",
+      "type": "boolean"
+    },
+    "genealogicalStudy": {
+      "title": "Genealogical study",
+      "type": "boolean"
+    },
+    "multiStudy": {
+      "title": "Multicentre study or international study",
+      "type": "boolean"
+    },
+    "otherResearch": {
+      "title": "Other",
+      "type": "boolean"
+    },
+    "otherResearchSpecify": {
+      "title": "Specify",
+      "type": "string"
+    },
+    "keywords": {
+      "type": "string"
+    },
+    "abstract": {
+      "type": "string"
+    },
+    "totalNbParticipants": {
+      "title": "Total number of participants requested",
+      "type": "integer"
+    },
+    "inclusionCriteria": {
+      "title": "Inclusion criteria",
+      "type": "string"
+    },
+    "exclusionCriteria": {
+      "title": "Exclusion criteria",
+      "type": "string"
+    },
+    "matchingCriteria": {
+      "title": "Matching criteria for case-control studies",
+      "type": "string"
+    },
+    "caseControlRatio": {
+      "title": "Case-control ratio",
+      "type": "string"
+    },
+    "stratification": {
+      "title": "Stratification or grouping",
+      "type": "string"
+    },
+    "summary": {
+      "type": "string"
+    },
+    "funding": {
+      "title": "Has financial support been granted?",
+      "type": "string",
+      "enum": [
+        "yes",
+        "no",
+        "requested"
+      ]
+    },
+    "fundingBody": {
+      "title": "Funding body",
+      "type": "string"
+    },
+    "noGrant": {
+      "title": "Funding details",
+      "type": "string"
+    },
+    "requestedFundingBody": {
+      "title": "Requested funding body",
+      "type": "string"
+    },
+    "evaluation": {
+      "title": "Has the project been evaluated by a recognized peer review process?",
+      "type": "string",
+      "enum": [
+        "yes",
+        "no"
+      ]
+    },
+    "peerReview": {
+      "title": "Peer review process",
+      "type": "string"
+    },
+    "peerReviewPlan": {
+      "title": "Is a peer review process planned for this project?",
+      "type": "string",
+      "enum": [
+        "yes",
+        "no"
+      ]
+    },
+    "peerReviewDate": {
+      "title": "Expected date of peer review",
+      "type": "string"
+    },
+    "ethicsApproval": {
+      "title": "This project has been approved by an institutional review board or a comparable decisional committee that has been formally designated to approve and/or monitor research involving humans with the aim of protecting the rights and welfare of the research participants. The approval letter(s) (in English or French) is/are attached (an institutional approval number should also be provided if available).",
+      "type": "boolean"
+    },
+    "age": {
+      "title": "Age/birthdate",
+      "type": "boolean"
+    },
+    "gender": {
+      "title": "Sex/gender",
+      "type": "boolean"
+    },
+    "twin": {
+      "title": "Twin",
+      "type": "boolean"
+    },
+    "maritalStatus": {
+      "title": "Marital/partner status",
+      "type": "boolean"
+    },
+    "education": {
+      "title": "Education",
+      "type": "boolean"
+    },
+    "birthPlace": {
+      "title": "Birth place",
+      "type": "boolean"
+    },
+    "ethnicity": {
+      "title": "Ethnicity, race and religion",
+      "type": "boolean"
+    },
+    "language": {
+      "title": "Language",
+      "type": "boolean"
+    },
+    "residence": {
+      "title": "Residence",
+      "type": "boolean"
+    },
+    "familyStructure": {
+      "title": "Family and household structure",
+      "type": "boolean"
+    },
+    "labourRetirement": {
+      "title": "labour force and retirement",
+      "type": "boolean"
+    },
+    "income": {
+      "title": "Income, possessions and benefits",
+      "type": "boolean"
+    },
+    "otherSocioDemoEco": {
+      "title": "Other socio-demographic and economic characteristics",
+      "type": "boolean"
+    },
+    "tobacco": {
+      "title": "Tobacco",
+      "type": "boolean"
+    },
+    "alcohol": {
+      "title": "Alcohol",
+      "type": "boolean"
+    },
+    "nutrition": {
+      "title": "Nutrition",
+      "type": "boolean"
+    },
+    "physicalActivity": {
+      "title": "Physical activity",
+      "type": "boolean"
+    },
+    "sleep": {
+      "title": "Sleep",
+      "type": "boolean"
+    },
+    "perceptionHealth": {
+      "title": "Perception of Health",
+      "type": "boolean"
+    },
+    "neoplasms": {
+      "title": "Neoplasms",
+      "type": "boolean"
+    },
+    "endocrineMetabolicDiseases": {
+      "title": "Endocrine, nutritional and metabolic diseases",
+      "type": "boolean"
+    },
+    "mentalBehavDisorders": {
+      "title": "Mental and behavioural disorders",
+      "type": "boolean"
+    },
+    "nervousSystemDiseases": {
+      "title": "Diseases of the nervous system",
+      "type": "boolean"
+    },
+    "circulatorySystemDiseases": {
+      "title": "Diseases of the circulatory system",
+      "type": "boolean"
+    },
+    "respiratorySystemDiseases": {
+      "title": "Diseases of the respiratory system",
+      "type": "boolean"
+    },
+    "digestiveSystemDiseases": {
+      "title": "Diseases of the digestive system",
+      "type": "boolean"
+    },
+    "skinSubcutaneousDiseases": {
+      "title": "Diseases of the skin and subcutaneous tissue",
+      "type": "boolean"
+    },
+    "musculoskeletalSystemDiseases": {
+      "title": "Diseases of the musculoskeletal system and connective tissue",
+      "type": "boolean"
+    },
+    "surgicalInterventions": {
+      "title": "Surgical interventions",
+      "type": "boolean"
+    },
+    "radiologicalInterventions": {
+      "title": "Radiological interventions",
+      "type": "boolean"
+    },
+    "biosampleAnalyses": {
+      "title": "Biosample analyses (screening test, FOBT, PSA test, PAP test)",
+      "type": "boolean"
+    },
+    "otherNonPharmacologicalInterventions": {
+      "title": "Other and unspecified non-pharmacological interventions",
+      "type": "boolean"
+    },
+    "visitHealthProfessionals": {
+      "title": "Visit to health professionals",
+      "type": "boolean"
+    },
+    "menstruationMenopauseAndropause": {
+      "title": "Menstruation, menopause and andropause",
+      "type": "boolean"
+    },
+    "contraception": {
+      "title": "Contraception and family planning",
+      "type": "boolean"
+    },
+    "pregnancyDelivery": {
+      "title": "Pregnancy, labour, delivery and postpartum",
+      "type": "boolean"
+    },
+    "gravidityFertility": {
+      "title": "Gravidity, pregnancy outcomes, parity (female) and fertility (male)",
+      "type": "boolean"
+    },
+    "breastfeeding": {
+      "title": "Breastfeeding",
+      "type": "boolean"
+    },
+    "reproductiveSexualProblems": {
+      "title": "Reproductive and sexual problems related to conception",
+      "type": "boolean"
+    },
+    "physicalCharacteristics": {
+      "title": "Physical characteristics (handedness, hair color, eye color)",
+      "type": "boolean"
+    },
+    "anthropometry": {
+      "title": "Anthropometry (self-reported height, weight, waist and hip circumferences)",
+      "type": "boolean"
+    },
+    "radiationExposure": {
+      "title": "Radiation exposure (UV exposure)",
+      "type": "boolean"
+    },
+    "chemicalExposure": {
+      "title": "Chemical exposure (Passive smoking exposure)",
+      "type": "boolean"
+    },
+    "additionalInfo": {
+      "title": "Additional information",
+      "type": "string"
+    },
+    "return": {
+      "type": "string"
+    },
+    "aggreementA": {
+      "title": "A. My institution has a formal IT security policy.",
+      "type": "boolean"
+    },
+    "aggreementB": {
+      "title": "B. I will maintain the consortium’s research data in secure physical computer systems. If data are stored on portable computers (whether laptops or other mobile devices), it must be encrypted in order to avoid any potential disclosure in case the portable system is lost or stolen.",
+      "type": "boolean"
+    },
+    "aggreementC": {
+      "title": "C. I will implement appropriate access security so as to ensure that only the authorized individuals mentioned in Section I of this Data Access Application Form be allowed to access the research data. This requires, for example, that if the consortium research data is stored on a shared computer system or on a file server, that it be password or encryption-protected. Moreover, if the computer(s) that hold the consortium research data are backed up, the backed up media must also be encrypted and stored in a secure location.",
+      "type": "boolean"
+    },
+    "aggreementD": {
+      "title": "D. I understand that anyone who will use the consortium’s research data (mentioned in Section I of this Data Access Application Form) should be trained in the responsible use of participant information and be familiar with the terms and conditions of the Data Access Agreement. I am responsible for transmitting and familiarizing the other research personnel and students with the restrictions on access and use of the consortium research data. They must also be briefed on the security plans described in this section.",
+      "type": "boolean"
+    },
+    "aggreementE": {
+      "title": "E. I understand that if the consortium research data is stored on a network-accessible computer, there should be measures in place to prevent access by computer hackers or contamination by viruses and spyware.",
+      "type": "boolean"
+    },
+    "aggreementF": {
+      "title": "F. I understand that upon completion of my research project, I must destroy all local copies, including backups of the data accessed from the consortium. However, if necessary, I can still keep the consortium research data for archival purposes in conformity with national audits, publication or legal requirements. I must also either store my analysis code or send a copy of it to the consortium in case of potential needs to reproduce my variables or findings at a later date.",
+      "type": "boolean"
     }
-  }
+  },
+  "required": [
+    "name",
+    "email",
+    "repName",
+    "repEmail",
+    "projectTitle",
+    "keywords",
+    "abstract",
+    "totalNbParticipants",
+    "summary",
+    "funding",
+    "fundingBody",
+    "noGrant",
+    "requestedFundingBody",
+    "evaluation",
+    "peerReview",
+    "peerReviewPlan",
+    "peerReviewDate",
+    "return"
+  ]
 }
