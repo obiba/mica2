@@ -69,10 +69,28 @@ public class SubjectAcl extends AbstractAuditableDocument {
     this.actions = actions;
   }
 
+  public boolean hasActions() {
+    return !getActions().isEmpty();
+  }
+
+  public boolean hasAction(String action) {
+    return getActions().contains(action);
+  }
+
+  /**
+   * Add an action (if not already done. Can be several actions, comma-separated.
+   * @param action
+   */
   public void addAction(String action) {
-    if(!getActions().contains(action)) {
-      getActions().add(action);
-    }
+    Stream.of(action.split(SUBPART_DIVIDER_TOKEN)).forEach(a -> {
+      if(!getActions().contains(a)) {
+        getActions().add(a);
+      }
+    });
+  }
+
+  public void removeAction(String action) {
+    getActions().remove(action);
   }
 
   public String getInstance() {
@@ -140,7 +158,11 @@ public class SubjectAcl extends AbstractAuditableDocument {
     }
 
     public Builder action(String... action) {
-      if(action != null) Stream.of(action).forEach(actions::add);
+      if(action != null) {
+        Stream.of(action).forEach(a -> {
+          Stream.of(a.split(SUBPART_DIVIDER_TOKEN)).forEach(actions::add);
+        });
+      }
       return this;
     }
 

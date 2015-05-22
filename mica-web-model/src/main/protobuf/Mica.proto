@@ -504,7 +504,7 @@ message DatasetVariableAggregationsDto {
 message DataAccessRequestDto {
   optional string id = 1;
   required string applicant = 2;
-  required string status = 3 [default = "DRAFT"];
+  required string status = 3 [default = "OPENED"];
   required string title = 4;
   optional string content = 5;
   repeated AttachmentDto attachments = 6;

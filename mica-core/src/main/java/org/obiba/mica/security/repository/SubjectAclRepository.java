@@ -9,6 +9,10 @@ public interface SubjectAclRepository extends MongoRepository<SubjectAcl, String
 
   List<SubjectAcl> findByPrincipalAndType(String principal, SubjectAcl.Type type);
 
+  List<SubjectAcl> findByResourceAndInstance(String resource, String instance);
+
+  List<SubjectAcl> findByResourceStartingWith(String regex);
+
   List<SubjectAcl> findByPrincipalAndTypeAndResourceAndInstance(String principal, SubjectAcl.Type type, String resource, String instance);
 
 }
