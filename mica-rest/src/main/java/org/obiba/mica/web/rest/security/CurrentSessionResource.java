@@ -21,7 +21,7 @@ import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.session.InvalidSessionException;
 import org.apache.shiro.subject.Subject;
-import org.obiba.mica.core.security.Roles;
+import org.obiba.mica.security.Roles;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.stereotype.Component;
 

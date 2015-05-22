@@ -10,9 +10,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.core.domain.LocalizedString;
-import org.obiba.mica.core.security.Roles;
 import org.obiba.mica.file.rest.FileResource;
 import org.obiba.mica.micaConfig.NoSuchDataAccessFormException;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;

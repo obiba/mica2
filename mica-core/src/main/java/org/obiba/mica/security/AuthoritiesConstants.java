@@ -1,4 +1,4 @@
-package org.obiba.mica.core.security;
+package org.obiba.mica.security;
 
 /**
  * Constants for Spring Security authorities.

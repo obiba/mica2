@@ -52,7 +52,7 @@ public class DraftNetworksResource {
   @GET
   @Path("/networks")
   @Timed
-  @RequiresPermissions({"mica:/draft:EDIT"})
+  @RequiresPermissions({"/draft:EDIT"})
   public List<Mica.NetworkDto> list(@QueryParam("study") String studyId) {
     return networkService.findAllNetworks(studyId).stream().map(dtos::asDto).collect(Collectors.toList());
   }
@@ -60,7 +60,7 @@ public class DraftNetworksResource {
   @POST
   @Path("/networks")
   @Timed
-  @RequiresPermissions({"mica:/draft:EDIT"})
+  @RequiresPermissions({"/draft:EDIT"})
   public Response create(Mica.NetworkDto networkDto, @Context UriInfo uriInfo) {
     Network network = dtos.fromDto(networkDto);
 
@@ -71,14 +71,14 @@ public class DraftNetworksResource {
   @PUT
   @Path("/networks/_index")
   @Timed
-  @RequiresPermissions({"mica:/draft:PUBLISH"})
+  @RequiresPermissions({"/draft:PUBLISH"})
   public Response reIndex() {
     networkService.indexAll();
     return Response.noContent().build();
   }
 
   @Path("/network/{id}")
-  @RequiresPermissions({"mica:/draft:EDIT"})
+  @RequiresPermissions({"/draft:EDIT"})
   public DraftNetworkResource dataset(@PathParam("id") String id) {
     DraftNetworkResource resource = applicationContext.getBean(DraftNetworkResource.class);
     resource.setId(id);

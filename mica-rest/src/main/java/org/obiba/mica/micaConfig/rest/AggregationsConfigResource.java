@@ -6,7 +6,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 
 import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.obiba.mica.core.security.Roles;
+import org.obiba.mica.security.Roles;
 import org.obiba.mica.micaConfig.domain.AggregationsConfig;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;

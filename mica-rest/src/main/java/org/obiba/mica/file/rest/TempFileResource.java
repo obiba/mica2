@@ -20,7 +20,7 @@ import com.codahale.metrics.annotation.Timed;
 
 @Component
 @Scope("request")
-@RequiresPermissions({"mica:/files:UPLOAD"})
+@RequiresPermissions({"/files:UPLOAD"})
 public class TempFileResource {
 
   @Inject

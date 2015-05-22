@@ -8,7 +8,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
-import org.obiba.mica.core.security.AuthoritiesConstants;
+import org.obiba.mica.security.AuthoritiesConstants;
 import org.obiba.mica.core.service.AuditEventService;
 import org.springframework.boot.actuate.audit.AuditEvent;
 

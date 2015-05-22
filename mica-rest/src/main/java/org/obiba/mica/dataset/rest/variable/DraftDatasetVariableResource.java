@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Scope("request")
 @Path("/draft")
-@RequiresPermissions({"mica:/draft:EDIT"})
+@RequiresPermissions({"/draft:EDIT"})
 public class DraftDatasetVariableResource {
 
   @Inject

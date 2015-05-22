@@ -34,7 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Path("/draft/studies/_import")
-@RequiresPermissions({"mica:/draft:EDIT"})
+@RequiresPermissions({"/draft:EDIT"})
 public class DraftStudiesImportResource {
 
   private static final Logger log = LoggerFactory.getLogger(DraftStudiesImportResource.class);

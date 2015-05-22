@@ -44,14 +44,14 @@ public class DraftStudyResource {
 
   @GET
   @Timed
-  @RequiresPermissions({"mica:/draft:EDIT"})
+  @RequiresPermissions({"/draft:EDIT"})
   public Mica.StudyDto get() {
     return dtos.asDto(studyService.findDraftStudy(id));
   }
 
   @PUT
   @Timed
-  @RequiresPermissions({"mica:/draft:EDIT"})
+  @RequiresPermissions({"/draft:EDIT"})
   public Response update(@SuppressWarnings("TypeMayBeWeakened") Mica.StudyDto studyDto) {
     // ensure study exists
     studyService.findDraftStudy(id);
@@ -64,7 +64,7 @@ public class DraftStudyResource {
   @PUT
   @Path("/_publish")
   @Timed
-  @RequiresPermissions({"mica:/draft:PUBLISH"})
+  @RequiresPermissions({"/draft:PUBLISH"})
   public Response publish() {
     studyService.publish(id);
     return Response.noContent().build();
@@ -72,7 +72,7 @@ public class DraftStudyResource {
 
   @DELETE
   @Path("/_publish")
-  @RequiresPermissions({"mica:/draft:PUBLISH"})
+  @RequiresPermissions({"/draft:PUBLISH"})
   public Response unPublish() {
     studyService.unpublish(id);
     return Response.noContent().build();
@@ -83,14 +83,14 @@ public class DraftStudyResource {
    */
   @DELETE
   @Timed
-  @RequiresPermissions({"mica:/draft:EDIT"})
+  @RequiresPermissions({"/draft:EDIT"})
   public Response delete() {
     studyService.delete(id);
     return Response.noContent().build();
   }
 
   @Path("/file/{fileId}")
-  @RequiresPermissions({"mica:/draft:EDIT"})
+  @RequiresPermissions({"/draft:EDIT"})
   public FileResource study(@PathParam("fileId") String fileId) {
     FileResource studyResource = applicationContext.getBean(FileResource.class);
     studyResource.setPersistable(studyService.findDraftStudy(id));

@@ -23,7 +23,7 @@ import org.springframework.context.ApplicationContext;
 import com.codahale.metrics.annotation.Timed;
 
 @Path("/draft")
-@RequiresPermissions({"mica:/draft:EDIT"})
+@RequiresPermissions({"/draft:EDIT"})
 public class DraftStudiesResource {
 
   @Inject
