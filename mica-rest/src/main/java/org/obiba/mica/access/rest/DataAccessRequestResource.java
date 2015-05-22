@@ -8,6 +8,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
@@ -20,7 +21,10 @@ import org.obiba.mica.web.model.Mica;
 import org.springframework.stereotype.Component;
 
 import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
+
+import sun.util.locale.LanguageTag;
 
 @Component
 @Path("/data-access-request/{id}")
@@ -44,6 +48,18 @@ public class DataAccessRequestResource {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
     DataAccessRequest request = dataAccessRequestService.findById(id);
     return dtos.asDto(request);
+  }
+
+  @GET
+  @Timed
+  @Path("/pdf")
+  public Response getPdf(@PathParam("id") String id, @QueryParam("lang") String lang) {
+    subjectAclService.checkPermission("/data-access-request", "VIEW", id);
+
+    if (Strings.isNullOrEmpty(lang)) lang = LanguageTag.UNDETERMINED;
+
+    return Response.ok(dataAccessRequestService.getRequestPdf(id, lang))
+      .header("Content-Disposition", "attachment; filename=\"" + "data-access-request.pdf" + "\"").build();
   }
 
   @DELETE
