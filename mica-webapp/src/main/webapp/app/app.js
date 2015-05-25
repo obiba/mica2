@@ -129,7 +129,8 @@ mica
         })
         .preferredLanguage('en')
         .fallbackLanguage('en')
-        .useCookieStorage();
+        .useCookieStorage()
+        .useSanitizeValueStrategy('escaped');
 
       paginationTemplateProvider.setPath('app/views/pagination-template.html');
       tmhDynamicLocaleProvider.localeLocationPattern('bower_components/angular-i18n/angular-locale_{{locale}}.js');
@@ -175,7 +176,6 @@ mica
         $rootScope.hasRole = AuthenticationSharedService.isAuthorized;
         $rootScope.userRoles = USER_ROLES;
         $rootScope.subject = Session;
-
 
         if (!$rootScope.authenticated) {
           $rootScope.$broadcast('event:auth-loginRequired');
