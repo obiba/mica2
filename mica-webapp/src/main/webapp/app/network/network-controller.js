@@ -42,7 +42,7 @@ mica.network
         NetworkResource.get({id: $routeParams.id}, function(response) {
           $scope.files = response.logo ? [response.logo] : [];
           return response;
-        }) : {published: false, 'obiba.mica.NetworkDto.type': {} };
+        }) : {published: false};
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
