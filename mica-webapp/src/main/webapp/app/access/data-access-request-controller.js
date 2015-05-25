@@ -12,18 +12,42 @@
 
 mica.dataAccessRequest
 
-  .controller('DataAccessRequestListController', ['$scope', 'DataAccessRequestsResource', 'DataAccessRequestResource',
+  .controller('DataAccessRequestListController', ['$rootScope', '$scope', 'DataAccessRequestsResource', 'DataAccessRequestResource', 'NOTIFICATION_EVENTS',
 
-    function ($scope, DataAccessRequestsResource, DataAccessRequestResource) {
+    function ($rootScope, $scope, DataAccessRequestsResource, DataAccessRequestResource, NOTIFICATION_EVENTS) {
 
       $scope.requests = DataAccessRequestsResource.query();
 
-      $scope.deleteRequest = function (id) {
-        //TODO ask confirmation
-        DataAccessRequestResource.delete({id: id},
-          function () {
-            $scope.requests = DataAccessRequestsResource.query();
-          });
+      $scope.deleteRequest = function (request) {
+        $scope.requestToDelete = request.id;
+        $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
+          {
+            titleKey: 'data-access-request.delete-dialog.title',
+            messageKey:'data-access-request.delete-dialog.message',
+            messageArgs: [request.title, request.applicant]
+          }, request.id
+        );
       };
+
+      $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, id) {
+        if ($scope.requestToDelete === id) {
+          DataAccessRequestResource.delete({id: $scope.requestToDelete},
+            function () {
+              $scope.requests = DataAccessRequestsResource.query();
+            });
+
+          delete $scope.requestToDelete;
+        }
+      });
+    }])
+
+  .controller('DataAccessRequestViewController', ['$scope', '$routeParams', 'DataAccessRequestResource',
+
+    function ($scope, $routeParams, DataAccessRequestResource) {
+
+      $scope.dataAccessRequest = $routeParams.id ?
+        DataAccessRequestResource.get({id: $routeParams.id}, function(dataAccessRequest) {
+          return dataAccessRequest;
+        }) : {};
 
     }]);

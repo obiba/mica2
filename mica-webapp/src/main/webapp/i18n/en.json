@@ -589,7 +589,13 @@
     "applicant": "Applicant",
     "title": "Title",
     "add": "Add Request",
-    "title": "Title"
+    "title": "Title",
+    "status": "Status",
+    "none": "No Data Access requested.",
+    "delete-dialog": {
+      "title": "Delete Data Access Request",
+      "message": "Are you sure you want to delete Data Access '{{arg0}}' request by '{{arg1}}'?"
+    }
   },
   "data-access-config": {
     "menu": "Data Access",

@@ -17,52 +17,61 @@
     <i class="fa fa-plus"></i> <span translate>data-access-request.add</span>
   </a>
 
-  <div class="row voffset4">
-    <div class="col-xs-4">
+  <p class="voffset3" ng-hide="requests.length > 0">
+    <span translate>data-access-request.none</span>
+  </p>
+
+  <div ng-hide="requests.length === 0">
+    <div class="row voffset4">
+      <div class="col-xs-4">
       <span class="input-group input-group-sm no-padding-top">
-        <span class="input-group-addon" id="data-access-requests-search"><i class="glyphicon glyphicon-search"></i></span>
-        <input ng-model="searchText" type="text" class="form-control width25" aria-describedby="data-access-requests-search">
+        <span class="input-group-addon" id="data-access-requests-search"><i
+          class="glyphicon glyphicon-search"></i></span>
+        <input ng-model="searchText" type="text" class="form-control width25"
+          aria-describedby="data-access-requests-search">
       </span>
+      </div>
+      <div class="col-xs-8">
+        <dir-pagination-controls class="pull-right"></dir-pagination-controls>
+      </div>
     </div>
-    <div class="col-xs-8">
-      <dir-pagination-controls class="pull-right"></dir-pagination-controls>
+
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+        <tr>
+          <th translate>data-access-request.applicant</th>
+          <th translate>data-access-request.title</th>
+          <th></th>
+        </tr>
+        </thead>
+        <tbody>
+
+        <tr dir-paginate="request in requests| filter:searchText | itemsPerPage: 20">
+          <td>
+            {{request.applicant}}
+          </td>
+          <td>
+            {{request.title}}
+          </td>
+          <td>
+            <ul class="list-inline pull-right">
+              <li>
+                <a ng-href="#/data-access-request/{{request.id}}" translate><i class="fa fa-eye"></i></a>
+              </li>
+              <li>
+                <a ng-href="#/data-access-request/{{request.id}}/edit" translate><i class="fa fa-pencil"></i></a>
+              </li>
+              <li>
+                <a ng-click="deleteRequest(request)" translate><i class="fa fa-trash-o"></i></a>
+              </li>
+            </ul>
+          </td>
+        </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
-  <div class="table-responsive">
-    <table class="table table-striped">
-      <thead>
-      <tr>
-        <th translate>data-access-request.applicant</th>
-        <th translate>data-access-request.title</th>
-        <th></th>
-      </tr>
-      </thead>
-      <tbody>
-
-      <tr dir-paginate="request in requests| filter:searchText | itemsPerPage: 20">
-        <td>
-          {{request.applicant}}
-        </td>
-        <td>
-          {{request.title}}
-        </td>
-        <td>
-          <ul class="list-inline pull-right">
-            <li>
-              <a ng-href="#/data-access-request/{{request.id}}" translate><i class="fa fa-eye"></i></a>
-            </li>
-            <li>
-              <a ng-href="#/data-access-request/{{request.id}}/edit" translate><i class="fa fa-pencil"></i></a>
-            </li>
-            <li>
-              <a ng-href="#/data-access-request/{{request.id}}/delete" translate><i class="fa fa-trash-o"></i></a>
-            </li>
-          </ul>
-        </td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
 
 </div>
