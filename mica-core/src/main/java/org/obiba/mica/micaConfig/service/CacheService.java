@@ -3,16 +3,17 @@ package org.obiba.mica.micaConfig.service;
 import javax.inject.Inject;
 
 import org.obiba.mica.dataset.domain.Dataset;
-import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
-import org.obiba.mica.dataset.service.PublishedDatasetService;
 import org.obiba.mica.dataset.service.StudyDatasetService;
+import org.obiba.mica.security.event.SubjectAclUpdatedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+
+import com.google.common.eventbus.EventBus;
 
 @Component
 public class CacheService {
@@ -27,6 +28,9 @@ public class CacheService {
 
   @Inject
   private StudyDatasetService studyDatasetService;
+
+  @Inject
+  private EventBus eventBus;
 
   @CacheEvict(value="opal-taxonomies", allEntries = true)
   public void clearOpalTaxonomiesCache() {
@@ -53,6 +57,10 @@ public class CacheService {
     });
   }
 
+  public void clearAuthorizationCache() {
+    eventBus.post(new SubjectAclUpdatedEvent());
+  }
+
   public void buildDatasetVariablesCache() {
     helper.buildDatasetVariablesCache();
   }
@@ -65,6 +73,7 @@ public class CacheService {
   public void clearAllCaches() {
     log.info("Clearing all caches");
     clearDatasetVariablesCache();
+    clearAuthorizationCache();
   }
 
   @Component

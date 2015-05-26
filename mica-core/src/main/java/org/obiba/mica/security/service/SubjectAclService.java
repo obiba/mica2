@@ -159,6 +159,8 @@ public class SubjectAclService {
         }
       }
     });
+    // inform acls update (for caching)
+    eventBus.post(new SubjectAclUpdatedEvent(SubjectAcl.Type.USER.subjectFor(principal)));
   }
 
   //

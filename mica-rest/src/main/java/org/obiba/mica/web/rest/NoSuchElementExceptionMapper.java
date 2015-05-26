@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica;
+package org.obiba.mica.web.rest;
 
 import java.util.NoSuchElementException;
 

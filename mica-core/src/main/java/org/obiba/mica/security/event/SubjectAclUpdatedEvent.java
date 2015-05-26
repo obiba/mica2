@@ -10,16 +10,28 @@
 
 package org.obiba.mica.security.event;
 
+import javax.annotation.Nullable;
+
 import org.obiba.mica.security.domain.SubjectAcl;
 
 public class SubjectAclUpdatedEvent {
 
-  private SubjectAcl.Subject subject;
+  private final SubjectAcl.Subject subject;
+
+  public SubjectAclUpdatedEvent() {
+    // any subject
+    subject = null;
+  }
 
   public SubjectAclUpdatedEvent(SubjectAcl.Subject subject) {
     this.subject = subject;
   }
 
+  public boolean hasSubject() {
+    return subject != null;
+  }
+
+  @Nullable
   public SubjectAcl.Subject getSubject() {
     return subject;
   }

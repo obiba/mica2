@@ -233,6 +233,12 @@ mica.controller('CachingController', ['$scope', '$rootScope', 'CacheService', 'N
       });
     };
 
+    $scope.clearAuthorization = function () {
+      withConfirm(function () {
+        CacheService.cache.clear({id: 'authorization'});
+      });
+    };
+
     $scope.buildDatasetVariables = function () {
       withConfirm(function () {
         CacheService.cache.build({id: 'datasetVariables'});
