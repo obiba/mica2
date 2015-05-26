@@ -508,6 +508,8 @@ message DataAccessRequestDto {
   required string title = 4;
   optional string content = 5;
   repeated AttachmentDto attachments = 6;
+  repeated string actions = 7;
+  repeated string nextStatus = 8;
 }
 
 message DataAccessFormDto {

@@ -28,6 +28,8 @@ import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.security.repository.SubjectAclRepository;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.StudyRepository;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
@@ -54,6 +56,9 @@ public class DatasetDtosTest {
 
   @Inject
   private MicaConfigService micaConfigService;
+
+  @Inject
+  private SubjectAclService subjectAclService;
 
   @Inject
   private StudyService studyService;
@@ -169,5 +174,14 @@ public class DatasetDtosTest {
       return Mockito.mock(StudyService.class);
     }
 
+    @Bean
+    public SubjectAclService subjectAclService() {
+      return Mockito.mock(SubjectAclService.class);
+    }
+
+    @Bean
+    public SubjectAclRepository subjectAclRepository() {
+      return Mockito.mock(SubjectAclRepository.class);
+    }
   }
 }

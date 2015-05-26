@@ -7,18 +7,17 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.file.Attachment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.springframework.stereotype.Component;
 
 @Component
 class DataAccessRequestDtos {
 
-  private static final Logger log = LoggerFactory.getLogger(DataAccessRequestDtos.class);
-
-
   @Inject
   private AttachmentDtos attachmentDtos;
+
+  @Inject
+  private SubjectAclService subjectAclService;
 
   @NotNull
   public Mica.DataAccessRequestDto asDto(@NotNull DataAccessRequest request) {
@@ -31,6 +30,17 @@ class DataAccessRequestDtos {
 
     request.getAttachments().forEach(attachment -> builder.addAttachments(attachmentDtos.asDto(attachment)));
 
+    // possible actions depending on the caller
+    if (subjectAclService.isPermitted("/data-access-request", "VIEW", request.getId())) {
+      builder.addActions("VIEW");
+    }
+    if (subjectAclService.isPermitted("/data-access-request", "EDIT", request.getId())) {
+      builder.addActions("EDIT").addActions("DELETE");
+    }
+
+    // possible status transitions
+    request.nextStatus().forEach(status -> builder.addNextStatus(status.toString()));
+
     return builder.build();
   }
 
@@ -41,7 +51,7 @@ class DataAccessRequestDtos {
     if(dto.hasContent()) builder.content(dto.getContent());
 
     DataAccessRequest request = builder.build();
-    if (dto.hasId()) request.setId(dto.getId());
+    if(dto.hasId()) request.setId(dto.getId());
 
     if(dto.getAttachmentsCount() > 0) {
       request.setAttachments(
