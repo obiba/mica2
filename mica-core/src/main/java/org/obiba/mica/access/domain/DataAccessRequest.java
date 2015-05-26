@@ -14,6 +14,7 @@ import org.obiba.mica.file.PersistableWithAttachments;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 
 /**
  *
@@ -69,6 +70,7 @@ public class DataAccessRequest extends AbstractAuditableDocument
   }
 
   public void setStatus(Status status) {
+    checkStatusTransition(status);
     this.status = status;
   }
 
@@ -129,6 +131,73 @@ public class DataAccessRequest extends AbstractAuditableDocument
   @Override
   public Map<String, Serializable> parts() {
     return null;
+  }
+
+  //
+  // Helpers
+  //
+
+  /**
+   * Get the possible next status.
+   *
+   * @return
+   */
+  @JsonIgnore
+  public Iterable<Status> nextStatus() {
+    List<Status> to = Lists.newArrayList();
+    switch(status) {
+      case OPENED:
+        to.add(Status.SUBMITTED);
+        break;
+      case SUBMITTED:
+        to.add(Status.OPENED);
+        to.add(Status.REVIEWED);
+        break;
+      case REVIEWED:
+        to.add(Status.OPENED);
+        to.add(Status.APPROVED);
+        to.add(Status.REJECTED);
+        break;
+      case APPROVED:
+      case REJECTED:
+        // final state
+        break;
+    }
+    return to;
+  }
+
+  /**
+   * Check if a status transition is valid.
+   *
+   * @param to
+   * @throws IllegalArgumentException
+   */
+  @SuppressWarnings("OverlyLongMethod")
+  @JsonIgnore
+  private void checkStatusTransition(Status to) throws IllegalArgumentException {
+    if(status == to) return;
+
+    switch(status) {
+      case OPENED:
+        if(to != Status.SUBMITTED)
+          throw new IllegalArgumentException("Opened data access request can only be submitted");
+        break;
+      case SUBMITTED:
+        if(to != Status.OPENED && to != Status.REVIEWED)
+          throw new IllegalArgumentException("Submitted data access request can only be reopened or put under review");
+        break;
+      case REVIEWED:
+        if(to != Status.OPENED && to != Status.APPROVED &&
+          to != Status.REJECTED) throw new IllegalArgumentException(
+          "Reviewed data access request can only be reopened or be approved/rejected");
+        break;
+      case APPROVED:
+        throw new IllegalArgumentException("Approved data access request cannot be modified");
+      case REJECTED:
+        throw new IllegalArgumentException("Rejected data access request cannot be modified");
+      default:
+        throw new IllegalArgumentException("Unexpected data access request status: " + status);
+    }
   }
 
   //

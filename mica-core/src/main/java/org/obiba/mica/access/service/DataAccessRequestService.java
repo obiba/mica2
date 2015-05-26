@@ -58,7 +58,9 @@ public class DataAccessRequestService {
     } else {
       saved = dataAccessRequestRepository.findOne(request.getId());
       if(saved != null) {
-        checkStatusTransition(saved.getStatus(), request.getStatus());
+        // validate the status
+        saved.setStatus(request.getStatus());
+        // merge beans
         BeanUtils.copyProperties(request, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
           "lastModifiedDate");
       } else {
@@ -91,7 +93,6 @@ public class DataAccessRequestService {
   public DataAccessRequest updateStatus(@NotNull String id, @NotNull DataAccessRequest.Status status)
     throws NoSuchDataAccessRequestException {
     DataAccessRequest request = findById(id);
-    checkStatusTransition(request.getStatus(), status);
     request.setStatus(status);
     save(request);
     return request;
@@ -144,31 +145,7 @@ public class DataAccessRequestService {
   // Private methods
   //
 
-  private void checkStatusTransition(DataAccessRequest.Status from, DataAccessRequest.Status to)
-    throws IllegalArgumentException {
-    if(from == to) return;
 
-    switch(from) {
-      case OPENED:
-        if(to != DataAccessRequest.Status.SUBMITTED)
-          throw new IllegalArgumentException("Opened data access request can only be submitted");
-        break;
-      case SUBMITTED:
-        if(to != DataAccessRequest.Status.OPENED && to != DataAccessRequest.Status.REVIEWED)
-          throw new IllegalArgumentException(
-            "Submitted data access request can only be reopened or put under review");
-        break;
-      case REVIEWED:
-        if(to != DataAccessRequest.Status.OPENED && to != DataAccessRequest.Status.APPROVED &&
-          to != DataAccessRequest.Status.REJECTED) throw new IllegalArgumentException(
-          "Reviewed data access request can only be reopened or be approved/rejected");
-        break;
-      case APPROVED:
-        throw new IllegalArgumentException("Approved data access request cannot be modified");
-      case REJECTED:
-        throw new IllegalArgumentException("Rejected data access request cannot be modified");
-    }
-  }
 
   public byte[] getRequestPdf(String id, String lang) {
     DataAccessRequest dataAccessRequest = findById(id);

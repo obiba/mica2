@@ -23,7 +23,6 @@ import org.obiba.mica.core.domain.Timestamped;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.StudyDatasetRepository;
-import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.TempFileRepository;
 import org.obiba.mica.file.TempFileService;
@@ -31,6 +30,8 @@ import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.repository.MicaConfigRepository;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.NetworkRepository;
+import org.obiba.mica.security.repository.SubjectAclRepository;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.StudyStateRepository;
 import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.NumberOfParticipants;
@@ -394,5 +395,14 @@ public class StudyDtosTest {
       return Mockito.mock(StudyStateRepository.class);
     }
 
+    @Bean
+    public SubjectAclService subjectAclService() {
+      return Mockito.mock(SubjectAclService.class);
+    }
+
+    @Bean
+    public SubjectAclRepository subjectAclRepository() {
+      return Mockito.mock(SubjectAclRepository.class);
+    }
   }
 }
