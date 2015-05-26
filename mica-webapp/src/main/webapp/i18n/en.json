@@ -237,7 +237,8 @@
     "opalTaxonomies": "Opal taxonomies",
     "micaConfig": "Mica configuration",
     "aggregationsMetadata": "Aggregations metadata",
-    "datasetVariables": "Dataset variables statistics"
+    "datasetVariables": "Dataset variables statistics",
+    "authorization": "Authorizations"
   },
   "logs": {
     "title": "Logs",

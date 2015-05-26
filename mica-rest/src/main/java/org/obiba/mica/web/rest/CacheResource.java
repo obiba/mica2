@@ -38,6 +38,9 @@ public class CacheResource {
       case "datasetVariables":
         cacheService.clearDatasetVariablesCache();
         break;
+      case "authorization":
+        cacheService.clearAuthorizationCache();
+        break;
       default:
         return Response.status(Response.Status.NOT_FOUND).build();
     }
