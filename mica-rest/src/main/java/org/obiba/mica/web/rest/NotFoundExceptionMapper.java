@@ -8,19 +8,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica;
+package org.obiba.mica.web.rest;
 
+import javax.ws.rs.NotFoundException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import org.apache.commons.fileupload.FileUploadException;
-
 @Provider
-public class FileUploadExceptionMapper implements ExceptionMapper<FileUploadException> {
+public class NotFoundExceptionMapper implements ExceptionMapper<NotFoundException> {
 
   @Override
-  public Response toResponse(FileUploadException exception) {
-    return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+  public Response toResponse(NotFoundException exception) {
+    return Response.status(Response.Status.NOT_FOUND).build();
   }
 }
