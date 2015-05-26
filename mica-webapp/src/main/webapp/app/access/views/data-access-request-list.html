@@ -56,14 +56,14 @@
           </td>
           <td>
             <ul class="list-inline pull-right">
-              <li>
+              <li ng-show="actions.canView(request)">
                 <a ng-href="#/data-access-request/{{request.id}}" translate><i class="fa fa-eye"></i></a>
               </li>
-              <li>
+              <li ng-show="actions.canEdit(request)">
                 <a ng-href="#/data-access-request/{{request.id}}/edit" translate><i class="fa fa-pencil"></i></a>
               </li>
               <li>
-                <a ng-click="deleteRequest(request)" translate><i class="fa fa-trash-o"></i></a>
+                <a ng-show="actions.canDelete(request)" ng-click="deleteRequest(request)" translate><i class="fa fa-trash-o"></i></a>
               </li>
             </ul>
           </td>
