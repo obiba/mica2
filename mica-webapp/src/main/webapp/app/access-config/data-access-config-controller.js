@@ -20,6 +20,8 @@ mica.dataAccesConfig
         if (DataAccessFormService.isFormValid($scope.dataAccessForm)) {
           $scope.dataAccessForm.definition = $scope.form.definition;
           $scope.dataAccessForm.schema = $scope.form.schema;
+          $scope.dataAccessForm.pdfTemplates = $scope.dataAccessForm.pdfTemplates || [];
+
           DataAccessFormResource.save($scope.dataAccessForm,
             function () {
               AlertService.alert({
@@ -93,6 +95,9 @@ mica.dataAccesConfig
         }
       };
 
+      $scope.dataAccessForm = {schema: '', definition: '', pdfTemplates: []};
+      $scope.fileTypes = '.pdf';
+
       DataAccessFormResource.get(
         function(dataAccessForm){
           $scope.dirty = true;
@@ -101,6 +106,7 @@ mica.dataAccesConfig
           $scope.form.schemaJson = dataAccessForm.schema ? JSON.parse(dataAccessForm.schema) : null;
           $scope.form.schema = DataAccessFormService.prettifyJson($scope.form.schemaJson);
           $scope.dataAccessForm = dataAccessForm;
+          $scope.dataAccessForm.pdfTemplates = $scope.dataAccessForm.pdfTemplates || [];
         },
         function(response) {
           AlertService.alert({
@@ -119,7 +125,6 @@ mica.dataAccesConfig
       };
 
       $scope.dirty = false;
-      $scope.dataAccessForm = {schema: '', definition: ''};
       $scope.selectedTab = 'form-definition';
       $scope.ace = DataAccessFormService.getEditorOptions(aceEditorOnLoadCallback);
       $scope.selectTab = selectTab;
