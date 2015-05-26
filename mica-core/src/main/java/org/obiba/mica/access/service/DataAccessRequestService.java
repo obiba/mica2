@@ -141,6 +141,15 @@ public class DataAccessRequestService {
     return dataAccessRequestRepository.findByApplicant(applicant);
   }
 
+  public List<DataAccessRequest> findByStatus(@Nullable List<String> status) {
+    if(status == null || status.size() == 0) return dataAccessRequestRepository.findAll();
+    List<DataAccessRequest.Status> statusList =
+      status.stream().map(s -> DataAccessRequest.Status.valueOf(s)).collect(Collectors.toList());
+
+    return dataAccessRequestRepository.findAll().stream()
+      .filter(dar -> statusList.contains(dar.getStatus())).collect(Collectors.toList());
+  }
+
   //
   // Private methods
   //

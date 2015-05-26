@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -40,7 +41,17 @@ public class DataAccessRequestsResource {
 
   @GET
   @Timed
-  public List<Mica.DataAccessRequestDto> list(@QueryParam("applicant") String applicant) {
+  public List<Mica.DataAccessRequestDto> listByStatus(@QueryParam("status") List<String> status) {
+    List<DataAccessRequest> reqs = dataAccessRequestService.findByStatus(status);
+    return reqs.stream() //
+      .filter(req -> subjectAclService.isPermitted("/data-access-request", "VIEW", req.getId())) //
+      .map(dtos::asDto).collect(Collectors.toList());
+  }
+
+  @GET
+  @Path("/applicant/{applicant}")
+  @Timed
+  public List<Mica.DataAccessRequestDto> list(@PathParam("applicant") String applicant) {
     return dataAccessRequestService.findAll(applicant).stream() //
       .filter(req -> subjectAclService.isPermitted("/data-access-request", "VIEW", req.getId())) //
       .map(dtos::asDto).collect(Collectors.toList());

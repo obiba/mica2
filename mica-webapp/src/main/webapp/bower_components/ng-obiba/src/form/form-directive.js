@@ -31,7 +31,8 @@ angular.module('obiba.form')
         min: '@',
         max: '@',
         step: '@',
-        help: '@'
+        help: '@',
+        readonly: '@'
       },
       templateUrl: 'form/form-input-template.tpl.html',
       compile: function(elem, attrs) {
