@@ -194,10 +194,10 @@ public class SecurityManagerFactory implements FactoryBean<SecurityManager> {
     protected void applyRealmsToSecurityManager(Collection<Realm> shiroRealms, @SuppressWarnings(
         "ParameterHidesMemberVariable") SecurityManager securityManager) {
       ImmutableList.Builder<Realm> builder = ImmutableList.<Realm>builder().addAll(realms).addAll(shiroRealms);
-      RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(env, "shiro.obibaRealm.");
+      RelaxedPropertyResolver propertyResolver = new RelaxedPropertyResolver(env, "agate.");
       String obibaRealmUrl = propertyResolver.getProperty("url");
-      String serviceName = propertyResolver.getProperty("service.name");
-      String serviceKey = propertyResolver.getProperty("service.key");
+      String serviceName = propertyResolver.getProperty("application.name");
+      String serviceKey = propertyResolver.getProperty("application.key");
 
       if(!Strings.isNullOrEmpty(obibaRealmUrl)) {
         ObibaRealm oRealm = new ObibaRealm();

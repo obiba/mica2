@@ -12,15 +12,18 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
+import javax.ws.rs.HEAD;
 
 import org.obiba.mica.access.DataAccessRequestRepository;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.core.service.GitService;
+import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.network.NoSuchNetworkException;
+import org.obiba.mica.security.Roles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -28,6 +31,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+import org.thymeleaf.spring4.SpringTemplateEngine;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
@@ -59,17 +63,25 @@ public class DataAccessRequestService {
   @Inject
   private GitService gitService;
 
+  @Inject
+  private SpringTemplateEngine templateEngine;
+
+  @Inject
+  private MailService mailService;
+
   @Value("classpath:config/data-access-form/data-access-request-template.pdf")
   private Resource defaultTemplateResource;
 
   public void save(@NotNull DataAccessRequest request) {
     DataAccessRequest saved = request;
+    DataAccessRequest.Status from = null;
     if(request.isNew()) {
       saved.setStatus(DataAccessRequest.Status.OPENED);
       //generateId(saved);
     } else {
       saved = dataAccessRequestRepository.findOne(request.getId());
       if(saved != null) {
+        from = saved.getStatus();
         // validate the status
         saved.setStatus(request.getStatus());
         // merge beans
@@ -82,6 +94,8 @@ public class DataAccessRequestService {
     }
 
     dataAccessRequestRepository.save(saved);
+
+    sendNotificationEmails(saved, from);
   }
 
   /**
@@ -155,18 +169,61 @@ public class DataAccessRequestService {
 
   public List<DataAccessRequest> findByStatus(@Nullable List<String> status) {
     if(status == null || status.size() == 0) return dataAccessRequestRepository.findAll();
-    List<DataAccessRequest.Status> statusList =
-      status.stream().map(s -> DataAccessRequest.Status.valueOf(s)).collect(Collectors.toList());
+    List<DataAccessRequest.Status> statusList = status.stream().map(s -> DataAccessRequest.Status.valueOf(s))
+      .collect(Collectors.toList());
 
-    return dataAccessRequestRepository.findAll().stream()
-      .filter(dar -> statusList.contains(dar.getStatus())).collect(Collectors.toList());
+    return dataAccessRequestRepository.findAll().stream().filter(dar -> statusList.contains(dar.getStatus()))
+      .collect(Collectors.toList());
   }
 
   //
   // Private methods
   //
 
+  /**
+   * Send a notification email, depending on the status of the request.
+   *
+   * @param request
+   * @param from
+   */
+  private void sendNotificationEmails(DataAccessRequest request, @Nullable DataAccessRequest.Status from) {
+    // check is new request
+    if(from == null) return;
 
+    Map<String, String> ctx = Maps.newHashMap();
+    ctx.put("title", request.getTitle());
+    ctx.put("link", "http://localhost:8082/#/data-access-request/" + request.getId());
+    switch(request.getStatus()) {
+      case SUBMITTED:
+        mailService
+          .sendEmailToUsers("[Mica] Submitted: " + request.getTitle(), "dataAccessRequestSubmittedApplicantEmail", ctx,
+            request.getApplicant());
+        mailService
+          .sendEmailToGroups("[Mica] Submitted: " + request.getTitle(), "dataAccessRequestSubmittedDAOEmail", ctx,
+            Roles.MICA_DAO);
+        break;
+      case REVIEWED:
+        mailService
+          .sendEmailToUsers("[Mica] Reviewed: " + request.getTitle(), "dataAccessRequestReviewedApplicantEmail", ctx,
+            request.getApplicant());
+        break;
+      case OPENED:
+        mailService
+          .sendEmailToUsers("[Mica] Reopened: " + request.getTitle(), "dataAccessRequestReopenedApplicantEmail", ctx,
+            request.getApplicant());
+        break;
+      case APPROVED:
+        mailService
+          .sendEmailToUsers("[Mica] Approved: " + request.getTitle(), "dataAccessRequestApprovedApplicantEmail", ctx,
+            request.getApplicant());
+        break;
+      case REJECTED:
+        mailService
+          .sendEmailToUsers("[Mica] Rejected: " + request.getTitle(), "dataAccessRequestRejectedApplicantEmail", ctx,
+            request.getApplicant());
+        break;
+    }
+  }
 
   public byte[] getRequestPdf(String id, String lang) {
     DataAccessRequest dataAccessRequest = findById(id);
@@ -210,6 +267,7 @@ public class DataAccessRequestService {
     stamper.setFormFlattening(true);
 
     AcroFields fields = stamper.getAcroFields();
+
     Map<String, List<Object>> requestValues = fields.getFields().keySet().stream()
       .map(k -> getMapEntryFromContent(content, k)).filter(e -> e != null && !e.getValue().isEmpty())
       .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
@@ -258,7 +316,7 @@ public class DataAccessRequestService {
   }
 
   private static class PdfStamperAutoclosable extends PdfStamper implements AutoCloseable {
-    public PdfStamperAutoclosable (PdfReader reader, OutputStream os) throws IOException, DocumentException {
+    public PdfStamperAutoclosable(PdfReader reader, OutputStream os) throws IOException, DocumentException {
       super(reader, os);
     }
   }
