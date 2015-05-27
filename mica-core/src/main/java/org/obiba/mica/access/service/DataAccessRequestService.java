@@ -16,15 +16,18 @@ import org.obiba.mica.access.DataAccessRequestRepository;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.core.service.GitService;
+import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.network.NoSuchNetworkException;
+import org.obiba.mica.security.Roles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+import org.thymeleaf.spring4.SpringTemplateEngine;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
@@ -50,14 +53,22 @@ public class DataAccessRequestService {
   @Inject
   private GitService gitService;
 
+  @Inject
+  private SpringTemplateEngine templateEngine;
+
+  @Inject
+  private MailService mailService;
+
   public void save(@NotNull DataAccessRequest request) {
     DataAccessRequest saved = request;
+    DataAccessRequest.Status from = null;
     if(request.isNew()) {
       saved.setStatus(DataAccessRequest.Status.OPENED);
       //generateId(saved);
     } else {
       saved = dataAccessRequestRepository.findOne(request.getId());
       if(saved != null) {
+        from = saved.getStatus();
         // validate the status
         saved.setStatus(request.getStatus());
         // merge beans
@@ -70,6 +81,8 @@ public class DataAccessRequestService {
     }
 
     dataAccessRequestRepository.save(saved);
+
+    sendNotificationEmails(saved, from);
   }
 
   /**
@@ -145,7 +158,50 @@ public class DataAccessRequestService {
   // Private methods
   //
 
+  /**
+   * Send a notification email, depending on the status of the request.
+   *
+   * @param request
+   * @param from
+   */
+  private void sendNotificationEmails(DataAccessRequest request, @Nullable DataAccessRequest.Status from) {
+    // check is new request
+    if (from == null) return;
 
+    Map<String, String> ctx = Maps.newHashMap();
+    ctx.put("title", request.getTitle());
+    ctx.put("link", "http://localhost:8082/#/data-access-request/" + request.getId());
+    switch(request.getStatus()) {
+      case SUBMITTED:
+        mailService
+          .sendEmailToUsers("[Mica] Submitted: " + request.getTitle(), "dataAccessRequestSubmittedApplicantEmail", ctx,
+            request.getApplicant());
+        mailService
+          .sendEmailToGroups("[Mica] Submitted: " + request.getTitle(), "dataAccessRequestSubmittedDAOEmail", ctx,
+            Roles.MICA_DAO);
+        break;
+      case REVIEWED:
+        mailService
+          .sendEmailToUsers("[Mica] Reviewed: " + request.getTitle(), "dataAccessRequestReviewedApplicantEmail", ctx,
+            request.getApplicant());
+        break;
+      case OPENED:
+        mailService
+          .sendEmailToUsers("[Mica] Reopened: " + request.getTitle(), "dataAccessRequestReopenedApplicantEmail", ctx,
+            request.getApplicant());
+        break;
+      case APPROVED:
+        mailService
+          .sendEmailToUsers("[Mica] Approved: " + request.getTitle(), "dataAccessRequestApprovedApplicantEmail", ctx,
+            request.getApplicant());
+        break;
+      case REJECTED:
+        mailService
+          .sendEmailToUsers("[Mica] Rejected: " + request.getTitle(), "dataAccessRequestRejectedApplicantEmail", ctx,
+            request.getApplicant());
+        break;
+    }
+  }
 
   public byte[] getRequestPdf(String id, String lang) {
     DataAccessRequest dataAccessRequest = findById(id);
@@ -173,8 +229,7 @@ public class DataAccessRequestService {
 
     AcroFields fields = stamper.getAcroFields();
     Map<String, Object> requestValues = fields.getFields().keySet().stream()
-      .map(k -> getMapEntryFromContent(content, k))
-      .filter(e -> e != null)
+      .map(k -> getMapEntryFromContent(content, k)).filter(e -> e != null)
       .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
 
     requestValues.forEach((k, v) -> setField(fields, k, v));
@@ -214,7 +269,7 @@ public class DataAccessRequestService {
   }
 
   private static class PdfStamperAutoclosable extends PdfStamper implements AutoCloseable {
-    public PdfStamperAutoclosable (PdfReader reader, OutputStream os) throws IOException, DocumentException {
+    public PdfStamperAutoclosable(PdfReader reader, OutputStream os) throws IOException, DocumentException {
       super(reader, os);
     }
   }

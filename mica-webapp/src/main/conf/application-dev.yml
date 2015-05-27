@@ -33,12 +33,13 @@ opal:
   username: administrator
   password: password
 
+agate:
+  url: https://localhost:8444
+  application:
+    name: mica
+    key: changeit
+
 shiro:
-  obibaRealm:
-    url: https://localhost:8444
-    service:
-      name: mica
-      key: changeit
   password:
     nbHashIterations: 10000
     salt: mica
