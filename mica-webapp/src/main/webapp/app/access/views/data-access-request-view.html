@@ -1,0 +1,41 @@
+<!--
+  ~ Copyright (c) 2015 OBiBa. All rights reserved.
+  ~
+  ~ This program and the accompanying materials
+  ~ are made available under the terms of the GNU Public License v3.0.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<div>
+  <h2 class="voffset5" translate>data-access-request</h2>
+
+  <div class="row">
+    <div class="col-md-6">
+      <obiba-alert id="UserViewController"></obiba-alert>
+
+      <table class="table table-striped">
+        <tbody>
+        <tr>
+          <td translate>data-access-request.title</td>
+          <td>{{dataAccessRequest.title}}</td>
+        </tr>
+        <tr>
+          <td translate>data-access-request.applicant</td>
+          <td>{{dataAccessRequest.applicant}}</td>
+        </tr>
+        <tr>
+          <td translate>data-access-request.status</td>
+          <td>{{dataAccessRequest.status}}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <a ng-href="#/data-access-request/{{dataAccessRequest.id}}/edit" class="btn btn-primary">
+    <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
+  </a>
+
+</div>

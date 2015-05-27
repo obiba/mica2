@@ -27,4 +27,35 @@ mica.dataAccessRequest
         'get': {method: 'GET'},
         'delete': {method: 'DELETE'}
       });
-    }]);
+    }])
+
+  .factory('DataAccessRequestService',
+    function () {
+      this.status = {
+        OPENED: 'OPENED',
+        SUBMITTED: 'SUBMITTED',
+        REVIEWED: 'REVIEWED',
+        APPROVED: 'APPROVED',
+        REJECTED: 'REJECTED'
+      };
+
+      var canDoAction = function (request, action) {
+        return request.actions ? request.actions.indexOf(action) !== -1 : null;
+      };
+
+      this.actions = {
+        canView: function (request) {
+          return canDoAction(request, 'VIEW');
+        },
+
+        canEdit: function (request) {
+          return canDoAction(request, 'EDIT');
+        },
+
+        canDelete: function (request) {
+          return canDoAction(request, 'DELETE');
+        }
+      };
+
+      return this;
+    });

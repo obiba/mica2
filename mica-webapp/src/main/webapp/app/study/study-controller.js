@@ -645,12 +645,12 @@ mica.study
     function ($rootScope, $scope, $routeParams, $log, $location, $modal, DraftStudyResource, DraftStudiesResource, MicaConfigResource, StringUtils, FormServerValidation) {
       // TODO this code needs simplification and possibly placed inside a directive
       $scope.today = new Date();
-      $scope.$watch('authorization.maelstrom.date', function (newVal, oldVal) {
+      $scope.$watch('authorization.maelstrom.date', function (newVal) {
         if (newVal !== $scope.today) {
           $scope.study.maelstromAuthorization.date = newVal;
         }
       }, true);
-      $scope.$watch('authorization.specific.date', function (newVal, oldVal) {
+      $scope.$watch('authorization.specific.date', function (newVal) {
         if (newVal !== $scope.today) {
           $scope.study.specificAuthorization.date = newVal;
         }

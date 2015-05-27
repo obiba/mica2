@@ -550,6 +550,7 @@
   "cancel": "Cancel",
   "ok": "OK",
   "confirmation": "Confirmation",
+  "submit": "Sumbit",
   "close": "Close",
   "clear": "Clear",
   "today": "Today",
@@ -589,13 +590,25 @@
     "applicant": "Applicant",
     "title": "Title",
     "add": "Add Request",
-    "title": "Title"
+    "title": "Title",
+    "status": "Status",
+    "none": "No Data Access requested.",
+    "add": "Add Data Access Request",
+    "form": "Request Form",
+    "comments": "Comments",
+    "history": "History",
+    "delete-dialog": {
+      "title": "Delete Data Access Request",
+      "message": "Are you sure you want to delete Data Access '{{arg0}}' request by '{{arg1}}'?"
+    }
   },
   "data-access-config": {
     "menu": "Data Access",
     "title": "Data Access Configuration",
     "info": "Configure the Data Access Form schema and definition, see <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details.",
     "saved": "Data Access Form is successfully updated.",
+    "pdf-template": "PDF Template",
+    "schema-form": "Form",
     "schema" : {
       "tab": "Schema",
       "info": "The form schema specifies the data structure."

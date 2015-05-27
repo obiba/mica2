@@ -6,11 +6,13 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
+import javax.ws.rs.HEAD;
 
 import org.obiba.mica.access.DataAccessRequestRepository;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
@@ -25,24 +27,32 @@ import org.obiba.mica.security.Roles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.google.common.io.ByteStreams;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.AcroFields;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfStamper;
+import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.InvalidPathException;
 import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.PathNotFoundException;
 
 @Service
 @Validated
 public class DataAccessRequestService {
 
   private static final Logger log = LoggerFactory.getLogger(DataAccessRequestService.class);
+
+  private static final Configuration conf = Configuration.defaultConfiguration().addOptions(Option.ALWAYS_RETURN_LIST);
 
   @Inject
   private DataAccessRequestRepository dataAccessRequestRepository;
@@ -58,6 +68,9 @@ public class DataAccessRequestService {
 
   @Inject
   private MailService mailService;
+
+  @Value("classpath:config/data-access-form/data-access-request-template.pdf")
+  private Resource defaultTemplateResource;
 
   public void save(@NotNull DataAccessRequest request) {
     DataAccessRequest saved = request;
@@ -154,6 +167,15 @@ public class DataAccessRequestService {
     return dataAccessRequestRepository.findByApplicant(applicant);
   }
 
+  public List<DataAccessRequest> findByStatus(@Nullable List<String> status) {
+    if(status == null || status.size() == 0) return dataAccessRequestRepository.findAll();
+    List<DataAccessRequest.Status> statusList = status.stream().map(s -> DataAccessRequest.Status.valueOf(s))
+      .collect(Collectors.toList());
+
+    return dataAccessRequestRepository.findAll().stream().filter(dar -> statusList.contains(dar.getStatus()))
+      .collect(Collectors.toList());
+  }
+
   //
   // Private methods
   //
@@ -166,7 +188,7 @@ public class DataAccessRequestService {
    */
   private void sendNotificationEmails(DataAccessRequest request, @Nullable DataAccessRequest.Status from) {
     // check is new request
-    if (from == null) return;
+    if(from == null) return;
 
     Map<String, String> ctx = Maps.newHashMap();
     ctx.put("title", request.getTitle());
@@ -205,18 +227,13 @@ public class DataAccessRequestService {
 
   public byte[] getRequestPdf(String id, String lang) {
     DataAccessRequest dataAccessRequest = findById(id);
-    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
-
-    Locale locale = Locale.forLanguageTag(lang);
-    Attachment pdfTemplate = dataAccessForm.getPdfTemplates().get(locale);
-
-    byte[] template = gitService.readFileHead(dataAccessForm, pdfTemplate.getId());
     ByteArrayOutputStream ba = new ByteArrayOutputStream();
 
-    try(PdfReaderAutoclosable reader = new PdfReaderAutoclosable(template);
+    try(PdfReaderAutoclosable reader = new PdfReaderAutoclosable(getTemplate(Locale.forLanguageTag(lang)));
         PdfStamperAutoclosable stamper = new PdfStamperAutoclosable(reader, ba)
     ) {
-      fillPdfTemplateFromRequest(stamper, dataAccessRequest.getContent());
+      Object document = Configuration.defaultConfiguration().jsonProvider().parse(dataAccessRequest.getContent());
+      fillPdfTemplateFromRequest(stamper, document);
     } catch(IOException | DocumentException e) {
       throw new RuntimeException("Error creating data access request PDF", e);
     }
@@ -224,24 +241,51 @@ public class DataAccessRequestService {
     return ba.toByteArray();
   }
 
-  private void fillPdfTemplateFromRequest(PdfStamper stamper, String content) {
+  private byte[] getTemplate(Locale locale) throws IOException {
+    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    Attachment pdfTemplate = dataAccessForm.getPdfTemplates().get(locale);
+    byte[] template;
+
+    if(pdfTemplate == null) {
+      if(locale.equals(Locale.ROOT)) {
+        Map<Locale, Attachment> pdfTemplates = dataAccessForm.getPdfTemplates();
+
+        if(!pdfTemplates.isEmpty()) {
+          pdfTemplate = dataAccessForm.getPdfTemplates().get(Locale.ENGLISH);
+
+          if(pdfTemplate == null) pdfTemplate = dataAccessForm.getPdfTemplates().values().stream().findFirst().get();
+
+          template = gitService.readFileHead(dataAccessForm, pdfTemplate.getId());
+        } else template = ByteStreams.toByteArray(defaultTemplateResource.getInputStream());
+      } else throw new NoSuchElementException();
+    } else template = gitService.readFileHead(dataAccessForm, pdfTemplate.getId());
+
+    return template;
+  }
+
+  private void fillPdfTemplateFromRequest(PdfStamper stamper, Object content) {
     stamper.setFormFlattening(true);
 
     AcroFields fields = stamper.getAcroFields();
-    Map<String, Object> requestValues = fields.getFields().keySet().stream()
-      .map(k -> getMapEntryFromContent(content, k)).filter(e -> e != null)
+
+    Map<String, List<Object>> requestValues = fields.getFields().keySet().stream()
+      .map(k -> getMapEntryFromContent(content, k)).filter(e -> e != null && !e.getValue().isEmpty())
       .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
 
-    requestValues.forEach((k, v) -> setField(fields, k, v));
+    requestValues.forEach((k, v) -> {
+      Object value = v.get(0);
+      if(value instanceof Boolean) setField(fields, k, (Boolean) value);
+      else setField(fields, k, value);
+    });
   }
 
   private void setField(AcroFields fields, String key, Object value) {
     setField(fields, key, value.toString());
   }
 
-  private void setField(AcroFields fields, String key, boolean value) {
+  private void setField(AcroFields fields, String key, Boolean value) {
     String[] states = fields.getAppearanceStates(key);
-    setField(fields, key, states.length > 0 ? states[value ? 1 : 0] : states[0]);
+    if(states.length > 0) setField(fields, key, states.length > 1 ? states[value.booleanValue() ? 1 : 0] : states[0]);
   }
 
   private void setField(AcroFields fields, String key, String value) {
@@ -252,11 +296,14 @@ public class DataAccessRequestService {
     }
   }
 
-  private Map.Entry<String, Object> getMapEntryFromContent(String content, String jsonPath) {
+  private Map.Entry<String, List<Object>> getMapEntryFromContent(Object content, String jsonPath) {
     try {
-      return Maps.immutableEntry(jsonPath, JsonPath.read(content, jsonPath));
-    } catch(InvalidPathException ex) {
-      log.warn("Invalid json path in pdf template: {}", jsonPath);
+      List<Object> values = JsonPath.using(conf).parse(content).read(jsonPath);
+      return Maps.immutableEntry(jsonPath, values);
+    } catch(PathNotFoundException ex) {
+      //ignore
+    } catch(InvalidPathException e) {
+      log.warn("Invalid jsonpath {}", jsonPath);
     }
 
     return null;

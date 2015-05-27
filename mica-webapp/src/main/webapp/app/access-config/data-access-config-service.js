@@ -8,6 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* global document */
 'use strict';
 
 mica.dataAccesConfig
@@ -70,7 +71,7 @@ mica.dataAccesConfig
         };
 
         return isJsonValid(dataAccessForm.definition) && isJsonValid(dataAccessForm.schema);
-      }
+      };
 
       return this;
     }]);

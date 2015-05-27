@@ -17,5 +17,17 @@ mica.dataAccessRequest
         .when('/data-access-requests', {
           templateUrl: 'app/access/views/data-access-request-list.html',
           controller: 'DataAccessRequestListController'
+        })
+        .when('/data-access-request/new', {
+          templateUrl: 'app/access/views/data-access-request-form.html',
+          controller: 'DataAccessRequestEditController'
+        })
+        .when('/data-access-request/:id/edit', {
+          templateUrl: 'app/access/views/data-access-request-form.html',
+          controller: 'DataAccessRequestEditController'
+        })
+        .when('/data-access-request/:id', {
+          templateUrl: 'app/access/views/data-access-request-view.html',
+          controller: 'DataAccessRequestViewController'
         });
     }]);
