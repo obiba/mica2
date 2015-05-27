@@ -1,5 +1,8 @@
 package org.obiba.mica.access.rest;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.ForbiddenException;
@@ -11,9 +14,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.service.DataAccessRequestService;
+import org.obiba.mica.core.domain.Comment;
+import org.obiba.mica.core.service.CommentsService;
 import org.obiba.mica.security.event.ResourceDeletedEvent;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
@@ -32,6 +38,9 @@ public class DataAccessRequestResource {
 
   @Inject
   private DataAccessRequestService dataAccessRequestService;
+
+  @Inject
+  private CommentsService commentsService;
 
   @Inject
   private Dtos dtos;
@@ -67,6 +76,9 @@ public class DataAccessRequestResource {
     subjectAclService.checkPermission("/data-access-request", "EDIT", id);
     try {
       dataAccessRequestService.delete(id);
+      // remove associated comments
+      subjectAclService.checkPermission("/data-access-request/" + id + "/comments", "EDIT");
+      commentsService.deleteByClassId(Comment.Builder.generateId(DataAccessRequest.class, id));
       eventBus.post(new ResourceDeletedEvent("/data-access-request", id));
     } catch(NoSuchDataAccessRequestException e) {
       // ignore
@@ -74,11 +86,63 @@ public class DataAccessRequestResource {
     return Response.noContent().build();
   }
 
+  @GET
+  @Path("/comments")
+  public List<Mica.CommentDto> comments(@PathParam("id") String id) {
+    subjectAclService.checkPermission("/data-access-request/" + id + "/comments", "VIEW");
+    dataAccessRequestService.findById(id);
+    return commentsService.findByClassId(Comment.Builder.generateId(DataAccessRequest.class, id)).stream()
+      .map(dtos::asDto).collect(Collectors.toList());
+  }
+
   @POST
   @Path("/comments")
-  public Response comment(@PathParam("id") String id) {
+  public Response createComment(@PathParam("id") String id, String message) {
     subjectAclService.checkPermission("/data-access-request/" + id + "/comments", "ADD");
-    // TODO
+    dataAccessRequestService.findById(id);
+    String author = SecurityUtils.getSubject().getPrincipal().toString();
+
+    Comment comment = commentsService.save( //
+      Comment.newBuilder() //
+        .author(author) //
+        .message(message) //
+        .classId(DataAccessRequest.class, id) //
+        .build()); //
+
+    subjectAclService.addPermission("/data-access-request/" + id + "/comment", "VIEW,EDIT", comment.getId());
+
+    return Response.noContent().build();
+  }
+
+  @GET
+  @Path("/comment/{commentId}")
+  public Mica.CommentDto getComment(@PathParam("id") String id, @PathParam("commentId") String commentId) {
+    subjectAclService.checkPermission("/data-access-request/" + id + "/comment", "VIEW", commentId);
+    dataAccessRequestService.findById(id);
+    return dtos.asDto(commentsService.findById(commentId));
+  }
+
+  @PUT
+  @Path("/comment/{commentId}")
+  public Response updateComment(@PathParam("id") String id, @PathParam("commentId") String commentId, String message) {
+    subjectAclService.checkPermission("/data-access-request/" + id + "/comment", "EDIT", commentId);
+    dataAccessRequestService.findById(id);
+
+    commentsService.save(Comment.newBuilder(commentsService.findById(commentId)) //
+      .message(message) //
+      .author(SecurityUtils.getSubject() //
+      .getPrincipal().toString()) //
+      .build()); //
+
+    return Response.noContent().build();
+  }
+
+  @DELETE
+  @Path("/comment/{commentId}")
+  public Response deleteComment(@PathParam("id") String id, @PathParam("commentId") String commentId) {
+    subjectAclService.checkPermission("/data-access-request/" + id + "/comment", "EDIT", commentId);
+    dataAccessRequestService.findById(id);
+    commentsService.delete(commentId);
     return Response.noContent().build();
   }
 

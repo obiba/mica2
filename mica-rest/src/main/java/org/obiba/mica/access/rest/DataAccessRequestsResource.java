@@ -72,7 +72,7 @@ public class DataAccessRequestsResource {
     dataAccessRequestService.save(request);
 
     subjectAclService.addPermission("/data-access-request", "VIEW,EDIT", request.getId());
-    subjectAclService.addPermission("/data-access-request/" + request.getId() + "/comments", "ADD");
+    subjectAclService.addPermission("/data-access-request/" + request.getId() + "/comments", "ADD,VIEW,EDIT");
 
     return Response.created(uriInfo.getBaseUriBuilder().segment("data-access-request", request.getId()).build()).build();
   }
