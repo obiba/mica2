@@ -7,7 +7,7 @@ mica.attachment
       restrict: 'E',
       require: '^form',
       scope: {
-        multiple: '@',
+        multiple: '=',
         accept: '@',
         files: '='
       },

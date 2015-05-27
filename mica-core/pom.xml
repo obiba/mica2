@@ -205,6 +205,16 @@
         <includes>
           <include>**/*</include>
         </includes>
+        <excludes>
+          <exclude>**/*.pdf</exclude>
+        </excludes>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+        <includes>
+          <include>**/*.pdf</include>
+        </includes>
       </resource>
     </resources>
 

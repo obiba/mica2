@@ -32,11 +32,11 @@ mica.dataAccessRequest
   .factory('DataAccessRequestService',
     function () {
       this.status = {
-        OPENED: "OPENED",
-        SUBMITTED: "SUBMITTED",
-        REVIEWED: "REVIEWED",
-        APPROVED: "APPROVED",
-        REJECTED: "REJECTED"
+        OPENED: 'OPENED',
+        SUBMITTED: 'SUBMITTED',
+        REVIEWED: 'REVIEWED',
+        APPROVED: 'APPROVED',
+        REJECTED: 'REJECTED'
       };
 
       var canDoAction = function (request, action) {
@@ -45,15 +45,15 @@ mica.dataAccessRequest
 
       this.actions = {
         canView: function (request) {
-          return canDoAction(request, "VIEW");
+          return canDoAction(request, 'VIEW');
         },
 
         canEdit: function (request) {
-          return canDoAction(request, "EDIT");
+          return canDoAction(request, 'EDIT');
         },
 
         canDelete: function (request) {
-          return canDoAction(request, "DELETE");
+          return canDoAction(request, 'DELETE');
         }
       };
 
