@@ -15,30 +15,38 @@ import javax.validation.constraints.NotNull;
 import org.obiba.mica.core.domain.Comment;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Strings;
+
 @Component
 public class CommentDtos {
 
   @NotNull
   Mica.CommentDto asDto(@NotNull Comment comment) {
-    return Mica.CommentDto.newBuilder() //
+    Mica.CommentDto.Builder builder = Mica.CommentDto.newBuilder() //
       .setId(comment.getId()) //
-      .setAuthor(comment.getAuthor()) //
       .setMessage(comment.getMessage()) //
-      .setClassId(comment.getClassId()) //
-      .setTimestamps(TimestampsDtos.asDto(comment)) //
-      .build(); //
+      .setClassName(comment.getClassName()) //
+      .setInstanceId(comment.getInstanceId()) //
+      .setCreatedBy(comment.getCreatedBy()) //
+      .setTimestamps(TimestampsDtos.asDto(comment));
+
+    String modifiedBy = comment.getLastModifiedBy();
+    if (!Strings.isNullOrEmpty(modifiedBy)) builder.setModifiedBy(modifiedBy);
+
+    return builder.build();
   }
 
   @NotNull
   Comment fromDto(@NotNull Mica.CommentDtoOrBuilder dto) {
     Comment comment = Comment.newBuilder() //
       .id(dto.getId()) //
-      .author(dto.getAuthor()) //
       .message(dto.getMessage()) //
-      .classId(dto.getClassId()) //
+      .className(dto.getClassName()) //
+      .instanceId(dto.getInstanceId()) //
       .build();
 
-    if(dto.hasTimestamps()) TimestampsDtos.fromDto(dto.getTimestamps(), comment);
+    if (dto.hasModifiedBy()) comment.setLastModifiedBy(dto.getModifiedBy());
+    TimestampsDtos.fromDto(dto.getTimestamps(), comment);
 
     return comment;
   }

@@ -77,8 +77,7 @@ public class DataAccessRequestResource {
     try {
       dataAccessRequestService.delete(id);
       // remove associated comments
-      subjectAclService.checkPermission("/data-access-request/" + id + "/comments", "EDIT");
-      commentsService.deleteByClassId(Comment.Builder.generateId(DataAccessRequest.class, id));
+      commentsService.delete(DataAccessRequest.class.getSimpleName(), id);
       eventBus.post(new ResourceDeletedEvent("/data-access-request", id));
     } catch(NoSuchDataAccessRequestException e) {
       // ignore
@@ -91,7 +90,7 @@ public class DataAccessRequestResource {
   public List<Mica.CommentDto> comments(@PathParam("id") String id) {
     subjectAclService.checkPermission("/data-access-request/" + id + "/comments", "VIEW");
     dataAccessRequestService.findById(id);
-    return commentsService.findByClassId(Comment.Builder.generateId(DataAccessRequest.class, id)).stream()
+    return commentsService.findByClassAndInstance(DataAccessRequest.class.getSimpleName(), id).stream()
       .map(dtos::asDto).collect(Collectors.toList());
   }
 
@@ -100,13 +99,13 @@ public class DataAccessRequestResource {
   public Response createComment(@PathParam("id") String id, String message) {
     subjectAclService.checkPermission("/data-access-request/" + id + "/comments", "ADD");
     dataAccessRequestService.findById(id);
-    String author = SecurityUtils.getSubject().getPrincipal().toString();
 
     Comment comment = commentsService.save( //
       Comment.newBuilder() //
-        .author(author) //
+        .createdBy(SecurityUtils.getSubject().getPrincipal().toString()) //
         .message(message) //
-        .classId(DataAccessRequest.class, id) //
+        .className(DataAccessRequest.class.getSimpleName()) //
+        .instanceId(id) //
         .build()); //
 
     subjectAclService.addPermission("/data-access-request/" + id + "/comment", "VIEW,EDIT", comment.getId());
@@ -130,8 +129,7 @@ public class DataAccessRequestResource {
 
     commentsService.save(Comment.newBuilder(commentsService.findById(commentId)) //
       .message(message) //
-      .author(SecurityUtils.getSubject() //
-      .getPrincipal().toString()) //
+      .modifiedBy(SecurityUtils.getSubject().getPrincipal().toString()) //
       .build()); //
 
     return Response.noContent().build();

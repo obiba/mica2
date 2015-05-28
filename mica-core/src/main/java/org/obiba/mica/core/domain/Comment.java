@@ -18,7 +18,9 @@ public class Comment extends AbstractAuditableDocument {
 
   private String message;
 
-  private String classId;
+  private String className;
+
+  private String instanceId;
 
   public String getAuthor() {
     return author;
@@ -44,12 +46,20 @@ public class Comment extends AbstractAuditableDocument {
     return new Builder(null);
   }
 
-  public String getClassId() {
-    return classId;
+  public String getClassName() {
+    return className;
   }
 
-  public void setClassId(String classAndId) {
-    classId = classAndId;
+  public void setClassName(String name) {
+    className = name;
+  }
+
+  public String getInstanceId() {
+    return instanceId;
+  }
+
+  public void setInstanceId(String instanceId) {
+    this.instanceId = instanceId;
   }
 
   /**
@@ -63,17 +73,18 @@ public class Comment extends AbstractAuditableDocument {
       comment = source == null ? new Comment() : source;
     }
 
-    public static String generateId(Class clazz, String id) {
-      return clazz.getSimpleName() + "__" + id;
-    }
-
     public Builder id(String id) {
       comment.setId(id);
       return this;
     }
 
-    public Builder author(String author) {
-      comment.setAuthor(author);
+    public Builder createdBy(String author) {
+      comment.setCreatedBy(author);
+      return this;
+    }
+
+    public Builder modifiedBy(String author) {
+      comment.setLastModifiedBy(author);
       return this;
     }
 
@@ -82,13 +93,14 @@ public class Comment extends AbstractAuditableDocument {
       return this;
     }
 
-    public Builder classId(String classId) {
-      comment.setClassId(classId);
+    public Builder className(String name) {
+      comment.setClassName(name);
       return this;
     }
 
-    public Builder classId(Class clazz, String id) {
-      return classId(generateId(clazz, id));
+    public Builder instanceId(String id) {
+      comment.setInstanceId(id);
+      return this;
     }
 
     public Comment build() {

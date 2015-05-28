@@ -56,18 +56,18 @@ public class CommentsService {
     delete(commentsRepository.findOne(id));
   }
 
+  public void delete(String name, String id) throws NoSuchCommentException {
+    commentsRepository.findByClassNameAndInstanceId(name, id).forEach(this::delete);
+  }
+
   public Comment findById(String id) {
     Comment comment = commentsRepository.findOne(id);
     if(comment == null) throw NoSuchCommentException.withId(id);
     return comment;
   }
 
-  public void deleteByClassId(String classId) throws NoSuchCommentException {
-    commentsRepository.findByClassId(classId).forEach(this::delete);
-  }
-
-  public List<Comment> findByClassId(String id) {
-    return commentsRepository.findByClassId(id);
+  public List<Comment> findByClassAndInstance(String name, String id) {
+    return commentsRepository.findByClassNameAndInstanceId(name, id);
   }
 
 }
