@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.obiba.mica.PdfUtils;
 import org.obiba.mica.access.DataAccessRequestRepository;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessRequest;
@@ -34,12 +35,10 @@ import org.springframework.validation.annotation.Validated;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
 import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
 import com.itextpdf.text.DocumentException;
-import com.itextpdf.text.pdf.AcroFields;
-import com.itextpdf.text.pdf.PdfReader;
-import com.itextpdf.text.pdf.PdfStamper;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.InvalidPathException;
 import com.jayway.jsonpath.JsonPath;
@@ -234,14 +233,11 @@ public class DataAccessRequestService {
   public byte[] getRequestPdf(String id, String lang) {
     DataAccessRequest dataAccessRequest = findById(id);
     ByteArrayOutputStream ba = new ByteArrayOutputStream();
-
-    try(PdfReaderAutoclosable reader = new PdfReaderAutoclosable(getTemplate(Locale.forLanguageTag(lang)));
-        PdfStamperAutoclosable stamper = new PdfStamperAutoclosable(reader, ba)
-    ) {
-      Object document = Configuration.defaultConfiguration().jsonProvider().parse(dataAccessRequest.getContent());
-      fillPdfTemplateFromRequest(stamper, document);
+    Object content = Configuration.defaultConfiguration().jsonProvider().parse(dataAccessRequest.getContent());
+    try {
+      fillPdfTemplateFromRequest(getTemplate(Locale.forLanguageTag(lang)), ba, content);
     } catch(IOException | DocumentException e) {
-      throw new RuntimeException("Error creating data access request PDF", e);
+      throw Throwables.propagate(e);
     }
 
     return ba.toByteArray();
@@ -269,37 +265,15 @@ public class DataAccessRequestService {
     return template;
   }
 
-  private void fillPdfTemplateFromRequest(PdfStamper stamper, Object content) {
-    stamper.setFormFlattening(true);
+  private void fillPdfTemplateFromRequest(byte[] template, OutputStream output, Object content)
+    throws IOException, DocumentException {
+    Map<String, Object> requestValues = PdfUtils.getFieldNames(template).stream().map(
+      k -> getMapEntryFromContent(content, k)) //
+      .filter(e -> e != null && !e.getValue().isEmpty()) //
+      .map(e -> Maps.immutableEntry(e.getKey(), e.getValue().get(0))) //
+      .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-    AcroFields fields = stamper.getAcroFields();
-
-    Map<String, List<Object>> requestValues = fields.getFields().keySet().stream()
-      .map(k -> getMapEntryFromContent(content, k)).filter(e -> e != null && !e.getValue().isEmpty())
-      .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
-
-    requestValues.forEach((k, v) -> {
-      Object value = v.get(0);
-      if(value instanceof Boolean) setField(fields, k, (Boolean) value);
-      else setField(fields, k, value);
-    });
-  }
-
-  private void setField(AcroFields fields, String key, Object value) {
-    setField(fields, key, value.toString());
-  }
-
-  private void setField(AcroFields fields, String key, Boolean value) {
-    String[] states = fields.getAppearanceStates(key);
-    if(states.length > 0) setField(fields, key, states.length > 1 ? states[value.booleanValue() ? 1 : 0] : states[0]);
-  }
-
-  private void setField(AcroFields fields, String key, String value) {
-    try {
-      fields.setField(key, value);
-    } catch(DocumentException | IOException e) {
-      throw new RuntimeException("Error setting PDF field", e);
-    }
+    PdfUtils.fillOutForm(template, output, requestValues);
   }
 
   private Map.Entry<String, List<Object>> getMapEntryFromContent(Object content, String jsonPath) {
@@ -314,17 +288,4 @@ public class DataAccessRequestService {
 
     return null;
   }
-
-  private static class PdfReaderAutoclosable extends PdfReader implements AutoCloseable {
-    public PdfReaderAutoclosable(byte[] pdfIn) throws IOException {
-      super(pdfIn);
-    }
-  }
-
-  private static class PdfStamperAutoclosable extends PdfStamper implements AutoCloseable {
-    public PdfStamperAutoclosable(PdfReader reader, OutputStream os) throws IOException, DocumentException {
-      super(reader, os);
-    }
-  }
-
 }
