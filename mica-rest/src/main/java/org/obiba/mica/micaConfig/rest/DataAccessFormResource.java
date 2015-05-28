@@ -8,6 +8,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.micaConfig.NoSuchDataAccessFormException;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
@@ -19,7 +20,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Path("/config/data-access-form")
-@RequiresRoles(Roles.MICA_ADMIN)
 public class DataAccessFormResource {
 
   @Inject
@@ -29,6 +29,7 @@ public class DataAccessFormResource {
   Dtos dtos;
 
   @GET
+  @RequiresAuthentication
   public Mica.DataAccessFormDto getDataAccessForm() {
     Optional<DataAccessForm> d = dataAccessFormService.findDataAccessForm();
 
@@ -38,6 +39,7 @@ public class DataAccessFormResource {
   }
 
   @PUT
+  @RequiresRoles(Roles.MICA_ADMIN)
   public Response updateDataAccessForm(Mica.DataAccessFormDto dto) {
     dataAccessFormService.createOrUpdateDataAccessForm(dtos.fromDto(dto));
 
@@ -46,6 +48,7 @@ public class DataAccessFormResource {
 
   @PUT
   @Path("/_publish")
+  @RequiresRoles(Roles.MICA_ADMIN)
   public Response publishDataAccessForm() {
     dataAccessFormService.publish();
 
