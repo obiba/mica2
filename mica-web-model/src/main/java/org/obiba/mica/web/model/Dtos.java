@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.access.domain.DataAccessRequest;
+import org.obiba.mica.core.domain.Comment;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.domain.Dataset;
@@ -28,7 +29,6 @@ import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.obiba.opal.web.model.Math;
 import org.springframework.stereotype.Component;
 
-import static java.util.stream.Collectors.toList;
 import static org.obiba.mica.web.model.Mica.DocumentDigestDto;
 import static org.obiba.mica.web.model.Mica.MicaConfigDto;
 import static org.obiba.mica.web.model.Mica.MicaConfigDtoOrBuilder;
@@ -65,6 +65,9 @@ public class Dtos {
 
   @Inject
   private DataAccessRequestDtos dataAccessRequestDtos;
+
+  @Inject
+  private CommentDtos commentDtos;
 
   @Inject
   private TaxonomyDtos taxonomyDtos;
@@ -264,6 +267,16 @@ public class Dtos {
   @NotNull
   public DataAccessForm fromDto(@NotNull Mica.DataAccessFormDto dto) {
     return micaConfigDtos.fromDto(dto);
+  }
+
+  @NotNull
+  public Mica.CommentDto asDto(@NotNull Comment comment) {
+    return commentDtos.asDto(comment);
+  }
+
+  @NotNull
+  public Comment fromDto(@NotNull Mica.CommentDto dto) {
+    return commentDtos.fromDto(dto);
   }
 
   @NotNull

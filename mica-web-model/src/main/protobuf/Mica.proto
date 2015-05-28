@@ -501,6 +501,16 @@ message DatasetVariableAggregationsDto {
   optional DatasetVariableAggregationDto.StatisticsDto statistics = 5;
 }
 
+message CommentDto {
+  optional string id = 1;
+  required string message = 3;
+  required string className = 4;
+  required string instanceId = 5;
+  required string createdBy = 6;
+  optional string modifiedBy = 7;
+  required TimestampsDto timestamps = 8;
+}
+
 message DataAccessRequestDto {
   optional string id = 1;
   required string applicant = 2;
