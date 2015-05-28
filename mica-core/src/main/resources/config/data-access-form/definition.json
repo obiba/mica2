@@ -132,13 +132,14 @@
             "style": {
               "add": "btn-info"
             },
-            "title": "",
+            "notitle": true,
             "items": [
               "staff[].name",
               "staff[].title",
               "staff[].position",
               "staff[].email"
-            ]
+            ],
+            "condition":"!model.hasNoStaff"
           }
         ]
       },
@@ -168,13 +169,14 @@
             "style": {
               "add": "btn-info"
             },
-            "title": "",
+            "notitle": true,
             "items": [
               "students[].name",
               "students[].title",
               "students[].position",
               "students[].email"
-            ]
+            ],
+            "condition":"!model.hasNoStudents"
           }
         ]
       },
@@ -208,7 +210,7 @@
       },
       {
         "key": "summary",
-        "title": "",
+        "notitle": true,
         "type": "textarea"
       }
     ]
