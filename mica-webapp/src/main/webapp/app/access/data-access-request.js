@@ -16,6 +16,7 @@ mica.dataAccessRequest = angular.module('mica.data-access-request', [
   'mica.localized',
   'mica.attachment',
   'obiba.notification',
+  'obiba.comments',
   'ngResource',
   'ngRoute',
   'ui.bootstrap',

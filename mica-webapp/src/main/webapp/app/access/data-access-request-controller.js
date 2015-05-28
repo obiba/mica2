@@ -45,9 +45,9 @@ mica.dataAccessRequest
       });
     }])
 
-  .controller('DataAccessRequestViewController', ['$scope', '$routeParams', '$location', 'DataAccessRequestResource', 'DataAccessRequestService', 'DataAccessRequestStatusResource', 'DataAccessFormResource', 'AlertService', 'ServerErrorUtils',
+  .controller('DataAccessRequestViewController', ['$rootScope', '$scope', '$routeParams', 'DataAccessRequestResource', 'DataAccessRequestService', 'DataAccessRequestStatusResource', 'DataAccessFormResource', 'DataAccessRequestCommentsResource', 'DataAccessRequestCommentResource', 'AlertService', 'ServerErrorUtils', 'NOTIFICATION_EVENTS',
 
-    function ($scope, $routeParams, $location, DataAccessRequestResource, DataAccessRequestService, DataAccessRequestStatusResource, DataAccessFormResource, AlertService, ServerErrorUtils) {
+    function ($rootScope, $scope, $routeParams, DataAccessRequestResource, DataAccessRequestService, DataAccessRequestStatusResource, DataAccessFormResource, DataAccessRequestCommentsResource, DataAccessRequestCommentResource, AlertService, ServerErrorUtils, NOTIFICATION_EVENTS) {
 
       var onError = function (response) {
         AlertService.alert({
@@ -57,10 +57,52 @@ mica.dataAccessRequest
         });
       };
 
+      var selectTab = function(id) {
+        $scope.selectedTab = id;
+        switch (id) {
+          case 'form':
+            break;
+          case 'comments':
+            retrieveComments();
+            break;
+        }
+      };
+
+      var retrieveComments = function() {
+        $scope.form.comments = DataAccessRequestCommentsResource.query({id: $routeParams.id});
+      };
+
+      var submitComment = function(comment) {
+        DataAccessRequestCommentsResource.save({id: $routeParams.id}, comment.message, retrieveComments, onError);
+      };
+
+      var updateComment = function(comment) {
+        DataAccessRequestCommentResource.update({id: $routeParams.id, commentId: comment.id}, comment.message, retrieveComments, onError);
+      };
+
+      var deleteComment = function(comment) {
+        $scope.commentToDelete = comment.id;
+
+        $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
+          {
+            titleKey: 'comment.delete-dialog.title',
+            messageKey:'comment.delete-dialog.message',
+            messageArgs: [comment.createdBy]
+          }, comment.id
+        );
+      };
+
+      $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, id) {
+        if ($scope.commentToDelete === id) {
+           DataAccessRequestCommentResource.delete({id: $routeParams.id, commentId: id}, {}, retrieveComments, onError);
+        }
+      });
+
       $scope.form = {
         schema: {},
         definition: {},
-        model: {}
+        model: {},
+        comments: null
       };
 
       $scope.getDownloadHref = function(attachments, id) {
@@ -69,6 +111,10 @@ mica.dataAccessRequest
 
       $scope.actions = DataAccessRequestService.actions;
       $scope.nextStatus = DataAccessRequestService.nextStatus;
+      $scope.selectTab = selectTab;
+      $scope.submitComment = submitComment;
+      $scope.updateComment = updateComment;
+      $scope.deleteComment = deleteComment;
 
       var getRequest = function () {
         return DataAccessRequestResource.get({id: $routeParams.id}, function onSuccess(request) {

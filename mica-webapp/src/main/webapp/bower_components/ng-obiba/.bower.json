@@ -1,6 +1,9 @@
 {
   "name": "ng-obiba",
-  "main": "ng-obiba.js",
+  "main": [
+    "dist/ng-obiba.js",
+    "dist/css/ng-obiba.css"
+  ],
   "description": "OBiBa AngularJS commons",
   "license": "GNU Public License version 3",
   "ignore": [
@@ -15,18 +18,20 @@
     "angular": "1.3.15",
     "angular-bootstrap": "0.13.0",
     "angular-translate": "2.7.0",
-    "angular-sanitize": "1.3.15"
+    "angular-sanitize": "1.3.15",
+    "angular-marked": "~0.0.14",
+    "angular-moment": "~0.10.1"
   },
   "devDependencies": {
     "angular-mocks": "1.3.15",
     "angular-scenario": "1.3.15"
   },
   "homepage": "https://github.com/obiba/ng-obiba",
-  "_release": "00c662818f",
+  "_release": "b48a47dc33",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "00c662818f5501bcfdfe10111e6ae50121a85f3a"
+    "commit": "b48a47dc33ed844651477b70900dcfafa360cd8e"
   },
   "_source": "git@github.com:obiba/ng-obiba.git",
   "_target": "*",
