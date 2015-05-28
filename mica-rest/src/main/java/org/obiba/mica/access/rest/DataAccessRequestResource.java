@@ -88,7 +88,7 @@ public class DataAccessRequestResource {
   @GET
   @Path("/comments")
   public List<Mica.CommentDto> comments(@PathParam("id") String id) {
-    subjectAclService.checkPermission("/data-access-request/" + id + "/comments", "VIEW");
+    subjectAclService.checkPermission("/data-access-request/", "VIEW", id);
     dataAccessRequestService.findById(id);
     return commentsService.findByClassAndInstance(DataAccessRequest.class.getSimpleName(), id).stream()
       .map(dtos::asDto).collect(Collectors.toList());
@@ -116,7 +116,7 @@ public class DataAccessRequestResource {
   @GET
   @Path("/comment/{commentId}")
   public Mica.CommentDto getComment(@PathParam("id") String id, @PathParam("commentId") String commentId) {
-    subjectAclService.checkPermission("/data-access-request/" + id + "/comment", "VIEW", commentId);
+    subjectAclService.checkPermission("/data-access-request/", "VIEW", id);
     dataAccessRequestService.findById(id);
     return dtos.asDto(commentsService.findById(commentId));
   }
