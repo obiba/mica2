@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.HEAD;
 
 import org.obiba.mica.access.DataAccessRequestRepository;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
@@ -22,6 +21,7 @@ import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.NoSuchNetworkException;
 import org.obiba.mica.security.Roles;
 import org.slf4j.Logger;
@@ -68,6 +68,9 @@ public class DataAccessRequestService {
 
   @Inject
   private MailService mailService;
+
+  @Inject
+  private MicaConfigService micaConfigService;
 
   @Value("classpath:config/data-access-form/data-access-request-template.pdf")
   private Resource defaultTemplateResource;
@@ -191,35 +194,38 @@ public class DataAccessRequestService {
     if(from == null) return;
 
     Map<String, String> ctx = Maps.newHashMap();
+    String organization = micaConfigService.getConfig().getName();
+    ctx.put("organization", organization);
+    ctx.put("publicUrl", micaConfigService.getPublicUrl());
+    ctx.put("id", request.getId());
     ctx.put("title", request.getTitle());
-    ctx.put("link", "http://localhost:8082/#/data-access-request/" + request.getId());
     switch(request.getStatus()) {
       case SUBMITTED:
         mailService
-          .sendEmailToUsers("[Mica] Submitted: " + request.getTitle(), "dataAccessRequestSubmittedApplicantEmail", ctx,
+          .sendEmailToUsers("[" + organization + "] Submitted: " + request.getTitle(), "dataAccessRequestSubmittedApplicantEmail", ctx,
             request.getApplicant());
         mailService
-          .sendEmailToGroups("[Mica] Submitted: " + request.getTitle(), "dataAccessRequestSubmittedDAOEmail", ctx,
+          .sendEmailToGroups("[" + organization + "] Submitted: " + request.getTitle(), "dataAccessRequestSubmittedDAOEmail", ctx,
             Roles.MICA_DAO);
         break;
       case REVIEWED:
         mailService
-          .sendEmailToUsers("[Mica] Reviewed: " + request.getTitle(), "dataAccessRequestReviewedApplicantEmail", ctx,
+          .sendEmailToUsers("[" + organization + "] Reviewed: " + request.getTitle(), "dataAccessRequestReviewedApplicantEmail", ctx,
             request.getApplicant());
         break;
       case OPENED:
         mailService
-          .sendEmailToUsers("[Mica] Reopened: " + request.getTitle(), "dataAccessRequestReopenedApplicantEmail", ctx,
+          .sendEmailToUsers("[" + organization + "] Reopened: " + request.getTitle(), "dataAccessRequestReopenedApplicantEmail", ctx,
             request.getApplicant());
         break;
       case APPROVED:
         mailService
-          .sendEmailToUsers("[Mica] Approved: " + request.getTitle(), "dataAccessRequestApprovedApplicantEmail", ctx,
+          .sendEmailToUsers("[" + organization + "] Approved: " + request.getTitle(), "dataAccessRequestApprovedApplicantEmail", ctx,
             request.getApplicant());
         break;
       case REJECTED:
         mailService
-          .sendEmailToUsers("[Mica] Rejected: " + request.getTitle(), "dataAccessRequestRejectedApplicantEmail", ctx,
+          .sendEmailToUsers("[" + organization + "] Rejected: " + request.getTitle(), "dataAccessRequestRejectedApplicantEmail", ctx,
             request.getApplicant());
         break;
     }
@@ -320,4 +326,5 @@ public class DataAccessRequestService {
       super(reader, os);
     }
   }
+
 }

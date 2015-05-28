@@ -20,6 +20,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -41,6 +42,9 @@ public class MicaConfigService {
 
   @Inject
   private EventBus eventBus;
+
+  @Inject
+  private Environment env;
 
   private final AesCipherService cipherService = new AesCipherService();
 
@@ -83,6 +87,22 @@ public class MicaConfigService {
         "lastModifiedDate", "secretKey");
     micaConfigRepository.save(savedConfig);
     eventBus.post(new MicaConfigUpdatedEvent(getConfig()));
+  }
+
+  /**
+   * Get the public url, statically defined if not part of the {@link org.obiba.mica.micaConfig.domain.MicaConfig}.
+   * @return
+   */
+  public String getPublicUrl() {
+    MicaConfig config = getConfig();
+
+    if(config.hasPublicUrl()) {
+      return config.getPublicUrl();
+    } else {
+      String host = env.getProperty("server.address");
+      String port = env.getProperty("https.port");
+      return "https://" + host + ":" + port;
+    }
   }
 
   public String encrypt(String plain) {
