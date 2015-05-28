@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Objects;
+import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
@@ -92,6 +93,10 @@ public class MicaConfig extends AbstractAuditableDocument {
     this.publicUrl = publicUrl;
   }
 
+  public boolean hasPublicUrl() {
+    return !Strings.isNullOrEmpty(publicUrl);
+  }
+
   public String getSecretKey() {
     return secretKey;
   }
@@ -115,4 +120,5 @@ public class MicaConfig extends AbstractAuditableDocument {
   public void setAggregations(AggregationsConfig aggregations) {
     this.aggregations = aggregations;
   }
+
 }
