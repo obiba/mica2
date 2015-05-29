@@ -125,42 +125,57 @@ public class SubjectAclService {
    */
   public void addUserPermission(@NotNull String principal, @NotNull String resource, @Nullable String action,
     @Nullable String instance) {
-    List<SubjectAcl> acls = subjectAclRepository
-      .findByPrincipalAndTypeAndResourceAndInstance(principal, SubjectAcl.Type.USER, resource, instance);
-    SubjectAcl acl;
-    if(acls == null || acls.isEmpty()) {
-      acl = SubjectAcl.newBuilder(principal, SubjectAcl.Type.USER).resource(resource).action(action).instance(instance)
-        .build();
-      subjectAclRepository.save(acl);
-    } else {
-      acl = acls.get(0);
-      acl.addAction(action);
-    }
-    subjectAclRepository.save(acl);
-    // inform acls update (for caching)
-    eventBus.post(new SubjectAclUpdatedEvent(SubjectAcl.Type.USER.subjectFor(principal)));
+    addSubjectPermission(SubjectAcl.Type.USER, principal, resource, action, instance);
   }
 
+  /**
+   * Add a group permission for the current user on a given instance.
+   *
+   * @param principal
+   * @param resource
+   * @param action multiple actions can be comma-separated
+   * @param instance any instances if null
+   */
+  public void addGroupPermission(@NotNull String principal, @NotNull String resource, @Nullable String action,
+    @Nullable String instance) {
+    addSubjectPermission(SubjectAcl.Type.GROUP, principal, resource, action, instance);
+  }
 
+  /**
+   * Remove a user permission for the current user on a given instance.
+   *
+   * @param resource
+   * @param action multiple actions can be comma-separated
+   * @param instance
+   */
   public void removePermission(@NotNull String resource, @NotNull String action, @NotNull String instance) {
     removeUserPermission(SecurityUtils.getSubject().getPrincipal().toString(), resource, action, instance);
   }
 
+  /**
+   * Remove a user permission for the current user on a given instance.
+   *
+   * @param principal
+   * @param resource
+   * @param action multiple actions can be comma-separated
+   * @param instance
+   */
   public void removeUserPermission(@NotNull String principal, @NotNull String resource, @NotNull String action,
     @NotNull String instance) {
-    subjectAclRepository
-      .findByPrincipalAndTypeAndResourceAndInstance(principal, SubjectAcl.Type.USER, resource, instance).forEach(acl -> {
-      if (acl.hasAction(action)) {
-        acl.removeAction(action);
-        if (acl.hasActions()) {
-          subjectAclRepository.save(acl);
-        } else {
-          subjectAclRepository.delete(acl);
-        }
-      }
-    });
-    // inform acls update (for caching)
-    eventBus.post(new SubjectAclUpdatedEvent(SubjectAcl.Type.USER.subjectFor(principal)));
+    removeSubjectPermission(SubjectAcl.Type.USER, principal, resource, action, instance);
+  }
+
+  /**
+   * Remove a group permission for the current user on a given instance.
+   *
+   * @param principal
+   * @param resource
+   * @param action multiple actions can be comma-separated
+   * @param instance
+   */
+  public void removeGroupPermission(@NotNull String principal, @NotNull String resource, @NotNull String action,
+    @NotNull String instance) {
+    removeSubjectPermission(SubjectAcl.Type.GROUP, principal, resource, action, instance);
   }
 
   //
@@ -180,6 +195,45 @@ public class SubjectAclService {
     // delete children acls, i.e. acls which resource name starts with regex "<resource>/<instance>/.+"
     subjectAclRepository
       .delete(subjectAclRepository.findByResourceStartingWith(event.getResource() + "/" + event.getInstance() + "/.+"));
+  }
+
+  //
+  // Private methods
+  //
+
+  private void addSubjectPermission(@NotNull SubjectAcl.Type type, @NotNull String principal, @NotNull String resource, @Nullable String action,
+    @Nullable String instance) {
+    List<SubjectAcl> acls = subjectAclRepository
+      .findByPrincipalAndTypeAndResourceAndInstance(principal, type, resource, instance);
+    SubjectAcl acl;
+    if(acls == null || acls.isEmpty()) {
+      acl = SubjectAcl.newBuilder(principal, type).resource(resource).action(action).instance(instance)
+        .build();
+      subjectAclRepository.save(acl);
+    } else {
+      acl = acls.get(0);
+      acl.addAction(action);
+    }
+    subjectAclRepository.save(acl);
+    // inform acls update (for caching)
+    eventBus.post(new SubjectAclUpdatedEvent(type.subjectFor(principal)));
+  }
+
+  private void removeSubjectPermission(@NotNull SubjectAcl.Type type, @NotNull String principal, @NotNull String resource, @NotNull String action,
+    @NotNull String instance) {
+    subjectAclRepository
+      .findByPrincipalAndTypeAndResourceAndInstance(principal, type, resource, instance).forEach(acl -> {
+      if (acl.hasAction(action)) {
+        acl.removeAction(action);
+        if (acl.hasActions()) {
+          subjectAclRepository.save(acl);
+        } else {
+          subjectAclRepository.delete(acl);
+        }
+      }
+    });
+    // inform acls update (for caching)
+    eventBus.post(new SubjectAclUpdatedEvent(type.subjectFor(principal)));
   }
 
 }

@@ -36,7 +36,13 @@ class DataAccessRequestDtos {
       builder.addActions("VIEW");
     }
     if (subjectAclService.isPermitted("/data-access-request", "EDIT", request.getId())) {
-      builder.addActions("EDIT").addActions("DELETE");
+      builder.addActions("EDIT");
+    }
+    if (subjectAclService.isPermitted("/data-access-request", "DELETE", request.getId())) {
+      builder.addActions("DELETE");
+    }
+    if (subjectAclService.isPermitted("/data-access-request/" + request.getId(), "EDIT", "_status")) {
+      builder.addActions("EDIT_STATUS");
     }
 
     // possible status transitions

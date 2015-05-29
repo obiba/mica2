@@ -73,12 +73,22 @@ public class SubjectAcl extends AbstractAuditableDocument {
     return !getActions().isEmpty();
   }
 
+  /**
+   * Check if is one the actions. Several actions can be provided, comma-separated.
+   *
+   * @param action
+   * @return
+   */
   public boolean hasAction(String action) {
-    return getActions().contains(action);
+    for(String a : action.split(SUBPART_DIVIDER_TOKEN)) {
+      if(getActions().contains(a)) return true;
+    }
+    return false;
   }
 
   /**
-   * Add an action (if not already done. Can be several actions, comma-separated.
+   * Add an action (if not already done). Can be several actions, comma-separated.
+   *
    * @param action
    */
   public void addAction(String action) {
@@ -89,8 +99,13 @@ public class SubjectAcl extends AbstractAuditableDocument {
     });
   }
 
+  /**
+   * Remove an action. Several actions can be provided, comma-separated.
+   *
+   * @param action
+   */
   public void removeAction(String action) {
-    getActions().remove(action);
+    Stream.of(action.split(SUBPART_DIVIDER_TOKEN)).forEach(a -> getActions().remove(a));
   }
 
   public String getInstance() {
@@ -128,8 +143,6 @@ public class SubjectAcl extends AbstractAuditableDocument {
   public static Builder newBuilder(String name, Type type) {
     return new Builder(name, type);
   }
-
-
 
   public enum Type {
     USER, GROUP;

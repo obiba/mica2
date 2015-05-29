@@ -26,6 +26,7 @@ import org.obiba.mica.core.domain.Comment;
 import org.obiba.mica.core.service.CommentsService;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.GridFsService;
+import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.event.ResourceDeletedEvent;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
@@ -72,8 +73,9 @@ public class DataAccessRequestResource {
   @Timed
   public Response get(@PathParam("id") String id, Mica.DataAccessRequestDto dto) {
     subjectAclService.checkPermission("/data-access-request", "EDIT", id);
+    if(!id.equals(dto.getId())) throw new BadRequestException();
+    //dataAccessRequestService.updateContent(id, dto.getContent());
     DataAccessRequest request = dtos.fromDto(dto);
-    if (!id.equals(request.getId())) throw new BadRequestException();
     dataAccessRequestService.save(request);
     return Response.noContent().build();
   }
@@ -84,7 +86,7 @@ public class DataAccessRequestResource {
   public Response getPdf(@PathParam("id") String id, @QueryParam("lang") String lang) {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
 
-    if (Strings.isNullOrEmpty(lang)) lang = LanguageTag.UNDETERMINED;
+    if(Strings.isNullOrEmpty(lang)) lang = LanguageTag.UNDETERMINED;
 
     return Response.ok(dataAccessRequestService.getRequestPdf(id, lang))
       .header("Content-Disposition", "attachment; filename=\"" + "data-access-request-" + id + ".pdf" + "\"").build();
@@ -107,7 +109,7 @@ public class DataAccessRequestResource {
 
   @DELETE
   public Response delete(@PathParam("id") String id) {
-    subjectAclService.checkPermission("/data-access-request", "EDIT", id);
+    subjectAclService.checkPermission("/data-access-request", "DELETE", id);
     try {
       dataAccessRequestService.delete(id);
       // remove associated comments
@@ -124,8 +126,8 @@ public class DataAccessRequestResource {
   public List<Mica.CommentDto> comments(@PathParam("id") String id) {
     subjectAclService.checkPermission("/data-access-request/", "VIEW", id);
     dataAccessRequestService.findById(id);
-    return commentsService.findByClassAndInstance(DataAccessRequest.class.getSimpleName(), id).stream()
-      .map(dtos::asDto).collect(Collectors.toList());
+    return commentsService.findByClassAndInstance(DataAccessRequest.class.getSimpleName(), id).stream().map(dtos::asDto)
+      .collect(Collectors.toList());
   }
 
   @POST
@@ -142,7 +144,7 @@ public class DataAccessRequestResource {
         .instanceId(id) //
         .build()); //
 
-    subjectAclService.addPermission("/data-access-request/" + id + "/comment", "VIEW,EDIT", comment.getId());
+    subjectAclService.addPermission("/data-access-request/" + id + "/comment", "VIEW,EDIT,DELETE", comment.getId());
 
     return Response.noContent().build();
   }
@@ -172,7 +174,7 @@ public class DataAccessRequestResource {
   @DELETE
   @Path("/comment/{commentId}")
   public Response deleteComment(@PathParam("id") String id, @PathParam("commentId") String commentId) {
-    subjectAclService.checkPermission("/data-access-request/" + id + "/comment", "EDIT", commentId);
+    subjectAclService.checkPermission("/data-access-request/" + id + "/comment", "DELETE", commentId);
     dataAccessRequestService.findById(id);
     commentsService.delete(commentId);
     return Response.noContent().build();
@@ -181,7 +183,8 @@ public class DataAccessRequestResource {
   @PUT
   @Path("/_status")
   public Response updateStatus(@PathParam("id") String id, @QueryParam("to") String status) {
-    switch (DataAccessRequest.Status.valueOf(status.toUpperCase())) {
+    subjectAclService.checkPermission("/data-access-request/" + id, "EDIT", "_status");
+    switch(DataAccessRequest.Status.valueOf(status.toUpperCase())) {
       case SUBMITTED:
         return submit(id);
       case OPENED:
@@ -193,57 +196,51 @@ public class DataAccessRequestResource {
       case REJECTED:
         return reject(id);
     }
-    throw new BadRequestException("Invalid status");
-  }
-
-    @PUT
-  @Path("/_submit")
-  public Response submit(@PathParam("id") String id) {
-    subjectAclService.checkPermission("/data-access-request", "EDIT", id);
-    DataAccessRequest request = dataAccessRequestService.findById(id);
-    if(!subjectAclService.isCurrentUser(request.getApplicant())) {
-      // only applicant can submit the request
-      throw new ForbiddenException();
-    }
-    dataAccessRequestService.updateStatus(id, DataAccessRequest.Status.SUBMITTED);
-    // applicant cannot edit request anymore
-    subjectAclService.removePermission("/data-access-request", "EDIT", id);
-    return Response.noContent().build();
-  }
-
-  @PUT
-  @Path("/_reopen")
-  public Response open(@PathParam("id") String id) {
-    subjectAclService.checkPermission("/data-access-request", "EDIT", id);
-    DataAccessRequest request = dataAccessRequestService.updateStatus(id, DataAccessRequest.Status.OPENED);
-    subjectAclService.addUserPermission(request.getApplicant(), "/data-access-request", "EDIT", id);
-    return Response.noContent().build();
-  }
-
-  @PUT
-  @Path("/_review")
-  public Response review(@PathParam("id") String id) {
-    return updateStatus(id, DataAccessRequest.Status.REVIEWED);
-  }
-
-  @PUT
-  @Path("/_approve")
-  public Response approve(@PathParam("id") String id) {
-    return updateStatus(id, DataAccessRequest.Status.APPROVED);
-  }
-
-  @PUT
-  @Path("/_reject")
-  public Response reject(@PathParam("id") String id) {
-    return updateStatus(id, DataAccessRequest.Status.REJECTED);
+    throw new BadRequestException("Unknown status");
   }
 
   //
   // Private methods
   //
 
+  private Response submit(String id) {
+    DataAccessRequest request = dataAccessRequestService.findById(id);
+    if(!subjectAclService.isCurrentUser(request.getApplicant())) {
+      // only applicant can submit the request
+      throw new ForbiddenException();
+    }
+    dataAccessRequestService.updateStatus(id, DataAccessRequest.Status.SUBMITTED);
+    // applicant cannot edit, nor delete request anymore + status cannot be changed
+    subjectAclService.removePermission("/data-access-request", "EDIT,DELETE", id);
+    subjectAclService.removePermission("/data-access-request/" + id, "EDIT", "_status");
+    // data access officers can change the status of this request
+    subjectAclService.addGroupPermission(Roles.MICA_DAO, "/data-access-request/" + id, "EDIT", "_status");
+    return Response.noContent().build();
+  }
+
+  private Response open(@PathParam("id") String id) {
+    DataAccessRequest request = dataAccessRequestService.updateStatus(id, DataAccessRequest.Status.OPENED);
+    // restore applicant permissions
+    subjectAclService.addUserPermission(request.getApplicant(), "/data-access-request", "EDIT,DELETE", id);
+    subjectAclService.addUserPermission(request.getApplicant(), "/data-access-request/" + id, "EDIT", "_status");
+    // data access officers cannot change the status of this request anymore
+    subjectAclService.removeGroupPermission(Roles.MICA_DAO, "/data-access-request/" + id, "EDIT", "_status");
+    return Response.noContent().build();
+  }
+
+  private Response review(@PathParam("id") String id) {
+    return updateStatus(id, DataAccessRequest.Status.REVIEWED);
+  }
+
+  private Response approve(@PathParam("id") String id) {
+    return updateStatus(id, DataAccessRequest.Status.APPROVED);
+  }
+
+  private Response reject(@PathParam("id") String id) {
+    return updateStatus(id, DataAccessRequest.Status.REJECTED);
+  }
+
   private Response updateStatus(String id, DataAccessRequest.Status status) {
-    subjectAclService.checkPermission("/data-access-request", "EDIT", id);
     dataAccessRequestService.updateStatus(id, status);
     return Response.noContent().build();
   }

@@ -57,31 +57,31 @@
 
   <a
     ng-click="submit()"
-    ng-if="actions.canEdit(dataAccessRequest) && nextStatus.canSubmit(dataAccessRequest)"
+    ng-if="actions.canEditStatus(dataAccessRequest) && nextStatus.canSubmit(dataAccessRequest)"
     class="btn btn-info">
     <i class="fa fa-check"></i> <span translate>submit</span>
   </a>
   <a
     ng-click="reopen()"
-    ng-if="actions.canEdit(dataAccessRequest) && nextStatus.canReopen(dataAccessRequest)"
+    ng-if="actions.canEditStatus(dataAccessRequest) && nextStatus.canReopen(dataAccessRequest)"
     class="btn btn-info">
     <i class="fa fa-check"></i> <span translate>reopen</span>
   </a>
   <a
     ng-click="review()"
-    ng-if="actions.canEdit(dataAccessRequest) && nextStatus.canReview(dataAccessRequest)"
+    ng-if="actions.canEditStatus(dataAccessRequest) && nextStatus.canReview(dataAccessRequest)"
     class="btn btn-info">
     <i class="fa fa-check"></i> <span translate>review</span>
   </a>
   <a
     ng-click="approve()"
-    ng-if="actions.canEdit(dataAccessRequest) && nextStatus.canApprove(dataAccessRequest)"
+    ng-if="actions.canEditStatus(dataAccessRequest) && nextStatus.canApprove(dataAccessRequest)"
     class="btn btn-info">
     <i class="fa fa-check"></i> <span translate>approve</span>
   </a>
   <a
     ng-click="reject()"
-    ng-if="actions.canEdit(dataAccessRequest) && nextStatus.canReject(dataAccessRequest)"
+    ng-if="actions.canEditStatus(dataAccessRequest) && nextStatus.canReject(dataAccessRequest)"
     class="btn btn-info">
     <i class="fa fa-check"></i> <span translate>reject</span>
   </a>

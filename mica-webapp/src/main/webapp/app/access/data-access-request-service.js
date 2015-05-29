@@ -59,6 +59,10 @@ mica.dataAccessRequest
           return canDoAction(request, 'EDIT');
         },
 
+        canEditStatus: function (request) {
+          return canDoAction(request, 'EDIT_STATUS');
+        },
+
         canDelete: function (request) {
           return canDoAction(request, 'DELETE');
         }
