@@ -39,6 +39,8 @@
     </div>
   </div>
 
+  <attachment-list files="dataAccessRequest.attachments" href-builder="getDownloadHref(attachments, id)"></attachment-list>
+
   <a target="_self" ng-href="/ws/data-access-request/{{dataAccessRequest.id}}/_pdf" class="btn btn-default">
     <i class="glyphicon glyphicon-download-alt"></i> <span translate>download</span>
   </a>

@@ -2,6 +2,30 @@
 
 mica.attachment
 
+  .directive('attachmentList', [function() {
+    return {
+      restrict: 'E',
+      scope: {
+        hrefBuilder: '&',
+        files: '='
+      },
+      templateUrl: 'app/commons/attachment/attachment-list-template.html',
+      link: function(scope) {
+        scope.attachments = [];
+        scope.hrefBuilder = scope.hrefBuilder || function(a) { return a.id; };
+
+        scope.$watch('files', function(val) {
+          if (val) {
+            scope.attachments = val.map(function (a) {
+              var temp = angular.copy(a);
+              temp.href = scope.hrefBuilder({id: a.id});
+              return temp;
+            });
+          }
+        }, true);
+      }
+    };
+  }])
   .directive('attachmentInput', [function () {
     return {
       restrict: 'E',

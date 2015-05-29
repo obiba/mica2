@@ -60,6 +60,10 @@ mica.dataAccessRequest
         model: {}
       };
 
+      $scope.getDownloadHref = function(attachments, id) {
+        return '/ws/data-access-request/' + $scope.dataAccessRequest.id + '/attachments/' + id + '/_download';
+      };
+
       $scope.actions = DataAccessRequestService.actions;
       $scope.nextStatus = DataAccessRequestService.nextStatus;
 
@@ -78,6 +82,8 @@ mica.dataAccessRequest
             },
             onError
           );
+
+          request.attachments = request.attachments || [];
 
           return request;
         });
@@ -134,7 +140,6 @@ mica.dataAccessRequest
       };
 
       $scope.forms = {};
-
     }])
 
   .controller('DataAccessRequestEditController', ['$log', '$scope', '$routeParams', '$location', 'DataAccessRequestsResource', 'DataAccessRequestResource', 'DataAccessFormResource', 'AlertService', 'ServerErrorUtils', 'Session', 'DataAccessRequestService',
@@ -187,10 +192,13 @@ mica.dataAccessRequest
               $scope.form.schema.readonly = !$scope.canEdit;
               $scope.$broadcast('schemaFormRedraw');
               $scope.newRequest = false;
+
+              request.attachments = request.attachments || [];
               return request;
             }) : {
               applicant: Session.login,
-              status: DataAccessRequestService.status.OPENED
+              status: DataAccessRequestService.status.OPENED,
+              attachments: []
           };
         },
         onError

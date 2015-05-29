@@ -1,6 +1,8 @@
 package org.obiba.mica.file;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Throwables;
 import com.google.common.hash.Hashing;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
@@ -90,6 +93,14 @@ public class TempFileService {
       return Files.toByteArray(getFile(id));
     } catch(IOException e) {
       throw new RuntimeException(e);
+    }
+  }
+
+  public InputStream getInputStreamFromFile(@NotNull String id) {
+    try {
+      return new FileInputStream(getFile(id));
+    } catch(FileNotFoundException e) {
+      throw Throwables.propagate(e);
     }
   }
 
