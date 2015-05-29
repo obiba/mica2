@@ -24,6 +24,11 @@
           label="data-access-request.title"></div>
       <div sf-model="form.model" sf-form="form.definition" sf-schema="form.schema" required="true"></div>
 
+      <div class="form-group">
+        <h3 translate>attachments</h3>
+        <attachment-input files="dataAccessRequest.attachments" multiple="true"></attachment-input>
+      </div>
+
       <a ng-click="cancel()" type="button" class="btn btn-default">
         <span translate>cancel</span>
       </a>

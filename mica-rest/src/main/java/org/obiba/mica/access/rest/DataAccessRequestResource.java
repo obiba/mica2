@@ -1,6 +1,8 @@
 package org.obiba.mica.access.rest;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -16,11 +18,14 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.apache.shiro.SecurityUtils;
+import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.core.domain.Comment;
 import org.obiba.mica.core.service.CommentsService;
+import org.obiba.mica.file.Attachment;
+import org.obiba.mica.file.GridFsService;
 import org.obiba.mica.security.event.ResourceDeletedEvent;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
@@ -52,6 +57,9 @@ public class DataAccessRequestResource {
   @Inject
   private SubjectAclService subjectAclService;
 
+  @Inject
+  private GridFsService gridFsService;
+
   @GET
   @Timed
   public Mica.DataAccessRequestDto get(@PathParam("id") String id) {
@@ -80,6 +88,21 @@ public class DataAccessRequestResource {
 
     return Response.ok(dataAccessRequestService.getRequestPdf(id, lang))
       .header("Content-Disposition", "attachment; filename=\"" + "data-access-request-" + id + ".pdf" + "\"").build();
+  }
+
+  @GET
+  @Timed
+  @Path("/attachments/{attachmentId}/_download")
+  public Response getAttachment(@PathParam("id") String id, @PathParam("attachmentId") String attachmentId)
+    throws IOException {
+    subjectAclService.checkPermission("/data-access-request", "VIEW", id);
+    DataAccessRequest request = dataAccessRequestService.findById(id);
+    Optional<Attachment> r = request.getAttachments().stream().filter(a -> a.getId().equals(attachmentId)).findFirst();
+
+    if(!r.isPresent()) throw NoSuchEntityException.withId(Attachment.class, attachmentId);
+
+    return Response.ok(gridFsService.getFile(attachmentId)).header("Content-Disposition", "attachment; filename=\"" + r.get().getName() + "\"")
+      .build();
   }
 
   @DELETE

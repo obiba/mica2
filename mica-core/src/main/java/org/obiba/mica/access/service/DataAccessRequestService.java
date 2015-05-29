@@ -20,6 +20,8 @@ import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.file.Attachment;
+import org.obiba.mica.file.GridFsService;
+import org.obiba.mica.file.TempFileService;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
@@ -37,6 +39,7 @@ import org.thymeleaf.spring4.SpringTemplateEngine;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.common.io.ByteStreams;
 import com.itextpdf.text.DocumentException;
 import com.jayway.jsonpath.Configuration;
@@ -66,6 +69,12 @@ public class DataAccessRequestService {
   private SpringTemplateEngine templateEngine;
 
   @Inject
+  private GridFsService gridFsService;
+
+  @Inject
+  private TempFileService tempFileService;
+
+  @Inject
   private MailService mailService;
 
   @Inject
@@ -77,12 +86,20 @@ public class DataAccessRequestService {
   public void save(@NotNull DataAccessRequest request) {
     DataAccessRequest saved = request;
     DataAccessRequest.Status from = null;
+    Sets.SetView<Attachment> toDelete = null;
+    Sets.SetView<Attachment> toSave = null;
+
     if(request.isNew()) {
       saved.setStatus(DataAccessRequest.Status.OPENED);
       //generateId(saved);
     } else {
       saved = dataAccessRequestRepository.findOne(request.getId());
       if(saved != null) {
+        toDelete = Sets
+          .difference(Sets.newHashSet(saved.getAttachments()), Sets.newHashSet(request.getAttachments()));
+        toSave = Sets
+          .difference(Sets.newHashSet(request.getAttachments()), Sets.newHashSet(saved.getAttachments()));
+
         from = saved.getStatus();
         // validate the status
         saved.setStatus(request.getStatus());
@@ -95,7 +112,13 @@ public class DataAccessRequestService {
       }
     }
 
+    if(toSave != null)
+      toSave.forEach(a -> gridFsService.save(tempFileService.getInputStreamFromFile(a.getId()), a.getId()));
+
     dataAccessRequestRepository.save(saved);
+
+    if(toDelete != null)
+      toDelete.forEach(a -> gridFsService.delete(a.getId()));
 
     sendNotificationEmails(saved, from);
   }
