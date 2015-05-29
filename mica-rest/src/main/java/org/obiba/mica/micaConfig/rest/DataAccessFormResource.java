@@ -8,7 +8,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.micaConfig.NoSuchDataAccessFormException;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
@@ -29,7 +29,7 @@ public class DataAccessFormResource {
   Dtos dtos;
 
   @GET
-  @RequiresAuthentication
+  @RequiresPermissions("/data-access-requests:ADD")
   public Mica.DataAccessFormDto getDataAccessForm() {
     Optional<DataAccessForm> d = dataAccessFormService.findDataAccessForm();
 

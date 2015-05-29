@@ -2,6 +2,7 @@ package org.obiba.mica.security.realm;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -108,10 +109,8 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
   @Subscribe
   public void onSubjectAclUpdate(SubjectAclUpdatedEvent event) {
     if(isCachingEnabled()) {
-      if (event.hasSubject())
-        getAuthorizationCache().remove(event.getSubject());
-      else
-        getAuthorizationCache().clear();
+      if(event.hasSubject()) getAuthorizationCache().remove(event.getSubject());
+      else getAuthorizationCache().clear();
     }
   }
 
@@ -135,25 +134,30 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
 
     @Override
     public Collection<Permission> resolvePermissionsInRole(String roleString) {
+      List<String> permissions = loadSubjectPermissions(roleString, SubjectAcl.Type.GROUP);
       // built-in permissions
       switch(roleString) {
         case Roles.MICA_ADMIN:
-          return PermissionUtils.resolveDelimitedPermissions("*", getPermissionResolver());
+          return mergePermissions("*", permissions);
         case Roles.MICA_REVIEWER:
-          return PermissionUtils
-            .resolveDelimitedPermissions("/draft:EDIT,/draft:PUBLISH,/files:UPLOAD", getPermissionResolver());
+          return mergePermissions("/draft:EDIT,/draft:PUBLISH,/files:UPLOAD", permissions);
         case Roles.MICA_EDITOR:
-          return PermissionUtils.resolveDelimitedPermissions("/draft:EDIT,/files:UPLOAD", getPermissionResolver());
+          return mergePermissions("/draft:EDIT,/files:UPLOAD", permissions);
         case Roles.MICA_DAO:
-          return PermissionUtils.resolveDelimitedPermissions("/data-access-requests,/data-access-request,/files:UPLOAD",
-            getPermissionResolver());
+          return mergePermissions(
+            "/data-access-requests,/data-access-request:VIEW,/data-access-request:DELETE,/files:UPLOAD", permissions);
         case Roles.MICA_USER:
-          return PermissionUtils
-            .resolveDelimitedPermissions("/data-access-requests:ADD,/files:UPLOAD", getPermissionResolver());
+          return mergePermissions("/data-access-requests:ADD,/files:UPLOAD", permissions);
       }
       // other groups
-      List<String> permissions = loadSubjectPermissions(roleString, SubjectAcl.Type.GROUP);
       return PermissionUtils.resolvePermissions(permissions, getPermissionResolver());
+    }
+
+    private Collection<Permission> mergePermissions(String delimitedPermissions, Collection<String> permissions) {
+      Set<Permission> perms = PermissionUtils
+        .resolveDelimitedPermissions(delimitedPermissions, getPermissionResolver());
+      perms.addAll(PermissionUtils.resolvePermissions(permissions, getPermissionResolver()));
+      return perms;
     }
   }
 
