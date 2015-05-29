@@ -29,6 +29,13 @@ mica.dataAccessRequest
       });
     }])
 
+  .factory('DataAccessRequestStatusResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/data-access-request/:id/_status?to=:status', {}, {
+        'update': {method: 'PUT', params: {id: '@id', status: '@status'}, errorHandler: true}
+      });
+    }])
+
   .factory('DataAccessRequestService',
     function () {
       this.status = {
@@ -55,6 +62,33 @@ mica.dataAccessRequest
         canDelete: function (request) {
           return canDoAction(request, 'DELETE');
         }
+      };
+
+      var canChangeStatus = function (request, to) {
+        return request.nextStatus ? request.nextStatus.indexOf(to) !== -1 : null;
+      };
+
+      this.nextStatus = {
+        canSubmit: function (request) {
+          return canChangeStatus(request, 'SUBMITTED');
+        },
+
+        canReopen: function (request) {
+          return canChangeStatus(request, 'OPENED');
+        },
+
+        canReview: function (request) {
+          return canChangeStatus(request, 'REVIEWED');
+        },
+
+        canApprove: function (request) {
+          return canChangeStatus(request, 'APPROVED');
+        },
+
+        canReject: function (request) {
+          return canChangeStatus(request, 'REJECTED');
+        }
+
       };
 
       return this;

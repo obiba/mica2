@@ -156,6 +156,24 @@ public class DataAccessRequestResource {
   }
 
   @PUT
+  @Path("/_status")
+  public Response updateStatus(@PathParam("id") String id, @QueryParam("to") String status) {
+    switch (DataAccessRequest.Status.valueOf(status.toUpperCase())) {
+      case SUBMITTED:
+        return submit(id);
+      case OPENED:
+        return open(id);
+      case REVIEWED:
+        return review(id);
+      case APPROVED:
+        return approve(id);
+      case REJECTED:
+        return reject(id);
+    }
+    throw new BadRequestException("Invalid status");
+  }
+
+    @PUT
   @Path("/_submit")
   public Response submit(@PathParam("id") String id) {
     subjectAclService.checkPermission("/data-access-request", "EDIT", id);
@@ -187,13 +205,13 @@ public class DataAccessRequestResource {
 
   @PUT
   @Path("/_approve")
-  public Response approved(@PathParam("id") String id) {
+  public Response approve(@PathParam("id") String id) {
     return updateStatus(id, DataAccessRequest.Status.APPROVED);
   }
 
   @PUT
   @Path("/_reject")
-  public Response rejected(@PathParam("id") String id) {
+  public Response reject(@PathParam("id") String id) {
     return updateStatus(id, DataAccessRequest.Status.REJECTED);
   }
 

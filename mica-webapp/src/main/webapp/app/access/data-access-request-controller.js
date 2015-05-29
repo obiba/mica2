@@ -42,13 +42,13 @@ mica.dataAccessRequest
       });
     }])
 
-  .controller('DataAccessRequestViewController', ['$scope', '$routeParams', 'DataAccessRequestResource', 'DataAccessRequestService', 'DataAccessFormResource', 'AlertService', 'ServerErrorUtils',
+  .controller('DataAccessRequestViewController', ['$scope', '$routeParams', '$location', 'DataAccessRequestResource', 'DataAccessRequestService', 'DataAccessRequestStatusResource', 'DataAccessFormResource', 'AlertService', 'ServerErrorUtils',
 
-    function ($scope, $routeParams, DataAccessRequestResource, DataAccessRequestService, DataAccessFormResource, AlertService, ServerErrorUtils) {
+    function ($scope, $routeParams, $location, DataAccessRequestResource, DataAccessRequestService, DataAccessRequestStatusResource, DataAccessFormResource, AlertService, ServerErrorUtils) {
 
-      var onError = function(response) {
+      var onError = function (response) {
         AlertService.alert({
-          id: 'DataAccessRequestEditController',
+          id: 'DataAccessRequestViewController',
           type: 'danger',
           msg: ServerErrorUtils.buildMessage(response)
         });
@@ -61,9 +61,10 @@ mica.dataAccessRequest
       };
 
       $scope.actions = DataAccessRequestService.actions;
+      $scope.nextStatus = DataAccessRequestService.nextStatus;
 
-      $scope.dataAccessRequest = $routeParams.id ?
-        DataAccessRequestResource.get({id: $routeParams.id}, function onSuccess(request) {
+      var getRequest = function () {
+        return DataAccessRequestResource.get({id: $routeParams.id}, function onSuccess(request) {
           $scope.form.model = request.content ? JSON.parse(request.content) : {};
 
           // Retrieve form data
@@ -72,13 +73,67 @@ mica.dataAccessRequest
               $scope.form.definition = JSON.parse(dataAccessForm.definition);
               $scope.form.schema = JSON.parse(dataAccessForm.schema);
               $scope.form.schema.readonly = true;
+
               $scope.$broadcast('schemaFormRedraw');
             },
             onError
           );
 
           return request;
-        }): {};
+        });
+      };
+
+      $scope.dataAccessRequest = $routeParams.id ? getRequest() : {};
+
+      $scope.delete = function () {
+        DataAccessRequestResource.delete({id: $scope.dataAccessRequest.id});
+      };
+
+      var onUpdatStatusSuccess = function () {
+        $scope.dataAccessRequest = getRequest();
+      };
+
+      $scope.submit = function () {
+        $scope.$broadcast('schemaFormValidate');
+        if ($scope.forms.requestForm.$valid) {
+          DataAccessRequestStatusResource.update({
+            id: $scope.dataAccessRequest.id,
+            status: "SUBMITTED"
+          }, onUpdatStatusSuccess, onError);
+        } else {
+          AlertService.alert({
+            id: 'DataAccessRequestViewController',
+            type: 'danger',
+            msgKey: 'data-access-request.submit.invalid'
+          });
+        }
+      };
+      $scope.reopen = function () {
+        DataAccessRequestStatusResource.update({
+          id: $scope.dataAccessRequest.id,
+          status: "OPENED"
+        }, onUpdatStatusSuccess, onError);
+      };
+      $scope.review = function () {
+        DataAccessRequestStatusResource.update({
+          id: $scope.dataAccessRequest.id,
+          status: "REVIEWED"
+        }, onUpdatStatusSuccess, onError);
+      };
+      $scope.approve = function () {
+        DataAccessRequestStatusResource.update({
+          id: $scope.dataAccessRequest.id,
+          status: "APPROVED"
+        }, onUpdatStatusSuccess, onError);
+      };
+      $scope.reject = function () {
+        DataAccessRequestStatusResource.update({
+          id: $scope.dataAccessRequest.id,
+          status: "REJECTED"
+        }, onUpdatStatusSuccess, onError);
+      };
+
+      $scope.forms = {};
 
     }])
 
@@ -99,22 +154,24 @@ mica.dataAccessRequest
         });
       };
 
-      var submit = function(form) {
+      var submit = function() {
         $scope.$broadcast('schemaFormValidate');
-
-        if (form.$valid) {
-          $scope.dataAccessRequest.content = JSON.stringify($scope.form.model);
-
-          if ($scope.newRequest) {
-            DataAccessRequestsResource.save($scope.dataAccessRequest, onSuccess, onError);
-          } else {
-            DataAccessRequestResource.save($scope.dataAccessRequest, onSuccess, onError);
-          }
-        }
       };
 
       var cancel = function() {
         $location.path('/data-access-request' + ($scope.dataAccessRequest.id ? '/' + $scope.dataAccessRequest.id : 's')).replace();
+      };
+
+      var save = function() {
+        $scope.dataAccessRequest.content = JSON.stringify($scope.form.model);
+
+        if ($scope.newRequest) {
+          DataAccessRequestsResource.save($scope.dataAccessRequest, onSuccess, onError);
+        } else {
+          DataAccessRequestResource.save($scope.dataAccessRequest, function() {
+            $location.path('/data-access-request' + ($scope.dataAccessRequest.id ? '/' + $scope.dataAccessRequest.id : 's')).replace();
+          }, onError);
+        }
       };
 
       // Retrieve form data
@@ -147,6 +204,7 @@ mica.dataAccessRequest
 
       $scope.newRequest = true;
       $scope.cancel = cancel;
+      $scope.save = save;
       $scope.editable = true;
       $scope.submit = submit;
     }]);

@@ -24,13 +24,17 @@
           label="data-access-request.title"></div>
       <div sf-model="form.model" sf-form="form.definition" sf-schema="form.schema" required="true"></div>
 
-      <button type="submit" class="btn btn-primary">
-        <span translate>save</span>
-      </button>
-
       <a ng-click="cancel()" type="button" class="btn btn-default">
         <span translate>cancel</span>
       </a>
+
+      <a ng-click="save()" type="button" class="btn btn-primary">
+        <span translate>save</span>
+      </a>
+
+      <button type="submit" class="btn btn-info">
+        <span translate>validate</span>
+      </button>
     </form>
 
   </div>

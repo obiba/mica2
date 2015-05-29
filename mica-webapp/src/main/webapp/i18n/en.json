@@ -551,10 +551,15 @@
   "ok": "OK",
   "confirmation": "Confirmation",
   "submit": "Submit",
+  "review": "Review",
+  "reopen": "Reopen",
+  "approve": "Approve",
+  "reject": "Reject",
   "close": "Close",
   "clear": "Clear",
   "today": "Today",
   "save": "Save",
+  "validate": "Validate",
   "download": "Download",
   "apply": "Apply",
   "on": "On",
@@ -594,12 +599,15 @@
     "none": "No Data Access requested.",
     "add": "Add Data Access Request",
     "edit": "Edit Data Access Request",
-    "form": "Request Form",
+    "form": "Application Form",
     "comments": "Comments",
     "history": "History",
     "delete-dialog": {
       "title": "Delete Data Access Request",
       "message": "Are you sure you want to delete Data Access '{{arg0}}' request by '{{arg1}}'?"
+    },
+    "submit": {
+      "invalid": "The request cannot be submitted because of an incomplete application form."
     }
   },
   "data-access-config": {
