@@ -513,13 +513,14 @@ message CommentDto {
 
 message DataAccessRequestDto {
   optional string id = 1;
-  required string applicant = 2;
-  required string status = 3 [default = "OPENED"];
-  required string title = 4;
-  optional string content = 5;
-  repeated AttachmentDto attachments = 6;
-  repeated string actions = 7;
-  repeated string nextStatus = 8;
+  optional TimestampsDto timestamps = 2;
+  required string applicant = 3;
+  required string status = 4 [default = "OPENED"];
+  required string title = 5;
+  optional string content = 6;
+  repeated AttachmentDto attachments = 7;
+  repeated string actions = 8;
+  repeated string nextStatus = 9;
 }
 
 message DataAccessFormDto {

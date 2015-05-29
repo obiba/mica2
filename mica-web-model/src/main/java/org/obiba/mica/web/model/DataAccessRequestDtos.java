@@ -24,7 +24,8 @@ class DataAccessRequestDtos {
     Mica.DataAccessRequestDto.Builder builder = Mica.DataAccessRequestDto.newBuilder();
     builder.setApplicant(request.getApplicant()) //
       .setStatus(request.getStatus().name()) //
-      .setTitle(request.getTitle());
+      .setTitle(request.getTitle()) //
+      .setTimestamps(TimestampsDtos.asDto(request));
     if(request.hasContent()) builder.setContent(request.getContent());
     if(!request.isNew()) builder.setId(request.getId());
 
@@ -57,6 +58,7 @@ class DataAccessRequestDtos {
       request.setAttachments(
         dto.getAttachmentsList().stream().map(attachmentDtos::fromDto).collect(Collectors.<Attachment>toList()));
     }
+    TimestampsDtos.fromDto(dto.getTimestamps(), request);
 
     return request;
   }

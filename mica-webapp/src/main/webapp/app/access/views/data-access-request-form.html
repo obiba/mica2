@@ -9,45 +9,29 @@
   -->
 
 <div>
-  <h2 class="voffset5" translate>data-access-request.add</h2>
+  <h2 class="voffset5" ng-if="newRequest" translate>data-access-request.add</h2>
+
+  <h2 class="voffset5" ng-if="!newRequest" translate>data-access-request.edit</h2>
+
   <h3 ng-if="!newRequest && !canEdit" class="voffset2">{{dataAccessRequest.title}}</h3>
 
   <div>
     <obiba-alert id="DataAccessRequestEditController"></obiba-alert>
 
+    <form name="requestForm" ng-submit="submit(requestForm)">
+      <div ng-if="newRequest || canEdit" class="voffset2" form-input name="data-access-request.title"
+          model="dataAccessRequest.title"
+          label="data-access-request.title"></div>
+      <div sf-model="form.model" sf-form="form.definition" sf-schema="form.schema" required="true"></div>
 
-    <tabset class="voffset5">
-      <div class="pull-right">
-      </div>
-      <tab heading="{{'data-access-request.form' | translate}}">
-        <form name="requestForm" ng-submit="submit(requestForm)">
-          <div ng-if="newRequest || canEdit" class="voffset2" form-input name="data-access-request.title" model="dataAccessRequest.title"
-            label="data-access-request.title"></div>
-          <div sf-model="form.model" sf-form="form.definition" sf-schema="form.schema" required="true"></div>
+      <button type="submit" class="btn btn-primary">
+        <span translate>save</span>
+      </button>
 
-          <button ng-click=""
-            ng-if="!newRequest"
-            class="btn btn-default"
-            title="{{'Download' | translate}}">
-            <i class="glyphicon glyphicon-download-alt"></i>
-          </button>
-
-          <button type="submit" class="btn btn-primary">
-            <span translate>submit</span>
-          </button>
-
-          <a ng-click="cancel()" type="button" class="btn btn-default">
-            <span translate>cancel</span>
-          </a>
-        </form>
-      </tab>
-      <tab heading="{{'data-access-request.comments' | translate}}">
-      </tab>
-      <tab heading="{{'data-access-request.history' | translate}}">
-      </tab>
-    </tabset>
-
-
+      <a ng-click="cancel()" type="button" class="btn btn-default">
+        <span translate>cancel</span>
+      </a>
+    </form>
 
   </div>
 

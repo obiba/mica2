@@ -9,7 +9,12 @@
   -->
 
 <div>
-  <h2 class="voffset5" translate>data-access-request</h2>
+  <h2>
+    <ol class="mica-breadcrumb">
+      <li><a href="#/data-access-requests" translate>data-access-requests</a></li>
+      <li class="active">{{dataAccessRequest.title}}</li>
+    </ol>
+  </h2>
 
   <div class="row">
     <div class="col-md-6">
@@ -34,8 +39,32 @@
     </div>
   </div>
 
-  <a ng-href="#/data-access-request/{{dataAccessRequest.id}}/edit" class="btn btn-primary">
+  <a target="_self" ng-href="/ws/data-access-request/{{dataAccessRequest.id}}/_pdf" class="btn btn-default">
+    <i class="glyphicon glyphicon-download-alt"></i> <span translate>download</span>
+  </a>
+  <a ng-href="#/data-access-request/{{dataAccessRequest.id}}/edit"
+      ng-if="actions.canEdit(dataAccessRequest)"
+      class="btn btn-primary">
     <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
   </a>
+  <a ng-click=""
+      ng-if="actions.canDelete(dataAccessRequest)"
+      class="btn btn-danger">
+    <i class="fa fa-trash-o"></i> <span translate>delete</span>
+  </a>
+
+  <tabset class="voffset5">
+    <div class="pull-right">
+    </div>
+    <tab heading="{{'data-access-request.form' | translate}}">
+
+      <div sf-model="form.model" sf-form="form.definition" sf-schema="form.schema" readonly="true"></div>
+
+    </tab>
+    <tab heading="{{'data-access-request.comments' | translate}}">
+    </tab>
+    <tab heading="{{'data-access-request.history' | translate}}">
+    </tab>
+  </tabset>
 
 </div>

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.GET;
@@ -59,16 +60,26 @@ public class DataAccessRequestResource {
     return dtos.asDto(request);
   }
 
+  @PUT
+  @Timed
+  public Response get(@PathParam("id") String id, Mica.DataAccessRequestDto dto) {
+    subjectAclService.checkPermission("/data-access-request", "EDIT", id);
+    DataAccessRequest request = dtos.fromDto(dto);
+    if (!id.equals(request.getId())) throw new BadRequestException();
+    dataAccessRequestService.save(request);
+    return Response.noContent().build();
+  }
+
   @GET
   @Timed
-  @Path("/pdf")
+  @Path("/_pdf")
   public Response getPdf(@PathParam("id") String id, @QueryParam("lang") String lang) {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
 
     if (Strings.isNullOrEmpty(lang)) lang = LanguageTag.UNDETERMINED;
 
     return Response.ok(dataAccessRequestService.getRequestPdf(id, lang))
-      .header("Content-Disposition", "attachment; filename=\"" + "data-access-request.pdf" + "\"").build();
+      .header("Content-Disposition", "attachment; filename=\"" + "data-access-request-" + id + ".pdf" + "\"").build();
   }
 
   @DELETE
