@@ -42,14 +42,43 @@ mica.dataAccessRequest
       });
     }])
 
-  .controller('DataAccessRequestViewController', ['$scope', '$routeParams', 'DataAccessRequestResource',
+  .controller('DataAccessRequestViewController', ['$scope', '$routeParams', 'DataAccessRequestResource', 'DataAccessRequestService', 'DataAccessFormResource', 'AlertService', 'ServerErrorUtils',
 
-    function ($scope, $routeParams, DataAccessRequestResource) {
+    function ($scope, $routeParams, DataAccessRequestResource, DataAccessRequestService, DataAccessFormResource, AlertService, ServerErrorUtils) {
+
+      var onError = function(response) {
+        AlertService.alert({
+          id: 'DataAccessRequestEditController',
+          type: 'danger',
+          msg: ServerErrorUtils.buildMessage(response)
+        });
+      };
+
+      $scope.form = {
+        schema: {},
+        definition: {},
+        model: {}
+      };
+
+      $scope.actions = DataAccessRequestService.actions;
 
       $scope.dataAccessRequest = $routeParams.id ?
-        DataAccessRequestResource.get({id: $routeParams.id}, function(dataAccessRequest) {
-          return dataAccessRequest;
-        }) : {};
+        DataAccessRequestResource.get({id: $routeParams.id}, function onSuccess(request) {
+          $scope.form.model = request.content ? JSON.parse(request.content) : {};
+
+          // Retrieve form data
+          DataAccessFormResource.get(
+            function onSuccess(dataAccessForm) {
+              $scope.form.definition = JSON.parse(dataAccessForm.definition);
+              $scope.form.schema = JSON.parse(dataAccessForm.schema);
+              $scope.form.schema.readonly = true;
+              $scope.$broadcast('schemaFormRedraw');
+            },
+            onError
+          );
+
+          return request;
+        }): {};
 
     }])
 
