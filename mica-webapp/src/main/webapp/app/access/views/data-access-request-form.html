@@ -9,9 +9,19 @@
   -->
 
 <div>
-  <h2 class="voffset5" ng-if="newRequest" translate>data-access-request.add</h2>
-
-  <h2 class="voffset5" ng-if="!newRequest" translate>data-access-request.edit</h2>
+  <h3>
+    <ol class="mica-breadcrumb">
+      <li><a href="#/data-access-requests" translate>data-access-requests</a></li>
+      <li class="active">
+        <span ng-if="newRequest" translate>add-sm</span>
+        <span ng-if="!newRequest" translate>edit-sm</span>
+        <small><span translate>or</span>
+          <a ng-click="cancel()">
+            <span translate>cancel-sm</span>
+          </a></small>
+      </li>
+    </ol>
+  </h3>
 
   <h3 ng-if="!newRequest && !canEdit" class="voffset2">{{dataAccessRequest.title}}</h3>
 
@@ -21,13 +31,21 @@
     <form name="requestForm" ng-submit="submit(requestForm)">
       <div ng-if="newRequest || canEdit" class="voffset2" form-input name="data-access-request.title"
           model="dataAccessRequest.title"
-          label="data-access-request.title"></div>
-      <div sf-model="form.model" sf-form="form.definition" sf-schema="form.schema" required="true"></div>
+          label="data-access-request.title"
+          help="data-access-request.title-help"></div>
 
-      <div class="form-group">
-        <h3 translate>attachments</h3>
-        <attachment-input files="dataAccessRequest.attachments" multiple="true"></attachment-input>
-      </div>
+      <tabset class="voffset5">
+        <div class="pull-right">
+        </div>
+        <tab heading="{{'data-access-request.form' | translate}}">
+          <div sf-model="form.model" sf-form="form.definition" sf-schema="form.schema" required="true"></div>
+        </tab>
+        <tab heading="{{'attachments' | translate}}">
+          <div class="form-group">
+            <attachment-input files="dataAccessRequest.attachments" multiple="true"></attachment-input>
+          </div>
+        </tab>
+      </tabset>
 
       <a ng-click="cancel()" type="button" class="btn btn-default">
         <span translate>cancel</span>

@@ -191,7 +191,6 @@ mica.dataAccessRequest
               $scope.canEdit = DataAccessRequestService.actions.canEdit(request);
               $scope.form.schema.readonly = !$scope.canEdit;
               $scope.$broadcast('schemaFormRedraw');
-              $scope.newRequest = false;
 
               request.attachments = request.attachments || [];
               return request;
@@ -210,7 +209,7 @@ mica.dataAccessRequest
         model: {}
       };
 
-      $scope.newRequest = true;
+      $scope.newRequest = $routeParams.id ? false : true;
       $scope.cancel = cancel;
       $scope.save = save;
       $scope.editable = true;
