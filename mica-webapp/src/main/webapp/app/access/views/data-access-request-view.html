@@ -18,8 +18,8 @@
 
   <obiba-alert id="DataAccessRequestViewController"></obiba-alert>
 
-  <p class="help-block pull-left"><span translate>created-by</span> {{dataAccessRequest.title}} <span
-      class="label label-success">{{dataAccessRequest.status}}</span></p>
+  <p class="help-block pull-left"><span translate>created-by</span> {{dataAccessRequest.applicant}} <span
+    class="label label-success">{{dataAccessRequest.status}}</span></p>
 
 
   <div class="pull-right">
@@ -28,39 +28,34 @@
       <i class="glyphicon glyphicon-download-alt"></i> <span translate>download</span>
     </a>
     <a ng-href="#/data-access-request/{{dataAccessRequest.id}}/edit"
-        ng-if="actions.canEdit(dataAccessRequest)"
-        class="btn btn-primary"  title="{{'edit' | translate}}">
+      ng-if="actions.canEdit(dataAccessRequest)"
+      class="btn btn-primary" title="{{'edit' | translate}}">
       <i class="fa fa-pencil-square-o"></i>
     </a>
 
     <a ng-click="submit()"
-        ng-if="actions.canEditStatus(dataAccessRequest) && nextStatus.canSubmit(dataAccessRequest)"
-        class="btn btn-info">
-      <span translate>submit</span>
+      ng-if="actions.canEditStatus(dataAccessRequest) && nextStatus.canSubmit(dataAccessRequest)"
+      class="btn btn-info" translate>submit
     </a>
     <a ng-click="reopen()"
-        ng-if="actions.canEditStatus(dataAccessRequest) && nextStatus.canReopen(dataAccessRequest)"
-        class="btn btn-info">
-      <i class="fa fa-check"></i> <span translate>reopen</span>
+      ng-if="actions.canEditStatus(dataAccessRequest) && nextStatus.canReopen(dataAccessRequest)"
+      class="btn btn-info" translate>reopen
     </a>
     <a ng-click="review()"
-        ng-if="actions.canEditStatus(dataAccessRequest) && nextStatus.canReview(dataAccessRequest)"
-        class="btn btn-info">
-      <i class="fa fa-check"></i> <span translate>review</span>
+      ng-if="actions.canEditStatus(dataAccessRequest) && nextStatus.canReview(dataAccessRequest)"
+      class="btn btn-info" translate>review
     </a>
     <a ng-click="approve()"
-        ng-if="actions.canEditStatus(dataAccessRequest) && nextStatus.canApprove(dataAccessRequest)"
-        class="btn btn-info">
-      <i class="fa fa-check"></i> <span translate>approve</span>
+      ng-if="actions.canEditStatus(dataAccessRequest) && nextStatus.canApprove(dataAccessRequest)"
+      class="btn btn-info" translate>approve
     </a>
     <a ng-click="reject()"
-        ng-if="actions.canEditStatus(dataAccessRequest) && nextStatus.canReject(dataAccessRequest)"
-        class="btn btn-info">
-      <i class="fa fa-check"></i> <span translate>reject</span>
+      ng-if="actions.canEditStatus(dataAccessRequest) && nextStatus.canReject(dataAccessRequest)"
+      class="btn btn-info" translate>reject
     </a>
     <a ng-click="delete()"
-        ng-if="actions.canDelete(dataAccessRequest)"
-        class="btn btn-danger" title="{{'delete' | translate}}">
+      ng-if="actions.canDelete(dataAccessRequest)"
+      class="btn btn-danger" title="{{'delete' | translate}}">
       <i class="fa fa-trash-o"></i>
     </a>
   </div>
@@ -77,7 +72,7 @@
     </tab>
     <tab heading="{{'attachments' | translate}}">
       <attachment-list files="dataAccessRequest.attachments"
-          href-builder="getDownloadHref(attachments, id)"></attachment-list>
+        href-builder="getDownloadHref(attachments, id)"></attachment-list>
     </tab>
     <tab heading="{{'data-access-request.comments' | translate}}">
     </tab>
