@@ -45,6 +45,8 @@ public class DataAccessRequest extends AbstractAuditableDocument
 
   private List<Attachment> attachments;
 
+  private List<StatusChange> statusChangeHistory;
+
   //
   // Accessors
   //
@@ -121,6 +123,19 @@ public class DataAccessRequest extends AbstractAuditableDocument
   @Override
   public Attachment findAttachmentById(String attachmentId) {
     return getAttachments().stream().filter(a -> a != null && a.getId().equals(attachmentId)).findAny().orElse(null);
+  }
+
+  public List<StatusChange> getStatusChangeHistory() {
+    if (statusChangeHistory == null) statusChangeHistory = Lists.newArrayList();
+    return statusChangeHistory;
+  }
+
+  public void addAttachment(@NotNull StatusChange statusChange) {
+    getStatusChangeHistory().add(statusChange);
+  }
+
+  public void setStatusChangeHistory(List<StatusChange> statusChangeHistory) {
+    this.statusChangeHistory = statusChangeHistory;
   }
 
   @Override

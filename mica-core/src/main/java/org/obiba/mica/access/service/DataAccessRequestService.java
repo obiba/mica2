@@ -13,10 +13,12 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.PdfUtils;
 import org.obiba.mica.access.DataAccessRequestRepository;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessRequest;
+import org.obiba.mica.access.domain.StatusChange;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.file.Attachment;
@@ -90,7 +92,7 @@ public class DataAccessRequestService {
     Sets.SetView<Attachment> toSave = null;
 
     if(request.isNew()) {
-      saved.setStatus(DataAccessRequest.Status.OPENED);
+      setAndLogStatus(saved, DataAccessRequest.Status.OPENED);
       //generateId(saved);
     } else {
       saved = dataAccessRequestRepository.findOne(request.getId());
@@ -103,12 +105,13 @@ public class DataAccessRequestService {
         from = saved.getStatus();
         // validate the status
         saved.setStatus(request.getStatus());
+        saved.setStatusChangeHistory(request.getStatusChangeHistory());
         // merge beans
         BeanUtils.copyProperties(request, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
           "lastModifiedDate");
       } else {
         saved = request;
-        saved.setStatus(DataAccessRequest.Status.OPENED);
+        setAndLogStatus(saved, DataAccessRequest.Status.OPENED);
       }
     }
 
@@ -144,7 +147,7 @@ public class DataAccessRequestService {
   public DataAccessRequest updateStatus(@NotNull String id, @NotNull DataAccessRequest.Status status)
     throws NoSuchDataAccessRequestException {
     DataAccessRequest request = findById(id);
-    request.setStatus(status);
+    setAndLogStatus(request, status);
     save(request);
     return request;
   }
@@ -310,5 +313,17 @@ public class DataAccessRequestService {
     }
 
     return null;
+  }
+
+  private void setAndLogStatus(DataAccessRequest request, DataAccessRequest.Status to) {
+    DataAccessRequest.Status from = request.getStatus();
+    request.setStatus(to);
+    request.getStatusChangeHistory().add( //
+      StatusChange.newBuilder() //
+        .previous(from) //
+        .current(to) //
+        .author(SecurityUtils.getSubject().getPrincipal().toString()) //
+        .now().build() //
+    ); //
   }
 }

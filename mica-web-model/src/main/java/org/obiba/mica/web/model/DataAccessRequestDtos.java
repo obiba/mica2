@@ -17,6 +17,9 @@ class DataAccessRequestDtos {
   private AttachmentDtos attachmentDtos;
 
   @Inject
+  private StatusChangeDtos statusChangeDtos;
+
+  @Inject
   private SubjectAclService subjectAclService;
 
   @NotNull
@@ -30,6 +33,8 @@ class DataAccessRequestDtos {
     if(!request.isNew()) builder.setId(request.getId());
 
     request.getAttachments().forEach(attachment -> builder.addAttachments(attachmentDtos.asDto(attachment)));
+
+    request.getStatusChangeHistory().forEach(statusChange -> builder.addStatusChangeHistory(statusChangeDtos.asDto(statusChange)));
 
     // possible actions depending on the caller
     if (subjectAclService.isPermitted("/data-access-request", "VIEW", request.getId())) {
