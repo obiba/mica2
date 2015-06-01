@@ -517,7 +517,7 @@ message DataAccessRequestDto {
     required string from = 1;
     required string to = 2;
     required string author = 3;
-    required string changeOn = 4;
+    required string changedOn = 4;
   }
 
   optional string id = 1;

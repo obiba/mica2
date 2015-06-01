@@ -63,8 +63,6 @@
   <div class="clearfix"></div>
 
   <tabset class="voffset5">
-    <div class="pull-right">
-    </div>
     <tab ng-click="selectTab('form')" heading="{{'data-access-request.form' | translate}}">
       <form id="request-form" name="forms.requestForm">
         <div sf-model="form.model" sf-form="form.definition" sf-schema="form.schema"></div>
@@ -79,6 +77,7 @@
       <obiba-comment-editor on-submit="submitComment"></obiba-comment-editor>
     </tab>
     <tab ng-click="selectTab('history')" heading="{{'data-access-request.history' | translate}}">
+      <div ng-include="'app/access/views/data-access-request-histroy-view.html'"></div>
     </tab>
   </tabset>
 
