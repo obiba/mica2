@@ -540,6 +540,7 @@
     "delete-dialog-title": "Delete Study",
     "delete-dialog-message": "Are you sure you want to delete the study?"
   },
+  "all": "All",
   "name": "Name",
   "value": "Value",
   "values": "Values",
@@ -602,10 +603,12 @@
     "title": "Title",
     "title-help": "Short summary to help identifying the request.",
     "status": "Status",
+    "lastUpdate": "Last Update",
     "none": "No Data Access requested.",
     "add": "Add Data Access Request",
     "edit": "Edit Data Access Request",
     "form": "Application Form",
+    "select-status": "Select a Status",
     "comments": "Comments",
     "history": "History",
     "delete-dialog": {

@@ -7,7 +7,8 @@ mica.constant('USER_ROLES', {
   admin: 'mica-administrator',
   reviewer: 'mica-reviewer',
   editor: 'mica-editor',
-  user: 'mica-user'
+  user: 'mica-user',
+  dao: 'mica-data-access-officer'
 });
 
 /* Services */

@@ -58,6 +58,8 @@ public class CurrentSessionResource {
         builder.setRole(Roles.MICA_REVIEWER);
       } else if (subject.hasRole(Roles.MICA_EDITOR)) {
         builder.setRole(Roles.MICA_EDITOR);
+      } else if (subject.hasRole(Roles.MICA_DAO)) {
+        builder.setRole(Roles.MICA_DAO);
       } else {
         builder.setRole(Roles.MICA_USER);
       }

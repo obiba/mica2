@@ -20,5 +20,6 @@ mica.dataAccessRequest = angular.module('mica.data-access-request', [
   'ngRoute',
   'ui.bootstrap',
   'ui',
-  'pascalprecht.translate'
+  'pascalprecht.translate',
+  'angularMoment'
 ]);

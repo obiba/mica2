@@ -12,10 +12,13 @@
 
 mica.dataAccessRequest
 
-  .controller('DataAccessRequestListController', ['$rootScope', '$scope', 'DataAccessRequestsResource', 'DataAccessRequestResource', 'DataAccessRequestService', 'NOTIFICATION_EVENTS',
+  .controller('DataAccessRequestListController', ['$rootScope', '$scope', 'DataAccessRequestsResource', 'DataAccessRequestResource', 'DataAccessRequestService', 'NOTIFICATION_EVENTS', 'Session', 'USER_ROLES',
 
-    function ($rootScope, $scope, DataAccessRequestsResource, DataAccessRequestResource, DataAccessRequestService, NOTIFICATION_EVENTS) {
+    function ($rootScope, $scope, DataAccessRequestsResource, DataAccessRequestResource, DataAccessRequestService, NOTIFICATION_EVENTS, Session, USER_ROLES) {
 
+      $scope.REQUEST_STATUS = [{}, {status: 'OPENED'}, {status: 'REJECTED'}];
+      $scope.searchStatus = $scope.REQUEST_STATUS[0];
+      $scope.showApplicant = [USER_ROLES.dao, USER_ROLES.admin].indexOf(Session.role) > -1;
       $scope.requests = DataAccessRequestsResource.query();
       $scope.actions = DataAccessRequestService.actions;
 
@@ -104,7 +107,7 @@ mica.dataAccessRequest
         if ($scope.forms.requestForm.$valid) {
           DataAccessRequestStatusResource.update({
             id: $scope.dataAccessRequest.id,
-            status: "SUBMITTED"
+            status: 'SUBMITTED'
           }, onUpdatStatusSuccess, onError);
         } else {
           AlertService.alert({
@@ -117,25 +120,25 @@ mica.dataAccessRequest
       $scope.reopen = function () {
         DataAccessRequestStatusResource.update({
           id: $scope.dataAccessRequest.id,
-          status: "OPENED"
+          status: 'OPENED'
         }, onUpdatStatusSuccess, onError);
       };
       $scope.review = function () {
         DataAccessRequestStatusResource.update({
           id: $scope.dataAccessRequest.id,
-          status: "REVIEWED"
+          status: 'REVIEWED'
         }, onUpdatStatusSuccess, onError);
       };
       $scope.approve = function () {
         DataAccessRequestStatusResource.update({
           id: $scope.dataAccessRequest.id,
-          status: "APPROVED"
+          status: 'APPROVED'
         }, onUpdatStatusSuccess, onError);
       };
       $scope.reject = function () {
         DataAccessRequestStatusResource.update({
           id: $scope.dataAccessRequest.id,
-          status: "REJECTED"
+          status: 'REJECTED'
         }, onUpdatStatusSuccess, onError);
       };
 
