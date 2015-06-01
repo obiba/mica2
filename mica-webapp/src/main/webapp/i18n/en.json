@@ -564,6 +564,7 @@
   "apply": "Apply",
   "on": "On",
   "by": "By",
+  "created-by": "Created by",
   "other": "Other",
   "notification": "Notification",
   "required": "Required",
@@ -580,6 +581,10 @@
   "total": "Total",
   "type": "Type",
   "fullscreen": "Switch to fullscreen mode",
+  "add-sm": "add",
+  "cancel-sm": "cancel",
+  "edit-sm": "edit",
+  "or": "or",
   "server": {
     "error": {
       "403": "Server rejected your request, please make sure you are logged in and try again."
@@ -595,6 +600,7 @@
   "data-access-request": {
     "applicant": "Applicant",
     "title": "Title",
+    "title-help": "Short summary to help identifying the request.",
     "status": "Status",
     "none": "No Data Access requested.",
     "add": "Add Data Access Request",
