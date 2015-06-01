@@ -19,8 +19,23 @@ module.exports = function (grunt) {
           'src/alert/alert.js',
           'src/alert/alert-service.js',
           'src/alert/alert-directive.js',
+          'src/comments/comments.js',
+          'src/comments/comments-directive.js',
           'src/ng-obiba.js'
         ]
+      }
+    },
+
+    less: {
+      development: {
+        options: {
+          compress: true,
+          yuicompress: true,
+          optimization: 2
+        },
+        files: {
+          "dist/css/ng-obiba.css": "less/ng-obiba.less" // destination file and source file
+        }
       }
     },
 
@@ -81,6 +96,7 @@ module.exports = function (grunt) {
     }
   });
 
+  grunt.loadNpmTasks('grunt-contrib-less');
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -88,6 +104,6 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-html2js');
   grunt.loadNpmTasks('grunt-karma');
 
-  grunt.registerTask('default', ['clean:build', 'jshint', 'html2js', 'concat', 'clean:tmp', 'karma', 'uglify']);
+  grunt.registerTask('default', ['clean:build', 'less', 'jshint', 'html2js', 'concat', 'clean:tmp', 'karma', 'uglify']);
 
 };

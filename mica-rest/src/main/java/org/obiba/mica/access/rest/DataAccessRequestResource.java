@@ -124,7 +124,7 @@ public class DataAccessRequestResource {
   @GET
   @Path("/comments")
   public List<Mica.CommentDto> comments(@PathParam("id") String id) {
-    subjectAclService.checkPermission("/data-access-request/", "VIEW", id);
+    subjectAclService.checkPermission("/data-access-request", "VIEW", id);
     dataAccessRequestService.findById(id);
     return commentsService.findByClassAndInstance(DataAccessRequest.class.getSimpleName(), id).stream().map(dtos::asDto)
       .collect(Collectors.toList());

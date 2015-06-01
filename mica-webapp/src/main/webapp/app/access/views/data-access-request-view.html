@@ -65,7 +65,7 @@
   <tabset class="voffset5">
     <div class="pull-right">
     </div>
-    <tab heading="{{'data-access-request.form' | translate}}">
+    <tab ng-click="selectTab('form')" heading="{{'data-access-request.form' | translate}}">
       <form id="request-form" name="forms.requestForm">
         <div sf-model="form.model" sf-form="form.definition" sf-schema="form.schema"></div>
       </form>
@@ -74,9 +74,11 @@
       <attachment-list files="dataAccessRequest.attachments"
         href-builder="getDownloadHref(attachments, id)"></attachment-list>
     </tab>
-    <tab heading="{{'data-access-request.comments' | translate}}">
+    <tab ng-click="selectTab('comments')" heading="{{'data-access-request.comments' | translate}}">
+      <obiba-comments comments="form.comments" on-update="updateComment" on-delete="deleteComment"></obiba-comments>
+      <obiba-comment-editor on-submit="submitComment"></obiba-comment-editor>
     </tab>
-    <tab heading="{{'data-access-request.history' | translate}}">
+    <tab ng-click="selectTab('history')" heading="{{'data-access-request.history' | translate}}">
     </tab>
   </tabset>
 

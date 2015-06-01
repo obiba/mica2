@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba
 
  * License: GNU Public License version 3
- * Date: 2015-05-26
+ * Date: 2015-06-01
  */
 'use strict';
 
@@ -488,14 +488,170 @@ angular.module('obiba.alert')
   }]);
 ;'use strict';
 
+angular.module('obiba.comments', [
+  'obiba.utils',
+  'obiba.notification',
+  'obiba.form',
+  'templates-main',
+  'hc.marked',
+  'pascalprecht.translate',
+  'angularMoment'
+]);
+;'use strict';
+
+angular.module('obiba.comments')
+
+  .config(['markedProvider', function(markedProvider) {
+    markedProvider.setOptions({
+      gfm: true,
+      tables: true
+    });
+  }])
+
+  .filter('fromNow', ['moment', function(moment) {
+    return function(dateString) {
+      return moment(dateString).fromNow();
+    };
+  }])
+
+  .directive('obibaCommentEditor', [function () {
+    return {
+      restrict: 'E',
+      replace: true,
+      scope: {
+        onSubmit: '&',
+        onCancel: '&',
+        comment: '=?'
+      },
+      templateUrl: 'comments/comment-editor-template.tpl.html',
+      controller: 'ObibaCommentEditorController',
+      link: function(scope, elem, attrs) {
+        scope.isCancellable = angular.isDefined(attrs.onCancel);
+      }
+    };
+  }])
+
+  .controller('ObibaCommentEditorController', ['$scope',
+    function ($scope) {
+      var reset = function() {
+        $scope.comment = {message: null};
+      };
+
+      if (!$scope.comment) {
+        reset();
+      }
+
+      $scope.cancel = function() {
+        $scope.onCancel()();
+      };
+      $scope.send = function() {
+        $scope.onSubmit()($scope.comment);
+        reset();
+      };
+    }])
+
+
+  .directive('obibaComments', [function () {
+    return {
+      restrict: 'E',
+      scope: {
+        comments: '=',
+        onDelete: '&',
+        onUpdate: '&'
+      },
+      templateUrl: 'comments/comments-template.tpl.html',
+      controller: 'ObibaCommentsController'
+    };
+  }])
+
+  .controller('ObibaCommentsController', ['$scope',
+    function ($scope) {
+
+      var clearSelected = function(){
+        $scope.selected = -1;
+      };
+
+      $scope.submit = function(comment) {
+        $scope.onUpdate()(comment);
+        clearSelected();
+      };
+      $scope.edit = function(index) {
+        $scope.selected = index;
+      };
+      $scope.cancel = function() {
+        clearSelected();
+      };
+      $scope.remove = function(index) {
+        $scope.onDelete()($scope.comments[index]);
+      };
+    }]);
+
+
+;'use strict';
+
 angular.module('ngObiba', [
   'obiba.form',
   'obiba.notification',
   'obiba.rest',
   'obiba.utils',
-  'obiba.alert'
+  'obiba.alert',
+  'obiba.comments'
 ]);
-;angular.module('templates-main', ['form/form-checkbox-template.tpl.html', 'form/form-input-template.tpl.html', 'form/form-localized-input-template.tpl.html', 'form/form-textarea-template.tpl.html', 'notification/notification-confirm-modal.tpl.html', 'notification/notification-modal.tpl.html']);
+;angular.module('templates-main', ['comments/comment-editor-template.tpl.html', 'comments/comments-template.tpl.html', 'form/form-checkbox-template.tpl.html', 'form/form-input-template.tpl.html', 'form/form-localized-input-template.tpl.html', 'form/form-textarea-template.tpl.html', 'notification/notification-confirm-modal.tpl.html', 'notification/notification-modal.tpl.html']);
+
+angular.module("comments/comment-editor-template.tpl.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("comments/comment-editor-template.tpl.html",
+    "<form class=\"obiba-comment-form\" name=\"form\" role=\"form\" ng-submit=\"send()\">\n" +
+    "  <tabset>\n" +
+    "    <ul class=\"nav pull-right obiba-comment-form-marked-doc\">\n" +
+    "      <li>\n" +
+    "        <a class=\"obiba-comment-form-marked-doc\" href=\"//guides.github.com/features/mastering-markdown/\" target=\"_blank\">{{'comment.markdown-doc-link' | translate}}</a>\n" +
+    "      </li>\n" +
+    "    </ul>\n" +
+    "    <tab heading=\"{{'comment.write' | translate}}\">\n" +
+    "      <textarea id=\"obiba-comment-form-message\" ng-model=\"comment.message\" class=\"form-control obiba-comment-form-message\"></textarea>\n" +
+    "    </tab>\n" +
+    "    <tab heading=\"{{'comment.preview' | translate}}\">\n" +
+    "      <div id=\"obiba-comment-form-marked\" class=\"obiba-comment-form-marked\" marked=\"comment.message\"></div>\n" +
+    "    </tab>\n" +
+    "  </tabset>\n" +
+    "  <button ng-if=\"isCancellable\" ng-click=\"cancel\" type=\"submit\" class=\"btn btn-default obiba-comment-form-button\">\n" +
+    "    <span>{{'cancel' | translate}}</span>\n" +
+    "  </button>\n" +
+    "\n" +
+    "  <button ng-disabled=\"!comment.message\" type=\"submit\" class=\"btn btn-primary obiba-comment-form-button\">\n" +
+    "    <span>{{'comment.send' | translate}}</span>\n" +
+    "  </button>\n" +
+    "</form>\n" +
+    "");
+}]);
+
+angular.module("comments/comments-template.tpl.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("comments/comments-template.tpl.html",
+    "<div id=\"obiba-comments\">\n" +
+    "  <div class=\"obiba-comment-top-offset1 obiba-comment-bottom-offset1\" ng-repeat=\"comment in comments\">\n" +
+    "    <div ng-hide=\"selected === $index\">\n" +
+    "      <div class=\"obiba-comment-top-offset obiba-comment-bottom-offset\">\n" +
+    "        <span class=\"obiba-comment-icon\"><i class=\"glyphicon glyphicon-comment\"></i></span>\n" +
+    "        <span ng-if=\"!comment.modifiedBy\">{{'comment.created-by' | translate}} {{comment.createdBy}} {{comment.timestamps.created | fromNow }}</span>\n" +
+    "        <span ng-if=\"comment.modifiedBy\"> {{'comment.modified-by' | translate}} {{comment.modifiedBy}} {{comment.timestamps.lastUpdate | fromNow }}</span>\n" +
+    "        <span class=\"pull-right\">\n" +
+    "          <a ng-click=\"edit($index)\"\n" +
+    "             class=\"btn btn-primary btn-xs\">\n" +
+    "            <i class=\"fa fa-pencil-square-o\"></i>\n" +
+    "          </a>\n" +
+    "          <a ng-click=\"remove($index)\"\n" +
+    "             class=\"btn btn-danger btn-xs\">\n" +
+    "            <i class=\"fa fa-trash-o\"></i>\n" +
+    "          </a>\n" +
+    "        </span>\n" +
+    "      </div>\n" +
+    "      <div class=\"obiba-comment-comment-view\" marked=\"comment.message\"></div>\n" +
+    "    </div>\n" +
+    "    <obiba-comment-editor ng-show=\"selected === $index\" on-cancel=\"cancel\" on-submit=\"submit\" comment=\"comments[$index]\"></obiba-comment-editor>\n" +
+    "  </div>\n" +
+    "</div>");
+}]);
 
 angular.module("form/form-checkbox-template.tpl.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("form/form-checkbox-template.tpl.html",

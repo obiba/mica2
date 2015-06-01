@@ -5,5 +5,6 @@ angular.module('ngObiba', [
   'obiba.notification',
   'obiba.rest',
   'obiba.utils',
-  'obiba.alert'
+  'obiba.alert',
+  'obiba.comments'
 ]);

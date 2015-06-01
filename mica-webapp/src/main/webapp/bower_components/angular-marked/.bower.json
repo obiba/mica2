@@ -1,0 +1,41 @@
+{
+  "name": "angular-marked",
+  "version": "0.0.14",
+  "authors": [
+    "J. Harshbarger"
+  ],
+  "description": "AngularJS Markdown using marked.",
+  "main": "angular-marked.js",
+  "keywords": [
+    "angularjs",
+    "markdown",
+    "marked",
+    "directive",
+    "filter"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": ">= 1.2.5",
+    "marked": "~0.3.1"
+  },
+  "devDependencies": {
+    "angular-mocks": ">= 1.2.5"
+  },
+  "homepage": "https://github.com/Hypercubed/angular-marked",
+  "_release": "0.0.14",
+  "_resolution": {
+    "type": "version",
+    "tag": "v0.0.14",
+    "commit": "358d13711d63e17f947b659b1de45e9344044320"
+  },
+  "_source": "git://github.com/Hypercubed/angular-marked.git",
+  "_target": "~0.0.14",
+  "_originalSource": "angular-marked"
+}
