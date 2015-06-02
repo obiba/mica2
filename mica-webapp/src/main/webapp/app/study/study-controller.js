@@ -254,14 +254,12 @@ mica.study
     }])
 
   .controller('StudyPopulationController', ['$rootScope', '$scope', '$routeParams', '$location', '$log',
-    'DraftStudyResource', 'MicaConfigResource', 'FormServerValidation', 'MicaConstants', 'MicaStudiesConfigResource',
-    'MicaUtil',
-    function ($rootScope, $scope, $routeParams, $location, $log, DraftStudyResource, MicaConfigResource, FormServerValidation, MicaConstants,
-              MicaStudiesConfigResource, MicaUtil) {
-      $scope.getAavailableCountries = function(lang) {
-        return MicaConstants.COUNTRIES_ISO_CODES[lang];
-      };
-      $scope.availableCountries = MicaConstants.COUNTRIES_ISO_CODES;
+    'DraftStudyResource', 'MicaConfigResource', 'FormServerValidation', 'MicaStudiesConfigResource',
+    'MicaUtil', 'ObibaCountriesIsoCodes',
+    function ($rootScope, $scope, $routeParams, $location, $log, DraftStudyResource, MicaConfigResource, FormServerValidation,
+              MicaStudiesConfigResource, MicaUtil, ObibaCountriesIsoCodes) {
+
+      $scope.getAvailableCountries = function (locale) { return ObibaCountriesIsoCodes[locale]; };
       $scope.selectionCriteriaGenders = [];
       $scope.availableSelectionCriteria = [];
       $scope.recruitmentSourcesTypes = [];
