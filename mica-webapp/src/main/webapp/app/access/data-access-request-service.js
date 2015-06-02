@@ -66,8 +66,8 @@ mica.dataAccessRequest
       });
     }])
 
-  .factory('DataAccessRequestService',
-    function () {
+  .service('DataAccessRequestService', ['LocaleStringUtils', 'moment', '$filter',
+    function (LocaleStringUtils, moment, $filter) {
       this.status = {
         OPENED: 'OPENED',
         SUBMITTED: 'SUBMITTED',
@@ -125,5 +125,66 @@ mica.dataAccessRequest
 
       };
 
+      this.getStatusHistoryInfo = function() {
+        return {
+          opened: {
+            id: 'opened',
+            icon: 'glyphicon glyphicon-saved',
+            msg: $filter('translate')('data-access-request.histories.opened')
+          },
+          reopened: {
+            id: 'reopened',
+            icon: 'glyphicon glyphicon-repeat',
+            msg: $filter('translate')('data-access-request.histories.reopened')
+          },
+          submitted: {
+            id: 'submitted',
+            icon: 'glyphicon glyphicon-export',
+            msg: $filter('translate')('data-access-request.histories.submitted')
+          },
+          reviewed: {
+            id: 'reviewed',
+            icon: 'glyphicon glyphicon-check',
+            msg: $filter('translate')('data-access-request.histories.reviewed')
+          },
+          approved: {
+            id: 'approved',
+            icon: 'glyphicon glyphicon-ok',
+            msg: $filter('translate')('data-access-request.histories.approved')
+          },
+          rejected: {
+            id: 'rejected',
+            icon: 'glyphicon glyphicon-remove',
+            msg: $filter('translate')('data-access-request.histories.rejected')
+          }
+        };
+      };
+
+      this.getStatusHistoryInfoId = function(status) {
+        var id = 'opened';
+
+        if (status.from !== 'OPENED' || status.from !== status.to) {
+          switch (status.to) {
+            case 'OPENED':
+              id = 'reopened'
+              break;
+            case 'SUBMITTED':
+              id = 'submitted';
+              break;
+            case 'REVIEWED':
+              id = 'reviewed';
+              break;
+            case 'APPROVED':
+              id = 'approved';
+              break;
+            case 'REJECTED':
+              id = 'rejected';
+              break;
+          }
+        }
+
+        return id;
+      };
+
       return this;
-    });
+    }]);

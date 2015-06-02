@@ -585,6 +585,9 @@
   "add-sm": "add",
   "cancel-sm": "cancel",
   "edit-sm": "edit",
+  "status": "Status",
+  "changed-by": "Changed By",
+  "changed-on": "Changed On",
   "or": "or",
   "server": {
     "error": {
@@ -611,6 +614,14 @@
     "select-status": "Select a Status",
     "comments": "Comments",
     "history": "History",
+    "histories": {
+      "opened":   "Opened",
+      "submitted": "Submitted",
+      "reopened":  "Re-opened",
+      "reviewed":  "Reviewed",
+      "approved":  "Approved",
+      "rejected":  "Rejected"
+    },
     "delete-dialog": {
       "title": "Delete Data Access Request",
       "message": "Are you sure you want to delete Data Access '{{arg0}}' request by '{{arg1}}'?"

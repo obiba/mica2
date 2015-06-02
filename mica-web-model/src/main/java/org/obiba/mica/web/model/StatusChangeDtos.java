@@ -24,7 +24,7 @@ public class StatusChangeDtos {
       .setFrom(statusChange.getFrom().toString()) //
       .setTo(statusChange.getTo().toString()) //
       .setAuthor(statusChange.getAuthor()) //
-      .setChangeOn(statusChange.getChangedOn().toString())
+      .setChangedOn(statusChange.getChangedOn().toString())
       .build();
   }
 
@@ -33,7 +33,7 @@ public class StatusChangeDtos {
       .previous(DataAccessRequest.Status.valueOf(dto.getFrom())) //
       .current(DataAccessRequest.Status.valueOf(dto.getTo())) //
       .author(dto.getAuthor()) //
-      .changedOn(DateTime.parse(dto.getChangeOn())) //
+      .changedOn(DateTime.parse(dto.getChangedOn())) //
       .build(); //
   }
 

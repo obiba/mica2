@@ -45,9 +45,9 @@ mica.dataAccessRequest
       });
     }])
 
-  .controller('DataAccessRequestViewController', ['$rootScope', '$scope', '$routeParams', 'DataAccessRequestResource', 'DataAccessRequestService', 'DataAccessRequestStatusResource', 'DataAccessFormResource', 'DataAccessRequestCommentsResource', 'DataAccessRequestCommentResource', 'AlertService', 'ServerErrorUtils', 'NOTIFICATION_EVENTS',
+  .controller('DataAccessRequestViewController', ['$rootScope', '$scope', '$location', '$routeParams', 'DataAccessRequestResource', 'DataAccessRequestService', 'DataAccessRequestStatusResource', 'DataAccessFormResource', 'DataAccessRequestCommentsResource', 'DataAccessRequestCommentResource', 'AlertService', 'ServerErrorUtils', 'NOTIFICATION_EVENTS',
 
-    function ($rootScope, $scope, $routeParams, DataAccessRequestResource, DataAccessRequestService, DataAccessRequestStatusResource, DataAccessFormResource, DataAccessRequestCommentsResource, DataAccessRequestCommentResource, AlertService, ServerErrorUtils, NOTIFICATION_EVENTS) {
+    function ($rootScope, $scope, $location, $routeParams, DataAccessRequestResource, DataAccessRequestService, DataAccessRequestStatusResource, DataAccessFormResource, DataAccessRequestCommentsResource, DataAccessRequestCommentResource, AlertService, ServerErrorUtils, NOTIFICATION_EVENTS) {
 
       var onError = function (response) {
         AlertService.alert({
@@ -115,6 +115,9 @@ mica.dataAccessRequest
       $scope.submitComment = submitComment;
       $scope.updateComment = updateComment;
       $scope.deleteComment = deleteComment;
+      $scope.getStatusHistoryInfoId = DataAccessRequestService.getStatusHistoryInfoId;
+      $scope.getStatusHistoryInfo = DataAccessRequestService.getStatusHistoryInfo();
+
 
       var getRequest = function () {
         return DataAccessRequestResource.get({id: $routeParams.id}, function onSuccess(request) {
@@ -141,8 +144,26 @@ mica.dataAccessRequest
       $scope.dataAccessRequest = $routeParams.id ? getRequest() : {};
 
       $scope.delete = function () {
-        DataAccessRequestResource.delete({id: $scope.dataAccessRequest.id});
+        $scope.requestToDelete = $scope.dataAccessRequest.id;
+        $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
+          {
+            titleKey: 'data-access-request.delete-dialog.title',
+            messageKey:'data-access-request.delete-dialog.message',
+            messageArgs: [$scope.dataAccessRequest.title, $scope.dataAccessRequest.applicant]
+          }, $scope.requestToDelete
+        );
       };
+
+      $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, id) {
+        if ($scope.requestToDelete === id) {
+          DataAccessRequestResource.delete({id: $scope.requestToDelete},
+            function () {
+              $location.path('/data-access-requests').replace();
+            });
+
+          delete $scope.requestToDelete;
+        }
+      });
 
       var onUpdatStatusSuccess = function () {
         $scope.dataAccessRequest = getRequest();
