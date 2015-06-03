@@ -68,12 +68,20 @@ mica.dataAccessRequest
 
   .service('DataAccessRequestService', ['LocaleStringUtils', 'moment', '$filter',
     function (LocaleStringUtils, moment, $filter) {
-      this.status = {
+      var statusList = {
         OPENED: 'OPENED',
         SUBMITTED: 'SUBMITTED',
         REVIEWED: 'REVIEWED',
         APPROVED: 'APPROVED',
         REJECTED: 'REJECTED'
+      };
+
+      this.status = statusList;
+
+      this.getStatusFilterData = function() {
+        return Object.keys(statusList).map(function(key) {
+           return $filter('translate')(statusList[key]);
+        });
       };
 
       var canDoAction = function (request, action) {

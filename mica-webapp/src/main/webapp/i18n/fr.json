@@ -539,6 +539,7 @@
     "delete-dialog-title": "Delete Study",
     "delete-dialog-message": "Are you sure you want to delete the study?"
   },
+  "all": "All",
   "name": "Name",
   "value": "Value",
   "values": "Values",
@@ -549,13 +550,21 @@
   "cancel": "Cancel",
   "ok": "OK",
   "confirmation": "Confirmation",
+  "submit": "Submit",
+  "review": "Review",
+  "reopen": "Reopen",
+  "approve": "Approve",
+  "reject": "Reject",
   "close": "Close",
   "clear": "Clear",
   "today": "Today",
   "save": "Save",
+  "validate": "Validate",
+  "download": "Download",
   "apply": "Apply",
   "on": "On",
   "by": "By",
+  "created-by": "Created by",
   "other": "Other",
   "notification": "Notification",
   "required": "Required",
@@ -570,5 +579,100 @@
   "attachments": "Attachments",
   "allowed-file-types": "Allowed file types:",
   "total": "Total",
-  "type": "Type"
+  "type": "Type",
+  "fullscreen": "Switch to fullscreen mode",
+  "add-sm": "add",
+  "cancel-sm": "cancel",
+  "edit-sm": "edit",
+  "status": "Status",
+  "changed-by": "Changed By",
+  "changed-on": "Changed On",
+  "OPENED": "Opened",
+  "SUBMITTED": "Submitted",
+  "REVIEWED": "Reviewed",
+  "APPROVED": "Approved",
+  "REJECTED": "Rejected",
+  "or": "or",
+  "server": {
+    "error": {
+      "403": "Server rejected your request, please make sure you are logged in and try again."
+    }
+  },
+  "file": {
+    "upload": {
+      "button": "Choose file",
+      "message": "No file chosen"
+    }
+  },
+  "data-access-requests": "Data Access Requests",
+  "data-access-request": {
+    "applicant": "Applicant",
+    "title": "Title",
+    "title-help": "Short summary to help identifying the request.",
+    "status": "Status",
+    "lastUpdate": "Last Update",
+    "none": "No Data Access requested.",
+    "add": "Add Data Access Request",
+    "edit": "Edit Data Access Request",
+    "form": "Application Form",
+    "select-status": "Select a Status",
+    "comments": "Comments",
+    "history": "History",
+    "status-placeholder": "Filter by status",
+    "histories": {
+      "opened":   "Opened",
+      "submitted": "Submitted",
+      "reopened":  "Re-opened",
+      "reviewed":  "Reviewed",
+      "approved":  "Approved",
+      "rejected":  "Rejected"
+    },
+    "delete-dialog": {
+      "title": "Delete Data Access Request",
+      "message": "Are you sure you want to delete Data Access '{{arg0}}' request by '{{arg1}}'?"
+    },
+    "submit": {
+      "invalid": "The request cannot be submitted because of an incomplete application form."
+    }
+  },
+  "data-access-config": {
+    "menu": "Data Access",
+    "title": "Data Access Configuration",
+    "info": "Configure the Data Access Form schema and definition, see <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details.",
+    "saved": "Data Access Form is successfully updated.",
+    "pdf-template": "PDF Template",
+    "schema-form": "Form",
+    "schema" : {
+      "tab": "Schema",
+      "info": "The form schema specifies the data structure."
+    },
+    "definition" : {
+      "tab": "Definition",
+      "info": "The form definition specifies how to display the schema and how to validate the data inputs."
+    },
+    "preview": {
+      "model-modal": "Model Preview",
+      "tab": "Preview",
+      "show-model": "Model",
+      "test": "Test Form Validation",
+      "tested": "Form is validated successfully."
+    },
+    "model": {
+      "tab": "Model",
+      "info": "The form model stores the valid input data, invalid values are excluded."
+    }
+  },
+  "comment": {
+    "write": "Write",
+    "preview": "Preview",
+    "send": "Comment",
+    "markdown-doc-link": "Markdown documentation",
+    "created-by": "Created by",
+    "modified-by": "Last modified by",
+    "delete-dialog": {
+      "title": "Delete Comment",
+      "message": "Are you sure you want to delete this comment by '{{arg0}}'?"
+    }
+  }
+
 }
