@@ -16,8 +16,8 @@ mica.dataAccessRequest
 
     function ($rootScope, $scope, DataAccessRequestsResource, DataAccessRequestResource, DataAccessRequestService, NOTIFICATION_EVENTS, Session, USER_ROLES) {
 
-      $scope.REQUEST_STATUS = [{}, {status: 'OPENED'}, {status: 'REJECTED'}];
-      $scope.searchStatus = $scope.REQUEST_STATUS[0];
+      $scope.REQUEST_STATUS = DataAccessRequestService.getStatusFilterData();
+      $scope.searchStatus = {};
       $scope.showApplicant = [USER_ROLES.dao, USER_ROLES.admin].indexOf(Session.role) > -1;
       $scope.requests = DataAccessRequestsResource.query();
       $scope.actions = DataAccessRequestService.actions;

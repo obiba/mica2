@@ -588,6 +588,11 @@
   "status": "Status",
   "changed-by": "Changed By",
   "changed-on": "Changed On",
+  "OPENED": "Opened",
+  "SUBMITTED": "Submitted",
+  "REVIEWED": "Reviewed",
+  "APPROVED": "Approved",
+  "REJECTED": "Rejected",
   "or": "or",
   "server": {
     "error": {
@@ -614,6 +619,7 @@
     "select-status": "Select a Status",
     "comments": "Comments",
     "history": "History",
+    "status-placeholder": "Filter by status",
     "histories": {
       "opened":   "Opened",
       "submitted": "Submitted",
