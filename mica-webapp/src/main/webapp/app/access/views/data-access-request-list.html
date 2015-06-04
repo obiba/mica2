@@ -70,7 +70,7 @@
             {{request.title}}
           </td>
           <td>
-            {{(request.timestamps.lastUpdate || request.timestamps.created) | amDateFormat:'YYYY-MM-DD HH:mm:ss'}}
+            {{(request.timestamps.lastUpdate || request.timestamps.created) | fromNow}}
           </td>
           <td>
             {{request.status | translate}}
