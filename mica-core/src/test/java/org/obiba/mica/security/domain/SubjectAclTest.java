@@ -1,7 +1,6 @@
-package org.obiba.mica.core.security.domain;
+package org.obiba.mica.security.domain;
 
 import org.junit.Test;
-import org.obiba.mica.security.domain.SubjectAcl;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

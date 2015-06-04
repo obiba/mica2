@@ -21,13 +21,13 @@ import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.domain.StatusChange;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.core.service.MailService;
+import org.obiba.mica.core.support.IdentifierGenerator;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.GridFsService;
 import org.obiba.mica.file.TempFileService;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
-import org.obiba.mica.network.NoSuchNetworkException;
 import org.obiba.mica.security.Roles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,7 +93,7 @@ public class DataAccessRequestService {
 
     if(request.isNew()) {
       setAndLogStatus(saved, DataAccessRequest.Status.OPENED);
-      //generateId(saved);
+      saved.setId(generateId());
     } else {
       saved = dataAccessRequestRepository.findOne(request.getId());
       if(saved != null) {
@@ -142,7 +142,7 @@ public class DataAccessRequestService {
    *
    * @param id
    * @param status
-   * @throws NoSuchNetworkException
+   * @throws NoSuchDataAccessRequestException
    */
   public DataAccessRequest updateStatus(@NotNull String id, @NotNull DataAccessRequest.Status status)
     throws NoSuchDataAccessRequestException {
@@ -175,10 +175,10 @@ public class DataAccessRequestService {
    *
    * @param id
    * @return
-   * @throws NoSuchNetworkException
+   * @throws NoSuchDataAccessRequestException
    */
   @NotNull
-  public DataAccessRequest findById(@NotNull String id) throws NoSuchNetworkException {
+  public DataAccessRequest findById(@NotNull String id) throws NoSuchDataAccessRequestException {
     DataAccessRequest request = dataAccessRequestRepository.findOne(id);
     if(request == null) throw NoSuchDataAccessRequestException.withId(id);
     return request;
@@ -325,5 +325,13 @@ public class DataAccessRequestService {
         .author(SecurityUtils.getSubject().getPrincipal().toString()) //
         .now().build() //
     ); //
+  }
+
+  private String generateId() {
+    IdentifierGenerator idGenerator = IdentifierGenerator.newBuilder().size(6).zeros().hex().build();
+    while(true) {
+      String id = idGenerator.generateIdentifier();
+      if (dataAccessRequestRepository.findOne(id) == null) return id;
+    }
   }
 }

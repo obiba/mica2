@@ -54,6 +54,7 @@
       <table class="table table-striped">
         <thead>
         <tr>
+          <th>ID</th>
           <th translate ng-if="showApplicant">data-access-request.applicant</th>
           <th translate>data-access-request.title</th>
           <th translate>data-access-request.lastUpdate</th>
@@ -63,6 +64,9 @@
         </thead>
         <tbody>
         <tr dir-paginate="request in requests | filter:{status: searchStatus.filter} | filter:searchText | itemsPerPage: 20">
+          <td>
+            {{request.id}}
+          </td>
           <td ng-if="showApplicant">
             {{request.applicant}}
           </td>

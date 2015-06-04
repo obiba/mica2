@@ -12,7 +12,7 @@
   <h3>
     <ol class="mica-breadcrumb">
       <li><a href="#/data-access-requests" translate>data-access-requests</a></li>
-      <li class="active">{{dataAccessRequest.title}}</li>
+      <li class="active">{{dataAccessRequest.id}}</li>
     </ol>
   </h3>
 
@@ -62,6 +62,8 @@
   </div>
 
   <div class="clearfix"></div>
+
+  <h3>{{dataAccessRequest.title}}</h3>
 
   <tabset class="voffset5">
     <tab ng-click="selectTab('form')" heading="{{'data-access-request.form' | translate}}">
