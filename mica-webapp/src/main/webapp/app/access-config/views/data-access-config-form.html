@@ -10,19 +10,12 @@
 
 <div>
   <h2 translate>data-access-config.title</h2>
-  <p translate>data-access-config.info</p>
 
   <obiba-alert id="DataAccessConfigController"></obiba-alert>
 
-  <h3 translate>data-access-config.pdf-template</h3>
+  <h3 translate>data-access-config.schema-form.title</h3>
 
-  <attachment-input files="dataAccessForm.pdfTemplates" accept="application/pdf" multiple="false"></attachment-input>
-
-  <div class="help-block">
-    <span>{{'allowed-file-types' | translate}}<span><strong>{{fileTypes}}</strong></span></span>
-  </div>
-
-  <h3 translate>data-access-config.schema-form</h3>
+  <p translate>data-access-config.schema-form.info</p>
 
   <tabset class="voffset4">
     <div class="pull-right">
@@ -75,5 +68,15 @@
   <button ng-click="saveForm()" class="btn btn-primary voffset4">
     <span translate>save</span>
   </button>
+
+  <h3 translate>data-access-config.pdf-template.title</h3>
+
+  <p translate>data-access-config.pdf-template.info</p>
+
+  <attachment-input files="dataAccessForm.pdfTemplates" accept="application/pdf" multiple="false"></attachment-input>
+
+  <div class="help-block">
+    <span>{{'allowed-file-types' | translate}}<span><strong>{{fileTypes}}</strong></span></span>
+  </div>
 
 </div>
