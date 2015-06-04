@@ -12,7 +12,7 @@
   <h3>
     <ol class="mica-breadcrumb">
       <li><a href="#/data-access-requests" translate>data-access-requests</a></li>
-      <li><a href="#/data-access-request/{{requestId}}">{{requestId}}</a></li>
+      <li ng-if="!newRequest"><a href="#/data-access-request/{{requestId}}">{{requestId}}</a></li>
       <li class="active">
         <span ng-if="newRequest" translate>add-sm</span>
         <span ng-if="!newRequest" translate>edit-sm</span>
