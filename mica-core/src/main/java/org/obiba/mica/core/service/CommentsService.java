@@ -57,7 +57,7 @@ public class CommentsService {
   }
 
   public void delete(String name, String id) throws NoSuchCommentException {
-    commentsRepository.findByClassNameAndInstanceId(name, id).forEach(this::delete);
+    commentsRepository.findByResourceIdAndInstanceId(name, id).forEach(this::delete);
   }
 
   public Comment findById(String id) {
@@ -66,8 +66,8 @@ public class CommentsService {
     return comment;
   }
 
-  public List<Comment> findByClassAndInstance(String name, String id) {
-    return commentsRepository.findByClassNameAndInstanceId(name, id);
+  public List<Comment> findByResourceAndInstance(String name, String id) {
+    return commentsRepository.findByResourceIdAndInstanceId(name, id);
   }
 
 }

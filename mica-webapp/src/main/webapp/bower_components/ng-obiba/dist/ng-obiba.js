@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba
 
  * License: GNU Public License version 3
- * Date: 2015-06-02
+ * Date: 2015-06-05
  */
 'use strict';
 
@@ -1063,7 +1063,9 @@ angular.module('obiba.comments')
       scope: {
         comments: '=',
         onDelete: '&',
-        onUpdate: '&'
+        onUpdate: '&',
+        editAction: '@',
+        deleteAction: '@'
       },
       templateUrl: 'comments/comments-template.tpl.html',
       controller: 'ObibaCommentsController'
@@ -1076,7 +1078,16 @@ angular.module('obiba.comments')
       var clearSelected = function(){
         $scope.selected = -1;
       };
+      var canDoAction = function(comment, action) {
+        return !action || (comment.actions && comment.actions.indexOf (action) !== -1);
+      };
 
+      $scope.canEdit = function(index) {
+        return canDoAction($scope.comments[index], $scope.editAction);
+      };
+      $scope.canDelete = function(index) {
+        return canDoAction($scope.comments[index], $scope.deleteAction);
+      };
       $scope.submit = function(comment) {
         $scope.onUpdate()(comment);
         clearSelected();
@@ -1142,11 +1153,11 @@ angular.module("comments/comments-template.tpl.html", []).run(["$templateCache",
     "        <span ng-if=\"!comment.modifiedBy\">{{'comment.created-by' | translate}} {{comment.createdBy}} {{comment.timestamps.created | fromNow }}</span>\n" +
     "        <span ng-if=\"comment.modifiedBy\"> {{'comment.modified-by' | translate}} {{comment.modifiedBy}} {{comment.timestamps.lastUpdate | fromNow }}</span>\n" +
     "        <span class=\"pull-right\">\n" +
-    "          <a ng-click=\"edit($index)\"\n" +
+    "          <a ng-if=\"canEdit($index)\" ng-click=\"edit($index)\"\n" +
     "             class=\"btn btn-primary btn-xs\">\n" +
     "            <i class=\"fa fa-pencil-square-o\"></i>\n" +
     "          </a>\n" +
-    "          <a ng-click=\"remove($index)\"\n" +
+    "          <a ng-if=\"canDelete($index)\" ng-click=\"remove($index)\"\n" +
     "             class=\"btn btn-danger btn-xs\">\n" +
     "            <i class=\"fa fa-trash-o\"></i>\n" +
     "          </a>\n" +

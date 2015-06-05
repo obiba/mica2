@@ -10,28 +10,41 @@
 
 package org.obiba.mica.web.model;
 
+import java.nio.file.Paths;
+
+import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.core.domain.Comment;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
 
 @Component
 public class CommentDtos {
+  @Inject
+  private SubjectAclService subjectAclService;
 
   @NotNull
   Mica.CommentDto asDto(@NotNull Comment comment) {
     Mica.CommentDto.Builder builder = Mica.CommentDto.newBuilder() //
       .setId(comment.getId()) //
       .setMessage(comment.getMessage()) //
-      .setClassName(comment.getClassName()) //
+      .setResourceId(comment.getResourceId()) //
       .setInstanceId(comment.getInstanceId()) //
       .setCreatedBy(comment.getCreatedBy()) //
       .setTimestamps(TimestampsDtos.asDto(comment));
 
     String modifiedBy = comment.getLastModifiedBy();
     if (!Strings.isNullOrEmpty(modifiedBy)) builder.setModifiedBy(modifiedBy);
+
+    if (subjectAclService.isPermitted(Paths.get(comment.getResourceId(), comment.getInstanceId(), "/comment").toString(), "EDIT", comment.getId())) {
+      builder.addActions("EDIT");
+    }
+    if (subjectAclService.isPermitted(Paths.get(comment.getResourceId(), comment.getInstanceId(), "/comment").toString(), "DELETE", comment.getId())) {
+      builder.addActions("DELETE");
+    }
 
     return builder.build();
   }
@@ -41,7 +54,7 @@ public class CommentDtos {
     Comment comment = Comment.newBuilder() //
       .id(dto.getId()) //
       .message(dto.getMessage()) //
-      .className(dto.getClassName()) //
+      .resourceId(dto.getResourceId()) //
       .instanceId(dto.getInstanceId()) //
       .build();
 

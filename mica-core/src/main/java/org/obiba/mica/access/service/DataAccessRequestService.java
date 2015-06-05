@@ -85,7 +85,7 @@ public class DataAccessRequestService {
   @Value("classpath:config/data-access-form/data-access-request-template.pdf")
   private Resource defaultTemplateResource;
 
-  public void save(@NotNull DataAccessRequest request) {
+  public DataAccessRequest save(@NotNull DataAccessRequest request) {
     DataAccessRequest saved = request;
     DataAccessRequest.Status from = null;
     Sets.SetView<Attachment> toDelete = null;
@@ -124,6 +124,7 @@ public class DataAccessRequestService {
       toDelete.forEach(a -> gridFsService.delete(a.getId()));
 
     sendNotificationEmails(saved, from);
+    return saved;
   }
 
   /**

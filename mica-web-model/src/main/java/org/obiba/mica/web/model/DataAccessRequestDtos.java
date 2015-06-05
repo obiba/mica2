@@ -1,5 +1,6 @@
 package org.obiba.mica.web.model;
 
+import java.nio.file.Paths;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -46,7 +47,7 @@ class DataAccessRequestDtos {
     if (subjectAclService.isPermitted("/data-access-request", "DELETE", request.getId())) {
       builder.addActions("DELETE");
     }
-    if (subjectAclService.isPermitted("/data-access-request/" + request.getId(), "EDIT", "_status")) {
+    if (subjectAclService.isPermitted(Paths.get("/data-access-request", request.getId()).toString(), "EDIT", "_status")) {
       builder.addActions("EDIT_STATUS");
     }
 

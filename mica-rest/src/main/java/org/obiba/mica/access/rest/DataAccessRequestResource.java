@@ -126,7 +126,7 @@ public class DataAccessRequestResource {
   public List<Mica.CommentDto> comments(@PathParam("id") String id) {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
     dataAccessRequestService.findById(id);
-    return commentsService.findByClassAndInstance(DataAccessRequest.class.getSimpleName(), id).stream().map(dtos::asDto)
+    return commentsService.findByResourceAndInstance("/data-access-request", id).stream().map(dtos::asDto)
       .collect(Collectors.toList());
   }
 
@@ -140,7 +140,7 @@ public class DataAccessRequestResource {
       Comment.newBuilder() //
         .createdBy(SecurityUtils.getSubject().getPrincipal().toString()) //
         .message(message) //
-        .className(DataAccessRequest.class.getSimpleName()) //
+        .resourceId("/data-access-request") //
         .instanceId(id) //
         .build()); //
 

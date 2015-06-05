@@ -504,11 +504,12 @@ message DatasetVariableAggregationsDto {
 message CommentDto {
   optional string id = 1;
   required string message = 3;
-  required string className = 4;
+  required string resourceId = 4;
   required string instanceId = 5;
   required string createdBy = 6;
   optional string modifiedBy = 7;
   required TimestampsDto timestamps = 8;
+  repeated string actions = 9;
 }
 
 message DataAccessRequestDto {
