@@ -76,7 +76,7 @@
         href-builder="getDownloadHref(attachments, id)"></attachment-list>
     </tab>
     <tab ng-click="selectTab('comments')" heading="{{'data-access-request.comments' | translate}}">
-      <obiba-comments comments="form.comments" on-update="updateComment" on-delete="deleteComment"></obiba-comments>
+      <obiba-comments comments="form.comments" on-update="updateComment" on-delete="deleteComment" edit-action="EDIT" delete-action="DELETE"></obiba-comments>
       <obiba-comment-editor on-submit="submitComment"></obiba-comment-editor>
     </tab>
     <tab ng-click="selectTab('history')" heading="{{'data-access-request.history' | translate}}">

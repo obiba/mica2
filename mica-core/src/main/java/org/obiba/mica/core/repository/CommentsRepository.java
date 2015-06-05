@@ -18,5 +18,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 public interface CommentsRepository extends MongoRepository<Comment, String>  {
   List<Comment> findByClassName(String name);
   List<Comment> findByInstanceId(String id);
-  List<Comment> findByClassNameAndInstanceId(String name, String id);
+  List<Comment> findByResourceIdAndInstanceId(String name, String id);
 }

@@ -18,7 +18,8 @@ public class Comment extends AbstractAuditableDocument {
 
   private String message;
 
-  private String className;
+  // resource id used for permissions
+  private String resourceId;
 
   private String instanceId;
 
@@ -46,12 +47,12 @@ public class Comment extends AbstractAuditableDocument {
     return new Builder(null);
   }
 
-  public String getClassName() {
-    return className;
+  public String getResourceId() {
+    return resourceId;
   }
 
-  public void setClassName(String name) {
-    className = name;
+  public void setResourceId(String name) {
+    resourceId = name;
   }
 
   public String getInstanceId() {
@@ -93,8 +94,8 @@ public class Comment extends AbstractAuditableDocument {
       return this;
     }
 
-    public Builder className(String name) {
-      comment.setClassName(name);
+    public Builder resourceId(String name) {
+      comment.setResourceId(name);
       return this;
     }
 

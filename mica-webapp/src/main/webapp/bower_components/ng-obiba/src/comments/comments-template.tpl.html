@@ -6,11 +6,11 @@
         <span ng-if="!comment.modifiedBy">{{'comment.created-by' | translate}} {{comment.createdBy}} {{comment.timestamps.created | fromNow }}</span>
         <span ng-if="comment.modifiedBy"> {{'comment.modified-by' | translate}} {{comment.modifiedBy}} {{comment.timestamps.lastUpdate | fromNow }}</span>
         <span class="pull-right">
-          <a ng-click="edit($index)"
+          <a ng-if="canEdit($index)" ng-click="edit($index)"
              class="btn btn-primary btn-xs">
             <i class="fa fa-pencil-square-o"></i>
           </a>
-          <a ng-click="remove($index)"
+          <a ng-if="canDelete($index)" ng-click="remove($index)"
              class="btn btn-danger btn-xs">
             <i class="fa fa-trash-o"></i>
           </a>

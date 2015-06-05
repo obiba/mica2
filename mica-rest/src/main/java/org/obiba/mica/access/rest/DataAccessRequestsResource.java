@@ -17,6 +17,7 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.service.DataAccessRequestService;
+import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -74,6 +75,7 @@ public class DataAccessRequestsResource {
     subjectAclService.addPermission("/data-access-request", "VIEW,EDIT,DELETE", request.getId());
     subjectAclService.addPermission("/data-access-request/" + request.getId(), "EDIT", "_status");
     subjectAclService.addPermission("/data-access-request/" + request.getId() + "/comments", "ADD");
+    subjectAclService.addGroupPermission(Roles.MICA_DAO, "/data-access-request/" + request.getId() + "/comments", "ADD", null);
 
     return Response.created(uriInfo.getBaseUriBuilder().segment("data-access-request", request.getId()).build()).build();
   }
