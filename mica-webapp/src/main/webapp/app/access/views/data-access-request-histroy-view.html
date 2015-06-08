@@ -22,7 +22,7 @@
     ng-init="info = getStatusHistoryInfo[getStatusHistoryInfoId(status)]">
     <td><span><i class="{{info.icon}} hoffset"></i></span></td>
     <td>{{info.msg}}</span></span></td>
-    <td>{{status.author}}</td>
+    <td>{{userProfileService.getFullName(status.profile) || status.author}}</td>
     <td><span>{{status.changedOn | fromNow}}</span></td>
   </tr>
   </tbody>

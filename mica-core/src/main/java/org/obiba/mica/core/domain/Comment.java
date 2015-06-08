@@ -14,22 +14,12 @@ public class Comment extends AbstractAuditableDocument {
 
   private static final long serialVersionUID = -1490617732167157048L;
 
-  private String author;
-
   private String message;
 
   // resource id used for permissions
   private String resourceId;
 
   private String instanceId;
-
-  public String getAuthor() {
-    return author;
-  }
-
-  public void setAuthor(String author) {
-    this.author = author;
-  }
 
   public String getMessage() {
     return message;

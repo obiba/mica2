@@ -3,8 +3,8 @@
     <div ng-hide="selected === $index">
       <div class="obiba-comment-top-offset obiba-comment-bottom-offset">
         <span class="obiba-comment-icon"><i class="glyphicon glyphicon-comment"></i></span>
-        <span ng-if="!comment.modifiedBy">{{'comment.created-by' | translate}} {{comment.createdBy}} {{comment.timestamps.created | fromNow }}</span>
-        <span ng-if="comment.modifiedBy"> {{'comment.modified-by' | translate}} {{comment.modifiedBy}} {{comment.timestamps.lastUpdate | fromNow }}</span>
+        <span ng-if="!comment.modifiedBy">{{'comment.created-by' | translate}} {{nameResolver()(comment.createdByProfile) || comment.createdBy}} {{comment.timestamps.created | fromNow }}</span>
+        <span ng-if="comment.modifiedBy"> {{'comment.modified-by' | translate}} {{nameResolver()(comment.modifiedByProfile) || comment.modifiedBy}} {{comment.timestamps.lastUpdate | fromNow }}</span>
         <span class="pull-right">
           <a ng-if="canEdit($index)" ng-click="edit($index)"
              class="btn btn-primary btn-xs">

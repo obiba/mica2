@@ -68,7 +68,7 @@
             {{request.id}}
           </td>
           <td ng-if="showApplicant">
-            {{request.applicant}}
+            {{userProfileService.getFullName(request.profile) || request.applicant}}
           </td>
           <td>
             {{request.title}}

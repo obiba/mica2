@@ -10,22 +10,38 @@
 
 package org.obiba.mica.web.model;
 
+import javax.inject.Inject;
+
 import org.joda.time.DateTime;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.domain.StatusChange;
+import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.web.model.Mica.DataAccessRequestDto.StatusChangeDto;
+import org.obiba.shiro.realm.ObibaRealm;
 import org.springframework.stereotype.Component;
 
 @Component
 public class StatusChangeDtos {
 
+  @Inject
+  private UserProfileService subjectProfileService;
+
+  @Inject
+  private UserProfileDtos userProfileDtos;
+
   StatusChangeDto asDto(StatusChange statusChange) {
-    return StatusChangeDto.newBuilder() //
+    StatusChangeDto.Builder builder = StatusChangeDto.newBuilder() //
       .setFrom(statusChange.getFrom().toString()) //
       .setTo(statusChange.getTo().toString()) //
       .setAuthor(statusChange.getAuthor()) //
-      .setChangedOn(statusChange.getChangedOn().toString())
-      .build();
+      .setChangedOn(statusChange.getChangedOn().toString());
+
+    ObibaRealm.Subject profile = subjectProfileService.getProfile(statusChange.getAuthor());
+    if (profile != null) {
+      builder.setProfile(userProfileDtos.asDto(profile));
+    }
+
+    return builder.build();
   }
 
   StatusChange fromDto(StatusChangeDto dto) {
