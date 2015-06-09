@@ -174,7 +174,7 @@ mica.dataAccessRequest
         if (status.from !== 'OPENED' || status.from !== status.to) {
           switch (status.to) {
             case 'OPENED':
-              id = 'reopened'
+              id = 'reopened';
               break;
             case 'SUBMITTED':
               id = 'submitted';

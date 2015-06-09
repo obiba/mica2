@@ -9,6 +9,8 @@ import javax.validation.constraints.NotNull;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.user.UserProfileService;
+import org.obiba.shiro.realm.ObibaRealm;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -22,6 +24,12 @@ class DataAccessRequestDtos {
 
   @Inject
   private SubjectAclService subjectAclService;
+
+  @Inject
+  private UserProfileService userProfileService;
+
+  @Inject
+  private UserProfileDtos userProfileDtos;
 
   @NotNull
   public Mica.DataAccessRequestDto asDto(@NotNull DataAccessRequest request) {
@@ -49,6 +57,11 @@ class DataAccessRequestDtos {
     }
     if (subjectAclService.isPermitted(Paths.get("/data-access-request", request.getId()).toString(), "EDIT", "_status")) {
       builder.addActions("EDIT_STATUS");
+    }
+
+    ObibaRealm.Subject profile = userProfileService.getProfile(request.getApplicant());
+    if (profile != null) {
+      builder.setProfile(userProfileDtos.asDto(profile));
     }
 
     // possible status transitions

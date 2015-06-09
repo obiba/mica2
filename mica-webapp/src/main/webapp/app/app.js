@@ -169,13 +169,14 @@ mica
     }]);
   }])
 
-  .run(['$rootScope', '$location', '$http', 'AuthenticationSharedService', 'Session', 'USER_ROLES', 'ServerErrorUtils',
-    function ($rootScope, $location, $http, AuthenticationSharedService, Session, USER_ROLES, ServerErrorUtils) {
+  .run(['$rootScope', '$location', '$http', 'AuthenticationSharedService', 'Session', 'USER_ROLES', 'ServerErrorUtils', 'UserProfileService',
+    function ($rootScope, $location, $http, AuthenticationSharedService, Session, USER_ROLES, ServerErrorUtils, UserProfileService) {
       $rootScope.$on('$routeChangeStart', function (event, next) {
         $rootScope.authenticated = AuthenticationSharedService.isAuthenticated();
         $rootScope.hasRole = AuthenticationSharedService.isAuthorized;
         $rootScope.userRoles = USER_ROLES;
         $rootScope.subject = Session;
+        $rootScope.userProfileService = UserProfileService;
 
         if (!$rootScope.authenticated) {
           $rootScope.$broadcast('event:auth-loginRequired');

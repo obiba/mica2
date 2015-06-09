@@ -59,6 +59,7 @@ angular.module('obiba.comments')
         comments: '=',
         onDelete: '&',
         onUpdate: '&',
+        nameResolver: '&',
         editAction: '@',
         deleteAction: '@'
       },

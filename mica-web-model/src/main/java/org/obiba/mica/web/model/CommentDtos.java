@@ -17,6 +17,8 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.core.domain.Comment;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.user.UserProfileService;
+import org.obiba.shiro.realm.ObibaRealm.Subject;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
@@ -25,6 +27,12 @@ import com.google.common.base.Strings;
 public class CommentDtos {
   @Inject
   private SubjectAclService subjectAclService;
+
+  @Inject
+  private UserProfileService userProfileService;
+
+  @Inject
+  private UserProfileDtos userProfileDtos;
 
   @NotNull
   Mica.CommentDto asDto(@NotNull Comment comment) {
@@ -44,6 +52,16 @@ public class CommentDtos {
     }
     if (subjectAclService.isPermitted(Paths.get(comment.getResourceId(), comment.getInstanceId(), "/comment").toString(), "DELETE", comment.getId())) {
       builder.addActions("DELETE");
+    }
+
+    Subject profile = userProfileService.getProfile(comment.getCreatedBy());
+    if (profile != null) {
+      builder.setCreatedByProfile(userProfileDtos.asDto(profile));
+    }
+
+    profile = userProfileService.getProfile(comment.getLastModifiedBy());
+    if (profile != null) {
+      builder.setModifiedByProfile(userProfileDtos.asDto(profile));
     }
 
     return builder.build();

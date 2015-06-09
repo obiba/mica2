@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba
 
  * License: GNU Public License version 3
- * Date: 2015-06-05
+ * Date: 2015-06-08
  */
 'use strict';
 
@@ -1064,6 +1064,7 @@ angular.module('obiba.comments')
         comments: '=',
         onDelete: '&',
         onUpdate: '&',
+        nameResolver: '&',
         editAction: '@',
         deleteAction: '@'
       },
@@ -1150,8 +1151,8 @@ angular.module("comments/comments-template.tpl.html", []).run(["$templateCache",
     "    <div ng-hide=\"selected === $index\">\n" +
     "      <div class=\"obiba-comment-top-offset obiba-comment-bottom-offset\">\n" +
     "        <span class=\"obiba-comment-icon\"><i class=\"glyphicon glyphicon-comment\"></i></span>\n" +
-    "        <span ng-if=\"!comment.modifiedBy\">{{'comment.created-by' | translate}} {{comment.createdBy}} {{comment.timestamps.created | fromNow }}</span>\n" +
-    "        <span ng-if=\"comment.modifiedBy\"> {{'comment.modified-by' | translate}} {{comment.modifiedBy}} {{comment.timestamps.lastUpdate | fromNow }}</span>\n" +
+    "        <span ng-if=\"!comment.modifiedBy\">{{'comment.created-by' | translate}} {{nameResolver()(comment.createdByProfile) || comment.createdBy}} {{comment.timestamps.created | fromNow }}</span>\n" +
+    "        <span ng-if=\"comment.modifiedBy\"> {{'comment.modified-by' | translate}} {{nameResolver()(comment.modifiedByProfile) || comment.modifiedBy}} {{comment.timestamps.lastUpdate | fromNow }}</span>\n" +
     "        <span class=\"pull-right\">\n" +
     "          <a ng-if=\"canEdit($index)\" ng-click=\"edit($index)\"\n" +
     "             class=\"btn btn-primary btn-xs\">\n" +

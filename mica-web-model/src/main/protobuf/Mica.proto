@@ -510,6 +510,8 @@ message CommentDto {
   optional string modifiedBy = 7;
   required TimestampsDto timestamps = 8;
   repeated string actions = 9;
+  optional UserProfileDto createdByProfile = 10;
+  optional UserProfileDto modifiedByProfile = 11;
 }
 
 message DataAccessRequestDto {
@@ -519,6 +521,7 @@ message DataAccessRequestDto {
     required string to = 2;
     required string author = 3;
     required string changedOn = 4;
+    optional UserProfileDto profile = 5;
   }
 
   optional string id = 1;
@@ -531,6 +534,7 @@ message DataAccessRequestDto {
   repeated string actions = 8;
   repeated string nextStatus = 9;
   repeated StatusChangeDto statusChangeHistory = 10;
+  optional UserProfileDto profile = 11;
 }
 
 message DataAccessFormDto {
@@ -544,3 +548,14 @@ message DataAccessFormDto {
   repeated AttachmentDto pdfTemplates = 3;
   repeated LocalizedPropertyDto properties = 4;
 }
+
+message UserProfileDto {
+  message AttributeDto {
+    required string key = 1;
+    optional string value = 2;
+  }
+  required string username = 1;
+  repeated string groups = 2;
+  repeated AttributeDto attributes = 3;
+}
+

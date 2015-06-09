@@ -27,6 +27,7 @@ import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Term;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.obiba.opal.web.model.Math;
+import org.obiba.shiro.realm.ObibaRealm.Subject;
 import org.springframework.stereotype.Component;
 
 import static org.obiba.mica.web.model.Mica.DocumentDigestDto;
@@ -74,6 +75,9 @@ public class Dtos {
 
   @Inject
   private LocalizedStringDtos localizedStringDtos;
+
+  @Inject
+  private UserProfileDtos userProfileDtos;
 
   @NotNull
   public StudyDto asDto(@NotNull Study study) {
@@ -282,5 +286,10 @@ public class Dtos {
   @NotNull
   public List<Mica.DataAccessFormDto.LocalizedPropertyDto> asDtoList(@NotNull Map<String, LocalizedString> properties) {
     return micaConfigDtos.asDtoList(properties);
+  }
+
+  @NotNull
+  public Mica.UserProfileDto asDto(Subject subject) {
+    return userProfileDtos.asDto(subject);
   }
 }

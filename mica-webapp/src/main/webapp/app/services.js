@@ -39,6 +39,13 @@ mica.factory('CurrentSession', ['$resource',
     return $resource('ws/auth/session/_current');
   }]);
 
+mica.factory('UserProfile', ['$resource',
+  function ($resource) {
+    return $resource('ws/user/:id', {}, {
+      'get': {method: 'GET', params: {id: '@id'}}
+    });
+  }]);
+
 mica.factory('Account', ['$resource',
   function ($resource) {
     return $resource('ws/user/_current', {}, {
@@ -51,15 +58,49 @@ mica.factory('Password', ['$resource',
     });
   }]);
 
+
+mica.factory('UserProfileService',
+  function () {
+
+    var getAttributeValue = function(attributes, key) {
+      var result = attributes.filter(function (attribute) {
+        return attribute.key === key;
+      });
+
+      return result && result.length > 0 ? result[0].value : null;
+    };
+
+    return {
+
+      'getAttribute': function (attributes, key) {
+        return getAttributeValue(attributes, key);
+      },
+
+      'getFullName': function (profile) {
+        if (profile) {
+          if (profile.attributes) {
+            return getAttributeValue(profile.attributes, 'firstName') + ' ' + getAttributeValue(profile.attributes, 'lastName');
+          }
+          return profile.username;
+        }
+        return null;
+      }
+    };
+  });
+
 mica.factory('Session', ['$cookieStore',
   function ($cookieStore) {
     this.create = function (login, role) {
       this.login = login;
       this.role = role;
     };
+    this.setProfile = function(profile) {
+      this.profile = profile;
+    };
     this.destroy = function () {
       this.login = null;
       this.role = null;
+      this.profile = null;
       $cookieStore.remove('mica_subject');
       $cookieStore.remove('micasid');
       $cookieStore.remove('obibaid');
@@ -67,8 +108,8 @@ mica.factory('Session', ['$cookieStore',
     return this;
   }]);
 
-mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStore', '$cookies', 'authService', 'Session', 'CurrentSession',
-  function ($rootScope, $http, $cookieStore, $cookies, authService, Session, CurrentSession) {
+mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStore', '$cookies', 'authService', 'Session', 'CurrentSession', 'UserProfile',
+  function ($rootScope, $http, $cookieStore, $cookies, authService, Session, CurrentSession, UserProfile) {
     return {
       login: function (param) {
         $rootScope.authenticationError = false;
@@ -83,6 +124,10 @@ mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStor
             Session.create(data.username, data.role);
             $cookieStore.put('mica_subject', JSON.stringify(Session));
             authService.loginConfirmed(data);
+
+            UserProfile.get({id: data.username}, function(data){
+              Session.setProfile(data);
+            });
           });
         }).error(function () {
           $rootScope.authenticationError = true;
@@ -110,6 +155,9 @@ mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStor
           if (subjectCookie !== null && subjectCookie) {
             var account = JSON.parse($cookieStore.get('mica_subject'));
             Session.create(account.login, account.role);
+            UserProfile.get({id: account.login}, function(data){
+              Session.setProfile(data);
+            });
             $rootScope.account = Session;
             return true;
           }

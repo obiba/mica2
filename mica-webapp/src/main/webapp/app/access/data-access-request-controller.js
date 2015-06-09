@@ -45,9 +45,34 @@ mica.dataAccessRequest
       });
     }])
 
-  .controller('DataAccessRequestViewController', ['$rootScope', '$scope', '$location', '$routeParams', 'DataAccessRequestResource', 'DataAccessRequestService', 'DataAccessRequestStatusResource', 'DataAccessFormResource', 'DataAccessRequestCommentsResource', 'DataAccessRequestCommentResource', 'AlertService', 'ServerErrorUtils', 'NOTIFICATION_EVENTS',
+  .controller('DataAccessRequestViewController',
+    ['$rootScope',
+      '$scope',
+      '$location',
+      '$routeParams',
+      'DataAccessRequestResource',
+      'DataAccessRequestService',
+      'DataAccessRequestStatusResource',
+      'DataAccessFormResource',
+      'DataAccessRequestCommentsResource',
+      'DataAccessRequestCommentResource',
+      'AlertService',
+      'ServerErrorUtils',
+      'NOTIFICATION_EVENTS',
 
-    function ($rootScope, $scope, $location, $routeParams, DataAccessRequestResource, DataAccessRequestService, DataAccessRequestStatusResource, DataAccessFormResource, DataAccessRequestCommentsResource, DataAccessRequestCommentResource, AlertService, ServerErrorUtils, NOTIFICATION_EVENTS) {
+    function ($rootScope,
+              $scope,
+              $location,
+              $routeParams,
+              DataAccessRequestResource,
+              DataAccessRequestService,
+              DataAccessRequestStatusResource,
+              DataAccessFormResource,
+              DataAccessRequestCommentsResource,
+              DataAccessRequestCommentResource,
+              AlertService,
+              ServerErrorUtils,
+              NOTIFICATION_EVENTS) {
 
       var onError = function (response) {
         AlertService.alert({
