@@ -30,10 +30,7 @@ public class DataAccessRequest extends AbstractAuditableDocument
   @NotNull
   private String applicant;
 
-  /**
-   * Short description of the request.
-   */
-  @NotNull
+  @JsonIgnore
   private String title;
 
   /**

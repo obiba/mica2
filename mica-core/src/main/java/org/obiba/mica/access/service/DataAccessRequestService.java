@@ -181,6 +181,7 @@ public class DataAccessRequestService {
   @NotNull
   public DataAccessRequest findById(@NotNull String id) throws NoSuchDataAccessRequestException {
     DataAccessRequest request = dataAccessRequestRepository.findOne(id);
+    request.setTitle(getRequestTitle(request));
     if(request == null) throw NoSuchDataAccessRequestException.withId(id);
     return request;
   }
@@ -192,17 +193,18 @@ public class DataAccessRequestService {
    * @return
    */
   public List<DataAccessRequest> findAll(@Nullable String applicant) {
-    if(Strings.isNullOrEmpty(applicant)) return dataAccessRequestRepository.findAll();
-    return dataAccessRequestRepository.findByApplicant(applicant);
+    if(Strings.isNullOrEmpty(applicant)) return addRequestsTitle(dataAccessRequestRepository.findAll());
+    return addRequestsTitle(dataAccessRequestRepository.findByApplicant(applicant));
   }
 
   public List<DataAccessRequest> findByStatus(@Nullable List<String> status) {
-    if(status == null || status.size() == 0) return dataAccessRequestRepository.findAll();
+    if(status == null || status.size() == 0) return addRequestsTitle(dataAccessRequestRepository.findAll());
     List<DataAccessRequest.Status> statusList = status.stream().map(s -> DataAccessRequest.Status.valueOf(s))
       .collect(Collectors.toList());
 
-    return dataAccessRequestRepository.findAll().stream().filter(dar -> statusList.contains(dar.getStatus()))
-      .collect(Collectors.toList());
+    return addRequestsTitle(
+      dataAccessRequestRepository.findAll().stream().filter(dar -> statusList.contains(dar.getStatus()))
+        .collect(Collectors.toList()));
   }
 
   //
@@ -221,38 +223,46 @@ public class DataAccessRequestService {
 
     Map<String, String> ctx = Maps.newHashMap();
     String organization = micaConfigService.getConfig().getName();
+    String id = request.getId();
+    String title = getRequestTitle(request);
+
     ctx.put("organization", organization);
     ctx.put("publicUrl", micaConfigService.getPublicUrl());
-    ctx.put("id", request.getId());
-    ctx.put("title", request.getTitle());
+    ctx.put("id", id);
+    if (Strings.isNullOrEmpty(title)) {
+      title = id;
+    } else {
+      ctx.put("title", title);
+    }
+
     switch(request.getStatus()) {
       case SUBMITTED:
         mailService
-          .sendEmailToUsers("[" + organization + "] Submitted: " + request.getTitle(), "dataAccessRequestSubmittedApplicantEmail", ctx,
+          .sendEmailToUsers("[" + organization + "] Submitted: " + title, "dataAccessRequestSubmittedApplicantEmail", ctx,
             request.getApplicant());
         mailService
-          .sendEmailToGroups("[" + organization + "] Submitted: " + request.getTitle(), "dataAccessRequestSubmittedDAOEmail", ctx,
+          .sendEmailToGroups("[" + organization + "] Submitted: " + title, "dataAccessRequestSubmittedDAOEmail", ctx,
             Roles.MICA_DAO);
         break;
       case REVIEWED:
         mailService
-          .sendEmailToUsers("[" + organization + "] Reviewed: " + request.getTitle(), "dataAccessRequestReviewedApplicantEmail", ctx,
+          .sendEmailToUsers("[" + organization + "] Reviewed: " + title, "dataAccessRequestReviewedApplicantEmail", ctx,
             request.getApplicant());
         break;
       case OPENED:
         mailService
-          .sendEmailToUsers("[" + organization + "] Reopened: " + request.getTitle(), "dataAccessRequestReopenedApplicantEmail", ctx,
+          .sendEmailToUsers("[" + organization + "] Reopened: " + title, "dataAccessRequestReopenedApplicantEmail", ctx,
             request.getApplicant());
         break;
       case APPROVED:
         mailService
-          .sendEmailToUsers("[" + organization + "] Approved: " + request.getTitle(), "dataAccessRequestApprovedApplicantEmail", ctx,
+          .sendEmailToUsers("[" + organization + "] Approved: " + title, "dataAccessRequestApprovedApplicantEmail", ctx,
             request.getApplicant());
         break;
       case REJECTED:
         mailService
-          .sendEmailToUsers("[" + organization + "] Rejected: " + request.getTitle(), "dataAccessRequestRejectedApplicantEmail", ctx,
-            request.getApplicant());
+          .sendEmailToUsers("[" + organization + "] Rejected: " + title,
+            "dataAccessRequestRejectedApplicantEmail", ctx, request.getApplicant());
         break;
     }
   }
@@ -334,5 +344,33 @@ public class DataAccessRequestService {
       String id = idGenerator.generateIdentifier();
       if (dataAccessRequestRepository.findOne(id) == null) return id;
     }
+  }
+
+  private List<DataAccessRequest> addRequestsTitle(List<DataAccessRequest> requests) {
+    if (requests != null) requests.forEach(request -> request.setTitle(getRequestTitle(request)));
+    return requests;
+  }
+
+  private String getRequestTitle(DataAccessRequest request) {
+    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    String titleFieldPath = dataAccessForm.getTitleFieldPath();
+    String rawContent = request.getContent();
+    if (!Strings.isNullOrEmpty(titleFieldPath) && !Strings.isNullOrEmpty(rawContent)) {
+      Object content = Configuration.defaultConfiguration().jsonProvider().parse(rawContent);
+      List<Object> values = null;
+      try {
+        values = JsonPath.using(conf).parse(content).read(titleFieldPath);
+      } catch(PathNotFoundException ex) {
+        //ignore
+      } catch(InvalidPathException e) {
+        log.warn("Invalid jsonpath {}", titleFieldPath);
+      }
+
+      if (values != null) {
+        return values.get(0).toString();
+      }
+    }
+
+    return null;
   }
 }

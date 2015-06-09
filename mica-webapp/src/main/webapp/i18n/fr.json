@@ -638,6 +638,8 @@
   "data-access-config": {
     "menu": "Data Access",
     "title": "Data Access Configuration",
+    "title-field": "Title Field Path",
+    "title-field-help": "JSON field path used as the request title. See <a href='http://goessner.net/articles/JsonPath/' target='_blank'>JSON Path documentation </a> for more details.",
     "info": "Configure the Data Access Form schema and definition, see <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details.",
     "saved": "Data Access Form is successfully updated.",
     "pdf-template": "PDF Template",
