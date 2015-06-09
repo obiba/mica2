@@ -9,6 +9,10 @@
  ******************************************************************************/
 package org.obiba.mica.web.rest.security;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.IntStream;
+
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -17,7 +21,6 @@ import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.session.InvalidSessionException;
 import org.apache.shiro.subject.Subject;
@@ -50,23 +53,11 @@ public class CurrentSessionResource {
     Subject subject = SecurityUtils.getSubject();
     Mica.SessionDto.Builder builder = Mica.SessionDto.newBuilder() //
         .setUsername(subject.getPrincipal().toString());
+    List<String> roles = //
+      Arrays.asList(Roles.MICA_ADMIN, Roles.MICA_REVIEWER, Roles.MICA_EDITOR, Roles.MICA_DAO, Roles.MICA_USER); //
 
-    try {
-      if (subject.hasRole(Roles.MICA_ADMIN)) {
-        builder.setRole(Roles.MICA_ADMIN);
-      } else if (subject.hasRole(Roles.MICA_REVIEWER)) {
-        builder.setRole(Roles.MICA_REVIEWER);
-      } else if (subject.hasRole(Roles.MICA_EDITOR)) {
-        builder.setRole(Roles.MICA_EDITOR);
-      } else if (subject.hasRole(Roles.MICA_DAO)) {
-        builder.setRole(Roles.MICA_DAO);
-      } else {
-        builder.setRole(Roles.MICA_USER);
-      }
-    } catch(AuthorizationException e) {
-      builder.setRole(Roles.MICA_USER);
-    }
-
+    boolean[] result = subject.hasRoles(roles);
+    IntStream.range(0, result.length).filter(i -> result[i]).forEach(i -> builder.addRoles(roles.get(i)));
     return builder.build();
   }
 
