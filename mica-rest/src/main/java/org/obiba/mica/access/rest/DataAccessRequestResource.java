@@ -145,6 +145,7 @@ public class DataAccessRequestResource {
         .build()); //
 
     subjectAclService.addPermission("/data-access-request/" + id + "/comment", "VIEW,EDIT,DELETE", comment.getId());
+    subjectAclService.addGroupPermission(Roles.MICA_DAO, "/data-access-request/" + id + "/comment", "DELETE", comment.getId());
 
     return Response.noContent().build();
   }
@@ -177,6 +178,7 @@ public class DataAccessRequestResource {
     subjectAclService.checkPermission("/data-access-request/" + id + "/comment", "DELETE", commentId);
     dataAccessRequestService.findById(id);
     commentsService.delete(commentId);
+    eventBus.post(new ResourceDeletedEvent("/data-access-request/" + id + "/comment", commentId));
     return Response.noContent().build();
   }
 
