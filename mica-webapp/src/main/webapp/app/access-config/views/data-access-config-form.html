@@ -17,6 +17,10 @@
 
   <p translate>data-access-config.schema-form.info</p>
 
+  <label class="control-label" >{{'data-access-config.title-field' | translate}}</label>
+  <input ng-model="dataAccessForm.titleFieldPath" type="{{type}}" class="form-control"/>
+  <p class="help-block" ng-bind-html="'data-access-config.title-field-help' | translate"></p>
+
   <tabset class="voffset4">
     <div class="pull-right">
       <button ng-if="selectedTab === 'form-preview'"

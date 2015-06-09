@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba
 
  * License: GNU Public License version 3
- * Date: 2015-06-08
+ * Date: 2015-06-09
  */
 'use strict';
 
@@ -1080,7 +1080,7 @@ angular.module('obiba.comments')
         $scope.selected = -1;
       };
       var canDoAction = function(comment, action) {
-        return !action || (comment.actions && comment.actions.indexOf (action) !== -1);
+        return angular.isUndefined(action) || (!angular.isUndefined(comment.actions) && comment.actions.indexOf (action) !== -1);
       };
 
       $scope.canEdit = function(index) {

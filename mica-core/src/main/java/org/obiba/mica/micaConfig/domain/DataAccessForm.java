@@ -34,6 +34,8 @@ public class DataAccessForm extends AbstractGitPersistable implements Persistabl
 
   private Map<String, LocalizedString> properties;
 
+  private String titleFieldPath;
+
   @Indexed
   private RevisionStatus revisionStatus = RevisionStatus.DRAFT;
 
@@ -156,5 +158,13 @@ public class DataAccessForm extends AbstractGitPersistable implements Persistabl
         put("schema", self.getSchema());
       }
     };
+  }
+
+  public String getTitleFieldPath() {
+    return titleFieldPath;
+  }
+
+  public void setTitleFieldPath(String titleFieldPath) {
+    this.titleFieldPath = titleFieldPath;
   }
 }

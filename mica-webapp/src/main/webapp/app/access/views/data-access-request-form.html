@@ -24,17 +24,10 @@
     </ol>
   </h3>
 
-  <h3 ng-if="!newRequest && !canEdit" class="voffset2">{{dataAccessRequest.title}}</h3>
-
   <div>
     <obiba-alert id="DataAccessRequestEditController"></obiba-alert>
 
     <form name="requestForm" ng-submit="submit(requestForm)">
-      <div ng-if="newRequest || canEdit" class="voffset2" form-input name="data-access-request.title"
-          model="dataAccessRequest.title"
-          label="data-access-request.title"
-          help="data-access-request.title-help"></div>
-
       <tabset class="voffset5">
         <div class="pull-right">
         </div>

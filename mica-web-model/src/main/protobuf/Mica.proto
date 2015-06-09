@@ -528,7 +528,7 @@ message DataAccessRequestDto {
   optional TimestampsDto timestamps = 2;
   required string applicant = 3;
   required string status = 4 [default = "OPENED"];
-  required string title = 5;
+  optional string title = 5;
   optional string content = 6;
   repeated AttachmentDto attachments = 7;
   repeated string actions = 8;
@@ -547,6 +547,7 @@ message DataAccessFormDto {
   required string definition = 2;
   repeated AttachmentDto pdfTemplates = 3;
   repeated LocalizedPropertyDto properties = 4;
+  optional string titleFieldPath = 5;
 }
 
 message UserProfileDto {

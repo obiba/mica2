@@ -13,6 +13,8 @@ import org.obiba.mica.user.UserProfileService;
 import org.obiba.shiro.realm.ObibaRealm;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Strings;
+
 @Component
 class DataAccessRequestDtos {
 
@@ -36,10 +38,14 @@ class DataAccessRequestDtos {
     Mica.DataAccessRequestDto.Builder builder = Mica.DataAccessRequestDto.newBuilder();
     builder.setApplicant(request.getApplicant()) //
       .setStatus(request.getStatus().name()) //
-      .setTitle(request.getTitle()) //
-      .setTimestamps(TimestampsDtos.asDto(request));
-    if(request.hasContent()) builder.setContent(request.getContent());
+      .setTimestamps(TimestampsDtos.asDto(request)); //
+    if(request.hasContent()) builder.setContent(request.getContent()); //
     if(!request.isNew()) builder.setId(request.getId());
+
+    String title = request.getTitle();
+    if (!Strings.isNullOrEmpty(title)) {
+      builder.setTitle(title);
+    }
 
     request.getAttachments().forEach(attachment -> builder.addAttachments(attachmentDtos.asDto(attachment)));
 
@@ -73,7 +79,7 @@ class DataAccessRequestDtos {
   @NotNull
   public DataAccessRequest fromDto(@NotNull Mica.DataAccessRequestDto dto) {
     DataAccessRequest.Builder builder = DataAccessRequest.newBuilder();
-    builder.applicant(dto.getApplicant()).title(dto.getTitle()).status(dto.getStatus());
+    builder.applicant(dto.getApplicant()).status(dto.getStatus());
     if(dto.hasContent()) builder.content(dto.getContent());
 
     DataAccessRequest request = builder.build();

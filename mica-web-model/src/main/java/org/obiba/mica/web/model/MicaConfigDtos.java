@@ -119,6 +119,11 @@ class MicaConfigDtos {
         dataAccessForm.getPdfTemplates().values().stream().map(p -> attachmentDtos.asDto(p)).collect(toList()))
       .addAllProperties(asDtoList(dataAccessForm.getProperties()));
 
+    String titleFieldPath = dataAccessForm.getTitleFieldPath();
+    if (!Strings.isNullOrEmpty(titleFieldPath)) {
+      builder.setTitleFieldPath(titleFieldPath);
+    }
+
     return builder.build();
   }
 
@@ -133,6 +138,10 @@ class MicaConfigDtos {
 
     dataAccessForm.setPdfTemplates(
       dto.getPdfTemplatesList().stream().map(t -> attachmentDtos.fromDto(t)).collect(toMap(a -> a.getLang(), x -> x)));
+
+    if (dto.hasTitleFieldPath()) {
+      dataAccessForm.setTitleFieldPath(dto.getTitleFieldPath());
+    }
 
     return dataAccessForm;
   }
