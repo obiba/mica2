@@ -639,8 +639,9 @@
   "data-access-config": {
     "menu": "Data Access",
     "title": "Data Access Configuration",
-    "title-field": "Title Field Path",
-    "title-field-help": "JSON field path used as the request title. See <a href='http://goessner.net/articles/JsonPath/' target='_blank'>JSON Path documentation </a> for more details.",
+    "title-edit": "Edit Data Access Configuration",
+    "title-field": "Title Field",
+    "title-field-help": "The title of the request will be extracted from the application form model according to the specified JSON field path. See <a href='http://goessner.net/articles/JsonPath/' target='_blank'>JSON Path documentation </a> for more details.",
     "saved": "Data Access Form is successfully updated.",
     "pdf-template": {
       "title": "PDF Template",
