@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
+import javax.ws.rs.HEAD;
 
 import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.PdfUtils;
@@ -96,10 +97,8 @@ public class DataAccessRequestService {
     } else {
       saved = dataAccessRequestRepository.findOne(request.getId());
       if(saved != null) {
-        toDelete = Sets
-          .difference(Sets.newHashSet(saved.getAttachments()), Sets.newHashSet(request.getAttachments()));
-        toSave = Sets
-          .difference(Sets.newHashSet(request.getAttachments()), Sets.newHashSet(saved.getAttachments()));
+        toDelete = Sets.difference(Sets.newHashSet(saved.getAttachments()), Sets.newHashSet(request.getAttachments()));
+        toSave = Sets.difference(Sets.newHashSet(request.getAttachments()), Sets.newHashSet(saved.getAttachments()));
 
         from = saved.getStatus();
         // validate the status
@@ -119,8 +118,7 @@ public class DataAccessRequestService {
 
     dataAccessRequestRepository.save(saved);
 
-    if(toDelete != null)
-      toDelete.forEach(a -> gridFsService.delete(a.getId()));
+    if(toDelete != null) toDelete.forEach(a -> gridFsService.delete(a.getId()));
 
     sendNotificationEmails(saved, from);
     return saved;
@@ -234,8 +232,8 @@ public class DataAccessRequestService {
     switch(request.getStatus()) {
       case SUBMITTED:
         mailService
-          .sendEmailToUsers("[" + organization + "] Submitted: " + title, "dataAccessRequestSubmittedApplicantEmail", ctx,
-            request.getApplicant());
+          .sendEmailToUsers("[" + organization + "] Submitted: " + title, "dataAccessRequestSubmittedApplicantEmail",
+            ctx, request.getApplicant());
         mailService
           .sendEmailToGroups("[" + organization + "] Submitted: " + title, "dataAccessRequestSubmittedDAOEmail", ctx,
             Roles.MICA_DAO);
@@ -257,8 +255,8 @@ public class DataAccessRequestService {
         break;
       case REJECTED:
         mailService
-          .sendEmailToUsers("[" + organization + "] Rejected: " + title,
-            "dataAccessRequestRejectedApplicantEmail", ctx, request.getApplicant());
+          .sendEmailToUsers("[" + organization + "] Rejected: " + title, "dataAccessRequestRejectedApplicantEmail", ctx,
+            request.getApplicant());
         break;
     }
   }
@@ -335,10 +333,12 @@ public class DataAccessRequestService {
   }
 
   private String generateId() {
-    IdentifierGenerator idGenerator = IdentifierGenerator.newBuilder().size(6).zeros().hex().build();
+    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    IdentifierGenerator idGenerator = IdentifierGenerator.newBuilder().prefix(dataAccessForm.getIdPrefix()).size(dataAccessForm.getIdLength()).zeros().hex()
+      .build();
     while(true) {
       String id = idGenerator.generateIdentifier();
-      if (dataAccessRequestRepository.findOne(id) == null) return id;
+      if(dataAccessRequestRepository.findOne(id) == null) return id;
     }
   }
 
