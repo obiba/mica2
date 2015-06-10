@@ -52,6 +52,7 @@ public class DataAccessFormService {
     DataAccessForm form = new DataAccessForm();
     form.setDefinition(getDefaultDataAccessFormResourceAsString("definition.json"));
     form.setSchema(getDefaultDataAccessFormResourceAsString("schema.json"));
+    form.setTitleFieldPath("projectTitle");
     return form;
   }
 
