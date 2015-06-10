@@ -38,7 +38,6 @@ mica.config
             }
           }
         }).result.then(function(data) {
-            console.log(data);
             KeyStoreResource.save(data).$promise.then(function () {
               $route.reload();
             });
@@ -55,7 +54,6 @@ mica.config
             }
           }
         }).result.then(function(data) {
-            console.log(data);
             KeyStoreResource.save(data).$promise.then(function () {
               $route.reload();
             });

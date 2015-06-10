@@ -12,8 +12,8 @@
 
 mica.dataAccesConfig
 
-  .controller('DataAccessConfigController', ['$rootScope', '$scope', '$log', 'DataAccessFormResource', 'DataAccessFormService', 'AlertService', 'ServerErrorUtils',
-    function ($rootScope, $scope, $log, DataAccessFormResource, DataAccessFormService, AlertService, ServerErrorUtils) {
+  .controller('DataAccessConfigController', ['$rootScope', '$location', '$scope', '$log', 'DataAccessFormResource', 'DataAccessFormService', 'AlertService', 'ServerErrorUtils',
+    function ($rootScope, $location, $scope, $log, DataAccessFormResource, DataAccessFormService, AlertService, ServerErrorUtils) {
 
      var saveForm = function() {
 
@@ -24,12 +24,7 @@ mica.dataAccesConfig
 
           DataAccessFormResource.save($scope.dataAccessForm,
             function () {
-              AlertService.alert({
-                id: 'DataAccessConfigController',
-                type: 'success',
-                msgKey: 'data-access-config.saved',
-                delay: 5000
-              });
+              $location.path('/config').replace();
             },
             function (response) {
               AlertService.alert({
