@@ -65,11 +65,12 @@
       </tab>
     </tabset>
   </div>
-
-  <div class="form-group">
-    <label class="control-label">{{'data-access-config.title-field' | translate}}</label>
-    <input ng-model="dataAccessForm.titleFieldPath" type="{{type}}" class="form-control"/>
-    <p class="help-block" ng-bind-html="'data-access-config.title-field-help' | translate"></p>
+  <div class="row">
+    <div class="col-md-6">
+      <div form-input name="titleFieldPath" model="dataAccessForm.titleFieldPath" label="data-access-config.title-field"
+        required="false"
+        help="data-access-config.title-field-help"></div>
+    </div>
   </div>
 
   <h3 translate>data-access-config.pdf-template.title</h3>
@@ -80,6 +81,25 @@
 
   <div class="help-block">
     <span>{{'allowed-file-types' | translate}}<span><strong>{{fileTypes}}</strong></span></span>
+  </div>
+
+  <h3 translate>data-access-config.id-generation.title</h3>
+
+  <p translate>data-access-config.id-generation.info</p>
+
+  <div class="row">
+    <div class="col-md-6">
+      <div form-input name="idPrefix" model="dataAccessForm.idPrefix" label="data-access-config.id-generation.prefix"
+        required="false"
+        help="data-access-config.id-generation.prefix-help"></div>
+
+      <div form-input name="idLength" model="dataAccessForm.idLength" label="data-access-config.id-generation.length"
+        type="number"
+        required="false"
+        help="data-access-config.id-generation.length-help"></div>
+
+
+    </div>
   </div>
 
   <div class="voffset4">
