@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.DELETE;
@@ -21,6 +22,7 @@ import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessRequest;
+import org.obiba.mica.access.notification.DataAccessRequestCommentMailNotification;
 import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.core.domain.Comment;
 import org.obiba.mica.core.service.CommentsService;
@@ -47,6 +49,9 @@ public class DataAccessRequestResource {
   private DataAccessRequestService dataAccessRequestService;
 
   @Inject
+  private DataAccessRequestCommentMailNotification commentMailNotification;
+
+  @Inject
   private CommentsService commentsService;
 
   @Inject
@@ -60,6 +65,11 @@ public class DataAccessRequestResource {
 
   @Inject
   private GridFsService gridFsService;
+
+  @PostConstruct
+  public void init() {
+    commentsService.setMailNotification(commentMailNotification);
+  }
 
   @GET
   @Timed

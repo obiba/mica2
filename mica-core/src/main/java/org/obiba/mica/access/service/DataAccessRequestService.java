@@ -36,7 +36,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-import org.thymeleaf.spring4.SpringTemplateEngine;
 
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
@@ -65,10 +64,10 @@ public class DataAccessRequestService {
   private DataAccessFormService dataAccessFormService;
 
   @Inject
-  private GitService gitService;
+  private DataAccessRequestTitleService dataAccessRequestTitleService;
 
   @Inject
-  private SpringTemplateEngine templateEngine;
+  private GitService gitService;
 
   @Inject
   private GridFsService gridFsService;
@@ -181,7 +180,7 @@ public class DataAccessRequestService {
   @NotNull
   public DataAccessRequest findById(@NotNull String id) throws NoSuchDataAccessRequestException {
     DataAccessRequest request = dataAccessRequestRepository.findOne(id);
-    request.setTitle(getRequestTitle(request));
+    request.setTitle(dataAccessRequestTitleService.getRequestTitle(request));
     if(request == null) throw NoSuchDataAccessRequestException.withId(id);
     return request;
   }
@@ -224,16 +223,13 @@ public class DataAccessRequestService {
     Map<String, String> ctx = Maps.newHashMap();
     String organization = micaConfigService.getConfig().getName();
     String id = request.getId();
-    String title = getRequestTitle(request);
+    String title = dataAccessRequestTitleService.getRequestTitle(request);
 
     ctx.put("organization", organization);
     ctx.put("publicUrl", micaConfigService.getPublicUrl());
     ctx.put("id", id);
-    if (Strings.isNullOrEmpty(title)) {
-      title = id;
-    } else {
-      ctx.put("title", title);
-    }
+    if (Strings.isNullOrEmpty(title)) title = id;
+    ctx.put("title", title);
 
     switch(request.getStatus()) {
       case SUBMITTED:
@@ -347,30 +343,8 @@ public class DataAccessRequestService {
   }
 
   private List<DataAccessRequest> addRequestsTitle(List<DataAccessRequest> requests) {
-    if (requests != null) requests.forEach(request -> request.setTitle(getRequestTitle(request)));
+    if (requests != null) requests.forEach(request -> request.setTitle(dataAccessRequestTitleService.getRequestTitle(
+      request)));
     return requests;
-  }
-
-  private String getRequestTitle(DataAccessRequest request) {
-    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
-    String titleFieldPath = dataAccessForm.getTitleFieldPath();
-    String rawContent = request.getContent();
-    if (!Strings.isNullOrEmpty(titleFieldPath) && !Strings.isNullOrEmpty(rawContent)) {
-      Object content = Configuration.defaultConfiguration().jsonProvider().parse(rawContent);
-      List<Object> values = null;
-      try {
-        values = JsonPath.using(conf).parse(content).read(titleFieldPath);
-      } catch(PathNotFoundException ex) {
-        //ignore
-      } catch(InvalidPathException e) {
-        log.warn("Invalid jsonpath {}", titleFieldPath);
-      }
-
-      if (values != null) {
-        return values.get(0).toString();
-      }
-    }
-
-    return null;
   }
 }
