@@ -97,10 +97,8 @@ public class DataAccessRequestService {
     } else {
       saved = dataAccessRequestRepository.findOne(request.getId());
       if(saved != null) {
-        toDelete = Sets
-          .difference(Sets.newHashSet(saved.getAttachments()), Sets.newHashSet(request.getAttachments()));
-        toSave = Sets
-          .difference(Sets.newHashSet(request.getAttachments()), Sets.newHashSet(saved.getAttachments()));
+        toDelete = Sets.difference(Sets.newHashSet(saved.getAttachments()), Sets.newHashSet(request.getAttachments()));
+        toSave = Sets.difference(Sets.newHashSet(request.getAttachments()), Sets.newHashSet(saved.getAttachments()));
 
         from = saved.getStatus();
         // validate the status
@@ -120,8 +118,7 @@ public class DataAccessRequestService {
 
     dataAccessRequestRepository.save(saved);
 
-    if(toDelete != null)
-      toDelete.forEach(a -> gridFsService.delete(a.getId()));
+    if(toDelete != null) toDelete.forEach(a -> gridFsService.delete(a.getId()));
 
     sendNotificationEmails(saved, from);
     return saved;
@@ -229,7 +226,7 @@ public class DataAccessRequestService {
     ctx.put("organization", organization);
     ctx.put("publicUrl", micaConfigService.getPublicUrl());
     ctx.put("id", id);
-    if (Strings.isNullOrEmpty(title)) {
+    if(Strings.isNullOrEmpty(title)) {
       title = id;
     } else {
       ctx.put("title", title);
@@ -238,8 +235,8 @@ public class DataAccessRequestService {
     switch(request.getStatus()) {
       case SUBMITTED:
         mailService
-          .sendEmailToUsers("[" + organization + "] Submitted: " + title, "dataAccessRequestSubmittedApplicantEmail", ctx,
-            request.getApplicant());
+          .sendEmailToUsers("[" + organization + "] Submitted: " + title, "dataAccessRequestSubmittedApplicantEmail",
+            ctx, request.getApplicant());
         mailService
           .sendEmailToGroups("[" + organization + "] Submitted: " + title, "dataAccessRequestSubmittedDAOEmail", ctx,
             Roles.MICA_DAO);
@@ -261,8 +258,8 @@ public class DataAccessRequestService {
         break;
       case REJECTED:
         mailService
-          .sendEmailToUsers("[" + organization + "] Rejected: " + title,
-            "dataAccessRequestRejectedApplicantEmail", ctx, request.getApplicant());
+          .sendEmailToUsers("[" + organization + "] Rejected: " + title, "dataAccessRequestRejectedApplicantEmail", ctx,
+            request.getApplicant());
         break;
     }
   }
@@ -339,15 +336,17 @@ public class DataAccessRequestService {
   }
 
   private String generateId() {
-    IdentifierGenerator idGenerator = IdentifierGenerator.newBuilder().size(6).zeros().hex().build();
+    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    IdentifierGenerator idGenerator = IdentifierGenerator.newBuilder().prefix(dataAccessForm.getIdPrefix()).size(dataAccessForm.getIdLength()).zeros().hex()
+      .build();
     while(true) {
       String id = idGenerator.generateIdentifier();
-      if (dataAccessRequestRepository.findOne(id) == null) return id;
+      if(dataAccessRequestRepository.findOne(id) == null) return id;
     }
   }
 
   private List<DataAccessRequest> addRequestsTitle(List<DataAccessRequest> requests) {
-    if (requests != null) requests.forEach(request -> request.setTitle(getRequestTitle(request)));
+    if(requests != null) requests.forEach(request -> request.setTitle(getRequestTitle(request)));
     return requests;
   }
 
@@ -355,7 +354,7 @@ public class DataAccessRequestService {
     DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
     String titleFieldPath = dataAccessForm.getTitleFieldPath();
     String rawContent = request.getContent();
-    if (!Strings.isNullOrEmpty(titleFieldPath) && !Strings.isNullOrEmpty(rawContent)) {
+    if(!Strings.isNullOrEmpty(titleFieldPath) && !Strings.isNullOrEmpty(rawContent)) {
       Object content = Configuration.defaultConfiguration().jsonProvider().parse(rawContent);
       List<Object> values = null;
       try {
@@ -366,7 +365,7 @@ public class DataAccessRequestService {
         log.warn("Invalid jsonpath {}", titleFieldPath);
       }
 
-      if (values != null) {
+      if(values != null) {
         return values.get(0).toString();
       }
     }

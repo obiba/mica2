@@ -4,32 +4,37 @@
 
   <form name="form" role="form" novalidate ng-submit="save()">
 
-    <div form-input name="name" model="micaConfig.name" label="config.name" required="true"
-        help="config.name-help"></div>
+    <div class="row">
+      <div class="col-md-6">
+        <div form-input name="name" model="micaConfig.name" label="config.name" required="true"
+          help="config.name-help"></div>
 
-    <div form-input name="publicUrl" model="micaConfig.publicUrl" label="config.publicUrl-help"
-        help="config.publicUrl-help"></div>
+        <div form-input name="publicUrl" model="micaConfig.publicUrl" label="config.publicUrl"
+          help="config.publicUrl-help"></div>
 
-    <div class="form-group"
-        ng-class="{'has-error': (form.languages.$dirty || form.saveAttempted) && form.languages.$invalid}">
-    <label for="languages" class="control-label">
-        <span translate>config.languages</span> *
-      </label>
-      <select chosen multiple id="languages" name="languages" ng-model="micaConfig.languages"
-          ng-options="code as name for (code, name) in availableLanguages" class="chosen-select" required>
-      </select>
-      <p class="input-error" ng-show="form.languages.$dirty && form.languages.$invalid">
-        <span ng-show="form.languages.$error.server">{{ errors.name }}</span>
-        <span ng-show="form.languages.$error.required" translate>required</span>
-      </p>
-      <p class="help-block" translate>config.languages-help</p>
+        <div class="form-group"
+          ng-class="{'has-error': (form.languages.$dirty || form.saveAttempted) && form.languages.$invalid}">
+          <label for="languages" class="control-label">
+            <span translate>config.languages</span> *
+          </label>
+          <select chosen multiple id="languages" name="languages" ng-model="micaConfig.languages"
+            ng-options="code as name for (code, name) in availableLanguages" class="chosen-select" required>
+          </select>
+          <p class="input-error" ng-show="form.languages.$dirty && form.languages.$invalid">
+            <span ng-show="form.languages.$error.server">{{ errors.name }}</span>
+            <span ng-show="form.languages.$error.required" translate>required</span>
+          </p>
+          <p class="help-block" translate>config.languages-help</p>
+        </div>
+
+        <div form-input name="defaultCharSet" model="micaConfig.defaultCharSet" label="config.defaultCharSet"
+          required="true"></div>
+
+        <div form-input name="opal" model="micaConfig.opal" label="config.opal"
+          required="true"></div>
+
+      </div>
     </div>
-
-    <div form-input name="defaultCharSet" model="micaConfig.defaultCharSet" label="config.defaultCharSet"
-        required="true"></div>
-
-    <div form-input name="opal" model="micaConfig.opal" label="config.opal"
-        required="true"></div>
 
     <a href="#/config" class="btn btn-default">
       <span translate>cancel</span>
@@ -40,6 +45,7 @@
     </button>
 
   </form>
+
 
 </div>
 
