@@ -18,9 +18,11 @@ mica.dataAccessRequest
 
       $scope.REQUEST_STATUS = DataAccessRequestService.getStatusFilterData();
       $scope.searchStatus = {};
-      $scope.showApplicant = [USER_ROLES.dao, USER_ROLES.admin].indexOf(Session.role) > -1;
       $scope.requests = DataAccessRequestsResource.query();
       $scope.actions = DataAccessRequestService.actions;
+      $scope.showApplicant = Session.roles.filter(function(role) {
+        return [USER_ROLES.dao, USER_ROLES.admin].indexOf(role) > -1;
+      }).length > 0;
 
       $scope.deleteRequest = function (request) {
         $scope.requestToDelete = request.id;

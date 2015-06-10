@@ -3,7 +3,7 @@ option java_package = "org.obiba.mica.web.model";
 
 message SessionDto {
   required string username = 1;
-  required string role = 2;
+  repeated string roles = 2;
 }
 
 message StudySummaryDto {

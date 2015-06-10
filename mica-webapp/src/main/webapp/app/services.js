@@ -90,16 +90,16 @@ mica.factory('UserProfileService',
 
 mica.factory('Session', ['$cookieStore',
   function ($cookieStore) {
-    this.create = function (login, role) {
+    this.create = function (login, roles) {
       this.login = login;
-      this.role = role;
+      this.roles = roles;
     };
     this.setProfile = function(profile) {
       this.profile = profile;
     };
     this.destroy = function () {
       this.login = null;
-      this.role = null;
+      this.roles = null;
       this.profile = null;
       $cookieStore.remove('mica_subject');
       $cookieStore.remove('micasid');
@@ -121,7 +121,7 @@ mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStor
           ignoreAuthModule: 'ignoreAuthModule'
         }).success(function () {
           CurrentSession.get(function (data) {
-            Session.create(data.username, data.role);
+            Session.create(data.username, data.roles);
             $cookieStore.put('mica_subject', JSON.stringify(Session));
             authService.loginConfirmed(data);
 
@@ -154,7 +154,7 @@ mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStor
           var subjectCookie = $cookieStore.get('mica_subject');
           if (subjectCookie !== null && subjectCookie) {
             var account = JSON.parse($cookieStore.get('mica_subject'));
-            Session.create(account.login, account.role);
+            Session.create(account.login, account.roles);
             UserProfile.get({id: account.login}, function(data){
               Session.setProfile(data);
             });
@@ -165,7 +165,7 @@ mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStor
           var obibaCookie = $cookies.obibaid;
           if (obibaCookie !== null && obibaCookie) {
             CurrentSession.get(function (data) {
-              Session.create(data.username, data.role);
+              Session.create(data.username, data.roles);
               $cookieStore.put('mica_subject', JSON.stringify(Session));
               authService.loginConfirmed(data);
             });
@@ -186,7 +186,7 @@ mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStor
 
         angular.forEach(authorizedRoles, function (authorizedRole) {
           var authorized = (!!Session.login &&
-            Session.role === authorizedRole);
+            !angular.isUndefined(Session.roles) && Session.roles.indexOf(authorizedRole) !== -1);
 
           if (authorized || authorizedRole === '*') {
             isAuthorized = true;
