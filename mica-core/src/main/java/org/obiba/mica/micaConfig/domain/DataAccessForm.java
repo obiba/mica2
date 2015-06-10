@@ -17,6 +17,7 @@ import org.obiba.mica.file.PersistableWithAttachments;
 import org.springframework.data.mongodb.core.index.Indexed;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 
@@ -25,6 +26,8 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 public class DataAccessForm extends AbstractGitPersistable implements PersistableWithAttachments, AttachmentAware {
 
   public final static String DEFAULT_ID = "default";
+
+  public final static int DEFAULT_ID_LENGTH = 6;
 
   private String schema;
 
@@ -35,6 +38,10 @@ public class DataAccessForm extends AbstractGitPersistable implements Persistabl
   private Map<String, LocalizedString> properties;
 
   private String titleFieldPath;
+
+  private String idPrefix;
+
+  private int idLength = 6;
 
   @Indexed
   private RevisionStatus revisionStatus = RevisionStatus.DRAFT;
@@ -160,11 +167,35 @@ public class DataAccessForm extends AbstractGitPersistable implements Persistabl
     };
   }
 
+  public boolean hasTitleFieldPath() {
+    return !Strings.isNullOrEmpty(titleFieldPath);
+  }
+
   public String getTitleFieldPath() {
     return titleFieldPath;
   }
 
   public void setTitleFieldPath(String titleFieldPath) {
     this.titleFieldPath = titleFieldPath;
+  }
+
+  public boolean hasIdPrefix() {
+    return !Strings.isNullOrEmpty(idPrefix);
+  }
+
+  public String getIdPrefix() {
+    return idPrefix;
+  }
+
+  public void setIdPrefix(String idPrefix) {
+    this.idPrefix = idPrefix;
+  }
+
+  public int getIdLength() {
+    return idLength;
+  }
+
+  public void setIdLength(int idLength) {
+    this.idLength = idLength < DEFAULT_ID_LENGTH ? DEFAULT_ID_LENGTH : idLength;
   }
 }

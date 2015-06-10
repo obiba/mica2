@@ -548,6 +548,8 @@ message DataAccessFormDto {
   repeated AttachmentDto pdfTemplates = 3;
   repeated LocalizedPropertyDto properties = 4;
   optional string titleFieldPath = 5;
+  optional string idPrefix = 6;
+  required int32 idLength = 7;
 }
 
 message UserProfileDto {

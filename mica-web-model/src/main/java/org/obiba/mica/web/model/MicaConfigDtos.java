@@ -32,8 +32,8 @@ class MicaConfigDtos {
   @NotNull
   Mica.MicaConfigDto asDto(@NotNull MicaConfig config) {
     Mica.MicaConfigDto.Builder builder = Mica.MicaConfigDto.newBuilder() //
-        .setName(config.getName()) //
-        .setDefaultCharSet(config.getDefaultCharacterSet());
+      .setName(config.getName()) //
+      .setDefaultCharSet(config.getDefaultCharacterSet());
     config.getLocales().forEach(locale -> builder.addLanguages(locale.getLanguage()));
 
     if(!Strings.isNullOrEmpty(config.getPublicUrl())) {
@@ -59,7 +59,7 @@ class MicaConfigDtos {
   }
 
   @NotNull
-  AggregationsConfig fromDto(@NotNull Mica.AggregationsConfigDtoOrBuilder dto){
+  AggregationsConfig fromDto(@NotNull Mica.AggregationsConfigDtoOrBuilder dto) {
     AggregationsConfig aggregationsConfig = new AggregationsConfig();
     aggregationsConfig.setStudyAggregations(dto.getStudyList().stream().map(a -> fromDto(a)).collect(toList()));
     aggregationsConfig.setVariableAggregations(dto.getVariableList().stream().map(a -> fromDto(a)).collect(toList()));
@@ -93,8 +93,7 @@ class MicaConfigDtos {
 
   @NotNull
   Mica.AggregationInfoDto asDto(@NotNull AggregationInfo agg) {
-    Mica.AggregationInfoDto.Builder builder = Mica.AggregationInfoDto.newBuilder()
-      .setId(agg.getId());
+    Mica.AggregationInfoDto.Builder builder = Mica.AggregationInfoDto.newBuilder().setId(agg.getId());
 
     localizedStringDtos.asDto(agg.getTitle()).forEach(t -> builder.addTitle(t));
 
@@ -103,9 +102,10 @@ class MicaConfigDtos {
 
   @NotNull
   Mica.OpalCredentialDto asDto(@NotNull OpalCredential credential) {
-    Mica.OpalCredentialDto.Builder builder = Mica.OpalCredentialDto.newBuilder()
-      .setType(credential.getAuthType() == AuthType.USERNAME ? Mica.OpalCredentialType.USERNAME : Mica.OpalCredentialType.PUBLIC_KEY_CERTIFICATE)
-      .setOpalUrl(credential.getOpalUrl());
+    Mica.OpalCredentialDto.Builder builder = Mica.OpalCredentialDto.newBuilder().setType(
+      credential.getAuthType() == AuthType.USERNAME
+        ? Mica.OpalCredentialType.USERNAME
+        : Mica.OpalCredentialType.PUBLIC_KEY_CERTIFICATE).setOpalUrl(credential.getOpalUrl());
 
     if(!Strings.isNullOrEmpty(credential.getUsername())) builder.setUsername(credential.getUsername());
 
@@ -114,15 +114,21 @@ class MicaConfigDtos {
 
   @NotNull
   Mica.DataAccessFormDto asDto(@NotNull DataAccessForm dataAccessForm) {
-    Mica.DataAccessFormDto.Builder builder = Mica.DataAccessFormDto.newBuilder()
-      .setDefinition(dataAccessForm.getDefinition()).setSchema(dataAccessForm.getSchema()).addAllPdfTemplates(
-        dataAccessForm.getPdfTemplates().values().stream().map(p -> attachmentDtos.asDto(p)).collect(toList()))
+    Mica.DataAccessFormDto.Builder builder = Mica.DataAccessFormDto.newBuilder() //
+      .setDefinition(dataAccessForm.getDefinition()) //
+      .setSchema(dataAccessForm.getSchema()) //
+      .addAllPdfTemplates(
+        dataAccessForm.getPdfTemplates().values().stream().map(p -> attachmentDtos.asDto(p)).collect(toList())) //
       .addAllProperties(asDtoList(dataAccessForm.getProperties()));
 
-    String titleFieldPath = dataAccessForm.getTitleFieldPath();
-    if (!Strings.isNullOrEmpty(titleFieldPath)) {
-      builder.setTitleFieldPath(titleFieldPath);
+    if(dataAccessForm.hasTitleFieldPath()) {
+      builder.setTitleFieldPath(dataAccessForm.getTitleFieldPath());
     }
+
+    if(dataAccessForm.hasIdPrefix()) {
+      builder.setIdPrefix(dataAccessForm.getIdPrefix());
+    }
+    builder.setIdLength(dataAccessForm.getIdLength());
 
     return builder.build();
   }
@@ -139,9 +145,14 @@ class MicaConfigDtos {
     dataAccessForm.setPdfTemplates(
       dto.getPdfTemplatesList().stream().map(t -> attachmentDtos.fromDto(t)).collect(toMap(a -> a.getLang(), x -> x)));
 
-    if (dto.hasTitleFieldPath()) {
+    if(dto.hasTitleFieldPath()) {
       dataAccessForm.setTitleFieldPath(dto.getTitleFieldPath());
     }
+
+    if(dto.hasIdPrefix()) {
+      dataAccessForm.setIdPrefix(dto.getIdPrefix());
+    }
+    dataAccessForm.setIdLength(dto.getIdLength());
 
     return dataAccessForm;
   }
