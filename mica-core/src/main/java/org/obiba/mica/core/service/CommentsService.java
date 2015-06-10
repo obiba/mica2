@@ -17,6 +17,7 @@ import javax.inject.Inject;
 import org.joda.time.DateTime;
 import org.obiba.mica.core.domain.Comment;
 import org.obiba.mica.core.domain.NoSuchCommentException;
+import org.obiba.mica.core.notification.MailNotification;
 import org.obiba.mica.core.repository.CommentsRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,8 @@ public class CommentsService {
 
   @Inject
   CommentsRepository commentsRepository;
+
+  private MailNotification<Comment> mailNotification;
 
   public Comment save(Comment comment) {
     if (comment.getMessage().isEmpty()) throw new IllegalArgumentException("Comment message cannot be empty");
@@ -44,6 +47,8 @@ public class CommentsService {
 
       saved.setLastModifiedDate(DateTime.now());
     }
+
+    if (mailNotification != null) mailNotification.send(saved);
 
     return commentsRepository.save(saved);
   }
@@ -70,4 +75,7 @@ public class CommentsService {
     return commentsRepository.findByResourceIdAndInstanceId(name, id);
   }
 
+  public void setMailNotification(MailNotification<Comment> value) {
+    mailNotification = value;
+  }
 }
