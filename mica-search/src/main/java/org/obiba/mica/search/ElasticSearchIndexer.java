@@ -82,7 +82,7 @@ public class ElasticSearchIndexer {
     BulkRequestBuilder bulkRequest = client.prepareBulk();
     persistables.forEach(persistable -> bulkRequest
         .add(getIndexRequestBuilder(indexName, persistable).setSource(toJson(persistable)).setParent(parentId)));
-    return bulkRequest.execute().actionGet();
+    return bulkRequest.numberOfActions() > 0 ? bulkRequest.execute().actionGet() : null;
   }
 
   public BulkResponse indexAllIndexables(String indexName, Iterable<? extends Indexable> indexables) {
