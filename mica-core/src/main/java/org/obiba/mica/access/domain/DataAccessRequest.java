@@ -122,6 +122,10 @@ public class DataAccessRequest extends AbstractAuditableDocument
     return getAttachments().stream().filter(a -> a != null && a.getId().equals(attachmentId)).findAny().orElse(null);
   }
 
+  public boolean hasStatusChangeHistory() {
+    return statusChangeHistory != null && !statusChangeHistory.isEmpty();
+  }
+
   public List<StatusChange> getStatusChangeHistory() {
     if (statusChangeHistory == null) statusChangeHistory = Lists.newArrayList();
     return statusChangeHistory;
