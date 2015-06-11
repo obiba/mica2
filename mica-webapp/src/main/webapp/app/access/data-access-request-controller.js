@@ -76,6 +76,13 @@ mica.dataAccessRequest
               ServerErrorUtils,
               NOTIFICATION_EVENTS) {
 
+      $scope.form = {
+        schema: null,
+        definition: null,
+        model: {},
+        comments: null
+      };
+
       var onError = function (response) {
         AlertService.alert({
           id: 'DataAccessRequestViewController',
@@ -124,13 +131,6 @@ mica.dataAccessRequest
            DataAccessRequestCommentResource.delete({id: $routeParams.id, commentId: id}, {}, retrieveComments, onError);
         }
       });
-
-      $scope.form = {
-        schema: {},
-        definition: {},
-        model: {},
-        comments: null
-      };
 
       $scope.getDownloadHref = function(attachments, id) {
         return '/ws/data-access-request/' + $scope.dataAccessRequest.id + '/attachments/' + id + '/_download';
@@ -242,6 +242,11 @@ mica.dataAccessRequest
   .controller('DataAccessRequestEditController', ['$log', '$scope', '$routeParams', '$location', 'DataAccessRequestsResource', 'DataAccessRequestResource', 'DataAccessFormResource', 'AlertService', 'ServerErrorUtils', 'Session', 'DataAccessRequestService',
 
     function ($log, $scope, $routeParams, $location, DataAccessRequestsResource, DataAccessRequestResource, DataAccessFormResource, AlertService, ServerErrorUtils, Session, DataAccessRequestService) {
+      $scope.form = {
+        schema: null,
+        definition: null,
+        model: {}
+      };
 
       var onSuccess = function(response, getResponseHeaders) {
         var parts = getResponseHeaders().location.split('/');
@@ -299,12 +304,6 @@ mica.dataAccessRequest
         },
         onError
         );
-
-      $scope.form = {
-        schema: {},
-        definition: {},
-        model: {}
-      };
 
       $scope.requestId = $routeParams.id;
       $scope.newRequest = $routeParams.id ? false : true;
