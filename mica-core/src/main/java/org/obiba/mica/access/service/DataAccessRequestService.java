@@ -88,12 +88,13 @@ public class DataAccessRequestService {
   public DataAccessRequest save(@NotNull DataAccessRequest request) {
     DataAccessRequest saved = request;
     DataAccessRequest.Status from = null;
-    Sets.SetView<Attachment> toDelete = null;
-    Sets.SetView<Attachment> toSave = null;
+    Iterable<Attachment> toDelete = null;
+    Iterable<Attachment> toSave = null;
 
     if(request.isNew()) {
       setAndLogStatus(saved, DataAccessRequest.Status.OPENED);
       saved.setId(generateId());
+      toSave = saved.getAttachments();
     } else {
       saved = dataAccessRequestRepository.findOne(request.getId());
       if(saved != null) {
