@@ -131,8 +131,12 @@ public class DataAccessRequestService {
    * @throws NoSuchDataAccessRequestException
    */
   public void delete(@NotNull String id) throws NoSuchDataAccessRequestException {
-    findById(id);
-    dataAccessRequestRepository.delete(id);
+    DataAccessRequest dataAccessRequest = findById(id);
+    List<Attachment> attachments = dataAccessRequest.getAttachments();
+
+    dataAccessRequestRepository.delete(dataAccessRequest);
+
+    attachments.forEach(a -> gridFsService.delete(a.getId()));
   }
 
   /**
