@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.access.domain.DataAccessRequest;
+import org.obiba.mica.access.service.DataAccessRequestUtilService;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.user.UserProfileService;
@@ -33,6 +34,9 @@ class DataAccessRequestDtos {
   @Inject
   private UserProfileDtos userProfileDtos;
 
+  @Inject
+  private DataAccessRequestUtilService dataAccessRequestUtilService;
+
   @NotNull
   public Mica.DataAccessRequestDto asDto(@NotNull DataAccessRequest request) {
     Mica.DataAccessRequestDto.Builder builder = Mica.DataAccessRequestDto.newBuilder();
@@ -42,36 +46,38 @@ class DataAccessRequestDtos {
     if(request.hasContent()) builder.setContent(request.getContent()); //
     if(!request.isNew()) builder.setId(request.getId());
 
-    String title = request.getTitle();
-    if (!Strings.isNullOrEmpty(title)) {
+    String title = dataAccessRequestUtilService.getRequestTitle(request);
+    if(!Strings.isNullOrEmpty(title)) {
       builder.setTitle(title);
     }
 
     request.getAttachments().forEach(attachment -> builder.addAttachments(attachmentDtos.asDto(attachment)));
 
-    request.getStatusChangeHistory().forEach(statusChange -> builder.addStatusChangeHistory(statusChangeDtos.asDto(statusChange)));
+    request.getStatusChangeHistory()
+      .forEach(statusChange -> builder.addStatusChangeHistory(statusChangeDtos.asDto(statusChange)));
 
     // possible actions depending on the caller
-    if (subjectAclService.isPermitted("/data-access-request", "VIEW", request.getId())) {
+    if(subjectAclService.isPermitted("/data-access-request", "VIEW", request.getId())) {
       builder.addActions("VIEW");
     }
-    if (subjectAclService.isPermitted("/data-access-request", "EDIT", request.getId())) {
+    if(subjectAclService.isPermitted("/data-access-request", "EDIT", request.getId())) {
       builder.addActions("EDIT");
     }
-    if (subjectAclService.isPermitted("/data-access-request", "DELETE", request.getId())) {
+    if(subjectAclService.isPermitted("/data-access-request", "DELETE", request.getId())) {
       builder.addActions("DELETE");
     }
-    if (subjectAclService.isPermitted(Paths.get("/data-access-request", request.getId()).toString(), "EDIT", "_status")) {
+    if(subjectAclService
+      .isPermitted(Paths.get("/data-access-request", request.getId()).toString(), "EDIT", "_status")) {
       builder.addActions("EDIT_STATUS");
     }
 
     ObibaRealm.Subject profile = userProfileService.getProfile(request.getApplicant());
-    if (profile != null) {
+    if(profile != null) {
       builder.setProfile(userProfileDtos.asDto(profile));
     }
 
     // possible status transitions
-    request.nextStatus().forEach(status -> builder.addNextStatus(status.toString()));
+    dataAccessRequestUtilService.nextStatus(request).forEach(status -> builder.addNextStatus(status.toString()));
 
     return builder.build();
   }

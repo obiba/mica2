@@ -8,9 +8,9 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.micaConfig.AuthType;
 import org.obiba.mica.micaConfig.domain.AggregationInfo;
 import org.obiba.mica.micaConfig.domain.AggregationsConfig;
-import org.obiba.mica.micaConfig.AuthType;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.domain.OpalCredential;
@@ -128,7 +128,14 @@ class MicaConfigDtos {
     if(dataAccessForm.hasIdPrefix()) {
       builder.setIdPrefix(dataAccessForm.getIdPrefix());
     }
-    builder.setIdLength(dataAccessForm.getIdLength());
+    builder.setIdLength(dataAccessForm.getIdLength()) //
+      .setNotifySubmitted(dataAccessForm.isNotifySubmitted()) //
+      .setNotifyReviewed(dataAccessForm.isNotifyReviewed()) //
+      .setNotifyApproved(dataAccessForm.isNotifyApproved()) //
+      .setNotifyRejected(dataAccessForm.isNotifyRejected()) //
+      .setNotifyReopened(dataAccessForm.isNotifyReopened()) //
+      .setNotifyCommented(dataAccessForm.isNotifyCommented()) //
+      .setWithReview(dataAccessForm.isWithReview());
 
     return builder.build();
   }
@@ -153,6 +160,14 @@ class MicaConfigDtos {
       dataAccessForm.setIdPrefix(dto.getIdPrefix());
     }
     dataAccessForm.setIdLength(dto.getIdLength());
+
+    dataAccessForm.setNotifySubmitted(dto.getNotifySubmitted());
+    dataAccessForm.setNotifyReviewed(dto.getNotifyReviewed());
+    dataAccessForm.setNotifyApproved(dto.getNotifyApproved());
+    dataAccessForm.setNotifyRejected(dto.getNotifyRejected());
+    dataAccessForm.setNotifyReopened(dto.getNotifyReopened());
+    dataAccessForm.setNotifyCommented(dto.getNotifyCommented());
+    dataAccessForm.setWithReview(dto.getWithReview());
 
     return dataAccessForm;
   }

@@ -43,6 +43,20 @@ public class DataAccessForm extends AbstractGitPersistable implements Persistabl
 
   private int idLength = 6;
 
+  private boolean notifySubmitted = true;
+
+  private boolean notifyReviewed = true;
+
+  private boolean notifyApproved = true;
+
+  private boolean notifyRejected = true;
+
+  private boolean notifyReopened = true;
+
+  private boolean notifyCommented = true;
+
+  private boolean withReview = true;
+
   @Indexed
   private RevisionStatus revisionStatus = RevisionStatus.DRAFT;
 
@@ -197,5 +211,61 @@ public class DataAccessForm extends AbstractGitPersistable implements Persistabl
 
   public void setIdLength(int idLength) {
     this.idLength = idLength < DEFAULT_ID_LENGTH ? DEFAULT_ID_LENGTH : idLength;
+  }
+
+  public void setNotifySubmitted(boolean notifySubmitted) {
+    this.notifySubmitted = notifySubmitted;
+  }
+
+  public boolean isNotifySubmitted() {
+    return notifySubmitted;
+  }
+
+  public void setNotifyReviewed(boolean notifyReviewed) {
+    this.notifyReviewed = notifyReviewed;
+  }
+
+  public boolean isNotifyReviewed() {
+    return notifyReviewed;
+  }
+
+  public void setNotifyApproved(boolean notifyApproved) {
+    this.notifyApproved = notifyApproved;
+  }
+
+  public boolean isNotifyApproved() {
+    return notifyApproved;
+  }
+
+  public void setNotifyRejected(boolean notifyRejected) {
+    this.notifyRejected = notifyRejected;
+  }
+
+  public boolean isNotifyRejected() {
+    return notifyRejected;
+  }
+
+  public void setNotifyReopened(boolean notifyReopened) {
+    this.notifyReopened = notifyReopened;
+  }
+
+  public boolean isNotifyReopened() {
+    return notifyReopened;
+  }
+
+  public void setNotifyCommented(boolean notifyCommented) {
+    this.notifyCommented = notifyCommented;
+  }
+
+  public boolean isNotifyCommented() {
+    return notifyCommented;
+  }
+
+  public void setWithReview(boolean withReview) {
+    this.withReview = withReview;
+  }
+
+  public boolean isWithReview() {
+    return withReview;
   }
 }

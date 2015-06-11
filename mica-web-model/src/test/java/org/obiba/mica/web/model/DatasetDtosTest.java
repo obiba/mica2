@@ -19,6 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.obiba.mica.access.service.DataAccessRequestUtilService;
 import org.obiba.mica.config.AggregationsConfiguration;
 import org.obiba.mica.config.JsonConfiguration;
 import org.obiba.mica.config.StudiesConfiguration;
@@ -27,15 +28,17 @@ import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
+import org.obiba.mica.micaConfig.repository.DataAccessFormRepository;
+import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.repository.SubjectAclRepository;
 import org.obiba.mica.security.service.SubjectAclService;
-import org.obiba.mica.user.UserProfileService;
 import org.obiba.mica.study.StudyRepository;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.StudyService;
+import org.obiba.mica.user.UserProfileService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -57,12 +60,6 @@ public class DatasetDtosTest {
 
   @Inject
   private MicaConfigService micaConfigService;
-
-  @Inject
-  private SubjectAclService subjectAclService;
-
-  @Inject
-  private UserProfileService subjectProfileService;
 
   @Inject
   private StudyService studyService;
@@ -191,6 +188,21 @@ public class DatasetDtosTest {
     @Bean
     public SubjectAclRepository subjectAclRepository() {
       return Mockito.mock(SubjectAclRepository.class);
+    }
+
+    @Bean
+    public DataAccessRequestUtilService dataAccessRequestUtilService() {
+      return Mockito.mock(DataAccessRequestUtilService.class);
+    }
+
+    @Bean
+    public DataAccessFormService dataAccessFormService() {
+      return Mockito.mock(DataAccessFormService.class);
+    }
+
+    @Bean
+    public DataAccessFormRepository dataAccessFormRepository() {
+      return Mockito.mock(DataAccessFormRepository.class);
     }
   }
 }
