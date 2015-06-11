@@ -596,7 +596,7 @@
   "changed-on": "Changed On",
   "OPENED": "Opened",
   "SUBMITTED": "Submitted",
-  "REVIEWED": "Reviewed",
+  "REVIEWED": "Under Review",
   "APPROVED": "Approved",
   "REJECTED": "Rejected",
   "or": "or",
@@ -683,6 +683,28 @@
       "prefix-help": "Generated IDs will start with the specified text.",
       "length": "Length",
       "length-help": "Length of the generated part of the ID (i.e. not including the prefix)."
+    },
+    "notifications": {
+      "title": "Notifications",
+      "info": "Emails can be sent to applicant and data access officers when an event happens on the data access request. events can be: status change or comment.",
+      "submitted": "On submission",
+      "submitted-help": "Email is sent to data access officers on data access request submission.",
+      "reviewed": "On review",
+      "reviewed-help": "Email is sent to applicant when its data access request is being reviewed.",
+      "approved": "On approval",
+      "approved-help": "Email is sent to applicant when its data access request is approved.",
+      "rejected": "On rejection",
+      "rejected-help": "Email is sent to applicant when its data access request is rejected.",
+      "reopened": "On reopening",
+      "reopened-help": "Email is sent to applicant when its data access request is reopened.",
+      "commented": "On comment",
+      "commented-help": "Email is sent to applicant and data access officers when the data access request is commented."
+    },
+    "workflow": {
+      "title": "Workflow",
+      "info": "The data access request goes through several steps. Some minimum settings can be applied to control this workflow.",
+      "with-review": "With 'Under Review' intermediate state",
+      "with-review-help": "Between the submission and the final approval/rejection of the data access request, an intermediate status can be used to inform applicant that its request is being processed."
     }
   },
   "comment": {

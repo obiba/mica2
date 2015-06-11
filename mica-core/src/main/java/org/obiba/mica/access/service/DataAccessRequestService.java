@@ -64,7 +64,7 @@ public class DataAccessRequestService {
   private DataAccessFormService dataAccessFormService;
 
   @Inject
-  private DataAccessRequestTitleService dataAccessRequestTitleService;
+  private DataAccessRequestUtilService dataAccessRequestUtilService;
 
   @Inject
   private GitService gitService;
@@ -102,6 +102,7 @@ public class DataAccessRequestService {
 
         from = saved.getStatus();
         // validate the status
+        dataAccessRequestUtilService.checkStatusTransition(saved, request.getStatus());
         saved.setStatus(request.getStatus());
         if (request.hasStatusChangeHistory()) saved.setStatusChangeHistory(request.getStatusChangeHistory());
         // merge beans
@@ -182,7 +183,6 @@ public class DataAccessRequestService {
   @NotNull
   public DataAccessRequest findById(@NotNull String id) throws NoSuchDataAccessRequestException {
     DataAccessRequest request = dataAccessRequestRepository.findOne(id);
-    request.setTitle(dataAccessRequestTitleService.getRequestTitle(request));
     if(request == null) throw NoSuchDataAccessRequestException.withId(id);
     return request;
   }
@@ -194,18 +194,17 @@ public class DataAccessRequestService {
    * @return
    */
   public List<DataAccessRequest> findAll(@Nullable String applicant) {
-    if(Strings.isNullOrEmpty(applicant)) return addRequestsTitle(dataAccessRequestRepository.findAll());
-    return addRequestsTitle(dataAccessRequestRepository.findByApplicant(applicant));
+    if(Strings.isNullOrEmpty(applicant)) return dataAccessRequestRepository.findAll();
+    return dataAccessRequestRepository.findByApplicant(applicant);
   }
 
   public List<DataAccessRequest> findByStatus(@Nullable List<String> status) {
-    if(status == null || status.size() == 0) return addRequestsTitle(dataAccessRequestRepository.findAll());
-    List<DataAccessRequest.Status> statusList = status.stream().map(s -> DataAccessRequest.Status.valueOf(s))
+    if(status == null || status.isEmpty()) return dataAccessRequestRepository.findAll();
+    List<DataAccessRequest.Status> statusList = status.stream().map(DataAccessRequest.Status::valueOf)
       .collect(Collectors.toList());
 
-    return addRequestsTitle(
-      dataAccessRequestRepository.findAll().stream().filter(dar -> statusList.contains(dar.getStatus()))
-        .collect(Collectors.toList()));
+    return dataAccessRequestRepository.findAll().stream().filter(dar -> statusList.contains(dar.getStatus()))
+      .collect(Collectors.toList());
   }
 
   //
@@ -222,45 +221,21 @@ public class DataAccessRequestService {
     // check is new request
     if(from == null) return;
 
-    Map<String, String> ctx = Maps.newHashMap();
-    String organization = micaConfigService.getConfig().getName();
-    String id = request.getId();
-    String title = dataAccessRequestTitleService.getRequestTitle(request);
-
-    ctx.put("organization", organization);
-    ctx.put("publicUrl", micaConfigService.getPublicUrl());
-    ctx.put("id", id);
-    if (Strings.isNullOrEmpty(title)) title = id;
-    ctx.put("title", title);
-
     switch(request.getStatus()) {
       case SUBMITTED:
-        mailService
-          .sendEmailToUsers("[" + organization + "] Submitted: " + title, "dataAccessRequestSubmittedApplicantEmail",
-            ctx, request.getApplicant());
-        mailService
-          .sendEmailToGroups("[" + organization + "] Submitted: " + title, "dataAccessRequestSubmittedDAOEmail", ctx,
-            Roles.MICA_DAO);
+        sendSubmittedNotificationEmail(request);
         break;
       case REVIEWED:
-        mailService
-          .sendEmailToUsers("[" + organization + "] Reviewed: " + title, "dataAccessRequestReviewedApplicantEmail", ctx,
-            request.getApplicant());
+        sendReviewedNotificationEmail(request);
         break;
       case OPENED:
-        mailService
-          .sendEmailToUsers("[" + organization + "] Reopened: " + title, "dataAccessRequestReopenedApplicantEmail", ctx,
-            request.getApplicant());
+        sendOpenedNotificationEmail(request);
         break;
       case APPROVED:
-        mailService
-          .sendEmailToUsers("[" + organization + "] Approved: " + title, "dataAccessRequestApprovedApplicantEmail", ctx,
-            request.getApplicant());
+        sendApprovedNotificationEmail(request);
         break;
       case REJECTED:
-        mailService
-          .sendEmailToUsers("[" + organization + "] Rejected: " + title, "dataAccessRequestRejectedApplicantEmail", ctx,
-            request.getApplicant());
+        sendRejectedNotificationEmail(request);
         break;
     }
   }
@@ -276,6 +251,74 @@ public class DataAccessRequestService {
     }
 
     return ba.toByteArray();
+  }
+
+  //
+  // Private methods
+  //
+
+  private Map<String, String> getNotificationEmailContext(DataAccessRequest request) {
+    Map<String, String> ctx = Maps.newHashMap();
+    String organization = micaConfigService.getConfig().getName();
+    String id = request.getId();
+    String title = dataAccessRequestUtilService.getRequestTitle(request);
+
+    ctx.put("organization", organization);
+    ctx.put("publicUrl", micaConfigService.getPublicUrl());
+    ctx.put("id", id);
+    if(Strings.isNullOrEmpty(title)) title = id;
+    ctx.put("title", title);
+    ctx.put("applicant", request.getApplicant());
+    ctx.put("status", request.getStatus().name());
+
+    return ctx;
+  }
+
+  private void sendSubmittedNotificationEmail(DataAccessRequest request) {
+    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    if(dataAccessForm.isNotifySubmitted()) {
+      Map<String, String> ctx = getNotificationEmailContext(request);
+      mailService.sendEmailToUsers("[" + ctx.get("organization") + "] " + ctx.get("title"),
+        "dataAccessRequestSubmittedApplicantEmail", ctx, request.getApplicant());
+      mailService.sendEmailToGroups("[" + ctx.get("organization") + "] " + ctx.get("title"),
+        "dataAccessRequestSubmittedDAOEmail", ctx, Roles.MICA_DAO);
+    }
+  }
+
+  private void sendReviewedNotificationEmail(DataAccessRequest request) {
+    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    if(dataAccessForm.isNotifyReviewed() && dataAccessForm.isWithReview()) {
+      Map<String, String> ctx = getNotificationEmailContext(request);
+      mailService.sendEmailToUsers("[" + ctx.get("organization") + "] " + ctx.get("title"),
+        "dataAccessRequestReviewedApplicantEmail", ctx, request.getApplicant());
+    }
+  }
+
+  private void sendOpenedNotificationEmail(DataAccessRequest request) {
+    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    if(dataAccessForm.isNotifyReopened()) {
+      Map<String, String> ctx = getNotificationEmailContext(request);
+      mailService.sendEmailToUsers("[" + ctx.get("organization") + "] " + ctx.get("title"),
+        "dataAccessRequestReopenedApplicantEmail", ctx, request.getApplicant());
+    }
+  }
+
+  private void sendApprovedNotificationEmail(DataAccessRequest request) {
+    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    if(dataAccessForm.isNotifyApproved()) {
+      Map<String, String> ctx = getNotificationEmailContext(request);
+      mailService.sendEmailToUsers("[" + ctx.get("organization") + "] " + ctx.get("title"),
+        "dataAccessRequestApprovedApplicantEmail", ctx, request.getApplicant());
+    }
+  }
+
+  private void sendRejectedNotificationEmail(DataAccessRequest request) {
+    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    if(dataAccessForm.isNotifyRejected()) {
+      Map<String, String> ctx = getNotificationEmailContext(request);
+      mailService.sendEmailToUsers("[" + ctx.get("organization") + "] " + ctx.get("title"),
+        "dataAccessRequestRejectedApplicantEmail", ctx, request.getApplicant());
+    }
   }
 
   private byte[] getTemplate(Locale locale) throws IOException {
@@ -326,6 +369,7 @@ public class DataAccessRequestService {
 
   private void setAndLogStatus(DataAccessRequest request, DataAccessRequest.Status to) {
     DataAccessRequest.Status from = request.getStatus();
+    dataAccessRequestUtilService.checkStatusTransition(request, to);
     request.setStatus(to);
     request.getStatusChangeHistory().add( //
       StatusChange.newBuilder() //
@@ -338,17 +382,12 @@ public class DataAccessRequestService {
 
   private String generateId() {
     DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
-    IdentifierGenerator idGenerator = IdentifierGenerator.newBuilder().prefix(dataAccessForm.getIdPrefix()).size(dataAccessForm.getIdLength()).zeros().hex()
-      .build();
+    IdentifierGenerator idGenerator = IdentifierGenerator.newBuilder().prefix(dataAccessForm.getIdPrefix())
+      .size(dataAccessForm.getIdLength()).zeros().hex().build();
     while(true) {
       String id = idGenerator.generateIdentifier();
       if(dataAccessRequestRepository.findOne(id) == null) return id;
     }
   }
 
-  private List<DataAccessRequest> addRequestsTitle(List<DataAccessRequest> requests) {
-    if (requests != null) requests.forEach(request -> request.setTitle(dataAccessRequestTitleService.getRequestTitle(
-      request)));
-    return requests;
-  }
 }

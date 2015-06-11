@@ -65,13 +65,17 @@
       </tab>
     </tabset>
   </div>
-  <div class="row">
-    <div class="col-md-6">
-      <div form-input name="titleFieldPath" model="dataAccessForm.titleFieldPath" label="data-access-config.title-field"
-        required="false"
-        help="data-access-config.title-field-help"></div>
+
+  <form>
+    <div class="row">
+      <div class="col-md-6">
+        <div form-input name="titleFieldPath" model="dataAccessForm.titleFieldPath"
+          label="data-access-config.title-field"
+          required="false"
+          help="data-access-config.title-field-help"></div>
+      </div>
     </div>
-  </div>
+  </form>
 
   <h3 translate>data-access-config.pdf-template.title</h3>
 
@@ -87,20 +91,66 @@
 
   <p translate>data-access-config.id-generation.info</p>
 
-  <div class="row">
-    <div class="col-md-6">
-      <div form-input name="idPrefix" model="dataAccessForm.idPrefix" label="data-access-config.id-generation.prefix"
-        required="false"
-        help="data-access-config.id-generation.prefix-help"></div>
+  <form>
+    <div class="row">
+      <div class="col-md-6">
+        <div form-input name="idPrefix" model="dataAccessForm.idPrefix" label="data-access-config.id-generation.prefix"
+          required="false"
+          help="data-access-config.id-generation.prefix-help"></div>
 
-      <div form-input name="idLength" model="dataAccessForm.idLength" label="data-access-config.id-generation.length"
-        type="number"
-        required="false"
-        help="data-access-config.id-generation.length-help"></div>
-
-
+        <div form-input name="idLength" model="dataAccessForm.idLength" label="data-access-config.id-generation.length"
+          type="number"
+          required="false"
+          help="data-access-config.id-generation.length-help"></div>
+      </div>
     </div>
-  </div>
+  </form>
+
+  <h3 translate>data-access-config.notifications.title</h3>
+
+  <p translate>data-access-config.notifications.info</p>
+
+  <form>
+    <div class="row">
+      <div class="col-md-6">
+        <div form-checkbox name="notifySubmitted" model="dataAccessForm.notifySubmitted"
+          label="data-access-config.notifications.submitted"
+          help="data-access-config.notifications.submitted-help"></div>
+        <div form-checkbox name="notifyReviewed" model="dataAccessForm.notifyReviewed"
+          label="data-access-config.notifications.reviewed"
+          help="data-access-config.notifications.reviewed-help"></div>
+        <div form-checkbox name="notifyReopened" model="dataAccessForm.notifyReopened"
+          label="data-access-config.notifications.reopened"
+          help="data-access-config.notifications.reopened-help"></div>
+      </div>
+      <div class="col-md-6">
+        <div form-checkbox name="notifyRejected" model="dataAccessForm.notifyRejected"
+          label="data-access-config.notifications.rejected"
+          help="data-access-config.notifications.rejected-help"></div>
+        <div form-checkbox name="notifyApproved" model="dataAccessForm.notifyApproved"
+          label="data-access-config.notifications.approved"
+          help="data-access-config.notifications.approved-help"></div>
+        <div form-checkbox name="notifyCommented" model="dataAccessForm.notifyCommented"
+          label="data-access-config.notifications.commented"
+          help="data-access-config.notifications.commented-help"></div>
+      </div>
+    </div>
+  </form>
+
+  <h3 translate>data-access-config.workflow.title</h3>
+
+  <p translate>data-access-config.workflow.info</p>
+
+  <form>
+        <div form-checkbox name="withReview" model="dataAccessForm.withReview"
+          label="data-access-config.workflow.with-review"
+          help="data-access-config.workflow.with-review-help"></div>
+
+    <div class="row">
+      <div class="col-md-6">
+</div>
+    </div>
+  </form>
 
   <div class="voffset4">
     <a href="#/config" class="btn btn-default">
