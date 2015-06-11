@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.HEAD;
 
 import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.PdfUtils;
@@ -104,10 +103,10 @@ public class DataAccessRequestService {
         from = saved.getStatus();
         // validate the status
         saved.setStatus(request.getStatus());
-        saved.setStatusChangeHistory(request.getStatusChangeHistory());
+        if (request.hasStatusChangeHistory()) saved.setStatusChangeHistory(request.getStatusChangeHistory());
         // merge beans
         BeanUtils.copyProperties(request, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
-          "lastModifiedDate");
+          "lastModifiedDate", "statusChangeHistory");
       } else {
         saved = request;
         setAndLogStatus(saved, DataAccessRequest.Status.OPENED);
