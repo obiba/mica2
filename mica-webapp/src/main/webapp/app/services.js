@@ -136,13 +136,13 @@ mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStor
       },
       isAuthenticated: function () {
         // WORKAROUND: until next angular update, cookieStore is currently buggy
-        function getMicaSidCookie() {
-          var regexp = /micasid=([^;]+)/g;
+        function getSidCookie(app) {
+          var regexp = new RegExp(app + '=([^;]+)', 'g');
           var result = regexp.exec(document.cookie);
           return (result === null) ? null : result[1];
         }
 
-        if (!getMicaSidCookie()) {
+        if (angular.isUndefined(getSidCookie('obibaid')) && angular.isUndefined(getSidCookie('micasid'))) {
           // session has terminated, cleanup
           Session.destroy();
           return false;
