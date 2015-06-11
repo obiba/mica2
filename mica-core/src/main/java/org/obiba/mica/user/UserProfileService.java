@@ -35,7 +35,10 @@ public class UserProfileService extends AgateRestService {
       log.error("Agate connection failure: {}", e.getMessage(), e);
     }
 
-    return null;
+    // return dummy Subject in case communication with Agate failed
+    Subject subject = new Subject();
+    subject.setUsername(username);
+    return subject;
   }
 
   private String getServiceUrl(String username) {

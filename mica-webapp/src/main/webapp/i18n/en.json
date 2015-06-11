@@ -537,8 +537,14 @@
     "investigators": "Investigators",
     "add-contact": "Add Contact",
     "add-investigator": "Add Investigator",
-    "delete-dialog-title": "Delete Study",
-    "delete-dialog-message": "Are you sure you want to delete the study?"
+    "delete-dialog": {
+      "title": "Delete Network",
+      "message": "Are you sure you want to delete the network '{{arg0}}'?"
+    },
+    "study-delete-dialog": {
+      "title": "Delete Study",
+      "message": "Are you sure you want to delete the study '{{arg0}}'?"
+    }
   },
   "all": "All",
   "name": "Name",
