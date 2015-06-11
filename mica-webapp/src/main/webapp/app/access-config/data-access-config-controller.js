@@ -15,7 +15,9 @@ mica.dataAccesConfig
   .controller('DataAccessConfigController', ['$rootScope', '$location', '$scope', '$log', 'DataAccessFormResource', 'DataAccessFormService', 'AlertService', 'ServerErrorUtils',
     function ($rootScope, $location, $scope, $log, DataAccessFormResource, DataAccessFormService, AlertService, ServerErrorUtils) {
 
-     var saveForm = function() {
+      DataAccessFormService.configureAcePaths();
+
+      var saveForm = function() {
 
         if (DataAccessFormService.isFormValid($scope.dataAccessForm)) {
           $scope.dataAccessForm.definition = $scope.form.definition;

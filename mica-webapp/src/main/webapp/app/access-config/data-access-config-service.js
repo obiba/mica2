@@ -21,57 +21,72 @@ mica.dataAccesConfig
       });
     }])
 
-
   .factory('DataAccessFormService', ['BrowserDetector',
     function (BrowserDetector) {
-      this.getEditorOptions = function(onLoadCallback) {
-        return {
-          options: {
-            theme: 'monokai',
-            mode: 'json',
-            displayIndentGuides: true,
-            useElasticTabstops: true,
-            onLoad: onLoadCallback
-          }
-        };
-      };
+      return {
 
-      this.gotoFullScreen = function (id) {
-        {
-          var view = document.getElementById(id);
+        /**
+         * HACK until angular-ui-ce can config path settings
+         */
+        configureAcePaths: function () {
+          var defaultPath = ace.config.get('basePath');
 
-          switch (BrowserDetector.detect()) {
-            case 'ie':
-              view.msRequestFullscreen();
-              break;
-            case 'firefox':
-              view.mozRequestFullScreen();
-              break;
-            case 'chrome':
-            case 'safari':
-              view.webkitRequestFullScreen();
-              break;
+          if (defaultPath.indexOf('bower_components') === -1) {
+            // production path must be changed
+            ace.config.set('basePath', '/scripts');
+            ace.config.set('modePath', '/scripts');
+            ace.config.set('themePath', '/scripts');
+            ace.config.set('workerPath', '/scripts');
           }
+        },
+
+        getEditorOptions: function (onLoadCallback) {
+          return {
+            options: {
+              theme: 'monokai',
+              mode: 'json',
+              displayIndentGuides: true,
+              useElasticTabstops: true,
+              onLoad: onLoadCallback
+            }
+          };
+        },
+
+        gotoFullScreen: function (id) {
+          {
+            var view = document.getElementById(id);
+
+            switch (BrowserDetector.detect()) {
+              case 'ie':
+                view.msRequestFullscreen();
+                break;
+              case 'firefox':
+                view.mozRequestFullScreen();
+                break;
+              case 'chrome':
+              case 'safari':
+                view.webkitRequestFullScreen();
+                break;
+            }
+          }
+        },
+
+        prettifyJson: function (jsonData) {
+          var str = typeof jsonData === 'string' ? jsonData : JSON.stringify(jsonData, undefined, 2);
+          return str;
+        },
+
+        isFormValid: function (dataAccessForm) {
+          var isJsonValid = function (json) {
+            try {
+              JSON.parse(json);
+            } catch (e) {
+              return false;
+            }
+            return true;
+          };
+
+          return isJsonValid(dataAccessForm.definition) && isJsonValid(dataAccessForm.schema);
         }
       };
-
-      this.prettifyJson = function(jsonData) {
-        var str = typeof jsonData === 'string' ? jsonData : JSON.stringify(jsonData, undefined, 2);
-        return str;
-      };
-
-      this.isFormValid = function(dataAccessForm) {
-        var isJsonValid = function(json) {
-          try {
-            JSON.parse(json);
-          } catch (e) {
-            return false;
-          }
-          return true;
-        };
-
-        return isJsonValid(dataAccessForm.definition) && isJsonValid(dataAccessForm.schema);
-      };
-
-      return this;
     }]);

@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2015 OBiBa. All rights reserved.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 // Generated on 2014-03-27 using generator-jhipster 0.12.0
 'use strict';
 
@@ -297,10 +307,30 @@ module.exports = function (grunt) {
           },
           {
             expand: true,
+            dot: true,
+            cwd: 'src/main/webapp/bower_components/font-awesome',
+            dest: '<%= yeoman.dist %>',
+            src: [
+              'fonts/fontawesome*',
+            ]
+          },
+          {
+            expand: true,
             cwd: '.tmp/images',
             dest: '<%= yeoman.dist %>/images',
             src: [
               'generated/*'
+            ]
+          },
+          {
+            expand: true,
+            dot: true,
+            cwd: 'src/main/webapp/bower_components/ace-builds/src-min-noconflict',
+            dest: '<%= yeoman.dist %>/scripts',
+            src: [
+              'mode-json.js',
+              'worker-json.js',
+              'theme-monokai.js'
             ]
           }
         ]

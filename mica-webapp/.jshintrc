@@ -23,6 +23,7 @@
     "mica": true,
     "filesize": true,
     "jQuery": true,
-    "$": true
+    "$": true,
+    "ace": true
   }
 }
