@@ -88,12 +88,13 @@ public class DataAccessRequestService {
   public DataAccessRequest save(@NotNull DataAccessRequest request) {
     DataAccessRequest saved = request;
     DataAccessRequest.Status from = null;
-    Sets.SetView<Attachment> toDelete = null;
-    Sets.SetView<Attachment> toSave = null;
+    Iterable<Attachment> toDelete = null;
+    Iterable<Attachment> toSave = null;
 
     if(request.isNew()) {
       setAndLogStatus(saved, DataAccessRequest.Status.OPENED);
       saved.setId(generateId());
+      toSave = saved.getAttachments();
     } else {
       saved = dataAccessRequestRepository.findOne(request.getId());
       if(saved != null) {
@@ -131,8 +132,12 @@ public class DataAccessRequestService {
    * @throws NoSuchDataAccessRequestException
    */
   public void delete(@NotNull String id) throws NoSuchDataAccessRequestException {
-    findById(id);
-    dataAccessRequestRepository.delete(id);
+    DataAccessRequest dataAccessRequest = findById(id);
+    List<Attachment> attachments = dataAccessRequest.getAttachments();
+
+    dataAccessRequestRepository.delete(dataAccessRequest);
+
+    attachments.forEach(a -> gridFsService.delete(a.getId()));
   }
 
   /**
