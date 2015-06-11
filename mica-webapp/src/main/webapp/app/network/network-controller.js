@@ -16,19 +16,49 @@ mica.network
     networkUpdated: 'event:network-updated'
   })
 
-  .controller('NetworkListController', ['$scope', 'NetworksResource', 'NetworkResource',
+  .controller('NetworkListController', ['$rootScope',
+    '$scope',
+    '$filter',
+    '$translate',
+    'NetworksResource',
+    'NetworkResource',
+    'NOTIFICATION_EVENTS',
+    'LocalizedValues',
 
-    function ($scope, NetworksResource, NetworkResource) {
+    function ($rootScope,
+              $scope,
+              $filter,
+              $translate,
+              NetworksResource,
+              NetworkResource,
+              NOTIFICATION_EVENTS,
+              LocalizedValues) {
 
       $scope.networks = NetworksResource.query();
 
-      $scope.deleteNetwork = function (id) {
-        //TODO ask confirmation
-        NetworkResource.delete({id: id},
-          function () {
-            $scope.networks = NetworksResource.query();
-          });
+      $scope.deleteNetwork = function (network) {
+        if (network) {
+          $scope.networkToDelete = network.id;
+          $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
+            {
+              titleKey: 'network.delete-dialog.title',
+              messageKey:'network.delete-dialog.message',
+              messageArgs: [LocalizedValues.forLang(network.name, $translate.use())]
+            }, network.id
+          );
+        }
       };
+
+      $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, id) {
+        if ($scope.networkToDelete === id) {
+          NetworkResource.delete({id: id},
+            function () {
+              $scope.networks = NetworksResource.query();
+            });
+
+          delete $scope.networkToDelete;
+        }
+      });
 
     }])
 
@@ -131,13 +161,40 @@ mica.network
       };
     }])
 
-  .controller('NetworkViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale',
-    '$location', '$translate', 'NetworkResource', 'NetworkPublicationResource', 'MicaConfigResource',
-    'CONTACT_EVENTS', 'NETWORK_EVENTS', 'NOTIFICATION_EVENTS', 'DraftStudiesSummariesResource', '$modal',
+  .controller('NetworkViewController', ['$rootScope',
+    '$scope',
+    '$routeParams',
+    '$log',
+    '$locale',
+    '$location',
+    '$translate',
+    'NetworkResource',
+    'NetworkPublicationResource',
+    'MicaConfigResource',
+    'CONTACT_EVENTS',
+    'NETWORK_EVENTS',
+    'NOTIFICATION_EVENTS',
+    'DraftStudiesSummariesResource',
+    '$modal',
+    'LocalizedValues',
 
-    function ($rootScope, $scope, $routeParams, $log, $locale, $location, $translate, NetworkResource,
-              NetworkPublicationResource, MicaConfigResource, CONTACT_EVENTS, NETWORK_EVENTS, NOTIFICATION_EVENTS,
-              DraftStudiesSummariesResource, $modal) {
+    function ($rootScope,
+              $scope,
+              $routeParams,
+              $log,
+              $locale,
+              $location,
+              $translate,
+              NetworkResource,
+              NetworkPublicationResource,
+              MicaConfigResource,
+              CONTACT_EVENTS,
+              NETWORK_EVENTS,
+              NOTIFICATION_EVENTS,
+              DraftStudiesSummariesResource,
+              $modal,
+              LocalizedValues) {
+
       var getActiveTab = function () {
         return $scope.tabs.filter(function (tab) {
           return tab.active;
@@ -273,26 +330,28 @@ mica.network
       };
 
       $scope.deleteStudyEvent = function (network, summary, index) {
-        var titleKey = 'network.delete-dialog-title';
-        var messageKey = 'network.delete-dialog-message';
-        $translate([titleKey, messageKey])
-          .then(function (translation) {
-            $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
-              {title: translation[titleKey], message: translation[messageKey]}, summary);
-          });
-
-        $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, summary) {
-          if ($scope.studySummaries[index] === summary) {
-            var deleteIndex = $scope.network.studyIds.indexOf(summary.id);
-            if (deleteIndex > -1) {
-              $scope.studySummaries.splice(index, 1);
-              $scope.network.studyIds.splice(deleteIndex, 1);
-              $scope.emitNetworkUpdated();
-            } else {
-              $log.error('The study id was not found: ', summary.id);
-            }
-          }
-        });
+        $scope.studyIndexToDelete = index;
+        $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
+          {
+            titleKey: 'network.study-delete-dialog.title',
+            messageKey:'network.study-delete-dialog.message',
+            messageArgs: [LocalizedValues.forLang(summary.name, $translate.use())]
+          }, summary
+        );
       };
+
+      $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, summary) {
+        if ($scope.studySummaries[$scope.studyIndexToDelete] === summary) {
+          var deleteIndex = $scope.network.studyIds.indexOf(summary.id);
+          if (deleteIndex > -1) {
+            $scope.studySummaries.splice($scope.studyIndexToDelete, 1);
+            $scope.network.studyIds.splice(deleteIndex, 1);
+            $scope.emitNetworkUpdated();
+          } else {
+            $log.error('The study id was not found: ', summary.id);
+          }
+          delete $scope.studyIndexToDelete;
+        }
+      });
 
     }]);
