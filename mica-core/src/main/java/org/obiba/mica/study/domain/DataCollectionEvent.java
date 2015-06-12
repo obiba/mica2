@@ -15,10 +15,13 @@ import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.study.date.PersistableYearMonth;
 import org.springframework.data.domain.Persistable;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
 import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public class DataCollectionEvent extends AbstractAttributeAware
     implements Serializable, Persistable<String>, Comparable<DataCollectionEvent>, AttachmentAware {
@@ -48,7 +51,10 @@ public class DataCollectionEvent extends AbstractAttributeAware
 
   private LocalizedString otherBioSamples;
 
-  private List<Attachment> attachments;
+  @DBRef
+  private List<Attachment> attachments = Lists.newArrayList();
+
+  private Iterable<Attachment> removedAttachments = Lists.newArrayList();
 
   @Override
   public String getId() {
@@ -175,19 +181,25 @@ public class DataCollectionEvent extends AbstractAttributeAware
   }
 
   @Override
+  @JsonIgnore
   public List<Attachment> getAttachments() {
     return attachments;
   }
 
   @Override
   public void addAttachment(@NotNull Attachment attachment) {
-    if(attachments == null) attachments = new ArrayList<>();
     attachments.add(attachment);
   }
 
   @Override
-  public void setAttachments(List<Attachment> attachments) {
+  public void setAttachments(@NotNull List<Attachment> attachments) {
+    removedAttachments = Sets.difference(Sets.newHashSet(this.attachments), Sets.newHashSet(attachments));
     this.attachments = attachments;
+  }
+
+  @Override
+  public List<Attachment> removedAttachments() {
+    return Lists.newArrayList(removedAttachments);
   }
 
   @Override

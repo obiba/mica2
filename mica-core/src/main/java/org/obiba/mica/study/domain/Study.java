@@ -26,6 +26,7 @@ import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.PersistableWithAttachments;
 import org.obiba.mica.study.date.PersitableYear;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
@@ -79,11 +80,14 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
   //@PubmedId
   private String pubmedId;
 
-  private List<Attachment> attachments;
+  @DBRef
+  private List<Attachment> attachments = Lists.newArrayList();
+
+  private Iterable<Attachment> removedAttachments = Lists.newArrayList();
 
   private LocalizedString info;
 
-  private SortedSet<Population> populations;
+  private SortedSet<Population> populations = Sets.newTreeSet();
 
   @URL
   private String opal;
@@ -262,19 +266,25 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
   }
 
   @Override
+  @JsonIgnore
   public List<Attachment> getAttachments() {
     return attachments;
   }
 
   @Override
   public void addAttachment(@NotNull Attachment anAttachment) {
-    if(attachments == null) attachments = new ArrayList<>();
     attachments.add(anAttachment);
   }
 
   @Override
   public void setAttachments(List<Attachment> attachments) {
+    removedAttachments = Sets.difference(Sets.newHashSet(this.attachments), Sets.newHashSet(attachments));
     this.attachments = attachments;
+  }
+
+  @Override
+  public List<Attachment> removedAttachments() {
+    return Lists.newArrayList(removedAttachments);
   }
 
   @NotNull

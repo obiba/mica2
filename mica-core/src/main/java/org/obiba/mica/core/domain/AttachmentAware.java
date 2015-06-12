@@ -29,4 +29,5 @@ public interface AttachmentAware {
 
   void setAttachments(List<Attachment> attachments);
 
+  List<Attachment> removedAttachments();
 }

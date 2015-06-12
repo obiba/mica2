@@ -41,7 +41,7 @@ clean:
 	${mvn_exec} clean
 
 install:
-	${mvn_exec} install
+	${mvn_exec} install -DskipTests
 
 core:
 	cd mica-core && ${mvn_exec} install

@@ -1,21 +1,20 @@
 package org.obiba.mica.file;
 
-import java.io.Serializable;
 import java.util.Locale;
 import java.util.Objects;
 
 import javax.validation.constraints.NotNull;
 
+import org.obiba.mica.core.domain.AbstractAuditableDocument;
 import org.obiba.mica.core.domain.LocalizedString;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class Attachment implements Serializable {
+@Document
+public class Attachment extends AbstractAuditableDocument {
 
   private static final long serialVersionUID = 7881381748865114007L;
-
-  @NotNull
-  private String id;
 
   @JsonIgnore
   private boolean justUploaded;
@@ -32,15 +31,6 @@ public class Attachment implements Serializable {
   private long size;
 
   private String md5;
-
-  @NotNull
-  public String getId() {
-    return id;
-  }
-
-  public void setId(@NotNull String id) {
-    this.id = id;
-  }
 
   @NotNull
   public String getName() {
@@ -101,7 +91,7 @@ public class Attachment implements Serializable {
 
   @Override
   public int hashCode() {
-    return id.hashCode();
+    return getId().hashCode();
   }
 
   @Override
@@ -110,6 +100,6 @@ public class Attachment implements Serializable {
 
     if(obj == null || getClass() != obj.getClass()) return false;
 
-    return Objects.equals(id, ((Attachment) obj).id);
+    return Objects.equals(getId(), ((Attachment) obj).getId());
   }
 }

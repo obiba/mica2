@@ -23,9 +23,12 @@ import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.PersistableWithAttachments;
 import org.obiba.mica.study.domain.Study;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 /**
  * A Network.
@@ -50,7 +53,10 @@ public class Network extends AbstractAuditableDocument implements AttributeAware
   @URL
   private String website;
 
-  private List<Attachment> attachments;
+  @DBRef
+  private List<Attachment> attachments = Lists.newArrayList();
+
+  private Iterable<Attachment> removedAttachments = Lists.newArrayList();
 
   private LocalizedString infos;
 
@@ -140,7 +146,6 @@ public class Network extends AbstractAuditableDocument implements AttributeAware
   @Override
   @NotNull
   public List<Attachment> getAttachments() {
-    if(attachments == null) attachments = new ArrayList<>();
     return attachments;
   }
 
@@ -151,12 +156,18 @@ public class Network extends AbstractAuditableDocument implements AttributeAware
 
   @Override
   public void addAttachment(@NotNull Attachment attachment) {
-    getAttachments().add(attachment);
+    attachments.add(attachment);
   }
 
   @Override
   public void setAttachments(List<Attachment> attachments) {
+    removedAttachments = Sets.difference(Sets.newHashSet(this.attachments), Sets.newHashSet(attachments));
     this.attachments = attachments;
+  }
+
+  @Override
+  public List<Attachment> removedAttachments() {
+    return Lists.newArrayList(removedAttachments);
   }
 
   public LocalizedString getInfos() {
