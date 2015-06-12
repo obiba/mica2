@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba
 
  * License: GNU Public License version 3
- * Date: 2015-06-09
+ * Date: 2015-06-12
  */
 'use strict';
 
@@ -1010,7 +1010,8 @@ angular.module('obiba.comments')
   .config(['markedProvider', function(markedProvider) {
     markedProvider.setOptions({
       gfm: true,
-      tables: true
+      tables: true,
+      sanitize: true
     });
   }])
 
