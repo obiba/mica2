@@ -7,11 +7,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.URL;
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
 import org.obiba.mica.core.domain.AttachmentAware;
+import org.obiba.mica.core.domain.Attribute;
+import org.obiba.mica.core.domain.AttributeAware;
+import org.obiba.mica.core.domain.Attributes;
 import org.obiba.mica.core.domain.Authorization;
 import org.obiba.mica.core.domain.Contact;
 import org.obiba.mica.core.domain.GitPersistable;
@@ -26,7 +30,7 @@ import com.google.common.base.Strings;
 /**
  * A Network.
  */
-public class Network extends AbstractAuditableDocument implements GitPersistable, AttachmentAware, PersistableWithAttachments {
+public class Network extends AbstractAuditableDocument implements AttributeAware, GitPersistable, AttachmentAware, PersistableWithAttachments {
 
   private static final long serialVersionUID = -4271967393906681773L;
 
@@ -55,6 +59,8 @@ public class Network extends AbstractAuditableDocument implements GitPersistable
   private Authorization maelstromAuthorization;
 
   private Attachment logo;
+
+  private Attributes attributes;
 
   //
   // Accessors
@@ -238,5 +244,36 @@ public class Network extends AbstractAuditableDocument implements GitPersistable
   private void cleanContacts(List<Contact> contactList) {
     if (contactList == null) return;
     contactList.forEach(Contact::cleanContact);
+  }
+
+  public Attributes getAttributes() {
+    return attributes;
+  }
+
+  public void setAttributes(Attributes value) {
+    attributes = value;
+  }
+
+  @Override
+  public void addAttribute(Attribute attribute) {
+    if(attributes == null) attributes = new Attributes();
+    attributes.addAttribute(attribute);
+  }
+
+  @Override
+  public void removeAttribute(Attribute attribute) {
+    if(attributes != null) {
+      attributes.removeAttribute(attribute);
+    }
+  }
+
+  @Override
+  public void removeAllAttributes() {
+    if(attributes != null) attributes.removeAllAttributes();
+  }
+
+  @Override
+  public boolean hasAttribute(String attName, @Nullable String namespace) {
+    return attributes != null && attributes.hasAttribute(attName, namespace);
   }
 }
