@@ -10,6 +10,8 @@
 
 package org.obiba.mica.core.domain;
 
+import org.springframework.web.util.HtmlUtils;
+
 public class Comment extends AbstractAuditableDocument {
 
   private static final long serialVersionUID = -1490617732167157048L;
@@ -80,7 +82,7 @@ public class Comment extends AbstractAuditableDocument {
     }
 
     public Builder message(String message) {
-      comment.setMessage(message);
+      comment.setMessage(HtmlUtils.htmlEscape(message));
       return this;
     }
 

@@ -5,7 +5,8 @@ angular.module('obiba.comments')
   .config(['markedProvider', function(markedProvider) {
     markedProvider.setOptions({
       gfm: true,
-      tables: true
+      tables: true,
+      sanitize: true
     });
   }])
 
