@@ -49,6 +49,9 @@ class NetworkDtos {
   @Inject
   private PublishedDatasetVariableService datasetVariableService;
 
+  @Inject
+  private AttributeDtos attributeDtos;
+
   @NotNull
   Mica.NetworkDto.Builder asDtoBuilder(@NotNull Network network) {
     Mica.NetworkDto.Builder builder = Mica.NetworkDto.newBuilder();
@@ -102,6 +105,11 @@ class NetworkDtos {
       builder.setLogo(attachmentDtos.asDto(network.getLogo()));
     }
 
+    if(network.getAttributes() != null) {
+      network.getAttributes().asAttributeList().forEach(
+        attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
+    }
+
     return builder;
   }
 
@@ -139,6 +147,9 @@ class NetworkDtos {
       network.setLogo(attachmentDtos.fromDto(dto.getLogo()));
     }
 
+    if(dto.getAttributesCount() > 0) {
+      dto.getAttributesList().forEach(attributeDto -> network.addAttribute(attributeDtos.fromDto(attributeDto)));
+    }
     return network;
   }
 
