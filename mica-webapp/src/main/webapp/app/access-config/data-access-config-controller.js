@@ -104,6 +104,7 @@ mica.dataAccesConfig
           $scope.form.schema = DataAccessFormService.prettifyJson($scope.form.schemaJson);
           $scope.dataAccessForm = dataAccessForm;
           $scope.dataAccessForm.pdfTemplates = $scope.dataAccessForm.pdfTemplates || [];
+          selectTab('form-schema');
         },
         function(response) {
           AlertService.alert({
