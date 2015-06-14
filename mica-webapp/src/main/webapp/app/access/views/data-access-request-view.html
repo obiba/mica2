@@ -68,10 +68,14 @@
       <form id="request-form" name="forms.requestForm">
         <div sf-model="form.model" sf-form="form.definition" sf-schema="form.schema"></div>
       </form>
-    </tab>
-    <tab heading="{{'attachments' | translate}}">
+      <h3 translate>attachments</h3>
+
+      <p ng-if="dataAccessRequest.attachments.length == 0" translate>
+        no-attachments
+      </p>
+
       <attachment-list files="dataAccessRequest.attachments"
-        href-builder="getDownloadHref(attachments, id)"></attachment-list>
+          href-builder="getDownloadHref(attachments, id)"></attachment-list>
     </tab>
     <tab ng-click="selectTab('comments')" heading="{{'data-access-request.comments' | translate}}">
       <obiba-comments comments="form.comments" on-update="updateComment" on-delete="deleteComment" name-resolver="userProfileService.getFullName" edit-action="EDIT" delete-action="DELETE"></obiba-comments>

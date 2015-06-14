@@ -584,6 +584,7 @@
   "authorizer": "Authorizer",
   "logo": "Logo",
   "attachments": "Attachments",
+  "no-attachments": "No attachments.",
   "allowed-file-types": "Allowed file types:",
   "total": "Total",
   "type": "Type",

@@ -24,36 +24,30 @@
     </ol>
   </h3>
 
-  <div>
-    <obiba-alert id="DataAccessRequestEditController"></obiba-alert>
+  <div class="pull-right">
+    <a ng-click="cancel()" type="button" class="btn btn-default">
+      <span translate>cancel</span>
+    </a>
 
-    <form name="requestForm" ng-submit="submit(requestForm)">
-      <tabset class="voffset5">
-        <div class="pull-right">
-        </div>
-        <tab heading="{{'data-access-request.form' | translate}}">
-          <div sf-model="form.model" sf-form="form.definition" sf-schema="form.schema" required="true"></div>
-        </tab>
-        <tab heading="{{'attachments' | translate}}">
-          <div class="form-group">
-            <attachment-input files="dataAccessRequest.attachments" multiple="true"></attachment-input>
-          </div>
-        </tab>
-      </tabset>
+    <a ng-click="save()" type="button" class="btn btn-primary">
+      <span translate>save</span>
+    </a>
 
-      <a ng-click="cancel()" type="button" class="btn btn-default">
-        <span translate>cancel</span>
-      </a>
-
-      <a ng-click="save()" type="button" class="btn btn-primary">
-        <span translate>save</span>
-      </a>
-
-      <button type="submit" class="btn btn-info">
-        <span translate>validate</span>
-      </button>
-    </form>
-
+    <a ng-click="validate()" type="button" class="btn btn-info">
+      <span translate>validate</span>
+    </a>
   </div>
+
+  <div class="clearfix"></div>
+
+  <obiba-alert id="DataAccessRequestEditController"></obiba-alert>
+
+  <form name="requestForm" ng-submit="submit(requestForm)">
+    <div sf-model="form.model" sf-form="form.definition" sf-schema="form.schema" required="true"></div>
+    <h3 translate>attachments</h3>
+    <div class="form-group">
+      <attachment-input files="dataAccessRequest.attachments" multiple="true"></attachment-input>
+    </div>
+  </form>
 
 </div>
