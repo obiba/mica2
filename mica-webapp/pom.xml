@@ -28,6 +28,10 @@
     </dependency>
     <dependency>
       <groupId>org.obiba.commons</groupId>
+      <artifactId>obiba-shiro</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.obiba.commons</groupId>
       <artifactId>obiba-shiro-web</artifactId>
     </dependency>
     <dependency>
