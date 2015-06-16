@@ -383,7 +383,7 @@ public class DataAccessRequestService {
   private String generateId() {
     DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
     IdentifierGenerator idGenerator = IdentifierGenerator.newBuilder().prefix(dataAccessForm.getIdPrefix())
-      .size(dataAccessForm.getIdLength()).zeros().hex().build();
+      .size(dataAccessForm.getIdLength()).zeros().build();
     while(true) {
       String id = idGenerator.generateIdentifier();
       if(dataAccessRequestRepository.findOne(id) == null) return id;
