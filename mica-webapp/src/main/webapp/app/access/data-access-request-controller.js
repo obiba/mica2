@@ -21,10 +21,12 @@ mica.dataAccessRequest
       $scope.requests = DataAccessRequestsResource.query(function(reqs) {
         for (var i = 0; i < reqs.length; i++) {
           var req = reqs[i];
-          for (var j = 0; j < req.statusChangeHistory.length; j++) {
-            var change = req.statusChangeHistory[j];
-            if (change.to == 'SUBMITTED') {
-              req.submissionDate = change.changedOn;
+          if (req.status !== 'OPENED') {
+            for (var j = 0; j < req.statusChangeHistory.length; j++) {
+              var change = req.statusChangeHistory[j];
+              if (change.to == 'SUBMITTED') {
+                req.submissionDate = change.changedOn;
+              }
             }
           }
         }

@@ -58,6 +58,7 @@
           <th translate ng-if="showApplicant">data-access-request.applicant</th>
           <th translate>data-access-request.title</th>
           <th translate>data-access-request.lastUpdate</th>
+          <th translate>data-access-request.submissionDate</th>
           <th translate>data-access-request.status</th>
           <th></th>
         </tr>
@@ -77,8 +78,10 @@
             {{(request.timestamps.lastUpdate || request.timestamps.created) | fromNow}}
           </td>
           <td>
+            <span ng-if="request.submissionDate">{{request.submissionDate | fromNow}}</span>
+          </td>
+          <td>
             {{request.status | translate}}
-            <span ng-if="request.submissionDate">({{request.submissionDate | fromNow}})</span>
           </td>
           <td>
             <ul class="list-inline pull-right">
