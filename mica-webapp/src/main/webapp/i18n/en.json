@@ -619,6 +619,7 @@
     "title-help": "Short summary to help identifying the request.",
     "status": "Status",
     "lastUpdate": "Last Update",
+    "submissionDate": "Submission Date",
     "none": "No Data Access requested.",
     "add": "Add Data Access Request",
     "edit": "Edit Data Access Request",
