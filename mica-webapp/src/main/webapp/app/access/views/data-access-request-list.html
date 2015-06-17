@@ -78,6 +78,7 @@
           </td>
           <td>
             {{request.status | translate}}
+            <span ng-if="request.submissionDate">({{request.submissionDate | fromNow}})</span>
           </td>
           <td>
             <ul class="list-inline pull-right">

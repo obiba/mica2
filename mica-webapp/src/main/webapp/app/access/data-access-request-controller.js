@@ -18,7 +18,18 @@ mica.dataAccessRequest
 
       $scope.REQUEST_STATUS = DataAccessRequestService.getStatusFilterData();
       $scope.searchStatus = {};
-      $scope.requests = DataAccessRequestsResource.query();
+      $scope.requests = DataAccessRequestsResource.query(function(reqs) {
+        for (var i = 0; i < reqs.length; i++) {
+          var req = reqs[i];
+          for (var j = 0; j < req.statusChangeHistory.length; j++) {
+            var change = req.statusChangeHistory[j];
+            console.log(change);
+            if (change.to == 'SUBMITTED') {
+              req.submissionDate = change.changedOn;
+            }
+          }
+        }
+      });
       $scope.actions = DataAccessRequestService.actions;
       $scope.showApplicant = Session.roles.filter(function(role) {
         return [USER_ROLES.dao, USER_ROLES.admin].indexOf(role) > -1;
