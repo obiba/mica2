@@ -44,7 +44,8 @@
 
   <form name="requestForm" ng-submit="submit(requestForm)">
     <div sf-model="form.model" sf-form="form.definition" sf-schema="form.schema" required="true"></div>
-    <h3 translate>attachments</h3>
+    <h2 translate>data-access-request.documents</h2>
+    <p translate>data-access-request.documents-help</p>
     <div class="form-group">
       <attachment-input files="dataAccessRequest.attachments" multiple="true"></attachment-input>
     </div>
