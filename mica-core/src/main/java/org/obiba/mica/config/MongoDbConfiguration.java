@@ -7,6 +7,7 @@ import javax.inject.Inject;
 
 import org.mongeez.MongeezRunner;
 import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.runtime.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
@@ -66,7 +67,7 @@ public class MongoDbConfiguration extends AbstractMongoConfiguration implements 
   @Override
   public CustomConversions customConversions() {
     return new CustomConversions(
-        Lists.newArrayList(new LocalizedStringWriteConverter(), new LocalizedStringReadConverter()));
+        Lists.newArrayList(new LocalizedStringWriteConverter(), new LocalizedStringReadConverter(), new VersionReadConverter()));
   }
 
   @Override
@@ -113,6 +114,14 @@ public class MongoDbConfiguration extends AbstractMongoConfiguration implements 
       source.keySet()
           .forEach(key -> rval.put(key, source.get(key) == null ? null : source.get(key).toString()));
       return rval;
+    }
+  }
+
+  public static class VersionReadConverter implements Converter<DBObject, Version> {
+
+    @Override
+    public Version convert(DBObject dbObject) {
+      return new Version((int)dbObject.get("major"), (int)dbObject.get("minor"), (int)dbObject.get("micro"), (String)dbObject.get("qualifier"));
     }
   }
 

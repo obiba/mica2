@@ -13,5 +13,5 @@ package org.obiba.mica.network;
 import org.obiba.mica.core.repository.AbstractAttachmentAwareRepository;
 import org.obiba.mica.network.domain.Network;
 
-public class NetworkRepositoryImpl extends AbstractAttachmentAwareRepository<Network> {
+public class NetworkRepositoryImpl extends AbstractAttachmentAwareRepository<Network> implements NetworkRepositoryCustom {
 }

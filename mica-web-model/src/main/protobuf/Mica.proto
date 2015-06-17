@@ -306,6 +306,7 @@ message AttachmentDto {
   optional int64 size = 6;
   optional string md5 = 7;
   optional bool justUploaded = 8;
+  optional TimestampsDto timestamps = 9;
 }
 
 message TempFileDto {

@@ -6,6 +6,7 @@ import org.obiba.mica.core.repository.AbstractAttachmentAwareRepository;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.study.domain.Study;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -16,29 +17,26 @@ public class StudyRepositoryImpl extends AbstractAttachmentAwareRepository<Study
 
   @Override
   public Study saveWithAttachments(Study obj) {
-    obj.getPopulations().forEach(p -> {
+    obj.getPopulations().forEach(p -> p.getDataCollectionEvents().forEach(d -> d.getAttachments().forEach(a -> {
         try {
-          p.getDataCollectionEvents().forEach(d -> attachmentRepository.save(d.getAttachments()));
-        } catch(DuplicateKeyException ex) {
-          //ignore
+          attachmentRepository.save(a);
+        } catch(DuplicateKeyException | OptimisticLockingFailureException ex) {
+          //TODO: copy same attachments that are in different DCEs.
         }
-      }
-    );
+      })));
 
     Study res = super.saveWithAttachments(obj);
 
-    obj.getPopulations().forEach(p ->
-        p.getDataCollectionEvents().forEach(d -> attachmentRepository.delete(d.removedAttachments()))
-    );
+    obj.getPopulations()
+      .forEach(p -> p.getDataCollectionEvents().forEach(d -> attachmentRepository.delete(d.removedAttachments())));
 
     return res;
   }
 
   @Override
   public void deleteWithAttachments(Study obj) {
-    obj.getPopulations().forEach(p ->
-        p.getDataCollectionEvents().forEach(d -> attachmentRepository.delete(d.getAttachments()))
-    );
+    obj.getPopulations()
+      .forEach(p -> p.getDataCollectionEvents().forEach(d -> attachmentRepository.delete(d.getAttachments())));
 
     super.deleteWithAttachments(obj);
   }
