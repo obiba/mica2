@@ -68,10 +68,10 @@
       <form id="request-form" name="forms.requestForm">
         <div sf-model="form.model" sf-form="form.definition" sf-schema="form.schema"></div>
       </form>
-      <h3 translate>attachments</h3>
+      <h2 translate>data-access-request.documents</h2>
 
       <p ng-if="dataAccessRequest.attachments.length == 0" translate>
-        no-attachments
+        data-access-request.no-documents
       </p>
 
       <attachment-list files="dataAccessRequest.attachments"
