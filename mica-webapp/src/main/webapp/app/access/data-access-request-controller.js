@@ -23,7 +23,6 @@ mica.dataAccessRequest
           var req = reqs[i];
           for (var j = 0; j < req.statusChangeHistory.length; j++) {
             var change = req.statusChangeHistory[j];
-            console.log(change);
             if (change.to == 'SUBMITTED') {
               req.submissionDate = change.changedOn;
             }
