@@ -24,13 +24,13 @@ public class NoSuchCommentExceptionMapper extends AbstractErrorDtoExceptionMappe
 
   @Override
   protected Response.Status getStatus() {
-    return Response.Status.BAD_REQUEST;
+    return Response.Status.NOT_FOUND;
   }
 
   @Override
   protected GeneratedMessage.ExtendableMessage<?> getErrorDto(NoSuchCommentException e) {
     return ErrorDtos.ClientErrorDto.newBuilder() //
-      .setCode(Response.Status.NOT_FOUND.getStatusCode()) //
+      .setCode(getStatus().getStatusCode()) //
       .setMessageTemplate("server.error.data-access-request.not-found") //
       .setMessage(e.getMessage()) //
       .build();
