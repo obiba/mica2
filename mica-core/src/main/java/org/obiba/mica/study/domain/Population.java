@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public class Population extends AbstractAttributeAware implements Serializable, Comparable<Population>, AttributeAware {
 
@@ -39,7 +40,7 @@ public class Population extends AbstractAttributeAware implements Serializable, 
 
   private LocalizedString info;
 
-  private SortedSet<DataCollectionEvent> dataCollectionEvents;
+  private SortedSet<DataCollectionEvent> dataCollectionEvents = Sets.newTreeSet();
 
   @JsonIgnore
   public boolean isNew() {

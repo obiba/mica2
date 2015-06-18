@@ -67,7 +67,7 @@ public class NetworkService {
     }
 
     gitService.save(saved);
-    networkRepository.save(saved);
+    networkRepository.saveWithAttachments(saved);
     eventBus.post(new NetworkUpdatedEvent(saved));
   }
 
@@ -156,7 +156,7 @@ public class NetworkService {
    */
   public void delete(@NotNull String id) throws NoSuchNetworkException {
     Network network = findById(id);
-    networkRepository.delete(id);
+    networkRepository.deleteWithAttachments(network);
     eventBus.post(new NetworkDeletedEvent(network));
   }
 

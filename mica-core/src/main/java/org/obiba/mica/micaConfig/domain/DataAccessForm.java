@@ -23,7 +23,7 @@ import com.google.common.collect.Maps;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-public class DataAccessForm extends AbstractGitPersistable implements PersistableWithAttachments, AttachmentAware {
+public class DataAccessForm extends AbstractGitPersistable implements PersistableWithAttachments {
 
   public final static String DEFAULT_ID = "default";
 
@@ -91,26 +91,6 @@ public class DataAccessForm extends AbstractGitPersistable implements Persistabl
 
   public void setProperties(Map<String, LocalizedString> properties) {
     this.properties = properties;
-  }
-
-  @Override
-  public boolean hasAttachments() {
-    return false;
-  }
-
-  @Override
-  public List<Attachment> getAttachments() {
-    return null;
-  }
-
-  @Override
-  public void addAttachment(@NotNull Attachment attachment) {
-    throw new NotImplementedException();
-  }
-
-  @Override
-  public void setAttachments(List<Attachment> attachments) {
-    throw new NotImplementedException();
   }
 
   @JsonIgnore

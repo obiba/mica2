@@ -11,14 +11,19 @@ import org.obiba.mica.core.domain.AbstractAuditableDocument;
 import org.obiba.mica.core.domain.AttachmentAware;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.PersistableWithAttachments;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 /**
  *
  */
+@Document
 public class DataAccessRequest extends AbstractAuditableDocument
   implements AttachmentAware, PersistableWithAttachments {
 
@@ -37,7 +42,10 @@ public class DataAccessRequest extends AbstractAuditableDocument
 
   private Status status = Status.OPENED;
 
-  private List<Attachment> attachments;
+  @DBRef
+  private List<Attachment> attachments = Lists.newArrayList();
+
+  private Iterable<Attachment> removedAttachments = Lists.newArrayList();
 
   private List<StatusChange> statusChangeHistory;
 
@@ -80,7 +88,6 @@ public class DataAccessRequest extends AbstractAuditableDocument
   @Override
   @NotNull
   public List<Attachment> getAttachments() {
-    if(attachments == null) attachments = new ArrayList<>();
     return attachments;
   }
 
@@ -96,7 +103,13 @@ public class DataAccessRequest extends AbstractAuditableDocument
 
   @Override
   public void setAttachments(List<Attachment> attachments) {
+    this.removedAttachments = Sets.difference(Sets.newHashSet(this.attachments), Sets.newHashSet(attachments));
     this.attachments = attachments;
+  }
+
+  @Override
+  public List<Attachment> removedAttachments() {
+    return Lists.newArrayList(removedAttachments);
   }
 
   @JsonIgnore

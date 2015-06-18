@@ -10,18 +10,8 @@
 
 package org.obiba.mica.network;
 
-import java.util.List;
-
+import org.obiba.mica.core.repository.AbstractAttachmentAwareRepository;
 import org.obiba.mica.network.domain.Network;
-import org.springframework.data.mongodb.repository.MongoRepository;
 
-/**
- * Spring Data MongoDB repository for the {@link org.obiba.mica.network.domain.Network} entity.
- */
-public interface NetworkRepository extends MongoRepository<Network, String>, NetworkRepositoryCustom {
-
-  List<Network> findByStudyIds(String studyId);
-
-  List<Network> findByPublished(boolean published);
-
+public class NetworkRepositoryImpl extends AbstractAttachmentAwareRepository<Network> implements NetworkRepositoryCustom {
 }

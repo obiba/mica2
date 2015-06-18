@@ -1,5 +1,5 @@
 skipTests = false
-version=0.1-SNAPSHOT
+version=0.9-SNAPSHOT
 mvn_exec = mvn -Dmaven.test.skip=${skipTests}
 current_dir = $(shell pwd)
 ifdef MICA_HOME
@@ -73,7 +73,7 @@ run-prod:
 	mkdir mica_home && \
 	mv mica-dist-${version}/conf mica_home/conf && \
 	export MICA_HOME="${current_dir}/mica-dist/target/mica_home" && \
-	mica-dist-${version}/bin/mica-server
+	mica-dist-${version}/bin/mica2
 
 debug:
 	export MAVEN_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,address=8002,suspend=n && \

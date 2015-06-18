@@ -19,6 +19,7 @@ import org.obiba.mica.access.DataAccessRequestRepository;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.domain.StatusChange;
+import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.core.support.IdentifierGenerator;
@@ -79,6 +80,9 @@ public class DataAccessRequestService {
   private MailService mailService;
 
   @Inject
+  private AttachmentRepository attachmentRepository;
+
+  @Inject
   private MicaConfigService micaConfigService;
 
   @Value("classpath:config/data-access-form/data-access-request-template.pdf")
@@ -115,9 +119,12 @@ public class DataAccessRequestService {
     }
 
     if(toSave != null)
-      toSave.forEach(a -> gridFsService.save(tempFileService.getInputStreamFromFile(a.getId()), a.getId()));
+      toSave.forEach(a -> {
+        gridFsService.save(tempFileService.getInputStreamFromFile(a.getId()), a.getId());
+        attachmentRepository.save(a);
+      });
 
-    dataAccessRequestRepository.save(saved);
+    dataAccessRequestRepository.saveWithAttachments(saved);
 
     if(toDelete != null) toDelete.forEach(a -> gridFsService.delete(a.getId()));
 
@@ -135,7 +142,7 @@ public class DataAccessRequestService {
     DataAccessRequest dataAccessRequest = findById(id);
     List<Attachment> attachments = dataAccessRequest.getAttachments();
 
-    dataAccessRequestRepository.delete(dataAccessRequest);
+    dataAccessRequestRepository.deleteWithAttachments(dataAccessRequest);
 
     attachments.forEach(a -> gridFsService.delete(a.getId()));
   }

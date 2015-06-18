@@ -8,6 +8,8 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.config.Profiles;
+import org.obiba.runtime.upgrade.UpgradeException;
+import org.obiba.runtime.upgrade.UpgradeManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -29,6 +31,9 @@ public class Application {
   @Inject
   private Environment env;
 
+  @Inject
+  private UpgradeManager upgradeManager;
+
   /**
    * Initializes mica.
    * <p>
@@ -36,12 +41,14 @@ public class Application {
    * <p>
    */
   @PostConstruct
-  public void initApplication() throws IOException {
+  public void initApplication() throws IOException, UpgradeException {
     if(env.getActiveProfiles().length == 0) {
       log.warn("No Spring profile configured, running with default configuration");
     } else {
       log.info("Running with Spring profile(s) : {}", Arrays.toString(env.getActiveProfiles()));
     }
+
+    upgradeManager.executeUpgrade();
   }
 
   /**

@@ -83,7 +83,7 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
     studyState.setName(study.getName());
     studyState.incrementRevisionsAhead();
     studyStateRepository.save(studyState);
-    studyRepository.save(study);
+    studyRepository.saveWithAttachments(study);
 
     eventBus.post(new DraftStudyUpdatedEvent(study));
   }
@@ -220,7 +220,7 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
     gitService.deleteGitRepository(study);
     eventBus.post(new StudyDeletedEvent(study));
     studyStateRepository.delete(id);
-    studyRepository.delete(id);
+    studyRepository.deleteWithAttachments(study);
   }
 
   //
