@@ -693,7 +693,7 @@
       "title": "Notifications",
       "info": "Emails can be sent to applicant and data access officers when an event happens on the data access request. events can be: status change or comment.",
       "submitted": "On submission",
-      "submitted-help": "Email is sent to data access officers on data access request submission.",
+      "submitted-help": "Email is sent to data access officers and to applicant on data access request submission.",
       "reviewed": "On review",
       "reviewed-help": "Email is sent to applicant when its data access request is being reviewed.",
       "approved": "On approval",
