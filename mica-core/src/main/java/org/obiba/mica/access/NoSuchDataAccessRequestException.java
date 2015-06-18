@@ -12,16 +12,29 @@ package org.obiba.mica.access;
 
 import java.util.NoSuchElementException;
 
+import com.google.common.base.Strings;
+
 public class NoSuchDataAccessRequestException extends NoSuchElementException {
 
   private static final long serialVersionUID = 2056200745616902456L;
 
-  private NoSuchDataAccessRequestException(String s) {
+  private final String requestId;
+
+  private NoSuchDataAccessRequestException(String s, String id)
+  {
     super(s);
+    requestId = id;
   }
 
   public static NoSuchDataAccessRequestException withId(String id) {
-    return new NoSuchDataAccessRequestException("Data access request with id '" + id + "' does not exist");
+    return new NoSuchDataAccessRequestException("Data access request with id '" + id + "' does not exist", id);
   }
 
+  public boolean hasRequestId() {
+    return !Strings.isNullOrEmpty(requestId);
+  }
+
+  public String getRequestId() {
+    return requestId;
+  }
 }

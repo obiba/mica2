@@ -25,15 +25,20 @@ public class NoSuchDataAccessRequestExceptionMapper
 
   @Override
   protected Response.Status getStatus() {
-    return Response.Status.BAD_REQUEST;
+    return Response.Status.NOT_FOUND;
   }
 
   @Override
   protected GeneratedMessage.ExtendableMessage<?> getErrorDto(NoSuchDataAccessRequestException e) {
-    return ErrorDtos.ClientErrorDto.newBuilder() //
-      .setCode(Response.Status.NOT_FOUND.getStatusCode()) //
+    ErrorDtos.ClientErrorDto.Builder builder = ErrorDtos.ClientErrorDto.newBuilder() //
+      .setCode(getStatus().getStatusCode()) //
       .setMessageTemplate("server.error.data-access-request.not-found") //
-      .setMessage(e.getMessage()) //
-      .build();
+      .setMessage(e.getMessage());
+
+    if (e.hasRequestId()) {
+      builder.addArguments(e.getRequestId());
+    }
+
+    return builder.build();
   }
 }
