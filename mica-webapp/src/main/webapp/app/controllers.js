@@ -2,7 +2,9 @@
 
 /* Controllers */
 
-mica.controller('MainController', [ function () {} ]);
+mica.controller('MainController', ['$scope', 'MicaConfigResource', function ($scope, MicaConfigResource) {
+ $scope.micaConfig = MicaConfigResource.get();
+}]);
 
 mica.controller('AdminController', [ function () {} ]);
 

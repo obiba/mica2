@@ -41,6 +41,11 @@ class MicaConfigDtos {
     }
 
     builder.setOpal(config.getOpal());
+
+    if(config.getMicaVersion() != null) {
+      builder.setVersion(config.getMicaVersion().toString());
+    }
+
     return builder.build();
   }
 
