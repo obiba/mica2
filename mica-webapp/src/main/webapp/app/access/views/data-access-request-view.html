@@ -24,16 +24,6 @@
 
 
   <div class="pull-right">
-
-    <a target="_self" ng-href="/ws/data-access-request/{{dataAccessRequest.id}}/_pdf" class="btn btn-default">
-      <i class="glyphicon glyphicon-download-alt"></i> <span translate>download</span>
-    </a>
-    <a ng-href="#/data-access-request/{{dataAccessRequest.id}}/edit"
-      ng-if="actions.canEdit(dataAccessRequest)"
-      class="btn btn-primary" title="{{'edit' | translate}}">
-      <i class="fa fa-pencil-square-o"></i>
-    </a>
-
     <a ng-click="submit()"
       ng-if="actions.canEditStatus(dataAccessRequest) && nextStatus.canSubmit(dataAccessRequest)"
       class="btn btn-info" translate>submit
@@ -53,6 +43,14 @@
     <a ng-click="reject()"
       ng-if="actions.canEditStatus(dataAccessRequest) && nextStatus.canReject(dataAccessRequest)"
       class="btn btn-info" translate>reject
+    </a>
+    <a ng-href="#/data-access-request/{{dataAccessRequest.id}}/edit"
+      ng-if="actions.canEdit(dataAccessRequest)"
+      class="btn btn-primary" title="{{'edit' | translate}}">
+      <i class="fa fa-pencil-square-o"></i>
+    </a>
+    <a target="_self" ng-href="/ws/data-access-request/{{dataAccessRequest.id}}/_pdf" class="btn btn-default">
+      <i class="glyphicon glyphicon-download-alt"></i> <span translate>download</span>
     </a>
     <a ng-click="delete()"
       ng-if="actions.canDelete(dataAccessRequest)"

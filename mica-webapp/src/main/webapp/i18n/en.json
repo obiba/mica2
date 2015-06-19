@@ -709,7 +709,11 @@
       "title": "Workflow",
       "info": "The data access request goes through several steps. Some minimum settings can be applied to control this workflow.",
       "with-review": "With 'Under Review' intermediate state",
-      "with-review-help": "Between the submission and the final approval/rejection of the data access request, an intermediate status can be used to inform applicant that its request is being processed."
+      "with-review-help": "Between the submission and the approval/rejection of the data access request, an intermediate state can be used to inform applicant that its request is being processed.",
+      "approved-final": "'Approved' state is final",
+      "approved-final-help": "If not final, an approved data access request can be reinstated to its previous state.",
+      "rejected-final": "'Rejected' state is final",
+      "rejected-final-help": "If not final, a rejected data access request can be reinstated to its previous state."
     }
   },
   "comment": {

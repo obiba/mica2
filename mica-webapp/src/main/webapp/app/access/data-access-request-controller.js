@@ -24,7 +24,7 @@ mica.dataAccessRequest
           if (req.status !== 'OPENED') {
             for (var j = 0; j < req.statusChangeHistory.length; j++) {
               var change = req.statusChangeHistory[j];
-              if (change.to === 'SUBMITTED') {
+              if (change.from === 'OPENED' && change.to === 'SUBMITTED') {
                 req.submissionDate = change.changedOn;
               }
             }

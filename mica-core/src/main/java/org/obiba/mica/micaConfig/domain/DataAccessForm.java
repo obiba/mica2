@@ -57,6 +57,10 @@ public class DataAccessForm extends AbstractGitPersistable implements Persistabl
 
   private boolean withReview = true;
 
+  private boolean approvedFinal = false;
+
+  private boolean rejectedFinal = false;
+
   @Indexed
   private RevisionStatus revisionStatus = RevisionStatus.DRAFT;
 
@@ -267,5 +271,21 @@ public class DataAccessForm extends AbstractGitPersistable implements Persistabl
 
   public boolean isWithReview() {
     return withReview;
+  }
+
+  public void setApprovedFinal(boolean approvedFinal) {
+    this.approvedFinal = approvedFinal;
+  }
+
+  public boolean isApprovedFinal() {
+    return approvedFinal;
+  }
+
+  public void setRejectedFinal(boolean rejectedFinal) {
+    this.rejectedFinal = rejectedFinal;
+  }
+
+  public boolean isRejectedFinal() {
+    return rejectedFinal;
   }
 }
