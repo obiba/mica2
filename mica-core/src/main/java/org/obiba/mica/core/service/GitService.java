@@ -2,8 +2,6 @@ package org.obiba.mica.core.service;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
@@ -32,7 +30,7 @@ import org.obiba.git.command.ListFilesCommand;
 import org.obiba.git.command.ReadFileCommand;
 import org.obiba.mica.core.domain.GitPersistable;
 import org.obiba.mica.file.Attachment;
-import org.obiba.mica.file.PersistableWithAttachments;
+import org.obiba.mica.core.domain.PersistableWithAttachments;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.file.TempFileService;
 import org.slf4j.Logger;

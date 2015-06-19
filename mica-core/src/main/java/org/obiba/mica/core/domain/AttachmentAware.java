@@ -16,6 +16,8 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.file.Attachment;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * Utility interface to manipulate {@link org.obiba.mica.file.Attachment}s.
  */
@@ -30,4 +32,10 @@ public interface AttachmentAware {
   void setAttachments(List<Attachment> attachments);
 
   List<Attachment> removedAttachments();
+
+  @JsonIgnore
+  Iterable<Attachment> getAllAttachments();
+
+  @NotNull
+  Attachment findAttachmentById(String attachmentId);
 }

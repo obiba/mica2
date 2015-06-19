@@ -203,6 +203,16 @@ public class DataCollectionEvent extends AbstractAttributeAware
   }
 
   @Override
+  public Iterable<Attachment> getAllAttachments() {
+    return null;
+  }
+
+  @Override
+  public Attachment findAttachmentById(String attachmentId) {
+    return null;
+  }
+
+  @Override
   public int hashCode() {return Objects.hash(id);}
 
   @Override

@@ -2,14 +2,17 @@ package org.obiba.mica.micaConfig.domain;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.validation.constraints.NotNull;
+
 import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.core.domain.PersistableWithAttachments;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.file.Attachment;
-import org.obiba.mica.file.PersistableWithAttachments;
 import org.springframework.data.mongodb.core.index.Indexed;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -89,6 +92,31 @@ public class DataAccessForm extends AbstractGitPersistable implements Persistabl
 
   public void setProperties(Map<String, LocalizedString> properties) {
     this.properties = properties;
+  }
+
+  @Override
+  public boolean hasAttachments() {
+    return false;
+  }
+
+  @Override
+  public List<Attachment> getAttachments() {
+    return null;
+  }
+
+  @Override
+  public void addAttachment(@NotNull Attachment attachment) {
+
+  }
+
+  @Override
+  public void setAttachments(List<Attachment> attachments) {
+
+  }
+
+  @Override
+  public List<Attachment> removedAttachments() {
+    return null;
   }
 
   @JsonIgnore
