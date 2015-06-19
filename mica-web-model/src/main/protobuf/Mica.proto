@@ -322,6 +322,7 @@ message MicaConfigDto {
   required string defaultCharSet = 3;
   optional string publicUrl = 4;
   required string opal = 5;
+  optional string version = 6;
 }
 
 message AggregationsConfigDto {
