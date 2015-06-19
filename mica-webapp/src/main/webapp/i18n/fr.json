@@ -633,6 +633,12 @@
     },
     "submit": {
       "invalid": "The request cannot be submitted because of an incomplete application form."
+    },
+    "validation": {
+      "title-success": "Valid Form",
+      "title-error": "Invalid Form",
+      "success": "Your request form is complete and ready to be submitted.",
+      "error": "Your request form is incomplete, please correct the errors."
     }
   },
   "data-access-config": {
