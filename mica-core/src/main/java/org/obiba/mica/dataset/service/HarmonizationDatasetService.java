@@ -24,13 +24,14 @@ import org.obiba.magma.MagmaRuntimeException;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.magma.Variable;
-import org.obiba.mica.micaConfig.service.OpalService;
+import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.event.IndexHarmonizationDatasetsEvent;
-import org.obiba.mica.core.domain.StudyTable;
+import org.obiba.mica.dataset.service.support.QueryTermsUtil;
+import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.opal.rest.client.magma.RestValueTable;
@@ -263,6 +264,13 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   public Search.QueryResultDto getFacets(Search.QueryTermsDto query, StudyTable studyTable)
     throws NoSuchStudyException, NoSuchValueTableException {
     return getTable(studyTable).getFacets(query);
+  }
+
+  public Search.QueryResultDto getContingencyTable(@NotNull StudyTable studyTable,
+    String variableName, String crossVariableName) throws NoSuchStudyException, NoSuchValueTableException {
+    Variable variable = getVariableValueSource(variableName, studyTable).getVariable();
+    Variable crossVariable = getVariableValueSource(crossVariableName, studyTable).getVariable();
+    return getFacets(QueryTermsUtil.getContingencyQuery(variable, crossVariable), studyTable);
   }
 
   @Override

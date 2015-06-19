@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -25,7 +26,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetResource;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
@@ -34,6 +34,7 @@ import org.obiba.opal.web.model.Search;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
@@ -110,8 +111,7 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
     throws IOException {
 
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, id);
-    Mica.DatasetVariablesHarmonizationsDto harmonizationVariables = getVariableHarmonizations(0, 999999, sort,
-      order);
+    Mica.DatasetVariablesHarmonizationsDto harmonizationVariables = getVariableHarmonizations(0, 999999, sort, order);
 
     CsvHarmonizationVariablesWriter writer = new CsvHarmonizationVariablesWriter(
       Lists.newArrayList("maelstrom", "Mlstr_harmo"));
@@ -154,9 +154,19 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
   public List<Search.QueryResultDto> getFacets(Search.QueryTermsDto query) {
     ImmutableList.Builder<Search.QueryResultDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, id);
-    for(StudyTable table : dataset.getStudyTables()) {
-      builder.add(datasetService.getFacets(query, table));
-    }
+    dataset.getStudyTables().forEach(t -> builder.add(datasetService.getFacets(query, t)));
+    return builder.build();
+  }
+
+  @GET
+  @Path("/contingency")
+  public List<Search.QueryResultDto> getContingency(@QueryParam("variable") String variable,
+    @QueryParam("by") String crossVariable) {
+    if(Strings.isNullOrEmpty(variable) || Strings.isNullOrEmpty(crossVariable))
+      throw new BadRequestException("Variable names are required for the contingency table");
+    ImmutableList.Builder<Search.QueryResultDto> builder = ImmutableList.builder();
+    HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, id);
+    dataset.getStudyTables().forEach(t -> builder.add(datasetService.getContingencyTable(t, variable, crossVariable)));
     return builder.build();
   }
 
