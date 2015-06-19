@@ -560,6 +560,8 @@ message DataAccessFormDto {
   required bool notifyReopened = 12;
   required bool notifyCommented = 13;
   required bool withReview = 14;
+  required bool approvedFinal = 15;
+  required bool rejectedFinal = 16;
 }
 
 message UserProfileDto {

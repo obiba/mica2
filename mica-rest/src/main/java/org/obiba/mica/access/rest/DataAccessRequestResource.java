@@ -217,16 +217,19 @@ public class DataAccessRequestResource {
 
   private Response submit(String id) {
     DataAccessRequest request = dataAccessRequestService.findById(id);
-    if(!subjectAclService.isCurrentUser(request.getApplicant())) {
-      // only applicant can submit the request
+    boolean fromOpened = request.getStatus() == DataAccessRequest.Status.OPENED;
+    if(fromOpened && !subjectAclService.isCurrentUser(request.getApplicant())) {
+      // only applicant can submit an opened request
       throw new ForbiddenException();
     }
     dataAccessRequestService.updateStatus(id, DataAccessRequest.Status.SUBMITTED);
-    // applicant cannot edit, nor delete request anymore + status cannot be changed
-    subjectAclService.removePermission("/data-access-request", "EDIT,DELETE", id);
-    subjectAclService.removePermission("/data-access-request/" + id, "EDIT", "_status");
-    // data access officers can change the status of this request
-    subjectAclService.addGroupPermission(Roles.MICA_DAO, "/data-access-request/" + id, "EDIT", "_status");
+    if (fromOpened) {
+      // applicant cannot edit, nor delete request anymore + status cannot be changed
+      subjectAclService.removePermission("/data-access-request", "EDIT,DELETE", id);
+      subjectAclService.removePermission("/data-access-request/" + id, "EDIT", "_status");
+      // data access officers can change the status of this request
+      subjectAclService.addGroupPermission(Roles.MICA_DAO, "/data-access-request/" + id, "EDIT", "_status");
+    }
     return Response.noContent().build();
   }
 

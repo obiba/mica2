@@ -2,14 +2,10 @@ package org.obiba.mica.micaConfig.domain;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.validation.constraints.NotNull;
-
 import org.obiba.mica.core.domain.AbstractGitPersistable;
-import org.obiba.mica.core.domain.AttachmentAware;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.file.Attachment;
@@ -20,8 +16,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
-
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class DataAccessForm extends AbstractGitPersistable implements PersistableWithAttachments {
 
@@ -56,6 +50,10 @@ public class DataAccessForm extends AbstractGitPersistable implements Persistabl
   private boolean notifyCommented = true;
 
   private boolean withReview = true;
+
+  private boolean approvedFinal = false;
+
+  private boolean rejectedFinal = false;
 
   @Indexed
   private RevisionStatus revisionStatus = RevisionStatus.DRAFT;
@@ -247,5 +245,21 @@ public class DataAccessForm extends AbstractGitPersistable implements Persistabl
 
   public boolean isWithReview() {
     return withReview;
+  }
+
+  public void setApprovedFinal(boolean approvedFinal) {
+    this.approvedFinal = approvedFinal;
+  }
+
+  public boolean isApprovedFinal() {
+    return approvedFinal;
+  }
+
+  public void setRejectedFinal(boolean rejectedFinal) {
+    this.rejectedFinal = rejectedFinal;
+  }
+
+  public boolean isRejectedFinal() {
+    return rejectedFinal;
   }
 }

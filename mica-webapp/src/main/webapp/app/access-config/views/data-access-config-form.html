@@ -142,14 +142,27 @@
   <p translate>data-access-config.workflow.info</p>
 
   <form>
-        <div form-checkbox name="withReview" model="dataAccessForm.withReview"
-          label="data-access-config.workflow.with-review"
-          help="data-access-config.workflow.with-review-help"></div>
+
+
+
 
     <div class="row">
       <div class="col-md-6">
-</div>
+        <div form-checkbox name="withReview" model="dataAccessForm.withReview"
+          label="data-access-config.workflow.with-review"
+          help="data-access-config.workflow.with-review-help"></div>
+      </div>
+      <div class="col-md-6">
+        <div form-checkbox name="approvedFinal" model="dataAccessForm.approvedFinal"
+          label="data-access-config.workflow.approved-final"
+          help="data-access-config.workflow.approved-final-help"></div>
+
+        <div form-checkbox name="rejectedFinal" model="dataAccessForm.rejectedFinal"
+          label="data-access-config.workflow.rejected-final"
+          help="data-access-config.workflow.rejected-final-help"></div>
+      </div>
     </div>
+
   </form>
 
   <div class="voffset4">

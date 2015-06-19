@@ -140,7 +140,9 @@ class MicaConfigDtos {
       .setNotifyRejected(dataAccessForm.isNotifyRejected()) //
       .setNotifyReopened(dataAccessForm.isNotifyReopened()) //
       .setNotifyCommented(dataAccessForm.isNotifyCommented()) //
-      .setWithReview(dataAccessForm.isWithReview());
+      .setWithReview(dataAccessForm.isWithReview()) //
+      .setApprovedFinal(dataAccessForm.isApprovedFinal()) //
+      .setRejectedFinal(dataAccessForm.isRejectedFinal());
 
     return builder.build();
   }
@@ -173,6 +175,8 @@ class MicaConfigDtos {
     dataAccessForm.setNotifyReopened(dto.getNotifyReopened());
     dataAccessForm.setNotifyCommented(dto.getNotifyCommented());
     dataAccessForm.setWithReview(dto.getWithReview());
+    dataAccessForm.setApprovedFinal(dto.getApprovedFinal());
+    dataAccessForm.setRejectedFinal(dto.getRejectedFinal());
 
     return dataAccessForm;
   }

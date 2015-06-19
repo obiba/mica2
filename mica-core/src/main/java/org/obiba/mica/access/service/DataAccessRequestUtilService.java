@@ -61,37 +61,26 @@ public class DataAccessRequestUtilService {
     return null;
   }
 
-  @SuppressWarnings("OverlyLongMethod")
   public void checkStatusTransition(DataAccessRequest request, DataAccessRequest.Status to)
     throws IllegalArgumentException {
     if(request.getStatus() == to) return;
 
     switch(request.getStatus()) {
       case OPENED:
-        if(to != DataAccessRequest.Status.SUBMITTED)
-          throw new IllegalArgumentException("Opened data access request can only be submitted");
+        checkOpenedStatusTransition(to);
         break;
       case SUBMITTED:
-        DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
-        if(dataAccessForm.isWithReview()) {
-          if(to != DataAccessRequest.Status.OPENED && to != DataAccessRequest.Status.REVIEWED)
-            throw new IllegalArgumentException(
-              "Submitted data access request can only be reopened or put under review");
-        } else {
-          if(to != DataAccessRequest.Status.OPENED && to != DataAccessRequest.Status.APPROVED &&
-            to != DataAccessRequest.Status.REJECTED) throw new IllegalArgumentException(
-            "Submitted data access request can only be reopened or be approved/rejected");
-        }
+        checkSubmittedStatusTransition(to);
         break;
       case REVIEWED:
-        if(to != DataAccessRequest.Status.OPENED && to != DataAccessRequest.Status.APPROVED &&
-          to != DataAccessRequest.Status.REJECTED) throw new IllegalArgumentException(
-          "Reviewed data access request can only be reopened or be approved/rejected");
+        checkReviewedStatusTransition(to);
         break;
       case APPROVED:
-        throw new IllegalArgumentException("Approved data access request cannot be modified");
+        checkApprovedStatusTransition(to);
+        break;
       case REJECTED:
-        throw new IllegalArgumentException("Rejected data access request cannot be modified");
+        checkRejectedStatusTransition(to);
+        break;
       default:
         throw new IllegalArgumentException("Unexpected data access request status: " + request.getStatus());
     }
@@ -102,33 +91,118 @@ public class DataAccessRequestUtilService {
    *
    * @return
    */
-  @SuppressWarnings("OverlyLongMethod")
   public Iterable<DataAccessRequest.Status> nextStatus(DataAccessRequest request) {
     List<DataAccessRequest.Status> to = Lists.newArrayList();
     switch(request.getStatus()) {
       case OPENED:
-        to.add(DataAccessRequest.Status.SUBMITTED);
+        addNextOpenedStatus(to);
         break;
       case SUBMITTED:
-        to.add(DataAccessRequest.Status.OPENED);
-        DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
-        if(dataAccessForm.isWithReview()) {
-          to.add(DataAccessRequest.Status.REVIEWED);
-        } else {
-          to.add(DataAccessRequest.Status.APPROVED);
-          to.add(DataAccessRequest.Status.REJECTED);
-        }
+        addNextSubmittedStatus(to);
         break;
       case REVIEWED:
-        to.add(DataAccessRequest.Status.OPENED);
-        to.add(DataAccessRequest.Status.APPROVED);
-        to.add(DataAccessRequest.Status.REJECTED);
+        addNextReviewedStatus(to);
         break;
       case APPROVED:
+        addNextApprovedStatus(to);
+        break;
       case REJECTED:
-        // final state
+        addNextRejectedStatus(to);
         break;
     }
     return to;
   }
+
+  //
+  // Private methods
+  //
+
+  private void addNextOpenedStatus(List<DataAccessRequest.Status> to) {
+    to.add(DataAccessRequest.Status.SUBMITTED);
+  }
+
+  private void addNextSubmittedStatus(List<DataAccessRequest.Status> to) {
+    to.add(DataAccessRequest.Status.OPENED);
+    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    if(dataAccessForm.isWithReview()) {
+      to.add(DataAccessRequest.Status.REVIEWED);
+    } else {
+      to.add(DataAccessRequest.Status.APPROVED);
+      to.add(DataAccessRequest.Status.REJECTED);
+    }
+  }
+
+  private void addNextReviewedStatus(List<DataAccessRequest.Status> to) {
+    to.add(DataAccessRequest.Status.OPENED);
+    to.add(DataAccessRequest.Status.APPROVED);
+    to.add(DataAccessRequest.Status.REJECTED);
+  }
+
+  private void addNextApprovedStatus(List<DataAccessRequest.Status> to) {
+    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    if(!dataAccessForm.isApprovedFinal()) {
+      if(dataAccessForm.isWithReview()) to.add(DataAccessRequest.Status.REVIEWED);
+      else to.add(DataAccessRequest.Status.SUBMITTED);
+    }
+  }
+
+  private void addNextRejectedStatus(List<DataAccessRequest.Status> to) {
+    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    if(!dataAccessForm.isRejectedFinal()) {
+      if(dataAccessForm.isWithReview()) to.add(DataAccessRequest.Status.REVIEWED);
+      else to.add(DataAccessRequest.Status.SUBMITTED);
+    }
+  }
+
+  private void checkOpenedStatusTransition(DataAccessRequest.Status to) {
+    if(to != DataAccessRequest.Status.SUBMITTED)
+      throw new IllegalArgumentException("Opened data access request can only be submitted");
+  }
+
+  private void checkSubmittedStatusTransition(DataAccessRequest.Status to) {
+    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    if(dataAccessForm.isWithReview()) {
+      if(to != DataAccessRequest.Status.OPENED && to != DataAccessRequest.Status.REVIEWED)
+        throw new IllegalArgumentException("Submitted data access request can only be reopened or put under review");
+    } else {
+      if(to != DataAccessRequest.Status.OPENED && to != DataAccessRequest.Status.APPROVED &&
+        to != DataAccessRequest.Status.REJECTED) throw new IllegalArgumentException(
+        "Submitted data access request can only be reopened or be approved/rejected");
+    }
+  }
+
+  private void checkReviewedStatusTransition(DataAccessRequest.Status to) {
+    if(to != DataAccessRequest.Status.OPENED && to != DataAccessRequest.Status.APPROVED &&
+      to != DataAccessRequest.Status.REJECTED)
+      throw new IllegalArgumentException("Reviewed data access request can only be reopened or be approved/rejected");
+  }
+
+  private void checkApprovedStatusTransition(DataAccessRequest.Status to) {
+    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    if(dataAccessForm.isApprovedFinal())
+      throw new IllegalArgumentException("Approved data access request cannot be modified");
+
+    if(dataAccessForm.isWithReview() && to != DataAccessRequest.Status.REVIEWED) {
+      throw new IllegalArgumentException("Approved data access request can only be put under review");
+    }
+
+    if(!dataAccessForm.isWithReview() && to != DataAccessRequest.Status.SUBMITTED) {
+      throw new IllegalArgumentException("Approved data access request can only go to submitted state");
+    }
+  }
+
+  private void checkRejectedStatusTransition(DataAccessRequest.Status to) {
+    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    if(dataAccessForm.isApprovedFinal())
+      throw new IllegalArgumentException("Rejected data access request cannot be modified");
+
+    if(dataAccessForm.isWithReview() && to != DataAccessRequest.Status.REVIEWED) {
+      throw new IllegalArgumentException("Rejected data access request can only be put under review");
+    }
+
+    if(!dataAccessForm.isWithReview() && to != DataAccessRequest.Status.SUBMITTED) {
+      throw new IllegalArgumentException("Rejected data access request can only go to submitted state");
+    }
+  }
+
 }
