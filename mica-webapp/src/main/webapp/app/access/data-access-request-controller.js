@@ -251,9 +251,23 @@ mica.dataAccessRequest
       $scope.forms = {};
     }])
 
-  .controller('DataAccessRequestEditController', ['$log', '$scope', '$routeParams', '$location', 'DataAccessRequestsResource', 'DataAccessRequestResource', 'DataAccessFormResource', 'AlertService', 'ServerErrorUtils', 'Session', 'DataAccessRequestService',
+  .controller('DataAccessRequestEditController', ['$log', '$scope', '$routeParams', '$location', '$modal',
+    'DataAccessRequestsResource',
+    'DataAccessRequestResource',
+    'DataAccessFormResource',
+    'AlertService',
+    'ServerErrorUtils',
+    'Session',
+    'DataAccessRequestService',
 
-    function ($log, $scope, $routeParams, $location, DataAccessRequestsResource, DataAccessRequestResource, DataAccessFormResource, AlertService, ServerErrorUtils, Session, DataAccessRequestService) {
+    function ($log, $scope, $routeParams, $location, $modal,
+              DataAccessRequestsResource,
+              DataAccessRequestResource,
+              DataAccessFormResource,
+              AlertService,
+              ServerErrorUtils,
+              Session,
+              DataAccessRequestService) {
       $scope.form = {
         schema: null,
         definition: null,
@@ -275,6 +289,11 @@ mica.dataAccessRequest
 
       var validate = function() {
         $scope.$broadcast('schemaFormValidate');
+
+        $modal.open({
+          scope: $scope,
+          templateUrl: 'app/access/views/data-access-request-validation-modal.html',
+        });
       };
 
       var cancel = function() {
