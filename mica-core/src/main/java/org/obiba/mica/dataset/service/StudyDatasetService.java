@@ -18,13 +18,15 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
-import org.obiba.mica.micaConfig.service.OpalService;
+import org.obiba.magma.Variable;
+import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.StudyDatasetRepository;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.event.IndexStudyDatasetsEvent;
-import org.obiba.mica.core.domain.StudyTable;
+import org.obiba.mica.dataset.service.support.QueryTermsUtil;
+import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.obiba.opal.web.model.Search;
@@ -216,6 +218,13 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
   public Search.QueryResultDto getFacets(@NotNull StudyDataset dataset, Search.QueryTermsDto query)
       throws NoSuchValueTableException, NoSuchVariableException {
     return getTable(dataset).getFacets(query);
+  }
+
+  public Search.QueryResultDto getContingencyTable(@NotNull StudyDataset dataset,
+    String variableName, String crossVariableName) throws NoSuchValueTableException, NoSuchVariableException {
+    Variable variable = getVariableValueSource(dataset, variableName).getVariable();
+    Variable crossVariable = getVariableValueSource(dataset, crossVariableName).getVariable();
+    return getFacets(dataset, QueryTermsUtil.getContingencyQuery(variable, crossVariable));
   }
 
   public void delete(String id) {

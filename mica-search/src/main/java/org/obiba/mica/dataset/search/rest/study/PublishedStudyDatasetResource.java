@@ -11,6 +11,7 @@
 package org.obiba.mica.dataset.search.rest.study;
 
 import javax.inject.Inject;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -26,6 +27,8 @@ import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Search;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import com.google.common.base.Strings;
 
 /**
  * Study variable resource: variable describing a study dataset.
@@ -64,15 +67,15 @@ public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResou
   @GET
   @Path("/variables")
   public Mica.DatasetVariablesDto getVariables(@QueryParam("from") @DefaultValue("0") int from,
-      @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
-      @QueryParam("order") String order) {
+    @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
+    @QueryParam("order") String order) {
     return getDatasetVariableDtos(id, from, limit, sort, order);
   }
 
   @Path("/variable/{variable}")
   public PublishedStudyDatasetVariableResource getVariable(@PathParam("variable") String variable) {
     PublishedStudyDatasetVariableResource resource = applicationContext
-        .getBean(PublishedStudyDatasetVariableResource.class);
+      .getBean(PublishedStudyDatasetVariableResource.class);
     resource.setDatasetId(id);
     resource.setVariableName(variable);
     return resource;
@@ -82,6 +85,15 @@ public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResou
   @Path("/facets")
   public Search.QueryResultDto getFacets(Search.QueryTermsDto query) {
     return datasetService.getFacets(getDataset(StudyDataset.class, id), query);
+  }
+
+  @GET
+  @Path("/contingency")
+  public Search.QueryResultDto getContingency(@QueryParam("variable") String variable,
+    @QueryParam("by") String crossVariable) {
+    if(Strings.isNullOrEmpty(variable) || Strings.isNullOrEmpty(crossVariable))
+      throw new BadRequestException("Variable names are required for the contingency table");
+    return datasetService.getContingencyTable(getDataset(StudyDataset.class, id), variable, crossVariable);
   }
 
 }
