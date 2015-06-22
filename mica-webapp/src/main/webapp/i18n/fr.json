@@ -533,11 +533,17 @@
     "details": "Réseau",
     "add-study": "Ajouter une étude",
     "contacts": "Contacts",
-    "investigators": "Investigateurs",
-    "add-contact": "Ajouter contact",
-    "add-investigator": "Ajouter investigateur",
-    "delete-dialog-title": "Delete Study",
-    "delete-dialog-message": "Are you sure you want to delete the study?"
+    "investigators": "Investigators",
+    "add-contact": "Add Contact",
+    "add-investigator": "Add Investigator",
+    "delete-dialog": {
+      "title": "Delete Network",
+      "message": "Are you sure you want to delete the network '{{arg0}}'?"
+    },
+    "study-delete-dialog": {
+      "title": "Delete Study",
+      "message": "Are you sure you want to delete the study '{{arg0}}'?"
+    }
   },
   "all": "All",
   "name": "Name",
@@ -569,7 +575,7 @@
   "notification": "Notification",
   "required": "Required",
   "suppl-info": "Supplementary information about study design",
-  "fix-error": "Please fix errors bellow",
+  "fix-error": "Please fix errors below",
   "dnd-reorder": "Drag and drop to reorder",
   "loading": "Loading...",
   "error": "Error",
@@ -577,6 +583,7 @@
   "authorizer": "Authorizer",
   "logo": "Logo",
   "attachments": "Attachments",
+  "no-attachments": "No attachments.",
   "allowed-file-types": "Allowed file types:",
   "total": "Total",
   "type": "Type",
@@ -589,7 +596,7 @@
   "changed-on": "Changed On",
   "OPENED": "Opened",
   "SUBMITTED": "Submitted",
-  "REVIEWED": "Reviewed",
+  "REVIEWED": "Under Review",
   "APPROVED": "Approved",
   "REJECTED": "Rejected",
   "or": "or",
@@ -611,10 +618,14 @@
     "title-help": "Short summary to help identifying the request.",
     "status": "Status",
     "lastUpdate": "Last Update",
+    "submissionDate": "Submission Date",
     "none": "No Data Access requested.",
     "add": "Add Data Access Request",
     "edit": "Edit Data Access Request",
     "form": "Application Form",
+    "documents": "Documents",
+    "documents-help": "Select one or more documents to be attached to the application form.",
+    "no-documents": "No documents.",
     "select-status": "Select a Status",
     "comments": "Comments",
     "history": "History",
@@ -639,17 +650,27 @@
       "title-error": "Invalid Form",
       "success": "Your request form is complete and ready to be submitted.",
       "error": "Your request form is incomplete, please correct the errors."
+    },
+    "status-change-confirmation": {
+      "title": "Status Change Confirmation",
+      "message": "Are you sure you want to change the status of this access request to '{{arg0}}'?"
     }
   },
   "data-access-config": {
     "menu": "Data Access",
     "title": "Data Access Configuration",
-    "title-field": "Title Field Path",
-    "title-field-help": "JSON field path used as the request title. See <a href='http://goessner.net/articles/JsonPath/' target='_blank'>JSON Path documentation </a> for more details.",
-    "info": "Configure the Data Access Form schema and definition, see <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details.",
+    "title-edit": "Edit Data Access Configuration",
+    "title-field": "Title Field",
+    "title-field-help": "The title of the request will be extracted from the application form model according to the specified JSON field path.",
     "saved": "Data Access Form is successfully updated.",
-    "pdf-template": "PDF Template",
-    "schema-form": "Form",
+    "pdf-template": {
+      "title": "PDF Template",
+      "info": "The data collected in the web application form can be rendered in a PDF file. A PDF template is to be provided with field names matching the application form schema."
+    },
+    "schema-form": {
+      "title": "Application Form",
+      "info": "The web application form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+    },
     "schema" : {
       "tab": "Schema",
       "info": "The form schema specifies the data structure."
@@ -668,6 +689,40 @@
     "model": {
       "tab": "Model",
       "info": "The form model stores the valid input data, invalid values are excluded."
+    },
+    "id-generation": {
+      "title": "ID Generation",
+      "info": "The ID of the data access requests can be generated following a pattern.",
+      "prefix": "Prefix",
+      "prefix-help": "Generated IDs will start with the specified text.",
+      "length": "Length",
+      "length-help": "Length of the generated part of the ID (i.e. not including the prefix)."
+    },
+    "notifications": {
+      "title": "Notifications",
+      "info": "Emails can be sent to applicant and data access officers when an event happens on the data access request. events can be: status change or comment.",
+      "submitted": "On submission",
+      "submitted-help": "Email is sent to data access officers and to applicant on data access request submission.",
+      "reviewed": "On review",
+      "reviewed-help": "Email is sent to applicant when its data access request is being reviewed.",
+      "approved": "On approval",
+      "approved-help": "Email is sent to applicant when its data access request is approved.",
+      "rejected": "On rejection",
+      "rejected-help": "Email is sent to applicant when its data access request is rejected.",
+      "reopened": "On reopening",
+      "reopened-help": "Email is sent to applicant when its data access request is reopened.",
+      "commented": "On comment",
+      "commented-help": "Email is sent to applicant and data access officers when the data access request is commented."
+    },
+    "workflow": {
+      "title": "Workflow",
+      "info": "The data access request goes through several steps. Some minimum settings can be applied to control this workflow.",
+      "with-review": "With 'Under Review' intermediate state",
+      "with-review-help": "Between the submission and the approval/rejection of the data access request, an intermediate state can be used to inform applicant that its request is being processed.",
+      "approved-final": "'Approved' state is final",
+      "approved-final-help": "If not final, an approved data access request can be reinstated to its previous state.",
+      "rejected-final": "'Rejected' state is final",
+      "rejected-final-help": "If not final, a rejected data access request can be reinstated to its previous state."
     }
   },
   "comment": {
