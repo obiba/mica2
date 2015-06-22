@@ -66,6 +66,20 @@ mica.dataAccessRequest
       });
     }])
 
+  .factory('ConfirmableCallback', ['NOTIFICATION_EVENTS',
+      function(NOTIFICATION_EVENTS) {
+
+        this.call =function(dispatcher, listener, callback, callbackArgs, dialogOptions) {
+          dispatcher.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
+            dialogOptions, callbackArgs
+          );
+
+          listener.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, callback);
+        };
+
+      return this;
+    }])
+
   .service('DataAccessRequestService', ['LocaleStringUtils', 'moment', '$filter',
     function (LocaleStringUtils, moment, $filter) {
       var statusList = {
