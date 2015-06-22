@@ -654,8 +654,8 @@
     },
     "status-change-confirmation": {
       "title": "Status Change Confirmation",
-      "message": "Are you sure you want to '{{arg0}}' this access request?",
-      "message-review": "Are you sure you want to put this access request 'under review'?"
+      "message": "Are you sure you want to {{arg0}} this access request?",
+      "message-review": "Are you sure you want to put this access request under review?"
     }
   },
   "data-access-config": {
