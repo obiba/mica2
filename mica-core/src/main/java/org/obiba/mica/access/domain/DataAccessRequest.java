@@ -1,17 +1,12 @@
 package org.obiba.mica.access.domain;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
 import org.obiba.mica.core.domain.AttachmentAware;
 import org.obiba.mica.file.Attachment;
-import org.obiba.mica.file.PersistableWithAttachments;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -24,8 +19,7 @@ import com.google.common.collect.Sets;
  *
  */
 @Document
-public class DataAccessRequest extends AbstractAuditableDocument
-  implements AttachmentAware, PersistableWithAttachments {
+public class DataAccessRequest extends AbstractAuditableDocument implements AttachmentAware {
 
   private static final long serialVersionUID = -6728220507676973832L;
 
@@ -138,16 +132,6 @@ public class DataAccessRequest extends AbstractAuditableDocument
 
   public void setStatusChangeHistory(List<StatusChange> statusChangeHistory) {
     this.statusChangeHistory = statusChangeHistory;
-  }
-
-  @Override
-  public String pathPrefix() {
-    return null;
-  }
-
-  @Override
-  public Map<String, Serializable> parts() {
-    return null;
   }
 
   //

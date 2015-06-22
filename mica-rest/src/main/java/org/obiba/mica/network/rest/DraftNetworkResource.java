@@ -19,6 +19,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.rest.FileResource;
 import org.obiba.mica.network.NoSuchNetworkException;
 import org.obiba.mica.network.domain.Network;
@@ -112,11 +114,14 @@ public class DraftNetworkResource {
   @Path("/file/{fileId}")
   @RequiresPermissions({"/draft:EDIT"})
   public FileResource study(@PathParam("fileId") String fileId) {
-    FileResource studyResource = applicationContext.getBean(FileResource.class);
-    studyResource.setPersistable(networkService.findById(id));
-    studyResource.setFileId(fileId);
+    FileResource fileResource = applicationContext.getBean(FileResource.class);
+    Network network = networkService.findById(id);
 
-    return studyResource;
+    if(network.getLogo() == null) throw NoSuchEntityException.withId(Attachment.class, fileId);
+
+    fileResource.setAttachment(network.getLogo());
+
+    return fileResource;
   }
 
 }

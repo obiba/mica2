@@ -1,10 +1,7 @@
 package org.obiba.mica.network.domain;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
@@ -18,10 +15,8 @@ import org.obiba.mica.core.domain.AttributeAware;
 import org.obiba.mica.core.domain.Attributes;
 import org.obiba.mica.core.domain.Authorization;
 import org.obiba.mica.core.domain.Contact;
-import org.obiba.mica.core.domain.GitPersistable;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.file.Attachment;
-import org.obiba.mica.file.PersistableWithAttachments;
 import org.obiba.mica.study.domain.Study;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
@@ -33,7 +28,7 @@ import com.google.common.collect.Sets;
 /**
  * A Network.
  */
-public class Network extends AbstractAuditableDocument implements AttributeAware, GitPersistable, AttachmentAware, PersistableWithAttachments {
+public class Network extends AbstractAuditableDocument implements AttributeAware, AttachmentAware {
 
   private static final long serialVersionUID = -4271967393906681773L;
 
@@ -227,20 +222,6 @@ public class Network extends AbstractAuditableDocument implements AttributeAware
   public Attachment findAttachmentById(String attachmentId) {
     return Stream.concat(getAttachments().stream(), Stream.of(this.logo))
       .filter(a -> a != null && a.getId().equals(attachmentId)).findAny().orElse(null);
-  }
-
-  @Override
-  public String pathPrefix() {
-    return "networks";
-  }
-
-  @Override
-  public Map<String, Serializable> parts() {
-    final Network self = this;
-
-    return new HashMap<String, Serializable>(){
-      {put(self.getClass().getSimpleName(), self);}
-    };
   }
 
   /**

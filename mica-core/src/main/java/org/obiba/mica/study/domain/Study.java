@@ -16,15 +16,14 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.URL;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
-import org.obiba.mica.core.domain.AttachmentAware;
 import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.AttributeAware;
 import org.obiba.mica.core.domain.Attributes;
 import org.obiba.mica.core.domain.Authorization;
 import org.obiba.mica.core.domain.Contact;
 import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.core.domain.PersistableWithAttachments;
 import org.obiba.mica.file.Attachment;
-import org.obiba.mica.file.PersistableWithAttachments;
 import org.obiba.mica.study.date.PersitableYear;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
@@ -37,8 +36,7 @@ import com.google.common.collect.Sets;
 /**
  * A Study.
  */
-public class Study extends AbstractGitPersistable implements AttributeAware, PersistableWithAttachments,
-    AttachmentAware {
+public class Study extends AbstractGitPersistable implements AttributeAware, PersistableWithAttachments {
 
   private static final long serialVersionUID = 6559914069652243954L;
 

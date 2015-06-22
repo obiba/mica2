@@ -17,7 +17,7 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.core.domain.LocalizedString;
-import org.obiba.mica.core.service.GitService;
+import org.obiba.mica.file.GridFsService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.network.NoSuchNetworkException;
 import org.obiba.mica.network.domain.Network;
@@ -45,7 +45,7 @@ public class NetworkService {
   private EventBus eventBus;
 
   @Inject
-  private GitService gitService;
+  private GridFsService gridFsService;
 
   /**
    * Create or update provided {@link org.obiba.mica.network.domain.Network}.
@@ -66,8 +66,9 @@ public class NetworkService {
       }
     }
 
-    gitService.save(saved);
-    networkRepository.saveWithAttachments(saved);
+    if (saved.getLogo() != null) gridFsService.save(saved.getLogo().getId());
+
+    networkRepository.save(saved);
     eventBus.post(new NetworkUpdatedEvent(saved));
   }
 
@@ -156,7 +157,10 @@ public class NetworkService {
    */
   public void delete(@NotNull String id) throws NoSuchNetworkException {
     Network network = findById(id);
-    networkRepository.deleteWithAttachments(network);
+    networkRepository.delete(network);
+
+    if (network.getLogo() != null) gridFsService.delete(network.getLogo().getId());
+
     eventBus.post(new NetworkDeletedEvent(network));
   }
 

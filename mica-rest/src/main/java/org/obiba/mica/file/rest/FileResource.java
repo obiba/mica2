@@ -1,14 +1,17 @@
 package org.obiba.mica.file.rest;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.mica.core.domain.PersistableWithAttachments;
 import org.obiba.mica.file.Attachment;
-import org.obiba.mica.file.PersistableWithAttachments;
 import org.obiba.mica.core.service.GitService;
+import org.obiba.mica.file.GridFsService;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -22,9 +25,14 @@ public class FileResource {
   @Inject
   private GitService gitService;
 
+  @Inject
+  private GridFsService gridFsService;
+
   private PersistableWithAttachments persistable;
 
   private String fileId;
+
+  private Attachment attachment;
 
   public void setPersistable(PersistableWithAttachments persistable) {
     this.persistable = persistable;
@@ -34,13 +42,22 @@ public class FileResource {
     this.fileId = fileId;
   }
 
+  public void setAttachment(Attachment attachment) {
+    this.attachment = attachment;
+  }
+
   @GET
   @Path("/_download")
   @Timed
-  public Response download() {
-    Attachment attachment = persistable.findAttachmentById(fileId);
-    return Response.ok(gitService.readFileHead(persistable, fileId))
-        .header("Content-Disposition", "attachment; filename=\"" + attachment.getName() + "\"").build();
-  }
+  public Response download() throws IOException {
+    if(persistable != null) {
+      attachment = persistable.findAttachmentById(fileId);
 
+      return Response.ok(gitService.readFileHead(persistable, attachment.getId()))
+        .header("Content-Disposition", "attachment; filename=\"" + attachment.getName() + "\"").build();
+    }
+
+    return Response.ok(gridFsService.getFile(attachment.getId()))
+      .header("Content-Disposition", "attachment; filename=\"" + attachment.getName() + "\"").build();
+  }
 }

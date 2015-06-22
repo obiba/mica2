@@ -16,7 +16,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.rest.FileResource;
+import org.obiba.mica.network.NoSuchNetworkException;
+import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -57,10 +61,13 @@ public class PublishedNetworkResource {
 
   @Path("/file/{fileId}")
   public FileResource study(@PathParam("fileId") String fileId) {
-    FileResource studyResource = applicationContext.getBean(FileResource.class);
-    studyResource.setPersistable(publishedNetworkService.findById(id));
-    studyResource.setFileId(fileId);
+    FileResource fileResource = applicationContext.getBean(FileResource.class);
+    Network network = publishedNetworkService.findById(id);
 
-    return studyResource;
+    if(network.getLogo() == null) throw NoSuchEntityException.withId(Attachment.class, fileId);
+
+    fileResource.setAttachment(network.getLogo());
+
+    return fileResource;
   }
 }

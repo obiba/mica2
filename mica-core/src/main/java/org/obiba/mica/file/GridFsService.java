@@ -18,6 +18,9 @@ public class GridFsService {
   @Inject
   private GridFsOperations gridFsOperations;
 
+  @Inject
+  private TempFileService tempFileService;
+
   public InputStream getFile(String id) throws IOException {
     GridFSDBFile f = gridFsOperations.findOne(new Query().addCriteria(Criteria.where("filename").is(id)));
 
@@ -29,6 +32,10 @@ public class GridFsService {
 
   public void save(InputStream input, String id) {
     gridFsOperations.store(input, id);
+  }
+
+  public void save(String tempFileId) {
+    save(tempFileService.getInputStreamFromFile(tempFileId), tempFileId);
   }
 
   public void delete(String id) {
