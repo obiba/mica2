@@ -64,6 +64,7 @@ mica.dataAccessRequest
       '$scope',
       '$location',
       '$routeParams',
+      '$filter',
       'DataAccessRequestResource',
       'DataAccessRequestService',
       'DataAccessRequestStatusResource',
@@ -78,6 +79,7 @@ mica.dataAccessRequest
               $scope,
               $location,
               $routeParams,
+              $filter,
               DataAccessRequestResource,
               DataAccessRequestService,
               DataAccessRequestStatusResource,
@@ -208,12 +210,31 @@ mica.dataAccessRequest
         $scope.dataAccessRequest = getRequest();
       };
 
+      var confirmStatusChange = function(status, messageKey, statusName) {
+        $rootScope.$broadcast(
+          NOTIFICATION_EVENTS.showConfirmDialog,
+          {
+            titleKey: 'data-access-request.status-change-confirmation.title',
+            messageKey: messageKey !== null ? messageKey : 'data-access-request.status-change-confirmation.message',
+            messageArgs: statusName !== null ? [$filter('translate')(statusName).toLowerCase()] : []
+          }, status);
+      };
+
+      var statusChangedConfirmed = function(status, expectedStatus) {
+        if (status === expectedStatus) {
+          DataAccessRequestStatusResource.update({
+            id: $scope.dataAccessRequest.id,
+            status: status
+          }, onUpdatStatusSuccess, onError);
+        }
+      };
+
       $scope.submit = function () {
         $scope.$broadcast('schemaFormValidate');
         if ($scope.forms.requestForm.$valid) {
           DataAccessRequestStatusResource.update({
             id: $scope.dataAccessRequest.id,
-            status: 'SUBMITTED'
+            status: DataAccessRequestService.status.SUBMITTED
           }, onUpdatStatusSuccess, onError);
         } else {
           AlertService.alert({
@@ -223,30 +244,44 @@ mica.dataAccessRequest
           });
         }
       };
+
       $scope.reopen = function () {
-        DataAccessRequestStatusResource.update({
-          id: $scope.dataAccessRequest.id,
-          status: 'OPENED'
-        }, onUpdatStatusSuccess, onError);
+        confirmStatusChange(DataAccessRequestService.status.OPENED, null, 'reopen');
       };
       $scope.review = function () {
-        DataAccessRequestStatusResource.update({
-          id: $scope.dataAccessRequest.id,
-          status: 'REVIEWED'
-        }, onUpdatStatusSuccess, onError);
+        confirmStatusChange(DataAccessRequestService.status.REVIEWED, 'data-access-request.status-change-confirmation.message-review', null);
       };
       $scope.approve = function () {
-        DataAccessRequestStatusResource.update({
-          id: $scope.dataAccessRequest.id,
-          status: 'APPROVED'
-        }, onUpdatStatusSuccess, onError);
+        confirmStatusChange(DataAccessRequestService.status.APPROVED, null, 'approve');
       };
       $scope.reject = function () {
-        DataAccessRequestStatusResource.update({
-          id: $scope.dataAccessRequest.id,
-          status: 'REJECTED'
-        }, onUpdatStatusSuccess, onError);
+        confirmStatusChange(DataAccessRequestService.status.REJECTED, null, 'reject');
       };
+
+      $scope.$on(
+        NOTIFICATION_EVENTS.confirmDialogAccepted,
+        function(event, status) {
+          statusChangedConfirmed(DataAccessRequestService.status.OPENED, status);
+        }
+      );
+      $scope.$on(
+        NOTIFICATION_EVENTS.confirmDialogAccepted,
+        function(event, status) {
+          statusChangedConfirmed(DataAccessRequestService.status.REVIEWED, status);
+        }
+      );
+      $scope.$on(
+        NOTIFICATION_EVENTS.confirmDialogAccepted,
+        function(event, status) {
+          statusChangedConfirmed(DataAccessRequestService.status.APPROVED, status);
+        }
+      );
+      $scope.$on(
+        NOTIFICATION_EVENTS.confirmDialogAccepted,
+        function(event, status) {
+          statusChangedConfirmed(DataAccessRequestService.status.REJECTED, status);
+        }
+      );
 
       $scope.forms = {};
     }])
