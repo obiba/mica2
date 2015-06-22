@@ -142,7 +142,7 @@ mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStor
           return (result === null) ? null : result[1];
         }
 
-        if (angular.isUndefined(getSidCookie('obibaid')) && angular.isUndefined(getSidCookie('micasid'))) {
+        if (!getSidCookie('obibaid') && !getSidCookie('micasid')) {
           // session has terminated, cleanup
           Session.destroy();
           return false;
