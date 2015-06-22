@@ -651,6 +651,11 @@
       "title-error": "Invalid Form",
       "success": "Your request form is complete and ready to be submitted.",
       "error": "Your request form is incomplete, please correct the errors."
+    },
+    "status-change-confirmation": {
+      "title": "Status Change Confirmation",
+      "message": "Are you sure you want to '{{arg0}}' this access request?",
+      "message-review": "Are you sure you want to put this access request 'under review'?"
     }
   },
   "data-access-config": {
