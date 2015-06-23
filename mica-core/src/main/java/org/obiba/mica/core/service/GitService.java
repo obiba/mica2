@@ -5,8 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 
 import javax.annotation.Nullable;
@@ -26,12 +24,8 @@ import org.obiba.git.GitException;
 import org.obiba.git.command.AbstractGitWriteCommand;
 import org.obiba.git.command.AddDeleteFilesCommand;
 import org.obiba.git.command.GitCommandHandler;
-import org.obiba.git.command.ListFilesCommand;
 import org.obiba.git.command.ReadFileCommand;
 import org.obiba.mica.core.domain.GitPersistable;
-import org.obiba.mica.file.Attachment;
-import org.obiba.mica.core.domain.PersistableWithAttachments;
-import org.obiba.mica.file.TempFile;
 import org.obiba.mica.file.TempFileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,9 +54,6 @@ public class GitService {
 
   @Inject
   private ObjectMapper objectMapper;
-
-  @Inject
-  private TempFileService tempFileService;
 
   private File repositoriesRoot;
 
@@ -104,65 +95,27 @@ public class GitService {
 
   public void save(
     @NotNull @Valid GitPersistable persistable) {
-    try {
-      persistable.setLastModifiedDate(DateTime.now());
+    persistable.setLastModifiedDate(DateTime.now());
 
-      AddDeleteFilesCommand.Builder builder = new AddDeleteFilesCommand.Builder(getRepositoryPath(persistable),
-        new File(clonesRoot, persistable.pathPrefix()) , "Update");
+    AddDeleteFilesCommand.Builder builder = new AddDeleteFilesCommand.Builder(getRepositoryPath(persistable),
+      new File(clonesRoot, persistable.pathPrefix()) , "Update");
 
-      if(persistable instanceof PersistableWithAttachments) {
-        processAttachments((PersistableWithAttachments) persistable, builder);
+    persistable.parts().entrySet().forEach(p -> {
+      try {
+        builder.addFile(getJsonFileName(p.getKey()), serializePersistable(p.getValue()));
+        //noinspection ResultOfMethodCallIgnored
       }
+      catch(IOException e) {
+        throw new RuntimeException("Cannot persist " + persistable + " to " + persistable.getId() + " repo", e);
+      }
+    });
 
-      persistable.parts().entrySet().forEach(p -> {
-        try {
-          builder.addFile(getJsonFileName(p.getKey()), serializePersistable(p.getValue()));
-          //noinspection ResultOfMethodCallIgnored
-        }
-        catch(IOException e) {
-          throw new RuntimeException("Cannot persist " + persistable + " to " + persistable.getId() + " repo", e);
-        }
-      });
-
-      gitCommandHandler.execute(builder.build());
-    } catch(IOException e) {
-      throw new RuntimeException("Cannot persist " + persistable + " to " + persistable.getId() + " repo", e);
-    }
+    gitCommandHandler.execute(builder.build());
   }
 
   private ByteArrayInputStream serializePersistable(
     Object persistable) throws IOException {
     return new ByteArrayInputStream(objectMapper.writeValueAsBytes(persistable));
-  }
-
-  private void processAttachments(PersistableWithAttachments persistable, AddDeleteFilesCommand.Builder builder)
-    throws IOException {
-
-    Collection<String> existingPathsInRepo = getExistingPathsInRepo(persistable);
-    Collection<String> filesToDelete = new HashSet<>(existingPathsInRepo);
-    persistable.getAllAttachments().forEach(a -> processAttachment(a, persistable, builder, filesToDelete));
-    filesToDelete.forEach(builder::deleteFile);
-  }
-
-  private Collection<String> getExistingPathsInRepo(GitPersistable persistable) {
-    return gitCommandHandler.execute(
-      new ListFilesCommand.Builder(getRepositoryPath(persistable), new File(clonesRoot, persistable.pathPrefix())).filter(ATTACHMENTS_PATH + "*")
-        .recursive(true).build());
-  }
-
-  private void processAttachment(Attachment attachment, GitPersistable parent,
-    AddDeleteFilesCommand.Builder builder, Collection<String> filesToDelete) {
-    String pathInRepo = getPathInRepo(attachment.getId());
-    if(attachment.isJustUploaded()) {
-      TempFile tempFile = tempFileService.getMetadata(attachment.getId());
-      builder.addFile(pathInRepo, new ByteArrayInputStream(tempFileService.getContent(attachment.getId())));
-      attachment.setName(tempFile.getName());
-      attachment.setSize(tempFile.getSize());
-      attachment.setMd5(tempFile.getMd5());
-      attachment.setJustUploaded(false);
-      tempFileService.delete(attachment.getId());
-    }
-    filesToDelete.remove(pathInRepo);
   }
 
   public <T> T readFromTag(GitPersistable persistable, String tag, Class<T> clazz) {

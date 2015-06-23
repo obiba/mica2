@@ -20,7 +20,6 @@ import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.domain.StatusChange;
 import org.obiba.mica.core.repository.AttachmentRepository;
-import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.core.support.IdentifierGenerator;
 import org.obiba.mica.file.Attachment;
@@ -66,9 +65,6 @@ public class DataAccessRequestService {
 
   @Inject
   private DataAccessRequestUtilService dataAccessRequestUtilService;
-
-  @Inject
-  private GitService gitService;
 
   @Inject
   private GridFsService gridFsService;
@@ -121,10 +117,11 @@ public class DataAccessRequestService {
     if(toSave != null)
       toSave.forEach(a -> {
         gridFsService.save(tempFileService.getInputStreamFromFile(a.getId()), a.getId());
+        a.setJustUploaded(false);
         attachmentRepository.save(a);
       });
 
-    dataAccessRequestRepository.saveWithAttachments(saved);
+    dataAccessRequestRepository.saveWithAttachments(saved, false);
 
     if(toDelete != null) toDelete.forEach(a -> gridFsService.delete(a.getId()));
 
@@ -142,7 +139,7 @@ public class DataAccessRequestService {
     DataAccessRequest dataAccessRequest = findById(id);
     List<Attachment> attachments = dataAccessRequest.getAttachments();
 
-    dataAccessRequestRepository.deleteWithAttachments(dataAccessRequest);
+    dataAccessRequestRepository.deleteWithAttachments(dataAccessRequest, false);
 
     attachments.forEach(a -> gridFsService.delete(a.getId()));
   }
@@ -342,10 +339,10 @@ public class DataAccessRequestService {
 
           if(pdfTemplate == null) pdfTemplate = dataAccessForm.getPdfTemplates().values().stream().findFirst().get();
 
-          template = gitService.readFileHead(dataAccessForm, pdfTemplate.getId());
+          template = ByteStreams.toByteArray(gridFsService.getFile(pdfTemplate.getId()));
         } else template = ByteStreams.toByteArray(defaultTemplateResource.getInputStream());
       } else throw new NoSuchElementException();
-    } else template = gitService.readFileHead(dataAccessForm, pdfTemplate.getId());
+    } else template = ByteStreams.toByteArray(gridFsService.getFile(pdfTemplate.getId()));
 
     return template;
   }

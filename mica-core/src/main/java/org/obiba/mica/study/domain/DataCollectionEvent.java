@@ -181,7 +181,6 @@ public class DataCollectionEvent extends AbstractAttributeAware
   }
 
   @Override
-  @JsonIgnore
   public List<Attachment> getAttachments() {
     return attachments;
   }

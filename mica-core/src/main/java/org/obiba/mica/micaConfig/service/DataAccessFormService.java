@@ -8,6 +8,7 @@ import javax.inject.Inject;
 
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.service.GitService;
+import org.obiba.mica.file.GridFsService;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.repository.DataAccessFormRepository;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -21,11 +22,22 @@ public class DataAccessFormService {
   GitService gitService;
 
   @Inject
+  GridFsService gridFsService;
+
+  @Inject
   DataAccessFormRepository dataAccessFormRepository;
 
   public void createOrUpdateDataAccessForm(DataAccessForm dataAccessForm) {
     dataAccessForm.incrementRevisionsAhead();
     gitService.save(dataAccessForm);
+
+    dataAccessForm.getAllAttachments().forEach(a -> {
+      if(a.isJustUploaded()) {
+        gridFsService.save(a.getId());
+        a.setJustUploaded(false);
+      }
+    });
+
     dataAccessFormRepository.save(dataAccessForm);
   }
 

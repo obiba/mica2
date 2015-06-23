@@ -6,14 +6,15 @@ import org.obiba.mica.core.domain.AttachmentAware;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-public class AbstractAttachmentAwareRepository<T extends AttachmentAware> {
+public class AbstractAttachmentAwareRepository<T extends AttachmentAware> implements AttachmentAwareRepository<T> {
   @Inject
   AttachmentRepository attachmentRepository;
 
   @Inject
   MongoTemplate mongoTemplate;
 
-  public T saveWithAttachments(T obj) {
+  @Override
+  public T saveWithAttachments(T obj, boolean removeOrphanedAttachments) {
     obj.getAttachments().forEach(a -> {
       try{
         attachmentRepository.save(a);
@@ -23,13 +24,16 @@ public class AbstractAttachmentAwareRepository<T extends AttachmentAware> {
     });
 
     mongoTemplate.save(obj);
-    attachmentRepository.delete(obj.removedAttachments());
+
+    if(removeOrphanedAttachments) attachmentRepository.delete(obj.removedAttachments());
 
     return obj;
   }
 
-  public void deleteWithAttachments(T obj) {
+  @Override
+  public void deleteWithAttachments(T obj, boolean removeOrphanedAttachments) {
     mongoTemplate.remove(obj);
-    attachmentRepository.delete(obj.getAttachments());
+
+    if(removeOrphanedAttachments) attachmentRepository.delete(obj.getAttachments());
   }
 }

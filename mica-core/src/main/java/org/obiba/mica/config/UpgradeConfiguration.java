@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.obiba.mica.core.upgrade.AttachmentsMigration;
 import org.obiba.mica.core.upgrade.AttachmentsRefactorUpgrade;
 import org.obiba.mica.core.upgrade.NetworkLogoMigration;
 import org.obiba.mica.core.upgrade.RuntimeVersionProvider;
@@ -49,7 +50,8 @@ public class UpgradeConfiguration {
   public List<UpgradeStep> upgradeSteps(ApplicationContext applicationContext) {
     return Lists.newArrayList(
       applicationContext.getBean(AttachmentsRefactorUpgrade.class),
-      applicationContext.getBean(NetworkLogoMigration.class)
+      applicationContext.getBean(NetworkLogoMigration.class),
+      applicationContext.getBean(AttachmentsMigration.class)
     );
   }
 }

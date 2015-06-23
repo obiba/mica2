@@ -264,7 +264,6 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
   }
 
   @Override
-  @JsonIgnore
   public List<Attachment> getAttachments() {
     return attachments;
   }

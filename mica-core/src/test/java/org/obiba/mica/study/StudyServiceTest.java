@@ -22,6 +22,7 @@ import org.obiba.git.command.GitCommandHandler;
 import org.obiba.mica.config.JsonConfiguration;
 import org.obiba.mica.config.MongoDbConfiguration;
 import org.obiba.mica.core.service.GitService;
+import org.obiba.mica.file.GridFsService;
 import org.obiba.mica.file.TempFileService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.network.domain.Network;
@@ -36,6 +37,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.convert.CustomConversions;
+import org.springframework.data.mongodb.gridfs.GridFsOperations;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -326,6 +328,16 @@ public class StudyServiceTest {
     @Bean
     public PublishedStudyService publishedStudyService() {
       return mock(PublishedStudyService.class);
+    }
+
+    @Bean
+    public GridFsService gridFsService() {
+      return mock(GridFsService.class);
+    }
+
+    @Bean
+    public GridFsOperations gridFsOperations() {
+      return mock(GridFsOperations.class);
     }
 
     @Bean
