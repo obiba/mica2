@@ -6,6 +6,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.rest.FileResource;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.domain.Study;
@@ -51,10 +53,13 @@ public class PublishedStudyResource {
 
   @Path("/file/{fileId}")
   public FileResource study(@PathParam("fileId") String fileId) {
-    FileResource studyResource = applicationContext.getBean(FileResource.class);
-    studyResource.setPersistable(publishedStudyService.findById(id));
-    studyResource.setFileId(fileId);
-    return studyResource;
-  }
+    FileResource fileResource = applicationContext.getBean(FileResource.class);
+    Study study = publishedStudyService.findById(id);
 
+    if(study.findAttachmentById(fileId) == null) throw NoSuchEntityException.withId(Attachment.class, fileId);
+
+    fileResource.setAttachment(study.findAttachmentById(fileId));
+
+    return fileResource;
+  }
 }

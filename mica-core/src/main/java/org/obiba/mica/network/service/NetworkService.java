@@ -66,7 +66,10 @@ public class NetworkService {
       }
     }
 
-    if (saved.getLogo() != null) gridFsService.save(saved.getLogo().getId());
+    if (saved.getLogo() != null) {
+      gridFsService.save(saved.getLogo().getId());
+      saved.getLogo().setJustUploaded(false);
+    }
 
     networkRepository.save(saved);
     eventBus.post(new NetworkUpdatedEvent(saved));

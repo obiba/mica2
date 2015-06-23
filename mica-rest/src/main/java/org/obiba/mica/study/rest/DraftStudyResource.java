@@ -9,6 +9,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.rest.FileResource;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.StudyService;
@@ -92,9 +94,13 @@ public class DraftStudyResource {
   @Path("/file/{fileId}")
   @RequiresPermissions({"/draft:EDIT"})
   public FileResource study(@PathParam("fileId") String fileId) {
-    FileResource studyResource = applicationContext.getBean(FileResource.class);
-    studyResource.setPersistable(studyService.findDraftStudy(id));
-    studyResource.setFileId(fileId);
-    return studyResource;
+    FileResource fileResource = applicationContext.getBean(FileResource.class);
+    Study study = studyService.findDraftStudy(id);
+
+    if(study.findAttachmentById(fileId) == null) throw NoSuchEntityException.withId(Attachment.class, fileId);
+
+    fileResource.setAttachment(study.findAttachmentById(fileId));
+
+    return fileResource;
   }
 }

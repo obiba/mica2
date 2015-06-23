@@ -24,6 +24,7 @@ import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.StudyDatasetRepository;
 import org.obiba.mica.file.Attachment;
+import org.obiba.mica.file.GridFsService;
 import org.obiba.mica.file.TempFileRepository;
 import org.obiba.mica.file.TempFileService;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
@@ -42,6 +43,7 @@ import org.obiba.mica.study.service.StudyService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.gridfs.GridFsOperations;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -51,6 +53,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import com.google.common.eventbus.EventBus;
 
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.obiba.mica.assertj.Assertions.assertThat;
 import static org.obiba.mica.core.domain.LocalizedString.en;
@@ -404,5 +407,16 @@ public class StudyDtosTest {
     public SubjectAclRepository subjectAclRepository() {
       return Mockito.mock(SubjectAclRepository.class);
     }
+
+    @Bean
+    public GridFsService gridFsService() {
+      return mock(GridFsService.class);
+    }
+
+    @Bean
+    public GridFsOperations gridFsOperations() {
+      return mock(GridFsOperations.class);
+    }
+
   }
 }

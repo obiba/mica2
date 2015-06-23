@@ -33,7 +33,7 @@ public class AttachmentsRefactorUpgrade implements UpgradeStep {
   @Override
   public void execute(Version version) {
     log.info("Executing attachments upgrade");
-    studyRepository.findAll().forEach(s -> studyRepository.saveWithAttachments(s));
-    dataAccessRequestRepository.findAll().forEach(d -> dataAccessRequestRepository.saveWithAttachments(d));
+    studyRepository.findAll().forEach(s -> studyRepository.saveWithAttachments(s, false));
+    dataAccessRequestRepository.findAll().forEach(d -> dataAccessRequestRepository.saveWithAttachments(d, false));
   }
 }

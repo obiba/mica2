@@ -13,6 +13,7 @@ import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.StudyDatasetRepository;
+import org.obiba.mica.file.GridFsService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.study.ConstraintException;
 import org.obiba.mica.study.NoSuchStudyException;
@@ -61,6 +62,9 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
   private GitService gitService;
 
   @Inject
+  private GridFsService gridFsService;
+
+  @Inject
   private NetworkRepository networkRepository;
 
   @Inject
@@ -80,10 +84,18 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
     if (!study.isNew()) ensureStudyGitRepository(studyState);
 
     gitService.save(study);
+
+    study.getAllAttachments().forEach(a -> {
+      if(a.isJustUploaded()) {
+        gridFsService.save(a.getId());
+        a.setJustUploaded(false);
+      }
+    });
+
     studyState.setName(study.getName());
     studyState.incrementRevisionsAhead();
     studyStateRepository.save(studyState);
-    studyRepository.saveWithAttachments(study);
+    studyRepository.saveWithAttachments(study, false);
 
     eventBus.post(new DraftStudyUpdatedEvent(study));
   }
@@ -220,7 +232,7 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
     gitService.deleteGitRepository(study);
     eventBus.post(new StudyDeletedEvent(study));
     studyStateRepository.delete(id);
-    studyRepository.deleteWithAttachments(study);
+    studyRepository.deleteWithAttachments(study, false);
   }
 
   //

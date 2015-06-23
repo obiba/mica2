@@ -16,7 +16,7 @@ public class StudyRepositoryImpl extends AbstractAttachmentAwareRepository<Study
   AttachmentRepository attachmentRepository;
 
   @Override
-  public Study saveWithAttachments(Study obj) {
+  public Study saveWithAttachments(Study obj, boolean removeOrphanedAttachments) {
     obj.getPopulations().forEach(p -> p.getDataCollectionEvents().forEach(d -> d.getAttachments().forEach(a -> {
         try {
           attachmentRepository.save(a);
@@ -25,19 +25,16 @@ public class StudyRepositoryImpl extends AbstractAttachmentAwareRepository<Study
         }
       })));
 
-    Study res = super.saveWithAttachments(obj);
-
-    obj.getPopulations()
-      .forEach(p -> p.getDataCollectionEvents().forEach(d -> attachmentRepository.delete(d.removedAttachments())));
+    Study res = super.saveWithAttachments(obj, removeOrphanedAttachments);
 
     return res;
   }
 
   @Override
-  public void deleteWithAttachments(Study obj) {
+  public void deleteWithAttachments(Study obj, boolean removeOrphanedAttachments) {
     obj.getPopulations()
       .forEach(p -> p.getDataCollectionEvents().forEach(d -> attachmentRepository.delete(d.getAttachments())));
 
-    super.deleteWithAttachments(obj);
+    super.deleteWithAttachments(obj, removeOrphanedAttachments);
   }
 }
