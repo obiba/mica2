@@ -12,6 +12,7 @@
 
 mica.dataAccesConfig = angular.module('mica.dataAccesConfig', [
   'schemaForm',
+  'schemaForm-datepicker',
   'ui.ace',
   'mica.localized',
   'obiba.notification',
