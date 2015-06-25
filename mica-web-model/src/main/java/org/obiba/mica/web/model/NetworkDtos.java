@@ -95,8 +95,6 @@ class NetworkDtos {
       builder.addStudySummaries(studySummaryDtos.asDto(studyId));
     });
 
-    network.getAttachments().forEach(attachment -> builder.addAttachments(attachmentDtos.asDto(attachment)));
-
     if(network.getMaelstromAuthorization() != null) {
       builder.setMaelstromAuthorization(AuthorizationDtos.asDto(network.getMaelstromAuthorization()));
     }
@@ -132,12 +130,15 @@ class NetworkDtos {
         dto.getInvestigatorsList().stream().map(contactDtos::fromDto).collect(Collectors.<Contact>toList()));
     network.setContacts(dto.getContactsList().stream().map(contactDtos::fromDto).collect(Collectors.<Contact>toList()));
     if(dto.hasWebsite()) network.setWebsite(dto.getWebsite());
+
     if(dto.getStudyIdsCount() > 0) {
       dto.getStudyIdsList().forEach(network::addStudyId);
     }
+
     if(dto.getAttachmentsCount() > 0) {
-      network.setAttachments(
-          dto.getAttachmentsList().stream().map(attachmentDtos::fromDto).collect(Collectors.<Attachment>toList()));
+      dto.getAttachmentsList().stream().filter(a->a.getJustUploaded()).findFirst().ifPresent(a->
+        network.setLogo(attachmentDtos.fromDto(a))
+      );
     }
 
     if(dto.hasMaelstromAuthorization())

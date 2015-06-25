@@ -1,5 +1,7 @@
 package org.obiba.mica.core.upgrade;
 
+import java.util.Optional;
+
 import javax.inject.Inject;
 
 import org.obiba.mica.micaConfig.domain.MicaConfig;
@@ -16,7 +18,7 @@ public class MicaVersionModifier implements VersionModifier {
 
   @Override
   public Version getVersion() {
-    return micaConfigService.getConfig().getMicaVersion();
+    return Optional.ofNullable(micaConfigService.getConfig().getMicaVersion()).orElse(new Version(0, 8));
   }
 
   @Override

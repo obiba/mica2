@@ -66,7 +66,7 @@ public class NetworkService {
       }
     }
 
-    if (saved.getLogo() != null) {
+    if (saved.getLogo() != null && saved.getLogo().isJustUploaded()) {
       gridFsService.save(saved.getLogo().getId());
       saved.getLogo().setJustUploaded(false);
     }

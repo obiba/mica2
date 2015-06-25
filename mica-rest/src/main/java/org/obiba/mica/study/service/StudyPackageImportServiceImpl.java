@@ -48,6 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
@@ -109,7 +110,9 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     if(study.getLogo() != null && study.getLogo().getId().equals(attId)) {
       return study.getLogo();
     }
+
     Attachment attachment = findAttachment(study, attId);
+
     if(attachment != null) return attachment;
 
     if(study.hasPopulations()) {
@@ -118,6 +121,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
         if(attachment != null) return attachment;
       }
     }
+
     return null;
   }
 
@@ -159,8 +163,6 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
 
   private void importNetwork(Network network, boolean publish, StudyPackage studyPackage) throws IOException{
     Network updated;
-    List<Attachment> attachments = ImmutableList.copyOf(network.getAllAttachments());
-
     try {
       Network existing = networkService.findById(network.getId());
       network.getStudyIds().stream().filter(sid -> !existing.getStudyIds().contains(sid))
@@ -171,19 +173,14 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     }
 
     for(Map.Entry<String, ByteArrayInputStream> e: studyPackage.attachments.entrySet()) {
-      Optional<Attachment> attachmentOpt = attachments.stream().filter(a -> a.getId().equals(e.getKey())).findAny();
+      Attachment attachment = network.getLogo();
 
-      if(attachmentOpt.isPresent()) {
-        Attachment attachment = attachmentOpt.get();
+      if ( attachment != null && attachment.getId().equals(e.getKey())){
         saveTempFile(attachment, e.getValue());
-
-        if (attachment.getType().equals("logo")) {
-          updated.setLogo(attachment);
-        } else if(updated.findAttachmentById(attachment.getId()) == null) {
-          updated.addAttachment(attachment);
-        }
+        updated.setLogo(attachment);
       }
     }
+
     updated.cleanContacts();
     networkService.save(updated);
 
@@ -262,9 +259,11 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
       } else if(entry.getName().endsWith(".json")) {
         String name = entry.getName();
         int slash = name.lastIndexOf('/');
+
         if(slash > -1) {
           name = name.substring(slash + 1);
         }
+
         log.debug("Reading {}...", name);
 
         if(name.startsWith("study-")) {
@@ -274,6 +273,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
         } else if(name.startsWith("network-")) {
           networks.add(readNetwork(zipIn));
         }
+
         zipIn.closeEntry();
       }
     }
@@ -327,5 +327,4 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     }
 
   }
-
 }

@@ -275,6 +275,9 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
 
   @Override
   public void setAttachments(List<Attachment> attachments) {
+    if (attachments == null)
+      attachments = Lists.newArrayList();
+
     removedAttachments = Sets.difference(Sets.newHashSet(this.attachments), Sets.newHashSet(attachments));
     this.attachments = attachments;
   }
@@ -311,12 +314,11 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
   @Override
   public Iterable<Attachment> getAllAttachments() {
     Collection<Attachment> all = new ArrayList<>();
-    if(logo != null) {
-      all.add(logo);
-    }
+
     if(getAttachments() != null) {
       all.addAll(getAttachments());
     }
+
     if(getPopulations() != null) {
       getPopulations().stream() //
           .filter(population -> population.getDataCollectionEvents() != null) //

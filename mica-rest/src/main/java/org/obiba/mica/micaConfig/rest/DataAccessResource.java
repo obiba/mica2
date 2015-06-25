@@ -76,8 +76,7 @@ public class DataAccessResource {
 
     if (!dataAccessForm.getPdfTemplates().containsKey(locale)) throw NoSuchDataAccessFormException.withDefaultMessage();
 
-    fileResource.setPersistable(dataAccessForm);
-    fileResource.setFileId(dataAccessForm.getPdfTemplates().get(locale).getId());
+    fileResource.setAttachment(dataAccessForm.getPdfTemplates().get(locale));
 
     return fileResource;
   }

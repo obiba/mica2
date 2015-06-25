@@ -31,10 +31,10 @@ public class DataAccessFormService {
     dataAccessForm.incrementRevisionsAhead();
     gitService.save(dataAccessForm);
 
-    dataAccessForm.getAllAttachments().forEach(a -> {
-      if(a.isJustUploaded()) {
-        gridFsService.save(a.getId());
-        a.setJustUploaded(false);
+    dataAccessForm.getPdfTemplates().forEach((k,v)-> {
+      if(v.isJustUploaded()) {
+        gridFsService.save(v.getId());
+        v.setJustUploaded(false);
       }
     });
 

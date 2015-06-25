@@ -192,6 +192,7 @@ public class DataCollectionEvent extends AbstractAttributeAware
 
   @Override
   public void setAttachments(@NotNull List<Attachment> attachments) {
+    if (attachments == null) attachments = Lists.newArrayList();
     removedAttachments = Sets.difference(Sets.newHashSet(this.attachments), Sets.newHashSet(attachments));
     this.attachments = attachments;
   }
@@ -203,12 +204,12 @@ public class DataCollectionEvent extends AbstractAttributeAware
 
   @Override
   public Iterable<Attachment> getAllAttachments() {
-    return null;
+    return this.attachments;
   }
 
   @Override
   public Attachment findAttachmentById(String attachmentId) {
-    return null;
+    return this.attachments.stream().filter(a -> a.getId().equals(attachmentId)).findFirst().orElse(null);
   }
 
   @Override
