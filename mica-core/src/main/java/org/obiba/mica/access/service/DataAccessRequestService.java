@@ -7,12 +7,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.PdfUtils;
 import org.obiba.mica.access.DataAccessRequestRepository;
@@ -278,9 +280,10 @@ public class DataAccessRequestService {
     DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
     if(dataAccessForm.isNotifySubmitted()) {
       Map<String, String> ctx = getNotificationEmailContext(request);
-      mailService.sendEmailToUsers("[" + ctx.get("organization") + "] " + ctx.get("title"),
+
+      mailService.sendEmailToUsers(dataAccessRequestUtilService.getSubject(dataAccessForm.getSubmittedSubject(), ctx),
         "dataAccessRequestSubmittedApplicantEmail", ctx, request.getApplicant());
-      mailService.sendEmailToGroups("[" + ctx.get("organization") + "] " + ctx.get("title"),
+      mailService.sendEmailToGroups(dataAccessRequestUtilService.getSubject(dataAccessForm.getSubmittedSubject(), ctx),
         "dataAccessRequestSubmittedDAOEmail", ctx, Roles.MICA_DAO);
     }
   }
@@ -289,7 +292,8 @@ public class DataAccessRequestService {
     DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
     if(dataAccessForm.isNotifyReviewed() && dataAccessForm.isWithReview()) {
       Map<String, String> ctx = getNotificationEmailContext(request);
-      mailService.sendEmailToUsers("[" + ctx.get("organization") + "] " + ctx.get("title"),
+
+      mailService.sendEmailToUsers(dataAccessRequestUtilService.getSubject(dataAccessForm.getReviewedSubject(), ctx),
         "dataAccessRequestReviewedApplicantEmail", ctx, request.getApplicant());
     }
   }
@@ -298,7 +302,8 @@ public class DataAccessRequestService {
     DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
     if(dataAccessForm.isNotifyReopened()) {
       Map<String, String> ctx = getNotificationEmailContext(request);
-      mailService.sendEmailToUsers("[" + ctx.get("organization") + "] " + ctx.get("title"),
+
+      mailService.sendEmailToUsers(dataAccessRequestUtilService.getSubject(dataAccessForm.getReopenedSubject(), ctx),
         "dataAccessRequestReopenedApplicantEmail", ctx, request.getApplicant());
     }
   }
@@ -307,7 +312,8 @@ public class DataAccessRequestService {
     DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
     if(dataAccessForm.isNotifyApproved()) {
       Map<String, String> ctx = getNotificationEmailContext(request);
-      mailService.sendEmailToUsers("[" + ctx.get("organization") + "] " + ctx.get("title"),
+
+      mailService.sendEmailToUsers(dataAccessRequestUtilService.getSubject(dataAccessForm.getApprovedSubject(), ctx),
         "dataAccessRequestApprovedApplicantEmail", ctx, request.getApplicant());
     }
   }
@@ -316,7 +322,8 @@ public class DataAccessRequestService {
     DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
     if(dataAccessForm.isNotifyRejected()) {
       Map<String, String> ctx = getNotificationEmailContext(request);
-      mailService.sendEmailToUsers("[" + ctx.get("organization") + "] " + ctx.get("title"),
+
+      mailService.sendEmailToUsers(dataAccessRequestUtilService.getSubject(dataAccessForm.getRejectedSubject(), ctx),
         "dataAccessRequestRejectedApplicantEmail", ctx, request.getApplicant());
     }
   }

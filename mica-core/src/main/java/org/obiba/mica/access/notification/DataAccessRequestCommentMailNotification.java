@@ -66,8 +66,8 @@ public class DataAccessRequestCommentMailNotification implements MailNotificatio
     ctx.put("applicant", request.getApplicant());
     ctx.put("status", request.getStatus().name());
 
-    mailService.sendEmailToUsers("[" + organization + "] " + title, "dataAccessRequestCommentAdded",
-      ctx, request.getApplicant());
+    mailService.sendEmailToUsers(dataAccessRequestUtilService.getSubject(dataAccessForm.getCommentedSubject(), ctx),
+      "dataAccessRequestCommentAdded", ctx, request.getApplicant());
   }
 
 }

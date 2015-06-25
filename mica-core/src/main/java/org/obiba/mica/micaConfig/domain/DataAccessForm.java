@@ -55,6 +55,18 @@ public class DataAccessForm extends AbstractGitPersistable implements Persistabl
 
   private boolean notifyCommented = true;
 
+  private String submittedSubject;
+
+  private String reviewedSubject;
+
+  private String approvedSubject;
+
+  private String rejectedSubject;
+
+  private String reopenedSubject;
+
+  private String commentedSubject;
+
   private boolean withReview = true;
 
   private boolean approvedFinal = false;
@@ -287,5 +299,53 @@ public class DataAccessForm extends AbstractGitPersistable implements Persistabl
 
   public boolean isRejectedFinal() {
     return rejectedFinal;
+  }
+
+  public String getSubmittedSubject() {
+    return submittedSubject;
+  }
+
+  public void setSubmittedSubject(String submittedSubject) {
+    this.submittedSubject = submittedSubject;
+  }
+
+  public String getReviewedSubject() {
+    return reviewedSubject;
+  }
+
+  public void setReviewedSubject(String reviewedSubject) {
+    this.reviewedSubject = reviewedSubject;
+  }
+
+  public String getApprovedSubject() {
+    return approvedSubject;
+  }
+
+  public void setApprovedSubject(String approvedSubject) {
+    this.approvedSubject = approvedSubject;
+  }
+
+  public String getRejectedSubject() {
+    return rejectedSubject;
+  }
+
+  public void setRejectedSubject(String rejectedSubject) {
+    this.rejectedSubject = rejectedSubject;
+  }
+
+  public String getReopenedSubject() {
+    return reopenedSubject;
+  }
+
+  public void setReopenedSubject(String reopenedSubject) {
+    this.reopenedSubject = reopenedSubject;
+  }
+
+  public String getCommentedSubject() {
+    return commentedSubject;
+  }
+
+  public void setCommentedSubject(String commentedSubject) {
+    this.commentedSubject = commentedSubject;
   }
 }
