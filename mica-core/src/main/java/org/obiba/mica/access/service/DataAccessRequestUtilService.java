@@ -11,9 +11,12 @@
 package org.obiba.mica.access.service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang.text.StrSubstitutor;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
@@ -34,6 +37,8 @@ public class DataAccessRequestUtilService {
   private static final Logger log = LoggerFactory.getLogger(DataAccessRequestUtilService.class);
 
   private static final Configuration conf = Configuration.defaultConfiguration().addOptions(Option.ALWAYS_RETURN_LIST);
+
+  private static final String DEFAULT_NOTIFICATION_SUBJECT = "[${organization}] ${title}";
 
   @Inject
   private DataAccessFormService dataAccessFormService;
@@ -111,6 +116,16 @@ public class DataAccessRequestUtilService {
         break;
     }
     return to;
+  }
+
+  public String getSubject(String subjectFormat, Map<String, String> ctx) {
+    StrSubstitutor sub = new StrSubstitutor(ctx, "${", "}");
+
+    String temp = Optional.ofNullable(subjectFormat) //
+      .filter(s -> !s.isEmpty()) //
+      .orElse(DEFAULT_NOTIFICATION_SUBJECT);
+
+    return sub.replace(temp);
   }
 
   //
