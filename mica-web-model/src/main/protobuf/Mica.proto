@@ -562,6 +562,12 @@ message DataAccessFormDto {
   required bool withReview = 14;
   required bool approvedFinal = 15;
   required bool rejectedFinal = 16;
+  optional string submittedSubject = 17;
+  optional string reviewedSubject = 18;
+  optional string approvedSubject = 19;
+  optional string rejectedSubject = 20;
+  optional string reopenedSubject = 21;
+  optional string commentedSubject = 22;
 }
 
 message UserProfileDto {

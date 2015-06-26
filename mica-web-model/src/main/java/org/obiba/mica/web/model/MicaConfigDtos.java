@@ -144,6 +144,18 @@ class MicaConfigDtos {
       .setApprovedFinal(dataAccessForm.isApprovedFinal()) //
       .setRejectedFinal(dataAccessForm.isRejectedFinal());
 
+    if(dataAccessForm.getSubmittedSubject() != null) builder.setSubmittedSubject(dataAccessForm.getSubmittedSubject());
+
+    if(dataAccessForm.getReviewedSubject() != null) builder.setReviewedSubject(dataAccessForm.getReviewedSubject());
+
+    if(dataAccessForm.getApprovedSubject() != null) builder.setApprovedSubject(dataAccessForm.getApprovedSubject());
+
+    if(dataAccessForm.getRejectedSubject() != null) builder.setRejectedSubject(dataAccessForm.getRejectedSubject());
+
+    if(dataAccessForm.getReopenedSubject() != null) builder.setReopenedSubject(dataAccessForm.getReopenedSubject());
+
+    if(dataAccessForm.getCommentedSubject() != null) builder.setCommentedSubject(dataAccessForm.getCommentedSubject());
+
     return builder.build();
   }
 
@@ -169,11 +181,23 @@ class MicaConfigDtos {
     dataAccessForm.setIdLength(dto.getIdLength());
 
     dataAccessForm.setNotifySubmitted(dto.getNotifySubmitted());
+    dataAccessForm.setSubmittedSubject(dto.getSubmittedSubject());
+
     dataAccessForm.setNotifyReviewed(dto.getNotifyReviewed());
+    dataAccessForm.setReviewedSubject(dto.getReviewedSubject());
+
     dataAccessForm.setNotifyApproved(dto.getNotifyApproved());
+    dataAccessForm.setApprovedSubject(dto.getApprovedSubject());
+
     dataAccessForm.setNotifyRejected(dto.getNotifyRejected());
+    dataAccessForm.setRejectedSubject(dto.getRejectedSubject());
+
     dataAccessForm.setNotifyReopened(dto.getNotifyReopened());
+    dataAccessForm.setReopenedSubject(dto.getReopenedSubject());
+
     dataAccessForm.setNotifyCommented(dto.getNotifyCommented());
+    dataAccessForm.setCommentedSubject(dto.getCommentedSubject());
+
     dataAccessForm.setWithReview(dto.getWithReview());
     dataAccessForm.setApprovedFinal(dto.getApprovedFinal());
     dataAccessForm.setRejectedFinal(dto.getRejectedFinal());

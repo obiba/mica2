@@ -116,23 +116,39 @@
         <div form-checkbox name="notifySubmitted" model="dataAccessForm.notifySubmitted"
           label="data-access-config.notifications.submitted"
           help="data-access-config.notifications.submitted-help"></div>
+        <div form-input name="submittedSubject" model="dataAccessForm.submittedSubject"
+          label="data-access-config.notifications.submittedSubject"
+          required="false" disabled="!dataAccessForm.notifySubmitted"></div>
         <div form-checkbox name="notifyReviewed" model="dataAccessForm.notifyReviewed"
           label="data-access-config.notifications.reviewed"
           help="data-access-config.notifications.reviewed-help"></div>
+        <div form-input name="reviewedSubject" model="dataAccessForm.reviewedSubject"
+          label="data-access-config.notifications.reviewedSubject"
+          required="false" disabled="!dataAccessForm.notifyReviewed"></div>
         <div form-checkbox name="notifyReopened" model="dataAccessForm.notifyReopened"
           label="data-access-config.notifications.reopened"
           help="data-access-config.notifications.reopened-help"></div>
-      </div>
-      <div class="col-md-6">
+        <div form-input name="reopenedSubject" model="dataAccessForm.reopenedSubject"
+          label="data-access-config.notifications.reopenedSubject"
+          required="false" disabled="!dataAccessForm.notifyReopened"></div>
         <div form-checkbox name="notifyRejected" model="dataAccessForm.notifyRejected"
           label="data-access-config.notifications.rejected"
           help="data-access-config.notifications.rejected-help"></div>
+        <div form-input name="rejectedSubject" model="dataAccessForm.rejectedSubject"
+          label="data-access-config.notifications.rejectedSubject"
+          required="false" disabled="!dataAccessForm.notifyRejected"></div>
         <div form-checkbox name="notifyApproved" model="dataAccessForm.notifyApproved"
           label="data-access-config.notifications.approved"
           help="data-access-config.notifications.approved-help"></div>
+        <div form-input name="approvedSubject" model="dataAccessForm.approvedSubject"
+          label="data-access-config.notifications.approvedSubject"
+          required="false" disabled="!dataAccessForm.notifyApproved"></div>
         <div form-checkbox name="notifyCommented" model="dataAccessForm.notifyCommented"
           label="data-access-config.notifications.commented"
           help="data-access-config.notifications.commented-help"></div>
+        <div form-input name="commentedSubject" model="dataAccessForm.commentedSubject"
+          label="data-access-config.notifications.commentedSubject"
+          required="false" disabled="!dataAccessForm.notifyCommented"></div>
       </div>
     </div>
   </form>
