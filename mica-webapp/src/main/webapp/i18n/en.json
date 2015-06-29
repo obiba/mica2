@@ -238,6 +238,7 @@
     "micaConfig": "Mica configuration",
     "aggregationsMetadata": "Aggregations metadata",
     "datasetVariables": "Dataset variables statistics",
+    "agateSubjects": "Agate subjects",
     "authorization": "Authorizations"
   },
   "logs": {

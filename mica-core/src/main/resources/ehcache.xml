@@ -56,13 +56,13 @@
       timeToIdleSeconds="0"/>
 
   <cache name="opal-taxonomies"
-    timeToLiveSeconds="1800"
+    timeToLiveSeconds="3600"
     timeToIdleSeconds="0">
     <pinning store="localMemory"/>
   </cache>
 
   <cache name="aggregations-metadata"
-    timeToLiveSeconds="1800"
+    timeToLiveSeconds="3600"
     timeToIdleSeconds="0">
     <pinning store="localMemory"/>
   </cache>
@@ -71,5 +71,12 @@
     eternal="true"
     overflowToDisk="true"
     diskPersistent="true"/>
+
+  <cache name="agate-subjects"
+    timeToLiveSeconds="3600"
+    timeToIdleSeconds="0">
+    <pinning store="localMemory"/>
+  </cache>
+
 </ehcache>
 
