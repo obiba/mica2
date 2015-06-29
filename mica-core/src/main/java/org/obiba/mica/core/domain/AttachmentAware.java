@@ -31,6 +31,7 @@ public interface AttachmentAware {
 
   void setAttachments(List<Attachment> attachments);
 
+  @JsonIgnore
   List<Attachment> removedAttachments();
 
   @JsonIgnore

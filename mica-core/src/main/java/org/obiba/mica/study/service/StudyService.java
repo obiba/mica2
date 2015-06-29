@@ -85,6 +85,11 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
 
     gitService.save(study);
 
+    if (study.getLogo() != null && study.getLogo().isJustUploaded()) {
+      gridFsService.save(study.getLogo().getId());
+      study.getLogo().setJustUploaded(false);
+    }
+
     study.getAllAttachments().forEach(a -> {
       if(a.isJustUploaded()) {
         gridFsService.save(a.getId());

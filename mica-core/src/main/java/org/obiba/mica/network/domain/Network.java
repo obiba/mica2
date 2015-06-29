@@ -2,14 +2,12 @@ package org.obiba.mica.network.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.URL;
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
-import org.obiba.mica.core.domain.AttachmentAware;
 import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.AttributeAware;
 import org.obiba.mica.core.domain.Attributes;
@@ -18,17 +16,14 @@ import org.obiba.mica.core.domain.Contact;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.study.domain.Study;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+
 
 /**
  * A Network.
  */
-public class Network extends AbstractAuditableDocument implements AttributeAware, AttachmentAware {
+public class Network extends AbstractAuditableDocument implements AttributeAware {
 
   private static final long serialVersionUID = -4271967393906681773L;
 
@@ -47,11 +42,6 @@ public class Network extends AbstractAuditableDocument implements AttributeAware
 
   @URL
   private String website;
-
-  @DBRef
-  private List<Attachment> attachments = Lists.newArrayList();
-
-  private Iterable<Attachment> removedAttachments = Lists.newArrayList();
 
   private LocalizedString infos;
 
@@ -138,33 +128,6 @@ public class Network extends AbstractAuditableDocument implements AttributeAware
     }
   }
 
-  @Override
-  @NotNull
-  public List<Attachment> getAttachments() {
-    return attachments;
-  }
-
-  @Override
-  public boolean hasAttachments() {
-    return attachments != null && !attachments.isEmpty();
-  }
-
-  @Override
-  public void addAttachment(@NotNull Attachment attachment) {
-    attachments.add(attachment);
-  }
-
-  @Override
-  public void setAttachments(List<Attachment> attachments) {
-    removedAttachments = Sets.difference(Sets.newHashSet(this.attachments), Sets.newHashSet(attachments));
-    this.attachments = attachments;
-  }
-
-  @Override
-  public List<Attachment> removedAttachments() {
-    return Lists.newArrayList(removedAttachments);
-  }
-
   public LocalizedString getInfos() {
     return infos;
   }
@@ -210,18 +173,6 @@ public class Network extends AbstractAuditableDocument implements AttributeAware
 
   public void setLogo(Attachment attachment) {
     this.logo = attachment;
-  }
-
-  @JsonIgnore
-  @Override
-  public Iterable<Attachment> getAllAttachments() {
-    return () -> Stream.concat(getAttachments().stream(), Stream.of(this.logo)).filter(a -> a != null).iterator();
-  }
-
-  @Override
-  public Attachment findAttachmentById(String attachmentId) {
-    return Stream.concat(getAttachments().stream(), Stream.of(this.logo))
-      .filter(a -> a != null && a.getId().equals(attachmentId)).findAny().orElse(null);
   }
 
   /**

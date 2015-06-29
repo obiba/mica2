@@ -3,6 +3,7 @@ package org.obiba.mica.core.upgrade;
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -51,6 +52,17 @@ public class AttachmentsMigration implements UpgradeStep {
     List<Study> studies = studyRepository.findAll();
 
     studies.forEach(study -> {
+      Optional.ofNullable(study.getLogo()).ifPresent(l -> {
+        try {
+          byte[] ba = gitService.readFileHead(study, l.getId());
+          gridFsService.save(new ByteArrayInputStream(ba), l.getId());
+        } catch(GitException ex) {
+          if(!(ex.getCause() instanceof FileNotFoundException)) {
+            throw ex;
+          }
+        }
+      });
+
       study.getAllAttachments().forEach(a -> {
         try {
           byte[] ba = gitService.readFileHead(study, a.getId());
@@ -66,7 +78,7 @@ public class AttachmentsMigration implements UpgradeStep {
     List<DataAccessForm> forms = dataAccessFormRepository.findAll();
 
     forms.forEach(daf -> {
-      daf.getAllAttachments().forEach(a -> {
+      daf.getPdfTemplates().forEach( (k, a) -> {
         try {
           byte[] ba = gitService.readFileHead(daf, a.getId());
           gridFsService.save(new ByteArrayInputStream(ba), a.getId());

@@ -18,7 +18,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 /**
  * Spring Data MongoDB repository for the {@link org.obiba.mica.network.domain.Network} entity.
  */
-public interface NetworkRepository extends MongoRepository<Network, String>, NetworkRepositoryCustom {
+public interface NetworkRepository extends MongoRepository<Network, String> {
 
   List<Network> findByStudyIds(String studyId);
 
