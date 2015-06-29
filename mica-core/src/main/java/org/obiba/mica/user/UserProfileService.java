@@ -4,6 +4,7 @@ import org.obiba.mica.core.service.AgateRestService;
 import org.obiba.shiro.realm.ObibaRealm.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -22,6 +23,7 @@ public class UserProfileService extends AgateRestService {
     initInternal();
   }
 
+  @Cacheable(value="agate-subjects")
   public synchronized Subject getProfile(String username) {
     try {
       RestTemplate template = newRestTemplate();

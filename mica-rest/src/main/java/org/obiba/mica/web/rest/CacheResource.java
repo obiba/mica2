@@ -29,6 +29,9 @@ public class CacheResource {
       case "micaConfig" :
         cacheService.clearMicaConfigCache();
         break;
+      case "agateSubjects":
+        cacheService.clearAgateSubjectsCache();
+        break;
       case "opalTaxonomies":
         cacheService.clearOpalTaxonomiesCache();
         break;

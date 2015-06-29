@@ -233,6 +233,12 @@ mica.controller('CachingController', ['$scope', '$rootScope', 'CacheService', 'N
       });
     };
 
+    $scope.clearAgateSubjects = function () {
+      withConfirm(function () {
+        CacheService.cache.clear({id: 'agateSubjects'});
+      });
+    };
+
     $scope.clearAuthorization = function () {
       withConfirm(function () {
         CacheService.cache.clear({id: 'authorization'});
