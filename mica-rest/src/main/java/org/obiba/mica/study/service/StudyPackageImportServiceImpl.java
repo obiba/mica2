@@ -18,12 +18,15 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.bson.types.ObjectId;
 import org.obiba.jersey.protobuf.AbstractProtobufProvider;
 import org.obiba.mica.core.domain.AttachmentAware;
 import org.obiba.mica.core.domain.LocalizedString;
@@ -48,14 +51,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.common.io.ByteStreams;
 import com.googlecode.protobuf.format.JsonFormat;
+
+import jersey.repackaged.com.google.common.base.Throwables;
 
 @Service
 public class StudyPackageImportServiceImpl extends AbstractProtobufProvider implements StudyPackageImportService {
@@ -84,13 +88,37 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
   public void importZip(InputStream inputStream, boolean publish) throws IOException {
     final StudyPackage studyPackage = new StudyPackage(inputStream);
     if(studyPackage.study != null) {
-      for(Map.Entry<String, ByteArrayInputStream> entry : studyPackage.attachments.entrySet()) {
-        importStudyAttachment(studyPackage.study, entry.getKey(), entry.getValue());
-      }
+      Map<String, ByteArrayInputStream> dict = studyPackage.attachments.entrySet().stream()
+        .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+      Optional.ofNullable(studyPackage.study.getLogo()).ifPresent(a -> saveAttachmentTempFile(dict, a));
+      Set<String> attachmentIds = Sets.newHashSet();
+
+      studyPackage.study.getAttachments().forEach(a -> {
+        if(attachmentIds.contains(a.getId())) {
+          String origId = a.getId();
+          a.setId(new ObjectId().toString());
+          saveAttachmentTempFile(dict, a, origId);
+        } else {
+          saveAttachmentTempFile(dict, a);
+          attachmentIds.add(a.getId());
+        }
+      });
+
+      studyPackage.study.getPopulations()
+        .forEach(p -> p.getDataCollectionEvents().forEach(dce -> dce.getAttachments().forEach(a -> {
+          if(attachmentIds.contains(a.getId())) {
+            String origId = a.getId();
+            a.setId(new ObjectId().toString());
+            saveAttachmentTempFile(dict, a, origId);
+          } else {
+            saveAttachmentTempFile(dict, a);
+            attachmentIds.add(a.getId());
+          }
+        })));
 
       importStudy(studyPackage.study, publish);
 
-      for(Network net: studyPackage.networks) {
+      for(Network net : studyPackage.networks) {
         importNetwork(net, publish, studyPackage);
       }
 
@@ -98,49 +126,18 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     }
   }
 
-  private void importStudyAttachment(Study study, String attId, ByteArrayInputStream content) throws IOException {
-    // look for the attachment name in the study
-    Attachment attachment = getAttachment(study, attId);
-    if(attachment == null) return;
-
-    saveTempFile(attachment, content);
+  private void saveAttachmentTempFile(Map<String, ByteArrayInputStream> dict, Attachment a) {
+    saveAttachmentTempFile(dict, a, a.getId());
   }
 
-  private Attachment getAttachment(@NotNull Study study, @NotNull String attId) {
-    if(study.getLogo() != null && study.getLogo().getId().equals(attId)) {
-      return study.getLogo();
-    }
-
-    Attachment attachment = findAttachment(study, attId);
-
-    if(attachment != null) return attachment;
-
-    if(study.hasPopulations()) {
-      for(Population population : study.getPopulations()) {
-        attachment = getAttachment(population, attId);
-        if(attachment != null) return attachment;
+  private void saveAttachmentTempFile(Map<String, ByteArrayInputStream> dict, Attachment a, String aid) {
+    if(dict.containsKey(aid)) {
+      try {
+        saveTempFile(a, dict.get(aid));
+      } catch(IOException e) {
+        Throwables.propagate(e);
       }
     }
-
-    return null;
-  }
-
-  private Attachment getAttachment(@NotNull Population population, @NotNull String attId) {
-    if(!population.hasDataCollectionEvents()) return null;
-    for(DataCollectionEvent dce : population.getDataCollectionEvents()) {
-      Attachment attachment = findAttachment(dce, attId);
-      if(attachment != null) return attachment;
-    }
-    return null;
-  }
-
-  private Attachment findAttachment(@NotNull AttachmentAware attachmentAware, @NotNull String attId) {
-    if(!attachmentAware.hasAttachments()) return null;
-
-    for(Attachment attachment : attachmentAware.getAttachments()) {
-      if(attachment.getId().equals(attId)) return attachment;
-    }
-    return null;
   }
 
   private void importStudy(Study study, boolean publish) {
@@ -153,8 +150,10 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
         study.getName().put(entry.getKey(), newName);
       }
     });
+
     study.cleanContacts();
     study.rebuildPopulationIds();
+
     studyService.save(study);
     if(publish) {
       studyService.publish(study.getId());

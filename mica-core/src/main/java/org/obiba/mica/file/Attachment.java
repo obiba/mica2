@@ -3,16 +3,22 @@ package org.obiba.mica.file;
 import java.util.Locale;
 import java.util.Objects;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
+import org.obiba.mica.core.domain.Attribute;
+import org.obiba.mica.core.domain.AttributeAware;
+import org.obiba.mica.core.domain.Attributes;
 import org.obiba.mica.core.domain.LocalizedString;
+import org.springframework.data.domain.Persistable;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Document
-public class Attachment extends AbstractAuditableDocument {
+public class Attachment extends AbstractAuditableDocument implements AttributeAware {
 
   private static final long serialVersionUID = 7881381748865114007L;
 
@@ -31,6 +37,11 @@ public class Attachment extends AbstractAuditableDocument {
   private long size;
 
   private String md5;
+
+  private Attributes attributes;
+
+  @JsonIgnore
+  private String path;
 
   @NotNull
   public String getName() {
@@ -101,5 +112,41 @@ public class Attachment extends AbstractAuditableDocument {
     if(obj == null || getClass() != obj.getClass()) return false;
 
     return Objects.equals(getId(), ((Attachment) obj).getId());
+  }
+
+  @Override
+  public void addAttribute(Attribute attribute) {
+    attributes.addAttribute(attribute);
+  }
+
+  @Override
+  public void removeAttribute(Attribute attribute) {
+    attributes.removeAttribute(attribute);
+  }
+
+  @Override
+  public void removeAllAttributes() {
+    attributes.removeAllAttributes();
+  }
+
+  @Override
+  public boolean hasAttribute(String attName, @Nullable String namespace) {
+    return attributes.hasAttribute(attName, namespace);
+  }
+
+  public Attributes getAttributes() {
+    return attributes;
+  }
+
+  public void setAttributes(Attributes attributes) {
+    this.attributes = attributes;
+  }
+
+  public String getPath() {
+    return path;
+  }
+
+  public void setPath(String path) {
+    this.path = path;
   }
 }
