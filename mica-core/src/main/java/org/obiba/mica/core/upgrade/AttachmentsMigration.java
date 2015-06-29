@@ -4,11 +4,16 @@ import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.bson.types.ObjectId;
 import org.obiba.git.GitException;
+import org.obiba.mica.core.domain.GitPersistable;
+import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.service.GitService;
+import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.GridFsService;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.repository.DataAccessFormRepository;
@@ -19,6 +24,8 @@ import org.obiba.runtime.upgrade.UpgradeStep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Sets;
 
 @Component
 public class AttachmentsMigration implements UpgradeStep {
@@ -32,6 +39,9 @@ public class AttachmentsMigration implements UpgradeStep {
 
   @Inject
   private StudyRepository studyRepository;
+
+  @Inject
+  private AttachmentRepository attachmentRepository;
 
   @Inject
   private DataAccessFormRepository dataAccessFormRepository;
@@ -52,43 +62,56 @@ public class AttachmentsMigration implements UpgradeStep {
     List<Study> studies = studyRepository.findAll();
 
     studies.forEach(study -> {
-      Optional.ofNullable(study.getLogo()).ifPresent(l -> {
-        try {
-          byte[] ba = gitService.readFileHead(study, l.getId());
-          gridFsService.save(new ByteArrayInputStream(ba), l.getId());
-        } catch(GitException ex) {
-          if(!(ex.getCause() instanceof FileNotFoundException)) {
-            throw ex;
-          }
-        }
-      });
+      Optional.ofNullable(study.getLogo()).ifPresent(l -> migrateAttachment(study, l));
+      Set<String> attachmentIds = Sets.newHashSet();
 
-      study.getAllAttachments().forEach(a -> {
-        try {
-          byte[] ba = gitService.readFileHead(study, a.getId());
-          gridFsService.save(new ByteArrayInputStream(ba), a.getId());
-        } catch(GitException ex) {
-          if(!(ex.getCause() instanceof FileNotFoundException)) {
-            throw ex;
+      study.getPopulations()
+        .forEach(p -> p.getDataCollectionEvents().forEach(dce -> dce.getAttachments().forEach(a -> {
+          if(attachmentIds.contains(a.getId())) { //duplicate reference to same attachment
+            log.info("Duplicate attachment found:" + a.getId());
+            Attachment attachment = new Attachment();
+            attachment.setType(a.getType());
+            attachment.setName(a.getName());
+            attachment.setLang(a.getLang());
+            attachment.setMd5(a.getMd5());
+            attachment.setSize(a.getSize());
+            attachment.setType(a.getType());
+            attachment.setDescription(a.getDescription());
+            attachment.setJustUploaded(a.isJustUploaded());
+            attachment.setId(new ObjectId().toString());
+            attachmentRepository.save(attachment);
+            migrateAttachment(study, a.getId(), attachment.getId());
+            a.setId(attachment.getId());
+          } else {
+            migrateAttachment(study, a);
+            attachmentIds.add(a.getId());
           }
-        }
-      }); //TODO: manually remove attachments from git
+        })));
+
+      if(!attachmentIds.isEmpty()) {
+        studyRepository.save(study);
+        gitService.save(study);
+      }
     });
 
     List<DataAccessForm> forms = dataAccessFormRepository.findAll();
 
-    forms.forEach(daf -> {
-      daf.getPdfTemplates().forEach( (k, a) -> {
-        try {
-          byte[] ba = gitService.readFileHead(daf, a.getId());
-          gridFsService.save(new ByteArrayInputStream(ba), a.getId());
-        } catch(GitException ex) {
-          if(!(ex.getCause() instanceof FileNotFoundException)) {
-            throw ex;
-          }
-        }
-      });
-    });
+    forms.forEach(daf -> daf.getPdfTemplates().forEach((k, a) -> migrateAttachment(daf, a)));
+  }
+
+  private void migrateAttachment(GitPersistable persistable, Attachment attachment) {
+    migrateAttachment(persistable, attachment.getId(), attachment.getId());
+  }
+
+  private void migrateAttachment(GitPersistable persistable, String sourceId, String destId) {
+    try {
+      byte[] ba = gitService.readFileHead(persistable, sourceId);
+      gridFsService.save(new ByteArrayInputStream(ba), destId);
+    } catch(GitException ex) {
+      if(!(ex.getCause() instanceof FileNotFoundException)) {
+        throw ex;
+      }
+    }
   }
 }
 

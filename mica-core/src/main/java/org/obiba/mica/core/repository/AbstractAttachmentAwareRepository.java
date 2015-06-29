@@ -3,10 +3,11 @@ package org.obiba.mica.core.repository;
 import javax.inject.Inject;
 
 import org.obiba.mica.core.domain.AttachmentAware;
+import org.obiba.mica.file.Attachment;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-public class AbstractAttachmentAwareRepository<T extends AttachmentAware> implements AttachmentAwareRepository<T> {
+public abstract class AbstractAttachmentAwareRepository<T extends AttachmentAware> implements AttachmentAwareRepository<T> {
   @Inject
   AttachmentRepository attachmentRepository;
 
@@ -16,7 +17,8 @@ public class AbstractAttachmentAwareRepository<T extends AttachmentAware> implem
   @Override
   public T saveWithAttachments(T obj, boolean removeOrphanedAttachments) {
     obj.getAttachments().forEach(a -> {
-      try{
+      try {
+        a.setPath(getAttachmentPath(obj, a));
         attachmentRepository.save(a);
       } catch(DuplicateKeyException ex) {
         //ignore
@@ -36,4 +38,6 @@ public class AbstractAttachmentAwareRepository<T extends AttachmentAware> implem
 
     if(removeOrphanedAttachments) attachmentRepository.delete(obj.getAttachments());
   }
+
+  protected abstract String getAttachmentPath(T obj, Attachment attachment);
 }
