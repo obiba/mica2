@@ -122,7 +122,11 @@ class NetworkDtos {
   @NotNull
   Network fromDto(@NotNull Mica.NetworkDtoOrBuilder dto) {
     Network network = new Network();
-    network.setId(dto.getId());
+
+    if (dto.hasId()) {
+      network.setId(dto.getId());
+    }
+    
     network.setPublished(dto.getPublished());
     network.setName(localizedStringDtos.fromDto(dto.getNameList()));
     network.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
