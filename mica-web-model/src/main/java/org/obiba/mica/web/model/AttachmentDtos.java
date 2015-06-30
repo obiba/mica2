@@ -16,6 +16,9 @@ class AttachmentDtos {
   @Inject
   private LocalizedStringDtos localizedStringDtos;
 
+  @Inject
+  private AttributeDtos attributeDtos;
+
   @NotNull
   AttachmentDto asDto(@NotNull Attachment attachment) {
     AttachmentDto.Builder builder = AttachmentDto.newBuilder().setId(attachment.getId())
@@ -26,6 +29,10 @@ class AttachmentDtos {
     }
     if(attachment.getLang() != null) builder.setLang(attachment.getLang().toString());
     if(attachment.getMd5() != null) builder.setMd5(attachment.getMd5());
+    if(attachment.getAttributes() != null) {
+      attachment.getAttributes().asAttributeList().forEach(
+        attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
+    }
 
     return builder.build();
   }
@@ -43,6 +50,10 @@ class AttachmentDtos {
     attachment.setJustUploaded(dto.getJustUploaded());
 
     if(dto.hasTimestamps()) TimestampsDtos.fromDto(dto.getTimestamps(), attachment);
+
+    if(dto.getAttributesCount() > 0) {
+      dto.getAttributesList().forEach(attributeDto -> attachment.addAttribute(attributeDtos.fromDto(attributeDto)));
+    }
 
     return attachment;
   }

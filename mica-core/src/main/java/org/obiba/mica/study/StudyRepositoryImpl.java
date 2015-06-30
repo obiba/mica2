@@ -4,6 +4,7 @@ import javax.inject.Inject;
 
 import org.obiba.mica.core.repository.AbstractAttachmentAwareRepository;
 import org.obiba.mica.core.repository.AttachmentRepository;
+import org.obiba.mica.file.Attachment;
 import org.obiba.mica.study.domain.Study;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.OptimisticLockingFailureException;
@@ -18,12 +19,10 @@ public class StudyRepositoryImpl extends AbstractAttachmentAwareRepository<Study
   @Override
   public Study saveWithAttachments(Study obj, boolean removeOrphanedAttachments) {
     obj.getPopulations().forEach(p -> p.getDataCollectionEvents().forEach(d -> d.getAttachments().forEach(a -> {
-        try {
-          attachmentRepository.save(a);
-        } catch(DuplicateKeyException | OptimisticLockingFailureException ex) {
-          //TODO: copy same attachments that are in different DCEs.
-        }
-      })));
+      a.setPath(
+        String.format("/study/%s/population/%s/dataCollectionEvent/%s", obj.getId(), p.getId(), d.getId(), a.getId()));
+      attachmentRepository.save(a);
+    })));
 
     Study res = super.saveWithAttachments(obj, removeOrphanedAttachments);
 
@@ -36,5 +35,10 @@ public class StudyRepositoryImpl extends AbstractAttachmentAwareRepository<Study
       .forEach(p -> p.getDataCollectionEvents().forEach(d -> attachmentRepository.delete(d.getAttachments())));
 
     super.deleteWithAttachments(obj, removeOrphanedAttachments);
+  }
+
+  @Override
+  protected String getAttachmentPath(Study study, Attachment attachment) {
+    return String.format("/study/%s/attachment/%s", study.getId(),  attachment.getId());
   }
 }
