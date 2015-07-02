@@ -161,10 +161,10 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
     Mica.DatasetVariableAggregationDto tableAggDto) {
     if(tableAggDto.getFrequenciesCount() == 0) return;
 
-    for(Mica.DatasetVariableAggregationDto.FrequencyDto tableFreq : tableAggDto.getFrequenciesList()) {
+    for(Mica.FrequencyDto tableFreq : tableAggDto.getFrequenciesList()) {
       boolean found = false;
       for(int i = 0; i < aggDto.getFrequenciesCount(); i++) {
-        Mica.DatasetVariableAggregationDto.FrequencyDto freq = aggDto.getFrequencies(i);
+        Mica.FrequencyDto freq = aggDto.getFrequencies(i);
         if(freq.getValue().equals(tableFreq.getValue())) {
           aggDto.setFrequencies(i, freq.toBuilder().setCount(freq.getCount() + tableFreq.getCount()).build());
           found = true;
@@ -185,13 +185,13 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
       aggDto.setStatistics(tableAggDto.getStatistics().toBuilder());
     } else {
 
-      Mica.DatasetVariableAggregationDto.StatisticsDto stats = aggDto.getStatistics();
-      Mica.DatasetVariableAggregationDto.StatisticsDto tableStats = tableAggDto.getStatistics();
+      Mica.StatisticsDto stats = aggDto.getStatistics();
+      Mica.StatisticsDto tableStats = tableAggDto.getStatistics();
 
       int count = aggDto.getN() + tableAggDto.getN();
 
       if (count > 0) {
-        Mica.DatasetVariableAggregationDto.StatisticsDto.Builder builder = aggDto.getStatistics().toBuilder();
+        Mica.StatisticsDto.Builder builder = aggDto.getStatistics().toBuilder();
 
         float sum = (stats.hasSum() ? stats.getSum() : 0) + (tableStats.hasSum() ? tableStats.getSum() : 0);
         builder.setSum(sum);

@@ -308,8 +308,8 @@ class DatasetDtos {
     return aggDto;
   }
 
-  private Mica.DatasetVariableAggregationDto.FrequencyDto.Builder asDto(Math.FrequencyDto freq) {
-    return Mica.DatasetVariableAggregationDto.FrequencyDto.newBuilder().setValue(freq.getValue())
+  private Mica.FrequencyDto.Builder asDto(Math.FrequencyDto freq) {
+    return Mica.FrequencyDto.newBuilder().setValue(freq.getValue())
       .setCount(Long.valueOf(freq.getFreq()).intValue()).setMissing(freq.getMissing());
   }
 
@@ -334,8 +334,8 @@ class DatasetDtos {
 
     aggDto.setN(Long.valueOf(stats.getN()).intValue());
 
-    Mica.DatasetVariableAggregationDto.StatisticsDto.Builder builder
-      = Mica.DatasetVariableAggregationDto.StatisticsDto.newBuilder();
+    Mica.StatisticsDto.Builder builder
+      = Mica.StatisticsDto.newBuilder();
 
     if(stats.hasSum()) builder.setSum(Double.valueOf(stats.getSum()).floatValue());
     if(stats.hasMin() && stats.getMin() != Double.POSITIVE_INFINITY)
