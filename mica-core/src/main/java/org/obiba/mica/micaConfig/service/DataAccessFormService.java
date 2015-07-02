@@ -6,6 +6,9 @@ import java.util.Scanner;
 
 import javax.inject.Inject;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.file.GridFsService;
@@ -28,6 +31,7 @@ public class DataAccessFormService {
   DataAccessFormRepository dataAccessFormRepository;
 
   public void createOrUpdateDataAccessForm(DataAccessForm dataAccessForm) {
+    validateForm(dataAccessForm);
     dataAccessForm.incrementRevisionsAhead();
     gitService.save(dataAccessForm);
 
@@ -58,6 +62,27 @@ public class DataAccessFormService {
       d.setRevisionStatus(RevisionStatus.DRAFT);
       dataAccessFormRepository.save(d);
     });
+  }
+
+  private void validateForm(DataAccessForm dataAccessForm) {
+    validateSchema(dataAccessForm.getSchema());
+    validateDefinition(dataAccessForm.getDefinition());
+  }
+
+  private void validateSchema(String json) {
+    try {
+      new JSONObject(json);
+    } catch(JSONException e) {
+      throw new InvalidFormSchemaException();
+    }
+  }
+
+  private void validateDefinition(String json) {
+    try {
+      new JSONArray(json);
+    } catch(JSONException e) {
+      throw new InvalidFormDefinitionException();
+    }
   }
 
   private DataAccessForm createDefaultDataAccessForm() {

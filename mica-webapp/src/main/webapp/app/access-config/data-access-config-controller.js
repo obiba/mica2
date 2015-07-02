@@ -12,29 +12,53 @@
 
 mica.dataAccesConfig
 
-  .controller('DataAccessConfigController', ['$rootScope', '$location', '$scope', '$log', 'DataAccessFormResource', 'DataAccessFormService', 'AlertService', 'ServerErrorUtils',
-    function ($rootScope, $location, $scope, $log, DataAccessFormResource, DataAccessFormService, AlertService, ServerErrorUtils) {
+  .controller('DataAccessConfigController', ['$rootScope', '$location', '$scope', '$log',
+    'DataAccessFormResource',
+    'DataAccessFormService',
+    'AlertService',
+    'ServerErrorUtils',
+    function ($rootScope, $location, $scope, $log,
+              DataAccessFormResource,
+              DataAccessFormService,
+              AlertService,
+              ServerErrorUtils) {
 
       DataAccessFormService.configureAcePaths();
 
       var saveForm = function() {
 
-        if (DataAccessFormService.isFormValid($scope.dataAccessForm)) {
-          $scope.dataAccessForm.definition = $scope.form.definition;
-          $scope.dataAccessForm.schema = $scope.form.schema;
-          $scope.dataAccessForm.pdfTemplates = $scope.dataAccessForm.pdfTemplates || [];
+        switch (DataAccessFormService.isFormValid($scope.form)) {
+          case DataAccessFormService.ParseResult.VALID:
+            $scope.dataAccessForm.definition = $scope.form.definition;
+            $scope.dataAccessForm.schema = $scope.form.schema;
+            $scope.dataAccessForm.pdfTemplates = $scope.dataAccessForm.pdfTemplates || [];
 
-          DataAccessFormResource.save($scope.dataAccessForm,
-            function () {
-              $location.path('/config').replace();
-            },
-            function (response) {
-              AlertService.alert({
-                id: 'DataAccessConfigController',
-                type: 'danger',
-                msg: ServerErrorUtils.buildMessage(response)
+            DataAccessFormResource.save($scope.dataAccessForm,
+              function () {
+                $location.path('/config').replace();
+              },
+              function (response) {
+                AlertService.alert({
+                  id: 'DataAccessConfigController',
+                  type: 'danger',
+                  msg: ServerErrorUtils.buildMessage(response)
+                });
               });
-            });
+            break;
+          case DataAccessFormService.ParseResult.SCHEMA:
+          AlertService.alert({
+            id: 'DataAccessConfigController',
+            type: 'danger',
+            msgKey: 'data-access-config.syntax-error.schema'
+          });
+          break;
+        case DataAccessFormService.ParseResult.DEFINITION:
+          AlertService.alert({
+            id: 'DataAccessConfigController',
+            type: 'danger',
+            msgKey: 'data-access-config.syntax-error.definition'
+          });
+          break;
         }
       };
 
@@ -98,13 +122,28 @@ mica.dataAccesConfig
       DataAccessFormResource.get(
         function(dataAccessForm){
           $scope.dirty = true;
-          $scope.form.definitionJson = dataAccessForm.definition ? JSON.parse(dataAccessForm.definition) : null;
+          $scope.form.definitionJson = DataAccessFormService.parseJsonSafely(dataAccessForm.definition, []);
           $scope.form.definition = DataAccessFormService.prettifyJson($scope.form.definitionJson);
-          $scope.form.schemaJson = dataAccessForm.schema ? JSON.parse(dataAccessForm.schema) : null;
+          $scope.form.schemaJson = DataAccessFormService.parseJsonSafely(dataAccessForm.schema, {});
           $scope.form.schema = DataAccessFormService.prettifyJson($scope.form.schemaJson);
           $scope.dataAccessForm = dataAccessForm;
           $scope.dataAccessForm.pdfTemplates = $scope.dataAccessForm.pdfTemplates || [];
           selectTab('form-schema');
+
+          if ($scope.form.definitionJson.length === 0) {
+            AlertService.alert({
+              id: 'DataAccessConfigController',
+              type: 'danger',
+              msgKey: 'data-access-config.parse-error.definition'
+            });
+          }
+          if (Object.getOwnPropertyNames($scope.form.schemaJson).length === 0) {
+            AlertService.alert({
+              id: 'DataAccessConfigController',
+              type: 'danger',
+              msgKey: 'data-access-config.parse-error.schema'
+            });
+          }
         },
         function(response) {
           AlertService.alert({

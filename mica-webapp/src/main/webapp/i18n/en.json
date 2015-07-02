@@ -657,7 +657,8 @@
       "title": "Status Change Confirmation",
       "message": "Are you sure you want to {{arg0}} this access request?",
       "message-review": "Are you sure you want to put this access request under review?"
-    }
+    },
+    "parse-error": "Form content is not a valid document, please contact your administrator for more help."
   },
   "data-access-config": {
     "menu": "Data Access",
@@ -732,6 +733,14 @@
       "approved-final-help": "If not final, an approved data access request can be reinstated to its previous state.",
       "rejected-final": "'Rejected' state is final",
       "rejected-final-help": "If not final, a rejected data access request can be reinstated to its previous state."
+    },
+    "syntax-error": {
+      "definition": "Form definition is not a valid document, please revise and correct the errors.",
+      "schema": "Form schema is not a valid document, please revise and correct the errors."
+    },
+    "parse-error": {
+      "definition": "Form definition is not a valid document, please contact your administrator to configure the form definition.",
+      "schema": "Form schema is not a valid document, please contact your administrator to configure the form schema."
     }
   },
   "comment": {
