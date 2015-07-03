@@ -115,7 +115,7 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
       try {
         Mica.DatasetVariableAggregationDto tableAggDto = dtos.asDto(table, futureResult.get()).build();
         builder.add(tableAggDto);
-        mergeAggregations(aggDto, tableAggDto);
+        CombinedStatistics.mergeAggregations(aggDto, tableAggDto);
       } catch(Exception e) {
         log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
         builder.add(dtos.asDto(table, null).build());
@@ -147,91 +147,6 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
   @Override
   public void setVariableName(String variableName) {
     this.variableName = variableName;
-  }
-
-  private void mergeAggregations(Mica.DatasetVariableAggregationsDto.Builder aggDto,
-    Mica.DatasetVariableAggregationDto tableAggDto) {
-    mergeAggregationFrequencies(aggDto, tableAggDto);
-    mergeAggregationStatistics(aggDto, tableAggDto);
-    aggDto.setTotal(aggDto.getTotal() + tableAggDto.getTotal());
-    aggDto.setN(aggDto.getN() + tableAggDto.getN());
-  }
-
-  private void mergeAggregationFrequencies(Mica.DatasetVariableAggregationsDto.Builder aggDto,
-    Mica.DatasetVariableAggregationDto tableAggDto) {
-    if(tableAggDto.getFrequenciesCount() == 0) return;
-
-    for(Mica.FrequencyDto tableFreq : tableAggDto.getFrequenciesList()) {
-      boolean found = false;
-      for(int i = 0; i < aggDto.getFrequenciesCount(); i++) {
-        Mica.FrequencyDto freq = aggDto.getFrequencies(i);
-        if(freq.getValue().equals(tableFreq.getValue())) {
-          aggDto.setFrequencies(i, freq.toBuilder().setCount(freq.getCount() + tableFreq.getCount()).build());
-          found = true;
-          break;
-        }
-      }
-      if(!found) {
-        aggDto.addFrequencies(tableFreq.toBuilder());
-      }
-    }
-  }
-
-  private void mergeAggregationStatistics(Mica.DatasetVariableAggregationsDto.Builder aggDto,
-    Mica.DatasetVariableAggregationDto tableAggDto) {
-    if(!tableAggDto.hasStatistics()) return;
-
-    if(!aggDto.hasStatistics()) {
-      aggDto.setStatistics(tableAggDto.getStatistics().toBuilder());
-    } else {
-
-      Mica.StatisticsDto stats = aggDto.getStatistics();
-      Mica.StatisticsDto tableStats = tableAggDto.getStatistics();
-
-      int count = aggDto.getN() + tableAggDto.getN();
-
-      if (count > 0) {
-        Mica.StatisticsDto.Builder builder = aggDto.getStatistics().toBuilder();
-
-        float sum = (stats.hasSum() ? stats.getSum() : 0) + (tableStats.hasSum() ? tableStats.getSum() : 0);
-        builder.setSum(sum);
-        float mean = 0;
-        if(count > 0) builder.setMean(mean = sum / count);
-
-        if(tableStats.hasMin() && tableStats.getMin() != Float.POSITIVE_INFINITY) {
-          builder.setMin(stats.hasMin() ? java.lang.Math.min(stats.getMin(), tableStats.getMin()) : tableStats.getMin());
-        }
-        if(tableStats.hasMax() && tableStats.getMax() != Float.NEGATIVE_INFINITY) {
-          builder.setMax(stats.hasMax() ? java.lang.Math.max(stats.getMax(), tableStats.getMax()) : tableStats.getMax());
-        }
-        if(tableStats.hasSumOfSquares()) {
-          builder
-            .setSumOfSquares((stats.hasSumOfSquares() ? 0 : stats.getSumOfSquares()) + tableStats.getSumOfSquares());
-        }
-
-        // ESSG = error sum of squares within each group = variance * (n-1)
-        // ESS = error sum of squares = sum(var(i) * (n(i)-1))
-        float essg = (stats.hasVariance() ? stats.getVariance() : 0) * (aggDto.getN() - 1);
-        float tableEssg = (tableStats.hasVariance() ? tableStats.getVariance() : 0) * (tableAggDto.getN() - 1);
-        float ess = essg + tableEssg;
-
-        // GM = grand mean = sum(n(i) * mean(i))
-        float tableMean = tableStats.hasMean() ? tableStats.getMean() : 0;
-        float gm = (mean * aggDto.getN() + tableMean * tableAggDto.getN()) / count;
-
-        // GSS = group sum of squares = (mean(i) - gm)^2 * n(i)
-        float gss = Double.valueOf(java.lang.Math.pow(mean - gm, 2)).floatValue() * aggDto.getN();
-        float tableGss = Double.valueOf(java.lang.Math.pow(tableMean - gm, 2)).floatValue() * tableAggDto.getN();
-        float tgss = gss + tableGss;
-
-        // GV = grand variance
-        float gv = count == 1 ? 0 :(ess - tgss) / (count - 1);
-        builder.setVariance(gv);
-        builder.setStdDeviation(Double.valueOf(java.lang.Math.pow(gv, 0.5)).floatValue());
-
-        aggDto.setStatistics(builder);
-      }
-    }
   }
 
   @Component
