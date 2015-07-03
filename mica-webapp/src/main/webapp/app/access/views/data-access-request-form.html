@@ -24,31 +24,34 @@
     </ol>
   </h3>
 
-  <div class="pull-right">
-    <a ng-click="cancel()" type="button" class="btn btn-default">
-      <span translate>cancel</span>
-    </a>
-
-    <a ng-click="save()" type="button" class="btn btn-primary">
-      <span translate>save</span>
-    </a>
-
-    <a ng-click="validate()" type="button" class="btn btn-info">
-      <span translate>validate</span>
-    </a>
-  </div>
-
-  <div class="clearfix"></div>
-
   <obiba-alert id="DataAccessRequestEditController"></obiba-alert>
 
-  <form name="requestForm" ng-submit="submit(requestForm)">
-    <div sf-model="form.model" sf-form="form.definition" sf-schema="form.schema" required="true"></div>
-    <h2 translate>data-access-request.documents</h2>
-    <p translate>data-access-request.documents-help</p>
-    <div class="form-group">
-      <attachment-input files="dataAccessRequest.attachments" multiple="true"></attachment-input>
+  <div ng-if="validForm">
+
+    <div class="pull-right">
+      <a ng-click="cancel()" type="button" class="btn btn-default">
+        <span translate>cancel</span>
+      </a>
+
+      <a ng-click="save()" type="button" class="btn btn-primary">
+        <span translate>save</span>
+      </a>
+
+      <a ng-click="validate()" type="button" class="btn btn-info">
+        <span translate>validate</span>
+      </a>
     </div>
-  </form>
+
+    <div class="clearfix"></div>
+
+    <form name="requestForm" ng-submit="submit(requestForm)">
+      <div sf-model="form.model" sf-form="form.definition" sf-schema="form.schema" required="true"></div>
+      <h2 translate>data-access-request.documents</h2>
+      <p translate>data-access-request.documents-help</p>
+      <div class="form-group">
+        <attachment-input files="dataAccessRequest.attachments" multiple="true"></attachment-input>
+      </div>
+    </form>
+  </div>
 
 </div>

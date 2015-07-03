@@ -25,6 +25,12 @@ mica.dataAccesConfig
     function (BrowserDetector) {
       return {
 
+        ParseResult: {
+          VALID: 1,
+          DEFINITION: 0,
+          SCHEMA: -1
+        },
+
         /**
          * HACK until angular-ui-ce can config path settings
          */
@@ -71,22 +77,34 @@ mica.dataAccesConfig
           }
         },
 
+        parseJsonSafely: function(json, defaultValue) {
+          try {
+            return JSON.parse(json);
+          } catch (e) {
+            return defaultValue;
+          }
+        },
+
         prettifyJson: function (jsonData) {
           var str = typeof jsonData === 'string' ? jsonData : JSON.stringify(jsonData, undefined, 2);
           return str;
         },
 
-        isFormValid: function (dataAccessForm) {
-          var isJsonValid = function (json) {
-            try {
-              JSON.parse(json);
-            } catch (e) {
-              return false;
-            }
-            return true;
-          };
+        isJsonValid: function (json) {
+          try {
+            JSON.parse(json);
+          } catch (e) {
+            return false;
+          }
+          return true;
+        },
 
-          return isJsonValid(dataAccessForm.definition) && isJsonValid(dataAccessForm.schema);
+        isFormValid: function(dataAccessForm) {
+          var result = this.isJsonValid(dataAccessForm.definition) ?
+            (this.isJsonValid(dataAccessForm.schema) ? this.ParseResult.VALID : this.ParseResult.SCHEMA) :
+            this.ParseResult.DEFINITION;
+
+          return result;
         }
       };
     }]);

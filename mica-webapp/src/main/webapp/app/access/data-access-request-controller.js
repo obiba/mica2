@@ -69,6 +69,7 @@ mica.dataAccessRequest
       'DataAccessRequestService',
       'DataAccessRequestStatusResource',
       'DataAccessFormResource',
+      'DataAccessFormService',
       'DataAccessRequestCommentsResource',
       'DataAccessRequestCommentResource',
       'AlertService',
@@ -84,6 +85,7 @@ mica.dataAccessRequest
               DataAccessRequestService,
               DataAccessRequestStatusResource,
               DataAccessFormResource,
+              DataAccessFormService,
               DataAccessRequestCommentsResource,
               DataAccessRequestCommentResource,
               AlertService,
@@ -158,19 +160,47 @@ mica.dataAccessRequest
       $scope.deleteComment = deleteComment;
       $scope.getStatusHistoryInfoId = DataAccessRequestService.getStatusHistoryInfoId;
       $scope.getStatusHistoryInfo = DataAccessRequestService.getStatusHistoryInfo();
-
+      $scope.validForm = true;
 
       var getRequest = function () {
         return DataAccessRequestResource.get({id: $routeParams.id}, function onSuccess(request) {
-          $scope.form.model = request.content ? JSON.parse(request.content) : {};
+          try {
+            $scope.form.model = request.content ? JSON.parse(request.content) : {};
+          } catch (e) {
+            $scope.validForm = false;
+            $scope.form.model = {};
+            AlertService.alert({
+              id: 'DataAccessRequestViewController',
+              type: 'danger',
+              msgKey: 'data-access-request.parse-error'
+            });
+          }
 
           // Retrieve form data
           DataAccessFormResource.get(
             function onSuccess(dataAccessForm) {
-              $scope.form.definition = JSON.parse(dataAccessForm.definition);
-              $scope.form.schema = JSON.parse(dataAccessForm.schema);
-              $scope.form.schema.readonly = true;
+              $scope.form.definition = DataAccessFormService.parseJsonSafely(dataAccessForm.definition, []);
+              $scope.form.schema = DataAccessFormService.parseJsonSafely(dataAccessForm.schema, {});
 
+              if ($scope.form.definition.length === 0) {
+                $scope.validForm = false;
+                $scope.form.definition = [];
+                AlertService.alert({
+                  id: 'DataAccessRequestViewController',
+                  type: 'danger',
+                  msgKey: 'data-access-config.parse-error.definition'
+                });
+              }
+              if (Object.getOwnPropertyNames($scope.form.schema).length === 0) {
+                $scope.validForm = false;
+                $scope.form.schema = {readonly: true};
+                AlertService.alert({
+                  id: 'DataAccessRequestViewController',
+                  type: 'danger',
+                  msgKey: 'data-access-config.parse-error.schema'
+                });
+              }
+              $scope.form.schema.readonly = true;
               $scope.$broadcast('schemaFormRedraw');
             },
             onError
@@ -290,6 +320,7 @@ mica.dataAccessRequest
     'DataAccessRequestsResource',
     'DataAccessRequestResource',
     'DataAccessFormResource',
+    'DataAccessFormService',
     'AlertService',
     'ServerErrorUtils',
     'Session',
@@ -299,6 +330,7 @@ mica.dataAccessRequest
               DataAccessRequestsResource,
               DataAccessRequestResource,
               DataAccessFormResource,
+              DataAccessFormService,
               AlertService,
               ServerErrorUtils,
               Session,
@@ -332,7 +364,7 @@ mica.dataAccessRequest
       };
 
       var cancel = function() {
-        $location.path('/data-access-request' + ($scope.dataAccessRequest.id ? '/' + $scope.dataAccessRequest.id : 's')).replace();
+        $location.path('/data-access-request' + ($routeParams.id ? '/' + $routeParams.id : 's')).replace();
       };
 
       var save = function() {
@@ -350,27 +382,58 @@ mica.dataAccessRequest
       // Retrieve form data
       DataAccessFormResource.get(
         function onSuccess(dataAccessForm) {
-          $scope.form.definition = JSON.parse(dataAccessForm.definition);
-          $scope.form.schema = JSON.parse(dataAccessForm.schema);
+          $scope.form.definition = DataAccessFormService.parseJsonSafely(dataAccessForm.definition, []);
+          $scope.form.schema = DataAccessFormService.parseJsonSafely(dataAccessForm.schema, {});
+          if ($scope.form.definition.length === 0) {
+            $scope.form.definition = [];
+            $scope.validForm = false;
+            AlertService.alert({
+              id: 'DataAccessRequestEditController',
+              type: 'danger',
+              msgKey: 'data-access-config.parse-error.definition'
+            });
+          }
+          if (Object.getOwnPropertyNames($scope.form.schema).length === 0) {
+            $scope.form.schema = {};
+            $scope.validForm = false;
+            AlertService.alert({
+              id: 'DataAccessRequestEditController',
+              type: 'danger',
+              msgKey: 'data-access-config.parse-error.schema'
+            });
+          }
 
-          $scope.dataAccessRequest = $routeParams.id ?
-            DataAccessRequestResource.get({id: $routeParams.id}, function onSuccess(request) {
-              $scope.form.model = request.content ? JSON.parse(request.content) : {};
-              $scope.canEdit = DataAccessRequestService.actions.canEdit(request);
-              $scope.form.schema.readonly = !$scope.canEdit;
-              $scope.$broadcast('schemaFormRedraw');
+          if ($scope.validForm) {
+            $scope.dataAccessRequest = $routeParams.id ?
+              DataAccessRequestResource.get({id: $routeParams.id}, function onSuccess(request) {
+                try {
+                  $scope.form.model = request.content ? JSON.parse(request.content) : {};
+                } catch (e) {
+                  $scope.form.model = {};
+                  AlertService.alert({
+                    id: 'DataAccessRequestEditController',
+                    type: 'danger',
+                    msgKey: 'data-access-request.parse-error'
+                  });
+                }
 
-              request.attachments = request.attachments || [];
-              return request;
-            }) : {
+                $scope.canEdit = DataAccessRequestService.actions.canEdit(request);
+                $scope.form.schema.readonly = !$scope.canEdit;
+                $scope.$broadcast('schemaFormRedraw');
+
+                request.attachments = request.attachments || [];
+                return request;
+              }) : {
               applicant: Session.login,
               status: DataAccessRequestService.status.OPENED,
               attachments: []
-          };
+            };
+          }
         },
         onError
         );
 
+      $scope.validForm = true;
       $scope.requestId = $routeParams.id;
       $scope.newRequest = $routeParams.id ? false : true;
       $scope.cancel = cancel;
