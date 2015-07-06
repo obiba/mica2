@@ -97,6 +97,8 @@ public class DataAccessRequest extends AbstractAuditableDocument implements Atta
 
   @Override
   public void setAttachments(List<Attachment> attachments) {
+    if(attachments == null) attachments = Lists.newArrayList();
+
     this.removedAttachments = Sets.difference(Sets.newHashSet(this.attachments), Sets.newHashSet(attachments));
     this.attachments = attachments;
   }
