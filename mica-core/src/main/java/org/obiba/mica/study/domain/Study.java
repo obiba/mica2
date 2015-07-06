@@ -269,8 +269,8 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
   }
 
   @Override
-  public void addAttachment(@NotNull Attachment anAttachment) {
-    attachments.add(anAttachment);
+  public void addAttachment(@NotNull Attachment attachment) {
+    attachments.add(attachment);
   }
 
   @Override
@@ -279,10 +279,12 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
       attachments = Lists.newArrayList();
 
     removedAttachments = Sets.difference(Sets.newHashSet(this.attachments), Sets.newHashSet(attachments));
+
     this.attachments = attachments;
   }
 
   @Override
+  @JsonIgnore
   public List<Attachment> removedAttachments() {
     return Lists.newArrayList(removedAttachments);
   }
