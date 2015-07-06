@@ -5,7 +5,7 @@
   <!-- console log config -->
   <include resource="org/springframework/boot/logging/logback/base.xml"/>
 
-  <logger name="org.obiba" level="debug"/>
+  <logger name="org.obiba" level="info"/>
 
   <!--<logger name="com.codahale.metrics" level="warn"/>-->
   <!--<logger name="com.ryantenney" level="warn"/>-->
@@ -17,7 +17,7 @@
   <!--<logger name="org.thymeleaf" level="warn"/>-->
   <!--<logger name="org.springframework" level="info"/>-->
   <!--<logger name="org.bson" level="warn"/>-->
-  <!--<logger name="org.glassfish" level="warn"/>-->
+  <logger name="org.glassfish" level="warn"/>
   <!--<logger name="com.fasterxml" level="warn"/>-->
   <!--<logger name="com.google.protobuf" level="warn"/>-->
   <!--<logger name="org.apache.shiro" level="trace"/>-->
