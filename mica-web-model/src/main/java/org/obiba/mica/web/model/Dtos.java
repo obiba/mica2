@@ -27,6 +27,7 @@ import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Term;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.obiba.opal.web.model.Math;
+import org.obiba.opal.web.model.Search;
 import org.obiba.shiro.realm.ObibaRealm.Subject;
 import org.springframework.stereotype.Component;
 
@@ -234,6 +235,11 @@ public class Dtos {
   }
 
   @NotNull
+  public Mica.DatasetVariableContingencyDto.Builder asContingencyDto(StudyTable studyTable, @Nullable Search.QueryResultDto results) {
+    return datasetDtos.asContingencyDto(studyTable, results);
+  }
+
+  @NotNull
   public Mica.DataAccessRequestDto asDto(@NotNull DataAccessRequest request) {
     return dataAccessRequestDtos.asDto(request);
   }
@@ -292,4 +298,5 @@ public class Dtos {
   public Mica.UserProfileDto asDto(Subject subject) {
     return userProfileDtos.asDto(subject);
   }
+
 }

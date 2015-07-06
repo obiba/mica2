@@ -11,8 +11,10 @@
 package org.obiba.mica.dataset.search.rest.study;
 
 import javax.inject.Inject;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.core.domain.StudyTable;
@@ -22,11 +24,13 @@ import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetResource;
 import org.obiba.mica.dataset.service.StudyDatasetService;
 import org.obiba.mica.web.model.Mica;
-import org.obiba.opal.web.model.Search;
+import org.obiba.opal.web.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import com.google.common.base.Strings;
 
 @Component
 @Scope("request")
@@ -72,6 +76,23 @@ public class PublishedStudyDatasetVariableResource extends AbstractPublishedData
     } catch(Exception e) {
       log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
       return dtos.asDto(studyTable, null).build();
+    }
+  }
+
+  @GET
+  @Path("/contingency")
+  public Mica.DatasetVariableContingencyDto getContingency(@QueryParam("by") String crossVariable) {
+    StudyDataset dataset = getDataset(StudyDataset.class, datasetId);
+    StudyTable studyTable = dataset.getStudyTable();
+
+    if(Strings.isNullOrEmpty(crossVariable))
+      throw new BadRequestException("Cross variable name is required for the contingency table");
+
+    try {
+      return dtos.asContingencyDto(studyTable, datasetService.getContingencyTable(dataset, variableName, crossVariable)).build();
+    } catch(Exception e) {
+      log.warn("Unable to retrieve contingency table: " + e.getMessage(), e);
+      return dtos.asContingencyDto(studyTable, null).build();
     }
   }
 
