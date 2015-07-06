@@ -510,11 +510,16 @@ message DatasetVariableAggregationsDto {
 
 message DatasetVariableContingencyDto {
   required DatasetDto.StudyTableDto studyTable = 1;
-  required int32 total = 2;
-  required int32 n = 3;
-  repeated FrequencyDto frequencies = 4;
-  optional StatisticsDto statistics = 5;
-  repeated DatasetVariableAggregationDto aggregations = 6;
+  repeated DatasetVariableAggregationDto aggregations = 2;
+  required DatasetVariableAggregationDto all = 3;
+}
+
+message DatasetVariableContingenciesDto {
+  repeated DatasetVariableContingencyDto contingencies = 1;
+//  required int32 total = 2;
+//  required int32 n = 3;
+//  repeated FrequencyDto frequencies = 4;
+//  optional StatisticsDto statistics = 5;
 }
 
 message CommentDto {

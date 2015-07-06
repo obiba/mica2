@@ -277,23 +277,25 @@ class DatasetDtos {
     @Nullable Search.QueryResultDto results) {
     Mica.DatasetVariableContingencyDto.Builder crossDto = Mica.DatasetVariableContingencyDto.newBuilder();
     crossDto.setStudyTable(asDto(studyTable));
+    Mica.DatasetVariableAggregationDto.Builder allAggBuilder = Mica.DatasetVariableAggregationDto.newBuilder();
 
     if(results == null) {
-      crossDto.setN(0);
-      crossDto.setTotal(0);
+      allAggBuilder.setN(0);
+      allAggBuilder.setTotal(0);
+      crossDto.setAll(allAggBuilder);
       return crossDto;
     }
 
-    crossDto.setTotal(results.getTotalHits());
+    allAggBuilder.setTotal(results.getTotalHits());
 
     results.getFacetsList().forEach(facet -> {
       if(facet.hasFacet()) {
-        if(facet.getFacet().equals("_total")) {
-          crossDto.setN(facet.getFilters(0).getCount());
-          crossDto.setTotal(results.getTotalHits());
-          facet.getFrequenciesList().forEach(freq -> crossDto.addFrequencies(asDto(freq)));
+        if("_total".equals(facet.getFacet())) {
+          allAggBuilder.setN(facet.getFilters(0).getCount());
+          allAggBuilder.setTotal(results.getTotalHits());
+          facet.getFrequenciesList().forEach(freq -> allAggBuilder.addFrequencies(asDto(freq)));
           if(facet.hasStatistics()) {
-            crossDto.setStatistics(asDto(facet.getStatistics()));
+            allAggBuilder.setStatistics(asDto(facet.getStatistics()));
           }
         } else {
           Mica.DatasetVariableAggregationDto.Builder aggBuilder = Mica.DatasetVariableAggregationDto.newBuilder();
@@ -308,6 +310,8 @@ class DatasetDtos {
         }
       }
     });
+
+    crossDto.setAll(allAggBuilder);
 
     return crossDto;
   }

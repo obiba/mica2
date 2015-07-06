@@ -16,6 +16,7 @@ import java.util.concurrent.Future;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.magma.NoSuchValueTableException;
@@ -127,6 +128,29 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
     return aggDto.build();
   }
 
+  @GET
+  @Path("/contingency")
+  public Mica.DatasetVariableContingenciesDto getContingency(@QueryParam("by") String crossVariable) {
+    HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
+    Mica.DatasetVariableContingenciesDto.Builder crossDto = Mica.DatasetVariableContingenciesDto.newBuilder();
+
+    List<Future<Search.QueryResultDto>> results = Lists.newArrayList();
+    dataset.getStudyTables().forEach(table -> results.add(helper.getContingencyTable(dataset, variableName, crossVariable, table)));
+
+    for(int i = 0; i < dataset.getStudyTables().size(); i++) {
+      StudyTable table = dataset.getStudyTables().get(i);
+      Future<Search.QueryResultDto> futureResult = results.get(i);
+      try {
+        crossDto.addContingencies(dtos.asContingencyDto(table, futureResult.get()));
+      } catch(Exception e) {
+        log.warn("Unable to retrieve contingency table: " + e.getMessage(), e);
+        crossDto.addContingencies(dtos.asContingencyDto(table, null));
+      }
+    }
+
+    return crossDto.build();
+  }
+
   /**
    * Get the harmonized variable summaries for each of the study.
    *
@@ -151,6 +175,7 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
 
   @Component
   public static class Helper {
+
     @Inject
     private HarmonizationDatasetService datasetService;
 
@@ -163,6 +188,16 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
           .getWrappedDto());
       } catch(Exception e) {
         log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
+        return new AsyncResult<>(null);
+      }
+    }
+
+    @Async
+    private Future<Search.QueryResultDto> getContingencyTable(HarmonizationDataset dataset, String variableName, String crossVariableName, StudyTable table) {
+      try {
+        return new AsyncResult<>(datasetService.getContingencyTable(table, variableName, crossVariableName));
+      } catch(Exception e) {
+        log.warn("Unable to retrieve contingency statistics: " + e.getMessage(), e);
         return new AsyncResult<>(null);
       }
     }
