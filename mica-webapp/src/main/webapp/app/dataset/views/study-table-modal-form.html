@@ -24,15 +24,70 @@
 
       <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
 
-      <div form-input name="studyTable.studyId" model="studyTable.studyId" label="study.label" required="true"></div>
+      <div class="form-group">
+        <label class="control-label">
+          <span translate>study.label</span>
+          <span>*</span>
+        </label>
+        <ui-select theme="bootstrap" ng-model="selected.study" reset-search-input="true" required="true">
+          <ui-select-match>{{$select.selected.id}}</ui-select-match>
+          <ui-select-choices repeat="study in studies| filter: {id: $select.search}">
+            <span ng-bind-html="study.id | highlight: $select.search"></span>
+          </ui-select-choices>
+        </ui-select>
+      </div>
 
-      <div form-input name="studyTable.populationId" model="studyTable.populationId" label="study.population" required="true"></div>
+      <div class="form-group">
+        <label class="control-label">
+          <span translate>study.population</span>
+          <span>*</span>
+        </label>
+        <ui-select theme="bootstrap" ng-model="selected.study.population" reset-search-input="true" required="true">
+          <ui-select-match>{{$select.selected.id}}</ui-select-match>
+          <ui-select-choices repeat="population in selected.study.populationSummaries | filter: $select.search">
+            <span ng-bind-html="population.id | highlight: $select.search"></span> - <span ng-bind-html="population.name[0].value | highlight: $select.search"></span>
+          </ui-select-choices>
+        </ui-select>
+      </div>
 
-      <div form-input name="studyTable.dataCollectionEventId" model="studyTable.dataCollectionEventId" label="study.data-collection-event" required="true"></div>
+      <div class="form-group">
+        <label class="control-label">
+          <span translate>study.data-collection-event</span>
+          <span>*</span>
+        </label>
+        <ui-select theme="bootstrap" ng-model="selected.study.population.dataCollectionEvent" reset-search-input="true" required="true">
+          <ui-select-match>{{$select.selected.id}}</ui-select-match>
+          <ui-select-choices repeat="population in selected.study.population.dataCollectionEventSummaries | filter: $select.search">
+            <span ng-bind-html="population.id | highlight: $select.search"></span> - <span ng-bind-html="population.name[0].value | highlight: $select.search"></span>
+          </ui-select-choices>
+        </ui-select>
+      </div>
 
-      <div form-input name="studyTable.project" model="studyTable.project" label="dataset.project" required="true"></div>
+      <div class="form-group">
+        <label class="control-label">
+          <span translate>dataset.project</span>
+          <span>*</span>
+        </label>
+        <ui-select theme="bootstrap" ng-model="selected.project" reset-search-input="true" required="true">
+          <ui-select-match>{{$select.selected.name}}</ui-select-match>
+          <ui-select-choices repeat="project in projects | filter: {name: $select.search}">
+            <span ng-bind-html="project.name | highlight: $select.search"></span>
+          </ui-select-choices>
+        </ui-select>
+      </div>
 
-      <div form-input name="studyTable.table" model="studyTable.table" label="dataset.table" required="true"></div>
+      <div class="form-group">
+        <label class="control-label">
+          <span translate>dataset.table</span>
+          <span>*</span>
+        </label>
+        <ui-select theme="bootstrap" ng-model="selected.project.table" reset-search-input="true" required="true">
+          <ui-select-match>{{$select.selected}}</ui-select-match>
+          <ui-select-choices repeat="table in selected.project.datasource.table | filter: $select.search">
+            <span ng-bind-html="table | highlight: $select.search"></span>
+          </ui-select-choices>
+        </ui-select>
+      </div>
 
       <div localized-input name="studyTable.name" model="studyTable.name" label="dataset.table-name" lang="tab.lang"></div>
 
