@@ -6,11 +6,27 @@
 
     <div class="row">
       <div class="col-md-6">
+        <h3 translate>config.serverIdentification</h3>
+
         <div form-input name="name" model="micaConfig.name" label="config.name" required="true"
           help="config.name-help"></div>
 
         <div form-input name="publicUrl" model="micaConfig.publicUrl" label="config.publicUrl"
           help="config.publicUrl-help"></div>
+
+        <h3 translate>config.dataSource</h3>
+
+        <div form-input name="opal" model="micaConfig.opal" label="config.opal" help="config.opal-help"
+          required="true"></div>
+
+        <div form-input name="threshold" model="micaConfig.privacyThreshold" label="config.privacyThreshold"
+          type="number"
+          required="false"
+          help="config.privacyThreshold-help"></div>
+      </div>
+
+      <div class="col-md-6">
+        <h3 translate>config.contentEdition</h3>
 
         <div class="form-group"
           ng-class="{'has-error': (form.languages.$dirty || form.saveAttempted) && form.languages.$invalid}">
@@ -29,10 +45,6 @@
 
         <div form-input name="defaultCharSet" model="micaConfig.defaultCharSet" label="config.defaultCharSet"
           required="true"></div>
-
-        <div form-input name="opal" model="micaConfig.opal" label="config.opal"
-          required="true"></div>
-
       </div>
     </div>
 

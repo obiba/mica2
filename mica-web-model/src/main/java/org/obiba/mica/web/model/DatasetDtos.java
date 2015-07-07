@@ -25,6 +25,8 @@ import org.obiba.mica.dataset.domain.DatasetCategory;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.micaConfig.domain.MicaConfig;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Term;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
@@ -49,6 +51,9 @@ class DatasetDtos {
 
   @Inject
   private TaxonomyDtos taxonomyDtos;
+
+  @Inject
+  private MicaConfigService micaConfigService;
 
   @NotNull
   Mica.DatasetDto.Builder asDtoBuilder(@NotNull StudyDataset dataset) {
@@ -289,24 +294,18 @@ class DatasetDtos {
 
     allAggBuilder.setTotal(results.getTotalHits());
 
+    MicaConfig micaConfig = micaConfigService.getConfig();
+
     results.getFacetsList().forEach(facet -> {
+      boolean privacyCheck = facet.getFilters(0).getCount() > micaConfig.getPrivacyThreshold();
       if(facet.hasFacet()) {
         if("_total".equals(facet.getFacet())) {
-          allAggBuilder.setN(facet.getFilters(0).getCount());
-          allAggBuilder.setTotal(results.getTotalHits());
-          facet.getFrequenciesList().forEach(freq -> allAggBuilder.addFrequencies(asDto(freq)));
-          if(facet.hasStatistics()) {
-            allAggBuilder.setStatistics(asDto(facet.getStatistics()));
-          }
+          addSummaryStatistics(allAggBuilder, facet, privacyCheck);
         } else {
           Mica.DatasetVariableAggregationDto.Builder aggBuilder = Mica.DatasetVariableAggregationDto.newBuilder();
-          aggBuilder.setN(facet.getFilters(0).getCount());
           aggBuilder.setTotal(results.getTotalHits());
           aggBuilder.setTerm(facet.getFacet());
-          facet.getFrequenciesList().forEach(freq -> aggBuilder.addFrequencies(asDto(freq)));
-          if(facet.hasStatistics()) {
-            aggBuilder.setStatistics(asDto(facet.getStatistics()));
-          }
+          addSummaryStatistics(aggBuilder, facet, privacyCheck);
           crossDto.addAggregations(aggBuilder);
         }
       }
@@ -315,6 +314,17 @@ class DatasetDtos {
     crossDto.setAll(allAggBuilder);
 
     return crossDto;
+  }
+
+  private void addSummaryStatistics(Mica.DatasetVariableAggregationDto.Builder aggBuilder, Search.FacetResultDto facet,
+    boolean privacyCheck) {
+    aggBuilder.setN(facet.getFilters(0).getCount());
+    if(!privacyCheck) return;
+
+    facet.getFrequenciesList().forEach(freq -> aggBuilder.addFrequencies(asDto(freq)));
+    if(facet.hasStatistics()) {
+      aggBuilder.setStatistics(asDto(facet.getStatistics()));
+    }
   }
 
   private Mica.FrequencyDto.Builder asDto(Search.FacetResultDto.TermFrequencyResultDto result) {

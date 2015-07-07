@@ -41,6 +41,7 @@ class MicaConfigDtos {
     }
 
     builder.setOpal(config.getOpal());
+    builder.setPrivacyThreshold(config.getPrivacyThreshold());
 
     if(config.getMicaVersion() != null) {
       builder.setVersion(config.getMicaVersion().toString());
@@ -59,6 +60,7 @@ class MicaConfigDtos {
 
     dto.getLanguagesList().forEach(lang -> config.getLocales().add(new Locale(lang)));
     config.setOpal(dto.getOpal());
+    if (dto.hasPrivacyThreshold()) config.setPrivacyThreshold(dto.getPrivacyThreshold());
 
     return config;
   }

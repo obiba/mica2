@@ -50,6 +50,8 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   private Version micaVersion;
 
+  private int privacyThreshold = 0;
+
   public String getName() {
     return name;
   }
@@ -130,5 +132,13 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public void setMicaVersion(Version micaVersion) {
     this.micaVersion = micaVersion;
+  }
+
+  public int getPrivacyThreshold() {
+    return privacyThreshold;
+  }
+
+  public void setPrivacyThreshold(int privacyThreshold) {
+    this.privacyThreshold = privacyThreshold;
   }
 }
