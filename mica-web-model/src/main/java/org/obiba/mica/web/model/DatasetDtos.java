@@ -252,7 +252,6 @@ class DatasetDtos {
   public Mica.DatasetVariableAggregationDto.Builder asDto(@NotNull StudyTable studyTable,
     @Nullable Math.SummaryStatisticsDto summary) {
     Mica.DatasetVariableAggregationDto.Builder aggDto = Mica.DatasetVariableAggregationDto.newBuilder();
-    aggDto.setStudyTable(asDto(studyTable));
 
     if(summary == null) return aggDto;
 
@@ -269,6 +268,8 @@ class DatasetDtos {
     } else if(summary.hasExtension(Math.BinarySummaryDto.binarySummary)) {
       aggDto = asDto(summary.getExtension(Math.BinarySummaryDto.binarySummary));
     }
+
+    aggDto.setStudyTable(asDto(studyTable));
 
     return aggDto;
   }
@@ -329,6 +330,7 @@ class DatasetDtos {
       .setMean(result.getMean()) //
       .setSum(result.getTotal()) //
       .setSumOfSquares(result.getSumOfSquares()) //
+      .setVariance(result.getVariance()) //
       .setStdDeviation(result.getStdDeviation());
   }
 
