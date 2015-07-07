@@ -10,11 +10,16 @@
 
 package org.obiba.mica.dataset.search.rest.harmonized;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
 import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.magma.NoSuchValueTableException;
@@ -98,6 +103,10 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   @GET
   @Path("/contingency")
   public Mica.DatasetVariableContingencyDto getContingency(@QueryParam("by") String crossVariable) {
+    return getContingencyDto(crossVariable);
+  }
+
+  private Mica.DatasetVariableContingencyDto getContingencyDto(String crossVariable) {
     if(Strings.isNullOrEmpty(crossVariable))
       throw new BadRequestException("Cross variable name is required for the contingency table");
 
@@ -116,7 +125,29 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
         }
       }
     }
+
     throw new NoSuchValueTableException(project, table);
+  }
+
+  @GET
+  @Path("/contingency/_export")
+  @Produces("text/csv")
+  public Response getContingencyCsv(@QueryParam("by") String crossVariable) throws IOException {
+    ByteArrayOutputStream res = new CsvContingencyWriter().write(getContingencyDto(crossVariable));
+
+    return Response.ok(res.toByteArray()).header("Content-Disposition",
+      String.format("attachment; filename=\"contingency-table-%s-%s.csv\"", variableName, crossVariable)).build();
+  }
+
+  @GET
+  @Path("/contingency/_export")
+  @Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+  public Response getContingencyExcel(@QueryParam("by") String crossVariable) throws IOException {
+    ByteArrayOutputStream res = new ExcelContingencyWriter(variableName, crossVariable)
+      .write(getContingencyDto(crossVariable));
+
+    return Response.ok(res.toByteArray()).header("Content-Disposition",
+      String.format("attachment; filename=\"contingency-table-%s-%s.xlsx\"", variableName, crossVariable)).build();
   }
 
   @Override
