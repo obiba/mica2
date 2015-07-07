@@ -117,16 +117,21 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
       StudyTable studyTable = dataset.getStudyTables().get(i);
       Future<Math.SummaryStatisticsDto> futureResult = results.get(i);
       try {
-        Mica.DatasetVariableAggregationDto tableAggDto = dtos.asDto(studyTable, futureResult.get()).build();
-        builder.add(tableAggDto);
-        CombinedStatistics.mergeAggregations(aggDto, tableAggDto);
+        builder.add(dtos.asDto(studyTable, futureResult.get()).build());
       } catch(Exception e) {
         log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
         builder.add(dtos.asDto(studyTable, null).build());
       }
     }
 
-    aggDto.addAllAggregations(builder.build());
+    List<Mica.DatasetVariableAggregationDto> aggsDto = builder.build();
+    Mica.DatasetVariableAggregationDto allAggDto = CombinedStatistics.mergeAggregations(aggsDto);
+    aggDto.setN(allAggDto.getN());
+    aggDto.setTotal(allAggDto.getTotal());
+    if (allAggDto.hasStatistics()) aggDto.setStatistics(allAggDto.getStatistics());
+    aggDto.addAllFrequencies(allAggDto.getFrequenciesList());
+
+    aggDto.addAllAggregations(aggsDto);
 
     return aggDto.build();
   }
