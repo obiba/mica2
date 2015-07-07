@@ -20,9 +20,10 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.dataset.service.StudyDatasetService;
+import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetResource;
+import org.obiba.mica.dataset.service.StudyDatasetService;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Search;
 import org.springframework.context.annotation.Scope;
@@ -62,6 +63,25 @@ public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResou
   /**
    * Get the {@link org.obiba.mica.dataset.domain.DatasetVariable}s from published index.
    *
+   * @param queryString - Elasticsearch query string 'field1: value AND field2: value'
+   * @param from
+   * @param limit
+   * @param sort
+   * @param order
+   * @return
+   */
+  @GET
+  @Path("/variables/_search")
+  public Mica.DatasetVariablesDto queryVariables(@QueryParam("query") String queryString,
+    @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit,
+    @QueryParam("sort") String sort, @QueryParam("order") String order) {
+
+    return getDatasetVariableDtos(queryString, id, DatasetVariable.Type.Study, from, limit, sort, order);
+  }
+
+  /**
+   * Get the {@link org.obiba.mica.dataset.domain.DatasetVariable}s from published index.
+   *
    * @return
    */
   @GET
@@ -69,7 +89,7 @@ public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResou
   public Mica.DatasetVariablesDto getVariables(@QueryParam("from") @DefaultValue("0") int from,
     @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
     @QueryParam("order") String order) {
-    return getDatasetVariableDtos(id, from, limit, sort, order);
+    return getDatasetVariableDtos(id, DatasetVariable.Type.Study, from, limit, sort, order);
   }
 
   @Path("/variable/{variable}")
