@@ -14,6 +14,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.FilteredQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.obiba.mica.search.rest.QueryDtoHelper;
@@ -41,6 +44,15 @@ public class QueryDtoHelperTest {
     assertThat(terms).isNotNull();
     assertThat(terms.getValuesCount()).isEqualTo(3);
     assertThat(terms.getValues(1)).isEqualTo("200");
+  }
+
+  @Test
+  public void test2() {
+    FilteredQueryBuilder query = QueryBuilders
+      .filteredQuery(QueryBuilders.queryString("name.analyzed: A_SDC_GENDER AND nature: categorical"),
+        FilterBuilders.boolFilter().must(FilterBuilders.termFilter("datasetId", "coreqx")));
+
+    System.out.println(query);
   }
 
   @Test

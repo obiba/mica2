@@ -23,6 +23,7 @@ import javax.validation.constraints.NotNull;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilders;
@@ -44,6 +45,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 
 /**
  * Retrieve the {@link org.obiba.mica.dataset.domain.Dataset} from the published dataset index.
@@ -97,10 +99,27 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
     return dtos.asDto(getDataset(clazz, datasetId));
   }
 
-  protected Mica.DatasetVariablesDto getDatasetVariableDtos(@NotNull String datasetId, int from, int limit,
-    @Nullable String sort, @Nullable String order) {
+  protected Mica.DatasetVariablesDto getDatasetVariableDtos(@NotNull String queryString, @NotNull String datasetId,
+    DatasetVariable.Type type, int from, int limit, @Nullable String sort, @Nullable String order) {
 
-    QueryBuilder query = QueryBuilders.termQuery("datasetId", datasetId);
+    return getDatasetVariableDtosInternal(queryString, datasetId, type, from, limit, sort, order);
+  }
+
+  protected Mica.DatasetVariablesDto getDatasetVariableDtos(@NotNull String datasetId, DatasetVariable.Type type, int from,
+    int limit, @Nullable String sort, @Nullable String order) {
+
+     return getDatasetVariableDtosInternal(null, datasetId, type, from, limit, sort, order);
+  }
+
+  protected Mica.DatasetVariablesDto getDatasetVariableDtosInternal(String queryString, String datasetId,
+    DatasetVariable.Type type, int from, int limit, @Nullable String sort,
+    @Nullable String order) {
+
+    QueryBuilder query = QueryBuilders.filteredQuery( //
+      Strings.isNullOrEmpty(queryString) ? QueryBuilders.matchAllQuery() : QueryBuilders.queryString(queryString), //
+      FilterBuilders.boolFilter() //
+        .must(FilterBuilders.termFilter("datasetId", datasetId)) //
+        .must(FilterBuilders.termFilter("variableType", type.toString().toLowerCase()))); //
 
     SearchRequestBuilder search = new SearchRequestBuilder(client) //
       .setIndices(VariableIndexerImpl.PUBLISHED_VARIABLE_INDEX) //
