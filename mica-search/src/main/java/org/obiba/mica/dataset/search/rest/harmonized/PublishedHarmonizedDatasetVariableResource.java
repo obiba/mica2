@@ -11,8 +11,10 @@
 package org.obiba.mica.dataset.search.rest.harmonized;
 
 import javax.inject.Inject;
+import javax.ws.rs.BadRequestException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.magma.NoSuchValueTableException;
@@ -28,6 +30,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import com.google.common.base.Strings;
 
 /**
  * Harmonized variable resource: variable of an harmonization dataset, implementing the dataschema variable with the same name.
@@ -85,6 +89,28 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
         } catch(Exception e) {
           log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
           return dtos.asDto(studyTable, null).build();
+        }
+      }
+    }
+    throw new NoSuchValueTableException(project, table);
+  }
+
+  @GET
+  @Path("/contingency")
+  public Mica.DatasetVariableContingencyDto getContingency(@QueryParam("by") String crossVariable) {
+    if(Strings.isNullOrEmpty(crossVariable))
+      throw new BadRequestException("Cross variable name is required for the contingency table");
+
+    HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
+
+    for(StudyTable studyTable : dataset.getStudyTables()) {
+      if(studyTable.isFor(studyId, project, table)) {
+        try {
+          return dtos.asContingencyDto(studyTable,
+            datasetService.getContingencyTable(studyTable, variableName, crossVariable)).build();
+        } catch(Exception e) {
+          log.warn("Unable to retrieve contingency table: " + e.getMessage(), e);
+          return dtos.asContingencyDto(studyTable, null).build();
         }
       }
     }

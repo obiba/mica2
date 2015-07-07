@@ -24,7 +24,7 @@ import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetResource;
 import org.obiba.mica.dataset.service.StudyDatasetService;
 import org.obiba.mica.web.model.Mica;
-import org.obiba.opal.web.model.*;
+import org.obiba.opal.web.model.Search;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -82,11 +82,11 @@ public class PublishedStudyDatasetVariableResource extends AbstractPublishedData
   @GET
   @Path("/contingency")
   public Mica.DatasetVariableContingencyDto getContingency(@QueryParam("by") String crossVariable) {
-    StudyDataset dataset = getDataset(StudyDataset.class, datasetId);
-    StudyTable studyTable = dataset.getStudyTable();
-
     if(Strings.isNullOrEmpty(crossVariable))
       throw new BadRequestException("Cross variable name is required for the contingency table");
+
+    StudyDataset dataset = getDataset(StudyDataset.class, datasetId);
+    StudyTable studyTable = dataset.getStudyTable();
 
     try {
       return dtos.asContingencyDto(studyTable, datasetService.getContingencyTable(dataset, variableName, crossVariable)).build();
