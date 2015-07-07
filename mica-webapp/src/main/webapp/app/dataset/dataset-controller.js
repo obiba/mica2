@@ -26,12 +26,80 @@ mica.dataset
       });
     }])
 
-  .controller('StudyDatasetEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', 'StudyDatasetResource', 'DraftStudyDatasetsResource', 'StudyDatasetPublicationResource', 'MicaConfigResource', 'FormServerValidation',
+  .controller('StudyDatasetEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', 'StudyDatasetResource', 'DraftStudyDatasetsResource', 'StudyDatasetPublicationResource', 'MicaConfigResource', 'FormServerValidation', 'StudyStatesResource', 'StudyStateProjectsResource',
 
-    function ($rootScope, $scope, $routeParams, $log, $locale, $location, StudyDatasetResource, DraftStudyDatasetsResource, StudyDatasetPublicationResource, MicaConfigResource, FormServerValidation) {
+    function ($rootScope, $scope, $routeParams, $log, $locale, $location, StudyDatasetResource, DraftStudyDatasetsResource, StudyDatasetPublicationResource, MicaConfigResource, FormServerValidation, StudyStatesResource, StudyStateProjectsResource) {
+      $scope.studies = [];
+      $scope.projects = [];
+      $scope.selected = {};
+      $scope.studyTable = {};
 
-      $scope.dataset = $routeParams.id ?
-        StudyDatasetResource.get({id: $routeParams.id}) : {published: false, 'obiba.mica.StudyDatasetDto.type': {}};
+      var populateStudyTable = function (studyTable) {
+        if (studyTable !== {}) {
+          $scope.selected.study = {
+            id: studyTable.studyId,
+            population: {
+              id: studyTable.populationId,
+              dataCollectionEvent: {id: studyTable.dataCollectionEventId}
+            }
+          };
+
+          $scope.selected.project = {name: studyTable.project, table: studyTable.table};
+        }
+
+        StudyStatesResource.query().$promise.then(function (studies) {
+          $scope.studies = studies.sort(function (a, b) { return a.id.localeCompare(b.id); });
+
+          var selectedPopulation, selectedDce, selectedStudy = $scope.studies.filter(function (s) {return s.id === studyTable.studyId; })[0];
+
+          if (selectedStudy) {
+            $scope.selected.study = selectedStudy;
+            selectedPopulation = selectedStudy.populationSummaries.filter(function (p) { return p.id === studyTable.populationId; })[0];
+
+            if (selectedPopulation) {
+              $scope.selected.study.population = selectedPopulation;
+
+              selectedDce = selectedPopulation.dataCollectionEventSummaries.filter(function (dce) { return dce.id === studyTable.dataCollectionEventId; })[0];
+
+              if (selectedDce) {
+                $scope.selected.study.population.dataCollectionEvent = selectedDce;
+              }
+            }
+          }
+        });
+      };
+
+      if ($routeParams.id) {
+        $scope.dataset = StudyDatasetResource.get({id: $routeParams.id}, function (dataset) {
+          $scope.studyTable = dataset['obiba.mica.StudyDatasetDto.type'].studyTable;
+          populateStudyTable($scope.studyTable);
+        });
+      } else {
+        $scope.dataset = {
+          published: false, 'obiba.mica.StudyDatasetDto.type': {studyTable: {}}
+        };
+
+        populateStudyTable($scope.studyTable);
+      }
+
+      $scope.$watch('selected.study', function () {
+        if ($scope.selected.study && $scope.selected.study.id) {
+          StudyStateProjectsResource.query({id: $scope.selected.study.id}).$promise.then(function (projects) {
+            $scope.projects = projects;
+            var selectedTable, selectedProject = $scope.projects.filter(function (p) {return p.name === $scope.studyTable.project; })[0];
+
+            if (selectedProject) {
+              $scope.selected.project = selectedProject;
+
+              selectedTable = selectedProject.datasource.table.filter(function (t) {return t === $scope.studyTable.table; })[0];
+
+              if (selectedTable) {
+                $scope.selected.project.table = selectedTable;
+              }
+            }
+          });
+        }
+      });
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
@@ -45,6 +113,15 @@ mica.dataset
           $scope.form.saveAttempted = true;
           return;
         }
+
+        angular.extend($scope.dataset['obiba.mica.StudyDatasetDto.type'].studyTable, {
+          studyId: $scope.selected.study.id,
+          populationId: $scope.selected.study.population.id,
+          dataCollectionEventId: $scope.selected.study.population.dataCollectionEvent.id,
+          project: $scope.selected.project.name,
+          table: $scope.selected.project.table
+        });
+
         if ($scope.dataset.id) {
           updateDataset();
         } else {
@@ -273,19 +350,83 @@ mica.dataset
 
     }])
 
-  .controller('StudyTableModalController', ['$scope', '$modalInstance', '$log', 'MicaConfigResource', 'studyTable', 'tab',
-    function ($scope, $modalInstance, $log, MicaConfigResource, studyTable, tab) {
+  .controller('StudyTableModalController', ['$scope', '$modalInstance', '$log', 'MicaConfigResource', 'StudyStatesResource', 'StudyStateProjectsResource', 'studyTable', 'tab',
+    function ($scope, $modalInstance, $log, MicaConfigResource, StudyStatesResource, StudyStateProjectsResource, studyTable, tab) {
+      $scope.studies = [];
+      $scope.projects = [];
+      $scope.selected = {};
       $scope.studyTable = $.extend(true, {}, studyTable);
       $scope.tab = tab;
 
+      if (studyTable && studyTable !== {}) {
+        $scope.selected.study = {
+          id: studyTable.studyId,
+          population: {
+            id: studyTable.populationId,
+            dataCollectionEvent: {id: studyTable.dataCollectionEventId}
+          }
+        };
+
+        $scope.selected.project = {name: studyTable.project, table: studyTable.table};
+      }
+
+      StudyStatesResource.query().$promise.then(function (studies) {
+        $scope.studies = studies.sort(function (a, b) { return a.id.localeCompare(b.id); });
+
+        var selectedPopulation, selectedDce, selectedStudy = $scope.studies.filter(function (s) {return s.id === studyTable.studyId; })[0];
+
+        if (selectedStudy) {
+          $scope.selected.study = selectedStudy;
+          selectedPopulation = selectedStudy.populationSummaries.filter(function (p) { return p.id === studyTable.populationId; })[0];
+
+          if (selectedPopulation) {
+            $scope.selected.study.population = selectedPopulation;
+
+            selectedDce = selectedPopulation.dataCollectionEventSummaries.filter(function (dce) { return dce.id === studyTable.dataCollectionEventId; })[0];
+
+            if (selectedDce) {
+              $scope.selected.study.population.dataCollectionEvent = selectedDce;
+            }
+          }
+        }
+      });
+
+      $scope.$watch('selected.study', function () {
+        if ($scope.selected.study && $scope.selected.study.id) {
+          StudyStateProjectsResource.query({id: $scope.selected.study.id}).$promise.then(function (projects) {
+            $scope.projects = projects;
+            var selectedTable, selectedProject = $scope.projects.filter(function (p) {return p.name === studyTable.project; })[0];
+
+            if (selectedProject) {
+              $scope.selected.project = selectedProject;
+
+              selectedTable = selectedProject.datasource.table.filter(function (t) {return t === studyTable.table; })[0];
+
+              if (selectedTable) {
+                $scope.selected.project.table = selectedTable;
+              }
+            }
+
+          });
+        }
+      });
+
       $scope.save = function (form) {
         if (form.$valid) {
+          angular.extend($scope.studyTable, {
+            studyId: $scope.selected.study.id,
+            populationId: $scope.selected.study.population.id,
+            dataCollectionEventId: $scope.selected.study.population.dataCollectionEvent.id,
+            project: $scope.selected.project.name,
+            table: $scope.selected.project.table
+          });
+
           $modalInstance.close($scope.studyTable);
+          return;
         }
-        else {
-          $scope.form = form;
-          $scope.form.saveAttempted = true;
-        }
+
+        $scope.form = form;
+        $scope.form.saveAttempted = true;
       };
 
       $scope.cancel = function () {

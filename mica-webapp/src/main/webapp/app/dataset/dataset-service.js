@@ -21,6 +21,13 @@ mica.dataset
       });
     }])
 
+  .factory('StudyStateProjectsResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/draft/study-state/:id/projects', {}, {
+        'get': {method: 'GET', params: {id: '@id'}}
+      });
+    }])
+
   .factory('StudyDatasetPublicationResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/study-dataset/:id/_publish', {}, {

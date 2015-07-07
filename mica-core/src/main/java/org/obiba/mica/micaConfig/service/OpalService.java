@@ -10,6 +10,7 @@
 
 package org.obiba.mica.micaConfig.service;
 
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.Comparator;
@@ -34,6 +35,7 @@ import org.obiba.opal.rest.client.magma.OpalJavaClient;
 import org.obiba.opal.rest.client.magma.RestDatasource;
 import org.obiba.opal.rest.client.magma.RestDatasourceFactory;
 import org.obiba.opal.web.model.Opal;
+import org.obiba.opal.web.model.Projects;
 import org.obiba.opal.web.taxonomy.Dtos;
 import org.obiba.security.KeyStoreManager;
 import org.slf4j.Logger;
@@ -229,6 +231,15 @@ public class OpalService implements EnvironmentAware {
     return Dtos.asDto(taxonomies.get(name));
   }
 
+  public List<Projects.ProjectDto> getProjectDtos(String opalUrl) throws URISyntaxException {
+    if (Strings.isNullOrEmpty(opalUrl)) opalUrl = getDefaultOpal();
+
+    OpalJavaClient opalJavaClient = getOpalJavaClient(opalUrl);
+    URI uri = opalJavaClient.newUri().segment("projects").build();
+
+    return opalJavaClient.getResources(Projects.ProjectDto.class, uri, Projects.ProjectDto.newBuilder());
+  }
+
   //
   // Private methods
   //
@@ -253,13 +264,35 @@ public class OpalService implements EnvironmentAware {
   private OpalJavaClient getOpalJavaClient() throws URISyntaxException {
     if(opalJavaClient != null) return opalJavaClient;
 
-    String opalUrl = getDefaultOpal();
+    return opalJavaClient = new OpalJavaClient(cleanupOpalUrl(getDefaultOpal()), getOpalUsername(), getOpalPassword());
+  }
+
+  private OpalJavaClient getOpalJavaClient(String opalUrl) throws URISyntaxException {
+    String alias = opalUrl;
+    OpalCredential opalCredential = opalCredentialService.findOpalCredentialById(opalUrl).orElse(
+      new OpalCredential(getDefaultOpal(), AuthType.USERNAME, getOpalUsername(), getOpalPassword()));
+
+    if(opalCredential.getAuthType() == AuthType.CERTIFICATE) {
+      KeyStoreManager kms = keyStoreService.getKeyStore(OPAL_KEYSTORE);
+
+      if(!kms.aliasExists(alias))
+        throw new IllegalStateException("Trying to use opal certificate credential but could not be found in keystore.");
+
+      return new OpalJavaClient(cleanupOpalUrl(opalUrl), kms.getKeyStore(), alias, micaConfigService.getConfig().getSecretKey());
+    }
+
+    return new OpalJavaClient(cleanupOpalUrl(opalUrl), opalCredential.getUsername(), opalCredential.getPassword());
+  }
+
+  private String cleanupOpalUrl(String opalUrl) {
     while(opalUrl.endsWith("/")) {
       opalUrl = opalUrl.substring(0, opalUrl.length() - 1);
     }
+
     if(!opalUrl.endsWith("/ws")) {
       opalUrl = opalUrl + "/ws";
     }
-    return opalJavaClient = new OpalJavaClient(opalUrl, getOpalUsername(), getOpalPassword());
+
+    return opalUrl;
   }
 }
