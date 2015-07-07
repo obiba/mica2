@@ -324,6 +324,7 @@ message MicaConfigDto {
   optional string publicUrl = 4;
   required string opal = 5;
   optional string version = 6;
+  optional int32 privacyThreshold = 7;
 }
 
 message AggregationsConfigDto {
@@ -511,7 +512,7 @@ message DatasetVariableAggregationsDto {
 message DatasetVariableContingencyDto {
   optional DatasetDto.StudyTableDto studyTable = 1;
   repeated DatasetVariableAggregationDto aggregations = 2;
-  required DatasetVariableAggregationDto all = 3;
+  optional DatasetVariableAggregationDto all = 3;
 }
 
 message DatasetVariableContingenciesDto {
