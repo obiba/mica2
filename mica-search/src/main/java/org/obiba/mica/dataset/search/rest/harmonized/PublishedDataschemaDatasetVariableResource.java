@@ -111,15 +111,15 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
     dataset.getStudyTables().forEach(table -> results.add(helper.getVariableFacet(dataset, variableName, table)));
 
     for(int i = 0; i < dataset.getStudyTables().size(); i++) {
-      StudyTable table = dataset.getStudyTables().get(i);
+      StudyTable studyTable = dataset.getStudyTables().get(i);
       Future<Math.SummaryStatisticsDto> futureResult = results.get(i);
       try {
-        Mica.DatasetVariableAggregationDto tableAggDto = dtos.asDto(table, futureResult.get()).build();
+        Mica.DatasetVariableAggregationDto tableAggDto = dtos.asDto(studyTable, futureResult.get()).build();
         builder.add(tableAggDto);
         CombinedStatistics.mergeAggregations(aggDto, tableAggDto);
       } catch(Exception e) {
         log.warn("Unable to retrieve statistics: " + e.getMessage(), e);
-        builder.add(dtos.asDto(table, null).build());
+        builder.add(dtos.asDto(studyTable, null).build());
       }
     }
 
@@ -137,16 +137,22 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
     List<Future<Search.QueryResultDto>> results = Lists.newArrayList();
     dataset.getStudyTables().forEach(table -> results.add(helper.getContingencyTable(dataset, variableName, crossVariable, table)));
 
+    Mica.DatasetVariableAggregationDto.Builder aggDto = Mica.DatasetVariableAggregationDto.newBuilder();
+
     for(int i = 0; i < dataset.getStudyTables().size(); i++) {
-      StudyTable table = dataset.getStudyTables().get(i);
+      StudyTable studyTable = dataset.getStudyTables().get(i);
       Future<Search.QueryResultDto> futureResult = results.get(i);
       try {
-        crossDto.addContingencies(dtos.asContingencyDto(table, futureResult.get()));
+        Mica.DatasetVariableContingencyDto studyTableCrossDto = dtos.asContingencyDto(studyTable, futureResult.get()).build();
+        CombinedStatistics.mergeAggregations(aggDto, studyTableCrossDto.getAll());
+        crossDto.addContingencies(studyTableCrossDto);
       } catch(Exception e) {
         log.warn("Unable to retrieve contingency table: " + e.getMessage(), e);
-        crossDto.addContingencies(dtos.asContingencyDto(table, null));
+        crossDto.addContingencies(dtos.asContingencyDto(studyTable, null));
       }
     }
+
+    crossDto.setAll(Mica.DatasetVariableContingencyDto.newBuilder().setAll(aggDto.build()));
 
     return crossDto.build();
   }

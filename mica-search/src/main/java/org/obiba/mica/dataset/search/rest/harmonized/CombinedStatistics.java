@@ -22,6 +22,14 @@ public class CombinedStatistics {
     tableCount = tableAggDto.getN();
   }
 
+  CombinedStatistics(Mica.DatasetVariableAggregationDto.Builder aggDto,
+    Mica.DatasetVariableAggregationDto tableAggDto) {
+    stats = Mica.StatisticsDto.newBuilder(aggDto.getStatistics()).build();
+    tableStats = tableAggDto.getStatistics();
+    count = aggDto.getN();
+    tableCount = tableAggDto.getN();
+  }
+
   public int getCount() {
     return count + tableCount;
   }
@@ -98,6 +106,14 @@ public class CombinedStatistics {
     aggDto.setN(aggDto.getN() + tableAggDto.getN());
   }
 
+  public static void mergeAggregations(Mica.DatasetVariableAggregationDto.Builder aggDto,
+    Mica.DatasetVariableAggregationDto tableAggDto) {
+    mergeFrequencies(aggDto, tableAggDto);
+    mergeStatistics(aggDto, tableAggDto);
+    aggDto.setTotal(aggDto.getTotal() + tableAggDto.getTotal());
+    aggDto.setN(aggDto.getN() + tableAggDto.getN());
+  }
+
   public static void mergeFrequencies(Mica.DatasetVariableAggregationsDto.Builder aggDto,
     Mica.DatasetVariableAggregationDto tableAggDto) {
     if(tableAggDto.getFrequenciesCount() == 0) return;
@@ -118,7 +134,53 @@ public class CombinedStatistics {
     }
   }
 
+  public static void mergeFrequencies(Mica.DatasetVariableAggregationDto.Builder aggDto,
+    Mica.DatasetVariableAggregationDto tableAggDto) {
+    if(tableAggDto.getFrequenciesCount() == 0) return;
+
+    for(Mica.FrequencyDto tableFreq : tableAggDto.getFrequenciesList()) {
+      boolean found = false;
+      for(int i = 0; i < aggDto.getFrequenciesCount(); i++) {
+        Mica.FrequencyDto freq = aggDto.getFrequencies(i);
+        if(freq.getValue().equals(tableFreq.getValue())) {
+          aggDto.setFrequencies(i, freq.toBuilder().setCount(freq.getCount() + tableFreq.getCount()).build());
+          found = true;
+          break;
+        }
+      }
+      if(!found) {
+        aggDto.addFrequencies(tableFreq.toBuilder());
+      }
+    }
+  }
+
   public static void mergeStatistics(Mica.DatasetVariableAggregationsDto.Builder aggDto,
+    Mica.DatasetVariableAggregationDto tableAggDto) {
+    if(!tableAggDto.hasStatistics()) return;
+
+    if(!aggDto.hasStatistics()) {
+      aggDto.setStatistics(tableAggDto.getStatistics().toBuilder());
+    } else {
+      CombinedStatistics combined = new CombinedStatistics(aggDto, tableAggDto);
+      if(combined.getCount() > 0) {
+        Mica.StatisticsDto.Builder builder = aggDto.getStatistics().toBuilder();
+
+        builder.setSum(combined.getSum());
+        if(combined.hasMean()) builder.setMean(combined.getMean());
+        if(combined.hasMin()) builder.setMin(combined.getMin());
+        if(combined.hasMax()) builder.setMax(combined.getMax());
+        if(combined.hasSumOfSquares()) builder.setSumOfSquares(combined.getSumOfSquares());
+
+        float gv = combined.getVariance();
+        builder.setVariance(gv);
+        builder.setStdDeviation(Double.valueOf(Math.pow(gv, 0.5)).floatValue());
+
+        aggDto.setStatistics(builder);
+      }
+    }
+  }
+
+  public static void mergeStatistics(Mica.DatasetVariableAggregationDto.Builder aggDto,
     Mica.DatasetVariableAggregationDto tableAggDto) {
     if(!tableAggDto.hasStatistics()) return;
 
