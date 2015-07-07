@@ -1,6 +1,7 @@
 package org.obiba.mica.dataset.search.rest.harmonized;
 
-import java.lang.Math;
+import java.util.Collection;
+import java.util.Iterator;
 
 import org.obiba.mica.web.model.Mica;
 
@@ -204,5 +205,15 @@ public class CombinedStatistics {
         aggDto.setStatistics(builder);
       }
     }
+  }
+
+  public static Mica.DatasetVariableAggregationDto mergeAggregations(
+    Collection<Mica.DatasetVariableAggregationDto> aggs) {
+    Iterator<Mica.DatasetVariableAggregationDto> iterator = aggs.iterator();
+    Mica.DatasetVariableAggregationDto.Builder start = iterator.next().toBuilder();
+    while(iterator.hasNext()) {
+      mergeAggregations(start, iterator.next());
+    }
+    return start.build();
   }
 }

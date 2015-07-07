@@ -38,7 +38,9 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
 
 /**
  * Dataschema variable resource: variable describing an harmonization dataset.
@@ -91,7 +93,8 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
     dataset.getStudyTables().forEach(table -> {
       try {
-        builder.add(datasetService.getVariableFacet(dataset, variableName, table.getStudyId(), table.getProject(), table.getTable()));
+        builder.add(datasetService
+          .getVariableFacet(dataset, variableName, table.getStudyId(), table.getProject(), table.getTable()));
       } catch(NoSuchVariableException | NoSuchValueTableException e) {
         // case the study has not implemented this dataschema variable
         builder.add(Search.QueryResultDto.newBuilder().setTotalHits(0).build());
@@ -135,16 +138,20 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
     Mica.DatasetVariableContingenciesDto.Builder crossDto = Mica.DatasetVariableContingenciesDto.newBuilder();
 
     List<Future<Search.QueryResultDto>> results = Lists.newArrayList();
-    dataset.getStudyTables().forEach(table -> results.add(helper.getContingencyTable(dataset, variableName, crossVariable, table)));
+    dataset.getStudyTables()
+      .forEach(table -> results.add(helper.getContingencyTable(dataset, variableName, crossVariable, table)));
 
-    Mica.DatasetVariableAggregationDto.Builder aggDto = Mica.DatasetVariableAggregationDto.newBuilder();
+    Multimap<String, Mica.DatasetVariableAggregationDto> termAggregations = LinkedListMultimap.create();
 
     for(int i = 0; i < dataset.getStudyTables().size(); i++) {
       StudyTable studyTable = dataset.getStudyTables().get(i);
       Future<Search.QueryResultDto> futureResult = results.get(i);
       try {
-        Mica.DatasetVariableContingencyDto studyTableCrossDto = dtos.asContingencyDto(studyTable, futureResult.get()).build();
-        CombinedStatistics.mergeAggregations(aggDto, studyTableCrossDto.getAll());
+        Mica.DatasetVariableContingencyDto studyTableCrossDto = dtos.asContingencyDto(studyTable, futureResult.get())
+          .build();
+        termAggregations.put(null, studyTableCrossDto.getAll());
+        studyTableCrossDto.getAggregationsList()
+          .forEach(termAggDto -> termAggregations.put(termAggDto.getTerm(), termAggDto));
         crossDto.addContingencies(studyTableCrossDto);
       } catch(Exception e) {
         log.warn("Unable to retrieve contingency table: " + e.getMessage(), e);
@@ -152,7 +159,19 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
       }
     }
 
-    crossDto.setAll(Mica.DatasetVariableContingencyDto.newBuilder().setAll(aggDto.build()));
+    // Merge aggregations by term (=variable category) + all terms aggregation.
+    Mica.DatasetVariableContingencyDto.Builder allContingencies = Mica.DatasetVariableContingencyDto.newBuilder();
+    termAggregations.asMap().entrySet()
+      .forEach(entry -> {
+        Mica.DatasetVariableAggregationDto merged = CombinedStatistics.mergeAggregations(entry.getValue());
+        if (entry.getKey() == null) {
+          allContingencies.setAll(merged);
+        } else {
+          allContingencies.addAggregations(merged);
+        }
+      });
+
+    crossDto.setAll(allContingencies);
 
     return crossDto.build();
   }
@@ -199,7 +218,8 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
     }
 
     @Async
-    private Future<Search.QueryResultDto> getContingencyTable(HarmonizationDataset dataset, String variableName, String crossVariableName, StudyTable table) {
+    private Future<Search.QueryResultDto> getContingencyTable(HarmonizationDataset dataset, String variableName,
+      String crossVariableName, StudyTable table) {
       try {
         return new AsyncResult<>(datasetService.getContingencyTable(table, variableName, crossVariableName));
       } catch(Exception e) {
