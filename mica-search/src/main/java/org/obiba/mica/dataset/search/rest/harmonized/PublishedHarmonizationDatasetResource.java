@@ -26,11 +26,16 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetResource;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Search;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -43,6 +48,8 @@ import com.google.common.collect.Lists;
 @Path("/harmonization-dataset/{id}")
 @RequiresAuthentication
 public class PublishedHarmonizationDatasetResource extends AbstractPublishedDatasetResource<HarmonizationDataset> {
+
+  private static final Logger log = LoggerFactory.getLogger(PublishedHarmonizationDatasetResource.class);
 
   @PathParam("id")
   private String id;
@@ -63,6 +70,25 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
   /**
    * Get the {@link org.obiba.mica.dataset.domain.DatasetVariable}s from published index.
    *
+   * @param queryString - Elasticsearch query string 'field1: value AND field2: value'
+   * @param from
+   * @param limit
+   * @param sort
+   * @param order
+   * @return
+   */
+  @GET
+  @Path("/variables/_search")
+  public Mica.DatasetVariablesDto queryVariables(@QueryParam("query") String queryString,
+    @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit,
+    @QueryParam("sort") String sort, @QueryParam("order") String order) {
+
+    return getDatasetVariableDtos(queryString, id, DatasetVariable.Type.Dataschema, from, limit, sort, order);
+  }
+
+  /**
+   * Get the {@link org.obiba.mica.dataset.domain.DatasetVariable}s from published index.
+   *
    * @param from
    * @param limit
    * @param sort
@@ -74,7 +100,8 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
   public Mica.DatasetVariablesDto getVariables(@QueryParam("from") @DefaultValue("0") int from,
     @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
     @QueryParam("order") String order) {
-    return getDatasetVariableDtos(id, from, limit, sort, order);
+
+    return getDatasetVariableDtos(id, DatasetVariable.Type.Dataschema, from, limit, sort, order);
   }
 
   /**
@@ -93,7 +120,7 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
     @QueryParam("sort") @DefaultValue("index") String sort, @QueryParam("order") @DefaultValue("asc") String order) {
     Mica.DatasetVariablesHarmonizationsDto.Builder builder = Mica.DatasetVariablesHarmonizationsDto.newBuilder();
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, id);
-    Mica.DatasetVariablesDto variablesDto = getDatasetVariableDtos(id, from, limit, sort, order);
+    Mica.DatasetVariablesDto variablesDto = getDatasetVariableDtos(id, DatasetVariable.Type.Dataschema, from, limit, sort, order);
 
     builder.setTotal(variablesDto.getTotal()).setLimit(variablesDto.getLimit()).setFrom(variablesDto.getFrom());
 
@@ -135,7 +162,11 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
   public Mica.DatasetVariablesDto getVariables(@PathParam("study") String studyId,
     @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit,
     @QueryParam("sort") String sort, @QueryParam("order") String order) {
-    return getDatasetVariableDtos(id, from, limit, sort, order);
+    QueryBuilder query = FilteredQueryBuilder.newBuilder().must("datasetId", id).must("studyIds", studyId)
+      .must("variableType", DatasetVariable.Type.Dataschema.toString().toLowerCase())
+      .build(QueryBuilders.matchAllQuery());
+
+    return getDatasetVariableDtosInternal(query, from, limit, sort, order);
   }
 
   @Path("/study/{study}/variable/{variable}")

@@ -23,6 +23,8 @@ import javax.validation.constraints.NotNull;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.index.query.BoolFilterBuilder;
+import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilders;
@@ -97,10 +99,24 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
     return dtos.asDto(getDataset(clazz, datasetId));
   }
 
-  protected Mica.DatasetVariablesDto getDatasetVariableDtos(@NotNull String datasetId, int from, int limit,
-    @Nullable String sort, @Nullable String order) {
+  protected Mica.DatasetVariablesDto getDatasetVariableDtos(@NotNull String queryString, @NotNull String datasetId,
+    DatasetVariable.Type type, int from, int limit, @Nullable String sort, @Nullable String order) {
+    QueryBuilder query = FilteredQueryBuilder.newBuilder().must("datasetId", datasetId)
+      .must("variableType", type.toString().toLowerCase()).build(QueryBuilders.queryString(queryString));
 
-    QueryBuilder query = QueryBuilders.termQuery("datasetId", datasetId);
+    return getDatasetVariableDtosInternal(query, from, limit, sort, order);
+  }
+
+  protected Mica.DatasetVariablesDto getDatasetVariableDtos(@NotNull String datasetId, DatasetVariable.Type type, int from,
+    int limit, @Nullable String sort, @Nullable String order) {
+    QueryBuilder query = FilteredQueryBuilder.newBuilder().must("datasetId", datasetId)
+      .must("variableType", type.toString().toLowerCase()).build(QueryBuilders.matchAllQuery());
+
+    return getDatasetVariableDtosInternal(query, from, limit, sort, order);
+  }
+
+  protected Mica.DatasetVariablesDto getDatasetVariableDtosInternal(QueryBuilder query, int from, int limit, @Nullable String sort,
+    @Nullable String order) {
 
     SearchRequestBuilder search = new SearchRequestBuilder(client) //
       .setIndices(VariableIndexerImpl.PUBLISHED_VARIABLE_INDEX) //
@@ -252,6 +268,23 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
     } catch(IOException e) {
       log.error("Failed retrieving {}", DatasetVariable.class.getSimpleName(), e);
       throw new NoSuchVariableException(variableName);
+    }
+  }
+
+  protected static class FilteredQueryBuilder {
+    private BoolFilterBuilder boolFilter = FilterBuilders.boolFilter();
+
+    public static FilteredQueryBuilder newBuilder() {
+      return new FilteredQueryBuilder();
+    }
+
+    public FilteredQueryBuilder must(String field, String value) {
+      boolFilter.must(FilterBuilders.termFilter(field, value));
+      return this;
+    }
+
+    public QueryBuilder build(QueryBuilder query) {
+      return QueryBuilders.filteredQuery(query, boolFilter);
     }
   }
 }
