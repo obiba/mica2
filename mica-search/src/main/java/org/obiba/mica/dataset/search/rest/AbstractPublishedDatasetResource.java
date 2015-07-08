@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -27,6 +28,7 @@ import org.elasticsearch.index.query.BoolFilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.obiba.magma.NoSuchVariableException;
@@ -102,7 +104,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   protected Mica.DatasetVariablesDto getDatasetVariableDtos(@NotNull String queryString, @NotNull String datasetId,
     DatasetVariable.Type type, int from, int limit, @Nullable String sort, @Nullable String order) {
     QueryBuilder query = FilteredQueryBuilder.newBuilder().must("datasetId", datasetId)
-      .must("variableType", type.toString().toLowerCase()).build(QueryBuilders.queryString(queryString));
+      .must("variableType", type.toString().toLowerCase()).build(QueryStringBuilder.newBuilder(queryString).build());
 
     return getDatasetVariableDtosInternal(query, from, limit, sort, order);
   }
@@ -268,6 +270,28 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
     } catch(IOException e) {
       log.error("Failed retrieving {}", DatasetVariable.class.getSimpleName(), e);
       throw new NoSuchVariableException(variableName);
+    }
+  }
+
+  protected static class QueryStringBuilder {
+
+    private final QueryStringQueryBuilder builder;
+
+    private QueryStringBuilder(String queryString) {
+      builder = QueryBuilders.queryString(queryString);
+    }
+
+    public static QueryStringBuilder newBuilder(String queryString) {
+      return new QueryStringBuilder(queryString);
+    }
+
+    public QueryBuilder build() {
+      Stream.of(VariableIndexerImpl.ANALYZED_FIELDS)
+        .forEach(f -> builder.field(f + ".analyzed"));
+      Stream.of(VariableIndexerImpl.LOCALIZED_ANALYZED_FIELDS)
+        .forEach(f -> builder.field("attributes." + f + ".*.analyzed"));
+
+      return builder;
     }
   }
 
