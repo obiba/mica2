@@ -2,8 +2,8 @@ package org.obiba.mica.dataset.service.support;
 
 import java.util.List;
 
-import org.obiba.magma.Variable;
 import org.obiba.magma.type.BooleanType;
+import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.opal.web.model.Search;
 
 import com.google.common.collect.Lists;
@@ -14,7 +14,7 @@ public class QueryTermsUtil {
 
   private QueryTermsUtil() {}
 
-  public static Search.QueryTermsDto getContingencyQuery(Variable variable, Variable crossVariable) {
+  public static Search.QueryTermsDto getContingencyQuery(DatasetVariable variable, DatasetVariable crossVariable) {
     Search.QueryTermsDto.Builder queries = Search.QueryTermsDto.newBuilder();
 
     // for each category, make a facet query
@@ -30,7 +30,7 @@ public class QueryTermsUtil {
   // Private methods
   //
 
-  private static Search.QueryTermDto getQueryTerm(Variable variable, Variable crossVariable, String facetName) {
+  private static Search.QueryTermDto getQueryTerm(DatasetVariable variable, DatasetVariable crossVariable, String facetName) {
     Search.QueryTermDto.Builder query = Search.QueryTermDto.newBuilder();
     query.setFacet(facetName);
 
@@ -41,7 +41,7 @@ public class QueryTermsUtil {
     return query.build();
   }
 
-  private static Search.QueryTermDto getTotalTerm(Variable variable, Variable crossVariable) {
+  private static Search.QueryTermDto getTotalTerm(DatasetVariable variable, DatasetVariable crossVariable) {
     Search.QueryTermDto.Builder query = Search.QueryTermDto.newBuilder();
     query.setFacet(TOTAL_FACET);
 
@@ -70,7 +70,7 @@ public class QueryTermsUtil {
     return term.build();
   }
 
-  private static List<String> getCategories(Variable variable) {
+  private static List<String> getCategories(DatasetVariable variable) {
     List<String> categories = Lists.newArrayList();
     if(variable.getValueType().equals(BooleanType.get())) {
       categories.add("true");

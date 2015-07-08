@@ -87,12 +87,14 @@ public class PublishedStudyDatasetVariableResource extends AbstractPublishedData
 
     StudyDataset dataset = getDataset(StudyDataset.class, datasetId);
     StudyTable studyTable = dataset.getStudyTable();
+    DatasetVariable var = getDatasetVariable(datasetId, variableName, DatasetVariable.Type.Study, null);
+    DatasetVariable crossVar = getDatasetVariable(datasetId, crossVariable, DatasetVariable.Type.Study, null);
 
     try {
-      return dtos.asContingencyDto(studyTable, datasetService.getContingencyTable(dataset, variableName, crossVariable)).build();
+      return dtos.asContingencyDto(studyTable, var, crossVar, datasetService.getContingencyTable(dataset, var, crossVar)).build();
     } catch(Exception e) {
       log.warn("Unable to retrieve contingency table: " + e.getMessage(), e);
-      return dtos.asContingencyDto(studyTable, null).build();
+      return dtos.asContingencyDto(studyTable, var, crossVar, null).build();
     }
   }
 

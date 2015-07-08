@@ -280,7 +280,7 @@ class DatasetDtos {
   }
 
   public Mica.DatasetVariableContingencyDto.Builder asContingencyDto(@NotNull StudyTable studyTable,
-    @Nullable Search.QueryResultDto results) {
+    DatasetVariable variable, DatasetVariable crossVariable, @Nullable Search.QueryResultDto results) {
     Mica.DatasetVariableContingencyDto.Builder crossDto = Mica.DatasetVariableContingencyDto.newBuilder();
     crossDto.setStudyTable(asDto(studyTable));
     Mica.DatasetVariableAggregationDto.Builder allAggBuilder = Mica.DatasetVariableAggregationDto.newBuilder();
@@ -296,41 +296,53 @@ class DatasetDtos {
 
     MicaConfig micaConfig = micaConfigService.getConfig();
 
-    results.getFacetsList().forEach(facet -> {
-      boolean privacyCheck = facet.getFilters(0).getCount() > micaConfig.getPrivacyThreshold();
-      if(facet.hasFacet()) {
-        if("_total".equals(facet.getFacet())) {
-          addSummaryStatistics(allAggBuilder, facet, privacyCheck);
-        } else {
+    // add facet results in the same order as the variable categories
+    variable.getCategories().forEach(cat -> results.getFacetsList().stream()
+        .filter(facet -> facet.hasFacet() && cat.getName().equals(facet.getFacet())).forEach(facet -> {
+          boolean privacyCheck = facet.getFilters(0).getCount() > micaConfig.getPrivacyThreshold();
           Mica.DatasetVariableAggregationDto.Builder aggBuilder = Mica.DatasetVariableAggregationDto.newBuilder();
           aggBuilder.setTotal(results.getTotalHits());
           aggBuilder.setTerm(facet.getFacet());
-          addSummaryStatistics(aggBuilder, facet, privacyCheck);
+          DatasetCategory category = variable.getCategory(facet.getFacet());
+          aggBuilder.setMissing(category != null && category.isMissing());
+          addSummaryStatistics(crossVariable, aggBuilder, facet, privacyCheck);
           crossDto.addAggregations(aggBuilder);
-        }
-      }
-    });
+        }));
+
+    // add total facet for all variable categories
+    results.getFacetsList().stream().filter(facet -> facet.hasFacet() && "_total".equals(facet.getFacet()))
+      .forEach(facet -> {
+        boolean privacyCheck = facet.getFilters(0).getCount() > micaConfig.getPrivacyThreshold();
+        addSummaryStatistics(crossVariable, allAggBuilder, facet, privacyCheck);
+      });
 
     crossDto.setAll(allAggBuilder);
 
     return crossDto;
   }
 
-  private void addSummaryStatistics(Mica.DatasetVariableAggregationDto.Builder aggBuilder, Search.FacetResultDto facet,
-    boolean privacyCheck) {
+  private void addSummaryStatistics(DatasetVariable crossVariable,
+    Mica.DatasetVariableAggregationDto.Builder aggBuilder, Search.FacetResultDto facet, boolean privacyCheck) {
     aggBuilder.setN(facet.getFilters(0).getCount());
     if(!privacyCheck) return;
 
-    facet.getFrequenciesList().forEach(freq -> aggBuilder.addFrequencies(asDto(freq)));
-    if(facet.hasStatistics()) {
+    if(crossVariable.hasCategories()) {
+      // order results as the order of cross variable categories
+      crossVariable.getCategories().forEach(
+        cat -> facet.getFrequenciesList().stream().filter(freq -> cat.getName().equals(freq.getTerm()))
+          .forEach(freq -> aggBuilder.addFrequencies(asDto(crossVariable, freq))));
+    } else if(facet.hasStatistics()) {
       aggBuilder.setStatistics(asDto(facet.getStatistics()));
     }
   }
 
-  private Mica.FrequencyDto.Builder asDto(Search.FacetResultDto.TermFrequencyResultDto result) {
+  private Mica.FrequencyDto.Builder asDto(DatasetVariable crossVariable,
+    Search.FacetResultDto.TermFrequencyResultDto result) {
+    DatasetCategory category = crossVariable.getCategory(result.getTerm());
     return Mica.FrequencyDto.newBuilder() //
       .setValue(result.getTerm()) //
-      .setCount(result.getCount());
+      .setCount(result.getCount()) //
+      .setMissing(category != null && category.isMissing());
   }
 
   private Mica.StatisticsDto.Builder asDto(Search.FacetResultDto.StatisticalResultDto result) {
