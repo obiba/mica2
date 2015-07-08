@@ -316,23 +316,6 @@ class DatasetDtos {
         addSummaryStatistics(crossVariable, allAggBuilder, facet, privacyCheck);
       });
 
-//    results.getFacetsList().forEach(facet -> {
-//      boolean privacyCheck = facet.getFilters(0).getCount() > micaConfig.getPrivacyThreshold();
-//      if(facet.hasFacet()) {
-//        if("_total".equals(facet.getFacet())) {
-//          addSummaryStatistics(crossVariable, allAggBuilder, facet, privacyCheck);
-//        } else {
-//          Mica.DatasetVariableAggregationDto.Builder aggBuilder = Mica.DatasetVariableAggregationDto.newBuilder();
-//          aggBuilder.setTotal(results.getTotalHits());
-//          aggBuilder.setTerm(facet.getFacet());
-//          DatasetCategory category = variable.getCategory(facet.getFacet());
-//          aggBuilder.setMissing(category != null && category.isMissing());
-//          addSummaryStatistics(crossVariable, aggBuilder, facet, privacyCheck);
-//          crossDto.addAggregations(aggBuilder);
-//        }
-//      }
-//    });
-
     crossDto.setAll(allAggBuilder);
 
     return crossDto;
