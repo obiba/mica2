@@ -102,12 +102,14 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
       throw new BadRequestException("Cross variable name is required for the contingency table");
 
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
+    DatasetVariable var = getDatasetVariable(datasetId, variableName, DatasetVariable.Type.Harmonized, studyId, project, table);
+    DatasetVariable crossVar = getDatasetVariable(datasetId, variableName, DatasetVariable.Type.Harmonized, studyId, project, table);
 
     for(StudyTable studyTable : dataset.getStudyTables()) {
       if(studyTable.isFor(studyId, project, table)) {
         try {
           return dtos.asContingencyDto(studyTable,
-            datasetService.getContingencyTable(studyTable, variableName, crossVariable)).build();
+            datasetService.getContingencyTable(studyTable, var, crossVar)).build();
         } catch(Exception e) {
           log.warn("Unable to retrieve contingency table: " + e.getMessage(), e);
           return dtos.asContingencyDto(studyTable, null).build();

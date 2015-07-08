@@ -267,9 +267,7 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   }
 
   public Search.QueryResultDto getContingencyTable(@NotNull StudyTable studyTable,
-    String variableName, String crossVariableName) throws NoSuchStudyException, NoSuchValueTableException {
-    Variable variable = getVariableValueSource(variableName, studyTable).getVariable();
-    Variable crossVariable = getVariableValueSource(crossVariableName, studyTable).getVariable();
+    DatasetVariable variable, DatasetVariable crossVariable) throws NoSuchStudyException, NoSuchValueTableException {
     return getFacets(QueryTermsUtil.getContingencyQuery(variable, crossVariable), studyTable);
   }
 

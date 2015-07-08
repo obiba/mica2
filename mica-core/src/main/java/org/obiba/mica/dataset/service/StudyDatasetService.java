@@ -18,7 +18,6 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
-import org.obiba.magma.Variable;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.StudyDatasetRepository;
@@ -221,9 +220,7 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
   }
 
   public Search.QueryResultDto getContingencyTable(@NotNull StudyDataset dataset,
-    String variableName, String crossVariableName) throws NoSuchValueTableException, NoSuchVariableException {
-    Variable variable = getVariableValueSource(dataset, variableName).getVariable();
-    Variable crossVariable = getVariableValueSource(dataset, crossVariableName).getVariable();
+    DatasetVariable variable, DatasetVariable crossVariable) throws NoSuchValueTableException, NoSuchVariableException {
     return getFacets(dataset, QueryTermsUtil.getContingencyQuery(variable, crossVariable));
   }
 

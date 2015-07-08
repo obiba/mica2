@@ -216,6 +216,10 @@ public class DatasetVariable implements Indexable, AttributeAware {
     return occurrenceGroup;
   }
 
+  public boolean hasCategories() {
+    return categories != null && !categories.isEmpty();
+  }
+
   public List<DatasetCategory> getCategories() {
     return categories;
   }
