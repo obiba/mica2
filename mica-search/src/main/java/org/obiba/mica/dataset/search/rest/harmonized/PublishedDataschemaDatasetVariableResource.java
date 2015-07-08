@@ -146,7 +146,7 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
 
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
     DatasetVariable var = getDatasetVariable(datasetId, variableName, DatasetVariable.Type.Dataschema, null);
-    DatasetVariable crossVar = getDatasetVariable(datasetId, variableName, DatasetVariable.Type.Dataschema, null);
+    DatasetVariable crossVar = getDatasetVariable(datasetId, crossVariable, DatasetVariable.Type.Dataschema, null);
 
     Mica.DatasetVariableContingenciesDto.Builder crossDto = Mica.DatasetVariableContingenciesDto.newBuilder();
 
@@ -160,7 +160,7 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
       StudyTable studyTable = dataset.getStudyTables().get(i);
       Future<Search.QueryResultDto> futureResult = results.get(i);
       try {
-        Mica.DatasetVariableContingencyDto studyTableCrossDto = dtos.asContingencyDto(studyTable, futureResult.get())
+        Mica.DatasetVariableContingencyDto studyTableCrossDto = dtos.asContingencyDto(studyTable, var, crossVar, futureResult.get())
           .build();
         termAggregations.put(null, studyTableCrossDto.getAll());
         studyTableCrossDto.getAggregationsList()
@@ -168,7 +168,7 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
         crossDto.addContingencies(studyTableCrossDto);
       } catch(Exception e) {
         log.warn("Unable to retrieve contingency table: " + e.getMessage(), e);
-        crossDto.addContingencies(dtos.asContingencyDto(studyTable, null));
+        crossDto.addContingencies(dtos.asContingencyDto(studyTable, var, crossVar, null));
       }
     }
 

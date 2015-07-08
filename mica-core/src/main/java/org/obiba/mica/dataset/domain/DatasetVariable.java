@@ -224,6 +224,16 @@ public class DatasetVariable implements Indexable, AttributeAware {
     return categories;
   }
 
+  public DatasetCategory getCategory(String name) {
+    if (!hasCategories()) return null;
+
+    for (DatasetCategory category : categories) {
+      if (category.getName().equals(name)) return category;
+    }
+
+    return null;
+  }
+
   public Attributes getAttributes() {
     return attributes;
   }

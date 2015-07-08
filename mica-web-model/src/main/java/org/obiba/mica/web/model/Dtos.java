@@ -235,8 +235,8 @@ public class Dtos {
   }
 
   @NotNull
-  public Mica.DatasetVariableContingencyDto.Builder asContingencyDto(StudyTable studyTable, @Nullable Search.QueryResultDto results) {
-    return datasetDtos.asContingencyDto(studyTable, results);
+  public Mica.DatasetVariableContingencyDto.Builder asContingencyDto(StudyTable studyTable, DatasetVariable variable, DatasetVariable crossVariable, @Nullable Search.QueryResultDto results) {
+    return datasetDtos.asContingencyDto(studyTable, variable, crossVariable, results);
   }
 
   @NotNull

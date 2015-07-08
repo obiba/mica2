@@ -103,16 +103,16 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
 
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
     DatasetVariable var = getDatasetVariable(datasetId, variableName, DatasetVariable.Type.Harmonized, studyId, project, table);
-    DatasetVariable crossVar = getDatasetVariable(datasetId, variableName, DatasetVariable.Type.Harmonized, studyId, project, table);
+    DatasetVariable crossVar = getDatasetVariable(datasetId, crossVariable, DatasetVariable.Type.Harmonized, studyId, project, table);
 
     for(StudyTable studyTable : dataset.getStudyTables()) {
       if(studyTable.isFor(studyId, project, table)) {
         try {
-          return dtos.asContingencyDto(studyTable,
+          return dtos.asContingencyDto(studyTable, var, crossVar,
             datasetService.getContingencyTable(studyTable, var, crossVar)).build();
         } catch(Exception e) {
           log.warn("Unable to retrieve contingency table: " + e.getMessage(), e);
-          return dtos.asContingencyDto(studyTable, null).build();
+          return dtos.asContingencyDto(studyTable, var, crossVar, null).build();
         }
       }
     }
