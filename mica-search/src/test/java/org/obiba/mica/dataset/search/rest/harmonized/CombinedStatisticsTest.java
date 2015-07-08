@@ -9,6 +9,29 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class CombinedStatisticsTest {
 
+  /**
+   * Use following R code to generate some data.
+   * <pre>
+   * <code>
+   * z1 = rnorm(20000, mean=11, sd=3)
+   * hist(z1,freq=FALSE,nclass=100)
+   * z2 = rnorm(10000, mean=9, sd=5)
+   * hist(z2,freq=FALSE,nclass=100)
+   * z3 = append(z1,z2)
+   * length(z3)
+   * hist(z3,freq=FALSE,nclass=100)
+   *
+   * print_summary = function(z) {
+   *   s = c(n=length(z), min=min(z), max=max(z), mean=mean(z), sd=sd(z), sum=sum(z), sum2=sum((z - mean(z))^2), var=var(z))
+   *   print(s)
+   * }
+   *
+   * print_summary(z1)
+   * print_summary(z2)
+   * print_summary(z3)
+   * </code>
+   * </pre>
+   */
   @SuppressWarnings("MagicNumber")
   @Test
   public void test_descriptive_statistics() {
