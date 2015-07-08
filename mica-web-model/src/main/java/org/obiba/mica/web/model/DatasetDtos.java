@@ -331,7 +331,9 @@ class DatasetDtos {
       crossVariable.getCategories().forEach(
         cat -> facet.getFrequenciesList().stream().filter(freq -> cat.getName().equals(freq.getTerm()))
           .forEach(freq -> aggBuilder.addFrequencies(asDto(crossVariable, freq))));
-    } else if(facet.hasStatistics()) {
+    }
+
+    if(facet.hasStatistics()) {
       aggBuilder.setStatistics(asDto(facet.getStatistics()));
     }
   }
