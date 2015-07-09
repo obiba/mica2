@@ -21,14 +21,10 @@
       <tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active"
           disabled="tab.disabled">
 
-        <tabset>
-          <tab heading="{{'network.general-info' | translate}}">
-            <div ng-include="'app/network/views/network-general-info-form.html'"></div>
-          </tab>
-          <tab heading="{{'attributes' | translate}}">
-            <attributes-editable-list attributes="network.attributes"></attributes-editable-list>
-          </tab>
-        </tabset>
+        <div ng-include="'app/network/views/network-general-info-form.html'"></div>
+
+        <label translate>attributes</label>
+        <attributes-editable-list attributes="network.attributes"></attributes-editable-list>
 
       </tab>
     </tabset>

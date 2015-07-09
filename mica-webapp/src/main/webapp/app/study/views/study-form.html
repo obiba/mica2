@@ -3,44 +3,47 @@
   <h2 class="voffset5" translate>study.label-edit</h2>
 
   <form name="form" role="form" novalidate
-      class="ng-scope ng-invalid ng-invalid-required ng-dirty" ng-submit="save()">
+    class="ng-scope ng-invalid ng-invalid-required ng-dirty" ng-submit="save()">
 
     <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
 
     <tabset>
       <tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active"
-          disabled="tab.disabled">
+        disabled="tab.disabled">
 
-        <tabset>
-          <tab heading="{{'study.general-info' | translate}}">
+
+        <div class="row">
+          <div class="col-md-6">
             <div ng-include="'app/study/views/study-general-info-form.html'"></div>
-          </tab>
-          <tab heading="{{'study.authorization.label' | translate}}">
-            <div ng-include="'app/study/views/study-authorization-form.html'"></div>
-          </tab>
-          <tab heading="{{'study.methods' | translate}}">
-            <div ng-include="'app/study/views/study-methods-form.html'"></div>
-          </tab>
-          <tab heading="{{'attributes' | translate}}">
             <div ng-include="'app/study/views/study-attributes-form.html'"></div>
-          </tab>
-          <tab heading="{{'study.access.label' | translate}}">
+          </div>
+          <div class="col-md-6">
+            <div ng-include="'app/study/views/study-methods-form.html'"></div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
             <div ng-include="'app/study/views/study-access-form.html'"></div>
-          </tab>
-          <tab heading="{{'study.marker-paper' | translate}}">
+          </div>
+          <div class="col-md-6">
             <div ng-include="'app/study/views/study-marker-paper-form.html'"></div>
-          </tab>
-          <tab heading="{{'study.documents' | translate}}">
+          </div>
+        </div>
+
+        <div ng-include="'app/study/views/study-authorization-form.html'"></div>
+
+        <div class="row">
+          <div class="col-md-6">
             <div ng-include="'app/study/views/study-document-form.html'"></div>
-          </tab>
-          <!--TODO -->
-          <!-- <tab heading="{{'suppl-info' | translate}}">
-            <div ng-include="'app/study/views/study-supplementary-info-form.html'"></div>
-          </tab> -->
-          <tab heading="{{'datasets' | translate}}">
+          </div>
+          <div class="col-md-6">
             <div ng-include="'app/study/views/study-datasets-form.html'"></div>
-          </tab>
-        </tabset>
+          </div>
+        </div>
+
+        <!--TODO -->
+        <!--<div ng-include="'app/study/views/study-supplementary-info-form.html'"></div>-->
 
       </tab>
     </tabset>
