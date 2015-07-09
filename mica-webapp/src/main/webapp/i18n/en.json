@@ -476,13 +476,35 @@
     "general-info": "General Information",
     "description": "Description",
     "entity-type": "Entity Type",
-    "study-table": "Study Table",
-    "study-tables": "Study Tables",
+    "study-dce": {
+      "title": "Study Data Collection Event",
+      "info": ""
+    },
+    "datasource": {
+      "title": "Data Source",
+      "info": "Reference to the Opal table from which variables and data summaries will be extracted from."
+    },
+    "options": "Options",
+    "study-table": {
+      "title": "Study Table",
+      "info": "A study table defines which study data collection event it applies to and which Opal table the variables and data summaries are to be extracted from."
+    },
+    "study-tables": {
+      "title": "Study Tables",
+      "info": "The study tables define implementations of the Data Schema variables. The data summaries will be extracted from the corresponding Opal tables."
+    },
     "project": "Project",
+    "project-help": "Project name from the study's Opal server (if this one is defined, otherwise the project is expected to be found in Opal primary server).",
+    "project-dataschema-help": "Project name from the Opal primary server.",
     "table": "Table",
-    "table-name": "Table Name",
-    "table-description": "Table Description",
-    "data-schema": "Data Schema",
+    "table-help": "Opal table name from which variables and data summaries will be extracted.",
+    "table-dataschema-help": "Project's table name from which variables will be extracted.",
+    "table-name": "Name",
+    "table-description": "Description",
+    "data-schema": {
+     "title": "Data Schema",
+      "info": "The variables of the Data Schema are the reference variables of the Harmonization dataset. This is a simple data dictionary: no data summaries will be extracted from the Opal table."
+    },
     "index": "Index",
     "add-study-table": "Add Study Table"
   },
