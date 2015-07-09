@@ -25,92 +25,100 @@
     <tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active"
       disabled="tab.disabled">
 
-      <div class="table-responsive">
-
-        <h3 translate>dataset.general-info</h3>
-        <table class="table table-striped">
-          <tbody>
-          <tr>
-            <th translate>dataset.name</th>
-            <td>
-              <localized value="dataset.name" lang="tab.lang"></localized>
-            </td>
-          </tr>
-          <tr>
-            <th translate>dataset.acronym</th>
-            <td>
-              <localized value="dataset.acronym" lang="tab.lang"></localized>
-            </td>
-          </tr>
-          <tr>
-            <th translate>dataset.description</th>
-            <td>
-              <localized value="dataset.description" lang="tab.lang"></localized>
-            </td>
-          </tr>
-          <tr>
-            <th translate>dataset.entity-type</th>
-            <td>{{dataset.entityType}}</td>
-          </tr>
-          </tbody>
-        </table>
-
-        <h3 translate ng-show="dataset['obiba.mica.HarmonizationDatasetDto.type']">dataset.data-schema</h3>
-        <table class="table table-striped">
-          <tbody>
-          <tr>
-            <th translate>dataset.project</th>
-            <td>
-              <a ng-href="{{opal + '/ui/index.html#!project;name=' + datasetProject}}" target="_blank">{{datasetProject}}</a>
-            </td>
-          </tr>
-          <tr>
-            <th translate>dataset.table</th>
-            <td>
-              <a
-                ng-href="{{opal + '/ui/index.html#!project;name=' + datasetProject + ';tab=TABLES;path=' + datasetProject + '.' + datasetTable}}"
-                target="_blank">{{datasetTable}}</a>
-            </td>
-          </tr>
-          </tbody>
-        </table>
-
-
-        <h3 translate ng-show="dataset['obiba.mica.HarmonizationDatasetDto.type']">dataset.study-tables</h3>
-        <table class="table table-striped" ng-show="dataset['obiba.mica.HarmonizationDatasetDto.type']">
-          <thead>
-          <tr>
-            <th translate>study.label</th>
-            <th translate>dataset.project</th>
-            <th translate>dataset.table</th>
-            <th translate>dataset.table-name</th>
-            <th translate>dataset.table-description</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr ng-repeat="studyTable in dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables">
-            <td>
-              <a ng-href="#/study/{{studyTable.studyId}}">
-                {{studyTable.studyId}}
-              </a>
-            </td>
-            <td>
-              {{studyTable.project}}
-            </td>
-            <td>
-              {{studyTable.table}}
-            </td>
-            <td>
-              <localized value="studyTable.name" lang="tab.lang"></localized>
-            </td>
-            <td>
-              <localized value="studyTable.description" lang="tab.lang"></localized>
-            </td>
-          </tr>
-          </tbody>
-        </table>
-
+      <div class="row">
+        <div class="col-md-6">
+          <h3 translate>dataset.general-info</h3>
+          <table class="table table-striped">
+            <tbody>
+            <tr>
+              <th translate>dataset.name</th>
+              <td>
+                <localized value="dataset.name" lang="tab.lang"></localized>
+              </td>
+            </tr>
+            <tr>
+              <th translate>dataset.acronym</th>
+              <td>
+                <localized value="dataset.acronym" lang="tab.lang"></localized>
+              </td>
+            </tr>
+            <tr>
+              <th translate>dataset.description</th>
+              <td>
+                <localized value="dataset.description" lang="tab.lang"></localized>
+              </td>
+            </tr>
+            <tr>
+              <th translate>dataset.entity-type</th>
+              <td>{{dataset.entityType}}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-md-6">
+          <h3 translate ng-show="dataset['obiba.mica.HarmonizationDatasetDto.type']">dataset.data-schema.title</h3>
+          <table class="table table-striped">
+            <tbody>
+            <tr>
+              <th translate>dataset.project</th>
+              <td>
+                <a ng-href="{{opal + '/ui/index.html#!project;name=' + datasetProject}}" target="_blank">{{datasetProject}}</a>
+              </td>
+            </tr>
+            <tr>
+              <th translate>dataset.table</th>
+              <td>
+                <a
+                  ng-href="{{opal + '/ui/index.html#!project;name=' + datasetProject + ';tab=TABLES;path=' + datasetProject + '.' + datasetTable}}"
+                  target="_blank">{{datasetTable}}</a>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
+
+      <h3 translate ng-show="dataset['obiba.mica.HarmonizationDatasetDto.type']">dataset.study-tables.title</h3>
+      <table class="table table-striped" ng-show="dataset['obiba.mica.HarmonizationDatasetDto.type']">
+        <thead>
+        <tr>
+          <th translate>study.label</th>
+          <th translate>study.population</th>
+          <th translate>study.data-collection-event</th>
+          <th translate>dataset.project</th>
+          <th translate>dataset.table</th>
+          <th translate>dataset.table-name</th>
+          <th translate>dataset.table-description</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="studyTable in dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables">
+          <td>
+            <a ng-href="#/study/{{studyTable.studyId}}">
+              {{studyTable.studyId}}
+            </a>
+          </td>
+          <td>
+            {{studyTable.populationId}}
+          </td>
+          <td>
+            {{studyTable.dataCollectionEventId}}
+          </td>
+          <td>
+            {{studyTable.project}}
+          </td>
+          <td>
+            {{studyTable.table}}
+          </td>
+          <td>
+            <localized value="studyTable.name" lang="tab.lang"></localized>
+          </td>
+          <td>
+            <localized value="studyTable.description" lang="tab.lang"></localized>
+          </td>
+        </tr>
+        </tbody>
+      </table>
 
     </tab>
   </tabset>

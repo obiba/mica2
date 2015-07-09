@@ -25,79 +25,103 @@
     <tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active"
       disabled="tab.disabled">
 
-      <div class="table-responsive">
 
-        <h3 translate>dataset.general-info</h3>
+        <div class="row">
+          <div class="col-md-6">
+            <h3 translate>dataset.general-info</h3>
 
-        <table class="table table-striped">
-          <tbody>
-          <tr>
-            <th translate>dataset.name</th>
-            <td>
-              <localized value="dataset.name" lang="tab.lang"></localized>
-            </td>
-          </tr>
-          <tr>
-            <th translate>dataset.acronym</th>
-            <td>
-              <localized value="dataset.acronym" lang="tab.lang"></localized>
-            </td>
-          </tr>
-          <tr>
-            <th translate>dataset.description</th>
-            <td>
-              <localized value="dataset.description" lang="tab.lang"></localized>
-            </td>
-          </tr>
-          <tr>
-            <th translate>dataset.entity-type</th>
-            <td>{{dataset.entityType}}</td>
-          </tr>
-          </tbody>
-        </table>
+            <table class="table table-striped">
+              <tbody>
+              <tr>
+                <th translate>dataset.name</th>
+                <td>
+                  <localized value="dataset.name" lang="tab.lang"></localized>
+                </td>
+              </tr>
+              <tr>
+                <th translate>dataset.acronym</th>
+                <td>
+                  <localized value="dataset.acronym" lang="tab.lang"></localized>
+                </td>
+              </tr>
+              <tr>
+                <th translate>dataset.description</th>
+                <td>
+                  <localized value="dataset.description" lang="tab.lang"></localized>
+                </td>
+              </tr>
+              <tr>
+                <th translate>dataset.entity-type</th>
+                <td>{{dataset.entityType}}</td>
+              </tr>
+              </tbody>
+            </table>
 
-        <h3 translate ng-show="dataset['obiba.mica.StudyDatasetDto.type']">dataset.study-table</h3>
-        <table class="table table-striped" ng-show="dataset['obiba.mica.StudyDatasetDto.type']">
-          <tbody>
-          <tr>
-            <td translate>study.label</td>
-            <td>
-              <a ng-href="#/study/{{dataset['obiba.mica.StudyDatasetDto.type'].studyTable.studyId}}">
-                {{dataset['obiba.mica.StudyDatasetDto.type'].studyTable.studyId}}
-              </a>
-            </td>
-          </tr>
-          <tr>
-            <td translate>dataset.project</td>
-            <td>
-              {{dataset['obiba.mica.StudyDatasetDto.type'].studyTable.project}}
-            </td>
-          </tr>
-          <tr>
-            <td translate>dataset.table</td>
-            <td>
-              {{dataset['obiba.mica.StudyDatasetDto.type'].studyTable.table}}
-            </td>
-          </tr>
-          <tr>
-            <td translate>dataset.table-name</td>
-            <td>
-              <localized value="dataset['obiba.mica.StudyDatasetDto.type'].studyTable.name" lang="tab.lang"></localized>
-            </td>
-          </tr>
-          <tr>
-            <td translate>dataset.table-description</td>
-            <td>
-              <localized value="dataset['obiba.mica.StudyDatasetDto.type'].studyTable.description"
-                lang="tab.lang"></localized>
-            </td>
-          </tr>
-          </tbody>
-        </table>
+            <label ng-show="dataset.attributes.length>0" translate>attributes</label>
+            <attributes-list attributes="dataset.attributes"></attributes-list>
 
-        <attributes-list attributes="dataset.attributes"></attributes-list>
+          </div>
+          <div class="col-md-6">
+            <h3 translate ng-show="dataset['obiba.mica.StudyDatasetDto.type']">dataset.study-table.title</h3>
 
-      </div>
+            <table class="table table-striped" ng-show="dataset['obiba.mica.StudyDatasetDto.type']">
+              <tbody>
+              <tr>
+                <th translate>study.label</th>
+                <td>
+                  <a ng-href="#/study/{{dataset['obiba.mica.StudyDatasetDto.type'].studyTable.studyId}}">
+                    {{dataset['obiba.mica.StudyDatasetDto.type'].studyTable.studyId}}
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <th translate>study.population</th>
+                <td>
+                    {{dataset['obiba.mica.StudyDatasetDto.type'].studyTable.populationId}}
+                </td>
+              </tr>
+              <tr>
+                <th translate>study.data-collection-event</th>
+                <td>
+                  {{dataset['obiba.mica.StudyDatasetDto.type'].studyTable.dataCollectionEventId}}
+                </td>
+              </tr>
+              <tr>
+                <th translate>dataset.project</th>
+                <td>
+                  {{dataset['obiba.mica.StudyDatasetDto.type'].studyTable.project}}
+                </td>
+              </tr>
+              <tr>
+                <th translate>dataset.table</th>
+                <td>
+                  {{dataset['obiba.mica.StudyDatasetDto.type'].studyTable.table}}
+                </td>
+              </tr>
+              <tr>
+                <th translate>dataset.table-name</th>
+                <td>
+                  <localized value="dataset['obiba.mica.StudyDatasetDto.type'].studyTable.name" lang="tab.lang"></localized>
+                </td>
+              </tr>
+              <tr>
+                <th translate>dataset.table-description</th>
+                <td>
+                  <localized value="dataset['obiba.mica.StudyDatasetDto.type'].studyTable.description"
+                    lang="tab.lang"></localized>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+
+
+
+
+
+
 
     </tab>
   </tabset>

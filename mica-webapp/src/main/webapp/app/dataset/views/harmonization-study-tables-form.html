@@ -10,7 +10,9 @@
   -->
 
 <div class="voffset4">
-  <h3 translate>dataset.study-tables</h3>
+  <h3 translate>dataset.study-tables.title</h3>
+
+  <p class="help-block" translate>dataset.study-tables.info</p>
 
   <button type="button" class="btn btn-info btn-sm voffset2" ng-click="addStudyTable(tab)">
     <i class="fa fa-plus"></i> <span translate>dataset.add-study-table</span>
@@ -22,6 +24,8 @@
       <thead>
       <tr>
         <th translate>study.label</th>
+        <th translate>study.population</th>
+        <th translate>study.data-collection-event</th>
         <th translate>dataset.project</th>
         <th translate>dataset.table</th>
         <th translate>dataset.table-name</th>
@@ -35,6 +39,12 @@
           <a ng-href="#/study/{{studyTable.studyId}}">
             {{studyTable.studyId}}
           </a>
+        </td>
+        <td>
+          {{studyTable.populationId}}
+        </td>
+        <td>
+          {{studyTable.dataCollectionEventId}}
         </td>
         <td>
           {{studyTable.project}}
