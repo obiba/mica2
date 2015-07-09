@@ -115,4 +115,8 @@ public class StudyTable implements Serializable {
   public boolean isFor(String studyId, String project, String table) {
     return this.studyId.equals(studyId) && this.project.equals(project) && this.table.equals(table);
   }
+
+  public boolean appliesTo(String studyId, String populationId, String dataCollectionEventId) {
+    return this.studyId.equals(studyId) && this.populationId.equals(populationId) && this.dataCollectionEventId.equals(dataCollectionEventId);
+  }
 }

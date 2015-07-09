@@ -114,7 +114,8 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
     @QueryParam("sort") @DefaultValue("index") String sort, @QueryParam("order") @DefaultValue("asc") String order) {
     Mica.DatasetVariablesHarmonizationsDto.Builder builder = Mica.DatasetVariablesHarmonizationsDto.newBuilder();
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, id);
-    Mica.DatasetVariablesDto variablesDto = getDatasetVariableDtos(id, DatasetVariable.Type.Dataschema, from, limit, sort, order);
+    Mica.DatasetVariablesDto variablesDto = getDatasetVariableDtos(id, DatasetVariable.Type.Dataschema, from, limit,
+      sort, order);
 
     builder.setTotal(variablesDto.getTotal()).setLimit(variablesDto.getLimit()).setFrom(variablesDto.getFrom());
 
@@ -163,14 +164,20 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
     return getDatasetVariableDtosInternal(query, from, limit, sort, order);
   }
 
-  @Path("/study/{study}/variable/{variable}")
+  @Path("/study/{study}/population/{population}/data-collection-event/{dce}/variable/{variable}")
   public PublishedHarmonizedDatasetVariableResource getVariable(@PathParam("study") String studyId,
+    @PathParam("population") String populationId, @PathParam("dce") String dceId,
     @PathParam("variable") String variable) {
     PublishedHarmonizedDatasetVariableResource resource = applicationContext
       .getBean(PublishedHarmonizedDatasetVariableResource.class);
     resource.setDatasetId(id);
     resource.setVariableName(variable);
     resource.setStudyId(studyId);
+    HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, id);
+    dataset.getStudyTables().stream().filter(t -> t.appliesTo(studyId, populationId, dceId)).forEach(t -> {
+      resource.setProject(t.getProject());
+      resource.setTable(t.getTable());
+    });
     return resource;
   }
 
