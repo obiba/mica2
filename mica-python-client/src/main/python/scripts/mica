@@ -3,7 +3,6 @@
 import argparse
 
 import mica.rest
-import mica.system
 import mica.import_zip
 
 
@@ -38,7 +37,6 @@ subparsers = parser.add_subparsers(title='sub-commands',
 # Add subcommands
 add_subcommand('import-zip', 'Import data from zip file(s) that have been extracted from old Mica',
                mica.import_zip.add_arguments, mica.import_zip.do_command)
-add_subcommand('system', 'Query for system status and configuration', mica.system.add_arguments, mica.system.do_command)
 add_subcommand('rest', 'Request directly the Mica REST API, for advanced users.', mica.rest.add_arguments,
                mica.rest.do_command)
 
