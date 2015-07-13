@@ -5,10 +5,13 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import org.obiba.mica.web.model.Mica;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
 public class CombinedStatistics {
+  private static final Logger log = LoggerFactory.getLogger(CombinedStatistics.class);
 
   private final List<Mica.StatisticsDto> stats = Lists.newArrayList();
 
@@ -160,7 +163,15 @@ public class CombinedStatistics {
 
     float gv = combined.getVariance();
     builder.setVariance(gv);
-    builder.setStdDeviation(Double.valueOf(Math.pow(gv, 0.5)).floatValue());
+    double stdDeviation = Double.valueOf(Math.pow(gv, 0.5));
+
+    if (Double.isNaN(stdDeviation)) {
+      // TODO: remove this once the cause of the erronuous stdDev is found
+      log.error("Invalid stdDeviation value with variance '{}', defaulting to zero.", gv);
+      stdDeviation = 0.0D;
+    }
+
+    builder.setStdDeviation(Double.valueOf(stdDeviation).floatValue());
     aggDto.setStatistics(builder);
   }
 }
