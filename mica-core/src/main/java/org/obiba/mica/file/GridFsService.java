@@ -36,6 +36,7 @@ public class GridFsService {
 
   public void save(String tempFileId) {
     save(tempFileService.getInputStreamFromFile(tempFileId), tempFileId);
+    tempFileService.delete(tempFileId);
   }
 
   public void delete(String id) {

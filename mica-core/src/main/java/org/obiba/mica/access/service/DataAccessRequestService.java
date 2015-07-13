@@ -72,9 +72,6 @@ public class DataAccessRequestService {
   private GridFsService gridFsService;
 
   @Inject
-  private TempFileService tempFileService;
-
-  @Inject
   private MailService mailService;
 
   @Inject
@@ -118,7 +115,7 @@ public class DataAccessRequestService {
 
     if(toSave != null)
       toSave.forEach(a -> {
-        gridFsService.save(tempFileService.getInputStreamFromFile(a.getId()), a.getId());
+        gridFsService.save(a.getId());
         a.setJustUploaded(false);
         attachmentRepository.save(a);
       });

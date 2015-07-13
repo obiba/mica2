@@ -7,13 +7,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -28,6 +32,10 @@ public class TempFileService {
   private static final Logger log = LoggerFactory.getLogger(TempFileService.class);
 
   private static final String TMP_ROOT = "${MICA_HOME}/work/tmp";
+
+  private static final int TEMP_FILE_EXPIRE_TIMEOUT = 24; //hours
+
+  private static final int TEMP_FILE_CLEANUP_INTERVAL = 5 * 60 * 1000; //milliseconds
 
   @Inject
   private TempFileRepository tempFileRepository;
@@ -114,5 +122,13 @@ public class TempFileService {
     if(!getFile(id).delete()) {
       log.debug("Could not delete temp file {}", id);
     }
+  }
+
+  @Scheduled(fixedDelay = TEMP_FILE_CLEANUP_INTERVAL)
+  public void cleanupTempFiles() {
+    log.debug("Cleaning up tempfiles");
+    List<TempFile> tempFiles = tempFileRepository.findByCreatedDateLessThan(DateTime.now().minusHours(TEMP_FILE_EXPIRE_TIMEOUT), new PageRequest(0, 100));
+
+    tempFiles.forEach(f -> tempFileRepository.delete(f));
   }
 }
