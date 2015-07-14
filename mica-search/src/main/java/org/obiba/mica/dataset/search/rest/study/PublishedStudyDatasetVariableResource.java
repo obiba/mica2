@@ -21,6 +21,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.math3.util.Pair;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.DatasetVariableResource;
@@ -89,20 +90,19 @@ public class PublishedStudyDatasetVariableResource extends AbstractPublishedData
   @GET
   @Path("/contingency")
   public Mica.DatasetVariableContingencyDto getContingency(@QueryParam("by") String crossVariable) {
-    return getContingencyDto(crossVariable);
+    Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
+
+    return getContingencyDto(variables.getFirst(), variables.getSecond());
   }
 
-  private Mica.DatasetVariableContingencyDto getContingencyDto(String crossVariable) {
-    if(Strings.isNullOrEmpty(crossVariable))
-      throw new BadRequestException("Cross variable name is required for the contingency table");
-
+  private Mica.DatasetVariableContingencyDto getContingencyDto(DatasetVariable var, DatasetVariable crossVar) {
     StudyDataset dataset = getDataset(StudyDataset.class, datasetId);
     StudyTable studyTable = dataset.getStudyTable();
-    DatasetVariable var = getDatasetVariable(datasetId, variableName, DatasetVariable.Type.Study, null);
-    DatasetVariable crossVar = getDatasetVariable(datasetId, crossVariable, DatasetVariable.Type.Study, null);
 
     try {
-      return dtos.asContingencyDto(studyTable, var, crossVar, datasetService.getContingencyTable(dataset, var, crossVar)).build();
+      return dtos
+        .asContingencyDto(studyTable, var, crossVar, datasetService.getContingencyTable(dataset, var, crossVar))
+        .build();
     } catch(Exception e) {
       log.warn("Unable to retrieve contingency table: " + e.getMessage(), e);
       return dtos.asContingencyDto(studyTable, var, crossVar, null).build();
@@ -113,7 +113,9 @@ public class PublishedStudyDatasetVariableResource extends AbstractPublishedData
   @Path("/contingency/_export")
   @Produces("text/csv")
   public Response getContingencyCsv(@QueryParam("by") String crossVariable) throws IOException {
-    ByteArrayOutputStream res = new CsvContingencyWriter().write(getContingencyDto(crossVariable));
+    Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
+    ByteArrayOutputStream res = new CsvContingencyWriter(variables.getFirst(), variables.getSecond())
+      .write(getContingencyDto(variables.getFirst(), variables.getSecond()));
 
     return Response.ok(res.toByteArray()).header("Content-Disposition",
       String.format("attachment; filename=\"contingency-table-%s-%s.csv\"", variableName, crossVariable)).build();
@@ -123,7 +125,9 @@ public class PublishedStudyDatasetVariableResource extends AbstractPublishedData
   @Path("/contingency/_export")
   @Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
   public Response getContingencyExcel(@QueryParam("by") String crossVariable) throws IOException {
-    ByteArrayOutputStream res = new ExcelContingencyWriter(variableName, crossVariable).write(getContingencyDto(crossVariable));
+    Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
+    ByteArrayOutputStream res = new ExcelContingencyWriter(variables.getFirst(), variables.getSecond())
+      .write(getContingencyDto(variables.getFirst(), variables.getSecond()));
 
     return Response.ok(res.toByteArray()).header("Content-Disposition",
       String.format("attachment; filename=\"contingency-table-%s-%s.xlsx\"", variableName, crossVariable)).build();
@@ -137,5 +141,15 @@ public class PublishedStudyDatasetVariableResource extends AbstractPublishedData
   @Override
   public void setVariableName(String variableName) {
     this.variableName = variableName;
+  }
+
+  private Pair<DatasetVariable, DatasetVariable> getContingencyVariables(String crossVariable) {
+    if(Strings.isNullOrEmpty(crossVariable))
+      throw new BadRequestException("Cross variable name is required for the contingency table");
+
+    DatasetVariable var = getDatasetVariable(datasetId, variableName, DatasetVariable.Type.Study, null);
+    DatasetVariable crossVar = getDatasetVariable(datasetId, crossVariable, DatasetVariable.Type.Study, null);
+
+    return Pair.create(var, crossVar);
   }
 }
