@@ -2,6 +2,7 @@ package org.obiba.mica.micaConfig.service;
 
 import javax.inject.Inject;
 
+import org.obiba.magma.NoSuchVariableException;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.dataset.service.StudyDatasetService;
@@ -32,34 +33,29 @@ public class CacheService {
   @Inject
   private EventBus eventBus;
 
-  @CacheEvict(value="agate-subjects", allEntries = true)
+  @CacheEvict(value = "agate-subjects", allEntries = true)
   public void clearAgateSubjectsCache() {
     log.info("Clearing agate subjects cache");
   }
 
-  @CacheEvict(value="opal-taxonomies", allEntries = true)
+  @CacheEvict(value = "opal-taxonomies", allEntries = true)
   public void clearOpalTaxonomiesCache() {
     log.info("Clearing opal taxonomies cache");
   }
 
-  @CacheEvict(value="micaConfig", allEntries = true)
+  @CacheEvict(value = "micaConfig", allEntries = true)
   public void clearMicaConfigCache() {
     log.info("Clearing mica config cache");
   }
 
-  @CacheEvict(value="aggregations-metadata", allEntries = true)
+  @CacheEvict(value = "aggregations-metadata", allEntries = true)
   public void clearAggregationsMetadataCache() {
     log.info("Clearing aggregations metadata cache");
   }
 
   public void clearDatasetVariablesCache() {
-    harmonizationDatasetService.findAllDatasets().forEach(dataset -> {
-      helper.clearDatasetVariablesCache(dataset);
-    });
-
-    studyDatasetService.findAllDatasets().forEach(dataset -> {
-      helper.clearDatasetVariablesCache(dataset);
-    });
+    harmonizationDatasetService.findAllDatasets().forEach(dataset -> helper.clearDatasetVariablesCache(dataset));
+    studyDatasetService.findAllDatasets().forEach(dataset -> helper.clearDatasetVariablesCache(dataset));
   }
 
   public void clearAuthorizationCache() {
@@ -70,12 +66,10 @@ public class CacheService {
     helper.buildDatasetVariablesCache();
   }
 
-  @Caching(evict = {
-    @CacheEvict(value="micaConfig", allEntries = true),
-    @CacheEvict(value="aggregations-metadata", allEntries = true),
+  @Caching(evict = { @CacheEvict(value = "micaConfig", allEntries = true),
+    @CacheEvict(value = "aggregations-metadata", allEntries = true),
     @CacheEvict(value = "opal-taxonomies", allEntries = true),
-    @CacheEvict(value = "agate-subjects", allEntries = true)
-  })
+    @CacheEvict(value = "agate-subjects", allEntries = true) })
   public void clearAllCaches() {
     log.info("Clearing all caches");
     clearDatasetVariablesCache();
@@ -97,14 +91,18 @@ public class CacheService {
 
     @Async
     public void buildDatasetVariablesCache() {
-      harmonizationDatasetService.findAllPublishedDatasets().forEach(dataset -> {
-        harmonizationDatasetService.getDatasetVariables(dataset).forEach(v -> {
-          dataset.getStudyTables().forEach(st -> {
-            harmonizationDatasetService
-              .getVariableSummary(dataset, v.getName(), st.getStudyId(), st.getProject(), st.getTable());
-          });
-        });
-      });
+      harmonizationDatasetService.findAllPublishedDatasets().forEach(
+        dataset -> harmonizationDatasetService.getDatasetVariables(dataset)
+          .forEach(v -> dataset.getStudyTables().forEach(st -> {
+            try {
+              harmonizationDatasetService
+                .getVariableSummary(dataset, v.getName(), st.getStudyId(), st.getProject(), st.getTable());
+            } catch(NoSuchVariableException ex) {
+              //ignore
+            } catch(Exception e) {
+              log.warn("Error building dataset variable cache for {} {}", st, v, e);
+            }
+          })));
     }
   }
 }
