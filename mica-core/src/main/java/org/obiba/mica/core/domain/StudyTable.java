@@ -14,6 +14,8 @@ import java.io.Serializable;
 
 import javax.validation.constraints.NotNull;
 
+import com.google.common.base.MoreObjects;
+
 /**
  * Represents
  */
@@ -117,6 +119,13 @@ public class StudyTable implements Serializable {
   }
 
   public boolean appliesTo(String studyId, String populationId, String dataCollectionEventId) {
-    return this.studyId.equals(studyId) && this.populationId.equals(populationId) && this.dataCollectionEventId.equals(dataCollectionEventId);
+    return this.studyId.equals(studyId) && this.populationId.equals(populationId) &&
+      this.dataCollectionEventId.equals(dataCollectionEventId);
+  }
+
+  @Override
+  public String toString() {
+    return MoreObjects.toStringHelper(this).add("project", project).add("table", table)
+      .add("dceId", getDataCollectionEventUId()).toString();
   }
 }
