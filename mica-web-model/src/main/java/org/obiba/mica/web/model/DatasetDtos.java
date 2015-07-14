@@ -254,6 +254,14 @@ class DatasetDtos {
     return builder;
   }
 
+  public Mica.DatasetDto.StudyTableDto.Builder asDto(StudyTable studyTable, boolean includeSummary) {
+    Mica.DatasetDto.StudyTableDto.Builder builder = asDto(studyTable);
+
+    if(includeSummary) builder.setStudySummary(studySummaryDtos.asDto(studyTable.getStudyId()));
+
+    return  builder;
+  }
+
   public Mica.DatasetVariableAggregationDto.Builder asDto(@NotNull StudyTable studyTable,
     @Nullable Math.SummaryStatisticsDto summary) {
     Mica.DatasetVariableAggregationDto.Builder aggDto = Mica.DatasetVariableAggregationDto.newBuilder();
@@ -282,7 +290,7 @@ class DatasetDtos {
   public Mica.DatasetVariableContingencyDto.Builder asContingencyDto(@NotNull StudyTable studyTable,
     DatasetVariable variable, DatasetVariable crossVariable, @Nullable Search.QueryResultDto results) {
     Mica.DatasetVariableContingencyDto.Builder crossDto = Mica.DatasetVariableContingencyDto.newBuilder();
-    crossDto.setStudyTable(asDto(studyTable));
+    crossDto.setStudyTable(asDto(studyTable, true));
     Mica.DatasetVariableAggregationDto.Builder allAggBuilder = Mica.DatasetVariableAggregationDto.newBuilder();
 
     if(results == null) {
