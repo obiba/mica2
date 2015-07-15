@@ -78,5 +78,7 @@ public class NetworkLogoMigration implements UpgradeStep {
         //ignore: already migrated
       }
     });
+
+    networkService.indexAll();
   }
 }

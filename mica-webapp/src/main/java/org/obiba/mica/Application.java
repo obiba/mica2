@@ -1,6 +1,5 @@
 package org.obiba.mica;
 
-import java.io.IOException;
 import java.util.Arrays;
 
 import javax.annotation.PostConstruct;
@@ -8,8 +7,6 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.config.Profiles;
-import org.obiba.runtime.upgrade.UpgradeException;
-import org.obiba.runtime.upgrade.UpgradeManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -23,7 +20,7 @@ import org.springframework.core.env.SimpleCommandLinePropertySource;
 
 @ComponentScan("org.obiba")
 @EnableAutoConfiguration(exclude = { MetricFilterAutoConfiguration.class, MetricRepositoryAutoConfiguration.class,
-    SecurityAutoConfiguration.class })
+  SecurityAutoConfiguration.class })
 public class Application {
 
   private static final Logger log = LoggerFactory.getLogger(Application.class);
@@ -31,29 +28,24 @@ public class Application {
   @Inject
   private Environment env;
 
-  @Inject
-  private UpgradeManager upgradeManager;
-
   /**
    * Initializes mica.
-   * <p>
+   * <p/>
    * Spring profiles can be configured with a program arguments --spring.profiles.active=your-active-profile
-   * <p>
+   * <p/>
    */
   @PostConstruct
-  public void initApplication() throws IOException, UpgradeException {
+  public void initApplication() {
     if(env.getActiveProfiles().length == 0) {
       log.warn("No Spring profile configured, running with default configuration");
     } else {
       log.info("Running with Spring profile(s) : {}", Arrays.toString(env.getActiveProfiles()));
     }
-
-    upgradeManager.executeUpgrade();
   }
 
   /**
    * Main method, used to run the application.
-   * <p>
+   * <p/>
    * To run the application with hot reload enabled, add the following arguments to your JVM:
    * "-javaagent:spring_loaded/springloaded-jhipster.jar -noverify -Dspringloaded=plugins=io.github.jhipster.loaded.instrument.JHipsterLoadtimeInstrumentationPlugin"
    */
