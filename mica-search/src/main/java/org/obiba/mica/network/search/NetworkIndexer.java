@@ -78,12 +78,13 @@ public class NetworkIndexer {
   @Async
   @Subscribe
   public void reIndexNetworks(IndexNetworksEvent event) {
+    log.info("Reindexing all networks");
     reIndexAll(PUBLISHED_NETWORK_INDEX, networkService.findAllPublishedNetworks());
     reIndexAll(DRAFT_NETWORK_INDEX, networkService.findAllNetworks());
   }
 
-  private void reIndexAll(String indexName, Iterable<Network> studies) {
+  private void reIndexAll(String indexName, Iterable<Network> networks) {
     if(elasticSearchIndexer.hasIndex(indexName)) elasticSearchIndexer.dropIndex(indexName);
-    elasticSearchIndexer.indexAll(indexName, studies);
+    elasticSearchIndexer.indexAll(indexName, networks);
   }
 }
