@@ -4,21 +4,31 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.web.model.Mica;
 
 import com.google.common.collect.Lists;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Stream.concat;
-import static org.obiba.mica.dataset.search.rest.harmonized.ContingencyUtils.checkIsContinuous;
+import static org.obiba.mica.dataset.search.rest.harmonized.ContingencyUtils.getTermsHeaders;
+import static org.obiba.mica.dataset.search.rest.harmonized.ContingencyUtils.getValuesHeaders;
 
 public class CsvContingencyWriter {
+
+  private DatasetVariable var;
+
+  private DatasetVariable crossVar;
+
+  public CsvContingencyWriter(DatasetVariable var, DatasetVariable crossVar) {
+    this.var = var;
+    this.crossVar = crossVar;
+  }
+
   public ByteArrayOutputStream write(Mica.DatasetVariableContingenciesDto dto) throws IOException {
     ByteArrayOutputStream ba = new ByteArrayOutputStream();
 
@@ -40,8 +50,8 @@ public class CsvContingencyWriter {
   }
 
   private void writeBody(CSVWriter writer, Mica.DatasetVariableContingenciesDto dto) {
-    final List<String> terms = ContingencyUtils.getTermsHeaders(dto);
-    final List<String> values = ContingencyUtils.getValuesHeaders(dto);
+    List<String> terms = getTermsHeaders(var, dto);
+    List<String> values = getValuesHeaders(crossVar, dto);
 
     dto.getContingenciesList().forEach(c -> {
       writeHeaders(writer, c, terms);
@@ -55,11 +65,8 @@ public class CsvContingencyWriter {
   }
 
   private void writeBody(CSVWriter writer, Mica.DatasetVariableContingencyDto dto) {
-    final List<String> terms = dto.getAggregationsList().stream().map(a -> a.getTerm()).collect(toList());
-    Optional<Mica.DatasetVariableAggregationDto> va = dto.getAggregationsList().stream()
-      .filter(a -> a.getFrequenciesCount() > 0).findFirst();
-    final List<String> values = va.isPresent() ? va.get().getFrequenciesList().stream().map(f -> f.getValue())
-      .collect(toList()) : Lists.newArrayList();
+    List<String> terms = getTermsHeaders(var, dto);
+    List<String> values = getValuesHeaders(crossVar, dto);
 
     writeHeaders(writer, dto, terms);
     writeTableBody(writer, dto, values, terms);
@@ -74,10 +81,12 @@ public class CsvContingencyWriter {
   }
 
   private void writeTableBody(CSVWriter writer, Mica.DatasetVariableContingencyDto dto, List<String> values, List<String> terms) {
-    if(checkIsContinuous(dto)) {
+    if("CONTINUOUS".equals(crossVar.getNature())) {
       writeContingencyContinuous(writer, dto, Lists.newArrayList(terms));
-    } else {
+    } else if("CATEGORICAL".equals(crossVar.getNature())){
       writeContingencyCategorical(writer, dto, values, terms);
+    } else {
+      throw new RuntimeException("Invalid Dataset Variable nature");
     }
   }
 

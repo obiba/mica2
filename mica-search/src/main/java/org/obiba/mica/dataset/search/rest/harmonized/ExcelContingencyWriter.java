@@ -4,8 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -19,18 +17,20 @@ import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.web.model.Mica;
 
 import com.google.common.collect.Lists;
 
-import static org.obiba.mica.dataset.search.rest.harmonized.ContingencyUtils.checkIsContinuous;
+import static org.obiba.mica.dataset.search.rest.harmonized.ContingencyUtils.getTermsHeaders;
+import static org.obiba.mica.dataset.search.rest.harmonized.ContingencyUtils.getValuesHeaders;
 
 public class ExcelContingencyWriter {
   private static List<String> CONTINUOUS_VALUES = Lists.newArrayList("Min", "Max", "Mean", "Standard Deviation", "N");
 
-  private String crossVariable;
+  private DatasetVariable crossVariable;
 
-  private String variable;
+  private DatasetVariable variable;
 
   private XSSFCellStyle headerStyle;
 
@@ -38,7 +38,7 @@ public class ExcelContingencyWriter {
 
   private XSSFCellStyle titleStyle;
 
-  public ExcelContingencyWriter(String variable, String crossVariable) {
+  public ExcelContingencyWriter(DatasetVariable variable, DatasetVariable crossVariable) {
     this.variable = variable;
     this.crossVariable = crossVariable;
   }
@@ -92,8 +92,8 @@ public class ExcelContingencyWriter {
   }
 
   private void writeBody(XSSFWorkbook workbook, Mica.DatasetVariableContingenciesDto dto) {
-    List<String> terms = ContingencyUtils.getTermsHeaders(dto);
-    List<String> values = ContingencyUtils.getValuesHeaders(dto);
+    List<String> terms = getTermsHeaders(variable, dto);
+    List<String> values = getValuesHeaders(crossVariable, dto);
 
     for(Mica.DatasetVariableContingencyDto c : dto.getContingenciesList()) {
       XSSFSheet sheet = workbook.createSheet(c.getStudyTable().getTable());
@@ -106,23 +106,20 @@ public class ExcelContingencyWriter {
     writeTable(sheet, c, "All", terms, values);
   }
 
-  private void writeBody(XSSFWorkbook workbook, Mica.DatasetVariableContingencyDto c) {
-    List<String> terms = c.getAggregationsList().stream().map(a -> a.getTerm()).collect(Collectors.toList());
-    Optional<Mica.DatasetVariableAggregationDto> va = c.getAggregationsList().stream()
-      .filter(a -> a.getFrequenciesCount() > 0).findFirst();
-    List<String> values = va.isPresent() ? va.get().getFrequenciesList().stream().map(f -> f.getValue())
-      .collect(Collectors.toList()) : Lists.newArrayList();
+  private void writeBody(XSSFWorkbook workbook, Mica.DatasetVariableContingencyDto dto) {
+    List<String> terms = getTermsHeaders(variable, dto);
+    List<String> values = getValuesHeaders(crossVariable, dto);
 
-    XSSFSheet sheet = workbook.createSheet(c.getStudyTable().getTable());
-    writeTable(sheet, c, String.format("%s %s", c.getStudyTable().getTable(), c.getStudyTable().getDceId()), terms,
+    XSSFSheet sheet = workbook.createSheet(dto.getStudyTable().getTable());
+    writeTable(sheet, dto, String.format("%s %s", dto.getStudyTable().getTable(), dto.getStudyTable().getDceId()), terms,
       values);
   }
 
   private void writeTable(XSSFSheet sheet, Mica.DatasetVariableContingencyDto c, String title, List<String> terms,
     List<String> values) {
-    if(checkIsContinuous(c)) {
+    if("CONTINUOUS".equals(crossVariable.getNature())) {
       writeTable(sheet, ContingencyUtils.getContinuousRows(c, terms), title, terms, CONTINUOUS_VALUES, true);
-    } else {
+    } else if("CATEGORICAL".equals(crossVariable.getNature())) {
       writeTable(sheet, ContingencyUtils.getCategoricalRows(c, values, terms), title, terms, values, false);
     }
   }
@@ -175,11 +172,11 @@ public class ExcelContingencyWriter {
 
     row = sheet.getRow(2);
     Cell crossVarLabel = row.getCell(0);
-    crossVarLabel.setCellValue(this.crossVariable);
+    crossVarLabel.setCellValue(this.crossVariable.getName());
     sheet.addMergedRegion(new CellRangeAddress(2, 3, 0, 0));
 
     Cell varLabel = row.getCell(1);
-    varLabel.setCellValue(this.variable);
+    varLabel.setCellValue(this.variable.getName());
     sheet.addMergedRegion(new CellRangeAddress(2, 2, 1, colNum - 1));
 
     Cell totalLabel = row.getCell(colNum);

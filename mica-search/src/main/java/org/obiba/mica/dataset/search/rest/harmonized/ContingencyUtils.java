@@ -2,33 +2,60 @@ package org.obiba.mica.dataset.search.rest.harmonized;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.web.model.Mica;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 public class ContingencyUtils {
 
-  public static List<String> getTermsHeaders(Mica.DatasetVariableContingenciesDto dto) {
-    Optional<Mica.DatasetVariableContingencyDto> contingency = dto.getContingenciesList().stream()
-      .filter(c -> c.getAggregationsCount() > 0).findFirst();
-
-    return contingency.isPresent() ? contingency.get().getAggregationsList().stream().map(a -> a.getTerm())
+  public static List<String> getTermsHeaders(DatasetVariable variable, Mica.DatasetVariableContingenciesDto dto) {
+    List<String> dtoTerms = Lists.newArrayList(
+      dto.getContingenciesList().stream().flatMap(c -> c.getAggregationsList().stream()).map(a -> a.getTerm())
+        .collect(toSet()));
+    List<String> terms = variable.getCategories() != null ? variable.getCategories().stream().map(c -> c.getName())
       .collect(toList()) : Lists.newArrayList();
+    terms.addAll(Sets.difference(Sets.newHashSet(dtoTerms), Sets.newHashSet(terms)));
+
+    return terms;
   }
 
-  public static List<String> getValuesHeaders(Mica.DatasetVariableContingenciesDto dto) {
-    Optional<Mica.DatasetVariableAggregationDto> varAgg = dto.getContingenciesList().stream()
-      .flatMap(c -> c.getAggregationsList().stream()).filter(a -> a.getFrequenciesCount() > 0).findFirst();
+  public static List<String> getTermsHeaders(DatasetVariable variable, Mica.DatasetVariableContingencyDto dto) {
+    List<String> terms = variable.getCategories() != null ? variable.getCategories().stream().map(c -> c.getName())
+      .collect(toList()) : Lists.newArrayList();
+    List<String> dtoTerms = dto.getAggregationsList().stream().map(a -> a.getTerm()).collect(Collectors.toList());
+    terms.addAll(Sets.difference(Sets.newHashSet(dtoTerms), Sets.newHashSet(terms)));
 
-    return varAgg.isPresent()
-      ? varAgg.get().getFrequenciesList().stream().map(f -> f.getValue()).collect(toList())
-      : Lists.newArrayList();
+    return terms;
+  }
+
+  public static List<String> getValuesHeaders(DatasetVariable variable, Mica.DatasetVariableContingenciesDto dto) {
+    List<String> values = variable.getCategories() != null ? variable.getCategories().stream().map(c -> c.getName())
+      .collect(toList()) : Lists.newArrayList();
+    List<String> dtoValues = Lists.newArrayList(
+      dto.getContingenciesList().stream().map(c -> c.getAll()).flatMap(a -> a.getFrequenciesList().stream())
+        .map(f -> f.getValue()).collect(toSet()));
+    values.addAll(Sets.difference(Sets.newHashSet(dtoValues), Sets.newHashSet(values)));
+
+    return values;
+  }
+
+  public static List<String> getValuesHeaders(DatasetVariable variable, Mica.DatasetVariableContingencyDto dto) {
+    List<String> values = variable.getCategories() != null ? variable.getCategories().stream().map(c -> c.getName())
+      .collect(toList()) : Lists.newArrayList();
+    List<String> dtoValues = dto.getAll().getFrequenciesList().stream().map(f -> f.getValue())
+      .collect(Collectors.toList());
+    values.addAll(Sets.difference(Sets.newHashSet(dtoValues), Sets.newHashSet(values)));
+
+    return values;
   }
 
   public static List<List<Integer>> getCategoricalRows(Mica.DatasetVariableContingencyDto c, List<String> values,
@@ -86,9 +113,5 @@ public class ContingencyUtils {
     maxList.add(stats.getMax());
     meanList.add(stats.getMean());
     stdList.add(stats.getStdDeviation());
-  }
-
-  public static boolean checkIsContinuous(Mica.DatasetVariableContingencyDto dto) {
-    return dto.getAll().hasStatistics() || dto.getAggregationsCount() == 0;
   }
 }

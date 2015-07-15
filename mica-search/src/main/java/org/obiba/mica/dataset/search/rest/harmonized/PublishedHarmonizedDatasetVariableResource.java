@@ -21,6 +21,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.math3.util.Pair;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.mica.core.domain.StudyTable;
@@ -103,16 +104,13 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   @GET
   @Path("/contingency")
   public Mica.DatasetVariableContingencyDto getContingency(@QueryParam("by") String crossVariable) {
-    return getContingencyDto(crossVariable);
+    Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
+
+    return getContingencyDto(variables.getFirst(), variables.getSecond());
   }
 
-  private Mica.DatasetVariableContingencyDto getContingencyDto(String crossVariable) {
-    if(Strings.isNullOrEmpty(crossVariable))
-      throw new BadRequestException("Cross variable name is required for the contingency table");
-
+  private Mica.DatasetVariableContingencyDto getContingencyDto(DatasetVariable var, DatasetVariable crossVar) {
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
-    DatasetVariable var = getDatasetVariable(datasetId, variableName, DatasetVariable.Type.Harmonized, studyId, project, table);
-    DatasetVariable crossVar = getDatasetVariable(datasetId, crossVariable, DatasetVariable.Type.Harmonized, studyId, project, table);
 
     for(StudyTable studyTable : dataset.getStudyTables()) {
       if(studyTable.isFor(studyId, project, table)) {
@@ -133,7 +131,9 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   @Path("/contingency/_export")
   @Produces("text/csv")
   public Response getContingencyCsv(@QueryParam("by") String crossVariable) throws IOException {
-    ByteArrayOutputStream res = new CsvContingencyWriter().write(getContingencyDto(crossVariable));
+    Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
+    ByteArrayOutputStream res = new CsvContingencyWriter(variables.getFirst(), variables.getSecond())
+      .write(getContingencyDto(variables.getFirst(), variables.getSecond()));
 
     return Response.ok(res.toByteArray()).header("Content-Disposition",
       String.format("attachment; filename=\"contingency-table-%s-%s.csv\"", variableName, crossVariable)).build();
@@ -143,8 +143,9 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   @Path("/contingency/_export")
   @Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
   public Response getContingencyExcel(@QueryParam("by") String crossVariable) throws IOException {
-    ByteArrayOutputStream res = new ExcelContingencyWriter(variableName, crossVariable)
-      .write(getContingencyDto(crossVariable));
+    Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
+    ByteArrayOutputStream res = new ExcelContingencyWriter(variables.getFirst(), variables.getSecond())
+      .write(getContingencyDto(variables.getFirst(), variables.getSecond()));
 
     return Response.ok(res.toByteArray()).header("Content-Disposition",
       String.format("attachment; filename=\"contingency-table-%s-%s.xlsx\"", variableName, crossVariable)).build();
@@ -170,5 +171,15 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
 
   public void setTable(String table) {
     this.table = table;
+  }
+
+  private Pair<DatasetVariable, DatasetVariable> getContingencyVariables(String crossVariable) {
+    if(Strings.isNullOrEmpty(crossVariable))
+      throw new BadRequestException("Cross variable name is required for the contingency table");
+
+    DatasetVariable var = getDatasetVariable(datasetId, variableName, DatasetVariable.Type.Harmonized, studyId, project, table);
+    DatasetVariable crossVar = getDatasetVariable(datasetId, crossVariable, DatasetVariable.Type.Harmonized, studyId, project, table);
+
+    return Pair.create(var, crossVar);
   }
 }

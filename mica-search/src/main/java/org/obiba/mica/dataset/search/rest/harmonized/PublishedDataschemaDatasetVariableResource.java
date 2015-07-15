@@ -23,6 +23,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.math3.util.Pair;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
@@ -134,7 +135,7 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
     Mica.DatasetVariableAggregationDto allAggDto = CombinedStatistics.mergeAggregations(aggsDto);
     aggDto.setN(allAggDto.getN());
     aggDto.setTotal(allAggDto.getTotal());
-    if (allAggDto.hasStatistics()) aggDto.setStatistics(allAggDto.getStatistics());
+    if(allAggDto.hasStatistics()) aggDto.setStatistics(allAggDto.getStatistics());
     aggDto.addAllFrequencies(allAggDto.getFrequenciesList());
 
     aggDto.addAllAggregations(aggsDto);
@@ -145,22 +146,18 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
   @GET
   @Path("/contingency")
   public Mica.DatasetVariableContingenciesDto getContingency(@QueryParam("by") String crossVariable) {
-    if(Strings.isNullOrEmpty(crossVariable))
-      throw new BadRequestException("Cross variable name is required for the contingency table");
+    Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
 
-    return getDatasetVariableContingenciesDto(crossVariable);
+    return getDatasetVariableContingenciesDto(variables.getFirst(), variables.getSecond());
   }
 
-  private Mica.DatasetVariableContingenciesDto getDatasetVariableContingenciesDto(String crossVariable) {
+  private Mica.DatasetVariableContingenciesDto getDatasetVariableContingenciesDto(DatasetVariable var,
+    DatasetVariable crossVar) {
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
-    DatasetVariable var = getDatasetVariable(datasetId, variableName, DatasetVariable.Type.Dataschema, null);
-    DatasetVariable crossVar = getDatasetVariable(datasetId, crossVariable, DatasetVariable.Type.Dataschema, null);
-
     Mica.DatasetVariableContingenciesDto.Builder crossDto = Mica.DatasetVariableContingenciesDto.newBuilder();
 
     List<Future<Search.QueryResultDto>> results = Lists.newArrayList();
-    dataset.getStudyTables()
-      .forEach(table -> results.add(helper.getContingencyTable(dataset, var, crossVar, table)));
+    dataset.getStudyTables().forEach(table -> results.add(helper.getContingencyTable(dataset, var, crossVar, table)));
 
     Multimap<String, Mica.DatasetVariableAggregationDto> termAggregations = LinkedListMultimap.create();
 
@@ -168,8 +165,8 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
       StudyTable studyTable = dataset.getStudyTables().get(i);
       Future<Search.QueryResultDto> futureResult = results.get(i);
       try {
-        Mica.DatasetVariableContingencyDto studyTableCrossDto = dtos.asContingencyDto(studyTable, var, crossVar, futureResult.get())
-          .build();
+        Mica.DatasetVariableContingencyDto studyTableCrossDto = dtos
+          .asContingencyDto(studyTable, var, crossVar, futureResult.get()).build();
         termAggregations.put(null, studyTableCrossDto.getAll());
         studyTableCrossDto.getAggregationsList()
           .forEach(termAggDto -> termAggregations.put(termAggDto.getTerm(), termAggDto));
@@ -182,15 +179,14 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
 
     // Merge aggregations by term (=variable category) + all terms aggregation.
     Mica.DatasetVariableContingencyDto.Builder allContingencies = Mica.DatasetVariableContingencyDto.newBuilder();
-    termAggregations.asMap().entrySet()
-      .forEach(entry -> {
-        Mica.DatasetVariableAggregationDto merged = CombinedStatistics.mergeAggregations(entry.getValue());
-        if(entry.getKey() == null) {
-          allContingencies.setAll(merged);
-        } else {
-          allContingencies.addAggregations(merged);
-        }
-      });
+    termAggregations.asMap().entrySet().forEach(entry -> {
+      Mica.DatasetVariableAggregationDto merged = CombinedStatistics.mergeAggregations(entry.getValue());
+      if(entry.getKey() == null) {
+        allContingencies.setAll(merged);
+      } else {
+        allContingencies.addAggregations(merged);
+      }
+    });
 
     crossDto.setAll(allContingencies);
 
@@ -201,8 +197,9 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
   @Path("/contingency/_export")
   @Produces("text/csv")
   public Response getContingencyCsv(@QueryParam("by") String crossVariable) throws IOException {
-    Mica.DatasetVariableContingenciesDto dto = getDatasetVariableContingenciesDto(crossVariable);
-    ByteArrayOutputStream value = new CsvContingencyWriter().write(dto);
+    Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
+    ByteArrayOutputStream value = new CsvContingencyWriter(variables.getFirst(), variables.getSecond())
+      .write(getDatasetVariableContingenciesDto(variables.getFirst(), variables.getSecond()));
 
     return Response.ok(value.toByteArray()).header("Content-Disposition",
       String.format("attachment; filename=\"contingency-table-%s-%s.csv\"", variableName, crossVariable)).build();
@@ -212,11 +209,22 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
   @Path("/contingency/_export")
   @Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
   public Response getContingencyExcel(@QueryParam("by") String crossVariable) throws IOException {
-    Mica.DatasetVariableContingenciesDto dto = getDatasetVariableContingenciesDto(crossVariable);
-    ByteArrayOutputStream value = new ExcelContingencyWriter(variableName, crossVariable).write(dto);
+    Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
+    ByteArrayOutputStream value = new ExcelContingencyWriter(variables.getFirst(), variables.getSecond())
+      .write(getDatasetVariableContingenciesDto(variables.getFirst(), variables.getSecond()));
 
     return Response.ok(value.toByteArray()).header("Content-Disposition",
       String.format("attachment; filename=\"contingency-table-%s-%s.xlsx\"", variableName, crossVariable)).build();
+  }
+
+  private Pair<DatasetVariable, DatasetVariable> getContingencyVariables(String crossVariable) {
+    if(Strings.isNullOrEmpty(crossVariable))
+      throw new BadRequestException("Cross variable name is required for the contingency table");
+
+    DatasetVariable var = getDatasetVariable(datasetId, variableName, DatasetVariable.Type.Dataschema, null);
+    DatasetVariable crossVar = getDatasetVariable(datasetId, crossVariable, DatasetVariable.Type.Dataschema, null);
+
+    return Pair.create(var, crossVar);
   }
 
   /**
