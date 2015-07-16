@@ -70,7 +70,8 @@
   <cache name="dataset-variables"
     eternal="true"
     overflowToDisk="true"
-    diskPersistent="true"/>
+    diskPersistent="true">
+  </cache>
 
   <cache name="agate-subjects"
     timeToLiveSeconds="3600"
