@@ -17,6 +17,8 @@ import java.io.Serializable;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
+import net.sf.ehcache.pool.sizeof.annotations.IgnoreSizeOf;
+
 import org.obiba.magma.MagmaRuntimeException;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
@@ -197,6 +199,7 @@ public abstract class DatasetService<T extends Dataset> {
    * Helper class to serialize protobuf object extension.
    */
   public static class SummaryStatisticsWrapper implements Serializable {
+    @IgnoreSizeOf
     private org.obiba.opal.web.model.Math.SummaryStatisticsDto summary;
 
     public SummaryStatisticsWrapper(Math.SummaryStatisticsDto summary) {
