@@ -1,22 +1,18 @@
-<div ng-cloak>
+<div ng-cloak ng-hide="!authenticated">
   <div class="row">
     <div class="col-md-8">
-      <h1><span translate>main.title</span></h1>
+      <h1 translate>main.title</h1>
 
-      <p><span translate>main.subtitle</span></p>
+      <p translate>main.subtitle</p>
 
-      <div class="alert alert-success" ng-hide="!(authenticated && hasRole('MICA_USER'))"
+      <div class="alert alert-success" ng-show="hasRole('mica-user')"
           translate translate-values="{username: '{{subject.login}}'}">
         main.logged.userMessage
       </div>
-      <div class="alert alert-warning" ng-hide="!(authenticated && hasRole('mica-administrator'))"
+      <div class="alert alert-warning" ng-show="hasRole('mica-administrator')"
           translate translate-values="{username: '{{subject.login}}'}">
         main.logged.adminMessage
       </div>
-      <a href="#/login" class="btn btn-info" ng-hide="authenticated">
-        <span translate>login.form.button</span>
-      </a>
-
     </div>
   </div>
 </div>

@@ -33,7 +33,7 @@
     }
   },
   "main": {
-    "title": "Welcome to Micado!",
+    "title": "Welcome to Mica!",
     "subtitle": "Mica allows you to browse studies and, for those with administrator rights, edit them.",
     "logged": {
       "userMessage": "You are logged in as user \"{{username}}\".",
