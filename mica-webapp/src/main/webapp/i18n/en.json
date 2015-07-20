@@ -43,10 +43,10 @@
   "login": {
     "title": "Authentication",
     "form": {
-      "username": "Login",
-      "username.placeholder": "Your login",
+      "username": "User Name",
+      "username.placeholder": "",
       "password": "Password",
-      "password.placeholder": "Your password",
+      "password.placeholder": "",
       "rememberme": "Automatic Login",
       "button": "Sign In"
     },
