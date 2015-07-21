@@ -514,6 +514,7 @@ message DatasetVariableContingencyDto {
   optional DatasetDto.StudyTableDto studyTable = 1;
   repeated DatasetVariableAggregationDto aggregations = 2;
   optional DatasetVariableAggregationDto all = 3;
+  optional int32 privacyThreshold = 4;
 }
 
 message DatasetVariableContingenciesDto {
