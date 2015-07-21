@@ -10,6 +10,7 @@
 
 package org.obiba.mica.web.model;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -301,32 +302,43 @@ class DatasetDtos {
     }
 
     allAggBuilder.setTotal(results.getTotalHits());
-
     MicaConfig micaConfig = micaConfigService.getConfig();
+    int privacyThreshold = micaConfig.getPrivacyThreshold();
+    crossDto.setPrivacyThreshold(privacyThreshold);
+    boolean privacyChecks = crossVariable.hasCategories() ? validatePrivacyThreshold(results, privacyThreshold) : true;
 
     // add facet results in the same order as the variable categories
     variable.getCategories().forEach(cat -> results.getFacetsList().stream()
-        .filter(facet -> facet.hasFacet() && cat.getName().equals(facet.getFacet())).forEach(facet -> {
-          boolean privacyCheck = facet.getFilters(0).getCount() > micaConfig.getPrivacyThreshold();
-          Mica.DatasetVariableAggregationDto.Builder aggBuilder = Mica.DatasetVariableAggregationDto.newBuilder();
-          aggBuilder.setTotal(results.getTotalHits());
-          aggBuilder.setTerm(facet.getFacet());
-          DatasetCategory category = variable.getCategory(facet.getFacet());
-          aggBuilder.setMissing(category != null && category.isMissing());
-          addSummaryStatistics(crossVariable, aggBuilder, facet, privacyCheck);
-          crossDto.addAggregations(aggBuilder);
-        }));
+      .filter(facet -> facet.hasFacet() && cat.getName().equals(facet.getFacet())).forEach(facet -> {
+        boolean privacyCheck = privacyChecks && checkPrivacyThreshold(facet.getFilters(0).getCount(), privacyThreshold);
+        Mica.DatasetVariableAggregationDto.Builder aggBuilder = Mica.DatasetVariableAggregationDto.newBuilder();
+        aggBuilder.setTotal(results.getTotalHits());
+        aggBuilder.setTerm(facet.getFacet());
+        DatasetCategory category = variable.getCategory(facet.getFacet());
+        aggBuilder.setMissing(category != null && category.isMissing());
+        addSummaryStatistics(crossVariable, aggBuilder, facet, privacyCheck);
+        crossDto.addAggregations(aggBuilder);
+      }));
 
     // add total facet for all variable categories
     results.getFacetsList().stream().filter(facet -> facet.hasFacet() && "_total".equals(facet.getFacet()))
       .forEach(facet -> {
-        boolean privacyCheck = facet.getFilters(0).getCount() > micaConfig.getPrivacyThreshold();
+        boolean privacyCheck = privacyChecks && facet.getFilters(0).getCount() > micaConfig.getPrivacyThreshold();
         addSummaryStatistics(crossVariable, allAggBuilder, facet, privacyCheck);
       });
 
     crossDto.setAll(allAggBuilder);
 
     return crossDto;
+  }
+
+  private boolean checkPrivacyThreshold(int count, int threshold) {
+    return count == 0 || count >= threshold;
+  }
+
+  private boolean validatePrivacyThreshold(Search.QueryResultDtoOrBuilder results, int privacyThreshold) {
+    return results.getFacetsList().stream().map(Search.FacetResultDto::getFrequenciesList).flatMap(Collection::stream)
+      .allMatch(freq -> checkPrivacyThreshold(freq.getCount(), privacyThreshold));
   }
 
   private void addSummaryStatistics(DatasetVariable crossVariable,
