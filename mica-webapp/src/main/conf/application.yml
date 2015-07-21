@@ -1,9 +1,53 @@
+#
+# Mica server main configuration file.
+# See documentation at: http://wiki.obiba.org/display/MICADOC/Mica+Configuration+Files
+#
+
+# HTTP server configuration
 server:
     port: 8082
     address: localhost
 
 https:
     port: 8445
+
+# MongoDB: database engine
+mongodb:
+  url: localhost:27017
+  databaseName: mica
+  username:
+  password:
+
+# Opal: data dictionaries, summaries and taxonomies
+opal:
+  url: https://localhost:8443
+  username: administrator
+  password: password
+
+# Agate: user realm and application services configuration
+agate:
+  url: https://localhost:8444
+  application:
+    name: mica
+    key: changeit
+
+# Elasticsearch: search engine configuration
+elasticsearch:
+  dataNode: true
+  clusterName: mica
+  shards: 5
+  replicas: 1
+  settings: "http.enabled: false"
+
+# Shiro: user directory configuration
+shiro:
+  password:
+    nbHashIterations: 10000
+    salt: mica
+
+#
+# Other advanced settings
+#
 
 spring:
   profiles: prod
@@ -21,35 +65,6 @@ spring:
   messageSource:
     cacheSeconds: 1
 
-mongodb:
-  url: localhost:27017
-  databaseName: mica
-  username:
-  password:
-
-opal:
-  url: https://localhost:8443
-  username: administrator
-  password: password
-
-agate:
-  url: https://localhost:8444
-  application:
-    name: mica
-    key: changeit
-
-shiro:
-  password:
-    nbHashIterations: 10000
-    salt: mica
-
-elasticsearch:
-  dataNode: true
-  clusterName: mica
-  shards: 5
-  replicas: 1
-  settings: "http.enabled: false"
-
 metrics:
     jmx.enabled: true
     graphite:
@@ -60,23 +75,10 @@ metrics:
 cache:
     timeToLiveSeconds: 3600
 
-# Disable the spring security default configuration from spring-boot-actuator
-#management.security.enabled: false
-
 # Disable Jolokia - An http/json bridge for remote JMX access
 endpoints.jolokia.enabled: false
-
-# security configuration (this key should be unique for your application, and kept secret)
-#jhipster.security.rememberme.key: mica
 
 async:
     corePoolSize: 2
     maxPoolSize: 50
     queueCapacity: 10000
-
-authentication:
-    oauth:
-        clientid: jhipsterapp
-        secret: mySecretOAuthSecret
-        # Token is valid 30 minutes
-        tokenValidityInSeconds: 1800

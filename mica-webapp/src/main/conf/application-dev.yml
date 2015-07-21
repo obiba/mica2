@@ -6,22 +6,6 @@ server:
 https:
     port: 8445
 
-spring:
-  profiles: dev
-  thymeleaf:
-    mode: XHTML
-    cache: false
-  mail:
-    host: localhost
-    port: 25
-    user:
-    password:
-    protocol: smtp
-    tls: false
-    auth: false
-  messageSource:
-    cacheSeconds: 1
-
 mongodb:
   url: localhost:27017
   databaseName: mica
@@ -39,17 +23,38 @@ agate:
     name: mica
     key: changeit
 
-shiro:
-  password:
-    nbHashIterations: 10000
-    salt: mica
-
 elasticsearch:
   dataNode: true
   clusterName: mica
   shards: 5
   replicas: 1
   settings: "http.enabled: true"
+
+shiro:
+  password:
+    nbHashIterations: 10000
+    salt: mica
+
+#
+# Other advanced settings
+#
+
+spring:
+  profiles: dev
+  thymeleaf:
+    mode: XHTML
+    cache: false
+  mail:
+    host: localhost
+    port: 25
+    user:
+    password:
+    protocol: smtp
+    tls: false
+    auth: false
+  messageSource:
+    cacheSeconds: 1
+
 
 metrics:
     jmx.enabled: true
@@ -72,25 +77,11 @@ hotReload:
     watchdir:
       - target/classes
 
-# Disable the spring security default configuration from spring-boot-actuator
-#management.security.enabled: false
-
 # Disable Jolokia - An http/json bridge for remote JMX access
 endpoints.jolokia.enabled: false
 endpoints.health.sensitive: false
-
-# security configuration (this key should be unique for your application, and kept secret)
-#jhipster.security.rememberme.key: mica
 
 async:
     corePoolSize: 2
     maxPoolSize: 50
     queueCapacity: 10000
-
-
-authentication:
-    oauth:
-        clientid: jhipsterapp
-        secret: mySecretOAuthSecret
-        # Token is valid 30 minutes
-        tokenValidityInSeconds: 1800
