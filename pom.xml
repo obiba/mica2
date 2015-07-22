@@ -68,6 +68,7 @@
     <maven-findbugs-plugin.version>2.5.3</maven-findbugs-plugin.version>
     <maven-pmd-plugin.version>3.1</maven-pmd-plugin.version>
     <maven-sonar-plugin.version>2.2</maven-sonar-plugin.version>
+    <maven-release-plugin.version>2.5.2</maven-release-plugin.version>
 
   </properties>
 
@@ -595,6 +596,18 @@
     <pluginManagement>
 
       <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>${maven-release-plugin.version}</version>
+          <configuration>
+            <!-- Use parent version as modules' version -->
+            <autoVersionSubmodules>true</autoVersionSubmodules>
+            <releaseProfiles>ci-build,release</releaseProfiles>
+            <!-- Comment this profile because Jenkins crashes while performing the release -->
+            <!--<preparationGoals>clean verify install</preparationGoals>-->
+          </configuration>
+        </plugin>
 
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -615,6 +628,10 @@
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
