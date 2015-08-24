@@ -41,6 +41,12 @@
       });
       
       return this;
+    },
+
+    reset: function() {
+      $(this.selectee).empty();
+      $('.timeline-legend').remove();
+      return this;
     }
   };
 

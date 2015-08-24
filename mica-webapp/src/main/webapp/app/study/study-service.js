@@ -15,7 +15,7 @@ mica.study
 
   .factory('DraftStudiesResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/studies', {}, {
+      return $resource('ws/draft/studies?comment:comment', {}, {
         'save': {method: 'POST', errorHandler: true}
       });
     }])
@@ -34,6 +34,27 @@ mica.study
     function ($resource) {
       return $resource('ws/draft/study/:id/_publish', {}, {
         'publish': {method: 'PUT', params: {id: '@id'}}
+      });
+    }])
+
+  .factory('DraftStudyRevisionsResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/draft/study/:id/commits', {}, {
+        'get': {method: 'GET', params: {id: '@id'}}
+      });
+    }])
+
+  .factory('DraftStudyRestoreRevisionResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/draft/study/:id/commit/:commitId/restore', {}, {
+        'restore': {method: 'PUT', params: {id: '@id', commitId: '@commitId'}}
+      });
+    }])
+
+  .factory('DraftStudyViewRevisionResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/draft/study/:id/commit/:commitId/view', {}, {
+        'view': {method: 'GET', params: {id: '@id', commitId: '@commitId'}}
       });
     }])
 

@@ -48,14 +48,22 @@
       </tab>
     </tabset>
 
-    <button type="button" class="btn btn-default" ng-click="cancel()">
-      <span translate>cancel</span>
-    </button>
 
-    <button type="submit" class="btn btn-primary">
-      <span translate>save</span>
-    </button>
+    <div class="row">
+      <div class="col-md-6">
+    <div form-input model="revision.comment" help="study.revision.update-comment" type="text"></div>
+      </div>
+    </div>
 
+    <div class="voffset1">
+      <button type="button" class="btn btn-default" ng-click="cancel()">
+        <span translate>cancel</span>
+      </button>
+
+      <button type="submit" class="btn btn-primary">
+        <span translate>save</span>
+      </button>
+    </div>
   </form>
 
 </div>

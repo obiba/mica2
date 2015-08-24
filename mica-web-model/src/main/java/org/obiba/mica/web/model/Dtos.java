@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.obiba.git.CommitInfo;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.core.domain.Comment;
 import org.obiba.mica.core.domain.LocalizedString;
@@ -79,6 +80,9 @@ public class Dtos {
 
   @Inject
   private UserProfileDtos userProfileDtos;
+
+  @Inject
+  private GitCommitInfoDtos gitCommitInfoDtos;
 
   @NotNull
   public StudyDto asDto(@NotNull Study study) {
@@ -235,7 +239,8 @@ public class Dtos {
   }
 
   @NotNull
-  public Mica.DatasetVariableContingencyDto.Builder asContingencyDto(StudyTable studyTable, DatasetVariable variable, DatasetVariable crossVariable, @Nullable Search.QueryResultDto results) {
+  public Mica.DatasetVariableContingencyDto.Builder asContingencyDto(StudyTable studyTable, DatasetVariable variable,
+    DatasetVariable crossVariable, @Nullable Search.QueryResultDto results) {
     return datasetDtos.asContingencyDto(studyTable, variable, crossVariable, results);
   }
 
@@ -299,4 +304,13 @@ public class Dtos {
     return userProfileDtos.asDto(subject);
   }
 
+  @NotNull
+  public List<Mica.GitCommitInfoDto> asDto(Iterable<CommitInfo> commitInfos) {
+    return gitCommitInfoDtos.asDto(commitInfos);
+  }
+
+  @NotNull
+  public Mica.GitCommitInfoDto asDto(CommitInfo commitInfo) {
+    return gitCommitInfoDtos.asDto(commitInfo);
+  }
 }

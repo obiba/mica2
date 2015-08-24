@@ -54,14 +54,119 @@ mica.study
       });
     }])
 
-  .controller('StudyViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location',
-    '$translate', 'StudyStateResource', 'DraftStudyResource', 'DraftStudyPublicationResource', 'MicaConfigResource', 'STUDY_EVENTS', 'NOTIFICATION_EVENTS', 'CONTACT_EVENTS',
-    'MicaStudiesConfigResource', '$modal', function ($rootScope, $scope, $routeParams, $log, $locale, $location, $translate, StudyStateResource, DraftStudyResource, DraftStudyPublicationResource, MicaConfigResource, STUDY_EVENTS, NOTIFICATION_EVENTS, CONTACT_EVENTS, MicaStudiesConfigResource, $modal) {
+  .controller('StudyViewController', [
+    '$rootScope',
+    '$scope',
+    '$routeParams',
+    '$log',
+    '$locale',
+    '$location',
+    '$translate',
+    '$filter',
+    'StudyStateResource',
+    'DraftStudyResource',
+    'DraftStudyPublicationResource',
+    'DraftStudyViewRevisionResource',
+    'DraftStudyRevisionsResource',
+    'DraftStudyRestoreRevisionResource',
+    'MicaConfigResource',
+    'STUDY_EVENTS',
+    'NOTIFICATION_EVENTS',
+    'CONTACT_EVENTS',
+    'MicaStudiesConfigResource',
+    '$modal',
+    function ($rootScope,
+              $scope,
+              $routeParams,
+              $log,
+              $locale,
+              $location,
+              $translate,
+              $filter,
+              StudyStateResource,
+              DraftStudyResource,
+              DraftStudyPublicationResource,
+              DraftStudyViewRevisionResource,
+              DraftStudyRevisionsResource,
+              DraftStudyRestoreRevisionResource,
+              MicaConfigResource,
+              STUDY_EVENTS,
+              NOTIFICATION_EVENTS,
+              CONTACT_EVENTS,
+              MicaStudiesConfigResource,
+              $modal) {
+
+      $scope.Mode = { View: 0, Revision: 1};
+      $scope.viewMode = /\/revision[s\/]*/.exec($location.path()) !== null ? $scope.Mode.Revision : $scope.Mode.View;
+
+      $scope.inViewMode = function() {
+        return $scope.viewMode === $scope.Mode.View;
+      };
+
       var getActiveTab = function () {
         return $scope.tabs.filter(function (tab) {
           return tab.active;
         })[0];
       };
+
+      var updateTimeline = function(study) {
+        if (!$scope.timeline) {
+          $scope.timeline = new $.MicaTimeline(new $.StudyDtoParser());
+        }
+
+        $scope.timeline.reset().create('#timeline', study).addLegend();
+      };
+
+      var initializeStudy = function (study) {
+        if (study.logo) {
+          $scope.logoUrl = 'ws/draft/study/' + study.id + '/file/' + study.logo.id + '/_download';
+        }
+        updateTimeline(study);
+      };
+
+      var viewRevision = function(studyId, commitId) {
+        $scope.study = DraftStudyViewRevisionResource.view({id: studyId, commitId: commitId}, initializeStudy);
+      };
+
+      var fetchStudy = function(studyId) {
+        $scope.study = DraftStudyResource.get({id: studyId}, initializeStudy);
+      };
+
+      var fetchRevisions = function(studyId, onSuccess) {
+        DraftStudyRevisionsResource.query({id: studyId}, function (response) {
+          if (onSuccess) {
+            onSuccess(response);
+          }
+        });
+      };
+
+      var restoreRevision = function(studyId, commitInfo) {
+        if (commitInfo) {
+          $scope.studyId = studyId;
+          $scope.studyRevisionToRestore = commitInfo.commitId;
+          $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
+            {
+              titleKey: 'study.restore-dialog.title',
+              messageKey:'study.restore-dialog.message',
+              messageArgs: [$filter('amDateFormat')(commitInfo.date, 'lll')]
+            }, commitInfo.commitId
+          );
+        }
+      };
+
+      var onRestore = function (event, id) {
+        if ($scope.studyRevisionToRestore === id) {
+          DraftStudyRestoreRevisionResource.restore({id: $scope.studyId, commitId: $scope.studyRevisionToRestore},
+            function () {
+              fetchStudy($routeParams.id);
+            });
+
+          delete $scope.studyId;
+          delete $scope.studyRevisionToRestore;
+        }
+      };
+
+      $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, onRestore);
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
@@ -86,17 +191,17 @@ mica.study
           }) || [{text: term}])[0].text;
       };
 
-      $scope.study = DraftStudyResource.get(
-        {id: $routeParams.id},
-        function (study) {
-          if (study.logo) {
-            $scope.logoUrl = 'ws/draft/study/' + study.id + '/file/' + study.logo.id + '/_download';
-          }
-          new $.MicaTimeline(new $.StudyDtoParser()).create('#timeline', study).addLegend();
-        });
+      if ($scope.viewMode === $scope.Mode.Revision && $routeParams.commitId) {
+        viewRevision($scope.study.id, $routeParams.commitId);
+      } else {
+        fetchStudy($routeParams.id);
+      }
 
+      $scope.fetchStudy = fetchStudy;
+      $scope.viewRevision = viewRevision;
+      $scope.restoreRevision = restoreRevision;
+      $scope.fetchRevisions = fetchRevisions;
       $scope.studySummary = StudyStateResource.get({id: $routeParams.id});
-
       $scope.months = $locale.DATETIME_FORMATS.MONTH;
 
       $scope.emitStudyUpdated = function () {
@@ -108,7 +213,9 @@ mica.study
           $log.debug('save study', studyUpdated);
 
           $scope.study.$save(function () {
-              $scope.study = DraftStudyResource.get({id: $scope.study.id});
+              $scope.study = DraftStudyResource.get({id: $scope.study.id}, function onSuccess(study){
+                initializeStudy(study);
+              });
             },
             function (response) {
               $log.error('Error on study save:', response);
@@ -223,22 +330,26 @@ mica.study
         $location.url($location.url() + '/population/' + population.id + '/dce/' + dce.id + '/edit');
       };
 
-      $scope.deleteDataCollectionEvent = function (study, popIndex, dce, dceIndex) {
+      $scope.deleteDataCollectionEvent = function (population, dce) {
         var titleKey = 'data-collection-event.delete-dialog-title';
         var messageKey = 'data-collection-event.delete-dialog-message';
         $translate([titleKey, messageKey])
           .then(function (translation) {
             $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
-              {title: translation[titleKey], message: translation[messageKey]}, dce);
+              {title: translation[titleKey], message: translation[messageKey]}, {dce: dce, population: population});
           });
+      };
 
-        $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, dce) {
-          if ($scope.study.populations[popIndex].dataCollectionEvents[dceIndex] === dce) {
-            $scope.study.populations[popIndex].dataCollectionEvents.splice(dceIndex, 1);
+      $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, data) {
+        var popIndex = $scope.study.populations.indexOf(data.population);
+        if (popIndex > -1) {
+          var dceIndex = data.population.dataCollectionEvents.indexOf(data.dce);
+          if (dceIndex > -1) {
+            data.population.dataCollectionEvents.splice(dceIndex, 1);
             $scope.emitStudyUpdated();
           }
-        });
-      };
+        }
+      });
 
       $scope.addPopulation = function () {
         $location.url($location.url() + '/population/add');
@@ -664,10 +775,32 @@ mica.study
 
     }])
 
-  .controller('StudyEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$location', '$modal', 'DraftStudyResource', 'DraftStudiesResource', 'MicaConfigResource', 'StringUtils', 'FormServerValidation',
+  .controller('StudyEditController', ['$rootScope',
+    '$scope',
+    '$routeParams',
+    '$log',
+    '$location',
+    '$modal',
+    'DraftStudyResource',
+    'DraftStudiesResource',
+    'MicaConfigResource',
+    'StringUtils',
+    'FormServerValidation',
 
-    function ($rootScope, $scope, $routeParams, $log, $location, $modal, DraftStudyResource, DraftStudiesResource, MicaConfigResource, StringUtils, FormServerValidation) {
+    function ($rootScope,
+              $scope,
+              $routeParams,
+              $log,
+              $location,
+              $modal,
+              DraftStudyResource,
+              DraftStudiesResource,
+              MicaConfigResource,
+              StringUtils,
+              FormServerValidation) {
+
       // TODO this code needs simplification and possibly placed inside a directive
+      $scope.revision = {comment: null};
       $scope.today = new Date();
       $scope.$watch('authorization.maelstrom.date', function (newVal) {
         if (newVal !== $scope.today) {
@@ -752,7 +885,7 @@ mica.study
 
       var updateStudy = function () {
         $log.debug('Update study', $scope.study);
-        $scope.study.$save(
+        $scope.study.$save({comment:$scope.revision.comment},
           function (study) {
             $location.path('/study/' + study.id).replace();
           },
