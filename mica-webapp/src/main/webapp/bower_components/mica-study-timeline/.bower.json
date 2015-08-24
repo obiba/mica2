@@ -22,11 +22,11 @@
   ],
   "license": "GNU Public License version 3",
   "homepage": "https://github.com/obiba/mica-study-timeline",
-  "_release": "f52df43192",
+  "_release": "5e0b75736e",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "f52df43192d081a917e1c83c8b5cb77014a9ab15"
+    "commit": "5e0b75736ed0af1b2d6650d6e01bfbdc0eb8c6b9"
   },
   "_source": "git@github.com:obiba/mica-study-timeline.git",
   "_target": "*",

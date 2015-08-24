@@ -3,6 +3,7 @@ package org.obiba.mica.study.rest;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -61,9 +62,10 @@ public class DraftStudiesResource {
   @POST
   @Path("/studies")
   @Timed
-  public Response create(@SuppressWarnings("TypeMayBeWeakened") Mica.StudyDto studyDto, @Context UriInfo uriInfo) {
+  public Response create(@SuppressWarnings("TypeMayBeWeakened") Mica.StudyDto studyDto, @Context UriInfo uriInfo,
+    @Nullable @QueryParam("comment") String comment) {
     Study study = dtos.fromDto(studyDto);
-    studyService.save(study);
+    studyService.save(study, comment);
     return Response.created(uriInfo.getBaseUriBuilder().path(DraftStudiesResource.class, "study").build(study.getId()))
         .build();
   }

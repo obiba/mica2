@@ -432,7 +432,15 @@
     "opal": "Opal Server",
     "opal-help": "URL of the opal server for this study",
     "delete-conflict": "Conflict deleting study",
-    "delete-conflict-message": "Found conflicts when trying to delete study. Remove dependencies and try again."
+    "delete-conflict-message": "Found conflicts when trying to delete study. Remove dependencies and try again.",
+    "revisions":  "Study Revisions",
+    "revision": {
+      "update-comment": "Add a comment to describe the changes."
+    },
+    "restore-dialog": {
+      "title": "Restoring Study from Revision",
+      "message": "Are you sure you want to restore this revision from '{{arg0}}'?"
+    }
   },
   "contact": {
     "label": "Contact",
@@ -632,6 +640,13 @@
   "APPROVED": "Approved",
   "REJECTED": "Rejected",
   "or": "or",
+  "date": "Date",
+  "author": "Author",
+  "revisions": "Revisions",
+  "revision": "Revision",
+  "current-reversion-info": "You are viewing the revision from '{{arg0}}' edited by '{{arg1}}'.",
+  "comment-label": "Comment",
+  "restore": "Restore",
   "server": {
     "error": {
       "403": "Server rejected your request, please make sure you are logged in and try again."

@@ -20,13 +20,17 @@ import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.transport.PushResult;
 import org.joda.time.DateTime;
+import org.obiba.git.CommitInfo;
 import org.obiba.git.GitException;
 import org.obiba.git.command.AbstractGitWriteCommand;
 import org.obiba.git.command.AddDeleteFilesCommand;
+import org.obiba.git.command.CommitLogCommand;
+import org.obiba.git.command.DiffAsStringCommand;
+import org.obiba.git.command.FetchBlobCommand;
 import org.obiba.git.command.GitCommandHandler;
+import org.obiba.git.command.LogsCommand;
 import org.obiba.git.command.ReadFileCommand;
 import org.obiba.mica.core.domain.GitPersistable;
-import org.obiba.mica.file.TempFileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -34,6 +38,7 @@ import org.springframework.validation.annotation.Validated;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.io.ByteStreams;
 
@@ -93,12 +98,60 @@ public class GitService {
     }
   }
 
-  public void save(
-    @NotNull @Valid GitPersistable persistable) {
+  public Iterable<CommitInfo> getCommitsInfo(@NotNull @Valid GitPersistable persistable, Class clazz) {
+    return gitCommandHandler.execute( //
+      new LogsCommand.Builder(getRepositoryPath(persistable), new File(clonesRoot, persistable.pathPrefix())) //
+        .path(getJsonFileName(clazz.getSimpleName())) //
+        .excludeDeletedCommits(true) //
+        .build() //
+    ); //
+  }
+
+  public CommitInfo getCommitInfo(@NotNull @Valid GitPersistable persistable, @NotNull String commitId,
+    Class clazz) {
+    return gitCommandHandler.execute(
+      new CommitLogCommand.Builder(getRepositoryPath(persistable), new File(clonesRoot, persistable.pathPrefix()),
+        getJsonFileName(clazz.getSimpleName()), commitId).build());
+  }
+
+  public String getBlob(@NotNull @Valid GitPersistable persistable, @NotNull String commitId, Class clazz) {
+    return gitCommandHandler.execute( //
+      new FetchBlobCommand.Builder(getRepositoryPath(persistable), //
+        new File(clonesRoot, persistable.pathPrefix()), //
+        getJsonFileName(clazz.getSimpleName()) //
+      ) //
+      .commitId(commitId) //
+      .build() //
+    ); //
+  }
+
+  public Iterable<String> getDiffEntries(@NotNull @Valid GitPersistable persistable, @NotNull String commitId,
+    @Nullable String prevCommitId, Class clazz) {
+    return gitCommandHandler.execute( //
+      new DiffAsStringCommand.Builder(getRepositoryPath(persistable), //
+        new File(clonesRoot, persistable.pathPrefix()), //
+        commitId //
+      ).path(getJsonFileName(clazz.getSimpleName())) //
+        .previousCommitId(prevCommitId) //
+        .build() //
+    );
+
+  }
+
+  public void save(@NotNull @Valid GitPersistable persistable) {
+    saveInternal(persistable, null);
+  }
+
+  public void save(@NotNull @Valid GitPersistable persistable, @Nullable String comment) {
+    saveInternal(persistable, comment);
+  }
+
+  private void saveInternal(GitPersistable persistable, String comment) {
     persistable.setLastModifiedDate(DateTime.now());
 
     AddDeleteFilesCommand.Builder builder = new AddDeleteFilesCommand.Builder(getRepositoryPath(persistable),
-      new File(clonesRoot, persistable.pathPrefix()) , "Update");
+      new File(clonesRoot, persistable.pathPrefix()),
+      Strings.isNullOrEmpty(comment) ? persistable.isNew() ? "Created" : "Updated" : comment);
 
     persistable.parts().entrySet().forEach(p -> {
       try {
