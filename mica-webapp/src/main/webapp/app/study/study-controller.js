@@ -196,8 +196,12 @@ mica.study
         });
       };
 
-      $scope.addDataCollectionEvent = function (study, population) {
-        $location.url($location.url() + '/population/' + population.id + '/dce/add');
+      $scope.addDataCollectionEvent = function (study, population, dce) {
+        $location.url($location.path() + '/population/' + population.id + '/dce/add');
+
+        if(dce) {
+          $location.search('sourceDceId', dce.id);
+        }
       };
 
       $scope.showDataCollectionEvent = function (study, population, dce) {
@@ -270,7 +274,7 @@ mica.study
       $scope.population = {selectionCriteria: {healthStatus: [], ethnicOrigin: []}, recruitment: {dataSources: []}};
 
       $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}, function () {
-        var latestPopulationId;
+        var populationsIds;
 
         if ($routeParams.pid) {
           $scope.population = $scope.study.populations.filter(function (p) {
@@ -283,8 +287,11 @@ mica.study
           }
 
           if ($scope.study.populations.length) {
-            latestPopulationId = $scope.study.populations[$scope.study.populations.length - 1].id;
-            $scope.population.id = MicaUtil.generateNextId(latestPopulationId);
+            populationsIds = $scope.study.populations.map(function(p) {
+              return p.id;
+            });
+
+            $scope.population.id = MicaUtil.generateNextId(populationsIds);
           }
 
           $scope.study.populations.push($scope.population);
@@ -512,14 +519,32 @@ mica.study
               return d.id === $routeParams.dceId;
             })[0];
           } else {
+            var sourceDceId = $location.search().sourceDceId;
 
             if ($scope.population.dataCollectionEvents === undefined) {
               $scope.population.dataCollectionEvents = [];
             }
 
-            if ($scope.population.dataCollectionEvents.length) {
-              var latestDce = $scope.population.dataCollectionEvents[$scope.population.dataCollectionEvents.length - 1];
-              $scope.dce.id = MicaUtil.generateNextId(latestDce.id);
+            var dceIds = $scope.population.dataCollectionEvents.map(function(dce){
+              return dce.id;
+            });
+
+            if (sourceDceId) {
+              var sourceDce = $scope.population.dataCollectionEvents.filter(function (dce) {
+                return dce.id === sourceDceId;
+              })[0];
+
+              if (sourceDce) {
+                angular.copy(sourceDce, $scope.dce);
+                $scope.dce.id = MicaUtil.generateNextId(dceIds);
+                delete $scope.dce.attachments;
+                delete $scope.dce.startYear;
+                delete $scope.dce.startMonth;
+                delete $scope.dce.endYear;
+                delete $scope.dce.endMonth;
+              }
+            } else if (dceIds.length) {
+              $scope.dce.id = MicaUtil.generateNextId(dceIds);
             }
 
             $scope.population.dataCollectionEvents.push($scope.dce);
@@ -588,6 +613,7 @@ mica.study
       };
 
       var redirectToStudy = function () {
+        $location.search('sourceDceId', null);
         $location.path('/study/' + $scope.study.id).replace();
       };
 
