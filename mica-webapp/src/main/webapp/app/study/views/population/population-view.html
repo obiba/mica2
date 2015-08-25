@@ -209,12 +209,14 @@
         <td>
           {{dce.endYear}} <span ng-show="dce.endMonth">({{months[dce.endMonth - 1]}})</span>
         </td>
-        <td>
+        <td class="action-column">
           <a ng-click="showDataCollectionEvent(study, population, dce)" class="hand action"><i
             class="fa fa-eye"></i></a>
           <div class="inline" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
             <a ng-click="editDataCollectionEvent(study, population, dce)" class="hand action"><i
               class="fa fa-pencil"></i></a>
+            <a ng-click="addDataCollectionEvent(study, population, dce)" class="hand action"  translate title="{{'clone' | translate}}"><i
+              class="fa fa-files-o"></i></a>
             <a ng-click="deleteDataCollectionEvent(study, $parent.$index, dce, $index)" class="hand action"><i
               class="fa fa-trash-o"></i></a>
           </div>

@@ -277,30 +277,28 @@ mica.factory('AuditsService', ['$http',
   }]);
 
 mica.factory('MicaUtil', [function() {
-  var generateNextId = function(prevId) {
-    var r= /[0-9]+$/,
+  var generateNextId = function (ids) {
+    var r = /[0-9]+$/, prevId, matches, newId, i = ids.length - 1;
+
+    while (i > -1) {
+      prevId = ids[i];
       matches = r.exec(prevId);
 
-    if (matches && matches.length) {
-      return prevId.replace(r, parseInt(matches[0], 10) + 1);
+      if (matches && matches.length) {
+        newId = prevId.replace(r, parseInt(matches[0], 10) + 1);
+      } else {
+        newId = prevId + '_1';
+      }
+
+      i = ids.indexOf(newId);
     }
 
-    return prevId ? prevId + '_1' : '';
+    return newId;
   };
 
   return {
-    generateNextId: function(prevId) {
-      if(angular.isArray(prevId)) {
-        var res = [];
-
-        for(var i = 0; i < prevId.length; i++) {
-          res[i] = {lang: prevId[i].lang, value: generateNextId(prevId[i].value)};
-        }
-
-        return res;
-      }
-
-      return generateNextId(prevId);
+    generateNextId: function(ids) {
+      return generateNextId(ids);
     }
   };
 }]);

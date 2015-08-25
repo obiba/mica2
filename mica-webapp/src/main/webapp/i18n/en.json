@@ -582,6 +582,7 @@
   "values": "Values",
   "namespace": "Namespace",
   "edit": "Edit",
+  "clone": "Clone",
   "view": "View",
   "delete": "Delete",
   "cancel": "Cancel",
