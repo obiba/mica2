@@ -5,7 +5,7 @@
 * along with this program.  If not, see  <http://www.gnu.org/licenses>
 
 * mica-study-timeline - v1.0.0-SNAPSHOT
-* Date: 2015-05-14
+* Date: 2015-08-28
  */
 (function () {
 
@@ -664,6 +664,12 @@
         }
       });
       
+      return this;
+    },
+
+    reset: function() {
+      $(this.selectee).empty();
+      $('.timeline-legend').remove();
       return this;
     }
   };

@@ -1,7 +1,7 @@
 <h4>
   <span class="badge">{{population.id}}</span>
   <localized value="population.name" lang="tab.lang"></localized>
-  <div class="inline" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+  <div class="inline" ng-if="$parent.inViewMode() && hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
     <a ng-click="editPopulation(study, population)" class="action"><i class="fa fa-pencil"></i></a>
     <a ng-click="deletePopulation(population, $index)" class="action"><i class="fa fa-trash-o"></i></a>
   </div>
@@ -174,7 +174,7 @@
   </tab>
 
   <tab heading="{{'study.data-collection-events' | translate}}">
-    <a ng-click="addDataCollectionEvent(study, population)" class="btn btn-info btn-sm voffset1">
+    <a ng-if="$parent.inViewMode()" ng-click="addDataCollectionEvent(study, population)" class="btn btn-info btn-sm voffset1">
       <i class="fa fa-plus"></i> <span translate>study.add-data-collection-event</span>
     </a>
     <div ng-show="population.dataCollectionEvents.length > 1" class="label label-default pull-right voffset3">
@@ -189,7 +189,7 @@
         <th translate>study.description</th>
         <th translate>study.start</th>
         <th translate>study.end</th>
-        <th translate>actions</th>
+        <th ng-if="inViewMode()" translate>actions</th>
       </tr>
       </thead>
       <tbody>
@@ -209,7 +209,7 @@
         <td>
           {{dce.endYear}} <span ng-show="dce.endMonth">({{months[dce.endMonth - 1]}})</span>
         </td>
-        <td class="action-column">
+        <td ng-if="inViewMode()" class="action-column">
           <a ng-click="showDataCollectionEvent(study, population, dce)" class="hand action"><i
             class="fa fa-eye"></i></a>
           <div class="inline" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
@@ -217,7 +217,7 @@
               class="fa fa-pencil"></i></a>
             <a ng-click="addDataCollectionEvent(study, population, dce)" class="hand action"  translate title="{{'clone' | translate}}"><i
               class="fa fa-files-o"></i></a>
-            <a ng-click="deleteDataCollectionEvent(study, $parent.$index, dce, $index)" class="hand action"><i
+            <a ng-click="deleteDataCollectionEvent(population, dce)" class="hand action"><i
               class="fa fa-trash-o"></i></a>
           </div>
         </td>

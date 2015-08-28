@@ -1,5 +1,9 @@
 package org.obiba.mica.study.service;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +13,7 @@ import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.obiba.git.CommitInfo;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
@@ -36,6 +41,7 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
@@ -74,35 +80,19 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
   private HarmonizationDatasetRepository harmonizationDatasetRepository;
 
   @Inject
+  private ObjectMapper objectMapper;
+
+  @Inject
   private EventBus eventBus;
 
   @CacheEvict(value = "studies-draft", key = "#study.id")
   public void save(@NotNull @Valid Study study) {
-    log.info("Saving study: {}", study.getId());
-    StudyState studyState = findStudyState(study);
+    saveInternal(study, null);
+  }
 
-    if (!study.isNew()) ensureStudyGitRepository(studyState);
-
-    gitService.save(study);
-
-    if (study.getLogo() != null && study.getLogo().isJustUploaded()) {
-      gridFsService.save(study.getLogo().getId());
-      study.getLogo().setJustUploaded(false);
-    }
-
-    study.getAllAttachments().forEach(a -> {
-      if(a.isJustUploaded()) {
-        gridFsService.save(a.getId());
-        a.setJustUploaded(false);
-      }
-    });
-
-    studyState.setName(study.getName());
-    studyState.incrementRevisionsAhead();
-    studyStateRepository.save(studyState);
-    studyRepository.saveWithAttachments(study, false);
-
-    eventBus.post(new DraftStudyUpdatedEvent(study));
+  @CacheEvict(value = "studies-draft", key = "#study.id")
+  public void save(@NotNull @Valid Study study, @Nullable String comment) {
+    saveInternal(study, comment);
   }
 
   @NotNull
@@ -127,6 +117,34 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
     }
 
     return studyState;
+  }
+
+  private void saveInternal(Study study, String comment) {
+    log.info("Saving study: {}", study.getId());
+    StudyState studyState = findStudyState(study);
+
+    if (!study.isNew()) ensureStudyGitRepository(studyState);
+
+    gitService.save(study, comment);
+
+    if (study.getLogo() != null && study.getLogo().isJustUploaded()) {
+      gridFsService.save(study.getLogo().getId());
+      study.getLogo().setJustUploaded(false);
+    }
+
+    study.getAllAttachments().forEach(a -> {
+      if(a.isJustUploaded()) {
+        gridFsService.save(a.getId());
+        a.setJustUploaded(false);
+      }
+    });
+
+    studyState.setName(study.getName());
+    studyState.incrementRevisionsAhead();
+    studyStateRepository.save(studyState);
+    studyRepository.saveWithAttachments(study, false);
+
+    eventBus.post(new DraftStudyUpdatedEvent(study));
   }
 
   @NotNull
@@ -331,5 +349,23 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
     if(study.getAcronym() == null || study.getAcronym().isEmpty()) {
       study.setAcronym(study.getName().asAcronym());
     }
+  }
+
+  public Iterable<CommitInfo> getCommitInfos(@NotNull Study study) {
+    return gitService.getCommitsInfo(study, Study.class);
+  }
+
+  public CommitInfo getCommitInfo(@NotNull Study study, @NotNull String commitInfo) {
+    return gitService.getCommitInfo(study, commitInfo, Study.class);
+  }
+
+  public Study getStudyFromCommit(@NotNull Study study, @NotNull String commitId) throws IOException {
+    String studyBlob = gitService.getBlob(study, commitId, Study.class);
+    InputStream inputStream = new ByteArrayInputStream(studyBlob.getBytes(StandardCharsets.UTF_8));
+    return objectMapper.readValue(inputStream, Study.class);
+  }
+
+  public Iterable<String> getDiffEntries(@NotNull Study study, @NotNull String commitId, @Nullable String prevCommitId) {
+    return gitService.getDiffEntries(study, commitId, prevCommitId, Study.class);
   }
 }

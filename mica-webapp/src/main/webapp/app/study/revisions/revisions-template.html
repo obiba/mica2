@@ -1,0 +1,53 @@
+<div>
+  <a name="revisions"></a>
+  <h3>
+    <span>{{title}}</span>
+    <span class="pull-right">
+      <dir-pagination-controls></dir-pagination-controls>
+    </span>
+  </h3>
+  <table class="table table-striped" ng-show="commitInfos.length">
+    <thead>
+    <tr>
+      <th translate>date</th>
+      <th translate>author</th>
+      <th width="50%" translate>comment-label</th>
+      <th translate>actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-class="{'active-row': $index === active.index && active.page === pages.index}"
+      dir-paginate="commitInfo in commitInfos | itemsPerPage: 10" current-page="pages.index">
+      <td>
+        {{commitInfo.date | amDateFormat: 'lll'}}
+      </td>
+      <td>
+        {{commitInfo.author}}
+      </td>
+      <td>
+        {{commitInfo.comment}}
+      </td>
+      <td>
+        <ul ng-if="$index === 0" class="list-inline">
+          <li>
+            <a ng-click="viewRevision($index, id, commitInfo)" href="" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>
+          </li>
+        </ul>
+        <ul ng-if="$index > 0" class="list-inline">
+          <li>
+            <a ng-click="viewRevision($index, id, commitInfo)" href="" title="{{'view' | translate}}" ><i class="fa fa-eye"></i></a>
+          </li>
+          <li>
+            <a ng-click="onRestoreRevision()(id, commitInfo)" href="" title="{{'restore' | translate}}"><i class="fa fa-rotate-left"></i></a>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <!--<h3 class="text-info voffset4">You are viewing the revision from '{{commitInfos[active.realIndex].date | amDateFormat: 'lll'}}'</h3>-->
+  <h3 ng-show="revisionInfoMessage" class="text-info voffset4">{{revisionInfoMessage}}</h3>
+
+</div>
+

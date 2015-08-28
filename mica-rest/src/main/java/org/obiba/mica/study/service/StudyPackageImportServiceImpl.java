@@ -150,7 +150,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     study.cleanContacts();
     study.rebuildPopulationIds();
 
-    studyService.save(study);
+    studyService.save(study, "Imported");
     if(publish) {
       studyService.publish(study.getId());
     }

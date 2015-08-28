@@ -598,3 +598,13 @@ message UserProfileDto {
   repeated AttributeDto attributes = 3;
 }
 
+message GitCommitInfoDto {
+  required string author = 1;
+  required string date = 2;
+  required string comment = 3;
+  required string commitId = 4;
+  repeated string diffEntries = 5;
+  optional string blob = 6;
+  optional bool isHead = 7 [default = false]; // head of the commit tree
+  optional bool isCurrent = 8 [default = false]; // current (latest) commit for a given path
+}
