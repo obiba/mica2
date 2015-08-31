@@ -9,8 +9,12 @@
   -->
 
 <div>
-
-  <h2 class="voffset5" translate>study-dataset</h2>
+  <h2 class="voffset5">
+    <ol class="mica-breadcrumb">
+      <li><a href="/#/study-dataset" translate>study-datasets</a></li>
+      <li class="active">{{dataset.id}}</li>
+    </ol>
+  </h2>
 
   <div class="btn-group pull-right">
     <a ng-href="#/study-dataset/{{dataset.id}}/edit" class="btn btn-primary"

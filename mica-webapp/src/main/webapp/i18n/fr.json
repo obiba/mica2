@@ -639,7 +639,6 @@
   "author": "Author",
   "revisions": "Revisions",
   "revision": "Revision",
-  "current-reversion-info": "You are viewing the revision from '{{arg0}}' edited by '{{arg1}}'.",
   "comment-label": "Comment",
   "restore": "Restore",
   "server": {

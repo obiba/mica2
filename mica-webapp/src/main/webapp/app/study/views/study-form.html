@@ -1,6 +1,22 @@
 <div>
-
-  <h2 class="voffset5" translate>study.label-edit</h2>
+  <h2 class="voffset5">
+    <ol class="mica-breadcrumb">
+      <li><a href="/#/study" translate>studies</a></li>
+      <li ng-if="!newStudy" class="active">
+        <a ng-href="/#/study/{{study.id}}">{{study.id}}</a>
+      </li>
+      <li class="active">
+        <span ng-if="newStudy" translate>add-sm</span>
+        <span ng-if="!newStudy" translate>edit-sm</span>
+        <small>
+          <span translate>or</span>
+          <a ng-click="cancel()">
+            <span translate>cancel-sm</span>
+          </a>
+        </small>
+      </li>
+    </ol>
+  </h2>
 
   <form name="form" role="form" novalidate
     class="ng-scope ng-invalid ng-invalid-required ng-dirty" ng-submit="save()">
@@ -48,22 +64,21 @@
       </tab>
     </tabset>
 
-
     <div class="row">
       <div class="col-md-6">
-    <div form-input model="revision.comment" help="study.revision.update-comment" type="text"></div>
+        <input class="form-control" ng-model="revision.comment"
+          placeholder="{{'study.revision.update-comment' | translate}}" type="text">
+        <div class="voffset1">
+          <button type="button" class="btn btn-default" ng-click="cancel()">
+            <span translate>cancel</span>
+          </button>
+          <button type="submit" class="btn btn-primary">
+            <span translate>save</span>
+          </button>
+        </div>
       </div>
     </div>
 
-    <div class="voffset1">
-      <button type="button" class="btn btn-default" ng-click="cancel()">
-        <span translate>cancel</span>
-      </button>
-
-      <button type="submit" class="btn btn-primary">
-        <span translate>save</span>
-      </button>
-    </div>
   </form>
 
 </div>

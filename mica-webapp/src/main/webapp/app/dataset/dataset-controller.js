@@ -26,9 +26,35 @@ mica.dataset
       });
     }])
 
-  .controller('StudyDatasetEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', 'StudyDatasetResource', 'DraftStudyDatasetsResource', 'StudyDatasetPublicationResource', 'MicaConfigResource', 'FormServerValidation', 'StudyStatesResource', 'StudyStateProjectsResource',
+  .controller('StudyDatasetEditController', ['$rootScope',
+    '$scope',
+    '$routeParams',
+    '$log',
+    '$locale',
+    '$location',
+    'StudyDatasetResource',
+    'DraftStudyDatasetsResource',
+    'StudyDatasetPublicationResource',
+    'MicaConfigResource',
+    'FormServerValidation',
+    'StudyStatesResource',
+    'StudyStateProjectsResource',
+    'ActiveTabService',
 
-    function ($rootScope, $scope, $routeParams, $log, $locale, $location, StudyDatasetResource, DraftStudyDatasetsResource, StudyDatasetPublicationResource, MicaConfigResource, FormServerValidation, StudyStatesResource, StudyStateProjectsResource) {
+    function ($rootScope,
+              $scope,
+              $routeParams,
+              $log,
+              $locale,
+              $location,
+              StudyDatasetResource,
+              DraftStudyDatasetsResource,
+              StudyDatasetPublicationResource,
+              MicaConfigResource,
+              FormServerValidation,
+              StudyStatesResource,
+              StudyStateProjectsResource,
+              ActiveTabService) {
       $scope.studies = [];
       $scope.projects = [];
       $scope.selected = {};
@@ -69,6 +95,8 @@ mica.dataset
         });
       };
 
+      $scope.getActiveTab = ActiveTabService.getActiveTab;
+      $scope.newDataset = !$routeParams.id;
       if ($routeParams.id) {
         $scope.dataset = StudyDatasetResource.get({id: $routeParams.id}, function (dataset) {
           $scope.studyTable = dataset['obiba.mica.StudyDatasetDto.type'].studyTable;
@@ -156,10 +184,36 @@ mica.dataset
 
     }])
 
-  .controller('HarmonizationDatasetEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', '$modal', 'HarmonizationDatasetResource', 'DraftHarmonizationDatasetsResource', 'HarmonizationDatasetPublicationResource', 'MicaConfigResource', 'FormServerValidation',
+  .controller('HarmonizationDatasetEditController', ['$rootScope',
+    '$scope',
+    '$routeParams',
+    '$log',
+    '$locale',
+    '$location',
+    '$modal',
+    'HarmonizationDatasetResource',
+    'DraftHarmonizationDatasetsResource',
+    'HarmonizationDatasetPublicationResource',
+    'MicaConfigResource',
+    'FormServerValidation',
+    'ActiveTabService',
 
-    function ($rootScope, $scope, $routeParams, $log, $locale, $location, $modal, HarmonizationDatasetResource, DraftHarmonizationDatasetsResource, HarmonizationDatasetPublicationResource, MicaConfigResource, FormServerValidation) {
+    function ($rootScope,
+              $scope,
+              $routeParams,
+              $log,
+              $locale,
+              $location,
+              $modal,
+              HarmonizationDatasetResource,
+              DraftHarmonizationDatasetsResource,
+              HarmonizationDatasetPublicationResource,
+              MicaConfigResource,
+              FormServerValidation,
+              ActiveTabService) {
 
+      $scope.getActiveTab = ActiveTabService.getActiveTab;
+      $scope.newDataset = !$routeParams.id;
       $scope.dataset = $routeParams.id ? HarmonizationDatasetResource.get({id: $routeParams.id}) : {
         published: false,
         'obiba.mica.HarmonizationDatasetDto.type': {}
@@ -261,9 +315,27 @@ mica.dataset
 
     }])
 
-  .controller('StudyDatasetViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', 'StudyDatasetResource', 'StudyDatasetPublicationResource', 'MicaConfigResource',
+  .controller('StudyDatasetViewController', ['$rootScope',
+    '$scope',
+    '$routeParams',
+    '$log',
+    '$locale',
+    '$location',
+    'StudyDatasetResource',
+    'StudyDatasetPublicationResource',
+    'MicaConfigResource',
+    'ActiveTabService',
 
-    function ($rootScope, $scope, $routeParams, $log, $locale, $location, StudyDatasetResource, StudyDatasetPublicationResource, MicaConfigResource) {
+    function ($rootScope,
+              $scope,
+              $routeParams,
+              $log,
+              $locale,
+              $location,
+              StudyDatasetResource,
+              StudyDatasetPublicationResource,
+              MicaConfigResource,
+              ActiveTabService) {
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
@@ -272,6 +344,7 @@ mica.dataset
         });
       });
 
+      $scope.getActiveTab = ActiveTabService.getActiveTab;
       $scope.dataset = StudyDatasetResource.get({id: $routeParams.id});
 
       $scope.isPublished = function () {
@@ -315,9 +388,27 @@ mica.dataset
       });
     }])
 
-  .controller('HarmonizationDatasetViewController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location', 'HarmonizationDatasetResource', 'HarmonizationDatasetPublicationResource', 'MicaConfigResource',
+  .controller('HarmonizationDatasetViewController', ['$rootScope',
+    '$scope',
+    '$routeParams',
+    '$log',
+    '$locale',
+    '$location',
+    'HarmonizationDatasetResource',
+    'HarmonizationDatasetPublicationResource',
+    'MicaConfigResource',
+    'ActiveTabService',
 
-    function ($rootScope, $scope, $routeParams, $log, $locale, $location, HarmonizationDatasetResource, HarmonizationDatasetPublicationResource, MicaConfigResource) {
+    function ($rootScope,
+              $scope,
+              $routeParams,
+              $log,
+              $locale,
+              $location,
+              HarmonizationDatasetResource,
+              HarmonizationDatasetPublicationResource,
+              MicaConfigResource,
+              ActiveTabService) {
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.opal = micaConfig.opal;
@@ -332,6 +423,7 @@ mica.dataset
         $scope.datasetTable = dataset['obiba.mica.HarmonizationDatasetDto.type'].table;
       });
 
+      $scope.getActiveTab = ActiveTabService.getActiveTab;
       $scope.isPublished = function () {
         return $scope.dataset.published;
       };
