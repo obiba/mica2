@@ -1,11 +1,20 @@
 <div>
-  <a name="revisions"></a>
   <h3>
     <span>{{title}}</span>
-    <span class="pull-right">
-      <dir-pagination-controls></dir-pagination-controls>
-    </span>
   </h3>
+
+  <div class="row" ng-class="{'voffset4': canPaginate()}">
+    <div ng-show="canPaginate()" class="col-xs-6">
+      <span class="input-group input-group-sm no-padding-top">
+        <span class="input-group-addon" id="revision-search"><i class="glyphicon glyphicon-search"></i></span>
+        <input ng-model="searchText" type="text" class="form-control width50" aria-describedby="revision-search">
+      </span>
+    </div>
+    <div ng-class="{'col-xs-6' : canPaginate()}">
+      <dir-pagination-controls class="pull-right"></dir-pagination-controls>
+    </div>
+  </div>
+
   <table class="table table-striped" ng-show="commitInfos.length">
     <thead>
     <tr>
@@ -17,7 +26,7 @@
     </thead>
     <tbody>
     <tr ng-class="{'active-row': $index === active.index && active.page === pages.index}"
-      dir-paginate="commitInfo in commitInfos | itemsPerPage: 10" current-page="pages.index">
+      dir-paginate="commitInfo in commitInfos | filter:searchText | itemsPerPage: 5" current-page="pages.index">
       <td>
         {{commitInfo.date | amDateFormat: 'lll'}}
       </td>
@@ -38,16 +47,13 @@
             <a ng-click="viewRevision($index, id, commitInfo)" href="" title="{{'view' | translate}}" ><i class="fa fa-eye"></i></a>
           </li>
           <li>
-            <a ng-click="onRestoreRevision()(id, commitInfo)" href="" title="{{'restore' | translate}}"><i class="fa fa-rotate-left"></i></a>
+            <a ng-click="restoreRevision(id, commitInfo)" href="" title="{{'restore' | translate}}"><i class="fa fa-rotate-left"></i></a>
           </li>
         </ul>
       </td>
     </tr>
     </tbody>
   </table>
-
-  <!--<h3 class="text-info voffset4">You are viewing the revision from '{{commitInfos[active.realIndex].date | amDateFormat: 'lll'}}'</h3>-->
-  <h3 ng-show="revisionInfoMessage" class="text-info voffset4">{{revisionInfoMessage}}</h3>
 
 </div>
 

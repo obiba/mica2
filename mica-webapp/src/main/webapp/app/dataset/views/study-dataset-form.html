@@ -10,7 +10,22 @@
 
 <div>
 
-  <h2 class="voffset5" translate>dataset.label-edit</h2>
+  <h2 class="voffset5">
+    <ol class="mica-breadcrumb">
+      <li><a href="/#/study-dataset" translate>study-datasets</a></li>
+      <li ng-if="!newDataset" class="active"><a ng-href="/#/study-dataset/{{dataset.id}}">{{dataset.id}}</a></li>
+      <li class="active">
+        <span ng-if="newDataset" translate>add-sm</span>
+        <span ng-if="!newDataset" translate>edit-sm</span>
+
+        <small><span translate>or</span>
+          <a ng-click="cancel()">
+            <span translate>cancel-sm</span>
+          </a></small>
+      </li>
+    </ol>
+  </h2>
+
 
   <form name="form" role="form" novalidate
       class="ng-scope ng-invalid ng-invalid-required ng-dirty" ng-submit="save()">
