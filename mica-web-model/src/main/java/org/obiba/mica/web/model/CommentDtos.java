@@ -59,9 +59,12 @@ public class CommentDtos {
       builder.setCreatedByProfile(userProfileDtos.asDto(profile));
     }
 
-    profile = userProfileService.getProfile(comment.getLastModifiedBy());
-    if (profile != null) {
-      builder.setModifiedByProfile(userProfileDtos.asDto(profile));
+    String lastModifiedBy = comment.getLastModifiedBy();
+    if (!Strings.isNullOrEmpty(lastModifiedBy)) {
+      profile = userProfileService.getProfile(lastModifiedBy);
+      if(profile != null) {
+        builder.setModifiedByProfile(userProfileDtos.asDto(profile));
+      }
     }
 
     return builder.build();
