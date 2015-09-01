@@ -24,10 +24,6 @@ mica.study
           templateUrl: 'app/study/views/study-view.html',
           controller: 'StudyViewController'
         })
-        .when('/study/:id/revision/:commitId', {
-          templateUrl: 'app/study/views/study-view.html',
-          controller: 'StudyViewController'
-        })
         .when('/study/:id/population/add', {
           templateUrl: 'app/study/views/population/population-form.html',
           controller: 'StudyPopulationController'

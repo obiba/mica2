@@ -62,12 +62,35 @@ mica.network
 
     }])
 
-  .controller('NetworkEditController', ['$rootScope', '$scope', '$routeParams', '$log', '$locale', '$location',
-    'NetworkResource', 'DraftNetworksResource', 'NetworkPublicationResource', 'MicaConfigResource',
+  .controller('NetworkEditController', [
+    '$rootScope',
+    '$scope',
+    '$routeParams',
+    '$log',
+    '$locale',
+    '$location',
+    'NetworkResource',
+    'DraftNetworksResource',
+    'NetworkPublicationResource',
+    'MicaConfigResource',
     'FormServerValidation',
-    function ($rootScope, $scope, $routeParams, $log, $locale, $location, NetworkResource, DraftNetworksResource,
-              NetworkPublicationResource, MicaConfigResource, FormServerValidation) {
+    'ActiveTabService',
+    function ($rootScope,
+              $scope,
+              $routeParams,
+              $log,
+              $locale,
+              $location,
+              NetworkResource,
+              DraftNetworksResource,
+              NetworkPublicationResource,
+              MicaConfigResource,
+              FormServerValidation,
+              ActiveTabService) {
+
+      $scope.getActiveTab = ActiveTabService.getActiveTab;
       $scope.files = [];
+      $scope.newNetwork= !$routeParams.id;
       $scope.network = $routeParams.id ?
         NetworkResource.get({id: $routeParams.id}, function(response) {
           $scope.files = response.logo ? [response.logo] : [];
@@ -177,6 +200,7 @@ mica.network
     'DraftStudiesSummariesResource',
     '$modal',
     'LocalizedValues',
+    'ActiveTabService',
 
     function ($rootScope,
               $scope,
@@ -193,13 +217,10 @@ mica.network
               NOTIFICATION_EVENTS,
               DraftStudiesSummariesResource,
               $modal,
-              LocalizedValues) {
+              LocalizedValues,
+              ActiveTabService) {
 
-      var getActiveTab = function () {
-        return $scope.tabs.filter(function (tab) {
-          return tab.active;
-        })[0];
-      };
+      $scope.getActiveTab = ActiveTabService.getActiveTab;
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
@@ -320,7 +341,7 @@ mica.network
               return $scope.network.studyIds;
             },
             lang: function() {
-              return getActiveTab().lang;
+              return ActiveTabService.getActiveTab().lang;
             }
           }
         }).result.then(function(selectedIds) {

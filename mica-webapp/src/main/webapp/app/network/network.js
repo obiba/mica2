@@ -17,6 +17,7 @@ mica.network = angular.module('mica.network', [
   'mica.attachment',
   'mica.publish',
   'mica.attributes',
+  'mica.commons',
   'obiba.notification',
   'ngResource',
   'ngRoute',

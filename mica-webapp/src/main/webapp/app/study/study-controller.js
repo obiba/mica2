@@ -74,6 +74,7 @@ mica.study
     'NOTIFICATION_EVENTS',
     'CONTACT_EVENTS',
     'MicaStudiesConfigResource',
+    'ActiveTabService',
     '$modal',
     function ($rootScope,
               $scope,
@@ -94,6 +95,7 @@ mica.study
               NOTIFICATION_EVENTS,
               CONTACT_EVENTS,
               MicaStudiesConfigResource,
+              ActiveTabService,
               $modal) {
 
       $scope.Mode = { View: 0, Revision: 1};
@@ -103,11 +105,7 @@ mica.study
         return $scope.viewMode === $scope.Mode.View;
       };
 
-      var getActiveTab = function () {
-        return $scope.tabs.filter(function (tab) {
-          return tab.active;
-        })[0];
-      };
+      $scope.getActiveTab = ActiveTabService.getActiveTab;
 
       var updateTimeline = function(study) {
         if (!$scope.timeline) {
@@ -124,8 +122,9 @@ mica.study
         updateTimeline(study);
       };
 
-      var viewRevision = function(studyId, commitId) {
-        $scope.study = DraftStudyViewRevisionResource.view({id: studyId, commitId: commitId}, initializeStudy);
+      var viewRevision = function(studyId, commitInfo) {
+        $scope.commitInfo = commitInfo;
+        $scope.study = DraftStudyViewRevisionResource.view({id: studyId, commitId: commitInfo.commitId}, initializeStudy);
       };
 
       var fetchStudy = function(studyId) {
@@ -140,29 +139,30 @@ mica.study
         });
       };
 
-      var restoreRevision = function(studyId, commitInfo) {
-        if (commitInfo) {
-          $scope.studyId = studyId;
-          $scope.studyRevisionToRestore = commitInfo.commitId;
+      var restoreRevision = function(studyId, commitInfo, onSuccess) {
+        if (commitInfo && $scope.studyId === studyId) {
+          var args = {commitId: commitInfo.commitId, restoreSuccessCallback: onSuccess};
+
           $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
             {
               titleKey: 'study.restore-dialog.title',
               messageKey:'study.restore-dialog.message',
               messageArgs: [$filter('amDateFormat')(commitInfo.date, 'lll')]
-            }, commitInfo.commitId
+            }, args
           );
         }
       };
 
-      var onRestore = function (event, id) {
-        if ($scope.studyRevisionToRestore === id) {
-          DraftStudyRestoreRevisionResource.restore({id: $scope.studyId, commitId: $scope.studyRevisionToRestore},
+      var onRestore = function (event, args) {
+        if (args.commitId) {
+          DraftStudyRestoreRevisionResource.restore({id: $scope.studyId, commitId: args.commitId},
             function () {
               fetchStudy($routeParams.id);
+              $scope.studyId = $routeParams.id;
+              if (args.restoreSuccessCallback) {
+                args.restoreSuccessCallback();
+              }
             });
-
-          delete $scope.studyId;
-          delete $scope.studyRevisionToRestore;
         }
       };
 
@@ -187,12 +187,12 @@ mica.study
         }) || [{terms: []}])[0].terms.filter(function (t) {
             return t.name === term;
           }) || [{title: []}])[0].title.filter(function (v) {
-            return v.locale === getActiveTab().lang;
+            return v.locale === ActiveTabService.getActiveTab($scope.tabs).lang;
           }) || [{text: term}])[0].text;
       };
 
-      if ($scope.viewMode === $scope.Mode.Revision && $routeParams.commitId) {
-        viewRevision($scope.study.id, $routeParams.commitId);
+      if ($scope.viewMode === $scope.Mode.Revision) {
+        $scope.studyId = $routeParams.id;
       } else {
         fetchStudy($routeParams.id);
       }
@@ -368,11 +368,30 @@ mica.study
       };
     }])
 
-  .controller('StudyPopulationController', ['$rootScope', '$scope', '$routeParams', '$location', '$log',
-    'DraftStudyResource', 'MicaConfigResource', 'FormServerValidation', 'MicaStudiesConfigResource',
-    'MicaUtil', 'ObibaCountriesIsoCodes',
-    function ($rootScope, $scope, $routeParams, $location, $log, DraftStudyResource, MicaConfigResource, FormServerValidation,
-              MicaStudiesConfigResource, MicaUtil, ObibaCountriesIsoCodes) {
+  .controller('StudyPopulationController', ['$rootScope',
+    '$scope',
+    '$routeParams',
+    '$location',
+    '$log',
+    'DraftStudyResource',
+    'MicaConfigResource',
+    'FormServerValidation',
+    'MicaStudiesConfigResource',
+    'MicaUtil',
+    'ActiveTabService',
+    'ObibaCountriesIsoCodes',
+    function ($rootScope,
+              $scope,
+              $routeParams,
+              $location,
+              $log,
+              DraftStudyResource,
+              MicaConfigResource,
+              FormServerValidation,
+              MicaStudiesConfigResource,
+              MicaUtil,
+              ActiveTabService,
+              ObibaCountriesIsoCodes) {
 
       $scope.getAvailableCountries = function (locale) { return ObibaCountriesIsoCodes[locale]; };
       $scope.selectionCriteriaGenders = [];
@@ -409,6 +428,8 @@ mica.study
         }
       }) : {};
 
+      $scope.getActiveTab = ActiveTabService.getActiveTab;
+      $scope.newPopulation = !$routeParams.pid;
       $scope.$watch('population.recruitment.dataSources', function (newVal, oldVal) {
         if (oldVal === undefined || newVal === undefined) {
           $scope.population.recruitment.dataSources = [];
@@ -418,15 +439,9 @@ mica.study
         updateActiveDatasourceTab(newVal, oldVal);
       }, true);
 
-      var getActiveTab = function () {
-        return $scope.tabs.filter(function (tab) {
-          return tab.active;
-        })[0];
-      };
-
       var getLabel = function (localizedString) {
         return (localizedString.filter(function (t) {
-          return t.locale === getActiveTab().lang;
+          return t.locale === ActiveTabService.getActiveTab($scope.tabs).lang;
         }) || [{text: null}])[0].text;
       };
 
@@ -785,6 +800,7 @@ mica.study
     'DraftStudiesResource',
     'MicaConfigResource',
     'StringUtils',
+    'ActiveTabService',
     'FormServerValidation',
 
     function ($rootScope,
@@ -797,9 +813,11 @@ mica.study
               DraftStudiesResource,
               MicaConfigResource,
               StringUtils,
+              ActiveTabService,
               FormServerValidation) {
 
-      // TODO this code needs simplification and possibly placed inside a directive
+      $scope.getActiveTab = ActiveTabService.getActiveTab;
+      $scope.getActiveTab = ActiveTabService.getActiveTab;
       $scope.revision = {comment: null};
       $scope.today = new Date();
       $scope.$watch('authorization.maelstrom.date', function (newVal) {
@@ -827,6 +845,7 @@ mica.study
       $scope.methodDesignTypes = ['case_control', 'case_only', 'clinical_trial', 'cohort_study', 'cross_sectional', 'other'];
       $scope.methodRecruitmentTypes = ['individuals', 'families', 'other'];
       $scope.files = [];
+      $scope.newStudy = !$routeParams.id;
       $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}, function (response) {
         if ($routeParams.id) {
           $scope.files = response.logo ? [response.logo] : [];

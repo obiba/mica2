@@ -1,15 +1,27 @@
 <div>
-
-  <h2 class="voffset5" translate>study.details</h2>
+  <h2 class="voffset5">
+    <ol class="mica-breadcrumb">
+      <li><a href="/#/study" translate>studies</a></li>
+      <li ng-if="inViewMode()" class="active">{{study.id}}</li>
+      <li ng-if="!inViewMode()">
+        <a ng-href="#/study/{{studyId}}">{{studyId}}</a>
+      </li>
+      <li ng-if="!inViewMode()" class="active">
+        <small>{{commitInfo.date | amDateFormat : 'lll'}} (<smaller>{{commitInfo.author}}</smaller>)</small>
+      </li>
+    </ol>
+  </h2>
 
   <div ng-if="!inViewMode()" class="voffset5">
     <revisions
-      id="{{study.id}}"
-      title="{{'study.revisions' | translate}}"
+      id="{{studyId}}"
+      title="{{'revisions' | translate}}"
       on-fetch-revisions="fetchRevisions"
       on-restore-revision="restoreRevision"
       on-view-revision="viewRevision"></revisions>
   </div>
+
+  <h3 ng-if="!inViewMode()" class="voffset5" translate>study.label</h3>
 
   <div class="voffset4">
 
@@ -298,7 +310,6 @@
         <h3>
           <span translate>study.populations</span>
         </h3>
-
         <a ng-click="addPopulation()" class="btn btn-info"
           ng-if="inViewMode() && hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
           <i class="fa fa-plus"></i> <span translate>study.add-population</span>

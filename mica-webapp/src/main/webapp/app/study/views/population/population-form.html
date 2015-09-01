@@ -1,5 +1,19 @@
 <div>
-  <h2 translate>population.label-edit</h2>
+  <h2 class="voffset5">
+    <ol class="mica-breadcrumb">
+      <li><a href="/#/study" translate>studies</a></li>
+      <li><a ng-href="/#/study/{{study.id}}">{{study.id}}</a></li>
+      <li ng-if="!newPopulation"><a ng-href="/#/study/{{study.id}}">{{population.id}}</a></li>
+      <li class="active">
+        <span ng-if="newPopulation" translate>add-sm</span>
+        <span ng-if="!newPopulation" translate>edit-sm</span>
+        <small><span translate>or</span>
+          <a ng-click="cancel()">
+            <span translate>cancel-sm</span>
+          </a></small>
+      </li>
+    </ol>
+  </h2>
 
   <form name="form" role="form" ng-submit="save(form)">
     <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>

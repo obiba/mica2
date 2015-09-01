@@ -10,8 +10,12 @@
 
 <div>
 
-  <h2 class="voffset5" translate>harmonization-dataset</h2>
-
+  <h2 class="voffset5">
+    <ol class="mica-breadcrumb">
+      <li><a href="/#/harmonization-dataset" translate>harmonization-datasets</a></li>
+      <li class="active">{{dataset.id}}</li>
+    </ol>
+  </h2>
   <div class="btn-group pull-right">
     <a ng-href="#/harmonization-dataset/{{dataset.id}}/edit" class="btn btn-primary"
       ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
