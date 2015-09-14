@@ -215,7 +215,7 @@
           <div class="inline" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
             <a ng-click="editDataCollectionEvent(study, population, dce)" class="hand action"><i
               class="fa fa-pencil"></i></a>
-            <a ng-click="deleteDataCollectionEvent(study, $parent.$index, dce, $index)" class="hand action"><i
+            <a ng-click="deleteDataCollectionEvent(population, dce)" class="hand action"><i
               class="fa fa-trash-o"></i></a>
           </div>
         </td>
