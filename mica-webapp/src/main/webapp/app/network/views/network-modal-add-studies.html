@@ -37,21 +37,21 @@
         <table class="table table-striped">
           <thead>
             <tr>
+              <th width="10px"></th>
               <th translate>study.acronym</th>
               <th translate>study.name</th>
-              <th></th>
             </tr>
           </thead>
           <tbody>
             <tr dir-paginate="study in studies | filter:searchText | itemsPerPage: 10" pagination-id="studiesSelection">
               <td>
+                <input type="checkbox" ng-model="study.selected"/>
+              </td>
+              <td>
                 <localized value="study.acronym" lang="lang"></localized>
               </td>
               <td>
                 <localized value="study.name" lang="lang"></localized>
-              </td>
-              <td>
-                <input type="checkbox" ng-model="study.selected"/>
               </td>
             </tr>
           </tbody>
