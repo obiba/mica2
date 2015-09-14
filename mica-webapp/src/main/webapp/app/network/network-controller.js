@@ -343,7 +343,7 @@ mica.network
               return $scope.network.studyIds;
             },
             lang: function() {
-              return ActiveTabService.getActiveTab().lang;
+              return ActiveTabService.getActiveTab($scope.tabs).lang;
             }
           }
         }).result.then(function(selectedIds) {
