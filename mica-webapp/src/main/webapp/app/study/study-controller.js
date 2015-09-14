@@ -219,22 +219,26 @@ mica.study
         $location.url($location.url() + '/population/' + population.id + '/dce/' + dce.id + '/edit');
       };
 
-      $scope.deleteDataCollectionEvent = function (study, popIndex, dce, dceIndex) {
+      $scope.deleteDataCollectionEvent = function (population, dce) {
         var titleKey = 'data-collection-event.delete-dialog-title';
         var messageKey = 'data-collection-event.delete-dialog-message';
         $translate([titleKey, messageKey])
           .then(function (translation) {
             $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
-              {title: translation[titleKey], message: translation[messageKey]}, dce);
+              {title: translation[titleKey], message: translation[messageKey]}, {dce: dce, population: population});
           });
+      };
 
-        $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, dce) {
-          if ($scope.study.populations[popIndex].dataCollectionEvents[dceIndex] === dce) {
-            $scope.study.populations[popIndex].dataCollectionEvents.splice(dceIndex, 1);
+      $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, data) {
+        var popIndex = $scope.study.populations.indexOf(data.population);
+        if (popIndex > -1) {
+          var dceIndex = data.population.dataCollectionEvents.indexOf(data.dce);
+          if (dceIndex > -1) {
+            data.population.dataCollectionEvents.splice(dceIndex, 1);
             $scope.emitStudyUpdated();
           }
-        });
-      };
+        }
+      });
 
       $scope.addPopulation = function () {
         $location.url($location.url() + '/population/add');
