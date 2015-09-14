@@ -131,7 +131,9 @@ mica.network
       $scope.studies = [];
 
       StudyStatesResource.query().$promise.then(function(studies) {
-        $scope.studies = studies.filter(function(s) { return currentStudies.indexOf(s.id) < 0; });
+        $scope.studies = studies.filter(function(s) {
+          return currentStudies === undefined || currentStudies.indexOf(s.id) < 0;
+        });
       });
 
       $scope.hasSelectedStudies = function() {
