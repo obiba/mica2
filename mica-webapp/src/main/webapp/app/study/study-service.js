@@ -33,7 +33,8 @@ mica.study
   .factory('DraftStudyPublicationResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/study/:id/_publish', {}, {
-        'publish': {method: 'PUT', params: {id: '@id'}}
+        'publish': {method: 'PUT', params: {id: '@id'}},
+        'unPublish': {method: 'DELETE', params: {id: '@id'}}
       });
     }])
 

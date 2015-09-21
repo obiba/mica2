@@ -33,9 +33,8 @@
         ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
         <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
       </a>
-      <publish-button version="studySummary['obiba.mica.StudyStateDto.state'].publishedTag"
-        ahead="studySummary['obiba.mica.StudyStateDto.state'].revisionsAhead" publish="publish()"
-        ng-if="hasRole(['mica-administrator','mica-reviewer'])"></publish-button>
+      <publish-switch status="isPublished()" publish="publish()"
+        ng-if="hasRole(['mica-administrator','mica-reviewer'])"></publish-switch>
     </div>
 
     <tabset>

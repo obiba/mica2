@@ -226,10 +226,21 @@ mica.study
         }
       });
 
+      $scope.isPublished = function () {
+        return $scope.studySummary.published;
+      };
+
       $scope.publish = function () {
-        DraftStudyPublicationResource.publish({id: $scope.study.id}, function () {
-          $scope.studySummary = StudyStateResource.get({id: $routeParams.id});
-        });
+        if ($scope.studySummary.published) {
+          DraftStudyPublicationResource.unPublish({id: $scope.study.id}, function () {
+            $scope.studySummary = StudyStateResource.get({id: $routeParams.id});
+          });
+        } else {
+          DraftStudyPublicationResource.publish({id: $scope.study.id}, function () {
+            $scope.studySummary = StudyStateResource.get({id: $routeParams.id});
+          });
+        }
+
       };
 
       $scope.sortableOptions = {
