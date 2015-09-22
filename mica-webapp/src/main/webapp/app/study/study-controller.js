@@ -216,6 +216,7 @@ mica.study
           $log.debug('save study', studyUpdated);
 
           $scope.study.$save(function () {
+              $scope.studySummary = StudyStateResource.get({id: $scope.study.id});
               $scope.study = DraftStudyResource.get({id: $scope.study.id}, function onSuccess(study) {
                 initializeStudy(study);
               });
