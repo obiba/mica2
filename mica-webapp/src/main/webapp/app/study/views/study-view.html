@@ -2,15 +2,48 @@
   <h2 class="voffset5">
     <ol class="mica-breadcrumb">
       <li><a href="/#/study" translate>studies</a></li>
-      <li ng-if="inViewMode()" class="active">{{study.id}}</li>
+      <li ng-if="inViewMode()" class="active">
+        {{study.id}}
+
+      </li>
       <li ng-if="!inViewMode()">
         <a ng-href="#/study/{{studyId}}">{{studyId}}</a>
       </li>
       <li ng-if="!inViewMode()" class="active">
-        <small>{{commitInfo.date | amDateFormat : 'lll'}} (<smaller>{{commitInfo.author}}</smaller>)</small>
+        <small>{{commitInfo.date | amDateFormat : 'lll'}} (
+          <smaller>{{commitInfo.author}}</smaller>
+          )
+        </small>
       </li>
     </ol>
   </h2>
+
+  <div ng-if="inViewMode()" class="clearfix">
+    <div class="pull-left">
+      <small class="help-block inline">{{'global.lastUpdate' | translate}}: {{studySummary.timestamps.lastUpdate |
+        amDateFormat : 'lll'}}
+      </small>
+      <publish-status class="inline" version="studySummary['obiba.mica.StudyStateDto.state'].publishedTag"
+        ahead="studySummary['obiba.mica.StudyStateDto.state'].revisionsAhead"></publish-status>
+
+    </div>
+    <div class="btn-group pull-right">
+      <a ng-href="#/study/{{study.id}}/revisions" class="btn btn-info">
+        <i class="fa fa-list-ol"></i> <span translate>revisions</span>
+      </a>
+      <a ng-href="#/study/{{study.id}}/edit" class="btn btn-primary"
+        ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+        <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
+      </a>
+      <publish-button version="studySummary['obiba.mica.StudyStateDto.state'].publishedTag"
+        ahead="studySummary['obiba.mica.StudyStateDto.state'].revisionsAhead" publish="publish()"
+        ng-if="hasRole(['mica-administrator','mica-reviewer'])"></publish-button>
+      <a class="btn btn-info" ng-click="unPublish()" ng-disabled="studySummary['obiba.mica.StudyStateDto.state'].publishedTag === undefined">
+        <i class="fa fa-star-o"></i>
+        <span translate>publish.un-publish</span>
+      </a>
+    </div>
+  </div>
 
   <div ng-if="!inViewMode()" class="voffset5">
     <revisions
@@ -19,24 +52,10 @@
       on-fetch-revisions="fetchRevisions"
       on-restore-revision="restoreRevision"
       on-view-revision="viewRevision"></revisions>
+    <h3 class="voffset5" translate>study.label</h3>
   </div>
 
-  <h3 ng-if="!inViewMode()" class="voffset5" translate>study.label</h3>
-
   <div class="voffset4">
-
-    <div ng-if="inViewMode()" class="btn-group pull-right">
-      <a ng-href="#/study/{{study.id}}/revisions" class="btn btn-info">
-        <i class="fa fa-list-ol"></i> <span translate>revisions</span>
-      </a>
-      <a ng-href="#/study/{{study.id}}/edit" class="btn btn-primary"
-        ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
-        <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
-      </a>
-      <publish-switch status="isPublished()" publish="publish()"
-        ng-if="hasRole(['mica-administrator','mica-reviewer'])"></publish-switch>
-    </div>
-
     <tabset>
       <tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active"
         disabled="tab.disabled">

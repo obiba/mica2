@@ -16,6 +16,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.joda.time.DateTime;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.mica.core.domain.StudyTable;
@@ -302,6 +303,7 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
       variables = Lists.newArrayList();
     }
 
+    saved.setLastModifiedDate(DateTime.now());
     studyDatasetRepository.save(saved);
     tryUpdateIndices(saved, variables, updatePublishIndices);
   }

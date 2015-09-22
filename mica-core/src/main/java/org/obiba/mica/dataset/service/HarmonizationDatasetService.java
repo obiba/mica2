@@ -20,6 +20,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.joda.time.DateTime;
 import org.obiba.magma.MagmaRuntimeException;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
@@ -326,6 +327,7 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
       harmonizationVariables = Maps.newHashMap();
     }
 
+    saved.setLastModifiedDate(DateTime.now());
     harmonizationDatasetRepository.save(saved);
     tryUpdateIndices(saved, variables, harmonizationVariables, updatePublishIndices);
   }

@@ -30,7 +30,8 @@
       "en": "English",
       "fr": "French",
       "de": "German"
-    }
+    },
+    "lastUpdate": "Last Update"
   },
   "main": {
     "title": "Welcome to Mica!",
@@ -330,6 +331,7 @@
   "publish": {
     "label": "Publish",
     "un-publish": "Unpublish",
+    "re-publish": "Republish",
     "not-published": "Not published",
     "published-out-of-date": "Published, out of date",
     "published": "Published",
