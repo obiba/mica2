@@ -220,7 +220,8 @@ public class DatasetQuery extends AbstractDocumentQuery {
       return DatasetType.DATASET;
     }
 
-    log.info("Request /{}/{}: {}", getSearchIndex(), getSearchType(), requestBuilder);
+    log.info("Request /{}/{}", getSearchIndex(), getSearchType());
+    log.debug("Request /{}/{}: {}", getSearchIndex(), getSearchType(), requestBuilder);
     SearchResponse response = requestBuilder.execute().actionGet();
     List<String> classNames = Lists.newArrayList();
 
@@ -230,13 +231,16 @@ public class DatasetQuery extends AbstractDocumentQuery {
 
     int count = classNames.size();
 
+    DatasetType rval = DatasetType.DATASET;
+
     if(count == 1) {
-      return classNames.get(0).equals(HarmonizationDataset.class.getSimpleName().toLowerCase())
+      rval = classNames.get(0).equals(HarmonizationDataset.class.getSimpleName().toLowerCase())
         ? DatasetType.HARMONIZATION
         : DatasetType.STUDY;
     }
 
-    return DatasetType.DATASET;
+    log.info("Response /{}/{}", getSearchIndex(), getSearchType());
+    return rval;
   }
 
   public Map<String, Map<String, List<String>>> getStudyCountsByDataset() {

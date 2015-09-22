@@ -165,17 +165,20 @@ public abstract class AbstractDocumentQuery {
       .setNoFields();
 
     aggregationYamlParser.getAggregations(getJoinFieldsAsProperties()).forEach(requestBuilder::addAggregation);
-    log.info("Request /{}/{}: {}", getSearchIndex(), getSearchType(), requestBuilder);
+    log.info("Request /{}/{}", getSearchIndex(), getSearchType());
+    log.debug("Request /{}/{}: {}", getSearchIndex(), getSearchType(), requestBuilder);
     SearchResponse response = requestBuilder.execute().actionGet();
     List<String> ids = Lists.newArrayList();
 
     response.getAggregations().forEach(aggregation -> ((Terms) aggregation).getBuckets().stream().forEach(bucket -> {
-      if(bucket.getDocCount() > 0){
+      if(bucket.getDocCount() > 0) {
         ids.add(bucket.getKey());
       }
     }));
 
-    return ids.stream().distinct().collect(Collectors.toList());
+    List<String> rval = ids.stream().distinct().collect(Collectors.toList());
+    log.info("Response /{}/{}", getSearchIndex(), getSearchType());
+    return rval;
   }
 
   private Properties getJoinFieldsAsProperties() {
@@ -199,9 +202,8 @@ public abstract class AbstractDocumentQuery {
    */
   public List<String> query(List<String> studyIds, CountStatsData counts, Scope scope) throws IOException {
     QueryDto tempQueryDto = queryDto == null ? createStudyIdFilters(studyIds) : addStudyIdFilters(studyIds);
-    return mode == COVERAGE ?
-      executeCoverage(tempQueryDto, tempQueryDto.getFrom(), tempQueryDto.getSize(), DIGEST, counts)
-      : execute(tempQueryDto, tempQueryDto.getFrom(), tempQueryDto.getSize(), scope, counts);
+    return mode == COVERAGE ? executeCoverage(tempQueryDto, tempQueryDto.getFrom(), tempQueryDto.getSize(), DIGEST,
+      counts) : execute(tempQueryDto, tempQueryDto.getFrom(), tempQueryDto.getSize(), scope, counts);
   }
 
   /**
@@ -344,18 +346,18 @@ public abstract class AbstractDocumentQuery {
       queryDto.getAggsByList().forEach(field -> subAggregations.put(field, aggregationProperties));
     }
 
-    aggregationYamlParser.getAggregations(getAggregationsDescription(), subAggregations)
-      .forEach(agg -> {
-        requestBuilder.addAggregation(agg);
-        defaultRequestBuilder.addAggregation(agg);
-      });
+    aggregationYamlParser.getAggregations(getAggregationsDescription(), subAggregations).forEach(agg -> {
+      requestBuilder.addAggregation(agg);
+      defaultRequestBuilder.addAggregation(agg);
+    });
 
     aggregationYamlParser.getAggregations(aggregationProperties).forEach(agg -> {
       requestBuilder.addAggregation(agg);
       defaultRequestBuilder.addAggregation(agg);
     });
 
-    log.info("Request /{}/{}: {}", getSearchIndex(), getSearchType(), requestBuilder.toString());
+    log.info("Request /{}/{}", getSearchIndex(), getSearchType());
+    log.debug("Request /{}/{}: {}", getSearchIndex(), getSearchType(), requestBuilder.toString());
 
     try {
       List<SearchResponse> responses = Stream
@@ -366,19 +368,22 @@ public abstract class AbstractDocumentQuery {
       SearchResponse defaultResponse = responses.get(0);
       SearchResponse response = responses.get(1);
 
-      log.debug("Response: {}", response);
+      List<String> rval = null;
+      if(response != null) {
 
-      if (response == null) {
-        return null;
+        QueryResultDto.Builder builder = QueryResultDto.newBuilder()
+          .setTotalHits((int) response.getHits().getTotalHits());
+
+        if(scope == DETAIL) processHits(builder, response.getHits(), scope, counts);
+
+        processAggregations(builder, defaultResponse.getAggregations(), response.getAggregations());
+        resultDto = builder.build();
+        rval = getResponseStudyIds(resultDto.getAggsList());
       }
 
-      QueryResultDto.Builder builder = QueryResultDto.newBuilder().setTotalHits((int) response.getHits().getTotalHits());
-
-      if(scope == DETAIL) processHits(builder, response.getHits(), scope, counts);
-
-      processAggregations(builder, defaultResponse.getAggregations(), response.getAggregations());
-      resultDto = builder.build();
-      return getResponseStudyIds(resultDto.getAggsList());
+      log.info("Response /{}/{}", getSearchIndex(), getSearchType());
+      log.debug("Response: {}", response);
+      return rval;
     } catch(IndexMissingException e) {
       return null; //ignoring
     }
