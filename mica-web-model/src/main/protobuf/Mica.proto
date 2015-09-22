@@ -367,6 +367,7 @@ message DatasetDto {
   required string entityType = 5;
   required bool published = 6;
   repeated AttributeDto attributes = 7;
+  optional TimestampsDto timestamps = 8;
 
   extensions 1000 to max;
 

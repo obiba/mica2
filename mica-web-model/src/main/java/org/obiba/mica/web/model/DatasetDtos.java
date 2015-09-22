@@ -260,7 +260,7 @@ class DatasetDtos {
 
     if(includeSummary) builder.setStudySummary(studySummaryDtos.asDto(studyTable.getStudyId()));
 
-    return  builder;
+    return builder;
   }
 
   public Mica.DatasetVariableAggregationDto.Builder asDto(@NotNull StudyTable studyTable,
@@ -338,7 +338,8 @@ class DatasetDtos {
   }
 
   private boolean validateTotalPrivacyThreshold(Search.QueryResultDtoOrBuilder results, int privacyThreshold) {
-    return results.getFacetsList().stream().allMatch(facet -> checkPrivacyThreshold(facet.getFilters(0).getCount(), privacyThreshold));
+    return results.getFacetsList().stream()
+      .allMatch(facet -> checkPrivacyThreshold(facet.getFilters(0).getCount(), privacyThreshold));
   }
 
   private boolean validatePrivacyThreshold(Search.QueryResultDtoOrBuilder results, int privacyThreshold) {
@@ -484,12 +485,13 @@ class DatasetDtos {
   private Mica.DatasetDto.Builder asBuilder(Dataset dataset) {
     Mica.DatasetDto.Builder builder = Mica.DatasetDto.newBuilder();
     if(dataset.getId() != null) builder.setId(dataset.getId());
-    builder.setEntityType(dataset.getEntityType());
-    builder.addAllName(localizedStringDtos.asDto(dataset.getName()));
-    builder.addAllAcronym(localizedStringDtos.asDto(dataset.getAcronym()));
-    builder.addAllDescription(localizedStringDtos.asDto(dataset.getDescription()));
+    builder.setTimestamps(TimestampsDtos.asDto(dataset)) //
+      .setEntityType(dataset.getEntityType()) //
+      .addAllName(localizedStringDtos.asDto(dataset.getName())) //
+      .addAllAcronym(localizedStringDtos.asDto(dataset.getAcronym())) //
+      .addAllDescription(localizedStringDtos.asDto(dataset.getDescription())) //
+      .setPublished(dataset.isPublished());
 
-    builder.setPublished(dataset.isPublished());
     if(dataset.getAttributes() != null) {
       dataset.getAttributes().asAttributeList()
         .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));

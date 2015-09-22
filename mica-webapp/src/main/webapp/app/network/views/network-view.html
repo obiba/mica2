@@ -15,14 +15,31 @@
       <li class="active">{{network.id}}</li>
     </ol>
   </h2>
+
+  <div class="clearfix">
+    <div class="pull-left">
+      <small class="help-block inline">{{'global.lastUpdate' | translate}}: {{network.timestamps.lastUpdate ===
+        undefined ? network.timestamps.created : network.timestamps.lastUpdate |
+        amDateFormat : 'lll'}}
+      </small>
+      <i class="fa fa-star-o" ng-show="!network.published"
+        title="{{'publish.not-published' | translate}}"></i>
+      <i class="fa fa-star" ng-show="network.published"
+        title="{{'publish.published' | translate}}"></i>
+    </div>
+    <div class="btn-group pull-right">
+      <a ng-href="#/network/{{network.id}}/edit" class="btn btn-primary"
+        ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+        <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
+      </a>
+      <publish-switch status="isPublished()" publish="publish()"
+        ng-if="hasRole(['mica-administrator','mica-reviewer'])"></publish-switch>
+    </div>
+  </div>
+
+
   <div class="voffset4">
     <tabset>
-      <div class="btn-group pull-right">
-        <a ng-href="#/network/{{network.id}}/edit" class="btn btn-primary" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
-          <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
-        </a>
-        <publish-switch status="isPublished()" publish="publish()" ng-if="hasRole(['mica-administrator','mica-reviewer'])"></publish-switch>
-      </div>
 
       <tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active"
         disabled="tab.disabled">

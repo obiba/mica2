@@ -98,16 +98,16 @@ mica.study
               ActiveTabService,
               $modal) {
 
-      $scope.Mode = { View: 0, Revision: 1};
+      $scope.Mode = {View: 0, Revision: 1};
       $scope.viewMode = /\/revision[s\/]*/.exec($location.path()) !== null ? $scope.Mode.Revision : $scope.Mode.View;
 
-      $scope.inViewMode = function() {
+      $scope.inViewMode = function () {
         return $scope.viewMode === $scope.Mode.View;
       };
 
       $scope.getActiveTab = ActiveTabService.getActiveTab;
 
-      var updateTimeline = function(study) {
+      var updateTimeline = function (study) {
         if (!$scope.timeline) {
           $scope.timeline = new $.MicaTimeline(new $.StudyDtoParser());
         }
@@ -122,16 +122,19 @@ mica.study
         updateTimeline(study);
       };
 
-      var viewRevision = function(studyId, commitInfo) {
+      var viewRevision = function (studyId, commitInfo) {
         $scope.commitInfo = commitInfo;
-        $scope.study = DraftStudyViewRevisionResource.view({id: studyId, commitId: commitInfo.commitId}, initializeStudy);
+        $scope.study = DraftStudyViewRevisionResource.view({
+          id: studyId,
+          commitId: commitInfo.commitId
+        }, initializeStudy);
       };
 
-      var fetchStudy = function(studyId) {
+      var fetchStudy = function (studyId) {
         $scope.study = DraftStudyResource.get({id: studyId}, initializeStudy);
       };
 
-      var fetchRevisions = function(studyId, onSuccess) {
+      var fetchRevisions = function (studyId, onSuccess) {
         DraftStudyRevisionsResource.query({id: studyId}, function (response) {
           if (onSuccess) {
             onSuccess(response);
@@ -139,14 +142,14 @@ mica.study
         });
       };
 
-      var restoreRevision = function(studyId, commitInfo, onSuccess) {
+      var restoreRevision = function (studyId, commitInfo, onSuccess) {
         if (commitInfo && $scope.studyId === studyId) {
           var args = {commitId: commitInfo.commitId, restoreSuccessCallback: onSuccess};
 
           $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
             {
               titleKey: 'study.restore-dialog.title',
-              messageKey:'study.restore-dialog.message',
+              messageKey: 'study.restore-dialog.message',
               messageArgs: [$filter('amDateFormat')(commitInfo.date, 'lll')]
             }, args
           );
@@ -213,7 +216,7 @@ mica.study
           $log.debug('save study', studyUpdated);
 
           $scope.study.$save(function () {
-              $scope.study = DraftStudyResource.get({id: $scope.study.id}, function onSuccess(study){
+              $scope.study = DraftStudyResource.get({id: $scope.study.id}, function onSuccess(study) {
                 initializeStudy(study);
               });
             },
@@ -226,21 +229,16 @@ mica.study
         }
       });
 
-      $scope.isPublished = function () {
-        return $scope.studySummary.published;
+      $scope.publish = function () {
+        DraftStudyPublicationResource.publish({id: $scope.study.id}, function () {
+          $scope.studySummary = StudyStateResource.get({id: $routeParams.id});
+        });
       };
 
-      $scope.publish = function () {
-        if ($scope.studySummary.published) {
-          DraftStudyPublicationResource.unPublish({id: $scope.study.id}, function () {
-            $scope.studySummary = StudyStateResource.get({id: $routeParams.id});
-          });
-        } else {
-          DraftStudyPublicationResource.publish({id: $scope.study.id}, function () {
-            $scope.studySummary = StudyStateResource.get({id: $routeParams.id});
-          });
-        }
-
+      $scope.unPublish = function () {
+        DraftStudyPublicationResource.unPublish({id: $scope.study.id}, function () {
+          $scope.studySummary = StudyStateResource.get({id: $routeParams.id});
+        });
       };
 
       $scope.sortableOptions = {
@@ -317,7 +315,7 @@ mica.study
       $scope.addDataCollectionEvent = function (study, population, dce) {
         $location.url($location.path() + '/population/' + population.id + '/dce/add');
 
-        if(dce) {
+        if (dce) {
           $location.search('sourceDceId', dce.id);
         }
       };
@@ -428,7 +426,7 @@ mica.study
           }
 
           if ($scope.study.populations.length) {
-            populationsIds = $scope.study.populations.map(function(p) {
+            populationsIds = $scope.study.populations.map(function (p) {
               return p.id;
             });
 
@@ -662,7 +660,7 @@ mica.study
               $scope.population.dataCollectionEvents = [];
             }
 
-            var dceIds = $scope.population.dataCollectionEvents.map(function(dce){
+            var dceIds = $scope.population.dataCollectionEvents.map(function (dce) {
               return dce.id;
             });
 
@@ -760,8 +758,8 @@ mica.study
           return;
         }
 
-        var dsFilter = function(d) {
-          return d !== 'questionnaires' && d !=='physical_measures';
+        var dsFilter = function (d) {
+          return d !== 'questionnaires' && d !== 'physical_measures';
         };
 
         updateActiveDatasourceTab(angular.copy(newVal).filter(dsFilter), angular.copy(oldVal).filter(dsFilter));
@@ -843,7 +841,7 @@ mica.study
       }, true);
       $scope.authorization = {maelstrom: {date: $scope.today}, specific: {date: $scope.today}};
       $scope.datePicker = {maelstrom: {opened: false}, specific: {opened: false}};
-      $scope.openDatePicker = function($event, id) {
+      $scope.openDatePicker = function ($event, id) {
         $event.preventDefault();
         $event.stopPropagation();
         $scope.datePicker[id].opened = true;
@@ -869,7 +867,7 @@ mica.study
           }
           if (response.specificAuthorization.date) {
             $scope.authorization.specific.date =
-              new Date(response.specificAuthorization.date.split('-').map(function(x) { return parseInt(x, 10);}));
+              new Date(response.specificAuthorization.date.split('-').map(function (x) { return parseInt(x, 10);}));
           }
         }
       }) : {attachments: [], maelstromAuthorization: {date: null}, specificAuthorization: {date: null}};
@@ -915,7 +913,7 @@ mica.study
 
       var updateStudy = function () {
         $log.debug('Update study', $scope.study);
-        $scope.study.$save({comment:$scope.revision.comment},
+        $scope.study.$save({comment: $scope.revision.comment},
           function (study) {
             $location.path('/study/' + study.id).replace();
           },

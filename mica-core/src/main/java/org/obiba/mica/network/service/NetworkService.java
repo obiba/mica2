@@ -16,6 +16,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.joda.time.DateTime;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.file.GridFsService;
 import org.obiba.mica.network.NetworkRepository;
@@ -70,6 +71,8 @@ public class NetworkService {
       gridFsService.save(saved.getLogo().getId());
       saved.getLogo().setJustUploaded(false);
     }
+
+    saved.setLastModifiedDate(DateTime.now());
 
     networkRepository.save(saved);
     eventBus.post(new NetworkUpdatedEvent(saved));

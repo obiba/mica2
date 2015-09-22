@@ -16,14 +16,28 @@
       <li class="active">{{dataset.id}}</li>
     </ol>
   </h2>
-  <div class="btn-group pull-right">
-    <a ng-href="#/harmonization-dataset/{{dataset.id}}/edit" class="btn btn-primary"
-      ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
-      <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
-    </a>
-    <publish-switch status="isPublished()" publish="publish()"
-      ng-if="hasRole(['mica-administrator','mica-reviewer'])"></publish-switch>
+
+  <div class="clearfix">
+    <div class="pull-left">
+      <small class="help-block inline">{{'global.lastUpdate' | translate}}: {{dataset.timestamps.lastUpdate ===
+        undefined ? dataset.timestamps.created : dataset.timestamps.lastUpdate |
+        amDateFormat : 'lll'}}
+      </small>
+      <i class="fa fa-star-o" ng-show="!dataset.published"
+        title="{{'publish.not-published' | translate}}"></i>
+      <i class="fa fa-star" ng-show="dataset.published"
+        title="{{'publish.published' | translate}}"></i>
+    </div>
+    <div class="btn-group pull-right">
+      <a ng-href="#/harmonization-dataset/{{dataset.id}}/edit" class="btn btn-primary"
+        ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+        <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
+      </a>
+      <publish-switch status="isPublished()" publish="publish()"
+        ng-if="hasRole(['mica-administrator','mica-reviewer'])"></publish-switch>
+    </div>
   </div>
+
 
   <tabset>
     <tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active"
