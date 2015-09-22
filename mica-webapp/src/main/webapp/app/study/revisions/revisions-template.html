@@ -37,12 +37,12 @@
         {{commitInfo.comment}}
       </td>
       <td>
-        <ul ng-if="$index === 0" class="list-inline">
+        <ul ng-if="pages.index === 1 && $index === 0" class="list-inline">
           <li>
             <a ng-click="viewRevision($index, id, commitInfo)" href="" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>
           </li>
         </ul>
-        <ul ng-if="$index > 0" class="list-inline">
+        <ul ng-if="pages.index > 1 || $index > 0" class="list-inline">
           <li>
             <a ng-click="viewRevision($index, id, commitInfo)" href="" title="{{'view' | translate}}" ><i class="fa fa-eye"></i></a>
           </li>
