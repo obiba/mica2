@@ -83,14 +83,16 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
       .setTypes(DatasetIndexerImpl.DATASET_TYPE) //
       .setQuery(query);
 
-    log.debug("Request: {}", search.toString());
+    log.info("Request /{}/{}", DatasetIndexerImpl.PUBLISHED_DATASET_INDEX, DatasetIndexerImpl.DATASET_TYPE);
     SearchResponse response = search.execute().actionGet();
 
     if(response.getHits().totalHits() == 0) throw NoSuchDatasetException.withId(datasetId);
 
     InputStream inputStream = new ByteArrayInputStream(response.getHits().hits()[0].getSourceAsString().getBytes());
     try {
-      return objectMapper.readValue(inputStream, clazz);
+      T rval = objectMapper.readValue(inputStream, clazz);
+      log.info("Response /{}/{}", DatasetIndexerImpl.PUBLISHED_DATASET_INDEX, DatasetIndexerImpl.DATASET_TYPE);
+      return rval;
     } catch(IOException e) {
       log.error("Failed retrieving {}", clazz.getSimpleName(), e);
       throw NoSuchDatasetException.withId(datasetId);
@@ -132,9 +134,8 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
         SortBuilders.fieldSort(sort).order(order == null ? SortOrder.ASC : SortOrder.valueOf(order.toUpperCase())));
     }
 
-    log.info(search.toString());
+    log.info("Request /{}/{}", VariableIndexerImpl.PUBLISHED_VARIABLE_INDEX, VariableIndexerImpl.VARIABLE_TYPE);
     SearchResponse response = search.execute().actionGet();
-    log.info(response.toString());
 
     Mica.DatasetVariablesDto.Builder builder = Mica.DatasetVariablesDto.newBuilder() //
       .setTotal(Long.valueOf(response.getHits().getTotalHits()).intValue()) //
@@ -150,6 +151,8 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
         log.error("Failed retrieving {}", DatasetVariable.class.getSimpleName(), e);
       }
     });
+
+    log.info("Response /{}/{}", VariableIndexerImpl.PUBLISHED_VARIABLE_INDEX, VariableIndexerImpl.VARIABLE_TYPE);
 
     return builder.build();
   }
