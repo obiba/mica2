@@ -255,7 +255,7 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
     gitService.deleteGitRepository(study);
     eventBus.post(new StudyDeletedEvent(study));
     studyStateRepository.delete(id);
-    studyRepository.deleteWithAttachments(study, false);
+    studyRepository.deleteWithAttachments(study, true);
   }
 
   //
