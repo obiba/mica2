@@ -14,7 +14,6 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.PdfUtils;
 import org.obiba.mica.access.DataAccessRequestRepository;
@@ -26,7 +25,6 @@ import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.core.support.IdentifierGenerator;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.GridFsService;
-import org.obiba.mica.file.TempFileService;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
@@ -138,7 +136,7 @@ public class DataAccessRequestService {
     DataAccessRequest dataAccessRequest = findById(id);
     List<Attachment> attachments = dataAccessRequest.getAttachments();
 
-    dataAccessRequestRepository.deleteWithAttachments(dataAccessRequest, false);
+    dataAccessRequestRepository.deleteWithAttachments(dataAccessRequest, true);
 
     attachments.forEach(a -> gridFsService.delete(a.getId()));
   }
