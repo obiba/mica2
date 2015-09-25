@@ -33,14 +33,6 @@ public class StudyRepositoryImpl extends AbstractAttachmentAwareRepository<Study
   }
 
   @Override
-  public void deleteWithAttachments(Study study, boolean removeOrphanedAttachments) {
-    study.getPopulations()
-      .forEach(p -> p.getDataCollectionEvents().forEach(d -> attachmentRepository.delete(d.getAttachments())));
-
-    super.deleteWithAttachments(study, removeOrphanedAttachments);
-  }
-
-  @Override
   protected String getAttachmentPath(Study study) {
     return String.format("/study/%s/attachment", study.getId());
   }

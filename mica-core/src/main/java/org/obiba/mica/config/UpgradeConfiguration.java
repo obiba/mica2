@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.obiba.mica.core.upgrade.AttachmentsCleanupUpgrade;
 import org.obiba.mica.core.upgrade.AttachmentsMigration;
 import org.obiba.mica.core.upgrade.AttachmentsPathUpgrade;
 import org.obiba.mica.core.upgrade.AttachmentsRefactorUpgrade;
@@ -53,7 +54,8 @@ public class UpgradeConfiguration {
       applicationContext.getBean(AttachmentsRefactorUpgrade.class),
       applicationContext.getBean(NetworkLogoMigration.class),
       applicationContext.getBean(AttachmentsMigration.class),
-      applicationContext.getBean(AttachmentsPathUpgrade.class)
+      applicationContext.getBean(AttachmentsPathUpgrade.class),
+      applicationContext.getBean(AttachmentsCleanupUpgrade.class)
     );
   }
 }
