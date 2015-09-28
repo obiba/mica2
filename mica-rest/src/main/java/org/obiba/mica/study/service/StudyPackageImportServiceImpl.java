@@ -10,7 +10,6 @@
 
 package org.obiba.mica.study.service;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,6 +52,8 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.hash.Hashing;
+import com.google.common.io.ByteSource;
 import com.google.common.io.ByteStreams;
 import com.googlecode.protobuf.format.JsonFormat;
 
@@ -84,7 +85,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
   public void importZip(InputStream inputStream, boolean publish) throws IOException {
     final StudyPackage studyPackage = new StudyPackage(inputStream);
     if(studyPackage.study != null) {
-      Map<String, ByteArrayInputStream> dict = studyPackage.attachments.entrySet().stream()
+      Map<String, ByteSource> dict = studyPackage.attachments.entrySet().stream()
         .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
       Optional.ofNullable(studyPackage.study.getLogo()).ifPresent(a -> saveAttachmentTempFile(dict, a));
       Set<String> attachmentIds = Sets.newHashSet();
@@ -122,11 +123,11 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     }
   }
 
-  private void saveAttachmentTempFile(Map<String, ByteArrayInputStream> dict, Attachment a) {
+  private void saveAttachmentTempFile(Map<String, ByteSource> dict, Attachment a) {
     saveAttachmentTempFile(dict, a, a.getId());
   }
 
-  private void saveAttachmentTempFile(Map<String, ByteArrayInputStream> dict, Attachment a, String aid) {
+  private void saveAttachmentTempFile(Map<String, ByteSource> dict, Attachment a, String aid) {
     if(dict.containsKey(aid)) {
       try {
         saveTempFile(a, dict.get(aid));
@@ -167,10 +168,10 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
       updated = network;
     }
 
-    for(Map.Entry<String, ByteArrayInputStream> e: studyPackage.attachments.entrySet()) {
+    for(Map.Entry<String, ByteSource> e: studyPackage.attachments.entrySet()) {
       Attachment attachment = network.getLogo();
 
-      if ( attachment != null && attachment.getId().equals(e.getKey())){
+      if(attachment != null && attachment.getId().equals(e.getKey())) {
         saveTempFile(attachment, e.getValue());
         updated.setLogo(attachment);
       }
@@ -182,11 +183,13 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     if(publish) networkService.publish(updated.getId(), publish);
   }
 
-  private void saveTempFile(Attachment att, ByteArrayInputStream content) throws IOException {
+  private void saveTempFile(Attachment attachment, ByteSource content) throws IOException {
     TempFile tempFile = new TempFile();
-    tempFile.setId(att.getId());
-    tempFile.setName(att.getName());
-    tempFileService.addTempFile(tempFile, content);
+    tempFile.setId(attachment.getId());
+    tempFile.setName(attachment.getName());
+    tempFileService.addTempFile(tempFile, content.openStream());
+    attachment.setMd5(content.hash(Hashing.md5()).toString());
+    attachment.setSize(content.size());
   }
 
   private void importDataset(Dataset dataset, boolean publish) {
@@ -227,7 +230,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
 
     private final List<Dataset> datasets = Lists.newArrayList();
 
-    private final Map<String, ByteArrayInputStream> attachments = Maps.newHashMap();
+    private final Map<String, ByteSource> attachments = Maps.newHashMap();
 
     private StudyPackage(InputStream inputStream) {
       try(ZipInputStream zipIn = new ZipInputStream(inputStream)) {
@@ -250,7 +253,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
 
       if(entry.getName().contains("attachments/")) {
         String attId = entry.getName().substring(entry.getName().lastIndexOf('/') + 1);
-        attachments.put(attId, new ByteArrayInputStream(readBytes(zipIn)));
+        attachments.put(attId, ByteSource.wrap(readBytes(zipIn)));
       } else if(entry.getName().endsWith(".json")) {
         String name = entry.getName();
         int slash = name.lastIndexOf('/');
