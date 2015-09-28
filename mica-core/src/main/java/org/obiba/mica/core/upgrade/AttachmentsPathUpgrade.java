@@ -2,9 +2,7 @@ package org.obiba.mica.core.upgrade;
 
 import javax.inject.Inject;
 
-import org.obiba.mica.access.DataAccessRequestRepository;
 import org.obiba.mica.core.repository.AttachmentRepository;
-import org.obiba.mica.study.StudyRepository;
 import org.obiba.runtime.Version;
 import org.obiba.runtime.upgrade.UpgradeStep;
 import org.slf4j.Logger;
@@ -33,7 +31,7 @@ public class AttachmentsPathUpgrade implements UpgradeStep {
     log.info("Executing attachments path property upgrade");
 
     attachmentRepository.findAll().forEach(a -> {
-      a.setPath(a.getPath().replaceAll("/[0-9a-f\\-]+$", ""));
+      a.setPath(a.getPath().replaceAll("/[0-9a-f\\-]+$", "").replaceAll("/attachment$",""));
       attachmentRepository.save(a);
     });
   }

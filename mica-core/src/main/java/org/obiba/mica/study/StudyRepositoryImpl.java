@@ -20,7 +20,7 @@ public class StudyRepositoryImpl extends AbstractAttachmentAwareRepository<Study
     study.getPopulations().forEach(p -> p.getDataCollectionEvents().forEach(d -> d.getAttachments().forEach(a -> {
       try {
         a.setPath(
-          String.format("/study/%s/population/%s/data-collection-event/%s/attachment", study.getId(), p.getId(), d.getId()));
+          String.format("/study/%s/population/%s/data-collection-event/%s", study.getId(), p.getId(), d.getId()));
         attachmentRepository.save(a);
       } catch(DuplicateKeyException | OptimisticLockingFailureException ex) {
         //TODO: copy same attachments that are in different DCEs.
@@ -34,6 +34,6 @@ public class StudyRepositoryImpl extends AbstractAttachmentAwareRepository<Study
 
   @Override
   protected String getAttachmentPath(Study study) {
-    return String.format("/study/%s/attachment", study.getId());
+    return String.format("/study/%s", study.getId());
   }
 }
