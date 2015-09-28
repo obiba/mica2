@@ -45,7 +45,7 @@ public abstract class AbstractAttachmentAwareRepository<T extends AttachmentAwar
     mongoTemplate.remove(obj);
 
     if(removeOrphanedAttachments) {
-      attachmentRepository.findByPath(String.format("^%s", getAttachmentPath(obj).replaceAll("/attachment$", "")))
+      attachmentRepository.findByPath(String.format("^%s", getAttachmentPath(obj)))
         .forEach(a -> {
           attachmentRepository.delete(a);
           gridFsService.delete(a.getId());
