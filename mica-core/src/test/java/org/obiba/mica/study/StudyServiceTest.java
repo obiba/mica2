@@ -22,7 +22,8 @@ import org.obiba.git.command.GitCommandHandler;
 import org.obiba.mica.config.JsonConfiguration;
 import org.obiba.mica.config.MongoDbConfiguration;
 import org.obiba.mica.core.service.GitService;
-import org.obiba.mica.file.GridFsService;
+import org.obiba.mica.file.FileService;
+import org.obiba.mica.file.impl.GridFsService;
 import org.obiba.mica.file.TempFileService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.network.domain.Network;
@@ -331,7 +332,7 @@ public class StudyServiceTest {
     }
 
     @Bean
-    public GridFsService gridFsService() {
+    public FileService fsService() {
       return mock(GridFsService.class);
     }
 

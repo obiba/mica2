@@ -1,10 +1,13 @@
-package org.obiba.mica.file;
+package org.obiba.mica.file.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 import javax.inject.Inject;
 
+import org.obiba.mica.file.FileService;
+import org.obiba.mica.file.GridFSFileNotFoundException;
+import org.obiba.mica.file.TempFileService;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsOperations;
@@ -13,7 +16,7 @@ import org.springframework.stereotype.Component;
 import com.mongodb.gridfs.GridFSDBFile;
 
 @Component
-public class GridFsService {
+public class GridFsService implements FileService {
 
   @Inject
   private GridFsOperations gridFsOperations;
@@ -21,6 +24,7 @@ public class GridFsService {
   @Inject
   private TempFileService tempFileService;
 
+  @Override
   public InputStream getFile(String id) throws IOException {
     GridFSDBFile f = gridFsOperations.findOne(new Query().addCriteria(Criteria.where("filename").is(id)));
 
@@ -30,15 +34,18 @@ public class GridFsService {
     return f.getInputStream();
   }
 
-  public void save(InputStream input, String id) {
+  @Override
+  public void save(String id, InputStream input) {
     gridFsOperations.store(input, id);
   }
 
+  @Override
   public void save(String tempFileId) {
-    save(tempFileService.getInputStreamFromFile(tempFileId), tempFileId);
+    save(tempFileId, tempFileService.getInputStreamFromFile(tempFileId));
     tempFileService.delete(tempFileId);
   }
 
+  @Override
   public void delete(String id) {
     gridFsOperations.delete(new Query().addCriteria(Criteria.where("filename").is(id)));
   }

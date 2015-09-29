@@ -27,7 +27,7 @@ import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.core.domain.Comment;
 import org.obiba.mica.core.service.CommentsService;
 import org.obiba.mica.file.Attachment;
-import org.obiba.mica.file.GridFsService;
+import org.obiba.mica.file.FileService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.event.ResourceDeletedEvent;
 import org.obiba.mica.security.service.SubjectAclService;
@@ -64,7 +64,7 @@ public class DataAccessRequestResource {
   private SubjectAclService subjectAclService;
 
   @Inject
-  private GridFsService gridFsService;
+  private FileService fileService;
 
   @PostConstruct
   public void init() {
@@ -113,7 +113,8 @@ public class DataAccessRequestResource {
 
     if(!r.isPresent()) throw NoSuchEntityException.withId(Attachment.class, attachmentId);
 
-    return Response.ok(gridFsService.getFile(attachmentId)).header("Content-Disposition", "attachment; filename=\"" + r.get().getName() + "\"")
+    return Response.ok(fileService.getFile(attachmentId)).header("Content-Disposition",
+      "attachment; filename=\"" + r.get().getName() + "\"")
       .build();
   }
 

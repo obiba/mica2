@@ -18,7 +18,7 @@ import javax.validation.constraints.NotNull;
 
 import org.joda.time.DateTime;
 import org.obiba.mica.core.domain.LocalizedString;
-import org.obiba.mica.file.GridFsService;
+import org.obiba.mica.file.FileService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.network.NoSuchNetworkException;
 import org.obiba.mica.network.domain.Network;
@@ -46,7 +46,7 @@ public class NetworkService {
   private EventBus eventBus;
 
   @Inject
-  private GridFsService gridFsService;
+  private FileService fileService;
 
   /**
    * Create or update provided {@link org.obiba.mica.network.domain.Network}.
@@ -68,7 +68,7 @@ public class NetworkService {
     }
 
     if (saved.getLogo() != null && saved.getLogo().isJustUploaded()) {
-      gridFsService.save(saved.getLogo().getId());
+      fileService.save(saved.getLogo().getId());
       saved.getLogo().setJustUploaded(false);
     }
 
@@ -165,7 +165,7 @@ public class NetworkService {
     Network network = findById(id);
     networkRepository.delete(network);
 
-    if (network.getLogo() != null) gridFsService.delete(network.getLogo().getId());
+    if (network.getLogo() != null) fileService.delete(network.getLogo().getId());
 
     eventBus.post(new NetworkDeletedEvent(network));
   }
