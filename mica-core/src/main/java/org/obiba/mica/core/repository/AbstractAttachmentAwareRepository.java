@@ -3,7 +3,7 @@ package org.obiba.mica.core.repository;
 import javax.inject.Inject;
 
 import org.obiba.mica.core.domain.AttachmentAware;
-import org.obiba.mica.file.GridFsService;
+import org.obiba.mica.file.FileService;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
@@ -12,7 +12,7 @@ public abstract class AbstractAttachmentAwareRepository<T extends AttachmentAwar
   AttachmentRepository attachmentRepository;
 
   @Inject
-  GridFsService gridFsService;
+  FileService fileService;
 
   @Inject
   MongoTemplate mongoTemplate;
@@ -33,7 +33,7 @@ public abstract class AbstractAttachmentAwareRepository<T extends AttachmentAwar
     if(removeOrphanedAttachments) {
       obj.removedAttachments().forEach(a -> {
         attachmentRepository.delete(a);
-        gridFsService.delete(a.getId());
+        fileService.delete(a.getId());
       });
     }
 
@@ -48,7 +48,7 @@ public abstract class AbstractAttachmentAwareRepository<T extends AttachmentAwar
       attachmentRepository.findByPath(String.format("^%s", getAttachmentPath(obj)))
         .forEach(a -> {
           attachmentRepository.delete(a);
-          gridFsService.delete(a.getId());
+          fileService.delete(a.getId());
         });
     }
   }

@@ -18,7 +18,7 @@ import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.StudyDatasetRepository;
-import org.obiba.mica.file.GridFsService;
+import org.obiba.mica.file.FileService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.study.ConstraintException;
 import org.obiba.mica.study.NoSuchStudyException;
@@ -68,7 +68,7 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
   private GitService gitService;
 
   @Inject
-  private GridFsService gridFsService;
+  private FileService fileService;
 
   @Inject
   private NetworkRepository networkRepository;
@@ -128,13 +128,13 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
     gitService.save(study, comment);
 
     if (study.getLogo() != null && study.getLogo().isJustUploaded()) {
-      gridFsService.save(study.getLogo().getId());
+      fileService.save(study.getLogo().getId());
       study.getLogo().setJustUploaded(false);
     }
 
     study.getAllAttachments().forEach(a -> {
       if(a.isJustUploaded()) {
-        gridFsService.save(a.getId());
+        fileService.save(a.getId());
         a.setJustUploaded(false);
       }
     });

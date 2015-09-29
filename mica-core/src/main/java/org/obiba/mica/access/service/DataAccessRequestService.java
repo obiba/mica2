@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -24,7 +23,7 @@ import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.core.support.IdentifierGenerator;
 import org.obiba.mica.file.Attachment;
-import org.obiba.mica.file.GridFsService;
+import org.obiba.mica.file.FileService;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
@@ -67,7 +66,7 @@ public class DataAccessRequestService {
   private DataAccessRequestUtilService dataAccessRequestUtilService;
 
   @Inject
-  private GridFsService gridFsService;
+  private FileService fileService;
 
   @Inject
   private MailService mailService;
@@ -113,14 +112,14 @@ public class DataAccessRequestService {
 
     if(toSave != null)
       toSave.forEach(a -> {
-        gridFsService.save(a.getId());
+        fileService.save(a.getId());
         a.setJustUploaded(false);
         attachmentRepository.save(a);
       });
 
     dataAccessRequestRepository.saveWithAttachments(saved, false);
 
-    if(toDelete != null) toDelete.forEach(a -> gridFsService.delete(a.getId()));
+    if(toDelete != null) toDelete.forEach(a -> fileService.delete(a.getId()));
 
     sendNotificationEmails(saved, from);
     return saved;
@@ -138,7 +137,7 @@ public class DataAccessRequestService {
 
     dataAccessRequestRepository.deleteWithAttachments(dataAccessRequest, true);
 
-    attachments.forEach(a -> gridFsService.delete(a.getId()));
+    attachments.forEach(a -> fileService.delete(a.getId()));
   }
 
   /**
@@ -341,10 +340,10 @@ public class DataAccessRequestService {
 
           if(pdfTemplate == null) pdfTemplate = dataAccessForm.getPdfTemplates().values().stream().findFirst().get();
 
-          template = ByteStreams.toByteArray(gridFsService.getFile(pdfTemplate.getId()));
+          template = ByteStreams.toByteArray(fileService.getFile(pdfTemplate.getId()));
         } else template = ByteStreams.toByteArray(defaultTemplateResource.getInputStream());
       } else throw new NoSuchElementException();
-    } else template = ByteStreams.toByteArray(gridFsService.getFile(pdfTemplate.getId()));
+    } else template = ByteStreams.toByteArray(fileService.getFile(pdfTemplate.getId()));
 
     return template;
   }

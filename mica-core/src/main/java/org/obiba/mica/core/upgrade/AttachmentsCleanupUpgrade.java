@@ -8,7 +8,7 @@ import javax.inject.Inject;
 
 import org.obiba.mica.access.DataAccessRequestRepository;
 import org.obiba.mica.core.repository.AttachmentRepository;
-import org.obiba.mica.file.GridFsService;
+import org.obiba.mica.file.FileService;
 import org.obiba.mica.study.StudyRepository;
 import org.obiba.runtime.Version;
 import org.obiba.runtime.upgrade.UpgradeStep;
@@ -33,7 +33,7 @@ public class AttachmentsCleanupUpgrade implements UpgradeStep {
   private DataAccessRequestRepository dataAccessRequestRepository;
 
   @Inject
-  private GridFsService gridFsService;
+  private FileService fileService;
 
   @Override
   public String getDescription() {
@@ -65,7 +65,7 @@ public class AttachmentsCleanupUpgrade implements UpgradeStep {
         if(missingIds.contains(id) || repository.findOne(id) == null) {
           if(!missingIds.contains(id)) missingIds.add(id);
           attachmentRepository.delete(a);
-          gridFsService.delete(a.getId());
+          fileService.delete(a.getId());
         }
       }
     });

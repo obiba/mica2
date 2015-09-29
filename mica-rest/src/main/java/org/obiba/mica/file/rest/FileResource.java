@@ -9,9 +9,9 @@ import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.core.domain.PersistableWithAttachments;
-import org.obiba.mica.file.Attachment;
 import org.obiba.mica.core.service.GitService;
-import org.obiba.mica.file.GridFsService;
+import org.obiba.mica.file.Attachment;
+import org.obiba.mica.file.FileService;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +26,7 @@ public class FileResource {
   private GitService gitService;
 
   @Inject
-  private GridFsService gridFsService;
+  private FileService fileService;
 
   private PersistableWithAttachments persistable;
 
@@ -57,7 +57,7 @@ public class FileResource {
         .header("Content-Disposition", "attachment; filename=\"" + attachment.getName() + "\"").build();
     }
 
-    return Response.ok(gridFsService.getFile(attachment.getId()))
+    return Response.ok(fileService.getFile(attachment.getId()))
       .header("Content-Disposition", "attachment; filename=\"" + attachment.getName() + "\"").build();
   }
 }
