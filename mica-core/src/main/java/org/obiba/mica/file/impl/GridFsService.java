@@ -1,12 +1,11 @@
 package org.obiba.mica.file.impl;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import javax.inject.Inject;
 
+import org.obiba.mica.file.FileRuntimeException;
 import org.obiba.mica.file.FileService;
-import org.obiba.mica.file.GridFSFileNotFoundException;
 import org.obiba.mica.file.TempFileService;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -25,11 +24,11 @@ public class GridFsService implements FileService {
   private TempFileService tempFileService;
 
   @Override
-  public InputStream getFile(String id) throws IOException {
+  public InputStream getFile(String id) throws FileRuntimeException {
     GridFSDBFile f = gridFsOperations.findOne(new Query().addCriteria(Criteria.where("filename").is(id)));
 
     if(f == null)
-      throw new GridFSFileNotFoundException(id);
+      throw new FileRuntimeException(id);
 
     return f.getInputStream();
   }

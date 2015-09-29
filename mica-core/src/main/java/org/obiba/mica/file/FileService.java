@@ -1,6 +1,5 @@
 package org.obiba.mica.file;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -13,24 +12,26 @@ public interface FileService {
    *
    * @param id the file identifier
    * @return
-   * @throws IOException
+   * @throws FileRuntimeException
    */
-  InputStream getFile(String id) throws IOException, GridFSFileNotFoundException;
+  InputStream getFile(String id) throws FileRuntimeException;
 
   /**
    * Insert or update a file with the content of the {@link java.io.InputStream}.
    *
    * @param id
    * @param input
+   * @throws FileRuntimeException
    */
-  void save(String id, InputStream input);
+  void save(String id, InputStream input) throws FileRuntimeException;
 
   /**
    * Save a file from the {@link TempFileService} into the final file storage.
    *
    * @param tempFileId
+   * @throws FileRuntimeException
    */
-  void save(String tempFileId);
+  void save(String tempFileId) throws FileRuntimeException;
 
   /**
    * Delete the file (ignore if file does not exist).
