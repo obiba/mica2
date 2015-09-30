@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -113,8 +115,18 @@ public class DraftStudyResource {
     return fileResource;
   }
 
-  @Path("/commits")
   @GET
+  @Path("/files")
+  @RequiresPermissions({"/draft:EDIT"})
+  public List<Mica.AttachmentDto> listAttachments() {
+    Study study = studyService.findDraftStudy(id);
+    return StreamSupport.stream(study.getAllAttachments().spliterator(), false).sorted().map(dtos::asDto)
+      .collect(Collectors.toList());
+  }
+
+  @GET
+  @RequiresPermissions({"/draft:EDIT"})
+  @Path("/commits")
   public List<Mica.GitCommitInfoDto> getCommitsInfo() {
     return dtos.asDto(studyService.getCommitInfos(studyService.findDraftStudy(id)));
   }
@@ -132,6 +144,7 @@ public class DraftStudyResource {
   }
 
   @GET
+  @RequiresPermissions({"/draft:EDIT"})
   @Path("/commit/{commitId}")
   public Mica.GitCommitInfoDto getCommitInfo(@NotNull @PathParam("commitId") String commitId) throws IOException {
     return dtos.asDto(
@@ -139,6 +152,7 @@ public class DraftStudyResource {
   }
 
   @GET
+  @RequiresPermissions({"/draft:EDIT"})
   @Path("/commit/{commitId}/view")
   public Mica.StudyDto getStudyFromCommit(@NotNull @PathParam("commitId") String commitId) throws IOException {
     return dtos.asDto(studyService.getStudyFromCommit(studyService.findDraftStudy(id), commitId));

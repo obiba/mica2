@@ -1,5 +1,9 @@
 package org.obiba.mica.study.rest;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -46,20 +50,32 @@ public class PublishedStudyResource {
   @GET
   @Timed
   public Mica.StudyDto get() {
-    Study study = publishedStudyService.findById(id);
-    if(study == null) throw NoSuchStudyException.withId(id);
-    return dtos.asDto(study);
+    return dtos.asDto(getStudy());
   }
 
   @Path("/file/{fileId}")
   public FileResource study(@PathParam("fileId") String fileId) {
     FileResource fileResource = applicationContext.getBean(FileResource.class);
-    Study study = publishedStudyService.findById(id);
+    Study study = getStudy();
 
     if(study.findAttachmentById(fileId) == null) throw NoSuchEntityException.withId(Attachment.class, fileId);
 
     fileResource.setAttachment(study.findAttachmentById(fileId));
 
     return fileResource;
+  }
+
+  @GET
+  @Path("/files")
+  public List<Mica.AttachmentDto> listAttachments() {
+    Study study = getStudy();
+    return StreamSupport.stream(study.getAllAttachments().spliterator(), false).sorted().map(dtos::asDto)
+      .collect(Collectors.toList());
+  }
+
+  private Study getStudy() {
+    Study study = publishedStudyService.findById(id);
+    if(study == null) throw NoSuchStudyException.withId(id);
+    return study;
   }
 }
