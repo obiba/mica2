@@ -68,12 +68,16 @@ public class NetworkLogoMigration implements UpgradeStep {
 
         persistable.setId(network.getId());
 
-        if(network.getLogo() != null) {
-          byte[] ba = gitService.readFileHead(persistable, network.getLogo().getId());
-          fileService.save(network.getLogo().getId(), new ByteArrayInputStream(ba));
-        }
+        try {
+          if(network.getLogo() != null) {
+            byte[] ba = gitService.readFileHead(persistable, network.getLogo().getId());
+            fileService.save(network.getLogo().getId(), new ByteArrayInputStream(ba));
+          }
 
-        gitService.deleteGitRepository(persistable);
+          gitService.deleteGitRepository(persistable);
+        } catch(RuntimeException e) {
+          log.warn("Error in network upgrade. Ignoring.", e);
+        }
       } catch(NoSuchGitRepositoryException ex) {
         //ignore: already migrated
       }
