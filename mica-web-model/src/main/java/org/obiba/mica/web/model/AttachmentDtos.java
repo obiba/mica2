@@ -32,8 +32,8 @@ class AttachmentDtos {
     if(attachment.getLang() != null) builder.setLang(attachment.getLang().toString());
     if(attachment.getMd5() != null) builder.setMd5(attachment.getMd5());
     if(attachment.getAttributes() != null) {
-      attachment.getAttributes().asAttributeList().forEach(
-        attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
+      attachment.getAttributes().asAttributeList()
+        .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
     }
     if(!Strings.isNullOrEmpty(attachment.getPath())) builder.setPath(attachment.getPath());
 
@@ -57,6 +57,8 @@ class AttachmentDtos {
     if(dto.getAttributesCount() > 0) {
       dto.getAttributesList().forEach(attributeDto -> attachment.addAttribute(attributeDtos.fromDto(attributeDto)));
     }
+
+    if(dto.hasPath()) attachment.setPath(dto.getPath());
 
     return attachment;
   }

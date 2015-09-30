@@ -140,6 +140,10 @@ public class Attachment extends AbstractAuditableDocument implements AttributeAw
     this.attributes = attributes;
   }
 
+  public boolean hasPath() {
+    return !Strings.isNullOrEmpty(path);
+  }
+
   public String getPath() {
     return path;
   }

@@ -19,7 +19,6 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.transport.PushResult;
-import org.joda.time.DateTime;
 import org.obiba.git.CommitInfo;
 import org.obiba.git.GitException;
 import org.obiba.git.command.AbstractGitWriteCommand;
@@ -147,8 +146,6 @@ public class GitService {
   }
 
   private void saveInternal(GitPersistable persistable, String comment) {
-    persistable.setLastModifiedDate(DateTime.now());
-
     AddDeleteFilesCommand.Builder builder = new AddDeleteFilesCommand.Builder(getRepositoryPath(persistable),
       new File(clonesRoot, persistable.pathPrefix()),
       Strings.isNullOrEmpty(comment) ? persistable.isNew() ? "Created" : "Updated" : comment);
