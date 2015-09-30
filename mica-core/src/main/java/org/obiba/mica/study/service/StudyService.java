@@ -13,6 +13,7 @@ import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.joda.time.DateTime;
 import org.obiba.git.CommitInfo;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.service.GitService;
@@ -125,8 +126,6 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
 
     if (!study.isNew()) ensureStudyGitRepository(studyState);
 
-    gitService.save(study, comment);
-
     if (study.getLogo() != null && study.getLogo().isJustUploaded()) {
       fileService.save(study.getLogo().getId());
       study.getLogo().setJustUploaded(false);
@@ -142,7 +141,9 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
     studyState.setName(study.getName());
     studyState.incrementRevisionsAhead();
     studyStateRepository.save(studyState);
+    study.setLastModifiedDate(DateTime.now());
     studyRepository.saveWithAttachments(study, false);
+    gitService.save(study, comment);
 
     eventBus.post(new DraftStudyUpdatedEvent(study));
   }

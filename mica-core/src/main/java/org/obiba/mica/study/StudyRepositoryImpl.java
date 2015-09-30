@@ -19,8 +19,8 @@ public class StudyRepositoryImpl extends AbstractAttachmentAwareRepository<Study
   public Study saveWithAttachments(Study study, boolean removeOrphanedAttachments) {
     study.getPopulations().forEach(p -> p.getDataCollectionEvents().forEach(d -> d.getAttachments().forEach(a -> {
       try {
-        a.setPath(
-          String.format("/study/%s/population/%s/data-collection-event/%s", study.getId(), p.getId(), d.getId()));
+        String defaultPath = String.format("/study/%s/population/%s/data-collection-event/%s", study.getId(), p.getId(), d.getId());
+        if(!a.hasPath() || !a.getPath().startsWith(defaultPath)) a.setPath(defaultPath);
         attachmentRepository.save(a);
       } catch(DuplicateKeyException | OptimisticLockingFailureException ex) {
         //TODO: copy same attachments that are in different DCEs.

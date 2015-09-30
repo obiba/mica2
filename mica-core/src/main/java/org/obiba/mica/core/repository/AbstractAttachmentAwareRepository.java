@@ -21,7 +21,8 @@ public abstract class AbstractAttachmentAwareRepository<T extends AttachmentAwar
   public T saveWithAttachments(T obj, boolean removeOrphanedAttachments) {
     obj.getAttachments().forEach(a -> {
       try {
-        a.setPath(getAttachmentPath(obj));
+        String defaultPath = getAttachmentPath(obj);
+        if (!a.hasPath() || !a.getPath().startsWith(defaultPath)) a.setPath(defaultPath);
         attachmentRepository.save(a);
       } catch(DuplicateKeyException ex) {
         //ignore
