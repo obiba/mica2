@@ -14,9 +14,10 @@ import org.obiba.mica.core.domain.LocalizedString;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.Strings;
 
 @Document
-public class Attachment extends AbstractAuditableDocument implements AttributeAware {
+public class Attachment extends AbstractAuditableDocument implements AttributeAware, Comparable<Attachment> {
 
   private static final long serialVersionUID = 7881381748865114007L;
 
@@ -38,7 +39,6 @@ public class Attachment extends AbstractAuditableDocument implements AttributeAw
 
   private Attributes attributes = new Attributes();
 
-  @JsonIgnore
   private String path;
 
   @NotNull
@@ -146,5 +146,16 @@ public class Attachment extends AbstractAuditableDocument implements AttributeAw
 
   public void setPath(String path) {
     this.path = path;
+  }
+
+  @Override
+  public int compareTo(Attachment o) {
+    if (equals(o)) return 0;
+    int cmp = 0;
+    if (!Strings.isNullOrEmpty(getPath())) cmp = getPath().compareToIgnoreCase(o.getPath());
+    if (cmp != 0) return cmp;
+    cmp = getName().compareToIgnoreCase(o.getName());
+    if (cmp != 0) return cmp;
+    return getCreatedDate().compareTo(o.getCreatedDate());
   }
 }

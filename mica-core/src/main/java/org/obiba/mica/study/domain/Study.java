@@ -317,15 +317,15 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
   public Iterable<Attachment> getAllAttachments() {
     Collection<Attachment> all = new ArrayList<>();
 
-    if(getAttachments() != null) {
+    if(hasAttachments()) {
       all.addAll(getAttachments());
     }
 
-    if(getPopulations() != null) {
+    if(hasPopulations()) {
       getPopulations().stream() //
-          .filter(population -> population.getDataCollectionEvents() != null) //
+          .filter(Population::hasDataCollectionEvents) //
           .forEach(population -> population.getDataCollectionEvents().stream() //
-              .filter(dce -> dce.getAttachments() != null) //
+              .filter(DataCollectionEvent::hasAttachments) //
               .forEach(dce -> all.addAll(dce.getAttachments())));
     }
 

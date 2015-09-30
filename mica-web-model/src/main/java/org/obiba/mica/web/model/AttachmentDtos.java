@@ -8,6 +8,8 @@ import javax.validation.constraints.NotNull;
 import org.obiba.mica.file.Attachment;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Strings;
+
 import static org.obiba.mica.web.model.Mica.AttachmentDto;
 
 @Component
@@ -33,6 +35,7 @@ class AttachmentDtos {
       attachment.getAttributes().asAttributeList().forEach(
         attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
     }
+    if(!Strings.isNullOrEmpty(attachment.getPath())) builder.setPath(attachment.getPath());
 
     return builder.build();
   }

@@ -16,6 +16,7 @@ import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.micaConfig.domain.AggregationsConfig;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
@@ -62,6 +63,9 @@ public class Dtos {
 
   @Inject
   private TempFileDtos tempFileDtos;
+
+  @Inject
+  private AttachmentDtos attachmentDtos;
 
   @Inject
   private DatasetDtos datasetDtos;
@@ -182,6 +186,11 @@ public class Dtos {
   @NotNull
   public Mica.TempFileDto asDto(@NotNull TempFile tempFile) {
     return tempFileDtos.asDto(tempFile);
+  }
+
+  @NotNull
+  public Mica.AttachmentDto asDto(@NotNull Attachment attachment) {
+    return attachmentDtos.asDto(attachment);
   }
 
   @NotNull

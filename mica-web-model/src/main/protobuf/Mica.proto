@@ -308,6 +308,7 @@ message AttachmentDto {
   optional bool justUploaded = 8;
   optional TimestampsDto timestamps = 9;
   repeated AttributeDto attributes = 10;
+  optional string path = 11;
 }
 
 message TempFileDto {
