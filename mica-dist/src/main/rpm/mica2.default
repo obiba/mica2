@@ -1,0 +1,32 @@
+# Defaults for mica2 server initscript
+# sourced by /etc/init.d/mica2
+# installed at /etc/default/mica2 by the maintainer scripts
+
+# pulled in from the init script; makes things easier.
+NAME=mica2
+
+# location of java
+JAVA=/usr/bin/java
+
+# ulimit
+# Increase maximum open files for the mica server process
+# Comment this out to use the system default
+MAXOPENFILES=16384
+
+# user id (or id:gid) to be run as
+MICA_USER=mica
+
+# location of the mica server distribution file
+MICA_DIST=/usr/share/mica2
+
+# Mica Server home location
+MICA_HOME=/var/lib/mica2
+
+# Mica Server log directory or syslog facility
+MICA_LOG=/var/log/mica2
+
+# arguments to pass to mica server.
+MICA_ARGS=""
+
+# arguments to pass to java
+JAVA_ARGS="-Xms1G -Xmx2G -XX:MaxPermSize=256M -XX:+UseG1GC"
