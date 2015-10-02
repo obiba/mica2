@@ -19,7 +19,7 @@ public class StudyRepositoryImpl extends AbstractAttachmentAwareRepository<Study
   public Study saveWithAttachments(Study study, boolean removeOrphanedAttachments) {
     study.getPopulations().forEach(p -> p.getDataCollectionEvents().forEach(d -> d.getAttachments().forEach(a -> {
       try {
-        String defaultPath = String.format("/study/%s/population/%s/data-collection-event/%s", study.getId(), p.getId(), d.getId());
+        String defaultPath = String.format("/study/%s/attachments/population/%s/data-collection-event/%s", study.getId(), p.getId(), d.getId());
         if(!a.hasPath() || !a.getPath().startsWith(defaultPath)) a.setPath(defaultPath);
         attachmentRepository.save(a);
       } catch(DuplicateKeyException | OptimisticLockingFailureException ex) {
@@ -34,6 +34,6 @@ public class StudyRepositoryImpl extends AbstractAttachmentAwareRepository<Study
 
   @Override
   protected String getAttachmentPath(Study study) {
-    return String.format("/study/%s", study.getId());
+    return String.format("/study/%s/attachments", study.getId());
   }
 }
