@@ -313,6 +313,21 @@
                   </target>
                 </configuration>
               </execution>
+              <execution>
+                <id>deploy-rpm</id>
+                <phase>deploy</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <!-- Deploy rpm file in rpm repo -->
+                    <copy todir="${obiba.rpm.dir}/${mica2.deploy.dir}">
+                      <fileset dir="target/rpm/mica2/RPMS/noarch" />
+                    </copy>
+                  </target>
+                </configuration>
+              </execution>
             </executions>
           </plugin>
         </plugins>
@@ -322,6 +337,7 @@
   </profiles>
 
   <properties>
+    <mica2.deploy.dir>unstable</mica2.deploy.dir>
     <install.dir>/usr/share</install.dir>
     <mica.dir>${install.dir}/mica2-${project.version}</mica.dir>
     <package.name>mica-dist-${project.version}</package.name>
