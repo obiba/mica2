@@ -6,7 +6,7 @@ mica.revisions
     '$scope',
     '$filter',
     'LocaleStringUtils',
-    function ($rootScope, $scope, $filter, LocaleStringUtils) {
+    function ($rootScope, $scope) {
       var onSuccess = function(revisions) {
         $scope.commitInfos = revisions;
         viewRevision($scope.active.index, $scope.id, $scope.commitInfos[$scope.active.index]);
