@@ -252,7 +252,7 @@
                 <configuration>
                   <target>
                     <!-- Deploy rpm file in rpm repo -->
-                    <copy todir="${obiba.rpm.dir}/${mica2.deploy.dir}">
+                    <copy todir="${obiba.rpm.dir}/${mica.deploy.dir}">
                       <fileset dir="target/rpm/mica-python-client/RPMS/noarch" />
                     </copy>
                   </target>
@@ -264,9 +264,5 @@
       </build>
     </profile>
   </profiles>
-
-  <properties>
-    <mica2.deploy.dir>unstable</mica2.deploy.dir>
-  </properties>
 
 </project>
