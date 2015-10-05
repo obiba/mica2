@@ -9,6 +9,7 @@ import org.obiba.mica.core.upgrade.AttachmentsCleanupUpgrade;
 import org.obiba.mica.core.upgrade.AttachmentsMigration;
 import org.obiba.mica.core.upgrade.AttachmentsPathUpgrade;
 import org.obiba.mica.core.upgrade.AttachmentsRefactorUpgrade;
+import org.obiba.mica.core.upgrade.ContactsRefactorUpgrade;
 import org.obiba.mica.core.upgrade.NetworkLogoMigration;
 import org.obiba.mica.core.upgrade.RuntimeVersionProvider;
 import org.obiba.mica.core.upgrade.MicaVersionModifier;
@@ -48,14 +49,13 @@ public class UpgradeConfiguration {
     return upgradeManager;
   }
 
-  @Bean(name="upgradeSteps")
+  @Bean(name = "upgradeSteps")
   public List<UpgradeStep> upgradeSteps(ApplicationContext applicationContext) {
-    return Lists.newArrayList(
-      applicationContext.getBean(AttachmentsRefactorUpgrade.class),
+    return Lists.newArrayList(applicationContext.getBean(AttachmentsRefactorUpgrade.class),
       applicationContext.getBean(NetworkLogoMigration.class),
       applicationContext.getBean(AttachmentsMigration.class),
       applicationContext.getBean(AttachmentsPathUpgrade.class),
-      applicationContext.getBean(AttachmentsCleanupUpgrade.class)
-    );
+      applicationContext.getBean(AttachmentsCleanupUpgrade.class),
+      applicationContext.getBean(ContactsRefactorUpgrade.class));
   }
 }
