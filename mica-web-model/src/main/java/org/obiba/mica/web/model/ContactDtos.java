@@ -20,6 +20,7 @@ class ContactDtos {
 
   Mica.ContactDto asDto(Contact contact) {
     Mica.ContactDto.Builder builder = Mica.ContactDto.newBuilder().setLastName(contact.getLastName());
+    if(!isNullOrEmpty(contact.getId())) builder.setId(contact.getId());
     if(!isNullOrEmpty(contact.getTitle())) builder.setTitle(contact.getTitle());
     if(!isNullOrEmpty(contact.getFirstName())) builder.setFirstName(contact.getFirstName());
     if(!isNullOrEmpty(contact.getAcademicLevel())) builder.setAcademicLevel(contact.getAcademicLevel());
@@ -31,6 +32,7 @@ class ContactDtos {
 
   Contact fromDto(Mica.ContactDtoOrBuilder dto) {
     Contact contact = new Contact();
+    if(dto.hasId()) contact.setId(dto.getId());
     if(dto.hasTitle()) contact.setTitle(dto.getTitle());
     if(dto.hasFirstName()) contact.setFirstName(dto.getFirstName());
     contact.setLastName(dto.getLastName());

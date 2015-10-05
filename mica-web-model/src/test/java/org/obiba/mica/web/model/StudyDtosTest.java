@@ -20,6 +20,7 @@ import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.Authorization;
 import org.obiba.mica.core.domain.Contact;
 import org.obiba.mica.core.domain.Timestamped;
+import org.obiba.mica.core.repository.ContactRepository;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.StudyDatasetRepository;
@@ -362,6 +363,11 @@ public class StudyDtosTest {
     @Bean
     public StudyDatasetRepository studyDatasetRepository() {
       return Mockito.mock(StudyDatasetRepository.class);
+    }
+
+    @Bean
+    public ContactRepository contactRepository() {
+      return Mockito.mock(ContactRepository.class);
     }
 
     @Bean
