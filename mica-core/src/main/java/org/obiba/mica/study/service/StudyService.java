@@ -15,7 +15,9 @@ import javax.validation.constraints.NotNull;
 
 import org.joda.time.DateTime;
 import org.obiba.git.CommitInfo;
+import org.obiba.mica.core.domain.Contact;
 import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.core.repository.ContactRepository;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.StudyDatasetRepository;
@@ -44,6 +46,7 @@ import org.springframework.validation.annotation.Validated;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 
@@ -73,6 +76,9 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
 
   @Inject
   private NetworkRepository networkRepository;
+
+  @Inject
+  private ContactRepository contactRepository;
 
   @Inject
   private StudyDatasetRepository studyDatasetRepository;
@@ -138,11 +144,14 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
       }
     });
 
+    study.setContacts(replaceExistingContacts(study.getContacts()));
+    study.setInvestigators(replaceExistingContacts(study.getInvestigators()));
+
     studyState.setName(study.getName());
     studyState.incrementRevisionsAhead();
     studyStateRepository.save(studyState);
     study.setLastModifiedDate(DateTime.now());
-    studyRepository.saveWithAttachments(study, false);
+    studyRepository.saveWithReferences(study);
     gitService.save(study, comment);
 
     eventBus.post(new DraftStudyUpdatedEvent(study));
@@ -256,12 +265,28 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
     gitService.deleteGitRepository(study);
     eventBus.post(new StudyDeletedEvent(study));
     studyStateRepository.delete(id);
-    studyRepository.deleteWithAttachments(study, true);
+    studyRepository.deleteWithReferences(study);
   }
 
   //
   // Private methods
   //
+
+  private List<Contact> replaceExistingContacts(List<Contact> contacts) {
+    ImmutableList.copyOf(contacts).forEach(c -> {
+      if(c.getId() == null && c.getEmail() != null) {
+        Contact contact = contactRepository.findOneByEmail(c.getEmail());
+
+        if(contact != null) {
+          int idx = contacts.indexOf(c);
+          contacts.remove(c);
+          contacts.add(idx, contact);
+        }
+      }
+    });
+
+    return contacts;
+  }
 
   private void checkStudyConstraints(Study study) {
     List<String> harmonizationDatasetsIds = harmonizationDatasetRepository.findByStudyTablesStudyId(study.getId()).stream().map(h -> h.getId()).collect(toList());

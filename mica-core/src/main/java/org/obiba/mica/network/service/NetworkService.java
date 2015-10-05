@@ -74,7 +74,7 @@ public class NetworkService {
 
     saved.setLastModifiedDate(DateTime.now());
 
-    networkRepository.save(saved);
+    networkRepository.saveWithReferences(saved);
     eventBus.post(new NetworkUpdatedEvent(saved));
   }
 
@@ -163,7 +163,7 @@ public class NetworkService {
    */
   public void delete(@NotNull String id) throws NoSuchNetworkException {
     Network network = findById(id);
-    networkRepository.delete(network);
+    networkRepository.deleteWithReferences(network);
 
     if (network.getLogo() != null) fileService.delete(network.getLogo().getId());
 

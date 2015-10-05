@@ -21,6 +21,7 @@ import org.obiba.core.util.FileUtil;
 import org.obiba.git.command.GitCommandHandler;
 import org.obiba.mica.config.JsonConfiguration;
 import org.obiba.mica.config.MongoDbConfiguration;
+import org.obiba.mica.core.domain.Contact;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.file.FileService;
 import org.obiba.mica.file.impl.GridFsService;
@@ -121,6 +122,23 @@ public class StudyServiceTest {
 
     Study retrievedStudy = studyService.findDraftStudy(study.getId());
     assertThat(retrievedStudy).areFieldsEqualToEachOther(study);
+  }
+
+  @Test
+  public void testCreateStudyWithContacts() throws Exception {
+
+    Study study = new Study();
+    study.setId("test");
+
+    Contact contact = new Contact();
+    contact.setEmail("test@test.com");
+
+    study.addContact(contact);
+
+    studyService.save(study);
+    Study retrievedStudy = studyService.findDraftStudy(study.getId());
+
+    assertThat(retrievedStudy.getContacts()).contains(contact);
   }
 
   @Test

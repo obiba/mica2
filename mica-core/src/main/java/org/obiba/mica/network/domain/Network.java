@@ -13,17 +13,20 @@ import org.obiba.mica.core.domain.AttributeAware;
 import org.obiba.mica.core.domain.Attributes;
 import org.obiba.mica.core.domain.Authorization;
 import org.obiba.mica.core.domain.Contact;
+import org.obiba.mica.core.domain.ContactAware;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.study.domain.Study;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import com.google.common.base.Strings;
-
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 
 /**
  * A Network.
  */
-public class Network extends AbstractAuditableDocument implements AttributeAware {
+public class Network extends AbstractAuditableDocument implements AttributeAware, ContactAware {
 
   private static final long serialVersionUID = -4271967393906681773L;
 
@@ -34,9 +37,11 @@ public class Network extends AbstractAuditableDocument implements AttributeAware
 
   private boolean published = false;
 
-  private List<Contact> investigators;
+  @DBRef
+  private List<Contact> investigators = Lists.newArrayList();
 
-  private List<Contact> contacts;
+  @DBRef
+  private List<Contact> contacts = Lists.newArrayList();
 
   private LocalizedString description;
 
@@ -83,30 +88,44 @@ public class Network extends AbstractAuditableDocument implements AttributeAware
 
   @NotNull
   public List<Contact> getInvestigators() {
-    if(investigators == null) investigators = new ArrayList<>();
     return investigators;
   }
 
   public void addInvestigator(@NotNull Contact investigator) {
-    getInvestigators().add(investigator);
+    investigators.add(investigator);
+    investigator.addNetwork(this);
   }
 
   public void setInvestigators(List<Contact> investigators) {
+    if (investigators == null) investigators = Lists.newArrayList();
+
     this.investigators = investigators;
+    this.investigators.forEach(c -> c.addNetwork(this));
   }
 
   @NotNull
   public List<Contact> getContacts() {
-    if(contacts == null) contacts = new ArrayList<>();
     return contacts;
   }
 
-  public void addContact(@NotNull Contact contact) {
-    getContacts().add(contact);
+  public void addContact(Contact contact) {
+    contacts.add(contact);
+    contact.addNetwork(this);
+  }
+
+  public void addToContact(Contact contact) {
+    contact.addNetwork(this);
+  }
+
+  public void removeFromContact(Contact contact) {
+    contact.removeNetwork(this);
   }
 
   public void setContacts(List<Contact> contacts) {
+    if (investigators == null) investigators = Lists.newArrayList();
+
     this.contacts = contacts;
+    this.contacts.forEach(c -> c.addNetwork(this));
   }
 
   public LocalizedString getDescription() {
@@ -218,5 +237,10 @@ public class Network extends AbstractAuditableDocument implements AttributeAware
   @Override
   public boolean hasAttribute(String attName, @Nullable String namespace) {
     return attributes != null && attributes.hasAttribute(attName, namespace);
+  }
+
+  @Override
+  public Iterable<Contact> getAllContacts() {
+    return Iterables.concat(contacts, investigators);
   }
 }

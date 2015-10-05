@@ -117,7 +117,7 @@ public class DataAccessRequestService {
         attachmentRepository.save(a);
       });
 
-    dataAccessRequestRepository.saveWithAttachments(saved, false);
+    dataAccessRequestRepository.saveWithReferences(saved);
 
     if(toDelete != null) toDelete.forEach(a -> fileService.delete(a.getId()));
 
@@ -135,7 +135,7 @@ public class DataAccessRequestService {
     DataAccessRequest dataAccessRequest = findById(id);
     List<Attachment> attachments = dataAccessRequest.getAttachments();
 
-    dataAccessRequestRepository.deleteWithAttachments(dataAccessRequest, true);
+    dataAccessRequestRepository.deleteWithReferences(dataAccessRequest);
 
     attachments.forEach(a -> fileService.delete(a.getId()));
   }

@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
@@ -21,6 +20,7 @@ import org.obiba.mica.core.domain.AttributeAware;
 import org.obiba.mica.core.domain.Attributes;
 import org.obiba.mica.core.domain.Authorization;
 import org.obiba.mica.core.domain.Contact;
+import org.obiba.mica.core.domain.ContactAware;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.PersistableWithAttachments;
 import org.obiba.mica.file.Attachment;
@@ -30,13 +30,16 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
 import com.google.common.base.Strings;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * A Study.
  */
-public class Study extends AbstractGitPersistable implements AttributeAware, PersistableWithAttachments {
+public class Study extends AbstractGitPersistable implements AttributeAware, PersistableWithAttachments, ContactAware {
 
   private static final long serialVersionUID = 6559914069652243954L;
 
@@ -47,9 +50,11 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
 
   private Attachment logo;
 
-  private List<Contact> investigators;
+  @DBRef
+  private List<Contact> investigators = Lists.newArrayList();
 
-  private List<Contact> contacts;
+  @DBRef
+  private List<Contact> contacts = Lists.newArrayList();
 
   private LocalizedString objectives;
 
@@ -117,29 +122,43 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
   }
 
   public List<Contact> getInvestigators() {
-    return investigators;
+    return investigators.stream().filter(c -> c != null).collect(toList());
   }
 
   public void addInvestigator(@NotNull Contact investigator) {
-    if(investigators == null) investigators = new ArrayList<>();
     investigators.add(investigator);
+    investigator.addStudy(this);
   }
 
   public void setInvestigators(List<Contact> investigators) {
+    if (investigators == null) investigators = Lists.newArrayList();
+
     this.investigators = investigators;
+    this.investigators.forEach(c -> c.addStudy(this));
   }
 
   public List<Contact> getContacts() {
-    return contacts;
+    return contacts.stream().filter(c -> c != null).collect(toList());
   }
 
-  public void addContact(@NotNull Contact contact) {
-    if(contacts == null) contacts = new ArrayList<>();
+  public void addContact(Contact contact) {
     contacts.add(contact);
+    contact.addStudy(this);
+  }
+
+  public void addToContact(Contact contact) {
+    contact.addStudy(this);
+  }
+
+  public void removeFromContact(Contact contact) {
+    contact.removeStudy(this);
   }
 
   public void setContacts(List<Contact> contacts) {
+    if (contacts == null) contacts = Lists.newArrayList();
+
     this.contacts = contacts;
+    this.contacts.forEach(c -> c.addStudy(this));
   }
 
   public LocalizedString getObjectives() {
@@ -300,9 +319,9 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
     }
     if(getPopulations() != null) {
       for(Population population : getPopulations().stream().filter(p -> p.getDataCollectionEvents() != null)
-          .collect(Collectors.toList())) {
+          .collect(toList())) {
         for(DataCollectionEvent dce : population.getDataCollectionEvents().stream()
-            .filter(d -> d.getAttachments() != null).collect(Collectors.toList())) {
+            .filter(d -> d.getAttachments() != null).collect(toList())) {
           for(Attachment attachment : dce.getAttachments()) {
             if(attachment.getId().equals(attachmentId)) return attachment;
           }
@@ -462,6 +481,11 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
         put(self.getClass().getSimpleName(), self);
       }
     };
+  }
+
+  @Override
+  public Iterable<Contact> getAllContacts() {
+    return Iterables.concat(contacts, investigators);
   }
 
   public static class StudyMethods implements Serializable {
