@@ -15,6 +15,7 @@ import javax.validation.constraints.NotNull;
 
 import org.joda.time.DateTime;
 import org.obiba.git.CommitInfo;
+import org.obiba.mica.contact.event.ContactUpdatedEvent;
 import org.obiba.mica.core.domain.Contact;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.repository.ContactRepository;
@@ -155,6 +156,7 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
     gitService.save(study, comment);
 
     eventBus.post(new DraftStudyUpdatedEvent(study));
+    study.getAllContacts().forEach(c -> eventBus.post(new ContactUpdatedEvent(c)));
   }
 
   @NotNull
