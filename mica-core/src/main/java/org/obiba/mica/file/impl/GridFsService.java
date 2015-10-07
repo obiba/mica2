@@ -6,7 +6,7 @@ import javax.inject.Inject;
 
 import org.obiba.mica.file.FileRuntimeException;
 import org.obiba.mica.file.FileService;
-import org.obiba.mica.file.TempFileService;
+import org.obiba.mica.file.service.TempFileService;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsOperations;

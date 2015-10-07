@@ -24,6 +24,7 @@ import java.util.zip.ZipInputStream;
 
 import javax.inject.Inject;
 
+import org.apache.commons.math3.util.Pair;
 import org.bson.types.ObjectId;
 import org.obiba.jersey.protobuf.AbstractProtobufProvider;
 import org.obiba.mica.core.domain.LocalizedString;
@@ -35,7 +36,8 @@ import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.dataset.service.StudyDatasetService;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.TempFile;
-import org.obiba.mica.file.TempFileService;
+import org.obiba.mica.file.service.FileSystemService;
+import org.obiba.mica.file.service.TempFileService;
 import org.obiba.mica.network.NoSuchNetworkException;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.service.NetworkService;
@@ -64,6 +66,9 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
   private static final Logger log = LoggerFactory.getLogger(StudyPackageImportServiceImpl.class);
 
   @Inject
+  private FileSystemService fileSystemService;
+
+  @Inject
   private TempFileService tempFileService;
 
   @Inject
@@ -86,11 +91,11 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     final StudyPackage studyPackage = new StudyPackage(inputStream);
     if(studyPackage.study != null) {
       Map<String, ByteSource> dict = studyPackage.attachments.entrySet().stream()
-        .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
       Optional.ofNullable(studyPackage.study.getLogo()).ifPresent(a -> saveAttachmentTempFile(dict, a));
       Set<String> attachmentIds = Sets.newHashSet();
 
-      studyPackage.study.getAttachments().forEach(a -> {
+      studyPackage.studyAttachments.forEach(a -> {
         if(attachmentIds.contains(a.getId())) {
           String origId = a.getId();
           a.setId(new ObjectId().toString());
@@ -113,7 +118,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
           }
         })));
 
-      importStudy(studyPackage.study, publish);
+      importStudy(studyPackage.study, studyPackage.studyAttachments, publish);
 
       for(Network net : studyPackage.networks) {
         importNetwork(net, publish, studyPackage);
@@ -137,7 +142,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     }
   }
 
-  private void importStudy(Study study, boolean publish) {
+  private void importStudy(Study study, List<Attachment> attachments, boolean publish) {
     if(study.getAcronym() == null) {
       study.setAcronym(study.getName().asAcronym());
     }
@@ -152,6 +157,12 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     study.rebuildPopulationIds();
 
     studyService.save(study, "Imported");
+
+    attachments.forEach(a -> {
+      a.setPath("/study/" + study.getId());
+      fileSystemService.save(a);
+    });
+
     if(publish) {
       studyService.publish(study.getId());
     }
@@ -226,6 +237,8 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
 
     private Study study = null;
 
+    private List<Attachment> studyAttachments = null;
+
     private final List<Network> networks = Lists.newArrayList();
 
     private final List<Dataset> datasets = Lists.newArrayList();
@@ -265,7 +278,9 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
         log.debug("Reading {}...", name);
 
         if(name.startsWith("study-")) {
-          study = readStudy(zipIn);
+          Pair<Study,List<Attachment>> studyInput = readStudy(zipIn);
+          study = studyInput.getFirst();
+          studyAttachments = studyInput.getSecond();
         } else if(name.startsWith("dataset-")) {
           datasets.add(readDataset(zipIn));
         } else if(name.startsWith("network-")) {
@@ -296,11 +311,15 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
       return acronym;
     }
 
-    private Study readStudy(InputStream inputStream) throws IOException {
+    private Pair<Study,List<Attachment>> readStudy(InputStream inputStream) throws IOException {
       Mica.StudyDto.Builder builder = Mica.StudyDto.newBuilder();
       Readable input = new InputStreamReader(inputStream, Charsets.UTF_8);
       JsonFormat.merge(input, builder);
-      return dtos.fromDto(builder);
+
+      List<Attachment> atts = Lists.newArrayList();
+      builder.getAttachmentsList().stream().map(dtos::fromDto).forEach(atts::add);
+
+      return Pair.create(dtos.fromDto(builder), atts);
     }
 
     private Network readNetwork(InputStream inputStream) throws IOException {

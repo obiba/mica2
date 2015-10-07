@@ -1,11 +1,8 @@
 package org.obiba.mica.web.model;
 
-import java.util.stream.Collectors;
-
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.file.Attachment;
 import org.obiba.mica.study.date.PersistableYearMonth;
 import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.Population;
@@ -234,10 +231,6 @@ class PopulationDtos {
     if(dto.getTissueTypesCount() > 0) dce.setTissueTypes(localizedStringDtos.fromDto(dto.getTissueTypesList()));
     if(dto.getOtherBioSamplesCount() > 0) {
       dce.setOtherBioSamples(localizedStringDtos.fromDto(dto.getOtherBioSamplesList()));
-    }
-    if(dto.getAttachmentsCount() > 0) {
-      dce.setAttachments(
-          dto.getAttachmentsList().stream().map(attachmentDtos::fromDto).collect(Collectors.<Attachment>toList()));
     }
     if(dto.getAttributesCount() > 0) {
       dto.getAttributesList().forEach(attributeDto -> dce.addAttribute(attributeDtos.fromDto(attributeDto)));

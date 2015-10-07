@@ -26,7 +26,7 @@ public interface FileService {
   void save(String id, InputStream input) throws FileRuntimeException;
 
   /**
-   * Save a file from the {@link TempFileService} into the final file storage.
+   * Save a file from the {@link org.obiba.mica.file.service.TempFileService} into the final file storage.
    *
    * @param tempFileId
    * @throws FileRuntimeException

@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import org.obiba.mica.core.domain.Contact;
 import org.obiba.mica.core.repository.AttachmentAwareRepository;
 import org.obiba.mica.core.repository.AttachmentRepository;
+import org.obiba.mica.core.repository.AttachmentStateRepository;
 import org.obiba.mica.core.repository.ContactAwareRepository;
 import org.obiba.mica.core.repository.ContactRepository;
 import org.obiba.mica.file.FileService;
@@ -22,6 +23,9 @@ public class StudyRepositoryImpl
 
   @Inject
   AttachmentRepository attachmentRepository;
+
+  @Inject
+  AttachmentStateRepository attachmentStateRepository;
 
   @Inject
   ContactRepository contactRepository;

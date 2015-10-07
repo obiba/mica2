@@ -7,7 +7,6 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.core.domain.Contact;
-import org.obiba.mica.file.Attachment;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.springframework.stereotype.Component;
@@ -127,10 +126,6 @@ class StudyDtos {
     if(dto.hasMethods()) study.setMethods(fromDto(dto.getMethods()));
     if(dto.hasNumberOfParticipants()) {
       study.setNumberOfParticipants(numberOfParticipantsDtos.fromDto(dto.getNumberOfParticipants()));
-    }
-    if(dto.getAttachmentsCount() > 0) {
-      study.setAttachments(
-          dto.getAttachmentsList().stream().map(attachmentDtos::fromDto).collect(Collectors.<Attachment>toList()));
     }
     if(dto.getInfoCount() > 0) study.setInfo(localizedStringDtos.fromDto(dto.getInfoList()));
     if(dto.getPopulationsCount() > 0) {
