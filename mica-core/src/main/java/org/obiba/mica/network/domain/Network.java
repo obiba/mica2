@@ -19,6 +19,7 @@ import org.obiba.mica.file.Attachment;
 import org.obiba.mica.study.domain.Study;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -182,7 +183,7 @@ public class Network extends AbstractAuditableDocument implements AttributeAware
   }
 
   @Override
-  protected com.google.common.base.Objects.ToStringHelper toStringHelper() {
+  protected MoreObjects.ToStringHelper toStringHelper() {
     return super.toStringHelper().add("name", name);
   }
 

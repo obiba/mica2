@@ -12,7 +12,7 @@ import org.obiba.mica.core.domain.RevisionStatus;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -78,7 +78,7 @@ public class StudyState extends AbstractAuditableDocument implements GitPersista
   }
 
   @Override
-  protected Objects.ToStringHelper toStringHelper() {
+  protected MoreObjects.ToStringHelper toStringHelper() {
     return super.toStringHelper().add("name", name) //
         .add("revisionStatus", revisionStatus) //
         .add("publishedTag", publishedTag);

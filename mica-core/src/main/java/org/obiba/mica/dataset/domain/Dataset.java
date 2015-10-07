@@ -21,6 +21,7 @@ import org.obiba.mica.core.domain.Indexable;
 import org.obiba.mica.core.domain.LocalizedString;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.MoreObjects;
 
 /**
  * Proxy to Opal tables.
@@ -138,7 +139,7 @@ public abstract class Dataset extends AbstractAuditableDocument implements Attri
   }
 
   @Override
-  protected com.google.common.base.Objects.ToStringHelper toStringHelper() {
+  protected MoreObjects.ToStringHelper toStringHelper() {
     return super.toStringHelper().add("name", name);
   }
 }

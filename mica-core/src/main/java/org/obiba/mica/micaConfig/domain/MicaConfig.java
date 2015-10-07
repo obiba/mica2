@@ -12,7 +12,7 @@ import org.obiba.runtime.Version;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.google.common.base.Charsets;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -111,7 +111,7 @@ public class MicaConfig extends AbstractAuditableDocument {
   }
 
   @Override
-  protected Objects.ToStringHelper toStringHelper() {
+  protected MoreObjects.ToStringHelper toStringHelper() {
     return super.toStringHelper().add("name", name) //
         .add("locales", locales) //
         .add("defaultCharacterSet", defaultCharacterSet) //
