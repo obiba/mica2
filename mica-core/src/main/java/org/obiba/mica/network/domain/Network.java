@@ -17,6 +17,7 @@ import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.study.domain.Study;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 
 
@@ -163,7 +164,7 @@ public class Network extends AbstractAuditableDocument implements AttributeAware
   }
 
   @Override
-  protected com.google.common.base.Objects.ToStringHelper toStringHelper() {
+  protected MoreObjects.ToStringHelper toStringHelper() {
     return super.toStringHelper().add("name", name);
   }
 

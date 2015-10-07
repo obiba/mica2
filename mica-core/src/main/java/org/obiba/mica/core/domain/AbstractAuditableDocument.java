@@ -10,6 +10,7 @@ import org.springframework.data.annotation.Version;
 import org.springframework.data.domain.Auditable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.MoreObjects;
 
 public abstract class AbstractAuditableDocument implements Auditable<String, String>, Timestamped {
 
@@ -107,8 +108,8 @@ public abstract class AbstractAuditableDocument implements Auditable<String, Str
     return Objects.equals(id, ((AbstractAuditableDocument) obj).id);
   }
 
-  protected com.google.common.base.Objects.ToStringHelper toStringHelper() {
-    return com.google.common.base.Objects.toStringHelper(this).omitNullValues().add("id", id).add("version", version);
+  protected MoreObjects.ToStringHelper toStringHelper() {
+    return MoreObjects.toStringHelper(this).omitNullValues().add("id", id).add("version", version);
   }
 
   @Override
