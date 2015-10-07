@@ -22,7 +22,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 @Document
-public class Contact implements Persistable {
+public class Contact implements Persistable<String> {
 
   public void setId(String id) {
     this.id = id;
@@ -158,7 +158,6 @@ public class Contact implements Persistable {
     return id == null;
   }
 
-  @JsonIgnore
   public List<String> getStudyIds() {
     return studyIds;
   }
@@ -175,7 +174,6 @@ public class Contact implements Persistable {
     if(studyIds.contains(study.getId())) this.studyIds.remove(study.getId());
   }
 
-  @JsonIgnore
   public List<String> getNetworkIds() {
     return networkIds;
   }

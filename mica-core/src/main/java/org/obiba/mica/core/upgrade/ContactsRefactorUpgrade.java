@@ -2,7 +2,6 @@ package org.obiba.mica.core.upgrade;
 
 import javax.inject.Inject;
 
-import org.obiba.mica.access.DataAccessRequestRepository;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.study.StudyRepository;
 import org.obiba.runtime.Version;

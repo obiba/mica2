@@ -284,6 +284,13 @@ message ContactDto {
   }
 }
 
+message ContactsDto {
+  required int32 total = 1;
+  required int32 from = 2;
+  required int32 limit = 3;
+  repeated ContactDto contacts = 4;
+}
+
 message AuthorizationDto {
   optional bool authorized = 1;
   optional string authorizer = 2;
