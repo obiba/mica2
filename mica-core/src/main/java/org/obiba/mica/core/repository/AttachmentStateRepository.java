@@ -8,8 +8,8 @@ import org.springframework.data.mongodb.repository.Query;
 
 public interface AttachmentStateRepository extends MongoRepository<AttachmentState, String> {
 
-  @Query("{'attachment.path': {$regex: ?0}}")
-  List<AttachmentState> findByAttachmentPath(String pathRegEx);
+  @Query("{'path': {$regex: ?0}}")
+  List<AttachmentState> findByPath(String pathRegEx);
 
   List<AttachmentState> findByNameAndPath(String name, String path);
 }

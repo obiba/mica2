@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -23,6 +22,7 @@ import org.obiba.git.CommitInfo;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.rest.FileResource;
+import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
@@ -42,6 +42,9 @@ public class DraftStudyResource {
 
   @Inject
   private StudyService studyService;
+
+  @Inject
+  private FileSystemService fileSystemService;
 
   @Inject
   private Dtos dtos;
@@ -105,12 +108,13 @@ public class DraftStudyResource {
   @Path("/file/{fileId}")
   @RequiresPermissions({"/draft:EDIT"})
   public FileResource study(@PathParam("fileId") String fileId) {
-    FileResource fileResource = applicationContext.getBean(FileResource.class);
     Study study = studyService.findDraftStudy(id);
+    List<Attachment> attachments = fileSystemService.findDraftAttachments(String.format("^/study/%s", study.getId())).stream().filter(
+      a -> a.getId().equals(fileId)).collect(Collectors.toList());
+    if(attachments.isEmpty()) throw NoSuchEntityException.withId(Attachment.class, fileId);
 
-    if(study.findAttachmentById(fileId) == null) throw NoSuchEntityException.withId(Attachment.class, fileId);
-
-    fileResource.setAttachment(study.findAttachmentById(fileId));
+    FileResource fileResource = applicationContext.getBean(FileResource.class);
+    fileResource.setAttachment(attachments.get(0));
 
     return fileResource;
   }
@@ -120,7 +124,7 @@ public class DraftStudyResource {
   @RequiresPermissions({"/draft:EDIT"})
   public List<Mica.AttachmentDto> listAttachments() {
     Study study = studyService.findDraftStudy(id);
-    return StreamSupport.stream(study.getAllAttachments().spliterator(), false).sorted().map(dtos::asDto)
+    return fileSystemService.findDraftAttachments(String.format("^/study/%s", study.getId())).stream().sorted().map(dtos::asDto)
       .collect(Collectors.toList());
   }
 

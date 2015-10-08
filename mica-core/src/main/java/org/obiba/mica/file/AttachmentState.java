@@ -76,6 +76,6 @@ public class AttachmentState extends AbstractAuditableDocument {
   }
 
   public boolean isPublished() {
-    return publicationDate != null;
+    return publicationDate != null && publishedAttachment != null;
   }
 }

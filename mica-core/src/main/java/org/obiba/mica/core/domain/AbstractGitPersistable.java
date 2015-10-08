@@ -5,6 +5,7 @@ import java.util.Objects;
 import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 
 public abstract class AbstractGitPersistable implements GitPersistable {
@@ -65,8 +66,8 @@ public abstract class AbstractGitPersistable implements GitPersistable {
     return Objects.equals(id, ((AbstractGitPersistable) obj).id);
   }
 
-  protected com.google.common.base.Objects.ToStringHelper toStringHelper() {
-    return com.google.common.base.Objects.toStringHelper(this).omitNullValues().add("id", id);
+  protected MoreObjects.ToStringHelper toStringHelper() {
+    return MoreObjects.toStringHelper(this).omitNullValues().add("id", id);
   }
 
   @Override

@@ -76,10 +76,6 @@ class StudyDtos {
     if(study.getNumberOfParticipants() != null) {
       builder.setNumberOfParticipants(numberOfParticipantsDtos.asDto(study.getNumberOfParticipants()));
     }
-    if(study.getAttachments() != null) {
-      builder.addAllAttachments(
-          study.getAttachments().stream().map(attachmentDtos::asDto).collect(Collectors.<Mica.AttachmentDto>toList()));
-    }
     if(study.getInfo() != null) {
       builder.addAllInfo(localizedStringDtos.asDto(study.getInfo()));
     }
