@@ -58,13 +58,16 @@ public class PublishedStudyResource {
 
   @Path("/file/{fileId}")
   public FileResource study(@PathParam("fileId") String fileId) {
-    Study study = getStudy();
-    List<Attachment> attachments = fileSystemService.findPublishedAttachments(String.format("^/study/%s", study.getId())).stream().filter(
-      a -> a.getId().equals(fileId)).collect(Collectors.toList());
-    if(attachments.isEmpty()) throw NoSuchEntityException.withId(Attachment.class, fileId);
-
     FileResource fileResource = applicationContext.getBean(FileResource.class);
-    fileResource.setAttachment(attachments.get(0));
+    Study study =  getStudy();
+    if (study.hasLogo() && study.getLogo().getId().equals(fileId)) {
+      fileResource.setAttachment(study.getLogo());
+    } else {
+      List<Attachment> attachments = fileSystemService.findPublishedAttachments(String.format("^/study/%s", study.getId())).stream().filter(
+        a -> a.getId().equals(fileId)).collect(Collectors.toList());
+      if(attachments.isEmpty()) throw NoSuchEntityException.withId(Attachment.class, fileId);
+      fileResource.setAttachment(attachments.get(0));
+    }
 
     return fileResource;
   }

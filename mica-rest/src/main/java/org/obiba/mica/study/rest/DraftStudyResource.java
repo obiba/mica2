@@ -108,13 +108,16 @@ public class DraftStudyResource {
   @Path("/file/{fileId}")
   @RequiresPermissions({"/draft:EDIT"})
   public FileResource study(@PathParam("fileId") String fileId) {
-    Study study = studyService.findDraftStudy(id);
-    List<Attachment> attachments = fileSystemService.findDraftAttachments(String.format("^/study/%s", study.getId())).stream().filter(
-      a -> a.getId().equals(fileId)).collect(Collectors.toList());
-    if(attachments.isEmpty()) throw NoSuchEntityException.withId(Attachment.class, fileId);
-
     FileResource fileResource = applicationContext.getBean(FileResource.class);
-    fileResource.setAttachment(attachments.get(0));
+    Study study = studyService.findDraftStudy(id);
+    if (study.hasLogo() && study.getLogo().getId().equals(fileId)) {
+      fileResource.setAttachment(study.getLogo());
+    } else {
+      List<Attachment> attachments = fileSystemService.findDraftAttachments(String.format("^/study/%s", study.getId())).stream().filter(
+        a -> a.getId().equals(fileId)).collect(Collectors.toList());
+      if(attachments.isEmpty()) throw NoSuchEntityException.withId(Attachment.class, fileId);
+      fileResource.setAttachment(attachments.get(0));
+    }
 
     return fileResource;
   }

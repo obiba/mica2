@@ -112,6 +112,10 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Git
     return logo;
   }
 
+  public boolean hasLogo() {
+    return logo != null;
+  }
+
   public void setLogo(Attachment logo) {
     this.logo = logo;
   }
