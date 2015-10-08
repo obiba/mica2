@@ -11,6 +11,7 @@
 package org.obiba.mica.contact.search.rest;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -29,6 +30,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Strings;
 
 @Path("/contacts/_search")
 @RequiresAuthentication
@@ -48,9 +50,15 @@ public class ContactsSearchResource {
   @Timed
   public MicaSearch.ContactsResultDto query(@QueryParam("from") @DefaultValue("0") int from,
     @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") @DefaultValue(DEFAULT_SORT) String sort,
-    @QueryParam("order") @DefaultValue("desc") String order, @QueryParam("query") String query) throws IOException {
-    PublishedDocumentService.Documents<Contact> contacts = esContactService.find(from, limit, sort, order, null, query);
+    @QueryParam("order") @DefaultValue("desc") String order, @QueryParam("query") String query,
+    @QueryParam("exclude") List<String> excludes) throws IOException {
 
+    String ids = excludes.stream().map(s -> "id:" + s).collect(Collectors.joining(" "));
+    if (!Strings.isNullOrEmpty(ids)) {
+      query += String.format(" AND NOT(%s)", ids);
+    }
+
+    PublishedDocumentService.Documents<Contact> contacts = esContactService.find(from, limit, sort, order, null, query);
     MicaSearch.ContactsResultDto.Builder builder = MicaSearch.ContactsResultDto.newBuilder();
     builder.addAllContacts(contacts.getList().stream().map(dtos::asDto).collect(Collectors.toList()));
 

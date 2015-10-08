@@ -15,50 +15,67 @@
 
       <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
 
-      <tabset>
+      <div ng-if="isNew" class="form-group">
+        <label class="control-label">
+          <span ng-show="isInvestigator" translate>contact.search.investigator</span>
+          <span ng-hide="isInvestigator" translate>contact.search.contact</span>
+        </label>
+        <ui-select theme="bootstrap" ng-model="selected.contact" reset-search-input="true">
+          <ui-select-match placeholder="{{'contact.search.placeholder' | translate }}">{{contact.firstName}} {{contact.lastName}}</ui-select-match>
+          <ui-select-choices refresh="findContacts($select.search)" refresh-delay="0" repeat="contact in contacts">
+            {{contact.firstName}} {{contact.lastName}}
+            <small ng-show="contact.email"><br/>{{'contact.email' | translate}}: {{contact.email}}</small>
+            <small ng-show="contact.institution && contact.institution.name">
+              <br/>{{'contact.institution' | translate}}:
+              <localized value="contact.institution.name" lang="tab.lang"></localized>
+            </small>
+          </ui-select-choices>
+        </ui-select>
+      </div>
+
+      <tabset class="voffset4">
         <tab ng-repeat="tab in tabs" heading="{{tab.labelKey | translate}}" active="tab.active" disabled="tab.disabled">
+          <div form-input name="contact.title" model="selected.contact.title" label="contact.title"></div>
 
-          <div form-input name="contact.title" model="contact.title" label="contact.title"></div>
+          <div form-input name="contact.firstName" model="selected.contact.firstName" label="contact.firstName"></div>
 
-          <div form-input name="contact.firstName" model="contact.firstName" label="contact.firstName"></div>
-
-          <div form-input name="contact.lastName" model="contact.lastName" label="contact.lastName"
+          <div form-input name="contact.lastName" model="selected.contact.lastName" label="contact.lastName"
               required="true"></div>
 
-          <div form-input name="contact.academicLevel" model="contact.academicLevel" label="contact.academicLevel"></div>
+          <div form-input name="contact.academicLevel" model="selected.contact.academicLevel" label="contact.academicLevel"></div>
 
-          <div form-input name="contact.email" model="contact.email" label="contact.email"></div>
+          <div form-input name="contact.email" model="selected.contact.email" label="contact.email"></div>
 
-          <div form-input name="contact.phone" model="contact.phone" label="contact.phone"></div>
+          <div form-input name="contact.phone" model="selected.contact.phone" label="contact.phone"></div>
 
-          <div form-checkbox name="contact.dataAccessCommitteeMember" model="contact.dataAccessCommitteeMember"
+          <div form-checkbox name="contact.dataAccessCommitteeMember" model="selected.contact.dataAccessCommitteeMember"
               label="contact.dataAccessCommitteeMember"></div>
 
           <fieldset>
             <legend translate>contact.institution</legend>
 
-            <div localized-input name="contact.institution" model="contact.institution.name" label="name"
+            <div localized-input name="contact.institution" model="selected.contact.institution.name" label="name"
                 lang="tab.lang"></div>
 
-            <div localized-input name="contact.institution.department" model="contact.institution.department"
+            <div localized-input name="contact.institution.department" model="selected.contact.institution.department"
                 label="contact.department"
                 lang="tab.lang"></div>
 
-            <div localized-input name="contact.institution.street" model="contact.institution.address.street"
+            <div localized-input name="contact.institution.street" model="selected.contact.institution.address.street"
                 label="address.label"
                 lang="tab.lang"></div>
 
-            <div localized-input name="contact.institution.city" model="contact.institution.address.city"
+            <div localized-input name="contact.institution.city" model="selected.contact.institution.address.city"
                 label="address.city"
                 lang="tab.lang"></div>
 
-            <div form-input name="contact.institution.zip" model="contact.institution.address.zip"
+            <div form-input name="contact.institution.zip" model="selected.contact.institution.address.zip"
                 label="address.zip"></div>
 
-            <div form-input name="contact.institution.state" model="contact.institution.address.state"
+            <div form-input name="contact.institution.state" model="selected.contact.institution.address.state"
                 label="address.state"></div>
 
-            <div form-input name="contact.institution.country" model="contact.institution.address.country.iso"
+            <div form-input name="contact.institution.country" model="selected.contact.institution.address.country.iso"
                 label="address.country"></div>
 
           </fieldset>

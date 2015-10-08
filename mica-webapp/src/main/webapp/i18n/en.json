@@ -460,6 +460,11 @@
       "contact": "Edit Contact",
       "investigator": "Edit Investigator"
     },
+    "search": {
+      "contact": "Find an existing contact",
+      "investigator": "Find an existing investigator",
+      "placeholder": "Search by first name, last name or institution..."
+    },
     "title": "Title",
     "firstName": "First Name",
     "lastName": "Last Name",

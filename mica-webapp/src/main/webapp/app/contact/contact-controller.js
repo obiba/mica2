@@ -33,6 +33,16 @@ mica.contact
         $scope.editInvestigatorOrContact(contactable, contact, false);
       };
 
+      var findContacts = function(contactable, type) {
+        if (contactable[type]) {
+          return contactable[type].map(function(contact) {
+            return contact.id;
+          });
+        }
+
+        return null;
+      };
+
       $scope.editInvestigatorOrContact = function (contactable, contact, isInvestigator) {
         $modal
           .open({
@@ -44,6 +54,9 @@ mica.contact
               },
               isInvestigator: function () {
                 return isInvestigator;
+              },
+              excludes: function() {
+                return [];
               }
             }
           })
@@ -55,14 +68,14 @@ mica.contact
       };
 
       $scope.addInvestigator = function (contactable) {
-        $scope.addInvestigatorOrContact(contactable, true);
+        $scope.addInvestigatorOrContact(contactable, true, findContacts(contactable, 'investigators'));
       };
 
       $scope.addContact = function (contactable) {
-        $scope.addInvestigatorOrContact(contactable, false);
+        $scope.addInvestigatorOrContact(contactable, false, findContacts(contactable, 'contacts'));
       };
 
-      $scope.addInvestigatorOrContact = function (contactable, isInvestigator) {
+      $scope.addInvestigatorOrContact = function (contactable, isInvestigator, excludes) {
         $modal
           .open({
             templateUrl: 'app/contact/contact-modal-form.html',
@@ -73,6 +86,9 @@ mica.contact
               },
               isInvestigator: function () {
                 return isInvestigator;
+              },
+              excludes: function () {
+                return excludes;
               }
             }
           })
@@ -115,8 +131,8 @@ mica.contact
 
     }])
 
-  .controller('ContactViewModalController', ['$scope', '$modalInstance', '$log', 'MicaConfigResource', 'contact',
-    function ($scope, $modalInstance, $log, MicaConfigResource, contact) {
+  .controller('ContactViewModalController', ['$scope', '$modalInstance', 'MicaConfigResource', 'contact',
+    function ($scope, $modalInstance, MicaConfigResource, contact) {
 
       $scope.contact = contact;
 
@@ -133,11 +149,14 @@ mica.contact
 
     }])
 
-  .controller('ContactEditModalController', ['$scope', '$modalInstance', '$log', 'MicaConfigResource', 'contact', 'isInvestigator',
-    function ($scope, $modalInstance, $log, MicaConfigResource, contact, isInvestigator) {
+  .controller('ContactEditModalController', ['$scope', '$modalInstance', 'ContactsSearchResource','MicaConfigResource', 'contact', 'isInvestigator', 'excludes',
+    function ($scope, $modalInstance, ContactsSearchResource, MicaConfigResource, contact, isInvestigator, excludes) {
 
-      $scope.contact = contact;
+      $scope.isNew = Object.getOwnPropertyNames(contact).length === 0;
+      $scope.selected = { contact: contact };
       $scope.isInvestigator = isInvestigator;
+      $scope.excludes = excludes;
+      $scope.contacts = [];
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
@@ -148,7 +167,7 @@ mica.contact
 
       $scope.save = function (form) {
         if (form.$valid) {
-          $modalInstance.close($scope.contact);
+          $modalInstance.close($scope.selected.contact);
         } else {
           $scope.form = form;
           $scope.form.saveAttempted = true;
@@ -157,6 +176,15 @@ mica.contact
 
       $scope.cancel = function () {
         $modalInstance.dismiss('cancel');
+      };
+
+      $scope.findContacts = function(search) {
+        if (search) {
+          ContactsSearchResource.search({query: search + '*', 'exclude': $scope.excludes},
+            function onSuccess(result) {
+              $scope.contacts = result.contacts;
+            });
+        }
       };
 
     }]);

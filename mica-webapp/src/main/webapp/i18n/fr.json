@@ -30,7 +30,8 @@
       "en": "Anglais",
       "fr": "Français",
       "de": "Allemand"
-    }
+    },
+    "lastUpdate": "Last Update"
   },
   "main": {
     "title": "Bienvenue chez Micado!",
@@ -237,7 +238,9 @@
     "opalTaxonomies": "Opal taxonomies",
     "micaConfig": "Mica configuration",
     "aggregationsMetadata": "Aggregations metadata",
-    "datasetVariables": "Dataset variables statistics"
+    "datasetVariables": "Dataset variables statistics",
+    "agateSubjects": "Agate subjects",
+    "authorization": "Authorizations"
   },
   "logs": {
     "title": "Logs",
@@ -291,8 +294,11 @@
     "publicUrl-help": "Public base URL of the server (not the web-interface one) that will be used when sending notification emails on report generation",
     "defaultCharSet": "Default Character Set",
     "languages": "Languages",
-    "languages-help": "Supported languages for studies and networks description",
-    "opal" : "Primary Opal Server",
+    "languages-help": "Supported languages for studies, networks and datasets descriptions.",
+    "opal": "Primary Opal Server",
+    "opal-help": "This Opal server is the source of variables and data summaries when no study-specific one is defined.",
+    "privacyThreshold": "Participant Privacy Threshold",
+    "privacyThreshold-help": "No data summary will be returned if the number of participants is below this threshold.",
     "opalCredentials": "Opal Credentials",
     "encryptionKeys": "Encyption Keys",
     "addKeyPair": "Add Keys",
@@ -323,8 +329,9 @@
     }
   },
   "publish": {
-    "label" : "Publish",
-    "un-publish" : "Unpublish",
+    "label": "Publish",
+    "un-publish": "Unpublish",
+    "re-publish": "Republish",
     "not-published": "Not published",
     "published-out-of-date": "Published, out of date",
     "published": "Published",
@@ -453,6 +460,11 @@
       "contact": "Edit Contact",
       "investigator": "Edit Investigator"
     },
+    "search": {
+      "contact": "Find an existing contact",
+      "investigator": "Find an existing investigator",
+      "placeholder": "Search by first name, last name or institution..."
+    },
     "title": "Title",
     "firstName": "First Name",
     "lastName": "Last Name",
@@ -471,12 +483,12 @@
     "country": "Country"
   },
   "networks": "Networks",
-  "datasets" : "Datasets",
-  "dataset" : {
-    "name" : "Name",
+  "datasets": "Datasets",
+  "dataset": {
+    "name": "Name",
     "acronym": "Acronym",
-    "add" : "Add Dataset",
-    "label-edit" : "Edit Dataset",
+    "add": "Add Dataset",
+    "label-edit": "Edit Dataset",
     "general-info": "General Information",
     "description": "Description",
     "entity-type": "Entity Type",
@@ -521,7 +533,7 @@
     "label-edit": "Edit Population",
     "id": "Id",
     "name": "Name",
-    "info": "Information",
+    "info": "Supplementary information",
     "description": "Description",
     "gender": "Gender",
     "ageMin": "Minimum age",
