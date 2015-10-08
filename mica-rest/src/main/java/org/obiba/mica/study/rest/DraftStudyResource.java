@@ -33,6 +33,8 @@ import org.springframework.stereotype.Component;
 
 import com.codahale.metrics.annotation.Timed;
 
+import javafx.util.Pair;
+
 /**
  * REST controller for managing draft Study.
  */
@@ -129,6 +131,15 @@ public class DraftStudyResource {
     Study study = studyService.findDraftStudy(id);
     return fileSystemService.findDraftAttachments(String.format("^/study/%s", study.getId())).stream().sorted().map(dtos::asDto)
       .collect(Collectors.toList());
+  }
+
+  @GET
+  @Path("/fs/{path:.*}")
+  public Mica.AttachmentDto getAttachment(@PathParam("path") String pathWithName) {
+    Study study = studyService.findDraftStudy(id);
+    Pair<String,String> pathName = FileSystemService.extractPathName(pathWithName,
+      String.format("/study/%s", study.getId()));
+    return dtos.asDto(fileSystemService.getDraftAttachment(pathName.getKey(), pathName.getValue()));
   }
 
   @GET
