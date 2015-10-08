@@ -59,7 +59,6 @@ import com.google.common.io.ByteSource;
 import com.google.common.io.ByteStreams;
 import com.googlecode.protobuf.format.JsonFormat;
 
-
 @Service
 public class StudyPackageImportServiceImpl extends AbstractProtobufProvider implements StudyPackageImportService {
 
@@ -147,19 +146,19 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
       study.setAcronym(study.getName().asAcronym());
     }
     study.getAcronym().entrySet().forEach(entry -> {
-      if (study.getName().containsKey(entry.getKey())) {
+      if(study.getName().containsKey(entry.getKey())) {
         String newName = study.getName().get(entry.getKey()).replace("(" + entry.getValue() + ")", "").trim();
         study.getName().put(entry.getKey(), newName);
       }
     });
 
     study.cleanContacts();
-    study.rebuildPopulationIds();
+    //study.rebuildPopulationIds();
 
     studyService.save(study, "Imported");
 
     attachments.forEach(a -> {
-      a.setPath("/study/" + study.getId());
+      a.setPath(String.format(a.getPath(), study.getId()));
       fileSystemService.save(a);
     });
 
@@ -168,18 +167,18 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     }
   }
 
-  private void importNetwork(Network network, boolean publish, StudyPackage studyPackage) throws IOException{
+  private void importNetwork(Network network, boolean publish, StudyPackage studyPackage) throws IOException {
     Network updated;
     try {
       Network existing = networkService.findById(network.getId());
       network.getStudyIds().stream().filter(sid -> !existing.getStudyIds().contains(sid))
-          .forEach(sid -> existing.getStudyIds().add(sid));
+        .forEach(sid -> existing.getStudyIds().add(sid));
       updated = existing;
     } catch(NoSuchNetworkException e) {
       updated = network;
     }
 
-    for(Map.Entry<String, ByteSource> e: studyPackage.attachments.entrySet()) {
+    for(Map.Entry<String, ByteSource> e : studyPackage.attachments.entrySet()) {
       Attachment attachment = network.getLogo();
 
       if(attachment != null && attachment.getId().equals(e.getKey())) {
@@ -212,14 +211,14 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
   }
 
   private void importDataset(StudyDataset dataset, boolean publish) {
-    if (Strings.isNullOrEmpty(dataset.getStudyTable().getStudyId())) return;
+    if(Strings.isNullOrEmpty(dataset.getStudyTable().getStudyId())) return;
     try {
       studyDatasetService.findById(dataset.getId());
       studyDatasetService.save(dataset);
     } catch(NoSuchDatasetException e) {
       studyDatasetService.save(dataset);
     }
-    if (publish) studyDatasetService.publish(dataset.getId(), publish);
+    if(publish) studyDatasetService.publish(dataset.getId(), publish);
   }
 
   private void importDataset(HarmonizationDataset dataset, boolean publish) {
@@ -230,7 +229,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     } catch(NoSuchDatasetException e) {
       harmonizationDatasetService.save(dataset);
     }
-    if (publish) harmonizationDatasetService.publish(dataset.getId(), publish);
+    if(publish) harmonizationDatasetService.publish(dataset.getId(), publish);
   }
 
   private final class StudyPackage {
@@ -278,7 +277,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
         log.debug("Reading {}...", name);
 
         if(name.startsWith("study-")) {
-          Pair<Study,List<Attachment>> studyInput = readStudy(zipIn);
+          Pair<Study, List<Attachment>> studyInput = readStudy(zipIn);
           study = studyInput.getFirst();
           studyAttachments = studyInput.getSecond();
         } else if(name.startsWith("dataset-")) {
@@ -296,7 +295,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
       String sId = study.getAcronym().asString().replace("(", "").replace(")", "").toLowerCase();
       study.setId(sId);
       study.setOpal(null);
-      for (Network network : networks) {
+      for(Network network : networks) {
         network.setAcronym(ensureAcronym(network.getAcronym(), network.getName()));
         String nId = network.getAcronym().asString().toLowerCase();
         network.setId(nId);
@@ -311,15 +310,40 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
       return acronym;
     }
 
-    private Pair<Study,List<Attachment>> readStudy(InputStream inputStream) throws IOException {
+    private Pair<Study, List<Attachment>> readStudy(InputStream inputStream) throws IOException {
       Mica.StudyDto.Builder builder = Mica.StudyDto.newBuilder();
       Readable input = new InputStreamReader(inputStream, Charsets.UTF_8);
       JsonFormat.merge(input, builder);
-
-      List<Attachment> atts = Lists.newArrayList();
-      builder.getAttachmentsList().stream().map(dtos::fromDto).forEach(atts::add);
-
+      List<Attachment> atts = extractAttachments(builder);
       return Pair.create(dtos.fromDto(builder), atts);
+    }
+
+    /**
+     * Extract the attachments in a separate list and rebuild the population and data collection event IDs.
+     *
+     * @param builder
+     * @return
+     */
+    private List<Attachment> extractAttachments(Mica.StudyDto.Builder builder) {
+      List<Attachment> atts = Lists.newArrayList();
+      builder.getAttachmentsList().stream().map(dtos::fromDto).forEach(a -> {
+        a.setPath("/study/%s");
+        atts.add(a);
+      });
+      int pIdx = 1;
+      for (Mica.StudyDto.PopulationDto.Builder pBuilder : builder.getPopulationsBuilderList()) {
+        pBuilder.setId("" + pIdx++);
+        int dceIdx = 1;
+        for (Mica.StudyDto.PopulationDto.DataCollectionEventDto.Builder dceBuilder : pBuilder.getDataCollectionEventsBuilderList()) {
+          dceBuilder.setId("" + dceIdx++);
+          dceBuilder.getAttachmentsList().stream().map(dtos::fromDto).forEach(a -> {
+            a.setPath("/study/%s/population/" + pBuilder.getId() + "/data-collection-event/" + dceBuilder.getId());
+            atts.add(a);
+          });
+        }
+      }
+
+      return atts;
     }
 
     private Network readNetwork(InputStream inputStream) throws IOException {

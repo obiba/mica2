@@ -150,20 +150,6 @@ public class Population extends AbstractAttributeAware implements Serializable, 
     this.dataCollectionEvents = dataCollectionEvents;
   }
 
-  public void rebuildDataCollectionEventIds() {
-    if (dataCollectionEvents == null) return;
-
-    Iterable<DataCollectionEvent> dataCollectionEventsOriginal = new TreeSet<>(dataCollectionEvents);
-
-    dataCollectionEvents.clear();
-    int idx = 1;
-    for (DataCollectionEvent dce : dataCollectionEventsOriginal) {
-      dce.setId(idx + "");
-      idx++;
-      dataCollectionEvents.add(dce);
-    }
-  }
-
   @Override
   public int hashCode() {return Objects.hash(id);}
 

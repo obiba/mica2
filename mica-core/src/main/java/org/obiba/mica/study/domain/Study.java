@@ -404,24 +404,6 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
   }
 
   /**
-   * Make the {@link org.obiba.mica.study.domain.Population} IDs sequential.
-   */
-  public void rebuildPopulationIds() {
-    if (populations == null) return;
-
-    Iterable<Population> populationsOriginal = new TreeSet<>(populations);
-
-    populations.clear();
-    int idx = 1;
-    for (Population population : populationsOriginal) {
-      population.setId(idx + "");
-      idx++;
-      population.rebuildDataCollectionEventIds();
-      populations.add(population);
-    }
-  }
-
-  /**
    * For each {@link org.obiba.mica.core.domain.Contact} and investigators: trim strings, make sure institution is
    * not repeated in contact name etc.
    */
