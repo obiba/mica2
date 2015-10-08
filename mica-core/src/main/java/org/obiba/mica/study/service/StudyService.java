@@ -138,13 +138,6 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
       study.getLogo().setJustUploaded(false);
     }
 
-    study.getAllAttachments().forEach(a -> {
-      if(a.isJustUploaded()) {
-        fileService.save(a.getId());
-        a.setJustUploaded(false);
-      }
-    });
-
     study.setContacts(replaceExistingContacts(study.getContacts()));
     study.setInvestigators(replaceExistingContacts(study.getInvestigators()));
 

@@ -2,11 +2,9 @@ package org.obiba.mica.study.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -21,14 +19,13 @@ import org.obiba.mica.core.domain.Attributes;
 import org.obiba.mica.core.domain.Authorization;
 import org.obiba.mica.core.domain.Contact;
 import org.obiba.mica.core.domain.ContactAware;
+import org.obiba.mica.core.domain.GitPersistable;
 import org.obiba.mica.core.domain.LocalizedString;
-import org.obiba.mica.core.domain.PersistableWithAttachments;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.study.date.PersitableYear;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.base.Objects;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -39,7 +36,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * A Study.
  */
-public class Study extends AbstractGitPersistable implements AttributeAware, PersistableWithAttachments, ContactAware {
+public class Study extends AbstractGitPersistable implements AttributeAware, GitPersistable, ContactAware {
 
   private static final long serialVersionUID = 6559914069652243954L;
 
@@ -86,8 +83,6 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
   @DBRef
   private List<Attachment> attachments = Lists.newArrayList();
 
-  private Iterable<Attachment> removedAttachments = Lists.newArrayList();
-
   private LocalizedString info;
 
   private SortedSet<Population> populations = Sets.newTreeSet();
@@ -115,6 +110,10 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
 
   public Attachment getLogo() {
     return logo;
+  }
+
+  public boolean hasLogo() {
+    return logo != null;
   }
 
   public void setLogo(Attachment logo) {
@@ -277,78 +276,8 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
     this.pubmedId = pubmedId;
   }
 
-  @Override
-  public boolean hasAttachments() {
-    return attachments != null && !attachments.isEmpty();
-  }
-
-  @Override
-  public List<Attachment> getAttachments() {
-    return attachments;
-  }
-
-  @Override
-  public void addAttachment(@NotNull Attachment attachment) {
-    attachments.add(attachment);
-  }
-
-  @Override
   public void setAttachments(List<Attachment> attachments) {
-    if (attachments == null)
-      attachments = Lists.newArrayList();
-
-    removedAttachments = Sets.difference(Sets.newHashSet(this.attachments), Sets.newHashSet(attachments));
-
-    this.attachments = attachments;
-  }
-
-  @Override
-  @JsonIgnore
-  public List<Attachment> removedAttachments() {
-    return Lists.newArrayList(removedAttachments);
-  }
-
-  @NotNull
-  @Override
-  public Attachment findAttachmentById(String attachmentId) {
-    if(getLogo() != null && logo.getId().equals(attachmentId)) return logo;
-    if(getAttachments() != null) {
-      for(Attachment attachment : getAttachments()) {
-        if(attachment.getId().equals(attachmentId)) return attachment;
-      }
-    }
-    if(getPopulations() != null) {
-      for(Population population : getPopulations().stream().filter(p -> p.getDataCollectionEvents() != null)
-          .collect(toList())) {
-        for(DataCollectionEvent dce : population.getDataCollectionEvents().stream()
-            .filter(d -> d.getAttachments() != null).collect(toList())) {
-          for(Attachment attachment : dce.getAttachments()) {
-            if(attachment.getId().equals(attachmentId)) return attachment;
-          }
-        }
-      }
-    }
-    throw new NoSuchElementException("Attachment " + attachmentId + " not found for study " + getId());
-  }
-
-  @JsonIgnore
-  @Override
-  public Iterable<Attachment> getAllAttachments() {
-    Collection<Attachment> all = new ArrayList<>();
-
-    if(hasAttachments()) {
-      all.addAll(getAttachments());
-    }
-
-    if(hasPopulations()) {
-      getPopulations().stream() //
-          .filter(Population::hasDataCollectionEvents) //
-          .forEach(population -> population.getDataCollectionEvents().stream() //
-              .filter(DataCollectionEvent::hasAttachments) //
-              .forEach(dce -> all.addAll(dce.getAttachments())));
-    }
-
-    return Sets.newHashSet(all);
+    // void
   }
 
   public LocalizedString getInfo() {
@@ -404,24 +333,6 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
   }
 
   /**
-   * Make the {@link org.obiba.mica.study.domain.Population} IDs sequential.
-   */
-  public void rebuildPopulationIds() {
-    if (populations == null) return;
-
-    Iterable<Population> populationsOriginal = new TreeSet<>(populations);
-
-    populations.clear();
-    int idx = 1;
-    for (Population population : populationsOriginal) {
-      population.setId(idx + "");
-      idx++;
-      population.rebuildDataCollectionEventIds();
-      populations.add(population);
-    }
-  }
-
-  /**
    * For each {@link org.obiba.mica.core.domain.Contact} and investigators: trim strings, make sure institution is
    * not repeated in contact name etc.
    */
@@ -436,7 +347,7 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
   }
 
   @Override
-  protected Objects.ToStringHelper toStringHelper() {
+  protected MoreObjects.ToStringHelper toStringHelper() {
     return super.toStringHelper().add("name", name);
   }
 

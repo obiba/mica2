@@ -2,7 +2,6 @@ package org.obiba.mica.study.rest;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -13,6 +12,7 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.rest.FileResource;
+import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
@@ -31,6 +31,9 @@ import com.codahale.metrics.annotation.Timed;
 @Scope("request")
 @RequiresAuthentication
 public class PublishedStudyResource {
+
+  @Inject
+  private FileSystemService fileSystemService;
 
   @Inject
   private PublishedStudyService publishedStudyService;
@@ -56,11 +59,15 @@ public class PublishedStudyResource {
   @Path("/file/{fileId}")
   public FileResource study(@PathParam("fileId") String fileId) {
     FileResource fileResource = applicationContext.getBean(FileResource.class);
-    Study study = getStudy();
-
-    if(study.findAttachmentById(fileId) == null) throw NoSuchEntityException.withId(Attachment.class, fileId);
-
-    fileResource.setAttachment(study.findAttachmentById(fileId));
+    Study study =  getStudy();
+    if (study.hasLogo() && study.getLogo().getId().equals(fileId)) {
+      fileResource.setAttachment(study.getLogo());
+    } else {
+      List<Attachment> attachments = fileSystemService.findPublishedAttachments(String.format("^/study/%s", study.getId())).stream().filter(
+        a -> a.getId().equals(fileId)).collect(Collectors.toList());
+      if(attachments.isEmpty()) throw NoSuchEntityException.withId(Attachment.class, fileId);
+      fileResource.setAttachment(attachments.get(0));
+    }
 
     return fileResource;
   }
@@ -69,8 +76,8 @@ public class PublishedStudyResource {
   @Path("/files")
   public List<Mica.AttachmentDto> listAttachments() {
     Study study = getStudy();
-    return StreamSupport.stream(study.getAllAttachments().spliterator(), false).sorted().map(dtos::asDto)
-      .collect(Collectors.toList());
+    return fileSystemService.findPublishedAttachments(String.format("^/study/%s", study.getId())).stream().sorted()
+      .map(dtos::asDto).collect(Collectors.toList());
   }
 
   private Study getStudy() {

@@ -28,7 +28,7 @@ import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileService;
 import org.obiba.mica.file.impl.GridFsService;
 import org.obiba.mica.file.TempFileRepository;
-import org.obiba.mica.file.TempFileService;
+import org.obiba.mica.file.service.TempFileService;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.repository.MicaConfigRepository;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
@@ -164,7 +164,6 @@ public class StudyDtosTest {
     study.addPopulation(createPopulation());
     study.setSpecificAuthorization(createAuthorization("mica-server"));
     study.setMaelstromAuthorization(createAuthorization("mica"));
-    study.addAttachment(createAttachment());
     study.setLogo(createAttachment());
 
     return study;
@@ -322,7 +321,6 @@ public class StudyDtosTest {
     event.setBioSamples(Arrays.asList("Blood", "Cell Tissue"));
     event.setTissueTypes(en("Liver Tissue"));
     event.setOtherBioSamples(en("Ear wax"));
-    event.addAttachment(createAttachment());
     return event;
   }
 

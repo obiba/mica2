@@ -198,6 +198,11 @@ public class Dtos {
   }
 
   @NotNull
+  public Attachment fromDto(@NotNull Mica.AttachmentDto attachment) {
+    return attachmentDtos.fromDto(attachment);
+  }
+
+  @NotNull
   public Mica.DatasetDto asDto(@NotNull Dataset dataset) {
     if(dataset instanceof StudyDataset) {
       return datasetDtos.asDto((StudyDataset) dataset);

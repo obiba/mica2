@@ -25,7 +25,7 @@ import org.obiba.mica.core.domain.Contact;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.file.FileService;
 import org.obiba.mica.file.impl.GridFsService;
-import org.obiba.mica.file.TempFileService;
+import org.obiba.mica.file.service.TempFileService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.study.domain.Study;

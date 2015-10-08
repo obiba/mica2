@@ -1,4 +1,4 @@
-package org.obiba.mica.file;
+package org.obiba.mica.file.service;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,6 +14,9 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.joda.time.DateTime;
+import org.obiba.mica.file.NoSuchTempFileException;
+import org.obiba.mica.file.TempFile;
+import org.obiba.mica.file.TempFileRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
