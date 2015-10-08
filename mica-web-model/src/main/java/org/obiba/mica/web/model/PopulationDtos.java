@@ -205,9 +205,6 @@ class PopulationDtos {
     if(dce.getOtherBioSamples() != null) {
       builder.addAllOtherBioSamples(localizedStringDtos.asDto(dce.getOtherBioSamples()));
     }
-    if(dce.getAttachments() != null) {
-      dce.getAttachments().forEach(attachment -> builder.addAttachments(attachmentDtos.asDto(attachment)));
-    }
     if(dce.getAttributes() != null) {
       dce.getAttributes().asAttributeList().forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
     }

@@ -105,18 +105,6 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
         }
       });
 
-      studyPackage.study.getPopulations()
-        .forEach(p -> p.getDataCollectionEvents().forEach(dce -> dce.getAttachments().forEach(a -> {
-          if(attachmentIds.contains(a.getId())) {
-            String origId = a.getId();
-            a.setId(new ObjectId().toString());
-            saveAttachmentTempFile(dict, a, origId);
-          } else {
-            saveAttachmentTempFile(dict, a);
-            attachmentIds.add(a.getId());
-          }
-        })));
-
       importStudy(studyPackage.study, studyPackage.studyAttachments, publish);
 
       for(Network net : studyPackage.networks) {
@@ -153,7 +141,6 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     });
 
     study.cleanContacts();
-    //study.rebuildPopulationIds();
 
     studyService.save(study, "Imported");
 

@@ -10,7 +10,6 @@ import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.core.domain.AbstractAttributeAware;
-import org.obiba.mica.core.domain.AttachmentAware;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.study.date.PersistableYearMonth;
@@ -21,10 +20,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 public class DataCollectionEvent extends AbstractAttributeAware
-    implements Serializable, Persistable<String>, Comparable<DataCollectionEvent>, AttachmentAware {
+    implements Serializable, Persistable<String>, Comparable<DataCollectionEvent> {
 
   private static final long serialVersionUID = 6559914069652243954L;
 
@@ -53,8 +51,6 @@ public class DataCollectionEvent extends AbstractAttributeAware
 
   @DBRef
   private List<Attachment> attachments = Lists.newArrayList();
-
-  private Iterable<Attachment> removedAttachments = Lists.newArrayList();
 
   @Override
   public String getId() {
@@ -175,41 +171,12 @@ public class DataCollectionEvent extends AbstractAttributeAware
     this.otherBioSamples = otherBioSamples;
   }
 
-  @Override
-  public boolean hasAttachments() {
-    return attachments != null && !attachments.isEmpty();
-  }
-
-  @Override
   public List<Attachment> getAttachments() {
     return attachments;
   }
 
-  @Override
-  public void addAttachment(@NotNull Attachment attachment) {
-    attachments.add(attachment);
-  }
-
-  @Override
   public void setAttachments(@NotNull List<Attachment> attachments) {
-    if (attachments == null) attachments = Lists.newArrayList();
-    removedAttachments = Sets.difference(Sets.newHashSet(this.attachments), Sets.newHashSet(attachments));
-    this.attachments = attachments;
-  }
-
-  @Override
-  public List<Attachment> removedAttachments() {
-    return Lists.newArrayList(removedAttachments);
-  }
-
-  @Override
-  public Iterable<Attachment> getAllAttachments() {
-    return this.attachments;
-  }
-
-  @Override
-  public Attachment findAttachmentById(String attachmentId) {
-    return this.attachments.stream().filter(a -> a.getId().equals(attachmentId)).findFirst().orElse(null);
+    // void
   }
 
   @Override
