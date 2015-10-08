@@ -75,6 +75,16 @@ public class AttachmentState extends AbstractAuditableDocument {
     this.publicationDate = publicationDate;
   }
 
+  public void publish() {
+    setPublishedAttachment(getAttachment());
+    setPublicationDate(DateTime.now());
+  }
+
+  public void unPublish() {
+    setPublishedAttachment(null);
+    setPublicationDate(null);
+  }
+
   public boolean isPublished() {
     return publicationDate != null && publishedAttachment != null;
   }

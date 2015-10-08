@@ -9,11 +9,15 @@ import org.obiba.mica.core.repository.AttachmentStateRepository;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.FileService;
+import org.obiba.mica.study.event.StudyPublishedEvent;
+import org.obiba.mica.study.event.StudyUnpublishedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
+import com.google.common.eventbus.Subscribe;
 
 @Component
 public class FileSystemService {
@@ -71,5 +75,27 @@ public class FileSystemService {
     attachmentStateRepository.findByPath(pathRegEx).stream().filter(AttachmentState::isPublished).map(
       AttachmentState::getPublishedAttachment).forEach(attachments::add);
     return attachments;
+  }
+
+  @Async
+  @Subscribe
+  public void studyPublished(StudyPublishedEvent event) {
+    log.info("Study {} was published", event.getPersistable());
+    String pathRegEx = String.format("^/study/%s", event.getPersistable().getId());
+    attachmentStateRepository.findByPath(pathRegEx).forEach(state -> {
+      state.publish();
+      attachmentStateRepository.save(state);
+    });
+  }
+
+  @Async
+  @Subscribe
+  public void studyUnpublished(StudyUnpublishedEvent event) {
+    log.info("Study {} was unpublished", event.getPersistable());
+    String pathRegEx = String.format("^/study/%s", event.getPersistable().getId());
+    attachmentStateRepository.findByPath(pathRegEx).forEach(state -> {
+      state.unPublish();
+      attachmentStateRepository.save(state);
+    });
   }
 }
