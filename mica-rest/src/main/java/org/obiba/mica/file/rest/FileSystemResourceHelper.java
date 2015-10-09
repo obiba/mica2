@@ -110,7 +110,7 @@ public class FileSystemResourceHelper {
   private Mica.FileDto getFileDto(String basePath) {
     Pair<String, String> pathName = FileSystemService.extractPathName(basePath);
     AttachmentState state = fileSystemService.getAttachmentState(pathName.getKey(), pathName.getValue(), published);
-    return dtos.asFileDto(state);
+    return dtos.asFileDto(state, published);
   }
 
   private Mica.FileDto getFolderDto(String basePath) {
