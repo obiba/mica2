@@ -35,8 +35,8 @@ public class FileSystemResourceHelper {
     this.published = published;
   }
 
-  protected Mica.FileDto getFile(String path) {
-    String basePath = path.startsWith("/") ? path : String.format("/%s", path);
+  public Mica.FileDto getFile(String path) {
+    String basePath = normalizePath(path);
     if(isRoot(basePath)) return getFolderDto(basePath);
     if(basePath.endsWith("/")) return getFolderDto(basePath.replaceAll("[/]+$", ""));
 
@@ -47,9 +47,30 @@ public class FileSystemResourceHelper {
     }
   }
 
+  public void deleteFile(String path) {
+    String basePath = normalizePath(path);
+    if(isRoot(basePath)) deleteFolderState(basePath);
+    if(basePath.endsWith("/")) deleteFolderState(basePath.replaceAll("[/]+$", ""));
+
+    try {
+      deleteFileState(basePath);
+    } catch(NoSuchEntityException ex) {
+      deleteFolderState(basePath);
+    }
+  }
+
   //
   // Private methods
   //
+
+  private void deleteFileState(String basePath) {
+    Pair<String, String> pathName = FileSystemService.extractPathName(basePath);
+    fileSystemService.delete(pathName.getKey(), pathName.getValue());
+  }
+
+  private void deleteFolderState(String basePath) {
+    fileSystemService.delete(basePath);
+  }
 
   private Mica.FileDto getFileDto(String basePath) {
     Pair<String, String> pathName = FileSystemService.extractPathName(basePath);
@@ -109,5 +130,9 @@ public class FileSystemResourceHelper {
 
   private boolean isRoot(String basePath) {
     return "/".equals(basePath);
+  }
+
+  private String normalizePath(String path) {
+    return path.startsWith("/") ? path : String.format("/%s", path);
   }
 }
