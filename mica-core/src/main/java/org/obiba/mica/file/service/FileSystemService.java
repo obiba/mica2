@@ -15,6 +15,7 @@ import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.FileService;
 import org.obiba.mica.file.event.FileDeletedEvent;
+import org.obiba.mica.file.event.FilePublishedEvent;
 import org.obiba.mica.study.event.StudyPublishedEvent;
 import org.obiba.mica.study.event.StudyUnpublishedEvent;
 import org.slf4j.Logger;
@@ -118,6 +119,8 @@ public class FileSystemService {
     else state.unPublish();
     state.setLastModifiedDate(DateTime.now());
     attachmentStateRepository.save(state);
+    if (publish) eventBus.post(new FilePublishedEvent(state));
+    else eventBus.post(new FilePublishedEvent(state));
   }
 
   /**
