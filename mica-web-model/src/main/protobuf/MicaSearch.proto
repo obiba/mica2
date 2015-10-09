@@ -196,14 +196,6 @@ message StudySummariesResultDto {
   }
 }
 
-message ContactsResultDto {
-  repeated obiba.mica.ContactDto contacts = 1;
-
-  extend QueryResultDto {
-    optional ContactsResultDto result = 1010;
-  }
-}
-
 message AggregationResultDto {
   required string aggregation = 1;
   repeated LocalizedStringDto title = 2;

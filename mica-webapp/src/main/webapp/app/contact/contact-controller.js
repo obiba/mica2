@@ -149,23 +149,20 @@ mica.contact
 
     }])
 
-  .controller('ContactEditModalController', ['$scope', '$modalInstance', 'ContactsSearchResource','MicaConfigResource', 'contact', 'isInvestigator', 'excludes',
+  .controller('ContactEditModalController', ['$scope',
+    '$modalInstance',
+    'ContactsSearchResource',
+    'MicaConfigResource',
+    'contact',
+    'isInvestigator',
+    'excludes',
     function ($scope, $modalInstance, ContactsSearchResource, MicaConfigResource, contact, isInvestigator, excludes) {
 
-      $scope.isNew = Object.getOwnPropertyNames(contact).length === 0;
-      $scope.selected = { contact: contact };
-      $scope.isInvestigator = isInvestigator;
-      $scope.excludes = excludes;
-      $scope.contacts = [];
+      var newResult = function() {
+        return {contacts: [], total: 0, current: 0};
+      };
 
-      MicaConfigResource.get(function (micaConfig) {
-        $scope.tabs = [];
-        micaConfig.languages.forEach(function (lang) {
-          $scope.tabs.push({ lang: lang, labelKey: 'language.' + lang });
-        });
-      });
-
-      $scope.save = function (form) {
+      var save = function (form) {
         if (form.$valid) {
           $modalInstance.close($scope.selected.contact);
         } else {
@@ -174,18 +171,59 @@ mica.contact
         }
       };
 
-      $scope.cancel = function () {
+      var cancel = function () {
         $modalInstance.dismiss('cancel');
       };
 
-      $scope.findContacts = function(search) {
+      var findContacts = function(search) {
         if (search) {
-          ContactsSearchResource.search({query: search + '*', 'exclude': $scope.excludes},
+          if (!$scope.autoRefreshed) {
+            $scope.result = newResult();
+          }
+
+          ContactsSearchResource.search(
+            {
+              query: search + '*',
+              exclude: $scope.excludes,
+              from: $scope.result.contacts.length
+            },
             function onSuccess(result) {
-              $scope.contacts = result.contacts;
+              if (result.contacts) {
+                $scope.result.contacts = $scope.result.contacts.concat(result.contacts);
+                $scope.result.total = result.total;
+                $scope.result.current = $scope.result.contacts.length;
+                $scope.autoRefreshed = false;
+              }
             });
+        }
+        else {
+          $scope.result = newResult();
         }
       };
 
+      var onHighlighted = function(index, isLast, search) {
+        if (isLast && !$scope.autoRefreshed) {
+          $scope.autoRefreshed = true;
+          $scope.findContacts(search);
+        }
+      };
+
+      MicaConfigResource.get(function (micaConfig) {
+        $scope.tabs = [];
+        micaConfig.languages.forEach(function (lang) {
+          $scope.tabs.push({ lang: lang, labelKey: 'language.' + lang });
+        });
+      });
+
+      $scope.isNew = Object.getOwnPropertyNames(contact).length === 0;
+      $scope.selected = {contact: contact};
+      $scope.isInvestigator = isInvestigator;
+      $scope.excludes = excludes;
+      $scope.result = newResult();
+      $scope.autoRefreshed = false;
+      $scope.save = save;
+      $scope.cancel = cancel;
+      $scope.findContacts = findContacts;
+      $scope.onHighlighted = onHighlighted;
     }]);
 

@@ -25,7 +25,7 @@ import org.obiba.mica.contact.search.EsContactService;
 import org.obiba.mica.core.domain.Contact;
 import org.obiba.mica.core.service.PublishedDocumentService;
 import org.obiba.mica.web.model.Dtos;
-import org.obiba.mica.web.model.MicaSearch;
+import org.obiba.mica.web.model.Mica;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -48,7 +48,7 @@ public class ContactsSearchResource {
 
   @GET
   @Timed
-  public MicaSearch.ContactsResultDto query(@QueryParam("from") @DefaultValue("0") int from,
+  public Mica.ContactsDto query(@QueryParam("from") @DefaultValue("0") int from,
     @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") @DefaultValue(DEFAULT_SORT) String sort,
     @QueryParam("order") @DefaultValue("desc") String order, @QueryParam("query") String query,
     @QueryParam("exclude") List<String> excludes) throws IOException {
@@ -59,7 +59,8 @@ public class ContactsSearchResource {
     }
 
     PublishedDocumentService.Documents<Contact> contacts = esContactService.find(from, limit, sort, order, null, query);
-    MicaSearch.ContactsResultDto.Builder builder = MicaSearch.ContactsResultDto.newBuilder();
+    Mica.ContactsDto.Builder builder =
+      Mica.ContactsDto.newBuilder().setFrom(from).setLimit(limit).setTotal(contacts.getTotal());
     builder.addAllContacts(contacts.getList().stream().map(dtos::asDto).collect(Collectors.toList()));
 
     return builder.build();
