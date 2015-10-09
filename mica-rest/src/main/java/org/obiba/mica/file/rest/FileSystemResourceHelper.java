@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.web.model.Dtos;
@@ -33,6 +34,15 @@ public class FileSystemResourceHelper {
 
   public void setPublished(boolean published) {
     this.published = published;
+  }
+
+  public Attachment getAttachment(String path) {
+    String basePath = normalizePath(path);
+    if (basePath.endsWith("/")) throw new IllegalArgumentException("Folder download is not supported");
+
+    Pair<String, String> pathName = FileSystemService.extractPathName(basePath);
+    AttachmentState state = fileSystemService.getAttachmentState(pathName.getKey(), pathName.getValue(), published);
+    return published ? state.getPublishedAttachment() : state.getAttachment();
   }
 
   public Mica.FileDto getFile(String path) {
@@ -69,6 +79,10 @@ public class FileSystemResourceHelper {
     } catch(NoSuchEntityException ex) {
       publishFolderState(basePath, publish);
     }
+  }
+
+  public void addFile(Mica.AttachmentDto attachmentDto) {
+    fileSystemService.save(dtos.fromDto(attachmentDto));
   }
 
   //
@@ -156,4 +170,5 @@ public class FileSystemResourceHelper {
   private String normalizePath(String path) {
     return path.startsWith("/") ? path : String.format("/%s", path);
   }
+
 }
