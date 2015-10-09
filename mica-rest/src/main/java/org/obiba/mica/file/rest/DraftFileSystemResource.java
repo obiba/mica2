@@ -2,9 +2,11 @@ package org.obiba.mica.file.rest;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.web.model.Mica;
@@ -29,6 +31,13 @@ public class DraftFileSystemResource {
   @Path("/files/{path:.*}")
   public Mica.FileDto getFile(@PathParam("path") String path) {
     return fileSystemResourceHelper.getFile(path);
+  }
+
+  @DELETE
+  @Path("/files/{path:.*}")
+  public Response deleteFile(@PathParam("path") String path) {
+    fileSystemResourceHelper.deleteFile(path);
+    return Response.noContent().build();
   }
 
 }

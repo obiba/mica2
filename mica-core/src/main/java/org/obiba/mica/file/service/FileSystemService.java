@@ -14,6 +14,7 @@ import org.obiba.mica.core.repository.AttachmentStateRepository;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.FileService;
+import org.obiba.mica.file.event.FileDeletedEvent;
 import org.obiba.mica.study.event.StudyPublishedEvent;
 import org.obiba.mica.study.event.StudyUnpublishedEvent;
 import org.slf4j.Logger;
@@ -22,6 +23,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 import javafx.util.Pair;
@@ -30,6 +32,9 @@ import javafx.util.Pair;
 public class FileSystemService {
 
   private static final Logger log = LoggerFactory.getLogger(FileSystemService.class);
+
+  @Inject
+  private EventBus eventBus;
 
   @Inject
   private AttachmentRepository attachmentRepository;
@@ -60,6 +65,38 @@ public class FileSystemService {
     attachmentStateRepository.save(state);
   }
 
+  /**
+   * Make sure the {@link org.obiba.mica.file.AttachmentState} is not published and delete it.
+   *
+   * @param state
+   */
+  public void delete(AttachmentState state) {
+    if (state.isPublished()) throw new IllegalArgumentException("Cannot delete a published file");
+    attachmentStateRepository.delete(state);
+    eventBus.post(new FileDeletedEvent(state));
+  }
+
+  /**
+   * Delete all unpublished {@link org.obiba.mica.file.AttachmentState}s corresponding to the given path.
+   *
+   * @param path
+   */
+  public void delete(String path) {
+    List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
+    states.addAll(findAttachmentStates(String.format("^%s/", path), false));
+    states.stream().filter(s -> !s.isPublished()).forEach(this::delete);
+  }
+
+  /**
+   * Delete unpublished and existing {@link org.obiba.mica.file.AttachmentState} corresponding to the given path and name.
+   *
+   * @param path
+   * @param name
+   */
+  public void delete(String path, String name) {
+    delete(getAttachmentState(path, name, false));
+  }
+
   public List<AttachmentState> findAttachmentStates(String pathRegEx, boolean published) {
     return published ? findPublishedAttachmentStates(pathRegEx) : findDraftAttachmentStates(pathRegEx);
   }
@@ -69,7 +106,7 @@ public class FileSystemService {
   }
 
   /**
-   * Get the atachment state, with publication status filter.
+   * Get the {@link org.obiba.mica.file.AttachmentState}, with publication status filter.
    *
    * @param path
    * @param name
