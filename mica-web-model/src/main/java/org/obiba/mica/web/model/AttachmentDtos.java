@@ -29,8 +29,34 @@ class AttachmentDtos {
       .setName(state.getName()) //
       .setTimestamps(TimestampsDtos.asDto(state)) //
       .setType(Mica.FileType.FILE) //
-      .setSize(state.getAttachment().getSize()) //
-      .build();
+      .setSize(state.getAttachment().getSize()).build();
+  }
+
+  @NotNull
+  Mica.FileDto asFileDto(AttachmentState state, boolean published) {
+    Mica.FileDto.Builder builder = asFileDto(state).toBuilder();
+
+    if(!published) {
+      builder.setState(asDto(state));
+    } else if(state.isPublished()) {
+      builder.setAttachment(asDto(state.getPublishedAttachment()));
+    }
+
+    return builder.build();
+  }
+
+  Mica.AttachmentStateDto asDto(AttachmentState state) {
+    Mica.AttachmentStateDto.Builder builder = Mica.AttachmentStateDto.newBuilder();
+    builder.setId(state.getId()) //
+      .setName(state.getName()) //
+    .setPath(state.getPath()) //
+    .setTimestamps(TimestampsDtos.asDto(state)) //
+    .setAttachment(asDto(state.getAttachment()));
+    if (state.isPublished()) {
+      builder.setPublishedAttachment(asDto(state.getPublishedAttachment())) //
+      .setPublicationDate(state.getPublicationDate().toString());
+    }
+    return builder.build();
   }
 
   @NotNull

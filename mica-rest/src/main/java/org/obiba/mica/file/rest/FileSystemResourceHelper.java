@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.web.model.Dtos;
@@ -35,8 +36,17 @@ public class FileSystemResourceHelper {
     this.published = published;
   }
 
-  protected Mica.FileDto getFile(String path) {
-    String basePath = path.startsWith("/") ? path : String.format("/%s", path);
+  public Attachment getAttachment(String path) {
+    String basePath = normalizePath(path);
+    if (basePath.endsWith("/")) throw new IllegalArgumentException("Folder download is not supported");
+
+    Pair<String, String> pathName = FileSystemService.extractPathName(basePath);
+    AttachmentState state = fileSystemService.getAttachmentState(pathName.getKey(), pathName.getValue(), published);
+    return published ? state.getPublishedAttachment() : state.getAttachment();
+  }
+
+  public Mica.FileDto getFile(String path) {
+    String basePath = normalizePath(path);
     if(isRoot(basePath)) return getFolderDto(basePath);
     if(basePath.endsWith("/")) return getFolderDto(basePath.replaceAll("[/]+$", ""));
 
@@ -47,14 +57,60 @@ public class FileSystemResourceHelper {
     }
   }
 
+  public void deleteFile(String path) {
+    String basePath = normalizePath(path);
+    if(isRoot(basePath)) deleteFolderState(basePath);
+    if(basePath.endsWith("/")) deleteFolderState(basePath.replaceAll("[/]+$", ""));
+
+    try {
+      deleteFileState(basePath);
+    } catch(NoSuchEntityException ex) {
+      deleteFolderState(basePath);
+    }
+  }
+
+  public void publishFile(String path, boolean publish) {
+    String basePath = normalizePath(path);
+    if(isRoot(basePath)) publishFolderState(basePath, publish);
+    if(basePath.endsWith("/")) publishFolderState(basePath.replaceAll("[/]+$", ""), publish);
+
+    try {
+      publishFileState(basePath, publish);
+    } catch(NoSuchEntityException ex) {
+      publishFolderState(basePath, publish);
+    }
+  }
+
+  public void addFile(Mica.AttachmentDto attachmentDto) {
+    fileSystemService.save(dtos.fromDto(attachmentDto));
+  }
+
   //
   // Private methods
   //
 
+  private void deleteFileState(String basePath) {
+    Pair<String, String> pathName = FileSystemService.extractPathName(basePath);
+    fileSystemService.delete(pathName.getKey(), pathName.getValue());
+  }
+
+  private void deleteFolderState(String basePath) {
+    fileSystemService.delete(basePath);
+  }
+
+  private void publishFileState(String basePath, boolean publish) {
+    Pair<String, String> pathName = FileSystemService.extractPathName(basePath);
+    fileSystemService.publish(pathName.getKey(), pathName.getValue(), publish);
+  }
+
+  private void publishFolderState(String basePath, boolean publish) {
+    fileSystemService.publish(basePath, publish);
+  }
+
   private Mica.FileDto getFileDto(String basePath) {
     Pair<String, String> pathName = FileSystemService.extractPathName(basePath);
     AttachmentState state = fileSystemService.getAttachmentState(pathName.getKey(), pathName.getValue(), published);
-    return dtos.asFileDto(state);
+    return dtos.asFileDto(state, published);
   }
 
   private Mica.FileDto getFolderDto(String basePath) {
@@ -110,4 +166,9 @@ public class FileSystemResourceHelper {
   private boolean isRoot(String basePath) {
     return "/".equals(basePath);
   }
+
+  private String normalizePath(String path) {
+    return path.startsWith("/") ? path : String.format("/%s", path);
+  }
+
 }

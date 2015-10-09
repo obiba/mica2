@@ -631,4 +631,17 @@ message FileDto {
   repeated FileDto children = 4;
   optional int64 size = 5;
   optional TimestampsDto timestamps = 6;
+  optional AttachmentStateDto state = 7;
+  optional AttachmentDto attachment = 8;
+}
+
+message AttachmentStateDto {
+  required string id = 1;
+  required string name = 2;
+  required string path = 3;
+  optional TimestampsDto timestamps = 4;
+  optional AttachmentDto attachment = 5;
+  optional AttachmentDto publishedAttachment = 6;
+  optional string publicationDate = 7;
+  repeated AttachmentDto revisions = 8;
 }
