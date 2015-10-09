@@ -113,22 +113,13 @@ public class DraftStudyResource {
     if (study.hasLogo() && study.getLogo().getId().equals(fileId)) {
       fileResource.setAttachment(study.getLogo());
     } else {
-      List<Attachment> attachments = fileSystemService.findDraftAttachments(String.format("^/study/%s", study.getId())).stream().filter(
+      List<Attachment> attachments = fileSystemService.findAttachments(String.format("^/study/%s", study.getId()), false).stream().filter(
         a -> a.getId().equals(fileId)).collect(Collectors.toList());
       if(attachments.isEmpty()) throw NoSuchEntityException.withId(Attachment.class, fileId);
       fileResource.setAttachment(attachments.get(0));
     }
 
     return fileResource;
-  }
-
-  @GET
-  @Path("/files")
-  @RequiresPermissions({"/draft:EDIT"})
-  public List<Mica.AttachmentDto> listAttachments() {
-    Study study = studyService.findDraftStudy(id);
-    return fileSystemService.findDraftAttachments(String.format("^/study/%s", study.getId())).stream().sorted().map(dtos::asDto)
-      .collect(Collectors.toList());
   }
 
   @GET

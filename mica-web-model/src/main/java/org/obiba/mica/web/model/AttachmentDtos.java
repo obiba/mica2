@@ -6,6 +6,7 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.file.Attachment;
+import org.obiba.mica.file.AttachmentState;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
@@ -20,6 +21,17 @@ class AttachmentDtos {
 
   @Inject
   private AttributeDtos attributeDtos;
+
+  @NotNull
+  Mica.FileDto asFileDto(AttachmentState state) {
+    Mica.FileDto.Builder builder = Mica.FileDto.newBuilder();
+    return builder.setPath(state.getPath() + "/" + state.getName()) //
+      .setName(state.getName()) //
+      .setTimestamps(TimestampsDtos.asDto(state)) //
+      .setType(Mica.FileType.FILE) //
+      .setSize(state.getAttachment().getSize()) //
+      .build();
+  }
 
   @NotNull
   AttachmentDto asDto(@NotNull Attachment attachment) {

@@ -11,5 +11,5 @@ public interface AttachmentStateRepository extends MongoRepository<AttachmentSta
   @Query("{'path': {$regex: ?0}}")
   List<AttachmentState> findByPath(String pathRegEx);
 
-  List<AttachmentState> findByNameAndPath(String name, String path);
+  List<AttachmentState> findByPathAndName(String path, String name);
 }

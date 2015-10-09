@@ -59,25 +59,18 @@ public class PublishedStudyResource {
   @Path("/file/{fileId}")
   public FileResource study(@PathParam("fileId") String fileId) {
     FileResource fileResource = applicationContext.getBean(FileResource.class);
-    Study study =  getStudy();
-    if (study.hasLogo() && study.getLogo().getId().equals(fileId)) {
+    Study study = getStudy();
+    if(study.hasLogo() && study.getLogo().getId().equals(fileId)) {
       fileResource.setAttachment(study.getLogo());
     } else {
-      List<Attachment> attachments = fileSystemService.findPublishedAttachments(String.format("^/study/%s", study.getId())).stream().filter(
-        a -> a.getId().equals(fileId)).collect(Collectors.toList());
+      List<Attachment> attachments = fileSystemService
+        .findAttachments(String.format("^/study/%s", study.getId()), true).stream()
+        .filter(a -> a.getId().equals(fileId)).collect(Collectors.toList());
       if(attachments.isEmpty()) throw NoSuchEntityException.withId(Attachment.class, fileId);
       fileResource.setAttachment(attachments.get(0));
     }
 
     return fileResource;
-  }
-
-  @GET
-  @Path("/files")
-  public List<Mica.AttachmentDto> listAttachments() {
-    Study study = getStudy();
-    return fileSystemService.findPublishedAttachments(String.format("^/study/%s", study.getId())).stream().sorted()
-      .map(dtos::asDto).collect(Collectors.toList());
   }
 
   private Study getStudy() {
