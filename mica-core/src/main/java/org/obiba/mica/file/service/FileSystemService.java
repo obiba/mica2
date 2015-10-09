@@ -45,6 +45,10 @@ public class FileSystemService {
   @Inject
   private FileService fileService;
 
+  //
+  // Persistence
+  //
+
   public void save(Attachment attachment) {
     if(attachment.isJustUploaded()) {
       if(attachmentRepository.exists(attachment.getId())) {
@@ -96,6 +100,52 @@ public class FileSystemService {
   public void delete(String path, String name) {
     delete(getAttachmentState(path, name, false));
   }
+
+  //
+  // Publication
+  //
+
+  /**
+   * Change the publication status of the {@link org.obiba.mica.file.AttachmentState}.
+   *
+   * @param state
+   * @param publish do the publication or the non publication
+   */
+  public void publish(AttachmentState state, boolean publish) {
+    if (state.isPublished() && publish) return;
+    if (!state.isPublished() && !publish) return;
+    if (publish) state.publish();
+    else state.unPublish();
+    state.setLastModifiedDate(DateTime.now());
+    attachmentStateRepository.save(state);
+  }
+
+  /**
+   * Change the publication status recursively.
+   *
+   * @param path
+   * @param publish
+   */
+  public void publish(String path, boolean publish) {
+    List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
+    states.addAll(findAttachmentStates(String.format("^%s/", path), false));
+    states.stream().forEach(s -> publish(s, publish));
+  }
+
+  /**
+   * Change the publication status of the existing {@link org.obiba.mica.file.AttachmentState}.
+   *
+   * @param path
+   * @param name
+   * @param publish
+   */
+  public void publish(String path, String name, boolean publish) {
+    publish(getAttachmentState(path, name, false), publish);
+  }
+
+  //
+  // Query
+  //
 
   public List<AttachmentState> findAttachmentStates(String pathRegEx, boolean published) {
     return published ? findPublishedAttachmentStates(pathRegEx) : findDraftAttachmentStates(pathRegEx);
@@ -151,26 +201,14 @@ public class FileSystemService {
   @Subscribe
   public void studyPublished(StudyPublishedEvent event) {
     log.info("Study {} was published", event.getPersistable());
-    String pathRegEx = String.format("^/study/%s", event.getPersistable().getId());
-    List<AttachmentState> states = attachmentStateRepository.findByPath(pathRegEx + "$");
-    states.addAll(attachmentStateRepository.findByPath(pathRegEx + "/"));
-    states.forEach(state -> {
-      state.publish();
-      attachmentStateRepository.save(state);
-    });
+    publish(String.format("/study/%s", event.getPersistable().getId()), true);
   }
 
   @Async
   @Subscribe
   public void studyUnpublished(StudyUnpublishedEvent event) {
     log.info("Study {} was unpublished", event.getPersistable());
-    String pathRegEx = String.format("^/study/%s", event.getPersistable().getId());
-    List<AttachmentState> states = attachmentStateRepository.findByPath(pathRegEx + "$");
-    states.addAll(attachmentStateRepository.findByPath(pathRegEx + "/"));
-    states.forEach(state -> {
-      state.unPublish();
-      attachmentStateRepository.save(state);
-    });
+    publish(String.format("/study/%s", event.getPersistable().getId()), false);
   }
 
   //

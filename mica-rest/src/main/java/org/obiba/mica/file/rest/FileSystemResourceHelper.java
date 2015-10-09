@@ -59,6 +59,18 @@ public class FileSystemResourceHelper {
     }
   }
 
+  public void publishFile(String path, boolean publish) {
+    String basePath = normalizePath(path);
+    if(isRoot(basePath)) publishFolderState(basePath, publish);
+    if(basePath.endsWith("/")) publishFolderState(basePath.replaceAll("[/]+$", ""), publish);
+
+    try {
+      publishFileState(basePath, publish);
+    } catch(NoSuchEntityException ex) {
+      publishFolderState(basePath, publish);
+    }
+  }
+
   //
   // Private methods
   //
@@ -70,6 +82,15 @@ public class FileSystemResourceHelper {
 
   private void deleteFolderState(String basePath) {
     fileSystemService.delete(basePath);
+  }
+
+  private void publishFileState(String basePath, boolean publish) {
+    Pair<String, String> pathName = FileSystemService.extractPathName(basePath);
+    fileSystemService.publish(pathName.getKey(), pathName.getValue(), publish);
+  }
+
+  private void publishFolderState(String basePath, boolean publish) {
+    fileSystemService.publish(basePath, publish);
   }
 
   private Mica.FileDto getFileDto(String basePath) {
