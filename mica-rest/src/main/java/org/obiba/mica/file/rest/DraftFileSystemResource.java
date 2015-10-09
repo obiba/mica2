@@ -4,8 +4,10 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -37,6 +39,13 @@ public class DraftFileSystemResource {
   @Path("/files/{path:.*}")
   public Response deleteFile(@PathParam("path") String path) {
     fileSystemResourceHelper.deleteFile(path);
+    return Response.noContent().build();
+  }
+
+  @PUT
+  @Path("/files/{path:.*}")
+  public Response publish(@PathParam("path") String path, @QueryParam("publish") Boolean publish) {
+    if (publish != null) fileSystemResourceHelper.publishFile(path, publish);
     return Response.noContent().build();
   }
 
