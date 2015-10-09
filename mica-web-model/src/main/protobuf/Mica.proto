@@ -618,3 +618,17 @@ message GitCommitInfoDto {
   optional bool isHead = 7 [default = false]; // head of the commit tree
   optional bool isCurrent = 8 [default = false]; // current (latest) commit for a given path
 }
+
+enum FileType {
+  FILE = 0;
+  FOLDER = 1;
+}
+
+message FileDto {
+  required string name = 1;
+  required string path = 2;
+  required FileType type = 3;
+  repeated FileDto children = 4;
+  optional int64 size = 5;
+  optional TimestampsDto timestamps = 6;
+}

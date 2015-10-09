@@ -3,12 +3,13 @@ package org.obiba.mica.file;
 import org.joda.time.DateTime;
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
 import org.obiba.mica.core.domain.RevisionStatus;
+import org.obiba.mica.core.domain.Timestamped;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
-public class AttachmentState extends AbstractAuditableDocument {
+public class AttachmentState extends AbstractAuditableDocument implements Timestamped {
 
   private static final long serialVersionUID = 6265547392853691755L;
 
@@ -32,6 +33,22 @@ public class AttachmentState extends AbstractAuditableDocument {
   //
   // Public methods
   //
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getPath() {
+    return path;
+  }
+
+  public void setPath(String path) {
+    this.path = path;
+  }
 
   public void setRevisionStatus(RevisionStatus revisionStatus) {
     this.revisionStatus = revisionStatus;

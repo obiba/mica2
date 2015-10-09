@@ -24,8 +24,6 @@ import org.springframework.stereotype.Component;
 
 import com.codahale.metrics.annotation.Timed;
 
-import javafx.util.Pair;
-
 /**
  * REST controller for managing Study.
  */
@@ -66,30 +64,13 @@ public class PublishedStudyResource {
       fileResource.setAttachment(study.getLogo());
     } else {
       List<Attachment> attachments = fileSystemService
-        .findPublishedAttachments(String.format("^/study/%s", study.getId())).stream()
+        .findAttachments(String.format("^/study/%s", study.getId()), true).stream()
         .filter(a -> a.getId().equals(fileId)).collect(Collectors.toList());
       if(attachments.isEmpty()) throw NoSuchEntityException.withId(Attachment.class, fileId);
       fileResource.setAttachment(attachments.get(0));
     }
 
     return fileResource;
-  }
-
-  @GET
-  @Path("/files")
-  public List<Mica.AttachmentDto> listAttachments() {
-    Study study = getStudy();
-    return fileSystemService.findPublishedAttachments(String.format("^/study/%s", study.getId())).stream().sorted()
-      .map(dtos::asDto).collect(Collectors.toList());
-  }
-
-  @GET
-  @Path("/fs/{path:.*}")
-  public Mica.AttachmentDto getAttachment(@PathParam("path") String pathWithName) {
-    Study study = getStudy();
-    Pair<String,String> pathName = FileSystemService.extractPathName(pathWithName,
-      String.format("/study/%s", study.getId()));
-    return dtos.asDto(fileSystemService.getPublishedAttachment(pathName.getKey(), pathName.getValue()));
   }
 
   private Study getStudy() {
