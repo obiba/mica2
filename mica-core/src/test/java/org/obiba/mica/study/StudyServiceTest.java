@@ -22,9 +22,12 @@ import org.obiba.git.command.GitCommandHandler;
 import org.obiba.mica.config.JsonConfiguration;
 import org.obiba.mica.config.MongoDbConfiguration;
 import org.obiba.mica.core.domain.Contact;
+import org.obiba.mica.core.repository.AttachmentRepository;
+import org.obiba.mica.core.repository.AttachmentStateRepository;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.file.FileService;
 import org.obiba.mica.file.impl.GridFsService;
+import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.file.service.TempFileService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.network.domain.Network;
@@ -352,6 +355,21 @@ public class StudyServiceTest {
     @Bean
     public FileService fsService() {
       return mock(GridFsService.class);
+    }
+
+    @Bean
+    public FileSystemService fileSystemService() {
+      return mock(FileSystemService.class);
+    }
+
+    @Bean
+    public AttachmentRepository attachmentRepository() {
+      return mock(AttachmentRepository.class);
+    }
+
+    @Bean
+    public AttachmentStateRepository attachmentStateRepository() {
+      return mock(AttachmentStateRepository.class);
     }
 
     @Bean

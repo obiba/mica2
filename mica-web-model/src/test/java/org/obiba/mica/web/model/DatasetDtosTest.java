@@ -25,8 +25,11 @@ import org.obiba.mica.config.JsonConfiguration;
 import org.obiba.mica.config.StudiesConfiguration;
 import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.StudyTable;
+import org.obiba.mica.core.repository.AttachmentRepository;
+import org.obiba.mica.core.repository.AttachmentStateRepository;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.repository.DataAccessFormRepository;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
@@ -48,6 +51,7 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.obiba.mica.core.domain.LocalizedString.en;
 
@@ -203,6 +207,21 @@ public class DatasetDtosTest {
     @Bean
     public DataAccessFormRepository dataAccessFormRepository() {
       return Mockito.mock(DataAccessFormRepository.class);
+    }
+
+    @Bean
+    public FileSystemService fileSystemService() {
+      return mock(FileSystemService.class);
+    }
+
+    @Bean
+    public AttachmentRepository attachmentRepository() {
+      return mock(AttachmentRepository.class);
+    }
+
+    @Bean
+    public AttachmentStateRepository attachmentStateRepository() {
+      return mock(AttachmentStateRepository.class);
     }
   }
 }

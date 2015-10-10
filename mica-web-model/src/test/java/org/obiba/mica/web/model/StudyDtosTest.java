@@ -20,6 +20,8 @@ import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.Authorization;
 import org.obiba.mica.core.domain.Contact;
 import org.obiba.mica.core.domain.Timestamped;
+import org.obiba.mica.core.repository.AttachmentRepository;
+import org.obiba.mica.core.repository.AttachmentStateRepository;
 import org.obiba.mica.core.repository.ContactRepository;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
@@ -28,6 +30,7 @@ import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileService;
 import org.obiba.mica.file.impl.GridFsService;
 import org.obiba.mica.file.TempFileRepository;
+import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.file.service.TempFileService;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.repository.MicaConfigRepository;
@@ -423,5 +426,19 @@ public class StudyDtosTest {
       return mock(GridFsOperations.class);
     }
 
+    @Bean
+    public FileSystemService fileSystemService() {
+      return mock(FileSystemService.class);
+    }
+
+    @Bean
+    public AttachmentRepository attachmentRepository() {
+      return mock(AttachmentRepository.class);
+    }
+
+    @Bean
+    public AttachmentStateRepository attachmentStateRepository() {
+      return mock(AttachmentStateRepository.class);
+    }
   }
 }
