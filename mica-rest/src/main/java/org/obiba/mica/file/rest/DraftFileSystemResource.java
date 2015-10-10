@@ -1,6 +1,5 @@
 package org.obiba.mica.file.rest;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -17,30 +16,25 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileService;
 import org.obiba.mica.web.model.Mica;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
-@Scope("request")
 @Path("/draft")
 @RequiresPermissions({ "/draft:EDIT" })
-public class DraftFileSystemResource {
-
-  @Inject
-  private FileSystemResourceHelper fileSystemResourceHelper;
+public class DraftFileSystemResource extends AbstractFileSystemResource {
 
   @Inject
   private FileService fileService;
 
-  @PostConstruct
-  public void init() {
-    fileSystemResourceHelper.setPublished(false);
+  @Override
+  protected boolean isPublished() {
+    return false;
   }
 
   @GET
   @Path("/file-dl/{path:.*}")
   public Response downloadFile(@PathParam("path") String path) {
-    Attachment attachment = fileSystemResourceHelper.getAttachment(path);
+    Attachment attachment = doGetAttachment(path);
     return Response.ok(fileService.getFile(attachment.getId()))
       .header("Content-Disposition", "attachment; filename=\"" + attachment.getName() + "\"").build();
   }
@@ -48,27 +42,27 @@ public class DraftFileSystemResource {
   @GET
   @Path("/file/{path:.*}")
   public Mica.FileDto getFile(@PathParam("path") String path) {
-    return fileSystemResourceHelper.getFile(path);
+    return doGetFile(path);
   }
 
   @DELETE
   @Path("/file/{path:.*}")
   public Response deleteFile(@PathParam("path") String path) {
-    fileSystemResourceHelper.deleteFile(path);
+    doDeleteFile(path);
     return Response.noContent().build();
   }
 
   @PUT
   @Path("/file/{path:.*}")
   public Response updateFile(@PathParam("path") String path, @QueryParam("publish") Boolean publish) {
-    if (publish != null) fileSystemResourceHelper.publishFile(path, publish);
+    if (publish != null) doPublishFile(path, publish);
     return Response.noContent().build();
   }
 
   @POST
   @Path("/files")
   public Response addFile(Mica.AttachmentDto attachmentDto, @Context UriInfo uriInfo) {
-    fileSystemResourceHelper.addFile(attachmentDto);
+    doAddFile(attachmentDto);
     return Response.created(uriInfo.getBaseUriBuilder().path("draft").path("file").path(attachmentDto.getPath()).build())
       .build();
   }

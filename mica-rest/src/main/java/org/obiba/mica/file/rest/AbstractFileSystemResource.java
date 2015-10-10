@@ -13,16 +13,12 @@ import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
 
 import javafx.util.Pair;
 
-@Component
-@Scope("request")
-public class FileSystemResourceHelper {
+public abstract class AbstractFileSystemResource {
 
   @Inject
   protected FileSystemService fileSystemService;
@@ -30,22 +26,25 @@ public class FileSystemResourceHelper {
   @Inject
   private Dtos dtos;
 
-  private boolean published;
+  /**
+   * Specify if the file system view is published or draft. If published, only the {@link AttachmentState}s will be looked
+   * up and the corresponding {@link Attachment} will be returned.
+   *
+   * @return
+   */
+  protected abstract boolean isPublished();
 
-  public void setPublished(boolean published) {
-    this.published = published;
-  }
 
-  public Attachment getAttachment(String path) {
+  public Attachment doGetAttachment(String path) {
     String basePath = normalizePath(path);
     if (basePath.endsWith("/")) throw new IllegalArgumentException("Folder download is not supported");
 
     Pair<String, String> pathName = FileSystemService.extractPathName(basePath);
-    AttachmentState state = fileSystemService.getAttachmentState(pathName.getKey(), pathName.getValue(), published);
-    return published ? state.getPublishedAttachment() : state.getAttachment();
+    AttachmentState state = fileSystemService.getAttachmentState(pathName.getKey(), pathName.getValue(), isPublished());
+    return isPublished() ? state.getPublishedAttachment() : state.getAttachment();
   }
 
-  public Mica.FileDto getFile(String path) {
+  public Mica.FileDto doGetFile(String path) {
     String basePath = normalizePath(path);
     if(isRoot(basePath)) return getFolderDto(basePath);
     if(basePath.endsWith("/")) return getFolderDto(basePath.replaceAll("[/]+$", ""));
@@ -57,7 +56,7 @@ public class FileSystemResourceHelper {
     }
   }
 
-  public void deleteFile(String path) {
+  public void doDeleteFile(String path) {
     String basePath = normalizePath(path);
     if(isRoot(basePath)) deleteFolderState(basePath);
     if(basePath.endsWith("/")) deleteFolderState(basePath.replaceAll("[/]+$", ""));
@@ -69,7 +68,7 @@ public class FileSystemResourceHelper {
     }
   }
 
-  public void publishFile(String path, boolean publish) {
+  public void doPublishFile(String path, boolean publish) {
     String basePath = normalizePath(path);
     if(isRoot(basePath)) publishFolderState(basePath, publish);
     if(basePath.endsWith("/")) publishFolderState(basePath.replaceAll("[/]+$", ""), publish);
@@ -81,7 +80,7 @@ public class FileSystemResourceHelper {
     }
   }
 
-  public void addFile(Mica.AttachmentDto attachmentDto) {
+  public void doAddFile(Mica.AttachmentDto attachmentDto) {
     fileSystemService.save(dtos.fromDto(attachmentDto));
   }
 
@@ -109,8 +108,8 @@ public class FileSystemResourceHelper {
 
   private Mica.FileDto getFileDto(String basePath) {
     Pair<String, String> pathName = FileSystemService.extractPathName(basePath);
-    AttachmentState state = fileSystemService.getAttachmentState(pathName.getKey(), pathName.getValue(), published);
-    return dtos.asFileDto(state, published);
+    AttachmentState state = fileSystemService.getAttachmentState(pathName.getKey(), pathName.getValue(), isPublished());
+    return dtos.asFileDto(state, isPublished());
   }
 
   private Mica.FileDto getFolderDto(String basePath) {
@@ -142,7 +141,7 @@ public class FileSystemResourceHelper {
   private Iterable<Mica.FileDto> getChildrenFolders(String basePath) {
     List<Mica.FileDto> folders = Lists.newArrayList();
     String pathRegEx = isRoot(basePath) ? "^/" : String.format("^%s/", basePath);
-    fileSystemService.findAttachmentStates(pathRegEx, published).stream() //
+    fileSystemService.findAttachmentStates(pathRegEx, isPublished()).stream() //
       .collect(Collectors.groupingBy(new Function<AttachmentState, String>() {
         @Override
         public String apply(AttachmentState state) {
@@ -155,7 +154,7 @@ public class FileSystemResourceHelper {
   }
 
   private Iterable<Mica.FileDto> getChildrenFiles(String basePath) {
-    return fileSystemService.findAttachmentStates(String.format("^%s$", basePath), published).stream().map(dtos::asFileDto)
+    return fileSystemService.findAttachmentStates(String.format("^%s$", basePath), isPublished()).stream().map(dtos::asFileDto)
       .collect(Collectors.toList());
   }
 

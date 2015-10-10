@@ -1,6 +1,5 @@
 package org.obiba.mica.file.rest;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -10,29 +9,24 @@ import javax.ws.rs.core.Response;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileService;
 import org.obiba.mica.web.model.Mica;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Component
-@Scope("request")
 @Path("/")
-public class PublishedFileSystemResource {
-
-  @Inject
-  private FileSystemResourceHelper fileSystemResourceHelper;
+public class PublishedFileSystemResource extends AbstractFileSystemResource {
 
   @Inject
   private FileService fileService;
 
-  @PostConstruct
-  public void init() {
-    fileSystemResourceHelper.setPublished(true);
+  @Override
+  protected boolean isPublished() {
+    return true;
   }
 
   @GET
   @Path("/file-dl/{path:.*}")
   public Response downloadFile(@PathParam("path") String path) {
-    Attachment attachment = fileSystemResourceHelper.getAttachment(path);
+    Attachment attachment = doGetAttachment(path);
     return Response.ok(fileService.getFile(attachment.getId()))
       .header("Content-Disposition", "attachment; filename=\"" + attachment.getName() + "\"").build();
   }
@@ -40,6 +34,6 @@ public class PublishedFileSystemResource {
   @GET
   @Path("/file/{path:.*}")
   public Mica.FileDto getFile(@PathParam("path") String path) {
-    return fileSystemResourceHelper.getFile(path);
+    return doGetFile(path);
   }
 }
