@@ -34,17 +34,22 @@ public abstract class AbstractFileSystemResource {
    */
   protected abstract boolean isPublished();
 
-
-  public Attachment doGetAttachment(String path) {
+  protected List<Mica.FileDto> doSearchFiles(String path, String query, boolean recursively) {
     String basePath = normalizePath(path);
-    if (basePath.endsWith("/")) throw new IllegalArgumentException("Folder download is not supported");
+    if(!isRoot(basePath) && basePath.endsWith("/")) basePath = basePath.replaceAll("[/]+$", "");
+    return getChildrenFiles(basePath, recursively);
+  }
+
+  protected Attachment doGetAttachment(String path) {
+    String basePath = normalizePath(path);
+    if(basePath.endsWith("/")) throw new IllegalArgumentException("Folder download is not supported");
 
     Pair<String, String> pathName = FileSystemService.extractPathName(basePath);
     AttachmentState state = fileSystemService.getAttachmentState(pathName.getKey(), pathName.getValue(), isPublished());
     return isPublished() ? state.getPublishedAttachment() : state.getAttachment();
   }
 
-  public Mica.FileDto doGetFile(String path) {
+  protected Mica.FileDto doGetFile(String path) {
     String basePath = normalizePath(path);
     if(isRoot(basePath)) return getFolderDto(basePath);
     if(basePath.endsWith("/")) return getFolderDto(basePath.replaceAll("[/]+$", ""));
@@ -56,7 +61,7 @@ public abstract class AbstractFileSystemResource {
     }
   }
 
-  public void doDeleteFile(String path) {
+  protected void doDeleteFile(String path) {
     String basePath = normalizePath(path);
     if(isRoot(basePath)) deleteFolderState(basePath);
     if(basePath.endsWith("/")) deleteFolderState(basePath.replaceAll("[/]+$", ""));
@@ -68,7 +73,7 @@ public abstract class AbstractFileSystemResource {
     }
   }
 
-  public void doPublishFile(String path, boolean publish) {
+  protected void doPublishFile(String path, boolean publish) {
     String basePath = normalizePath(path);
     if(isRoot(basePath)) publishFolderState(basePath, publish);
     if(basePath.endsWith("/")) publishFolderState(basePath.replaceAll("[/]+$", ""), publish);
@@ -80,7 +85,7 @@ public abstract class AbstractFileSystemResource {
     }
   }
 
-  public void doAddFile(Mica.AttachmentDto attachmentDto) {
+  protected void doAddFile(Mica.AttachmentDto attachmentDto) {
     fileSystemService.save(dtos.fromDto(attachmentDto));
   }
 
@@ -117,7 +122,7 @@ public abstract class AbstractFileSystemResource {
 
     Mica.FileDto.Builder builder = Mica.FileDto.newBuilder();
     builder.addAllChildren(getChildrenFolders(basePath)) //
-      .addAllChildren(getChildrenFiles(basePath));
+      .addAllChildren(getChildrenFiles(basePath, false));
 
     if(builder.getChildrenCount() == 0) {
       if(isRoot(basePath)) {
@@ -148,14 +153,23 @@ public abstract class AbstractFileSystemResource {
           return extractFirstChildren(basePath, state.getPath());
         }
       })).forEach((n, s) -> folders.add(Mica.FileDto.newBuilder().setType(Mica.FileType.FOLDER)
-        .setPath(isRoot(basePath) ? String.format("/%s", n) : String.format("%s/%s", basePath, n)).setName(n)
-        .setSize(s.size()).build()));
+      .setPath(isRoot(basePath) ? String.format("/%s", n) : String.format("%s/%s", basePath, n)).setName(n)
+      .setSize(s.size()).build()));
     return folders;
   }
 
-  private Iterable<Mica.FileDto> getChildrenFiles(String basePath) {
-    return fileSystemService.findAttachmentStates(String.format("^%s$", basePath), isPublished()).stream().map(dtos::asFileDto)
+  private List<Mica.FileDto> getChildrenFiles(String basePath, boolean recursively) {
+    List<AttachmentState> states = fileSystemService.findAttachmentStates(String.format("^%s$", basePath),
+      isPublished()).stream()
       .collect(Collectors.toList());
+
+    if (recursively) {
+      states.addAll(fileSystemService.findAttachmentStates(String.format("^%s/", basePath),
+        isPublished()).stream()
+        .collect(Collectors.toList()));
+    }
+
+    return states.stream().map(dtos::asFileDto).collect(Collectors.toList());
   }
 
   private String extractFirstChildren(String basePath, String path) {
