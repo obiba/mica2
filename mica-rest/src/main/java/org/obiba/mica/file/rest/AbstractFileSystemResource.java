@@ -29,8 +29,9 @@ public abstract class AbstractFileSystemResource {
   private Dtos dtos;
 
   /**
-   * Specify if the file system view is published or draft. If published, only the {@link AttachmentState}s will be looked
-   * up and the corresponding {@link Attachment} will be returned.
+   * Specify if the file system view is published or draft. If published, only the published {@link AttachmentState}s
+   * will be looked up and the corresponding {@link Attachment} will be returned. Otherwise all {@link AttachmentState}
+   * and all revisions of {@link Attachment}s are accessible.
    *
    * @return
    */
