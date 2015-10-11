@@ -5,6 +5,7 @@ import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import org.obiba.mica.NoSuchEntityException;
@@ -14,6 +15,7 @@ import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 import javafx.util.Pair;
@@ -41,12 +43,26 @@ public abstract class AbstractFileSystemResource {
   }
 
   protected Attachment doGetAttachment(String path) {
+    return doGetAttachment(path, null);
+  }
+
+  protected Attachment doGetAttachment(String path, @Nullable String version) {
     String basePath = normalizePath(path);
     if(basePath.endsWith("/")) throw new IllegalArgumentException("Folder download is not supported");
 
     Pair<String, String> pathName = FileSystemService.extractPathName(basePath);
     AttachmentState state = fileSystemService.getAttachmentState(pathName.getKey(), pathName.getValue(), isPublished());
-    return isPublished() ? state.getPublishedAttachment() : state.getAttachment();
+    if(isPublished()) return state.getPublishedAttachment();
+
+    if(Strings.isNullOrEmpty(version)) return state.getAttachment();
+
+    List<Attachment> attachments = fileSystemService.getAttachmentRevisions(state).stream()
+      .filter(a -> a.getId().equals(version)).collect(Collectors.toList());
+
+    if(attachments.isEmpty())
+      throw new NoSuchElementException("No file version " + version + " found at path: " + basePath);
+
+    return attachments.get(0);
   }
 
   protected Mica.FileDto doGetFile(String path) {
@@ -159,13 +175,11 @@ public abstract class AbstractFileSystemResource {
   }
 
   private List<Mica.FileDto> getChildrenFiles(String basePath, boolean recursively) {
-    List<AttachmentState> states = fileSystemService.findAttachmentStates(String.format("^%s$", basePath),
-      isPublished()).stream()
-      .collect(Collectors.toList());
+    List<AttachmentState> states = fileSystemService
+      .findAttachmentStates(String.format("^%s$", basePath), isPublished()).stream().collect(Collectors.toList());
 
-    if (recursively) {
-      states.addAll(fileSystemService.findAttachmentStates(String.format("^%s/", basePath),
-        isPublished()).stream()
+    if(recursively) {
+      states.addAll(fileSystemService.findAttachmentStates(String.format("^%s/", basePath), isPublished()).stream()
         .collect(Collectors.toList()));
     }
 
