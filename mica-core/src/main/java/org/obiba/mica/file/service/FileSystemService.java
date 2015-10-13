@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.repository.AttachmentRepository;
@@ -20,6 +21,7 @@ import org.obiba.mica.study.event.StudyPublishedEvent;
 import org.obiba.mica.study.event.StudyUnpublishedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -76,7 +78,7 @@ public class FileSystemService {
    * @param state
    */
   public void delete(AttachmentState state) {
-    if (state.isPublished()) throw new IllegalArgumentException("Cannot delete a published file");
+    if(state.isPublished()) throw new IllegalArgumentException("Cannot delete a published file");
     attachmentStateRepository.delete(state);
     eventBus.post(new FileDeletedEvent(state));
   }
@@ -113,13 +115,13 @@ public class FileSystemService {
    * @param publish do the publication or the non publication
    */
   public void publish(AttachmentState state, boolean publish) {
-    if (state.isPublished() && publish) return;
-    if (!state.isPublished() && !publish) return;
-    if (publish) state.publish();
+    if(state.isPublished() && publish) return;
+    if(!state.isPublished() && !publish) return;
+    if(publish) state.publish();
     else state.unPublish();
     state.setLastModifiedDate(DateTime.now());
     attachmentStateRepository.save(state);
-    if (publish) eventBus.post(new FilePublishedEvent(state));
+    if(publish) eventBus.post(new FilePublishedEvent(state));
     else eventBus.post(new FilePublishedEvent(state));
   }
 
@@ -146,16 +148,59 @@ public class FileSystemService {
     publish(getAttachmentState(path, name, false), publish);
   }
 
+  /**
+   * Renaming a file consists of copying the file at the same path, with a different name.
+   *
+   * @param state
+   * @param newName
+   */
+  public void rename(AttachmentState state, @NotNull String newName) {
+    if(state.isPublished()) throw new IllegalArgumentException("Cannot rename a published file");
+    copy(state, state.getPath(), newName);
+    delete(state);
+  }
+
+  public void rename(String path, String newPath) {
+    List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
+    states.addAll(findAttachmentStates(String.format("^%s/", path), false));
+    states.stream().filter(s -> !s.isPublished()).forEach(s -> {
+      copy(s, newPath, s.getName());
+      delete(s);
+    });
+  }
+
+  public void rename(String path, String name, String newName) {
+    rename(getAttachmentState(path, name, false), newName);
+  }
+
+  public void copy(AttachmentState state, String newPath, String newName) {
+    if(state.isPublished()) throw new IllegalArgumentException("Cannot copy a published file");
+    try {
+      getAttachmentState(newPath, newName, false);
+      throw new IllegalArgumentException("A file with name '" + newName + "' already exists at path: " + newPath);
+    } catch(NoSuchEntityException e) {
+      Attachment attachment = state.getAttachment();
+      Attachment newAttachment = new Attachment();
+      BeanUtils.copyProperties(attachment, newAttachment, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
+        "lastModifiedDate");
+      newAttachment.setPath(newPath);
+      newAttachment.setName(newName);
+      newAttachment.setId(new ObjectId().toString());
+      save(newAttachment);
+      fileService.save(newAttachment.getId(), fileService.getFile(attachment.getId()));
+    }
+  }
+
   //
   // Query
   //
 
-  public List<AttachmentState> findAttachmentStates(String pathRegEx, boolean published) {
-    return published ? findPublishedAttachmentStates(pathRegEx) : findDraftAttachmentStates(pathRegEx);
+  public List<AttachmentState> findAttachmentStates(String pathRegEx, boolean publishedConstraint) {
+    return publishedConstraint ? findPublishedAttachmentStates(pathRegEx) : findDraftAttachmentStates(pathRegEx);
   }
 
-  public List<Attachment> findAttachments(String pathRegEx, boolean published) {
-    return published ? findDraftAttachments(pathRegEx) : findPublishedAttachments(pathRegEx);
+  public List<Attachment> findAttachments(String pathRegEx, boolean publishedConstraint) {
+    return publishedConstraint ? findDraftAttachments(pathRegEx) : findPublishedAttachments(pathRegEx);
   }
 
   /**
@@ -163,14 +208,14 @@ public class FileSystemService {
    *
    * @param path
    * @param name
-   * @param published if true and state is not published, an not found error is thrown
+   * @param publishedConstraint if true and state is not published, a not found error is thrown
    * @return
    */
   @NotNull
-  public AttachmentState getAttachmentState(String path, String name, boolean published) {
+  public AttachmentState getAttachmentState(String path, String name, boolean publishedConstraint) {
     List<AttachmentState> state = attachmentStateRepository.findByPathAndName(path, name);
     if(state.isEmpty()) throw NoSuchEntityException.withPath(Attachment.class, path + "/" + name);
-    if(published && !state.get(0).isPublished())
+    if(publishedConstraint && !state.get(0).isPublished())
       throw NoSuchEntityException.withPath(Attachment.class, path + "/" + name);
     return state.get(0);
   }

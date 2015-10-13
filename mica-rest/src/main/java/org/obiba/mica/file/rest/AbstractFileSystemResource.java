@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.file.Attachment;
@@ -38,9 +39,7 @@ public abstract class AbstractFileSystemResource {
   protected abstract boolean isPublished();
 
   protected List<Mica.FileDto> doSearchFiles(String path, String query, boolean recursively) {
-    String basePath = normalizePath(path);
-    if(!isRoot(basePath) && basePath.endsWith("/")) basePath = basePath.replaceAll("[/]+$", "");
-    return getChildrenFiles(basePath, recursively);
+    return getChildrenFiles(normalizePath(path), recursively);
   }
 
   protected Attachment doGetAttachment(String path) {
@@ -69,7 +68,7 @@ public abstract class AbstractFileSystemResource {
   protected Mica.FileDto doGetFile(String path) {
     String basePath = normalizePath(path);
     if(isRoot(basePath)) return getFolderDto(basePath);
-    if(basePath.endsWith("/")) return getFolderDto(basePath.replaceAll("[/]+$", ""));
+    if(basePath.endsWith("/")) return getFolderDto(basePath);
 
     try {
       return getFileDto(basePath);
@@ -81,7 +80,7 @@ public abstract class AbstractFileSystemResource {
   protected void doDeleteFile(String path) {
     String basePath = normalizePath(path);
     if(isRoot(basePath)) deleteFolderState(basePath);
-    if(basePath.endsWith("/")) deleteFolderState(basePath.replaceAll("[/]+$", ""));
+    if(basePath.endsWith("/")) deleteFolderState(basePath);
 
     try {
       deleteFileState(basePath);
@@ -93,7 +92,7 @@ public abstract class AbstractFileSystemResource {
   protected void doPublishFile(String path, boolean publish) {
     String basePath = normalizePath(path);
     if(isRoot(basePath)) publishFolderState(basePath, publish);
-    if(basePath.endsWith("/")) publishFolderState(basePath.replaceAll("[/]+$", ""), publish);
+    if(basePath.endsWith("/")) publishFolderState(basePath, publish);
 
     try {
       publishFileState(basePath, publish);
@@ -104,6 +103,18 @@ public abstract class AbstractFileSystemResource {
 
   protected void doAddFile(Mica.AttachmentDto attachmentDto) {
     fileSystemService.save(dtos.fromDto(attachmentDto));
+  }
+
+  protected void doRenameFile(String path, @NotNull String newName) {
+    String basePath = normalizePath(path);
+    if(isRoot(basePath)) throw new IllegalArgumentException("Root folder cannot be renamed");
+    if(basePath.endsWith("/")) renameFolderState(basePath, newName);
+
+    try {
+      renameFileState(basePath, newName);
+    } catch(NoSuchEntityException ex) {
+      renameFolderState(basePath, newName);
+    }
   }
 
   //
@@ -126,6 +137,16 @@ public abstract class AbstractFileSystemResource {
 
   private void publishFolderState(String basePath, boolean publish) {
     fileSystemService.publish(basePath, publish);
+  }
+
+  private void renameFileState(String basePath, String newName) {
+    Pair<String, String> pathName = FileSystemService.extractPathName(basePath);
+    fileSystemService.rename(pathName.getKey(), pathName.getValue(), newName);
+  }
+
+  private void renameFolderState(String basePath, String newName) {
+    Pair<String, String> pathName = FileSystemService.extractPathName(basePath);
+    fileSystemService.rename(basePath, pathName.getKey() + "/" + newName);
   }
 
   private Mica.FileDto getFileDto(String basePath) {
@@ -196,7 +217,9 @@ public abstract class AbstractFileSystemResource {
   }
 
   private String normalizePath(String path) {
-    return path.startsWith("/") ? path : String.format("/%s", path);
+    String nPath = path.startsWith("/") ? path : String.format("/%s", path);
+    if (!isRoot(nPath) && nPath.endsWith("/")) nPath = nPath.replaceAll("[/]+$", "");
+    return nPath;
   }
 
 }

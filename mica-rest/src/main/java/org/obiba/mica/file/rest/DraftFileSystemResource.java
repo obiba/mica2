@@ -21,6 +21,8 @@ import org.obiba.mica.file.FileService;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Strings;
+
 @Component
 @Path("/draft")
 @RequiresPermissions({ "/draft:EDIT" })
@@ -57,7 +59,8 @@ public class DraftFileSystemResource extends AbstractFileSystemResource {
 
   @PUT
   @Path("/file/{path:.*}")
-  public Response updateFile(@PathParam("path") String path, @QueryParam("publish") Boolean publish) {
+  public Response updateFile(@PathParam("path") String path, @QueryParam("publish") Boolean publish, @QueryParam("name") String newName) {
+    if (!Strings.isNullOrEmpty(newName)) doRenameFile(path, newName);
     if(publish != null) doPublishFile(path, publish);
     return Response.noContent().build();
   }
