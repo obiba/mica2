@@ -186,6 +186,24 @@ mica.network
       };
     }])
 
+  .controller('NetworkContactsModalController', ['$scope', '$modalInstance', 'ContactsSearchResource', 'network', 'lang',
+    function ($scope, $modalInstance, ContactsSearchResource, network, lang) {
+      $scope.lang = lang;
+      var studyIds = network.studyIds.join(' ');
+      $scope.persons = []
+
+      ContactsSearchResource.get({
+        query: 'studyMemberships.parentId:(' + studyIds + ')',
+        limit: 999
+      }).$promise.then(function (result) {
+        $scope.persons = result.persons;
+      });
+
+      $scope.cancel = function () {
+        $modalInstance.dismiss('cancel');
+      };
+    }])
+
   .controller('NetworkViewController', ['$rootScope',
     '$scope',
     '$routeParams',
@@ -361,6 +379,21 @@ mica.network
             messageArgs: [LocalizedValues.forLang(summary.name, $translate.use())]
           }, summary
         );
+      };
+
+      $scope.showAllContacts = function () {
+        $modal.open({
+          templateUrl: 'app/network/views/network-modal-contacts.html',
+          controller: 'NetworkContactsModalController',
+          resolve: {
+            network: function() {
+              return $scope.network;
+            },
+            lang: function() {
+              return ActiveTabService.getActiveTab($scope.tabs).lang;
+            }
+          }
+        });
       };
 
       $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, summary) {

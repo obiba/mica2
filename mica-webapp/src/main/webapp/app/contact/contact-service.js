@@ -17,4 +17,3 @@ mica.contact
         'search': {method: 'GET', params: {query: '@query', 'exclude': '@exclude'}}
       });
     }]);
-
