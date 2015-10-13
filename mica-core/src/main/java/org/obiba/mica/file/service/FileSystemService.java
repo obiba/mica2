@@ -19,6 +19,7 @@ import org.obiba.mica.file.FileService;
 import org.obiba.mica.file.event.FileDeletedEvent;
 import org.obiba.mica.file.event.FilePublishedEvent;
 import org.obiba.mica.file.event.FileUnPublishedEvent;
+import org.obiba.mica.file.event.FileUpdatedEvent;
 import org.obiba.mica.study.event.StudyPublishedEvent;
 import org.obiba.mica.study.event.StudyUnpublishedEvent;
 import org.slf4j.Logger;
@@ -58,6 +59,7 @@ public class FileSystemService {
     if (attachment.isNew()) {
       attachment.setId(new ObjectId().toString());
     }
+
     if(attachment.isJustUploaded()) {
       if(attachmentRepository.exists(attachment.getId())) {
         // replace already existing attachment
@@ -67,6 +69,7 @@ public class FileSystemService {
       fileService.save(attachment.getId());
       attachment.setJustUploaded(false);
     }
+
     attachmentRepository.save(attachment);
 
     List<AttachmentState> states = attachmentStateRepository
@@ -75,6 +78,8 @@ public class FileSystemService {
     state.setAttachment(attachment);
     state.setLastModifiedDate(DateTime.now());
     attachmentStateRepository.save(state);
+
+    eventBus.post(new FileUpdatedEvent(state));
   }
 
   /**

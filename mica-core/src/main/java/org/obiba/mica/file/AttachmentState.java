@@ -8,6 +8,8 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Document
 public class AttachmentState extends AbstractAuditableDocument implements Timestamped {
 
@@ -102,6 +104,7 @@ public class AttachmentState extends AbstractAuditableDocument implements Timest
     setPublicationDate(null);
   }
 
+  @JsonIgnore
   public boolean isPublished() {
     return publicationDate != null && publishedAttachment != null;
   }

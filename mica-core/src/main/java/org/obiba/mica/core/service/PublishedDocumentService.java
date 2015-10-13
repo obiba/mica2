@@ -55,6 +55,9 @@ public interface PublishedDocumentService<T> {
   Documents<T> find(int from, int limit, @Nullable String sort, @Nullable String order, @Nullable String studyId,
       @Nullable String query);
 
+  Documents<T> find(int from, int limit, @Nullable String sort, @Nullable String order, @Nullable String studyId,
+    @Nullable String query, @Nullable List<String> fields);
+
   /**
    * Documents query result container.
    */

@@ -1,10 +1,8 @@
 package org.obiba.mica.file.rest;
 
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -89,12 +87,4 @@ public class DraftFileSystemResource extends AbstractFileSystemResource {
     return Response
       .created(uriInfo.getBaseUriBuilder().path("draft").path("file").path(attachmentDto.getPath()).build()).build();
   }
-
-  @GET
-  @Path("/files-search/{path:.*}")
-  public List<Mica.FileDto> searchFile(@PathParam("path") String path, @QueryParam("query") String query,
-    @QueryParam("recursively") @DefaultValue("false") boolean recursively) {
-    return doSearchFiles(path, query, recursively);
-  }
-
 }

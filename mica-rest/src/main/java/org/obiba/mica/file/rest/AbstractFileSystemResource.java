@@ -27,6 +27,9 @@ import com.google.common.collect.Lists;
 
 import javafx.util.Pair;
 
+import static org.obiba.mica.file.FileUtils.isRoot;
+import static org.obiba.mica.file.FileUtils.normalizePath;
+
 public abstract class AbstractFileSystemResource {
 
   @Inject
@@ -277,16 +280,6 @@ public abstract class AbstractFileSystemResource {
 
   private String extractFirstChildren(String basePath, String path) {
     return path.replaceFirst(String.format("^%s/", isRoot(basePath) ? "" : basePath), "").split("/")[0];
-  }
-
-  private boolean isRoot(String basePath) {
-    return "/".equals(basePath);
-  }
-
-  private String normalizePath(String path) {
-    String nPath = path.startsWith("/") ? path : String.format("/%s", path);
-    if(!isRoot(nPath) && nPath.endsWith("/")) nPath = nPath.replaceAll("[/]+$", "");
-    return nPath;
   }
 
   private static class FolderTimestamps implements Timestamped {
