@@ -17,7 +17,7 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.joda.time.DateTime;
-import org.obiba.mica.contact.event.ContactUpdatedEvent;
+import org.obiba.mica.contact.event.PersonUpdatedEvent;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.file.FileService;
 import org.obiba.mica.network.NetworkRepository;
@@ -77,7 +77,7 @@ public class NetworkService {
 
     networkRepository.saveWithReferences(saved);
     eventBus.post(new NetworkUpdatedEvent(saved));
-    saved.getAllContacts().forEach(c -> eventBus.post(new ContactUpdatedEvent(c)));
+    saved.getAllPersons().forEach(c -> eventBus.post(new PersonUpdatedEvent(c.getPerson())));
   }
 
   /**

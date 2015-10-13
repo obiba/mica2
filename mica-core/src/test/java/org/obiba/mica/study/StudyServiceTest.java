@@ -21,7 +21,7 @@ import org.obiba.core.util.FileUtil;
 import org.obiba.git.command.GitCommandHandler;
 import org.obiba.mica.config.JsonConfiguration;
 import org.obiba.mica.config.MongoDbConfiguration;
-import org.obiba.mica.core.domain.Contact;
+import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.AttachmentStateRepository;
 import org.obiba.mica.core.service.GitService;
@@ -129,19 +129,19 @@ public class StudyServiceTest {
 
   @Test
   public void testCreateStudyWithContacts() throws Exception {
-
     Study study = new Study();
     study.setId("test");
 
-    Contact contact = new Contact();
-    contact.setEmail("test@test.com");
-
-    study.addContact(contact);
+    Person person = new Person();
+    person.setEmail("test@test.com");
+    List<Person> persons = Lists.newArrayList();
+    persons.add(person);
+    study.setContacts(persons);
 
     studyService.save(study);
     Study retrievedStudy = studyService.findDraftStudy(study.getId());
 
-    assertThat(retrievedStudy.getContacts()).contains(contact);
+    assertThat(retrievedStudy.getContacts()).contains(person);
   }
 
   @Test

@@ -10,14 +10,12 @@
 
 package org.obiba.mica.contact.event;
 
-import org.obiba.mica.core.domain.Contact;
+import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.event.PersistableUpdatedEvent;
-import org.obiba.mica.network.domain.Network;
 
-public class ContactUpdatedEvent extends PersistableUpdatedEvent<Contact> {
+public class PersonUpdatedEvent extends PersistableUpdatedEvent<Person> {
 
-  public ContactUpdatedEvent(Contact persistable) {
+  public PersonUpdatedEvent(Person persistable) {
     super(persistable);
   }
-
 }

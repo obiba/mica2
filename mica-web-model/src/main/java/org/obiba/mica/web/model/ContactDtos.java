@@ -3,7 +3,7 @@ package org.obiba.mica.web.model;
 import javax.inject.Inject;
 
 import org.obiba.mica.core.domain.Address;
-import org.obiba.mica.core.domain.Contact;
+import org.obiba.mica.core.domain.Person;
 import org.springframework.stereotype.Component;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -18,8 +18,8 @@ class ContactDtos {
   @Inject
   private LocalizedStringDtos localizedStringDtos;
 
-  Mica.ContactDto asDto(Contact contact) {
-    Mica.ContactDto.Builder builder = Mica.ContactDto.newBuilder().setLastName(contact.getLastName());
+  Mica.PersonDto asDto(Person contact) {
+    Mica.PersonDto.Builder builder = Mica.PersonDto.newBuilder().setLastName(contact.getLastName());
     if(!isNullOrEmpty(contact.getId())) builder.setId(contact.getId());
     if(!isNullOrEmpty(contact.getTitle())) builder.setTitle(contact.getTitle());
     if(!isNullOrEmpty(contact.getFirstName())) builder.setFirstName(contact.getFirstName());
@@ -30,8 +30,8 @@ class ContactDtos {
     return builder.build();
   }
 
-  Contact fromDto(Mica.ContactDtoOrBuilder dto) {
-    Contact contact = new Contact();
+  Person fromDto(Mica.PersonDtoOrBuilder dto) {
+    Person contact = new Person();
     if(dto.hasId()) contact.setId(dto.getId());
     if(dto.hasTitle()) contact.setTitle(dto.getTitle());
     if(dto.hasFirstName()) contact.setFirstName(dto.getFirstName());
@@ -43,8 +43,8 @@ class ContactDtos {
     return contact;
   }
 
-  private Mica.ContactDto.InstitutionDto asDto(Contact.Institution institution) {
-    Mica.ContactDto.InstitutionDto.Builder builder = Mica.ContactDto.InstitutionDto.newBuilder();
+  private Mica.PersonDto.InstitutionDto asDto(Person.Institution institution) {
+    Mica.PersonDto.InstitutionDto.Builder builder = Mica.PersonDto.InstitutionDto.newBuilder();
     if(institution.getName() != null) builder.addAllName(localizedStringDtos.asDto(institution.getName()));
     if(institution.getDepartment() != null) {
       builder.addAllDepartment(localizedStringDtos.asDto(institution.getDepartment()));
@@ -53,8 +53,8 @@ class ContactDtos {
     return builder.build();
   }
 
-  private Contact.Institution fromDto(Mica.ContactDto.InstitutionDtoOrBuilder dto) {
-    Contact.Institution institution = new Contact.Institution();
+  private Person.Institution fromDto(Mica.PersonDto.InstitutionDtoOrBuilder dto) {
+    Person.Institution institution = new Person.Institution();
     institution.setName(localizedStringDtos.fromDto(dto.getNameList()));
     institution.setDepartment(localizedStringDtos.fromDto(dto.getDepartmentList()));
     if(dto.hasAddress()) institution.setAddress(fromDto(dto.getAddress()));
@@ -80,5 +80,4 @@ class ContactDtos {
     if(dto.hasCountry()) address.setCountryIso(dto.getCountry().getIso());
     return address;
   }
-
 }

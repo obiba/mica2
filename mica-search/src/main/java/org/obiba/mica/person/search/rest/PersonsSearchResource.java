@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.contact.search.rest;
+package org.obiba.mica.person.search.rest;
 
 import java.io.IOException;
 import java.util.List;
@@ -21,8 +21,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.contact.search.EsContactService;
-import org.obiba.mica.core.domain.Contact;
+import org.obiba.mica.person.search.EsPersonService;
+import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.service.PublishedDocumentService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -32,23 +32,23 @@ import org.springframework.stereotype.Component;
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
 
-@Path("/contacts/_search")
+@Path("/persons/_search")
 @RequiresAuthentication
 @Scope("request")
 @Component
-public class ContactsSearchResource {
+public class PersonsSearchResource {
 
   public static final String DEFAULT_SORT = "lastName";
 
   @Inject
-  private EsContactService esContactService;
+  private EsPersonService esPersonService;
 
   @Inject
   private Dtos dtos;
 
   @GET
   @Timed
-  public Mica.ContactsDto query(@QueryParam("from") @DefaultValue("0") int from,
+  public Mica.PersonsDto query(@QueryParam("from") @DefaultValue("0") int from,
     @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") @DefaultValue(DEFAULT_SORT) String sort,
     @QueryParam("order") @DefaultValue("desc") String order, @QueryParam("query") String query,
     @QueryParam("exclude") List<String> excludes) throws IOException {
@@ -58,10 +58,10 @@ public class ContactsSearchResource {
       query += String.format(" AND NOT(%s)", ids);
     }
 
-    PublishedDocumentService.Documents<Contact> contacts = esContactService.find(from, limit, sort, order, null, query);
-    Mica.ContactsDto.Builder builder =
-      Mica.ContactsDto.newBuilder().setFrom(from).setLimit(limit).setTotal(contacts.getTotal());
-    builder.addAllContacts(contacts.getList().stream().map(dtos::asDto).collect(Collectors.toList()));
+    PublishedDocumentService.Documents<Person> contacts = esPersonService.find(from, limit, sort, order, null, query);
+    Mica.PersonsDto.Builder builder =
+      Mica.PersonsDto.newBuilder().setFrom(from).setLimit(limit).setTotal(contacts.getTotal());
+    builder.addAllPersons(contacts.getList().stream().map(dtos::asDto).collect(Collectors.toList()));
 
     return builder.build();
   }

@@ -6,23 +6,23 @@ import java.util.Objects;
 
 import javax.validation.constraints.NotNull;
 
-import net.sf.ehcache.pool.sizeof.annotations.IgnoreSizeOf;
-
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.study.domain.Study;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Persistable;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
+import static java.util.stream.Collectors.toList;
+
 @Document
-public class Contact implements Persistable<String> {
+public class Person implements Persistable<String> {
 
   public void setId(String id) {
     this.id = id;
@@ -51,9 +51,9 @@ public class Contact implements Persistable<String> {
 
   private Institution institution;
 
-  private List<String> studyIds = Lists.newArrayList();
+  private List<Membership> studyMemberships = Lists.newArrayList();
 
-  private List<String> networkIds = Lists.newArrayList();
+  private List<Membership> networkMemberships = Lists.newArrayList();
 
   public String getTitle() {
     return title;
@@ -111,7 +111,7 @@ public class Contact implements Persistable<String> {
     this.dataAccessCommitteeMember = dataAccessCommitteeMember;
   }
 
-  public void cleanContact() {
+  public void cleanPerson() {
     if(institution != null && institution.getName() != null && !Strings.isNullOrEmpty(lastName)) {
       institution.getName().values().forEach(name -> lastName = lastName.replace("(" + name + ")", ""));
       lastName = lastName.trim();
@@ -158,44 +158,60 @@ public class Contact implements Persistable<String> {
     return id == null;
   }
 
-  public List<String> getStudyIds() {
-    return studyIds;
+  public List<Membership> getStudyMemberships() {
+    return studyMemberships;
   }
 
-  public void setStudies(List<String> studies) {
-    this.studyIds = studies;
+  public void setStudyMemberships(List<Membership> studyMemberships) {
+    this.studyMemberships = studyMemberships;
   }
 
-  public void addStudy(Study study) {
-    if(!studyIds.contains(study.getId())) this.studyIds.add(study.getId());
+  public void addStudy(@NotNull Study study, @NotNull String role) {
+    Membership membership = Membership.withIdAndRole(study.getId(), role);
+
+    if(!studyMemberships.contains(membership)) this.studyMemberships.add(membership);
   }
 
-  public void removeStudy(Study study) {
-    if(studyIds.contains(study.getId())) this.studyIds.remove(study.getId());
+  public void removeStudy(@NotNull Study study) {
+    studyMemberships = studyMemberships.stream().filter(m -> m.getParentId() != study.getId()).collect(toList());
   }
 
-  public List<String> getNetworkIds() {
-    return networkIds;
+  public void removeStudy(@NotNull Study study, @NotNull String role) {
+    Membership membership = Membership.withIdAndRole(study.getId(), role);
+
+    if(studyMemberships.contains(membership)) this.studyMemberships.remove(membership);
   }
 
-  public void setNetworks(List<String> networkIds) {
-    this.networkIds = networkIds;
+  public List<Membership> getNetworkMemberships() {
+    return networkMemberships;
   }
 
-  public void addNetwork(Network network) {
-    if(!networkIds.contains(network.getId())) this.networkIds.add(network.getId());
+  public void setNetworkMemberships(List<Membership> networkMemberships) {
+    this.networkMemberships = networkMemberships;
   }
 
-  public void removeNetwork(Network network) {
-    if(networkIds.contains(network.getId())) this.networkIds.remove(network.getId());
+  public void addNetwork(@NotNull Network network, @NotNull String role) {
+    Membership membership = Membership.withIdAndRole(network.getId(), role);
+
+    if(!networkMemberships.contains(membership)) this.networkMemberships.add(membership);
+  }
+
+  public void removeNetwork(@NotNull Network network) {
+    networkMemberships = networkMemberships.stream().filter(m -> m.getParentId() != network.getId()).collect(toList());
+  }
+
+  public void removeNetwork(@NotNull Network network, @NotNull String role) {
+    Membership membership = Membership.withIdAndRole(network.getId(), role);
+
+    if(networkMemberships.contains(membership)) this.networkMemberships.remove(membership);
   }
 
   @Override
   public boolean equals(Object object) {
     return this == object || (object != null && this.getClass().equals(object.getClass()) &&
       (getId() != null
-        ? java.util.Objects.equals(getId(), ((Contact) object).getId())
-        : java.util.Objects.equals(getEmail(), ((Contact) object).getEmail())));
+        ? Objects.equals(getId(), ((Person) object).getId())
+        : Objects.equals(getEmail(), ((Person) object).getEmail())));
   }
 
   @Override
@@ -240,4 +256,53 @@ public class Contact implements Persistable<String> {
 
   }
 
+  public static class Membership implements Serializable {
+    private static final long serialVersionUID = -1L;
+
+    private String parentId;
+
+    private String role;
+
+    public Membership() {}
+
+    public Membership(String parentId, String role) {
+      this.parentId = parentId;
+      this.role = role;
+    }
+
+    public static Membership withIdAndRole(String parentId, String role) {
+      return new Membership(parentId, role);
+    }
+
+    public String getParentId() {
+      return parentId;
+    }
+
+    public void setParentId(String parentId) {
+      this.parentId = parentId;
+    }
+
+    public String getRole() {
+      return role;
+    }
+
+    public void setRole(String role) {
+      this.role = role;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if(this == o) return true;
+      if(o == null || getClass() != o.getClass()) return false;
+
+      Membership that = (Membership) o;
+
+      return Objects.equals(parentId, that.getParentId()) && Objects.equals(role, that.getRole());
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(parentId, role);
+    }
+  }
 }

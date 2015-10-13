@@ -14,27 +14,27 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.obiba.mica.core.domain.Contact;
-import org.obiba.mica.core.repository.ContactRepository;
+import org.obiba.mica.core.domain.Person;
+import org.obiba.mica.core.repository.PersonRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 @Service
 @Validated
-public class ContactService {
+public class PersonService {
 
   @Inject
-  ContactRepository contactRepository;
+  PersonRepository personRepository;
 
-  public Contact findById(String id) {
-    return contactRepository.findOne(id);
+  public Person findById(String id) {
+    return personRepository.findOne(id);
   }
 
-  public List<Contact> find(String query) {
+  public List<Person> find(String query) {
     return null;
   }
 
-  public List<Contact> findAllContacts() {
+  public List<Person> findAllPersons() {
     return null;
   }
 }
