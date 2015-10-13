@@ -59,9 +59,22 @@ public class DraftFileSystemResource extends AbstractFileSystemResource {
 
   @PUT
   @Path("/file/{path:.*}")
-  public Response updateFile(@PathParam("path") String path, @QueryParam("publish") Boolean publish, @QueryParam("name") String newName) {
-    if (!Strings.isNullOrEmpty(newName)) doRenameFile(path, newName);
-    if(publish != null) doPublishFile(path, publish);
+  public Response updateFile(@PathParam("path") String path, @QueryParam("publish") Boolean publish,
+    @QueryParam("name") String newName, @QueryParam("move") String movePath, @QueryParam("copy") String copyPath) {
+
+    if(!Strings.isNullOrEmpty(copyPath)) {
+      if(!Strings.isNullOrEmpty(movePath))
+        throw new IllegalArgumentException("Copy and move are mutually exclusive operations");
+      if(!Strings.isNullOrEmpty(newName))
+        throw new IllegalArgumentException("Copy and rename are mutually exclusive operations");
+      doCopyFile(path, copyPath);
+    } else if(!Strings.isNullOrEmpty(movePath)) {
+      if(!Strings.isNullOrEmpty(newName))
+        throw new IllegalArgumentException("Move and rename are mutually exclusive operations");
+      doMoveFile(path, movePath);
+    } else if(!Strings.isNullOrEmpty(newName)) doRenameFile(path, newName);
+    else if(publish != null) doPublishFile(path, publish);
+
     return Response.noContent().build();
   }
 

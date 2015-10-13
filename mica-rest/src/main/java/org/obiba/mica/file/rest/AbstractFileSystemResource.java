@@ -117,6 +117,30 @@ public abstract class AbstractFileSystemResource {
     }
   }
 
+  protected void doMoveFile(String path, @NotNull String newPath) {
+    String basePath = normalizePath(path);
+    if(isRoot(basePath)) throw new IllegalArgumentException("Root folder cannot be renamed");
+    if(basePath.endsWith("/")) renameFolderState(basePath, newPath);
+
+    try {
+      moveFileState(basePath, newPath);
+    } catch(NoSuchEntityException ex) {
+      renameFolderState(basePath, newPath);
+    }
+  }
+
+  protected void doCopyFile(String path, @NotNull String newPath) {
+    String basePath = normalizePath(path);
+    if(isRoot(basePath)) throw new IllegalArgumentException("Root folder cannot be renamed");
+    if(basePath.endsWith("/")) copyFolderState(basePath, newPath);
+
+    try {
+      copyFileState(basePath, newPath);
+    } catch(NoSuchEntityException ex) {
+      copyFolderState(basePath, newPath);
+    }
+  }
+
   //
   // Private methods
   //
@@ -147,6 +171,20 @@ public abstract class AbstractFileSystemResource {
   private void renameFolderState(String basePath, String newName) {
     Pair<String, String> pathName = FileSystemService.extractPathName(basePath);
     fileSystemService.rename(basePath, pathName.getKey() + "/" + newName);
+  }
+
+  private void moveFileState(String basePath, String newPath) {
+    Pair<String, String> pathName = FileSystemService.extractPathName(basePath);
+    fileSystemService.move(pathName.getKey(), pathName.getValue(), newPath);
+  }
+
+  private void copyFileState(String basePath, String newPath) {
+    Pair<String, String> pathName = FileSystemService.extractPathName(basePath);
+    fileSystemService.copy(pathName.getKey(), pathName.getValue(), newPath);
+  }
+
+  private void copyFolderState(String basePath, String newPath) {
+    fileSystemService.copy(basePath, newPath);
   }
 
   private Mica.FileDto getFileDto(String basePath) {

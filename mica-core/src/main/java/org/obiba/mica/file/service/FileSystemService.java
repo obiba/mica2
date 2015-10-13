@@ -148,47 +148,107 @@ public class FileSystemService {
     publish(getAttachmentState(path, name, false), publish);
   }
 
-  /**
-   * Renaming a file consists of copying the file at the same path, with a different name.
-   *
-   * @param state
-   * @param newName
-   */
-  public void rename(AttachmentState state, @NotNull String newName) {
-    if(state.isPublished()) throw new IllegalArgumentException("Cannot rename a published file");
-    copy(state, state.getPath(), newName);
-    delete(state);
-  }
+  //
+  // Rename, move and copy
+  //
 
+  /**
+   * Rename path of all the files found in the given path (and children).
+   *
+   * @param path
+   * @param newPath
+   */
   public void rename(String path, String newPath) {
     List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
     states.addAll(findAttachmentStates(String.format("^%s/", path), false));
-    states.stream().filter(s -> !s.isPublished()).forEach(s -> {
-      copy(s, newPath, s.getName());
-      delete(s);
-    });
+    states.stream().filter(s -> !s.isPublished()).forEach(s -> copy(s, newPath, s.getName(), true));
   }
 
+  /**
+   * Rename a specific file at the same path.
+   *
+   * @param path
+   * @param name
+   * @param newName
+   */
   public void rename(String path, String name, String newName) {
-    rename(getAttachmentState(path, name, false), newName);
+    AttachmentState state = getAttachmentState(path, name, false);
+    move(state, state.getPath(), newName);
   }
 
-  public void copy(AttachmentState state, String newPath, String newName) {
+  /**
+   * Move a file to another path location.
+   *
+   * @param path
+   * @param name
+   * @param newPath
+   */
+  public void move(String path, String name, String newPath) {
+    AttachmentState state = getAttachmentState(path, name, false);
+    move(state, newPath, state.getName());
+  }
+
+  /**
+   * Moving a file consists of copying the file at the provided path and name, and deleting the original one.
+   *
+   * @param state
+   * @param newPath
+   * @param newName
+   */
+  public void move(AttachmentState state, @NotNull String newPath, @NotNull String newName) {
+    if(state.isPublished()) throw new IllegalArgumentException("Cannot move a published file");
+    copy(state, newPath, newName, true);
+  }
+
+  /**
+   * Copy all files at a given path (and children) into another path location.
+   *
+   * @param path
+   * @param newPath
+   */
+  public void copy(String path, String newPath) {
+    List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
+    states.addAll(findAttachmentStates(String.format("^%s/", path), false));
+    states.stream().filter(s -> !s.isPublished()).forEach(s -> copy(s, newPath, s.getName(), false));
+  }
+
+  /**
+   * Copy a file into another path location.
+   *
+   * @param path
+   * @param name
+   * @param newPath
+   */
+  public void copy(String path, String name, String newPath) {
+    AttachmentState state = getAttachmentState(path, name, false);
+    copy(state, newPath, state.getName(), false);
+  }
+
+  /**
+   * Make a copy of the latest {@link org.obiba.mica.file.Attachment} (and associated raw file) and optionally delete
+   * the {@link org.obiba.mica.file.AttachmentState} source.
+   *
+   * @param state
+   * @param newPath
+   * @param newName
+   * @param delete
+   */
+  public void copy(AttachmentState state, String newPath, String newName, boolean delete) {
     if(state.isPublished()) throw new IllegalArgumentException("Cannot copy a published file");
-    try {
-      getAttachmentState(newPath, newName, false);
+
+    if(hasAttachmentState(newPath, newName, false))
       throw new IllegalArgumentException("A file with name '" + newName + "' already exists at path: " + newPath);
-    } catch(NoSuchEntityException e) {
-      Attachment attachment = state.getAttachment();
-      Attachment newAttachment = new Attachment();
-      BeanUtils.copyProperties(attachment, newAttachment, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
-        "lastModifiedDate");
-      newAttachment.setPath(newPath);
-      newAttachment.setName(newName);
-      newAttachment.setId(new ObjectId().toString());
-      save(newAttachment);
-      fileService.save(newAttachment.getId(), fileService.getFile(attachment.getId()));
-    }
+
+    Attachment attachment = state.getAttachment();
+    Attachment newAttachment = new Attachment();
+    BeanUtils.copyProperties(attachment, newAttachment, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
+      "lastModifiedDate");
+    newAttachment.setPath(newPath);
+    newAttachment.setName(newName);
+    newAttachment.setId(new ObjectId().toString());
+    save(newAttachment);
+    fileService.save(newAttachment.getId(), fileService.getFile(attachment.getId()));
+    if(delete) delete(state);
   }
 
   //
@@ -220,8 +280,13 @@ public class FileSystemService {
     return state.get(0);
   }
 
+  public boolean hasAttachmentState(String path, String name, boolean publishedConstraint) {
+    List<AttachmentState> state = attachmentStateRepository.findByPathAndName(path, name);
+    return !state.isEmpty();
+  }
+
   public List<Attachment> getAttachmentRevisions(AttachmentState state) {
-    return attachmentRepository.findByPathAndName(state.getPath(), state.getName());
+    return attachmentRepository.findByPathAndNameOrderByCreatedDateDesc(state.getPath(), state.getName());
   }
 
   /**
