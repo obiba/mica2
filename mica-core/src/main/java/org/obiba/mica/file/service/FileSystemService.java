@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.repository.AttachmentRepository;
@@ -20,6 +21,7 @@ import org.obiba.mica.study.event.StudyPublishedEvent;
 import org.obiba.mica.study.event.StudyUnpublishedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -51,6 +53,9 @@ public class FileSystemService {
   //
 
   public void save(Attachment attachment) {
+    if (attachment.isNew()) {
+      attachment.setId(new ObjectId().toString());
+    }
     if(attachment.isJustUploaded()) {
       if(attachmentRepository.exists(attachment.getId())) {
         // replace already existing attachment
@@ -76,7 +81,7 @@ public class FileSystemService {
    * @param state
    */
   public void delete(AttachmentState state) {
-    if (state.isPublished()) throw new IllegalArgumentException("Cannot delete a published file");
+    if(state.isPublished()) throw new IllegalArgumentException("Cannot delete a published file");
     attachmentStateRepository.delete(state);
     eventBus.post(new FileDeletedEvent(state));
   }
@@ -113,13 +118,13 @@ public class FileSystemService {
    * @param publish do the publication or the non publication
    */
   public void publish(AttachmentState state, boolean publish) {
-    if (state.isPublished() && publish) return;
-    if (!state.isPublished() && !publish) return;
-    if (publish) state.publish();
+    if(state.isPublished() && publish) return;
+    if(!state.isPublished() && !publish) return;
+    if(publish) state.publish();
     else state.unPublish();
     state.setLastModifiedDate(DateTime.now());
     attachmentStateRepository.save(state);
-    if (publish) eventBus.post(new FilePublishedEvent(state));
+    if(publish) eventBus.post(new FilePublishedEvent(state));
     else eventBus.post(new FilePublishedEvent(state));
   }
 
@@ -147,15 +152,117 @@ public class FileSystemService {
   }
 
   //
+  // Rename, move and copy
+  //
+
+  /**
+   * Rename path of all the files found in the given path (and children).
+   *
+   * @param path
+   * @param newPath
+   */
+  public void rename(String path, String newPath) {
+    List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
+    states.addAll(findAttachmentStates(String.format("^%s/", path), false));
+    states.stream().filter(s -> !s.isPublished()).forEach(s -> copy(s, newPath, s.getName(), true));
+  }
+
+  /**
+   * Rename a specific file at the same path.
+   *
+   * @param path
+   * @param name
+   * @param newName
+   */
+  public void rename(String path, String name, String newName) {
+    AttachmentState state = getAttachmentState(path, name, false);
+    move(state, state.getPath(), newName);
+  }
+
+  /**
+   * Move a file to another path location.
+   *
+   * @param path
+   * @param name
+   * @param newPath
+   */
+  public void move(String path, String name, String newPath) {
+    AttachmentState state = getAttachmentState(path, name, false);
+    move(state, newPath, state.getName());
+  }
+
+  /**
+   * Moving a file consists of copying the file at the provided path and name, and deleting the original one.
+   *
+   * @param state
+   * @param newPath
+   * @param newName
+   */
+  public void move(AttachmentState state, @NotNull String newPath, @NotNull String newName) {
+    if(state.isPublished()) throw new IllegalArgumentException("Cannot move a published file");
+    copy(state, newPath, newName, true);
+  }
+
+  /**
+   * Copy all files at a given path (and children) into another path location.
+   *
+   * @param path
+   * @param newPath
+   */
+  public void copy(String path, String newPath) {
+    List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
+    states.addAll(findAttachmentStates(String.format("^%s/", path), false));
+    states.stream().filter(s -> !s.isPublished()).forEach(s -> copy(s, newPath, s.getName(), false));
+  }
+
+  /**
+   * Copy a file into another path location.
+   *
+   * @param path
+   * @param name
+   * @param newPath
+   */
+  public void copy(String path, String name, String newPath) {
+    AttachmentState state = getAttachmentState(path, name, false);
+    copy(state, newPath, state.getName(), false);
+  }
+
+  /**
+   * Make a copy of the latest {@link org.obiba.mica.file.Attachment} (and associated raw file) and optionally delete
+   * the {@link org.obiba.mica.file.AttachmentState} source.
+   *
+   * @param state
+   * @param newPath
+   * @param newName
+   * @param delete
+   */
+  public void copy(AttachmentState state, String newPath, String newName, boolean delete) {
+    if(state.isPublished()) throw new IllegalArgumentException("Cannot copy a published file");
+
+    if(hasAttachmentState(newPath, newName, false))
+      throw new IllegalArgumentException("A file with name '" + newName + "' already exists at path: " + newPath);
+
+    Attachment attachment = state.getAttachment();
+    Attachment newAttachment = new Attachment();
+    BeanUtils.copyProperties(attachment, newAttachment, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
+      "lastModifiedDate");
+    newAttachment.setPath(newPath);
+    newAttachment.setName(newName);
+    save(newAttachment);
+    fileService.save(newAttachment.getId(), fileService.getFile(attachment.getId()));
+    if(delete) delete(state);
+  }
+
+  //
   // Query
   //
 
-  public List<AttachmentState> findAttachmentStates(String pathRegEx, boolean published) {
-    return published ? findPublishedAttachmentStates(pathRegEx) : findDraftAttachmentStates(pathRegEx);
+  public List<AttachmentState> findAttachmentStates(String pathRegEx, boolean publishedConstraint) {
+    return publishedConstraint ? findPublishedAttachmentStates(pathRegEx) : findDraftAttachmentStates(pathRegEx);
   }
 
-  public List<Attachment> findAttachments(String pathRegEx, boolean published) {
-    return published ? findDraftAttachments(pathRegEx) : findPublishedAttachments(pathRegEx);
+  public List<Attachment> findAttachments(String pathRegEx, boolean publishedConstraint) {
+    return publishedConstraint ? findDraftAttachments(pathRegEx) : findPublishedAttachments(pathRegEx);
   }
 
   /**
@@ -163,20 +270,25 @@ public class FileSystemService {
    *
    * @param path
    * @param name
-   * @param published if true and state is not published, an not found error is thrown
+   * @param publishedConstraint if true and state is not published, a not found error is thrown
    * @return
    */
   @NotNull
-  public AttachmentState getAttachmentState(String path, String name, boolean published) {
+  public AttachmentState getAttachmentState(String path, String name, boolean publishedConstraint) {
     List<AttachmentState> state = attachmentStateRepository.findByPathAndName(path, name);
     if(state.isEmpty()) throw NoSuchEntityException.withPath(Attachment.class, path + "/" + name);
-    if(published && !state.get(0).isPublished())
+    if(publishedConstraint && !state.get(0).isPublished())
       throw NoSuchEntityException.withPath(Attachment.class, path + "/" + name);
     return state.get(0);
   }
 
+  public boolean hasAttachmentState(String path, String name, boolean publishedConstraint) {
+    List<AttachmentState> state = attachmentStateRepository.findByPathAndName(path, name);
+    return !state.isEmpty();
+  }
+
   public List<Attachment> getAttachmentRevisions(AttachmentState state) {
-    return attachmentRepository.findByPathAndName(state.getPath(), state.getName());
+    return attachmentRepository.findByPathAndNameOrderByCreatedDateDesc(state.getPath(), state.getName());
   }
 
   /**
