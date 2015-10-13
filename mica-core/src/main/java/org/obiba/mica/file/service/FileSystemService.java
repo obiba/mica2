@@ -53,6 +53,9 @@ public class FileSystemService {
   //
 
   public void save(Attachment attachment) {
+    if (attachment.isNew()) {
+      attachment.setId(new ObjectId().toString());
+    }
     if(attachment.isJustUploaded()) {
       if(attachmentRepository.exists(attachment.getId())) {
         // replace already existing attachment
@@ -245,7 +248,6 @@ public class FileSystemService {
       "lastModifiedDate");
     newAttachment.setPath(newPath);
     newAttachment.setName(newName);
-    newAttachment.setId(new ObjectId().toString());
     save(newAttachment);
     fileService.save(newAttachment.getId(), fileService.getFile(attachment.getId()));
     if(delete) delete(state);
