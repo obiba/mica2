@@ -277,10 +277,19 @@ message PersonDto {
   optional bool dataAccessCommitteeMember = 7;
   optional InstitutionDto institution = 8;
   optional string id = 9;
+  repeated MembershipDto studyMemberships = 10;
+  repeated MembershipDto networkMemberships = 11;
+
   message InstitutionDto {
     repeated LocalizedStringDto name = 1;
     repeated LocalizedStringDto department = 2;
     optional AddressDto address = 3;
+  }
+
+  message MembershipDto {
+    required string role = 1;
+    required string parentId = 2;
+    repeated LocalizedStringDto parentName = 3;
   }
 }
 

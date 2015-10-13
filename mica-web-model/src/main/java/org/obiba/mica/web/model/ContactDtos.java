@@ -4,9 +4,14 @@ import javax.inject.Inject;
 
 import org.obiba.mica.core.domain.Address;
 import org.obiba.mica.core.domain.Person;
+import org.obiba.mica.network.domain.Network;
+import org.obiba.mica.network.service.NetworkService;
+import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.service.StudyService;
 import org.springframework.stereotype.Component;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
+import static java.util.stream.Collectors.toList;
 
 @Component
 @SuppressWarnings("OverlyCoupledClass")
@@ -14,6 +19,12 @@ class ContactDtos {
 
   @Inject
   private CountryDtos countryDtos;
+
+  @Inject
+  private StudyService studyService;
+
+  @Inject
+  private NetworkService networkService;
 
   @Inject
   private LocalizedStringDtos localizedStringDtos;
@@ -27,6 +38,11 @@ class ContactDtos {
     if(!isNullOrEmpty(contact.getEmail())) builder.setEmail(contact.getEmail());
     if(!isNullOrEmpty(contact.getPhone())) builder.setPhone(contact.getPhone());
     if(contact.getInstitution() != null) builder.setInstitution(asDto(contact.getInstitution()));
+    builder
+      .addAllStudyMemberships(contact.getStudyMemberships().stream().map(this::asStudyMembershipDto).collect(toList()));
+    builder.addAllNetworkMemberships(
+      contact.getNetworkMemberships().stream().map(this::asNetworkMembershipDto).collect(toList()));
+
     return builder.build();
   }
 
@@ -50,6 +66,32 @@ class ContactDtos {
       builder.addAllDepartment(localizedStringDtos.asDto(institution.getDepartment()));
     }
     if(institution.getAddress() != null) builder.setAddress(asDto(institution.getAddress()));
+    return builder.build();
+  }
+
+  private Mica.PersonDto.MembershipDto asStudyMembershipDto(Person.Membership membership) {
+    Mica.PersonDto.MembershipDto.Builder builder = Mica.PersonDto.MembershipDto.newBuilder();
+    builder.setRole(membership.getRole());
+    builder.setParentId(membership.getParentId());
+
+    if(membership.getParentId() != null) {
+      Study study = studyService.findStudy(membership.getParentId());
+      if (study != null) builder.addAllParentName(localizedStringDtos.asDto(study.getName()));
+    }
+
+    return builder.build();
+  }
+
+  private Mica.PersonDto.MembershipDto asNetworkMembershipDto(Person.Membership membership) {
+    Mica.PersonDto.MembershipDto.Builder builder = Mica.PersonDto.MembershipDto.newBuilder();
+    builder.setRole(membership.getRole());
+    builder.setParentId(membership.getParentId());
+
+    if(membership.getParentId() != null) {
+      Network network = networkService.findById(membership.getParentId());
+      if (network != null) builder.addAllParentName(localizedStringDtos.asDto(network.getName()));
+    }
+
     return builder.build();
   }
 
