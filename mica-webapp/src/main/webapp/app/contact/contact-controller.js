@@ -159,7 +159,7 @@ mica.contact
     function ($scope, $modalInstance, ContactsSearchResource, MicaConfigResource, contact, isInvestigator, excludes) {
 
       var newResult = function() {
-        return {contacts: [], total: 0, current: 0};
+        return {persons: [], total: 0, current: 0};
       };
 
       var save = function (form) {
@@ -185,13 +185,13 @@ mica.contact
             {
               query: search + '*',
               exclude: $scope.excludes,
-              from: $scope.result.contacts.length
+              from: $scope.result.persons.length
             },
             function onSuccess(result) {
-              if (result.contacts) {
-                $scope.result.contacts = $scope.result.contacts.concat(result.contacts);
+              if (result.persons) {
+                $scope.result.persons = $scope.result.persons.concat(result.persons);
                 $scope.result.total = result.total;
-                $scope.result.current = $scope.result.contacts.length;
+                $scope.result.current = $scope.result.persons.length;
                 $scope.autoRefreshed = false;
               }
             });

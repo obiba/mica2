@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.contact.search;
+package org.obiba.mica.person.search;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -17,32 +17,31 @@ import java.io.InputStream;
 import javax.inject.Inject;
 
 import org.elasticsearch.search.SearchHit;
-import org.obiba.mica.core.domain.Contact;
-import org.obiba.mica.core.service.ContactService;
+import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.search.AbstractPublishedDocumentService;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
-public class EsContactService extends AbstractPublishedDocumentService<Contact> {
+public class EsPersonService extends AbstractPublishedDocumentService<Person> {
 
   @Inject
   private ObjectMapper objectMapper;
 
   @Override
-  protected Contact processHit(SearchHit hit) throws IOException {
+  protected Person processHit(SearchHit hit) throws IOException {
     InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
-    return objectMapper.readValue(inputStream, Contact.class);
+    return objectMapper.readValue(inputStream, Person.class);
   }
 
   @Override
   protected String getIndexName() {
-    return ContactIndexer.CONTACT_INDEX;
+    return PersonIndexer.PERSON_INDEX;
   }
 
   @Override
   protected String getType() {
-    return ContactIndexer.CONTACT_TYPE;
+    return PersonIndexer.PERSON_TYPE;
   }
 }

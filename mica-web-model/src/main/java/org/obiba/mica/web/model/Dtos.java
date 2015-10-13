@@ -10,8 +10,8 @@ import javax.validation.constraints.NotNull;
 import org.obiba.git.CommitInfo;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.core.domain.Comment;
-import org.obiba.mica.core.domain.Contact;
 import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
@@ -324,12 +324,12 @@ public class Dtos {
   }
 
   @NotNull
-  public Mica.ContactDto asDto(@NotNull Contact contact) {
+  public Mica.PersonDto asDto(@NotNull Person contact) {
     return contactDtos.asDto(contact);
   }
 
   @NotNull
-  public Contact fromDto(@NotNull Mica.ContactDto dto) {
+  public Person fromDto(@NotNull Mica.PersonDto dto) {
     return contactDtos.fromDto(dto);
   }
 

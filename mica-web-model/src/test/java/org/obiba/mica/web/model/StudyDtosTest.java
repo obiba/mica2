@@ -18,11 +18,11 @@ import org.obiba.mica.config.StudiesConfiguration;
 import org.obiba.mica.core.domain.Address;
 import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.Authorization;
-import org.obiba.mica.core.domain.Contact;
+import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.domain.Timestamped;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.AttachmentStateRepository;
-import org.obiba.mica.core.repository.ContactRepository;
+import org.obiba.mica.core.repository.PersonRepository;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.StudyDatasetRepository;
@@ -62,8 +62,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.obiba.mica.assertj.Assertions.assertThat;
 import static org.obiba.mica.core.domain.LocalizedString.en;
-import static org.obiba.mica.study.domain.Population.Recruitment;
-import static org.obiba.mica.study.domain.Study.StudyMethods;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
@@ -102,6 +100,12 @@ public class StudyDtosTest {
     assertThat(fromDto).areFieldsEqualToEachOther(study);
   }
 
+  private void assertTimestamps(Timestamped study, Mica.StudyDtoOrBuilder dto) {
+    assertThat(dto.getTimestamps().getCreated()).isEqualTo(study.getCreatedDate().toString());
+    assertThat(dto.getTimestamps().getLastUpdate())
+      .isEqualTo(study.getLastModifiedDate() == null ? "" : study.getLastModifiedDate().toString());
+  }
+
   @Test
   public void test_full_dto() throws Exception {
     Study study = createStudy();
@@ -121,12 +125,6 @@ public class StudyDtosTest {
     assertThat(dto.getDataSourcesCount()).isEqualTo(5);
   }
 
-  private void assertTimestamps(Timestamped study, Mica.StudyDtoOrBuilder dto) {
-    assertThat(dto.getTimestamps().getCreated()).isEqualTo(study.getCreatedDate().toString());
-    assertThat(dto.getTimestamps().getLastUpdate())
-        .isEqualTo(study.getLastModifiedDate() == null ? "" : study.getLastModifiedDate().toString());
-  }
-
   @SuppressWarnings("OverlyLongMethod")
   private Study createStudy() {
     Study study = new Study();
@@ -140,9 +138,9 @@ public class StudyDtosTest {
                 "L’Étude longitudinale canadienne sur le vieillissement (ÉLCV) est une vaste étude nationale à long terme qui permettra de suivre environ 50 000 Canadiennes et Canadiens âgé(e)s de 45 à 85 ans pendant une période d’au moins 20 ans. L’ÉLCV recueillera des renseignements sur les changements biologiques, médicaux, psychologiques, sociaux et sur les habitudes de vie qui se produisent chez les gens. On étudiera ces facteurs pour comprendre la façon dont ils influencent, individuellement et collectivement, le maintien en santé et le développement de maladies et d’incapacités au fur et à mesure que les gens vieillissent. L’ÉLCV sera l’une des études les plus complètes du genre entreprises jusqu’à ce jour, non seulement au Canada, mais aussi au niveau international."));
     study.setWebsite("http://www.clsa-elcv.ca");
 
-    Contact contact = createContact();
-    study.addContact(contact);
-    study.addInvestigator(contact);
+    Person person = createPerson();
+    study.addContact(person);
+    study.addInvestigator(person);
 
     study.setStart(2002);
     study.setEnd(2050);
@@ -158,10 +156,10 @@ public class StudyDtosTest {
     study.addAttribute(
         Attribute.Builder.newAttribute("att1").namespace("mica").value(Locale.FRENCH, "value fr").build());
     study.addAttribute(
-        Attribute.Builder.newAttribute("att1").namespace("mica").value(Locale.ENGLISH, "value en").build());
+      Attribute.Builder.newAttribute("att1").namespace("mica").value(Locale.ENGLISH, "value en").build());
 
     study.setMarkerPaper(
-        "Raina PS, Wolfson C, Kirkland SA, Griffith LE, Oremus M, Patterson C, Tuokko H, Penning M, Balion CM, Hogan D, Wister A, Payette H, Shannon H, and Brazil K, The Canadian longitudinal study on aging (CLSA). Can J Aging, 2009. 28(3): p. 221-9.");
+      "Raina PS, Wolfson C, Kirkland SA, Griffith LE, Oremus M, Patterson C, Tuokko H, Penning M, Balion CM, Hogan D, Wister A, Payette H, Shannon H, and Brazil K, The Canadian longitudinal study on aging (CLSA). Can J Aging, 2009. 28(3): p. 221-9.");
     study.setPubmedId("PUBMED 19860977");
 
     study.addPopulation(createPopulation());
@@ -201,8 +199,8 @@ public class StudyDtosTest {
     return numberOfParticipants;
   }
 
-  private StudyMethods createMethods() {
-    StudyMethods methods = new StudyMethods();
+  private Study.StudyMethods createMethods() {
+    Study.StudyMethods methods = new Study.StudyMethods();
     methods.addDesign("case_control");
     methods.addDesign("clinical_trial");
     methods.addDesign("other");
@@ -216,15 +214,15 @@ public class StudyDtosTest {
     return methods;
   }
 
-  private Contact createContact() {
-    Contact contact = new Contact();
-    contact.setTitle("Dr.");
-    contact.setFirstName("Parminder");
-    contact.setLastName("Raina");
-    contact.setEmail("praina@mcmaster.ca");
-    contact.setPhone("1-905-525-9140 ext. 22197");
+  private Person createPerson() {
+    Person person = new Person();
+    person.setTitle("Dr.");
+    person.setFirstName("Parminder");
+    person.setLastName("Raina");
+    person.setEmail("praina@mcmaster.ca");
+    person.setPhone("1-905-525-9140 ext. 22197");
 
-    Contact.Institution institution = new Contact.Institution();
+    Person.Institution institution = new Person.Institution();
     institution.setName(en("McMaster University"));
     institution.setDepartment(en("Department of Clinical Epidemiology & Biostatistics"));
     institution.setAddress(new Address());
@@ -232,8 +230,8 @@ public class StudyDtosTest {
     institution.getAddress().setState("ON");
     institution.getAddress().setCountryIso(Locale.CANADA.getISO3Country());
 
-    contact.setInstitution(institution);
-    return contact;
+    person.setInstitution(institution);
+    return person;
   }
 
   private Population createPopulation() {
@@ -252,8 +250,8 @@ public class StudyDtosTest {
     return population;
   }
 
-  private Recruitment createRecruitment() {
-    Recruitment recruitment = new Recruitment();
+  private Population.Recruitment createRecruitment() {
+    Population.Recruitment recruitment = new Population.Recruitment();
     recruitment.addDataSource("questionnaires");
     recruitment.addDataSource("administratives_databases");
     recruitment.addDataSource("others");
@@ -367,8 +365,8 @@ public class StudyDtosTest {
     }
 
     @Bean
-    public ContactRepository contactRepository() {
-      return Mockito.mock(ContactRepository.class);
+    public PersonRepository contactRepository() {
+      return Mockito.mock(PersonRepository.class);
     }
 
     @Bean

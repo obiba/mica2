@@ -8,17 +8,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.contact.search;
+package org.obiba.mica.person.search;
 
 import java.io.IOException;
-import java.util.stream.Stream;
-
-import javax.inject.Inject;
 
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
-import org.obiba.mica.dataset.search.VariableIndexerImpl;
 import org.obiba.mica.search.AbstractIndexConfiguration;
 import org.obiba.mica.search.ElasticSearchIndexer;
 import org.slf4j.Logger;
@@ -26,15 +22,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ContactIndexConfiguration extends AbstractIndexConfiguration implements ElasticSearchIndexer.IndexConfigurationListener {
-  private static final Logger log = LoggerFactory.getLogger(ContactIndexConfiguration.class);
+public class PersonIndexConfiguration extends AbstractIndexConfiguration implements ElasticSearchIndexer.IndexConfigurationListener {
+  private static final Logger log = LoggerFactory.getLogger(PersonIndexConfiguration.class);
 
   @Override
   public void onIndexCreated(Client client, String indexName) {
-    if(ContactIndexer.CONTACT_INDEX.equals(indexName)) {
+    if(PersonIndexer.PERSON_INDEX.equals(indexName)) {
       try {
-        client.admin().indices().preparePutMapping(indexName).setType(ContactIndexer.CONTACT_TYPE)
-          .setSource(createMappingProperties(ContactIndexer.CONTACT_TYPE)).execute().actionGet();
+        client.admin().indices().preparePutMapping(indexName).setType(PersonIndexer.PERSON_TYPE)
+          .setSource(createMappingProperties(PersonIndexer.PERSON_TYPE)).execute().actionGet();
       } catch (IOException e) {
         throw new RuntimeException(e);
       }

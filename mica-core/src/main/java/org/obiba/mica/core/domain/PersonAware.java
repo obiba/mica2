@@ -10,13 +10,17 @@
 
 package org.obiba.mica.core.domain;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public interface ContactAware {
+public interface PersonAware {
   @JsonIgnore
-  Iterable<Contact> getAllContacts();
+  List<Membership> getAllPersons();
 
-  void addToContact(Contact contact);
+  void addToPerson(Membership membership);
 
-  void removeFromContact(Contact contact);
+  void removeFromPerson(Membership membership);
+
+  void removeFromPerson(Person person);
 }

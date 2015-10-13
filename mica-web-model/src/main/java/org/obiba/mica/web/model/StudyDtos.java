@@ -6,13 +6,14 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.core.domain.Contact;
+import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.springframework.stereotype.Component;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
-import static org.obiba.mica.web.model.Mica.ContactDto;
+
+import static org.obiba.mica.web.model.Mica.PersonDto;
 
 @Component
 @SuppressWarnings("OverlyLongMethod")
@@ -58,11 +59,11 @@ class StudyDtos {
     if(study.getAcronym() != null) builder.addAllAcronym(localizedStringDtos.asDto(study.getAcronym()));
     if(study.getInvestigators() != null) {
       builder.addAllInvestigators(
-          study.getInvestigators().stream().map(contactDtos::asDto).collect(Collectors.<ContactDto>toList()));
+          study.getInvestigators().stream().map(contactDtos::asDto).collect(Collectors.<PersonDto>toList()));
     }
     if(study.getContacts() != null) {
       builder.addAllContacts(
-          study.getContacts().stream().map(contactDtos::asDto).collect(Collectors.<ContactDto>toList()));
+          study.getContacts().stream().map(contactDtos::asDto).collect(Collectors.<PersonDto>toList()));
     }
     if(!isNullOrEmpty(study.getWebsite())) builder.setWebsite(study.getWebsite());
     if(!isNullOrEmpty(study.getOpal())) builder.setOpal(study.getOpal());
@@ -103,12 +104,12 @@ class StudyDtos {
     if(dto.getNameCount() > 0) study.setName(localizedStringDtos.fromDto(dto.getNameList()));
     if(dto.getAcronymCount() > 0) study.setAcronym(localizedStringDtos.fromDto(dto.getAcronymList()));
     if(dto.hasLogo()) study.setLogo(attachmentDtos.fromDto(dto.getLogo()));
+    if(dto.getContactsCount() > 0) {
+      study.setContacts(dto.getContactsList().stream().map(contactDtos::fromDto).collect(Collectors.<Person>toList()));
+    }
     if(dto.getInvestigatorsCount() > 0) {
       study.setInvestigators(
-          dto.getInvestigatorsList().stream().map(contactDtos::fromDto).collect(Collectors.<Contact>toList()));
-    }
-    if(dto.getContactsCount() > 0) {
-      study.setContacts(dto.getContactsList().stream().map(contactDtos::fromDto).collect(Collectors.<Contact>toList()));
+        dto.getInvestigatorsList().stream().map(contactDtos::fromDto).collect(Collectors.<Person>toList()));
     }
     if(dto.getObjectivesCount() > 0) study.setObjectives(localizedStringDtos.fromDto(dto.getObjectivesList()));
     if(dto.hasWebsite()) study.setWebsite(dto.getWebsite());

@@ -4,30 +4,30 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.obiba.mica.core.domain.Contact;
-import org.obiba.mica.core.repository.ContactAwareRepository;
-import org.obiba.mica.core.repository.ContactRepository;
+import org.obiba.mica.core.domain.Person;
+import org.obiba.mica.core.repository.PersonAwareRepository;
+import org.obiba.mica.core.repository.PersonRepository;
 import org.obiba.mica.network.domain.Network;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
-public class NetworkRepositoryImpl implements NetworkRepositoryCustom, ContactAwareRepository<Network> {
+public class NetworkRepositoryImpl implements NetworkRepositoryCustom, PersonAwareRepository<Network> {
 
   @Inject
   MongoTemplate mongoTemplate;
 
   @Inject
-  ContactRepository contactRepository;
+  PersonRepository personRepository;
 
   @Override
-  public ContactRepository getContactRepository() {
-    return contactRepository;
+  public PersonRepository getPersonRepository() {
+    return personRepository;
   }
 
   @Override
-  public List<Contact> findAllContactsByParent(Network network) {
-    return contactRepository.findByNetworkIds(network.getId());
+  public List<Person> findAllPersonsByParent(Network network) {
+    return personRepository.findByNetworkMemberships(network.getId());
   }
 
   @Override

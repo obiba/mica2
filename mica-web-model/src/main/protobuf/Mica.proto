@@ -57,8 +57,8 @@ message StudyDto {
   repeated LocalizedStringDto name = 3;
   repeated LocalizedStringDto acronym = 4;
   optional AttachmentDto logo = 5;
-  repeated ContactDto investigators = 6;
-  repeated ContactDto contacts = 7;
+  repeated PersonDto investigators = 6;
+  repeated PersonDto contacts = 7;
   repeated LocalizedStringDto objectives = 8;
   optional string website = 9;
   optional AuthorizationDto specificAuthorization = 10;
@@ -221,8 +221,8 @@ message NetworkDto {
   optional TimestampsDto timestamps = 2;
   repeated LocalizedStringDto name = 3;
   repeated LocalizedStringDto acronym = 4;
-  repeated ContactDto investigators = 5;
-  repeated ContactDto contacts = 6;
+  repeated PersonDto investigators = 5;
+  repeated PersonDto contacts = 6;
   repeated LocalizedStringDto description = 7;
   optional string website = 8;
   optional AuthorizationDto maelstromAuthorization = 9;
@@ -267,7 +267,7 @@ message LocalizedStringDtos {
   repeated LocalizedStringDto localizedStrings = 1;
 }
 
-message ContactDto {
+message PersonDto {
   optional string title = 1;
   optional string firstName = 2;
   required string lastName = 3;
@@ -284,11 +284,11 @@ message ContactDto {
   }
 }
 
-message ContactsDto {
+message PersonsDto {
   required int32 total = 1;
   required int32 from = 2;
   required int32 limit = 3;
-  repeated ContactDto contacts = 4;
+  repeated PersonDto persons = 4;
 }
 
 message AuthorizationDto {

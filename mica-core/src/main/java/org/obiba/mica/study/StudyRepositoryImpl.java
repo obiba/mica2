@@ -4,18 +4,18 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.obiba.mica.core.domain.Contact;
+import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.AttachmentStateRepository;
-import org.obiba.mica.core.repository.ContactAwareRepository;
-import org.obiba.mica.core.repository.ContactRepository;
+import org.obiba.mica.core.repository.PersonAwareRepository;
+import org.obiba.mica.core.repository.PersonRepository;
 import org.obiba.mica.file.FileService;
 import org.obiba.mica.study.domain.Study;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
-public class StudyRepositoryImpl implements StudyRepositoryCustom, ContactAwareRepository<Study> {
+public class StudyRepositoryImpl implements StudyRepositoryCustom, PersonAwareRepository<Study> {
 
   @Inject
   AttachmentRepository attachmentRepository;
@@ -24,7 +24,7 @@ public class StudyRepositoryImpl implements StudyRepositoryCustom, ContactAwareR
   AttachmentStateRepository attachmentStateRepository;
 
   @Inject
-  ContactRepository contactRepository;
+  PersonRepository personRepository;
 
   @Inject
   FileService fileService;
@@ -33,13 +33,13 @@ public class StudyRepositoryImpl implements StudyRepositoryCustom, ContactAwareR
   MongoTemplate mongoTemplate;
 
   @Override
-  public ContactRepository getContactRepository() {
-    return contactRepository;
+  public PersonRepository getPersonRepository() {
+    return personRepository;
   }
 
   @Override
-  public List<Contact> findAllContactsByParent(Study study) {
-    return contactRepository.findByStudyIds(study.getId());
+  public List<Person> findAllPersonsByParent(Study study) {
+    return personRepository.findByStudyMemberships(study.getId());
   }
 
   @Override

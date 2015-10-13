@@ -1,7 +1,9 @@
 package org.obiba.mica.network.domain;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
@@ -12,22 +14,25 @@ import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.AttributeAware;
 import org.obiba.mica.core.domain.Attributes;
 import org.obiba.mica.core.domain.Authorization;
-import org.obiba.mica.core.domain.Contact;
-import org.obiba.mica.core.domain.ContactAware;
+import org.obiba.mica.core.domain.PersonAware;
 import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.core.domain.Membership;
+import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.study.domain.Study;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * A Network.
  */
-public class Network extends AbstractAuditableDocument implements AttributeAware, ContactAware {
+public class Network extends AbstractAuditableDocument implements AttributeAware, PersonAware {
 
   private static final long serialVersionUID = -4271967393906681773L;
 
@@ -38,11 +43,16 @@ public class Network extends AbstractAuditableDocument implements AttributeAware
 
   private boolean published = false;
 
-  @DBRef
-  private List<Contact> investigators = Lists.newArrayList();
+  private List<Person> investigators = Lists.newArrayList();
 
-  @DBRef
-  private List<Contact> contacts = Lists.newArrayList();
+  private List<Person> contacts = Lists.newArrayList();
+
+  private Map<String, List<Membership>> memberships = new HashMap<String, List<Membership>>() {
+    {
+      put(Membership.CONTACT, Lists.newArrayList());
+      put(Membership.INVESTIGATOR, Lists.newArrayList());
+    }
+  };
 
   private LocalizedString description;
 
@@ -88,45 +98,66 @@ public class Network extends AbstractAuditableDocument implements AttributeAware
   }
 
   @NotNull
-  public List<Contact> getInvestigators() {
-    return investigators;
+  @JsonIgnore
+  public List<Person> getInvestigators() {
+    if(!investigators.isEmpty()) {
+      setInvestigators(investigators);
+      investigators.clear();
+    }
+
+    return memberships.get(Membership.INVESTIGATOR).stream().map(m -> m.getPerson())
+      .collect(toList());
   }
 
-  public void addInvestigator(@NotNull Contact investigator) {
-    investigators.add(investigator);
-    investigator.addNetwork(this);
+  public void addInvestigator(@NotNull Person investigator) {
+    memberships.get(Membership.INVESTIGATOR).add(new Membership(investigator, Membership.INVESTIGATOR));
   }
 
-  public void setInvestigators(List<Contact> investigators) {
-    if (investigators == null) investigators = Lists.newArrayList();
+  @JsonProperty
+  public void setInvestigators(List<Person> investigators) {
+    if(investigators == null) investigators = Lists.newArrayList();
 
-    this.investigators = investigators;
-    this.investigators.forEach(c -> c.addNetwork(this));
+    memberships.put(Membership.INVESTIGATOR,
+      investigators.stream().map(p -> new Membership(p, Membership.INVESTIGATOR)).collect(toList()));
   }
 
   @NotNull
-  public List<Contact> getContacts() {
-    return contacts;
+  @JsonIgnore
+  public List<Person> getContacts() {
+    if(!contacts.isEmpty()) {
+      setInvestigators(contacts);
+      contacts.clear();
+    }
+
+    return memberships.get(Membership.CONTACT).stream().map(m -> m.getPerson())
+      .collect(toList());
   }
 
-  public void addContact(Contact contact) {
-    contacts.add(contact);
-    contact.addNetwork(this);
+  public void addContact(Person contact) {
+    memberships.get(Membership.CONTACT).add(new Membership(contact, Membership.CONTACT));
   }
 
-  public void addToContact(Contact contact) {
-    contact.addNetwork(this);
+  @Override
+  public void addToPerson(Membership membership) {
+    membership.getPerson().addNetwork(this, membership.getRole());
   }
 
-  public void removeFromContact(Contact contact) {
-    contact.removeNetwork(this);
+  @Override
+  public void removeFromPerson(Membership membership) {
+    membership.getPerson().removeNetwork(this, membership.getRole());
   }
 
-  public void setContacts(List<Contact> contacts) {
-    if (investigators == null) investigators = Lists.newArrayList();
+  @Override
+  public void removeFromPerson(Person person) {
+    person.removeNetwork(this);
+  }
 
-    this.contacts = contacts;
-    this.contacts.forEach(c -> c.addNetwork(this));
+  @JsonProperty
+  public void setContacts(List<Person> contacts) {
+    if(contacts == null) contacts = Lists.newArrayList();
+
+    memberships.put(Membership.CONTACT,
+      contacts.stream().map(p -> new Membership(p, Membership.CONTACT)).collect(toList()));
   }
 
   public LocalizedString getDescription() {
@@ -143,7 +174,7 @@ public class Network extends AbstractAuditableDocument implements AttributeAware
 
   public void setWebsite(String website) {
     this.website = website;
-    if (!Strings.isNullOrEmpty(website) && !website.startsWith("http")) {
+    if(!Strings.isNullOrEmpty(website) && !website.startsWith("http")) {
       this.website = "http://" + website;
     }
   }
@@ -171,7 +202,7 @@ public class Network extends AbstractAuditableDocument implements AttributeAware
   }
 
   public void addStudy(@NotNull Study study) {
-    if (!study.isNew()) addStudyId(study.getId());
+    if(!study.isNew()) addStudyId(study.getId());
   }
 
   public Authorization getMaelstromAuthorization() {
@@ -196,7 +227,7 @@ public class Network extends AbstractAuditableDocument implements AttributeAware
   }
 
   /**
-   * For each {@link org.obiba.mica.core.domain.Contact} and investigators: trim strings, make sure institution is
+   * For each {@link org.obiba.mica.core.domain.Person} and investigators: trim strings, make sure institution is
    * not repeated in contact name etc.
    */
   public void cleanContacts() {
@@ -204,9 +235,9 @@ public class Network extends AbstractAuditableDocument implements AttributeAware
     cleanContacts(investigators);
   }
 
-  private void cleanContacts(List<Contact> contactList) {
-    if (contactList == null) return;
-    contactList.forEach(Contact::cleanContact);
+  private void cleanContacts(List<Person> contactList) {
+    if(contactList == null) return;
+    contactList.forEach(Person::cleanPerson);
   }
 
   public Attributes getAttributes() {
@@ -241,7 +272,25 @@ public class Network extends AbstractAuditableDocument implements AttributeAware
   }
 
   @Override
-  public Iterable<Contact> getAllContacts() {
-    return Iterables.concat(contacts, investigators);
+  public List<Membership> getAllPersons() {
+    return getMemberships().values().stream().flatMap(List::stream).collect(toList());
+  }
+
+  public Map<String, List<Membership>> getMemberships() {
+    if(!contacts.isEmpty()){
+      setContacts(contacts);
+      contacts.clear();
+    }
+
+    if(!investigators.isEmpty()) {
+      setInvestigators(investigators);
+      investigators.clear();
+    }
+
+    return memberships;
+  }
+
+  public void setMemberships(Map<String, List<Membership>> memberships) {
+    this.memberships = memberships;
   }
 }

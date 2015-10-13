@@ -10,11 +10,11 @@ public class ContactTest {
 
   @Test
   public void test_clean_contact_with_title() {
-    Contact contact = new Contact();
+    Person contact = new Person();
     contact.setLastName("Prof. Foo Bar (" + INSTITUTION_NAME + ")");
     contact.setInstitution(newInstitution());
 
-    contact.cleanContact();
+    contact.cleanPerson();
     assertThat(contact.getTitle()).isEqualTo("Prof.");
     assertThat(contact.getFirstName()).isEqualTo("Foo");
     assertThat(contact.getLastName()).isEqualTo("Bar");
@@ -23,11 +23,11 @@ public class ContactTest {
 
   @Test
   public void test_clean_contact_without_title() {
-    Contact contact = new Contact();
+    Person contact = new Person();
     contact.setLastName("Foo Bar (" + INSTITUTION_NAME + ")");
     contact.setInstitution(newInstitution());
 
-    contact.cleanContact();
+    contact.cleanPerson();
     assertThat(contact.getTitle()).isNullOrEmpty();
     assertThat(contact.getFirstName()).isEqualTo("Foo");
     assertThat(contact.getLastName()).isEqualTo("Bar");
@@ -36,11 +36,11 @@ public class ContactTest {
 
   @Test
   public void test_clean_contact_with_title_academic_level() {
-    Contact contact = new Contact();
+    Person contact = new Person();
     contact.setLastName("Dr. Foo Bar, Ph.D. (" + INSTITUTION_NAME + ")");
     contact.setInstitution(newInstitution());
 
-    contact.cleanContact();
+    contact.cleanPerson();
     assertThat(contact.getTitle()).isEqualTo("Dr.");
     assertThat(contact.getFirstName()).isEqualTo("Foo");
     assertThat(contact.getLastName()).isEqualTo("Bar");
@@ -49,19 +49,19 @@ public class ContactTest {
 
   @Test
   public void test_clean_contact_with_academic_level() {
-    Contact contact = new Contact();
+    Person contact = new Person();
     contact.setLastName("Foo Bar, Ph.D. (" + INSTITUTION_NAME + ")");
     contact.setInstitution(newInstitution());
 
-    contact.cleanContact();
+    contact.cleanPerson();
     assertThat(contact.getTitle()).isNullOrEmpty();
     assertThat(contact.getFirstName()).isEqualTo("Foo");
     assertThat(contact.getLastName()).isEqualTo("Bar");
     assertThat(contact.getAcademicLevel()).isEqualTo("Ph.D.");
   }
 
-  private Contact.Institution newInstitution() {
-    Contact.Institution institution = new Contact.Institution();
+  private Person.Institution newInstitution() {
+    Person.Institution institution = new Person.Institution();
     institution.setName(LocalizedString.en(INSTITUTION_NAME));
     return institution;
   }

@@ -15,10 +15,10 @@ import javax.validation.constraints.NotNull;
 
 import org.joda.time.DateTime;
 import org.obiba.git.CommitInfo;
-import org.obiba.mica.contact.event.ContactUpdatedEvent;
-import org.obiba.mica.core.domain.Contact;
+import org.obiba.mica.contact.event.PersonUpdatedEvent;
 import org.obiba.mica.core.domain.LocalizedString;
-import org.obiba.mica.core.repository.ContactRepository;
+import org.obiba.mica.core.domain.Person;
+import org.obiba.mica.core.repository.PersonRepository;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.StudyDatasetRepository;
@@ -79,7 +79,7 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
   private NetworkRepository networkRepository;
 
   @Inject
-  private ContactRepository contactRepository;
+  private PersonRepository personRepository;
 
   @Inject
   private StudyDatasetRepository studyDatasetRepository;
@@ -138,8 +138,8 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
       study.getLogo().setJustUploaded(false);
     }
 
-    study.setContacts(replaceExistingContacts(study.getContacts()));
-    study.setInvestigators(replaceExistingContacts(study.getInvestigators()));
+    study.setContacts(replaceExistingPersons(study.getContacts()));
+    study.setInvestigators(replaceExistingPersons(study.getInvestigators()));
 
     studyState.setName(study.getName());
     studyState.incrementRevisionsAhead();
@@ -149,7 +149,7 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
     gitService.save(study, comment);
 
     eventBus.post(new DraftStudyUpdatedEvent(study));
-    study.getAllContacts().forEach(c -> eventBus.post(new ContactUpdatedEvent(c)));
+    study.getAllPersons().forEach(c -> eventBus.post(new PersonUpdatedEvent(c.getPerson())));
   }
 
   @NotNull
@@ -267,20 +267,20 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
   // Private methods
   //
 
-  private List<Contact> replaceExistingContacts(List<Contact> contacts) {
-    ImmutableList.copyOf(contacts).forEach(c -> {
+  private List<Person> replaceExistingPersons(List<Person> persons) {
+    ImmutableList.copyOf(persons).forEach(c -> {
       if(c.getId() == null && c.getEmail() != null) {
-        Contact contact = contactRepository.findOneByEmail(c.getEmail());
+        Person person = personRepository.findOneByEmail(c.getEmail());
 
-        if(contact != null) {
-          int idx = contacts.indexOf(c);
-          contacts.remove(c);
-          contacts.add(idx, contact);
+        if(person != null) {
+          int idx = persons.indexOf(c);
+          persons.remove(c);
+          persons.add(idx, person);
         }
       }
     });
 
-    return contacts;
+    return persons;
   }
 
   private void checkStudyConstraints(Study study) {

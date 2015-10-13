@@ -17,17 +17,19 @@ import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.AttributeAware;
 import org.obiba.mica.core.domain.Attributes;
 import org.obiba.mica.core.domain.Authorization;
-import org.obiba.mica.core.domain.Contact;
-import org.obiba.mica.core.domain.ContactAware;
+import org.obiba.mica.core.domain.PersonAware;
 import org.obiba.mica.core.domain.GitPersistable;
 import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.core.domain.Membership;
+import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.study.date.PersitableYear;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -36,7 +38,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * A Study.
  */
-public class Study extends AbstractGitPersistable implements AttributeAware, GitPersistable, ContactAware {
+public class Study extends AbstractGitPersistable implements AttributeAware, GitPersistable, PersonAware {
 
   private static final long serialVersionUID = 6559914069652243954L;
 
@@ -47,11 +49,16 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Git
 
   private Attachment logo;
 
-  @DBRef
-  private List<Contact> investigators = Lists.newArrayList();
+  private List<Person> investigators = Lists.newArrayList();
 
-  @DBRef
-  private List<Contact> contacts = Lists.newArrayList();
+  private List<Person> contacts = Lists.newArrayList();
+
+  private Map<String, List<Membership>> memberships = new HashMap<String, List<Membership>>() {
+    {
+      put(Membership.CONTACT, Lists.newArrayList());
+      put(Membership.INVESTIGATOR, Lists.newArrayList());
+    }
+  };
 
   private LocalizedString objectives;
 
@@ -120,44 +127,65 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Git
     this.logo = logo;
   }
 
-  public List<Contact> getInvestigators() {
-    return investigators.stream().filter(c -> c != null).collect(toList());
+  @JsonIgnore
+  public List<Person> getInvestigators() {
+    if(!investigators.isEmpty()) {
+      setInvestigators(investigators);
+      investigators.clear();
+    }
+
+    return memberships.get(Membership.INVESTIGATOR).stream().map(m -> m.getPerson())
+      .collect(toList());
   }
 
-  public void addInvestigator(@NotNull Contact investigator) {
-    investigators.add(investigator);
-    investigator.addStudy(this);
+  public void addInvestigator(@NotNull Person investigator) {
+    memberships.get(Membership.INVESTIGATOR).add(new Membership(investigator, Membership.INVESTIGATOR));
   }
 
-  public void setInvestigators(List<Contact> investigators) {
-    if (investigators == null) investigators = Lists.newArrayList();
+  @JsonProperty
+  public void setInvestigators(List<Person> investigators) {
+    if(investigators == null) investigators = Lists.newArrayList();
 
-    this.investigators = investigators;
-    this.investigators.forEach(c -> c.addStudy(this));
+    memberships.put(Membership.INVESTIGATOR,
+      investigators.stream().map(p -> new Membership(p, Membership.INVESTIGATOR)).collect(toList()));
   }
 
-  public List<Contact> getContacts() {
-    return contacts.stream().filter(c -> c != null).collect(toList());
+  @JsonIgnore
+  public List<Person> getContacts() {
+    if(!contacts.isEmpty()) {
+      setContacts(contacts);
+      contacts.clear();
+    }
+
+    return memberships.get(Membership.CONTACT).stream().map(m -> m.getPerson())
+      .collect(toList());
   }
 
-  public void addContact(Contact contact) {
-    contacts.add(contact);
-    contact.addStudy(this);
+  public void addContact(Person contact) {
+    memberships.get(Membership.CONTACT).add(new Membership(contact, Membership.CONTACT));
   }
 
-  public void addToContact(Contact contact) {
-    contact.addStudy(this);
+  @Override
+  public void addToPerson(Membership membership) {
+    membership.getPerson().addStudy(this, membership.getRole());
   }
 
-  public void removeFromContact(Contact contact) {
-    contact.removeStudy(this);
+  @Override
+  public void removeFromPerson(Membership membership) {
+    membership.getPerson().removeStudy(this, membership.getRole());
   }
 
-  public void setContacts(List<Contact> contacts) {
-    if (contacts == null) contacts = Lists.newArrayList();
+  @Override
+  public void removeFromPerson(Person person) {
+    person.removeStudy(this);
+  }
 
-    this.contacts = contacts;
-    this.contacts.forEach(c -> c.addStudy(this));
+  @JsonProperty
+  public void setContacts(List<Person> contacts) {
+    if(contacts == null) contacts = Lists.newArrayList();
+
+    memberships.put(Membership.CONTACT,
+      contacts.stream().map(p -> new Membership(p, Membership.CONTACT)).collect(toList()));
   }
 
   public LocalizedString getObjectives() {
@@ -174,7 +202,7 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Git
 
   public void setWebsite(String website) {
     this.website = website;
-    if (!Strings.isNullOrEmpty(website) && !website.startsWith("http")) {
+    if(!Strings.isNullOrEmpty(website) && !website.startsWith("http")) {
       this.website = "http://" + website;
     }
   }
@@ -224,8 +252,8 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Git
   }
 
   public void setStart(Integer value) {
-    if (value == null) return;
-    if (start == null) start = new PersitableYear();
+    if(value == null) return;
+    if(start == null) start = new PersitableYear();
     start.setYear(value);
   }
 
@@ -234,8 +262,8 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Git
   }
 
   public void setEnd(Integer value) {
-    if (value == null) return;
-    if (end == null) end = new PersitableYear();
+    if(value == null) return;
+    if(end == null) end = new PersitableYear();
     end.setYear(value);
   }
 
@@ -321,7 +349,7 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Git
   }
 
   public void setPopulations(SortedSet<Population> newPopulations) {
-    if (newPopulations == null) {
+    if(newPopulations == null) {
       // during serialization input can be null
       populations = newPopulations;
       return;
@@ -333,7 +361,7 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Git
   }
 
   /**
-   * For each {@link org.obiba.mica.core.domain.Contact} and investigators: trim strings, make sure institution is
+   * For each {@link org.obiba.mica.core.domain.Person} and investigators: trim strings, make sure institution is
    * not repeated in contact name etc.
    */
   public void cleanContacts() {
@@ -341,9 +369,9 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Git
     cleanContacts(investigators);
   }
 
-  private void cleanContacts(List<Contact> contactList) {
-    if (contactList == null) return;
-    contactList.forEach(Contact::cleanContact);
+  private void cleanContacts(List<Person> contactList) {
+    if(contactList == null) return;
+    contactList.forEach(Person::cleanPerson);
   }
 
   @Override
@@ -395,8 +423,26 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Git
   }
 
   @Override
-  public Iterable<Contact> getAllContacts() {
-    return Iterables.concat(contacts, investigators);
+  public List<Membership> getAllPersons() {
+    return getMemberships().values().stream().flatMap(List::stream).collect(toList());
+  }
+
+  public Map<String, List<Membership>> getMemberships() {
+    if(!contacts.isEmpty()) {
+      setContacts(contacts);
+      contacts.clear();
+    }
+
+    if(!investigators.isEmpty()) {
+      setInvestigators(investigators);
+      investigators.clear();
+    }
+
+    return memberships;
+  }
+
+  public void setMemberships(Map<String, List<Membership>> memberships) {
+    this.memberships = memberships;
   }
 
   public static class StudyMethods implements Serializable {

@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.core.domain.Contact;
+import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
@@ -23,7 +23,7 @@ import com.google.common.collect.Sets;
 import jersey.repackaged.com.google.common.collect.Lists;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
-import static org.obiba.mica.web.model.Mica.ContactDto;
+import static org.obiba.mica.web.model.Mica.PersonDto;
 
 @Component
 class NetworkDtos {
@@ -64,12 +64,12 @@ class NetworkDtos {
 
     if(network.getInvestigators() != null) {
       builder.addAllInvestigators(
-          network.getInvestigators().stream().map(contactDtos::asDto).collect(Collectors.<ContactDto>toList()));
+          network.getInvestigators().stream().map(contactDtos::asDto).collect(Collectors.<PersonDto>toList()));
     }
 
     if(network.getContacts() != null) {
       builder.addAllContacts(
-          network.getContacts().stream().map(contactDtos::asDto).collect(Collectors.<ContactDto>toList()));
+          network.getContacts().stream().map(contactDtos::asDto).collect(Collectors.<PersonDto>toList()));
     }
 
     if(!isNullOrEmpty(network.getWebsite())) builder.setWebsite(network.getWebsite());
@@ -123,15 +123,15 @@ class NetworkDtos {
     if (dto.hasId()) {
       network.setId(dto.getId());
     }
-    
+
     network.setPublished(dto.getPublished());
     network.setName(localizedStringDtos.fromDto(dto.getNameList()));
     network.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
     network.setAcronym(localizedStringDtos.fromDto(dto.getAcronymList()));
     network.setInfos(localizedStringDtos.fromDto(dto.getInfoList()));
     network.setInvestigators(
-        dto.getInvestigatorsList().stream().map(contactDtos::fromDto).collect(Collectors.<Contact>toList()));
-    network.setContacts(dto.getContactsList().stream().map(contactDtos::fromDto).collect(Collectors.<Contact>toList()));
+        dto.getInvestigatorsList().stream().map(contactDtos::fromDto).collect(Collectors.<Person>toList()));
+    network.setContacts(dto.getContactsList().stream().map(contactDtos::fromDto).collect(Collectors.<Person>toList()));
     if(dto.hasWebsite()) network.setWebsite(dto.getWebsite());
 
     if(dto.getStudyIdsCount() > 0) {
