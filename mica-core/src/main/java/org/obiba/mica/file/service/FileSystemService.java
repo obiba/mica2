@@ -1,6 +1,8 @@
 package org.obiba.mica.file.service;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -10,6 +12,8 @@ import javax.validation.constraints.NotNull;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.core.domain.Attributes;
+import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.AttachmentStateRepository;
@@ -34,6 +38,8 @@ import com.google.common.eventbus.Subscribe;
 
 import javafx.util.Pair;
 
+import static org.obiba.mica.file.FileUtils.normalizePath;
+
 @Component
 public class FileSystemService {
 
@@ -56,26 +62,39 @@ public class FileSystemService {
   //
 
   public void save(Attachment attachment) {
-    if(attachment.isNew()) {
+    Attachment saved = attachment;
+
+    if (attachment.isNew()) {
       attachment.setId(new ObjectId().toString());
-    }
-
-    if(attachment.isJustUploaded()) {
-      if(attachmentRepository.exists(attachment.getId())) {
-        // replace already existing attachment
-        fileService.delete(attachment.getId());
-        attachmentRepository.delete(attachment.getId());
+    } else {
+      saved = attachmentRepository.findOne(attachment.getId());
+      if(saved == null) {
+        saved = attachment;
       }
-      fileService.save(attachment.getId());
-      attachment.setJustUploaded(false);
+      else {
+        BeanUtils.copyProperties(attachment, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
+          "lastModifiedDate");
+      }
+
+      saved.setLastModifiedDate(DateTime.now());
     }
 
-    attachmentRepository.save(attachment);
+    if(saved.isJustUploaded()) {
+      if(attachmentRepository.exists(saved.getId())) {
+        // replace already existing attachment
+        fileService.delete(saved.getId());
+        attachmentRepository.delete(saved.getId());
+      }
+      fileService.save(saved.getId());
+      saved.setJustUploaded(false);
+    }
+
+    attachmentRepository.save(saved);
 
     List<AttachmentState> states = attachmentStateRepository
-      .findByPathAndName(attachment.getPath(), attachment.getName());
+      .findByPathAndName(saved.getPath(), saved.getName());
     AttachmentState state = states.isEmpty() ? new AttachmentState() : states.get(0);
-    state.setAttachment(attachment);
+    state.setAttachment(saved);
     state.setLastModifiedDate(DateTime.now());
     attachmentStateRepository.save(state);
 
@@ -255,6 +274,18 @@ public class FileSystemService {
     save(newAttachment);
     fileService.save(newAttachment.getId(), fileService.getFile(attachment.getId()));
     if(delete) updateStatus(state, RevisionStatus.DELETED);
+  }
+
+  /**
+   * Reinstate an existing attachment by copying it as a new one, thus generating a new revision
+   * @param attachment
+   */
+  public void reinstate(Attachment attachment) {
+    Attachment newAttachment = new Attachment();
+    BeanUtils.copyProperties(attachment, newAttachment, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
+      "lastModifiedDate");
+    save(newAttachment);
+//    fileService.save(newAttachment.getId(), fileService.getFile(attachment.getId()));
   }
 
   /**

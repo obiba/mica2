@@ -17,10 +17,13 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileService;
+import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
+
+import javafx.util.Pair;
 
 @Component
 @Path("/draft")
@@ -60,9 +63,11 @@ public class DraftFileSystemResource extends AbstractFileSystemResource {
   @Path("/file/{path:.*}")
   public Response updateFile(@PathParam("path") String path, @QueryParam("status") String status,
     @QueryParam("publish") Boolean publish, @QueryParam("name") String newName, @QueryParam("move") String movePath,
-    @QueryParam("copy") String copyPath) {
+    @QueryParam("copy") String copyPath, @QueryParam("version") String versionId) {
 
-    if(!Strings.isNullOrEmpty(copyPath)) {
+    if(!Strings.isNullOrEmpty(versionId)) {
+      doReinstate(path, versionId);
+    } else if(!Strings.isNullOrEmpty(copyPath)) {
       if(!Strings.isNullOrEmpty(movePath))
         throw new IllegalArgumentException("Copy and move are mutually exclusive operations");
       if(!Strings.isNullOrEmpty(newName))
@@ -86,5 +91,10 @@ public class DraftFileSystemResource extends AbstractFileSystemResource {
     doAddFile(attachmentDto);
     return Response
       .created(uriInfo.getBaseUriBuilder().path("draft").path("file").path(attachmentDto.getPath()).build()).build();
+  }
+
+  private void doReinstate(String path, String versionId) {
+    Attachment attachment = doGetAttachment(path, versionId);
+    fileSystemService.reinstate(attachment);
   }
 }

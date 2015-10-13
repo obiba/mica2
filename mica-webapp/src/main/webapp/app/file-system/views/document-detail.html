@@ -1,0 +1,91 @@
+<div>
+  <!-- second level breadcrumb -->
+
+  <ol ng-if="!data.isRoot" class="mica-breadcrumb no-margin no-padding">
+    <li ng-repeat="part in data.breadcrumbs">
+      <a ng-show="part.path" href ng-click="navigateToPath(part.path)">{{part.name}}</a>
+    </li>
+  </ol>
+  <!-- prevents the UI jumping -->
+  <ol ng-if="data.isRoot" class="mica-breadcrumb no-margin no-padding">
+    <li>
+      <span>&nbsp;</span>
+    </li>
+  </ol>
+
+  <!-- Document details -->
+  <div class="row voffset4">
+    <div class="col-md-6">
+      <h3>
+        <span ng-if="data.isRoot"><i
+          class="fa {{getDocumentIcon(data.document)}}"></i> {{'files' | translate}}</span>
+
+        <span ng-if="!data.isRoot" editable-text="data.document.name"
+          e-form="buttonRename"
+          onbeforesave="renameDocument(data.document, $data)">
+          <i class="fa {{getDocumentIcon(data.document)}}"></i> {{data.document.name || 'empty'}}
+          <span class="hoffset1"><a href ng-click="buttonRename.$show()" ng-hide="buttonRename.$visible">
+            <i class="fa fa-pencil"></i></a>
+          </span>
+        </span>
+      </h3>
+    </div>
+    <div class="col-md-6">
+      <div class=" pull-right">
+        <a ng-href="#/study/{{study.id}}/revisions"
+          class="btn btn-primary"
+          ngf-select ngf-change="onFileSelect($files)">
+          <i class="fa fa-upload"></i> <span translate>upload</span>
+        </a>
+        <a ng-if="data.isFile"
+          target="_self"
+          class="btn btn-primary"
+          ng-href="ws/draft/file-dl/{{data.document.path}} ">
+          <i class="fa fa-download"></i> <span translate>download</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="voffset2">
+    <div class="row">
+      <div class="col-md-4">
+        <table class="table table-bordered  table-striped table-condenser">
+          <tbody>
+          <tr>
+            <td translate>size</td>
+            <td ng-if="!data.isFile">{{data.document.size}}</td>
+            <td ng-if="data.isFile">{{data.document.size | bytes}}</td>
+          </tr>
+          <tr>
+            <td translate>created-on</td>
+            <td>{{data.document.timestamps.created | amDateFormat : 'lll'}}</td>
+          </tr>
+          <tr>
+            <td translate>last-modified</td>
+            <td>{{data.document.timestamps.lastUpdate | amDateFormat : 'lll'}}</td>
+          </tr>
+          <tr ng-if="data.isFile">
+            <td translate>status</td>
+            <td>{{data.document.revisionStatus}}</td>
+          </tr>
+          <tr ng-if="data.isFile">
+            <td translate>type</td>
+            <td>
+            <span editable-text="data.document.state.attachment.type"
+              e-form="buttonChangeType"
+              onbeforesave="updateDocumentType(data.document, $data)">
+              {{data.document.state.attachment.type || 'empty'}}
+              <span class="hoffset1"><a href ng-click="buttonChangeType.$show()" ng-hide="buttonChangeType.$visible">
+                <i class="fa fa-pencil"></i></a>
+              </span>
+            </span>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -100,8 +100,26 @@ mica.study
               ActiveTabService,
               $modal) {
 
-      $scope.Mode = {View: 0, Revision: 1};
-      $scope.viewMode = /\/revision[s\/]*/.exec($location.path()) !== null ? $scope.Mode.Revision : $scope.Mode.View;
+      $scope.Mode = {View: 0, Revision: 1, File: 2, Permission: 3};
+
+      var getViewMode = function() {
+        var result = /\/(revision[s\/]*|files|permissions)/.exec($location.path());
+        if (result && result.length > 1) {
+          switch (result[1]) {
+            case 'revision':
+            case 'revisions':
+              return $scope.Mode.Revision;
+            case 'files':
+              return $scope.Mode.File;
+            case 'permissions':
+              return $scope.Mode.Permission;
+          }
+        }
+
+        return $scope.Mode.View;
+      };
+
+      $scope.viewMode = getViewMode();
 
       $scope.inViewMode = function () {
         return $scope.viewMode === $scope.Mode.View;
@@ -121,7 +139,10 @@ mica.study
         if (study.logo) {
           $scope.logoUrl = 'ws/draft/study/' + study.id + '/file/' + study.logo.id + '/_download';
         }
-        updateTimeline(study);
+
+        if ($scope.viewMode === $scope.Mode.View || $scope.viewMode === $scope.Mode.Revision) {
+          updateTimeline(study);
+        }
       };
 
       var viewRevision = function (studyId, commitInfo) {
@@ -807,6 +828,13 @@ mica.study
       };
 
     }])
+
+  .controller('StudyFileSystemController', ['$scope', '$log', '$routeParams',
+    function ($scope, $log, $routeParams) {
+      $scope.documentInfo = {type: 'study', id: $routeParams.id};
+      $log.info('>>>', $scope.documentInfo);
+    }
+  ])
 
   .controller('StudyEditController', ['$rootScope',
     '$scope',

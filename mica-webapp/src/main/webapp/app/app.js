@@ -21,7 +21,8 @@ var mica = angular.module('mica', [
   'tmh.dynamicLocale',
   'ui.bootstrap',
   'ngFileUpload',
-  'angularUtils.directives.dirPagination'
+  'angularUtils.directives.dirPagination',
+  'xeditable'
 ]);
 
 mica
@@ -169,9 +170,11 @@ mica
     }]);
   }])
 
-  .run(['$rootScope', '$location', '$http', 'AuthenticationSharedService', 'Session', 'USER_ROLES', 'ServerErrorUtils', 'UserProfileService',
-    function ($rootScope, $location, $http, AuthenticationSharedService, Session, USER_ROLES, ServerErrorUtils, UserProfileService) {
+  .run(['$rootScope', '$location', '$http', 'AuthenticationSharedService', 'Session', 'USER_ROLES', 'ServerErrorUtils', 'UserProfileService', 'editableOptions',
+    function ($rootScope, $location, $http, AuthenticationSharedService, Session, USER_ROLES, ServerErrorUtils, UserProfileService, editableOptions) {
       $rootScope.$on('$routeChangeStart', function (event, next) {
+        editableOptions.theme = 'bs3';
+
         $rootScope.authenticated = AuthenticationSharedService.isAuthenticated();
         $rootScope.hasRole = AuthenticationSharedService.isAuthorized;
         $rootScope.userRoles = USER_ROLES;
