@@ -1,12 +1,14 @@
 package org.obiba.mica.web.model;
 
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
+import org.obiba.mica.file.service.FileSystemService;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
@@ -21,6 +23,9 @@ class AttachmentDtos {
 
   @Inject
   private AttributeDtos attributeDtos;
+
+  @Inject
+  private FileSystemService fileSystemService;
 
   @NotNull
   Mica.FileDto asFileDto(AttachmentState state) {
@@ -56,6 +61,8 @@ class AttachmentDtos {
       builder.setPublishedAttachment(asDto(state.getPublishedAttachment())) //
       .setPublicationDate(state.getPublicationDate().toString());
     }
+    builder.addAllRevisions(fileSystemService.getAttachmentRevisions(state).stream().map(this::asDto).collect(
+      Collectors.toList()));
     return builder.build();
   }
 

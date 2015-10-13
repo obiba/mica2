@@ -5,6 +5,7 @@ import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import org.obiba.mica.NoSuchEntityException;
@@ -13,16 +14,13 @@ import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 import javafx.util.Pair;
 
-@Component
-@Scope("request")
-public class FileSystemResourceHelper {
+public abstract class AbstractFileSystemResource {
 
   @Inject
   protected FileSystemService fileSystemService;
@@ -30,22 +28,45 @@ public class FileSystemResourceHelper {
   @Inject
   private Dtos dtos;
 
-  private boolean published;
+  /**
+   * Specify if the file system view is published or draft. If published, only the published {@link AttachmentState}s
+   * will be looked up and the corresponding {@link Attachment} will be returned. Otherwise all {@link AttachmentState}
+   * and all revisions of {@link Attachment}s are accessible.
+   *
+   * @return
+   */
+  protected abstract boolean isPublished();
 
-  public void setPublished(boolean published) {
-    this.published = published;
+  protected List<Mica.FileDto> doSearchFiles(String path, String query, boolean recursively) {
+    String basePath = normalizePath(path);
+    if(!isRoot(basePath) && basePath.endsWith("/")) basePath = basePath.replaceAll("[/]+$", "");
+    return getChildrenFiles(basePath, recursively);
   }
 
-  public Attachment getAttachment(String path) {
+  protected Attachment doGetAttachment(String path) {
+    return doGetAttachment(path, null);
+  }
+
+  protected Attachment doGetAttachment(String path, @Nullable String version) {
     String basePath = normalizePath(path);
-    if (basePath.endsWith("/")) throw new IllegalArgumentException("Folder download is not supported");
+    if(basePath.endsWith("/")) throw new IllegalArgumentException("Folder download is not supported");
 
     Pair<String, String> pathName = FileSystemService.extractPathName(basePath);
-    AttachmentState state = fileSystemService.getAttachmentState(pathName.getKey(), pathName.getValue(), published);
-    return published ? state.getPublishedAttachment() : state.getAttachment();
+    AttachmentState state = fileSystemService.getAttachmentState(pathName.getKey(), pathName.getValue(), isPublished());
+    if(isPublished()) return state.getPublishedAttachment();
+
+    if(Strings.isNullOrEmpty(version)) return state.getAttachment();
+
+    List<Attachment> attachments = fileSystemService.getAttachmentRevisions(state).stream()
+      .filter(a -> a.getId().equals(version)).collect(Collectors.toList());
+
+    if(attachments.isEmpty())
+      throw new NoSuchElementException("No file version " + version + " found at path: " + basePath);
+
+    return attachments.get(0);
   }
 
-  public Mica.FileDto getFile(String path) {
+  protected Mica.FileDto doGetFile(String path) {
     String basePath = normalizePath(path);
     if(isRoot(basePath)) return getFolderDto(basePath);
     if(basePath.endsWith("/")) return getFolderDto(basePath.replaceAll("[/]+$", ""));
@@ -57,7 +78,7 @@ public class FileSystemResourceHelper {
     }
   }
 
-  public void deleteFile(String path) {
+  protected void doDeleteFile(String path) {
     String basePath = normalizePath(path);
     if(isRoot(basePath)) deleteFolderState(basePath);
     if(basePath.endsWith("/")) deleteFolderState(basePath.replaceAll("[/]+$", ""));
@@ -69,7 +90,7 @@ public class FileSystemResourceHelper {
     }
   }
 
-  public void publishFile(String path, boolean publish) {
+  protected void doPublishFile(String path, boolean publish) {
     String basePath = normalizePath(path);
     if(isRoot(basePath)) publishFolderState(basePath, publish);
     if(basePath.endsWith("/")) publishFolderState(basePath.replaceAll("[/]+$", ""), publish);
@@ -81,7 +102,7 @@ public class FileSystemResourceHelper {
     }
   }
 
-  public void addFile(Mica.AttachmentDto attachmentDto) {
+  protected void doAddFile(Mica.AttachmentDto attachmentDto) {
     fileSystemService.save(dtos.fromDto(attachmentDto));
   }
 
@@ -109,8 +130,8 @@ public class FileSystemResourceHelper {
 
   private Mica.FileDto getFileDto(String basePath) {
     Pair<String, String> pathName = FileSystemService.extractPathName(basePath);
-    AttachmentState state = fileSystemService.getAttachmentState(pathName.getKey(), pathName.getValue(), published);
-    return dtos.asFileDto(state, published);
+    AttachmentState state = fileSystemService.getAttachmentState(pathName.getKey(), pathName.getValue(), isPublished());
+    return dtos.asFileDto(state, isPublished());
   }
 
   private Mica.FileDto getFolderDto(String basePath) {
@@ -118,7 +139,7 @@ public class FileSystemResourceHelper {
 
     Mica.FileDto.Builder builder = Mica.FileDto.newBuilder();
     builder.addAllChildren(getChildrenFolders(basePath)) //
-      .addAllChildren(getChildrenFiles(basePath));
+      .addAllChildren(getChildrenFiles(basePath, false));
 
     if(builder.getChildrenCount() == 0) {
       if(isRoot(basePath)) {
@@ -142,21 +163,28 @@ public class FileSystemResourceHelper {
   private Iterable<Mica.FileDto> getChildrenFolders(String basePath) {
     List<Mica.FileDto> folders = Lists.newArrayList();
     String pathRegEx = isRoot(basePath) ? "^/" : String.format("^%s/", basePath);
-    fileSystemService.findAttachmentStates(pathRegEx, published).stream() //
+    fileSystemService.findAttachmentStates(pathRegEx, isPublished()).stream() //
       .collect(Collectors.groupingBy(new Function<AttachmentState, String>() {
         @Override
         public String apply(AttachmentState state) {
           return extractFirstChildren(basePath, state.getPath());
         }
       })).forEach((n, s) -> folders.add(Mica.FileDto.newBuilder().setType(Mica.FileType.FOLDER)
-        .setPath(isRoot(basePath) ? String.format("/%s", n) : String.format("%s/%s", basePath, n)).setName(n)
-        .setSize(s.size()).build()));
+      .setPath(isRoot(basePath) ? String.format("/%s", n) : String.format("%s/%s", basePath, n)).setName(n)
+      .setSize(s.size()).build()));
     return folders;
   }
 
-  private Iterable<Mica.FileDto> getChildrenFiles(String basePath) {
-    return fileSystemService.findAttachmentStates(String.format("^%s$", basePath), published).stream().map(dtos::asFileDto)
-      .collect(Collectors.toList());
+  private List<Mica.FileDto> getChildrenFiles(String basePath, boolean recursively) {
+    List<AttachmentState> states = fileSystemService
+      .findAttachmentStates(String.format("^%s$", basePath), isPublished()).stream().collect(Collectors.toList());
+
+    if(recursively) {
+      states.addAll(fileSystemService.findAttachmentStates(String.format("^%s/", basePath), isPublished()).stream()
+        .collect(Collectors.toList()));
+    }
+
+    return states.stream().map(dtos::asFileDto).collect(Collectors.toList());
   }
 
   private String extractFirstChildren(String basePath, String path) {

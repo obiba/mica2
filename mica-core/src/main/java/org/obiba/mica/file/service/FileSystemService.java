@@ -175,6 +175,10 @@ public class FileSystemService {
     return state.get(0);
   }
 
+  public List<Attachment> getAttachmentRevisions(AttachmentState state) {
+    return attachmentRepository.findByPathAndName(state.getPath(), state.getName());
+  }
+
   /**
    * From a path with name, extract the path (can be empty if only one element) and the name (last element).
    *
