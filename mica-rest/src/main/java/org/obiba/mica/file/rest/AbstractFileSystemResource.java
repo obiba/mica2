@@ -1,5 +1,7 @@
 package org.obiba.mica.file.rest;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
@@ -9,8 +11,11 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.joda.time.DateTime;
 import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.core.domain.AbstractAuditableDocument;
 import org.obiba.mica.core.domain.RevisionStatus;
+import org.obiba.mica.core.domain.Timestamped;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.service.FileSystemService;
@@ -231,8 +236,8 @@ public abstract class AbstractFileSystemResource {
     builder.setPath(basePath) //
       .setName(pathName.getValue()) //
       .setType(Mica.FileType.FOLDER) //
-      .setSize(
-        builder.getChildrenList().stream().mapToLong(f -> f.getType() == Mica.FileType.FOLDER ? f.getSize() : 1).sum());
+      .setTimestamps(dtos.asDto(new FolderTimestamps(builder.getChildrenList()))).setSize(
+      builder.getChildrenList().stream().mapToLong(f -> f.getType() == Mica.FileType.FOLDER ? f.getSize() : 1).sum());
 
     return builder.build();
   }
@@ -246,9 +251,11 @@ public abstract class AbstractFileSystemResource {
         public String apply(AttachmentState state) {
           return extractFirstChildren(basePath, state.getPath());
         }
-      })).forEach((n, s) -> folders.add(Mica.FileDto.newBuilder().setType(Mica.FileType.FOLDER)
-      .setPath(isRoot(basePath) ? String.format("/%s", n) : String.format("%s/%s", basePath, n)).setName(n)
-      .setSize(s.size()).build()));
+      })).forEach((n, states) -> folders.add(Mica.FileDto.newBuilder().setType(Mica.FileType.FOLDER)
+      .setPath(isRoot(basePath) ? String.format("/%s", n) : String.format("%s/%s", basePath, n)) //
+      .setName(n) //
+      .setTimestamps(dtos.asDto(new FolderTimestamps(states))) //
+      .setSize(states.size()).build()));
     return folders;
   }
 
@@ -263,7 +270,7 @@ public abstract class AbstractFileSystemResource {
 
     return states.stream().map(s -> {
       Mica.FileDto f = dtos.asFileDto(s);
-      if (isPublished()) f = f.toBuilder().clearRevisionStatus().build();
+      if(isPublished()) f = f.toBuilder().clearRevisionStatus().build();
       return f;
     }).collect(Collectors.toList());
   }
@@ -282,4 +289,43 @@ public abstract class AbstractFileSystemResource {
     return nPath;
   }
 
+  private static class FolderTimestamps implements Timestamped {
+
+    private final DateTime createdDate;
+
+    private final DateTime lastModifiedDate;
+
+    private FolderTimestamps(Collection<AttachmentState> states) {
+      createdDate = states.stream().map(AbstractAuditableDocument::getCreatedDate).sorted().findFirst().get();
+      lastModifiedDate = states.stream().map(AbstractAuditableDocument::getLastModifiedDate)
+        .sorted(Collections.reverseOrder()).findFirst().get();
+    }
+
+    private FolderTimestamps(List<Mica.FileDto> files) {
+      createdDate = DateTime.parse(files.stream().map(f -> f.getTimestamps().getCreated()).sorted().findFirst().get());
+      lastModifiedDate = DateTime.parse(
+        files.stream().map(f -> f.getTimestamps().getLastUpdate()).sorted(Collections.reverseOrder()).findFirst()
+          .get());
+    }
+
+    @Override
+    public DateTime getCreatedDate() {
+      return createdDate;
+    }
+
+    @Override
+    public void setCreatedDate(DateTime createdDate) {
+
+    }
+
+    @Override
+    public DateTime getLastModifiedDate() {
+      return lastModifiedDate;
+    }
+
+    @Override
+    public void setLastModifiedDate(DateTime lastModifiedDate) {
+
+    }
+  }
 }
