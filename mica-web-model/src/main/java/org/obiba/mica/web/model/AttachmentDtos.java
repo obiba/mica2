@@ -43,11 +43,12 @@ class AttachmentDtos {
   Mica.FileDto asFileDto(AttachmentState state, boolean published) {
     Mica.FileDto.Builder builder = asFileDto(state).toBuilder();
 
-    if(!published) {
-      builder.setState(asDto(state));
-    } else if(state.isPublished()) {
-      builder.setAttachment(asDto(state.getPublishedAttachment()));
-    }
+    if(published) {
+      builder.clearRevisionStatus();
+      if(state.isPublished()) {
+        builder.setAttachment(asDto(state.getPublishedAttachment()));
+      }
+    } else builder.setState(asDto(state));
 
     return builder.build();
   }
@@ -56,15 +57,15 @@ class AttachmentDtos {
     Mica.AttachmentStateDto.Builder builder = Mica.AttachmentStateDto.newBuilder();
     builder.setId(state.getId()) //
       .setName(state.getName()) //
-    .setPath(state.getPath()) //
-    .setTimestamps(TimestampsDtos.asDto(state)) //
-    .setAttachment(asDto(state.getAttachment()));
-    if (state.isPublished()) {
+      .setPath(state.getPath()) //
+      .setTimestamps(TimestampsDtos.asDto(state)) //
+      .setAttachment(asDto(state.getAttachment()));
+    if(state.isPublished()) {
       builder.setPublishedAttachment(asDto(state.getPublishedAttachment())) //
-      .setPublicationDate(state.getPublicationDate().toString());
+        .setPublicationDate(state.getPublicationDate().toString());
     }
-    builder.addAllRevisions(fileSystemService.getAttachmentRevisions(state).stream().map(this::asDto).collect(
-      Collectors.toList()));
+    builder.addAllRevisions(
+      fileSystemService.getAttachmentRevisions(state).stream().map(this::asDto).collect(Collectors.toList()));
     return builder.build();
   }
 

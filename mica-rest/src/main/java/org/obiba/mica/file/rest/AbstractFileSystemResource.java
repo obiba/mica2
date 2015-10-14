@@ -261,7 +261,11 @@ public abstract class AbstractFileSystemResource {
         .collect(Collectors.toList()));
     }
 
-    return states.stream().map(dtos::asFileDto).collect(Collectors.toList());
+    return states.stream().map(s -> {
+      Mica.FileDto f = dtos.asFileDto(s);
+      if (isPublished()) f = f.toBuilder().clearRevisionStatus().build();
+      return f;
+    }).collect(Collectors.toList());
   }
 
   private String extractFirstChildren(String basePath, String path) {
@@ -274,7 +278,7 @@ public abstract class AbstractFileSystemResource {
 
   private String normalizePath(String path) {
     String nPath = path.startsWith("/") ? path : String.format("/%s", path);
-    if (!isRoot(nPath) && nPath.endsWith("/")) nPath = nPath.replaceAll("[/]+$", "");
+    if(!isRoot(nPath) && nPath.endsWith("/")) nPath = nPath.replaceAll("[/]+$", "");
     return nPath;
   }
 

@@ -61,7 +61,7 @@ public class DraftFileSystemResource extends AbstractFileSystemResource {
   @PUT
   @Path("/file/{path:.*}")
   public Response updateFile(@PathParam("path") String path, @QueryParam("status") String status,
-    @QueryParam("status") Boolean publish, @QueryParam("name") String newName, @QueryParam("move") String movePath,
+    @QueryParam("publish") Boolean publish, @QueryParam("name") String newName, @QueryParam("move") String movePath,
     @QueryParam("copy") String copyPath) {
 
     if(!Strings.isNullOrEmpty(copyPath)) {
