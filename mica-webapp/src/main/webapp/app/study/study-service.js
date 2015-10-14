@@ -38,6 +38,13 @@ mica.study
       });
     }])
 
+  .factory('DraftStudyStatusResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/draft/study/:id/_status', {}, {
+        'toStatus': {method: 'PUT', params: {id: '@id', value: '@value'}}
+      });
+    }])
+
   .factory('DraftStudyRevisionsResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/study/:id/commits', {}, {

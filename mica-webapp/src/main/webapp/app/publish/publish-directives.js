@@ -13,19 +13,6 @@ mica.publish
     };
   }])
 
-  .directive('publishButton', [function () {
-    return {
-      restrict: 'AE',
-      replace: true,
-      scope: {
-        version: '=',
-        ahead: '=',
-        publish: '&'
-      },
-      templateUrl: 'app/publish/publish-button-template.html'
-    };
-  }])
-
   .directive('publishSwitch', [function () {
     return {
       restrict: 'AE',

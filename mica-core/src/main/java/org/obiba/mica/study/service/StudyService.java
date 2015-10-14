@@ -18,6 +18,7 @@ import org.obiba.git.CommitInfo;
 import org.obiba.mica.contact.event.PersonUpdatedEvent;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.Person;
+import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.repository.PersonRepository;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
@@ -52,6 +53,7 @@ import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 
 import static java.util.stream.Collectors.toList;
+import static org.obiba.mica.core.domain.RevisionStatus.DELETED;
 import static org.obiba.mica.core.domain.RevisionStatus.DRAFT;
 
 @Service
@@ -232,6 +234,20 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
     return studyState;
   }
 
+  @Nullable
+  public Study unPublish(String id) {
+    StudyState studyState = studyStateRepository.findOne(id);
+    return studyState == null ? null : unpublish(studyState);
+  }
+
+
+  public StudyState updateStatus(String id, RevisionStatus status) {
+    StudyState studyState = findStateById(id);
+    studyState.setRevisionStatus(status);
+    studyStateRepository.save(studyState);
+    return studyState;
+  }
+
   @Override
   public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
     log.info("Gather published and draft studies to be indexed");
@@ -323,12 +339,6 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
     }
   }
 
-  @Nullable
-  public Study unpublish(String id) {
-    StudyState studyState = studyStateRepository.findOne(id);
-    return studyState == null ? null : unpublish(studyState);
-  }
-
   @Caching(evict = { @CacheEvict(value = "aggregations-metadata", allEntries = true),
     @CacheEvict(value = { "studies-draft", "studies-published" }, key = "#id") })
   @Nullable
@@ -336,7 +346,7 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
     log.info("Unpublish state since there are no Git repo for study: {}", studyState.getId());
     studyState.resetRevisionsAhead();
     studyState.setPublishedTag(null);
-    studyState.setRevisionStatus(DRAFT);
+    if (studyState.getRevisionStatus() != DELETED) studyState.setRevisionStatus(DRAFT);
     studyStateRepository.save(studyState);
     Study study = studyRepository.findOne(studyState.getId());
     if (study != null) eventBus.post(new StudyUnpublishedEvent(study));
@@ -389,4 +399,5 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
   public Iterable<String> getDiffEntries(@NotNull Study study, @NotNull String commitId, @Nullable String prevCommitId) {
     return gitService.getDiffEntries(study, commitId, prevCommitId, Study.class);
   }
+
 }

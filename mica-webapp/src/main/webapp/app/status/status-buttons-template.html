@@ -1,0 +1,47 @@
+<div>
+  <a class="btn btn-danger" ng-click="onDelete()"
+    ng-if="canDelete() && state.revisionStatus === 'DELETED'">
+    <i class="fa fa-trash"></i>
+    <span translate>delete</span>
+  </a>
+  <a ng-click="onPublish()" class="btn btn-info"
+    ng-disabled="state.publishedTag !== undefined && state.revisionsAhead == 0"
+    ng-if="canPublish() && state.revisionStatus === 'UNDER_REVIEW'">
+    <i class="fa fa-star"></i>
+    <span translate>publish.label</span>
+  </a>
+  <a class="btn btn-info" ng-click="onUnPublish()"
+    ng-if="canPublish() && state.publishedTag !== undefined">
+    <i class="fa fa-star-o"></i>
+    <span translate>publish.un-publish</span>
+  </a>
+  <div class="btn-group">
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+      aria-expanded="false">
+      {{'publish.status.' + state.revisionStatus | translate}} <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+      <li>
+        <a ng-click="toDraft()"
+          ng-if="state.revisionStatus !== 'DRAFT'">
+          <i class="fa fa-arrow-left"></i>
+          <span translate>publish.status.draft</span>
+        </a>
+      </li>
+      <li>
+        <a ng-click="toUnderReview()"
+          ng-if="state.revisionStatus === 'DRAFT' && (state.publishedTag === undefined || state.revisionsAhead > 0)">
+          <i class="fa fa-arrow-right"></i>
+          <span translate>publish.status.under-review</span>
+        </a>
+      </li>
+      <li>
+        <a ng-click="toDeleted()"
+          ng-if="state.revisionStatus !== 'DELETED'">
+          <i class="fa fa-arrow-right"></i>
+          <span translate>publish.status.deleted</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>

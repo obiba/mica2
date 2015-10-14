@@ -27,22 +27,35 @@
         ahead="studySummary['obiba.mica.StudyStateDto.state'].revisionsAhead"></publish-status>
 
     </div>
-    <div class="btn-group pull-right">
-      <a ng-href="#/study/{{study.id}}/revisions" class="btn btn-info">
+    <div class="pull-right">
+      <a ng-href="#/study/{{study.id}}/revisions" class="btn btn-info"
+        ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor']) && studySummary['obiba.mica.StudyStateDto.state'].revisionStatus === 'DRAFT'">
         <i class="fa fa-list-ol"></i> <span translate>revisions</span>
       </a>
       <a ng-href="#/study/{{study.id}}/edit" class="btn btn-primary"
-        ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+        ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor']) && studySummary['obiba.mica.StudyStateDto.state'].revisionStatus === 'DRAFT'"
+        ng-disabled="hasRole(['mica-editor']) && studySummary['obiba.mica.StudyStateDto.state'].revisionStatus !== 'DRAFT'">
         <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
       </a>
-      <publish-button version="studySummary['obiba.mica.StudyStateDto.state'].publishedTag"
-        ahead="studySummary['obiba.mica.StudyStateDto.state'].revisionsAhead" publish="publish()"
-        ng-if="hasRole(['mica-administrator','mica-reviewer'])"></publish-button>
-      <a class="btn btn-info" ng-click="unPublish()" ng-disabled="studySummary['obiba.mica.StudyStateDto.state'].publishedTag === undefined">
-        <i class="fa fa-star-o"></i>
-        <span translate>publish.un-publish</span>
-      </a>
+
+      <status-buttons class="inline"
+        state="studySummary['obiba.mica.StudyStateDto.state']"
+        on-publish="publish(true)"
+        on-un-publish="publish(false)"
+        can-publish="hasRole(['mica-administrator','mica-reviewer'])"
+        on-delete="delete()"
+        can-delete="hasRole(['mica-administrator','mica-reviewer'])"
+        can-edit="hasRole(['mica-administrator','mica-reviewer','mica-editor'])"
+        to-draft="toStatus('DRAFT')"
+        to-under-review="toStatus('UNDER_REVIEW')"
+        to-deleted="toStatus('DELETED')">
+
+      </status-buttons>
+
     </div>
+
+    <!-- Single button -->
+
   </div>
 
   <div ng-if="!inViewMode()" class="voffset5">

@@ -7,7 +7,7 @@ mica.study = angular.module('mica.study', [
   'mica.attributes',
   'obiba.notification',
   'mica.commons',
-  'mica.publish',
+  'mica.status',
   'mica.contact',
   'ngResource',
   'ngRoute',
