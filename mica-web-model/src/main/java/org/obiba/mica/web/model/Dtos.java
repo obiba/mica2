@@ -13,6 +13,7 @@ import org.obiba.mica.core.domain.Comment;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.domain.StudyTable;
+import org.obiba.mica.core.domain.Timestamped;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
@@ -186,6 +187,11 @@ public class Dtos {
   @NotNull
   public Mica.OpalCredentialDto asDto(@NotNull OpalCredential opalCredential) {
     return micaConfigDtos.asDto(opalCredential);
+  }
+
+  @NotNull
+  public Mica.TimestampsDto asDto(@NotNull Timestamped timestamped) {
+    return TimestampsDtos.asDto(timestamped);
   }
 
   @NotNull
