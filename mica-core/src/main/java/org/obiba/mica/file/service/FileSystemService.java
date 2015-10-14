@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.AttachmentStateRepository;
 import org.obiba.mica.file.Attachment;
@@ -17,6 +18,7 @@ import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.FileService;
 import org.obiba.mica.file.event.FileDeletedEvent;
 import org.obiba.mica.file.event.FilePublishedEvent;
+import org.obiba.mica.file.event.FileUnPublishedEvent;
 import org.obiba.mica.study.event.StudyPublishedEvent;
 import org.obiba.mica.study.event.StudyUnpublishedEvent;
 import org.slf4j.Logger;
@@ -81,7 +83,7 @@ public class FileSystemService {
    * @param state
    */
   public void delete(AttachmentState state) {
-    if(state.isPublished()) throw new IllegalArgumentException("Cannot delete a published file");
+    if(state.isPublished()) publish(state, false);
     attachmentStateRepository.delete(state);
     eventBus.post(new FileDeletedEvent(state));
   }
@@ -125,7 +127,7 @@ public class FileSystemService {
     state.setLastModifiedDate(DateTime.now());
     attachmentStateRepository.save(state);
     if(publish) eventBus.post(new FilePublishedEvent(state));
-    else eventBus.post(new FilePublishedEvent(state));
+    else eventBus.post(new FileUnPublishedEvent(state));
   }
 
   /**
@@ -164,7 +166,7 @@ public class FileSystemService {
   public void rename(String path, String newPath) {
     List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
     states.addAll(findAttachmentStates(String.format("^%s/", path), false));
-    states.stream().filter(s -> !s.isPublished()).forEach(s -> copy(s, newPath, s.getName(), true));
+    states.stream().forEach(s -> copy(s, newPath, s.getName(), true));
   }
 
   /**
@@ -199,7 +201,6 @@ public class FileSystemService {
    * @param newName
    */
   public void move(AttachmentState state, @NotNull String newPath, @NotNull String newName) {
-    if(state.isPublished()) throw new IllegalArgumentException("Cannot move a published file");
     copy(state, newPath, newName, true);
   }
 
@@ -212,7 +213,7 @@ public class FileSystemService {
   public void copy(String path, String newPath) {
     List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
     states.addAll(findAttachmentStates(String.format("^%s/", path), false));
-    states.stream().filter(s -> !s.isPublished()).forEach(s -> copy(s, newPath, s.getName(), false));
+    states.stream().forEach(s -> copy(s, newPath, s.getName(), false));
   }
 
   /**
@@ -237,8 +238,6 @@ public class FileSystemService {
    * @param delete
    */
   public void copy(AttachmentState state, String newPath, String newName, boolean delete) {
-    if(state.isPublished()) throw new IllegalArgumentException("Cannot copy a published file");
-
     if(hasAttachmentState(newPath, newName, false))
       throw new IllegalArgumentException("A file with name '" + newName + "' already exists at path: " + newPath);
 
@@ -250,7 +249,42 @@ public class FileSystemService {
     newAttachment.setName(newName);
     save(newAttachment);
     fileService.save(newAttachment.getId(), fileService.getFile(attachment.getId()));
-    if(delete) delete(state);
+    if(delete) updateStatus(state, RevisionStatus.DELETED);
+  }
+
+  /**
+   * Update {@link RevisionStatus} of all files at a given path (and children).
+   *
+   * @param path
+   * @param status
+   */
+  public void updateStatus(String path, RevisionStatus status) {
+    List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
+    states.addAll(findAttachmentStates(String.format("^%s/", path), false));
+    states.stream().forEach(s -> updateStatus(s, status));
+  }
+
+  /**
+   * Update {@link RevisionStatus} of the file with the given path and name.
+   *
+   * @param path
+   * @param name
+   * @param status
+   */
+  public void updateStatus(String path, String name, RevisionStatus status) {
+    AttachmentState state = getAttachmentState(path, name, false);
+    updateStatus(state, status);
+  }
+
+  /**
+   * Update {@link RevisionStatus} of the {@link AttachmentState}.
+   *
+   * @param state
+   * @param status
+   */
+  public void updateStatus(AttachmentState state, RevisionStatus status) {
+    state.setRevisionStatus(status);
+    attachmentStateRepository.save(state);
   }
 
   //

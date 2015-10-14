@@ -643,6 +643,7 @@ message FileDto {
   optional TimestampsDto timestamps = 6;
   optional AttachmentStateDto state = 7;
   optional AttachmentDto attachment = 8;
+  optional string revisionStatus = 9;
 }
 
 message AttachmentStateDto {

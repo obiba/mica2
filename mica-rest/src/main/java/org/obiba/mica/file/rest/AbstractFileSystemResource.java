@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.service.FileSystemService;
@@ -67,7 +68,6 @@ public abstract class AbstractFileSystemResource {
 
   protected Mica.FileDto doGetFile(String path) {
     String basePath = normalizePath(path);
-    if(isRoot(basePath)) return getFolderDto(basePath);
     if(basePath.endsWith("/")) return getFolderDto(basePath);
 
     try {
@@ -79,7 +79,6 @@ public abstract class AbstractFileSystemResource {
 
   protected void doDeleteFile(String path) {
     String basePath = normalizePath(path);
-    if(isRoot(basePath)) deleteFolderState(basePath);
     if(basePath.endsWith("/")) deleteFolderState(basePath);
 
     try {
@@ -91,7 +90,6 @@ public abstract class AbstractFileSystemResource {
 
   protected void doPublishFile(String path, boolean publish) {
     String basePath = normalizePath(path);
-    if(isRoot(basePath)) publishFolderState(basePath, publish);
     if(basePath.endsWith("/")) publishFolderState(basePath, publish);
 
     try {
@@ -141,6 +139,17 @@ public abstract class AbstractFileSystemResource {
     }
   }
 
+  protected void doUpdateStatus(String path, @NotNull RevisionStatus status) {
+    String basePath = normalizePath(path);
+    if(basePath.endsWith("/")) updateFolderStatus(basePath, status);
+
+    try {
+      updateFileStatus(basePath, status);
+    } catch(NoSuchEntityException ex) {
+      updateFolderStatus(basePath, status);
+    }
+  }
+
   //
   // Private methods
   //
@@ -185,6 +194,15 @@ public abstract class AbstractFileSystemResource {
 
   private void copyFolderState(String basePath, String newPath) {
     fileSystemService.copy(basePath, newPath);
+  }
+
+  private void updateFileStatus(String basePath, @NotNull RevisionStatus status) {
+    Pair<String, String> pathName = FileSystemService.extractPathName(basePath);
+    fileSystemService.updateStatus(pathName.getKey(), pathName.getValue(), status);
+  }
+
+  private void updateFolderStatus(String basePath, @NotNull RevisionStatus status) {
+    fileSystemService.updateStatus(basePath, status);
   }
 
   private Mica.FileDto getFileDto(String basePath) {

@@ -34,7 +34,9 @@ class AttachmentDtos {
       .setName(state.getName()) //
       .setTimestamps(TimestampsDtos.asDto(state)) //
       .setType(Mica.FileType.FILE) //
-      .setSize(state.getAttachment().getSize()).build();
+      .setSize(state.getAttachment().getSize()) //
+      .setRevisionStatus(state.getRevisionStatus().name()) //
+      .build();
   }
 
   @NotNull
