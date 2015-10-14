@@ -16,6 +16,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileService;
 import org.obiba.mica.web.model.Mica;
@@ -59,8 +60,9 @@ public class DraftFileSystemResource extends AbstractFileSystemResource {
 
   @PUT
   @Path("/file/{path:.*}")
-  public Response updateFile(@PathParam("path") String path, @QueryParam("publish") Boolean publish,
-    @QueryParam("name") String newName, @QueryParam("move") String movePath, @QueryParam("copy") String copyPath) {
+  public Response updateFile(@PathParam("path") String path, @QueryParam("status") String status,
+    @QueryParam("publish") Boolean publish, @QueryParam("name") String newName, @QueryParam("move") String movePath,
+    @QueryParam("copy") String copyPath) {
 
     if(!Strings.isNullOrEmpty(copyPath)) {
       if(!Strings.isNullOrEmpty(movePath))
@@ -73,7 +75,9 @@ public class DraftFileSystemResource extends AbstractFileSystemResource {
         throw new IllegalArgumentException("Move and rename are mutually exclusive operations");
       doMoveFile(path, movePath);
     } else if(!Strings.isNullOrEmpty(newName)) doRenameFile(path, newName);
-    else if(publish != null) doPublishFile(path, publish);
+
+    if(publish != null) doPublishFile(path, publish);
+    if (!Strings.isNullOrEmpty(status)) doUpdateStatus(path, RevisionStatus.valueOf(status.toUpperCase()));
 
     return Response.noContent().build();
   }
