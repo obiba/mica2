@@ -66,6 +66,7 @@ mica.study
     'StudyStateResource',
     'DraftStudyResource',
     'DraftStudyPublicationResource',
+    'DraftStudyStatusResource',
     'DraftStudyViewRevisionResource',
     'DraftStudyRevisionsResource',
     'DraftStudyRestoreRevisionResource',
@@ -87,6 +88,7 @@ mica.study
               StudyStateResource,
               DraftStudyResource,
               DraftStudyPublicationResource,
+              DraftStudyStatusResource,
               DraftStudyViewRevisionResource,
               DraftStudyRevisionsResource,
               DraftStudyRestoreRevisionResource,
@@ -230,14 +232,20 @@ mica.study
         }
       });
 
-      $scope.publish = function () {
-        DraftStudyPublicationResource.publish({id: $scope.study.id}, function () {
-          $scope.studySummary = StudyStateResource.get({id: $routeParams.id});
-        });
+      $scope.publish = function (doPublish) {
+        if (doPublish) {
+          DraftStudyPublicationResource.publish({id: $scope.study.id}, function () {
+            $scope.studySummary = StudyStateResource.get({id: $routeParams.id});
+          });
+        } else {
+          DraftStudyPublicationResource.unPublish({id: $scope.study.id}, function () {
+            $scope.studySummary = StudyStateResource.get({id: $routeParams.id});
+          });
+        }
       };
 
-      $scope.unPublish = function () {
-        DraftStudyPublicationResource.unPublish({id: $scope.study.id}, function () {
+      $scope.toStatus = function (value) {
+        DraftStudyStatusResource.toStatus({id: $scope.study.id, value: value}, function () {
           $scope.studySummary = StudyStateResource.get({id: $routeParams.id});
         });
       };

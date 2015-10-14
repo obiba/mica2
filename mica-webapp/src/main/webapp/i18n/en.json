@@ -335,7 +335,15 @@
     "not-published": "Not published",
     "published-out-of-date": "Published, out of date",
     "published": "Published",
-    "revisions-ahead": "Revisions ahead"
+    "revisions-ahead": "Revisions ahead",
+    "status": {
+      "DRAFT": "Draft",
+      "UNDER_REVIEW": "Under Review",
+      "DELETED": "Deleted",
+      "draft": "To Draft",
+      "under-review": "To Under Review",
+      "deleted": "To Deleted"
+    }
   },
   "studies": "Studies",
   "numberOfParticipants": {

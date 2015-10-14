@@ -123,7 +123,8 @@ class StudySummaryDtos {
   @NotNull
   Mica.StudySummaryDto asDto(@NotNull StudyState studyState) {
     Mica.StudyStateDto.Builder stateBuilder = Mica.StudyStateDto.newBuilder()
-      .setRevisionsAhead(studyState.getRevisionsAhead());
+      .setRevisionsAhead(studyState.getRevisionsAhead()) //
+      .setRevisionStatus(studyState.getRevisionStatus().name());
 
     if(studyState.isPublished()) {
       stateBuilder.setPublishedTag(studyState.getPublishedTag());

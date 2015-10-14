@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.git.CommitInfo;
 import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.rest.FileResource;
 import org.obiba.mica.file.service.FileSystemService;
@@ -90,7 +91,16 @@ public class DraftStudyResource {
   @Path("/_publish")
   @RequiresPermissions({"/draft:PUBLISH"})
   public Response unPublish() {
-    studyService.unpublish(id);
+    studyService.unPublish(id);
+    return Response.noContent().build();
+  }
+
+  @PUT
+  @Path("/_status")
+  @Timed
+  @RequiresPermissions({"/draft:EDIT"})
+  public Response toUnderReview(@QueryParam("value") String status) {
+    studyService.updateStatus(id, RevisionStatus.valueOf(status.toUpperCase()));
     return Response.noContent().build();
   }
 
