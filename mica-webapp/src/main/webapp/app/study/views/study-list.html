@@ -20,18 +20,23 @@
   </div>
 
   <div class="table-responsive">
-    <table class="table table-striped">
+    <table class="table table-striped table-bordered">
       <thead>
       <tr>
+        <th>ID</th>
         <th translate>study.acronym</th>
         <th translate>study.name</th>
-        <th>Published</th>
+        <th translate>publish.published</th>
+        <th translate>status</th>
         <th></th>
       </tr>
       </thead>
       <tbody>
 
       <tr dir-paginate="study in studies| filter:searchText | itemsPerPage: 20">
+        <td>
+          <a ng-href="#/study/{{study.id}}" translate>{{study.id}}</a>
+        </td>
         <td>
           <ul class="list-unstyled">
             <li ng-repeat="acronym in study.acronym">
@@ -48,21 +53,21 @@
         </td>
         <td>
           <div publish-status version="study['obiba.mica.StudyStateDto.state'].publishedTag"
-              ahead="study['obiba.mica.StudyStateDto.state'].revisionsAhead"></div>
+            ahead="study['obiba.mica.StudyStateDto.state'].revisionsAhead"></div>
+        </td>
+        <td>
+          {{'publish.status.' + study['obiba.mica.StudyStateDto.state'].revisionStatus | translate}}
         </td>
         <td>
           <ul class="list-inline pull-right">
-            <li>
-              <a ng-href="#/study/{{study.id}}" translate><i class="fa fa-eye"></i></a>
-            </li>
-            <li>
+            <li ng-if="study['obiba.mica.StudyStateDto.state'].revisionStatus === 'DRAFT'">
               <a ng-href="#/study/{{study.id}}/edit" translate><i class="fa fa-pencil"></i></a>
             </li>
-            <li>
+            <li ng-if="study['obiba.mica.StudyStateDto.state'].revisionStatus === 'DELETED'">
               <a href ng-click="deleteStudy(study.id)" translate><i class="fa fa-trash-o"></i></a>
             </li>
-            <li>
-              <a href ng-href="#/study/{{study.id}}/revisions" translate><i class="fa fa-list-ol"></i></a>
+            <li ng-if="study['obiba.mica.StudyStateDto.state'].revisionStatus === 'UNDER_REVIEW'">
+              <a ng-href="#/study/{{study.id}}" translate><i class="fa fa-eye"></i></a>
             </li>
           </ul>
         </td>
