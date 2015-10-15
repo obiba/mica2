@@ -41,9 +41,14 @@ public class PersonIndexConfiguration extends AbstractIndexConfiguration impleme
     XContentBuilder mapping = XContentFactory.jsonBuilder().startObject().startObject(type);
     mapping.startObject("properties");
     mapping.startObject("id").field("type", "string").field("index", "not_analyzed").endObject();
-    mapping.startObject("studyIds").field("type", "string").field("index", "not_analyzed").endObject();
-    mapping.startObject("networkIds").field("type", "string").field("index", "not_analyzed").endObject();
-
+    mapping.startObject("studyMemberships").startObject("properties");
+    mapping.startObject("parentId").field("type", "string").field("index", "not_analyzed").endObject();
+    mapping.startObject("role").field("type", "string").field("index", "not_analyzed").endObject();
+    mapping.endObject().endObject();
+    mapping.startObject("networkMemberships").startObject("properties");
+    mapping.startObject("parentId").field("type", "string").field("index", "not_analyzed").endObject();
+    mapping.startObject("role").field("type", "string").field("index", "not_analyzed").endObject();
+    mapping.endObject().endObject();
     mapping.startObject("institution");
     mapping.startObject("properties");
     createLocalizedMappingWithAnalyzers(mapping, "name");
