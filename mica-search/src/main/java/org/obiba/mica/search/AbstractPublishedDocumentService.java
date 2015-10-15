@@ -29,6 +29,7 @@ import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
@@ -39,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 public abstract class AbstractPublishedDocumentService<T> implements PublishedDocumentService<T> {
@@ -72,13 +74,18 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
   @Override
   public Documents<T> find(int from, int limit, @Nullable String sort, @Nullable String order, @Nullable String studyId,
     @Nullable String queryString) {
-    QueryBuilder query = null;
+    return find(from, limit, sort, order, studyId, queryString, null);
+  }
 
-    if(queryString != null) {
-      query = QueryBuilders.queryString(queryString);
-    }
+  @Override
+  public Documents<T> find(int from, int limit, @Nullable String sort, @Nullable String order, @Nullable String studyId,
+    @Nullable String queryString, @Nullable List<String> fields) {
+    final QueryStringQueryBuilder query = queryString != null ? QueryBuilders.queryString(queryString) : null;
+
+    if(query != null) fields.forEach(f -> query.field(f));
 
     FilterBuilder filter = null;
+
     if(studyId != null) {
       filter = filterByStudy(studyId);
     }
