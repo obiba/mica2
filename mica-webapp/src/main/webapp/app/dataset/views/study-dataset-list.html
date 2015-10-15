@@ -20,17 +20,21 @@
   </div>
 
   <div class="table-responsive">
-    <table class="table table-striped">
+    <table class="table table-bordered table-striped">
       <thead>
       <tr>
+        <th>ID</th>
         <th translate>dataset.acronym</th>
         <th translate>dataset.name</th>
-        <th>Published</th>
-        <th></th>
+        <th translate>publish.published</th>
+        <th translate>actions</th>
       </tr>
       </thead>
       <tbody>
       <tr dir-paginate="dataset in studyDatasets | filter:searchText | itemsPerPage: 20">
+        <td>
+          <a ng-href="#/study-dataset/{{dataset.id}}" translate>{{dataset.id}}</a>
+        </td>
         <td>
           <ul class="list-unstyled">
             <li ng-repeat="acronym in dataset.acronym">
@@ -52,10 +56,7 @@
               title="{{'publish.published' | translate}}"></i>
         </td>
         <td>
-          <ul class="list-inline pull-right">
-            <li>
-              <a ng-href="#/study-dataset/{{dataset.id}}" translate><i class="fa fa-eye"></i></a>
-            </li>
+          <ul class="list-inline">
             <li>
               <a ng-href="#/study-dataset/{{dataset.id}}/edit" translate><i class="fa fa-pencil"></i></a>
             </li>

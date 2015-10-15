@@ -190,7 +190,7 @@
     | number:0}}</b></p>
 
   <div class="table-responsive">
-    <table class="table table-striped">
+    <table class="table table-bordered table-striped">
       <thead>
       <tr>
         <th translate="metrics.jvm.http.table.code">Code</th>
@@ -297,7 +297,7 @@
   <h3 translate="metrics.servicesstats.title">Services statistics (time in millisecond)</h3>
 
   <div class="table-responsive">
-    <table class="table table-striped">
+    <table class="table table-bordered table-striped">
       <thead>
       <tr>
         <th translate="metrics.servicesstats.table.name">Service name</th>
@@ -330,7 +330,7 @@
   <h3 translate="metrics.ehcache.title">Ehcache statistics</h3>
 
   <div class="table-responsive">
-    <table class="table table-striped">
+    <table class="table table-bordered table-striped">
       <thead>
       <tr>
         <th translate="metrics.ehcache.cachename">Cache name</th>
@@ -379,7 +379,7 @@
         <div class="row" ng-repeat="(k, v) in threadDump | filter:threadDumpFilter">
           <h5><span class="label" ng-class="getLabelClass(v.threadState)">&nbsp;</span>&nbsp;{{v.threadName}}
             ({{'metrics.jvm.threads.dump.id' | translate}} {{v.threadId}})</h5>
-          <table class="table table-condensed">
+          <table class="table table-bordered table-condensed">
             <thead>
             <tr>
               <th translate="metrics.jvm.threads.dump.blockedtime">Blocked Time</th>

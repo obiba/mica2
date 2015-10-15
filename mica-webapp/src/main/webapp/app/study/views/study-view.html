@@ -88,7 +88,7 @@
           <div class="col-md-6">
             <h3 translate>study.general-info</h3>
 
-            <table class="table table-striped">
+            <table class="table table-bordered table-striped">
               <tbody>
               <tr ng-show="study.name.length">
                 <th translate>study.name</th>
@@ -190,7 +190,7 @@
           </div>
           <div class="col-md-6">
             <h3 translate ng-show="study.methods">study.general-design</h3>
-            <table class="table table-striped" ng-show="study.methods">
+            <table class="table table-bordered table-striped" ng-show="study.methods">
               <tbody>
               <tr ng-show="study.methods.designs.length || study.methods.otherDesign.length">
                 <th translate>study.design</th>
@@ -260,7 +260,7 @@
         <div class="row">
           <div class="col-md-6" ng-show="study.access.length || study.otherAccess.length">
             <h3 translate>study.access.label</h3>
-            <table class="table table-striped" ng-show="study.access.length || study.otherAccess.length">
+            <table class="table table-bordered table-striped" ng-show="study.access.length || study.otherAccess.length">
               <tbody>
               <tr>
                 <th translate>study.access.for</th>
@@ -280,7 +280,7 @@
           </div>
           <div class="col-md-6">
             <h3 translate ng-show="study.markerPaper || study.pubmedId">study.marker-paper</h3>
-            <table class="table table-striped" ng-show="study.markerPaper || study.pubmedId">
+            <table class="table table-bordered table-striped" ng-show="study.markerPaper || study.pubmedId">
               <tbody>
               <tr ng-show="study.markerPaper">
                 <th translate>study.marker-paper</th>
@@ -302,7 +302,7 @@
         <div class="row">
           <div class="col-md-6" ng-show="study.attachments.length">
             <h3 translate>study.documents</h3>
-            <table class="table table-striped" ng-show="study.attachments.length">
+            <table class="table table-bordered table-striped" ng-show="study.attachments.length">
               <tbody>
               <tr ng-repeat="attachment in study.attachments | filter:{lang:lang}">
                 <th>
@@ -323,7 +323,7 @@
           </div>
           <div class="col-md-6">
             <h3 translate ng-show="study.info.length">suppl-info</h3>
-            <table class="table table-striped" ng-show="study.info.length">
+            <table class="table table-bordered table-striped" ng-show="study.info.length">
               <tbody>
               <tr>
                 <td>
@@ -358,7 +358,7 @@
 
         <h3 translate ng-show="study.specificAuthorization || study.maelstromAuthorization">
           study.authorization.label</h3>
-        <table class="table table-striped" ng-show="study.specificAuthorization || study.maelstromAuthorization">
+        <table class="table table-bordered table-striped" ng-show="study.specificAuthorization || study.maelstromAuthorization">
           <tbody>
           <tr ng-show="study.maelstromAuthorization">
             <td translate>study.authorization.maelstrom</td>
@@ -388,7 +388,7 @@
         </table>
 
         <h3 translate ng-show="study.opal">datasets</h3>
-        <table class="table table-striped" ng-show="study.opal">
+        <table class="table table-bordered table-striped" ng-show="study.opal">
           <tbody>
           <tr ng-show="study.opal">
             <td translate>study.opal</td>
