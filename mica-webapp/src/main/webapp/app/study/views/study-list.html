@@ -23,6 +23,7 @@
     <table class="table table-striped">
       <thead>
       <tr>
+        <th>ID</th>
         <th translate>study.acronym</th>
         <th translate>study.name</th>
         <th translate>publish.published</th>
@@ -33,6 +34,9 @@
       <tbody>
 
       <tr dir-paginate="study in studies| filter:searchText | itemsPerPage: 20">
+        <td>
+          <a ng-href="#/study/{{study.id}}" translate>{{study.id}}</a>
+        </td>
         <td>
           <ul class="list-unstyled">
             <li ng-repeat="acronym in study.acronym">
@@ -61,9 +65,6 @@
             </li>
             <li ng-if="study['obiba.mica.StudyStateDto.state'].revisionStatus === 'DELETED'">
               <a href ng-click="deleteStudy(study.id)" translate><i class="fa fa-trash-o"></i></a>
-            </li>
-            <li>
-              <a ng-href="#/study/{{study.id}}" translate><i class="fa fa-eye"></i></a>
             </li>
           </ul>
         </td>
