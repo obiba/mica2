@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -15,15 +16,19 @@ import javax.validation.constraints.NotNull;
 
 import org.joda.time.DateTime;
 import org.obiba.git.CommitInfo;
+import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.contact.event.PersonUpdatedEvent;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.domain.RevisionStatus;
+import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.PersonRepository;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.StudyDatasetRepository;
+import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileService;
+import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.study.ConstraintException;
 import org.obiba.mica.study.NoSuchStudyException;
@@ -72,10 +77,16 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
   private StudyRepository studyRepository;
 
   @Inject
+  private AttachmentRepository attachmentRepository;
+
+  @Inject
   private GitService gitService;
 
   @Inject
   private FileService fileService;
+
+  @Inject
+  private FileSystemService fileSystemService;
 
   @Inject
   private NetworkRepository networkRepository;
@@ -301,7 +312,8 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
 
   private void checkStudyConstraints(Study study) {
     List<String> harmonizationDatasetsIds = harmonizationDatasetRepository.findByStudyTablesStudyId(study.getId()).stream().map(h -> h.getId()).collect(toList());
-    List<String> studyDatasetIds = studyDatasetRepository.findByStudyTableStudyId(study.getId()).stream().map(h -> h.getId()).collect(toList());
+    List<String> studyDatasetIds = studyDatasetRepository.findByStudyTableStudyId(study.getId()).stream().map(
+      h -> h.getId()).collect(toList());
     List<String> networkIds = networkRepository.findByStudyIds(study.getId()).stream().map(n -> n.getId()).collect(toList());
 
     if(!harmonizationDatasetsIds.isEmpty() || !studyDatasetIds.isEmpty() || !networkIds.isEmpty()) {
@@ -393,7 +405,24 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
   public Study getStudyFromCommit(@NotNull Study study, @NotNull String commitId) throws IOException {
     String studyBlob = gitService.getBlob(study, commitId, Study.class);
     InputStream inputStream = new ByteArrayInputStream(studyBlob.getBytes(StandardCharsets.UTF_8));
-    return objectMapper.readValue(inputStream, Study.class);
+    Study restoredStudy = objectMapper.readValue(inputStream, Study.class);
+
+    Stream.concat(restoredStudy.getAttachments().stream(),
+      restoredStudy.getPopulations().stream().flatMap(p -> p.getDataCollectionEvents().stream())
+        .flatMap(d -> d.getAttachments().stream())).forEach(a -> {
+      try {
+        fileSystemService.getAttachmentState(a.getPath(), a.getName(), false);
+      } catch(NoSuchEntityException e) {
+        Attachment existingAttachment = attachmentRepository.findOne(a.getId());
+
+        if(existingAttachment != null) {
+          existingAttachment.setPath(existingAttachment.getPath().replaceAll("/attachment/[0-9a-f\\-]+$", ""));
+          fileSystemService.save(existingAttachment);
+        } else fileSystemService.save(a);
+      }
+    });
+
+    return restoredStudy;
   }
 
   public Iterable<String> getDiffEntries(@NotNull Study study, @NotNull String commitId, @Nullable String prevCommitId) {
