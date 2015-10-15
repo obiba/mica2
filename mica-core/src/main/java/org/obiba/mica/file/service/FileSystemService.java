@@ -56,7 +56,7 @@ public class FileSystemService {
   //
 
   public void save(Attachment attachment) {
-    if (attachment.isNew()) {
+    if(attachment.isNew()) {
       attachment.setId(new ObjectId().toString());
     }
 
@@ -171,7 +171,7 @@ public class FileSystemService {
   public void rename(String path, String newPath) {
     List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
     states.addAll(findAttachmentStates(String.format("^%s/", path), false));
-    states.stream().forEach(s -> copy(s, newPath, s.getName(), true));
+    states.stream().forEach(s -> copy(s, s.getPath().replaceFirst(path, newPath), s.getName(), true));
   }
 
   /**
