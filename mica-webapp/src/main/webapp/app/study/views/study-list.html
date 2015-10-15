@@ -56,17 +56,14 @@
         </td>
         <td>
           <ul class="list-inline pull-right">
-            <li>
-              <a ng-href="#/study/{{study.id}}" translate><i class="fa fa-eye"></i></a>
-            </li>
             <li ng-if="study['obiba.mica.StudyStateDto.state'].revisionStatus === 'DRAFT'">
               <a ng-href="#/study/{{study.id}}/edit" translate><i class="fa fa-pencil"></i></a>
             </li>
             <li ng-if="study['obiba.mica.StudyStateDto.state'].revisionStatus === 'DELETED'">
               <a href ng-click="deleteStudy(study.id)" translate><i class="fa fa-trash-o"></i></a>
             </li>
-            <li ng-if="study['obiba.mica.StudyStateDto.state'].revisionStatus === 'DRAFT'">
-              <a href ng-href="#/study/{{study.id}}/revisions" translate><i class="fa fa-list-ol"></i></a>
+            <li>
+              <a ng-href="#/study/{{study.id}}" translate><i class="fa fa-eye"></i></a>
             </li>
           </ul>
         </td>
