@@ -30,18 +30,22 @@
   </div>
 
   <div class="table-responsive">
-    <table class="table table-striped">
+    <table class="table table-bordered table-striped">
       <thead>
       <tr>
+        <th>ID</th>
         <th translate>network.acronym</th>
         <th translate>network.name</th>
-        <th>Published</th>
-        <th></th>
+        <th translate>publish.published</th>
+        <th translate>actions</th>
       </tr>
       </thead>
       <tbody>
 
       <tr dir-paginate="network in networks| filter:searchText | itemsPerPage: 20">
+        <td>
+          <a ng-href="#/network/{{network.id}}" translate>{{network.id}}</a>
+        </td>
         <td>
           <ul class="list-unstyled">
             <li ng-repeat="acronym in network.acronym">
@@ -63,10 +67,7 @@
               title="{{'publish.published' | translate}}"></i>
         </td>
         <td>
-          <ul class="list-inline pull-right">
-            <li>
-              <a ng-href="#/network/{{network.id}}" translate><i class="fa fa-eye"></i></a>
-            </li>
+          <ul class="list-inline">
             <li>
               <a ng-href="#/network/{{network.id}}/edit" translate><i class="fa fa-pencil"></i></a>
             </li>

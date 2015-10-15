@@ -20,7 +20,7 @@
   </div>
 
   <div class="table-responsive">
-    <table class="table table-striped table-bordered">
+    <table class="table table-bordered table-striped">
       <thead>
       <tr>
         <th>ID</th>
@@ -28,7 +28,7 @@
         <th translate>study.name</th>
         <th translate>publish.published</th>
         <th translate>status</th>
-        <th></th>
+        <th translate>actions</th>
       </tr>
       </thead>
       <tbody>
@@ -59,7 +59,7 @@
           {{'publish.status.' + study['obiba.mica.StudyStateDto.state'].revisionStatus | translate}}
         </td>
         <td>
-          <ul class="list-inline pull-right">
+          <ul class="list-inline">
             <li ng-if="study['obiba.mica.StudyStateDto.state'].revisionStatus === 'DRAFT'">
               <a ng-href="#/study/{{study.id}}/edit" translate><i class="fa fa-pencil"></i></a>
             </li>
