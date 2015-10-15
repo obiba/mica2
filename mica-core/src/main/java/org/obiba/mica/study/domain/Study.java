@@ -24,7 +24,7 @@ import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.study.date.PersitableYear;
-import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.annotation.Transient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -87,7 +87,7 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Git
   //@PubmedId
   private String pubmedId;
 
-  @DBRef
+  @Transient
   private List<Attachment> attachments = Lists.newArrayList();
 
   private LocalizedString info;
@@ -304,8 +304,16 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Git
     this.pubmedId = pubmedId;
   }
 
+  @Deprecated
+  @JsonIgnore
+  public List<Attachment> getAttachments() {
+    return attachments;
+  }
+
+  @Deprecated
+  @JsonProperty
   public void setAttachments(List<Attachment> attachments) {
-    // void
+    this.attachments = attachments;
   }
 
   public LocalizedString getInfo() {

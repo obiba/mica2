@@ -13,10 +13,11 @@ import org.obiba.mica.core.domain.AbstractAttributeAware;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.study.date.PersistableYearMonth;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.domain.Persistable;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Strings;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Lists;
@@ -49,7 +50,7 @@ public class DataCollectionEvent extends AbstractAttributeAware
 
   private LocalizedString otherBioSamples;
 
-  @DBRef
+  @Transient
   private List<Attachment> attachments = Lists.newArrayList();
 
   @Override
@@ -171,12 +172,16 @@ public class DataCollectionEvent extends AbstractAttributeAware
     this.otherBioSamples = otherBioSamples;
   }
 
+  @Deprecated
+  @JsonIgnore
   public List<Attachment> getAttachments() {
     return attachments;
   }
 
+  @Deprecated
+  @JsonProperty
   public void setAttachments(@NotNull List<Attachment> attachments) {
-    // void
+    this.attachments = attachments;
   }
 
   @Override
