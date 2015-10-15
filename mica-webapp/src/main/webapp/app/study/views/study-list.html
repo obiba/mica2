@@ -25,7 +25,8 @@
       <tr>
         <th translate>study.acronym</th>
         <th translate>study.name</th>
-        <th>Published</th>
+        <th translate>publish.published</th>
+        <th translate>status</th>
         <th></th>
       </tr>
       </thead>
@@ -51,17 +52,20 @@
               ahead="study['obiba.mica.StudyStateDto.state'].revisionsAhead"></div>
         </td>
         <td>
+          {{'publish.status.' + study['obiba.mica.StudyStateDto.state'].revisionStatus | translate}}
+        </td>
+        <td>
           <ul class="list-inline pull-right">
             <li>
               <a ng-href="#/study/{{study.id}}" translate><i class="fa fa-eye"></i></a>
             </li>
-            <li>
+            <li ng-if="study['obiba.mica.StudyStateDto.state'].revisionStatus === 'DRAFT'">
               <a ng-href="#/study/{{study.id}}/edit" translate><i class="fa fa-pencil"></i></a>
             </li>
-            <li>
+            <li ng-if="study['obiba.mica.StudyStateDto.state'].revisionStatus === 'DELETED'">
               <a href ng-click="deleteStudy(study.id)" translate><i class="fa fa-trash-o"></i></a>
             </li>
-            <li>
+            <li ng-if="study['obiba.mica.StudyStateDto.state'].revisionStatus === 'DRAFT'">
               <a href ng-href="#/study/{{study.id}}/revisions" translate><i class="fa fa-list-ol"></i></a>
             </li>
           </ul>
