@@ -6,7 +6,7 @@ mica.status
       restrict: 'AE',
       replace: true,
       scope: {
-        state: "=",
+        state: '=',
         onEdit: '&',
         canEdit: '&',
         onPublish: '&',

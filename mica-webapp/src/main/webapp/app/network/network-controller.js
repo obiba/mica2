@@ -190,7 +190,7 @@ mica.network
     function ($scope, $modalInstance, ContactsSearchResource, network, lang) {
       $scope.lang = lang;
       var studyIds = network.studyIds.join(' ');
-      $scope.persons = []
+      $scope.persons = [];
 
       ContactsSearchResource.get({
         query: 'studyMemberships.parentId:(' + studyIds + ')',
