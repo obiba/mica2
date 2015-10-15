@@ -1,10 +1,9 @@
 <div ng-cloak ng-hide="!authenticated">
+  <h1 translate>main.title</h1>
+  <p translate>main.subtitle</p>
+
   <div class="row">
     <div class="col-md-8">
-      <h1 translate>main.title</h1>
-
-      <p translate>main.subtitle</p>
-
       <div class="alert alert-success" ng-show="hasRole('mica-user')"
           translate translate-values="{username: '{{subject.login}}'}">
         main.logged.userMessage
