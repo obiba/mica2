@@ -68,6 +68,10 @@
             <span translate>data-access-requests</span>
           </a>
         </li>
+
+      </ul>
+
+      <ul class="nav navbar-nav navbar-right" ng-hide="!authenticated">
         <li class="dropdown" ng-if="hasRole(['mica-administrator'])">
           <a href="" class="dropdown-toggle" data-toggle="dropdown">
             <span translate>global.menu.admin</span>
@@ -82,12 +86,12 @@
             <li>
               <a href="#/metrics">
                 <span class="glyphicon glyphicon-dashboard"></span>
-              &nbsp;<span translate>global.menu.account.metrics</span>
+                &nbsp;<span translate>global.menu.account.metrics</span>
               </a>
             </li>
             <li>
               <a href="#/logs"><span class="glyphicon glyphicon-tasks"></span>
-              &nbsp;<span translate>global.menu.account.logs</span>
+                &nbsp;<span translate>global.menu.account.logs</span>
               </a>
             </li>
             <li>
@@ -97,9 +101,6 @@
             </li>
           </ul>
         </li>
-      </ul>
-
-      <ul class="nav navbar-nav navbar-right" ng-hide="!authenticated">
         <li class="dropdown">
           <a href="" class="dropdown-toggle" data-toggle="dropdown">
             <i class="fa fa-user"></i>

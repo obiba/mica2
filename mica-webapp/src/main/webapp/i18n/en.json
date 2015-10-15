@@ -450,7 +450,8 @@
     "restore-dialog": {
       "title": "Restoring Study from Revision",
       "message": "Are you sure you want to restore this revision from '{{arg0}}'?"
-    }
+    },
+    "none": "No studies."
   },
   "contact": {
     "label": "Contact",
@@ -531,7 +532,8 @@
       "info": "The variables of the Data Schema are the reference variables of the Harmonization dataset. This is a simple data dictionary: no data summaries will be extracted from the Opal table."
     },
     "index": "Index",
-    "add-study-table": "Add Study Table"
+    "add-study-table": "Add Study Table",
+    "none": "No datasets."
   },
   "attributes": "Attributes",
   "attribute": {
@@ -599,7 +601,8 @@
     "study-delete-dialog": {
       "title": "Delete Study",
       "message": "Are you sure you want to delete the study '{{arg0}}'?"
-    }
+    },
+    "none": "No networks."
   },
   "all": "All",
   "name": "Name",
