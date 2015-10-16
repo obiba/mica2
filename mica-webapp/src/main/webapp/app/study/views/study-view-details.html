@@ -1,0 +1,335 @@
+<div>
+  <tabset>
+    <tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active"
+      disabled="tab.disabled">
+
+      <div class="voffset4">
+        <img class="img-responsive desaturate" ng-show="study.logo"
+          ng-src="{{logoUrl}}"/>
+
+        <h2>
+          <localized value="study.name" lang="tab.lang"></localized>
+        </h2>
+
+        <localized value="study.objectives" lang="tab.lang"></localized>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <h3 translate>study.general-info</h3>
+
+          <table class="table table-bordered table-striped">
+            <tbody>
+            <tr ng-show="study.name.length">
+              <th translate>study.name</th>
+              <td>
+                <localized value="study.name" lang="tab.lang"></localized>
+              </td>
+            </tr>
+            <tr ng-show="study.acronym.length">
+              <th translate>study.acronym</th>
+              <td>
+                <localized value="study.acronym" lang="tab.lang"></localized>
+              </td>
+            </tr>
+            <tr ng-show="study.objectives.length">
+              <th translate>study.objectives</th>
+              <td>
+
+              </td>
+            </tr>
+            <tr ng-show="study.website">
+              <th translate>study.website</th>
+              <td>
+                <a href="{{study.website}}" target="_blank">{{study.website}}</a>
+              </td>
+            </tr>
+            <tr>
+              <th translate>study.investigators</th>
+              <td>
+                <div ng-controller="ContactController">
+                  <ul ui-sortable="sortableOptions" ng-model="study.investigators" class="list-unstyled sortable"
+                    ng-show="study.investigators.length">
+                    <li ng-repeat="investigator in study.investigators">
+                      <a ng-click="viewContact(investigator)" title="{{'dnd-reorder' | translate}}">
+                        {{investigator.title}} {{investigator.firstName}} {{investigator.lastName}}
+                        {{investigator.academicLevel}}
+                      <span ng-show="investigator.institution.name.length">
+                        (<localized value="investigator.institution.name" lang="tab.lang"></localized>)
+                      </span>
+                      </a>
+                      <div class="inline"
+                        ng-if="inViewMode() && hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+                        <a ng-click="editInvestigator(study, investigator)" class="action">
+                          <i class="fa fa-pencil"></i>
+                        </a>
+                        <a ng-click="deleteInvestigator(study, investigator)" class="action">
+                          <i class="fa fa-trash-o"></i>
+                        </a>
+                      </div>
+                    </li>
+                  </ul>
+                  <button type="button" class="btn btn-info btn-sm" ng-click="addInvestigator(study)"
+                    ng-if="inViewMode() && hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+                    <i class="fa fa-plus"></i> <span translate>study.add-investigator</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <th translate>study.contacts</th>
+              <td>
+                <div ng-controller="ContactController">
+                  <ul ui-sortable="sortableOptions" ng-model="study.contacts" class="list-unstyled sortable"
+                    ng-show="study.contacts.length">
+                    <li ng-repeat="contact in study.contacts">
+                      <a ng-click="viewContact(contact)" title="{{'dnd-reorder' | translate}}">
+                        {{contact.title}} {{contact.firstName}} {{contact.lastName}} {{contact.academicLevel}}
+                      <span ng-show="contact.institution.name.length">
+                        (<localized value="contact.institution.name" lang="tab.lang"></localized>)
+                      </span>
+                      </a>
+                      <div class="inline"
+                        ng-if="inViewMode() && hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+                        <a ng-click="editContact(study, contact)" class="action"><i class="fa fa-pencil"></i></a>
+                        <a ng-click="deleteContact(study, contact)" class="action"><i class="fa fa-trash-o"></i></a>
+                      </div>
+                    </li>
+                  </ul>
+                  <button type="button" class="btn btn-info btn-sm" ng-click="addContact(study)"
+                    ng-if="inViewMode() && hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+                    <i class="fa fa-plus"></i> <span translate>study.add-contact</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr ng-show="study.startYear">
+              <th translate>study.start-year</th>
+              <td>{{study.startYear}}</td>
+            </tr>
+            <tr ng-show="study.endYear">
+              <th translate>study.end-year</th>
+              <td>{{study.endYear}}</td>
+            </tr>
+            <tr ng-show="study.networks.length">
+              <th translate>networks</th>
+              <td>{{study.networks}}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-md-6">
+          <h3 translate ng-show="study.methods">study.general-design</h3>
+          <table class="table table-bordered table-striped" ng-show="study.methods">
+            <tbody>
+            <tr ng-show="study.methods.designs.length || study.methods.otherDesign.length">
+              <th translate>study.design</th>
+              <td>
+                <ul class="list-unstyled">
+                  <li ng-repeat="design in study.methods.designs">
+                    {{'study.design.' + design | translate}}
+                  </li>
+                  <li ng-show="study.methods.otherDesign.length">
+                    <localized value="study.methods.otherDesign" lang="tab.lang"></localized>
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            <tr ng-show="study.methods.followUpInfo.length">
+              <th translate>study.follow-up</th>
+              <td>
+                <localized value="study.methods.followUpInfo" lang="tab.lang"></localized>
+              </td>
+            </tr>
+            <tr ng-show="study.methods.recruitments.length || study.methods.otherRecruitment.length">
+              <th translate>study.recruitment-target</th>
+              <td>
+                <ul class="list-unstyled">
+                  <li ng-repeat="recruitment in study.methods.recruitments">
+                    {{'study.recruitment.' + recruitment | translate}}
+                  </li>
+                  <li ng-show="study.methods.otherRecruitment.length">
+                    <localized value="study.methods.otherRecruitment" lang="tab.lang"></localized>
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            <tr ng-show="study.numberOfParticipants.participant">
+              <th translate>numberOfParticipants.participants</th>
+              <td>
+                <span ng-hide="study.numberOfParticipants.participant.noLimit">{{study.numberOfParticipants.participant.number | number}}</span>
+                <span ng-show="study.numberOfParticipants.participant.noLimit"
+                  translate>numberOfParticipants.no-limit</span>
+              </td>
+            </tr>
+            <tr ng-show="study.numberOfParticipants.sample">
+              <th translate>numberOfParticipants.sample</th>
+              <td>
+                <span ng-hide="study.numberOfParticipants.sample.noLimit">{{study.numberOfParticipants.sample.number | number}}</span>
+                  <span ng-show="study.numberOfParticipants.sample.noLimit"
+                    translate>numberOfParticipants.no-limit</span>
+              </td>
+            </tr>
+            <tr ng-show="study.numberOfParticipants.info.length">
+              <th translate>numberOfParticipants.suppl-info</th>
+              <td>
+                <localized value="study.numberOfParticipants.info" lang="tab.lang"></localized>
+              </td>
+            </tr>
+            <tr ng-show="study.methods.info.length">
+              <th translate>suppl-info</th>
+              <td>
+                <localized value="study.methods.info" lang="tab.lang"></localized>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6" ng-show="study.access.length || study.otherAccess.length">
+          <h3 translate>study.access.label</h3>
+          <table class="table table-bordered table-striped" ng-show="study.access.length || study.otherAccess.length">
+            <tbody>
+            <tr>
+              <th translate>study.access.for</th>
+              <td>
+                <ul class="list-unstyled">
+                  <li ng-repeat="access in study.access">
+                    {{'study.access.' + access | translate}}
+                  </li>
+                  <li ng-show="study.otherAccess.length">
+                    <localized value="study.otherAccess" lang="tab.lang"></localized>
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-md-6">
+          <h3 translate ng-show="study.markerPaper || study.pubmedId">study.marker-paper</h3>
+          <table class="table table-bordered table-striped" ng-show="study.markerPaper || study.pubmedId">
+            <tbody>
+            <tr ng-show="study.markerPaper">
+              <th translate>study.marker-paper</th>
+              <td>{{study.markerPaper}}</td>
+            </tr>
+            <tr ng-show="study.pubmedId">
+              <th translate>study.pubmed-id</th>
+              <td>
+                <a ng-href="http://www.ncbi.nlm.nih.gov/pubmed/{{study.pubmedId}}" target="_blank">
+                  PUBMED {{study.pubmedId}}
+                </a>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6" ng-show="study.attachments.length">
+          <h3 translate>study.documents</h3>
+          <table class="table table-bordered table-striped" ng-show="study.attachments.length">
+            <tbody>
+            <tr ng-repeat="attachment in study.attachments | filter:{lang:lang}">
+              <th>
+                <a target="_self" ng-href="/ws/draft/study/{{study.id}}/file/{{attachment.id}}/_download"
+                  download="{{attachment.fileName}}">
+                  {{attachment.fileName}}
+                </a>
+              </th>
+              <td>
+                {{attachment.size | bytes}}
+              </td>
+              <td>
+                <small>MD5: {{attachment.md5}}</small>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-md-6">
+          <h3 translate ng-show="study.info.length">suppl-info</h3>
+          <table class="table table-bordered table-striped" ng-show="study.info.length">
+            <tbody>
+            <tr>
+              <td>
+                <localized value="study.info" lang="tab.lang"></localized>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <h3 translate ng-show="study.populations.length">study.timeline</h3>
+      <div id="timeline"></div>
+
+      <h3>
+        <span translate>study.populations</span>
+      </h3>
+      <a ng-click="addPopulation()" class="btn btn-info"
+        ng-if="inViewMode() && hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+        <i class="fa fa-plus"></i> <span translate>study.add-population</span>
+      </a>
+
+      <!--<tabset vertical="true">-->
+      <!--<tab ng-repeat="population in study.populations" heading="{{population.id}}" active="{{$index === 0}}">-->
+      <!--<div ng-include="'app/study/views/population/population-view.html'"></div>-->
+      <!--</tab>-->
+      <!--</tabset>-->
+
+      <div ng-repeat="population in study.populations">
+        <div ng-include="'app/study/views/population/population-view.html'"></div>
+      </div>
+
+      <h3 translate ng-show="study.specificAuthorization || study.maelstromAuthorization">
+        study.authorization.label</h3>
+      <table class="table table-bordered table-striped"
+        ng-show="study.specificAuthorization || study.maelstromAuthorization">
+        <tbody>
+        <tr ng-show="study.maelstromAuthorization">
+          <td translate>study.authorization.maelstrom</td>
+          <td>
+            {{'study.authorization.authorized.' + study.maelstromAuthorization.authorized | translate}}
+              <span ng-show="study.maelstromAuthorization.authorized && study.maelstromAuthorization.authorizer">
+                <span translate>by</span> {{study.maelstromAuthorization.authorizer}}
+              </span>
+              <span ng-show="study.maelstromAuthorization.authorized && study.maelstromAuthorization.date">
+                <span translate>on</span> {{study.maelstromAuthorization.date}}
+              </span>
+          </td>
+        </tr>
+        <tr ng-show="study.specificAuthorization">
+          <td translate>study.authorization.specific</td>
+          <td>
+            {{'study.authorization.authorized.' + study.specificAuthorization.authorized | translate}}
+              <span ng-show="study.specificAuthorization.authorized && study.specificAuthorization.authorizer">
+                <span translate>by</span> {{study.specificAuthorization.authorizer}}
+              </span>
+              <span ng-show="study.specificAuthorization.authorized && study.specificAuthorization.date">
+                <span translate>on</span> {{study.specificAuthorization.date}}
+              </span>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+      <h3 translate ng-show="study.opal">datasets</h3>
+      <table class="table table-bordered table-striped" ng-show="study.opal">
+        <tbody>
+        <tr ng-show="study.opal">
+          <td translate>study.opal</td>
+          <td>
+            <a ng-href="{{study.opal}}" target="_blank">{{study.opal}}</a>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+
+    </tab>
+  </tabset>
+</div>
