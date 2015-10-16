@@ -21,7 +21,15 @@ mica.study
           controller: 'StudyEditController'
         })
         .when('/study/:id/revisions', {
-          templateUrl: 'app/study/views/study-view.html',
+          templateUrl: 'app/study/views/study-view-revisions.html',
+          controller: 'StudyViewController'
+        })
+        .when('/study/:id/files', {
+          templateUrl: 'app/study/views/study-view-files.html',
+          controller: 'StudyViewController'
+        })
+        .when('/study/:id/permissions', {
+          templateUrl: 'app/study/views/study-view-permissions.html',
           controller: 'StudyViewController'
         })
         .when('/study/:id/population/add', {

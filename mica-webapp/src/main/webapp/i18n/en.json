@@ -662,8 +662,11 @@
   "or": "or",
   "date": "Date",
   "author": "Author",
+  "permissions": "Permissions",
+  "files": "Files",
   "revisions": "Revisions",
   "revision": "Revision",
+  "revision-date": "Revision Date",
   "comment-label": "Comment",
   "restore": "Restore",
   "server": {
