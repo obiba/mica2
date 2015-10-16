@@ -30,6 +30,10 @@
   <small class="help-block">
     {{'revision-date' | translate}}: {{commitInfo.date | amDateFormat : 'lll'}} ({{commitInfo.author}})
   </small>
-  <div ng-include="'app/study/views/study-view-details.html'"></div>
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <div ng-include="'app/study/views/study-view-details.html'"></div>
+    </div>
+  </div>
 
 </div>
