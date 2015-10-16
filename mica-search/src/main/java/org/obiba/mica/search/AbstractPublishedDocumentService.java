@@ -82,7 +82,7 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
     @Nullable String queryString, @Nullable List<String> fields) {
     final QueryStringQueryBuilder query = queryString != null ? QueryBuilders.queryString(queryString) : null;
 
-    if(query != null) fields.forEach(f -> query.field(f));
+    if(query != null && fields != null) fields.forEach(f -> query.field(f));
 
     FilterBuilder filter = null;
 
