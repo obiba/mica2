@@ -11,6 +11,7 @@ import org.obiba.mica.core.upgrade.AttachmentsPathUpgrade;
 import org.obiba.mica.core.upgrade.AttachmentsRefactorUpgrade;
 import org.obiba.mica.core.upgrade.ContactsRefactorUpgrade;
 import org.obiba.mica.core.upgrade.NetworkLogoMigration;
+import org.obiba.mica.core.upgrade.NetworkStateUpgrade;
 import org.obiba.mica.core.upgrade.RuntimeVersionProvider;
 import org.obiba.mica.core.upgrade.MicaVersionModifier;
 import org.obiba.runtime.upgrade.UpgradeManager;
@@ -51,11 +52,12 @@ public class UpgradeConfiguration {
 
   @Bean(name = "upgradeSteps")
   public List<UpgradeStep> upgradeSteps(ApplicationContext applicationContext) {
-    return Lists.newArrayList(applicationContext.getBean(AttachmentsRefactorUpgrade.class),
-      applicationContext.getBean(NetworkLogoMigration.class),
-      applicationContext.getBean(AttachmentsMigration.class),
-      applicationContext.getBean(AttachmentsPathUpgrade.class),
-      applicationContext.getBean(AttachmentsCleanupUpgrade.class),
-      applicationContext.getBean(ContactsRefactorUpgrade.class));
+    return Lists.newArrayList(applicationContext.getBean(AttachmentsRefactorUpgrade.class), //
+      applicationContext.getBean(NetworkLogoMigration.class), //
+      applicationContext.getBean(AttachmentsMigration.class), //
+      applicationContext.getBean(AttachmentsPathUpgrade.class), //
+      applicationContext.getBean(AttachmentsCleanupUpgrade.class), //
+      applicationContext.getBean(ContactsRefactorUpgrade.class), //
+      applicationContext.getBean(NetworkStateUpgrade.class));
   }
 }

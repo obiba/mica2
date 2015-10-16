@@ -22,6 +22,4 @@ public interface NetworkRepository extends MongoRepository<Network, String>, Net
 
   List<Network> findByStudyIds(String studyId);
 
-  List<Network> findByPublished(boolean published);
-
 }

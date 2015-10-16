@@ -1,4 +1,4 @@
-package org.obiba.mica.study.domain;
+package org.obiba.mica.network.domain;
 
 import javax.validation.constraints.NotNull;
 
@@ -7,13 +7,13 @@ import org.obiba.mica.core.domain.LocalizedString;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
-public class StudyState extends EntityState {
+public class NetworkState extends EntityState {
 
   private static final long serialVersionUID = -4271967393906681773L;
 
   @Override
   public String pathPrefix() {
-    return "studies";
+    return "networks";
   }
 
   @NotNull

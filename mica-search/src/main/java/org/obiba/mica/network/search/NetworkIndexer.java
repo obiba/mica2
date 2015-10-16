@@ -16,6 +16,7 @@ import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.event.IndexNetworksEvent;
 import org.obiba.mica.network.event.NetworkDeletedEvent;
 import org.obiba.mica.network.event.NetworkPublishedEvent;
+import org.obiba.mica.network.event.NetworkUnpublishedEvent;
 import org.obiba.mica.network.event.NetworkUpdatedEvent;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.search.ElasticSearchIndexer;
@@ -50,21 +51,20 @@ public class NetworkIndexer {
   public void networkUpdated(NetworkUpdatedEvent event) {
     log.info("Network {} was updated", event.getPersistable());
     elasticSearchIndexer.index(DRAFT_NETWORK_INDEX, event.getPersistable());
-    if (event.getPersistable().isPublished()) {
-      elasticSearchIndexer.index(PUBLISHED_NETWORK_INDEX, event.getPersistable());
-    }
   }
 
   @Async
   @Subscribe
   public void networkPublished(NetworkPublishedEvent event) {
     log.info("Network {} was published", event.getPersistable());
-    if (event.getPersistable().isPublished()) {
-      elasticSearchIndexer.index(PUBLISHED_NETWORK_INDEX, event.getPersistable());
-    } else {
-      elasticSearchIndexer.delete(PUBLISHED_NETWORK_INDEX, event.getPersistable());
-    }
-    elasticSearchIndexer.index(DRAFT_NETWORK_INDEX, event.getPersistable());
+    elasticSearchIndexer.index(PUBLISHED_NETWORK_INDEX, event.getPersistable());
+  }
+
+  @Async
+  @Subscribe
+  public void networkPublished(NetworkUnpublishedEvent event) {
+    log.info("Network {} was unpublished", event.getPersistable());
+    elasticSearchIndexer.delete(PUBLISHED_NETWORK_INDEX, event.getPersistable());
   }
 
   @Async

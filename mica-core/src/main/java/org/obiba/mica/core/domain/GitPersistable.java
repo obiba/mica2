@@ -7,6 +7,8 @@ import org.springframework.data.domain.Persistable;
 
 public interface GitPersistable extends Persistable<String>, Timestamped {
 
+  void setId(String id);
+
   String pathPrefix();
 
   Map<String, Serializable> parts();

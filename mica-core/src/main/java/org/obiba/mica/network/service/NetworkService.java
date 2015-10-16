@@ -17,15 +17,20 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.joda.time.DateTime;
+import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.contact.event.PersonUpdatedEvent;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.file.FileStoreService;
+import org.obiba.mica.core.service.AbstractGitPersistableService;
 import org.obiba.mica.network.NetworkRepository;
+import org.obiba.mica.network.NetworkStateRepository;
 import org.obiba.mica.network.NoSuchNetworkException;
 import org.obiba.mica.network.domain.Network;
+import org.obiba.mica.network.domain.NetworkState;
 import org.obiba.mica.network.event.IndexNetworksEvent;
 import org.obiba.mica.network.event.NetworkDeletedEvent;
 import org.obiba.mica.network.event.NetworkPublishedEvent;
+import org.obiba.mica.network.event.NetworkUnpublishedEvent;
 import org.obiba.mica.network.event.NetworkUpdatedEvent;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
@@ -36,12 +41,19 @@ import org.springframework.validation.annotation.Validated;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 
+import static java.util.stream.Collectors.toList;
+import static org.obiba.mica.core.domain.RevisionStatus.DELETED;
+import static org.obiba.mica.core.domain.RevisionStatus.DRAFT;
+
 @Service
 @Validated
-public class NetworkService {
+public class NetworkService extends AbstractGitPersistableService<NetworkState, Network> {
 
   @Inject
   private NetworkRepository networkRepository;
+
+  @Inject
+  private NetworkStateRepository networkStateRepository;
 
   @Inject
   private EventBus eventBus;
@@ -73,11 +85,26 @@ public class NetworkService {
       saved.getLogo().setJustUploaded(false);
     }
 
+    NetworkState networkState = findEntityState(network, () -> {
+      NetworkState defaultState = new NetworkState();
+      defaultState.setName(network.getName());
+
+      return defaultState;
+    });
+
+    if(!network.isNew()) ensureGitRepository(networkState);
+
+    networkState.incrementRevisionsAhead();
+    networkStateRepository.save(networkState);
+
     saved.setLastModifiedDate(DateTime.now());
 
     networkRepository.saveWithReferences(saved);
     eventBus.post(new NetworkUpdatedEvent(saved));
+
     saved.getAllPersons().forEach(c -> eventBus.post(new PersonUpdatedEvent(c.getPerson())));
+
+    gitService.save(saved);
   }
 
   /**
@@ -90,7 +117,9 @@ public class NetworkService {
   @NotNull
   public Network findById(@NotNull String id) throws NoSuchNetworkException {
     Network network = networkRepository.findOne(id);
+
     if(network == null) throw NoSuchNetworkException.withId(id);
+
     return network;
   }
 
@@ -121,7 +150,12 @@ public class NetworkService {
    * @return
    */
   public List<Network> findAllPublishedNetworks() {
-    return networkRepository.findByPublished(true);
+    return findPublishedStates().stream() //
+      .filter(networkState -> { //
+        return gitService.hasGitRepository(networkState) && !Strings.isNullOrEmpty(networkState.getPublishedTag()); //
+      }) //
+      .map(networkState -> gitService.readFromTag(networkState, networkState.getPublishedTag(), Network.class)) //
+      .collect(toList());
   }
 
   /**
@@ -135,15 +169,12 @@ public class NetworkService {
    * Set the publication flag on a {@link org.obiba.mica.network.domain.Network}.
    *
    * @param id
-   * @param published
    * @throws NoSuchNetworkException
    */
   @Caching(evict = { @CacheEvict(value = "aggregations-metadata", key = "'network'") })
-  public void publish(@NotNull String id, boolean published) throws NoSuchNetworkException {
-    Network network = findById(id);
-    network.setPublished(published);
-    save(network);
-    eventBus.post(new NetworkPublishedEvent(network));
+  public void publish(@NotNull String id) throws NoSuchEntityException {
+    publishState(id);
+    eventBus.post(new NetworkPublishedEvent(networkRepository.findOne(id)));
   }
 
   /**
@@ -153,8 +184,13 @@ public class NetworkService {
    * @throws NoSuchNetworkException
    */
   public void index(@NotNull String id) throws NoSuchNetworkException {
+    NetworkState networkState = findStateById(id);
     Network network = findById(id);
+
     eventBus.post(new NetworkUpdatedEvent(network));
+
+    if(networkState.isPublished()) eventBus.post(new NetworkPublishedEvent(network));
+    else eventBus.post(new NetworkUnpublishedEvent(network));
   }
 
   /**
@@ -169,12 +205,18 @@ public class NetworkService {
 
     if (network.getLogo() != null) fileStoreService.delete(network.getLogo().getId());
 
+    networkStateRepository.delete(id);
+    gitService.deleteGitRepository(network);
+
     eventBus.post(new NetworkDeletedEvent(network));
   }
 
-  private void generateId(Network network) {
+  protected String generateId(Network network) {
     ensureAcronym(network);
-    network.setId(getNextId(network.getAcronym()));
+    String nextId = getNextId(network.getAcronym());
+    network.setId(nextId);
+
+    return nextId;
   }
 
   private String getNextId(LocalizedString suggested) {
@@ -200,4 +242,24 @@ public class NetworkService {
     }
   }
 
+  @Nullable
+  @Override
+  public Network unpublish(NetworkState networkState) {
+    networkState.resetRevisionsAhead();
+    networkState.setPublishedTag(null);
+
+    if(networkState.getRevisionStatus() != DELETED) networkState.setRevisionStatus(DRAFT);
+
+    entityStateRepository.save(networkState);
+    Network network = networkRepository.findOne(networkState.getId());
+
+    if(network != null) eventBus.post(new NetworkUnpublishedEvent(network));
+
+    return network;
+  }
+
+  @Override
+  protected Class<NetworkState> getType() {
+    return NetworkState.class;
+  }
 }

@@ -113,7 +113,7 @@ public abstract class AbstractAuditableDocument implements Auditable<String, Str
   }
 
   @Override
-  public final String toString() {
+  public String toString() {
     return toStringHelper().toString();
   }
 

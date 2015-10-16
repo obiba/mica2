@@ -87,7 +87,7 @@ public class DraftNetworkResource {
   @Path("/_publish")
   @RequiresPermissions({"/draft:PUBLISH"})
   public Response publish() {
-    networkService.publish(id, true);
+    networkService.publish(id);
     return Response.noContent().build();
   }
 
@@ -95,7 +95,7 @@ public class DraftNetworkResource {
   @Path("/_publish")
   @RequiresPermissions({"/draft:PUBLISH"})
   public Response unPublish() {
-    networkService.publish(id, false);
+    networkService.unPublish(id);
     return Response.noContent().build();
   }
 
