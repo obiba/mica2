@@ -11,7 +11,7 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.core.domain.PersistableWithAttachments;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.file.Attachment;
-import org.obiba.mica.file.FileService;
+import org.obiba.mica.file.FileStoreService;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +26,7 @@ public class FileResource {
   private GitService gitService;
 
   @Inject
-  private FileService fileService;
+  private FileStoreService fileStoreService;
 
   private PersistableWithAttachments persistable;
 
@@ -57,7 +57,7 @@ public class FileResource {
         .header("Content-Disposition", "attachment; filename=\"" + attachment.getName() + "\"").build();
     }
 
-    return Response.ok(fileService.getFile(attachment.getId()))
+    return Response.ok(fileStoreService.getFile(attachment.getId()))
       .header("Content-Disposition", "attachment; filename=\"" + attachment.getName() + "\"").build();
   }
 }

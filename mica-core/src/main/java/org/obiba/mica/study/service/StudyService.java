@@ -27,7 +27,7 @@ import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.StudyDatasetRepository;
 import org.obiba.mica.file.Attachment;
-import org.obiba.mica.file.FileService;
+import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.study.ConstraintException;
@@ -83,7 +83,7 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
   private GitService gitService;
 
   @Inject
-  private FileService fileService;
+  private FileStoreService fileStoreService;
 
   @Inject
   private FileSystemService fileSystemService;
@@ -147,7 +147,7 @@ public class StudyService implements ApplicationListener<ContextRefreshedEvent> 
     if (!study.isNew()) ensureStudyGitRepository(studyState);
 
     if (study.getLogo() != null && study.getLogo().isJustUploaded()) {
-      fileService.save(study.getLogo().getId());
+      fileStoreService.save(study.getLogo().getId());
       study.getLogo().setJustUploaded(false);
     }
 

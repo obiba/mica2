@@ -16,7 +16,7 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.file.Attachment;
-import org.obiba.mica.file.FileService;
+import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +28,7 @@ import com.google.common.base.Strings;
 public class DraftFileSystemResource extends AbstractFileSystemResource {
 
   @Inject
-  private FileService fileService;
+  private FileStoreService fileStoreService;
 
   @Override
   protected boolean isPublished() {
@@ -39,7 +39,7 @@ public class DraftFileSystemResource extends AbstractFileSystemResource {
   @Path("/file-dl/{path:.*}")
   public Response downloadFile(@PathParam("path") String path, @QueryParam("version") String version) {
     Attachment attachment = doGetAttachment(path);
-    return Response.ok(fileService.getFile(attachment.getId()))
+    return Response.ok(fileStoreService.getFile(attachment.getId()))
       .header("Content-Disposition", "attachment; filename=\"" + attachment.getName() + "\"").build();
   }
 

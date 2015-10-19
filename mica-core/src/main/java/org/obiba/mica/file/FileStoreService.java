@@ -5,7 +5,7 @@ import java.io.InputStream;
 /**
  * File storage service: read, write and delete operations.
  */
-public interface FileService {
+public interface FileStoreService {
 
   /**
    * Get an {@link java.io.InputStream} from an existing stored file.

@@ -9,7 +9,7 @@ import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.AttachmentStateRepository;
 import org.obiba.mica.core.repository.PersonAwareRepository;
 import org.obiba.mica.core.repository.PersonRepository;
-import org.obiba.mica.file.FileService;
+import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.study.domain.Study;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
@@ -27,7 +27,7 @@ public class StudyRepositoryImpl implements StudyRepositoryCustom, PersonAwareRe
   PersonRepository personRepository;
 
   @Inject
-  FileService fileService;
+  FileStoreService fileStoreService;
 
   @Inject
   MongoTemplate mongoTemplate;

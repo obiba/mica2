@@ -16,7 +16,7 @@ import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.AttachmentStateRepository;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
-import org.obiba.mica.file.FileService;
+import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.event.FileDeletedEvent;
 import org.obiba.mica.file.event.FilePublishedEvent;
 import org.obiba.mica.file.event.FileUnPublishedEvent;
@@ -48,7 +48,7 @@ public class FileSystemService {
   private AttachmentStateRepository attachmentStateRepository;
 
   @Inject
-  private FileService fileService;
+  private FileStoreService fileStoreService;
 
   //
   // Persistence
@@ -75,10 +75,10 @@ public class FileSystemService {
     if(saved.isJustUploaded()) {
       if(attachmentRepository.exists(saved.getId())) {
         // replace already existing attachment
-        fileService.delete(saved.getId());
+        fileStoreService.delete(saved.getId());
         attachmentRepository.delete(saved.getId());
       }
-      fileService.save(saved.getId());
+      fileStoreService.save(saved.getId());
       saved.setJustUploaded(false);
     }
 
@@ -265,7 +265,7 @@ public class FileSystemService {
     newAttachment.setPath(newPath);
     newAttachment.setName(newName);
     save(newAttachment);
-    fileService.save(newAttachment.getId(), fileService.getFile(attachment.getId()));
+    fileStoreService.save(newAttachment.getId(), fileStoreService.getFile(attachment.getId()));
     if(delete) updateStatus(state, RevisionStatus.DELETED);
   }
 
