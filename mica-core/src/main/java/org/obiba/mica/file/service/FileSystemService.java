@@ -1,19 +1,16 @@
 package org.obiba.mica.file.service;
 
 import java.util.List;
-import java.util.Locale;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.math3.util.Pair;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.obiba.mica.NoSuchEntityException;
-import org.obiba.mica.core.domain.Attributes;
-import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.AttachmentStateRepository;
@@ -35,10 +32,6 @@ import org.springframework.stereotype.Component;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-
-import javafx.util.Pair;
-
-import static org.obiba.mica.file.FileUtils.normalizePath;
 
 @Component
 public class FileSystemService {
@@ -369,7 +362,7 @@ public class FileSystemService {
    * @return
    */
   public static Pair<String, String> extractPathName(String pathWithName, @Nullable String prefix) {
-    return new Pair<>(extractDirName(pathWithName, prefix), extractBaseName(pathWithName));
+    return Pair.create(extractDirName(pathWithName, prefix), extractBaseName(pathWithName));
   }
 
   /**

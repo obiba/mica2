@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.math3.util.Pair;
 import org.joda.time.DateTime;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
@@ -24,8 +25,6 @@ import org.obiba.mica.web.model.Mica;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-
-import javafx.util.Pair;
 
 import static org.obiba.mica.file.FileUtils.isRoot;
 import static org.obiba.mica.file.FileUtils.normalizePath;

@@ -17,13 +17,10 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileService;
-import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
-
-import javafx.util.Pair;
 
 @Component
 @Path("/draft")
