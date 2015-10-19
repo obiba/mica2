@@ -23,7 +23,7 @@ import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.core.support.IdentifierGenerator;
 import org.obiba.mica.file.Attachment;
-import org.obiba.mica.file.FileService;
+import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
@@ -66,7 +66,7 @@ public class DataAccessRequestService {
   private DataAccessRequestUtilService dataAccessRequestUtilService;
 
   @Inject
-  private FileService fileService;
+  private FileStoreService fileStoreService;
 
   @Inject
   private MailService mailService;
@@ -112,14 +112,14 @@ public class DataAccessRequestService {
 
     if(toSave != null)
       toSave.forEach(a -> {
-        fileService.save(a.getId());
+        fileStoreService.save(a.getId());
         a.setJustUploaded(false);
         attachmentRepository.save(a);
       });
 
     dataAccessRequestRepository.saveWithReferences(saved);
 
-    if(toDelete != null) toDelete.forEach(a -> fileService.delete(a.getId()));
+    if(toDelete != null) toDelete.forEach(a -> fileStoreService.delete(a.getId()));
 
     sendNotificationEmails(saved, from);
     return saved;
@@ -137,7 +137,7 @@ public class DataAccessRequestService {
 
     dataAccessRequestRepository.deleteWithReferences(dataAccessRequest);
 
-    attachments.forEach(a -> fileService.delete(a.getId()));
+    attachments.forEach(a -> fileStoreService.delete(a.getId()));
   }
 
   /**
@@ -340,10 +340,10 @@ public class DataAccessRequestService {
 
           if(pdfTemplate == null) pdfTemplate = dataAccessForm.getPdfTemplates().values().stream().findFirst().get();
 
-          template = ByteStreams.toByteArray(fileService.getFile(pdfTemplate.getId()));
+          template = ByteStreams.toByteArray(fileStoreService.getFile(pdfTemplate.getId()));
         } else template = ByteStreams.toByteArray(defaultTemplateResource.getInputStream());
       } else throw new NoSuchElementException();
-    } else template = ByteStreams.toByteArray(fileService.getFile(pdfTemplate.getId()));
+    } else template = ByteStreams.toByteArray(fileStoreService.getFile(pdfTemplate.getId()));
 
     return template;
   }

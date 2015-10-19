@@ -210,8 +210,8 @@ public class Dtos {
   }
 
   @NotNull
-  public Mica.FileDto asFileDto(@NotNull AttachmentState attachmentState, boolean published) {
-    return attachmentDtos.asFileDto(attachmentState, published);
+  public Mica.FileDto asFileDto(@NotNull AttachmentState attachmentState, boolean publishedFileSystem) {
+    return attachmentDtos.asFileDto(attachmentState, publishedFileSystem);
   }
 
   @NotNull

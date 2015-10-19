@@ -16,7 +16,7 @@ import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.AttachmentStateRepository;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
-import org.obiba.mica.file.FileService;
+import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.event.FileDeletedEvent;
 import org.obiba.mica.file.event.FilePublishedEvent;
 import org.obiba.mica.file.event.FileUnPublishedEvent;
@@ -48,7 +48,7 @@ public class FileSystemService {
   private AttachmentStateRepository attachmentStateRepository;
 
   @Inject
-  private FileService fileService;
+  private FileStoreService fileStoreService;
 
   //
   // Persistence
@@ -75,10 +75,10 @@ public class FileSystemService {
     if(saved.isJustUploaded()) {
       if(attachmentRepository.exists(saved.getId())) {
         // replace already existing attachment
-        fileService.delete(saved.getId());
+        fileStoreService.delete(saved.getId());
         attachmentRepository.delete(saved.getId());
       }
-      fileService.save(saved.getId());
+      fileStoreService.save(saved.getId());
       saved.setJustUploaded(false);
     }
 
@@ -265,7 +265,7 @@ public class FileSystemService {
     newAttachment.setPath(newPath);
     newAttachment.setName(newName);
     save(newAttachment);
-    fileService.save(newAttachment.getId(), fileService.getFile(attachment.getId()));
+    fileStoreService.save(newAttachment.getId(), fileStoreService.getFile(attachment.getId()));
     if(delete) updateStatus(state, RevisionStatus.DELETED);
   }
 
@@ -320,12 +320,12 @@ public class FileSystemService {
   // Query
   //
 
-  public List<AttachmentState> findAttachmentStates(String pathRegEx, boolean publishedConstraint) {
-    return publishedConstraint ? findPublishedAttachmentStates(pathRegEx) : findDraftAttachmentStates(pathRegEx);
+  public List<AttachmentState> findAttachmentStates(String pathRegEx, boolean publishedFS) {
+    return publishedFS ? findPublishedAttachmentStates(pathRegEx) : findDraftAttachmentStates(pathRegEx);
   }
 
-  public List<Attachment> findAttachments(String pathRegEx, boolean publishedConstraint) {
-    return publishedConstraint ? findDraftAttachments(pathRegEx) : findPublishedAttachments(pathRegEx);
+  public List<Attachment> findAttachments(String pathRegEx, boolean publishedFS) {
+    return publishedFS ? findDraftAttachments(pathRegEx) : findPublishedAttachments(pathRegEx);
   }
 
   /**
@@ -333,19 +333,19 @@ public class FileSystemService {
    *
    * @param path
    * @param name
-   * @param publishedConstraint if true and state is not published, a not found error is thrown
+   * @param publishedFS published file system view: if true and state is not published, a not found error is thrown
    * @return
    */
   @NotNull
-  public AttachmentState getAttachmentState(String path, String name, boolean publishedConstraint) {
+  public AttachmentState getAttachmentState(String path, String name, boolean publishedFS) {
     List<AttachmentState> state = attachmentStateRepository.findByPathAndName(path, name);
     if(state.isEmpty()) throw NoSuchEntityException.withPath(Attachment.class, path + "/" + name);
-    if(publishedConstraint && !state.get(0).isPublished())
+    if(publishedFS && !state.get(0).isPublished())
       throw NoSuchEntityException.withPath(Attachment.class, path + "/" + name);
     return state.get(0);
   }
 
-  public boolean hasAttachmentState(String path, String name, boolean publishedConstraint) {
+  public boolean hasAttachmentState(String path, String name, boolean publishedFS) {
     List<AttachmentState> state = attachmentStateRepository.findByPathAndName(path, name);
     return !state.isEmpty();
   }

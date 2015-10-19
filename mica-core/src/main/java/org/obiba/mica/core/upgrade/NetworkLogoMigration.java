@@ -11,7 +11,7 @@ import javax.inject.Inject;
 import org.obiba.git.NoSuchGitRepositoryException;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.service.GitService;
-import org.obiba.mica.file.FileService;
+import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.runtime.Version;
@@ -28,7 +28,7 @@ public class NetworkLogoMigration implements UpgradeStep {
   private GitService gitService;
 
   @Inject
-  private FileService fileService;
+  private FileStoreService fileStoreService;
 
   @Inject
   private NetworkService networkService;
@@ -71,7 +71,7 @@ public class NetworkLogoMigration implements UpgradeStep {
         try {
           if(network.getLogo() != null) {
             byte[] ba = gitService.readFileHead(persistable, network.getLogo().getId());
-            fileService.save(network.getLogo().getId(), new ByteArrayInputStream(ba));
+            fileStoreService.save(network.getLogo().getId(), new ByteArrayInputStream(ba));
           }
 
           gitService.deleteGitRepository(persistable);

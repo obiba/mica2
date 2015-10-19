@@ -7,7 +7,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
 import org.obiba.mica.file.Attachment;
-import org.obiba.mica.file.FileService;
+import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.stereotype.Component;
 
@@ -16,10 +16,10 @@ import org.springframework.stereotype.Component;
 public class PublishedFileSystemResource extends AbstractFileSystemResource {
 
   @Inject
-  private FileService fileService;
+  private FileStoreService fileStoreService;
 
   @Override
-  protected boolean isPublished() {
+  protected boolean isPublishedFileSystem() {
     return true;
   }
 
@@ -27,7 +27,7 @@ public class PublishedFileSystemResource extends AbstractFileSystemResource {
   @Path("/file-dl/{path:.*}")
   public Response downloadFile(@PathParam("path") String path) {
     Attachment attachment = doGetAttachment(path);
-    return Response.ok(fileService.getFile(attachment.getId()))
+    return Response.ok(fileStoreService.getFile(attachment.getId()))
       .header("Content-Disposition", "attachment; filename=\"" + attachment.getName() + "\"").build();
   }
 

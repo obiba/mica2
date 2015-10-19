@@ -14,7 +14,7 @@ import org.obiba.mica.core.domain.GitPersistable;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.file.Attachment;
-import org.obiba.mica.file.FileService;
+import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.repository.DataAccessFormRepository;
 import org.obiba.mica.study.StudyRepository;
@@ -35,7 +35,7 @@ public class AttachmentsMigration implements UpgradeStep {
   private GitService gitService;
 
   @Inject
-  private FileService fileService;
+  private FileStoreService fileStoreService;
 
   @Inject
   private StudyRepository studyRepository;
@@ -106,7 +106,7 @@ public class AttachmentsMigration implements UpgradeStep {
   private void migrateAttachment(GitPersistable persistable, String sourceId, String destId) {
     try {
       byte[] ba = gitService.readFileHead(persistable, sourceId);
-      fileService.save(destId, new ByteArrayInputStream(ba));
+      fileStoreService.save(destId, new ByteArrayInputStream(ba));
     } catch(GitException ex) {
       if(!(ex.getCause() instanceof FileNotFoundException)) {
         throw ex;

@@ -5,7 +5,7 @@ import javax.inject.Inject;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.core.repository.AttachmentAwareRepository;
 import org.obiba.mica.core.repository.AttachmentRepository;
-import org.obiba.mica.file.FileService;
+import org.obiba.mica.file.FileStoreService;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +17,7 @@ public class DataAccessRequestRepositoryImpl
   AttachmentRepository attachmentRepository;
 
   @Inject
-  FileService fileService;
+  FileStoreService fileStoreService;
 
   @Inject
   MongoTemplate mongoTemplate;
@@ -28,8 +28,8 @@ public class DataAccessRequestRepositoryImpl
   }
 
   @Override
-  public FileService getFileService() {
-    return fileService;
+  public FileStoreService getFileStoreService() {
+    return fileStoreService;
   }
 
   @Override

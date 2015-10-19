@@ -27,7 +27,7 @@ import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.StudyDatasetRepository;
 import org.obiba.mica.file.Attachment;
-import org.obiba.mica.file.FileService;
+import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.impl.GridFsService;
 import org.obiba.mica.file.TempFileRepository;
 import org.obiba.mica.file.service.FileSystemService;
@@ -421,7 +421,7 @@ public class StudyDtosTest {
     }
 
     @Bean
-    public FileService fsService() {
+    public FileStoreService fsService() {
       return mock(GridFsService.class);
     }
 

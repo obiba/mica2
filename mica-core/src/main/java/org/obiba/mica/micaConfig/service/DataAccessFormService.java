@@ -11,7 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.service.GitService;
-import org.obiba.mica.file.FileService;
+import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.repository.DataAccessFormRepository;
 import org.springframework.core.io.DefaultResourceLoader;
@@ -25,7 +25,7 @@ public class DataAccessFormService {
   GitService gitService;
 
   @Inject
-  FileService fileService;
+  FileStoreService fileStoreService;
 
   @Inject
   DataAccessFormRepository dataAccessFormRepository;
@@ -37,7 +37,7 @@ public class DataAccessFormService {
 
     dataAccessForm.getPdfTemplates().forEach((k,v)-> {
       if(v.isJustUploaded()) {
-        fileService.save(v.getId());
+        fileStoreService.save(v.getId());
         v.setJustUploaded(false);
       }
     });

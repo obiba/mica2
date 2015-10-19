@@ -19,7 +19,7 @@ import javax.validation.constraints.NotNull;
 import org.joda.time.DateTime;
 import org.obiba.mica.contact.event.PersonUpdatedEvent;
 import org.obiba.mica.core.domain.LocalizedString;
-import org.obiba.mica.file.FileService;
+import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.network.NoSuchNetworkException;
 import org.obiba.mica.network.domain.Network;
@@ -47,7 +47,7 @@ public class NetworkService {
   private EventBus eventBus;
 
   @Inject
-  private FileService fileService;
+  private FileStoreService fileStoreService;
 
   /**
    * Create or update provided {@link org.obiba.mica.network.domain.Network}.
@@ -69,7 +69,7 @@ public class NetworkService {
     }
 
     if (saved.getLogo() != null && saved.getLogo().isJustUploaded()) {
-      fileService.save(saved.getLogo().getId());
+      fileStoreService.save(saved.getLogo().getId());
       saved.getLogo().setJustUploaded(false);
     }
 
@@ -167,7 +167,7 @@ public class NetworkService {
     Network network = findById(id);
     networkRepository.deleteWithReferences(network);
 
-    if (network.getLogo() != null) fileService.delete(network.getLogo().getId());
+    if (network.getLogo() != null) fileStoreService.delete(network.getLogo().getId());
 
     eventBus.post(new NetworkDeletedEvent(network));
   }

@@ -5,7 +5,7 @@ import java.io.InputStream;
 import javax.inject.Inject;
 
 import org.obiba.mica.file.FileRuntimeException;
-import org.obiba.mica.file.FileService;
+import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.service.TempFileService;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import com.mongodb.gridfs.GridFSDBFile;
 
 @Component
-public class GridFsService implements FileService {
+public class GridFsService implements FileStoreService {
 
   @Inject
   private GridFsOperations gridFsOperations;

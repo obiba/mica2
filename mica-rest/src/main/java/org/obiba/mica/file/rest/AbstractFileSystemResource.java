@@ -44,7 +44,7 @@ public abstract class AbstractFileSystemResource {
    *
    * @return
    */
-  protected abstract boolean isPublished();
+  protected abstract boolean isPublishedFileSystem();
 
   protected List<Mica.FileDto> doSearchFiles(String path, String query, boolean recursively) {
     return getChildrenFiles(normalizePath(path), recursively);
@@ -59,8 +59,8 @@ public abstract class AbstractFileSystemResource {
     if(basePath.endsWith("/")) throw new IllegalArgumentException("Folder download is not supported");
 
     Pair<String, String> pathName = FileSystemService.extractPathName(basePath);
-    AttachmentState state = fileSystemService.getAttachmentState(pathName.getKey(), pathName.getValue(), isPublished());
-    if(isPublished()) return state.getPublishedAttachment();
+    AttachmentState state = fileSystemService.getAttachmentState(pathName.getKey(), pathName.getValue(), isPublishedFileSystem());
+    if(isPublishedFileSystem()) return state.getPublishedAttachment();
 
     if(Strings.isNullOrEmpty(version)) return state.getAttachment();
 
@@ -214,8 +214,8 @@ public abstract class AbstractFileSystemResource {
 
   private Mica.FileDto getFileDto(String basePath) {
     Pair<String, String> pathName = FileSystemService.extractPathName(basePath);
-    AttachmentState state = fileSystemService.getAttachmentState(pathName.getKey(), pathName.getValue(), isPublished());
-    return dtos.asFileDto(state, isPublished());
+    AttachmentState state = fileSystemService.getAttachmentState(pathName.getKey(), pathName.getValue(), isPublishedFileSystem());
+    return dtos.asFileDto(state, isPublishedFileSystem());
   }
 
   private Mica.FileDto getFolderDto(String basePath) {
@@ -247,7 +247,7 @@ public abstract class AbstractFileSystemResource {
   private Iterable<Mica.FileDto> getChildrenFolders(String basePath) {
     List<Mica.FileDto> folders = Lists.newArrayList();
     String pathRegEx = isRoot(basePath) ? "^/" : String.format("^%s/", basePath);
-    fileSystemService.findAttachmentStates(pathRegEx, isPublished()).stream() //
+    fileSystemService.findAttachmentStates(pathRegEx, isPublishedFileSystem()).stream() //
       .collect(Collectors.groupingBy(new Function<AttachmentState, String>() {
         @Override
         public String apply(AttachmentState state) {
@@ -263,16 +263,16 @@ public abstract class AbstractFileSystemResource {
 
   private List<Mica.FileDto> getChildrenFiles(String basePath, boolean recursively) {
     List<AttachmentState> states = fileSystemService
-      .findAttachmentStates(String.format("^%s$", basePath), isPublished()).stream().collect(Collectors.toList());
+      .findAttachmentStates(String.format("^%s$", basePath), isPublishedFileSystem()).stream().collect(Collectors.toList());
 
     if(recursively) {
-      states.addAll(fileSystemService.findAttachmentStates(String.format("^%s/", basePath), isPublished()).stream()
+      states.addAll(fileSystemService.findAttachmentStates(String.format("^%s/", basePath), isPublishedFileSystem()).stream()
         .collect(Collectors.toList()));
     }
 
     return states.stream().map(s -> {
       Mica.FileDto f = dtos.asFileDto(s);
-      if(isPublished()) f = f.toBuilder().clearRevisionStatus().build();
+      if(isPublishedFileSystem()) f = f.toBuilder().clearRevisionStatus().build();
       return f;
     }).collect(Collectors.toList());
   }

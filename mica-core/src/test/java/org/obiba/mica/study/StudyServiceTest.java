@@ -25,7 +25,7 @@ import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.AttachmentStateRepository;
 import org.obiba.mica.core.service.GitService;
-import org.obiba.mica.file.FileService;
+import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.impl.GridFsService;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.file.service.TempFileService;
@@ -353,7 +353,7 @@ public class StudyServiceTest {
     }
 
     @Bean
-    public FileService fsService() {
+    public FileStoreService fsService() {
       return mock(GridFsService.class);
     }
 
