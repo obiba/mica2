@@ -31,7 +31,7 @@ public class DraftFileSystemResource extends AbstractFileSystemResource {
   private FileStoreService fileStoreService;
 
   @Override
-  protected boolean isPublished() {
+  protected boolean isPublishedFileSystem() {
     return false;
   }
 

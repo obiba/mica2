@@ -40,10 +40,10 @@ class AttachmentDtos {
   }
 
   @NotNull
-  Mica.FileDto asFileDto(AttachmentState state, boolean published) {
+  Mica.FileDto asFileDto(AttachmentState state, boolean publishedFileSystem) {
     Mica.FileDto.Builder builder = asFileDto(state).toBuilder();
 
-    if(published) {
+    if(publishedFileSystem) {
       builder.clearRevisionStatus();
       if(state.isPublished()) {
         builder.setAttachment(asDto(state.getPublishedAttachment()));
