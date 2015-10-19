@@ -67,6 +67,11 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
    * @param network
    */
   public void save(@NotNull Network network) {
+    save(network, null);
+  }
+
+  @Override
+  public void save(@NotNull Network network, String comment) {
     Network saved = network;
     if(network.isNew()) {
       generateId(saved);
@@ -104,7 +109,7 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
 
     saved.getAllPersons().forEach(c -> eventBus.post(new PersonUpdatedEvent(c.getPerson())));
 
-    gitService.save(saved);
+    gitService.save(saved, comment);
   }
 
   /**
@@ -261,5 +266,11 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
   @Override
   protected Class<NetworkState> getType() {
     return NetworkState.class;
+  }
+
+  @NotNull
+  @Override
+  public Network findDraft(@NotNull String id) throws NoSuchEntityException {
+    return findById(id);
   }
 }

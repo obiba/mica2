@@ -48,8 +48,8 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
@@ -93,9 +93,6 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
 
   @Inject
   private HarmonizationDatasetRepository harmonizationDatasetRepository;
-
-  @Inject
-  private ObjectMapper objectMapper;
 
   @Inject
   private EventBus eventBus;
@@ -145,9 +142,10 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
 
   @NotNull
   @Cacheable(value = "studies-draft", key = "#id")
-  public Study findDraftStudy(@NotNull String id) throws NoSuchEntityException {
+  public Study findDraft(@NotNull String id) throws NoSuchEntityException {
     // ensure study exists
     getEntityState(id);
+
     return studyRepository.findOne(id);
   }
 
@@ -309,10 +307,17 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
     return StudyState.class;
   }
 
-  public Study getStudyFromCommit(@NotNull Study study, @NotNull String commitId) throws IOException {
+  @Override
+  public Study getFromCommit(@NotNull Study study, @NotNull String commitId) {
     String studyBlob = gitService.getBlob(study, commitId, Study.class);
     InputStream inputStream = new ByteArrayInputStream(studyBlob.getBytes(StandardCharsets.UTF_8));
-    Study restoredStudy = objectMapper.readValue(inputStream, Study.class);
+    Study restoredStudy;
+
+    try {
+      restoredStudy = objectMapper.readValue(inputStream, Study.class);
+    } catch(IOException e) {
+      throw Throwables.propagate(e);
+    }
 
     Stream.concat(restoredStudy.getAttachments().stream(),
       restoredStudy.getPopulations().stream().flatMap(p -> p.getDataCollectionEvents().stream())

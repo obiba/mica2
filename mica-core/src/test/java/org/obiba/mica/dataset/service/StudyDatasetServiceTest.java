@@ -63,7 +63,7 @@ public class StudyDatasetServiceTest {
     RestDatasource r = mock(RestDatasource.class);
     when(r.getValueTable(anyString())).thenThrow(new MagmaRuntimeException());
     when(opalService.getDatasource(anyString(), anyString())).thenReturn(r);
-    when(studyService.findDraftStudy(anyString())).thenReturn(study);
+    when(studyService.findDraft(anyString())).thenReturn(study);
 
     studyDatasetService.save(dataset);
   }
@@ -73,7 +73,7 @@ public class StudyDatasetServiceTest {
     RestDatasource r = mock(RestDatasource.class);
     when(r.getValueTable(anyString())).thenThrow(NoSuchValueTableException.class);
     when(opalService.getDatasource(anyString(), anyString())).thenReturn(r);
-    when(studyService.findDraftStudy(anyString())).thenReturn(study);
+    when(studyService.findDraft(anyString())).thenReturn(study);
     dataset.setPublished(true);
 
     exception.expect(InvalidDatasetException.class);

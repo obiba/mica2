@@ -1,5 +1,9 @@
 package org.obiba.mica.core.service;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -13,14 +17,21 @@ import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.core.domain.GitPersistable;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.repository.EntityStateRepository;
+import org.obiba.mica.study.domain.Study;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Throwables;
 
 import static org.obiba.mica.core.domain.RevisionStatus.DRAFT;
 
 public abstract class AbstractGitPersistableService<T extends EntityState, T1 extends GitPersistable> {
 
   private static final Logger log = LoggerFactory.getLogger(AbstractGitPersistableService.class);
+
+  @Inject
+  protected ObjectMapper objectMapper;
 
   @Inject
   protected GitService gitService;
@@ -31,6 +42,22 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
   protected abstract GitPersistable unpublish(T gitPersistable);
 
   protected abstract Class<T> getType();
+
+  @NotNull
+  public abstract T1 findDraft(@NotNull String id) throws NoSuchEntityException;
+
+  public T1 getFromCommit(T1 gitPersistable, String commitId) {
+    String blob = gitService.getBlob(gitPersistable, commitId, getType());
+    InputStream inputStream = new ByteArrayInputStream(blob.getBytes(StandardCharsets.UTF_8));
+
+    try {
+      return (T1) objectMapper.readValue(inputStream, getType());
+    } catch(IOException e) {
+      throw Throwables.propagate(e);
+    }
+  }
+
+  public abstract void save(T1 gitPersistable, String comments);
 
   @NotNull
   public T findStateById(@NotNull String id) throws NoSuchEntityException {

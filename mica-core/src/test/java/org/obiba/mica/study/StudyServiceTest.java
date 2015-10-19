@@ -123,7 +123,7 @@ public class StudyServiceTest {
 
     verify(eventBus).post(any(DraftStudyUpdatedEvent.class));
 
-    Study retrievedStudy = studyService.findDraftStudy(study.getId());
+    Study retrievedStudy = studyService.findDraft(study.getId());
     assertThat(retrievedStudy).areFieldsEqualToEachOther(study);
   }
 
@@ -139,7 +139,7 @@ public class StudyServiceTest {
     study.setContacts(persons);
 
     studyService.save(study);
-    Study retrievedStudy = studyService.findDraftStudy(study.getId());
+    Study retrievedStudy = studyService.findDraft(study.getId());
 
     assertThat(retrievedStudy.getContacts()).contains(person);
   }
@@ -164,7 +164,7 @@ public class StudyServiceTest {
 
     verify(eventBus, times(2)).post(any(DraftStudyUpdatedEvent.class));
 
-    Study retrievedStudy = studyService.findDraftStudy(study.getId());
+    Study retrievedStudy = studyService.findDraft(study.getId());
     assertThat(retrievedStudy).areFieldsEqualToEachOther(study);
   }
 
@@ -184,11 +184,11 @@ public class StudyServiceTest {
     assertThat(publishedState.getId()).isEqualTo(study.getId());
     assertThat(publishedState.getPublishedTag()).isEqualTo("1");
 
-    Study draft = studyService.findDraftStudy(study.getId());
+    Study draft = studyService.findDraft(study.getId());
     draft.setName(en("new name en").forFr("new name fr"));
     studyService.save(draft);
 
-    assertThat(studyService.findDraftStudy(study.getId())).areFieldsEqualToEachOther(draft);
+    assertThat(studyService.findDraft(study.getId())).areFieldsEqualToEachOther(draft);
   }
 
   @Test
@@ -214,7 +214,7 @@ public class StudyServiceTest {
     });
 
     FileUtil.delete(Config.BASE_REPO);
-    Study draft = studyService.findDraftStudy(study.getId());
+    Study draft = studyService.findDraft(study.getId());
     draft.setName(en("d en").forFr("d fr"));
     studyService.save(draft);
     studyService.publish(draft.getId());
@@ -233,7 +233,7 @@ public class StudyServiceTest {
     });
 
     FileUtil.delete(Config.BASE_CLONE);
-    Study draft = studyService.findDraftStudy(study.getId());
+    Study draft = studyService.findDraft(study.getId());
     draft.setName(en("d en").forFr("d fr"));
     studyService.save(draft);
     studyService.publish(draft.getId());
@@ -254,7 +254,7 @@ public class StudyServiceTest {
     FileUtil.delete(Config.BASE_REPO);
     FileUtil.delete(Config.BASE_CLONE);
 
-    Study draft = studyService.findDraftStudy(study.getId());
+    Study draft = studyService.findDraft(study.getId());
     draft.setName(en("d en").forFr("d fr"));
     studyService.save(draft);
     studyService.publish(draft.getId());
