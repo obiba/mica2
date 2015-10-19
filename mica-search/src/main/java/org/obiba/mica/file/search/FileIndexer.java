@@ -12,6 +12,7 @@ package org.obiba.mica.file.search;
 
 import javax.inject.Inject;
 
+import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.event.FileDeletedEvent;
 import org.obiba.mica.file.event.FilePublishedEvent;
 import org.obiba.mica.file.event.FileUnPublishedEvent;
@@ -42,6 +43,7 @@ public class FileIndexer {
   @Subscribe
   public void onFilePublished(FilePublishedEvent event) {
     log.info("File {} was published", event.getPersistable());
+    if (FileUtils.isDirectory(event.getPersistable())) return;
     elasticSearchIndexer.index(ATTACHMENT_PUBLISHED_INDEX, event.getPersistable());
   }
 
@@ -49,6 +51,7 @@ public class FileIndexer {
   @Subscribe
   public void onFileUnPublished(FileUnPublishedEvent event) {
     log.info("File {} was unpublished", event.getPersistable());
+    if (FileUtils.isDirectory(event.getPersistable())) return;
     elasticSearchIndexer.delete(ATTACHMENT_PUBLISHED_INDEX, event.getPersistable());
   }
 
@@ -56,6 +59,7 @@ public class FileIndexer {
   @Subscribe
   public void onFileDeleted(FileDeletedEvent event) {
     log.info("File {} was deleted", event.getPersistable());
+    if (FileUtils.isDirectory(event.getPersistable())) return;
     elasticSearchIndexer.delete(ATTACHMENT_DRAFT_INDEX, event.getPersistable());
     elasticSearchIndexer.delete(ATTACHMENT_PUBLISHED_INDEX, event.getPersistable());
   }
@@ -64,6 +68,7 @@ public class FileIndexer {
   @Subscribe
   public void onFileUpdated(FileUpdatedEvent event) {
     log.info("File {} was updated", event.getPersistable());
+    if (FileUtils.isDirectory(event.getPersistable())) return;
     elasticSearchIndexer.index(ATTACHMENT_DRAFT_INDEX, event.getPersistable());
   }
 }

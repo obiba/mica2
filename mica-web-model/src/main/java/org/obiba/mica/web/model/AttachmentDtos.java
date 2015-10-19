@@ -8,6 +8,7 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
+import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
 import org.springframework.stereotype.Component;
 
@@ -29,11 +30,19 @@ class AttachmentDtos {
 
   @NotNull
   Mica.FileDto asFileDto(AttachmentState state) {
+    boolean isFolder = FileUtils.isDirectory(state);
+    String name = state.getName();
+    String path = String.format("%s/%s", state.getPath(), state.getName());
+    if(isFolder) {
+      int idx = state.getPath().lastIndexOf('/');
+      name = state.getPath().substring(idx + 1);
+      path = state.getPath();
+    }
     Mica.FileDto.Builder builder = Mica.FileDto.newBuilder();
-    return builder.setPath(state.getPath() + "/" + state.getName()) //
-      .setName(state.getName()) //
+    return builder.setPath(path) //
+      .setName(name) //
       .setTimestamps(TimestampsDtos.asDto(state)) //
-      .setType(Mica.FileType.FILE) //
+      .setType(isFolder ? Mica.FileType.FOLDER : Mica.FileType.FILE) //
       .setSize(state.getAttachment().getSize()) //
       .setRevisionStatus(state.getRevisionStatus().name()) //
       .build();
@@ -49,6 +58,13 @@ class AttachmentDtos {
         builder.setAttachment(asDto(state.getPublishedAttachment()));
       }
     } else builder.setState(asDto(state));
+
+    if(builder.getType() == Mica.FileType.FOLDER) {
+      // get the number of files recursively
+      String pathRegEx = String.format("^%s", state.getPath());
+      builder.setSize(fileSystemService.findAttachmentStates(pathRegEx, publishedFileSystem).stream()
+        .filter(s -> !FileUtils.isDirectory(s)).collect(Collectors.toList()).size());
+    }
 
     return builder.build();
   }
@@ -72,13 +88,15 @@ class AttachmentDtos {
   @NotNull
   AttachmentDto asDto(@NotNull Attachment attachment) {
     AttachmentDto.Builder builder = AttachmentDto.newBuilder().setId(attachment.getId())
-      .setFileName(attachment.getName()).setSize(attachment.getSize()).setTimestamps(TimestampsDtos.asDto(attachment));
+      .setFileName(attachment.getName()).setTimestamps(TimestampsDtos.asDto(attachment));
     if(attachment.getType() != null) builder.setType(attachment.getType());
     if(attachment.getDescription() != null) {
       builder.addAllDescription(localizedStringDtos.asDto(attachment.getDescription()));
     }
-    if(attachment.getLang() != null) builder.setLang(attachment.getLang().toString());
-    if(attachment.getMd5() != null) builder.setMd5(attachment.getMd5());
+    if(attachment.getMd5() != null) {
+      builder.setMd5(attachment.getMd5()).setSize(attachment.getSize());
+      if(attachment.getLang() != null) builder.setLang(attachment.getLang().toString());
+    }
     if(attachment.getAttributes() != null) {
       attachment.getAttributes().asAttributeList()
         .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));

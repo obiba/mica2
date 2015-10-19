@@ -1,7 +1,10 @@
 package org.obiba.mica.file;
 
+import org.obiba.mica.file.service.FileSystemService;
 
 public class FileUtils {
+
+  private FileUtils() {}
 
   public static boolean isRoot(String basePath) {
     return "/".equals(basePath);
@@ -14,4 +17,9 @@ public class FileUtils {
 
     return nPath;
   }
+
+  public static boolean isDirectory(AttachmentState state) {
+    return state != null && FileSystemService.DIR_NAME.equals(state.getName());
+  }
+
 }
