@@ -1,10 +1,8 @@
 package org.obiba.mica.file.rest;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -14,11 +12,11 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.math3.util.Pair;
 import org.joda.time.DateTime;
 import org.obiba.mica.NoSuchEntityException;
-import org.obiba.mica.core.domain.AbstractAuditableDocument;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.domain.Timestamped;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
+import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -221,58 +219,34 @@ public abstract class AbstractFileSystemResource {
   }
 
   private Mica.FileDto getFolderDto(String basePath) {
-    Pair<String, String> pathName = FileSystemService.extractPathName(basePath);
+    AttachmentState state = fileSystemService
+      .getAttachmentState(basePath, FileSystemService.DIR_NAME, isPublishedFileSystem());
 
-    Mica.FileDto.Builder builder = Mica.FileDto.newBuilder();
+    Mica.FileDto.Builder builder = dtos.asFileDto(state, isPublishedFileSystem()).toBuilder();
     builder.addAllChildren(getChildrenFolders(basePath)) //
       .addAllChildren(getChildrenFiles(basePath, false));
-
-    if(builder.getChildrenCount() == 0) {
-      if(isRoot(basePath)) {
-        return builder.setPath(basePath) //
-          .setName("") //
-          .setType(Mica.FileType.FOLDER) //
-          .setSize(0).build();
-      }
-      throw new NoSuchElementException("No file found at path: " + basePath);
-    }
-
-    builder.setPath(basePath) //
-      .setName(pathName.getValue()) //
-      .setType(Mica.FileType.FOLDER) //
-      .setTimestamps(dtos.asDto(new FolderTimestamps(builder.getChildrenList()))).setSize(
-      builder.getChildrenList().stream().mapToLong(f -> f.getType() == Mica.FileType.FOLDER ? f.getSize() : 1).sum());
 
     return builder.build();
   }
 
   private Iterable<Mica.FileDto> getChildrenFolders(String basePath) {
     List<Mica.FileDto> folders = Lists.newArrayList();
-    String pathRegEx = isRoot(basePath) ? "^/" : String.format("^%s/", basePath);
+    String pathRegEx = isRoot(basePath) ? "^/[^/]+$" : String.format("^%s/[^/]+$", basePath);
     fileSystemService.findAttachmentStates(pathRegEx, isPublishedFileSystem()).stream() //
-      .filter(s -> !fileSystemService.isDirectory(s)) //
-      .collect(Collectors.groupingBy(new Function<AttachmentState, String>() {
-        @Override
-        public String apply(AttachmentState state) {
-          return extractFirstChildren(basePath, state.getPath());
-        }
-      })).forEach((n, states) -> folders.add(Mica.FileDto.newBuilder().setType(Mica.FileType.FOLDER).setPath(
-      isRoot(basePath) ? String.format("/%s", n) : String.format("%s/%s", basePath, n)) //
-      .setName(n) //
-      .setTimestamps(dtos.asDto(new FolderTimestamps(states))) //
-      .setSize(states.size()).build()));
+      .filter(FileUtils::isDirectory) //
+      .forEach(s -> folders.add(dtos.asFileDto(s, isPublishedFileSystem())));
     return folders;
   }
 
   private List<Mica.FileDto> getChildrenFiles(String basePath, boolean recursively) {
     List<AttachmentState> states = fileSystemService
       .findAttachmentStates(String.format("^%s$", basePath), isPublishedFileSystem()).stream()
-      .filter(s -> !fileSystemService.isDirectory(s)).collect(Collectors.toList());
+      .filter(s -> !FileUtils.isDirectory(s)).collect(Collectors.toList());
 
     if(recursively) {
       states.addAll(
         fileSystemService.findAttachmentStates(String.format("^%s/", basePath), isPublishedFileSystem()).stream()
-          .filter(s -> !fileSystemService.isDirectory(s)).collect(Collectors.toList()));
+          .filter(s -> !FileUtils.isDirectory(s)).collect(Collectors.toList()));
     }
 
     return states.stream().map(s -> {
@@ -282,21 +256,11 @@ public abstract class AbstractFileSystemResource {
     }).collect(Collectors.toList());
   }
 
-  private String extractFirstChildren(String basePath, String path) {
-    return path.replaceFirst(String.format("^%s/", isRoot(basePath) ? "" : basePath), "").split("/")[0];
-  }
-
   private static class FolderTimestamps implements Timestamped {
 
     private final DateTime createdDate;
 
     private final DateTime lastModifiedDate;
-
-    private FolderTimestamps(Collection<AttachmentState> states) {
-      createdDate = states.stream().map(AbstractAuditableDocument::getCreatedDate).sorted().findFirst().get();
-      lastModifiedDate = states.stream().map(AbstractAuditableDocument::getLastModifiedDate)
-        .sorted(Collections.reverseOrder()).findFirst().get();
-    }
 
     private FolderTimestamps(List<Mica.FileDto> files) {
       createdDate = DateTime.parse(files.stream().map(f -> f.getTimestamps().getCreated()).sorted().findFirst().get());
