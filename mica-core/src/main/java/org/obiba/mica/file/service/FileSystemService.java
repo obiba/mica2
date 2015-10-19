@@ -21,6 +21,7 @@ import org.obiba.mica.file.event.FileDeletedEvent;
 import org.obiba.mica.file.event.FilePublishedEvent;
 import org.obiba.mica.file.event.FileUnPublishedEvent;
 import org.obiba.mica.file.event.FileUpdatedEvent;
+import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
 import org.obiba.mica.study.event.StudyPublishedEvent;
 import org.obiba.mica.study.event.StudyUnpublishedEvent;
 import org.slf4j.Logger;
@@ -37,6 +38,8 @@ import com.google.common.eventbus.Subscribe;
 public class FileSystemService {
 
   private static final Logger log = LoggerFactory.getLogger(FileSystemService.class);
+
+  public static final String DIR_NAME = ".";
 
   @Inject
   private EventBus eventBus;
@@ -57,14 +60,13 @@ public class FileSystemService {
   public void save(Attachment attachment) {
     Attachment saved = attachment;
 
-    if (attachment.isNew()) {
+    if(attachment.isNew()) {
       attachment.setId(new ObjectId().toString());
     } else {
       saved = attachmentRepository.findOne(attachment.getId());
       if(saved == null) {
         saved = attachment;
-      }
-      else {
+      } else {
         BeanUtils.copyProperties(attachment, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
           "lastModifiedDate");
       }
@@ -84,9 +86,9 @@ public class FileSystemService {
 
     attachmentRepository.save(saved);
 
-    List<AttachmentState> states = attachmentStateRepository
-      .findByPathAndName(saved.getPath(), saved.getName());
+    List<AttachmentState> states = attachmentStateRepository.findByPathAndName(saved.getPath(), saved.getName());
     AttachmentState state = states.isEmpty() ? new AttachmentState() : states.get(0);
+    if (state.isNew()) mkdirs(saved.getPath());
     state.setAttachment(saved);
     state.setLastModifiedDate(DateTime.now());
     attachmentStateRepository.save(state);
@@ -124,6 +126,28 @@ public class FileSystemService {
    */
   public void delete(String path, String name) {
     delete(getAttachmentState(path, name, false));
+  }
+
+  /**
+   * Make sure there are {@link AttachmentState}s representing the directory and its parents at path.
+   *
+   * @param path
+   */
+  public void mkdirs(String path) {
+    if(Strings.isNullOrEmpty(path)) return;
+
+    if(attachmentStateRepository.findByPathAndName(path, DIR_NAME).isEmpty()) {
+      // make sure parent exists
+      if(path.lastIndexOf('/') > 0) mkdirs(path.substring(0, path.lastIndexOf('/')));
+      AttachmentState state = new AttachmentState();
+      state.setName(DIR_NAME);
+      state.setPath(path);
+      attachmentStateRepository.save(state);
+    }
+  }
+
+  public boolean isDirectory(AttachmentState state) {
+    return state != null && DIR_NAME.equals(state.getName());
   }
 
   //
@@ -271,6 +295,7 @@ public class FileSystemService {
 
   /**
    * Reinstate an existing attachment by copying it as a new one, thus generating a new revision
+   *
    * @param attachment
    */
   public void reinstate(Attachment attachment) {
@@ -391,6 +416,13 @@ public class FileSystemService {
   public void studyUnpublished(StudyUnpublishedEvent event) {
     log.info("Study {} was unpublished", event.getPersistable());
     publish(String.format("/study/%s", event.getPersistable().getId()), false);
+  }
+
+  @Async
+  @Subscribe
+  public void studyUpdated(DraftStudyUpdatedEvent event) {
+    log.info("Study {} was updated", event.getPersistable());
+    mkdirs(String.format("/study/%s", event.getPersistable().getId()));
   }
 
   //
