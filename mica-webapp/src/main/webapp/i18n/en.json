@@ -674,8 +674,10 @@
   "revision": "Revision",
   "revision-date": "Revision Date",
   "comment-label": "Comment",
+  "items": "Items",
   "restore": "Restore",
   "history": "History",
+  "new": "New",
   "server": {
     "error": {
       "403": "Server rejected your request, please make sure you are logged in and try again."
