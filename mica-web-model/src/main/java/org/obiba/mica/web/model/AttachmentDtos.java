@@ -60,10 +60,8 @@ class AttachmentDtos {
     } else builder.setState(asDto(state));
 
     if(builder.getType() == Mica.FileType.FOLDER) {
-      // get the number of files recursively
-      String pathRegEx = String.format("^%s", state.getPath());
-      builder.setSize(fileSystemService.findAttachmentStates(pathRegEx, publishedFileSystem).stream()
-        .filter(s -> !FileUtils.isDirectory(s)).collect(Collectors.toList()).size());
+      // get the number of files in the folder
+      builder.setSize(fileSystemService.countAttachmentStates(state.getPath(), publishedFileSystem));
     }
 
     return builder.build();

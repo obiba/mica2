@@ -17,6 +17,7 @@ import org.obiba.mica.core.repository.AttachmentStateRepository;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.FileStoreService;
+import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.event.FileDeletedEvent;
 import org.obiba.mica.file.event.FilePublishedEvent;
 import org.obiba.mica.file.event.FileUnPublishedEvent;
@@ -137,7 +138,7 @@ public class FileSystemService {
   public synchronized void mkdirs(String path) {
     if(Strings.isNullOrEmpty(path)) return;
 
-    if(attachmentStateRepository.findByPathAndName(path, DIR_NAME).isEmpty()) {
+    if(attachmentStateRepository.countByPathAndName(path, DIR_NAME) == 0) {
       // make sure parent exists
       if(path.lastIndexOf('/') > 0) mkdirs(path.substring(0, path.lastIndexOf('/')));
       else if(path.lastIndexOf('/') == 0 && !"/".equals(path)) mkdirs("/");
@@ -171,7 +172,12 @@ public class FileSystemService {
     if(state.isPublished() && publish) return;
     if(!state.isPublished() && !publish) return;
     if(publish) {
-      publishDirs(state.getPath());
+      // publish the parent directories (if any)
+      if (!FileUtils.isRoot(state.getPath())) {
+        int idx = state.getPath().lastIndexOf('/');
+        String parentPath = idx == 0 ? "/" : state.getPath().substring(0, idx);
+        publishDirs(parentPath);
+      }
       state.publish();
     } else state.unPublish();
     state.setLastModifiedDate(DateTime.now());
@@ -363,6 +369,21 @@ public class FileSystemService {
   }
 
   /**
+   * Count the number of {@link AttachmentState}s located at the given path. Result excludes the
+   * {@link AttachmentState} representing the folder itself.
+   *
+   * @param path
+   * @param publishedFS
+   * @return
+   */
+  public long countAttachmentStates(String path, boolean publishedFS) {
+    long count = publishedFS
+      ? attachmentStateRepository.countByPathAndPublishedAttachmentNotNull(path)
+      : attachmentStateRepository.countByPath(path);
+    return count == 0 ? 0 : count - 1;
+  }
+
+  /**
    * Get the {@link org.obiba.mica.file.AttachmentState}, with publication status filter.
    *
    * @param path
@@ -372,18 +393,17 @@ public class FileSystemService {
    */
   @NotNull
   public AttachmentState getAttachmentState(String path, String name, boolean publishedFS) {
-    List<AttachmentState> state = attachmentStateRepository.findByPathAndName(path, name);
+    List<AttachmentState> state = publishedFS
+      ? attachmentStateRepository.findByPathAndNameAndPublishedAttachmentNotNull(path, name)
+      : attachmentStateRepository.findByPathAndName(path, name);
     if(state.isEmpty()) throw NoSuchEntityException.withPath(Attachment.class, path + "/" + name);
-    if(publishedFS && !state.get(0).isPublished())
-      throw NoSuchEntityException.withPath(Attachment.class, path + "/" + name);
     return state.get(0);
   }
 
   public boolean hasAttachmentState(String path, String name, boolean publishedFS) {
-    List<AttachmentState> state = attachmentStateRepository.findByPathAndName(path, name);
     return publishedFS
-      ? !state.stream().filter(AttachmentState::isPublished).collect(Collectors.toList()).isEmpty()
-      : !state.isEmpty();
+      ? attachmentStateRepository.countByPathAndNameAndPublishedAttachmentNotNull(path, name) > 0
+      : attachmentStateRepository.countByPathAndName(path, name) > 0;
   }
 
   public List<Attachment> getAttachmentRevisions(AttachmentState state) {
@@ -485,7 +505,7 @@ public class FileSystemService {
    * @return
    */
   private List<AttachmentState> findPublishedAttachmentStates(String pathRegEx) {
-    return attachmentStateRepository.findByPath(pathRegEx).stream().filter(AttachmentState::isPublished)
+    return attachmentStateRepository.findByPathAndPublishedAttachmentNotNull(pathRegEx).stream()
       .collect(Collectors.toList());
   }
 

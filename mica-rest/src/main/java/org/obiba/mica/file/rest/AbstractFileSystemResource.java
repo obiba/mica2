@@ -54,7 +54,7 @@ public abstract class AbstractFileSystemResource {
 
   protected Attachment doGetAttachment(String path, @Nullable String version) {
     String basePath = normalizePath(path);
-    if(basePath.endsWith("/")) throw new IllegalArgumentException("Folder download is not supported");
+    if(path.endsWith("/")) throw new IllegalArgumentException("Folder download is not supported");
 
     Pair<String, String> pathName = FileSystemService.extractPathName(basePath);
     AttachmentState state = fileSystemService
@@ -74,7 +74,7 @@ public abstract class AbstractFileSystemResource {
 
   protected Mica.FileDto doGetFile(String path) {
     String basePath = normalizePath(path);
-    if(basePath.endsWith("/")) return getFolderDto(basePath);
+    if(path.endsWith("/")) return getFolderDto(basePath);
 
     try {
       return getFileDto(basePath);
@@ -85,7 +85,7 @@ public abstract class AbstractFileSystemResource {
 
   protected void doDeleteFile(String path) {
     String basePath = normalizePath(path);
-    if(basePath.endsWith("/")) deleteFolderState(basePath);
+    if(path.endsWith("/")) deleteFolderState(basePath);
 
     try {
       deleteFileState(basePath);
@@ -112,7 +112,7 @@ public abstract class AbstractFileSystemResource {
   protected void doRenameFile(String path, @NotNull String newName) {
     String basePath = normalizePath(path);
     if(isRoot(basePath)) throw new IllegalArgumentException("Root folder cannot be renamed");
-    if(basePath.endsWith("/")) renameFolderState(basePath, newName);
+    if(path.endsWith("/")) renameFolderState(basePath, newName);
 
     try {
       renameFileState(basePath, newName);
@@ -124,7 +124,7 @@ public abstract class AbstractFileSystemResource {
   protected void doMoveFile(String path, @NotNull String newPath) {
     String basePath = normalizePath(path);
     if(isRoot(basePath)) throw new IllegalArgumentException("Root folder cannot be renamed");
-    if(basePath.endsWith("/")) renameFolderState(basePath, newPath);
+    if(path.endsWith("/")) renameFolderState(basePath, newPath);
 
     try {
       moveFileState(basePath, newPath);
@@ -136,7 +136,7 @@ public abstract class AbstractFileSystemResource {
   protected void doCopyFile(String path, @NotNull String newPath) {
     String basePath = normalizePath(path);
     if(isRoot(basePath)) throw new IllegalArgumentException("Root folder cannot be renamed");
-    if(basePath.endsWith("/")) copyFolderState(basePath, newPath);
+    if(path.endsWith("/")) copyFolderState(basePath, newPath);
 
     try {
       copyFileState(basePath, newPath);
@@ -147,7 +147,7 @@ public abstract class AbstractFileSystemResource {
 
   protected void doUpdateStatus(String path, @NotNull RevisionStatus status) {
     String basePath = normalizePath(path);
-    if(basePath.endsWith("/")) updateFolderStatus(basePath, status);
+    if(path.endsWith("/")) updateFolderStatus(basePath, status);
 
     try {
       updateFileStatus(basePath, status);
