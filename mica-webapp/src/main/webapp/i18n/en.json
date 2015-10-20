@@ -1,5 +1,6 @@
 {
   "language": {
+    "title": "Language",
     "en": "English",
     "fr": "French"
   },
@@ -681,7 +682,8 @@
   "items": "Items",
   "restore": "Restore",
   "history": "History",
-  "new": "New",
+  "new-folder": "New Folder",
+  "description": "Description",
   "server": {
     "error": {
       "403": "Server rejected your request, please make sure you are logged in and try again."

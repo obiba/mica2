@@ -10,7 +10,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr ng-show="data.parentPath">
+    <tr ng-show="!data.isRoot">
       <td colspan="5">
         <span><a href style="text-decoration: none;" ng-click="navigateBack()"><i class="fa fa-folder"></i> ..</a></span>
       </td>
@@ -33,7 +33,7 @@
         {{document.size}}
       </td>
       <td>
-        {{document.revisionStatus}}
+        {{'publish.status.' + document.revisionStatus | translate}}
       </td>
       <td>
         <ul class="list-inline pull-right">

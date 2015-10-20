@@ -15,9 +15,13 @@ mica.fileSystem
 
   .factory('DraftFileSystemFileResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/file/:path', {}, {
-        'get': {method: 'GET', params: {path: '@path'}, errorHandler: true},
-        'delete': {method: 'DELETE', params: {path: '@path'}, errorHandler: true}
+      return $resource('ws/draft/file/:path/', {path: '@path'}, {
+        'get': {method: 'GET', errorHandler: true},
+        'delete': {method: 'DELETE', errorHandler: true},
+        'rename': {method: 'PUT', params: {name: '@name'}, errorHandler: true},
+        'restore': {method: 'PUT', params: {version: '@version'}, errorHandler: true},
+        'publish': {method: 'PUT', params: {publish: '@publish'}, errorHandler: true},
+        'changeStatus': {method: 'PUT', params: {status: '@status'}, errorHandler: true}
       });
     }])
 
@@ -25,27 +29,6 @@ mica.fileSystem
     function ($resource) {
       return $resource('ws/draft/files', {}, {
         'update': {method: 'POST', errorHandler: true}
-      });
-    }])
-
-  .factory('DraftFileSystemRenameResource', ['$resource',
-    function ($resource) {
-      return $resource('ws/draft/file/:path/?name=:name', {}, {
-        'rename': {method: 'PUT', params: {path: '@path', name: '@name'}, errorHandler: true}
-      });
-    }])
-
-  .factory('DraftFileSystemRestoreResource', ['$resource',
-    function ($resource) {
-      return $resource('ws/draft/file/:path?version=:version', {}, {
-        'restore': {method: 'PUT', params: {path: '@path', version: '@version'}, errorHandler: true}
-      });
-    }])
-
-  .factory('DraftFileSystemPublishResource', ['$resource',
-    function ($resource) {
-      return $resource('ws/draft/file/:path?publish=:publish', {}, {
-        'publish': {method: 'PUT', params: {path: '@path', publish: '@publish'}, errorHandler: true}
       });
     }])
 
@@ -67,6 +50,14 @@ mica.fileSystem
         return document && document.type === 'FILE';
       };
 
+      this.isRoot = function (document) {
+        return document && document.path === '/';
+      };
+
+      this.isPathEditable = function(path) {
+        return path.replace(/\/$/, '').split('/').slice(1).length > 2;
+      };
+
       this.getDocumentTypeTitle = function (type) {
         switch (type) {
           case 'study':
@@ -74,6 +65,16 @@ mica.fileSystem
         }
 
         return '';
+      };
+
+      this.getLocalizedValue = function(values, lang) {
+        if (!values) return null;
+
+        var result = values.filter(function(value) {
+          return value.lang === lang;
+        });
+
+        return result && result.length > 0 ? result[0].value : null;
       };
 
       this.getDocumentIcon = function (document) {

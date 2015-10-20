@@ -1,34 +1,72 @@
-<div>
+<div ng-cloak>
+
   <obiba-alert id="DataAccessRequestEditController"></obiba-alert>
 
   <div>
     <!-- second level breadcrumb -->
     <ol class="mica-breadcrumb no-margin no-padding">
-      <li ng-repeat="part in data.breadcrumbs" ng-class="{'active': $last}">
+      <li ng-repeat="part in data.breadcrumbs" ng-class="{'active': $first === $last && $last}">
         <a ng-show="!$last" href ng-click="navigateToPath(part.path)">
           <span ng-show="part.name === '/'"><i class="fa fa-hdd-o"></i></span>
           <span ng-show="part.name !== '/'">{{part.name}}</span>
         </a>
-        <!-- -->
+        <!-- Top level root -->
+        <span ng-if="$last && part.name === '/'">
+          <i class="fa fa-hdd-o"></i> /
+        </span>
         <!-- Editable part of breadcrumb -->
-        <!-- -->
-          <span ng-show="$last" editable-text="data.document.name"
-            e-form="buttonRename"
-            onbeforesave="renameDocument(data.document, $data)">
-            <i class="fa {{getDocumentIcon(data.document)}}"></i> {{data.document.name || 'empty'}}
-            <span class="hoffset1"><a href ng-click="buttonRename.$show()" ng-hide="buttonRename.$visible">
-              <i class="fa fa-pencil"></i></a>
-            </span>
+        <span ng-if="part.name !== '/' && $last" editable-text="data.document.name"
+          e-form="buttonRename"
+          onbeforesave="renameDocument(data.document, $data)">
+          <i class="fa {{getDocumentIcon(data.document)}}"></i> {{data.document.name || 'empty'}}
+          <span ng-if="isPathEditable(part.path)" class="hoffset1">
+            <a href ng-click="buttonRename.$show()" ng-hide="buttonRename.$visible">
+              <i class="fa fa-pencil"></i>
+            </a>
           </span>
+        </span>
       </li>
     </ol>
+    <div class="voffset2">
+      <a ng-if="!data.isFile" href ng-click="newDocument()" class="btn btn-info">
+        <i class="fa fa-plus"></i> <span translate>new-folder</span>
+      </a>
+      <a class="btn btn-info"
+         ngf-select ngf-change="onFileSelect($files)">
+        <i class="fa fa-upload"></i> {{'upload' | translate}}
+      </a>
+      <a ng-if="data.isFile"
+         target="_self"
+         class="btn btn-default"
+         ng-href="ws/draft/file-dl/{{data.document.path}} ">
+        <i class="fa fa-download"></i> {{'download' | translate}}
+      </a>
+      <div class="btn-group" role="group" >
+        <button type="button" class="btn btn-default"><i class="fa fa-files-o"></i></button>
+        <button type="button" class="btn btn-default"><i class="fa fa-scissors"></i></button>
+        <button type="button" class="btn btn-default"><i class="fa fa-clipboard"></i></button>
+      </div>
 
+      <file-status-buttons class="inline pull-right"
+                           document="data.document"
+                           on-publish="publish(true)"
+                           on-un-publish="publish(false)"
+                           can-publish="hasRole(['mica-administrator','mica-reviewer'])"
+                           on-delete="delete()"
+                           can-delete="hasRole(['mica-administrator','mica-reviewer'])"
+                           can-edit="hasRole(['mica-administrator','mica-reviewer','mica-editor'])"
+                           to-draft="toStatus('DRAFT')"
+                           to-under-review="toStatus('UNDER_REVIEW')"
+                           to-deleted="toStatus('DELETED')">
+      </file-status-buttons>
+
+    </div>
     <!-- Document details -->
-    <div class="row voffset3">
+    <div class="row voffset2">
       <div class="col-md-2">
         <div ng-include="'app/file-system/views/shortcuts-template.html'"></div>
       </div>
-      <div class="col-md-6">
+      <div class="col-md-7">
         <div class="panel panel-default">
           <div class="panel-body">
             <div ng-include="'app/file-system/views/toolbar-template.html'"></div>
@@ -39,7 +77,7 @@
           </div>
         </div>
       </div>
-      <div class="col-md-4">
+      <div class="col-md-3">
         <div ng-include="'app/file-system/views/document-detail-template.html'"></div>
       </div>
     </div>
