@@ -36,6 +36,7 @@ import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.repository.MicaConfigRepository;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.NetworkRepository;
+import org.obiba.mica.network.NetworkStateRepository;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.security.repository.SubjectAclRepository;
 import org.obiba.mica.security.service.SubjectAclService;
@@ -383,6 +384,11 @@ public class StudyDtosTest {
     @Bean
     public NetworkRepository networkRepository() {
       return Mockito.mock(NetworkRepository.class);
+    }
+
+    @Bean
+    public NetworkStateRepository networkStateRepository() {
+      return Mockito.mock(NetworkStateRepository.class);
     }
 
     @Bean

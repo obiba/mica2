@@ -177,7 +177,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     updated.cleanContacts();
     networkService.save(updated);
 
-    if(publish) networkService.publish(updated.getId(), publish);
+    if(publish) networkService.publish(updated.getId());
   }
 
   private void saveTempFile(Attachment attachment, ByteSource content) throws IOException {

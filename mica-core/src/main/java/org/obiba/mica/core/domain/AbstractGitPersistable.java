@@ -23,6 +23,7 @@ public abstract class AbstractGitPersistable implements GitPersistable {
     return id;
   }
 
+  @Override
   public void setId(String id) {
     this.id = id;
   }

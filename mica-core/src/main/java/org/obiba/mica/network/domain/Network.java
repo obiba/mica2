@@ -1,5 +1,6 @@
 package org.obiba.mica.network.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,10 +11,12 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.URL;
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
+import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.AttributeAware;
 import org.obiba.mica.core.domain.Attributes;
 import org.obiba.mica.core.domain.Authorization;
+import org.obiba.mica.core.domain.GitPersistable;
 import org.obiba.mica.core.domain.PersonAware;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.Membership;
@@ -26,13 +29,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import static java.util.stream.Collectors.toList;
 
 /**
  * A Network.
  */
-public class Network extends AbstractAuditableDocument implements AttributeAware, PersonAware {
+public class Network extends AbstractGitPersistable implements AttributeAware, PersonAware {
 
   private static final long serialVersionUID = -4271967393906681773L;
 
@@ -89,10 +93,14 @@ public class Network extends AbstractAuditableDocument implements AttributeAware
     this.acronym = acronym;
   }
 
+  @Deprecated
+  @JsonIgnore
   public boolean isPublished() {
     return published;
   }
 
+  @Deprecated
+  @JsonProperty
   public void setPublished(boolean published) {
     this.published = published;
   }
@@ -292,5 +300,21 @@ public class Network extends AbstractAuditableDocument implements AttributeAware
 
   public void setMemberships(Map<String, List<Membership>> memberships) {
     this.memberships = memberships;
+  }
+
+  @Override
+  public String pathPrefix() {
+    return "networks";
+  }
+
+  @Override
+  public Map<String, Serializable> parts() {
+    Network self = this;
+
+    return new HashMap<String, Serializable>() {
+      {
+        put(self.getClass().getSimpleName(), self);
+      }
+    };
   }
 }

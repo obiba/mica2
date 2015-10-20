@@ -18,7 +18,6 @@ import org.obiba.mica.core.domain.AttributeAware;
 import org.obiba.mica.core.domain.Attributes;
 import org.obiba.mica.core.domain.Authorization;
 import org.obiba.mica.core.domain.PersonAware;
-import org.obiba.mica.core.domain.GitPersistable;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.domain.Person;
@@ -38,7 +37,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * A Study.
  */
-public class Study extends AbstractGitPersistable implements AttributeAware, GitPersistable, PersonAware {
+public class Study extends AbstractGitPersistable implements AttributeAware, PersonAware {
 
   private static final long serialVersionUID = 6559914069652243954L;
 

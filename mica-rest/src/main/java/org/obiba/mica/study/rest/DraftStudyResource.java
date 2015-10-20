@@ -1,8 +1,6 @@
 package org.obiba.mica.study.rest;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,13 +16,15 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.obiba.git.CommitInfo;
+import org.obiba.mica.AbstractGitPersistableResource;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.RevisionStatus;
+import org.obiba.mica.core.service.AbstractGitPersistableService;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.rest.FileResource;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -39,7 +39,7 @@ import com.codahale.metrics.annotation.Timed;
  */
 @Component
 @Scope("request")
-public class DraftStudyResource {
+public class DraftStudyResource extends AbstractGitPersistableResource<StudyState, Study> {
 
   @Inject
   private StudyService studyService;
@@ -63,7 +63,7 @@ public class DraftStudyResource {
   @Timed
   @RequiresPermissions({"/draft:EDIT"})
   public Mica.StudyDto get() {
-    return dtos.asDto(studyService.findDraftStudy(id));
+    return dtos.asDto(studyService.findDraft(id));
   }
 
   @PUT
@@ -71,7 +71,7 @@ public class DraftStudyResource {
   @RequiresPermissions({"/draft:EDIT"})
   public Response update(@SuppressWarnings("TypeMayBeWeakened") Mica.StudyDto studyDto, @Nullable @QueryParam("comment") String comment) {
     // ensure study exists
-    studyService.findDraftStudy(id);
+    studyService.findDraft(id);
 
     Study study = dtos.fromDto(studyDto);
     studyService.save(study, comment);
@@ -119,7 +119,8 @@ public class DraftStudyResource {
   @RequiresPermissions({"/draft:EDIT"})
   public FileResource study(@PathParam("fileId") String fileId) {
     FileResource fileResource = applicationContext.getBean(FileResource.class);
-    Study study = studyService.findDraftStudy(id);
+    Study study = studyService.findDraft(id);
+
     if (study.hasLogo() && study.getLogo().getId().equals(fileId)) {
       fileResource.setAttachment(study.getLogo());
     } else {
@@ -134,49 +135,18 @@ public class DraftStudyResource {
 
   @GET
   @RequiresPermissions({"/draft:EDIT"})
-  @Path("/commits")
-  public List<Mica.GitCommitInfoDto> getCommitsInfo() {
-    return dtos.asDto(studyService.getCommitInfos(studyService.findDraftStudy(id)));
-  }
-
-  @PUT
-  @RequiresPermissions({"/draft:EDIT"})
-  @Path("/commit/{commitId}/restore")
-  public Response restoreCommit(@NotNull @PathParam("commitId") String commitId) throws IOException {
-    Study study= studyService.getStudyFromCommit(studyService.findDraftStudy(id), commitId);
-    if (study != null){
-      studyService.save(study, createRestoreComment(studyService.getCommitInfo(study, commitId)));
-    }
-
-    return Response.noContent().build();
-  }
-
-  @GET
-  @RequiresPermissions({"/draft:EDIT"})
-  @Path("/commit/{commitId}")
-  public Mica.GitCommitInfoDto getCommitInfo(@NotNull @PathParam("commitId") String commitId) throws IOException {
-    return dtos.asDto(
-      getCommitInfoInternal(studyService.getCommitInfo(studyService.findDraftStudy(id), commitId), commitId, null));
-  }
-
-  @GET
-  @RequiresPermissions({"/draft:EDIT"})
   @Path("/commit/{commitId}/view")
   public Mica.StudyDto getStudyFromCommit(@NotNull @PathParam("commitId") String commitId) throws IOException {
-    return dtos.asDto(studyService.getStudyFromCommit(studyService.findDraftStudy(id), commitId));
+    return dtos.asDto(studyService.getFromCommit(studyService.findDraft(id), commitId));
   }
 
-  private CommitInfo getCommitInfoInternal(@NotNull CommitInfo commitInfo, @NotNull String commitId,
-    @Nullable String prevCommitId) {
-    Iterable<String> diffEntries = studyService.getDiffEntries(studyService.findDraftStudy(id), commitId, prevCommitId);
-    return CommitInfo.Builder.createFromObject(commitInfo).diffEntries((List<String>) diffEntries).build();
+  @Override
+  protected String getId() {
+    return id;
   }
 
-  private String createRestoreComment(CommitInfo commitInfo) {
-    LocalDateTime date = LocalDateTime
-      .parse(commitInfo.getDate().toString(), DateTimeFormatter.ofPattern("EEE MMM d HH:mm:ss zzz yyyy"));
-    String formatted =  date.format(DateTimeFormatter.ofPattern("MMM dd, yyyy h:mm a"));
-
-    return String.format("Restored revision from '%s'", formatted);
+  @Override
+  protected AbstractGitPersistableService<StudyState, Study> getService() {
+    return studyService;
   }
 }

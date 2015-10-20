@@ -10,16 +10,21 @@
 
 package org.obiba.mica.network.rest;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.rest.FileResource;
 import org.obiba.mica.network.NoSuchNetworkException;
@@ -87,7 +92,7 @@ public class DraftNetworkResource {
   @Path("/_publish")
   @RequiresPermissions({"/draft:PUBLISH"})
   public Response publish() {
-    networkService.publish(id, true);
+    networkService.publish(id);
     return Response.noContent().build();
   }
 
@@ -95,7 +100,7 @@ public class DraftNetworkResource {
   @Path("/_publish")
   @RequiresPermissions({"/draft:PUBLISH"})
   public Response unPublish() {
-    networkService.publish(id, false);
+    networkService.unPublish(id);
     return Response.noContent().build();
   }
 
@@ -111,9 +116,19 @@ public class DraftNetworkResource {
     return Response.noContent().build();
   }
 
+  @PUT
+  @Path("/_status")
+  @Timed
+  @RequiresPermissions({"/draft:EDIT"})
+  public Response toUnderReview(@QueryParam("value") String status) {
+    networkService.updateStatus(id, RevisionStatus.valueOf(status.toUpperCase()));
+
+    return Response.noContent().build();
+  }
+
   @Path("/file/{fileId}")
   @RequiresPermissions({"/draft:EDIT"})
-  public FileResource study(@PathParam("fileId") String fileId) {
+  public FileResource network(@PathParam("fileId") String fileId) {
     FileResource fileResource = applicationContext.getBean(FileResource.class);
     Network network = networkService.findById(id);
 
@@ -124,4 +139,10 @@ public class DraftNetworkResource {
     return fileResource;
   }
 
+  @GET
+  @RequiresPermissions({ "/draft:EDIT" })
+  @Path("/commit/{commitId}/view")
+  public Mica.NetworkDto getFromCommit(@NotNull @PathParam("commitId") String commitId) throws IOException {
+    return dtos.asDto(networkService.getFromCommit(networkService.findDraft(id), commitId));
+  }
 }

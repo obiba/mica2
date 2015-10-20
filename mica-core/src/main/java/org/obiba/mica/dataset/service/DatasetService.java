@@ -177,7 +177,7 @@ public abstract class DatasetService<T extends Dataset> {
   }
 
   protected RestDatasource getDatasource(@NotNull StudyTable studyTable) {
-    String opalUrl = getStudyService().findDraftStudy(studyTable.getStudyId()).getOpal();
+    String opalUrl = getStudyService().findDraft(studyTable.getStudyId()).getOpal();
     return getOpalService().getDatasource(opalUrl, studyTable.getProject());
   }
 

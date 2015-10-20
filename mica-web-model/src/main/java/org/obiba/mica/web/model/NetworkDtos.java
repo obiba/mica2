@@ -10,7 +10,10 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.network.domain.Network;
+import org.obiba.mica.network.domain.NetworkState;
+import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.slf4j.Logger;
@@ -51,12 +54,18 @@ class NetworkDtos {
   @Inject
   private AttributeDtos attributeDtos;
 
+  @Inject
+  private NetworkService networkService;
+
   @NotNull
   Mica.NetworkDto.Builder asDtoBuilder(@NotNull Network network) {
     Mica.NetworkDto.Builder builder = Mica.NetworkDto.newBuilder();
+
+    NetworkState networkState = networkService.findStateById(network.getId());
+
     builder.setId(network.getId()) //
         .setTimestamps(TimestampsDtos.asDto(network)) //
-        .setPublished(network.isPublished()) //
+        .setPublished(networkState.isPublished()) //
         .addAllName(localizedStringDtos.asDto(network.getName())) //
         .addAllDescription(localizedStringDtos.asDto(network.getDescription())) //
         .addAllAcronym(localizedStringDtos.asDto(network.getAcronym())) //
@@ -124,7 +133,6 @@ class NetworkDtos {
       network.setId(dto.getId());
     }
 
-    network.setPublished(dto.getPublished());
     network.setName(localizedStringDtos.fromDto(dto.getNameList()));
     network.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
     network.setAcronym(localizedStringDtos.fromDto(dto.getAcronymList()));
