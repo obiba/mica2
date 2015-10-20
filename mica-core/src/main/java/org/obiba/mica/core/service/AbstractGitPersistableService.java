@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.joda.time.DateTime;
 import org.obiba.git.CommitInfo;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.EntityState;
@@ -24,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Throwables;
 
+import static org.obiba.mica.core.domain.RevisionStatus.DELETED;
 import static org.obiba.mica.core.domain.RevisionStatus.DRAFT;
 
 public abstract class AbstractGitPersistableService<T extends EntityState, T1 extends GitPersistable> {
@@ -147,9 +149,20 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
     entityState.setRevisionStatus(DRAFT);
     entityState.setPublishedTag(gitService.tag(entityState));
     entityState.resetRevisionsAhead();
+    entityState.setPublicationDate(DateTime.now());
     entityStateRepository.save(entityState);
 
     return entityState;
+  }
+
+  protected void unpublishState(@NotNull T entityState) {
+    entityState.resetRevisionsAhead();
+    entityState.setPublishedTag(null);
+    entityState.setPublicationDate(null);
+
+    if(entityState.getRevisionStatus() != DELETED) entityState.setRevisionStatus(DRAFT);
+
+    entityStateRepository.save(entityState);
   }
 
   @Nullable

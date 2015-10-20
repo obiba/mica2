@@ -55,8 +55,6 @@ import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 
 import static java.util.stream.Collectors.toList;
-import static org.obiba.mica.core.domain.RevisionStatus.DELETED;
-import static org.obiba.mica.core.domain.RevisionStatus.DRAFT;
 
 @Service
 @Validated
@@ -289,12 +287,7 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
   @Override
   public Study unpublish(StudyState studyState) {
     log.info("Unpublish state since there are no Git repo for study: {}", studyState.getId());
-    studyState.resetRevisionsAhead();
-    studyState.setPublishedTag(null);
-
-    if(studyState.getRevisionStatus() != DELETED) studyState.setRevisionStatus(DRAFT);
-
-    studyStateRepository.save(studyState);
+    unpublishState(studyState);
     Study study = studyRepository.findOne(studyState.getId());
 
     if(study != null) eventBus.post(new StudyUnpublishedEvent(study));

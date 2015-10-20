@@ -42,8 +42,6 @@ import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 
 import static java.util.stream.Collectors.toList;
-import static org.obiba.mica.core.domain.RevisionStatus.DELETED;
-import static org.obiba.mica.core.domain.RevisionStatus.DRAFT;
 
 @Service
 @Validated
@@ -250,12 +248,7 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
   @Nullable
   @Override
   public Network unpublish(NetworkState networkState) {
-    networkState.resetRevisionsAhead();
-    networkState.setPublishedTag(null);
-
-    if(networkState.getRevisionStatus() != DELETED) networkState.setRevisionStatus(DRAFT);
-
-    entityStateRepository.save(networkState);
+    unpublishState(networkState);
     Network network = networkRepository.findOne(networkState.getId());
 
     if(network != null) eventBus.post(new NetworkUnpublishedEvent(network));

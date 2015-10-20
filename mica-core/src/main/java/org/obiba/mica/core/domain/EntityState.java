@@ -3,6 +3,7 @@ package org.obiba.mica.core.domain;
 import java.io.Serializable;
 import java.util.Map;
 
+import org.joda.time.DateTime;
 import org.springframework.data.mongodb.core.index.Indexed;
 
 import com.google.common.base.MoreObjects;
@@ -17,6 +18,10 @@ public abstract class EntityState extends AbstractGitPersistable {
 
   @Indexed
   private String publishedTag;
+
+  private DateTime publicationDate;
+
+  private String publishedBy;
 
   private int revisionsAhead = 0;
 
@@ -54,6 +59,22 @@ public abstract class EntityState extends AbstractGitPersistable {
 
   public void setRevisionStatus(RevisionStatus status) {
     revisionStatus = status;
+  }
+
+  public DateTime getPublicationDate() {
+    return publicationDate;
+  }
+
+  public void setPublicationDate(DateTime publicationDate) {
+    this.publicationDate = publicationDate;
+  }
+
+  public String getPublishedBy() {
+    return publishedBy;
+  }
+
+  public void setPublishedBy(String publishedBy) {
+    this.publishedBy = publishedBy;
   }
 
   @Override
