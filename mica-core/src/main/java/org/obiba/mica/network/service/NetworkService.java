@@ -257,8 +257,8 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
   }
 
   @Override
-  protected Class<NetworkState> getType() {
-    return NetworkState.class;
+  protected Class<Network> getType() {
+    return Network.class;
   }
 
   @NotNull

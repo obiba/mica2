@@ -41,6 +41,18 @@ message StudySummariesDto {
   repeated StudySummaryDto studySummaries = 4;
 }
 
+message EntityStateDto {
+  optional string publishedTag = 1;
+  required int32 revisionsAhead = 2;
+  optional string revisionStatus = 3;
+  optional string publicationDate = 4;
+  optional string publishedBy = 5;
+
+  extend NetworkDto {
+    optional EntityStateDto state = 1000;
+  }
+}
+
 message StudyStateDto {
   optional string publishedTag = 1;
   required int32 revisionsAhead = 2;

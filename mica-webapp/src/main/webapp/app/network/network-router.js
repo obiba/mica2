@@ -29,5 +29,9 @@ mica.network
         .when('/network/:id/edit', {
           templateUrl: 'app/network/views/network-form.html',
           controller: 'NetworkEditController'
+        })
+        .when('/network/:id/revisions', {
+          templateUrl: 'app/network/views/network-view-revisions.html',
+          controller: 'NetworkViewController'
         });
     }]);

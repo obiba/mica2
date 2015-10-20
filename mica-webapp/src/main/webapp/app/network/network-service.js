@@ -23,18 +23,47 @@ mica.network
       });
     }])
 
-  .factory('NetworkResource', ['$resource',
+  .factory('DraftNetworkResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/network/:id', {}, {
         'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true},
+        'delete': {method: 'DELETE', params: {id: '@id'}, errorHandler: true},
         'get': {method: 'GET'}
       });
     }])
 
-  .factory('NetworkPublicationResource', ['$resource',
+  .factory('DraftNetworkPublicationResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/network/:id/_publish', {}, {
         'publish': {method: 'PUT', params: {id: '@id'}},
         'unPublish': {method: 'DELETE', params: {id: '@id'}}
+      });
+    }])
+
+  .factory('DraftNetworkStatusResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/draft/network/:id/_status', {}, {
+        'toStatus': {method: 'PUT', params: {id: '@id', value: '@value'}}
+      });
+    }])
+
+  .factory('DraftNetworkRevisionsResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/draft/network/:id/commits', {}, {
+        'get': {method: 'GET', params: {id: '@id'}}
+      });
+    }])
+
+  .factory('DraftNetworkRestoreRevisionResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/draft/network/:id/commit/:commitId/restore', {}, {
+        'restore': {method: 'PUT', params: {id: '@id', commitId: '@commitId'}}
+      });
+    }])
+
+  .factory('DraftNetworkViewRevisionResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/draft/network/:id/commit/:commitId/view', {}, {
+        'view': {method: 'GET', params: {id: '@id', commitId: '@commitId'}}
       });
     }]);

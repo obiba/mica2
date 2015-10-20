@@ -43,13 +43,13 @@
 
     </div>
   </div>
+
   <p>
     <small class="help-block inline">{{'global.lastUpdate' | translate}}: {{studySummary.timestamps.lastUpdate |
       amDateFormat : 'lll'}}
     </small>
     <publish-status class="inline" version="studySummary['obiba.mica.StudyStateDto.state'].publishedTag"
       ahead="studySummary['obiba.mica.StudyStateDto.state'].revisionsAhead"></publish-status>
-
   </p>
 
   <div ng-include="'app/study/views/study-view-details.html'"></div>

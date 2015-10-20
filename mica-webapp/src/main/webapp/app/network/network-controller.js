@@ -21,7 +21,7 @@ mica.network
     '$filter',
     '$translate',
     'NetworksResource',
-    'NetworkResource',
+    'DraftNetworkResource',
     'NOTIFICATION_EVENTS',
     'LocalizedValues',
 
@@ -30,7 +30,7 @@ mica.network
               $filter,
               $translate,
               NetworksResource,
-              NetworkResource,
+              DraftNetworkResource,
               NOTIFICATION_EVENTS,
               LocalizedValues) {
 
@@ -51,7 +51,7 @@ mica.network
 
       $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, id) {
         if ($scope.networkToDelete === id) {
-          NetworkResource.delete({id: id},
+          DraftNetworkResource.delete({id: id},
             function () {
               $scope.networks = NetworksResource.query();
             });
@@ -69,9 +69,9 @@ mica.network
     '$log',
     '$locale',
     '$location',
-    'NetworkResource',
+    'DraftNetworkResource',
     'DraftNetworksResource',
-    'NetworkPublicationResource',
+    'DraftNetworkPublicationResource',
     'MicaConfigResource',
     'FormServerValidation',
     'ActiveTabService',
@@ -81,9 +81,9 @@ mica.network
               $log,
               $locale,
               $location,
-              NetworkResource,
+              DraftNetworkResource,
               DraftNetworksResource,
-              NetworkPublicationResource,
+              DraftNetworkPublicationResource,
               MicaConfigResource,
               FormServerValidation,
               ActiveTabService) {
@@ -92,7 +92,7 @@ mica.network
       $scope.files = [];
       $scope.newNetwork= !$routeParams.id;
       $scope.network = $routeParams.id ?
-        NetworkResource.get({id: $routeParams.id}, function(response) {
+        DraftNetworkResource.get({id: $routeParams.id}, function(response) {
           $scope.files = response.logo ? [response.logo] : [];
           return response;
         }) : {published: false};
@@ -211,8 +211,12 @@ mica.network
     '$locale',
     '$location',
     '$translate',
-    'NetworkResource',
-    'NetworkPublicationResource',
+    'DraftNetworkResource',
+    'DraftNetworkPublicationResource',
+    'DraftNetworkStatusResource',
+    'DraftNetworkViewRevisionResource',
+    'DraftNetworkRevisionsResource',
+    'DraftNetworkRestoreRevisionResource',
     'MicaConfigResource',
     'CONTACT_EVENTS',
     'NETWORK_EVENTS',
@@ -221,6 +225,7 @@ mica.network
     '$modal',
     'LocalizedValues',
     'ActiveTabService',
+    '$filter',
 
     function ($rootScope,
               $scope,
@@ -229,8 +234,12 @@ mica.network
               $locale,
               $location,
               $translate,
-              NetworkResource,
-              NetworkPublicationResource,
+              DraftNetworkResource,
+              DraftNetworkPublicationResource,
+              DraftNetworkStatusResource,
+              DraftNetworkViewRevisionResource,
+              DraftNetworkRevisionsResource,
+              DraftNetworkRestoreRevisionResource,
               MicaConfigResource,
               CONTACT_EVENTS,
               NETWORK_EVENTS,
@@ -238,7 +247,21 @@ mica.network
               DraftStudiesSummariesResource,
               $modal,
               LocalizedValues,
-              ActiveTabService) {
+              ActiveTabService,
+              $filter) {
+      var initializeNetwork = function(network){
+        if (network.logo) {
+          $scope.logoUrl = 'ws/draft/network/'+network.id+'/file/'+network.logo.id+'/_download';
+        }
+
+        if (network.studyIds && network.studyIds.length > 0) {
+          DraftStudiesSummariesResource.summaries({id: network.studyIds},function (summaries){
+            $scope.studySummaries = summaries;
+          });
+        }
+      };
+
+      $scope.Mode = {View: 0, Revision: 1, File: 2, Permission: 3};
 
       $scope.getActiveTab = ActiveTabService.getActiveTab;
 
@@ -249,33 +272,100 @@ mica.network
         });
       });
 
+      $scope.networkId = $routeParams.id;
       $scope.studySummaries = [];
-      $scope.network = NetworkResource.get({id: $routeParams.id}, function(network){
-        if (network.studyIds && network.studyIds.length > 0) {
-          if (network.logo) {
-            $scope.logoUrl = 'ws/draft/network/'+network.id+'/file/'+network.logo.id+'/_download';
-          }
-          DraftStudiesSummariesResource.summaries({id: network.studyIds},function (summaries){
-            $scope.studySummaries = summaries;
-          });
-        }
-      });
+      $scope.network = DraftNetworkResource.get({id: $routeParams.id}, initializeNetwork);
 
-      $scope.isPublished = function() {
-        return $scope.network.published;
-      };
-
-      $scope.publish = function () {
-        if ($scope.network.published) {
-          NetworkPublicationResource.unPublish({id: $scope.network.id}, function () {
-            $scope.network = NetworkResource.get({id: $routeParams.id});
+      $scope.publish = function (publish) {
+        if (publish) {
+          DraftNetworkPublicationResource.publish({id: $scope.network.id}, function () {
+            $scope.network = DraftNetworkResource.get({id: $routeParams.id});
           });
         } else {
-          NetworkPublicationResource.publish({id: $scope.network.id}, function () {
-            $scope.network = NetworkResource.get({id: $routeParams.id});
+          DraftNetworkPublicationResource.unPublish({id: $scope.network.id}, function () {
+            $scope.network = DraftNetworkResource.get({id: $routeParams.id});
           });
         }
       };
+
+      $scope.toStatus = function (value) {
+        DraftNetworkStatusResource.toStatus({id: $scope.network.id, value: value}, function () {
+          $scope.network = DraftNetworkResource.get({id: $routeParams.id});
+        });
+      };
+
+      var getViewMode = function() {
+        var result = /\/(revision[s\/]*|files|permissions)/.exec($location.path());
+        if (result && result.length > 1) {
+          switch (result[1]) {
+            case 'revision':
+            case 'revisions':
+              return $scope.Mode.Revision;
+            case 'files':
+              return $scope.Mode.File;
+            case 'permissions':
+              return $scope.Mode.Permission;
+          }
+        }
+
+        return $scope.Mode.View;
+      };
+
+      $scope.viewMode = getViewMode();
+
+      var viewRevision = function (networkId, commitInfo) {
+        $scope.commitInfo = commitInfo;
+        $scope.network = DraftNetworkViewRevisionResource.view({
+          id: networkId,
+          commitId: commitInfo.commitId
+        }, initializeNetwork);
+      };
+
+      var fetchNetwork = function (networkId) {
+        $scope.network = DraftNetworkResource.get({id: networkId}, initializeNetwork);
+      };
+
+      var fetchRevisions = function (networkId, onSuccess) {
+        DraftNetworkRevisionsResource.query({id: networkId}, function (response) {
+          if (onSuccess) {
+            onSuccess(response);
+          }
+        });
+      };
+
+      var restoreRevision = function (networkId, commitInfo, onSuccess) {
+        if (commitInfo && $scope.networkId === networkId) {
+          var args = {commitId: commitInfo.commitId, restoreSuccessCallback: onSuccess};
+
+          $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
+            {
+              titleKey: 'network.restore-dialog.title',
+              messageKey: 'network.restore-dialog.message',
+              messageArgs: [$filter('amDateFormat')(commitInfo.date, 'lll')]
+            }, args
+          );
+        }
+      };
+
+      var onRestore = function (event, args) {
+        if (args.commitId) {
+          DraftNetworkRestoreRevisionResource.restore({id: $scope.networkId, commitId: args.commitId},
+            function () {
+              fetchNetwork($routeParams.id);
+              $scope.networkId = $routeParams.id;
+              if (args.restoreSuccessCallback) {
+                args.restoreSuccessCallback();
+              }
+            });
+        }
+      };
+
+      $scope.fetchNetwork = fetchNetwork;
+      $scope.viewRevision = viewRevision;
+      $scope.restoreRevision = restoreRevision;
+      $scope.fetchRevisions = fetchRevisions;
+
+      $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, onRestore);
 
       $scope.emitNetworkUpdated = function () {
         $scope.$emit(NETWORK_EVENTS.networkUpdated, $scope.network);
@@ -286,7 +376,7 @@ mica.network
           $log.debug('save network', networkUpdated);
 
           $scope.network.$save(function () {
-              $scope.network = NetworkResource.get({id: $routeParams.id}, function(network){
+              $scope.network = DraftNetworkResource.get({id: $routeParams.id}, function(network){
                 if (network.studyIds && network.studyIds.length > 0) {
                   DraftStudiesSummariesResource.summaries({id: network.studyIds},function (summaries){
                     $scope.studySummaries = summaries;
@@ -331,7 +421,7 @@ mica.network
 
       $scope.$on(CONTACT_EVENTS.contactEditionCanceled, function (event, study) {
         if (study === $scope.network) {
-          $scope.network = NetworkResource.get({id: $scope.network.id});
+          $scope.network = DraftNetworkResource.get({id: $scope.network.id});
         }
       });
 
