@@ -42,6 +42,13 @@ mica.fileSystem
       });
     }])
 
+  .factory('DraftFileSystemPublishResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/draft/file/:path?publish=:publish', {}, {
+        'publish': {method: 'PUT', params: {path: '@path', publish: '@publish'}, errorHandler: true}
+      });
+    }])
+
   .factory('DraftFileSystemSearchResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/files-search/:path/?query=:query&recursively=:recursively', {}, {
@@ -114,8 +121,6 @@ mica.fileSystem
               method: 'POST',
               file: file
             })
-            .progress(function (evt) {
-            })
             .success(function (data, status, getResponseHeaders) {
               var parts = getResponseHeaders().location.split('/');
               var fileId = parts[parts.length - 1];
@@ -150,17 +155,15 @@ mica.fileSystem
 
     }])
 
-  .service('BreadcrumbHelper', ['$filter', function ($filter) {
+  .service('BreadcrumbHelper', [function () {
     this.toArray = function (path) {
       if (path) {
         var a = path.replace(/\/$/, '').split('/').slice(1);
-        var rootPath = '/' + a.splice(0, 2).join('/');
-        var parts = [{name: $filter('translate')('files'), path: rootPath}];
+        var parts = [{name: '/', path: '/'}];
         var prev = null;
-        a.pop();
         a.forEach(function (part) {
-          prev = prev !== null ? prev + '/' + part : part;
-          parts.push({name: part, path: rootPath + '/' + prev});
+          prev = (prev === null ? '' : prev) + '/' + part;
+          parts.push({name: part, path: prev});
         });
 
         return parts;

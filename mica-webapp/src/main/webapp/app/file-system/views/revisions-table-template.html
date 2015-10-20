@@ -1,19 +1,6 @@
-<div ng-if="data.document.state.revisions.length > 1">
-  <h3 translate>history</h3>
-  <div class="row voffset2">
-    <div class="col-xs-4">
-          <span class="input-group input-group-sm no-padding-top">
-            <span class="input-group-addon" id="study-search"><i class="glyphicon glyphicon-search"></i></span>
-            <input ng-model="searchText" type="text" class="form-control width50" aria-describedby="file-search">
-          </span>
-    </div>
-    <div class="col-xs-8">
-      <dir-pagination-controls class="pull-right"></dir-pagination-controls>
-    </div>
-  </div>
-
+<div>
   <div ng-if="data.document.state.revisions" class="table-responsive">
-    <table class="table table-bordered table-striped">
+    <table class="table table-bordered table-striped no-padding no-margin">
       <thead>
       <tr>
         <th translate>created-on</th>

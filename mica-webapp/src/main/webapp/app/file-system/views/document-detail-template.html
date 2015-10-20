@@ -1,0 +1,30 @@
+<div class="panel panel-default">
+  <div class="panel-body">
+      <label class="control-label text-muted"><small>{{'size' | translate}}</small></label>
+      <div>
+        <label ng-if="!data.isFile">{{data.document.size}} {{'items' | translate}}</label>
+        <label ng-if="data.isFile">{{data.document.size | bytes}}</label>
+      </div>
+      <label class="control-label text-muted voffset2"><small>{{'created-on' | translate}}</small></label>
+      <div>
+        <label>{{data.document.timestamps.created | amDateFormat : 'lll'}}</label>
+      </div>
+      <label class="control-label text-muted voffset2"><small>{{'last-modified' | translate}}</small></label>
+      <div>
+        <label>{{data.document.timestamps.lastUpdate | amDateFormat : 'lll'}}</label>
+      </div>
+    <div ng-if="data.isFile">
+      <label class="control-label text-muted voffset2"><small>{{'type' | translate}}</small></label>
+      <div>
+        <label editable-text="data.document.state.attachment.type"
+          e-form="buttonChangeType"
+          onbeforesave="updateDocumentType(data.document, $data)">
+          {{data.document.state.attachment.type || 'empty'}}
+                <span class="hoffset1"><a href ng-click="buttonChangeType.$show()" ng-hide="buttonChangeType.$visible">
+                  <i class="fa fa-pencil"></i></a>
+                </span>
+        </label>
+      </div>
+    </div>
+  </div>
+</div>

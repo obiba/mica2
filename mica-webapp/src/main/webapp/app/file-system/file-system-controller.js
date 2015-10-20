@@ -23,6 +23,7 @@ mica.fileSystem
     'DraftFileSystemFilesResource',
     'DraftFileSystemSearchResource',
     'DraftFileSystemRestoreResource',
+    'DraftFileSystemPublishResource',
 
     function ($scope,
               $log,
@@ -34,7 +35,8 @@ mica.fileSystem
               DraftFileSystemRenameResource,
               DraftFileSystemFilesResource,
               DraftFileSystemSearchResource,
-              DraftFileSystemRestoreResource) {
+              DraftFileSystemRestoreResource,
+              DraftFileSystemPublishResource) {
 
       var onError = function(response) {
         AlertService.alert({
@@ -135,11 +137,24 @@ mica.fileSystem
       };
 
       var searchDocuments = function() {
-        $log.info('>>>>>>>>');
         DraftFileSystemSearchResource.search(
           {path: $scope.data.document.path, query: $scope.data.searchText, recursively: false},
           function onSuccess(response) {
             $log.info('Search result', response);
+          },
+          onError
+        );
+      };
+
+      var isPublished = function() {
+        return $scope.data.document && $scope.data.document.state.publicationDate;
+      };
+
+      var publish = function() {
+        DraftFileSystemPublishResource.publish(
+          {path: $scope.data.document.path, publish: !isPublished() ? 'true' : 'false'},
+          function onSuccess(){
+            navigateTo($scope.data.document);
           },
           onError
         );
@@ -158,6 +173,8 @@ mica.fileSystem
       $scope.searchDocuments = searchDocuments;
       $scope.onFileSelect = onFileSelect;
       $scope.isFile = FileSystemService.isFile;
+      $scope.isPublished = isPublished;
+      $scope.publish = publish;
 
       $scope.data = {
         rootPath: null,

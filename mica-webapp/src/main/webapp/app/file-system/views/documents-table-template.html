@@ -1,65 +1,51 @@
-<div>
-  <div class="row voffset2">
-    <div class="col-xs-4">
-          <span class="input-group input-group-sm no-padding-top">
-            <span class="input-group-addon" id="study-search"><i class="glyphicon glyphicon-search"></i></span>
-            <input ng-change="searchDocuments()" ng-model="data.searchText" type="text" class="form-control width50" aria-describedby="file-search">
-          </span>
-    </div>
-    <div class="col-xs-8">
-      <dir-pagination-controls class="pull-right"></dir-pagination-controls>
-    </div>
-  </div>
+<div class="table-responsive">
+  <table class="table table-bordered table-striped no-padding no-margin">
+    <thead>
+    <tr>
+      <th translate>name</th>
+      <th translate>last-modified</th>
+      <th translate>size</th>
+      <th translate>status</th>
+      <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr ng-show="data.parentPath">
+      <td colspan="5">
+        <span><a href style="text-decoration: none;" ng-click="navigateBack()"><i class="fa fa-folder"></i> ..</a></span>
+      </td>
+    </tr>
+    <tr dir-paginate="document in data.document.children | itemsPerPage: 20"
+      ng-init="fileDocument = isFile(document)">
 
-  <div ng-if="!data.isFile" class="table-responsive">
-    <table class="table table-bordered table-striped">
-      <thead>
-      <tr>
-        <th translate>name</th>
-        <th translate>last-modified</th>
-        <th translate>size</th>
-        <th translate>status</th>
-        <th></th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr ng-show="data.parentPath">
-        <td colspan="5">
-          <span><a href style="text-decoration: none;" ng-click="navigateBack()"><i class="fa fa-folder"></i> ..</a></span>
-        </td>
-      </tr>
-      <tr dir-paginate="document in data.document.children | itemsPerPage: 20"
-        ng-init="fileDocument = isFile(document)">
-
-        <td>
-          <a href style="text-decoration: none;" ng-click="navigateTo(document)">
-            <span><i class="fa {{getDocumentIcon(document)}}"></i> {{document.name}}</span>
-          </a>
-        </td>
-        <td>
-          {{document.timestamps.lastUpdate | amDateFormat : 'lll'}}
-        </td>
-        <td ng-if="fileDocument">
-          {{document.size | bytes}}
-        </td>
-        <td ng-if="!fileDocument">
-          {{document.size}}
-        </td>
-        <td>
-          {{document.revisionStatus}}
-        </td>
-        <td>
-          <ul class="list-inline pull-right">
-            <li ng-show="isFile(document)">
-              <a target="_self" ng-href="ws/draft/file-dl/{{document.path}} "><i class="fa fa-download"></i></a>
-            </li>
-            <li>
-              <a href ng-click="deleteDocument(document)"><i class="fa fa-trash"></i></a>
-            </li>
-          </ul>
-        </td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
+      <td>
+        <a href style="text-decoration: none;" ng-click="navigateTo(document)">
+          <span><i class="fa {{getDocumentIcon(document)}}"></i> {{document.name}}</span>
+        </a>
+      </td>
+      <td>
+        {{document.timestamps.lastUpdate | amDateFormat : 'lll'}}
+      </td>
+      <td ng-if="fileDocument">
+        {{document.size | bytes}}
+      </td>
+      <td ng-if="!fileDocument">
+        {{document.size}}
+      </td>
+      <td>
+        {{document.revisionStatus}}
+      </td>
+      <td>
+        <ul class="list-inline pull-right">
+          <li ng-show="isFile(document)">
+            <a target="_self" ng-href="ws/draft/file-dl/{{document.path}} "><i class="fa fa-download"></i></a>
+          </li>
+          <li>
+            <a href ng-click="deleteDocument(document)"><i class="fa fa-trash"></i></a>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    </tbody>
+  </table>
 </div>

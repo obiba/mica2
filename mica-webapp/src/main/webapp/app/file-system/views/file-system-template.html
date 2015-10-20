@@ -1,6 +1,47 @@
 <div>
   <obiba-alert id="DataAccessRequestEditController"></obiba-alert>
-  <div ng-include="'app/file-system/views/document-detail.html'"></div>
-  <div ng-if="data.isFile" ng-include="'app/file-system/views/revisions-table-template.html'"></div>
-  <div ng-if="!data.isFile" ng-include="'app/file-system/views/documents-table-template.html'"></div>
+
+  <div>
+    <!-- second level breadcrumb -->
+    <ol class="mica-breadcrumb no-margin no-padding">
+      <li ng-repeat="part in data.breadcrumbs" ng-class="{'active': $last}">
+        <a ng-show="!$last" href ng-click="navigateToPath(part.path)">
+          <span ng-show="part.name === '/'"><i class="fa fa-hdd-o"></i></span>
+          <span ng-show="part.name !== '/'">{{part.name}}</span>
+        </a>
+        <!-- -->
+        <!-- Editable part of breadcrumb -->
+        <!-- -->
+          <span ng-show="$last" editable-text="data.document.name"
+            e-form="buttonRename"
+            onbeforesave="renameDocument(data.document, $data)">
+            <i class="fa {{getDocumentIcon(data.document)}}"></i> {{data.document.name || 'empty'}}
+            <span class="hoffset1"><a href ng-click="buttonRename.$show()" ng-hide="buttonRename.$visible">
+              <i class="fa fa-pencil"></i></a>
+            </span>
+          </span>
+      </li>
+    </ol>
+
+    <!-- Document details -->
+    <div class="row voffset3">
+      <div class="col-md-2">
+        <div ng-include="'app/file-system/views/shortcuts-template.html'"></div>
+      </div>
+      <div class="col-md-6">
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div ng-include="'app/file-system/views/toolbar-template.html'"></div>
+            <div class="voffset2">
+              <div ng-if="data.isFile" ng-include="'app/file-system/views/revisions-table-template.html'"></div>
+              <div ng-if="!data.isFile" ng-include="'app/file-system/views/documents-table-template.html'"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div ng-include="'app/file-system/views/document-detail-template.html'"></div>
+      </div>
+    </div>
+  </div>
 </div>
