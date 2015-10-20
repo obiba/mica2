@@ -23,13 +23,18 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.obiba.mica.AbstractGitPersistableResource;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.RevisionStatus;
+import org.obiba.mica.core.service.AbstractGitPersistableService;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.rest.FileResource;
 import org.obiba.mica.network.NoSuchNetworkException;
 import org.obiba.mica.network.domain.Network;
+import org.obiba.mica.network.domain.NetworkState;
 import org.obiba.mica.network.service.NetworkService;
+import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.ApplicationContext;
@@ -43,7 +48,7 @@ import com.codahale.metrics.annotation.Timed;
  */
 @Component
 @Scope("request")
-public class DraftNetworkResource {
+public class DraftNetworkResource extends AbstractGitPersistableResource<NetworkState, Network> {
 
   @Inject
   private NetworkService networkService;
@@ -144,5 +149,15 @@ public class DraftNetworkResource {
   @Path("/commit/{commitId}/view")
   public Mica.NetworkDto getFromCommit(@NotNull @PathParam("commitId") String commitId) throws IOException {
     return dtos.asDto(networkService.getFromCommit(networkService.findDraft(id), commitId));
+  }
+
+  @Override
+  protected String getId() {
+    return id;
+  }
+
+  @Override
+  protected AbstractGitPersistableService<NetworkState, Network> getService() {
+    return networkService;
   }
 }

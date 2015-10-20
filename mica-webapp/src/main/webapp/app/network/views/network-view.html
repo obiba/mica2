@@ -16,163 +16,47 @@
     </ol>
   </h2>
 
+  <div class="tabs-menu tabs-left">
+    <ul class="nav nav-tabs">
+      <li class="active"><a href="#/network/{{network.id}}" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>
+      </li>
+      <li><a href="#/network/{{network.id}}/revisions" title="{{'revisions' | translate}}"><i class="fa fa-list-ol"></i></a>
+      </li>
+    </ul>
+  </div>
+
   <div class="clearfix">
-    <div class="pull-left">
-      <small class="help-block inline">{{'global.lastUpdate' | translate}}: {{network.timestamps.lastUpdate ===
-        undefined ? network.timestamps.created : network.timestamps.lastUpdate |
-        amDateFormat : 'lll'}}
-      </small>
-      <i class="fa fa-star-o" ng-show="!network.published"
-        title="{{'publish.not-published' | translate}}"></i>
-      <i class="fa fa-star" ng-show="network.published"
-        title="{{'publish.published' | translate}}"></i>
-    </div>
-    <div class="btn-group pull-right">
+    <h3 class="pull-left no-margin-top" translate>view</h3>
+    <div class="pull-right">
       <a ng-href="#/network/{{network.id}}/edit" class="btn btn-primary"
-        ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+        ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor']) && network['obiba.mica.EntityStateDto.state'].revisionStatus === 'DRAFT'"
+        ng-disabled="hasRole(['mica-editor']) && network['obiba.mica.EntityStateDto.state'].revisionStatus !== 'DRAFT'">
         <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
       </a>
-      <publish-switch status="isPublished()" publish="publish()"
-        ng-if="hasRole(['mica-administrator','mica-reviewer'])"></publish-switch>
+
+      <status-buttons class="inline"
+        state="network['obiba.mica.EntityStateDto.state']"
+        on-publish="publish(true)"
+        on-un-publish="publish(false)"
+        can-publish="hasRole(['mica-administrator','mica-reviewer'])"
+        on-delete="delete()"
+        can-delete="hasRole(['mica-administrator','mica-reviewer'])"
+        can-edit="hasRole(['mica-administrator','mica-reviewer','mica-editor'])"
+        to-draft="toStatus('DRAFT')"
+        to-under-review="toStatus('UNDER_REVIEW')"
+        to-deleted="toStatus('DELETED')">
+      </status-buttons>
+
     </div>
   </div>
 
+  <p>
+    <small class="help-block inline">{{'global.lastUpdate' | translate}}: {{network.timestamps.lastUpdate |
+      amDateFormat : 'lll'}}
+    </small>
+    <publish-status class="inline" version="network['obiba.mica.EntityStateDto.state'].publishedTag"
+      ahead="network['obiba.mica.EntityStateDto.state'].revisionsAhead"></publish-status>
+  </p>
 
-  <div class="voffset4">
-    <tabset>
-
-      <tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active"
-        disabled="tab.disabled">
-
-        <div class="voffset4">
-          <img class="img-responsive desaturate" ng-show="network.logo"
-            ng-src="{{logoUrl}}"/>
-
-          <h2>
-            <localized value="network.name" lang="tab.lang"></localized>
-          </h2>
-
-          <localized value="network.description" lang="tab.lang"></localized>
-        </div>
-
-        <div class="row">
-          <div class="col-md-6">
-            <h3 translate>network.general-info</h3>
-
-            <table class="table table-bordered table-striped">
-              <tbody>
-              <tr>
-                <th translate>network.acronym</th>
-                <td>
-                  <localized value="network.acronym" lang="tab.lang"></localized>
-                </td>
-              </tr>
-              <tr>
-                <th translate>network.investigators</th>
-                <td>
-                  <div ng-controller="ContactController">
-                    <ul ui-sortable="sortableOptions" ng-model="network.investigators" class="list-unstyled sortable"
-                      ng-show="network.investigators.length">
-                      <li ng-repeat="investigator in network.investigators">
-                        <a ng-click="viewContact(investigator)" title="{{'dnd-reorder' | translate}}">
-                          {{investigator.title}} {{investigator.firstName}} {{investigator.lastName}}
-                          {{investigator.academicLevel}}
-                        <span ng-show="investigator.institution.name.length">
-                          (<localized value="investigator.institution.name" lang="tab.lang"></localized>)
-                        </span>
-                        </a>
-                        <div class="inline" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
-                          <a ng-click="editInvestigator(network, investigator)" class="action">
-                            <i class="fa fa-pencil"></i>
-                          </a>
-                          <a ng-click="deleteInvestigator(network, investigator)" class="action">
-                            <i class="fa fa-trash-o"></i>
-                          </a>
-                        </div>
-                      </li>
-                    </ul>
-                    <button type="button" class="btn btn-info btn-sm" ng-click="addInvestigator(network)"
-                      ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
-                      <i class="fa fa-plus"></i> <span translate>network.add-investigator</span>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <th translate>network.contacts</th>
-                <td>
-                  <div ng-controller="ContactController">
-                    <ul ui-sortable="sortableOptions" ng-model="network.contacts" class="list-unstyled sortable"
-                      ng-show="network.contacts.length">
-                      <li ng-repeat="contact in network.contacts">
-                        <a ng-click="viewContact(contact)" title="{{'dnd-reorder' | translate}}">
-                          {{contact.title}} {{contact.firstName}} {{contact.lastName}} {{contact.academicLevel}}
-                        <span ng-show="contact.institution.name.length">
-                          (<localized value="contact.institution.name" lang="tab.lang"></localized>)
-                        </span>
-                        </a>
-                        <div class="inline" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
-                          <a ng-click="editContact(network, contact)" class="action"><i class="fa fa-pencil"></i></a>
-                          <a ng-click="deleteContact(network, contact)" class="action"><i class="fa fa-trash-o"></i></a>
-                        </div>
-                      </li>
-                    </ul>
-                    <button type="button" class="btn btn-info btn-sm" ng-click="addContact(network)"
-                      ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
-                      <i class="fa fa-plus"></i> <span translate>network.add-contact</span>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <a href="" class="btn btn-info" ng-click="showAllContacts()" translate>network.all-contacts</a>
-                </td>
-              </tr>
-              </tbody>
-            </table>
-
-            <attributes-list attributes="network.attributes"></attributes-list>
-          </div>
-          <div class="col-md-6">
-            <h3 translate>studies</h3>
-
-            <a ng-click="addStudyEvent(network)" class="btn btn-info"
-              ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
-              <i class="fa fa-plus"></i> <span translate>study.add</span>
-            </a>
-          <span class="pull-right">
-            <dir-pagination-controls></dir-pagination-controls>
-          </span>
-
-            <table class="table table-bordered table-striped" ng-show="studySummaries.length">
-              <thead>
-              <tr>
-                <th translate>study.name</th>
-                <th translate>study.description</th>
-                <th translate>actions</th>
-              </tr>
-              </thead>
-              <tbody>
-              <tr dir-paginate="studySummary in studySummaries | itemsPerPage: 10">
-                <td>
-                  <localized value="studySummary.acronym" lang="tab.lang"></localized>
-                </td>
-                <td>
-                  <localized value="studySummary.name" lang="tab.lang"></localized>
-                </td>
-                <td>
-                  <!--<a ng-click="editStudy(study, population, dce)" class="hand action"><i class="fa fa-pencil"></i></a>-->
-                  <a ng-click="deleteStudyEvent(network, studySummary, $index)" class="hand action"><i
-                    class="fa fa-trash-o"></i></a>
-                </td>
-              </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-      </tab>
-    </tabset>
-  </div>
+  <div ng-include="'app/network/views/network-view-details.html'"></div>
 </div>

@@ -18,7 +18,6 @@ import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.core.domain.GitPersistable;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.repository.EntityStateRepository;
-import org.obiba.mica.study.domain.Study;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +42,7 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
 
   protected abstract GitPersistable unpublish(T gitPersistable);
 
-  protected abstract Class<T> getType();
+  protected abstract Class<T1> getType();
 
   @NotNull
   public abstract T1 findDraft(@NotNull String id) throws NoSuchEntityException;
@@ -53,7 +52,7 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
     InputStream inputStream = new ByteArrayInputStream(blob.getBytes(StandardCharsets.UTF_8));
 
     try {
-      return (T1) objectMapper.readValue(inputStream, getType());
+      return objectMapper.readValue(inputStream, getType());
     } catch(IOException e) {
       throw Throwables.propagate(e);
     }

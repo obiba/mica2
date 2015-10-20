@@ -17,6 +17,7 @@ mica.network = angular.module('mica.network', [
   'mica.attachment',
   'mica.publish',
   'mica.attributes',
+  'mica.status',
   'mica.commons',
   'mica.contact',
   'obiba.notification',
@@ -24,5 +25,6 @@ mica.network = angular.module('mica.network', [
   'ngRoute',
   'ui.bootstrap',
   'ui',
-  'pascalprecht.translate'
+  'pascalprecht.translate',
+  'mica.revisions'
 ]);

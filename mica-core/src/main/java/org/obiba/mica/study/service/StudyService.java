@@ -296,8 +296,8 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
   }
 
   @Override
-  protected Class<StudyState> getType() {
-    return StudyState.class;
+  protected Class<Study> getType() {
+    return Study.class;
   }
 
   @Override

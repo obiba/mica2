@@ -43,6 +43,7 @@
           <th translate>network.acronym</th>
           <th translate>network.name</th>
           <th translate>publish.published</th>
+          <th translate>status</th>
           <th translate>actions</th>
         </tr>
         </thead>
@@ -67,10 +68,11 @@
             </ul>
           </td>
           <td>
-            <i class="fa fa-star-o" ng-show="!network.published"
-              title="{{'publish.not-published' | translate}}"></i>
-            <i class="fa fa-star" ng-show="network.published"
-              title="{{'publish.published' | translate}}"></i>
+            <div publish-status version="network['obiba.mica.EntityStateDto.state'].publishedTag"
+              ahead="network['obiba.mica.EntityStateDto.state'].revisionsAhead"></div>
+          </td>
+          <td>
+            {{'publish.status.' + network['obiba.mica.EntityStateDto.state'].revisionStatus | translate}}
           </td>
           <td>
             <ul class="list-inline">

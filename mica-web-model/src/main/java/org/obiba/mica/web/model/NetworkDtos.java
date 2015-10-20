@@ -60,16 +60,30 @@ class NetworkDtos {
   @NotNull
   Mica.NetworkDto.Builder asDtoBuilder(@NotNull Network network) {
     Mica.NetworkDto.Builder builder = Mica.NetworkDto.newBuilder();
-
     NetworkState networkState = networkService.findStateById(network.getId());
 
     builder.setId(network.getId()) //
-        .setTimestamps(TimestampsDtos.asDto(network)) //
-        .setPublished(networkState.isPublished()) //
-        .addAllName(localizedStringDtos.asDto(network.getName())) //
-        .addAllDescription(localizedStringDtos.asDto(network.getDescription())) //
-        .addAllAcronym(localizedStringDtos.asDto(network.getAcronym())) //
-        .addAllInfo(localizedStringDtos.asDto(network.getInfos()));
+      .setTimestamps(TimestampsDtos.asDto(network)) //
+      .setPublished(networkState.isPublished()) //
+      .addAllName(localizedStringDtos.asDto(network.getName())) //
+      .addAllDescription(localizedStringDtos.asDto(network.getDescription())) //
+      .addAllAcronym(localizedStringDtos.asDto(network.getAcronym())) //
+      .addAllInfo(localizedStringDtos.asDto(network.getInfos()));
+
+    Mica.EntityStateDto.Builder stateBuilder = Mica.EntityStateDto.newBuilder()//
+      .setRevisionsAhead(networkState.getRevisionsAhead()) //
+      .setRevisionStatus(networkState.getRevisionStatus().name());
+
+    if(networkState.getPublicationDate() != null) {
+      stateBuilder.setPublicationDate(networkState.getPublicationDate().toString());
+    }
+
+    if(networkState.isPublished()) {
+      stateBuilder.setPublishedTag(networkState.getPublishedTag());
+    }
+
+    builder.setPublished(networkState.isPublished());
+    builder.setExtension(Mica.EntityStateDto.state, stateBuilder.build());
 
     if(network.getInvestigators() != null) {
       builder.addAllInvestigators(

@@ -602,6 +602,10 @@
       "title": "Delete Study",
       "message": "Are you sure you want to delete the study '{{arg0}}'?"
     },
+    "restore-dialog": {
+      "title": "Restoring Network from Revision",
+      "message": "Are you sure you want to restore this revision from '{{arg0}}'?"
+    },
     "none": "No networks."
   },
   "all": "All",
