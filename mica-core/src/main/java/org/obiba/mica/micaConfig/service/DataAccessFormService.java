@@ -57,7 +57,7 @@ public class DataAccessFormService {
   public void publish() {
     Optional<DataAccessForm> dataAccessForm = findDataAccessForm();
     dataAccessForm.ifPresent(d -> {
-      d.setPublishedTag(gitService.tag(d));
+      d.setPublishedTag(gitService.tag(d).getFirst());
       d.setRevisionsAhead(0);
       d.setRevisionStatus(RevisionStatus.DRAFT);
       dataAccessFormRepository.save(d);

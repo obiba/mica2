@@ -8,6 +8,7 @@ mica.revisions
       scope: {
         title: '@',
         id: '@',
+        state: '=',
         canRestore: '=',
         onFetchRevisions: '&',
         onViewRevision: '&',

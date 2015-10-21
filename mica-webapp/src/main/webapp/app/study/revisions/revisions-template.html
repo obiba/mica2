@@ -29,9 +29,11 @@
     <tr ng-class="{'active-row': $index === active.index && active.page === pages.index}"
       dir-paginate="commitInfo in commitInfos | filter:searchText | itemsPerPage: 5" current-page="pages.index">
       <td>
-        <div class="ellipsis" title="{{commitInfo.commitId}}">
+        <span class="ellipsis pull-left" title="{{commitInfo.commitId}}">
           {{commitInfo.commitId}}
-        </div>
+        </span>
+        <i class="fa fa-star pull-left" ng-if="state.publishedId === commitInfo.commitId"
+          title="{{'publish.published' | translate}} ({{state.publicationDate | amDateFormat : 'lll'}} [{{state.publishedBy}}])"></i>
       </td>
       <td>
         {{commitInfo.date | amDateFormat: 'lll'}}

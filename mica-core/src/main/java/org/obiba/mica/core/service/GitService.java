@@ -13,6 +13,7 @@ import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.math3.util.Pair;
 import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -21,6 +22,7 @@ import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.transport.PushResult;
 import org.obiba.git.CommitInfo;
 import org.obiba.git.GitException;
+import org.obiba.git.GitUtils;
 import org.obiba.git.command.AbstractGitWriteCommand;
 import org.obiba.git.command.AddDeleteFilesCommand;
 import org.obiba.git.command.CommitLogCommand;
@@ -106,8 +108,7 @@ public class GitService {
     ); //
   }
 
-  public CommitInfo getCommitInfo(@NotNull @Valid GitPersistable persistable, @NotNull String commitId,
-    Class clazz) {
+  public CommitInfo getCommitInfo(@NotNull @Valid GitPersistable persistable, @NotNull String commitId, Class clazz) {
     return gitCommandHandler.execute(
       new CommitLogCommand.Builder(getRepositoryPath(persistable), new File(clonesRoot, persistable.pathPrefix()),
         getJsonFileName(clazz.getSimpleName()), commitId).build());
@@ -119,8 +120,8 @@ public class GitService {
         new File(clonesRoot, persistable.pathPrefix()), //
         getJsonFileName(clazz.getSimpleName()) //
       ) //
-      .commitId(commitId) //
-      .build() //
+        .commitId(commitId) //
+        .build() //
     ); //
   }
 
@@ -154,8 +155,7 @@ public class GitService {
       try {
         builder.addFile(getJsonFileName(p.getKey()), serializePersistable(p.getValue()));
         //noinspection ResultOfMethodCallIgnored
-      }
-      catch(IOException e) {
+      } catch(IOException e) {
         throw new RuntimeException("Cannot persist " + persistable + " to " + persistable.getId() + " repo", e);
       }
     });
@@ -163,8 +163,7 @@ public class GitService {
     gitCommandHandler.execute(builder.build());
   }
 
-  private ByteArrayInputStream serializePersistable(
-    Object persistable) throws IOException {
+  private ByteArrayInputStream serializePersistable(Object persistable) throws IOException {
     return new ByteArrayInputStream(objectMapper.writeValueAsBytes(persistable));
   }
 
@@ -174,8 +173,9 @@ public class GitService {
 
   private <T> T read(GitPersistable persistable, @Nullable String tag, Class<T> clazz) {
     try {
-      try(InputStream inputStream = gitCommandHandler
-        .execute(new ReadFileCommand.Builder(getRepositoryPath(persistable), getJsonFileName(clazz.getSimpleName())).tag(tag).build())) {
+      try(InputStream inputStream = gitCommandHandler.execute(
+        new ReadFileCommand.Builder(getRepositoryPath(persistable), getJsonFileName(clazz.getSimpleName())).tag(tag)
+          .build())) {
         return objectMapper.readValue(inputStream, clazz);
       }
     } catch(IOException e) {
@@ -202,11 +202,12 @@ public class GitService {
     return ATTACHMENTS_PATH + attachmentId;
   }
 
-  public String tag(GitPersistable persistable) {
-    IncrementTagCommand command = new IncrementTagCommand(getRepositoryPath(persistable), new File(clonesRoot, persistable.pathPrefix()));
+  public Pair<String, String> tag(GitPersistable persistable) {
+    IncrementTagCommand command = new IncrementTagCommand(getRepositoryPath(persistable),
+      new File(clonesRoot, persistable.pathPrefix()));
     gitCommandHandler.execute(command);
 
-    return String.valueOf(command.getNewTag());
+    return Pair.create(String.valueOf(command.getNewTag()), command.getHeadCommitId());
   }
 
   private File getRepositoryPath(GitPersistable persistable) {
@@ -225,6 +226,8 @@ public class GitService {
 
     private int newTag = 1;
 
+    private String headCommitId = "";
+
     private IncrementTagCommand(@NotNull File repositoryPath, @NotNull File clonesPath) {
       super(repositoryPath, clonesPath, null);
     }
@@ -236,9 +239,8 @@ public class GitService {
         if(!refs.isEmpty()) {
           int maxTagNumber = 0;
           for(Ref ref : refs) {
-            String name = ref.getName();
             try {
-              int tagNumber = Integer.valueOf(name.substring(name.lastIndexOf('/') + 1, name.length()));
+              int tagNumber = parseTagNumber(ref);
               if(tagNumber > maxTagNumber) {
                 maxTagNumber = tagNumber;
               }
@@ -250,14 +252,24 @@ public class GitService {
         }
         git.tag().setMessage("Create tag " + newTag).setName(String.valueOf(newTag))
           .setTagger(new PersonIdent(getAuthorName(), getAuthorEmail())).call();
+        headCommitId = GitUtils.getHeadCommitId(git.getRepository());
         return git.push().setPushTags().setRemote("origin").call();
-      } catch(GitAPIException e) {
+      } catch(IOException | GitAPIException e) {
         throw new GitException(e);
       }
     }
 
+    private int parseTagNumber(Ref ref) {
+      String name = ref.getName();
+      return Integer.valueOf(name.substring(name.lastIndexOf('/') + 1, name.length()));
+    }
+
     public int getNewTag() {
       return newTag;
+    }
+
+    public String getHeadCommitId() {
+      return headCommitId;
     }
   }
 }
