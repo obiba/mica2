@@ -54,8 +54,7 @@
     <small class="help-block inline">{{'global.lastUpdate' | translate}}: {{network.timestamps.lastUpdate |
       amDateFormat : 'lll'}}
     </small>
-    <publish-status class="inline" version="network['obiba.mica.EntityStateDto.state'].publishedTag"
-      ahead="network['obiba.mica.EntityStateDto.state'].revisionsAhead"></publish-status>
+    <publish-status class="inline" state="network['obiba.mica.EntityStateDto.state']"></publish-status>
   </p>
 
   <div ng-include="'app/network/views/network-view-details.html'"></div>

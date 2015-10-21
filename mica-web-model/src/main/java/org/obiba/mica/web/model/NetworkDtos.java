@@ -13,7 +13,6 @@ import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.domain.NetworkState;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.slf4j.Logger;
@@ -76,6 +75,7 @@ class NetworkDtos {
 
     if(networkState.getPublicationDate() != null) {
       stateBuilder.setPublicationDate(networkState.getPublicationDate().toString());
+      stateBuilder.setPublishedBy(networkState.getPublishedBy());
     }
 
     if(networkState.isPublished()) {

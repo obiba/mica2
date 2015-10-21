@@ -57,6 +57,8 @@ message StudyStateDto {
   optional string publishedTag = 1;
   required int32 revisionsAhead = 2;
   optional string revisionStatus = 3;
+  optional string publicationDate = 4;
+  optional string publishedBy = 5;
 
   extend StudySummaryDto {
     optional StudyStateDto state = 1000;

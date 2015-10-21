@@ -128,6 +128,8 @@ class StudySummaryDtos {
 
     if(studyState.isPublished()) {
       stateBuilder.setPublishedTag(studyState.getPublishedTag());
+      stateBuilder.setPublicationDate(studyState.getPublicationDate().toString());
+      stateBuilder.setPublishedBy(studyState.getPublishedBy());
     }
 
     Study study = studyService.findStudy(studyState.getId());
