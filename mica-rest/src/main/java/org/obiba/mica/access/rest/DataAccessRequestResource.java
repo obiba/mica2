@@ -113,7 +113,7 @@ public class DataAccessRequestResource {
 
     if(!r.isPresent()) throw NoSuchEntityException.withId(Attachment.class, attachmentId);
 
-    return Response.ok(fileStoreService.getFile(attachmentId)).header("Content-Disposition",
+    return Response.ok(fileStoreService.getFile(r.get().getFileReference())).header("Content-Disposition",
       "attachment; filename=\"" + r.get().getName() + "\"")
       .build();
   }
