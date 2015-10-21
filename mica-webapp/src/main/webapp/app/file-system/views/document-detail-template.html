@@ -2,7 +2,7 @@
   <div class="panel-body">
     <label class="control-label text-muted"><small>{{'size' | translate}}</small></label>
     <div>
-      <label ng-if="!data.isFile">{{data.document.size}} {{'items' | translate}}</label>
+      <label ng-if="!data.isFile">{{data.document.size}} {{'files' | translate}}</label>
       <label ng-if="data.isFile">{{data.document.size | bytes}}</label>
     </div>
 

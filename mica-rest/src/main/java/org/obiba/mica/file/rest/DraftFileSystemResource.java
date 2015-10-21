@@ -38,7 +38,7 @@ public class DraftFileSystemResource extends AbstractFileSystemResource {
   @GET
   @Path("/file-dl/{path:.*}")
   public Response downloadFile(@PathParam("path") String path, @QueryParam("version") String version) {
-    Attachment attachment = doGetAttachment(path);
+    Attachment attachment = doGetAttachment(path, version);
     return Response.ok(fileStoreService.getFile(attachment.getFileReference()))
       .header("Content-Disposition", "attachment; filename=\"" + attachment.getName() + "\"").build();
   }

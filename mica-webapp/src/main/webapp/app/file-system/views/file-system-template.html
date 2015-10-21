@@ -27,17 +27,18 @@
         </span>
       </li>
     </ol>
+
     <div class="voffset2">
       <a ng-if="!data.isFile" href ng-click="newDocument()" class="btn btn-info">
         <i class="fa fa-plus"></i> <span translate>new-folder</span>
       </a>
-      <a class="btn btn-info"
+      <a ng-if="!data.isFile" class="btn btn-info"
          ngf-select ngf-change="onFileSelect($files)">
         <i class="fa fa-upload"></i> {{'upload' | translate}}
       </a>
       <a ng-if="data.isFile"
          target="_self"
-         class="btn btn-default"
+         class="btn btn-info"
          ng-href="ws/draft/file-dl/{{data.document.path}} ">
         <i class="fa fa-download"></i> {{'download' | translate}}
       </a>
@@ -66,18 +67,14 @@
       <div class="col-md-2">
         <div ng-include="'app/file-system/views/shortcuts-template.html'"></div>
       </div>
-      <div class="col-md-7">
-        <div class="panel panel-default">
-          <div class="panel-body">
-            <div ng-include="'app/file-system/views/toolbar-template.html'"></div>
-            <div class="voffset2">
-              <div ng-if="data.isFile" ng-include="'app/file-system/views/revisions-table-template.html'"></div>
-              <div ng-if="!data.isFile" ng-include="'app/file-system/views/documents-table-template.html'"></div>
-            </div>
-          </div>
+      <div class="col-md-6">
+        <div ng-include="'app/file-system/views/toolbar-template.html'"></div>
+        <div>
+          <div ng-if="data.isFile" ng-include="'app/file-system/views/revisions-table-template.html'"></div>
+          <div ng-if="!data.isFile" ng-include="'app/file-system/views/documents-table-template.html'"></div>
         </div>
       </div>
-      <div class="col-md-3">
+      <div class="col-md-4">
         <div ng-include="'app/file-system/views/document-detail-template.html'"></div>
       </div>
     </div>
