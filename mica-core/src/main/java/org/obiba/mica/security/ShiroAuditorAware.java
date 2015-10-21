@@ -11,7 +11,7 @@ public class ShiroAuditorAware implements AuditorAware<String> {
   @Override
   public String getCurrentAuditor() {
     Subject subject = SecurityUtils.getSubject();
-    return subject == null || subject.getPrincipal() == null ? "anonymous" : subject.getPrincipal().toString();
+    return subject == null || subject.getPrincipal() == null ? "Anonymous" : subject.getPrincipal().toString();
   }
 
 }

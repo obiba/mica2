@@ -12,8 +12,10 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.joda.time.DateTime;
 import org.obiba.git.CommitInfo;
+import org.obiba.git.command.AbstractGitWriteCommand;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.core.domain.GitPersistable;
@@ -146,13 +148,10 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
 
   public T publishState(@NotNull String id) throws NoSuchEntityException {
     T entityState = findStateById(id);
-    String publisher = SecurityUtils.getSubject().getPrincipal() == null
-      ? ""
-      : SecurityUtils.getSubject().getPrincipal().toString();
     entityState.setRevisionStatus(DRAFT);
     entityState.setPublishedTag(gitService.tag(entityState));
     entityState.setPublicationDate(DateTime.now());
-    entityState.setPublishedBy(publisher);
+    entityState.setPublishedBy(getCurrentUsername());
     entityState.resetRevisionsAhead();
     entityState.setPublicationDate(DateTime.now());
     entityStateRepository.save(entityState);
@@ -183,5 +182,12 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
     entityStateRepository.save(entityState);
 
     return entityState;
+  }
+
+  private String getCurrentUsername() {
+    Subject subject = SecurityUtils.getSubject();
+    return subject == null || subject.getPrincipal() == null
+      ? AbstractGitWriteCommand.DEFAULT_AUTHOR_NAME
+      : subject.getPrincipal().toString();
   }
 }
