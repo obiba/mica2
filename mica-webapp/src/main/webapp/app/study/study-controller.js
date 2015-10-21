@@ -102,6 +102,9 @@ mica.study
 
       $scope.Mode = {View: 0, Revision: 1, File: 2, Permission: 3};
 
+      console.log('SCOPE', $scope);
+
+
       var getViewMode = function() {
         var result = /\/(revision[s\/]*|files|permissions)/.exec($location.path());
         if (result && result.length > 1) {
@@ -431,6 +434,7 @@ mica.study
               MicaUtil,
               ActiveTabService,
               ObibaCountriesIsoCodes) {
+
 
       $scope.getAvailableCountries = function (locale) { return ObibaCountriesIsoCodes[locale]; };
       $scope.selectionCriteriaGenders = [];
