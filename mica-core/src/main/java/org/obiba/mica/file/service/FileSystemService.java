@@ -62,6 +62,8 @@ public class FileSystemService {
 
   public void save(Attachment attachment) {
     Attachment saved = attachment;
+    List<AttachmentState> states = attachmentStateRepository.findByPathAndName(saved.getPath(), saved.getName());
+    AttachmentState state = states.isEmpty() ? new AttachmentState() : states.get(0);
 
     if(attachment.isNew()) {
       attachment.setId(new ObjectId().toString());
@@ -69,9 +71,15 @@ public class FileSystemService {
       saved = attachmentRepository.findOne(attachment.getId());
       if(saved == null) {
         saved = attachment;
+      } else if(state.isPublished() && state.getPublishedAttachment().getId().equals(attachment.getId())) {
+        // about to update a published attachment, so make a soft copy of it
+        attachment.setFileReference(saved.getFileReference());
+        attachment.setCreatedDate(DateTime.now());
+        attachment.setId(new ObjectId().toString());
+        saved = attachment;
       } else {
         BeanUtils.copyProperties(attachment, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
-          "lastModifiedDate");
+          "lastModifiedDate", "fileReference");
       }
 
       saved.setLastModifiedDate(DateTime.now());
@@ -89,8 +97,6 @@ public class FileSystemService {
 
     attachmentRepository.save(saved);
 
-    List<AttachmentState> states = attachmentStateRepository.findByPathAndName(saved.getPath(), saved.getName());
-    AttachmentState state = states.isEmpty() ? new AttachmentState() : states.get(0);
     if(state.isNew()) mkdirs(saved.getPath());
     state.setAttachment(saved);
     state.setLastModifiedDate(DateTime.now());
@@ -305,7 +311,7 @@ public class FileSystemService {
     newAttachment.setPath(newPath);
     newAttachment.setName(newName);
     save(newAttachment);
-    fileStoreService.save(newAttachment.getId(), fileStoreService.getFile(attachment.getId()));
+    fileStoreService.save(newAttachment.getFileReference(), fileStoreService.getFile(attachment.getFileReference()));
     if(delete) updateStatus(state, RevisionStatus.DELETED);
   }
 
@@ -318,8 +324,8 @@ public class FileSystemService {
     Attachment newAttachment = new Attachment();
     BeanUtils.copyProperties(attachment, newAttachment, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
       "lastModifiedDate");
+    newAttachment.setLastModifiedDate(DateTime.now());
     save(newAttachment);
-//    fileService.save(newAttachment.getId(), fileService.getFile(attachment.getId()));
   }
 
   /**

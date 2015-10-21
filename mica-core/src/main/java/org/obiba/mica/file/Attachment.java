@@ -41,6 +41,8 @@ public class Attachment extends AbstractAuditableDocument implements AttributeAw
 
   private String path;
 
+  private String fileReference;
+
   @NotNull
   public String getName() {
     return name;
@@ -88,6 +90,14 @@ public class Attachment extends AbstractAuditableDocument implements AttributeAw
 
   public void setMd5(String md5) {
     this.md5 = md5;
+  }
+
+  public String getFileReference() {
+    return Strings.isNullOrEmpty(fileReference) ? getId() : fileReference;
+  }
+
+  public void setFileReference(String fileReference) {
+    this.fileReference = fileReference;
   }
 
   public boolean isJustUploaded() {

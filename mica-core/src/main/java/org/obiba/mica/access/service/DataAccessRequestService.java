@@ -340,10 +340,10 @@ public class DataAccessRequestService {
 
           if(pdfTemplate == null) pdfTemplate = dataAccessForm.getPdfTemplates().values().stream().findFirst().get();
 
-          template = ByteStreams.toByteArray(fileStoreService.getFile(pdfTemplate.getId()));
+          template = ByteStreams.toByteArray(fileStoreService.getFile(pdfTemplate.getFileReference()));
         } else template = ByteStreams.toByteArray(defaultTemplateResource.getInputStream());
       } else throw new NoSuchElementException();
-    } else template = ByteStreams.toByteArray(fileStoreService.getFile(pdfTemplate.getId()));
+    } else template = ByteStreams.toByteArray(fileStoreService.getFile(pdfTemplate.getFileReference()));
 
     return template;
   }

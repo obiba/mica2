@@ -57,7 +57,7 @@ public class FileResource {
         .header("Content-Disposition", "attachment; filename=\"" + attachment.getName() + "\"").build();
     }
 
-    return Response.ok(fileStoreService.getFile(attachment.getId()))
+    return Response.ok(fileStoreService.getFile(attachment.getFileReference()))
       .header("Content-Disposition", "attachment; filename=\"" + attachment.getName() + "\"").build();
   }
 }
