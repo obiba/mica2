@@ -23,6 +23,7 @@ import org.obiba.mica.file.event.FilePublishedEvent;
 import org.obiba.mica.file.event.FileUnPublishedEvent;
 import org.obiba.mica.file.event.FileUpdatedEvent;
 import org.obiba.mica.network.event.NetworkUpdatedEvent;
+import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
 import org.obiba.mica.study.event.StudyPublishedEvent;
 import org.obiba.mica.study.event.StudyUnpublishedEvent;
@@ -173,7 +174,7 @@ public class FileSystemService {
     if(!state.isPublished() && !publish) return;
     if(publish) {
       // publish the parent directories (if any)
-      if (!FileUtils.isRoot(state.getPath())) {
+      if(!FileUtils.isRoot(state.getPath())) {
         int idx = state.getPath().lastIndexOf('/');
         String parentPath = idx == 0 ? "/" : state.getPath().substring(0, idx);
         publishDirs(parentPath);
@@ -453,7 +454,13 @@ public class FileSystemService {
   @Subscribe
   public void studyUpdated(DraftStudyUpdatedEvent event) {
     log.info("Study {} was updated", event.getPersistable());
-    mkdirs(String.format("/study/%s", event.getPersistable().getId()));
+    if(event.getPersistable().hasPopulations()) {
+      event.getPersistable().getPopulations().stream().filter(Population::hasDataCollectionEvents).forEach(p -> {
+        p.getDataCollectionEvents().forEach(dce -> mkdirs(String
+          .format("/study/%s/population/%s/data-collection-event/%s", event.getPersistable().getId(), p.getId(),
+            dce.getId())));
+      });
+    } else mkdirs(String.format("/study/%s", event.getPersistable().getId()));
   }
 
   @Async
