@@ -13,7 +13,6 @@ import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.domain.NetworkState;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.slf4j.Logger;
@@ -74,12 +73,15 @@ class NetworkDtos {
       .setRevisionsAhead(networkState.getRevisionsAhead()) //
       .setRevisionStatus(networkState.getRevisionStatus().name());
 
-    if(networkState.getPublicationDate() != null) {
-      stateBuilder.setPublicationDate(networkState.getPublicationDate().toString());
-    }
-
     if(networkState.isPublished()) {
       stateBuilder.setPublishedTag(networkState.getPublishedTag());
+      if(networkState.hasPublishedId()) {
+        stateBuilder.setPublishedId(networkState.getPublishedId());
+      }
+      if(networkState.hasPublicationDate()) {
+        stateBuilder.setPublicationDate(networkState.getPublicationDate().toString());
+        stateBuilder.setPublishedBy(networkState.getPublishedBy());
+      }
     }
 
     builder.setPublished(networkState.isPublished());
@@ -87,24 +89,24 @@ class NetworkDtos {
 
     if(network.getInvestigators() != null) {
       builder.addAllInvestigators(
-          network.getInvestigators().stream().map(contactDtos::asDto).collect(Collectors.<PersonDto>toList()));
+        network.getInvestigators().stream().map(contactDtos::asDto).collect(Collectors.<PersonDto>toList()));
     }
 
     if(network.getContacts() != null) {
-      builder.addAllContacts(
-          network.getContacts().stream().map(contactDtos::asDto).collect(Collectors.<PersonDto>toList()));
+      builder
+        .addAllContacts(network.getContacts().stream().map(contactDtos::asDto).collect(Collectors.<PersonDto>toList()));
     }
 
     if(!isNullOrEmpty(network.getWebsite())) builder.setWebsite(network.getWebsite());
 
     List<Study> publishedStudies = publishedStudyService.findByIds(network.getStudyIds());
     Set<String> publishedStudyIds = publishedStudies.stream().map(s -> s.getId()).collect(Collectors.toSet());
-    Sets.SetView<String> unpublishedStudyIds = Sets.difference(ImmutableSet.copyOf(network.getStudyIds()),
-      publishedStudyIds);
+    Sets.SetView<String> unpublishedStudyIds = Sets
+      .difference(ImmutableSet.copyOf(network.getStudyIds()), publishedStudyIds);
 
-    if (!publishedStudies.isEmpty()) {
-      Map<String, Long> datasetVariableCounts = datasetVariableService.getCountByStudyIds(
-        Lists.newArrayList(publishedStudyIds));
+    if(!publishedStudies.isEmpty()) {
+      Map<String, Long> datasetVariableCounts = datasetVariableService
+        .getCountByStudyIds(Lists.newArrayList(publishedStudyIds));
 
       publishedStudies.forEach(study -> {
         builder.addStudyIds(study.getId());
@@ -121,18 +123,17 @@ class NetworkDtos {
       builder.setMaelstromAuthorization(AuthorizationDtos.asDto(network.getMaelstromAuthorization()));
     }
 
-    if (network.getLogo() != null) {
+    if(network.getLogo() != null) {
       builder.setLogo(attachmentDtos.asDto(network.getLogo()));
     }
 
     if(network.getAttributes() != null) {
-      network.getAttributes().asAttributeList().forEach(
-        attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
+      network.getAttributes().asAttributeList()
+        .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
     }
 
     return builder;
   }
-
 
   @NotNull
   Mica.NetworkDto asDto(@NotNull Network network) {
@@ -143,7 +144,7 @@ class NetworkDtos {
   Network fromDto(@NotNull Mica.NetworkDtoOrBuilder dto) {
     Network network = new Network();
 
-    if (dto.hasId()) {
+    if(dto.hasId()) {
       network.setId(dto.getId());
     }
 
@@ -152,7 +153,7 @@ class NetworkDtos {
     network.setAcronym(localizedStringDtos.fromDto(dto.getAcronymList()));
     network.setInfos(localizedStringDtos.fromDto(dto.getInfoList()));
     network.setInvestigators(
-        dto.getInvestigatorsList().stream().map(contactDtos::fromDto).collect(Collectors.<Person>toList()));
+      dto.getInvestigatorsList().stream().map(contactDtos::fromDto).collect(Collectors.<Person>toList()));
     network.setContacts(dto.getContactsList().stream().map(contactDtos::fromDto).collect(Collectors.<Person>toList()));
     if(dto.hasWebsite()) network.setWebsite(dto.getWebsite());
 
@@ -161,9 +162,8 @@ class NetworkDtos {
     }
 
     if(dto.getAttachmentsCount() > 0) {
-      dto.getAttachmentsList().stream().filter(a->a.getJustUploaded()).findFirst().ifPresent(a->
-        network.setLogo(attachmentDtos.fromDto(a))
-      );
+      dto.getAttachmentsList().stream().filter(a -> a.getJustUploaded()).findFirst()
+        .ifPresent(a -> network.setLogo(attachmentDtos.fromDto(a)));
     }
 
     if(dto.hasMaelstromAuthorization())

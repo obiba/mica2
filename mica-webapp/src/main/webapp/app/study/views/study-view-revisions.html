@@ -21,6 +21,7 @@
   <revisions
     id="{{studyId}}"
     title="{{'revisions' | translate}}"
+    state="studySummary['obiba.mica.StudyStateDto.state']"
     can-restore="hasRole(['mica-administrator','mica-reviewer','mica-editor']) && studySummary['obiba.mica.StudyStateDto.state'].revisionStatus === 'DRAFT'"
     on-fetch-revisions="fetchRevisions"
     on-restore-revision="restoreRevision"

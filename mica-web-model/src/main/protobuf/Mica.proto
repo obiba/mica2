@@ -47,6 +47,7 @@ message EntityStateDto {
   optional string revisionStatus = 3;
   optional string publicationDate = 4;
   optional string publishedBy = 5;
+  optional string publishedId = 6;
 
   extend NetworkDto {
     optional EntityStateDto state = 1000;
@@ -57,6 +58,9 @@ message StudyStateDto {
   optional string publishedTag = 1;
   required int32 revisionsAhead = 2;
   optional string revisionStatus = 3;
+  optional string publicationDate = 4;
+  optional string publishedBy = 5;
+  optional string publishedId = 6;
 
   extend StudySummaryDto {
     optional StudyStateDto state = 1000;

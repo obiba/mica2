@@ -70,6 +70,6 @@ public abstract class AbstractGitPersistableResource<T extends EntityState, T1 e
       .parse(commitInfo.getDate().toString(), DateTimeFormatter.ofPattern("EEE MMM d HH:mm:ss zzz yyyy"));
     String formatted =  date.format(DateTimeFormatter.ofPattern("MMM dd, yyyy h:mm a"));
 
-    return String.format("Restored revision from '%s'", formatted);
+    return String.format("Restored revision from '%s' (%s...)", formatted, commitInfo.getCommitId().substring(0,9));
   }
 }

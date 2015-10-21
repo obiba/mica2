@@ -18,6 +18,7 @@
   <table class="table table-bordered table-striped" ng-show="commitInfos.length">
     <thead>
     <tr>
+      <th>ID</th>
       <th translate>date</th>
       <th translate>author</th>
       <th width="50%" translate>comment-label</th>
@@ -27,6 +28,13 @@
     <tbody>
     <tr ng-class="{'active-row': $index === active.index && active.page === pages.index}"
       dir-paginate="commitInfo in commitInfos | filter:searchText | itemsPerPage: 5" current-page="pages.index">
+      <td>
+        <span class="ellipsis pull-left" title="{{commitInfo.commitId}}">
+          {{commitInfo.commitId}}
+        </span>
+        <i class="fa fa-star pull-left" ng-if="state.publishedId === commitInfo.commitId"
+          title="{{'publish.published' | translate}} ({{state.publicationDate | amDateFormat : 'lll'}} [{{state.publishedBy}}])"></i>
+      </td>
       <td>
         {{commitInfo.date | amDateFormat: 'lll'}}
       </td>
@@ -39,15 +47,18 @@
       <td>
         <ul ng-if="pages.index === 1 && $index === 0" class="list-inline">
           <li>
-            <a ng-click="viewRevision($index, id, commitInfo)" href="" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>
+            <a ng-click="viewRevision($index, id, commitInfo)" href="" title="{{'view' | translate}}"><i
+              class="fa fa-eye"></i></a>
           </li>
         </ul>
         <ul ng-if="pages.index > 1 || $index > 0" class="list-inline">
           <li>
-            <a ng-click="viewRevision($index, id, commitInfo)" href="" title="{{'view' | translate}}" ><i class="fa fa-eye"></i></a>
+            <a ng-click="viewRevision($index, id, commitInfo)" href="" title="{{'view' | translate}}"><i
+              class="fa fa-eye"></i></a>
           </li>
           <li ng-if="canRestore">
-            <a ng-click="restoreRevision(id, commitInfo)" href="" title="{{'restore' | translate}}"><i class="fa fa-rotate-left"></i></a>
+            <a ng-click="restoreRevision(id, commitInfo)" href="" title="{{'restore' | translate}}"><i
+              class="fa fa-rotate-left"></i></a>
           </li>
         </ul>
       </td>

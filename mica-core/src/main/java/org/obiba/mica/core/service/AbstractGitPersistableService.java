@@ -11,8 +11,12 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.math3.util.Pair;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.joda.time.DateTime;
 import org.obiba.git.CommitInfo;
+import org.obiba.git.command.AbstractGitWriteCommand;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.core.domain.GitPersistable;
@@ -146,7 +150,11 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
   public T publishState(@NotNull String id) throws NoSuchEntityException {
     T entityState = findStateById(id);
     entityState.setRevisionStatus(DRAFT);
-    entityState.setPublishedTag(gitService.tag(entityState));
+    Pair<String, String> tagInfo = gitService.tag(entityState);
+    entityState.setPublishedTag(tagInfo.getFirst());
+    entityState.setPublishedId(tagInfo.getSecond());
+    entityState.setPublicationDate(DateTime.now());
+    entityState.setPublishedBy(getCurrentUsername());
     entityState.resetRevisionsAhead();
     entityState.setPublicationDate(DateTime.now());
     entityStateRepository.save(entityState);
@@ -158,6 +166,7 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
     entityState.resetRevisionsAhead();
     entityState.setPublishedTag(null);
     entityState.setPublicationDate(null);
+    entityState.setPublishedBy(null);
 
     if(entityState.getRevisionStatus() != DELETED) entityState.setRevisionStatus(DRAFT);
 
@@ -177,5 +186,12 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
     entityStateRepository.save(entityState);
 
     return entityState;
+  }
+
+  private String getCurrentUsername() {
+    Subject subject = SecurityUtils.getSubject();
+    return subject == null || subject.getPrincipal() == null
+      ? AbstractGitWriteCommand.DEFAULT_AUTHOR_NAME
+      : subject.getPrincipal().toString();
   }
 }

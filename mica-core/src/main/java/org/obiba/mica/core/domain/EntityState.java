@@ -19,6 +19,8 @@ public abstract class EntityState extends AbstractGitPersistable {
   @Indexed
   private String publishedTag;
 
+  private String publishedId;
+
   private DateTime publicationDate;
 
   private String publishedBy;
@@ -31,6 +33,18 @@ public abstract class EntityState extends AbstractGitPersistable {
 
   public void setPublishedTag(String publishedTag) {
     this.publishedTag = publishedTag;
+  }
+
+  public String getPublishedId() {
+    return publishedId;
+  }
+
+  public void setPublishedId(String publishedId) {
+    this.publishedId = publishedId;
+  }
+
+  public boolean hasPublishedId() {
+    return !Strings.isNullOrEmpty(publishedId);
   }
 
   public boolean isPublished() {
@@ -67,6 +81,10 @@ public abstract class EntityState extends AbstractGitPersistable {
 
   public void setPublicationDate(DateTime publicationDate) {
     this.publicationDate = publicationDate;
+  }
+
+  public boolean hasPublicationDate() {
+    return publicationDate != null;
   }
 
   public String getPublishedBy() {

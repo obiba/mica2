@@ -6,8 +6,7 @@ mica.publish
       restrict: 'AE',
       replace: true,
       scope: {
-        version: '=',
-        ahead: '='
+        state: '='
       },
       templateUrl: 'app/publish/publish-status-template.html'
     };
