@@ -73,6 +73,7 @@ public class DatasetIndexerImpl implements DatasetIndexer {
 
   protected void reIndexPublished(Dataset dataset) {
     deleteFromDatasetIndex(PUBLISHED_DATASET_INDEX, dataset);
+
     if(dataset.isPublished()) {
       elasticSearchIndexer.index(PUBLISHED_DATASET_INDEX, (Indexable) dataset);
     }

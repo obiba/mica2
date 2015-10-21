@@ -12,6 +12,7 @@ package org.obiba.mica.dataset.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.function.Supplier;
@@ -25,11 +26,16 @@ import org.obiba.magma.MagmaRuntimeException;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.magma.Variable;
+import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.core.domain.GitPersistable;
 import org.obiba.mica.core.domain.StudyTable;
+import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
+import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
+import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.event.IndexHarmonizationDatasetsEvent;
 import org.obiba.mica.dataset.service.support.QueryTermsUtil;
 import org.obiba.mica.micaConfig.service.OpalService;
@@ -57,10 +63,12 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 @Service
 @Validated
-public class HarmonizationDatasetService extends DatasetService<HarmonizationDataset> {
+public class HarmonizationDatasetService extends DatasetService<HarmonizationDataset, HarmonizationDatasetState> {
 
   private static final Logger log = LoggerFactory.getLogger(HarmonizationDatasetService.class);
 
@@ -72,6 +80,9 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
 
   @Inject
   private HarmonizationDatasetRepository harmonizationDatasetRepository;
+
+  @Inject
+  private HarmonizationDatasetStateRepository harmonizationDatasetStateRepository;
 
   @Inject
   private EventBus eventBus;
@@ -87,7 +98,12 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   private Helper helper;
 
   public void save(@NotNull HarmonizationDataset dataset) {
-    save(dataset, false);
+    save(dataset, false, null);
+  }
+
+  @Override
+  public void save(@NotNull HarmonizationDataset dataset, String comment) {
+    save(dataset, false, comment);
   }
 
   /**
@@ -130,7 +146,9 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
    * @return
    */
   public List<HarmonizationDataset> findAllPublishedDatasets() {
-    return harmonizationDatasetRepository.findByPublished(true);
+    Set<String> publishedIds = harmonizationDatasetStateRepository.findByPublishedTagNotNull().stream().map(HarmonizationDatasetState::getId).collect(toSet());
+
+    return Lists.newArrayList(harmonizationDatasetRepository.findAll(publishedIds));
   }
 
   /**
@@ -141,7 +159,11 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
    */
   public List<HarmonizationDataset> findAllPublishedDatasets(String studyId) {
     if(Strings.isNullOrEmpty(studyId)) return findAllPublishedDatasets();
-    return harmonizationDatasetRepository.findByStudyTablesStudyIdAndPublished(studyId, true);
+
+    Set<String> publishedIds = harmonizationDatasetStateRepository.findByPublishedTagNotNull().stream().map(HarmonizationDatasetState::getId).collect(toSet());
+
+    return harmonizationDatasetRepository.findByStudyTablesStudyId(studyId).stream()
+      .filter(s -> publishedIds.contains(s.getId())).collect(toList());
   }
 
   /**
@@ -183,9 +205,12 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   })
   public void publish(@NotNull String id, boolean published) {
     HarmonizationDataset dataset = findById(id);
-    dataset.setPublished(published);
     helper.evictCache(dataset);
-    save(dataset, true);
+
+    if (published) publishState(id);
+    else unPublish(id);
+
+    updateIndices(dataset, wrappedGetDatasetVariables(dataset), populateHarmonizedVariablesMap(dataset), true);
   }
 
   /**
@@ -195,8 +220,9 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
    * @return
    */
   public boolean isPublished(@NotNull String id) throws NoSuchDatasetException {
-    HarmonizationDataset dataset = findById(id);
-    return dataset.isPublished();
+    HarmonizationDatasetState state = findStateById(id);
+
+    return state.isPublished();
   }
 
   public void delete(String id) {
@@ -210,6 +236,7 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
     datasetIndexer.onDatasetDeleted(dataset);
     variableIndexer.onDatasetDeleted(dataset);
     harmonizationDatasetRepository.delete(id);
+    gitService.deleteGitRepository(dataset);
   }
 
   @Override
@@ -291,11 +318,11 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   // Private methods
   //
 
-  private void save(HarmonizationDataset dataset, boolean updatePublishIndices) {
+  private void save(HarmonizationDataset dataset, boolean updatePublishIndices, String comment) {
     HarmonizationDataset saved = dataset;
 
     if(saved.isNew()) {
-      generateId(saved);
+      saved.setId(generateDatasetId(dataset));
     } else {
       saved = harmonizationDatasetRepository.findOne(dataset.getId());
 
@@ -327,9 +354,21 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
       harmonizationVariables = Maps.newHashMap();
     }
 
+    HarmonizationDatasetState harmonizationDatasetState = findEntityState(dataset, () -> {
+      HarmonizationDatasetState defaultState = new HarmonizationDatasetState();
+      return defaultState;
+    });
+
+    if(!dataset.isNew()) ensureGitRepository(harmonizationDatasetState);
+
+    harmonizationDatasetState.incrementRevisionsAhead();
+    harmonizationDatasetStateRepository.save(harmonizationDatasetState);
+
     saved.setLastModifiedDate(DateTime.now());
     harmonizationDatasetRepository.save(saved);
     tryUpdateIndices(saved, variables, harmonizationVariables, updatePublishIndices);
+
+    gitService.save(saved, comment);
   }
 
   private void updateIndices(HarmonizationDataset dataset, Iterable<DatasetVariable> variables,
@@ -454,6 +493,39 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
     return execute(getDatasource(studyTable), callback);
   }
 
+  @Override
+  protected EntityStateRepository<HarmonizationDatasetState> getEntityStateRepository() {
+    return harmonizationDatasetStateRepository;
+  }
+
+  @Override
+  protected GitPersistable unpublish(HarmonizationDatasetState gitPersistable) {
+    unpublishState(gitPersistable);
+    HarmonizationDataset dataset = harmonizationDatasetRepository.findOne(gitPersistable.getId());
+
+    if(dataset != null) {
+      dataset.setPublished(gitPersistable.isPublished());
+      updateIndices(dataset, wrappedGetDatasetVariables(dataset), populateHarmonizedVariablesMap(dataset), true);
+    }
+
+    return dataset;
+  }
+
+  @Override
+  protected Class<HarmonizationDataset> getType() {
+    return HarmonizationDataset.class;
+  }
+
+  @Override
+  public HarmonizationDataset findDraft(@NotNull String id) throws NoSuchEntityException {
+    return findById(id);
+  }
+
+  @Override
+  protected String generateId(@NotNull HarmonizationDataset gitPersistable) {
+    return generateDatasetId(gitPersistable);
+  }
+
   @Component
   public static class Helper {
 
@@ -478,17 +550,13 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
       Map<String, List<DatasetVariable>> harmonizationVariables) {
       log.info("building variable summaries cache");
 
-      dataset.getStudyTables().forEach(st -> {
-        harmonizationVariables.forEach((k, v) -> {
-          v.forEach(var-> {
+      dataset.getStudyTables().forEach(st -> harmonizationVariables.forEach((k, v) -> v.forEach(var -> {
             try {
               service.getVariableSummary(dataset, var.getName(), st.getStudyId(), st.getProject(), st.getTable());
             } catch(Exception e) {
               //ignoring
             }
-          });
-        });
-      });
+          })));
 
       log.info("done building variable summaries cache");
     }

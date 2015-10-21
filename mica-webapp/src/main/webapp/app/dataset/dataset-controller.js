@@ -315,16 +315,23 @@ mica.dataset
 
     }])
 
-  .controller('StudyDatasetViewController', ['$rootScope',
+  .controller('DatasetViewController', ['$rootScope',
     '$scope',
     '$routeParams',
     '$log',
     '$locale',
     '$location',
-    'StudyDatasetResource',
-    'StudyDatasetPublicationResource',
+    'DatasetResource',
+    'DatasetPublicationResource',
+    'DraftDatasetResource',
+    'DraftDatasetStatusResource',
+    'DraftDatasetViewRevisionResource',
+    'DraftDatasetRevisionsResource',
+    'DraftDatasetRestoreRevisionResource',
     'MicaConfigResource',
     'ActiveTabService',
+    'NOTIFICATION_EVENTS',
+    '$filter',
 
     function ($rootScope,
               $scope,
@@ -332,11 +339,17 @@ mica.dataset
               $log,
               $locale,
               $location,
-              StudyDatasetResource,
-              StudyDatasetPublicationResource,
+              DatasetResource,
+              DatasetPublicationResource,
+              DraftDatasetResource,
+              DraftDatasetStatusResource,
+              DraftDatasetViewRevisionResource,
+              DraftDatasetRevisionsResource,
+              DraftDatasetRestoreRevisionResource,
               MicaConfigResource,
-              ActiveTabService) {
-
+              ActiveTabService,
+              NOTIFICATION_EVENTS,
+              $filter) {
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
         micaConfig.languages.forEach(function (lang) {
@@ -344,25 +357,104 @@ mica.dataset
         });
       });
 
+      $scope.Mode = {View: 0, Revision: 1, File: 2, Permission: 3};
+
+      $scope.type = $routeParams.type;
+      $scope.datasetId = $routeParams.id;
       $scope.getActiveTab = ActiveTabService.getActiveTab;
-      $scope.dataset = StudyDatasetResource.get({id: $routeParams.id});
+      $scope.dataset = DatasetResource.get({id: $routeParams.id, type: $scope.type});
 
-      $scope.isPublished = function () {
-        return $scope.dataset.published;
-      };
-
-      $scope.publish = function () {
-        if ($scope.dataset.published) {
-          StudyDatasetPublicationResource.unPublish({id: $scope.dataset.id}, function () {
-            $scope.dataset = StudyDatasetResource.get({id: $routeParams.id});
+      $scope.publish = function (publish) {
+        if (publish) {
+          DatasetPublicationResource.publish({id: $scope.dataset.id, type: $scope.type}, function () {
+            $scope.dataset = DraftDatasetResource.get({id: $routeParams.id, type: $scope.type});
           });
         } else {
-          StudyDatasetPublicationResource.publish({id: $scope.dataset.id}, function () {
-            $scope.dataset = StudyDatasetResource.get({id: $routeParams.id});
+          DatasetPublicationResource.unPublish({id: $scope.dataset.id, type: $scope.type}, function () {
+            $scope.dataset = DraftDatasetResource.get({id: $routeParams.id, type: $scope.type});
           });
         }
       };
 
+      $scope.toStatus = function (value) {
+        DraftDatasetStatusResource.toStatus({id: $scope.dataset.id, type:$scope.type, value: value}, function () {
+          $scope.dataset = DraftDatasetResource.get({id: $routeParams.id, type: $scope.type});
+        });
+      };
+
+      var getViewMode = function() {
+        var result = /\/(revision[s\/]*|files|permissions)/.exec($location.path());
+        if (result && result.length > 1) {
+          switch (result[1]) {
+            case 'revision':
+            case 'revisions':
+              return $scope.Mode.Revision;
+            case 'files':
+              return $scope.Mode.File;
+            case 'permissions':
+              return $scope.Mode.Permission;
+          }
+        }
+
+        return $scope.Mode.View;
+      };
+
+      $scope.viewMode = getViewMode();
+
+      var viewRevision = function (datasetId, commitInfo) {
+        $scope.commitInfo = commitInfo;
+        $scope.dataset = DraftDatasetViewRevisionResource.view({
+          id: datasetId,
+          commitId: commitInfo.commitId,
+          type: $scope.type
+        });
+      };
+
+      var fetchDataset = function (datasetId) {
+        $scope.dataset = DraftDatasetResource.get({id: datasetId, type: $scope.type});
+      };
+
+      var fetchRevisions = function (datasetId, onSuccess) {
+        DraftDatasetRevisionsResource.query({id: datasetId, type: $scope.type}, function (response) {
+          if (onSuccess) {
+            onSuccess(response);
+          }
+        });
+      };
+
+      var restoreRevision = function (datasetId, commitInfo, onSuccess) {
+        if (commitInfo && $scope.datasetId === datasetId) {
+          var args = {commitId: commitInfo.commitId, restoreSuccessCallback: onSuccess};
+
+          $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
+            {
+              titleKey: 'dataset.restore-dialog.title',
+              messageKey: 'dataset.restore-dialog.message',
+              messageArgs: [$filter('amDateFormat')(commitInfo.date, 'lll')]
+            }, args
+          );
+        }
+      };
+
+      var onRestore = function (event, args) {
+        if (args.commitId) {
+          DraftDatasetRestoreRevisionResource.restore({id: $scope.datasetId, commitId: args.commitId, type: $scope.type},
+            function () {
+              fetchDataset($routeParams.id);
+              $scope.datasetId = $routeParams.id;
+              if (args.restoreSuccessCallback) {
+                args.restoreSuccessCallback();
+              }
+            });
+        }
+      };
+
+      $scope.fetchDataset = fetchDataset;
+      $scope.viewRevision = viewRevision;
+      $scope.restoreRevision = restoreRevision;
+      $scope.fetchRevisions = fetchRevisions;
+
+      $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, onRestore);
     }])
 
   .controller('HarmonizationDatasetListController', ['$rootScope', '$scope', 'HarmonizationDatasetsResource',
@@ -424,6 +516,7 @@ mica.dataset
       });
 
       $scope.getActiveTab = ActiveTabService.getActiveTab;
+
       $scope.isPublished = function () {
         return $scope.dataset.published;
       };

@@ -12,15 +12,10 @@ mica.dataset
           templateUrl: 'app/dataset/views/study-dataset-form.html',
           controller: 'StudyDatasetEditController'
         })
-        .when('/study-dataset/:id', {
-          templateUrl: 'app/dataset/views/study-dataset-view.html',
-          controller: 'StudyDatasetViewController'
-        })
         .when('/study-dataset/:id/edit', {
           templateUrl: 'app/dataset/views/study-dataset-form.html',
           controller: 'StudyDatasetEditController'
         })
-
         .when('/harmonization-dataset', {
           templateUrl: 'app/dataset/views/harmonization-dataset-list.html',
           controller: 'HarmonizationDatasetListController'
@@ -29,12 +24,16 @@ mica.dataset
           templateUrl: 'app/dataset/views/harmonization-dataset-form.html',
           controller: 'HarmonizationDatasetEditController'
         })
-        .when('/harmonization-dataset/:id', {
-          templateUrl: 'app/dataset/views/harmonization-dataset-view.html',
-          controller: 'HarmonizationDatasetViewController'
-        })
         .when('/harmonization-dataset/:id/edit', {
           templateUrl: 'app/dataset/views/harmonization-dataset-form.html',
           controller: 'HarmonizationDatasetEditController'
+        })
+        .when('/:type/:id', {
+          templateUrl: 'app/dataset/views/dataset-view.html',
+          controller: 'DatasetViewController'
+        })
+        .when('/:type/:id/revisions', {
+          templateUrl: 'app/dataset/views/dataset-view-revisions.html',
+          controller: 'DatasetViewController'
         });
     }]);

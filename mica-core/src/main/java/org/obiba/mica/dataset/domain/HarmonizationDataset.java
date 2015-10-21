@@ -10,8 +10,11 @@
 
 package org.obiba.mica.dataset.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
@@ -68,5 +71,21 @@ public class HarmonizationDataset extends Dataset {
 
   public void setTable(String table) {
     this.table = table;
+  }
+
+  @Override
+  public String pathPrefix() {
+    return "harmonizationDatasets";
+  }
+
+  @Override
+  public Map<String, Serializable> parts() {
+    HarmonizationDataset self = this;
+
+    return new HashMap<String, Serializable>() {
+      {
+        put(self.getClass().getSimpleName(), self);
+      }
+    };
   }
 }

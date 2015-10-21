@@ -10,23 +10,30 @@
 
 package org.obiba.mica.dataset.rest.harmonization;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.obiba.mica.AbstractGitPersistableResource;
+import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.domain.StudyTable;
+import org.obiba.mica.core.service.AbstractGitPersistableService;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
+import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Magma;
@@ -40,7 +47,8 @@ import com.google.common.collect.ImmutableList;
 
 @Component
 @Scope("request")
-public class DraftHarmonizationDatasetResource {
+public class DraftHarmonizationDatasetResource extends
+  AbstractGitPersistableResource<HarmonizationDatasetState,HarmonizationDataset> {
 
   @Inject
   private ApplicationContext applicationContext;
@@ -154,8 +162,34 @@ public class DraftHarmonizationDatasetResource {
     return builder.build();
   }
 
+  @PUT
+  @Path("/_status")
+  @Timed
+  @RequiresPermissions({"/draft:EDIT"})
+  public Response toUnderReview(@QueryParam("value") String status) {
+    datasetService.updateStatus(id, RevisionStatus.valueOf(status.toUpperCase()));
+
+    return Response.noContent().build();
+  }
+
+  @GET
+  @RequiresPermissions({ "/draft:EDIT" })
+  @Path("/commit/{commitId}/view")
+  public Mica.DatasetDto getFromCommit(@NotNull @PathParam("commitId") String commitId) throws IOException {
+    return dtos.asDto(datasetService.getFromCommit(datasetService.findDraft(id), commitId));
+  }
+
   private HarmonizationDataset getDataset() {
     return datasetService.findById(id);
   }
 
+  @Override
+  protected String getId() {
+    return id;
+  }
+
+  @Override
+  protected AbstractGitPersistableService<HarmonizationDatasetState, HarmonizationDataset> getService() {
+    return datasetService;
+  }
 }

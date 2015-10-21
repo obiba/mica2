@@ -11,6 +11,7 @@
 package org.obiba.mica.dataset.service;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -19,11 +20,16 @@ import javax.validation.constraints.NotNull;
 import org.joda.time.DateTime;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
+import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.core.domain.GitPersistable;
 import org.obiba.mica.core.domain.StudyTable;
+import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.StudyDatasetRepository;
+import org.obiba.mica.dataset.StudyDatasetStateRepository;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.dataset.event.IndexStudyDatasetsEvent;
 import org.obiba.mica.dataset.service.support.QueryTermsUtil;
 import org.obiba.mica.micaConfig.service.OpalService;
@@ -46,9 +52,12 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
+
 @Service
 @Validated
-public class StudyDatasetService extends DatasetService<StudyDataset> {
+public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatasetState> {
   private static final Logger log = LoggerFactory.getLogger(StudyDatasetService.class);
 
   @Inject
@@ -59,6 +68,9 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
 
   @Inject
   private StudyDatasetRepository studyDatasetRepository;
+
+  @Inject
+  private StudyDatasetStateRepository studyDatasetStateRepository;
 
   @Inject
   private EventBus eventBus;
@@ -74,7 +86,12 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
   private Helper helper;
 
   public void save(@NotNull StudyDataset dataset) {
-    save(dataset, false);
+    save(dataset, false, null);
+  }
+
+  @Override
+  public void save(StudyDataset dataset, String comment) {
+    save(dataset, false, comment);
   }
 
   /**
@@ -117,7 +134,10 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
    * @return
    */
   public List<StudyDataset> findAllPublishedDatasets() {
-    return studyDatasetRepository.findByPublished(true);
+    Set<String> published = studyDatasetStateRepository.findByPublishedTagNotNull().stream().map(StudyDatasetState::getId)
+      .collect(toSet());
+
+    return studyDatasetRepository.findAll().stream().filter(st -> published.contains(st.getId())).collect(toList());
   }
 
   /**
@@ -128,7 +148,11 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
    */
   public List<StudyDataset> findAllPublishedDatasets(@Nullable String studyId) {
     if(Strings.isNullOrEmpty(studyId)) return findAllPublishedDatasets();
-    return studyDatasetRepository.findByStudyTableStudyIdAndPublished(studyId, true);
+
+    Set<String> published = studyDatasetStateRepository.findByPublishedTagNotNull().stream().map(StudyDatasetState::getId).collect(toSet());
+
+    return studyDatasetRepository.findByStudyTableStudyId(studyId).stream().filter(st -> published.contains(st.getId()))
+      .collect(toList());
   }
 
   /**
@@ -142,9 +166,12 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
   })
   public void publish(@NotNull String id, boolean published) {
     StudyDataset dataset = findById(id);
-    dataset.setPublished(published);
     helper.evictCache(dataset);
-    save(dataset, true);
+
+    if(published) publishState(id);
+    else unPublish(id);
+
+    updateIndices(dataset, wrappedGetDatasetVariables(dataset), true);
   }
 
   /**
@@ -236,6 +263,7 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
     datasetIndexer.onDatasetDeleted(studyDataset);
     variableIndexer.onDatasetDeleted(studyDataset);
     studyDatasetRepository.delete(id);
+    gitService.deleteGitRepository(studyDataset);
   }
 
   @Override
@@ -269,12 +297,11 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
     return execute(getDatasource(studyTable), callback);
   }
 
-  private void save(StudyDataset dataset, boolean updatePublishIndices) {
+  private void save(StudyDataset dataset, boolean updatePublishIndices, String comment) {
     StudyDataset saved = dataset;
 
     if(saved.isNew()) {
-      generateId(dataset);
-      saved.setId(getNextId(saved.getAcronym()));
+      saved.setId(generateDatasetId(dataset));
     } else {
       saved = studyDatasetRepository.findOne(dataset.getId());
 
@@ -303,9 +330,21 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
       variables = Lists.newArrayList();
     }
 
+    StudyDatasetState studyDatasetState = findEntityState(dataset, () -> {
+      StudyDatasetState defaultState = new StudyDatasetState();
+      return defaultState;
+    });
+
+    if(!dataset.isNew()) ensureGitRepository(studyDatasetState);
+
+    studyDatasetState.incrementRevisionsAhead();
+    studyDatasetStateRepository.save(studyDatasetState);
+
     saved.setLastModifiedDate(DateTime.now());
     studyDatasetRepository.save(saved);
     tryUpdateIndices(saved, variables, updatePublishIndices);
+
+    gitService.save(saved, comment);
   }
 
   private void updateIndices(StudyDataset dataset, Iterable<DatasetVariable> variables, boolean updatePublishIndices) {
@@ -324,6 +363,39 @@ public class StudyDatasetService extends DatasetService<StudyDataset> {
     } catch (Exception e) {
       log.error("Error updating indices.", e);
     }
+  }
+
+  @Override
+  protected EntityStateRepository<StudyDatasetState> getEntityStateRepository() {
+    return studyDatasetStateRepository;
+  }
+
+  @Override
+  protected GitPersistable unpublish(StudyDatasetState gitPersistable) {
+    unpublishState(gitPersistable);
+    StudyDataset dataset = studyDatasetRepository.findOne(gitPersistable.getId());
+
+    if(dataset != null) {
+      dataset.setPublished(gitPersistable.isPublished());
+      updateIndices(dataset, wrappedGetDatasetVariables(dataset), true);
+    }
+
+    return dataset;
+  }
+
+  @Override
+  protected Class<StudyDataset> getType() {
+    return StudyDataset.class;
+  }
+
+  @Override
+  public StudyDataset findDraft(@NotNull String id) throws NoSuchEntityException {
+    return findById(id);
+  }
+
+  @Override
+  protected String generateId(@NotNull StudyDataset dataset) {
+    return generateDatasetId(dataset);
   }
 
   @Component

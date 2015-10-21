@@ -1,0 +1,33 @@
+<div>
+  <h2>
+    <ol class="mica-breadcrumb">
+      <li><a href="/#/{{type}}">{{type + 's' | translate}}</a></li>
+      <li class="active">{{dataset.id}}</li>
+    </ol>
+  </h2>
+  <div class="tabs-menu tabs-left">
+    <ul class="nav nav-tabs">
+      <li><a href="#/{{type}}/{{dataset.id}}" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a></li>
+      <li class="active">
+        <a href="#/{{type}}/{{dataset.id}}/revisions" title="{{'revisions' | translate}}"><i class="fa fa-list-ol"></i></a>
+      </li>
+    </ul>
+  </div>
+  <revisions
+    id="{{datasetId}}"
+    title="{{'revisions' | translate}}"
+    state="dataset['obiba.mica.EntityStateDto.datasetState']"
+    can-restore="hasRole(['mica-administrator','mica-reviewer','mica-editor'])"
+    on-fetch-revisions="fetchRevisions"
+    on-restore-revision="restoreRevision"
+    on-view-revision="viewRevision"></revisions>
+  <h3 class="voffset5" translate>dataset.details</h3>
+  <small class="help-block">
+    {{'revision-date' | translate}}: {{commitInfo.date | amDateFormat : 'lll'}} ({{commitInfo.author}})
+  </small>
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <div ng-include="'app/dataset/views/' + type + '-view-details.html'"></div>
+    </div>
+  </div>
+</div>

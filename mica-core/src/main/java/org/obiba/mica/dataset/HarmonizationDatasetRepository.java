@@ -22,8 +22,4 @@ public interface HarmonizationDatasetRepository extends MongoRepository<Harmoniz
 
   List<HarmonizationDataset> findByStudyTablesStudyId(String studyId);
 
-  List<HarmonizationDataset> findByPublished(boolean published);
-
-  List<HarmonizationDataset> findByStudyTablesStudyIdAndPublished(String studyId, boolean published);
-
 }

@@ -33,8 +33,6 @@ import org.obiba.mica.network.NoSuchNetworkException;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.domain.NetworkState;
 import org.obiba.mica.network.service.NetworkService;
-import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.ApplicationContext;

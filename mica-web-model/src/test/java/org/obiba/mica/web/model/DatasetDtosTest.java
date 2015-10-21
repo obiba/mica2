@@ -27,8 +27,12 @@ import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.AttachmentStateRepository;
+import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
+import org.obiba.mica.dataset.StudyDatasetStateRepository;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
+import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.repository.DataAccessFormRepository;
@@ -51,6 +55,7 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.obiba.mica.core.domain.LocalizedString.en;
@@ -69,6 +74,12 @@ public class DatasetDtosTest {
   private StudyService studyService;
 
   @Inject
+  private HarmonizationDatasetStateRepository harmonizationDatasetStateRepository;
+
+  @Inject
+  private StudyDatasetStateRepository studyDatasetStateRepository;
+
+  @Inject
   private Dtos dtos;
 
   @Before
@@ -82,6 +93,7 @@ public class DatasetDtosTest {
 
   @Test
   public void test_study_dataset_dto() throws Exception {
+    when(studyDatasetStateRepository.findOne(anyString())).thenReturn(new StudyDatasetState());
     StudyDataset studyDataset = createStudyDataset();
     Mica.DatasetDto dto = dtos.asDto(studyDataset);
     System.out.println(dto);
@@ -89,6 +101,7 @@ public class DatasetDtosTest {
 
   @Test
   public void test_harmonized_dataset_dto() throws Exception {
+    when(harmonizationDatasetStateRepository.findOne(anyString())).thenReturn(new HarmonizationDatasetState());
     HarmonizationDataset harmonizationDataset = createHarmonizedDataset();
     Mica.DatasetDto dto = dtos.asDto(harmonizationDataset);
     System.out.println(dto);
@@ -172,6 +185,16 @@ public class DatasetDtosTest {
     @Bean
     public StudyRepository studyRepository() {
       return Mockito.mock(StudyRepository.class);
+    }
+
+    @Bean
+    public StudyDatasetStateRepository studyDatasetStaetRepository() {
+      return Mockito.mock(StudyDatasetStateRepository.class);
+    }
+
+    @Bean
+    public HarmonizationDatasetStateRepository harmonizationDatasetStaetRepository() {
+      return Mockito.mock(HarmonizationDatasetStateRepository.class);
     }
 
     @Bean

@@ -23,8 +23,10 @@ import org.obiba.magma.MagmaRuntimeException;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.magma.Variable;
+import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.StudyTable;
+import org.obiba.mica.core.service.AbstractGitPersistableService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.Dataset;
@@ -45,7 +47,7 @@ import com.google.protobuf.GeneratedMessage;
  * {@link org.obiba.mica.dataset.domain.Dataset} management service.
  */
 
-public abstract class DatasetService<T extends Dataset> {
+public abstract class DatasetService<T extends Dataset, T1 extends EntityState> extends AbstractGitPersistableService<T1, T> {
 
   private static final Logger log = LoggerFactory.getLogger(DatasetService.class);
 
@@ -110,9 +112,10 @@ public abstract class DatasetService<T extends Dataset> {
     }
   }
 
-  protected void generateId(@NotNull T dataset) {
+  protected String generateDatasetId(@NotNull T dataset) {
     ensureAcronym(dataset);
-    dataset.setId(getNextId(dataset.getAcronym()));
+
+    return getNextId(dataset.getAcronym());
   }
 
   private void ensureAcronym(@NotNull T dataset) {

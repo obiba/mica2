@@ -33,6 +33,7 @@
           <th translate>dataset.acronym</th>
           <th translate>dataset.name</th>
           <th translate>publish.published</th>
+          <th translate>status</th>
           <th translate>actions</th>
         </tr>
         </thead>
@@ -56,10 +57,10 @@
             </ul>
           </td>
           <td>
-            <i class="fa fa-star-o" ng-show="!dataset.published"
-              title="{{'publish.not-published' | translate}}"></i>
-            <i class="fa fa-star" ng-show="dataset.published"
-              title="{{'publish.published' | translate}}"></i>
+            <div publish-status state="dataset['obiba.mica.EntityStateDto.datasetState']"></div>
+          </td>
+          <td>
+            {{'publish.status.' + dataset['obiba.mica.EntityStateDto.datasetState'].revisionStatus | translate}}
           </td>
           <td>
             <ul class="list-inline">

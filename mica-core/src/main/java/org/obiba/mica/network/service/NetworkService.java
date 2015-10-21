@@ -20,6 +20,7 @@ import org.joda.time.DateTime;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.contact.event.PersonUpdatedEvent;
 import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
 import org.obiba.mica.network.NetworkRepository;
@@ -243,6 +244,11 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
     if (network.getAcronym() == null || network.getAcronym().isEmpty()) {
       network.setAcronym(network.getName().asAcronym());
     }
+  }
+
+  @Override
+  protected EntityStateRepository<NetworkState> getEntityStateRepository() {
+    return networkStateRepository;
   }
 
   @Nullable

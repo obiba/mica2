@@ -501,6 +501,7 @@
     "name": "Name",
     "acronym": "Acronym",
     "add": "Add Dataset",
+    "details": "Dataset",
     "label-edit": "Edit Dataset",
     "general-info": "General Information",
     "description": "Description",
@@ -521,6 +522,10 @@
     "study-tables": {
       "title": "Study Tables",
       "info": "The study tables define implementations of the Data Schema variables. The data summaries will be extracted from the corresponding Opal tables."
+    },
+    "restore-dialog": {
+      "title": "Restoring Dataset from Revision",
+      "message": "Are you sure you want to restore this revision from '{{arg0}}'?"
     },
     "project": "Project",
     "project-help": "Project name from the study's Opal server (if this one is defined, otherwise the project is expected to be found in Opal primary server).",

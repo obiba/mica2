@@ -75,13 +75,10 @@ class NetworkDtos {
 
     if(networkState.isPublished()) {
       stateBuilder.setPublishedTag(networkState.getPublishedTag());
-      if(networkState.hasPublishedId()) {
-        stateBuilder.setPublishedId(networkState.getPublishedId());
-      }
-      if(networkState.hasPublicationDate()) {
+      if(networkState.hasPublishedId()) stateBuilder.setPublishedId(networkState.getPublishedId());
+      if(networkState.hasPublicationDate())
         stateBuilder.setPublicationDate(networkState.getPublicationDate().toString());
-        stateBuilder.setPublishedBy(networkState.getPublishedBy());
-      }
+      if(networkState.getPublishedBy() != null) stateBuilder.setPublishedBy(networkState.getPublishedBy());
     }
 
     builder.setPublished(networkState.isPublished());

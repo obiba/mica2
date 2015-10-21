@@ -21,11 +21,15 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.core.domain.Attributes;
 import org.obiba.mica.core.domain.StudyTable;
+import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
+import org.obiba.mica.dataset.StudyDatasetStateRepository;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetCategory;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
+import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
@@ -48,6 +52,9 @@ class DatasetDtos {
   private AttributeDtos attributeDtos;
 
   @Inject
+  private EntityStateDtos entityStateDtos;
+
+  @Inject
   private StudySummaryDtos studySummaryDtos;
 
   @Inject
@@ -56,15 +63,32 @@ class DatasetDtos {
   @Inject
   private MicaConfigService micaConfigService;
 
+  @Inject
+  private StudyDatasetStateRepository studyDatasetStateRepository;
+
+  @Inject
+  private HarmonizationDatasetStateRepository harmonizationDatasetStateRepository;
+
   @NotNull
   Mica.DatasetDto.Builder asDtoBuilder(@NotNull StudyDataset dataset) {
     Mica.DatasetDto.Builder builder = asBuilder(dataset);
 
     if(dataset.hasStudyTable() && !Strings.isNullOrEmpty(dataset.getStudyTable().getStudyId())) {
-      Mica.StudyDatasetDto.Builder sbuilder = Mica.StudyDatasetDto.newBuilder().setStudyTable(
-        asDto(dataset.getStudyTable()).setStudySummary(studySummaryDtos.asDto(dataset.getStudyTable().getStudyId())));
+      Mica.StudyDatasetDto.Builder sbuilder = Mica.StudyDatasetDto.newBuilder()//
+        .setStudyTable(asDto(dataset.getStudyTable())//
+          .setStudySummary(studySummaryDtos.asDto(dataset.getStudyTable().getStudyId())));
       builder.setExtension(Mica.StudyDatasetDto.type, sbuilder.build());
     }
+
+    StudyDatasetState state = studyDatasetStateRepository.findOne(dataset.getId());
+
+    if(state != null) {
+      builder.setPublished(state.isPublished());
+      builder.setExtension(Mica.EntityStateDto.datasetState, entityStateDtos.asDto(state));
+    } else {
+      builder.setPublished(false);
+    }
+
     return builder;
   }
 
@@ -84,7 +108,17 @@ class DatasetDtos {
       dataset.getStudyTables().forEach(studyTable -> hbuilder
         .addStudyTables(asDto(studyTable).setStudySummary(studySummaryDtos.asDto(studyTable.getStudyId()))));
     }
+
     builder.setExtension(Mica.HarmonizationDatasetDto.type, hbuilder.build());
+
+    HarmonizationDatasetState state = harmonizationDatasetStateRepository.findOne(dataset.getId());
+
+    if(state != null) {
+      builder.setPublished(state.isPublished());
+      builder.setExtension(Mica.EntityStateDto.datasetState, entityStateDtos.asDto(state));
+    } else {
+      builder.setPublished(false);
+    }
 
     return builder;
   }
@@ -489,8 +523,7 @@ class DatasetDtos {
       .setEntityType(dataset.getEntityType()) //
       .addAllName(localizedStringDtos.asDto(dataset.getName())) //
       .addAllAcronym(localizedStringDtos.asDto(dataset.getAcronym())) //
-      .addAllDescription(localizedStringDtos.asDto(dataset.getDescription())) //
-      .setPublished(dataset.isPublished());
+      .addAllDescription(localizedStringDtos.asDto(dataset.getDescription()));
 
     if(dataset.getAttributes() != null) {
       dataset.getAttributes().asAttributeList()

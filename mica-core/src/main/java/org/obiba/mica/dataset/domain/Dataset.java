@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
+import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.AttributeAware;
 import org.obiba.mica.core.domain.Attributes;
@@ -21,12 +22,13 @@ import org.obiba.mica.core.domain.Indexable;
 import org.obiba.mica.core.domain.LocalizedString;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
 
 /**
  * Proxy to Opal tables.
  */
-public abstract class Dataset extends AbstractAuditableDocument implements AttributeAware, Indexable {
+public abstract class Dataset extends AbstractGitPersistable implements AttributeAware, Indexable {
 
   private static final long serialVersionUID = -3328963766855899217L;
 
@@ -79,10 +81,12 @@ public abstract class Dataset extends AbstractAuditableDocument implements Attri
     this.entityType = entityType == null ? DEFAULT_ENTITY_TYPE : entityType;
   }
 
+  @JsonIgnore
   public boolean isPublished() {
     return published;
   }
 
+  @JsonProperty
   public void setPublished(boolean published) {
     this.published = published;
   }

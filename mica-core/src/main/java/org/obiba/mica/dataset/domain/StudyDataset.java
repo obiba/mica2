@@ -10,6 +10,10 @@
 
 package org.obiba.mica.dataset.domain;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.obiba.mica.core.domain.StudyTable;
 
 /**
@@ -31,5 +35,21 @@ public class StudyDataset extends Dataset {
 
   public void setStudyTable(StudyTable studyTable) {
     this.studyTable = studyTable;
+  }
+
+  @Override
+  public String pathPrefix() {
+    return "studyDatasets";
+  }
+
+  @Override
+  public Map<String, Serializable> parts() {
+    StudyDataset self = this;
+
+    return new HashMap<String, Serializable>() {
+      {
+        put(self.getClass().getSimpleName(), self);
+      }
+    };
   }
 }
