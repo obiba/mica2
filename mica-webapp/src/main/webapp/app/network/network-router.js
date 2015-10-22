@@ -33,5 +33,9 @@ mica.network
         .when('/network/:id/revisions', {
           templateUrl: 'app/network/views/network-view-revisions.html',
           controller: 'NetworkViewController'
+        })
+        .when('/network/:id/files', {
+          templateUrl: 'app/network/views/network-view-files.html',
+          controller: 'NetworkViewController'
         });
     }]);

@@ -68,7 +68,9 @@ mica.fileSystem
       };
 
       this.getLocalizedValue = function(values, lang) {
-        if (!values) return null;
+        if (!values) {
+          return null;
+        }
 
         var result = values.filter(function(value) {
           return value.lang === lang;

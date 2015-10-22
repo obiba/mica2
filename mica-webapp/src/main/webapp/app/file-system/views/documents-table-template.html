@@ -12,15 +12,17 @@
     <tbody>
     <tr ng-show="!data.isRoot">
       <td colspan="5">
-        <span><a href style="text-decoration: none;" ng-click="navigateBack()"><i class="fa fa-folder"></i> ..</a></span>
+        <i class="fa fa-folder"></i>
+        <span><a href style="text-decoration: none;" ng-click="navigateBack()"> ..</a></span>
       </td>
     </tr>
     <tr dir-paginate="document in data.document.children | itemsPerPage: 20"
       ng-init="fileDocument = isFile(document)">
 
       <td>
+        <span><i class="fa {{getDocumentIcon(document)}}"></i>
         <a href style="text-decoration: none;" ng-click="navigateTo(document)">
-          <span><i class="fa {{getDocumentIcon(document)}}"></i> {{document.name}}</span>
+           {{document.name}}</span>
         </a>
       </td>
       <td>

@@ -1,14 +1,35 @@
 <div class="panel panel-default">
   <div class="panel-body">
-    <div>
-      <a href="" style="text-decoration: none;" ng-click="navigateToPath('/network')">
-        <span class="ng-binding"><i class="i-obiba-network"></i> {{'networks' | translate}}</span>
-      </a>
-    </div>
-    <div class="voffset1">
-      <a href="" style="text-decoration: none;" ng-click="navigateToPath('/study')">
-        <span class="ng-binding"><i class="i-obiba-study"></i> {{'studies' | translate}}</span>
-      </a>
-    </div>
+    <ul class="nav nav-list">
+      <li class="nav-header">
+        <span translate>home</span>
+      </li>
+      <li>
+        <a ng-click="navigateToPath('/study')">
+          <span class="ng-binding"><i class="i-obiba-study"></i> {{'study.label' | translate}}</span>
+        </a>
+      </li>
+      <li class="nav-header">
+        <span translate>places</span>
+      </li>
+      <li>
+        <a ng-click="navigateToPath('/')">
+          <span class="ng-binding"><i class="fa fa-hdd-o"></i> {{'file-system' | translate}}</span>
+        </a>
+      </li>
+      <li>
+        <a ng-click="navigateToPath('/network')">
+          <span class="ng-binding"><i class="i-obiba-network"></i> {{'networks' | translate}}</span>
+        </a>
+      </li>
+      <li>
+        <a ng-click="navigateToPath('/study')">
+          <span class="ng-binding"><i class="i-obiba-study"></i> {{'studies' | translate}}</span>
+        </a>
+      </li>
+      <li class="nav-header">
+        <span translate>search</span>
+      </li>
+    </ul>
   </div>
 </div>
