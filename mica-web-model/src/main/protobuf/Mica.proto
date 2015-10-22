@@ -670,5 +670,6 @@ message AttachmentStateDto {
   optional AttachmentDto attachment = 5;
   optional AttachmentDto publishedAttachment = 6;
   optional string publicationDate = 7;
-  repeated AttachmentDto revisions = 8;
+  optional string publishedBy = 8;
+  repeated AttachmentDto revisions = 9;
 }

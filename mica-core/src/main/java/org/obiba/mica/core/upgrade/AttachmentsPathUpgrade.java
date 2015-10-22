@@ -34,7 +34,7 @@ public class AttachmentsPathUpgrade implements UpgradeStep {
   public void execute(Version version) {
     log.info("Executing attachments path property upgrade");
 
-    attachmentRepository.findAll().forEach(a -> {
+    attachmentRepository.findAll().stream().filter(a -> a.getPath().contains("/attachment/")).forEach(a -> {
       a.setPath(a.getPath().replaceAll("/attachment/[0-9a-f\\-]+$", ""));
       fileSystemService.save(a);
     });

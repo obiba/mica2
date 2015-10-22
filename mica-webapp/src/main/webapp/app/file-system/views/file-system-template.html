@@ -18,7 +18,7 @@
           e-form="buttonRename"
           onbeforesave="renameDocument(data.document, $data)">
           <i class="fa {{getDocumentIcon(data.document)}}"></i> {{data.document.name || 'empty'}}
-          <span ng-if="isPathEditable(part.path)" class="hoffset1">
+          <span ng-if="isPathEditable(part.path) && data.document.revisionStatus === 'DRAFT'" class="hoffset1">
             <a href ng-click="buttonRename.$show()" ng-hide="buttonRename.$visible">
               <i class="fa fa-pencil"></i>
             </a>

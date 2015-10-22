@@ -94,14 +94,16 @@ public class AttachmentState extends AbstractAuditableDocument implements Timest
     this.publicationDate = publicationDate;
   }
 
-  public void publish() {
+  public void publish(String by) {
     setPublishedAttachment(getAttachment());
     setPublicationDate(DateTime.now());
+    setPublishedBy(by);
   }
 
   public void unPublish() {
     setPublishedAttachment(null);
     setPublicationDate(null);
+    setPublishedBy(null);
   }
 
   @JsonIgnore

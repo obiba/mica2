@@ -336,6 +336,8 @@
     "not-published": "Not published",
     "published-out-of-date": "Published, out of date",
     "published": "Published",
+    "publication": "Publication",
+    "published-ago-by": "Published {{publicationDate | amTimeAgo}} [{{publishedBy}}]",
     "revisions-ahead": "Revisions ahead",
     "status": {
       "DRAFT": "Draft",
