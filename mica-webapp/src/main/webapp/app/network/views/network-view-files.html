@@ -1,0 +1,25 @@
+<div>
+  <h2>
+    <ol class="mica-breadcrumb">
+      <li><a href="/#/network" translate>studies</a></li>
+      <li class="active">{{network.id}}</li>
+    </ol>
+  </h2>
+
+  <div class="tabs-menu tabs-left">
+    <ul class="nav nav-tabs">
+      <li><a href="#/network/{{network.id}}" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a></li>
+      <li><a href="#/network/{{network.id}}/revisions" title="{{'revisions' | translate}}"><i class="fa fa-list-ol"></i></a>
+      </li>
+      <li class="active"><a href="#/network/{{network.id}}/files" title="{{'files' | translate}}"><i class="fa fa-file"></i></a>
+      </li>
+    </ul>
+  </div>
+
+  <h3 translate>files</h3>
+
+  <p>
+    <div files-list doc-path="/network" doc-id="{{network.id}}"></div>
+  </p>
+
+</div>
