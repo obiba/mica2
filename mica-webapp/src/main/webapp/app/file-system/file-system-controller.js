@@ -80,6 +80,16 @@ mica.fileSystem
         navigateToPath(document.path);
       };
 
+      var navigateToParent = function(document) {
+        var path = document.path;
+        if (path.lastIndexOf("/") === 0) {
+          path = "/";
+        } else {
+          path = path.substring(0, path.lastIndexOf("/"));
+        }
+        navigateToPath(path);
+      };
+
       var renameDocument = function(document, newName) {
         var newPath = document.path.replace(document.name, newName);
         DraftFileSystemFileResource.rename({path: document.path, name: newName},
@@ -115,7 +125,11 @@ mica.fileSystem
       var deleteDocument = function(document) {
         DraftFileSystemFileResource.delete({path: document.path},
           function onSuccess() {
-            navigateTo($scope.data.document);
+            if (document.path !== $scope.data.document.path) {
+              navigateTo($scope.data.document);
+            } else {
+              navigateToParent($scope.data.document);
+            }
           },
           onError
         );

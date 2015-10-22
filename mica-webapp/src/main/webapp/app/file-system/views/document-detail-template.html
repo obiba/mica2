@@ -45,22 +45,10 @@
         e-form="buttonChangeType"
         onbeforesave="updateDocumentType(data.document, $data)">
         {{data.document.state.attachment.type || 'empty'}}
-        <span class="hoffset1"><a href ng-click="buttonChangeType.$show()" ng-hide="buttonChangeType.$visible">
+        <span class="hoffset1" ng-if="data.document.revisionStatus === 'DRAFT'"><a href ng-click="buttonChangeType.$show()" ng-hide="buttonChangeType.$visible">
           <i class="fa fa-pencil"></i></a>
         </span>
       </div>
-
-      <!--<label class="text-muted">-->
-        <!--<small>{{'language.title' | translate}}</small>-->
-      <!--</label>-->
-      <!--<div editable-text="data.document.state.attachment.lang"-->
-        <!--e-form="buttonChangeLang"-->
-        <!--onbeforesave="updateDocumentDescription(data.document, $data)">-->
-        <!--{{data.document.state.attachment.lang || 'empty'}}-->
-        <!--<span class="hoffset1"><a href ng-click="buttonChangeLang.$show()" ng-hide="buttonChangeLang.$visible">-->
-          <!--<i class="fa fa-pencil"></i></a>-->
-        <!--</span>-->
-      <!--</div>-->
 
       <!-- TODO create a directive (see MK-568) -->
       <tabset class="voffset2">
@@ -77,7 +65,7 @@
             </label>
             <localized ng-if="getLocalizedValue(data.document.state.attachment.description, tab.lang)"
               value="data.document.state.attachment.description" lang="tab.lang"></localized>
-            <a href="" ng-click="data.editDescField = true" ng-hide="buttonChangeType.$visible">
+            <a ng-if="data.document.revisionStatus === 'DRAFT'" ng-click="data.editDescField = true" ng-hide="buttonChangeType.$visible && data.document.revisionStatus !== DRAFT">
               <i class="fa fa-pencil"></i>
             </a>
           </div>
