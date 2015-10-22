@@ -10,13 +10,7 @@
 
 'use strict';
 
-mica.dataAccesConfig
-  .config(['$routeProvider',
-    function ($routeProvider) {
-      $routeProvider
-        .when('/admin/data-access-config', {
-          templateUrl: 'app/access-config/views/data-access-config-form.html',
-          controller: 'DataAccessConfigController'
-        });
-    }]);
-
+mica.admin = angular.module('mica.admin', [
+  'ui.bootstrap',
+  'pascalprecht.translate'
+]);

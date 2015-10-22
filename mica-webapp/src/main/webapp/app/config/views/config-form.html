@@ -1,6 +1,11 @@
 <div>
 
-  <h2 translate>config.title-edit</h2>
+  <h2>
+    <ol class="mica-breadcrumb">
+      <li><a href="/#/admin" translate>global.menu.admin</a></li>
+      <li class="active" translate>config.short-title</li>
+    </ol>
+  </h2>
 
   <form name="form" role="form" novalidate ng-submit="save()">
 
@@ -48,7 +53,7 @@
       </div>
     </div>
 
-    <a href="#/config" class="btn btn-default">
+    <a href="#/admin/general" class="btn btn-default">
       <span translate>cancel</span>
     </a>
 

@@ -8,6 +8,7 @@ var mica = angular.module('mica', [
   'localytics.directives',
   'mica.config',
   'ngObiba',
+  'mica.admin',
   'mica.network',
   'mica.study',
   'mica.dataset',
@@ -66,32 +67,6 @@ mica
           },
           access: {
             authorizedRoles: [USER_ROLES.all]
-          }
-        })
-        .when('/metrics', {
-          templateUrl: 'app/views/metrics.html',
-          controller: 'MetricsController',
-          access: {
-            authorizedRoles: [USER_ROLES.admin]
-          }
-        })
-        .when('/caching', {
-          templateUrl: 'app/views/caching.html',
-          controller: 'CachingController',
-          access: {
-            authorizedRoles: [USER_ROLES.admin]
-          }
-        })
-        .when('/logs', {
-          templateUrl: 'app/views/logs.html',
-          controller: 'LogsController',
-          resolve: {
-            resolvedLogs: ['LogsService', function (LogsService) {
-              return LogsService.findAll();
-            }]
-          },
-          access: {
-            authorizedRoles: [USER_ROLES.admin]
           }
         })
         .when('/audits', {

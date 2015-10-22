@@ -70,38 +70,18 @@
             <span translate>data-access-requests</span>
           </a>
         </li>
-
       </ul>
 
       <ul class="nav navbar-nav navbar-right" ng-hide="!authenticated">
-        <li class="dropdown" ng-if="hasRole(['mica-administrator'])">
-          <a href="" class="dropdown-toggle" data-toggle="dropdown">
+        <li ng-if="hasRole(['mica-administrator'])">
+          <a href="#/admin">
             <span translate>global.menu.admin</span>
-            <i class="fa fa-caret-down"></i></a>
-          <ul class="dropdown-menu pull-right">
-            <li>
-              <a href="#/config">
-                <i class="fa fa-cog"></i> <span translate>config.short-title</span>
-              </a>
-            </li>
-            <li class="divider"></li>
-            <li>
-              <a href="#/metrics">
-                <span class="glyphicon glyphicon-dashboard"></span>
-                &nbsp;<span translate>global.menu.account.metrics</span>
-              </a>
-            </li>
-            <li>
-              <a href="#/logs"><span class="glyphicon glyphicon-tasks"></span>
-                &nbsp;<span translate>global.menu.account.logs</span>
-              </a>
-            </li>
-            <li>
-              <a href="#/caching"><span class="glyphicon glyphicon-hdd"></span>
-                &nbsp;<span translate>global.menu.account.caching</span>
-              </a>
-            </li>
-          </ul>
+          </a>
+        </li>
+        <li>
+          <a href="http://wiki.obiba.org/display/MICADOC/Home" target="_blank">
+            <span translate>help</span>
+          </a>
         </li>
         <li class="dropdown">
           <a href="" class="dropdown-toggle" data-toggle="dropdown">
@@ -195,6 +175,9 @@
 <script src="app/controllers.js"></script>
 <script src="app/services.js"></script>
 <script src="app/directives.js"></script>
+<script src="app/admin/admin.js"></script>
+<script src="app/admin/admin-router.js"></script>
+<script src="app/admin/admin-controller.js"></script>
 <script src="app/config/config.js"></script>
 <script src="app/config/config-router.js"></script>
 <script src="app/config/config-controller.js"></script>
