@@ -6,52 +6,31 @@ mica.study
     studyUpdated: 'event:study-updated'
   })
 
-  .controller('StudyListController', ['$rootScope', '$scope', '$translate', '$interpolate', 'StudyStatesResource', 'DraftStudyResource', 'NOTIFICATION_EVENTS',
-    function ($rootScope, $scope, $translate, $interpolate, StudyStatesResource, DraftStudyResource, NOTIFICATION_EVENTS) {
+  .controller('StudyListController', [
+    '$rootScope',
+    '$scope',
+    '$translate',
+    '$interpolate',
+    'StudyStatesResource',
+    'DraftStudyResource',
+    'NOTIFICATION_EVENTS',
+    'DraftStudyDeleteService',
+    function ($rootScope,
+              $scope,
+              $translate,
+              $interpolate,
+              StudyStatesResource,
+              DraftStudyResource,
+              NOTIFICATION_EVENTS,
+              DraftStudyDeleteService) {
+
       $scope.studies = StudyStatesResource.query();
-      $scope.deleteStudy = function (id) {
-        $scope.studyToDelete = id;
-        $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
-          {title: 'Delete study', message: 'Are you sure to delete the study?'}, id);
+
+      $scope.deleteStudy = function (study) {
+        DraftStudyDeleteService.delete(study, function() {
+          $scope.studies = StudyStatesResource.query();
+        });
       };
-
-      $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, id) {
-        if ($scope.studyToDelete === id) {
-          DraftStudyResource.delete({id: id},
-            function () {
-              $scope.studies = StudyStatesResource.query();
-            }, function (response) {
-              if (response.status === 409) {
-                var conflicts = '{{network ? networks + ": " + network + ". " : "" }}' +
-                  '{{harmonizationDataset ? harmonizationDatasets + ": " + harmonizationDataset + ". " : "" }}' +
-                  '{{studyDataset ? studyDatasets + ": " + studyDataset : "" }}';
-
-                $translate(['study.delete-conflict-message', 'networks', 'study-datasets', 'harmonization-datasets'])
-                  .then(function (translation) {
-                    $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
-                      titleKey: 'study.delete-conflict',
-                      message: translation['study.delete-conflict-message'] + ' ' + $interpolate(conflicts)(
-                        {
-                          networks: translation.networks,
-                          harmonizationDatasets: translation['harmonization-datasets'],
-                          studyDatasets: translation['study-datasets'],
-                          network: response.data.network.join(', '),
-                          harmonizationDataset: response.data.harmonizationDataset.join(', '),
-                          studyDataset: response.data.studyDataset.join(', ')
-                        })
-                    });
-                  });
-              } else {
-                $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
-                  titleKey: 'form-server-error',
-                  message: angular.toJson(response)
-                });
-              }
-            });
-        }
-
-        delete $scope.studyToDelete;
-      });
     }])
 
   .controller('StudyViewController', [
@@ -77,6 +56,7 @@ mica.study
     'MicaStudiesConfigResource',
     'ActiveTabService',
     '$modal',
+    'DraftStudyDeleteService',
     function ($rootScope,
               $scope,
               $routeParams,
@@ -98,12 +78,10 @@ mica.study
               CONTACT_EVENTS,
               MicaStudiesConfigResource,
               ActiveTabService,
-              $modal) {
+              $modal,
+              DraftStudyDeleteService) {
 
       $scope.Mode = {View: 0, Revision: 1, File: 2, Permission: 3};
-
-      console.log('SCOPE', $scope);
-
 
       var getViewMode = function() {
         var result = /\/(revision[s\/]*|files|permissions)/.exec($location.path());
@@ -255,6 +233,12 @@ mica.study
             });
         }
       });
+
+      $scope.delete = function (study) {
+        DraftStudyDeleteService.delete(study, function() {
+          $location.path('/study').replace();
+        }, ActiveTabService.getActiveTab($scope.tabs).lang);
+      };
 
       $scope.publish = function (doPublish) {
         if (doPublish) {
