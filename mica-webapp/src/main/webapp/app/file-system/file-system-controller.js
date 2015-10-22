@@ -196,7 +196,6 @@ mica.fileSystem
       $scope.onFileSelect = onFileSelect;
       $scope.isFile = FileSystemService.isFile;
       $scope.isRoot = FileSystemService.isRoot;
-      $scope.isPathEditable = FileSystemService.isPathEditable;
       $scope.getLocalizedValue = FileSystemService.getLocalizedValue;
       $scope.isPublished = isPublished;
       $scope.publish = publish;
