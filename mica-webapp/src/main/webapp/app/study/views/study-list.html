@@ -70,7 +70,7 @@
                 <a ng-href="#/study/{{study.id}}/edit" title="{{'edit' | translate}}"><i class="fa fa-pencil"></i></a>
               </li>
               <li ng-if="study['obiba.mica.StudyStateDto.state'].revisionStatus === 'DELETED'">
-                <a href ng-click="deleteStudy(study.id)" title="{{'delete' | translate}}"><i
+                <a href ng-click="deleteStudy(study)" title="{{'delete' | translate}}"><i
                   class="fa fa-trash-o"></i></a>
               </li>
               <li ng-if="study['obiba.mica.StudyStateDto.state'].revisionStatus === 'UNDER_REVIEW'">

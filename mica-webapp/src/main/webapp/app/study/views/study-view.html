@@ -32,7 +32,7 @@
         on-publish="publish(true)"
         on-un-publish="publish(false)"
         can-publish="hasRole(['mica-administrator','mica-reviewer'])"
-        on-delete="delete()"
+        on-delete="delete(study)"
         can-delete="hasRole(['mica-administrator','mica-reviewer'])"
         can-edit="hasRole(['mica-administrator','mica-reviewer','mica-editor'])"
         to-draft="toStatus('DRAFT')"

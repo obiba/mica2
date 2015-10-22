@@ -450,6 +450,10 @@
     "revision": {
       "update-comment": "Add a comment to describe the changes."
     },
+    "delete-dialog":{
+      "title": "Delete Study",
+      "message": "Are you sure to delete the study '{{arg0}}'?"
+    },
     "restore-dialog": {
       "title": "Restoring Study from Revision",
       "message": "Are you sure you want to restore this revision from '{{arg0}}'?"
