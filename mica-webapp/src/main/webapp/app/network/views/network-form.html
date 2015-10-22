@@ -13,17 +13,22 @@
   <h2>
     <ol class="mica-breadcrumb">
       <li><a href="/#/network" translate>networks</a></li>
-      <li ng-if="!newNetwork" class="active"><a ng-href="/#/network/{{network.id}}">{{network.id}}</a></li>
-      <li class="active">
-        <span ng-if="newNetwork" translate>add-sm</span>
-        <span ng-if="!newNetwork" translate>edit-sm</span>
-        <small><span translate>or</span>
-          <a ng-click="cancel()">
-            <span translate>cancel-sm</span>
-          </a></small>
-      </li>
+      <li class="active">{{network.id}}</li>
     </ol>
   </h2>
+
+  <div class="tabs-menu tabs-left">
+    <ul class="nav nav-tabs">
+      <li class="active"><a href="#/network/{{network.id}}" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>
+      </li>
+      <li><a href="#/network/{{network.id}}/revisions" title="{{'revisions' | translate}}"><i class="fa fa-list-ol"></i></a>
+      </li>
+    </ul>
+  </div>
+
+  <h3><a ng-click="cancel()">
+    <i class="fa fa-chevron-left"> </i>
+  </a> {{'edit' | translate}}</h3>
 
   <form name="form" role="form" novalidate
       class="ng-scope ng-invalid ng-invalid-required ng-dirty" ng-submit="save()">
