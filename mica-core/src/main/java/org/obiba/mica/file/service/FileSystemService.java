@@ -186,6 +186,7 @@ public class FileSystemService {
         publishDirs(parentPath);
       }
       state.publish();
+      state.setRevisionStatus(RevisionStatus.DRAFT);
     } else state.unPublish();
     state.setLastModifiedDate(DateTime.now());
     attachmentStateRepository.save(state);
