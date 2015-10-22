@@ -47,6 +47,7 @@ mica.fileSystem
 
 
       var getDocument = function(path) {
+        $log.debug('getDocument()\'', path, '\'');
 
         DraftFileSystemFileResource.get({path: path},
           function onSuccess(response) {
@@ -223,7 +224,7 @@ mica.fileSystem
 
       $scope.$watchGroup(['docPath', 'docId'], function(){
         if ($scope.docPath && $scope.docId) {
-          var rootPath = $scope.docPath + '/' + $scope.docId;
+          var rootPath = $scope.docPath + ($scope.docId !== 'null' ? '/' + $scope.docId : '');
           getDocument(rootPath, null);
         }
       });

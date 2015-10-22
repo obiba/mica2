@@ -691,6 +691,23 @@
   "history": "History",
   "new-folder": "New Folder",
   "description": "Description",
+  "help": "Help",
+  "general": "General",
+  "configuration": "Configuration",
+  "security": "Security",
+  "data-management": "Data Management",
+  "data-access": "Data Access",
+  "admin-page": {
+    "help": {
+      "general": "Configure Opal server, locale and server properties.",
+      "security": "Configure encryption and Opal server credentials.",
+      "metrics": "View JVM and HTTP metrics.",
+      "logs": "Configure server logs.",
+      "caching": "Manage server caches.",
+      "data-access-config": "Configure Data Access Request form.",
+      "file-system": "Manage file system."
+    }
+  },
   "server": {
     "error": {
       "403": "Server rejected your request, please make sure you are logged in and try again."
