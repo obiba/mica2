@@ -11,6 +11,7 @@ import org.springframework.data.domain.Auditable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Strings;
 
 public abstract class AbstractAuditableDocument implements Auditable<String, String>, Timestamped {
 
@@ -52,7 +53,7 @@ public abstract class AbstractAuditableDocument implements Auditable<String, Str
   @JsonIgnore
   @Override
   public boolean isNew() {
-    return id == null;
+    return Strings.isNullOrEmpty(id);
   }
 
   @Override

@@ -100,9 +100,15 @@ public class FileSystemService {
 
     attachmentRepository.save(saved);
 
-    if(state.isNew()) mkdirs(saved.getPath());
     state.setAttachment(saved);
     state.setLastModifiedDate(DateTime.now());
+    if(state.isNew()) {
+      if(FileUtils.isDirectory(state)) {
+        mkdirs(getParentPath(saved.getPath()));
+      } else {
+        mkdirs(saved.getPath());
+      }
+    }
     attachmentStateRepository.save(state);
 
     eventBus.post(new FileUpdatedEvent(state));
@@ -182,9 +188,7 @@ public class FileSystemService {
     if(publish) {
       // publish the parent directories (if any)
       if(!FileUtils.isRoot(state.getPath())) {
-        int idx = state.getPath().lastIndexOf('/');
-        String parentPath = idx == 0 ? "/" : state.getPath().substring(0, idx);
-        publishDirs(parentPath);
+        publishDirs(getParentPath(state.getPath()));
       }
       state.publish(getCurrentUsername());
       state.setRevisionStatus(RevisionStatus.DRAFT);
@@ -566,5 +570,10 @@ public class FileSystemService {
     return subject == null || subject.getPrincipal() == null
       ? AbstractGitWriteCommand.DEFAULT_AUTHOR_NAME
       : subject.getPrincipal().toString();
+  }
+
+  private String getParentPath(String path) {
+    int idx = path.lastIndexOf('/');
+    return idx == 0 ? "/" : path.substring(0, idx);
   }
 }

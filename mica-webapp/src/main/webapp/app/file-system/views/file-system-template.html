@@ -28,7 +28,7 @@
     </ol>
 
     <div class="voffset2">
-      <a ng-if="!data.isFile" ng-disabled="data.document.revisionStatus !== 'DRAFT'" ng-click="newDocument()" class="btn btn-info">
+      <a ng-if="!data.isFile" ng-disabled="data.document.revisionStatus !== 'DRAFT'" ng-click="createFolder()" class="btn btn-info">
         <i class="fa fa-plus"></i> <span translate>new-folder</span>
       </a>
       <a ng-if="!data.isFile" ng-disabled="data.document.revisionStatus !== 'DRAFT'" class="btn btn-info"

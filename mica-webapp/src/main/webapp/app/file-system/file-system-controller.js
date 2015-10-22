@@ -113,7 +113,6 @@ mica.fileSystem
       };
 
       var updateDocument = function(document) {
-        console.log('UPDATE', JSON.stringify(document.state.attachment));
         DraftFileSystemFilesResource.update(document.state.attachment,
           function onSuccess() {
             navigateTo(document);
@@ -157,6 +156,22 @@ mica.fileSystem
               onError
             );
           });
+      };
+
+      var createFolder = function(nameOrPath) {
+        if (!nameOrPath) {
+          return;
+        }
+        var attachment = {};
+        attachment.path = $scope.data.document.path + "/" + nameOrPath;
+        attachment.fileName = ".";
+        attachment.id = "";
+        DraftFileSystemFilesResource.update(attachment,
+          function onSuccess() {
+            navigateTo($scope.data.document);
+          },
+          onError
+        );
       };
 
       var searchDocuments = function() {
@@ -208,6 +223,7 @@ mica.fileSystem
       $scope.restoreRevision = restoreRevision;
       $scope.searchDocuments = searchDocuments;
       $scope.onFileSelect = onFileSelect;
+      $scope.createFolder = createFolder;
       $scope.isFile = FileSystemService.isFile;
       $scope.isRoot = FileSystemService.isRoot;
       $scope.getLocalizedValue = FileSystemService.getLocalizedValue;
