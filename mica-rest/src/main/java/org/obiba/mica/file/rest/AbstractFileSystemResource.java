@@ -234,6 +234,7 @@ public abstract class AbstractFileSystemResource {
     String pathRegEx = isRoot(basePath) ? "^/[^/]+$" : String.format("^%s/[^/]+$", basePath);
     fileSystemService.findAttachmentStates(pathRegEx, isPublishedFileSystem()).stream() //
       .filter(FileUtils::isDirectory) //
+      .sorted((o1, o2) -> o1.getPath().compareTo(o2.getPath())) //
       .forEach(s -> folders.add(dtos.asFileDto(s, isPublishedFileSystem())));
     return folders;
   }
@@ -249,11 +250,13 @@ public abstract class AbstractFileSystemResource {
           .filter(s -> !FileUtils.isDirectory(s)).collect(Collectors.toList()));
     }
 
-    return states.stream().map(s -> {
-      Mica.FileDto f = dtos.asFileDto(s, isPublishedFileSystem());
-      if(isPublishedFileSystem()) f = f.toBuilder().clearRevisionStatus().build();
-      return f;
-    }).collect(Collectors.toList());
+    return states.stream() //
+      .sorted((o1, o2) -> o1.getFullPath().compareTo(o2.getFullPath())) //
+      .map(s -> {
+        Mica.FileDto f = dtos.asFileDto(s, isPublishedFileSystem());
+        if(isPublishedFileSystem()) f = f.toBuilder().clearRevisionStatus().build();
+        return f;
+      }).collect(Collectors.toList());
   }
 
   private static class FolderTimestamps implements Timestamped {

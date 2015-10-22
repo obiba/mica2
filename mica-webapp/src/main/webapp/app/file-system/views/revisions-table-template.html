@@ -26,7 +26,7 @@
         </td>
         <td>
           <ul class="list-inline pull-right">
-            <li ng-show="!$first" ng-if="data.document.revisionStatus === 'DRAFT'">
+            <li ng-show="!$first && data.document.revisionStatus === 'DRAFT'">
               <a href ng-click="restoreRevision(revision)">
                 <span><i class="fa fa-undo"></i> {{restore | translate}}</span></i>
               </a>

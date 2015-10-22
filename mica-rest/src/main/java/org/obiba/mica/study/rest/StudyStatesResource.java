@@ -17,7 +17,7 @@ import org.springframework.context.ApplicationContext;
 import com.codahale.metrics.annotation.Timed;
 
 @Path("/draft")
-@RequiresPermissions({"/draft:EDIT"})
+@RequiresPermissions({ "/draft:EDIT" })
 public class StudyStatesResource {
 
   @Inject
@@ -33,7 +33,8 @@ public class StudyStatesResource {
   @Path("/study-states")
   @Timed
   public List<Mica.StudySummaryDto> list() {
-    return studyService.findAllStates().stream().map(dtos::asDto).collect(Collectors.toList());
+    return studyService.findAllStates().stream().sorted((o1, o2) -> o1.getId().compareTo(o2.getId())).map(dtos::asDto)
+      .collect(Collectors.toList());
   }
 
   @Path("/study-state/{id}")
