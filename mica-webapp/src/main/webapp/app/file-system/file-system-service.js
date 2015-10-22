@@ -54,10 +54,6 @@ mica.fileSystem
         return document && document.path === '/';
       };
 
-      this.isPathEditable = function(path) {
-        return path.replace(/\/$/, '').split('/').slice(1).length > 2;
-      };
-
       this.getDocumentTypeTitle = function (type) {
         switch (type) {
           case 'study':
