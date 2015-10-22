@@ -231,7 +231,10 @@ public class FileSystemService {
   public void rename(String path, String newPath) {
     List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
     states.addAll(findAttachmentStates(String.format("^%s/", path), false));
-    states.stream().forEach(s -> copy(s, s.getPath().replaceFirst(path, newPath), s.getName(), true));
+    states.stream().filter(s -> !FileUtils.isDirectory(s))
+      .forEach(s -> copy(s, s.getPath().replaceFirst(path, newPath), s.getName(), true));
+    states.stream().filter(FileUtils::isDirectory)
+      .forEach(s -> updateStatus(s, RevisionStatus.DELETED));
   }
 
   /**
@@ -303,6 +306,7 @@ public class FileSystemService {
    * @param delete
    */
   public void copy(AttachmentState state, String newPath, String newName, boolean delete) {
+    if(state.getPath().equals(newPath) && state.getName().equals(newName)) return;
     if(hasAttachmentState(newPath, newName, false))
       throw new IllegalArgumentException("A file with name '" + newName + "' already exists at path: " + newPath);
 
