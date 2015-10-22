@@ -160,7 +160,7 @@ mica.fileSystem
 
       var createFolder = function(nameOrPath) {
         if (!nameOrPath) {
-          return;
+         // return;
         }
         var attachment = {};
         attachment.path = $scope.data.document.path + "/" + nameOrPath;
