@@ -97,8 +97,8 @@ mica.admin
       };
     }])
 
-  .controller('LogsController', ['$scope', 'LogsService', 'cfpLoadingBar',
-    function ($scope, LogsService, cfpLoadingBar) {
+  .controller('LogsController', ['$scope', '$timeout', 'LogsService', 'cfpLoadingBar',
+    function ($scope, $timeout, LogsService, cfpLoadingBar) {
 
       var findAll = function() {
         cfpLoadingBar.start();
@@ -122,7 +122,7 @@ mica.admin
 
       $scope.changeLevel = changeLevel;
 
-      findAll();
+      $timeout(findAll, 250);
 
     }])
 

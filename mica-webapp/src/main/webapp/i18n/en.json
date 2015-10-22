@@ -697,6 +697,8 @@
   "security": "Security",
   "data-management": "Data Management",
   "data-access": "Data Access",
+  "properties": "Properties",
+  "searching": "Searching",
   "admin-page": {
     "help": {
       "general": "Configure Opal server, locale and server properties.",
