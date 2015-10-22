@@ -5,7 +5,7 @@
     <span translate>delete</span>
   </a>
   <a ng-click="onPublish()" class="btn btn-info"
-    ng-disabled="document.state.publicationDate !== undefined"
+    ng-disabled="document.state.attachment.id === document.state.publishedAttachment.id"
     ng-if="canPublish() && document.revisionStatus === 'UNDER_REVIEW'">
     <i class="fa fa-star"></i>
     <span translate>publish.label</span>
@@ -31,7 +31,7 @@
       </li>
       <li>
         <a ng-click="toUnderReview()"
-          ng-if="document.revisionStatus === 'DRAFT' && (document.state.publicationDate === undefined)">
+          ng-if="document.revisionStatus === 'DRAFT' && document.state.attachment.id !== document.state.publishedAttachment.id">
           <i class="fa fa-arrow-right"></i>
           <span translate>publish.status.under-review</span>
         </a>

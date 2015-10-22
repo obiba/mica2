@@ -3,28 +3,37 @@
     <table class="table table-bordered table-striped no-padding no-margin">
       <thead>
       <tr>
+        <th>ID</th>
         <th translate>created-on</th>
         <th translate>last-modified</th>
-        <th translate width="5%">actions</th>
+        <th translate>actions</th>
       </tr>
       </thead>
       <tbody>
       <tr dir-paginate="revision in data.document.state.revisions.reverse() | filter:searchText | itemsPerPage: 20">
         <td>
+          <span class="ellipsis pull-left" title="{{revision.id}}">
+          {{revision.id}}
+        </span>
+          <i class="fa fa-star pull-left" ng-if="data.document.state.publishedAttachment.id === revision.id"
+            title="{{'publish.published' | translate}} ({{data.document.state.publicationDate | amDateFormat : 'lll'}} [{{data.document.state.publishedBy}}])"></i>
+        </td>
+        <td>
           {{revision.timestamps.created | amDateFormat : 'lll'}}
         </td>
         <td>
-          {{revision.timestamps.lastUpdate | amDateFormat : 'lll'}}
+          {{revision.timestamps.lastUpdate | amTimeAgo}}
         </td>
         <td>
           <ul class="list-inline pull-right">
-            <li ng-show="!$first" >
+            <li ng-show="!$first" ng-if="data.document.revisionStatus === 'DRAFT'">
               <a href ng-click="restoreRevision(revision)">
                 <span><i class="fa fa-undo"></i> {{restore | translate}}</span></i>
               </a>
             </li>
             <li>
-              <a target="_self" ng-href="ws/draft/file-dl/{{data.document.path}}?version={{revision.id}}"><i class="fa fa-download"></i></a>
+              <a target="_self" ng-href="ws/draft/file-dl/{{data.document.path}}?version={{revision.id}}"><i
+                class="fa fa-download"></i></a>
             </li>
           </ul>
         </td>

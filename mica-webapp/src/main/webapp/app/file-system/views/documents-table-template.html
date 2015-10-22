@@ -26,7 +26,7 @@
         </a>
       </td>
       <td>
-        {{document.timestamps.lastUpdate | amDateFormat : 'lll'}}
+        {{document.timestamps.lastUpdate | amTimeAgo}}
       </td>
       <td ng-if="fileDocument">
         {{document.size | bytes}}

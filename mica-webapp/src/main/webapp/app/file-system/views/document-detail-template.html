@@ -1,57 +1,75 @@
 <div class="panel panel-default">
   <div class="panel-body">
-    <label class="control-label text-muted"><small>{{'size' | translate}}</small></label>
+    <label class="text-muted">
+      <small>{{'size' | translate}}</small>
+    </label>
     <div>
-      <label ng-if="!data.isFile">{{data.document.size}} {{'files' | translate}}</label>
-      <label ng-if="data.isFile">{{data.document.size | bytes}}</label>
+      <span ng-if="!data.isFile">{{data.document.size}} {{'files' | translate}}</span>
+      <span ng-if="data.isFile">{{data.document.size | bytes}}</span>
     </div>
 
-    <label class="control-label text-muted voffset1"><small>{{'created-on' | translate}}</small></label>
+    <label class="text-muted">
+      <small>{{'created-on' | translate}}</small>
+    </label>
     <div>
-      <label>{{data.document.timestamps.created | amDateFormat : 'lll'}}</label>
+      <span>{{data.document.timestamps.created | amDateFormat : 'lll'}}</span>
     </div>
 
-    <label class="control-label text-muted voffset1"><small>{{'last-modified' | translate}}</small></label>
+    <label class="text-muted">
+      <small>{{'last-modified' | translate}}</small>
+    </label>
     <div>
-      <label>{{data.document.timestamps.lastUpdate | amDateFormat : 'lll'}}</label>
+      <span>{{data.document.timestamps.lastUpdate | amDateFormat : 'lll'}}</span>
     </div>
 
-    <label class="control-label text-muted voffset1"><small>{{'status' | translate}}</small></label>
+    <label class="text-muted">
+      <small>{{'publish.publication' | translate}}</small>
+    </label>
     <div>
-      <label>{{'publish.status.' + data.document.revisionStatus | translate}} </label>
+      <span translate
+        translate-values="{ publicationDate: data.document.state.publicationDate, publishedBy: data.document.state.publishedBy }"
+        ng-if="data.document.state.publicationDate !== undefined">
+        publish.published-ago-by
+      </span>
+      <span translate
+        ng-if="data.document.state.publicationDate === undefined">
+        publish.not-published
+      </span>
     </div>
 
     <div ng-if="data.isFile">
-      <label class="control-label text-muted voffset1"><small>{{'type' | translate}}</small></label>
-      <div>
-        <label editable-text="data.document.state.attachment.type"
-          e-form="buttonChangeType"
-          onbeforesave="updateDocumentType(data.document, $data)">
-          {{data.document.state.attachment.type || 'empty'}}
-            <span class="hoffset1"><a href ng-click="buttonChangeType.$show()" ng-hide="buttonChangeType.$visible">
-              <i class="fa fa-pencil"></i></a>
-            </span>
-        </label>
+      <label class="text-muted">
+        <small>{{'type' | translate}}</small>
+      </label>
+      <div editable-text="data.document.state.attachment.type"
+        e-form="buttonChangeType"
+        onbeforesave="updateDocumentType(data.document, $data)">
+        {{data.document.state.attachment.type || 'empty'}}
+        <span class="hoffset1"><a href ng-click="buttonChangeType.$show()" ng-hide="buttonChangeType.$visible">
+          <i class="fa fa-pencil"></i></a>
+        </span>
       </div>
 
-      <label class="control-label text-muted voffset1"><small>{{'language.title' | translate}}</small></label>
-      <div>
-        <label editable-text="data.document.state.attachment.lang"
-          e-form="buttonChangeLang"
-          onbeforesave="updateDocumentDescription(data.document, $data)">
-          {{data.document.state.attachment.lang || 'empty'}}
-            <span class="hoffset1"><a href ng-click="buttonChangeLang.$show()" ng-hide="buttonChangeLang.$visible">
-              <i class="fa fa-pencil"></i></a>
-            </span>
-        </label>
-      </div>
+      <!--<label class="text-muted">-->
+        <!--<small>{{'language.title' | translate}}</small>-->
+      <!--</label>-->
+      <!--<div editable-text="data.document.state.attachment.lang"-->
+        <!--e-form="buttonChangeLang"-->
+        <!--onbeforesave="updateDocumentDescription(data.document, $data)">-->
+        <!--{{data.document.state.attachment.lang || 'empty'}}-->
+        <!--<span class="hoffset1"><a href ng-click="buttonChangeLang.$show()" ng-hide="buttonChangeLang.$visible">-->
+          <!--<i class="fa fa-pencil"></i></a>-->
+        <!--</span>-->
+      <!--</div>-->
 
       <!-- TODO create a directive (see MK-568) -->
       <tabset class="voffset2">
         <tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active"
           disabled="tab.disabled">
 
-          <label class="control-label text-muted voffset1"><small>{{'description' | translate}}</small></label>
+          <label class="text-muted">
+            <small>{{'description' | translate}}</small>
+          </label>
 
           <div ng-if="!data.editDescField">
             <label ng-if="!getLocalizedValue(data.document.state.attachment.description, tab.lang)">
@@ -66,7 +84,8 @@
 
           <div ng-if="data.editDescField">
             <form name="form" role="form" novalidate>
-              <div localized-textarea name="description" model="data.document.state.attachment.description" lang="tab.lang"></div>
+              <div localized-textarea name="description" model="data.document.state.attachment.description"
+                lang="tab.lang"></div>
               <span class="editable-buttons">
                 <button ng-click="updateDocumentDescription(data.document)" class="btn btn-primary">
                   <span class="glyphicon glyphicon-ok"></span>

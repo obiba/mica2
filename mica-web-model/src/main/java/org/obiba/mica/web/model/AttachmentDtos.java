@@ -76,7 +76,7 @@ class AttachmentDtos {
       .setAttachment(asDto(state.getAttachment()));
     if(state.isPublished()) {
       builder.setPublishedAttachment(asDto(state.getPublishedAttachment())) //
-        .setPublicationDate(state.getPublicationDate().toString());
+        .setPublicationDate(state.getPublicationDate().toString()).setPublishedBy(state.getPublishedBy());
     }
     builder.addAllRevisions(
       fileSystemService.getAttachmentRevisions(state).stream().map(this::asDto).collect(Collectors.toList()));

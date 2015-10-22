@@ -8,8 +8,11 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.math3.util.Pair;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
+import org.obiba.git.command.AbstractGitWriteCommand;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.repository.AttachmentRepository;
@@ -124,7 +127,7 @@ public class FileSystemService {
   public void delete(String path) {
     List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
     states.addAll(findAttachmentStates(String.format("^%s/", path), false));
-    states.stream().filter(s -> !s.isPublished()).forEach(this::delete);
+    states.stream().forEach(this::delete);
   }
 
   /**
@@ -176,8 +179,6 @@ public class FileSystemService {
    * @param publish do the publication or the non publication
    */
   public void publish(AttachmentState state, boolean publish) {
-    if(state.isPublished() && publish) return;
-    if(!state.isPublished() && !publish) return;
     if(publish) {
       // publish the parent directories (if any)
       if(!FileUtils.isRoot(state.getPath())) {
@@ -185,7 +186,7 @@ public class FileSystemService {
         String parentPath = idx == 0 ? "/" : state.getPath().substring(0, idx);
         publishDirs(parentPath);
       }
-      state.publish();
+      state.publish(getCurrentUsername());
       state.setRevisionStatus(RevisionStatus.DRAFT);
     } else state.unPublish();
     state.setLastModifiedDate(DateTime.now());
@@ -496,7 +497,7 @@ public class FileSystemService {
     else if(path.lastIndexOf('/') == 0 && !"/".equals(path)) publishDirs("/");
 
     AttachmentState state = states.get(0);
-    state.publish();
+    state.publish(getCurrentUsername());
     state.setLastModifiedDate(DateTime.now());
     attachmentStateRepository.save(state);
     eventBus.post(new FilePublishedEvent(state));
@@ -554,5 +555,12 @@ public class FileSystemService {
 
   private static String extractBaseName(String pathWithName) {
     return pathWithName.contains("/") ? pathWithName.substring(pathWithName.lastIndexOf('/') + 1) : pathWithName;
+  }
+
+  private String getCurrentUsername() {
+    Subject subject = SecurityUtils.getSubject();
+    return subject == null || subject.getPrincipal() == null
+      ? AbstractGitWriteCommand.DEFAULT_AUTHOR_NAME
+      : subject.getPrincipal().toString();
   }
 }
