@@ -52,15 +52,16 @@ public class DraftNetworksResource {
   @GET
   @Path("/networks")
   @Timed
-  @RequiresPermissions({"/draft:EDIT"})
+  @RequiresPermissions({ "/draft:EDIT" })
   public List<Mica.NetworkDto> list(@QueryParam("study") String studyId) {
-    return networkService.findAllNetworks(studyId).stream().map(dtos::asDto).collect(Collectors.toList());
+    return networkService.findAllNetworks(studyId).stream().sorted((o1, o2) -> o1.getId().compareTo(o2.getId()))
+      .map(dtos::asDto).collect(Collectors.toList());
   }
 
   @POST
   @Path("/networks")
   @Timed
-  @RequiresPermissions({"/draft:EDIT"})
+  @RequiresPermissions({ "/draft:EDIT" })
   public Response create(Mica.NetworkDto networkDto, @Context UriInfo uriInfo) {
     Network network = dtos.fromDto(networkDto);
 
@@ -71,14 +72,14 @@ public class DraftNetworksResource {
   @PUT
   @Path("/networks/_index")
   @Timed
-  @RequiresPermissions({"/draft:PUBLISH"})
+  @RequiresPermissions({ "/draft:PUBLISH" })
   public Response reIndex() {
     networkService.indexAll();
     return Response.noContent().build();
   }
 
   @Path("/network/{id}")
-  @RequiresPermissions({"/draft:EDIT"})
+  @RequiresPermissions({ "/draft:EDIT" })
   public DraftNetworkResource dataset(@PathParam("id") String id) {
     DraftNetworkResource resource = applicationContext.getBean(DraftNetworkResource.class);
     resource.setId(id);

@@ -48,6 +48,10 @@ public class AttachmentState extends AbstractAuditableDocument implements Timest
     return path;
   }
 
+  public String getFullPath() {
+    return String.format("%s/%s", path, name);
+  }
+
   public void setPath(String path) {
     this.path = path;
   }
