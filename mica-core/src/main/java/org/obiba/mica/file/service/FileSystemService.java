@@ -235,8 +235,13 @@ public class FileSystemService {
   public void rename(String path, String newPath) {
     List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
     states.addAll(findAttachmentStates(String.format("^%s/", path), false));
+    // create the directories first (as they could be empty)
+    states.stream().filter(FileUtils::isDirectory)
+      .forEach(s -> mkdirs(s.getPath().replaceFirst(path, newPath)));
+    // then copy the files
     states.stream().filter(s -> !FileUtils.isDirectory(s))
       .forEach(s -> copy(s, s.getPath().replaceFirst(path, newPath), s.getName(), true));
+    // mark source as being deleted
     states.stream().filter(FileUtils::isDirectory)
       .forEach(s -> updateStatus(s, RevisionStatus.DELETED));
   }
