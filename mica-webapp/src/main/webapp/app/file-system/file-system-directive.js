@@ -18,7 +18,8 @@ mica.fileSystem
       controller: 'FileSystemController',
       scope: {
         docPath: '@',
-        docId: '@'
+        docId: '@',
+        subject: '='
       },
       templateUrl: 'app/file-system/views/file-system-template.html'
     };

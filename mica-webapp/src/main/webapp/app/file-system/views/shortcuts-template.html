@@ -2,11 +2,21 @@
   <div class="panel-body">
     <ul class="nav nav-list">
       <li class="nav-header">
-        <span translate>home</span>
+        <span translate>homes</span>
       </li>
       <li>
-        <a ng-click="navigateToPath('/study')">
-          <span class="ng-binding"><i class="i-obiba-study"></i> {{'study.label' | translate}}</span>
+        <a ng-click="navigateToPath('/user/' + subject.login)">
+          <span class="ng-binding"><i class="fa fa-user"></i> {{'user' | translate}} ({{subject.login}})</span>
+        </a>
+      </li>
+      <li ng-if="docPath === '/network'">
+        <a ng-click="navigateToPath(docPath + '/' + docId)">
+          <span class="ng-binding"><i class="i-obiba-network"></i> {{'network.label' | translate}} ({{docId}})</span>
+        </a>
+      </li>
+      <li ng-if="docPath === '/study'">
+        <a ng-click="navigateToPath(docPath + '/' + docId)">
+          <span class="ng-binding"><i class="i-obiba-study"></i> {{'study.label' | translate}} ({{docId}})</span>
         </a>
       </li>
       <li class="nav-header">
@@ -25,6 +35,11 @@
       <li>
         <a ng-click="navigateToPath('/study')">
           <span class="ng-binding"><i class="i-obiba-study"></i> {{'studies' | translate}}</span>
+        </a>
+      </li>
+      <li>
+        <a ng-click="navigateToPath('/user')">
+          <span class="ng-binding"><i class="fa fa-group"></i> {{'users' | translate}}</span>
         </a>
       </li>
       <li class="nav-header">

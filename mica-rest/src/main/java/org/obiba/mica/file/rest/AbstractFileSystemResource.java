@@ -250,7 +250,7 @@ public abstract class AbstractFileSystemResource {
     }
 
     return states.stream().map(s -> {
-      Mica.FileDto f = dtos.asFileDto(s);
+      Mica.FileDto f = dtos.asFileDto(s, isPublishedFileSystem());
       if(isPublishedFileSystem()) f = f.toBuilder().clearRevisionStatus().build();
       return f;
     }).collect(Collectors.toList());

@@ -42,7 +42,7 @@ public class FileIndexer {
   @Async
   @Subscribe
   public void onFilePublished(FilePublishedEvent event) {
-    log.info("File {} was published", event.getPersistable());
+    log.debug("File {} was published", event.getPersistable());
     if (FileUtils.isDirectory(event.getPersistable())) return;
     elasticSearchIndexer.index(ATTACHMENT_PUBLISHED_INDEX, event.getPersistable());
   }
@@ -50,7 +50,7 @@ public class FileIndexer {
   @Async
   @Subscribe
   public void onFileUnPublished(FileUnPublishedEvent event) {
-    log.info("File {} was unpublished", event.getPersistable());
+    log.debug("File {} was unpublished", event.getPersistable());
     if (FileUtils.isDirectory(event.getPersistable())) return;
     elasticSearchIndexer.delete(ATTACHMENT_PUBLISHED_INDEX, event.getPersistable());
   }
@@ -58,7 +58,7 @@ public class FileIndexer {
   @Async
   @Subscribe
   public void onFileDeleted(FileDeletedEvent event) {
-    log.info("File {} was deleted", event.getPersistable());
+    log.debug("File {} was deleted", event.getPersistable());
     if (FileUtils.isDirectory(event.getPersistable())) return;
     elasticSearchIndexer.delete(ATTACHMENT_DRAFT_INDEX, event.getPersistable());
     elasticSearchIndexer.delete(ATTACHMENT_PUBLISHED_INDEX, event.getPersistable());
@@ -67,7 +67,7 @@ public class FileIndexer {
   @Async
   @Subscribe
   public void onFileUpdated(FileUpdatedEvent event) {
-    log.info("File {} was updated", event.getPersistable());
+    log.debug("File {} was updated", event.getPersistable());
     if (FileUtils.isDirectory(event.getPersistable())) return;
     elasticSearchIndexer.index(ATTACHMENT_DRAFT_INDEX, event.getPersistable());
   }
