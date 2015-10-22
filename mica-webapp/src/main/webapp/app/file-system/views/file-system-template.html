@@ -28,10 +28,10 @@
     </ol>
 
     <div class="voffset2">
-      <a ng-if="!data.isFile" href ng-click="newDocument()" class="btn btn-info">
+      <a ng-if="!data.isFile" ng-disabled="data.document.revisionStatus !== 'DRAFT'" ng-click="newDocument()" class="btn btn-info">
         <i class="fa fa-plus"></i> <span translate>new-folder</span>
       </a>
-      <a ng-if="!data.isFile" class="btn btn-info"
+      <a ng-if="!data.isFile" ng-disabled="data.document.revisionStatus !== 'DRAFT'" class="btn btn-info"
          ngf-select ngf-change="onFileSelect($files)">
         <i class="fa fa-upload"></i> {{'upload' | translate}}
       </a>
@@ -43,8 +43,8 @@
       </a>
       <div class="btn-group" role="group">
         <button type="button" class="btn btn-default"><i class="fa fa-files-o"></i></button>
-        <button type="button" class="btn btn-default"><i class="fa fa-scissors"></i></button>
-        <button type="button" class="btn btn-default"><i class="fa fa-clipboard"></i></button>
+        <button ng-disabled="data.document.revisionStatus !== 'DRAFT'" type="button" class="btn btn-default"><i class="fa fa-scissors"></i></button>
+        <button ng-disabled="data.document.revisionStatus !== 'DRAFT'" type="button" class="btn btn-default"><i class="fa fa-clipboard"></i></button>
       </div>
 
       <file-status-buttons class="inline pull-right"
@@ -52,7 +52,7 @@
         on-publish="publish(true)"
         on-un-publish="publish(false)"
         can-publish="hasRole(['mica-administrator','mica-reviewer'])"
-        on-delete="delete()"
+        on-delete="deleteDocument(data.document)"
         can-delete="hasRole(['mica-administrator','mica-reviewer'])"
         can-edit="hasRole(['mica-administrator','mica-reviewer','mica-editor'])"
         to-draft="toStatus('DRAFT')"
