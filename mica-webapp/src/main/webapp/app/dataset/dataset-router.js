@@ -27,17 +27,24 @@ mica.dataset
         .when('/harmonization-dataset/:id/edit', {
           templateUrl: 'app/dataset/views/harmonization-dataset-form.html',
           controller: 'HarmonizationDatasetEditController'
-        })
-        .when('/:type/:id', {
-          templateUrl: 'app/dataset/views/dataset-view.html',
-          controller: 'DatasetViewController'
-        })
-        .when('/:type/:id/revisions', {
-          templateUrl: 'app/dataset/views/dataset-view-revisions.html',
-          controller: 'DatasetViewController'
-        })
-        .when('/:type/:id/files', {
-          templateUrl: 'app/dataset/views/dataset-view-files.html',
-          controller: 'DatasetViewController'
         });
+
+      ['study-dataset', 'harmonization-dataset'].forEach(
+        function (type) {
+          $routeProvider
+            .when('/' + type + '/:id', {
+              templateUrl: 'app/dataset/views/dataset-view.html',
+              controller: 'DatasetViewController'
+            })
+            .when('/' + type + '/:id/revisions', {
+              templateUrl: 'app/dataset/views/dataset-view-revisions.html',
+              controller: 'DatasetViewController'
+            })
+            .when('/' + type + '/:id/files', {
+              templateUrl: 'app/dataset/views/dataset-view-files.html',
+              controller: 'DatasetViewController'
+            });
+        }
+      );
+
     }]);
