@@ -37,6 +37,6 @@ public class PublishedFilesSearchResource extends AbstractFileSearchResource {
     PublishedDocumentService.Documents<AttachmentState> states = esAttachmentService
       .find(from, limit, sort, order, null, queryString);
 
-    return states.getList().stream().map(state -> dtos.asFileDto(state, true)).collect(Collectors.toList());
+    return states.getList().stream().map(state -> dtos.asFileDto(state, true, false)).collect(Collectors.toList());
   }
 }

@@ -38,6 +38,6 @@ public class DraftFilesSearchResource extends AbstractFileSearchResource {
     PublishedDocumentService.Documents<AttachmentState> states = esAttachmentService
       .find(from, limit, sort, order, null, queryString);
 
-    return states.getList().stream().map(state -> dtos.asFileDto(state, false)).collect(Collectors.toList());
+    return states.getList().stream().map(state -> dtos.asFileDto(state, false, false)).collect(Collectors.toList());
   }
 }
