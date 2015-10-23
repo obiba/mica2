@@ -64,13 +64,15 @@
           </td>
           <td>
             <ul class="list-inline">
-              <li>
-                <a ng-href="#/harmonization-dataset/{{dataset.id}}/edit" title="{{'edit' | translate}}"><i
-                  class="fa fa-pencil"></i></a>
+              <li ng-if="dataset['obiba.mica.EntityStateDto.datasetState'].revisionStatus === 'DRAFT'">
+                <a ng-href="#/harmonization-dataset/{{dataset.id}}/edit" title="{{'edit' | translate}}"><i class="fa fa-pencil"></i></a>
               </li>
-              <li>
-                <a href ng-click="deleteHarmonizedDataset(dataset.id)" title="{{'delete' | translate}}"><i
+              <li ng-if="dataset['obiba.mica.EntityStateDto.datasetState'].revisionStatus === 'DELETED'">
+                <a href ng-click="deleteHarmonizationDataset(dataset)" title="{{'delete' | translate}}"><i
                   class="fa fa-trash-o"></i></a>
+              </li>
+              <li ng-if="dataset['obiba.mica.EntityStateDto.datasetState'].revisionStatus === 'UNDER_REVIEW'">
+                <a ng-href="#/harmonization-dataset/{{dataset.id}}" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>
               </li>
             </ul>
           </td>

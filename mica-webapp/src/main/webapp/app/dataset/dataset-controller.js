@@ -3,27 +3,15 @@
 mica.dataset
 
   .controller('StudyDatasetListController', ['$rootScope', '$scope', 'StudyDatasetsResource',
-    'StudyDatasetResource', 'NOTIFICATION_EVENTS',
+    'DatasetService',
 
-    function ($rootScope, $scope, StudyDatasetsResource, StudyDatasetResource, NOTIFICATION_EVENTS) {
-
+    function ($rootScope, $scope, StudyDatasetsResource, DatasetService) {
       $scope.studyDatasets = StudyDatasetsResource.query();
-
-      $scope.deleteStudyDataset = function (id) {
-        $scope.datasetToDelete = id;
-        $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
-          {title: 'Delete dataset', message: 'Are you sure to delete the dataset?'}, id);
+      $scope.deleteStudyDataset = function (dataset) {
+        DatasetService.deleteDataset(dataset, function () {
+          $scope.studyDatasets = StudyDatasetsResource.query();
+        });
       };
-
-      $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, id) {
-        if ($scope.datasetToDelete === id) {
-          StudyDatasetResource.delete({id: id},
-            function () {
-              $scope.studyDatasets = StudyDatasetsResource.query();
-            });
-          delete $scope.datasetToDelete;
-        }
-      });
     }])
 
   .controller('StudyDatasetEditController', ['$rootScope',
@@ -332,6 +320,7 @@ mica.dataset
     'ActiveTabService',
     'NOTIFICATION_EVENTS',
     '$filter',
+    'DatasetService',
 
     function ($rootScope,
               $scope,
@@ -349,7 +338,8 @@ mica.dataset
               MicaConfigResource,
               ActiveTabService,
               NOTIFICATION_EVENTS,
-              $filter) {
+              $filter,
+              DatasetService) {
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
         micaConfig.languages.forEach(function (lang) {
@@ -384,6 +374,13 @@ mica.dataset
       $scope.toStatus = function (value) {
         DraftDatasetStatusResource.toStatus({id: $scope.dataset.id, type:$scope.type, value: value}, function () {
           $scope.dataset = DraftDatasetResource.get({id: $routeParams.id, type: $scope.type});
+        });
+      };
+
+      $scope.delete = function () {
+        $scope.dataset.type = $scope.type;
+        DatasetService.deleteDataset($scope.dataset, function () {
+          $location.path('/' + $scope.type);
         });
       };
 
@@ -462,27 +459,15 @@ mica.dataset
       $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, onRestore);
     }])
 
-  .controller('HarmonizationDatasetListController', ['$rootScope', '$scope', 'HarmonizationDatasetsResource',
-    'HarmonizationDatasetResource', 'NOTIFICATION_EVENTS',
-    function ($rootScope, $scope, HarmonizationDatasetsResource, HarmonizationDatasetResource, NOTIFICATION_EVENTS) {
+  .controller('HarmonizationDatasetListController', ['$rootScope', '$scope', 'HarmonizationDatasetsResource', 'DatasetService',
+    function ($rootScope, $scope, HarmonizationDatasetsResource, DatasetService) {
       $scope.harmonizedDatasets = HarmonizationDatasetsResource.query();
 
-      $scope.deleteHarmonizedDataset = function (id) {
-        $scope.datasetToDelete = id;
-        $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
-          {title: 'Delete dataset', message: 'Are you sure to delete the dataset?'}, id);
+      $scope.deleteHarmonizationDataset = function (dataset) {
+        DatasetService.deleteDataset(dataset, function () {
+          $scope.harmonizedDatasets = HarmonizationDatasetsResource.query();
+        });
       };
-
-      $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, id) {
-        if ($scope.datasetToDelete === id) {
-          HarmonizationDatasetResource.delete({id: id},
-            function () {
-              $scope.harmonizedDatasets = HarmonizationDatasetsResource.query();
-            });
-        }
-
-        delete $scope.datasetToDelete;
-      });
     }])
 
   .controller('HarmonizationDatasetViewController', ['$rootScope',
