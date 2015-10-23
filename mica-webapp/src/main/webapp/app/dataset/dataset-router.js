@@ -35,5 +35,9 @@ mica.dataset
         .when('/:type/:id/revisions', {
           templateUrl: 'app/dataset/views/dataset-view-revisions.html',
           controller: 'DatasetViewController'
+        })
+        .when('/:type/:id/files', {
+          templateUrl: 'app/dataset/views/dataset-view-files.html',
+          controller: 'DatasetViewController'
         });
     }]);
