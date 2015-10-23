@@ -10,21 +10,14 @@
 
 package org.obiba.mica.dataset.event;
 
+import org.obiba.mica.core.event.PersistableUpdatedEvent;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
-import org.obiba.mica.core.event.PersistableUpdatedEvent;
 
-public class DatasetPublishedEvent extends PersistableUpdatedEvent<Dataset> {
+public class DatasetUnpublishedEvent extends PersistableUpdatedEvent<Dataset> {
 
-  private final String publisher;
-
-  public DatasetPublishedEvent(Dataset persistable, String publisher) {
+  public DatasetUnpublishedEvent(Dataset persistable) {
     super(persistable);
-    this.publisher = publisher;
-  }
-
-  public String getPublisher() {
-    return publisher;
   }
 
   public boolean isStudyDataset() {

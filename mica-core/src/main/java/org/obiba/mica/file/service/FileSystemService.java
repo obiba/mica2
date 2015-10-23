@@ -17,7 +17,10 @@ import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.AttachmentStateRepository;
+import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
+import org.obiba.mica.dataset.event.DatasetPublishedEvent;
+import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
@@ -27,6 +30,8 @@ import org.obiba.mica.file.event.FileDeletedEvent;
 import org.obiba.mica.file.event.FilePublishedEvent;
 import org.obiba.mica.file.event.FileUnPublishedEvent;
 import org.obiba.mica.file.event.FileUpdatedEvent;
+import org.obiba.mica.network.event.NetworkPublishedEvent;
+import org.obiba.mica.network.event.NetworkUnpublishedEvent;
 import org.obiba.mica.network.event.NetworkUpdatedEvent;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
@@ -117,7 +122,7 @@ public class FileSystemService {
   }
 
   /**
-   * Make sure the {@link org.obiba.mica.file.AttachmentState} is not published and delete it.
+   * Make sure the {@link AttachmentState} is not published and delete it.
    *
    * @param state
    */
@@ -128,7 +133,7 @@ public class FileSystemService {
   }
 
   /**
-   * Delete all unpublished {@link org.obiba.mica.file.AttachmentState}s corresponding to the given path.
+   * Delete all unpublished {@link AttachmentState}s corresponding to the given path.
    *
    * @param path
    */
@@ -139,7 +144,7 @@ public class FileSystemService {
   }
 
   /**
-   * Delete unpublished and existing {@link org.obiba.mica.file.AttachmentState} corresponding to the given path and name.
+   * Delete unpublished and existing {@link AttachmentState} corresponding to the given path and name.
    *
    * @param path
    * @param name
@@ -181,18 +186,29 @@ public class FileSystemService {
   //
 
   /**
-   * Change the publication status of the {@link org.obiba.mica.file.AttachmentState}.
+   * Change the publication status of the {@link AttachmentState}.
    *
    * @param state
    * @param publish do the publication or the non publication
    */
   public void publish(AttachmentState state, boolean publish) {
+    publish(state, publish, getCurrentUsername());
+  }
+
+  /**
+   * Change the publication status of the {@link AttachmentState}.
+   *
+   * @param state
+   * @param publish
+   * @param publisher
+   */
+  public void publish(AttachmentState state, boolean publish, String publisher) {
     if(publish) {
       // publish the parent directories (if any)
       if(!FileUtils.isRoot(state.getPath())) {
-        publishDirs(getParentPath(state.getPath()));
+        publishDirs(getParentPath(state.getPath()), publisher);
       }
-      state.publish(getCurrentUsername());
+      state.publish(publisher);
       state.setRevisionStatus(RevisionStatus.DRAFT);
     } else state.unPublish();
     state.setLastModifiedDate(DateTime.now());
@@ -208,9 +224,20 @@ public class FileSystemService {
    * @param publish
    */
   public void publish(String path, boolean publish) {
+    publish(path, publish, getCurrentUsername());
+  }
+
+  /**
+   * Change the publication status recursively.
+   *
+   * @param path
+   * @param publish
+   * @param publisher
+   */
+  public void publish(String path, boolean publish, String publisher) {
     List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
     states.addAll(findAttachmentStates(String.format("^%s/", path), false));
-    states.stream().forEach(s -> publish(s, publish));
+    states.stream().forEach(s -> publish(s, publish, publisher));
   }
 
   /**
@@ -238,14 +265,12 @@ public class FileSystemService {
     List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
     states.addAll(findAttachmentStates(String.format("^%s/", path), false));
     // create the directories first (as they could be empty)
-    states.stream().filter(FileUtils::isDirectory)
-      .forEach(s -> mkdirs(s.getPath().replaceFirst(path, newPath)));
+    states.stream().filter(FileUtils::isDirectory).forEach(s -> mkdirs(s.getPath().replaceFirst(path, newPath)));
     // then copy the files
     states.stream().filter(s -> !FileUtils.isDirectory(s))
       .forEach(s -> copy(s, s.getPath().replaceFirst(path, newPath), s.getName(), true));
     // mark source as being deleted
-    states.stream().filter(FileUtils::isDirectory)
-      .forEach(s -> updateStatus(s, RevisionStatus.DELETED));
+    states.stream().filter(FileUtils::isDirectory).forEach(s -> updateStatus(s, RevisionStatus.DELETED));
   }
 
   /**
@@ -463,7 +488,7 @@ public class FileSystemService {
   @Subscribe
   public void studyPublished(StudyPublishedEvent event) {
     log.debug("Study {} was published", event.getPersistable());
-    publish(String.format("/study/%s", event.getPersistable().getId()), true);
+    publish(String.format("/study/%s", event.getPersistable().getId()), true, event.getPublisher());
   }
 
   @Async
@@ -495,13 +520,47 @@ public class FileSystemService {
 
   @Async
   @Subscribe
+  public void networkPublished(NetworkPublishedEvent event) {
+    log.debug("Network {} was published", event.getPersistable());
+    publish(String.format("/network/%s", event.getPersistable().getId()), true, event.getPublisher());
+  }
+
+  @Async
+  @Subscribe
+  public void networkUnpublished(NetworkUnpublishedEvent event) {
+    log.debug("Network {} was unpublished", event.getPersistable());
+    publish(String.format("/network/%s", event.getPersistable().getId()), false);
+  }
+
+  @Async
+  @Subscribe
   public void datasetUpdated(DatasetUpdatedEvent event) {
     log.debug("{} {} was updated", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
+    mkdirs(String.format("/%s/%s", getDatasetTypeFolder(event.getPersistable()), event.getPersistable().getId()));
+  }
+
+  @Async
+  @Subscribe
+  public void datasetPublished(DatasetPublishedEvent event) {
+    log.debug("{} {} was published", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
+    publish(String.format("/%s/%s", getDatasetTypeFolder(event.getPersistable()), event.getPersistable().getId()), true,
+      event.getPublisher());
+  }
+
+  @Async
+  @Subscribe
+  public void datasetUnpublished(DatasetUnpublishedEvent event) {
+    log.debug("{} {} was unpublished", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
+    publish(String.format("/%s/%s", getDatasetTypeFolder(event.getPersistable()), event.getPersistable().getId()),
+      false);
+  }
+
+  private String getDatasetTypeFolder(Dataset dataset) {
     String type = "study-dataset";
-    if (event.getPersistable() instanceof HarmonizationDataset) {
+    if(dataset instanceof HarmonizationDataset) {
       type = "harmonization-dataset";
     }
-    mkdirs(String.format("/%s/%s", type, event.getPersistable().getId()));
+    return type;
   }
 
   //
@@ -514,16 +573,17 @@ public class FileSystemService {
    *
    * @param path
    */
-  private synchronized void publishDirs(String path) {
+  private synchronized void publishDirs(String path, String publisher) {
     if(Strings.isNullOrEmpty(path)) return;
     List<AttachmentState> states = attachmentStateRepository.findByPathAndName(path, DIR_NAME);
     if(states.isEmpty()) return;
 
-    if(path.lastIndexOf('/') > 0) publishDirs(path.substring(0, path.lastIndexOf('/')));
-    else if(path.lastIndexOf('/') == 0 && !"/".equals(path)) publishDirs("/");
+    if(path.lastIndexOf('/') > 0) publishDirs(path.substring(0, path.lastIndexOf('/')), publisher);
+    else if(path.lastIndexOf('/') == 0 && !"/".equals(path)) publishDirs("/", publisher);
 
     AttachmentState state = states.get(0);
-    state.publish(getCurrentUsername());
+    if(state.isPublished()) return;
+    state.publish(publisher);
     state.setLastModifiedDate(DateTime.now());
     attachmentStateRepository.save(state);
     eventBus.post(new FilePublishedEvent(state));

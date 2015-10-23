@@ -30,6 +30,8 @@ import org.obiba.mica.dataset.StudyDatasetStateRepository;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
+import org.obiba.mica.dataset.event.DatasetPublishedEvent;
+import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.event.IndexStudyDatasetsEvent;
 import org.obiba.mica.dataset.service.support.QueryTermsUtil;
@@ -173,6 +175,7 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
     else unPublish(id);
 
     updateIndices(dataset, wrappedGetDatasetVariables(dataset), true);
+    eventBus.post(published ? new DatasetPublishedEvent(dataset, getCurrentUsername()) : new DatasetUnpublishedEvent(dataset));
   }
 
   /**

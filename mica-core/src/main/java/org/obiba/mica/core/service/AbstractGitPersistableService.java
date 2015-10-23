@@ -187,7 +187,7 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
     return entityState;
   }
 
-  private String getCurrentUsername() {
+  protected String getCurrentUsername() {
     Subject subject = SecurityUtils.getSubject();
     return subject == null || subject.getPrincipal() == null
       ? AbstractGitWriteCommand.DEFAULT_AUTHOR_NAME

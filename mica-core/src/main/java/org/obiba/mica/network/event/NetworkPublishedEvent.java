@@ -15,8 +15,14 @@ import org.obiba.mica.network.domain.Network;
 
 public class NetworkPublishedEvent extends PersistableUpdatedEvent<Network> {
 
-  public NetworkPublishedEvent(Network persistable) {
+  private final String publisher;
+
+  public NetworkPublishedEvent(Network persistable, String publisher) {
     super(persistable);
+    this.publisher = publisher;
   }
 
+  public String getPublisher() {
+    return publisher;
+  }
 }
