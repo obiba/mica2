@@ -11,7 +11,7 @@
       </span>
     </div>
     <div ng-class="{'col-xs-6' : canPaginate()}">
-      <dir-pagination-controls class="pull-right"></dir-pagination-controls>
+      <dir-pagination-controls pagination-id="revisions" class="pull-right"></dir-pagination-controls>
     </div>
   </div>
 
@@ -27,7 +27,7 @@
     </thead>
     <tbody>
     <tr ng-class="{'active-row': $index === active.index && active.page === pages.index}"
-      dir-paginate="commitInfo in commitInfos | filter:searchText | itemsPerPage: 5" current-page="pages.index">
+      dir-paginate="commitInfo in commitInfos | filter:searchText | itemsPerPage: 5" current-page="pages.index" pagination-id="revisions">
       <td>
         <span class="ellipsis pull-left" title="{{commitInfo.commitId}}">
           {{commitInfo.commitId}}
