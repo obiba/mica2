@@ -15,7 +15,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.AbstractGitPersistableResource;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.RevisionStatus;
@@ -61,15 +60,16 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
 
   @GET
   @Timed
-  @RequiresPermissions({"/draft:EDIT"})
   public Mica.StudyDto get() {
+    subjectAclService.checkPermission("/draft/study", "VIEW", id);
     return dtos.asDto(studyService.findDraft(id));
   }
 
   @PUT
   @Timed
-  @RequiresPermissions({"/draft:EDIT"})
-  public Response update(@SuppressWarnings("TypeMayBeWeakened") Mica.StudyDto studyDto, @Nullable @QueryParam("comment") String comment) {
+  public Response update(@SuppressWarnings("TypeMayBeWeakened") Mica.StudyDto studyDto,
+    @Nullable @QueryParam("comment") String comment) {
+    subjectAclService.checkPermission("/draft/study", "EDIT", id);
     // ensure study exists
     studyService.findDraft(id);
 
@@ -81,16 +81,16 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
   @PUT
   @Path("/_publish")
   @Timed
-  @RequiresPermissions({"/draft:PUBLISH"})
   public Response publish() {
+    subjectAclService.checkPermission("/draft/study", "PUBLISH", id);
     studyService.publish(id);
     return Response.noContent().build();
   }
 
   @DELETE
   @Path("/_publish")
-  @RequiresPermissions({"/draft:PUBLISH"})
   public Response unPublish() {
+    subjectAclService.checkPermission("/draft/study", "PUBLISH", id);
     studyService.unPublish(id);
     return Response.noContent().build();
   }
@@ -98,8 +98,8 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
   @PUT
   @Path("/_status")
   @Timed
-  @RequiresPermissions({"/draft:EDIT"})
   public Response toUnderReview(@QueryParam("value") String status) {
+    subjectAclService.checkPermission("/draft/study", "EDIT", id);
     studyService.updateStatus(id, RevisionStatus.valueOf(status.toUpperCase()));
     return Response.noContent().build();
   }
@@ -109,23 +109,24 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
    */
   @DELETE
   @Timed
-  @RequiresPermissions({"/draft:EDIT"})
   public Response delete() {
+    subjectAclService.checkPermission("/draft/study", "DELETE", id);
     studyService.delete(id);
     return Response.noContent().build();
   }
 
   @Path("/file/{fileId}")
-  @RequiresPermissions({"/draft:EDIT"})
   public FileResource study(@PathParam("fileId") String fileId) {
+    subjectAclService.checkPermission("/draft/study", "VIEW", id);
     FileResource fileResource = applicationContext.getBean(FileResource.class);
     Study study = studyService.findDraft(id);
 
-    if (study.hasLogo() && study.getLogo().getId().equals(fileId)) {
+    if(study.hasLogo() && study.getLogo().getId().equals(fileId)) {
       fileResource.setAttachment(study.getLogo());
     } else {
-      List<Attachment> attachments = fileSystemService.findAttachments(String.format("^/study/%s", study.getId()), false).stream().filter(
-        a -> a.getId().equals(fileId)).collect(Collectors.toList());
+      List<Attachment> attachments = fileSystemService
+        .findAttachments(String.format("^/study/%s", study.getId()), false).stream()
+        .filter(a -> a.getId().equals(fileId)).collect(Collectors.toList());
       if(attachments.isEmpty()) throw NoSuchEntityException.withId(Attachment.class, fileId);
       fileResource.setAttachment(attachments.get(0));
     }
@@ -134,9 +135,9 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
   }
 
   @GET
-  @RequiresPermissions({"/draft:EDIT"})
   @Path("/commit/{commitId}/view")
   public Mica.StudyDto getStudyFromCommit(@NotNull @PathParam("commitId") String commitId) throws IOException {
+    subjectAclService.checkPermission("/draft/study", "VIEW", id);
     return dtos.asDto(studyService.getFromCommit(studyService.findDraft(id), commitId));
   }
 

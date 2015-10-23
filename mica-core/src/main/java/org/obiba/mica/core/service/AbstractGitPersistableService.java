@@ -47,6 +47,13 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
 
   protected abstract Class<T1> getType();
 
+  /**
+   * Type name for REST resources and permissions.
+   *
+   * @return
+   */
+  public abstract String getTypeName();
+
   @NotNull
   public abstract T1 findDraft(@NotNull String id) throws NoSuchEntityException;
 
@@ -193,4 +200,5 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
       ? AbstractGitWriteCommand.DEFAULT_AUTHOR_NAME
       : subject.getPrincipal().toString();
   }
+
 }

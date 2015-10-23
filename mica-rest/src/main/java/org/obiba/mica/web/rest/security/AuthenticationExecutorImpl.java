@@ -10,15 +10,29 @@
 
 package org.obiba.mica.web.rest.security;
 
+import javax.inject.Inject;
+
 import org.apache.shiro.subject.Subject;
+import org.obiba.mica.file.service.FileSystemService;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.shiro.web.filter.AbstractAuthenticationExecutor;
 import org.springframework.stereotype.Component;
 
 @Component
 public class AuthenticationExecutorImpl extends AbstractAuthenticationExecutor {
 
+  @Inject
+  private FileSystemService fileSystemService;
+
+  @Inject
+  private SubjectAclService subjectAclService;
+
   @Override
   protected void ensureProfile(Subject subject) {
-    // do nothing
+    String name = subject.getPrincipal().toString();
+    fileSystemService.mkdirs("/user/" + name);
+    subjectAclService.addUserPermission(name, "/draft/file/user", "VIEW", "/user");
+    subjectAclService.addUserPermission(name, "/draft/file/user", "VIEW,EDIT", String.format("/user/%s", name));
+    subjectAclService.addUserPermission(name, "/file/user", "VIEW", null);
   }
 }

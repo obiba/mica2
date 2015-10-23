@@ -13,7 +13,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileStoreService;
@@ -24,7 +23,6 @@ import com.google.common.base.Strings;
 
 @Component
 @Path("/draft")
-@RequiresPermissions({ "/draft:EDIT" })
 public class DraftFileSystemResource extends AbstractFileSystemResource {
 
   @Inject

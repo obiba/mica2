@@ -2,7 +2,6 @@ package org.obiba.mica.security.realm;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -25,6 +24,7 @@ import org.obiba.mica.security.service.SubjectAclService;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 
 @Component
@@ -136,13 +136,27 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
     public Collection<Permission> resolvePermissionsInRole(String roleString) {
       List<String> permissions = loadSubjectPermissions(roleString, SubjectAcl.Type.GROUP);
       // built-in permissions
+      Collection<Permission> perms;
       switch(roleString) {
         case Roles.MICA_ADMIN:
           return mergePermissions("*", permissions);
         case Roles.MICA_REVIEWER:
-          return mergePermissions("/draft:EDIT,/draft:PUBLISH,/files:UPLOAD", permissions);
+          perms = mergePermissions("/files:UPLOAD", permissions);
+          for(String e : Lists.newArrayList("study", "network", "study-dataset", "harmonization-dataset")) {
+            perms.addAll(toPermissions(
+              String.format("/draft/%s:VIEW,/draft/%s:EDIT,/draft/%s:DELETE,/draft/%s:PUBLISH", e, e, e, e)));
+            perms.addAll(toPermissions(String
+              .format("/draft/file/%s:VIEW,/draft/file/%s:EDIT,/draft/file/%s:DELETE,/draft/file/%s:PUBLISH", e, e, e,
+                e)));
+          }
+          return perms;
         case Roles.MICA_EDITOR:
-          return mergePermissions("/draft:EDIT,/files:UPLOAD", permissions);
+          perms = mergePermissions("/files:UPLOAD", permissions);
+          for(String e : Lists.newArrayList("study", "network", "study-dataset", "harmonization-dataset")) {
+            perms.addAll(toPermissions(String.format("/draft/%s:VIEW,/draft/%s:EDIT", e, e)));
+            perms.addAll(toPermissions(String.format("/draft/file/%s:VIEW,/draft/file/%s:EDIT", e, e)));
+          }
+          return perms;
         case Roles.MICA_DAO:
           return mergePermissions(
             "/data-access-requests,/data-access-request:VIEW,/data-access-request:DELETE,/files:UPLOAD", permissions);
@@ -154,10 +168,13 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
     }
 
     private Collection<Permission> mergePermissions(String delimitedPermissions, Collection<String> permissions) {
-      Set<Permission> perms = PermissionUtils
-        .resolveDelimitedPermissions(delimitedPermissions, getPermissionResolver());
+      Collection<Permission> perms = toPermissions(delimitedPermissions);
       perms.addAll(PermissionUtils.resolvePermissions(permissions, getPermissionResolver()));
       return perms;
+    }
+
+    private Collection<Permission> toPermissions(String delimitedPermissions) {
+      return PermissionUtils.resolveDelimitedPermissions(delimitedPermissions, getPermissionResolver());
     }
   }
 

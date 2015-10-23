@@ -12,6 +12,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.micaConfig.service.OpalService;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
@@ -33,6 +34,9 @@ public class StudyStateResource {
   private StudyService studyService;
 
   @Inject
+  private SubjectAclService subjectAclService;
+
+  @Inject
   private Dtos dtos;
 
   @Inject
@@ -46,8 +50,8 @@ public class StudyStateResource {
 
   @GET
   @Timed
-  @RequiresPermissions({"/draft:EDIT"})
   public Mica.StudySummaryDto get() {
+    subjectAclService.checkPermission("/draft/study", "VIEW", id);
     return dtos.asDto(studyService.findStateById(id));
   }
 
@@ -55,6 +59,7 @@ public class StudyStateResource {
   @Path("/_publish")
   @RequiresPermissions({"/draft:PUBLISH"})
   public Response publish() {
+    subjectAclService.checkPermission("/draft/study", "PUBLISH", id);
     studyService.publish(id);
     return Response.noContent().build();
   }
@@ -62,6 +67,7 @@ public class StudyStateResource {
   @GET
   @Path("/projects")
   public List<Projects.ProjectDto> projects() throws URISyntaxException {
+    subjectAclService.checkPermission("/draft/study", "VIEW", id);
     String opalUrl = Optional.ofNullable(studyService.findStudy(id)).map(Study::getOpal).orElse(null);
 
     return opalService.getProjectDtos(opalUrl);
