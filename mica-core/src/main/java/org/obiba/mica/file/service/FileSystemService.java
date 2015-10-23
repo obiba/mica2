@@ -1,6 +1,8 @@
 package org.obiba.mica.file.service;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -26,6 +28,7 @@ import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.FileUtils;
+import org.obiba.mica.file.InvalidFileNameException;
 import org.obiba.mica.file.event.FileDeletedEvent;
 import org.obiba.mica.file.event.FilePublishedEvent;
 import org.obiba.mica.file.event.FileUnPublishedEvent;
@@ -72,6 +75,7 @@ public class FileSystemService {
 
   public void save(Attachment attachment) {
     Attachment saved = attachment;
+    validateFileName(attachment.getName());
     List<AttachmentState> states = attachmentStateRepository.findByPathAndName(saved.getPath(), saved.getName());
     AttachmentState state = states.isEmpty() ? new AttachmentState() : states.get(0);
 
@@ -281,6 +285,7 @@ public class FileSystemService {
    * @param newName
    */
   public void rename(String path, String name, String newName) {
+    validateFileName(newName);
     AttachmentState state = getAttachmentState(path, name, false);
     move(state, state.getPath(), newName);
   }
@@ -653,5 +658,13 @@ public class FileSystemService {
   private String getParentPath(String path) {
     int idx = path.lastIndexOf('/');
     return idx == 0 ? "/" : path.substring(0, idx);
+  }
+
+  private void validateFileName(String name) {
+    Pattern pattern = Pattern.compile("[\\$%/#]");
+    Matcher matcher = pattern.matcher(name);
+    if (matcher.find()) {
+      throw new InvalidFileNameException(name);
+    }
   }
 }
