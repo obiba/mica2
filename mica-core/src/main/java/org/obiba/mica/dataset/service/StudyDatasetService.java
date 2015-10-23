@@ -30,6 +30,7 @@ import org.obiba.mica.dataset.StudyDatasetStateRepository;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
+import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.event.IndexStudyDatasetsEvent;
 import org.obiba.mica.dataset.service.support.QueryTermsUtil;
 import org.obiba.mica.micaConfig.service.OpalService;
@@ -345,6 +346,7 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
     tryUpdateIndices(saved, variables, updatePublishIndices);
 
     gitService.save(saved, comment);
+    eventBus.post(new DatasetUpdatedEvent(saved));
   }
 
   private void updateIndices(StudyDataset dataset, Iterable<DatasetVariable> variables, boolean updatePublishIndices) {

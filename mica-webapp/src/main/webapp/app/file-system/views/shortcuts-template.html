@@ -2,48 +2,73 @@
   <div class="panel-body">
     <ul class="nav nav-list">
       <li class="nav-header">
+        <span translate>search</span>
+      </li>
+      <li>
+        <a href ng-click="navigateToPath('/')">
+          <span><i class="fa fa-eye"></i> {{'publish.status.UNDER_REVIEW' | translate}}</span>
+        </a>
+      </li>
+      <li>
+        <a href ng-click="navigateToPath('/')">
+          <span><i class="fa fa-trash"></i> {{'publish.status.DELETED' | translate}}</span>
+        </a>
+      </li>
+      <li class="nav-header">
         <span translate>homes</span>
       </li>
       <li>
         <a href ng-click="navigateToPath('/user/' + subject.login)">
-          <span class="ng-binding"><i class="fa fa-user"></i> {{'user' | translate}} ({{subject.login}})</span>
+          <span><i class="fa fa-user"></i> {{subject.login}}</span>
         </a>
       </li>
       <li ng-if="docPath === '/network'">
         <a href ng-click="navigateToPath(docPath + '/' + docId)">
-          <span class="ng-binding"><i class="i-obiba-network"></i> {{'network.label' | translate}} ({{docId}})</span>
+          <span><i class="i-obiba-network"></i> {{docId}}</span>
         </a>
       </li>
       <li ng-if="docPath === '/study'">
         <a href ng-click="navigateToPath(docPath + '/' + docId)">
-          <span class="ng-binding"><i class="i-obiba-study"></i> {{'study.label' | translate}} ({{docId}})</span>
+          <span><i class="i-obiba-study"></i> {{docId}}</span>
+        </a>
+      </li>
+      <li ng-if="docPath === '/study-dataset'">
+        <a href ng-click="navigateToPath(docPath + '/' + docId)">
+          <span><i class="i-obiba-dataset"></i> {{docId}}</span>
+        </a>
+      </li>
+      <li ng-if="docPath === '/harmonization-dataset'">
+        <a href ng-click="navigateToPath(docPath + '/' + docId)">
+          <span><i class="i-obiba-harmo-dataset"></i> {{docId}}</span>
         </a>
       </li>
       <li class="nav-header">
         <span translate>places</span>
       </li>
       <li>
-        <a href ng-click="navigateToPath('/')">
-          <span class="ng-binding"><i class="fa fa-hdd-o"></i> {{'file-system' | translate}}</span>
-        </a>
-      </li>
-      <li>
         <a href ng-click="navigateToPath('/network')">
-          <span class="ng-binding"><i class="i-obiba-network"></i> {{'networks' | translate}}</span>
+          <span><i class="i-obiba-network"></i> {{'networks' | translate}}</span>
         </a>
       </li>
       <li>
         <a href ng-click="navigateToPath('/study')">
-          <span cla ss="ng-binding"><i class="i-obiba-study"></i> {{'studies' | translate}}</span>
+          <span><i class="i-obiba-study"></i> {{'studies' | translate}}</span>
+        </a>
+      </li>
+      <li>
+        <a href ng-click="navigateToPath('/study-dataset')">
+          <span><i class="i-obiba-dataset"></i> {{'study-datasets' | translate}}</span>
+        </a>
+      </li>
+      <li>
+        <a href ng-click="navigateToPath('/harmonization-dataset')">
+          <span><i class="i-obiba-harmo-dataset"></i> {{'harmonization-datasets' | translate}}</span>
         </a>
       </li>
       <li>
         <a href ng-click="navigateToPath('/user')">
-          <span class="ng-binding"><i class="fa fa-group"></i> {{'users' | translate}}</span>
+          <span><i class="fa fa-group"></i> {{'users' | translate}}</span>
         </a>
-      </li>
-      <li class="nav-header">
-        <span translate>search</span>
       </li>
     </ul>
   </div>

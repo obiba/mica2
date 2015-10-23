@@ -17,6 +17,8 @@ import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.AttachmentStateRepository;
+import org.obiba.mica.dataset.domain.HarmonizationDataset;
+import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.FileStoreService;
@@ -460,21 +462,21 @@ public class FileSystemService {
   @Async
   @Subscribe
   public void studyPublished(StudyPublishedEvent event) {
-    log.info("Study {} was published", event.getPersistable());
+    log.debug("Study {} was published", event.getPersistable());
     publish(String.format("/study/%s", event.getPersistable().getId()), true);
   }
 
   @Async
   @Subscribe
   public void studyUnpublished(StudyUnpublishedEvent event) {
-    log.info("Study {} was unpublished", event.getPersistable());
+    log.debug("Study {} was unpublished", event.getPersistable());
     publish(String.format("/study/%s", event.getPersistable().getId()), false);
   }
 
   @Async
   @Subscribe
   public void studyUpdated(DraftStudyUpdatedEvent event) {
-    log.info("Study {} was updated", event.getPersistable());
+    log.debug("Study {} was updated", event.getPersistable());
     if(event.getPersistable().hasPopulations()) {
       event.getPersistable().getPopulations().stream().filter(Population::hasDataCollectionEvents).forEach(p -> {
         p.getDataCollectionEvents().forEach(dce -> mkdirs(String
@@ -487,8 +489,19 @@ public class FileSystemService {
   @Async
   @Subscribe
   public void networkUpdated(NetworkUpdatedEvent event) {
-    log.info("Network {} was updated", event.getPersistable());
+    log.debug("Network {} was updated", event.getPersistable());
     mkdirs(String.format("/network/%s", event.getPersistable().getId()));
+  }
+
+  @Async
+  @Subscribe
+  public void datasetUpdated(DatasetUpdatedEvent event) {
+    log.debug("{} {} was updated", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
+    String type = "study-dataset";
+    if (event.getPersistable() instanceof HarmonizationDataset) {
+      type = "harmonization-dataset";
+    }
+    mkdirs(String.format("/%s/%s", type, event.getPersistable().getId()));
   }
 
   //

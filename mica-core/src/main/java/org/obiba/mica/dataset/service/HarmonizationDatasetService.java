@@ -36,6 +36,7 @@ import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
+import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.event.IndexHarmonizationDatasetsEvent;
 import org.obiba.mica.dataset.service.support.QueryTermsUtil;
 import org.obiba.mica.micaConfig.service.OpalService;
@@ -369,6 +370,7 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
     tryUpdateIndices(saved, variables, harmonizationVariables, updatePublishIndices);
 
     gitService.save(saved, comment);
+    eventBus.post(new DatasetUpdatedEvent(saved));
   }
 
   private void updateIndices(HarmonizationDataset dataset, Iterable<DatasetVariable> variables,
