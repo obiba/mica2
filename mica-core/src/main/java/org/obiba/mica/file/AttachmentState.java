@@ -48,6 +48,7 @@ public class AttachmentState extends AbstractAuditableDocument implements Timest
     return path;
   }
 
+  @JsonIgnore
   public String getFullPath() {
     return String.format("%s/%s", path, name);
   }

@@ -408,6 +408,7 @@ public class FileSystemService {
   public void updateStatus(AttachmentState state, RevisionStatus status) {
     state.setRevisionStatus(status);
     attachmentStateRepository.save(state);
+    eventBus.post(new FileUpdatedEvent(state));
   }
 
   //
