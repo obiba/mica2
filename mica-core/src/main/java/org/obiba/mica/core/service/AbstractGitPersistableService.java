@@ -41,8 +41,7 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
   @Inject
   protected GitService gitService;
 
-  @Inject
-  protected EntityStateRepository<T> entityStateRepository;
+  protected abstract EntityStateRepository<T> getEntityStateRepository();
 
   protected abstract GitPersistable unpublish(T gitPersistable);
 
@@ -74,7 +73,7 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
   }
 
   protected T getEntityState(String id) {
-    T entityState = entityStateRepository.findOne(id);
+    T entityState = getEntityStateRepository().findOne(id);
 
     if(entityState == null) throw NoSuchEntityException.withId(getType(), id);
 
@@ -88,18 +87,18 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
     if(gitPersistable.isNew()) {
       defaultState = stateSupplier.get();
       defaultState.setId(generateId(gitPersistable));
-      entityStateRepository.save(defaultState);
+      getEntityStateRepository().save(defaultState);
       gitPersistable.setId(defaultState.getId());
 
       return defaultState;
     }
 
-    T existingState = entityStateRepository.findOne(gitPersistable.getId());
+    T existingState = getEntityStateRepository().findOne(gitPersistable.getId());
 
     if(existingState == null) {
       defaultState = stateSupplier.get();
       defaultState.setId(gitPersistable.getId());
-      entityStateRepository.save(defaultState);
+      getEntityStateRepository().save(defaultState);
 
       return defaultState;
     }
@@ -140,11 +139,11 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
   }
 
   public List<T> findPublishedStates() {
-    return entityStateRepository.findByPublishedTagNotNull();
+    return getEntityStateRepository().findByPublishedTagNotNull();
   }
 
   public List<T> findAllStates() {
-    return entityStateRepository.findAll();
+    return getEntityStateRepository().findAll();
   }
 
   public T publishState(@NotNull String id) throws NoSuchEntityException {
@@ -157,7 +156,7 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
     entityState.setPublishedBy(getCurrentUsername());
     entityState.resetRevisionsAhead();
     entityState.setPublicationDate(DateTime.now());
-    entityStateRepository.save(entityState);
+    getEntityStateRepository().save(entityState);
 
     return entityState;
   }
@@ -170,12 +169,12 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
 
     if(entityState.getRevisionStatus() != DELETED) entityState.setRevisionStatus(DRAFT);
 
-    entityStateRepository.save(entityState);
+    getEntityStateRepository().save(entityState);
   }
 
   @Nullable
   public GitPersistable unPublish(String id) {
-    T entityState = entityStateRepository.findOne(id);
+    T entityState = getEntityStateRepository().findOne(id);
 
     return entityState == null ? null : unpublish(entityState);
   }
@@ -183,7 +182,7 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
   public T updateStatus(String id, RevisionStatus status) {
     T entityState = findStateById(id);
     entityState.setRevisionStatus(status);
-    entityStateRepository.save(entityState);
+    getEntityStateRepository().save(entityState);
 
     return entityState;
   }

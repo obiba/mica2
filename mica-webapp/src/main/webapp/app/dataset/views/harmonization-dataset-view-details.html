@@ -8,41 +8,10 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<div>
-
-  <h2>
-    <ol class="mica-breadcrumb">
-      <li><a href="/#/harmonization-dataset" translate>harmonization-datasets</a></li>
-      <li class="active">{{dataset.id}}</li>
-    </ol>
-  </h2>
-
-  <div class="clearfix">
-    <div class="pull-left">
-      <small class="help-block inline">{{'global.lastUpdate' | translate}}: {{dataset.timestamps.lastUpdate ===
-        undefined ? dataset.timestamps.created : dataset.timestamps.lastUpdate |
-        amDateFormat : 'lll'}}
-      </small>
-      <i class="fa fa-star-o" ng-show="!dataset.published"
-        title="{{'publish.not-published' | translate}}"></i>
-      <i class="fa fa-star" ng-show="dataset.published"
-        title="{{'publish.published' | translate}}"></i>
-    </div>
-    <div class="btn-group pull-right">
-      <a ng-href="#/harmonization-dataset/{{dataset.id}}/edit" class="btn btn-primary"
-        ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
-        <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
-      </a>
-      <publish-switch status="isPublished()" publish="publish()"
-        ng-if="hasRole(['mica-administrator','mica-reviewer'])"></publish-switch>
-    </div>
-  </div>
-
-
+<div class="voffset4">
   <tabset>
     <tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active"
       disabled="tab.disabled">
-
       <div class="row">
         <div class="col-md-6">
           <h3 translate>dataset.general-info</h3>
@@ -95,7 +64,6 @@
           </table>
         </div>
       </div>
-
       <h3 translate ng-show="dataset['obiba.mica.HarmonizationDatasetDto.type']">dataset.study-tables.title</h3>
       <table class="table table-bordered table-striped" ng-show="dataset['obiba.mica.HarmonizationDatasetDto.type']">
         <thead>
@@ -137,9 +105,6 @@
         </tr>
         </tbody>
       </table>
-
     </tab>
   </tabset>
-
-
 </div>

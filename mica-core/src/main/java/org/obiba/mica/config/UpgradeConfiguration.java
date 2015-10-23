@@ -10,6 +10,7 @@ import org.obiba.mica.core.upgrade.AttachmentsMigration;
 import org.obiba.mica.core.upgrade.AttachmentsPathUpgrade;
 import org.obiba.mica.core.upgrade.AttachmentsRefactorUpgrade;
 import org.obiba.mica.core.upgrade.ContactsRefactorUpgrade;
+import org.obiba.mica.core.upgrade.DatasetStateUpgrade;
 import org.obiba.mica.core.upgrade.NetworkLogoMigration;
 import org.obiba.mica.core.upgrade.NetworkStateUpgrade;
 import org.obiba.mica.core.upgrade.RuntimeVersionProvider;
@@ -18,12 +19,9 @@ import org.obiba.runtime.upgrade.UpgradeManager;
 import org.obiba.runtime.upgrade.UpgradeStep;
 import org.obiba.runtime.upgrade.support.DefaultUpgradeManager;
 import org.obiba.runtime.upgrade.support.NullVersionNewInstallationDetectionStrategy;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 
 import com.google.common.collect.Lists;
 
@@ -58,6 +56,7 @@ public class UpgradeConfiguration {
       applicationContext.getBean(AttachmentsPathUpgrade.class), //
       applicationContext.getBean(AttachmentsCleanupUpgrade.class), //
       applicationContext.getBean(ContactsRefactorUpgrade.class), //
-      applicationContext.getBean(NetworkStateUpgrade.class));
+      applicationContext.getBean(NetworkStateUpgrade.class), //
+      applicationContext.getBean(DatasetStateUpgrade.class));
   }
 }

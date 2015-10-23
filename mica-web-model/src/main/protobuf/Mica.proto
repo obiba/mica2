@@ -52,6 +52,10 @@ message EntityStateDto {
   extend NetworkDto {
     optional EntityStateDto state = 1000;
   }
+
+  extend DatasetDto {
+    optional EntityStateDto datasetState = 1002;
+  }
 }
 
 message StudyStateDto {
@@ -421,6 +425,7 @@ message DatasetDto {
 
 message StudyDatasetDto {
   required DatasetDto.StudyTableDto studyTable = 1;
+  extensions 1000 to max;
 
   extend DatasetDto {
     optional StudyDatasetDto type = 1000;
@@ -431,6 +436,7 @@ message HarmonizationDatasetDto {
   required string project = 1;
   required string table = 2;
   repeated DatasetDto.StudyTableDto studyTables = 3;
+  extensions 1000 to max;
 
   extend DatasetDto {
     optional HarmonizationDatasetDto type = 1001;

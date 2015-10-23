@@ -13,15 +13,21 @@ import org.obiba.magma.MagmaRuntimeException;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.StudyTable;
+import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.dataset.StudyDatasetRepository;
+import org.obiba.mica.dataset.StudyDatasetStateRepository;
 import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.StudyService;
 
 import com.google.common.eventbus.EventBus;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.obiba.opal.rest.client.magma.RestDatasource;
@@ -45,17 +51,34 @@ public class StudyDatasetServiceTest {
   private StudyDatasetRepository studyDatasetRepository;
 
   @Mock
+  private DatasetIndexer datasetIndexer;
+
+  @Mock
+  private VariableIndexer variableIndexer;
+
+  @Mock
   private EventBus eventBus;
+
+  @Mock
+  private GitService gitService;
+
+  @Mock
+  private StudyDatasetStateRepository studyDatasetStateRepository;
 
   private Study study;
 
   private StudyDataset dataset;
+
+  private StudyDatasetState state;
 
   @Before
   public void init() {
     MockitoAnnotations.initMocks(this);
     study = buildStudy();
     dataset = buildStudyDataset();
+    state = buildStudyDatasetState(dataset);
+    doNothing().when(gitService).save(any(StudyDataset.class), anyString());
+    when(gitService.hasGitRepository(any(StudyDataset.class))).thenReturn(true);
   }
 
   @Test
@@ -64,6 +87,7 @@ public class StudyDatasetServiceTest {
     when(r.getValueTable(anyString())).thenThrow(new MagmaRuntimeException());
     when(opalService.getDatasource(anyString(), anyString())).thenReturn(r);
     when(studyService.findDraft(anyString())).thenReturn(study);
+    when(studyDatasetStateRepository.findOne(anyString())).thenReturn(state);
 
     studyDatasetService.save(dataset);
   }
@@ -74,6 +98,7 @@ public class StudyDatasetServiceTest {
     when(r.getValueTable(anyString())).thenThrow(NoSuchValueTableException.class);
     when(opalService.getDatasource(anyString(), anyString())).thenReturn(r);
     when(studyService.findDraft(anyString())).thenReturn(study);
+    when(studyDatasetStateRepository.findOne(anyString())).thenReturn(state);
     dataset.setPublished(true);
 
     exception.expect(InvalidDatasetException.class);
@@ -90,6 +115,13 @@ public class StudyDatasetServiceTest {
     ds.setName(new LocalizedString(Locale.CANADA, "test"));
 
     return ds;
+  }
+
+  private StudyDatasetState buildStudyDatasetState(StudyDataset dataset) {
+    StudyDatasetState state = new StudyDatasetState();
+    state.setId(dataset.getId());
+
+    return state;
   }
 
   private Study buildStudy() {

@@ -20,6 +20,7 @@ import org.obiba.mica.contact.event.PersonUpdatedEvent;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.repository.AttachmentRepository;
+import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.core.repository.PersonRepository;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
@@ -279,6 +280,11 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
     } catch(NoSuchEntityException e) {
       return next;
     }
+  }
+
+  @Override
+  protected EntityStateRepository<StudyState> getEntityStateRepository() {
+    return studyStateRepository;
   }
 
   @Caching(evict = { @CacheEvict(value = "aggregations-metadata", allEntries = true),
