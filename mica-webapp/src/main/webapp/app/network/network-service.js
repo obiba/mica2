@@ -66,4 +66,33 @@ mica.network
       return $resource('ws/draft/network/:id/commit/:commitId/view', {}, {
         'view': {method: 'GET', params: {id: '@id', commitId: '@commitId'}}
       });
+    }])
+
+  .factory('NetworkService', ['$rootScope', '$translate', 'DraftNetworkResource',
+    'NOTIFICATION_EVENTS', 'LocalizedValues', function ($rootScope, $translate, DraftNetworkResource,
+                                                        NOTIFICATION_EVENTS,
+                                                        LocalizedValues) {
+      return {
+        deleteNetwork: function (network, onSuccess) {
+          var networkToDelete;
+
+          var removeSubscriber = $rootScope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, id) {
+            if (networkToDelete === id) {
+              DraftNetworkResource.delete({id: id}, onSuccess);
+              removeSubscriber();
+            }
+          });
+
+          if (network) {
+            networkToDelete = network.id;
+            $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
+              {
+                titleKey: 'network.delete-dialog.title',
+                messageKey: 'network.delete-dialog.message',
+                messageArgs: [LocalizedValues.forLang(network.name, $translate.use())]
+              }, network.id
+            );
+          }
+        }
+      };
     }]);
