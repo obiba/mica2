@@ -90,13 +90,17 @@ mica.fileSystem
         navigateToPath(path);
       };
 
-      var renameDocument = function(document, newName) {
+      var renameDocument = function(form, document, newName) {
+        var oldName = document.name;
         var newPath = document.path.replace(document.name, newName);
         DraftFileSystemFileResource.rename({path: document.path, name: newName},
           function onSuccess(){
             navigateToPath(newPath);
           },
-          onError
+          function (response) {
+            document.name = oldName;
+            onError(response);
+          }
         );
       };
 
@@ -164,11 +168,13 @@ mica.fileSystem
         }
         var attachment = { id: '', path: $scope.data.document.path + '/' + nameOrPath, fileName: '.' };
         DraftFileSystemFilesResource.update(attachment,
-          function onSuccess() {
-            navigateTo($scope.data.document);
+          function onSuccess(response) {
+            navigateTo(response);
           },
           onError
         );
+
+        delete $scope.data.new.folder;
       };
 
       var searchDocuments = function() {
