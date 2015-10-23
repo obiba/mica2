@@ -49,7 +49,7 @@ class AttachmentDtos {
   }
 
   @NotNull
-  Mica.FileDto asFileDto(AttachmentState state, boolean publishedFileSystem) {
+  Mica.FileDto asFileDto(AttachmentState state, boolean publishedFileSystem, boolean detailed) {
     Mica.FileDto.Builder builder = asFileDto(state).toBuilder();
 
     if(publishedFileSystem) {
@@ -57,7 +57,7 @@ class AttachmentDtos {
       if(state.isPublished()) {
         builder.setAttachment(asDto(state.getPublishedAttachment()));
       }
-    } else builder.setState(asDto(state));
+    } else builder.setState(asDto(state, detailed));
 
     if(builder.getType() == Mica.FileType.FOLDER) {
       // get the number of files in the folder
@@ -67,7 +67,7 @@ class AttachmentDtos {
     return builder.build();
   }
 
-  Mica.AttachmentStateDto asDto(AttachmentState state) {
+  Mica.AttachmentStateDto asDto(AttachmentState state, boolean detailed) {
     Mica.AttachmentStateDto.Builder builder = Mica.AttachmentStateDto.newBuilder();
     builder.setId(state.getId()) //
       .setName(state.getName()) //
@@ -75,10 +75,10 @@ class AttachmentDtos {
       .setTimestamps(TimestampsDtos.asDto(state)) //
       .setAttachment(asDto(state.getAttachment()));
     if(state.isPublished()) {
-      builder.setPublishedAttachment(asDto(state.getPublishedAttachment())) //
+      builder.setPublishedId(state.getPublishedAttachment().getId()) //
         .setPublicationDate(state.getPublicationDate().toString()).setPublishedBy(state.getPublishedBy());
     }
-    builder.addAllRevisions(
+    if(detailed && !FileUtils.isDirectory(state)) builder.addAllRevisions(
       fileSystemService.getAttachmentRevisions(state).stream().map(this::asDto).collect(Collectors.toList()));
     return builder.build();
   }

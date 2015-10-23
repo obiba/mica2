@@ -235,7 +235,7 @@ public abstract class AbstractFileSystemResource {
     fileSystemService.findAttachmentStates(pathRegEx, isPublishedFileSystem()).stream() //
       .filter(FileUtils::isDirectory) //
       .sorted((o1, o2) -> o1.getPath().compareTo(o2.getPath())) //
-      .forEach(s -> folders.add(dtos.asFileDto(s, isPublishedFileSystem())));
+      .forEach(s -> folders.add(dtos.asFileDto(s, isPublishedFileSystem(), false)));
     return folders;
   }
 
@@ -253,7 +253,7 @@ public abstract class AbstractFileSystemResource {
     return states.stream() //
       .sorted((o1, o2) -> o1.getFullPath().compareTo(o2.getFullPath())) //
       .map(s -> {
-        Mica.FileDto f = dtos.asFileDto(s, isPublishedFileSystem());
+        Mica.FileDto f = dtos.asFileDto(s, isPublishedFileSystem(), false);
         if(isPublishedFileSystem()) f = f.toBuilder().clearRevisionStatus().build();
         return f;
       }).collect(Collectors.toList());

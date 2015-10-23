@@ -674,7 +674,7 @@ message AttachmentStateDto {
   required string path = 3;
   optional TimestampsDto timestamps = 4;
   optional AttachmentDto attachment = 5;
-  optional AttachmentDto publishedAttachment = 6;
+  optional string publishedId = 6;
   optional string publicationDate = 7;
   optional string publishedBy = 8;
   repeated AttachmentDto revisions = 9;
