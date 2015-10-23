@@ -82,10 +82,10 @@ mica.fileSystem
 
       var navigateToParent = function(document) {
         var path = document.path;
-        if (path.lastIndexOf("/") === 0) {
-          path = "/";
+        if (path.lastIndexOf('/') === 0) {
+          path = '/';
         } else {
-          path = path.substring(0, path.lastIndexOf("/"));
+          path = path.substring(0, path.lastIndexOf('/'));
         }
         navigateToPath(path);
       };
@@ -162,10 +162,7 @@ mica.fileSystem
         if (!nameOrPath) {
           return;
         }
-        var attachment = {};
-        attachment.path = $scope.data.document.path + "/" + nameOrPath;
-        attachment.fileName = ".";
-        attachment.id = "";
+        var attachment = { id: '', path: $scope.data.document.path + '/' + nameOrPath, fileName: '.' };
         DraftFileSystemFilesResource.update(attachment,
           function onSuccess() {
             navigateTo($scope.data.document);
