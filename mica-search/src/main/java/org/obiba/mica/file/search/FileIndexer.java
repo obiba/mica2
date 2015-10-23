@@ -44,6 +44,7 @@ public class FileIndexer {
   public void onFilePublished(FilePublishedEvent event) {
     log.debug("File {} was published", event.getPersistable());
     if (FileUtils.isDirectory(event.getPersistable())) return;
+    elasticSearchIndexer.index(ATTACHMENT_DRAFT_INDEX, event.getPersistable());
     elasticSearchIndexer.index(ATTACHMENT_PUBLISHED_INDEX, event.getPersistable());
   }
 
@@ -52,6 +53,7 @@ public class FileIndexer {
   public void onFileUnPublished(FileUnPublishedEvent event) {
     log.debug("File {} was unpublished", event.getPersistable());
     if (FileUtils.isDirectory(event.getPersistable())) return;
+    elasticSearchIndexer.index(ATTACHMENT_DRAFT_INDEX, event.getPersistable());
     elasticSearchIndexer.delete(ATTACHMENT_PUBLISHED_INDEX, event.getPersistable());
   }
 
