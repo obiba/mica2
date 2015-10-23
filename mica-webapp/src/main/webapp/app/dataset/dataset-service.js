@@ -3,7 +3,9 @@
 mica.dataset
   .factory('StudyDatasetsResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/study-datasets');
+      return $resource('ws/draft/study-datasets', {}, {
+        'delete': {method: 'DELETE', url: 'ws/draft/study-dataset/:id', params: {id: '@id'}, errorHandler: true}
+      });
     }])
 
   .factory('DraftStudyDatasetsResource', ['$resource',
@@ -38,7 +40,9 @@ mica.dataset
 
   .factory('HarmonizationDatasetsResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/harmonization-datasets');
+      return $resource('ws/draft/harmonization-datasets', {}, {
+        'delete': {method: 'DELETE', url: 'ws/draft/harmonization-dataset/:id', params: {id: '@id'}, errorHandler: true}
+      });
     }])
 
   .factory('DraftHarmonizationDatasetsResource', ['$resource',
@@ -68,6 +72,7 @@ mica.dataset
     function ($resource) {
       return $resource('ws/draft/:type/:id', {}, {
         'save': {method: 'PUT', params: {id: '@id', type: '@type'}, errorHandler: true},
+        'delete': {method: 'DELETE', params: {id: '@id', type: '@type'}, errorHandler: true},
         'get': {method: 'GET', params: {id: '@id', type: '@type'}}
       });
     }])
@@ -115,4 +120,23 @@ mica.dataset
       return $resource('ws/draft/:type/:id/commit/:commitId/view', {}, {
         'view': {method: 'GET'}
       });
+    }])
+
+  .factory('DatasetService', ['$rootScope', 'HarmonizationDatasetResource', 'NOTIFICATION_EVENTS',
+    function ($rootScope, HarmonizationDatasetResource, NOTIFICATION_EVENTS) {
+      return {
+        deleteDataset: function (dataset, onSuccess) {
+          var datasetToDelete = dataset;
+
+          var removeSubscriber = $rootScope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, id) {
+            if (datasetToDelete.id === id) {
+              dataset.$delete(onSuccess);
+            }
+            removeSubscriber();
+          });
+
+          $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
+            {title: 'Delete dataset', message: 'Are you sure to delete the dataset?'}, dataset.id);
+        }
+      };
     }]);
