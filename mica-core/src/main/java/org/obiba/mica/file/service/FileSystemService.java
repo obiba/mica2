@@ -97,6 +97,7 @@ public class FileSystemService {
       }
 
       saved.setLastModifiedDate(DateTime.now());
+      saved.setLastModifiedBy(getCurrentUsername());
     }
 
     if(saved.isJustUploaded()) {
@@ -113,6 +114,7 @@ public class FileSystemService {
 
     state.setAttachment(saved);
     state.setLastModifiedDate(DateTime.now());
+    state.setLastModifiedBy(getCurrentUsername());
     if(state.isNew()) {
       if(FileUtils.isDirectory(state)) {
         mkdirs(getParentPath(saved.getPath()));
@@ -174,12 +176,14 @@ public class FileSystemService {
       attachment.setName(DIR_NAME);
       attachment.setPath(path);
       attachment.setLastModifiedDate(DateTime.now());
+      attachment.setLastModifiedBy(getCurrentUsername());
       attachmentRepository.save(attachment);
       AttachmentState state = new AttachmentState();
       state.setName(DIR_NAME);
       state.setPath(path);
       state.setAttachment(attachment);
       state.setLastModifiedDate(DateTime.now());
+      state.setLastModifiedBy(getCurrentUsername());
       attachmentStateRepository.save(state);
       eventBus.post(new FileUpdatedEvent(state));
     }
@@ -216,6 +220,7 @@ public class FileSystemService {
       state.setRevisionStatus(RevisionStatus.DRAFT);
     } else state.unPublish();
     state.setLastModifiedDate(DateTime.now());
+    state.setLastModifiedBy(publisher);
     attachmentStateRepository.save(state);
     if(publish) eventBus.post(new FilePublishedEvent(state));
     else eventBus.post(new FileUnPublishedEvent(state));
@@ -372,6 +377,7 @@ public class FileSystemService {
     BeanUtils.copyProperties(attachment, newAttachment, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
       "lastModifiedDate");
     newAttachment.setLastModifiedDate(DateTime.now());
+    newAttachment.setLastModifiedBy(getCurrentUsername());
     save(newAttachment);
   }
 
@@ -591,6 +597,7 @@ public class FileSystemService {
     if(state.isPublished()) return;
     state.publish(publisher);
     state.setLastModifiedDate(DateTime.now());
+    state.setLastModifiedBy(publisher);
     attachmentStateRepository.save(state);
     eventBus.post(new FilePublishedEvent(state));
   }
