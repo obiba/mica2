@@ -159,7 +159,7 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
       if(study == null) {
         // correct the discrepancy between state and the published index
         study = studyRepository.findOne(id);
-        eventBus.post(new StudyPublishedEvent(study));
+        eventBus.post(new StudyPublishedEvent(study, getCurrentUsername()));
       }
     }
 
@@ -213,7 +213,7 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
   public StudyState publish(@NotNull String id) throws NoSuchEntityException {
     log.info("Publish study: {}", id);
     StudyState studyState = publishState(id);
-    eventBus.post(new StudyPublishedEvent(studyRepository.findOne(id)));
+    eventBus.post(new StudyPublishedEvent(studyRepository.findOne(id), getCurrentUsername()));
 
     return studyState;
   }

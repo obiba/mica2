@@ -178,7 +178,7 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
   @Caching(evict = { @CacheEvict(value = "aggregations-metadata", key = "'network'") })
   public void publish(@NotNull String id) throws NoSuchEntityException {
     publishState(id);
-    eventBus.post(new NetworkPublishedEvent(networkRepository.findOne(id)));
+    eventBus.post(new NetworkPublishedEvent(networkRepository.findOne(id), getCurrentUsername()));
   }
 
   /**
@@ -193,7 +193,7 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
 
     eventBus.post(new NetworkUpdatedEvent(network));
 
-    if(networkState.isPublished()) eventBus.post(new NetworkPublishedEvent(network));
+    if(networkState.isPublished()) eventBus.post(new NetworkPublishedEvent(network, getCurrentUsername()));
     else eventBus.post(new NetworkUnpublishedEvent(network));
   }
 

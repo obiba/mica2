@@ -36,6 +36,8 @@ import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
+import org.obiba.mica.dataset.event.DatasetPublishedEvent;
+import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.event.IndexHarmonizationDatasetsEvent;
 import org.obiba.mica.dataset.service.support.QueryTermsUtil;
@@ -212,6 +214,7 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
     else unPublish(id);
 
     updateIndices(dataset, wrappedGetDatasetVariables(dataset), populateHarmonizedVariablesMap(dataset), true);
+    eventBus.post(published ? new DatasetPublishedEvent(dataset, getCurrentUsername()) : new DatasetUnpublishedEvent(dataset));
   }
 
   /**

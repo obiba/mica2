@@ -5,7 +5,14 @@ import org.obiba.mica.study.domain.Study;
 
 public class StudyPublishedEvent extends PersistablePublishedEvent<Study> {
 
-  public StudyPublishedEvent(Study study) {
+  private final String publisher;
+
+  public StudyPublishedEvent(Study study, String publisher) {
     super(study);
+    this.publisher = publisher;
+  }
+
+  public String getPublisher() {
+    return publisher;
   }
 }
