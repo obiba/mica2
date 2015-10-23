@@ -14,6 +14,6 @@ mica.config
         })
         .when('/admin/security', {
           templateUrl: 'app/config/views/config-security-view.html',
-          controller: 'MicaConfigEditController'
+          controller: 'MicaConfigController'
         });
     }]);
