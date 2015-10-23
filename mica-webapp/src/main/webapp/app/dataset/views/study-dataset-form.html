@@ -13,19 +13,27 @@
   <h2>
     <ol class="mica-breadcrumb">
       <li><a href="/#/study-dataset" translate>study-datasets</a></li>
-      <li ng-if="!newDataset" class="active"><a ng-href="/#/study-dataset/{{dataset.id}}">{{dataset.id}}</a></li>
       <li class="active">
-        <span ng-if="newDataset" translate>add-sm</span>
-        <span ng-if="!newDataset" translate>edit-sm</span>
-
-        <small><span translate>or</span>
-          <a ng-click="cancel()">
-            <span translate>cancel-sm</span>
-          </a></small>
+        <span ng-if="dataset.id">{{dataset.id}}</span>
+        <span ng-if="!dataset.id" translate>new-study-dataset</span>
       </li>
     </ol>
   </h2>
 
+  <div ng-if="dataset.id" class="tabs-menu tabs-left">
+    <ul class="nav nav-tabs">
+      <li class="active"><a href="#/study-dataset/{{dataset.id}}" title="{{'view' | translate}}"><i
+        class="fa fa-eye"></i></a>
+      </li>
+      <li><a href="#/study-dataset/{{dataset.id}}/revisions" title="{{'revisions' | translate}}"><i
+        class="fa fa-list-ol"></i></a>
+      </li>
+    </ul>
+  </div>
+
+  <h3 ng-if="dataset.id"><a ng-click="cancel()">
+    <i class="fa fa-chevron-left"> </i>
+  </a> {{'edit' | translate}}</h3>
 
   <form name="form" role="form" novalidate
       class="ng-scope ng-invalid ng-invalid-required ng-dirty" ng-submit="save()">

@@ -2,11 +2,14 @@
   <h2>
     <ol class="mica-breadcrumb">
       <li><a href="/#/study" translate>studies</a></li>
-      <li class="active">{{study.id}}</li>
+      <li class="active">
+        <span ng-if="study.id">{{study.id}}</span>
+        <span ng-if="!study.id" translate>new-study</span>
+      </li>
     </ol>
   </h2>
 
-  <div class="tabs-menu tabs-left">
+  <div ng-if="study.id" class="tabs-menu tabs-left">
     <ul class="nav nav-tabs">
       <li class="active"><a href="#/study/{{study.id}}" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>
       </li>
@@ -18,7 +21,7 @@
     </ul>
   </div>
 
-  <h3><a ng-click="cancel()">
+  <h3 ng-if="study.id"><a ng-click="cancel()">
     <i class="fa fa-chevron-left"> </i>
   </a> {{'edit' | translate}}</h3>
 
