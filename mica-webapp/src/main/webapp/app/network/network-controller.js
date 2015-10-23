@@ -21,45 +21,22 @@ mica.network
     '$filter',
     '$translate',
     'NetworksResource',
-    'DraftNetworkResource',
-    'NOTIFICATION_EVENTS',
-    'LocalizedValues',
+    'NetworkService',
 
     function ($rootScope,
               $scope,
               $filter,
               $translate,
               NetworksResource,
-              DraftNetworkResource,
-              NOTIFICATION_EVENTS,
-              LocalizedValues) {
-
+              NetworkService
+    ) {
       $scope.networks = NetworksResource.query();
 
-      $scope.deleteNetwork = function (network) {
-        if (network) {
-          $scope.networkToDelete = network.id;
-          $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
-            {
-              titleKey: 'network.delete-dialog.title',
-              messageKey:'network.delete-dialog.message',
-              messageArgs: [LocalizedValues.forLang(network.name, $translate.use())]
-            }, network.id
-          );
-        }
+      $scope.deleteNetwork = function(network) {
+        NetworkService.deleteNetwork(network, function() {
+          $scope.networks = NetworksResource.query();
+        });
       };
-
-      $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, id) {
-        if ($scope.networkToDelete === id) {
-          DraftNetworkResource.delete({id: id},
-            function () {
-              $scope.networks = NetworksResource.query();
-            });
-
-          delete $scope.networkToDelete;
-        }
-      });
-
     }])
 
   .controller('NetworkEditController', [
@@ -226,6 +203,7 @@ mica.network
     'LocalizedValues',
     'ActiveTabService',
     '$filter',
+    'NetworkService',
 
     function ($rootScope,
               $scope,
@@ -248,7 +226,8 @@ mica.network
               $modal,
               LocalizedValues,
               ActiveTabService,
-              $filter) {
+              $filter,
+              NetworkService) {
       var initializeNetwork = function(network){
         if (network.logo) {
           $scope.logoUrl = 'ws/draft/network/'+network.id+'/file/'+network.logo.id+'/_download';
@@ -291,6 +270,12 @@ mica.network
       $scope.toStatus = function (value) {
         DraftNetworkStatusResource.toStatus({id: $scope.network.id, value: value}, function () {
           $scope.network = DraftNetworkResource.get({id: $routeParams.id});
+        });
+      };
+
+      $scope.delete = function () {
+        NetworkService.deleteNetwork($scope.network, function() {
+          $location.path('/network');
         });
       };
 
