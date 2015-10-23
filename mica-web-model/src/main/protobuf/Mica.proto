@@ -347,6 +347,7 @@ message AttachmentDto {
   optional TimestampsDto timestamps = 9;
   repeated AttributeDto attributes = 10;
   optional string path = 11;
+  optional string lastModifiedBy = 12;
 }
 
 message TempFileDto {

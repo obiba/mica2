@@ -76,6 +76,10 @@ public abstract class AbstractAuditableDocument implements Auditable<String, Str
     this.createdDate = createdDate;
   }
 
+  public boolean hasLastModifiedBy() {
+    return !Strings.isNullOrEmpty(lastModifiedBy);
+  }
+
   @Override
   public String getLastModifiedBy() {
     return lastModifiedBy;

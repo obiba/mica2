@@ -100,6 +100,7 @@ class AttachmentDtos {
         .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
     }
     if(!Strings.isNullOrEmpty(attachment.getPath())) builder.setPath(attachment.getPath());
+    if(attachment.hasLastModifiedBy()) builder.setLastModifiedBy(attachment.getLastModifiedBy());
 
     return builder.build();
   }
