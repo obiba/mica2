@@ -58,9 +58,10 @@
 
       <file-status-buttons class="inline pull-right"
         document="data.document"
+        documents="selected"
         on-publish="publish(true)"
         on-un-publish="publish(false)"
-        on-delete="deleteDocument(data.document)"
+        on-delete="deleteDocument()"
         to-draft="toStatus('DRAFT')"
         to-under-review="toStatus('UNDER_REVIEW')"
         to-deleted="toStatus('DELETED')">

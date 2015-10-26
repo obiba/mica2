@@ -24,6 +24,7 @@ mica.fileSystem
     'DraftFileSystemFilesResource',
     'DraftFileSystemSearchResource',
     'MicaConfigResource',
+    '$q',
 
     function ($rootScope,
               $scope,
@@ -35,7 +36,78 @@ mica.fileSystem
               DraftFileSystemFileResource,
               DraftFileSystemFilesResource,
               DraftFileSystemSearchResource,
-              MicaConfigResource) {
+              MicaConfigResource,
+              $q) {
+
+      $scope.selected = [];
+      $scope.pagination = {
+        currentPage: 1,
+        itemsPerPage: 20
+      };
+
+      $scope.hasUnselected = true;
+
+      function getCurrentPageDocuments() {
+        return $scope.data.document.children.slice(
+          $scope.pagination.itemsPerPage * ($scope.pagination.currentPage - 1),
+          $scope.pagination.itemsPerPage * $scope.pagination.currentPage);
+      }
+
+      $scope.$watch('data.document.children', function (documents) {
+        var items;
+
+        if (!$scope.data.document || !$scope.data.document.children) {
+          return;
+        }
+
+        items = getCurrentPageDocuments();
+
+        $scope.hasUnselected = items.filter(function (d) {
+          return d.selected;
+        }).length < items.length;
+
+        $scope.selected = documents.filter(function (d) {
+          return d.selected;
+        });
+
+      }, true);
+
+      $scope.$watch('pagination', function () {
+        var items;
+
+        if (!$scope.data.document || !$scope.data.document.children) {
+          return;
+        }
+
+        items = getCurrentPageDocuments();
+
+        $scope.hasUnselected = items.filter(function (d) {
+          return d.selected;
+        }).length < items.length;
+      }, true);
+
+      $scope.selectAll = function () {
+        var selection = $scope.selected.length < $scope.data.document.children.length;
+
+        $scope.data.document.children.map(function (d) {
+          d.selected = selection;
+        });
+      };
+
+      $scope.clearSelection = function () {
+        $scope.data.document.children.map(function (d) {
+          d.selected = false;
+        });
+      };
+
+      $scope.selectPage = function () {
+        var items = getCurrentPageDocuments(),
+          selection = items.filter(function (d) { return d.selected; }).length < items.length;
+
+        items.map(function (d) {
+          d.selected = selection;
+        });
+      };
 
       var onError = function(response) {
         AlertService.alert({
@@ -43,8 +115,13 @@ mica.fileSystem
           type: 'danger',
           msg: ServerErrorUtils.buildMessage(response)
         });
-      };
 
+        if ($scope.selected.length === 0 ) {
+          navigateToParent($scope.data.document);
+        } else {
+          navigateTo($scope.data.document);
+        }
+      };
 
       var getDocument = function(path) {
         $scope.data.search.active = false;
@@ -83,11 +160,13 @@ mica.fileSystem
 
       var navigateToParent = function(document) {
         var path = document.path;
+
         if (path.lastIndexOf('/') === 0) {
           path = '/';
         } else {
           path = path.substring(0, path.lastIndexOf('/'));
         }
+
         navigateToPath(path);
       };
 
@@ -126,17 +205,10 @@ mica.fileSystem
         );
       };
 
-      var deleteDocument = function(document) {
-        DraftFileSystemFileResource.delete({path: document.path},
-          function onSuccess() {
-            if (document.path !== $scope.data.document.path) {
-              navigateTo($scope.data.document);
-            } else {
-              navigateToParent($scope.data.document);
-            }
-          },
-          onError
-        );
+      var deleteDocument = function () {
+        applyToFiles(function (path) {
+          return DraftFileSystemFileResource.delete({path: path});
+        });
       };
 
       var restoreRevision = function(document) {
@@ -154,7 +226,7 @@ mica.fileSystem
         FileSystemService.onFileSelect(files,
           $scope.data.isFile ? $scope.data.document.state.attachment : $scope.data.document,
           function onSuccess(attachment) {
-            DraftFileSystemFilesResource.update(attachment,
+            return DraftFileSystemFilesResource.update(attachment,
               function onSuccess() {
                 navigateTo($scope.data.document);
               },
@@ -231,25 +303,52 @@ mica.fileSystem
       };
 
       var publish = function(value) {
-        DraftFileSystemFileResource.publish(
-          {path: $scope.data.document.path, publish: value ? 'true' : 'false'},
-          function onSuccess(){
-            navigateTo($scope.data.document);
-          },
-          onError
-        );
+        applyToFiles(function (path) {
+          return DraftFileSystemFileResource.publish(
+            {path: path, publish: value ? 'true' : 'false'});
+        });
       };
 
-      var toStatus = function(value) {
+      var toStatus = function (value) {
         $log.info('STATUS', value);
-        DraftFileSystemFileResource.changeStatus(
-          {path: $scope.data.document.path, status: value},
-          function onSuccess(){
-            navigateTo($scope.data.document);
-          },
-          onError
-        );
+        applyToFiles(function (path) {
+          return DraftFileSystemFileResource.changeStatus(
+            {path: path, status: value}
+          );
+        });
       };
+
+      function ignoreConflicts(response) {
+        if (response.status < 500) {
+          return;
+        }
+
+        return $q.reject(response);
+      }
+
+      function applyToFiles(consumer) {
+        var files = $scope.selected.length === 0 ? [$scope.data.document.path] :
+          $scope.selected.map(function (d) {
+            return d.path;
+          });
+
+        $q.all(files.map(function (path) {
+          return consumer(path).$promise.catch(function (response) {
+            if ($scope.selected.length > 0) {
+              return ignoreConflicts(response);
+            }
+
+            return $q.reject(response);
+          });
+        })).catch(onError)
+          .finally(function () {
+            if ($scope.selected.length === 0) {
+              navigateToParent($scope.data.document);
+            } else {
+              navigateTo($scope.data.document);
+            }
+          });
+      }
 
       $scope.hasRole = $rootScope.hasRole;
       $scope.getDocumentTypeTitle = FileSystemService.getDocumentTypeTitle;
