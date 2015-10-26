@@ -157,9 +157,9 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
           return perms;
         case Roles.MICA_DAO:
           return mergePermissions(
-            "/data-access-requests,/data-access-request:VIEW,/data-access-request:DELETE,/files:UPLOAD", permissions);
+            "/data-access-request:*,/files:UPLOAD", permissions);
         case Roles.MICA_USER:
-          return mergePermissions("/data-access-requests:ADD,/files:UPLOAD", permissions);
+          return mergePermissions("/data-access-request:ADD,/files:UPLOAD", permissions);
       }
       // other groups
       return PermissionUtils.resolvePermissions(permissions, getPermissionResolver());

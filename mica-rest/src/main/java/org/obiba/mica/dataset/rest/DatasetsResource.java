@@ -5,7 +5,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.dataset.service.DatasetIndexer;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.dataset.service.StudyDatasetService;
@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope("request")
-@RequiresAuthentication
 @Path("/datasets")
 public class DatasetsResource {
 
@@ -27,6 +26,7 @@ public class DatasetsResource {
 
   @PUT
   @Path("/_index")
+  @RequiresPermissions({ "/draft/study-dataset:EDIT", "/draft/harmonization-dataset:EDIT" })
   public Response indexAll() {
     helper.indexAll();
 

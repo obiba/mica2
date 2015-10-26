@@ -14,7 +14,6 @@ import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.dataset.DatasetVariableResource;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
@@ -26,7 +25,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope("request")
-@RequiresPermissions({"/draft:EDIT"})
 public class DraftHarmonizedDatasetVariableResource implements DatasetVariableResource {
 
   private String datasetId;
