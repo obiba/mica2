@@ -62,3 +62,11 @@
   content: "\e000";
   vertical-align: text-top;
 }
+.i-obiba-hierarchy:before {
+  content: "\e002";
+  vertical-align: text-top;
+}
+.i-obiba-quotes:before {
+  content: "\e005";
+  vertical-align: text-top;
+}

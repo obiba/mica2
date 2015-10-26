@@ -47,6 +47,7 @@ mica.fileSystem
 
 
       var getDocument = function(path) {
+        $scope.data.search.active = false;
         $log.debug('getDocument()\'', path, '\'');
 
         DraftFileSystemFileResource.get({path: path},
@@ -177,13 +178,51 @@ mica.fileSystem
         delete $scope.data.new.folder;
       };
 
-      var searchDocuments = function() {
+      var toggleRecursively = function() {
+        $scope.data.search.recursively = !$scope.data.search.recursively;
+        if ($scope.data.search.text) {
+          searchDocuments($scope.data.search.text);
+        }
+      };
+
+      var clearSearch = function() {
+        $scope.data.search.text = null;
+        $scope.data.search.active = false;
+        navigateTo($scope.data.document);
+      };
+
+      var searchDocuments = function(query) {
+        $scope.data.search.active = true;
+        var recursively = $scope.data.search.recursively;
+        var orderBy = null;
+        var sortBy = null;
+
+        switch (query) {
+          case 'DELETED':
+          case 'UNDER_REVIEW':
+            recursively = true;
+            query = 'revisionStatus:' + query;
+            break;
+
+          case 'RECENT':
+            query = '';
+            recursively = true;
+            orderBy = 'desc';
+            sortBy = 'lastModifiedDate';
+            break;
+        }
+
         DraftFileSystemSearchResource.search(
-          {path: $scope.data.document.path, query: $scope.data.searchText, recursively: false},
+          {path: $scope.data.document.path, query: query, recursively: recursively, sort: sortBy, order:orderBy},
           function onSuccess(response) {
             $log.info('Search result', response);
+            var clone = angular.copy($scope.data.document);
+            clone.children = response;
+            $scope.data.document = clone;
           },
-          onError
+          function onError(response) {
+            $log.debug(response);
+          }
         );
       };
 
@@ -219,12 +258,15 @@ mica.fileSystem
       $scope.navigateTo = navigateTo;
       $scope.navigateBack = navigateBack;
       $scope.renameDocument = renameDocument;
+      $scope.navigateToParent = navigateToParent;
       $scope.updateDocument = updateDocument;
       $scope.updateDocumentType = updateDocumentType;
       $scope.updateDocumentDescription = updateDocumentDescription;
       $scope.deleteDocument = deleteDocument;
       $scope.restoreRevision = restoreRevision;
+      $scope.clearSearch = clearSearch;
       $scope.searchDocuments = searchDocuments;
+      $scope.toggleRecursively = toggleRecursively;
       $scope.onFileSelect = onFileSelect;
       $scope.createFolder = createFolder;
       $scope.isFile = FileSystemService.isFile;
@@ -246,8 +288,11 @@ mica.fileSystem
       $scope.data = {
         rootPath: null,
         document: null,
-        searchText: null,
-        parentPath: null,
+        search: {
+          text: null,
+          active: false,
+          recursively: true
+        },
         breadcrumbs: null,
         isFile: false,
         isRoot: false,

@@ -5,15 +5,16 @@
       <th translate>name</th>
       <th translate>last-modified</th>
       <th translate>size</th>
+      <th ng-if="data.search.active" translate>path</th>
       <th translate>status</th>
       <th translate>actions</th>
     </tr>
     </thead>
     <tbody>
-    <tr ng-show="!data.isRoot">
+    <tr ng-show="!data.isRoot && !data.search.active">
       <td colspan="5">
         <i class="fa fa-folder"></i>
-        <span><a href style="text-decoration: none;" ng-click="navigateBack()"> ..</a></span>
+        <span><a href class="no-text-decoration" ng-click="navigateBack()"> ..</a></span>
       </td>
     </tr>
     <tr dir-paginate="document in data.document.children | itemsPerPage: 20"
@@ -21,20 +22,26 @@
 
       <td>
         <span><i class="fa {{getDocumentIcon(document)}}"></i>
-        <a href style="text-decoration: none;" ng-click="navigateTo(document)">
-           {{document.name}}</span>
-        </a>
+          <a href style="text-decoration: none;" ng-click="navigateTo(document)">
+             {{document.name}}
+          </a>
+        </span>
       </td>
       <td>
         {{document.timestamps.lastUpdate | amTimeAgo}}
       </td>
-      <td ng-if="fileDocument">
+      <td class="no-wrap" ng-if="fileDocument">
         {{document.size | bytes}}
       </td>
-      <td ng-if="!fileDocument">
+      <td class="no-wrap" ng-if="!fileDocument">
         {{document.size}}
       </td>
-      <td>
+      <td ng-if="data.search.active">
+        <a href class="no-text-decoration" ng-click="navigateToParent(document)">
+          {{document.state.attachment.path}}
+        </a>
+      </td>
+      <td class="no-wrap">
         {{'publish.status.' + document.revisionStatus | translate}}
         <i class="fa fa-star" ng-if="document.state.publicationDate !== undefined"
           title="{{'publish.published' | translate}} ({{document.state.publicationDate | amDateFormat : 'lll'}} [{{document.state.publishedBy}}])"></i>
@@ -43,14 +50,15 @@
           title="{{'publish.not-published' | translate}}"></i>
       </td>
       <td>
-        <ul class="list-inline pull-right">
-          <li ng-show="isFile(document)">
+        <div class="row">
+          <div class="col-md-2">
             <a target="_self" ng-href="ws/draft/file-dl/{{document.path}} "><i class="fa fa-download"></i></a>
-          </li>
-          <li>
+
+          </div>
+          <div class="col-md-2">
             <a href ng-click="deleteDocument(document)" ng-if="document.revisionStatus === 'DELETED'"><i class="fa fa-trash"></i></a>
-          </li>
-        </ul>
+          </div>
+        </div>
       </td>
     </tr>
     </tbody>

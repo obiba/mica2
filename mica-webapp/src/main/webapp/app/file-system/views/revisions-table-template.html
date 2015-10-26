@@ -3,7 +3,7 @@
     <table class="table table-bordered table-striped no-padding no-margin">
       <thead>
       <tr>
-        <th>ID</th>
+        <th translate>revision</th>
         <th translate>created-on</th>
         <th translate>last-modified</th>
         <th translate>actions</th>
@@ -13,8 +13,8 @@
       <tr dir-paginate="revision in data.document.state.revisions.reverse() | filter:searchText | itemsPerPage: 20">
         <td>
           <span class="ellipsis pull-left" title="{{revision.id}}">
-          {{revision.id}}
-        </span>
+            {{revision.id}}
+          </span>
           <i class="fa fa-star pull-left" ng-if="data.document.state.publishedId === revision.id"
             title="{{'publish.published' | translate}} ({{data.document.state.publicationDate | amDateFormat : 'lll'}} [{{data.document.state.publishedBy}}])"></i>
         </td>

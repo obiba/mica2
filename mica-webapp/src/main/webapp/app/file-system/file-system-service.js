@@ -34,10 +34,11 @@ mica.fileSystem
 
   .factory('DraftFileSystemSearchResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/files-search/:path/?query=:query&recursively=:recursively', {}, {
+      return $resource('ws/draft/files-search/:path', {path: '@path'}, {
         'search': {
           method: 'GET',
-          params: {path: '@path', query: '@query', recursively: '@recursively'},
+          isArray: true,
+          params: {query: '@query', recursively: '@recursively'},
           errorHandler: true
         }
       });

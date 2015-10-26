@@ -264,6 +264,14 @@ ul#strength {
   padding-bottom: 0 !important;
 }
 
+.no-padding-right {
+  padding-right: 0 !important;
+}
+
+.no-padding-left {
+  padding-left: 0 !important;
+}
+
 .no-padding {
   .no-padding-top;
   .no-padding-bottom;
@@ -432,17 +440,8 @@ tr.active-row {
   }
 }
 
-.table-condenser {
-  > thead,
-  > tbody,
-  > tfoot {
-    > tr {
-      > th,
-      > td {
-        padding: 1px;
-      }
-    }
-  }
+.no-wrap {
+  white-space: nowrap !important;
 }
 
 .ellipsis {
@@ -450,4 +449,8 @@ tr.active-row {
   width:6em;
   overflow:hidden;
   text-overflow:ellipsis;
+}
+
+a.no-text-decoration {
+  text-decoration: none !important;
 }
