@@ -56,6 +56,7 @@ message EntityStateDto {
   optional string publicationDate = 4;
   optional string publishedBy = 5;
   optional string publishedId = 6;
+  optional PermissionsDto permissions = 7;
 
   extend NetworkDto {
     optional EntityStateDto state = 1000;
@@ -264,7 +265,6 @@ message NetworkDto {
   optional bool published = 14;
   optional AttachmentDto logo = 15;
   repeated AttributeDto attributes = 16;
-  optional PermissionsDto permissions = 17;
   extensions 1000 to max;
 }
 
@@ -419,7 +419,6 @@ message DatasetDto {
   required bool published = 6;
   repeated AttributeDto attributes = 7;
   optional TimestampsDto timestamps = 8;
-  optional PermissionsDto permissions = 9;
 
   extensions 1000 to max;
 

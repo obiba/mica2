@@ -21,7 +21,6 @@
     id="{{networkId}}"
     title="{{'revisions' | translate}}"
     state="network['obiba.mica.EntityStateDto.state']"
-    can-restore="hasRole(['mica-administrator','mica-reviewer','mica-editor'])"
     on-fetch-revisions="fetchRevisions"
     on-restore-revision="restoreRevision"
     on-view-revision="viewRevision"></revisions>

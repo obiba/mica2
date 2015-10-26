@@ -64,10 +64,13 @@
           </td>
           <td>
             <ul class="list-inline">
-              <li ng-if="dataset['obiba.mica.EntityStateDto.datasetState'].revisionStatus === 'DRAFT'">
-                <a ng-href="#/study-dataset/{{dataset.id}}/edit" title="{{'edit' | translate}}"><i class="fa fa-pencil"></i></a>
+              <li
+                ng-if="dataset['obiba.mica.EntityStateDto.datasetState'].permissions.edit && dataset['obiba.mica.EntityStateDto.datasetState'].revisionStatus === 'DRAFT'">
+                <a ng-href="#/study-dataset/{{dataset.id}}/edit" title="{{'edit' | translate}}"><i
+                  class="fa fa-pencil"></i></a>
               </li>
-              <li ng-if="dataset['obiba.mica.EntityStateDto.datasetState'].revisionStatus === 'DELETED'">
+              <li
+                ng-if="dataset['obiba.mica.EntityStateDto.datasetState'].permissions.delete && dataset['obiba.mica.EntityStateDto.datasetState'].revisionStatus === 'DELETED'">
                 <a href ng-click="deleteStudyDataset(dataset)" title="{{'delete' | translate}}"><i
                   class="fa fa-trash-o"></i></a>
               </li>

@@ -9,7 +9,6 @@ mica.revisions
         title: '@',
         id: '@',
         state: '=',
-        canRestore: '=',
         onFetchRevisions: '&',
         onViewRevision: '&',
         onRestoreRevision: '&'

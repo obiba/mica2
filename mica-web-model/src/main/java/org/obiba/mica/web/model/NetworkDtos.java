@@ -36,6 +36,9 @@ class NetworkDtos {
   private ContactDtos contactDtos;
 
   @Inject
+  private EntityStateDtos entityStateDtos;
+
+  @Inject
   private LocalizedStringDtos localizedStringDtos;
 
   @Inject
@@ -71,23 +74,10 @@ class NetworkDtos {
       .addAllInfo(localizedStringDtos.asDto(network.getInfos()));
 
     if(asDraft) {
-      Mica.EntityStateDto.Builder stateBuilder = Mica.EntityStateDto.newBuilder()//
-        .setRevisionsAhead(networkState.getRevisionsAhead()) //
-        .setRevisionStatus(networkState.getRevisionStatus().name());
-
-      if(networkState.isPublished()) {
-        stateBuilder.setPublishedTag(networkState.getPublishedTag());
-        if(networkState.hasPublishedId()) stateBuilder.setPublishedId(networkState.getPublishedId());
-        if(networkState.hasPublicationDate())
-          stateBuilder.setPublicationDate(networkState.getPublicationDate().toString());
-        if(networkState.getPublishedBy() != null) stateBuilder.setPublishedBy(networkState.getPublishedBy());
-      }
-
       builder.setTimestamps(TimestampsDtos.asDto(network)) //
         .setPublished(networkState.isPublished()) //
-        .setExtension(Mica.EntityStateDto.state, stateBuilder.build());
-
-      builder.setPermissions(permissionsDtos.asDto(network));
+        .setExtension(Mica.EntityStateDto.state, entityStateDtos.asDto(networkState)
+          .setPermissions(permissionsDtos.asDto(network)).build());
     }
 
     if(network.getInvestigators() != null) {

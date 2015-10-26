@@ -145,7 +145,7 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
   @Path("/commit/{commitId}/view")
   public Mica.NetworkDto getFromCommit(@NotNull @PathParam("commitId") String commitId) throws IOException {
     subjectAclService.checkPermission("/draft/network", "VIEW", id);
-    return dtos.asDto(networkService.getFromCommit(networkService.findDraft(id), commitId));
+    return dtos.asDto(networkService.getFromCommit(networkService.findDraft(id), commitId), true);
   }
 
   @Override

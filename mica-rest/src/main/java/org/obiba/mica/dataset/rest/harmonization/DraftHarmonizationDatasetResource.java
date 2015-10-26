@@ -176,7 +176,7 @@ public class DraftHarmonizationDatasetResource extends
   @Path("/commit/{commitId}/view")
   public Mica.DatasetDto getFromCommit(@NotNull @PathParam("commitId") String commitId) throws IOException {
     subjectAclService.isPermitted("/draft/harmonization-dataset", "VIEW", id);
-    return dtos.asDto(datasetService.getFromCommit(datasetService.findDraft(id), commitId));
+    return dtos.asDto(datasetService.getFromCommit(datasetService.findDraft(id), commitId), true);
   }
 
   private HarmonizationDataset getDataset() {

@@ -56,7 +56,7 @@
             <a ng-click="viewRevision($index, id, commitInfo)" href="" title="{{'view' | translate}}"><i
               class="fa fa-eye"></i></a>
           </li>
-          <li ng-if="canRestore">
+          <li ng-if="state.permissions.edit && state.revisionStatus === 'DRAFT'">
             <a ng-click="restoreRevision(id, commitInfo)" href="" title="{{'restore' | translate}}"><i
               class="fa fa-rotate-left"></i></a>
           </li>

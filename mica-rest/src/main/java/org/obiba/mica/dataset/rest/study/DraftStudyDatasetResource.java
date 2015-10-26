@@ -161,7 +161,7 @@ public class DraftStudyDatasetResource extends
   @Path("/commit/{commitId}/view")
   public Mica.DatasetDto getFromCommit(@NotNull @PathParam("commitId") String commitId) throws IOException {
     subjectAclService.isPermitted("/draft/study-dataset", "VIEW", id);
-    return dtos.asDto(datasetService.getFromCommit(datasetService.findDraft(id), commitId));
+    return dtos.asDto(datasetService.getFromCommit(datasetService.findDraft(id), commitId), true);
   }
 
   private StudyDataset getDataset() {
