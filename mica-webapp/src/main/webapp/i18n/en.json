@@ -712,6 +712,11 @@
   "data-access": "Data Access",
   "properties": "Properties",
   "searching": "Searching",
+  "recent": "Recent",
+  "path": "Path",
+  "search-tooltip": {
+    "recursively": "Search recursively"
+  },
   "admin-page": {
     "help": {
       "general": "Configure Opal server, locale and server properties.",
