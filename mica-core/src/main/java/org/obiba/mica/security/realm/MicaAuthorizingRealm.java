@@ -143,17 +143,15 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
         case Roles.MICA_REVIEWER:
           perms = mergePermissions("/files:UPLOAD", permissions);
           for(String e : Lists.newArrayList("study", "network", "study-dataset", "harmonization-dataset")) {
-            perms.addAll(toPermissions(
-              String.format("/draft/%s:VIEW,/draft/%s:EDIT,/draft/%s:DELETE,/draft/%s:PUBLISH", e, e, e, e)));
-            perms.addAll(toPermissions(String
-              .format("/draft/file/%s:VIEW,/draft/file/%s:EDIT,/draft/file/%s:DELETE,/draft/file/%s:PUBLISH", e, e, e,
-                e)));
+            perms.addAll(toPermissions(String.format("/draft/%s:*", e)));
+            perms.addAll(toPermissions(String.format("/draft/file/%s:*", e)));
           }
           return perms;
         case Roles.MICA_EDITOR:
           perms = mergePermissions("/files:UPLOAD", permissions);
           for(String e : Lists.newArrayList("study", "network", "study-dataset", "harmonization-dataset")) {
-            perms.addAll(toPermissions(String.format("/draft/%s:VIEW,/draft/%s:EDIT", e, e)));
+            perms.addAll(
+              toPermissions(String.format("/draft/%s:ADD,/draft/%s:VIEW,/draft/%s:EDIT,/draft/%s:DELETE", e, e, e, e)));
             perms.addAll(toPermissions(String.format("/draft/file/%s:VIEW,/draft/file/%s:EDIT", e, e)));
           }
           return perms;

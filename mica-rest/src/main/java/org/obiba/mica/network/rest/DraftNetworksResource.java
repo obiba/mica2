@@ -27,6 +27,7 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.service.NetworkService;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.ApplicationContext;
@@ -44,6 +45,9 @@ public class DraftNetworksResource {
   private NetworkService networkService;
 
   @Inject
+  private SubjectAclService subjectAclService;
+
+  @Inject
   private Dtos dtos;
 
   @Inject
@@ -52,16 +56,16 @@ public class DraftNetworksResource {
   @GET
   @Path("/networks")
   @Timed
-  @RequiresPermissions({ "/draft:EDIT" })
   public List<Mica.NetworkDto> list(@QueryParam("study") String studyId) {
-    return networkService.findAllNetworks(studyId).stream().sorted((o1, o2) -> o1.getId().compareTo(o2.getId()))
-      .map(dtos::asDto).collect(Collectors.toList());
+    return networkService.findAllNetworks(studyId).stream()
+      .filter(n -> subjectAclService.isPermitted("/draft/network", "VIEW", n.getId()))
+      .sorted((o1, o2) -> o1.getId().compareTo(o2.getId())).map(dtos::asDto).collect(Collectors.toList());
   }
 
   @POST
   @Path("/networks")
   @Timed
-  @RequiresPermissions({ "/draft:EDIT" })
+  @RequiresPermissions("/draft/network:ADD")
   public Response create(Mica.NetworkDto networkDto, @Context UriInfo uriInfo) {
     Network network = dtos.fromDto(networkDto);
 
@@ -72,14 +76,13 @@ public class DraftNetworksResource {
   @PUT
   @Path("/networks/_index")
   @Timed
-  @RequiresPermissions({ "/draft:PUBLISH" })
+  @RequiresPermissions("/draft/network:PUBLISH")
   public Response reIndex() {
     networkService.indexAll();
     return Response.noContent().build();
   }
 
   @Path("/network/{id}")
-  @RequiresPermissions({ "/draft:EDIT" })
   public DraftNetworkResource dataset(@PathParam("id") String id) {
     DraftNetworkResource resource = applicationContext.getBean(DraftNetworkResource.class);
     resource.setId(id);

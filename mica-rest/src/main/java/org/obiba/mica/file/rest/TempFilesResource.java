@@ -42,7 +42,6 @@ public class TempFilesResource {
   @Timed
   public Response upload(@FormDataParam("file") InputStream uploadedInputStream,
       @FormDataParam("file") FormDataContentDisposition fileDetail, @Context UriInfo uriInfo) throws IOException {
-
     TempFile tempFile = tempFileService.addTempFile(fileDetail.getFileName(), uploadedInputStream);
     //TODO make this work
     // URI location = uriInfo.getBaseUriBuilder().path(TempFilesResource.class, "file").build(tempFile.getId());

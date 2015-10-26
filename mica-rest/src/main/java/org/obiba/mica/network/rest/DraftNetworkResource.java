@@ -22,7 +22,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.AbstractGitPersistableResource;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.RevisionStatus;
@@ -65,15 +64,15 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
 
   @GET
   @Timed
-  @RequiresPermissions({"/draft:EDIT"})
   public Mica.NetworkDto get() {
+    subjectAclService.isPermitted("/draft/network", "VIEW", id);
     return dtos.asDto(networkService.findById(id));
   }
 
   @PUT
   @Timed
-  @RequiresPermissions({"/draft:EDIT"})
   public Response update(@SuppressWarnings("TypeMayBeWeakened") Mica.NetworkDto networkDto) {
+    subjectAclService.isPermitted("/draft/network", "EDIT", id);
     // ensure network exists
     networkService.findById(id);
 
@@ -85,32 +84,32 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
   @PUT
   @Path("/_index")
   @Timed
-  @RequiresPermissions({"/draft:EDIT"})
   public Response index() {
+    subjectAclService.isPermitted("/draft/network", "EDIT", id);
     networkService.index(id);
     return Response.noContent().build();
   }
 
   @PUT
   @Path("/_publish")
-  @RequiresPermissions({"/draft:PUBLISH"})
   public Response publish() {
+    subjectAclService.isPermitted("/draft/network", "PUBLISH", id);
     networkService.publish(id);
     return Response.noContent().build();
   }
 
   @DELETE
   @Path("/_publish")
-  @RequiresPermissions({"/draft:PUBLISH"})
   public Response unPublish() {
+    subjectAclService.isPermitted("/draft/network", "PUBLISH", id);
     networkService.unPublish(id);
     return Response.noContent().build();
   }
 
   @DELETE
   @Timed
-  @RequiresPermissions({"/draft:EDIT"})
   public Response delete() {
+    subjectAclService.isPermitted("/draft/network", "DELETE", id);
     try {
       networkService.delete(id);
     } catch (NoSuchNetworkException e) {
@@ -122,16 +121,16 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
   @PUT
   @Path("/_status")
   @Timed
-  @RequiresPermissions({"/draft:EDIT"})
   public Response toUnderReview(@QueryParam("value") String status) {
+    subjectAclService.isPermitted("/draft/network", "EDIT", id);
     networkService.updateStatus(id, RevisionStatus.valueOf(status.toUpperCase()));
 
     return Response.noContent().build();
   }
 
   @Path("/file/{fileId}")
-  @RequiresPermissions({"/draft:EDIT"})
   public FileResource network(@PathParam("fileId") String fileId) {
+    subjectAclService.checkPermission("/draft/network", "VIEW", id);
     FileResource fileResource = applicationContext.getBean(FileResource.class);
     Network network = networkService.findById(id);
 
@@ -143,9 +142,9 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
   }
 
   @GET
-  @RequiresPermissions({ "/draft:EDIT" })
   @Path("/commit/{commitId}/view")
   public Mica.NetworkDto getFromCommit(@NotNull @PathParam("commitId") String commitId) throws IOException {
+    subjectAclService.checkPermission("/draft/network", "VIEW", id);
     return dtos.asDto(networkService.getFromCommit(networkService.findDraft(id), commitId));
   }
 
