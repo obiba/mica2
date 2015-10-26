@@ -1,5 +1,6 @@
 package org.obiba.mica.security.realm;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,11 +25,14 @@ import org.obiba.mica.security.service.SubjectAclService;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 
 @Component
 public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermissionResolver {
+
+  private static final String[] ALL_RESOURCES = { "network", "study", "study-dataset", "harmonization-dataset" };
+
+  private static final String[] EDITOR_OPERATIONS = { "ADD", "VIEW", "EDIT", "DELETE" };
 
   @Inject
   private SubjectAclService subjectAclService;
@@ -141,23 +145,24 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
         case Roles.MICA_ADMIN:
           return mergePermissions("*", permissions);
         case Roles.MICA_REVIEWER:
+          // all permissions: edition and publication
           perms = mergePermissions("/files:UPLOAD", permissions);
-          for(String e : Lists.newArrayList("study", "network", "study-dataset", "harmonization-dataset")) {
-            perms.addAll(toPermissions(String.format("/draft/%s:*", e)));
-            perms.addAll(toPermissions(String.format("/draft/file/%s:*", e)));
-          }
+          Arrays.stream(ALL_RESOURCES).forEach(e -> {
+            perms.addAll(toPermissions(String.format("/draft/%s", e)));
+            perms.addAll(toPermissions(String.format("/draft/file/%s", e)));
+          });
           return perms;
         case Roles.MICA_EDITOR:
+          // all edition permissions
           perms = mergePermissions("/files:UPLOAD", permissions);
-          for(String e : Lists.newArrayList("study", "network", "study-dataset", "harmonization-dataset")) {
-            perms.addAll(
-              toPermissions(String.format("/draft/%s:ADD,/draft/%s:VIEW,/draft/%s:EDIT,/draft/%s:DELETE", e, e, e, e)));
+          Arrays.stream(ALL_RESOURCES).forEach(e -> {
+            Arrays.stream(EDITOR_OPERATIONS).forEach(o -> {
+              perms.addAll(toPermissions(String.format("/draft/%s:%s", e, o)));
+            });
             perms.addAll(toPermissions(String.format("/draft/file/%s:VIEW,/draft/file/%s:EDIT", e, e)));
-          }
+          });
           return perms;
         case Roles.MICA_DAO:
-          return mergePermissions(
-            "/data-access-request:*,/files:UPLOAD", permissions);
         case Roles.MICA_USER:
           return mergePermissions("/data-access-request:ADD,/files:UPLOAD", permissions);
       }
