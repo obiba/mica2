@@ -37,13 +37,20 @@ class StudyDtos {
   @Inject
   private AttributeDtos attributeDtos;
 
+  @Inject
+  private PermissionsDtos permissionsDtos;
+
   @NotNull
-  Mica.StudyDto asDto(@NotNull Study study) {
+  Mica.StudyDto asDto(@NotNull Study study, boolean asDraft) {
     Mica.StudyDto.Builder builder = Mica.StudyDto.newBuilder();
     builder.setId(study.getId()) //
-        .setTimestamps(TimestampsDtos.asDto(study)) //
-        .addAllName(localizedStringDtos.asDto(study.getName())) //
-        .addAllObjectives(localizedStringDtos.asDto(study.getObjectives()));
+      .addAllName(localizedStringDtos.asDto(study.getName())) //
+      .addAllObjectives(localizedStringDtos.asDto(study.getObjectives()));
+
+    if(asDraft) {
+      builder.setTimestamps(TimestampsDtos.asDto(study));
+      builder.setPermissions(permissionsDtos.asDto(study));
+    }
 
     if(study.getLogo() != null) builder.setLogo(attachmentDtos.asDto(study.getLogo()));
 
@@ -59,11 +66,11 @@ class StudyDtos {
     if(study.getAcronym() != null) builder.addAllAcronym(localizedStringDtos.asDto(study.getAcronym()));
     if(study.getInvestigators() != null) {
       builder.addAllInvestigators(
-          study.getInvestigators().stream().map(contactDtos::asDto).collect(Collectors.<PersonDto>toList()));
+        study.getInvestigators().stream().map(contactDtos::asDto).collect(Collectors.<PersonDto>toList()));
     }
     if(study.getContacts() != null) {
-      builder.addAllContacts(
-          study.getContacts().stream().map(contactDtos::asDto).collect(Collectors.<PersonDto>toList()));
+      builder
+        .addAllContacts(study.getContacts().stream().map(contactDtos::asDto).collect(Collectors.<PersonDto>toList()));
     }
     if(!isNullOrEmpty(study.getWebsite())) builder.setWebsite(study.getWebsite());
     if(!isNullOrEmpty(study.getOpal())) builder.setOpal(study.getOpal());
@@ -84,8 +91,8 @@ class StudyDtos {
       study.getPopulations().forEach(population -> builder.addPopulations(populationDtos.asDto(population)));
     }
     if(study.getAttributes() != null) {
-      study.getAttributes().asAttributeList().forEach(
-          attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
+      study.getAttributes().asAttributeList()
+        .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
     }
     return builder.build();
   }
@@ -127,7 +134,7 @@ class StudyDtos {
     if(dto.getInfoCount() > 0) study.setInfo(localizedStringDtos.fromDto(dto.getInfoList()));
     if(dto.getPopulationsCount() > 0) {
       study.setPopulations(dto.getPopulationsList().stream().map(populationDtos::fromDto)
-          .collect(Collectors.toCollection(TreeSet<Population>::new)));
+        .collect(Collectors.toCollection(TreeSet<Population>::new)));
     }
     if(dto.getAttributesCount() > 0) {
       dto.getAttributesList().forEach(attributeDto -> study.addAttribute(attributeDtos.fromDto(attributeDto)));

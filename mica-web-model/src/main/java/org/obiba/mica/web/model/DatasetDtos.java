@@ -58,6 +58,9 @@ class DatasetDtos {
   private StudySummaryDtos studySummaryDtos;
 
   @Inject
+  private PermissionsDtos permissionsDtos;
+
+  @Inject
   private TaxonomyDtos taxonomyDtos;
 
   @Inject
@@ -70,7 +73,7 @@ class DatasetDtos {
   private HarmonizationDatasetStateRepository harmonizationDatasetStateRepository;
 
   @NotNull
-  Mica.DatasetDto.Builder asDtoBuilder(@NotNull StudyDataset dataset) {
+  Mica.DatasetDto.Builder asDtoBuilder(@NotNull StudyDataset dataset, boolean asDraft) {
     Mica.DatasetDto.Builder builder = asBuilder(dataset);
 
     if(dataset.hasStudyTable() && !Strings.isNullOrEmpty(dataset.getStudyTable().getStudyId())) {
@@ -89,16 +92,23 @@ class DatasetDtos {
       builder.setPublished(false);
     }
 
+    if(asDraft) builder.setPermissions(permissionsDtos.asDto(dataset));
+
     return builder;
   }
 
   @NotNull
   Mica.DatasetDto asDto(@NotNull StudyDataset dataset) {
-    return asDtoBuilder(dataset).build();
+    return asDto(dataset, false);
   }
 
   @NotNull
-  Mica.DatasetDto.Builder asDtoBuilder(@NotNull HarmonizationDataset dataset) {
+  Mica.DatasetDto asDto(@NotNull StudyDataset dataset, boolean asDraft) {
+    return asDtoBuilder(dataset, asDraft).build();
+  }
+
+  @NotNull
+  Mica.DatasetDto.Builder asDtoBuilder(@NotNull HarmonizationDataset dataset, boolean asDraft) {
     Mica.DatasetDto.Builder builder = asBuilder(dataset);
 
     Mica.HarmonizationDatasetDto.Builder hbuilder = Mica.HarmonizationDatasetDto.newBuilder();
@@ -108,6 +118,8 @@ class DatasetDtos {
       dataset.getStudyTables().forEach(studyTable -> hbuilder
         .addStudyTables(asDto(studyTable).setStudySummary(studySummaryDtos.asDto(studyTable.getStudyId()))));
     }
+
+    if(asDraft) builder.setPermissions(permissionsDtos.asDto(dataset));
 
     builder.setExtension(Mica.HarmonizationDatasetDto.type, hbuilder.build());
 
@@ -125,7 +137,12 @@ class DatasetDtos {
 
   @NotNull
   Mica.DatasetDto asDto(@NotNull HarmonizationDataset dataset) {
-    return asDtoBuilder(dataset).build();
+    return asDto(dataset, false);
+  }
+
+  @NotNull
+  Mica.DatasetDto asDto(@NotNull HarmonizationDataset dataset, boolean asDraft) {
+    return asDtoBuilder(dataset, asDraft).build();
   }
 
   @NotNull

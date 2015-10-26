@@ -65,8 +65,8 @@ public class DraftStudyDatasetsResource {
   @Timed
   public List<Mica.DatasetDto> list(@QueryParam("study") String studyId) {
     return datasetService.findAllDatasets(studyId).stream()
-      .filter(s -> subjectAclService.isPermitted("/draft/study-dataset", "VIEW", s.getId())).map(dtos::asDto)
-      .collect(Collectors.toList());
+      .filter(s -> subjectAclService.isPermitted("/draft/study-dataset", "VIEW", s.getId()))
+      .map(d -> dtos.asDto(d, true)).collect(Collectors.toList());
   }
 
   @POST

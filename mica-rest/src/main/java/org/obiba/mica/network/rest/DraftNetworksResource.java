@@ -59,7 +59,7 @@ public class DraftNetworksResource {
   public List<Mica.NetworkDto> list(@QueryParam("study") String studyId) {
     return networkService.findAllNetworks(studyId).stream()
       .filter(n -> subjectAclService.isPermitted("/draft/network", "VIEW", n.getId()))
-      .sorted((o1, o2) -> o1.getId().compareTo(o2.getId())).map(dtos::asDto).collect(Collectors.toList());
+      .sorted((o1, o2) -> o1.getId().compareTo(o2.getId())).map(n -> dtos.asDto(n, true)).collect(Collectors.toList());
   }
 
   @POST

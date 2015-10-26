@@ -45,7 +45,7 @@ public class DraftStudiesResource {
   public List<Mica.StudyDto> list() {
     return studyService.findAllDraftStudies().stream()
       .filter(s -> subjectAclService.isPermitted("/draft/study", "VIEW", s.getId()))
-      .sorted((o1, o2) -> o1.getId().compareTo(o2.getId())).map(dtos::asDto).collect(Collectors.toList());
+      .sorted((o1, o2) -> o1.getId().compareTo(o2.getId())).map(s -> dtos.asDto(s, true)).collect(Collectors.toList());
   }
 
   @GET

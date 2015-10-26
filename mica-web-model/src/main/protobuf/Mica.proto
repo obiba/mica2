@@ -6,6 +6,14 @@ message SessionDto {
   repeated string roles = 2;
 }
 
+message PermissionsDto {
+  optional bool add = 1;
+  optional bool view = 2;
+  optional bool edit = 3;
+  optional bool delete = 4;
+  optional bool publish = 5;
+}
+
 message StudySummaryDto {
   required string id = 1;
   optional TimestampsDto timestamps = 2;
@@ -65,6 +73,7 @@ message StudyStateDto {
   optional string publicationDate = 4;
   optional string publishedBy = 5;
   optional string publishedId = 6;
+  optional PermissionsDto permissions = 7;
 
   extend StudySummaryDto {
     optional StudyStateDto state = 1000;
@@ -99,6 +108,7 @@ message StudyDto {
   optional string opal = 25;
   optional string opalUsername = 26;
   optional string opalPassword = 27;
+  optional PermissionsDto permissions = 28;
 
   message StudyMethodsDto {
     repeated string designs = 1;
@@ -251,9 +261,10 @@ message NetworkDto {
   repeated LocalizedStringDto info = 11;
   repeated string studyIds = 12;
   repeated StudySummaryDto studySummaries = 13;
-  required bool published = 14;
+  optional bool published = 14;
   optional AttachmentDto logo = 15;
   repeated AttributeDto attributes = 16;
+  optional PermissionsDto permissions = 17;
   extensions 1000 to max;
 }
 
@@ -408,6 +419,7 @@ message DatasetDto {
   required bool published = 6;
   repeated AttributeDto attributes = 7;
   optional TimestampsDto timestamps = 8;
+  optional PermissionsDto permissions = 9;
 
   extensions 1000 to max;
 
@@ -667,6 +679,7 @@ message FileDto {
   optional AttachmentStateDto state = 7;
   optional AttachmentDto attachment = 8;
   optional string revisionStatus = 9;
+  optional PermissionsDto permissions = 10;
 }
 
 message AttachmentStateDto {

@@ -68,7 +68,7 @@ public class DraftHarmonizationDatasetResource extends
   @GET
   public Mica.DatasetDto get() {
     subjectAclService.isPermitted("/draft/harmonization-dataset", "VIEW", id);
-    return dtos.asDto(datasetService.findById(id));
+    return dtos.asDto(datasetService.findById(id), true);
   }
 
   @DELETE

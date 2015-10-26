@@ -67,7 +67,7 @@ public class DraftStudyDatasetResource extends
   @GET
   public Mica.DatasetDto get() {
     subjectAclService.isPermitted("/draft/study-dataset", "VIEW", id);
-    return dtos.asDto(getDataset());
+    return dtos.asDto(getDataset(), true);
   }
 
   @DELETE

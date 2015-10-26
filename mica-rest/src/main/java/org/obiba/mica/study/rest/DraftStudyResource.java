@@ -62,7 +62,7 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
   @Timed
   public Mica.StudyDto get() {
     subjectAclService.checkPermission("/draft/study", "VIEW", id);
-    return dtos.asDto(studyService.findDraft(id));
+    return dtos.asDto(studyService.findDraft(id), true);
   }
 
   @PUT

@@ -96,7 +96,12 @@ public class Dtos {
 
   @NotNull
   public StudyDto asDto(@NotNull Study study) {
-    return studyDtos.asDto(study);
+    return asDto(study, false);
+  }
+
+  @NotNull
+  public StudyDto asDto(@NotNull Study study, boolean asDraft) {
+    return studyDtos.asDto(study, asDraft);
   }
 
   @NotNull
@@ -151,12 +156,17 @@ public class Dtos {
 
   @NotNull
   public NetworkDto.Builder asDtoBuilder(@NotNull Network network) {
-    return networkDtos.asDtoBuilder(network);
+    return networkDtos.asDtoBuilder(network, false);
   }
 
   @NotNull
   public NetworkDto asDto(@NotNull Network network) {
-    return networkDtos.asDto(network);
+    return networkDtos.asDto(network, false);
+  }
+
+  @NotNull
+  public NetworkDto asDto(@NotNull Network network, boolean asDraft) {
+    return networkDtos.asDto(network, asDraft);
   }
 
   @NotNull
@@ -226,19 +236,24 @@ public class Dtos {
 
   @NotNull
   public Mica.DatasetDto asDto(@NotNull Dataset dataset) {
+    return asDto(dataset, false);
+  }
+
+  @NotNull
+  public Mica.DatasetDto asDto(@NotNull Dataset dataset, boolean asDraft) {
     if(dataset instanceof StudyDataset) {
-      return datasetDtos.asDto((StudyDataset) dataset);
+      return datasetDtos.asDto((StudyDataset) dataset, asDraft);
     } else {
-      return datasetDtos.asDto((HarmonizationDataset) dataset);
+      return datasetDtos.asDto((HarmonizationDataset) dataset, asDraft);
     }
   }
 
   @NotNull
   public Mica.DatasetDto.Builder asDtoBuilder(@NotNull Dataset dataset) {
     if(dataset instanceof StudyDataset) {
-      return datasetDtos.asDtoBuilder((StudyDataset) dataset);
+      return datasetDtos.asDtoBuilder((StudyDataset) dataset, false);
     } else {
-      return datasetDtos.asDtoBuilder((HarmonizationDataset) dataset);
+      return datasetDtos.asDtoBuilder((HarmonizationDataset) dataset, false);
     }
   }
 

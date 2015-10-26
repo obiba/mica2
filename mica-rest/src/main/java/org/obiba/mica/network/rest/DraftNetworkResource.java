@@ -66,7 +66,7 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
   @Timed
   public Mica.NetworkDto get() {
     subjectAclService.isPermitted("/draft/network", "VIEW", id);
-    return dtos.asDto(networkService.findById(id));
+    return dtos.asDto(networkService.findById(id), true);
   }
 
   @PUT
