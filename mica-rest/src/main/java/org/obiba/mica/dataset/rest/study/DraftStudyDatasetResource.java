@@ -67,21 +67,21 @@ public class DraftStudyDatasetResource extends
 
   @GET
   public Mica.DatasetDto get() {
-    subjectAclService.isPermitted("/draft/study-dataset", "VIEW", id);
+    subjectAclService.checkPermission("/draft/study-dataset", "VIEW", id);
     return dtos.asDto(getDataset(), true);
   }
 
   @DELETE
   @Timed
   public void delete() {
-    subjectAclService.isPermitted("/draft/study-dataset", "DELETE", id);
+    subjectAclService.checkPermission("/draft/study-dataset", "DELETE", id);
     datasetService.delete(id);
   }
 
   @PUT
   @Timed
   public Response update(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo) {
-    subjectAclService.isPermitted("/draft/study-dataset", "EDIT", id);
+    subjectAclService.checkPermission("/draft/study-dataset", "EDIT", id);
     if (!datasetDto.hasId() || !datasetDto.getId().equals(id)) throw new IllegalArgumentException("Not the expected dataset id");
     Dataset dataset = dtos.fromDto(datasetDto);
     if(!(dataset instanceof StudyDataset)) throw new IllegalArgumentException("A study dataset is expected");
@@ -94,7 +94,7 @@ public class DraftStudyDatasetResource extends
   @Path("/_index")
   @Timed
   public Response index() {
-    subjectAclService.isPermitted("/draft/study-dataset", "EDIT", id);
+    subjectAclService.checkPermission("/draft/study-dataset", "EDIT", id);
     datasetService.index(id);
     return Response.noContent().build();
   }
@@ -102,7 +102,7 @@ public class DraftStudyDatasetResource extends
   @PUT
   @Path("/_publish")
   public Response publish() {
-    subjectAclService.isPermitted("/draft/study-dataset", "PUBLISH", id);
+    subjectAclService.checkPermission("/draft/study-dataset", "PUBLISH", id);
     datasetService.publish(id, true);
     return Response.noContent().build();
   }
@@ -110,7 +110,7 @@ public class DraftStudyDatasetResource extends
   @DELETE
   @Path("/_publish")
   public Response unPublish() {
-    subjectAclService.isPermitted("/draft/study-dataset", "PUBLISH", id);
+    subjectAclService.checkPermission("/draft/study-dataset", "PUBLISH", id);
     datasetService.publish(id, false);
     return Response.noContent().build();
   }
@@ -118,7 +118,7 @@ public class DraftStudyDatasetResource extends
   @GET
   @Path("/table")
   public Magma.TableDto getTable() {
-    subjectAclService.isPermitted("/draft/study-dataset", "VIEW", id);
+    subjectAclService.checkPermission("/draft/study-dataset", "VIEW", id);
     Magma.TableDto dto = datasetService.getTableDto(getDataset());
     return dto;
   }
@@ -126,7 +126,7 @@ public class DraftStudyDatasetResource extends
   @GET
   @Path("/variables")
   public List<Mica.DatasetVariableDto> getVariables() {
-    subjectAclService.isPermitted("/draft/study-dataset", "VIEW", id);
+    subjectAclService.checkPermission("/draft/study-dataset", "VIEW", id);
     ImmutableList.Builder<Mica.DatasetVariableDto> builder = ImmutableList.builder();
     datasetService.getDatasetVariables(getDataset()).forEach(variable -> builder.add(dtos.asDto(variable)));
     return builder.build();
@@ -134,7 +134,7 @@ public class DraftStudyDatasetResource extends
 
   @Path("/variable/{variable}")
   public DraftStudyDatasetVariableResource getVariable(@PathParam("variable") String variable) {
-    subjectAclService.isPermitted("/draft/study-dataset", "VIEW", id);
+    subjectAclService.checkPermission("/draft/study-dataset", "VIEW", id);
     DraftStudyDatasetVariableResource resource = applicationContext.getBean(DraftStudyDatasetVariableResource.class);
     resource.setDatasetId(id);
     resource.setVariableName(variable);
@@ -144,7 +144,7 @@ public class DraftStudyDatasetResource extends
   @POST
   @Path("/facets")
   public Search.QueryResultDto getFacets(Search.QueryTermsDto query) {
-    subjectAclService.isPermitted("/draft/study-dataset", "VIEW", id);
+    subjectAclService.checkPermission("/draft/study-dataset", "VIEW", id);
     return datasetService.getFacets(getDataset(), query);
   }
 
@@ -152,7 +152,7 @@ public class DraftStudyDatasetResource extends
   @Path("/_status")
   @Timed
   public Response updateStatus(@QueryParam("value") String status) {
-    subjectAclService.isPermitted("/draft/study-dataset", "VIEW", id);
+    subjectAclService.checkPermission("/draft/study-dataset", "VIEW", id);
     datasetService.updateStatus(id, RevisionStatus.valueOf(status.toUpperCase()));
 
     return Response.noContent().build();
@@ -161,7 +161,7 @@ public class DraftStudyDatasetResource extends
   @GET
   @Path("/commit/{commitId}/view")
   public Mica.DatasetDto getFromCommit(@NotNull @PathParam("commitId") String commitId) throws IOException {
-    subjectAclService.isPermitted("/draft/study-dataset", "VIEW", id);
+    subjectAclService.checkPermission("/draft/study-dataset", "VIEW", id);
     return dtos.asDto(datasetService.getFromCommit(datasetService.findDraft(id), commitId), true);
   }
 

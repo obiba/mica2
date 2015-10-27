@@ -66,14 +66,14 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
   @GET
   @Timed
   public Mica.NetworkDto get() {
-    subjectAclService.isPermitted("/draft/network", "VIEW", id);
+    subjectAclService.checkPermission("/draft/network", "VIEW", id);
     return dtos.asDto(networkService.findById(id), true);
   }
 
   @PUT
   @Timed
   public Response update(@SuppressWarnings("TypeMayBeWeakened") Mica.NetworkDto networkDto) {
-    subjectAclService.isPermitted("/draft/network", "EDIT", id);
+    subjectAclService.checkPermission("/draft/network", "EDIT", id);
     // ensure network exists
     networkService.findById(id);
 
@@ -86,7 +86,7 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
   @Path("/_index")
   @Timed
   public Response index() {
-    subjectAclService.isPermitted("/draft/network", "EDIT", id);
+    subjectAclService.checkPermission("/draft/network", "EDIT", id);
     networkService.index(id);
     return Response.noContent().build();
   }
@@ -94,7 +94,7 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
   @PUT
   @Path("/_publish")
   public Response publish() {
-    subjectAclService.isPermitted("/draft/network", "PUBLISH", id);
+    subjectAclService.checkPermission("/draft/network", "PUBLISH", id);
     networkService.publish(id);
     return Response.noContent().build();
   }
@@ -102,7 +102,7 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
   @DELETE
   @Path("/_publish")
   public Response unPublish() {
-    subjectAclService.isPermitted("/draft/network", "PUBLISH", id);
+    subjectAclService.checkPermission("/draft/network", "PUBLISH", id);
     networkService.unPublish(id);
     return Response.noContent().build();
   }
@@ -110,7 +110,7 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
   @DELETE
   @Timed
   public Response delete() {
-    subjectAclService.isPermitted("/draft/network", "DELETE", id);
+    subjectAclService.checkPermission("/draft/network", "DELETE", id);
     try {
       networkService.delete(id);
     } catch (NoSuchNetworkException e) {
@@ -123,7 +123,7 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
   @Path("/_status")
   @Timed
   public Response toUnderReview(@QueryParam("value") String status) {
-    subjectAclService.isPermitted("/draft/network", "EDIT", id);
+    subjectAclService.checkPermission("/draft/network", "EDIT", id);
     networkService.updateStatus(id, RevisionStatus.valueOf(status.toUpperCase()));
 
     return Response.noContent().build();
