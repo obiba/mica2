@@ -76,7 +76,7 @@ public abstract class AbstractFileSystemResource {
   protected Mica.FileDto doGetFile(String path) {
     String basePath = normalizePath(path);
     if(!isRoot(basePath)) subjectAclService
-      .checkPermission(String.format("%s/file/%s", isPublishedFileSystem() ? "" : "/draft", FileUtils.getFirstFolder(basePath)),
+      .checkPermission(String.format("%s/file", isPublishedFileSystem() ? "" : "/draft"),
         "VIEW", basePath);
     if(path.endsWith("/")) return getFolderDto(basePath);
 

@@ -1,13 +1,15 @@
 package org.obiba.mica.security.realm;
 
-import org.apache.shiro.authz.permission.WildcardPermissionResolver;
+import org.apache.shiro.authz.Permission;
+import org.apache.shiro.authz.permission.PermissionResolver;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MicaPermissionResolver extends WildcardPermissionResolver {
+public class MicaPermissionResolver implements PermissionResolver {
 
-  public MicaPermissionResolver() {
-
+  @Override
+  public Permission resolvePermission(String permissionString) {
+    return new ExtendedWildcardPermission(permissionString);
   }
 
 }

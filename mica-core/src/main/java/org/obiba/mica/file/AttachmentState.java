@@ -50,7 +50,7 @@ public class AttachmentState extends AbstractAuditableDocument implements Timest
 
   @JsonIgnore
   public String getFullPath() {
-    return String.format("%s/%s", path, name);
+    return FileUtils.isDirectory(this) ? path : String.format("%s/%s", path, name);
   }
 
   public void setPath(String path) {

@@ -15,7 +15,7 @@
     <i class="fa fa-star-o"></i>
     <span translate>publish.un-publish</span>
   </a>
-  <div class="btn-group" nf-if="state.permissions.edit">
+  <div class="btn-group" ng-if="state.permissions.edit">
     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
       aria-expanded="false">
       {{'publish.status.' + state.revisionStatus | translate}} <span class="caret"></span>

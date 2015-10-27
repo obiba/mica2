@@ -55,7 +55,7 @@ public class DraftHarmonizationDatasetsResource {
   private ApplicationContext applicationContext;
 
   /**
-   * Get all {@link org.obiba.mica.dataset.domain.HarmonizationDataset}, optionally filtered by study.
+   * Get all {@link HarmonizationDataset}, optionally filtered by study.
    *
    * @param studyId can be null, in which case all datasets are returned
    * @return

@@ -18,6 +18,7 @@ import org.apache.shiro.cache.CacheManager;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.PermissionUtils;
+import org.obiba.mica.security.PermissionsUtils;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.domain.SubjectAcl;
 import org.obiba.mica.security.event.SubjectAclUpdatedEvent;
@@ -31,8 +32,6 @@ import com.google.common.eventbus.Subscribe;
 public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermissionResolver {
 
   private static final String[] ALL_RESOURCES = { "network", "study", "study-dataset", "harmonization-dataset" };
-
-  private static final String[] EDITOR_OPERATIONS = { "ADD", "VIEW", "EDIT", "DELETE" };
 
   @Inject
   private SubjectAclService subjectAclService;
@@ -127,7 +126,8 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
   }
 
   private List<String> loadSubjectPermissions(String name, SubjectAcl.Type type) {
-    return subjectAclService.find(name, type).stream().map(SubjectAcl::getPermission).collect(Collectors.toList());
+    return subjectAclService.findBySubject(name, type).stream().map(SubjectAcl::getPermission)
+      .collect(Collectors.toList());
   }
 
   //
@@ -149,17 +149,17 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
           perms = mergePermissions("/files:UPLOAD", permissions);
           Arrays.stream(ALL_RESOURCES).forEach(e -> {
             perms.addAll(toPermissions(String.format("/draft/%s", e)));
-            perms.addAll(toPermissions(String.format("/draft/file/%s", e)));
+            perms.addAll(toPermissions(String.format("/draft/file:*:/%s", e)));
           });
           return perms;
         case Roles.MICA_EDITOR:
           // all edition permissions
           perms = mergePermissions("/files:UPLOAD", permissions);
           Arrays.stream(ALL_RESOURCES).forEach(e -> {
-            Arrays.stream(EDITOR_OPERATIONS).forEach(o -> {
+            PermissionsUtils.EDITOR_ACTIONS.forEach(o -> {
               perms.addAll(toPermissions(String.format("/draft/%s:%s", e, o)));
+              perms.addAll(toPermissions(String.format("/draft/file:%s:/%s", o, e)));
             });
-            perms.addAll(toPermissions(String.format("/draft/file/%s:VIEW,/draft/file/%s:EDIT", e, e)));
           });
           return perms;
         case Roles.MICA_DAO:

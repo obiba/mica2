@@ -22,9 +22,8 @@ public class FileUtils {
     return state != null && FileSystemService.DIR_NAME.equals(state.getName());
   }
 
-  public static String getFirstFolder(String basePath) {
-    if(isRoot(basePath)) return "";
-    return basePath.split("/")[1];
+  public static String getParentPath(String path) {
+    int idx = path.lastIndexOf('/');
+    return idx == 0 ? "/" : path.substring(0, idx);
   }
-
 }

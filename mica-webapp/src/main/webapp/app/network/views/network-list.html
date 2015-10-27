@@ -14,7 +14,7 @@
     <span translate>networks</span>
   </h2>
 
-  <a ng-href="#/network/new" class="btn btn-info">
+  <a ng-href="#/network/new" class="btn btn-info" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
     <i class="fa fa-plus"></i> <span translate>network.add</span>
   </a>
 

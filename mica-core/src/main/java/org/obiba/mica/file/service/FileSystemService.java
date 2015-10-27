@@ -117,7 +117,7 @@ public class FileSystemService {
     state.setLastModifiedBy(getCurrentUsername());
     if(state.isNew()) {
       if(FileUtils.isDirectory(state)) {
-        mkdirs(getParentPath(saved.getPath()));
+        mkdirs(FileUtils.getParentPath(saved.getPath()));
       } else {
         mkdirs(saved.getPath());
       }
@@ -214,7 +214,7 @@ public class FileSystemService {
     if(publish) {
       // publish the parent directories (if any)
       if(!FileUtils.isRoot(state.getPath())) {
-        publishDirs(getParentPath(state.getPath()), publisher);
+        publishDirs(FileUtils.getParentPath(state.getPath()), publisher);
       }
       state.publish(publisher);
       state.setRevisionStatus(RevisionStatus.DRAFT);
@@ -661,11 +661,6 @@ public class FileSystemService {
     return subject == null || subject.getPrincipal() == null
       ? AbstractGitWriteCommand.DEFAULT_AUTHOR_NAME
       : subject.getPrincipal().toString();
-  }
-
-  private String getParentPath(String path) {
-    int idx = path.lastIndexOf('/');
-    return idx == 0 ? "/" : path.substring(0, idx);
   }
 
   private void validateFileName(String name) {

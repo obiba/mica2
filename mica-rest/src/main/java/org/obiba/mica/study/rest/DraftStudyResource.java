@@ -22,6 +22,7 @@ import org.obiba.mica.core.service.AbstractGitPersistableService;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.rest.FileResource;
 import org.obiba.mica.file.service.FileSystemService;
+import org.obiba.mica.security.rest.SubjectAclResource;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.service.StudyService;
@@ -139,6 +140,14 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
   public Mica.StudyDto getStudyFromCommit(@NotNull @PathParam("commitId") String commitId) throws IOException {
     subjectAclService.checkPermission("/draft/study", "VIEW", id);
     return dtos.asDto(studyService.getFromCommit(studyService.findDraft(id), commitId));
+  }
+
+  @Path("/permissions")
+  public SubjectAclResource permissions() {
+    SubjectAclResource subjectAclResource = applicationContext.getBean(SubjectAclResource.class);
+    subjectAclResource.setResourceInstance("/draft/study", id);
+    subjectAclResource.setFileResourceInstance("/draft/file", "/study/" + id);
+    return subjectAclResource;
   }
 
   @Override
