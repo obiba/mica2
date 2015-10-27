@@ -43,7 +43,7 @@ mica.admin
             authorizedRoles: ['mica-administrator']
           }
         })
-        .when('/admin/file-system', {
+        .when('/admin/files', {
           templateUrl: 'app/admin/views/file-system.html',
           access: {
             authorizedRoles: ['mica-administrator']

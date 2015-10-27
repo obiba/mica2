@@ -46,17 +46,17 @@
     </div>
     <div class="navbar-collapse collapse" id="navbar-main" ng-switch="authenticated">
       <ul class="nav navbar-nav">
-        <li>
+        <li ng-if="authenticated">
           <a href="#/network">
             <span translate>networks</span>
           </a>
         </li>
-        <li>
+        <li ng-if="authenticated">
           <a href="#/study">
             <span translate>studies</span>
           </a>
         </li>
-        <li class="dropdown">
+        <li class="dropdown" ng-if="authenticated">
           <a href="" class="dropdown-toggle" data-toggle="dropdown">
             <span translate>datasets</span>
             <i class="fa fa-caret-down"></i></a>
