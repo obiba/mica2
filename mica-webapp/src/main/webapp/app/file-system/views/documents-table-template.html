@@ -1,7 +1,13 @@
-<div class="table-responsive">
+<div class="table-responsive panel panel-default">
+  <div class="panel-heading" ng-if="selected.length > 0">{{selected.length}} <span translate>items-selected</span>.
+    <a href="" ng-click="selectAll()" ng-if="selected.length < data.document.children.length"><i
+      class="fa fa-check"></i> <span translate>select-all</span></a>
+    <a href="" ng-click="clearSelection()"><i class="fa fa-times"></i> <span translate>clear-selection</span></a>
+  </div>
   <table class="table table-bordered table-striped no-padding no-margin">
     <thead>
     <tr>
+      <th><input type="checkbox" ng-checked="!hasUnselected" ng-click="selectPage()"></th>
       <th translate>name</th>
       <th translate>last-modified</th>
       <th translate>size</th>
@@ -12,14 +18,16 @@
     </thead>
     <tbody>
     <tr ng-show="!data.isRoot && !data.search.active">
+      <td></td>
       <td colspan="5">
         <i class="fa fa-folder"></i>
         <span><a href class="no-text-decoration" ng-click="navigateBack()"> ..</a></span>
       </td>
     </tr>
-    <tr dir-paginate="document in data.document.children | itemsPerPage: 20"
-      ng-init="fileDocument = isFile(document)">
+    <tr dir-paginate="document in data.document.children | itemsPerPage: pagination.itemsPerPage"
+      ng-init="fileDocument = isFile(document)" current-page="pagination.currentPage">
 
+      <td><input type="checkbox" ng-model="document.selected"></td>
       <td>
         <span ng-if="document.permissions.view">
           <i class="fa {{getDocumentIcon(document)}}"></i>
