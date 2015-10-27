@@ -26,6 +26,9 @@ class AttachmentDtos {
   private AttributeDtos attributeDtos;
 
   @Inject
+  private PermissionsDtos permissionsDtos;
+
+  @Inject
   private FileSystemService fileSystemService;
 
   @NotNull
@@ -57,7 +60,10 @@ class AttachmentDtos {
       if(state.isPublished()) {
         builder.setAttachment(asDto(state.getPublishedAttachment()));
       }
-    } else builder.setState(asDto(state, detailed));
+    } else {
+      builder.setState(asDto(state, detailed));
+      builder.setPermissions(permissionsDtos.asDto(state));
+    }
 
     if(builder.getType() == Mica.FileType.FOLDER) {
       // get the number of files in the folder

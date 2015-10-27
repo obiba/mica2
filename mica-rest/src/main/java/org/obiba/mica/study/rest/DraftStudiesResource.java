@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
@@ -24,11 +25,13 @@ import org.springframework.context.ApplicationContext;
 import com.codahale.metrics.annotation.Timed;
 
 @Path("/draft")
-@RequiresPermissions({ "/draft:EDIT" })
 public class DraftStudiesResource {
 
   @Inject
   private StudyService studyService;
+
+  @Inject
+  private SubjectAclService subjectAclService;
 
   @Inject
   private Dtos dtos;
@@ -40,8 +43,9 @@ public class DraftStudiesResource {
   @Path("/studies")
   @Timed
   public List<Mica.StudyDto> list() {
-    return studyService.findAllDraftStudies().stream().sorted((o1, o2) -> o1.getId().compareTo(o2.getId()))
-      .map(dtos::asDto).collect(Collectors.toList());
+    return studyService.findAllDraftStudies().stream()
+      .filter(s -> subjectAclService.isPermitted("/draft/study", "VIEW", s.getId()))
+      .sorted((o1, o2) -> o1.getId().compareTo(o2.getId())).map(s -> dtos.asDto(s, true)).collect(Collectors.toList());
   }
 
   @GET
@@ -49,7 +53,8 @@ public class DraftStudiesResource {
   @Timed
   public List<Mica.StudySummaryDto> listSummaries(@QueryParam("id") List<String> ids) {
     List<Study> studies = ids.isEmpty() ? studyService.findAllDraftStudies() : studyService.findAllDraftStudies(ids);
-    return studies.stream().map(dtos::asSummaryDto).collect(Collectors.toList());
+    return studies.stream().filter(s -> subjectAclService.isPermitted("/draft/study", "VIEW", s.getId()))
+      .map(dtos::asSummaryDto).collect(Collectors.toList());
   }
 
   @GET
@@ -57,12 +62,13 @@ public class DraftStudiesResource {
   @Timed
   public List<Mica.DocumentDigestDto> listDigests(@QueryParam("id") List<String> ids) {
     List<Study> studies = ids.isEmpty() ? studyService.findAllDraftStudies() : studyService.findAllDraftStudies(ids);
-    return studies.stream().map(dtos::asDigestDto).collect(Collectors.toList());
+    return studies.stream().filter(s -> subjectAclService.isPermitted("/draft/study", "VIEW", s.getId())).map(dtos::asDigestDto).collect(Collectors.toList());
   }
 
   @POST
   @Path("/studies")
   @Timed
+  @RequiresPermissions({"/draft/study:ADD"})
   public Response create(@SuppressWarnings("TypeMayBeWeakened") Mica.StudyDto studyDto, @Context UriInfo uriInfo,
     @Nullable @QueryParam("comment") String comment) {
     Study study = dtos.fromDto(studyDto);

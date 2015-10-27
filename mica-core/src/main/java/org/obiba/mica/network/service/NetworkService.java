@@ -267,6 +267,11 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
     return Network.class;
   }
 
+  @Override
+  public String getTypeName() {
+    return "network";
+  }
+
   @NotNull
   @Override
   public Network findDraft(@NotNull String id) throws NoSuchEntityException {

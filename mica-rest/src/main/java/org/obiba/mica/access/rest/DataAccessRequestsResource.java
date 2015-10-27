@@ -60,7 +60,7 @@ public class DataAccessRequestsResource {
 
   @POST
   @Timed
-  @RequiresPermissions("/data-access-requests:ADD")
+  @RequiresPermissions("/data-access-request:ADD")
   public Response create(Mica.DataAccessRequestDto dto, @Context UriInfo uriInfo) {
     DataAccessRequest request = dtos.fromDto(dto);
 

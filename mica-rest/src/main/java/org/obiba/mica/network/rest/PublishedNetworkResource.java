@@ -56,18 +56,24 @@ public class PublishedNetworkResource {
   @GET
   @Timed
   public Mica.NetworkDto get() {
-    return dtos.asDto(publishedNetworkService.findById(id));
+    return dtos.asDto(getNetwork());
   }
 
   @Path("/file/{fileId}")
   public FileResource study(@PathParam("fileId") String fileId) {
     FileResource fileResource = applicationContext.getBean(FileResource.class);
-    Network network = publishedNetworkService.findById(id);
+    Network network = getNetwork();
 
     if(network.getLogo() == null) throw NoSuchEntityException.withId(Attachment.class, fileId);
 
     fileResource.setAttachment(network.getLogo());
 
     return fileResource;
+  }
+
+  private Network getNetwork() {
+    Network network = publishedNetworkService.findById(id);
+    if (network == null) throw NoSuchNetworkException.withId(id);
+    return network;
   }
 }

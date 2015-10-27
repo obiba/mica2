@@ -26,7 +26,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.AbstractGitPersistableResource;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.domain.StudyTable;
@@ -35,6 +34,7 @@ import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
+import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Magma;
 import org.obiba.opal.web.model.Search;
@@ -57,7 +57,7 @@ public class DraftHarmonizationDatasetResource extends
   private HarmonizationDatasetService datasetService;
 
   @Inject
-  private org.obiba.mica.web.model.Dtos dtos;
+  private Dtos dtos;
 
   private String id;
 
@@ -66,21 +66,21 @@ public class DraftHarmonizationDatasetResource extends
   }
 
   @GET
-  @RequiresPermissions({"/draft:EDIT"})
   public Mica.DatasetDto get() {
-    return dtos.asDto(datasetService.findById(id));
+    subjectAclService.isPermitted("/draft/harmonization-dataset", "VIEW", id);
+    return dtos.asDto(datasetService.findById(id), true);
   }
 
   @DELETE
-  @RequiresPermissions({"/draft:EDIT"})
   public void delete(){
+    subjectAclService.isPermitted("/draft/harmonization-dataset", "DELETE", id);
     datasetService.delete(id);
   }
 
   @PUT
   @Timed
-  @RequiresPermissions({"/draft:EDIT"})
   public Response update(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo) {
+    subjectAclService.isPermitted("/draft/harmonization-dataset", "EDIT", id);
     if(!datasetDto.hasId() || !datasetDto.getId().equals(id))
       throw new IllegalArgumentException("Not the expected dataset id");
     Dataset dataset = dtos.fromDto(datasetDto);
@@ -93,47 +93,47 @@ public class DraftHarmonizationDatasetResource extends
   @PUT
   @Path("/_index")
   @Timed
-  @RequiresPermissions({"/draft:PUBLISH"})
   public Response index() {
+    subjectAclService.isPermitted("/draft/harmonization-dataset", "EDIT", id);
     datasetService.index(id);
     return Response.noContent().build();
   }
 
   @PUT
   @Path("/_publish")
-  @RequiresPermissions({"/draft:PUBLISH"})
   public Response publish() {
+    subjectAclService.isPermitted("/draft/harmonization-dataset", "PUBLISH", id);
     datasetService.publish(id, true);
     return Response.noContent().build();
   }
 
   @DELETE
   @Path("/_publish")
-  @RequiresPermissions({"/draft:PUBLISH"})
   public Response unPublish() {
+    subjectAclService.isPermitted("/draft/harmonization-dataset", "PUBLISH", id);
     datasetService.publish(id, false);
     return Response.noContent().build();
   }
 
   @GET
   @Path("/table")
-  @RequiresPermissions({"/draft:EDIT"})
   public Magma.TableDto getTable() {
+    subjectAclService.isPermitted("/draft/harmonization-dataset", "VIEW", id);
     return datasetService.getTableDto(getDataset());
   }
 
   @GET
   @Path("/variables")
-  @RequiresPermissions({"/draft:EDIT"})
   public List<Mica.DatasetVariableDto> getVariables() {
+    subjectAclService.isPermitted("/draft/harmonization-dataset", "VIEW", id);
     ImmutableList.Builder<Mica.DatasetVariableDto> builder = ImmutableList.builder();
     datasetService.getDatasetVariables(getDataset()).forEach(variable -> builder.add(dtos.asDto(variable)));
     return builder.build();
   }
 
   @Path("/variable/{variable}")
-  @RequiresPermissions({"/draft:EDIT"})
   public DraftDataschemaDatasetVariableResource getVariable(@PathParam("variable") String variable) {
+    subjectAclService.isPermitted("/draft/harmonization-dataset", "VIEW", id);
     DraftDataschemaDatasetVariableResource resource = applicationContext.getBean(DraftDataschemaDatasetVariableResource.class);
     resource.setDatasetId(id);
     resource.setVariableName(variable);
@@ -141,8 +141,8 @@ public class DraftHarmonizationDatasetResource extends
   }
 
   @Path("/study/{study}/variable/{variable}")
-  @RequiresPermissions({"/draft:EDIT"})
   public DraftHarmonizedDatasetVariableResource getVariable(@PathParam("study") String studyId, @PathParam("variable") String variable) {
+    subjectAclService.isPermitted("/draft/harmonization-dataset", "VIEW", id);
     DraftHarmonizedDatasetVariableResource resource = applicationContext.getBean(DraftHarmonizedDatasetVariableResource.class);
     resource.setDatasetId(id);
     resource.setVariableName(variable);
@@ -152,8 +152,8 @@ public class DraftHarmonizationDatasetResource extends
 
   @POST
   @Path("/facets")
-  @RequiresPermissions({"/draft:EDIT"})
   public List<Search.QueryResultDto> getFacets(Search.QueryTermsDto query) {
+    subjectAclService.isPermitted("/draft/harmonization-dataset", "VIEW", id);
     ImmutableList.Builder<Search.QueryResultDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset();
     for(StudyTable table : dataset.getStudyTables()) {
@@ -165,18 +165,18 @@ public class DraftHarmonizationDatasetResource extends
   @PUT
   @Path("/_status")
   @Timed
-  @RequiresPermissions({"/draft:EDIT"})
-  public Response toUnderReview(@QueryParam("value") String status) {
+  public Response updateStatus(@QueryParam("value") String status) {
+    subjectAclService.isPermitted("/draft/harmonization-dataset", "EDIT", id);
     datasetService.updateStatus(id, RevisionStatus.valueOf(status.toUpperCase()));
 
     return Response.noContent().build();
   }
 
   @GET
-  @RequiresPermissions({ "/draft:EDIT" })
   @Path("/commit/{commitId}/view")
   public Mica.DatasetDto getFromCommit(@NotNull @PathParam("commitId") String commitId) throws IOException {
-    return dtos.asDto(datasetService.getFromCommit(datasetService.findDraft(id), commitId));
+    subjectAclService.isPermitted("/draft/harmonization-dataset", "VIEW", id);
+    return dtos.asDto(datasetService.getFromCommit(datasetService.findDraft(id), commitId), true);
   }
 
   private HarmonizationDataset getDataset() {

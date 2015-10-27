@@ -28,6 +28,7 @@ import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.ApplicationContext;
@@ -45,6 +46,9 @@ public class DraftHarmonizationDatasetsResource {
   private HarmonizationDatasetService datasetService;
 
   @Inject
+  private SubjectAclService subjectAclService;
+
+  @Inject
   private Dtos dtos;
 
   @Inject
@@ -59,35 +63,36 @@ public class DraftHarmonizationDatasetsResource {
   @GET
   @Path("/harmonization-datasets")
   @Timed
-  @RequiresPermissions({"/draft:EDIT"})
   public List<Mica.DatasetDto> list(@QueryParam("study") String studyId) {
-    return datasetService.findAllDatasets(studyId).stream().map(dtos::asDto).collect(Collectors.toList());
+    return datasetService.findAllDatasets(studyId).stream()
+      .filter(s -> subjectAclService.isPermitted("/draft/harmonization-dataset", "VIEW", s.getId()))
+      .map(d -> dtos.asDto(d, true)).collect(Collectors.toList());
   }
 
   @POST
   @Path("/harmonization-datasets")
   @Timed
-  @RequiresPermissions({"/draft:EDIT"})
+  @RequiresPermissions({ "/draft/harmonization-dataset:ADD" })
   public Response create(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo) {
     Dataset dataset = dtos.fromDto(datasetDto);
-    if(!(dataset instanceof HarmonizationDataset)) throw new IllegalArgumentException("An harmonization dataset is expected");
+    if(!(dataset instanceof HarmonizationDataset))
+      throw new IllegalArgumentException("An harmonization dataset is expected");
 
     datasetService.save((HarmonizationDataset) dataset);
-    return Response.created(uriInfo.getBaseUriBuilder().segment("draft", "harmonization-dataset", dataset.getId()).build())
-        .build();
+    return Response
+      .created(uriInfo.getBaseUriBuilder().segment("draft", "harmonization-dataset", dataset.getId()).build()).build();
   }
 
   @PUT
   @Path("/harmonization-datasets/_index")
   @Timed
-  @RequiresPermissions({"/draft:PUBLISH"})
+  @RequiresPermissions({ "/draft/harmonization-dataset:PUBLISH" })
   public Response reIndex() {
     datasetService.indexAll(false);
     return Response.noContent().build();
   }
 
   @Path("/harmonization-dataset/{id}")
-  @RequiresPermissions({"/draft:EDIT"})
   public DraftHarmonizationDatasetResource dataset(@PathParam("id") String id) {
     DraftHarmonizationDatasetResource resource = applicationContext.getBean(DraftHarmonizationDatasetResource.class);
     resource.setId(id);

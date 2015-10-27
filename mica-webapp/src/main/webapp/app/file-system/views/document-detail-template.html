@@ -61,7 +61,7 @@
         e-form="buttonChangeType"
         onbeforesave="updateDocumentType(data.document, $data)">
         {{data.document.state.attachment.type || 'empty'}}
-        <span class="hoffset1" ng-if="data.document.revisionStatus === 'DRAFT'"><a href ng-click="buttonChangeType.$show()" ng-hide="buttonChangeType.$visible">
+        <span class="hoffset1" ng-if="data.document.permissions.edit && data.document.revisionStatus === 'DRAFT'"><a href ng-click="buttonChangeType.$show()" ng-hide="buttonChangeType.$visible">
           <i class="fa fa-pencil"></i></a>
         </span>
       </div>
@@ -82,7 +82,7 @@
               </label>
               <localized ng-if="getLocalizedValue(data.document.state.attachment.description, tab.lang)"
                 value="data.document.state.attachment.description" lang="tab.lang"></localized>
-              <a ng-if="data.document.revisionStatus === 'DRAFT'" ng-click="data.editDescField = true" ng-hide="buttonChangeType.$visible && data.document.revisionStatus !== DRAFT">
+              <a ng-if="data.document.permissions.edit && data.document.revisionStatus === 'DRAFT'" ng-click="data.editDescField = true" ng-hide="buttonChangeType.$visible && data.document.revisionStatus !== DRAFT">
                 <i class="fa fa-pencil"></i>
               </a>
             </div>

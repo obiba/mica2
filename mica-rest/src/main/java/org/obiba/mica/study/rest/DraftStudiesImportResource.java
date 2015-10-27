@@ -30,23 +30,18 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.study.service.StudyPackageImportService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Path("/draft/studies/_import")
-@RequiresPermissions({"/draft:EDIT"})
 public class DraftStudiesImportResource {
 
-  private static final Logger log = LoggerFactory.getLogger(DraftStudiesImportResource.class);
-
-@Inject
-private StudyPackageImportService studyPackageImportService;
-
+  @Inject
+  private StudyPackageImportService studyPackageImportService;
 
   @POST
   @Consumes(MediaType.MULTIPART_FORM_DATA)
+  @RequiresPermissions("/draft/study:ADD")
   public Response importZip(@Context HttpServletRequest request,
-      @QueryParam("publish") @DefaultValue("false") boolean publish) throws FileUploadException, IOException {
+    @QueryParam("publish") @DefaultValue("false") boolean publish) throws FileUploadException, IOException {
     FileItem uploadedFile = getUploadedFile(request);
 
     studyPackageImportService.importZip(uploadedFile.getInputStream(), publish);
@@ -54,15 +49,13 @@ private StudyPackageImportService studyPackageImportService;
     return Response.ok().build();
   }
 
-
-
   /**
    * Returns the first {@code FileItem} that is represents a file upload field. If no such field exists, this method
    * returns null
    *
    * @param request
    * @return
-   * @throws org.apache.commons.fileupload.FileUploadException
+   * @throws FileUploadException
    */
   FileItem getUploadedFile(HttpServletRequest request) throws FileUploadException {
     FileItemFactory factory = new DiskFileItemFactory();

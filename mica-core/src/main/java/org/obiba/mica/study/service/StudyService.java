@@ -307,6 +307,11 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
   }
 
   @Override
+  public String getTypeName() {
+    return "study";
+  }
+
+  @Override
   public Study getFromCommit(@NotNull Study study, @NotNull String commitId) {
     String studyBlob = gitService.getBlob(study, commitId, Study.class);
     InputStream inputStream = new ByteArrayInputStream(studyBlob.getBytes(StandardCharsets.UTF_8));

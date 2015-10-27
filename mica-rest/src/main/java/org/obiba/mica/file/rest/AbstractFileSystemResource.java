@@ -1,6 +1,5 @@
 package org.obiba.mica.file.rest;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -10,14 +9,13 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.math3.util.Pair;
-import org.joda.time.DateTime;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.RevisionStatus;
-import org.obiba.mica.core.domain.Timestamped;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 
@@ -28,6 +26,9 @@ import static org.obiba.mica.file.FileUtils.isRoot;
 import static org.obiba.mica.file.FileUtils.normalizePath;
 
 public abstract class AbstractFileSystemResource {
+
+  @Inject
+  protected SubjectAclService subjectAclService;
 
   @Inject
   protected FileSystemService fileSystemService;
@@ -74,6 +75,9 @@ public abstract class AbstractFileSystemResource {
 
   protected Mica.FileDto doGetFile(String path) {
     String basePath = normalizePath(path);
+    if(!isRoot(basePath)) subjectAclService
+      .checkPermission(String.format("%s/file/%s", isPublishedFileSystem() ? "" : "/draft", FileUtils.getFirstFolder(basePath)),
+        "VIEW", basePath);
     if(path.endsWith("/")) return getFolderDto(basePath);
 
     try {
@@ -259,37 +263,4 @@ public abstract class AbstractFileSystemResource {
       }).collect(Collectors.toList());
   }
 
-  private static class FolderTimestamps implements Timestamped {
-
-    private final DateTime createdDate;
-
-    private final DateTime lastModifiedDate;
-
-    private FolderTimestamps(List<Mica.FileDto> files) {
-      createdDate = DateTime.parse(files.stream().map(f -> f.getTimestamps().getCreated()).sorted().findFirst().get());
-      lastModifiedDate = DateTime.parse(
-        files.stream().map(f -> f.getTimestamps().getLastUpdate()).sorted(Collections.reverseOrder()).findFirst()
-          .get());
-    }
-
-    @Override
-    public DateTime getCreatedDate() {
-      return createdDate;
-    }
-
-    @Override
-    public void setCreatedDate(DateTime createdDate) {
-
-    }
-
-    @Override
-    public DateTime getLastModifiedDate() {
-      return lastModifiedDate;
-    }
-
-    @Override
-    public void setLastModifiedDate(DateTime lastModifiedDate) {
-
-    }
-  }
 }

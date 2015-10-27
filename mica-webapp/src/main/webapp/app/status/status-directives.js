@@ -8,12 +8,9 @@ mica.status
       scope: {
         state: '=',
         onEdit: '&',
-        canEdit: '&',
         onPublish: '&',
         onUnPublish: '&',
-        canPublish: '&',
         onDelete: '&',
-        canDelete: '&',
         toDraft: '&',
         toUnderReview: '&',
         toDeleted: '&'
@@ -29,12 +26,9 @@ mica.status
       scope: {
         document: '=',
         onEdit: '&',
-        canEdit: '&',
         onPublish: '&',
         onUnPublish: '&',
-        canPublish: '&',
         onDelete: '&',
-        canDelete: '&',
         toDraft: '&',
         toUnderReview: '&',
         toDeleted: '&'

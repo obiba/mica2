@@ -16,7 +16,6 @@ import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.mica.dataset.DatasetVariableResource;
@@ -33,7 +32,6 @@ import com.google.common.collect.ImmutableList;
 
 @Component
 @Scope("request")
-@RequiresPermissions({"/draft:EDIT"})
 public class DraftDataschemaDatasetVariableResource implements DatasetVariableResource {
 
   private String datasetId;

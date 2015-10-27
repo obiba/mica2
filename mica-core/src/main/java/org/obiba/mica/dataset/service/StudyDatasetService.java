@@ -394,6 +394,11 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
   }
 
   @Override
+  public String getTypeName() {
+    return "study-dataset";
+  }
+
+  @Override
   public StudyDataset findDraft(@NotNull String id) throws NoSuchEntityException {
     return findById(id);
   }

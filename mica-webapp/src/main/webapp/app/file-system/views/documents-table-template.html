@@ -21,10 +21,15 @@
       ng-init="fileDocument = isFile(document)">
 
       <td>
-        <span><i class="fa {{getDocumentIcon(document)}}"></i>
+        <span ng-if="document.permissions.view">
+          <i class="fa {{getDocumentIcon(document)}}"></i>
           <a href style="text-decoration: none;" ng-click="navigateTo(document)">
-             {{document.name}}
+            {{document.name}}
           </a>
+        </span>
+        <span ng-if="!document.permissions.view">
+          <i class="fa {{getDocumentIcon(document)}}"></i>
+          {{document.name}}
         </span>
       </td>
       <td>
@@ -52,11 +57,14 @@
       <td>
         <div class="row">
           <div class="col-md-2">
-            <a target="_self" ng-href="ws/draft/file-dl/{{document.path}} "><i class="fa fa-download"></i></a>
+            <a target="_self" ng-href="ws/draft/file-dl/{{document.path}}" ng-if="document.permissions.view"><i
+              class="fa fa-download"></i></a>
 
           </div>
           <div class="col-md-2">
-            <a href ng-click="deleteDocument(document)" ng-if="document.revisionStatus === 'DELETED'"><i class="fa fa-trash"></i></a>
+            <a href ng-click="deleteDocument(document)"
+              ng-if="document.permissions.delete && document.revisionStatus === 'DELETED'"><i
+              class="fa fa-trash"></i></a>
           </div>
         </div>
       </td>

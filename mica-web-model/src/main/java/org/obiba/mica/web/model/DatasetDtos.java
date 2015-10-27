@@ -58,6 +58,9 @@ class DatasetDtos {
   private StudySummaryDtos studySummaryDtos;
 
   @Inject
+  private PermissionsDtos permissionsDtos;
+
+  @Inject
   private TaxonomyDtos taxonomyDtos;
 
   @Inject
@@ -70,7 +73,7 @@ class DatasetDtos {
   private HarmonizationDatasetStateRepository harmonizationDatasetStateRepository;
 
   @NotNull
-  Mica.DatasetDto.Builder asDtoBuilder(@NotNull StudyDataset dataset) {
+  Mica.DatasetDto.Builder asDtoBuilder(@NotNull StudyDataset dataset, boolean asDraft) {
     Mica.DatasetDto.Builder builder = asBuilder(dataset);
 
     if(dataset.hasStudyTable() && !Strings.isNullOrEmpty(dataset.getStudyTable().getStudyId())) {
@@ -82,11 +85,11 @@ class DatasetDtos {
 
     StudyDatasetState state = studyDatasetStateRepository.findOne(dataset.getId());
 
-    if(state != null) {
-      builder.setPublished(state.isPublished());
-      builder.setExtension(Mica.EntityStateDto.datasetState, entityStateDtos.asDto(state));
-    } else {
-      builder.setPublished(false);
+    builder.setPublished(state != null && state.isPublished());
+
+    if(asDraft && state != null) {
+      builder.setExtension(Mica.EntityStateDto.datasetState,
+        entityStateDtos.asDto(state).setPermissions(permissionsDtos.asDto(dataset)).build());
     }
 
     return builder;
@@ -94,11 +97,16 @@ class DatasetDtos {
 
   @NotNull
   Mica.DatasetDto asDto(@NotNull StudyDataset dataset) {
-    return asDtoBuilder(dataset).build();
+    return asDto(dataset, false);
   }
 
   @NotNull
-  Mica.DatasetDto.Builder asDtoBuilder(@NotNull HarmonizationDataset dataset) {
+  Mica.DatasetDto asDto(@NotNull StudyDataset dataset, boolean asDraft) {
+    return asDtoBuilder(dataset, asDraft).build();
+  }
+
+  @NotNull
+  Mica.DatasetDto.Builder asDtoBuilder(@NotNull HarmonizationDataset dataset, boolean asDraft) {
     Mica.DatasetDto.Builder builder = asBuilder(dataset);
 
     Mica.HarmonizationDatasetDto.Builder hbuilder = Mica.HarmonizationDatasetDto.newBuilder();
@@ -113,11 +121,11 @@ class DatasetDtos {
 
     HarmonizationDatasetState state = harmonizationDatasetStateRepository.findOne(dataset.getId());
 
-    if(state != null) {
-      builder.setPublished(state.isPublished());
-      builder.setExtension(Mica.EntityStateDto.datasetState, entityStateDtos.asDto(state));
-    } else {
-      builder.setPublished(false);
+    builder.setPublished(state != null && state.isPublished());
+
+    if(asDraft && state != null) {
+      builder.setExtension(Mica.EntityStateDto.datasetState,
+        entityStateDtos.asDto(state).setPermissions(permissionsDtos.asDto(dataset)).build());
     }
 
     return builder;
@@ -125,7 +133,12 @@ class DatasetDtos {
 
   @NotNull
   Mica.DatasetDto asDto(@NotNull HarmonizationDataset dataset) {
-    return asDtoBuilder(dataset).build();
+    return asDto(dataset, false);
+  }
+
+  @NotNull
+  Mica.DatasetDto asDto(@NotNull HarmonizationDataset dataset, boolean asDraft) {
+    return asDtoBuilder(dataset, asDraft).build();
   }
 
   @NotNull

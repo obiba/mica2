@@ -36,6 +36,9 @@ class NetworkDtos {
   private ContactDtos contactDtos;
 
   @Inject
+  private EntityStateDtos entityStateDtos;
+
+  @Inject
   private LocalizedStringDtos localizedStringDtos;
 
   @Inject
@@ -43,6 +46,9 @@ class NetworkDtos {
 
   @Inject
   private StudySummaryDtos studySummaryDtos;
+
+  @Inject
+  private PermissionsDtos permissionsDtos;
 
   @Inject
   private PublishedStudyService publishedStudyService;
@@ -57,32 +63,22 @@ class NetworkDtos {
   private NetworkService networkService;
 
   @NotNull
-  Mica.NetworkDto.Builder asDtoBuilder(@NotNull Network network) {
+  Mica.NetworkDto.Builder asDtoBuilder(@NotNull Network network, boolean asDraft) {
     Mica.NetworkDto.Builder builder = Mica.NetworkDto.newBuilder();
     NetworkState networkState = networkService.findStateById(network.getId());
 
     builder.setId(network.getId()) //
-      .setTimestamps(TimestampsDtos.asDto(network)) //
-      .setPublished(networkState.isPublished()) //
       .addAllName(localizedStringDtos.asDto(network.getName())) //
       .addAllDescription(localizedStringDtos.asDto(network.getDescription())) //
       .addAllAcronym(localizedStringDtos.asDto(network.getAcronym())) //
       .addAllInfo(localizedStringDtos.asDto(network.getInfos()));
 
-    Mica.EntityStateDto.Builder stateBuilder = Mica.EntityStateDto.newBuilder()//
-      .setRevisionsAhead(networkState.getRevisionsAhead()) //
-      .setRevisionStatus(networkState.getRevisionStatus().name());
-
-    if(networkState.isPublished()) {
-      stateBuilder.setPublishedTag(networkState.getPublishedTag());
-      if(networkState.hasPublishedId()) stateBuilder.setPublishedId(networkState.getPublishedId());
-      if(networkState.hasPublicationDate())
-        stateBuilder.setPublicationDate(networkState.getPublicationDate().toString());
-      if(networkState.getPublishedBy() != null) stateBuilder.setPublishedBy(networkState.getPublishedBy());
+    if(asDraft) {
+      builder.setTimestamps(TimestampsDtos.asDto(network)) //
+        .setPublished(networkState.isPublished()) //
+        .setExtension(Mica.EntityStateDto.state, entityStateDtos.asDto(networkState)
+          .setPermissions(permissionsDtos.asDto(network)).build());
     }
-
-    builder.setPublished(networkState.isPublished());
-    builder.setExtension(Mica.EntityStateDto.state, stateBuilder.build());
 
     if(network.getInvestigators() != null) {
       builder.addAllInvestigators(
@@ -132,9 +128,16 @@ class NetworkDtos {
     return builder;
   }
 
+  /**
+   * Get the dto of the network.
+   *
+   * @param network
+   * @param asDraft
+   * @return
+   */
   @NotNull
-  Mica.NetworkDto asDto(@NotNull Network network) {
-    return asDtoBuilder(network).build();
+  Mica.NetworkDto asDto(@NotNull Network network, boolean asDraft) {
+    return asDtoBuilder(network, asDraft).build();
   }
 
   @NotNull

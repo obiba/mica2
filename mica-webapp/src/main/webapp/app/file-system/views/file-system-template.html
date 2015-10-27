@@ -18,14 +18,14 @@
           e-form="buttonRename"
           onbeforesave="renameDocument($form, data.document, $data)">
           <i class="fa {{getDocumentIcon(data.document)}}"></i> {{data.document.name || 'empty'}}
-          <span ng-if="data.document.revisionStatus === 'DRAFT'" class="hoffset1">
+          <span ng-if="data.document.permissions.edit && data.document.revisionStatus === 'DRAFT'" class="hoffset1">
             <a href ng-click="buttonRename.$show()" ng-hide="buttonRename.$visible">
               <i class="fa fa-pencil"></i>
             </a>
           </span>
         </span>
       </li>
-      <li ng-if="!data.isFile && !data.isRoot && data.document.revisionStatus === 'DRAFT'">
+      <li ng-if="!data.isFile && !data.isRoot && data.document.permissions.edit && data.document.revisionStatus === 'DRAFT'">
         <span editable-text="data.new.folder"
           e-form="buttonCreate"
           onaftersave="createFolder($data)">
@@ -39,11 +39,11 @@
     </ol>
 
     <div class="voffset2">
-      <a ng-if="!data.isFile" ng-disabled="data.document.revisionStatus !== 'DRAFT'" class="btn btn-info"
+      <a ng-if="!data.isFile" ng-disabled="!data.document.permissions.edit || data.document.revisionStatus !== 'DRAFT'" class="btn btn-info"
         ngf-select ngf-change="onFileSelect($files)">
         <i class="fa fa-upload"></i> {{'upload' | translate}}
       </a>
-      <a ng-if="data.isFile"
+      <a ng-if="data.isFile && data.document.permissions.view"
         target="_self"
         class="btn btn-info"
         ng-href="ws/draft/file-dl/{{data.document.path}} ">
@@ -51,19 +51,16 @@
       </a>
 
       <div class="btn-group" role="group">
-        <button type="button" class="btn btn-default"><i class="fa fa-files-o"></i></button>
-        <button ng-disabled="data.document.revisionStatus !== 'DRAFT'" type="button" class="btn btn-default"><i class="fa fa-scissors"></i></button>
-        <button ng-disabled="data.document.revisionStatus !== 'DRAFT'" type="button" class="btn btn-default"><i class="fa fa-clipboard"></i></button>
+        <button ng-disabled="!data.document.permissions.view" type="button" class="btn btn-default"><i class="fa fa-files-o"></i></button>
+        <button ng-disabled="!data.document.permissions.edit || data.document.revisionStatus !== 'DRAFT'" type="button" class="btn btn-default"><i class="fa fa-scissors"></i></button>
+        <button ng-disabled="!data.document.permissions.edit || data.document.revisionStatus !== 'DRAFT'" type="button" class="btn btn-default"><i class="fa fa-clipboard"></i></button>
       </div>
 
       <file-status-buttons class="inline pull-right"
         document="data.document"
         on-publish="publish(true)"
         on-un-publish="publish(false)"
-        can-publish="hasRole(['mica-administrator','mica-reviewer'])"
         on-delete="deleteDocument(data.document)"
-        can-delete="hasRole(['mica-administrator','mica-reviewer'])"
-        can-edit="hasRole(['mica-administrator','mica-reviewer','mica-editor'])"
         to-draft="toStatus('DRAFT')"
         to-under-review="toStatus('UNDER_REVIEW')"
         to-deleted="toStatus('DELETED')">

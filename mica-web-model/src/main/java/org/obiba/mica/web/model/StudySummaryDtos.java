@@ -31,6 +31,9 @@ class StudySummaryDtos {
   private AttachmentDtos attachmentDtos;
 
   @Inject
+  private PermissionsDtos permissionsDtos;
+
+  @Inject
   private PublishedStudyService publishedStudyService;
 
   @Inject
@@ -136,6 +139,8 @@ class StudySummaryDtos {
         stateBuilder.setPublishedBy(studyState.getPublishedBy());
       }
     }
+
+    stateBuilder.setPermissions(permissionsDtos.asDto(studyState));
 
     Study study = studyService.findStudy(studyState.getId());
 

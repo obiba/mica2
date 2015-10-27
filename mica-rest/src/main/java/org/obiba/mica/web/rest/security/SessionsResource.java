@@ -22,7 +22,6 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.obiba.mica.config.JerseyConfiguration;
-import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.shiro.web.filter.AuthenticationExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,9 +36,6 @@ public class SessionsResource {
   @Inject
   private AuthenticationExecutor authenticationExecutor;
 
-  @Inject
-  private FileSystemService fileSystemService;
-
   @POST
   @Path("/sessions")
   public Response createSession(@SuppressWarnings("TypeMayBeWeakened") @Context HttpServletRequest servletRequest,
@@ -48,7 +44,6 @@ public class SessionsResource {
       authenticationExecutor.login(new UsernamePasswordToken(username, password));
       String sessionId = SecurityUtils.getSubject().getSession().getId().toString();
       log.info("Successful session creation for user '{}' session ID is '{}'.", username, sessionId);
-      fileSystemService.mkdirs("/user/" + SecurityUtils.getSubject().getPrincipal().toString());
       return Response
           .created(UriBuilder.fromPath(JerseyConfiguration.WS_ROOT).path(SessionResource.class).build(sessionId))
           .build();

@@ -29,7 +29,7 @@ public class DataAccessFormResource {
   Dtos dtos;
 
   @GET
-  @RequiresPermissions("/data-access-requests:ADD")
+  @RequiresPermissions("/data-access-request:ADD")
   public Mica.DataAccessFormDto getDataAccessForm() {
     Optional<DataAccessForm> d = dataAccessFormService.findDataAccessForm();
 

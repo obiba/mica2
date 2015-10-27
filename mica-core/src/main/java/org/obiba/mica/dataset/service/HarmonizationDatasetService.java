@@ -522,6 +522,11 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   }
 
   @Override
+  public String getTypeName() {
+    return "harmonization-dataset";
+  }
+
+  @Override
   public HarmonizationDataset findDraft(@NotNull String id) throws NoSuchEntityException {
     return findById(id);
   }

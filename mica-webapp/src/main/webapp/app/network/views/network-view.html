@@ -31,7 +31,7 @@
     <h3 class="pull-left no-margin-top" translate>view</h3>
     <div class="pull-right">
       <a ng-href="#/network/{{network.id}}/edit" class="btn btn-primary"
-        ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor']) && network['obiba.mica.EntityStateDto.state'].revisionStatus === 'DRAFT'"
+        ng-if="network['obiba.mica.EntityStateDto.state'].permissions.edit && network['obiba.mica.EntityStateDto.state'].revisionStatus === 'DRAFT'"
         ng-disabled="hasRole(['mica-editor']) && network['obiba.mica.EntityStateDto.state'].revisionStatus !== 'DRAFT'">
         <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
       </a>
@@ -40,10 +40,7 @@
         state="network['obiba.mica.EntityStateDto.state']"
         on-publish="publish(true)"
         on-un-publish="publish(false)"
-        can-publish="hasRole(['mica-administrator','mica-reviewer'])"
         on-delete="delete()"
-        can-delete="hasRole(['mica-administrator','mica-reviewer'])"
-        can-edit="hasRole(['mica-administrator','mica-reviewer','mica-editor'])"
         to-draft="toStatus('DRAFT')"
         to-under-review="toStatus('UNDER_REVIEW')"
         to-deleted="toStatus('DELETED')">
