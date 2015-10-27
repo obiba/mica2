@@ -1,0 +1,10 @@
+package obiba.mica;
+option java_package = "org.obiba.mica.web.model";
+
+message AclDto {
+  required string type = 1;
+  required string principal = 2;
+  required string resource = 3;
+  optional string role = 4;
+  optional string instance = 5;
+}

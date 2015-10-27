@@ -7,7 +7,6 @@ import javax.validation.constraints.NotNull;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.file.AttachmentState;
-import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.domain.Study;
@@ -45,7 +44,7 @@ class PermissionsDtos {
   }
 
   public Mica.PermissionsDto asDto(@NotNull AttachmentState state) {
-    return asDto("/draft/file/" + FileUtils.getFirstFolder(state.getPath()), state.getPath());
+    return asDto("/draft/file", state.getFullPath());
   }
 
   public Mica.PermissionsDto asDto(@NotNull String resource, @Nullable String instance) {

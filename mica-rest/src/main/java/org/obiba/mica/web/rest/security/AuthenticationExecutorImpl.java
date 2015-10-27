@@ -31,8 +31,6 @@ public class AuthenticationExecutorImpl extends AbstractAuthenticationExecutor {
   protected void ensureProfile(Subject subject) {
     String name = subject.getPrincipal().toString();
     fileSystemService.mkdirs("/user/" + name);
-    subjectAclService.addUserPermission(name, "/draft/file/user", "VIEW", "/user");
-    subjectAclService.addUserPermission(name, "/draft/file/user", "VIEW,EDIT", String.format("/user/%s", name));
-    subjectAclService.addUserPermission(name, "/file/user", "VIEW", null);
+    subjectAclService.addUserPermission(name, "/draft/file", "ADD,VIEW,EDIT,DELETE", String.format("/user/%s", name));
   }
 }

@@ -41,8 +41,12 @@ public class SubjectAclService {
    * @param type
    * @return
    */
-  public List<SubjectAcl> find(String principal, SubjectAcl.Type type) {
+  public List<SubjectAcl> findBySubject(String principal, SubjectAcl.Type type) {
     return subjectAclRepository.findByPrincipalAndType(principal, type);
+  }
+
+  public List<SubjectAcl> findByResourceInstance(String resource, String instance) {
+    return subjectAclRepository.findByResourceAndInstance(resource, instance);
   }
 
   /**
@@ -116,7 +120,7 @@ public class SubjectAclService {
   }
 
   /**
-   * Add a user permission for the current user on a given instance.
+   * Add a permission for the user principal on a given instance.
    *
    * @param principal
    * @param resource
@@ -129,7 +133,7 @@ public class SubjectAclService {
   }
 
   /**
-   * Add a group permission for the current user on a given instance.
+   * Add a permission for the group principal on a given instance.
    *
    * @param principal
    * @param resource
@@ -139,6 +143,32 @@ public class SubjectAclService {
   public void addGroupPermission(@NotNull String principal, @NotNull String resource, @Nullable String action,
     @Nullable String instance) {
     addSubjectPermission(SubjectAcl.Type.GROUP, principal, resource, action, instance);
+  }
+
+  /**
+   * Add a permission for the subject principal on a given instance.
+   *
+   * @param type
+   * @param principal
+   * @param resource
+   * @param action
+   * @param instance
+   */
+  public void addSubjectPermission(@NotNull SubjectAcl.Type type, @NotNull String principal, @NotNull String resource,
+    @Nullable String action, @Nullable String instance) {
+    List<SubjectAcl> acls = subjectAclRepository
+      .findByPrincipalAndTypeAndResourceAndInstance(principal, type, resource, instance);
+    SubjectAcl acl;
+    if(acls == null || acls.isEmpty()) {
+      acl = SubjectAcl.newBuilder(principal, type).resource(resource).action(action).instance(instance).build();
+      subjectAclRepository.save(acl);
+    } else {
+      acl = acls.get(0);
+      acl.addAction(action);
+    }
+    subjectAclRepository.save(acl);
+    // inform acls update (for caching)
+    eventBus.post(new SubjectAclUpdatedEvent(type.subjectFor(principal)));
   }
 
   /**
@@ -153,7 +183,7 @@ public class SubjectAclService {
   }
 
   /**
-   * Remove a user permission for the current user on a given instance.
+   * Remove a user permission for the user principal on a given instance.
    *
    * @param principal
    * @param resource
@@ -166,7 +196,7 @@ public class SubjectAclService {
   }
 
   /**
-   * Remove a group permission for the current user on a given instance.
+   * Remove a group permission for the group principal on a given instance.
    *
    * @param principal
    * @param resource
@@ -176,6 +206,22 @@ public class SubjectAclService {
   public void removeGroupPermission(@NotNull String principal, @NotNull String resource, @NotNull String action,
     @NotNull String instance) {
     removeSubjectPermission(SubjectAcl.Type.GROUP, principal, resource, action, instance);
+  }
+
+  /**
+   * Remove permissions for the subject principal on a given instance.
+   *
+   * @param type
+   * @param principal
+   * @param resource
+   * @param instance
+   */
+  public void removeSubjectPermissions(@NotNull SubjectAcl.Type type, @NotNull String principal,
+    @NotNull String resource, @Nullable String instance) {
+    subjectAclRepository.findByPrincipalAndTypeAndResourceAndInstance(principal, type, resource, instance)
+      .forEach(subjectAclRepository::delete);
+    // inform acls update (for caching)
+    eventBus.post(new SubjectAclUpdatedEvent(type.subjectFor(principal)));
   }
 
   //
@@ -201,39 +247,20 @@ public class SubjectAclService {
   // Private methods
   //
 
-  private void addSubjectPermission(@NotNull SubjectAcl.Type type, @NotNull String principal, @NotNull String resource, @Nullable String action,
-    @Nullable String instance) {
-    List<SubjectAcl> acls = subjectAclRepository
-      .findByPrincipalAndTypeAndResourceAndInstance(principal, type, resource, instance);
-    SubjectAcl acl;
-    if(acls == null || acls.isEmpty()) {
-      acl = SubjectAcl.newBuilder(principal, type).resource(resource).action(action).instance(instance)
-        .build();
-      subjectAclRepository.save(acl);
-    } else {
-      acl = acls.get(0);
-      acl.addAction(action);
-    }
-    subjectAclRepository.save(acl);
-    // inform acls update (for caching)
-    eventBus.post(new SubjectAclUpdatedEvent(type.subjectFor(principal)));
-  }
-
-  private void removeSubjectPermission(@NotNull SubjectAcl.Type type, @NotNull String principal, @NotNull String resource, @NotNull String action,
-    @NotNull String instance) {
-    subjectAclRepository
-      .findByPrincipalAndTypeAndResourceAndInstance(principal, type, resource, instance).forEach(acl -> {
-      if (acl.hasAction(action)) {
-        acl.removeAction(action);
-        if (acl.hasActions()) {
-          subjectAclRepository.save(acl);
-        } else {
-          subjectAclRepository.delete(acl);
+  private void removeSubjectPermission(@NotNull SubjectAcl.Type type, @NotNull String principal,
+    @NotNull String resource, @NotNull String action, @NotNull String instance) {
+    subjectAclRepository.findByPrincipalAndTypeAndResourceAndInstance(principal, type, resource, instance)
+      .forEach(acl -> {
+        if(acl.hasAction(action)) {
+          acl.removeAction(action);
+          if(acl.hasActions()) {
+            subjectAclRepository.save(acl);
+          } else {
+            subjectAclRepository.delete(acl);
+          }
         }
-      }
-    });
+      });
     // inform acls update (for caching)
     eventBus.post(new SubjectAclUpdatedEvent(type.subjectFor(principal)));
   }
-
 }
