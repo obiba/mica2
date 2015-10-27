@@ -1,0 +1,31 @@
+{
+  "name": "angular-media-queries",
+  "version": "0.4.1",
+  "authors": [
+    "Jack <jack@ofspades.com>"
+  ],
+  "description": "Angular service to test if a given @media statment is true.",
+  "main": "match-media.js",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "angular",
+    "angularjs",
+    "matchmedia",
+    "@media",
+    "css"
+  ],
+  "license": "Creative Commons Attribution-ShareAlike 4.0 International License",
+  "homepage": "https://jack.ofspades.com/angular-matchmedia-module/",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": ">=1.2.0"
+  }
+}
