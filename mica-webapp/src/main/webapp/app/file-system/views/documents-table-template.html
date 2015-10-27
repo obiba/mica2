@@ -1,4 +1,4 @@
-<div class="table-responsive panel panel-default">
+<div class="panel panel-default">
   <div class="panel-heading" ng-if="selected.length > 0">{{selected.length}} <span translate>items-selected</span>.
     <a href="" ng-click="selectAll()" ng-if="selected.length < data.document.children.length"><i
       class="fa fa-check"></i> <span translate>select-all</span></a>
@@ -63,18 +63,18 @@
           title="{{'publish.not-published' | translate}}"></i>
       </td>
       <td>
-        <div class="row">
-          <div class="col-md-2">
-            <a target="_self" ng-href="ws/draft/file-dl/{{document.path}}" ng-if="document.permissions.view && fileDocument"><i
+        <ul class="list-inline">
+          <li>
+            <a target="_self" ng-href="ws/draft/file-dl/{{document.path}}"
+              ng-if="document.permissions.view && fileDocument"><i
               class="fa fa-download"></i></a>
-
-          </div>
-          <div class="col-md-2">
+          </li>
+          <li>
             <a href ng-click="deleteDocument(document)"
               ng-if="document.permissions.delete && document.revisionStatus === 'DELETED'"><i
               class="fa fa-trash"></i></a>
-          </div>
-        </div>
+          </li>
+        </ul>
       </td>
     </tr>
     </tbody>
