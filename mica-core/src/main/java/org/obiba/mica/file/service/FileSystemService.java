@@ -16,6 +16,7 @@ import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.obiba.git.command.AbstractGitWriteCommand;
 import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.core.domain.InvalidRevisionStatusException;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.AttachmentStateRepository;
@@ -145,6 +146,13 @@ public class FileSystemService {
    */
   public void delete(String path) {
     List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
+
+    states.stream().findFirst().ifPresent(state -> {
+      if(state.getRevisionStatus() != RevisionStatus.DELETED) {
+        throw InvalidRevisionStatusException.withStatus(state.getRevisionStatus());
+      }
+    });
+
     states.addAll(findAttachmentStates(String.format("^%s/", path), false));
     states.stream().forEach(this::delete);
   }
@@ -156,7 +164,12 @@ public class FileSystemService {
    * @param name
    */
   public void delete(String path, String name) {
-    delete(getAttachmentState(path, name, false));
+    AttachmentState state = getAttachmentState(path, name, false);
+
+    if(state.getRevisionStatus() != RevisionStatus.DELETED)
+      throw InvalidRevisionStatusException.withStatus(state.getRevisionStatus());
+
+    delete(state);
   }
 
   /**
