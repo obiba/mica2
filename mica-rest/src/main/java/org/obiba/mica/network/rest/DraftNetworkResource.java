@@ -32,6 +32,7 @@ import org.obiba.mica.network.NoSuchNetworkException;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.domain.NetworkState;
 import org.obiba.mica.network.service.NetworkService;
+import org.obiba.mica.security.rest.SubjectAclResource;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.ApplicationContext;
@@ -146,6 +147,14 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
   public Mica.NetworkDto getFromCommit(@NotNull @PathParam("commitId") String commitId) throws IOException {
     subjectAclService.checkPermission("/draft/network", "VIEW", id);
     return dtos.asDto(networkService.getFromCommit(networkService.findDraft(id), commitId), true);
+  }
+
+  @Path("/permissions")
+  public SubjectAclResource permissions() {
+    SubjectAclResource subjectAclResource = applicationContext.getBean(SubjectAclResource.class);
+    subjectAclResource.setResourceInstance("/draft/network", id);
+    subjectAclResource.setFileResourceInstance("/draft/file", "/network/" + id);
+    return subjectAclResource;
   }
 
   @Override

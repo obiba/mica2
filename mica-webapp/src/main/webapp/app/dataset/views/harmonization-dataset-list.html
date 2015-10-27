@@ -4,7 +4,7 @@
     <span translate>harmonization-datasets</span>
   </h2>
 
-  <a ng-href="#/harmonization-dataset/new" class="btn btn-info">
+  <a ng-href="#/harmonization-dataset/new" class="btn btn-info" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
     <i class="fa fa-plus"></i> <span translate>dataset.add</span>
   </a>
 

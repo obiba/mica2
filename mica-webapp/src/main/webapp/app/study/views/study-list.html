@@ -4,7 +4,7 @@
     <span translate>studies</span>
   </h2>
 
-  <a ng-href="#/study/new" class="btn btn-info">
+  <a ng-href="#/study/new" class="btn btn-info" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
     <i class="fa fa-plus"></i> <span translate>study.add</span>
   </a>
 

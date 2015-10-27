@@ -33,6 +33,7 @@ import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.dataset.service.StudyDatasetService;
+import org.obiba.mica.security.rest.SubjectAclResource;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Magma;
@@ -162,6 +163,14 @@ public class DraftStudyDatasetResource extends
   public Mica.DatasetDto getFromCommit(@NotNull @PathParam("commitId") String commitId) throws IOException {
     subjectAclService.isPermitted("/draft/study-dataset", "VIEW", id);
     return dtos.asDto(datasetService.getFromCommit(datasetService.findDraft(id), commitId), true);
+  }
+
+  @Path("/permissions")
+  public SubjectAclResource permissions() {
+    SubjectAclResource subjectAclResource = applicationContext.getBean(SubjectAclResource.class);
+    subjectAclResource.setResourceInstance("/draft/study-dataset", id);
+    subjectAclResource.setFileResourceInstance("/draft/file", "/study-dataset/" + id);
+    return subjectAclResource;
   }
 
   private StudyDataset getDataset() {

@@ -34,6 +34,7 @@ import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
+import org.obiba.mica.security.rest.SubjectAclResource;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Magma;
@@ -177,6 +178,14 @@ public class DraftHarmonizationDatasetResource extends
   public Mica.DatasetDto getFromCommit(@NotNull @PathParam("commitId") String commitId) throws IOException {
     subjectAclService.isPermitted("/draft/harmonization-dataset", "VIEW", id);
     return dtos.asDto(datasetService.getFromCommit(datasetService.findDraft(id), commitId), true);
+  }
+
+  @Path("/permissions")
+  public SubjectAclResource permissions() {
+    SubjectAclResource subjectAclResource = applicationContext.getBean(SubjectAclResource.class);
+    subjectAclResource.setResourceInstance("/draft/harmonization-dataset", id);
+    subjectAclResource.setFileResourceInstance("/draft/file", "/harmonization-dataset/" + id);
+    return subjectAclResource;
   }
 
   private HarmonizationDataset getDataset() {
