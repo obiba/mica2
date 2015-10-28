@@ -20,7 +20,7 @@ import static org.obiba.mica.web.model.Mica.PersonDto;
 class StudyDtos {
 
   @Inject
-  private ContactDtos contactDtos;
+  private PersonDtos personDtos;
 
   @Inject
   private LocalizedStringDtos localizedStringDtos;
@@ -66,11 +66,11 @@ class StudyDtos {
     if(study.getAcronym() != null) builder.addAllAcronym(localizedStringDtos.asDto(study.getAcronym()));
     if(study.getInvestigators() != null) {
       builder.addAllInvestigators(
-        study.getInvestigators().stream().map(p -> contactDtos.asDto(p, asDraft)).collect(Collectors.<PersonDto>toList()));
+        study.getInvestigators().stream().map(p -> personDtos.asDto(p, asDraft)).collect(Collectors.<PersonDto>toList()));
     }
     if(study.getContacts() != null) {
       builder
-        .addAllContacts(study.getContacts().stream().map(p -> contactDtos.asDto(p, asDraft)).collect(Collectors.<PersonDto>toList()));
+        .addAllContacts(study.getContacts().stream().map(p -> personDtos.asDto(p, asDraft)).collect(Collectors.<PersonDto>toList()));
     }
     if(!isNullOrEmpty(study.getWebsite())) builder.setWebsite(study.getWebsite());
     if(!isNullOrEmpty(study.getOpal())) builder.setOpal(study.getOpal());
@@ -112,11 +112,11 @@ class StudyDtos {
     if(dto.getAcronymCount() > 0) study.setAcronym(localizedStringDtos.fromDto(dto.getAcronymList()));
     if(dto.hasLogo()) study.setLogo(attachmentDtos.fromDto(dto.getLogo()));
     if(dto.getContactsCount() > 0) {
-      study.setContacts(dto.getContactsList().stream().map(contactDtos::fromDto).collect(Collectors.<Person>toList()));
+      study.setContacts(dto.getContactsList().stream().map(personDtos::fromDto).collect(Collectors.<Person>toList()));
     }
     if(dto.getInvestigatorsCount() > 0) {
       study.setInvestigators(
-        dto.getInvestigatorsList().stream().map(contactDtos::fromDto).collect(Collectors.<Person>toList()));
+        dto.getInvestigatorsList().stream().map(personDtos::fromDto).collect(Collectors.<Person>toList()));
     }
     if(dto.getObjectivesCount() > 0) study.setObjectives(localizedStringDtos.fromDto(dto.getObjectivesList()));
     if(dto.hasWebsite()) study.setWebsite(dto.getWebsite());

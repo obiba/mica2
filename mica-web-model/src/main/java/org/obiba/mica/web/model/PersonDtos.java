@@ -16,7 +16,7 @@ import static java.util.stream.Collectors.toList;
 
 @Component
 @SuppressWarnings("OverlyCoupledClass")
-class ContactDtos {
+class PersonDtos {
 
   @Inject
   private CountryDtos countryDtos;
@@ -33,19 +33,19 @@ class ContactDtos {
   @Inject
   private SubjectAclService subjectAclService;
 
-  Mica.PersonDto asDto(Person contact, boolean asDraft) {
-    Mica.PersonDto.Builder builder = Mica.PersonDto.newBuilder().setLastName(contact.getLastName());
-    if(!isNullOrEmpty(contact.getId())) builder.setId(contact.getId());
-    if(!isNullOrEmpty(contact.getTitle())) builder.setTitle(contact.getTitle());
-    if(!isNullOrEmpty(contact.getFirstName())) builder.setFirstName(contact.getFirstName());
-    if(!isNullOrEmpty(contact.getAcademicLevel())) builder.setAcademicLevel(contact.getAcademicLevel());
-    if(!isNullOrEmpty(contact.getEmail())) builder.setEmail(contact.getEmail());
-    if(!isNullOrEmpty(contact.getPhone())) builder.setPhone(contact.getPhone());
-    if(contact.getInstitution() != null) builder.setInstitution(asDto(contact.getInstitution()));
-    builder.addAllStudyMemberships(contact.getStudyMemberships().stream()
+  Mica.PersonDto asDto(Person person, boolean asDraft) {
+    Mica.PersonDto.Builder builder = Mica.PersonDto.newBuilder().setLastName(person.getLastName());
+    if(!isNullOrEmpty(person.getId())) builder.setId(person.getId());
+    if(!isNullOrEmpty(person.getTitle())) builder.setTitle(person.getTitle());
+    if(!isNullOrEmpty(person.getFirstName())) builder.setFirstName(person.getFirstName());
+    if(!isNullOrEmpty(person.getAcademicLevel())) builder.setAcademicLevel(person.getAcademicLevel());
+    if(!isNullOrEmpty(person.getEmail())) builder.setEmail(person.getEmail());
+    if(!isNullOrEmpty(person.getPhone())) builder.setPhone(person.getPhone());
+    if(person.getInstitution() != null) builder.setInstitution(asDto(person.getInstitution()));
+    builder.addAllStudyMemberships(person.getStudyMemberships().stream()
       .filter(m -> !asDraft || subjectAclService.isPermitted("/draft/study", "VIEW", m.getParentId()))
       .map(this::asStudyMembershipDto).collect(toList()));
-    builder.addAllNetworkMemberships(contact.getNetworkMemberships().stream()
+    builder.addAllNetworkMemberships(person.getNetworkMemberships().stream()
       .filter(m -> !asDraft || subjectAclService.isPermitted("/draft/study", "VIEW", m.getParentId()))
       .map(this::asNetworkMembershipDto).collect(toList()));
 
@@ -53,16 +53,16 @@ class ContactDtos {
   }
 
   Person fromDto(Mica.PersonDtoOrBuilder dto) {
-    Person contact = new Person();
-    if(dto.hasId()) contact.setId(dto.getId());
-    if(dto.hasTitle()) contact.setTitle(dto.getTitle());
-    if(dto.hasFirstName()) contact.setFirstName(dto.getFirstName());
-    contact.setLastName(dto.getLastName());
-    if(dto.hasAcademicLevel()) contact.setAcademicLevel(dto.getAcademicLevel());
-    if(dto.hasEmail()) contact.setEmail(dto.getEmail());
-    if(dto.hasPhone()) contact.setPhone(dto.getPhone());
-    if(dto.hasInstitution()) contact.setInstitution(fromDto(dto.getInstitution()));
-    return contact;
+    Person person = new Person();
+    if(dto.hasId()) person.setId(dto.getId());
+    if(dto.hasTitle()) person.setTitle(dto.getTitle());
+    if(dto.hasFirstName()) person.setFirstName(dto.getFirstName());
+    person.setLastName(dto.getLastName());
+    if(dto.hasAcademicLevel()) person.setAcademicLevel(dto.getAcademicLevel());
+    if(dto.hasEmail()) person.setEmail(dto.getEmail());
+    if(dto.hasPhone()) person.setPhone(dto.getPhone());
+    if(dto.hasInstitution()) person.setInstitution(fromDto(dto.getInstitution()));
+    return person;
   }
 
   private Mica.PersonDto.InstitutionDto asDto(Person.Institution institution) {
