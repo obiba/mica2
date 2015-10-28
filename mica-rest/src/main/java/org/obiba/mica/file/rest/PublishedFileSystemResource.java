@@ -6,6 +6,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.web.model.Mica;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Path("/")
+@RequiresAuthentication
 public class PublishedFileSystemResource extends AbstractFileSystemResource {
 
   @Inject

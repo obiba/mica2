@@ -33,6 +33,11 @@ public class PublishedFilesSearchResource extends AbstractFileSearchResource {
   private EsPublishedFileService esAttachmentService;
 
   @Override
+  protected boolean isPublishedFileSystem() {
+    return true;
+  }
+
+  @Override
   protected List<Mica.FileDto> searchFiles(int from, int limit, String sort, String order, String queryString) {
     PublishedDocumentService.Documents<AttachmentState> states = esAttachmentService
       .find(from, limit, sort, order, null, queryString);

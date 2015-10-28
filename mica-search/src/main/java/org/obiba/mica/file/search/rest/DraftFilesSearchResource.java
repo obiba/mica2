@@ -34,10 +34,16 @@ public class DraftFilesSearchResource extends AbstractFileSearchResource {
   private EsDraftFileService esAttachmentService;
 
   @Override
+  protected boolean isPublishedFileSystem() {
+    return false;
+  }
+
+  @Override
   protected List<Mica.FileDto> searchFiles(int from, int limit, String sort, String order, String queryString) {
     PublishedDocumentService.Documents<AttachmentState> states = esAttachmentService
       .find(from, limit, sort, order, null, queryString);
 
-    return states.getList().stream().map(state -> dtos.asFileDto(state, false, false)).collect(Collectors.toList());
+    return states.getList().stream().filter(s -> subjectAclService.isPermitted("/draft/file", "VIEW", s.getFullPath()))
+      .map(state -> dtos.asFileDto(state, false, false)).collect(Collectors.toList());
   }
 }
