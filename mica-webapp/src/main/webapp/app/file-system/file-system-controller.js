@@ -242,8 +242,7 @@ mica.fileSystem
       };
 
       var onFileSelect = function (files) {
-        FileSystemService.onFileSelect(files,
-          $scope.data.isFile ? $scope.data.document.state.attachment : $scope.data.document,
+        FileSystemService.onFileSelect(files, $scope.data.document,
           function onSuccess(attachment) {
             return DraftFileSystemFilesResource.update(attachment,
               function onSuccess() {
