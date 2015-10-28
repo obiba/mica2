@@ -230,27 +230,6 @@
       </div>
 
       <div class="row">
-        <div class="col-md-6" ng-show="study.attachments.length">
-          <h3 translate>study.documents</h3>
-          <table class="table table-bordered table-striped" ng-show="study.attachments.length">
-            <tbody>
-            <tr ng-repeat="attachment in study.attachments | filter:{lang:lang}">
-              <th>
-                <a target="_self" ng-href="/ws/draft/study/{{study.id}}/file/{{attachment.id}}/_download"
-                  download="{{attachment.fileName}}">
-                  {{attachment.fileName}}
-                </a>
-              </th>
-              <td>
-                {{attachment.size | bytes}}
-              </td>
-              <td>
-                <small>MD5: {{attachment.md5}}</small>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-        </div>
         <div class="col-md-6">
           <h3 translate ng-show="study.info.length">suppl-info</h3>
           <table class="table table-bordered table-striped" ng-show="study.info.length">
