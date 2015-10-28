@@ -1,12 +1,14 @@
 <h3 translate>study.authorization.label</h3>
 
+<h4>Maelstrom authorization</h4>
+<div form-checkbox name="study.maelstromAuthorization.authorized" model="study.maelstromAuthorization.authorized"
+  lang="tab.lang" label="study.authorization.maelstrom"></div>
 <div class="row">
   <div class="col-md-6">
-    <h4>Maelstrom authorization</h4>
-    <div form-checkbox name="study.maelstromAuthorization.authorized" model="study.maelstromAuthorization.authorized"
-      lang="tab.lang" label="study.authorization.maelstrom"></div>
     <div form-input name="study.maelstromAuthorization.authorizer"
       model="study.maelstromAuthorization.authorizer" label="study.authorization.authorizer"></div>
+  </div>
+  <div class="col-md-6">
     <div class="input-group">
       <label translate>study.authorization.date</label>
       <p class="input-group">
@@ -22,12 +24,18 @@
       </p>
     </div>
   </div>
+</div>
+
+
+<h4>Specific authorization</h4>
+<div form-checkbox name="study.specificAuthorization.authorized" model="study.specificAuthorization.authorized"
+  lang="tab.lang" label="study.authorization.specific"></div>
+<div class="row">
   <div class="col-md-6">
-    <h4>Specific authorization</h4>
-    <div form-checkbox name="study.specificAuthorization.authorized" model="study.specificAuthorization.authorized"
-      lang="tab.lang" label="study.authorization.specific"></div>
     <div form-input name="study.specificAuthorization.authorizer"
       model="study.specificAuthorization.authorizer" label="study.authorization.authorizer"></div>
+  </div>
+  <div class="col-md-6">
     <div class="input-group">
       <label translate>study.authorization.date</label>
       <p class="input-group">
@@ -45,6 +53,8 @@
     </div>
   </div>
 </div>
+
+
 
 
 
