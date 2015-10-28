@@ -16,14 +16,14 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-@Path("/persons/_search")
+@Path("/draft/persons/_search")
 @RequiresAuthentication
 @Scope("request")
 @Component
-public class PersonsSearchResource extends AbstractPersonsSearchResource {
+public class DraftPersonsSearchResource extends AbstractPersonsSearchResource {
 
   @Override
   protected boolean isDraft() {
-    return false;
+    return true;
   }
 }

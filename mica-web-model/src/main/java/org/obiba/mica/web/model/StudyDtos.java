@@ -66,11 +66,11 @@ class StudyDtos {
     if(study.getAcronym() != null) builder.addAllAcronym(localizedStringDtos.asDto(study.getAcronym()));
     if(study.getInvestigators() != null) {
       builder.addAllInvestigators(
-        study.getInvestigators().stream().map(contactDtos::asDto).collect(Collectors.<PersonDto>toList()));
+        study.getInvestigators().stream().map(p -> contactDtos.asDto(p, asDraft)).collect(Collectors.<PersonDto>toList()));
     }
     if(study.getContacts() != null) {
       builder
-        .addAllContacts(study.getContacts().stream().map(contactDtos::asDto).collect(Collectors.<PersonDto>toList()));
+        .addAllContacts(study.getContacts().stream().map(p -> contactDtos.asDto(p, asDraft)).collect(Collectors.<PersonDto>toList()));
     }
     if(!isNullOrEmpty(study.getWebsite())) builder.setWebsite(study.getWebsite());
     if(!isNullOrEmpty(study.getOpal())) builder.setOpal(study.getOpal());

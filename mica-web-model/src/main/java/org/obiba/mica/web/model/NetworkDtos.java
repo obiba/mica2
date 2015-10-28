@@ -76,18 +76,18 @@ class NetworkDtos {
     if(asDraft) {
       builder.setTimestamps(TimestampsDtos.asDto(network)) //
         .setPublished(networkState.isPublished()) //
-        .setExtension(Mica.EntityStateDto.state, entityStateDtos.asDto(networkState)
-          .setPermissions(permissionsDtos.asDto(network)).build());
+        .setExtension(Mica.EntityStateDto.state,
+          entityStateDtos.asDto(networkState).setPermissions(permissionsDtos.asDto(network)).build());
     }
 
     if(network.getInvestigators() != null) {
-      builder.addAllInvestigators(
-        network.getInvestigators().stream().map(contactDtos::asDto).collect(Collectors.<PersonDto>toList()));
+      builder.addAllInvestigators(network.getInvestigators().stream().map(p -> contactDtos.asDto(p, asDraft))
+        .collect(Collectors.<PersonDto>toList()));
     }
 
     if(network.getContacts() != null) {
-      builder
-        .addAllContacts(network.getContacts().stream().map(contactDtos::asDto).collect(Collectors.<PersonDto>toList()));
+      builder.addAllContacts(
+        network.getContacts().stream().map(p -> contactDtos.asDto(p, asDraft)).collect(Collectors.<PersonDto>toList()));
     }
 
     if(!isNullOrEmpty(network.getWebsite())) builder.setWebsite(network.getWebsite());

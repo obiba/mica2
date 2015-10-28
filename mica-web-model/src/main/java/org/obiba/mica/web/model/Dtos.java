@@ -350,8 +350,8 @@ public class Dtos {
   }
 
   @NotNull
-  public Mica.PersonDto asDto(@NotNull Person contact) {
-    return contactDtos.asDto(contact);
+  public Mica.PersonDto asDto(@NotNull Person contact, boolean asDraft) {
+    return contactDtos.asDto(contact, asDraft);
   }
 
   @NotNull

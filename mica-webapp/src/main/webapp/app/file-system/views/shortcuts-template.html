@@ -1,7 +1,7 @@
 <div class="panel panel-default">
   <div class="panel-body">
     <ul class="nav nav-list">
-      <li class="nav-header">
+      <li ng-if="!data.isFile" class="nav-header">
         <span>
           <span translate>search</span>
           <span class="pull-right">
@@ -34,23 +34,23 @@
           </span>
         </a>
       </li>
-      <li class="voffset">
+      <li ng-if="!data.isFile" class="voffset">
         <a href ng-click="searchDocuments('UNDER_REVIEW')">
           <span><i class="fa fa-eye"></i> {{'publish.status.UNDER_REVIEW' | translate}}</span>
         </a>
       </li>
-      <li>
+      <li ng-if="!data.isFile">
         <a href ng-click="searchDocuments('DELETED')">
           <span><i class="fa fa-trash"></i> {{'publish.status.DELETED' | translate}}</span>
         </a>
       </li>
-      <li>
+      <li ng-if="!data.isFile">
         <a href ng-click="searchDocuments('RECENT')">
           <span><i class="fa fa-clock-o"></i> {{'recent' | translate}}</span>
         </a>
       </li>
       <li class="nav-header">
-        <span translate>homes</span>
+        <span translate>home</span>
       </li>
       <li>
         <a href ng-click="navigateToPath('/user/' + subject.login)">

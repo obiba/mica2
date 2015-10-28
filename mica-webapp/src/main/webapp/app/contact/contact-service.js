@@ -13,7 +13,7 @@
 mica.contact
   .factory('ContactsSearchResource', ['$resource',
     function ($resource) {
-      return $resource('ws/persons/_search?', {}, {
+      return $resource('ws/draft/persons/_search?', {}, {
         'search': {method: 'GET', params: {query: '@query', 'exclude': '@exclude'}}
       });
     }]);
