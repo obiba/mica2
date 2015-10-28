@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 @RequiresAuthentication
 @Scope("request")
 @Component
-public class PersonsSearchResource extends AbstractPersonsSearchResource {
+public class PublishedPersonsSearchResource extends AbstractPersonsSearchResource {
 
   @Override
   protected boolean isDraft() {
