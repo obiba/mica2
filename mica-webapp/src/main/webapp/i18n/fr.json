@@ -658,6 +658,7 @@
   "select-all": "Select all",
   "clear-selection": "Clear",
   "items-selected": "Items selected",
+  "item-selected": "Item selected",
   "revisions": "Revisions",
   "revision": "Revision",
   "comment-label": "Comment",

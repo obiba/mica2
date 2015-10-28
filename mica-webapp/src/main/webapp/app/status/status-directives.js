@@ -57,10 +57,6 @@ mica.status
             return f.revisionStatus === 'DRAFT' && f.state.attachment.id !== f.state.publishedId;
           }).length;
 
-          scope.canToUnderReview = documents.filter(function (f) {
-            return f.revisionStatus === 'DRAFT' && f.state.attachment.id !== f.state.publishedId;
-          }).length;
-
           scope.canToDraft = documents.filter(function (f) {
             return f.revisionStatus !== 'DRAFT';
           }).length;
