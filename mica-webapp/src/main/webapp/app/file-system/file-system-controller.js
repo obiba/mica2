@@ -213,6 +213,13 @@ mica.fileSystem
           },
           function (path) {
             return DraftFileSystemFileResource.delete({path: path});
+          })
+          .finally(function () {
+            if ($scope.selected.length === 0) {
+              navigateToParent($scope.data.document);
+            } else {
+              navigateTo($scope.data.document);
+            }
           }
         );
       };
@@ -324,6 +331,8 @@ mica.fileSystem
         }, function (path) {
           return DraftFileSystemFileResource.publish(
             {path: path, publish: value ? 'true' : 'false'});
+        }).finally(function () {
+          navigateTo($scope.data.document);
         });
       };
 
@@ -342,6 +351,8 @@ mica.fileSystem
           return DraftFileSystemFileResource.changeStatus(
             {path: path, status: value}
           );
+        }).finally(function () {
+          navigateTo($scope.data.document);
         });
       };
 
@@ -360,7 +371,7 @@ mica.fileSystem
             return d.path;
           });
 
-        $q.all(paths.map(function (path) {
+        return $q.all(paths.map(function (path) {
           return consumer(path).$promise.catch(function (response) {
             if ($scope.selected.length > 0) {
               return ignoreConflicts(response);
@@ -368,14 +379,7 @@ mica.fileSystem
 
             return $q.reject(response);
           });
-        })).catch(onError)
-          .finally(function () {
-            if ($scope.selected.length === 0) {
-              navigateToParent($scope.data.document);
-            } else {
-              navigateTo($scope.data.document);
-            }
-          });
+        })).catch(onError);
       }
 
       $scope.hasRole = $rootScope.hasRole;
