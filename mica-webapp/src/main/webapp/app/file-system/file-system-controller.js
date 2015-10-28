@@ -208,9 +208,13 @@ mica.fileSystem
       };
 
       var deleteDocuments = function () {
-        applyToFiles(function (path) {
-          return DraftFileSystemFileResource.delete({path: path});
-        });
+        applyToFiles(function (f) {
+            return f.permissions.delete && f.revisionStatus === 'DELETED';
+          },
+          function (path) {
+            return DraftFileSystemFileResource.delete({path: path});
+          }
+        );
       };
 
       var deleteDocument = function (document) {
@@ -311,7 +315,13 @@ mica.fileSystem
       };
 
       var publish = function(value) {
-        applyToFiles(function (path) {
+        applyToFiles(function (f) {
+          if(value) {
+            return f.permissions.publish && f.revisionStatus === 'UNDER_REVIEW';
+          } else {
+            return f.permissions.publish && f.state.publicationDate !== undefined;
+          }
+        }, function (path) {
           return DraftFileSystemFileResource.publish(
             {path: path, publish: value ? 'true' : 'false'});
         });
@@ -319,7 +329,16 @@ mica.fileSystem
 
       var toStatus = function (value) {
         $log.info('STATUS', value);
-        applyToFiles(function (path) {
+        applyToFiles(function (f) {
+          switch (value) {
+            case 'UNDER_REVIEW':
+              return f.revisionStatus === 'DRAFT' && f.state.attachment.id !== f.state.publishedId;
+            case 'DELETED':
+              return f.revisionStatus !== 'DELETED';
+            case 'DRAFT':
+              return f.revisionStatus !== 'DRAFT';
+          }
+        }, function (path) {
           return DraftFileSystemFileResource.changeStatus(
             {path: path, status: value}
           );
@@ -334,13 +353,14 @@ mica.fileSystem
         return $q.reject(response);
       }
 
-      function applyToFiles(consumer) {
-        var files = $scope.selected.length === 0 ? [$scope.data.document.path] :
-          $scope.selected.map(function (d) {
+      function applyToFiles(filter, consumer) {
+        var files = $scope.selected.length === 0 ? [$scope.data.document] :
+            $scope.selected,
+          paths = files.filter(filter).map(function (d) {
             return d.path;
           });
 
-        $q.all(files.map(function (path) {
+        $q.all(paths.map(function (path) {
           return consumer(path).$promise.catch(function (response) {
             if ($scope.selected.length > 0) {
               return ignoreConflicts(response);
