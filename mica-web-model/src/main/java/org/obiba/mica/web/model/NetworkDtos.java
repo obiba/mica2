@@ -33,7 +33,7 @@ class NetworkDtos {
   private static final Logger log = LoggerFactory.getLogger(NetworkDtos.class);
 
   @Inject
-  private ContactDtos contactDtos;
+  private PersonDtos personDtos;
 
   @Inject
   private EntityStateDtos entityStateDtos;
@@ -81,13 +81,13 @@ class NetworkDtos {
     }
 
     if(network.getInvestigators() != null) {
-      builder.addAllInvestigators(network.getInvestigators().stream().map(p -> contactDtos.asDto(p, asDraft))
+      builder.addAllInvestigators(network.getInvestigators().stream().map(p -> personDtos.asDto(p, asDraft))
         .collect(Collectors.<PersonDto>toList()));
     }
 
     if(network.getContacts() != null) {
       builder.addAllContacts(
-        network.getContacts().stream().map(p -> contactDtos.asDto(p, asDraft)).collect(Collectors.<PersonDto>toList()));
+        network.getContacts().stream().map(p -> personDtos.asDto(p, asDraft)).collect(Collectors.<PersonDto>toList()));
     }
 
     if(!isNullOrEmpty(network.getWebsite())) builder.setWebsite(network.getWebsite());
@@ -153,8 +153,8 @@ class NetworkDtos {
     network.setAcronym(localizedStringDtos.fromDto(dto.getAcronymList()));
     network.setInfos(localizedStringDtos.fromDto(dto.getInfoList()));
     network.setInvestigators(
-      dto.getInvestigatorsList().stream().map(contactDtos::fromDto).collect(Collectors.<Person>toList()));
-    network.setContacts(dto.getContactsList().stream().map(contactDtos::fromDto).collect(Collectors.<Person>toList()));
+      dto.getInvestigatorsList().stream().map(personDtos::fromDto).collect(Collectors.<Person>toList()));
+    network.setContacts(dto.getContactsList().stream().map(personDtos::fromDto).collect(Collectors.<Person>toList()));
     if(dto.hasWebsite()) network.setWebsite(dto.getWebsite());
 
     if(dto.getStudyIdsCount() > 0) {

@@ -80,7 +80,7 @@ public class Dtos {
   private CommentDtos commentDtos;
 
   @Inject
-  private ContactDtos contactDtos;
+  private PersonDtos personDtos;
 
   @Inject
   private TaxonomyDtos taxonomyDtos;
@@ -350,13 +350,13 @@ public class Dtos {
   }
 
   @NotNull
-  public Mica.PersonDto asDto(@NotNull Person contact, boolean asDraft) {
-    return contactDtos.asDto(contact, asDraft);
+  public Mica.PersonDto asDto(@NotNull Person person, boolean asDraft) {
+    return personDtos.asDto(person, asDraft);
   }
 
   @NotNull
   public Person fromDto(@NotNull Mica.PersonDto dto) {
-    return contactDtos.fromDto(dto);
+    return personDtos.fromDto(dto);
   }
 
   @NotNull
