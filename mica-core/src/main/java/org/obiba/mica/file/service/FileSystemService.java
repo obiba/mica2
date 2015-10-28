@@ -83,7 +83,7 @@ public class FileSystemService {
       attachment.setId(new ObjectId().toString());
     } else {
       saved = attachmentRepository.findOne(attachment.getId());
-      if(saved == null) {
+      if(saved == null || attachment.isJustUploaded()) {
         saved = attachment;
       } else if(state.isPublished() && state.getPublishedAttachment().getId().equals(attachment.getId())) {
         // about to update a published attachment, so make a soft copy of it
@@ -666,7 +666,7 @@ public class FileSystemService {
   private void validateFileName(String name) {
     Pattern pattern = Pattern.compile("[\\$%/#]");
     Matcher matcher = pattern.matcher(name);
-    if (matcher.find()) {
+    if(matcher.find()) {
       throw new InvalidFileNameException(name);
     }
   }
