@@ -321,7 +321,8 @@ message PersonDto {
   message MembershipDto {
     required string role = 1;
     required string parentId = 2;
-    repeated LocalizedStringDto parentName = 3;
+    repeated LocalizedStringDto parentAcronym = 3;
+    repeated LocalizedStringDto parentName = 4;
   }
 }
 

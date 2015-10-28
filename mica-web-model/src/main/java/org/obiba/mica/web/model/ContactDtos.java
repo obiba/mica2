@@ -6,6 +6,7 @@ import org.obiba.mica.core.domain.Address;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.service.NetworkService;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.StudyService;
 import org.springframework.stereotype.Component;
@@ -29,7 +30,10 @@ class ContactDtos {
   @Inject
   private LocalizedStringDtos localizedStringDtos;
 
-  Mica.PersonDto asDto(Person contact) {
+  @Inject
+  private SubjectAclService subjectAclService;
+
+  Mica.PersonDto asDto(Person contact, boolean asDraft) {
     Mica.PersonDto.Builder builder = Mica.PersonDto.newBuilder().setLastName(contact.getLastName());
     if(!isNullOrEmpty(contact.getId())) builder.setId(contact.getId());
     if(!isNullOrEmpty(contact.getTitle())) builder.setTitle(contact.getTitle());
@@ -38,10 +42,12 @@ class ContactDtos {
     if(!isNullOrEmpty(contact.getEmail())) builder.setEmail(contact.getEmail());
     if(!isNullOrEmpty(contact.getPhone())) builder.setPhone(contact.getPhone());
     if(contact.getInstitution() != null) builder.setInstitution(asDto(contact.getInstitution()));
-    builder
-      .addAllStudyMemberships(contact.getStudyMemberships().stream().map(this::asStudyMembershipDto).collect(toList()));
-    builder.addAllNetworkMemberships(
-      contact.getNetworkMemberships().stream().map(this::asNetworkMembershipDto).collect(toList()));
+    builder.addAllStudyMemberships(contact.getStudyMemberships().stream()
+      .filter(m -> !asDraft || subjectAclService.isPermitted("/draft/study", "VIEW", m.getParentId()))
+      .map(this::asStudyMembershipDto).collect(toList()));
+    builder.addAllNetworkMemberships(contact.getNetworkMemberships().stream()
+      .filter(m -> !asDraft || subjectAclService.isPermitted("/draft/study", "VIEW", m.getParentId()))
+      .map(this::asNetworkMembershipDto).collect(toList()));
 
     return builder.build();
   }
@@ -76,7 +82,10 @@ class ContactDtos {
 
     if(membership.getParentId() != null) {
       Study study = studyService.findStudy(membership.getParentId());
-      if (study != null) builder.addAllParentName(localizedStringDtos.asDto(study.getName()));
+      if(study != null) {
+        builder.addAllParentAcronym(localizedStringDtos.asDto(study.getAcronym()));
+        builder.addAllParentName(localizedStringDtos.asDto(study.getName()));
+      }
     }
 
     return builder.build();
@@ -89,7 +98,10 @@ class ContactDtos {
 
     if(membership.getParentId() != null) {
       Network network = networkService.findById(membership.getParentId());
-      if (network != null) builder.addAllParentName(localizedStringDtos.asDto(network.getName()));
+      if(network != null) {
+        builder.addAllParentAcronym(localizedStringDtos.asDto(network.getAcronym()));
+        builder.addAllParentName(localizedStringDtos.asDto(network.getName()));
+      }
     }
 
     return builder.build();

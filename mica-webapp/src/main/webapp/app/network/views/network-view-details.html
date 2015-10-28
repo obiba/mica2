@@ -84,21 +84,16 @@
                 </div>
               </td>
             </tr>
-            <tr>
-              <td>
-                <a href="" class="btn btn-info" ng-click="showAllContacts()" translate>network.all-contacts</a>
-              </td>
-            </tr>
             </tbody>
           </table>
-
+          <a href="" class="btn btn-info" ng-click="showAllContacts()" translate>network.all-contacts</a>
           <attributes-list attributes="network.attributes"></attributes-list>
         </div>
         <div class="col-md-6">
           <h3 translate>studies</h3>
 
           <a ng-click="addStudyEvent(network)" class="btn btn-info"
-            ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+            ng-if="network['obiba.mica.EntityStateDto.state'].permissions.edit">
             <i class="fa fa-plus"></i> <span translate>study.add</span>
           </a>
           <span class="pull-right">
@@ -108,20 +103,22 @@
           <table class="table table-bordered table-striped" ng-show="studySummaries.length">
             <thead>
             <tr>
+              <th translate>study.acronym</th>
               <th translate>study.name</th>
-              <th translate>study.description</th>
-              <th translate>actions</th>
+              <th ng-if="network['obiba.mica.EntityStateDto.state'].permissions.edit" translate>actions</th>
             </tr>
             </thead>
             <tbody>
             <tr dir-paginate="studySummary in studySummaries | itemsPerPage: 10">
               <td>
-                <localized value="studySummary.acronym" lang="tab.lang"></localized>
+                <a ng-href="#/study/{{studySummary.id}}">
+                  <localized value="studySummary.acronym" lang="tab.lang"></localized>
+                </a>
               </td>
               <td>
                 <localized value="studySummary.name" lang="tab.lang"></localized>
               </td>
-              <td>
+              <td ng-if="network['obiba.mica.EntityStateDto.state'].permissions.edit">
                 <!--<a ng-click="editStudy(study, population, dce)" class="hand action"><i class="fa fa-pencil"></i></a>-->
                 <a ng-click="deleteStudyEvent(network, studySummary, $index)" class="hand action"><i
                   class="fa fa-trash-o"></i></a>
