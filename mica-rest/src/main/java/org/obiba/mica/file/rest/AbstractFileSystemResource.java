@@ -45,16 +45,13 @@ public abstract class AbstractFileSystemResource {
    */
   protected abstract boolean isPublishedFileSystem();
 
-  protected List<Mica.FileDto> doSearchFiles(String path, String query, boolean recursively) {
-    return getChildrenFiles(normalizePath(path), recursively);
-  }
-
   protected Attachment doGetAttachment(String path) {
     return doGetAttachment(path, null);
   }
 
   protected Attachment doGetAttachment(String path, @Nullable String version) {
     String basePath = normalizePath(path);
+    if(!isPublishedFileSystem()) subjectAclService.checkPermission("/draft/file", "VIEW", basePath);
     if(path.endsWith("/")) throw new IllegalArgumentException("Folder download is not supported");
 
     Pair<String, String> pathName = FileSystemService.extractPathName(basePath);
@@ -75,9 +72,7 @@ public abstract class AbstractFileSystemResource {
 
   protected Mica.FileDto doGetFile(String path) {
     String basePath = normalizePath(path);
-    if(!isRoot(basePath)) subjectAclService
-      .checkPermission(String.format("%s/file", isPublishedFileSystem() ? "" : "/draft"),
-        "VIEW", basePath);
+    if(!isPublishedFileSystem()) subjectAclService.checkPermission("/draft/file", "VIEW", basePath);
     if(path.endsWith("/")) return getFolderDto(basePath);
 
     try {
@@ -89,6 +84,7 @@ public abstract class AbstractFileSystemResource {
 
   protected void doDeleteFile(String path) {
     String basePath = normalizePath(path);
+    subjectAclService.checkPermission("/draft/file", "DELETE", basePath);
     if(path.endsWith("/")) deleteFolderState(basePath);
 
     try {
@@ -100,6 +96,7 @@ public abstract class AbstractFileSystemResource {
 
   protected void doPublishFile(String path, boolean publish) {
     String basePath = normalizePath(path);
+    subjectAclService.checkPermission("/draft/file", "PUBLISH", basePath);
     if(basePath.endsWith("/")) publishFolderState(basePath, publish);
 
     try {
@@ -109,7 +106,13 @@ public abstract class AbstractFileSystemResource {
     }
   }
 
-  protected void doAddFile(Mica.AttachmentDto attachmentDto) {
+  protected void doAddOrUpdateFile(Mica.AttachmentDto attachmentDto) {
+    String action = fileSystemService
+      .hasAttachmentState(attachmentDto.getPath(), attachmentDto.getFileName(), isPublishedFileSystem())
+      ? "EDIT"
+      : "ADD";
+    subjectAclService.checkPermission("/draft/file", action, attachmentDto.getPath());
+
     fileSystemService.save(dtos.fromDto(attachmentDto));
   }
 
@@ -127,6 +130,8 @@ public abstract class AbstractFileSystemResource {
 
   protected void doMoveFile(String path, @NotNull String newPath) {
     String basePath = normalizePath(path);
+    subjectAclService.checkPermission("/draft/file", "EDIT", basePath);
+    subjectAclService.checkPermission("/draft/file", "ADD", newPath);
     if(isRoot(basePath)) throw new IllegalArgumentException("Root folder cannot be renamed");
     if(path.endsWith("/")) renameFolderState(basePath, newPath);
 
@@ -139,6 +144,8 @@ public abstract class AbstractFileSystemResource {
 
   protected void doCopyFile(String path, @NotNull String newPath) {
     String basePath = normalizePath(path);
+    subjectAclService.checkPermission("/draft/file", "VIEW", basePath);
+    subjectAclService.checkPermission("/draft/file", "ADD", newPath);
     if(isRoot(basePath)) throw new IllegalArgumentException("Root folder cannot be renamed");
     if(path.endsWith("/")) copyFolderState(basePath, newPath);
 
@@ -151,6 +158,7 @@ public abstract class AbstractFileSystemResource {
 
   protected void doUpdateStatus(String path, @NotNull RevisionStatus status) {
     String basePath = normalizePath(path);
+    subjectAclService.checkPermission("/draft/file", "EDIT", basePath);
     if(path.endsWith("/")) updateFolderStatus(basePath, status);
 
     try {

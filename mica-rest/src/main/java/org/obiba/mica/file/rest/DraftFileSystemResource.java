@@ -83,7 +83,7 @@ public class DraftFileSystemResource extends AbstractFileSystemResource {
   @POST
   @Path("/files")
   public Response addFile(Mica.AttachmentDto attachmentDto, @Context UriInfo uriInfo) {
-    doAddFile(attachmentDto);
+    doAddOrUpdateFile(attachmentDto);
     return Response
       .created(uriInfo.getBaseUriBuilder().path("draft").path("file").path(attachmentDto.getPath()).build()).build();
   }
