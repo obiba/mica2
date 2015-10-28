@@ -125,21 +125,24 @@ mica.fileSystem
               var parts = getResponseHeaders().location.split('/');
               var fileId = parts[parts.length - 1];
               TempFileResource.get({id: fileId}, function (tempFile) {
-                  var attachment = null;
+                  var attachment = {
+                    fileName: tempFile.name,
+                    path: document.path
+                  };
 
-                  if (document.fileName && document.fileName === tempFile.name) {
-                    attachment = angular.copy(document);
-                  } else {
-                    attachment = {
-                      fileName: tempFile.name,
-                      path: document.path,
-                      justUploaded: true
-                    };
+                  if (document.children) {
+                    document.children.forEach(function (file) {
+                      if (file.type === 'FILE' && file.name && file.name === tempFile.name) {
+                        attachment = angular.copy(file.state.attachment);
+                        delete attachment.timestamps;
+                      }
+                    });
                   }
 
                   attachment.id = tempFile.id;
                   attachment.size = tempFile.size;
                   attachment.md5 = tempFile.md5;
+                  attachment.justUploaded = true;
 
                   if (successCallback) {
                     successCallback(attachment);
