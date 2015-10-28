@@ -57,6 +57,8 @@ mica.fileSystem
         var items;
 
         if (!$scope.data.document || !$scope.data.document.children) {
+          $scope.selected = [];
+          $scope.hasUnselected = true;
           return;
         }
 
@@ -205,10 +207,16 @@ mica.fileSystem
         );
       };
 
-      var deleteDocument = function () {
+      var deleteDocuments = function () {
         applyToFiles(function (path) {
           return DraftFileSystemFileResource.delete({path: path});
         });
+      };
+
+      var deleteDocument = function (document) {
+        DraftFileSystemFileResource.delete({path: document.path}).$promise.then(function () {
+          navigateTo($scope.data.document);
+        }, onError);
       };
 
       var restoreRevision = function(document) {
@@ -362,6 +370,7 @@ mica.fileSystem
       $scope.updateDocumentType = updateDocumentType;
       $scope.updateDocumentDescription = updateDocumentDescription;
       $scope.deleteDocument = deleteDocument;
+      $scope.deleteDocuments = deleteDocuments;
       $scope.restoreRevision = restoreRevision;
       $scope.clearSearch = clearSearch;
       $scope.searchDocuments = searchDocuments;
