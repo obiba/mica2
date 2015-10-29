@@ -720,13 +720,15 @@
   "searching": "Searching",
   "search-results": "Search results",
   "most-recent": "Most Recent",
+  "not-published": "Not Published",
   "path": "Path",
   "search-tooltip": {
     "recursively": "Search recursively",
     "clear": "Clear search",
     "under-review": "Search files under review",
     "deleted": "Search deleted files",
-    "most-recent": "Search 10 most recent files"
+    "most-recent": "Search 10 most recently modified files",
+    "not-published": "Search not published files"
   },
   "admin-page": {
     "help": {

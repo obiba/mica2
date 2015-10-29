@@ -67,14 +67,14 @@
       </td>
       <td>
         <ul class="list-inline">
-          <li>
+          <li ng-if="document.permissions.view && fileDocument">
             <a target="_self" ng-href="ws/draft/file-dl/{{document.path}}"
-              ng-if="document.permissions.view && fileDocument"><i
+              ><i
               class="fa fa-download"></i></a>
           </li>
-          <li>
+          <li ng-if="document.permissions.delete && document.revisionStatus === 'DELETED'">
             <a href ng-click="deleteDocument(document)"
-              ng-if="document.permissions.delete && document.revisionStatus === 'DELETED'"><i
+             ><i
               class="fa fa-trash"></i></a>
           </li>
         </ul>

@@ -294,6 +294,10 @@ mica.fileSystem
             query = 'revisionStatus:' + query;
             break;
 
+          case 'NOT_PUBLISHED':
+            query = 'NOT(publicationDate:*)';
+            break;
+
           case 'RECENT':
             query = '';
             orderBy = 'desc';
