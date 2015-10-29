@@ -82,7 +82,9 @@ class AttachmentDtos {
       .setAttachment(asDto(state.getAttachment()));
     if(state.isPublished()) {
       builder.setPublishedId(state.getPublishedAttachment().getId()) //
-        .setPublicationDate(state.getPublicationDate().toString()).setPublishedBy(state.getPublishedBy());
+        .setPublicationDate(state.getPublicationDate().toString());
+
+      if(state.getPublishedBy() != null) builder.setPublishedBy(state.getPublishedBy());
     }
     if(detailed && !FileUtils.isDirectory(state)) builder.addAllRevisions(
       fileSystemService.getAttachmentRevisions(state).stream().map(this::asDto).collect(Collectors.toList()));

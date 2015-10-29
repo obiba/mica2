@@ -60,12 +60,8 @@
                       </a>
                       <div class="inline"
                         ng-if="inViewMode() && hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
-                        <a ng-click="editInvestigator(study, investigator)" class="action">
-                          <i class="fa fa-pencil"></i>
-                        </a>
-                        <a ng-click="deleteInvestigator(study, investigator)" class="action">
-                          <i class="fa fa-trash-o"></i>
-                        </a>
+                        <a ng-click="editInvestigator(study, investigator)" class="action"><i class="fa fa-pencil"></i></a>
+                        <a ng-click="deleteInvestigator(study, investigator)" class="action"><i class="fa fa-trash-o"></i></a>
                       </div>
                     </li>
                   </ul>

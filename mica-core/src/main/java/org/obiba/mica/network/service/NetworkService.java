@@ -107,7 +107,7 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
     networkRepository.saveWithReferences(saved);
     eventBus.post(new NetworkUpdatedEvent(saved));
 
-    saved.getAllPersons().forEach(c -> eventBus.post(new PersonUpdatedEvent(c.getPerson())));
+    saved.getAllPersons().forEach(c -> eventBus.post(new PersonUpdatedEvent(c)));
 
     gitService.save(saved, comment);
   }

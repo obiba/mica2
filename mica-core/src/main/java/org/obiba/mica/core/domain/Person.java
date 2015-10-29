@@ -42,7 +42,6 @@ public class Person implements Persistable<String> {
 
   private String academicLevel;
 
-  @Email
   private String email;
 
   private String phone;
@@ -211,12 +210,16 @@ public class Person implements Persistable<String> {
     return this == object || (object != null && this.getClass().equals(object.getClass()) &&
       (getId() != null
         ? Objects.equals(getId(), ((Person) object).getId())
-        : Objects.equals(getEmail(), ((Person) object).getEmail())));
+        : !Strings.isNullOrEmpty(getEmail()) ? Objects.equals(getEmail(), ((Person) object).getEmail()) : false));
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(getId());
+    if(getId() != null) return Objects.hashCode(getId());
+
+    if(!Strings.isNullOrEmpty(getEmail())) return Objects.hashCode(getEmail());
+
+    return super.hashCode();
   }
 
   public static class Institution implements Serializable {

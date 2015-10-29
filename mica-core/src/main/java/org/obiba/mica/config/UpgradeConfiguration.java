@@ -12,7 +12,6 @@ import org.obiba.mica.core.upgrade.AttachmentsRefactorUpgrade;
 import org.obiba.mica.core.upgrade.ContactsRefactorUpgrade;
 import org.obiba.mica.core.upgrade.DatasetStateUpgrade;
 import org.obiba.mica.core.upgrade.NetworkLogoMigration;
-import org.obiba.mica.core.upgrade.NetworkStateUpgrade;
 import org.obiba.mica.core.upgrade.RuntimeVersionProvider;
 import org.obiba.mica.core.upgrade.MicaVersionModifier;
 import org.obiba.runtime.upgrade.UpgradeManager;
@@ -56,7 +55,6 @@ public class UpgradeConfiguration {
       applicationContext.getBean(AttachmentsPathUpgrade.class), //
       applicationContext.getBean(AttachmentsCleanupUpgrade.class), //
       applicationContext.getBean(ContactsRefactorUpgrade.class), //
-      applicationContext.getBean(NetworkStateUpgrade.class), //
       applicationContext.getBean(DatasetStateUpgrade.class));
   }
 }

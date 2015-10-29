@@ -10,13 +10,11 @@ import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.URL;
-import org.obiba.mica.core.domain.AbstractAuditableDocument;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.AttributeAware;
 import org.obiba.mica.core.domain.Attributes;
 import org.obiba.mica.core.domain.Authorization;
-import org.obiba.mica.core.domain.GitPersistable;
 import org.obiba.mica.core.domain.PersonAware;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.Membership;
@@ -28,8 +26,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import static java.util.stream.Collectors.toList;
 
@@ -125,6 +123,8 @@ public class Network extends AbstractGitPersistable implements AttributeAware, P
   public void setInvestigators(List<Person> investigators) {
     if(investigators == null) investigators = Lists.newArrayList();
 
+    replaceExisting(investigators);
+
     memberships.put(Membership.INVESTIGATOR,
       investigators.stream().map(p -> new Membership(p, Membership.INVESTIGATOR)).collect(toList()));
   }
@@ -133,7 +133,7 @@ public class Network extends AbstractGitPersistable implements AttributeAware, P
   @JsonIgnore
   public List<Person> getContacts() {
     if(!contacts.isEmpty()) {
-      setInvestigators(contacts);
+      setContacts(contacts);
       contacts.clear();
     }
 
@@ -163,6 +163,8 @@ public class Network extends AbstractGitPersistable implements AttributeAware, P
   @JsonProperty
   public void setContacts(List<Person> contacts) {
     if(contacts == null) contacts = Lists.newArrayList();
+
+    replaceExisting(contacts);
 
     memberships.put(Membership.CONTACT,
       contacts.stream().map(p -> new Membership(p, Membership.CONTACT)).collect(toList()));
@@ -280,7 +282,13 @@ public class Network extends AbstractGitPersistable implements AttributeAware, P
   }
 
   @Override
-  public List<Membership> getAllPersons() {
+  public List<Person> getAllPersons() {
+    return getMemberships().values().stream().flatMap(List::stream).map(Membership::getPerson).distinct()
+      .collect(toList());
+  }
+
+  @Override
+  public List<Membership> getAllMemberships() {
     return getMemberships().values().stream().flatMap(List::stream).collect(toList());
   }
 
@@ -316,5 +324,18 @@ public class Network extends AbstractGitPersistable implements AttributeAware, P
         put(self.getClass().getSimpleName(), self);
       }
     };
+  }
+
+  private void replaceExisting(List<Person> persons) {
+    List<Person> existing = this.memberships.values().stream().flatMap(List::stream).map(Membership::getPerson)
+      .distinct().collect(toList());
+
+    ImmutableList.copyOf(persons).forEach(p -> {
+      if(existing.contains(p)) {
+        int idx = persons.indexOf(p);
+        persons.remove(p);
+        persons.add(idx, existing.get(existing.indexOf(p)));
+      }
+    });
   }
 }

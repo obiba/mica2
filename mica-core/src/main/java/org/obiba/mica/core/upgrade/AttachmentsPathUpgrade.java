@@ -1,8 +1,12 @@
 package org.obiba.mica.core.upgrade;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.inject.Inject;
 
 import org.obiba.mica.core.repository.AttachmentRepository;
+import org.obiba.mica.file.InvalidFileNameException;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.runtime.Version;
 import org.obiba.runtime.upgrade.UpgradeStep;
@@ -34,9 +38,24 @@ public class AttachmentsPathUpgrade implements UpgradeStep {
   public void execute(Version version) {
     log.info("Executing attachments path property upgrade");
 
-    attachmentRepository.findAll().stream().filter(a -> a.getPath().contains("/attachment/")).forEach(a -> {
-      a.setPath(a.getPath().replaceAll("/attachment/[0-9a-f\\-]+$", ""));
-      fileSystemService.save(a);
+    Pattern pattern = Pattern.compile("[\\$%/#]");
+
+    attachmentRepository.findAll().stream().forEach(a -> {
+      boolean isModified = false;
+
+      if(a.getPath() != null && a.getPath().contains("/attachment/")) {
+        a.setPath(a.getPath().replaceAll("/attachment/[0-9a-f\\-]+$", ""));
+        isModified = true;
+      }
+
+      Matcher matcher = pattern.matcher(a.getName());
+
+      if(matcher.find()) {
+        a.setName(matcher.replaceAll("_"));
+        isModified = true;
+      }
+
+      if(isModified) fileSystemService.save(a);
     });
   }
 }

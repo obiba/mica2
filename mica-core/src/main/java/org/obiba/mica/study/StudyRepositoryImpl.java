@@ -56,5 +56,4 @@ public class StudyRepositoryImpl implements StudyRepositoryCustom, PersonAwareRe
     mongoTemplate.remove(study);
     deleteContacts(study);
   }
-
 }

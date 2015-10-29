@@ -16,7 +16,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public interface PersonAware {
   @JsonIgnore
-  List<Membership> getAllPersons();
+  List<Person> getAllPersons();
+
+  @JsonIgnore
+  List<Membership> getAllMemberships();
 
   void addToPerson(Membership membership);
 

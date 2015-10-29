@@ -44,7 +44,7 @@ public abstract class AbstractPersonsSearchResource {
   @Timed
   public Mica.PersonsDto query(@QueryParam("from") @DefaultValue("0") int from,
     @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") @DefaultValue(DEFAULT_SORT) String sort,
-    @QueryParam("order") @DefaultValue("desc") String order, @QueryParam("query") String query,
+    @QueryParam("order") @DefaultValue("asc") String order, @QueryParam("query") String query,
     @QueryParam("exclude") List<String> excludes) throws IOException {
 
     String ids = excludes.stream().map(s -> "id:" + s).collect(Collectors.joining(" "));
