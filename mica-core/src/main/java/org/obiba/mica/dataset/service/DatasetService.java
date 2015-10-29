@@ -115,25 +115,22 @@ public abstract class DatasetService<T extends Dataset, T1 extends EntityState> 
   }
 
   protected T prepareSave(T dataset, MongoRepository<T, String> repository) {
-    T saved = dataset;
-    if(saved.isNew()) {
-      saved.setId(generateDatasetId(dataset));
+    if(dataset.isNew()) {
+      dataset.setId(generateDatasetId(dataset));
+      return dataset;
     } else {
-      saved = repository.findOne(dataset.getId());
-
+      T saved = repository.findOne(dataset.getId());
       if(saved != null) {
         BeanUtils.copyProperties(dataset, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
           "lastModifiedDate");
-      } else {
-        saved = dataset;
+        return saved;
       }
+      return dataset;
     }
-    return saved;
   }
 
   protected String generateDatasetId(@NotNull T dataset) {
     ensureAcronym(dataset);
-
     return getNextId(dataset.getAcronym());
   }
 
