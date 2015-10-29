@@ -11,7 +11,6 @@
 package org.obiba.mica.dataset.search;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -19,12 +18,9 @@ import javax.inject.Inject;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
-import org.obiba.mica.core.domain.AttributeKey;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.search.AbstractIndexConfiguration;
 import org.obiba.mica.search.ElasticSearchIndexer;
-import org.obiba.opal.core.domain.taxonomy.Taxonomy;
-import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -35,18 +31,18 @@ public class VariableIndexConfiguration extends AbstractIndexConfiguration imple
 
   @Override
   public void onIndexCreated(Client client, String indexName) {
-    if(VariableIndexerImpl.DRAFT_VARIABLE_INDEX.equals(indexName) ||
-        VariableIndexerImpl.PUBLISHED_VARIABLE_INDEX.equals(indexName)) {
+    if(VariableIndexer.DRAFT_VARIABLE_INDEX.equals(indexName) ||
+        VariableIndexer.PUBLISHED_VARIABLE_INDEX.equals(indexName)) {
       setMappingProperties(client, indexName);
     }
   }
 
   private void setMappingProperties(Client client, String indexName) {
     try {
-      client.admin().indices().preparePutMapping(indexName).setType(VariableIndexerImpl.VARIABLE_TYPE)
-          .setSource(createMappingProperties(VariableIndexerImpl.VARIABLE_TYPE)).execute().actionGet();
-      client.admin().indices().preparePutMapping(indexName).setType(VariableIndexerImpl.HARMONIZED_VARIABLE_TYPE)
-          .setSource(createMappingProperties(VariableIndexerImpl.HARMONIZED_VARIABLE_TYPE)).execute().actionGet();
+      client.admin().indices().preparePutMapping(indexName).setType(VariableIndexer.VARIABLE_TYPE)
+          .setSource(createMappingProperties(VariableIndexer.VARIABLE_TYPE)).execute().actionGet();
+      client.admin().indices().preparePutMapping(indexName).setType(VariableIndexer.HARMONIZED_VARIABLE_TYPE)
+          .setSource(createMappingProperties(VariableIndexer.HARMONIZED_VARIABLE_TYPE)).execute().actionGet();
     } catch(IOException e) {
       throw new RuntimeException(e);
     }
@@ -70,7 +66,7 @@ public class VariableIndexConfiguration extends AbstractIndexConfiguration imple
     try {
       mapping.startObject("attributes");
       mapping.startObject("properties");
-      Stream.of(VariableIndexerImpl.LOCALIZED_ANALYZED_FIELDS)
+      Stream.of(VariableIndexer.LOCALIZED_ANALYZED_FIELDS)
         .forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
       mapping.endObject(); // properties
       mapping.endObject(); // attributes
@@ -81,8 +77,8 @@ public class VariableIndexConfiguration extends AbstractIndexConfiguration imple
     mapping.endObject(); // properties
 
     // parent
-    if(VariableIndexerImpl.HARMONIZED_VARIABLE_TYPE.equals(type)) {
-      mapping.startObject("_parent").field("type", VariableIndexerImpl.VARIABLE_TYPE).endObject();
+    if(VariableIndexer.HARMONIZED_VARIABLE_TYPE.equals(type)) {
+      mapping.startObject("_parent").field("type", VariableIndexer.VARIABLE_TYPE).endObject();
     }
 
     mapping.endObject().endObject();

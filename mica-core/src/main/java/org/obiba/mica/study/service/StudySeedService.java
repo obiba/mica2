@@ -156,7 +156,7 @@ public class StudySeedService {
     List<Study> studies = objectMapper.readValue(inputStream, new TypeReference<List<Study>>() {});
     for(Study study : studies) {
       studyService.save(study);
-      studyService.publish(study.getId());
+      studyService.publish(study.getId(), true);
     }
   }
 
@@ -170,7 +170,7 @@ public class StudySeedService {
     InputStream inputStream = new FileInputStream(json);
     Study study = objectMapper.readValue(inputStream, Study.class);
     studyService.save(study);
-    studyService.publish(study.getId());
+    studyService.publish(study.getId(), true);
   }
 
 }

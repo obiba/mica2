@@ -19,20 +19,26 @@ import org.elasticsearch.action.deletebyquery.DeleteByQueryResponse;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.rest.RestStatus;
-import org.obiba.mica.dataset.service.VariableIndexer;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
+import org.obiba.mica.dataset.event.DatasetDeletedEvent;
+import org.obiba.mica.dataset.event.DatasetPublishedEvent;
+import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
+import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.search.ElasticSearchIndexer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+
+import com.google.common.eventbus.Subscribe;
 
 /**
  * Indexer of variables, that reacts on dataset events.
  */
 @Component
-public class VariableIndexerImpl implements VariableIndexer {
-  private static final Logger log = LoggerFactory.getLogger(VariableIndexerImpl.class);
+public class VariableIndexer {
+  private static final Logger log = LoggerFactory.getLogger(VariableIndexer.class);
 
   public static final String DRAFT_VARIABLE_INDEX = "variable-draft";
 
@@ -42,65 +48,46 @@ public class VariableIndexerImpl implements VariableIndexer {
 
   public static final String HARMONIZED_VARIABLE_TYPE = DatasetVariable.HMAPPING_NAME;
 
-  public static final String[] ANALYZED_FIELDS = {"name"};
+  public static final String[] ANALYZED_FIELDS = { "name" };
 
-  public static final String[] LOCALIZED_ANALYZED_FIELDS = {"label", "description"};
+  public static final String[] LOCALIZED_ANALYZED_FIELDS = { "label", "description" };
 
   @Inject
   private ElasticSearchIndexer elasticSearchIndexer;
 
-  @Override
-  public void onDatasetUpdated(Iterable<DatasetVariable> variables) {
-    indexDatasetVariables(DRAFT_VARIABLE_INDEX, variables);
+  @Async
+  @Subscribe
+  public void datasetUpdated(DatasetUpdatedEvent event) {
+    log.debug("{} {} was updated", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
+    deleteDatasetVariables(DRAFT_VARIABLE_INDEX, event.getPersistable());
+    indexDatasetVariables(DRAFT_VARIABLE_INDEX, event.getVariables());
+    if(event.hasHarmonizationVariables())
+      indexHarmonizedVariables(DRAFT_VARIABLE_INDEX, event.getHarmonizationVariables());
   }
 
-  @Override
-  public void onDatasetUpdated(Iterable<DatasetVariable> variables,
-    Map<String, List<DatasetVariable>> harmonizedVariables) {
-    onDatasetUpdated(variables);
-    indexHarmonizedVariables(DRAFT_VARIABLE_INDEX, harmonizedVariables);
+  @Async
+  @Subscribe
+  public void datasetPublished(DatasetPublishedEvent event) {
+    log.debug("{} {} was published", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
+    deleteDatasetVariables(PUBLISHED_VARIABLE_INDEX, event.getPersistable());
+    indexDatasetVariables(PUBLISHED_VARIABLE_INDEX, event.getVariables());
+    if(event.hasHarmonizationVariables())
+      indexHarmonizedVariables(PUBLISHED_VARIABLE_INDEX, event.getHarmonizationVariables());
   }
 
-  @Override
-  public void onDatasetPublished(Dataset dataset, Iterable<DatasetVariable> variables) {
-    if (!dataset.isPublished()) {
-      deleteDatasetVariables(PUBLISHED_VARIABLE_INDEX, dataset);
-      return;
-    }
-
-    indexDatasetVariables(PUBLISHED_VARIABLE_INDEX, variables);
+  @Async
+  @Subscribe
+  public void datasetUnpublished(DatasetUnpublishedEvent event) {
+    log.debug("{} {} was unpublished", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
+    deleteDatasetVariables(PUBLISHED_VARIABLE_INDEX, event.getPersistable());
   }
 
-  @Override
-  public void onDatasetPublished(Dataset dataset, Iterable<DatasetVariable> variables,
-    Map<String, List<DatasetVariable>> harmonizedVariables) {
-    onDatasetPublished(dataset, variables);
-
-    if (dataset.isPublished()) {
-      indexHarmonizedVariables(PUBLISHED_VARIABLE_INDEX, harmonizedVariables);
-    }
-  }
-
-  @Override
-  public void onDatasetDeleted(Dataset dataset) {
-    deleteDatasetVariables(DRAFT_VARIABLE_INDEX, dataset);
-    deleteDatasetVariables(PUBLISHED_VARIABLE_INDEX, dataset);
-  }
-
-  @Override
-  public void indexAll(Iterable<DatasetVariable> variables) {
-
-  }
-
-  @Override
-  public void indexAll(Map<String, List<DatasetVariable>> harmonizedVariables) {
-
-  }
-
-  @Override
-  public void dropIndex() {
-    if(elasticSearchIndexer.hasIndex(DRAFT_VARIABLE_INDEX)) elasticSearchIndexer.dropIndex(DRAFT_VARIABLE_INDEX);
-    if(elasticSearchIndexer.hasIndex(PUBLISHED_VARIABLE_INDEX)) elasticSearchIndexer.dropIndex(PUBLISHED_VARIABLE_INDEX);
+  @Async
+  @Subscribe
+  public void datasetDeleted(DatasetDeletedEvent event) {
+    log.debug("{} {} was deleted", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
+    deleteDatasetVariables(DRAFT_VARIABLE_INDEX, event.getPersistable());
+    deleteDatasetVariables(PUBLISHED_VARIABLE_INDEX, event.getPersistable());
   }
 
   //
@@ -112,8 +99,8 @@ public class VariableIndexerImpl implements VariableIndexer {
   }
 
   protected void indexHarmonizedVariables(String indexName, Map<String, List<DatasetVariable>> harmonizedVariables) {
-      harmonizedVariables.keySet().forEach(
-          parentId -> elasticSearchIndexer.indexAllIndexables(indexName, harmonizedVariables.get(parentId), parentId));
+    harmonizedVariables.keySet().forEach(
+      parentId -> elasticSearchIndexer.indexAllIndexables(indexName, harmonizedVariables.get(parentId), parentId));
   }
 
   private void deleteDatasetVariables(String indexName, Dataset dataset) {

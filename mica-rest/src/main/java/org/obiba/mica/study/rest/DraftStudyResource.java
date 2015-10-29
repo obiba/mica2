@@ -84,7 +84,7 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
   @Timed
   public Response publish() {
     subjectAclService.checkPermission("/draft/study", "PUBLISH", id);
-    studyService.publish(id);
+    studyService.publish(id, true);
     return Response.noContent().build();
   }
 
@@ -92,7 +92,7 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
   @Path("/_publish")
   public Response unPublish() {
     subjectAclService.checkPermission("/draft/study", "PUBLISH", id);
-    studyService.unPublish(id);
+    studyService.publish(id, false);
     return Response.noContent().build();
   }
 

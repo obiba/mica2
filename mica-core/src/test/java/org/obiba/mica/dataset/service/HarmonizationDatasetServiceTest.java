@@ -43,13 +43,7 @@ public class HarmonizationDatasetServiceTest {
   private EventBus eventBus;
 
   @Mock
-  private VariableIndexer varIndexer;
-
-  @Mock
   private HarmonizationDatasetService.Helper helper;
-
-  @Mock
-  private DatasetIndexer dsIndexer;
 
   private StudyTable st;
   private StudyTable st2;

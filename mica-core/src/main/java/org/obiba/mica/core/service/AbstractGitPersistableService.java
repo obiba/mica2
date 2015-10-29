@@ -43,8 +43,6 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
 
   protected abstract EntityStateRepository<T> getEntityStateRepository();
 
-  protected abstract GitPersistable unpublish(T gitPersistable);
-
   protected abstract Class<T1> getType();
 
   /**
@@ -70,20 +68,15 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
 
   public abstract void save(T1 gitPersistable, String comments);
 
-  @NotNull
+  @Nullable
   public T findStateById(@NotNull String id) throws NoSuchEntityException {
-    T entityState = getEntityState(id);
-
-    ensureGitRepositoryAndSave(entityState);
-
-    return entityState;
+    return getEntityStateRepository().findOne(id);
   }
 
-  protected T getEntityState(String id) {
+  @NotNull
+  public T getEntityState(String id) {
     T entityState = getEntityStateRepository().findOne(id);
-
     if(entityState == null) throw NoSuchEntityException.withId(getType(), id);
-
     return entityState;
   }
 
@@ -117,18 +110,7 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
 
   protected void ensureGitRepository(@NotNull T gitPersistable) {
     if(!gitService.hasGitRepository(gitPersistable)) {
-      unpublish(gitPersistable);
-    }
-  }
-
-  protected void ensureGitRepositoryAndSave(@NotNull T gitPersistable) {
-    if(!gitService.hasGitRepository(gitPersistable)) {
-      GitPersistable recovered = unpublish(gitPersistable);
-
-      if(recovered != null) {
-        log.info("Recuperated state '{}' from repository is saved backed to Git repo.", gitPersistable.getId());
-        gitService.save(recovered);
-      }
+      // not sure what to do here
     }
   }
 
@@ -155,35 +137,31 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
 
   public T publishState(@NotNull String id) throws NoSuchEntityException {
     T entityState = findStateById(id);
-    entityState.setRevisionStatus(DRAFT);
-    Pair<String, String> tagInfo = gitService.tag(entityState);
-    entityState.setPublishedTag(tagInfo.getFirst());
-    entityState.setPublishedId(tagInfo.getSecond());
-    entityState.setPublicationDate(DateTime.now());
-    entityState.setPublishedBy(getCurrentUsername());
-    entityState.resetRevisionsAhead();
-    entityState.setPublicationDate(DateTime.now());
-    getEntityStateRepository().save(entityState);
-
+    if(entityState != null) {
+      entityState.setRevisionStatus(DRAFT);
+      Pair<String, String> tagInfo = gitService.tag(entityState);
+      entityState.setPublishedTag(tagInfo.getFirst());
+      entityState.setPublishedId(tagInfo.getSecond());
+      entityState.setPublicationDate(DateTime.now());
+      entityState.setPublishedBy(getCurrentUsername());
+      entityState.resetRevisionsAhead();
+      entityState.setPublicationDate(DateTime.now());
+      getEntityStateRepository().save(entityState);
+    }
     return entityState;
   }
 
-  protected void unpublishState(@NotNull T entityState) {
-    entityState.resetRevisionsAhead();
-    entityState.setPublishedTag(null);
-    entityState.setPublicationDate(null);
-    entityState.setPublishedBy(null);
-
-    if(entityState.getRevisionStatus() != DELETED) entityState.setRevisionStatus(DRAFT);
-
-    getEntityStateRepository().save(entityState);
-  }
-
-  @Nullable
-  public GitPersistable unPublish(String id) {
-    T entityState = getEntityStateRepository().findOne(id);
-
-    return entityState == null ? null : unpublish(entityState);
+  public T unPublishState(@NotNull String id) {
+    T entityState = findStateById(id);
+    if(entityState != null) {
+      entityState.resetRevisionsAhead();
+      entityState.setPublishedTag(null);
+      entityState.setPublicationDate(null);
+      entityState.setPublishedBy(null);
+      if(entityState.getRevisionStatus() != DELETED) entityState.setRevisionStatus(DRAFT);
+      getEntityStateRepository().save(entityState);
+    }
+    return entityState;
   }
 
   public T updateStatus(String id, RevisionStatus status) {
