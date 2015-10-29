@@ -38,7 +38,7 @@ public class NetworkStateUpgrade implements UpgradeStep {
       networkService.save(network);
 
       if(network.isPublished()) {
-        networkService.publish(network.getId());
+        networkService.publish(network.getId(), true);
       }
     });
   }

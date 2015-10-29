@@ -88,7 +88,7 @@ public class DraftHarmonizationDatasetsResource {
   @Timed
   @RequiresPermissions({ "/draft/harmonization-dataset:PUBLISH" })
   public Response reIndex() {
-    datasetService.indexAll(false);
+    datasetService.indexAll();
     return Response.noContent().build();
   }
 

@@ -6,12 +6,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.obiba.mica.dataset.service.DatasetIndexer;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.dataset.service.StudyDatasetService;
-import org.obiba.mica.dataset.service.VariableIndexer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -35,13 +31,6 @@ public class DatasetsResource {
 
   @Component
   public static class Helper {
-    private static final Logger log = LoggerFactory.getLogger(DatasetsResource.Helper.class);
-
-    @Inject
-    private DatasetIndexer datasetDatasetIndexer;
-
-    @Inject
-    private VariableIndexer variableIndexer;
 
     @Inject
     private StudyDatasetService studyDatasetService;
@@ -51,13 +40,8 @@ public class DatasetsResource {
 
     @Async
     public void indexAll() {
-      log.info("Reindexing datasets");
-
-      datasetDatasetIndexer.dropIndex();
-      variableIndexer.dropIndex();
-
-      studyDatasetService.indexAll(true);
-      harmonizationDatasetService.indexAll(true);
+      studyDatasetService.indexAll();
+      harmonizationDatasetService.indexAll();
     }
   }
 }

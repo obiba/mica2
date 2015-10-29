@@ -86,7 +86,7 @@ public class StudyDtosTest {
     MicaConfig config = new MicaConfig();
     config.setLocales(Arrays.asList(Locale.ENGLISH, Locale.FRENCH));
     when(micaConfigService.getConfig()).thenReturn(config);
-    when(studyService.findStateById(anyString())).thenReturn(new StudyState());
+    when(studyService.getEntityState(anyString())).thenReturn(new StudyState());
   }
 
   @Test

@@ -44,7 +44,7 @@ class StudySummaryDtos {
 
   @NotNull
   public Mica.StudySummaryDto.Builder asDtoBuilder(@NotNull Study study) {
-    StudyState studyState = studyService.findStateById(study.getId());
+    StudyState studyState = studyService.getEntityState(study.getId());
 
     if (studyState.isPublished()) {
       return asDtoBuilder(study, studyState.isPublished(), datasetVariableService.getCountByStudyId(study.getId()));
@@ -160,7 +160,7 @@ class StudySummaryDtos {
   }
 
   Mica.StudySummaryDto asDto(String studyId) {
-    StudyState studyState = studyService.findStateById(studyId);
+    StudyState studyState = studyService.getEntityState(studyId);
 
     if(studyState.isPublished()) {
       return asDtoBuilder(publishedStudyService.findById(studyId), true,

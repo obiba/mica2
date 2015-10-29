@@ -150,7 +150,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     });
 
     if(publish) {
-      studyService.publish(study.getId());
+      studyService.publish(study.getId(), true);
     }
   }
 
@@ -177,7 +177,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     updated.cleanContacts();
     networkService.save(updated);
 
-    if(publish) networkService.publish(updated.getId());
+    if(publish) networkService.publish(updated.getId(), true);
   }
 
   private void saveTempFile(Attachment attachment, ByteSource content) throws IOException {
