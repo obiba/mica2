@@ -694,8 +694,10 @@
   "files": "Files",
   "select-all": "Select all",
   "clear-selection": "Clear",
-  "items-selected": "Items selected",
-  "item-selected": "Item selected",
+  "items-selected": "items selected",
+  "item-selected": "item selected",
+  "files-selected": "files selected",
+  "file-selected": "file selected",
   "revisions": "Revisions",
   "revision": "Revision",
   "revision-date": "Revision Date",
@@ -716,10 +718,15 @@
   "data-access": "Data Access",
   "properties": "Properties",
   "searching": "Searching",
-  "recent": "Recent",
+  "search-results": "Search results",
+  "most-recent": "Most Recent",
   "path": "Path",
   "search-tooltip": {
-    "recursively": "Search recursively"
+    "recursively": "Search recursively",
+    "clear": "Clear search",
+    "under-review": "Search files under review",
+    "deleted": "Search deleted files",
+    "most-recent": "Search 10 most recent files"
   },
   "admin-page": {
     "help": {

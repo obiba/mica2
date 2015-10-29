@@ -1,8 +1,11 @@
-<div class="panel panel-default">
-  <div class="panel-heading" ng-if="selected.length > 0">{{selected.length}} <span>{{selected.length > 1 ? 'items-selected' : 'item-selected'| translate}}</span>.
-    <a href="" ng-click="selectAll()" ng-if="selected.length < data.document.children.length"><i
-      class="fa fa-check"></i> <span translate>select-all</span></a>
-    <a href="" ng-click="clearSelection()"><i class="fa fa-times"></i> <span translate>clear-selection</span></a>
+<div class="panel panel-default" ng-if="!data.search.active || data.document.children.length>0">
+  <div class="panel-heading" ng-if="selected.length > 0">
+    <small>
+      {{selected.length}} <span>{{selected.length > 1 ? 'files-selected' : 'file-selected'| translate}}</span>.
+      <a href="" ng-click="selectAll()" ng-if="selected.length < data.document.children.length"><i
+        class="fa fa-check"></i> <span translate>select-all</span></a>
+      <a href="" ng-click="clearSelection()"><i class="fa fa-times"></i> <span translate>clear-selection</span></a>
+    </small>
   </div>
   <table class="table table-bordered table-striped no-padding no-margin">
     <thead>
