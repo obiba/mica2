@@ -16,7 +16,7 @@ import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**
- * Spring Data MongoDB repository for the {@link org.obiba.mica.dataset.domain.HarmonizationDataset} entity.
+ * Spring Data MongoDB repository for the {@link HarmonizationDataset} entity.
  */
 public interface HarmonizationDatasetRepository extends MongoRepository<HarmonizationDataset, String> {
 

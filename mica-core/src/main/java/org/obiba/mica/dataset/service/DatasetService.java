@@ -27,10 +27,10 @@ import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
-import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
+import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.opal.rest.client.magma.RestDatasource;
 import org.obiba.opal.rest.client.magma.RestValueTable;
@@ -114,7 +114,6 @@ public abstract class DatasetService<T extends Dataset, T1 extends EntityState> 
 
   protected String generateDatasetId(@NotNull T dataset) {
     ensureAcronym(dataset);
-
     return getNextId(dataset.getAcronym());
   }
 

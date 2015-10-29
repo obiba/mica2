@@ -6,9 +6,7 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
 
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.security.service.SubjectAclService;
@@ -51,15 +49,7 @@ public class StudyStateResource {
   @Timed
   public Mica.StudySummaryDto get() {
     subjectAclService.checkPermission("/draft/study", "VIEW", id);
-    return dtos.asDto(studyService.findStateById(id));
-  }
-
-  @PUT
-  @Path("/_publish")
-  public Response publish() {
-    subjectAclService.checkPermission("/draft/study", "PUBLISH", id);
-    studyService.publish(id);
-    return Response.noContent().build();
+    return dtos.asDto(studyService.getEntityState(id));
   }
 
   @GET

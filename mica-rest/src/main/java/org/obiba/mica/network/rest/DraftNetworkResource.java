@@ -95,7 +95,7 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
   @Path("/_publish")
   public Response publish() {
     subjectAclService.checkPermission("/draft/network", "PUBLISH", id);
-    networkService.publish(id);
+    networkService.publish(id, true);
     return Response.noContent().build();
   }
 
@@ -103,7 +103,7 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
   @Path("/_publish")
   public Response unPublish() {
     subjectAclService.checkPermission("/draft/network", "PUBLISH", id);
-    networkService.unPublish(id);
+    networkService.publish(id, false);
     return Response.noContent().build();
   }
 

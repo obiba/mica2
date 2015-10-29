@@ -25,11 +25,11 @@ public class DatasetIndexConfiguration extends AbstractIndexConfiguration implem
 
   @Override
   public void onIndexCreated(Client client, String indexName) {
-    if(DatasetIndexerImpl.DRAFT_DATASET_INDEX.equals(indexName) ||
-        DatasetIndexerImpl.PUBLISHED_DATASET_INDEX.equals(indexName)) {
+    if(DatasetIndexer.DRAFT_DATASET_INDEX.equals(indexName) ||
+        DatasetIndexer.PUBLISHED_DATASET_INDEX.equals(indexName)) {
 
       try {
-        client.admin().indices().preparePutMapping(indexName).setType(DatasetIndexerImpl.DATASET_TYPE)
+        client.admin().indices().preparePutMapping(indexName).setType(DatasetIndexer.DATASET_TYPE)
             .setSource(createMappingProperties()).execute().actionGet();
       } catch(IOException e) {
         throw new RuntimeException(e);
@@ -38,12 +38,12 @@ public class DatasetIndexConfiguration extends AbstractIndexConfiguration implem
   }
 
   private XContentBuilder createMappingProperties() throws IOException {
-    XContentBuilder mapping = XContentFactory.jsonBuilder().startObject().startObject(DatasetIndexerImpl.DATASET_TYPE);
+    XContentBuilder mapping = XContentFactory.jsonBuilder().startObject().startObject(DatasetIndexer.DATASET_TYPE);
 
     // properties
     mapping.startObject("properties");
     mapping.startObject("id").field("type", "string").field("index","not_analyzed").endObject();
-    Stream.of(DatasetIndexerImpl.LOCALIZED_ANALYZED_FIELDS).forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
+    Stream.of(DatasetIndexer.LOCALIZED_ANALYZED_FIELDS).forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
 
     mapping.startObject("studyTables") //
         .startObject("properties");

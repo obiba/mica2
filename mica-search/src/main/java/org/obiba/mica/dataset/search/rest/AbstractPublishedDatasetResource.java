@@ -37,8 +37,8 @@ import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
-import org.obiba.mica.dataset.search.DatasetIndexerImpl;
-import org.obiba.mica.dataset.search.VariableIndexerImpl;
+import org.obiba.mica.dataset.search.DatasetIndexer;
+import org.obiba.mica.dataset.search.VariableIndexer;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -76,14 +76,14 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   protected T getDataset(Class<T> clazz, @NotNull String datasetId) throws NoSuchDatasetException {
     QueryBuilder query = QueryBuilders.queryString(clazz.getSimpleName()).field("className");
     query = QueryBuilders.boolQuery().must(query)
-      .must(QueryBuilders.idsQuery(DatasetIndexerImpl.DATASET_TYPE).addIds(datasetId));
+      .must(QueryBuilders.idsQuery(DatasetIndexer.DATASET_TYPE).addIds(datasetId));
 
     SearchRequestBuilder search = client.prepareSearch() //
-      .setIndices(DatasetIndexerImpl.PUBLISHED_DATASET_INDEX) //
-      .setTypes(DatasetIndexerImpl.DATASET_TYPE) //
+      .setIndices(DatasetIndexer.PUBLISHED_DATASET_INDEX) //
+      .setTypes(DatasetIndexer.DATASET_TYPE) //
       .setQuery(query);
 
-    log.info("Request /{}/{}", DatasetIndexerImpl.PUBLISHED_DATASET_INDEX, DatasetIndexerImpl.DATASET_TYPE);
+    log.info("Request /{}/{}", DatasetIndexer.PUBLISHED_DATASET_INDEX, DatasetIndexer.DATASET_TYPE);
     SearchResponse response = search.execute().actionGet();
 
     if(response.getHits().totalHits() == 0) throw NoSuchDatasetException.withId(datasetId);
@@ -91,7 +91,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
     InputStream inputStream = new ByteArrayInputStream(response.getHits().hits()[0].getSourceAsString().getBytes());
     try {
       T rval = objectMapper.readValue(inputStream, clazz);
-      log.info("Response /{}/{}", DatasetIndexerImpl.PUBLISHED_DATASET_INDEX, DatasetIndexerImpl.DATASET_TYPE);
+      log.info("Response /{}/{}", DatasetIndexer.PUBLISHED_DATASET_INDEX, DatasetIndexer.DATASET_TYPE);
       return rval;
     } catch(IOException e) {
       log.error("Failed retrieving {}", clazz.getSimpleName(), e);
@@ -123,8 +123,8 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
     @Nullable String order) {
 
     SearchRequestBuilder search = new SearchRequestBuilder(client) //
-      .setIndices(VariableIndexerImpl.PUBLISHED_VARIABLE_INDEX) //
-      .setTypes(VariableIndexerImpl.VARIABLE_TYPE) //
+      .setIndices(VariableIndexer.PUBLISHED_VARIABLE_INDEX) //
+      .setTypes(VariableIndexer.VARIABLE_TYPE) //
       .setQuery(query) //
       .setFrom(from) //
       .setSize(limit);
@@ -134,7 +134,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
         SortBuilders.fieldSort(sort).order(order == null ? SortOrder.ASC : SortOrder.valueOf(order.toUpperCase())));
     }
 
-    log.info("Request /{}/{}", VariableIndexerImpl.PUBLISHED_VARIABLE_INDEX, VariableIndexerImpl.VARIABLE_TYPE);
+    log.info("Request /{}/{}", VariableIndexer.PUBLISHED_VARIABLE_INDEX, VariableIndexer.VARIABLE_TYPE);
     SearchResponse response = search.execute().actionGet();
 
     Mica.DatasetVariablesDto.Builder builder = Mica.DatasetVariablesDto.newBuilder() //
@@ -152,7 +152,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
       }
     });
 
-    log.info("Response /{}/{}", VariableIndexerImpl.PUBLISHED_VARIABLE_INDEX, VariableIndexerImpl.VARIABLE_TYPE);
+    log.info("Response /{}/{}", VariableIndexer.PUBLISHED_VARIABLE_INDEX, VariableIndexer.VARIABLE_TYPE);
 
     return builder.build();
   }
@@ -208,7 +208,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
       return getHarmonizedDatasetVariable(datasetId, variableId, variableName);
     }
 
-    return getDatasetVariableInternal(VariableIndexerImpl.VARIABLE_TYPE, variableId, variableName);
+    return getDatasetVariableInternal(VariableIndexer.VARIABLE_TYPE, variableId, variableName);
   }
 
   protected Mica.DatasetVariableDto getDatasetVariableDto(@NotNull String datasetId, @NotNull String variableName,
@@ -242,9 +242,9 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   private DatasetVariable getHarmonizedDatasetVariable(String datasetId, String variableId, String variableName) {
     String dataSchemaVariableId = DatasetVariable.IdResolver
       .encode(datasetId, variableName, DatasetVariable.Type.Dataschema, null, null, null);
-    DatasetVariable harmonizedDatasetVariable = getDatasetVariableInternal(VariableIndexerImpl.HARMONIZED_VARIABLE_TYPE,
+    DatasetVariable harmonizedDatasetVariable = getDatasetVariableInternal(VariableIndexer.HARMONIZED_VARIABLE_TYPE,
       variableId, variableName);
-    DatasetVariable dataSchemaVariable = getDatasetVariableInternal(VariableIndexerImpl.VARIABLE_TYPE,
+    DatasetVariable dataSchemaVariable = getDatasetVariableInternal(VariableIndexer.VARIABLE_TYPE,
       dataSchemaVariableId, variableName);
 
     dataSchemaVariable.getAttributes().asAttributeList().forEach(a -> {
@@ -258,7 +258,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
     QueryBuilder query = QueryBuilders.idsQuery(indexType).addIds(variableId);
 
     SearchRequestBuilder search = client.prepareSearch() //
-      .setIndices(VariableIndexerImpl.PUBLISHED_VARIABLE_INDEX) //
+      .setIndices(VariableIndexer.PUBLISHED_VARIABLE_INDEX) //
       .setTypes(indexType) //
       .setQuery(query);
 
@@ -289,9 +289,9 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
     }
 
     public QueryBuilder build() {
-      Stream.of(VariableIndexerImpl.ANALYZED_FIELDS)
+      Stream.of(VariableIndexer.ANALYZED_FIELDS)
         .forEach(f -> builder.field(f + ".analyzed"));
-      Stream.of(VariableIndexerImpl.LOCALIZED_ANALYZED_FIELDS)
+      Stream.of(VariableIndexer.LOCALIZED_ANALYZED_FIELDS)
         .forEach(f -> builder.field("attributes." + f + ".*.analyzed"));
 
       return builder;

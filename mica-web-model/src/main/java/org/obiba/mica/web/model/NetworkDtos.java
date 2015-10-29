@@ -65,7 +65,7 @@ class NetworkDtos {
   @NotNull
   Mica.NetworkDto.Builder asDtoBuilder(@NotNull Network network, boolean asDraft) {
     Mica.NetworkDto.Builder builder = Mica.NetworkDto.newBuilder();
-    NetworkState networkState = networkService.findStateById(network.getId());
+    NetworkState networkState = networkService.getEntityState(network.getId());
 
     builder.setId(network.getId()) //
       .addAllName(localizedStringDtos.asDto(network.getName())) //

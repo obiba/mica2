@@ -61,7 +61,7 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
   private FileStoreService fileStoreService;
 
   /**
-   * Create or update provided {@link org.obiba.mica.network.domain.Network}.
+   * Create or update provided {@link Network}.
    *
    * @param network
    */
@@ -69,6 +69,7 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
     save(network, null);
   }
 
+  @SuppressWarnings("OverlyLongMethod")
   @Override
   public void save(@NotNull Network network, String comment) {
     Network saved = network;
@@ -112,7 +113,7 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
   }
 
   /**
-   * Find a {@link org.obiba.mica.network.domain.Network} by its ID.
+   * Find a {@link Network} by its ID.
    *
    * @param id
    * @return
@@ -128,7 +129,7 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
   }
 
   /**
-   * Find all {@link org.obiba.mica.network.domain.Network}s, optionally related to
+   * Find all {@link Network}s, optionally related to
    * a {@link org.obiba.mica.study.domain.Study} ID.
    *
    * @param studyId
@@ -140,7 +141,7 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
   }
 
   /**
-   * Get all {@link org.obiba.mica.network.domain.Network}s.
+   * Get all {@link Network}s.
    *
    * @return
    */
@@ -149,7 +150,7 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
   }
 
   /**
-   * Get all published {@link org.obiba.mica.network.domain.Network}s.
+   * Get all published {@link Network}s.
    *
    * @return
    */
@@ -163,32 +164,39 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
   }
 
   /**
-   * Index all {@link org.obiba.mica.network.domain.Network}s.
+   * Index all {@link Network}s.
    */
   public void indexAll() {
     eventBus.post(new IndexNetworksEvent());
   }
 
   /**
-   * Set the publication flag on a {@link org.obiba.mica.network.domain.Network}.
+   * Set the publication flag on a {@link Network}.
    *
    * @param id
    * @throws NoSuchNetworkException
    */
   @Caching(evict = { @CacheEvict(value = "aggregations-metadata", key = "'network'") })
-  public void publish(@NotNull String id) throws NoSuchEntityException {
-    publishState(id);
-    eventBus.post(new NetworkPublishedEvent(networkRepository.findOne(id), getCurrentUsername()));
+  public void publish(@NotNull String id, boolean publish) throws NoSuchEntityException {
+    Network network = networkRepository.findOne(id);
+    if (network == null) return;
+    if (publish) {
+      publishState(id);
+      eventBus.post(new NetworkPublishedEvent(network, getCurrentUsername()));
+    } else {
+      unPublishState(id);
+      eventBus.post(new NetworkUnpublishedEvent(network));
+    }
   }
 
   /**
-   * Index a specific {@link org.obiba.mica.network.domain.Network} without updating it.
+   * Index a specific {@link Network} without updating it.
    *
    * @param id
    * @throws NoSuchNetworkException
    */
   public void index(@NotNull String id) throws NoSuchNetworkException {
-    NetworkState networkState = findStateById(id);
+    NetworkState networkState = getEntityState(id);
     Network network = findById(id);
 
     eventBus.post(new NetworkUpdatedEvent(network));
@@ -198,7 +206,7 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
   }
 
   /**
-   * Delete a {@link org.obiba.mica.network.domain.Network}.
+     * Delete a {@link Network}.
    *
    * @param id
    * @throws NoSuchNetworkException
@@ -215,6 +223,7 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
     eventBus.post(new NetworkDeletedEvent(network));
   }
 
+  @Override
   protected String generateId(Network network) {
     ensureAcronym(network);
     String nextId = getNextId(network.getAcronym());
@@ -249,17 +258,6 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
   @Override
   protected EntityStateRepository<NetworkState> getEntityStateRepository() {
     return networkStateRepository;
-  }
-
-  @Nullable
-  @Override
-  public Network unpublish(NetworkState networkState) {
-    unpublishState(networkState);
-    Network network = networkRepository.findOne(networkState.getId());
-
-    if(network != null) eventBus.post(new NetworkUnpublishedEvent(network));
-
-    return network;
   }
 
   @Override

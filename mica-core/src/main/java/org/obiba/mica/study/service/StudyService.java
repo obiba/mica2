@@ -167,7 +167,7 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
   }
 
   public boolean isPublished(@NotNull String id) throws NoSuchEntityException {
-    return findStateById(id).isPublished();
+    return getEntityState(id).isPublished();
   }
 
   public List<Study> findAllDraftStudies() {
@@ -210,12 +210,17 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
 
   @Caching(evict = { @CacheEvict(value = "aggregations-metadata", allEntries = true),
     @CacheEvict(value = { "studies-draft", "studies-published" }, key = "#id") })
-  public StudyState publish(@NotNull String id) throws NoSuchEntityException {
+  public void publish(@NotNull String id, boolean publish) throws NoSuchEntityException {
     log.info("Publish study: {}", id);
-    StudyState studyState = publishState(id);
-    eventBus.post(new StudyPublishedEvent(studyRepository.findOne(id), getCurrentUsername()));
+    Study study = studyRepository.findOne(id);
 
-    return studyState;
+    if (publish) {
+      publishState(id);
+      eventBus.post(new StudyPublishedEvent(study, getCurrentUsername()));
+    } else {
+      unPublishState(id);
+      eventBus.post(new StudyUnpublishedEvent(study));
+    }
   }
 
   //
@@ -287,19 +292,7 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
     return studyStateRepository;
   }
 
-  @Caching(evict = { @CacheEvict(value = "aggregations-metadata", allEntries = true),
-    @CacheEvict(value = { "studies-draft", "studies-published" }, key = "#id") })
-  @Nullable
-  @Override
-  public Study unpublish(StudyState studyState) {
-    log.info("Unpublish state since there are no Git repo for study: {}", studyState.getId());
-    unpublishState(studyState);
-    Study study = studyRepository.findOne(studyState.getId());
 
-    if(study != null) eventBus.post(new StudyUnpublishedEvent(study));
-
-    return study;
-  }
 
   @Override
   protected Class<Study> getType() {
