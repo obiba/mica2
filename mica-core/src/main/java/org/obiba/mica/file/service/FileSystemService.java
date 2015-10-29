@@ -214,7 +214,7 @@ public class FileSystemService {
     if(publish) {
       // publish the parent directories (if any)
       if(!FileUtils.isRoot(state.getPath())) {
-        publishDirs(FileUtils.getParentPath(state.getPath()), publisher);
+        publishDirs(FileUtils.isDirectory(state) ? FileUtils.getParentPath(state.getPath()) : state.getPath(), publisher);
       }
       state.publish(publisher);
       state.setRevisionStatus(RevisionStatus.DRAFT);
@@ -598,6 +598,7 @@ public class FileSystemService {
     state.publish(publisher);
     state.setLastModifiedDate(DateTime.now());
     state.setLastModifiedBy(publisher);
+    state.setRevisionStatus(RevisionStatus.DRAFT);
     attachmentStateRepository.save(state);
     eventBus.post(new FilePublishedEvent(state));
   }
