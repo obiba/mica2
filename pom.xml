@@ -177,6 +177,11 @@
         <version>${elasticsearch.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.elasticsearch</groupId>
+        <artifactId>elasticsearch-groovy</artifactId>
+        <version>${elasticsearch.version}</version>
+      </dependency>
+      <dependency>
         <groupId>com.codahale.metrics</groupId>
         <artifactId>metrics-core</artifactId>
         <version>${codahale-metrics.version}</version>
