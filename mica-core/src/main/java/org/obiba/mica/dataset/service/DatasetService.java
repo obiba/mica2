@@ -38,8 +38,6 @@ import org.obiba.opal.web.model.Magma;
 import org.obiba.opal.web.model.Math;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
-import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
@@ -111,21 +109,6 @@ public abstract class DatasetService<T extends Dataset, T1 extends EntityState> 
       return null;
     } catch(NoSuchDatasetException e) {
       return next;
-    }
-  }
-
-  protected T prepareSave(T dataset, MongoRepository<T, String> repository) {
-    if(dataset.isNew()) {
-      dataset.setId(generateDatasetId(dataset));
-      return dataset;
-    } else {
-      T saved = repository.findOne(dataset.getId());
-      if(saved != null) {
-        BeanUtils.copyProperties(dataset, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
-          "lastModifiedDate");
-        return saved;
-      }
-      return dataset;
     }
   }
 

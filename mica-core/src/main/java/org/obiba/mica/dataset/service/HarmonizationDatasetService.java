@@ -49,6 +49,7 @@ import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.obiba.opal.web.model.Search;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -299,7 +300,7 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
 
   @SuppressWarnings("OverlyLongMethod")
   private void saveInternal(HarmonizationDataset dataset, String comment) {
-    HarmonizationDataset saved = prepareSave(dataset, harmonizationDatasetRepository);
+    HarmonizationDataset saved = prepareSave(dataset);
 
     Iterable<DatasetVariable> variables;
     Map<String, List<DatasetVariable>> harmonizationVariables;
@@ -332,6 +333,21 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
     harmonizationDatasetRepository.save(saved);
     gitService.save(saved, comment);
     eventBus.post(new DatasetUpdatedEvent(saved, variables, harmonizationVariables));
+  }
+
+  protected HarmonizationDataset prepareSave(HarmonizationDataset dataset) {
+    if(dataset.isNew()) {
+      dataset.setId(generateDatasetId(dataset));
+      return dataset;
+    } else {
+      HarmonizationDataset saved = harmonizationDatasetRepository.findOne(dataset.getId());
+      if(saved != null) {
+        BeanUtils.copyProperties(dataset, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
+          "lastModifiedDate");
+        return saved;
+      }
+      return dataset;
+    }
   }
 
   private Iterable<Variable> getVariables(StudyTable studyTable)

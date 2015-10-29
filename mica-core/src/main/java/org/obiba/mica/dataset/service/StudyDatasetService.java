@@ -39,6 +39,7 @@ import org.obiba.opal.rest.client.magma.RestValueTable;
 import org.obiba.opal.web.model.Search;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
@@ -258,7 +259,7 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
   }
 
   private void saveInternal(StudyDataset dataset, String comment) {
-    StudyDataset saved = prepareSave(dataset, studyDatasetRepository);
+    StudyDataset saved = prepareSave(dataset);
 
     Iterable<DatasetVariable> variables;
 
@@ -288,6 +289,21 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
     studyDatasetRepository.save(saved);
     gitService.save(saved, comment);
     eventBus.post(new DatasetUpdatedEvent(saved, variables, null));
+  }
+
+  protected StudyDataset prepareSave(StudyDataset dataset) {
+    if(dataset.isNew()) {
+      dataset.setId(generateDatasetId(dataset));
+      return dataset;
+    } else {
+      StudyDataset saved = studyDatasetRepository.findOne(dataset.getId());
+      if(saved != null) {
+        BeanUtils.copyProperties(dataset, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
+          "lastModifiedDate");
+        return saved;
+      }
+      return dataset;
+    }
   }
 
   @Override
