@@ -1,7 +1,9 @@
-<div class="row">
-  <div class="col-xs-12">
-    <div class="pull-right">
-      <dir-pagination-controls></dir-pagination-controls>
-    </div>
-  </div>
+<h5 class="pull-left" ng-if="data.search.active">
+  <a ng-click="clearSearch()">
+    <i class="fa fa-chevron-left"> </i>
+  </a> {{'search-results' | translate}} ({{data.document.children.length}})
+</h5>
+<div class="pull-right">
+  <dir-pagination-controls></dir-pagination-controls>
 </div>
+<div class="clearfix" ng-if="data.search.active"></div>

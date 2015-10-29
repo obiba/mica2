@@ -286,24 +286,24 @@ mica.fileSystem
         var recursively = $scope.data.search.recursively;
         var orderBy = null;
         var sortBy = null;
+        var limit = 999;
 
         switch (query) {
           case 'DELETED':
           case 'UNDER_REVIEW':
-            recursively = true;
             query = 'revisionStatus:' + query;
             break;
 
           case 'RECENT':
             query = '';
-            recursively = true;
             orderBy = 'desc';
             sortBy = 'lastModifiedDate';
+            limit = 10;
             break;
         }
 
         DraftFileSystemSearchResource.search(
-          {path: $scope.data.document.path, query: query, recursively: recursively, sort: sortBy, order:orderBy},
+          {path: $scope.data.document.path, query: query, recursively: recursively, sort: sortBy, order:orderBy, limit: limit},
           function onSuccess(response) {
             $log.info('Search result', response);
             var clone = angular.copy($scope.data.document);

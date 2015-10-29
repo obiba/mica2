@@ -38,7 +38,6 @@ mica.fileSystem
         'search': {
           method: 'GET',
           isArray: true,
-          params: {query: '@query', recursively: '@recursively'},
           errorHandler: true
         }
       });

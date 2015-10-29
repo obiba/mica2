@@ -6,7 +6,9 @@
           <span translate>search</span>
           <span class="pull-right">
             <span>
-              <a href ng-click="clearSearch()" class="btn btn-info btn-xs"><i class="fa fa-undo"></i></a>
+              <a href ng-click="clearSearch()" class="btn btn-info btn-xs" title="{{'search-tooltip.clear' | translate}}">
+                <i class="fa fa-eraser"></i>
+              </a>
             </span>
             <span>
               <a href
@@ -35,18 +37,18 @@
         </a>
       </li>
       <li ng-if="!data.isFile" class="voffset">
-        <a href ng-click="searchDocuments('UNDER_REVIEW')">
+        <a href ng-click="searchDocuments('UNDER_REVIEW')" title="{{'search-tooltip.under-review' | translate}}">
           <span><i class="fa fa-eye"></i> {{'publish.status.UNDER_REVIEW' | translate}}</span>
         </a>
       </li>
       <li ng-if="!data.isFile">
-        <a href ng-click="searchDocuments('DELETED')">
+        <a href ng-click="searchDocuments('DELETED')" title="{{'search-tooltip.deleted' | translate}}">
           <span><i class="fa fa-trash"></i> {{'publish.status.DELETED' | translate}}</span>
         </a>
       </li>
       <li ng-if="!data.isFile">
-        <a href ng-click="searchDocuments('RECENT')">
-          <span><i class="fa fa-clock-o"></i> {{'recent' | translate}}</span>
+        <a href ng-click="searchDocuments('RECENT')" title="{{'search-tooltip.most-recent' | translate}}">
+          <span><i class="fa fa-clock-o"></i> {{'most-recent' | translate}}</span>
         </a>
       </li>
       <li class="nav-header">
