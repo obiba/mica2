@@ -28,7 +28,7 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.obiba.mica.core.domain.AttributeKey;
 import org.obiba.mica.dataset.domain.DatasetVariable;
-import org.obiba.mica.dataset.search.VariableIndexerImpl;
+import org.obiba.mica.dataset.search.VariableIndexer;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.DatasetIdProvider;
@@ -97,22 +97,22 @@ public class VariableQuery extends AbstractDocumentQuery {
 
   @Override
   public String getSearchIndex() {
-    return VariableIndexerImpl.PUBLISHED_VARIABLE_INDEX;
+    return VariableIndexer.PUBLISHED_VARIABLE_INDEX;
   }
 
   @Override
   public String getSearchType() {
-    return VariableIndexerImpl.VARIABLE_TYPE;
+    return VariableIndexer.VARIABLE_TYPE;
   }
 
   @Override
   public Stream<String> getLocalizedQueryStringFields() {
-    return Stream.of(VariableIndexerImpl.LOCALIZED_ANALYZED_FIELDS).map(f -> "attributes." + f);
+    return Stream.of(VariableIndexer.LOCALIZED_ANALYZED_FIELDS).map(f -> "attributes." + f);
   }
 
   @Override
   public Stream<String> getQueryStringFields() {
-    return Stream.of(VariableIndexerImpl.ANALYZED_FIELDS);
+    return Stream.of(VariableIndexer.ANALYZED_FIELDS);
   }
 
   public void setDatasetIdProvider(DatasetIdProvider provider) {

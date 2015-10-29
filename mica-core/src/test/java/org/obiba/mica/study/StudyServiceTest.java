@@ -177,7 +177,7 @@ public class StudyServiceTest {
     assertThat(studyService.findAllStates()).hasSize(1);
     assertThat(studyService.findPublishedStates()).isEmpty();
 
-    studyService.publish(study.getId());
+    studyService.publish(study.getId(), true);
     List<StudyState> publishedStates = studyService.findPublishedStates();
     assertThat(publishedStates).hasSize(1);
     StudyState publishedState = publishedStates.get(0);
@@ -210,14 +210,14 @@ public class StudyServiceTest {
     Stream.of("a", "b", "c").forEach(name -> {
       study.setName(en(name+ " en").forFr(name + " fr"));
       studyService.save(study);
-      studyService.publish(study.getId());
+      studyService.publish(study.getId(), true);
     });
 
     FileUtil.delete(Config.BASE_REPO);
     Study draft = studyService.findDraft(study.getId());
     draft.setName(en("d en").forFr("d fr"));
     studyService.save(draft);
-    studyService.publish(draft.getId());
+    studyService.publish(draft.getId(), true);
     StudyState studyState = studyService.findStateById(draft.getId());
     assertThat(studyState.isPublished()).isTrue();
     assertThat(studyState.getPublishedTag()).isEqualTo("4");
@@ -229,14 +229,14 @@ public class StudyServiceTest {
     Stream.of("a", "b", "c").forEach(name -> {
       study.setName(en(name+ " en").forFr(name + " fr"));
       studyService.save(study);
-      studyService.publish(study.getId());
+      studyService.publish(study.getId(), true);
     });
 
     FileUtil.delete(Config.BASE_CLONE);
     Study draft = studyService.findDraft(study.getId());
     draft.setName(en("d en").forFr("d fr"));
     studyService.save(draft);
-    studyService.publish(draft.getId());
+    studyService.publish(draft.getId(), true);
     StudyState studyState = studyService.findStateById(draft.getId());
     assertThat(studyState.isPublished()).isTrue();
     assertThat(studyState.getPublishedTag()).isEqualTo("4");
@@ -248,7 +248,7 @@ public class StudyServiceTest {
     Stream.of("a", "b", "c").forEach(name -> {
       study.setName(en(name+ " en").forFr(name + " fr"));
       studyService.save(study);
-      studyService.publish(study.getId());
+      studyService.publish(study.getId(), true);
     });
 
     FileUtil.delete(Config.BASE_REPO);
@@ -257,7 +257,7 @@ public class StudyServiceTest {
     Study draft = studyService.findDraft(study.getId());
     draft.setName(en("d en").forFr("d fr"));
     studyService.save(draft);
-    studyService.publish(draft.getId());
+    studyService.publish(draft.getId(), true);
     StudyState studyState = studyService.findStateById(draft.getId());
     assertThat(studyState.isPublished()).isTrue();
     assertThat(studyState.getPublishedTag()).isEqualTo("1");

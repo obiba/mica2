@@ -10,28 +10,47 @@
 
 package org.obiba.mica.dataset.event;
 
-import org.obiba.mica.dataset.domain.Dataset;
-import org.obiba.mica.dataset.domain.StudyDataset;
+import java.util.List;
+import java.util.Map;
+
 import org.obiba.mica.core.event.PersistableUpdatedEvent;
+import org.obiba.mica.dataset.domain.Dataset;
+import org.obiba.mica.dataset.domain.DatasetVariable;
 
 public class DatasetPublishedEvent extends PersistableUpdatedEvent<Dataset> {
 
+  private final Iterable<DatasetVariable> variables;
+
+  private final Map<String, List<DatasetVariable>> harmonizationVariables;
+
   private final String publisher;
 
-  public DatasetPublishedEvent(Dataset persistable, String publisher) {
+  public DatasetPublishedEvent(Dataset persistable, Iterable<DatasetVariable> variables,
+    String publisher) {
+    this(persistable, variables, null, publisher);
+  }
+
+  public DatasetPublishedEvent(Dataset persistable, Iterable<DatasetVariable> variables,
+    Map<String, List<DatasetVariable>> harmonizationVariables, String publisher) {
     super(persistable);
     this.publisher = publisher;
+    this.variables = variables;
+    this.harmonizationVariables = harmonizationVariables;
   }
 
   public String getPublisher() {
     return publisher;
   }
 
-  public boolean isStudyDataset() {
-    return getPersistable() instanceof StudyDataset;
+  public Iterable<DatasetVariable> getVariables() {
+    return variables;
   }
 
-  public boolean isPublished() {
-    return getPersistable().isPublished();
+  public boolean hasHarmonizationVariables() {
+    return harmonizationVariables != null && !harmonizationVariables.isEmpty();
+  }
+
+  public Map<String, List<DatasetVariable>> getHarmonizationVariables() {
+    return harmonizationVariables;
   }
 }

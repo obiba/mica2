@@ -32,7 +32,7 @@ import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
-import org.obiba.mica.dataset.search.DatasetIndexerImpl;
+import org.obiba.mica.dataset.search.DatasetIndexer;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
 import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.DatasetIdProvider;
@@ -87,17 +87,17 @@ public class DatasetQuery extends AbstractDocumentQuery {
 
   @Override
   public String getSearchIndex() {
-    return DatasetIndexerImpl.PUBLISHED_DATASET_INDEX;
+    return DatasetIndexer.PUBLISHED_DATASET_INDEX;
   }
 
   @Override
   public String getSearchType() {
-    return DatasetIndexerImpl.DATASET_TYPE;
+    return DatasetIndexer.DATASET_TYPE;
   }
 
   @Override
   public Stream<String> getLocalizedQueryStringFields() {
-    return Stream.of(DatasetIndexerImpl.LOCALIZED_ANALYZED_FIELDS);
+    return Stream.of(DatasetIndexer.LOCALIZED_ANALYZED_FIELDS);
   }
 
   public void setDatasetIdProvider(DatasetIdProvider provider) {

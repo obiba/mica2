@@ -21,16 +21,15 @@ import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.StudyService;
+import org.obiba.opal.rest.client.magma.RestDatasource;
 
 import com.google.common.eventbus.EventBus;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import org.obiba.opal.rest.client.magma.RestDatasource;
 
 
 public class StudyDatasetServiceTest {
@@ -49,12 +48,6 @@ public class StudyDatasetServiceTest {
 
   @Mock
   private StudyDatasetRepository studyDatasetRepository;
-
-  @Mock
-  private DatasetIndexer datasetIndexer;
-
-  @Mock
-  private VariableIndexer variableIndexer;
 
   @Mock
   private EventBus eventBus;

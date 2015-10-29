@@ -27,10 +27,10 @@ import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
-import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
+import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.opal.rest.client.magma.RestDatasource;
 import org.obiba.opal.rest.client.magma.RestValueTable;
@@ -38,6 +38,8 @@ import org.obiba.opal.web.model.Magma;
 import org.obiba.opal.web.model.Math;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
@@ -110,6 +112,23 @@ public abstract class DatasetService<T extends Dataset, T1 extends EntityState> 
     } catch(NoSuchDatasetException e) {
       return next;
     }
+  }
+
+  protected T prepareSave(T dataset, MongoRepository<T, String> repository) {
+    T saved = dataset;
+    if(saved.isNew()) {
+      saved.setId(generateDatasetId(dataset));
+    } else {
+      saved = repository.findOne(dataset.getId());
+
+      if(saved != null) {
+        BeanUtils.copyProperties(dataset, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
+          "lastModifiedDate");
+      } else {
+        saved = dataset;
+      }
+    }
+    return saved;
   }
 
   protected String generateDatasetId(@NotNull T dataset) {
