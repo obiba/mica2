@@ -37,6 +37,11 @@
         </a>
       </li>
       <li ng-if="!data.isFile" class="voffset">
+        <a href ng-click="searchDocuments('NOT_PUBLISHED')" title="{{'search-tooltip.not-published' | translate}}">
+          <span><i class="fa fa-star-o"></i> {{'not-published' | translate}}</span>
+        </a>
+      </li>
+      <li ng-if="!data.isFile" class="voffset">
         <a href ng-click="searchDocuments('UNDER_REVIEW')" title="{{'search-tooltip.under-review' | translate}}">
           <span><i class="fa fa-eye"></i> {{'publish.status.UNDER_REVIEW' | translate}}</span>
         </a>
