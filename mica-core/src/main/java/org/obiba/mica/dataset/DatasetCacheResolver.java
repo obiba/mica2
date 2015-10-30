@@ -16,6 +16,8 @@ import org.springframework.cache.interceptor.CacheOperationInvocationContext;
 import org.springframework.cache.interceptor.CacheResolver;
 import org.springframework.stereotype.Component;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.ehcache.InstrumentedEhcache;
 import com.google.common.collect.Lists;
 
 @Component("datasetVariablesCacheResolver")
@@ -23,6 +25,9 @@ public class DatasetCacheResolver implements CacheResolver{
 
   @Inject
   private net.sf.ehcache.CacheManager cacheManager;
+
+  @Inject
+  private MetricRegistry metricRegistry;
 
   @Inject
   private CacheManager springCacheManager;
@@ -42,7 +47,9 @@ public class DatasetCacheResolver implements CacheResolver{
         CacheConfiguration conf = cacheManager.getEhcache("dataset-variables").getCacheConfiguration().clone();
         conf.setName(cacheName);
         cacheManager.addCache(new net.sf.ehcache.Cache(conf));
-        datasetCache = new EhCacheCache(cacheManager.getCache(cacheName));
+        net.sf.ehcache.Cache cache = cacheManager.getCache(cacheName);
+        cacheManager.replaceCacheWithDecoratedCache(cache, InstrumentedEhcache.instrument(metricRegistry, cache));
+        datasetCache = new EhCacheCache(cacheManager.getEhcache(cacheName));
       }
 
       res.add(datasetCache);
