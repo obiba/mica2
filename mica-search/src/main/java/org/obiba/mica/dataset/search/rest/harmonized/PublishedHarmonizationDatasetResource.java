@@ -46,9 +46,6 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
 
   private static final Logger log = LoggerFactory.getLogger(PublishedHarmonizationDatasetResource.class);
 
-  @PathParam("id")
-  private String id;
-
   @Inject
   private HarmonizationDatasetService datasetService;
 
@@ -59,7 +56,7 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
    */
   @GET
   @Timed
-  public Mica.DatasetDto get() {
+  public Mica.DatasetDto get(@PathParam("id") String id) {
     return getDatasetDto(HarmonizationDataset.class, id);
   }
 
@@ -76,7 +73,7 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
   @GET
   @Path("/variables/_search")
   @Timed
-  public Mica.DatasetVariablesDto queryVariables(@QueryParam("query") String queryString,
+  public Mica.DatasetVariablesDto queryVariables(@PathParam("id") String id, @QueryParam("query") String queryString,
     @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit,
     @QueryParam("sort") String sort, @QueryParam("order") String order) {
 
@@ -95,9 +92,9 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
   @GET
   @Path("/variables")
   @Timed
-  public Mica.DatasetVariablesDto getVariables(@QueryParam("from") @DefaultValue("0") int from,
-    @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
-    @QueryParam("order") String order) {
+  public Mica.DatasetVariablesDto getVariables(@PathParam("id") String id,
+    @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit,
+    @QueryParam("sort") String sort, @QueryParam("order") String order) {
 
     return getDatasetVariableDtos(id, DatasetVariable.Type.Dataschema, from, limit, sort, order);
   }
@@ -114,7 +111,7 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
   @GET
   @Path("/variables/harmonizations")
   @Timed
-  public Mica.DatasetVariablesHarmonizationsDto getVariableHarmonizations(
+  public Mica.DatasetVariablesHarmonizationsDto getVariableHarmonizations(@PathParam("id") String id,
     @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit,
     @QueryParam("sort") @DefaultValue("index") String sort, @QueryParam("order") @DefaultValue("asc") String order) {
     Mica.DatasetVariablesHarmonizationsDto.Builder builder = Mica.DatasetVariablesHarmonizationsDto.newBuilder();
@@ -134,12 +131,12 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
   @Path("/variables/harmonizations/_export")
   @Produces("text/csv")
   @Timed
-  public Response getVariableHarmonizationsAsCsv(@QueryParam("sort") @DefaultValue("index") String sort,
-    @QueryParam("order") @DefaultValue("asc") String order, @QueryParam("locale") @DefaultValue("en") String locale)
-    throws IOException {
+  public Response getVariableHarmonizationsAsCsv(@PathParam("id") String id,
+    @QueryParam("sort") @DefaultValue("index") String sort, @QueryParam("order") @DefaultValue("asc") String order,
+    @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
 
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, id);
-    Mica.DatasetVariablesHarmonizationsDto harmonizationVariables = getVariableHarmonizations(0, 999999, sort, order);
+    Mica.DatasetVariablesHarmonizationsDto harmonizationVariables = getVariableHarmonizations(id, 0, 999999, sort, order);
 
     CsvHarmonizationVariablesWriter writer = new CsvHarmonizationVariablesWriter(
       Lists.newArrayList("maelstrom", "Mlstr_harmo"));
@@ -150,7 +147,8 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
   }
 
   @Path("/variable/{variable}")
-  public PublishedDataschemaDatasetVariableResource getVariable(@PathParam("variable") String variable) {
+  public PublishedDataschemaDatasetVariableResource getVariable(@PathParam("id") String id,
+    @PathParam("variable") String variable) {
     PublishedDataschemaDatasetVariableResource resource = applicationContext
       .getBean(PublishedDataschemaDatasetVariableResource.class);
     resource.setDatasetId(id);
@@ -161,7 +159,7 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
   @GET
   @Path("/study/{study}/variables")
   @Timed
-  public Mica.DatasetVariablesDto getVariables(@PathParam("study") String studyId,
+  public Mica.DatasetVariablesDto getVariables(@PathParam("id") String id, @PathParam("study") String studyId,
     @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit,
     @QueryParam("sort") String sort, @QueryParam("order") String order) {
     QueryBuilder query = FilteredQueryBuilder.newBuilder().must("datasetId", id).must("studyIds", studyId)
@@ -172,8 +170,8 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
   }
 
   @Path("/study/{study}/population/{population}/data-collection-event/{dce}/variable/{variable}")
-  public PublishedHarmonizedDatasetVariableResource getVariable(@PathParam("study") String studyId,
-    @PathParam("population") String populationId, @PathParam("dce") String dceId,
+  public PublishedHarmonizedDatasetVariableResource getVariable(@PathParam("id") String id,
+    @PathParam("study") String studyId, @PathParam("population") String populationId, @PathParam("dce") String dceId,
     @PathParam("variable") String variable) {
     PublishedHarmonizedDatasetVariableResource resource = applicationContext
       .getBean(PublishedHarmonizedDatasetVariableResource.class);

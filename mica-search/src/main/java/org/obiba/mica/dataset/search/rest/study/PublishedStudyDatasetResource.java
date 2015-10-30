@@ -37,8 +37,7 @@ import com.codahale.metrics.annotation.Timed;
 @RequiresAuthentication
 public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResource<StudyDataset> {
 
-  @PathParam("id")
-  private String id;
+
 
   @Inject
   private StudyDatasetService datasetService;
@@ -54,7 +53,7 @@ public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResou
    */
   @GET
   @Timed
-  public Mica.DatasetDto get() {
+  public Mica.DatasetDto get(@PathParam("id") String id) {
     return getDatasetDto(StudyDataset.class, id);
   }
 
@@ -71,7 +70,7 @@ public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResou
   @GET
   @Path("/variables/_search")
   @Timed
-  public Mica.DatasetVariablesDto queryVariables(@QueryParam("query") String queryString,
+  public Mica.DatasetVariablesDto queryVariables(@PathParam("id") String id, @QueryParam("query") String queryString,
     @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit,
     @QueryParam("sort") String sort, @QueryParam("order") String order) {
 
@@ -86,14 +85,14 @@ public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResou
   @GET
   @Path("/variables")
   @Timed
-  public Mica.DatasetVariablesDto getVariables(@QueryParam("from") @DefaultValue("0") int from,
+  public Mica.DatasetVariablesDto getVariables(@PathParam("id") String id, @QueryParam("from") @DefaultValue("0") int from,
     @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
     @QueryParam("order") String order) {
     return getDatasetVariableDtos(id, DatasetVariable.Type.Study, from, limit, sort, order);
   }
 
   @Path("/variable/{variable}")
-  public PublishedStudyDatasetVariableResource getVariable(@PathParam("variable") String variable) {
+  public PublishedStudyDatasetVariableResource getVariable(@PathParam("id") String id, @PathParam("variable") String variable) {
     PublishedStudyDatasetVariableResource resource = applicationContext
       .getBean(PublishedStudyDatasetVariableResource.class);
     resource.setDatasetId(id);
