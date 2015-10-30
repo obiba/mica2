@@ -7,21 +7,30 @@
     </ol>
   </h2>
 
-  <h3 translate>properties</h3>
   <div class="row">
     <div class="col-md-6">
+      <h3 translate>properties</h3>
       <table class="table table-bordered table-striped">
         <tbody>
         <tr>
-          <td translate>config.name</td>
+          <td>
+            <span translate>config.name</span>
+            <span class="help-block" translate>config.name-help</span>
+          </td>
           <td>{{micaConfig.name}}</td>
         </tr>
         <tr>
-          <td translate>config.publicUrl</td>
+          <td>
+            <span translate>config.publicUrl</span>
+            <span class="help-block" translate>config.publicUrl-help</span>
+          </td>
           <td>{{micaConfig.publicUrl}}</td>
         </tr>
         <tr>
-          <td translate>config.languages</td>
+          <td>
+            <span translate>config.languages</span>
+            <span class="help-block" translate>config.languages-help</span>
+          </td>
           <td>
             <ul class="list-inline">
               <li ng-repeat="lang in micaConfig.languages">
@@ -31,24 +40,102 @@
           </td>
         </tr>
         <tr>
-          <td translate>config.defaultCharSet</td>
+          <td>
+            <span translate>config.defaultCharSet</span>
+          </td>
           <td>{{micaConfig.defaultCharSet}}</td>
         </tr>
         <tr>
-          <td translate>config.opal</td>
+          <td>
+            <span translate>config.opal</span>
+            <span class="help-block" translate>config.opal-help</span>
+          </td>
           <td><a ng-href="{{micaConfig.opal}}" target="_blank">{{micaConfig.opal}}</a></td>
         </tr>
         <tr>
-          <td translate>config.privacyThreshold</td>
+          <td>
+            <span translate>config.privacy-threshold</span>
+            <span class="help-block" translate>config.privacy-threshold-help</span>
+          </td>
           <td>{{micaConfig.privacyThreshold}}</td>
         </tr>
         </tbody>
       </table>
+      <a href="#/admin/general/edit" class="btn btn-primary">
+        <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
+      </a>
+    </div>
+    <div class="col-md-6">
+      <h3 translate>config.encryption-keys</h3>
+      <p class="help-block" translate>
+        config.encryption-keys-help
+      </p>
+
+      <div class="btn-group dropdown" is-open="status.isopen">
+        <button type="button" class="btn btn-info dropdown-toggle" ng-disabled="disabled" data-toggle="dropdown">
+          <i class="fa fa-plus"></i> <span translate>config.addKeyPair</span> <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu">
+          <li><a role="menuitem" href="" ng-click="createKeyPair()" translate>config.create</a></li>
+          <li><a role="menuitem" href="" ng-click="importKeyPair()" translate>config.import</a></li>
+        </ul>
+      </div>
+
+      <a href="" class="btn btn-default" ng-click="downloadCertificate()">
+        <i class="fa fa-download"></i> <span translate>config.download-certificate</span>
+      </a>
+
+      <h3 translate>config.opal-credentials</h3>
+      <p class="help-block" translate>
+        config.opal-credentials-help
+      </p>
+
+      <div class="btn-group dropdown" is-open="status.isopen">
+        <button type="button" class="btn btn-info dropdown-toggle" ng-disabled="disabled" data-toggle="dropdown">
+          <i class="fa fa-plus"></i> <span translate>config.opal-credential-add</span> <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu">
+          <li><a href="" ng-click="createOpalCredentialKeyPair()" translate>config.create</a></li>
+          <li><a href="" ng-click="importOpalCredentialKeyPair()" translate>config.import</a></li>
+          <li><a href="" ng-click="addOpalCredentialUserPass()" translate>config.username</a></li>
+        </ul>
+      </div>
+
+      <div class="row" ng-show="opalCredentials.length">
+        <div class="col-md-12">
+          <table class="table table-bordered table-striped">
+            <thead>
+            <tr>
+              <th translate>config.opalUrl</th>
+              <th translate>config.type</th>
+              <th translate>config.actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="opalCredential in opalCredentials">
+              <td><a href="{{opalCredential.opalUrl}}" target="_blank">{{opalCredential.opalUrl}}</a></td>
+              <td>{{'config.opal-credential-type.' + opalCredential.type | translate}}</td>
+              <td>
+                <ul class="list-inline">
+                  <li>
+                    <a ng-click="deleteOpalCredential(opalCredential)" class="hand action" title="{{'delete' | translate}}"><i class="fa fa-trash-o"></i></a>
+                  </li>
+                  <li ng-if="opalCredential.type === 'USERNAME'">
+                    <a ng-click="editOpalCredentialCertificate(opalCredential)" class="hand action" title="{{'edit' | translate}}"><i class="fa fa-edit"></i></a>
+                  </li>
+                  <li ng-if="opalCredential.type === 'PUBLIC_KEY_CERTIFICATE'">
+                    <a ng-click="downloadOpalCredentialCertificate(opalCredential)" class="hand action" title="{{'config.download-certificate' | translate}}"><i class="fa fa-download"></i></a>
+                  </li>
+                </ul>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
   </div>
 
-  <a href="#/admin/general/edit" class="btn btn-primary">
-    <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
-  </a>
 
 </div>
