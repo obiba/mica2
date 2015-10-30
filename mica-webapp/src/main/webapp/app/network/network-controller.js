@@ -173,7 +173,9 @@ mica.network
         query: 'studyMemberships.parentId:(' + studyIds + ')',
         limit: 999
       }).$promise.then(function (result) {
-        $scope.persons = result.persons;
+        $scope.persons = result.persons.filter(function(p) {
+          return p.studyMemberships && p.studyMemberships.length > 0;
+        });
       });
 
       $scope.cancel = function () {
