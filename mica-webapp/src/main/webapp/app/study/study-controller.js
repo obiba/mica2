@@ -264,11 +264,24 @@ mica.study
         }
       };
 
+      function updateExistingContact(contact, contacts) {
+        var existingContact = contacts.filter(function (c) {
+          return c.id === contact.id && !angular.equals(c, contact);
+        })[0];
+
+        if (existingContact) {
+          angular.copy(contact, existingContact);
+        }
+      }
+
       $scope.$on(CONTACT_EVENTS.addInvestigator, function (event, study, contact) {
         if (study === $scope.study) {
           if (!$scope.study.investigators) {
             $scope.study.investigators = [];
           }
+
+          updateExistingContact(contact, $scope.study.contacts);
+
           $scope.study.investigators.push(contact);
           $scope.emitStudyUpdated();
         }
@@ -279,12 +292,18 @@ mica.study
           if (!$scope.study.contacts) {
             $scope.study.contacts = [];
           }
+
+          updateExistingContact(contact, $scope.study.investigators);
+
           $scope.study.contacts.push(contact);
           $scope.emitStudyUpdated();
         }
       });
 
-      $scope.$on(CONTACT_EVENTS.contactUpdated, function (event, study) {
+      $scope.$on(CONTACT_EVENTS.contactUpdated, function (event, study, contact) {
+        updateExistingContact(contact, $scope.study.contacts);
+        updateExistingContact(contact, $scope.study.investigators);
+
         if (study === $scope.study) {
           $scope.emitStudyUpdated();
         }
