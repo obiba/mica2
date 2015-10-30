@@ -48,11 +48,13 @@ public abstract class AbstractPersonsSearchResource {
     @QueryParam("exclude") List<String> excludes) throws IOException {
 
     String ids = excludes.stream().map(s -> "id:" + s).collect(Collectors.joining(" "));
+
     if(!Strings.isNullOrEmpty(ids)) {
       query += String.format(" AND NOT(%s)", ids);
     }
 
     PublishedDocumentService.Documents<Person> contacts = esPersonService.find(from, limit, sort, order, null, query);
+
     Mica.PersonsDto.Builder builder = Mica.PersonsDto.newBuilder().setFrom(from).setLimit(limit)
       .setTotal(contacts.getTotal());
     builder.addAllPersons(contacts.getList().stream().map(p -> dtos.asDto(p, isDraft()))
