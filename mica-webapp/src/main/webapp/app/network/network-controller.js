@@ -380,11 +380,24 @@ mica.network
         }
       });
 
+      function updateExistingContact(contact, contacts) {
+        var existingContact = contacts.filter(function (c) {
+          return c.id === contact.id && !angular.equals(c, contact);
+        })[0];
+
+        if (existingContact) {
+          angular.copy(contact, existingContact);
+        }
+      }
+
       $scope.$on(CONTACT_EVENTS.addInvestigator, function (event, study, contact) {
         if (study === $scope.network) {
           if (!$scope.network.investigators) {
             $scope.network.investigators = [];
           }
+
+          updateExistingContact(contact, $scope.network.contacts);
+
           $scope.network.investigators.push(contact);
           $scope.emitNetworkUpdated();
         }
@@ -395,25 +408,31 @@ mica.network
           if (!$scope.network.contacts) {
             $scope.network.contacts = [];
           }
+
+          updateExistingContact(contact, $scope.network.investigators);
+
           $scope.network.contacts.push(contact);
           $scope.emitNetworkUpdated();
         }
       });
 
-      $scope.$on(CONTACT_EVENTS.contactUpdated, function (event, study) {
-        if (study === $scope.network) {
+      $scope.$on(CONTACT_EVENTS.contactUpdated, function (event, network, contact) {
+        updateExistingContact(contact, $scope.network.contacts);
+        updateExistingContact(contact, $scope.network.investigators);
+
+        if (network === $scope.network) {
           $scope.emitNetworkUpdated();
         }
       });
 
-      $scope.$on(CONTACT_EVENTS.contactEditionCanceled, function (event, study) {
-        if (study === $scope.network) {
+      $scope.$on(CONTACT_EVENTS.contactEditionCanceled, function (event, network) {
+        if (network === $scope.network) {
           $scope.network = DraftNetworkResource.get({id: $scope.network.id});
         }
       });
 
-      $scope.$on(CONTACT_EVENTS.contactDeleted, function (event, study, contact, isInvestigator) {
-        if (study === $scope.network) {
+      $scope.$on(CONTACT_EVENTS.contactDeleted, function (event, network, contact, isInvestigator) {
+        if (network === $scope.network) {
           if (isInvestigator) {
             var investigatorsIndex = $scope.network.investigators.indexOf(contact);
             if (investigatorsIndex !== -1) {
