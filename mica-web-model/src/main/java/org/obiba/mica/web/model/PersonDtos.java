@@ -5,9 +5,13 @@ import javax.inject.Inject;
 import org.obiba.mica.core.domain.Address;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.network.domain.Network;
+import org.obiba.mica.network.domain.NetworkState;
 import org.obiba.mica.network.service.NetworkService;
+import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.domain.StudyState;
+import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.StudyService;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +27,12 @@ class PersonDtos {
 
   @Inject
   private StudyService studyService;
+
+  @Inject
+  private PublishedStudyService publishedStudyService;
+
+  @Inject
+  private PublishedNetworkService publishedNetworkService;
 
   @Inject
   private NetworkService networkService;
@@ -42,12 +52,28 @@ class PersonDtos {
     if(!isNullOrEmpty(person.getEmail())) builder.setEmail(person.getEmail());
     if(!isNullOrEmpty(person.getPhone())) builder.setPhone(person.getPhone());
     if(person.getInstitution() != null) builder.setInstitution(asDto(person.getInstitution()));
-    builder.addAllStudyMemberships(person.getStudyMemberships().stream()
-      .filter(m -> !asDraft || subjectAclService.isPermitted("/draft/study", "VIEW", m.getParentId()))
-      .map(this::asStudyMembershipDto).collect(toList()));
-    builder.addAllNetworkMemberships(person.getNetworkMemberships().stream()
-      .filter(m -> !asDraft || subjectAclService.isPermitted("/draft/study", "VIEW", m.getParentId()))
-      .map(this::asNetworkMembershipDto).collect(toList()));
+    builder.addAllStudyMemberships(person.getStudyMemberships().stream().filter(m -> {
+      if(asDraft) {
+        return subjectAclService.isPermitted("/draft/study", "VIEW", m.getParentId());
+      } else {
+        StudyState state = studyService.findStateById(m.getParentId());
+
+        if(state != null) return state.isPublished();
+
+        return false;
+      }
+    }).map(m -> asStudyMembershipDto(m, asDraft)).collect(toList()));
+    builder.addAllNetworkMemberships(person.getNetworkMemberships().stream().filter(m -> {
+      if(asDraft) {
+        return subjectAclService.isPermitted("/draft/network", "VIEW", m.getParentId());
+      } else {
+        NetworkState state = networkService.findStateById(m.getParentId());
+
+        if(state != null) return state.isPublished();
+
+        return false;
+      }
+    }).map(m -> asNetworkMembershipDto(m, asDraft)).collect(toList()));
 
     return builder.build();
   }
@@ -75,34 +101,33 @@ class PersonDtos {
     return builder.build();
   }
 
-  private Mica.PersonDto.MembershipDto asStudyMembershipDto(Person.Membership membership) {
+  private Mica.PersonDto.MembershipDto asStudyMembershipDto(Person.Membership membership, boolean asDraft) {
     Mica.PersonDto.MembershipDto.Builder builder = Mica.PersonDto.MembershipDto.newBuilder();
     builder.setRole(membership.getRole());
     builder.setParentId(membership.getParentId());
 
     if(membership.getParentId() != null) {
-      Study study = studyService.findStudy(membership.getParentId());
-
-      if(study != null) {
-        builder.addAllParentAcronym(localizedStringDtos.asDto(study.getAcronym()));
-        builder.addAllParentName(localizedStringDtos.asDto(study.getName()));
-      }
+      Study study = asDraft
+        ? studyService.findStudy(membership.getParentId())
+        : publishedStudyService.findById(membership.getParentId());
+      builder.addAllParentAcronym(localizedStringDtos.asDto(study.getAcronym()));
+      builder.addAllParentName(localizedStringDtos.asDto(study.getName()));
     }
 
     return builder.build();
   }
 
-  private Mica.PersonDto.MembershipDto asNetworkMembershipDto(Person.Membership membership) {
+  private Mica.PersonDto.MembershipDto asNetworkMembershipDto(Person.Membership membership, boolean asDraft) {
     Mica.PersonDto.MembershipDto.Builder builder = Mica.PersonDto.MembershipDto.newBuilder();
     builder.setRole(membership.getRole());
     builder.setParentId(membership.getParentId());
 
     if(membership.getParentId() != null) {
-      Network network = networkService.findById(membership.getParentId());
-      if(network != null) {
-        builder.addAllParentAcronym(localizedStringDtos.asDto(network.getAcronym()));
-        builder.addAllParentName(localizedStringDtos.asDto(network.getName()));
-      }
+      Network network = asDraft
+        ? networkService.findById(membership.getParentId())
+        : publishedNetworkService.findById(membership.getParentId());
+      builder.addAllParentAcronym(localizedStringDtos.asDto(network.getAcronym()));
+      builder.addAllParentName(localizedStringDtos.asDto(network.getName()));
     }
 
     return builder.build();

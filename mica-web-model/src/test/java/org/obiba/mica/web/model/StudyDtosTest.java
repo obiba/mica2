@@ -38,6 +38,7 @@ import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.network.NetworkStateRepository;
 import org.obiba.mica.network.service.NetworkService;
+import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.security.repository.SubjectAclRepository;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.StudyStateRepository;
@@ -46,6 +47,7 @@ import org.obiba.mica.study.domain.NumberOfParticipants;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
+import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.StudyService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -349,6 +351,16 @@ public class StudyDtosTest {
     @Bean
     public NetworkService networkService() {
       return Mockito.mock(NetworkService.class);
+    }
+
+    @Bean
+    public PublishedStudyService publishedStudyService() {
+      return Mockito.mock(PublishedStudyService.class);
+    }
+
+    @Bean
+    public PublishedNetworkService publishedNetworkService() {
+      return Mockito.mock(PublishedNetworkService.class);
     }
 
     @Bean
