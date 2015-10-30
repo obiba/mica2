@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
 
 /**
@@ -64,12 +65,14 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   private HarmonizationDatasetService datasetService;
 
   @GET
+  @Timed
   public Mica.DatasetVariableDto getVariable() {
     return getDatasetVariableDto(datasetId, variableName, DatasetVariable.Type.Harmonized, studyId, project, table);
   }
 
   @GET
   @Path("/summary")
+  @Timed
   public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary() {
     return datasetService
       .getVariableSummary(getDataset(HarmonizationDataset.class, datasetId), variableName, studyId, project, table)
@@ -78,6 +81,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
 
   @GET
   @Path("/facet")
+  @Timed
   public Search.QueryResultDto getVariableFacet() {
     return datasetService
       .getVariableFacet(getDataset(HarmonizationDataset.class, datasetId), variableName, studyId, project, table);
@@ -85,6 +89,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
 
   @GET
   @Path("/aggregation")
+  @Timed
   public Mica.DatasetVariableAggregationDto getVariableAggregations() {
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
     for(StudyTable studyTable : dataset.getStudyTables()) {
@@ -103,6 +108,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
 
   @GET
   @Path("/contingency")
+  @Timed
   public Mica.DatasetVariableContingencyDto getContingency(@QueryParam("by") String crossVariable) {
     Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
 
@@ -130,6 +136,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   @GET
   @Path("/contingency/_export")
   @Produces("text/csv")
+  @Timed
   public Response getContingencyCsv(@QueryParam("by") String crossVariable) throws IOException {
     Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
     ByteArrayOutputStream res = new CsvContingencyWriter(variables.getFirst(), variables.getSecond())
@@ -142,6 +149,7 @@ public class PublishedHarmonizedDatasetVariableResource extends AbstractPublishe
   @GET
   @Path("/contingency/_export")
   @Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+  @Timed
   public Response getContingencyExcel(@QueryParam("by") String crossVariable) throws IOException {
     Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
     ByteArrayOutputStream res = new ExcelContingencyWriter(variables.getFirst(), variables.getSecond())

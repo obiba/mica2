@@ -38,6 +38,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
 
 @Component
@@ -62,18 +63,21 @@ public class PublishedStudyDatasetVariableResource extends AbstractPublishedData
 
   @GET
   @Path("/summary")
+  @Timed
   public org.obiba.opal.web.model.Math.SummaryStatisticsDto getVariableSummary() {
     return datasetService.getVariableSummary(getDataset(StudyDataset.class, datasetId), variableName).getWrappedDto();
   }
 
   @GET
   @Path("/facet")
+  @Timed
   public Search.QueryResultDto getVariableFacet() {
     return datasetService.getVariableFacet(getDataset(StudyDataset.class, datasetId), variableName);
   }
 
   @GET
   @Path("/aggregation")
+  @Timed
   public Mica.DatasetVariableAggregationDto getVariableAggregations() {
     StudyDataset dataset = getDataset(StudyDataset.class, datasetId);
     StudyTable studyTable = dataset.getStudyTable();
@@ -89,6 +93,7 @@ public class PublishedStudyDatasetVariableResource extends AbstractPublishedData
 
   @GET
   @Path("/contingency")
+  @Timed
   public Mica.DatasetVariableContingencyDto getContingency(@QueryParam("by") String crossVariable) {
     Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
 
@@ -112,6 +117,7 @@ public class PublishedStudyDatasetVariableResource extends AbstractPublishedData
   @GET
   @Path("/contingency/_export")
   @Produces("text/csv")
+  @Timed
   public Response getContingencyCsv(@QueryParam("by") String crossVariable) throws IOException {
     Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
     ByteArrayOutputStream res = new CsvContingencyWriter(variables.getFirst(), variables.getSecond())
@@ -124,6 +130,7 @@ public class PublishedStudyDatasetVariableResource extends AbstractPublishedData
   @GET
   @Path("/contingency/_export")
   @Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+  @Timed
   public Response getContingencyExcel(@QueryParam("by") String crossVariable) throws IOException {
     Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
     ByteArrayOutputStream res = new ExcelContingencyWriter(variables.getFirst(), variables.getSecond())

@@ -12,6 +12,8 @@ import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.stereotype.Component;
 
+import com.codahale.metrics.annotation.Timed;
+
 @Component
 @Path("/")
 @RequiresAuthentication
@@ -27,6 +29,7 @@ public class PublishedFileSystemResource extends AbstractFileSystemResource {
 
   @GET
   @Path("/file-dl/{path:.*}")
+  @Timed
   public Response downloadFile(@PathParam("path") String path) {
     Attachment attachment = doGetAttachment(path);
     return Response.ok(fileStoreService.getFile(attachment.getFileReference()))
@@ -35,6 +38,7 @@ public class PublishedFileSystemResource extends AbstractFileSystemResource {
 
   @GET
   @Path("/file/{path:.*}")
+  @Timed
   public Mica.FileDto getFile(@PathParam("path") String path) {
     return doGetFile(path);
   }

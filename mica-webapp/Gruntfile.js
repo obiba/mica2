@@ -85,7 +85,7 @@ module.exports = function (grunt) {
           changeOrigin: false
         },
         {
-          context: '/metrics',
+          context: '/jvm',
           host: 'localhost',
           port: 8082,
           https: false,

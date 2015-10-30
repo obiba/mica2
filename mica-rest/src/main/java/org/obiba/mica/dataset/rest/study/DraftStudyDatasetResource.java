@@ -72,14 +72,12 @@ public class DraftStudyDatasetResource extends
   }
 
   @DELETE
-  @Timed
   public void delete() {
     subjectAclService.checkPermission("/draft/study-dataset", "DELETE", id);
     datasetService.delete(id);
   }
 
   @PUT
-  @Timed
   public Response update(Mica.DatasetDto datasetDto, @Context UriInfo uriInfo) {
     subjectAclService.checkPermission("/draft/study-dataset", "EDIT", id);
     if (!datasetDto.hasId() || !datasetDto.getId().equals(id)) throw new IllegalArgumentException("Not the expected dataset id");
@@ -92,7 +90,6 @@ public class DraftStudyDatasetResource extends
 
   @PUT
   @Path("/_index")
-  @Timed
   public Response index() {
     subjectAclService.checkPermission("/draft/study-dataset", "EDIT", id);
     datasetService.index(id);
@@ -150,7 +147,6 @@ public class DraftStudyDatasetResource extends
 
   @PUT
   @Path("/_status")
-  @Timed
   public Response updateStatus(@QueryParam("value") String status) {
     subjectAclService.checkPermission("/draft/study-dataset", "VIEW", id);
     datasetService.updateStatus(id, RevisionStatus.valueOf(status.toUpperCase()));

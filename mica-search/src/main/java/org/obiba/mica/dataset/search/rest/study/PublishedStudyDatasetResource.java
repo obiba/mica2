@@ -26,6 +26,8 @@ import org.obiba.mica.web.model.Mica;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.codahale.metrics.annotation.Timed;
+
 /**
  * Study variable resource: variable describing a study dataset.
  */
@@ -51,6 +53,7 @@ public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResou
    * @return
    */
   @GET
+  @Timed
   public Mica.DatasetDto get() {
     return getDatasetDto(StudyDataset.class, id);
   }
@@ -67,6 +70,7 @@ public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResou
    */
   @GET
   @Path("/variables/_search")
+  @Timed
   public Mica.DatasetVariablesDto queryVariables(@QueryParam("query") String queryString,
     @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit,
     @QueryParam("sort") String sort, @QueryParam("order") String order) {
@@ -81,6 +85,7 @@ public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResou
    */
   @GET
   @Path("/variables")
+  @Timed
   public Mica.DatasetVariablesDto getVariables(@QueryParam("from") @DefaultValue("0") int from,
     @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
     @QueryParam("order") String order) {

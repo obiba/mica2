@@ -187,7 +187,7 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
     filterRegistration.addMappingForUrlPatterns(disps, true, "*.json");
     filterRegistration.addMappingForUrlPatterns(disps, true, "*.html");
     filterRegistration.addMappingForUrlPatterns(disps, true, "*.js");
-    filterRegistration.addMappingForUrlPatterns(disps, true, "/metrics/*");
+    filterRegistration.addMappingForUrlPatterns(disps, true, "/jvm/*");
     filterRegistration.addMappingForUrlPatterns(disps, true, WS_ROOT + "/*");
     filterRegistration.setAsyncSupported(true);
   }
@@ -245,7 +245,7 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
     log.debug("Registering Metrics Servlet");
     ServletRegistration.Dynamic metricsAdminServlet = servletContext.addServlet("metricsServlet", new MetricsServlet());
 
-    metricsAdminServlet.addMapping("/metrics/metrics/*");
+    metricsAdminServlet.addMapping("/jvm/*");
     metricsAdminServlet.setAsyncSupported(true);
     metricsAdminServlet.setLoadOnStartup(2);
   }

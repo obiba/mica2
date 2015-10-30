@@ -17,6 +17,7 @@ import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 
+import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 
@@ -62,6 +63,7 @@ public abstract class AbstractFileSearchResource {
 
   @GET
   @Path("/{path:.*}")
+  @Timed
   public List<Mica.FileDto> searchFiles(@PathParam("path") String path, @QueryParam("query") String query,
     @QueryParam("recursively") @DefaultValue("false") boolean recursively,
     @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue(MAX_SIZE) int limit,
