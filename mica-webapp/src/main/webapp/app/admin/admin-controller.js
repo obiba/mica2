@@ -19,12 +19,9 @@ mica.admin
     function () {
     }])
 
-  .controller('MetricsController', ['$rootScope', '$scope', 'MetricsService', 'HealthCheckService', 'ThreadDumpService',
-    function ($rootScope, $scope, MetricsService, HealthCheckService, ThreadDumpService) {
+  .controller('MetricsController', ['$rootScope', '$scope', 'MetricsService', 'ThreadDumpService',
+    function ($rootScope, $scope, MetricsService, ThreadDumpService) {
       $scope.refresh = function () {
-        HealthCheckService.check().then(function (data) {
-          $scope.healthCheck = data;
-        });
 
         $scope.metrics = MetricsService.get();
 
@@ -33,11 +30,11 @@ mica.admin
           $scope.servicesStats = {};
           $scope.cachesStats = {};
           angular.forEach(items.timers, function (value, key) {
-            if (key.indexOf('web.rest') !== -1) {
+            if (key.indexOf('org.obiba') !== -1) {
               $scope.servicesStats[key] = value;
             }
 
-            if (key.indexOf('net.sf.ehcache.Cache') !== -1) {
+            if (key.indexOf('net.sf.ehcache') !== -1) {
               // remove gets or puts
               var index = key.lastIndexOf('.');
               var newKey = key.substr(0, index);

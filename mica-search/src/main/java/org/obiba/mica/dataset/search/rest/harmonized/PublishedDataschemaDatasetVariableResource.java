@@ -43,6 +43,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
 
+import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.LinkedListMultimap;
@@ -71,12 +72,14 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
   private Helper helper;
 
   @GET
+  @Timed
   public Mica.DatasetVariableDto getVariable() {
     return getDatasetVariableDto(datasetId, variableName, DatasetVariable.Type.Dataschema);
   }
 
   @GET
   @Path("/summary")
+  @Timed
   public List<Math.SummaryStatisticsDto> getVariableSummaries() {
     ImmutableList.Builder<Math.SummaryStatisticsDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
@@ -95,6 +98,7 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
 
   @GET
   @Path("/facet")
+  @Timed
   public List<Search.QueryResultDto> getVariableFacets() {
     ImmutableList.Builder<Search.QueryResultDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
@@ -112,6 +116,7 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
 
   @GET
   @Path("/aggregation")
+  @Timed
   public Mica.DatasetVariableAggregationsDto getVariableAggregations() {
     ImmutableList.Builder<Mica.DatasetVariableAggregationDto> builder = ImmutableList.builder();
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
@@ -145,6 +150,7 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
 
   @GET
   @Path("/contingency")
+  @Timed
   public Mica.DatasetVariableContingenciesDto getContingency(@QueryParam("by") String crossVariable) {
     Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
 
@@ -196,6 +202,7 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
   @GET
   @Path("/contingency/_export")
   @Produces("text/csv")
+  @Timed
   public Response getContingencyCsv(@QueryParam("by") String crossVariable) throws IOException {
     Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
     ByteArrayOutputStream value = new CsvContingencyWriter(variables.getFirst(), variables.getSecond())
@@ -208,6 +215,7 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
   @GET
   @Path("/contingency/_export")
   @Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+  @Timed
   public Response getContingencyExcel(@QueryParam("by") String crossVariable) throws IOException {
     Pair<DatasetVariable, DatasetVariable> variables = getContingencyVariables(crossVariable);
     ByteArrayOutputStream value = new ExcelContingencyWriter(variables.getFirst(), variables.getSecond())
@@ -234,6 +242,7 @@ public class PublishedDataschemaDatasetVariableResource extends AbstractPublishe
    */
   @GET
   @Path("/harmonizations")
+  @Timed
   public Mica.DatasetVariableHarmonizationDto getVariableHarmonizations() {
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, datasetId);
     return getVariableHarmonizationDto(dataset, variableName);

@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 @Scope("request")
 @Component
 public class PublishedFilesSearchResource extends AbstractFileSearchResource {
+
   @Inject
   private EsPublishedFileService esAttachmentService;
 

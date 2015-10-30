@@ -64,14 +64,12 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
   }
 
   @GET
-  @Timed
   public Mica.NetworkDto get() {
     subjectAclService.checkPermission("/draft/network", "VIEW", id);
     return dtos.asDto(networkService.findById(id), true);
   }
 
   @PUT
-  @Timed
   public Response update(@SuppressWarnings("TypeMayBeWeakened") Mica.NetworkDto networkDto) {
     subjectAclService.checkPermission("/draft/network", "EDIT", id);
     // ensure network exists
@@ -84,7 +82,6 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
 
   @PUT
   @Path("/_index")
-  @Timed
   public Response index() {
     subjectAclService.checkPermission("/draft/network", "EDIT", id);
     networkService.index(id);
@@ -108,7 +105,6 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
   }
 
   @DELETE
-  @Timed
   public Response delete() {
     subjectAclService.checkPermission("/draft/network", "DELETE", id);
     try {
@@ -121,7 +117,6 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
 
   @PUT
   @Path("/_status")
-  @Timed
   public Response toUnderReview(@QueryParam("value") String status) {
     subjectAclService.checkPermission("/draft/network", "EDIT", id);
     networkService.updateStatus(id, RevisionStatus.valueOf(status.toUpperCase()));

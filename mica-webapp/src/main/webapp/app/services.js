@@ -212,7 +212,7 @@ mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStor
 
 mica.factory('MetricsService', ['$resource',
   function ($resource) {
-    return $resource('metrics/metrics', {}, {
+    return $resource('jvm', {}, {
       'get': { method: 'GET'}
     });
   }]);
@@ -222,17 +222,6 @@ mica.factory('ThreadDumpService', ['$http',
     return {
       dump: function () {
         return $http.get('dump').then(function (response) {
-          return response.data;
-        });
-      }
-    };
-  }]);
-
-mica.factory('HealthCheckService', ['$rootScope', '$http',
-  function ($rootScope, $http) {
-    return {
-      check: function () {
-        return $http.get('health').then(function (response) {
           return response.data;
         });
       }

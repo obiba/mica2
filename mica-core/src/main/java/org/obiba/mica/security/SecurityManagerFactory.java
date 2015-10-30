@@ -233,8 +233,8 @@ public class SecurityManagerFactory implements FactoryBean<SecurityManager> {
     private void configureUrl(@SuppressWarnings("TypeMayBeWeakened") Ini.Section urls) {
       urls.put("/ws/logs/**", ADMIN);
       urls.put("/websocket/tracker", ADMIN);
-      urls.put("/metrics*", ADMIN);
-      urls.put("/metrics/**", ADMIN);
+      urls.put("/jvm*", ADMIN);
+      urls.put("/jvm/**", ADMIN);
       urls.put("/health*", ADMIN);
       urls.put("/health/**", ADMIN);
       urls.put("/trace*", ADMIN);

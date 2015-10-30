@@ -24,6 +24,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.codahale.metrics.annotation.Timed;
+
 @Component
 @Scope("request")
 @Path("/harmonization-datasets")
@@ -43,6 +45,7 @@ public class PublishedHarmonizationDatasetsResource extends AbstractPublishedDat
    * @return
    */
   @GET
+  @Timed
   public Mica.DatasetsDto list(@QueryParam("from") @DefaultValue("0") int from,
       @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
       @QueryParam("order") String order, @QueryParam("study") String studyId, @QueryParam("query") String query) {
