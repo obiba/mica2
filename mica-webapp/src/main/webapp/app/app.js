@@ -23,7 +23,8 @@ var mica = angular.module('mica', [
   'ui.bootstrap',
   'ngFileUpload',
   'angularUtils.directives.dirPagination',
-  'xeditable'
+  'xeditable',
+  'matchMedia'
 ]);
 
 mica

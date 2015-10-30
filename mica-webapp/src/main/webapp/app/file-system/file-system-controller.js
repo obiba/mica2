@@ -385,6 +385,7 @@ mica.fileSystem
         })).catch(onError);
       }
 
+      $scope.screen = $rootScope.screen;
       $scope.hasRole = $rootScope.hasRole;
       $scope.getDocumentTypeTitle = FileSystemService.getDocumentTypeTitle;
       $scope.getDocumentIcon = FileSystemService.getDocumentIcon;

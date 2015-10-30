@@ -15,7 +15,8 @@
 
     {{'logs.filter' | translate}} <input type="text" ng-model="filter" class="form-control">
 
-    <table class="table table-bordered table-condensed table-striped table-responsive">
+    <div class="table-responsive">
+      <table class="table table-bordered table-condensed table-striped">
       <thead>
       <tr title="click to order">
         <th ng-click="predicate = 'name'; reverse=!reverse">{{'logs.table.name' | translate}}</th>
@@ -46,5 +47,6 @@
         </td>
       </tr>
     </table>
+    </div>
   </div>
 </div>

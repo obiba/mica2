@@ -39,10 +39,16 @@
 <![endif]-->
 <div class="development"></div>
 
-<div class="navbar navbar-default navbar-fixed-top">
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
       <a href="#" class="navbar-brand">Mica</a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
     </div>
     <div class="navbar-collapse collapse" id="navbar-main" ng-switch="authenticated">
       <ul class="nav navbar-nav">
@@ -169,6 +175,7 @@
 <script src="bower_components/angular-strap/dist/angular-strap.tpl.js"></script>
 <script src="bower_components/angular-schema-form-datetimepicker/schema-form-date-time-picker.min.js"></script>
 <script src="bower_components/angular-xeditable/dist/js/xeditable.js"></script>
+<script src="bower_components/angular-media-queries/match-media.js"></script>
 <!-- endbower -->
 <script src="app/http-auth-interceptor.js"></script>
 <script src="app/app.js"></script>

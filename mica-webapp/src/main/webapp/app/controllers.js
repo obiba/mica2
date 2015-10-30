@@ -2,11 +2,31 @@
 
 /* Controllers */
 
-mica.controller('MainController', ['$scope', 'MicaConfigResource', function ($scope, MicaConfigResource) {
- $scope.micaConfig = MicaConfigResource.get();
-}]);
+mica.controller('MainController', ['$rootScope', '$scope', 'MicaConfigResource', 'screenSize',
+  function ($rootScope, $scope, MicaConfigResource, screenSize) {
+    $scope.micaConfig = MicaConfigResource.get();
+    $rootScope.screen = $scope.screen = {size: null, device: null};
 
-mica.controller('AdminController', [ function () {} ]);
+
+    function getScreenSize() {
+      var size = ['lg', 'md', 'sm', 'xs'].filter(function (size) {
+        return screenSize.is(size);
+      });
+
+      $scope.screen.size = size ? size[0] : 'lg';
+      $scope.screen.device = screenSize.is('md, lg') ? 'desktop' : 'mobile';
+
+      console.log('>>>>', $scope.screen);
+    }
+
+    getScreenSize();
+
+    screenSize.on('lg, md, sm, xs', function () {
+      getScreenSize();
+    });
+  }]);
+
+mica.controller('AdminController', [function () {}]);
 
 mica.controller('LanguageController', ['$scope', '$translate',
   function ($scope, $translate) {
@@ -15,7 +35,7 @@ mica.controller('LanguageController', ['$scope', '$translate',
     };
   }]);
 
-mica.controller('MenuController', [ function () {} ]);
+mica.controller('MenuController', [function () {}]);
 
 mica.controller('LoginController', ['$scope', '$location', 'AuthenticationSharedService',
   function ($scope, $location, AuthenticationSharedService) {
