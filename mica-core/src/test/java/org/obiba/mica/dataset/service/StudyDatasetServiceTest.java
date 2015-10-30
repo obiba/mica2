@@ -10,7 +10,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.obiba.magma.MagmaRuntimeException;
-import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.core.service.GitService;
@@ -81,20 +80,6 @@ public class StudyDatasetServiceTest {
     when(opalService.getDatasource(anyString(), anyString())).thenReturn(r);
     when(studyService.findDraft(anyString())).thenReturn(study);
     when(studyDatasetStateRepository.findOne(anyString())).thenReturn(state);
-
-    studyDatasetService.save(dataset);
-  }
-
-  @Test
-  public void testInvalidValueTableInDataset() {
-    RestDatasource r = mock(RestDatasource.class);
-    when(r.getValueTable(anyString())).thenThrow(NoSuchValueTableException.class);
-    when(opalService.getDatasource(anyString(), anyString())).thenReturn(r);
-    when(studyService.findDraft(anyString())).thenReturn(study);
-    when(studyDatasetStateRepository.findOne(anyString())).thenReturn(state);
-    dataset.setPublished(true);
-
-    exception.expect(InvalidDatasetException.class);
 
     studyDatasetService.save(dataset);
   }

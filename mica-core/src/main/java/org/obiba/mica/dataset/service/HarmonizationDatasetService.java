@@ -310,14 +310,9 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
       variables = wrappedGetDatasetVariables(dataset);
       harmonizationVariables = populateHarmonizedVariablesMap(dataset);
     } catch(DatasourceNotAvailableException | InvalidDatasetException e) {
-      if(dataset.isPublished()) {
-        throw e;
-      }
-
       if(e instanceof DatasourceNotAvailableException) {
         log.warn("Datasource not available.", e);
       }
-
       variables = Lists.newArrayList();
       harmonizationVariables = Maps.newHashMap();
     }

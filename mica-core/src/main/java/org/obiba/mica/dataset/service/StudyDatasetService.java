@@ -44,6 +44,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -135,8 +136,10 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
     helper.evictCache(dataset);
 
     if(published) {
+      Iterable<DatasetVariable> variables = wrappedGetDatasetVariables(dataset);
       publishState(id);
-      eventBus.post(new DatasetPublishedEvent(dataset, wrappedGetDatasetVariables(dataset), getCurrentUsername()));
+      eventBus.post(new DatasetPublishedEvent(dataset, variables, getCurrentUsername()));
+      helper.asyncBuildDatasetVariablesCache(dataset, variables);
     } else {
       unPublishState(id);
       eventBus.post(new DatasetUnpublishedEvent(dataset));
@@ -150,8 +153,8 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
    * @return
    */
   public boolean isPublished(@NotNull String id) throws NoSuchDatasetException {
-    StudyDataset dataset = findById(id);
-    return dataset.isPublished();
+    StudyDatasetState state = getEntityState(id);
+    return state.isPublished();
   }
 
   /**
@@ -191,7 +194,7 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
     return new DatasetVariable(dataset, getVariableValueSource(dataset, variableName).getVariable());
   }
 
-  @Cacheable(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver", key = "#variableName")
+  @Cacheable(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver", key = "#variableName  + ':' + #dataset.getStudyTable().getStudyId() + ':' + #dataset.getStudyTable().getProject() + ':' + #dataset.getStudyTable().getTable()")
   public SummaryStatisticsWrapper getVariableSummary(@NotNull StudyDataset dataset, String variableName)
     throws NoSuchValueTableException, NoSuchVariableException {
     log.info("Caching variable summary {} {}", dataset.getId(), variableName);
@@ -267,14 +270,9 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
       //getting variables first to fail fast when dataset is being published
       variables = wrappedGetDatasetVariables(dataset);
     } catch(DatasourceNotAvailableException | InvalidDatasetException e) {
-      if(dataset.isPublished()) {
-        throw e;
-      }
-
       if(e instanceof DatasourceNotAvailableException) {
         log.warn("Datasource not available.", e);
       }
-
       variables = Lists.newArrayList();
     }
 
@@ -342,5 +340,22 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
     public void evictCache(StudyDataset dataset) {
       log.info("clearing dataset variables cache dataset-{}", dataset.getId());
     }
+
+    @Async
+    public void asyncBuildDatasetVariablesCache(StudyDataset dataset, Iterable<DatasetVariable> variables) {
+      log.info("building variable summaries cache");
+
+      variables.forEach(var -> {
+        try {
+          service.getVariableSummary(dataset, var.getName());
+        } catch(Exception e) {
+          //ignoring
+        }
+      });
+
+
+      log.info("done building variable summaries cache");
+    }
+
   }
 }
