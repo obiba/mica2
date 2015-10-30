@@ -12,7 +12,6 @@ package org.obiba.mica.dataset.event;
 
 import org.obiba.mica.core.event.PersistableUpdatedEvent;
 import org.obiba.mica.dataset.domain.Dataset;
-import org.obiba.mica.dataset.domain.StudyDataset;
 
 public class DatasetUnpublishedEvent extends PersistableUpdatedEvent<Dataset> {
 
@@ -20,11 +19,4 @@ public class DatasetUnpublishedEvent extends PersistableUpdatedEvent<Dataset> {
     super(persistable);
   }
 
-  public boolean isStudyDataset() {
-    return getPersistable() instanceof StudyDataset;
-  }
-
-  public boolean isPublished() {
-    return getPersistable().isPublished();
-  }
 }

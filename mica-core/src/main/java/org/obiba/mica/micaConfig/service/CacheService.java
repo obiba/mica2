@@ -84,6 +84,9 @@ public class CacheService {
     @Inject
     private HarmonizationDatasetService harmonizationDatasetService;
 
+    @Inject
+    private StudyDatasetService studyDatasetService;
+
     @CacheEvict(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver", allEntries = true, beforeInvocation = true)
     public void clearDatasetVariablesCache(Dataset dataset) {
       log.info("Clearing dataset variables cache dataset-{}", dataset.getId());
@@ -100,9 +103,21 @@ public class CacheService {
             } catch(NoSuchVariableException ex) {
               //ignore
             } catch(Exception e) {
-              log.warn("Error building dataset variable cache for {} {}", st, v, e);
+              log.warn("Error building dataset variable cache of harmonization dataset {}: {} {}", dataset.getId(), st,
+                v, e);
             }
           })));
+
+      studyDatasetService.findAllDatasets()
+        .forEach(dataset -> studyDatasetService.getDatasetVariables(dataset).forEach(v -> {
+          try {
+            studyDatasetService.getVariableSummary(dataset, v.getName());
+          } catch(NoSuchVariableException ex) {
+            //ignore
+          } catch(Exception e) {
+            log.warn("Error building dataset variable cache of study dataset {}: {}", dataset.getId(), v, e);
+          }
+        }));
     }
   }
 }

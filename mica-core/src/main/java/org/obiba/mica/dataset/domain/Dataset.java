@@ -13,7 +13,6 @@ package org.obiba.mica.dataset.domain;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.core.domain.AbstractAuditableDocument;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.AttributeAware;
@@ -82,6 +81,7 @@ public abstract class Dataset extends AbstractGitPersistable implements Attribut
   }
 
   @JsonIgnore
+  @Deprecated
   public boolean isPublished() {
     return published;
   }
