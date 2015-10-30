@@ -7,77 +7,7 @@
     </ol>
   </h2>
 
-  <div class="table-responsive">
-    <table class="table table-bordered table-striped">
-      <thead>
-      <tr>
-        <th translate>type</th>
-        <th translate>actions</th>
-      </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>
-            <span translate>caching.all</span>
-          </td>
-          <td>
-            <a ng-click="clearAll()" class="hand action"><i class="fa fa-trash-o"></i></a>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <span translate>caching.micaConfig</span>
-          </td>
-          <td>
-            <a ng-click="clearMicaConfig()" class="hand action"><i class="fa fa-trash-o"></i></a>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <span translate>caching.opalTaxonomies</span>
-          </td>
-          <td>
-            <a ng-click="clearOpalTaxonomies()" class="hand action"><i class="fa fa-trash-o"></i></a>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <span translate>caching.aggregationsMetadata</span>
-          </td>
-          <td>
-            <a ng-click="clearAggregationsMetadata()" class="hand action"><i class="fa fa-trash-o"></i></a>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <span translate>caching.datasetVariables</span>
-          </td>
-          <td>
-            <a ng-click="clearDatasetVariables()" class="hand action"><i class="fa fa-trash-o"></i></a>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <span translate>caching.agateSubjects</span>
-          </td>
-          <td>
-            <a ng-click="clearAgateSubjects()" class="hand action"><i class="fa fa-trash-o"></i></a>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <span translate>caching.authorization</span>
-          </td>
-          <td>
-            <a ng-click="clearAuthorization()" class="hand action"><i class="fa fa-trash-o"></i></a>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <h2 class="voffset5" translate>caching.titleBuild</h2>
-
+  <p class="help-block" translate>caching.help</p>
   <div class="table-responsive">
     <table class="table table-bordered table-striped">
       <thead>
@@ -89,10 +19,72 @@
       <tbody>
       <tr>
         <td>
-          <span translate>caching.datasetVariables</span>
+          <span translate>caching.all</span>
+          <span class="help-block no-margin-bottom" translate>caching.all-help</span>
         </td>
         <td>
-          <a ng-click="buildDatasetVariables()" class="hand action"><i class="fa fa-play-circle-o"></i></a>
+          <a ng-click="clearAll()" class="hand action" title="{{'caching.delete-cache' | translate}}"><i class="fa fa-trash-o"></i></a>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <span translate>caching.mica-config</span>
+          <span class="help-block no-margin-bottom" translate>caching.mica-config-help</span>
+        </td>
+        <td>
+          <a ng-click="clearMicaConfig()" class="hand action" title="{{'caching.delete-cache' | translate}}"><i class="fa fa-trash-o"></i></a>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <span translate>caching.opal-taxonomies</span>
+          <span class="help-block no-margin-bottom" translate>caching.opal-taxonomies-help</span>
+        </td>
+        <td>
+          <a ng-click="clearOpalTaxonomies()" class="hand action" title="{{'caching.delete-cache' | translate}}"><i class="fa fa-trash-o"></i></a>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <span translate>caching.aggregations-metadata</span>
+          <span class="help-block no-margin-bottom" translate>caching.aggregations-metadata-help</span>
+        </td>
+        <td>
+          <a ng-click="clearAggregationsMetadata()" class="hand action" title="{{'caching.delete-cache' | translate}}"><i class="fa fa-trash-o"></i></a>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <span translate>caching.dataset-variables</span>
+          <span class="help-block no-margin-bottom" translate>caching.dataset-variables-help</span>
+        </td>
+        <td>
+          <ul class="list-inline">
+            <li>
+              <a ng-click="clearDatasetVariables()" class="hand action" title="{{'caching.delete-cache' | translate}}"><i class="fa fa-trash-o"></i></a>
+            </li>
+            <li>
+              <a ng-click="buildDatasetVariables()" class="hand action" title="{{'caching.build-cache' | translate}}"><i class="fa fa-play-circle-o"></i></a>
+            </li>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <span translate>caching.agate-subjects</span>
+          <span class="help-block no-margin-bottom" translate>caching.agate-subjects-help</span>
+        </td>
+        <td>
+          <a ng-click="clearAgateSubjects()" class="hand action" title="{{'caching.delete-cache' | translate}}"><i class="fa fa-trash-o"></i></a>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <span translate>caching.authorization</span>
+          <span class="help-block no-margin-bottom" translate>caching.authorization-help</span>
+        </td>
+        <td>
+          <a ng-click="clearAuthorization()" class="hand action" title="{{'caching.delete-cache' | translate}}"><i class="fa fa-trash-o"></i></a>
         </td>
       </tr>
       </tbody>
