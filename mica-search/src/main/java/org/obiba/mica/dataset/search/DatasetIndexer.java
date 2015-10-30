@@ -48,7 +48,6 @@ public class DatasetIndexer {
     log.debug("{} {} was updated", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
     elasticSearchIndexer.delete(DRAFT_DATASET_INDEX, (Indexable) event.getPersistable());
     elasticSearchIndexer.index(DRAFT_DATASET_INDEX, (Indexable) event.getPersistable());
-
   }
 
   @Async
@@ -73,5 +72,4 @@ public class DatasetIndexer {
     log.debug("{} {} was unpublished", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
     elasticSearchIndexer.delete(PUBLISHED_DATASET_INDEX, (Indexable) event.getPersistable());
   }
-
 }

@@ -29,6 +29,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -145,6 +146,8 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
   public void setInvestigators(List<Person> investigators) {
     if(investigators == null) investigators = Lists.newArrayList();
 
+    replaceExisting(investigators);
+
     memberships.put(Membership.INVESTIGATOR,
       investigators.stream().map(p -> new Membership(p, Membership.INVESTIGATOR)).collect(toList()));
   }
@@ -182,6 +185,8 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
   @JsonProperty
   public void setContacts(List<Person> contacts) {
     if(contacts == null) contacts = Lists.newArrayList();
+
+    replaceExisting(contacts);
 
     memberships.put(Membership.CONTACT,
       contacts.stream().map(p -> new Membership(p, Membership.CONTACT)).collect(toList()));
@@ -312,7 +317,7 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
   @Deprecated
   @JsonProperty
   public void setAttachments(List<Attachment> attachments) {
-    this.attachments = attachments;
+    this.attachments = attachments == null ? Lists.newArrayList() : attachments;
   }
 
   public LocalizedString getInfo() {
@@ -430,7 +435,13 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
   }
 
   @Override
-  public List<Membership> getAllPersons() {
+  public List<Person> getAllPersons() {
+    return getMemberships().values().stream().flatMap(List::stream).map(Membership::getPerson).distinct()
+      .collect(toList());
+  }
+
+  @Override
+  public List<Membership> getAllMemberships() {
     return getMemberships().values().stream().flatMap(List::stream).collect(toList());
   }
 
@@ -450,6 +461,19 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
 
   public void setMemberships(Map<String, List<Membership>> memberships) {
     this.memberships = memberships;
+  }
+
+  private void replaceExisting(List<Person> persons) {
+    List<Person> existing = this.memberships.values().stream().flatMap(List::stream).map(Membership::getPerson)
+      .collect(toList());
+
+    ImmutableList.copyOf(persons).forEach(p -> {
+      if(existing.contains(p)) {
+        int idx = persons.indexOf(p);
+        persons.remove(p);
+        persons.add(idx, existing.get(existing.indexOf(p)));
+      }
+    });
   }
 
   public static class StudyMethods implements Serializable {

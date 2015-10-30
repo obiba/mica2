@@ -42,12 +42,8 @@
                         </span>
                       </a>
                       <div class="inline" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
-                        <a ng-click="editInvestigator(network, investigator)" class="action">
-                          <i class="fa fa-pencil"></i>
-                        </a>
-                        <a ng-click="deleteInvestigator(network, investigator)" class="action">
-                          <i class="fa fa-trash-o"></i>
-                        </a>
+                        <a ng-click="editInvestigator(network, investigator)" class="action"><i class="fa fa-pencil"></i></a>
+                        <a ng-click="deleteInvestigator(network, investigator)" class="action"><i class="fa fa-trash-o"></i></a>
                       </div>
                     </li>
                   </ul>

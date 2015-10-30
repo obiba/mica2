@@ -57,16 +57,21 @@ public class AttachmentsCleanupUpgrade implements UpgradeStep {
     Set<String> missingIds = Sets.newHashSet();
 
     attachmentRepository.findAll().forEach(a -> {
-      Matcher m = pattern.matcher(a.getPath());
+      if(a.getPath() != null) {
+        Matcher m = pattern.matcher(a.getPath());
 
-      if(m.find()) {
-        String id = m.group(1);
+        if(m.find()) {
+          String id = m.group(1);
 
-        if(missingIds.contains(id) || repository.findOne(id) == null) {
-          if(!missingIds.contains(id)) missingIds.add(id);
-          attachmentRepository.delete(a);
-          fileStoreService.delete(a.getId());
+          if(missingIds.contains(id) || repository.findOne(id) == null) {
+            if(!missingIds.contains(id)) missingIds.add(id);
+            attachmentRepository.delete(a);
+            fileStoreService.delete(a.getId());
+          }
         }
+      } else {
+        attachmentRepository.delete(a);
+        fileStoreService.delete(a.getId());
       }
     });
   }

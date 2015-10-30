@@ -81,7 +81,7 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
   }
 
   @NotNull
-  protected T findEntityState(T1 gitPersistable, Supplier<T> stateSupplier) {
+  public T findEntityState(T1 gitPersistable, Supplier<T> stateSupplier) {
     T defaultState;
 
     if(gitPersistable.isNew()) {

@@ -59,8 +59,12 @@ public class VariableIndexer {
   @Subscribe
   public void datasetUpdated(DatasetUpdatedEvent event) {
     log.debug("{} {} was updated", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
-    deleteDatasetVariables(DRAFT_VARIABLE_INDEX, event.getPersistable());
-    indexDatasetVariables(DRAFT_VARIABLE_INDEX, event.getVariables());
+
+    if(event.getVariables() != null) {
+      deleteDatasetVariables(DRAFT_VARIABLE_INDEX, event.getPersistable());
+      indexDatasetVariables(DRAFT_VARIABLE_INDEX, event.getVariables());
+    }
+
     if(event.hasHarmonizationVariables())
       indexHarmonizedVariables(DRAFT_VARIABLE_INDEX, event.getHarmonizationVariables());
   }
@@ -69,8 +73,12 @@ public class VariableIndexer {
   @Subscribe
   public void datasetPublished(DatasetPublishedEvent event) {
     log.debug("{} {} was published", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
-    deleteDatasetVariables(PUBLISHED_VARIABLE_INDEX, event.getPersistable());
-    indexDatasetVariables(PUBLISHED_VARIABLE_INDEX, event.getVariables());
+
+    if(event.getVariables() != null) {
+      deleteDatasetVariables(PUBLISHED_VARIABLE_INDEX, event.getPersistable());
+      indexDatasetVariables(PUBLISHED_VARIABLE_INDEX, event.getVariables());
+    }
+
     if(event.hasHarmonizationVariables())
       indexHarmonizedVariables(PUBLISHED_VARIABLE_INDEX, event.getHarmonizationVariables());
   }

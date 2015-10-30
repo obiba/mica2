@@ -82,6 +82,7 @@ class PersonDtos {
 
     if(membership.getParentId() != null) {
       Study study = studyService.findStudy(membership.getParentId());
+
       if(study != null) {
         builder.addAllParentAcronym(localizedStringDtos.asDto(study.getAcronym()));
         builder.addAllParentName(localizedStringDtos.asDto(study.getName()));

@@ -181,7 +181,7 @@ public class DataCollectionEvent extends AbstractAttributeAware
   @Deprecated
   @JsonProperty
   public void setAttachments(@NotNull List<Attachment> attachments) {
-    this.attachments = attachments;
+    this.attachments = attachments == null ? Lists.newArrayList() : attachments;
   }
 
   @Override
