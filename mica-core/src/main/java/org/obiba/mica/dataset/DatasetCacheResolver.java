@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import javax.inject.Inject;
 
-import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.config.CacheConfiguration;
 
 import org.obiba.mica.dataset.domain.Dataset;
@@ -40,7 +39,7 @@ public class DatasetCacheResolver implements CacheResolver{
       Cache datasetCache = springCacheManager.getCache(cacheName);
 
       if (datasetCache == null) {
-        CacheConfiguration conf = cacheManager.getCache("dataset-variables").getCacheConfiguration().clone();
+        CacheConfiguration conf = cacheManager.getEhcache("dataset-variables").getCacheConfiguration().clone();
         conf.setName(cacheName);
         cacheManager.addCache(new net.sf.ehcache.Cache(conf));
         datasetCache = new EhCacheCache(cacheManager.getCache(cacheName));
