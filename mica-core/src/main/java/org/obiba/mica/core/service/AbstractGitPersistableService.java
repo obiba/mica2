@@ -178,5 +178,4 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
       ? AbstractGitWriteCommand.DEFAULT_AUTHOR_NAME
       : subject.getPrincipal().toString();
   }
-
 }
