@@ -20,7 +20,7 @@
       aria-expanded="false">
       {{'publish.status.' + state.revisionStatus | translate}} <span class="caret"></span>
     </button>
-    <ul class="dropdown-menu">
+    <ul class="dropdown-menu pull-right">
       <li>
         <a ng-click="toDraft()"
           ng-if="state.revisionStatus !== 'DRAFT'">
