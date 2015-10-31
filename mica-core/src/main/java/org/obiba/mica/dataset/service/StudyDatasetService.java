@@ -194,7 +194,7 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
     return new DatasetVariable(dataset, getVariableValueSource(dataset, variableName).getVariable());
   }
 
-  @Cacheable(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver", key = "#variableName  + ':' + #dataset.getStudyTable().getStudyId() + ':' + #dataset.getStudyTable().getProject() + ':' + #dataset.getStudyTable().getTable()")
+  @Cacheable(value = "dataset-variables", cacheResolver = "datasetVariablesCacheResolver", key = "#variableName")
   public SummaryStatisticsWrapper getVariableSummary(@NotNull StudyDataset dataset, String variableName)
     throws NoSuchValueTableException, NoSuchVariableException {
     log.info("Caching variable summary {} {}", dataset.getId(), variableName);
