@@ -30,8 +30,8 @@ mica.admin
           $scope.servicesStats = {};
           $scope.cachesStats = {};
           angular.forEach(items.timers, function (value, key) {
-            if (key.indexOf('org.obiba') !== -1) {
-              $scope.servicesStats[key] = value;
+            if (key.indexOf('org.obiba') !== -1 && key.indexOf('net.sf.ehcache') === -1) {
+              $scope.servicesStats[key.replace('org.obiba.mica','o.o.m')] = value;
             }
 
             if (key.indexOf('net.sf.ehcache') !== -1) {
@@ -40,9 +40,8 @@ mica.admin
               var newKey = key.substr(0, index);
 
               // Keep the name of the domain
-              index = newKey.lastIndexOf('.');
               $scope.cachesStats[newKey] = {
-                'name': newKey.substr(index + 1),
+                'name': newKey.replace('net.sf.ehcache.Cache.',''),
                 'value': value
               };
             }
