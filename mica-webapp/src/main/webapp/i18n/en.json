@@ -374,6 +374,10 @@
   "study": {
     "input-placeholder": "Study name",
     "add": "Add Study",
+    "add-population": "Add Population",
+    "edit-population": "Edit Population",
+    "add-dce": "Add Data Collection Event",
+    "edit-dce": "Edit Data Collection Event",
     "label": "Study",
     "label-edit": "Edit Study",
     "details": "Study",
