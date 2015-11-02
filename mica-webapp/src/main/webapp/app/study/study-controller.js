@@ -685,7 +685,7 @@ mica.study
           $scope.population = $scope.study.populations.filter(function (p) {
             return p.id === $routeParams.pid;
           })[0];
-
+          $scope.newDCE = !$routeParams.dceId;
           if ($routeParams.dceId) {
             $scope.dce = $scope.population.dataCollectionEvents.filter(function (d) {
               return d.id === $routeParams.dceId;

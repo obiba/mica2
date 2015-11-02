@@ -2,18 +2,31 @@
   <h2>
     <ol class="mica-breadcrumb">
       <li><a href="/#/study" translate>studies</a></li>
-      <li><a ng-href="/#/study/{{study.id}}">{{study.id}}</a></li>
-      <li ng-if="!newPopulation"><a ng-href="/#/study/{{study.id}}">{{population.id}}</a></li>
       <li class="active">
-        <span ng-if="newPopulation" translate>add-sm</span>
-        <span ng-if="!newPopulation" translate>edit-sm</span>
-        <small><span translate>or</span>
-          <a ng-click="cancel()">
-            <span translate>cancel-sm</span>
-          </a></small>
+        {{study.id}}
       </li>
     </ol>
   </h2>
+
+  <div class="tabs-menu tabs-left">
+    <ul class="nav nav-tabs">
+      <li class="active"><a href="#/study/{{study.id}}" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>
+      </li>
+      <li><a href="#/study/{{study.id}}/revisions" title="{{'revisions' | translate}}"><i class="fa fa-list-ol"></i></a>
+      </li>
+      <li><a href="#/study/{{study.id}}/files" title="{{'files' | translate}}"><i class="fa fa-file"></i></a></li>
+      <li><a href="#/study/{{study.id}}/permissions" title="{{'permissions' | translate}}"><i
+        class="fa fa-lock"></i></a></li>
+    </ul>
+  </div>
+
+  <h3>
+    <a ng-click="cancel()">
+      <i class="fa fa-chevron-left"> </i>
+    </a>
+    <span ng-if="newPopulation" translate>study.add-population</span>
+    <span ng-if="!newPopulation">{{'study.edit-population' | translate}} [{{population.id}}]</span>
+  </h3>
 
   <form name="form" role="form" ng-submit="save(form)">
     <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
