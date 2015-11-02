@@ -26,12 +26,14 @@ import org.obiba.mica.search.rest.QueryDtoHelper;
 import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
 
 import static org.obiba.mica.web.model.MicaSearch.JoinQueryResultDto;
 
+@Component
 @Path("/studies/_search")
 @RequiresAuthentication
 @Scope("request")

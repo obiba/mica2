@@ -209,6 +209,7 @@ public class MicaConfigResource {
   @GET
   @Path("/languages")
   @Timed
+  @RequiresAuthentication
   public Map<String, String> getAvailableLanguages() {
     //TODO support user locale (http://jira.obiba.org/jira/browse/MICASERVER-39)
     Locale locale = Locale.ENGLISH;
@@ -218,30 +219,40 @@ public class MicaConfigResource {
 
   @GET
   @Path("/taxonomies")
+  @Timed
+  @RequiresAuthentication
   public List<Opal.TaxonomyDto> getTaxonomies() {
     return opalService.getTaxonomyDtos();
   }
 
   @GET
   @Path("/taxonomies/summaries")
+  @Timed
+  @RequiresAuthentication
   public Opal.TaxonomiesDto getTaxonomySummaries() {
     return opalService.getTaxonomySummaryDtos();
   }
 
   @GET
   @Path("/taxonomies/vocabularies/summaries")
+  @Timed
+  @RequiresAuthentication
   public Opal.TaxonomiesDto getTaxonomyVocabularySummaries() {
     return opalService.getTaxonomyVocabularySummaryDtos();
   }
 
   @GET
   @Path("/taxonomy/{name}")
+  @Timed
+  @RequiresAuthentication
   public Opal.TaxonomyDto getTaxonomy(@PathParam("name") String name) {
     return opalService.getTaxonomyDto(name);
   }
 
   @GET
   @Path("/studies")
+  @Timed
+  @RequiresAuthentication
   public Opal.TaxonomyDto getStudiesConfig() {
     return org.obiba.opal.web.taxonomy.Dtos.asDto(micaConfigService.getStudiesConfiguration());
   }

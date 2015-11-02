@@ -20,6 +20,7 @@ import org.obiba.mica.web.model.Mica;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
@@ -44,6 +45,7 @@ public class DataAccessResource {
 
   @GET
   @Path("/form")
+  @Timed
   public Mica.DataAccessFormDto getDataAccessForm(@QueryParam("lang") String lang) {
     Optional<DataAccessForm> d = dataAccessFormService.findDataAccessForm();
 
