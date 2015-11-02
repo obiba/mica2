@@ -10,6 +10,7 @@
 
 package org.obiba.mica.person.search.rest;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,7 +18,9 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Response;
 
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.service.PublishedDocumentService;
@@ -55,12 +58,30 @@ public abstract class AbstractPersonsSearchResource {
 
     PublishedDocumentService.Documents<Person> contacts = esPersonService.find(from, limit, sort, order, null, query);
 
+    List<Mica.PersonDto> persons = contacts.getList().stream().map(p -> dtos.asDto(p, isDraft()))
+      .filter(p -> p.getStudyMembershipsCount() > 0 || p.getNetworkMembershipsCount() > 0).collect(Collectors.toList());
+
     Mica.PersonsDto.Builder builder = Mica.PersonsDto.newBuilder().setFrom(from).setLimit(limit)
-      .setTotal(contacts.getTotal());
-    builder.addAllPersons(contacts.getList().stream().map(p -> dtos.asDto(p, isDraft()))
-      .filter(p -> p.getStudyMembershipsCount() > 0 || p.getNetworkMembershipsCount() > 0)
-      .collect(Collectors.toList()));
+      .setTotal(persons.size());
+    builder.addAllPersons(persons);
 
     return builder.build();
   }
+
+  @GET
+  @Timed
+  @Produces("text/csv")
+  public Response queryCSV(@QueryParam("from") @DefaultValue("0") int from,
+    @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") @DefaultValue(DEFAULT_SORT) String sort,
+    @QueryParam("order") @DefaultValue("asc") String order, @QueryParam("query") String query,
+    @QueryParam("exclude") List<String> excludes) throws IOException {
+
+    Mica.PersonsDto persons = query(from, limit, sort, order, query, excludes);
+    CsvPersonsWriter writer = new CsvPersonsWriter();
+    ByteArrayOutputStream values = writer.write(persons);
+
+    return Response.ok(values.toByteArray(), "text/csv")
+      .header("Content-Disposition", "attachment; filename=\"coverage.csv\"").build();
+  }
+
 }
