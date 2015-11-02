@@ -21,25 +21,29 @@ mica.fileSystem = angular.module('mica.fileSystem', [
 // Workaround for bug #1388
 // https://github.com/angular/angular.js/issues/1388
 // replace %2F by /
-mica.fileSystem.config(['$httpProvider', function($httpProvider) {
+
+mica.fileSystem.factory('FileSystemInterceptor', ['$q', function ($q) {
   var encodedSlash = new RegExp('%2F', 'g');
   var interceptULRS = [new RegExp('ws/draft/file.*'), new RegExp('ws/file.*')];
-  $httpProvider.interceptors.push(function ($q) {
-    return {
-      'request': function (config) {
-        var url = config.url;
-        console.log('url=' + url);
-        for (var i = 0; i < interceptULRS.length; i++) {
-          var regex = interceptULRS[i];
-          if (url.match(regex)) {
-            url = url.replace('/%2F','/').replace(encodedSlash, '/');
-            // end there is only one matching url
-            break;
-          }
+
+  return {
+    'request': function (config) {
+      var url = config.url;
+
+      for (var i = 0; i < interceptULRS.length; i++) {
+        var regex = interceptULRS[i];
+        if (url.match(regex)) {
+          url = url.replace('/%2F', '/').replace(encodedSlash, '/');
+          // end there is only one matching url
+          break;
         }
-        config.url = url;
-        return config || $q.when(config);
       }
-    };
-  });
+      config.url = url;
+      return config || $q.when(config);
+    }
+  };
+}]);
+
+mica.fileSystem.config(['$httpProvider', function ($httpProvider) {
+  $httpProvider.interceptors.push('FileSystemInterceptor');
 }]);
