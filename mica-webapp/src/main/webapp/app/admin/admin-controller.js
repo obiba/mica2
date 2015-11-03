@@ -184,4 +184,11 @@ mica.admin
           CacheService.cache.build({id: 'datasetVariables'});
         }, {message: 'Are you sure you want to build this cache?'});
       };
+    }])
+
+  .controller('SearchController', ['$scope', '$timeout', 'TaxonomiesResource', 'cfpLoadingBar',
+    function ($scope, $timeout, TaxonomiesResource, cfpLoadingBar) {
+
+      $scope.taxonomies = TaxonomiesResource.get();
+
     }]);

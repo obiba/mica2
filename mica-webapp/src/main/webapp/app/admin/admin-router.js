@@ -49,5 +49,12 @@ mica.admin
           access: {
             authorizedRoles: ['mica-administrator']
           }
+        })
+        .when('/admin/search', {
+          templateUrl: 'app/admin/views/search.html',
+          controller: 'SearchController',
+          access: {
+            authorizedRoles: ['mica-administrator']
+          }
         });
     }]);
