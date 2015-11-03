@@ -81,7 +81,7 @@ public abstract class AbstractPersonsSearchResource {
     ByteArrayOutputStream values = writer.write(persons);
 
     return Response.ok(values.toByteArray(), "text/csv")
-      .header("Content-Disposition", "attachment; filename=\"coverage.csv\"").build();
+      .header("Content-Disposition", "attachment; filename=\"people.csv\"").build();
   }
 
 }
