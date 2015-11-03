@@ -36,7 +36,8 @@ mica.network
         })
         .when('/network/:id/files', {
           templateUrl: 'app/network/views/network-view-files.html',
-          controller: 'NetworkViewController'
+          controller: 'NetworkViewController',
+          reloadOnSearch: false
         })
         .when('/network/:id/permissions', {
           templateUrl: 'app/network/views/network-view-permissions.html',

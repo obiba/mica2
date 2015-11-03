@@ -4,7 +4,7 @@
       <li ng-if="!data.isFile" class="nav-header">
         <span>
           <span translate>search</span>
-          <span class="pull-right">
+          <span ng-if="data.document" class="pull-right">
             <span>
               <a href ng-click="clearSearch()" class="btn btn-info btn-xs" title="{{'search-tooltip.clear' | translate}}">
                 <i class="fa fa-eraser"></i>
@@ -24,11 +24,11 @@
           </span>
         </span>
       </li>
-      <li ng-if="!data.isFile" class="voffset">
+      <li ng-if="!data.isFile && data.document" class="voffset">
         <a href>
           <span class="input-group input-group-sm no-padding-top">
             <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
-            <input ng-keyup="searchDocuments(data.search.text)"
+            <input ng-keyup="searchKeyUp($event)"
               ng-model="data.search.text"
               type="text"
               class="form-control ng-pristine ng-untouched ng-valid"

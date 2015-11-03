@@ -45,6 +45,7 @@ mica.admin
         })
         .when('/admin/files', {
           templateUrl: 'app/admin/views/file-system.html',
+          reloadOnSearch: false,
           access: {
             authorizedRoles: ['mica-administrator']
           }

@@ -18,6 +18,7 @@ mica.fileSystem
     '$log',
     'FileSystemService',
     'BreadcrumbHelper',
+    'LocationService',
     'AlertService',
     'ServerErrorUtils',
     'DraftFileSystemFileResource',
@@ -31,6 +32,7 @@ mica.fileSystem
               $log,
               FileSystemService,
               BreadcrumbHelper,
+              LocationService,
               AlertService,
               ServerErrorUtils,
               DraftFileSystemFileResource,
@@ -118,16 +120,17 @@ mica.fileSystem
           msg: ServerErrorUtils.buildMessage(response)
         });
 
-        if ($scope.selected.length === 0 ) {
-          navigateToParent($scope.data.document);
-        } else {
-          navigateTo($scope.data.document);
+        if ($scope.data.document) {
+          if ($scope.selected.length === 0) {
+            navigateToParent($scope.data.document);
+          } else {
+            navigateTo($scope.data.document);
+          }
         }
       };
 
       var getDocument = function(path) {
         $scope.data.search.active = false;
-        $log.debug('getDocument()\'', path, '\'');
 
         DraftFileSystemFileResource.get({path: path},
           function onSuccess(response) {
@@ -137,11 +140,18 @@ mica.fileSystem
             $scope.data.isFile = FileSystemService.isFile(response);
             $scope.data.isRoot = FileSystemService.isRoot(response);
 
-            $log.info('DATA', $scope.data);
+            if (LocationService.hasSearchQuery()) {
+              var searchParams =LocationService.getSearchQueryParams();
+              $scope.data.search.active = true;
+              $scope.data.search.text = searchParams.query;
+              $scope.data.search.recursively =
+                searchParams.hasOwnProperty('recursively') && searchParams.recursively !== 'false';
+              searchDocumentsInternal($scope.data.document.path, searchParams);
+            } else {
+              LocationService.update(path);
+            }
           },
-          function onError(response) {
-            $log.info('!', response);
-          }
+          onError
         );
       };
 
@@ -157,7 +167,9 @@ mica.fileSystem
       };
 
       var navigateTo = function(document) {
-        navigateToPath(document.path);
+        if (document) {
+          navigateToPath(document.path);
+        }
       };
 
       var navigateToParent = function(document) {
@@ -276,10 +288,43 @@ mica.fileSystem
       };
 
       var clearSearch = function() {
+        LocationService.update($scope.data.document.path);
         $scope.data.search.text = null;
         $scope.data.search.active = false;
         navigateTo($scope.data.document);
       };
+
+      var searchKeyUp = function(event) {
+        switch(event.keyCode) {
+          case 27: // ESC
+            if ($scope.data.search.active) {
+              clearSearch();
+            }
+            break;
+
+          default:
+            if ($scope.data.search.text) {
+              searchDocuments($scope.data.search.text);
+            }
+            break;
+        }
+      };
+
+      function searchDocumentsInternal(path, searchParams) {
+        var urlParams = angular.extend({}, {path: path}, searchParams);
+        DraftFileSystemSearchResource.search(urlParams,
+          function onSuccess(response) {
+            $log.info('Search result', response);
+            LocationService.update(path, searchParams);
+            var clone = $scope.data.document ? angular.copy($scope.data.document) : {};
+            clone.children = response;
+            $scope.data.document = clone;
+          },
+          function onError(response) {
+            $log.debug(response);
+          }
+        );
+      }
 
       var searchDocuments = function(query) {
         $scope.data.search.active = true;
@@ -306,18 +351,8 @@ mica.fileSystem
             break;
         }
 
-        DraftFileSystemSearchResource.search(
-          {path: $scope.data.document.path, query: query, recursively: recursively, sort: sortBy, order:orderBy, limit: limit},
-          function onSuccess(response) {
-            $log.info('Search result', response);
-            var clone = angular.copy($scope.data.document);
-            clone.children = response;
-            $scope.data.document = clone;
-          },
-          function onError(response) {
-            $log.debug(response);
-          }
-        );
+        var searchParams = {query: query, recursively: recursively, sort: sortBy, order:orderBy, limit: limit};
+        searchDocumentsInternal($scope.data.document.path, searchParams);
       };
 
       var isPublished = function() {
@@ -404,6 +439,7 @@ mica.fileSystem
       $scope.searchDocuments = searchDocuments;
       $scope.toggleRecursively = toggleRecursively;
       $scope.onFileSelect = onFileSelect;
+      $scope.searchKeyUp = searchKeyUp;
       $scope.createFolder = createFolder;
       $scope.isFile = FileSystemService.isFile;
       $scope.isRoot = FileSystemService.isRoot;
@@ -438,6 +474,11 @@ mica.fileSystem
       $scope.$watchGroup(['docPath', 'docId'], function(){
         if ($scope.docPath && $scope.docId) {
           var rootPath = $scope.docPath + ($scope.docId !== 'null' ? '/' + $scope.docId : '');
+
+          if (LocationService.hasPathQuery()) {
+            rootPath = LocationService.getPathQuery();
+          }
+
           getDocument(rootPath, null);
         }
       });
