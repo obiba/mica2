@@ -1,6 +1,7 @@
 package org.obiba.mica.file.service;
 
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -68,6 +69,8 @@ public class FileSystemService {
 
   @Inject
   private FileStoreService fileStoreService;
+
+  private ReentrantLock fsLock = new ReentrantLock();
 
   //
   // Persistence
@@ -214,7 +217,8 @@ public class FileSystemService {
     if(publish) {
       // publish the parent directories (if any)
       if(!FileUtils.isRoot(state.getPath())) {
-        publishDirs(FileUtils.isDirectory(state) ? FileUtils.getParentPath(state.getPath()) : state.getPath(), publisher);
+        publishDirs(FileUtils.isDirectory(state) ? FileUtils.getParentPath(state.getPath()) : state.getPath(),
+          publisher);
       }
       state.publish(publisher);
       state.setRevisionStatus(RevisionStatus.DRAFT);
@@ -244,9 +248,14 @@ public class FileSystemService {
    * @param publisher
    */
   public void publish(String path, boolean publish, String publisher) {
+  fsLock.lock();
+    try {
     List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
     states.addAll(findAttachmentStates(String.format("^%s/", path), false));
     states.stream().forEach(s -> publish(s, publish, publisher));
+    } finally {
+      fsLock.unlock();
+    }
   }
 
   /**
@@ -257,7 +266,12 @@ public class FileSystemService {
    * @param publish
    */
   public void publish(String path, String name, boolean publish) {
+    fsLock.lock();
+    try {
     publish(getAttachmentState(path, name, false), publish);
+    } finally {
+      fsLock.unlock();
+    }
   }
 
   //
@@ -514,20 +528,30 @@ public class FileSystemService {
   @Subscribe
   public void studyUpdated(DraftStudyUpdatedEvent event) {
     log.debug("Study {} was updated", event.getPersistable());
-    if(event.getPersistable().hasPopulations()) {
-      event.getPersistable().getPopulations().stream().filter(Population::hasDataCollectionEvents).forEach(p -> {
-        p.getDataCollectionEvents().forEach(dce -> mkdirs(String
-          .format("/study/%s/population/%s/data-collection-event/%s", event.getPersistable().getId(), p.getId(),
-            dce.getId())));
-      });
-    } else mkdirs(String.format("/study/%s", event.getPersistable().getId()));
+    fsLock.lock();
+    try {
+      if(event.getPersistable().hasPopulations()) {
+        event.getPersistable().getPopulations().stream().filter(Population::hasDataCollectionEvents).forEach(p -> {
+          p.getDataCollectionEvents().forEach(dce -> mkdirs(String
+            .format("/study/%s/population/%s/data-collection-event/%s", event.getPersistable().getId(), p.getId(),
+              dce.getId())));
+        });
+      } else mkdirs(String.format("/study/%s", event.getPersistable().getId()));
+    } finally {
+      fsLock.unlock();
+    }
   }
 
   @Async
   @Subscribe
   public void networkUpdated(NetworkUpdatedEvent event) {
     log.debug("Network {} was updated", event.getPersistable());
-    mkdirs(String.format("/network/%s", event.getPersistable().getId()));
+    fsLock.lock();
+    try {
+      mkdirs(String.format("/network/%s", event.getPersistable().getId()));
+    } finally {
+      fsLock.unlock();
+    }
   }
 
   @Async
@@ -548,7 +572,12 @@ public class FileSystemService {
   @Subscribe
   public void datasetUpdated(DatasetUpdatedEvent event) {
     log.debug("{} {} was updated", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
-    mkdirs(String.format("/%s/%s", getDatasetTypeFolder(event.getPersistable()), event.getPersistable().getId()));
+    fsLock.lock();
+    try {
+      mkdirs(String.format("/%s/%s", getDatasetTypeFolder(event.getPersistable()), event.getPersistable().getId()));
+    } finally {
+      fsLock.unlock();
+    }
   }
 
   @Async
