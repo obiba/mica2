@@ -1,4 +1,4 @@
-<div>
+<div ng-controller="StudyPermissionsController">
   <h2>
     <ol class="mica-breadcrumb">
       <li><a href="/#/study" translate>studies</a></li>
@@ -18,10 +18,5 @@
     </ul>
   </div>
 
-  <h3 translate>permissions</h3>
-
-  <p>
-    TODO
-  </p>
-
+  <permissions-table permissions="permissions" on-add="addPermission" on-load="loadPermissions" on-delete="deletePermission"></permissions-table>
 </div>

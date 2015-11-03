@@ -32,6 +32,20 @@ mica.network
       });
     }])
 
+  .factory('DraftNetworkPermissionsResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/draft/network/:id/permissions', {}, {
+        'save': {
+          method: 'PUT',
+          params: {id: '@id', type: '@type', principal: '@principal', role: '@role'},
+          errorHandler: true
+        },
+        'delete': {method: 'DELETE', params: {id: '@id', type: '@type', principal: '@principal'}, errorHandler: true},
+        'get': {method: 'GET'},
+        'query': {method: 'GET', params: {id: '@id'}, isArray: true}
+      });
+    }])
+
   .factory('DraftNetworkPublicationResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/network/:id/_publish', {}, {

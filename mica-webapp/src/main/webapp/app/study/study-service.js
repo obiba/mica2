@@ -30,6 +30,20 @@ mica.study
       });
     }])
 
+  .factory('DraftStudyPermissionsResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/draft/study/:id/permissions', {}, {
+        'save': {
+          method: 'PUT',
+          params: {id: '@id', type: '@type', principal: '@principal', role: '@role'},
+          errorHandler: true
+        },
+        'delete': {method: 'DELETE', params: {id: '@id', type: '@type', principal: '@principal'}, errorHandler: true},
+        'get': {method: 'GET'},
+        'query': {method: 'GET', params: {id: '@id'}, isArray: true}
+      });
+    }])
+
   .factory('DraftStudyPublicationResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/study/:id/_publish', {}, {

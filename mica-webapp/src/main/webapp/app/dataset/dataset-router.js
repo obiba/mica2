@@ -43,6 +43,10 @@ mica.dataset
             .when('/' + type + '/:id/files', {
               templateUrl: 'app/dataset/views/dataset-view-files.html',
               controller: 'DatasetViewController'
+            })
+            .when('/' + type + '/:id/permissions', {
+              templateUrl: 'app/dataset/views/dataset-view-permissions.html',
+              controller: 'DatasetViewController'
             });
         }
       );
