@@ -57,6 +57,7 @@ mica.study
     'ActiveTabService',
     '$modal',
     'DraftStudyDeleteService',
+
     function ($rootScope,
               $scope,
               $routeParams,
@@ -399,8 +400,24 @@ mica.study
       $scope.addPopulation = function () {
         $location.url($location.url() + '/population/add');
       };
-
     }])
+
+  .controller('StudyPermissionsController', ['$scope','$routeParams', 'DraftStudyPermissionsResource', function ($scope, $routeParams, DraftStudyPermissionsResource) {
+    $scope.permissions = [];
+
+    $scope.loadPermissions = function () {
+      $scope.permissions = DraftStudyPermissionsResource.query({id: $routeParams.id});
+      return $scope.permissions;
+    };
+
+    $scope.deletePermission = function (permission) {
+      return DraftStudyPermissionsResource.delete({id: $routeParams.id}, permission);
+    };
+
+    $scope.addPermission = function (permission) {
+      return DraftStudyPermissionsResource.save({id: $routeParams.id}, permission);
+    };
+  }])
 
   .controller('StudyPopulationDceModalController', ['$scope', '$modalInstance', '$locale', 'dce', 'study',
     function ($scope, $modalInstance, $locale, dce, study) {

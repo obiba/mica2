@@ -10,6 +10,7 @@ mica.study = angular.module('mica.study', [
   'mica.commons',
   'mica.status',
   'mica.contact',
+  'mica.permission',
   'ngResource',
   'ngRoute',
   'ui.bootstrap',

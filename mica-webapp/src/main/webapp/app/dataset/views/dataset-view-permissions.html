@@ -1,0 +1,23 @@
+<div ng-controller="DatasetPermissionsController">
+  <h2>
+    <ol class="mica-breadcrumb">
+      <li><a href="/#/{{type}}">{{type + 's' | translate}}</a></li>
+      <li class="active">{{dataset.id}}</li>
+    </ol>
+  </h2>
+
+  <div class="tabs-menu tabs-left">
+    <ul class="nav nav-tabs">
+      <li><a href="#/{{type}}/{{dataset.id}}" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a></li>
+      <li><a href="#/{{type}}/{{dataset.id}}/revisions" title="{{'revisions' | translate}}"><i
+        class="fa fa-list-ol"></i></a>
+      </li>
+      <li><a href="#/{{type}}/{{dataset.id}}/files" title="{{'files' | translate}}"><i class="fa fa-file"></i></a>
+      </li>
+      <li class="active"><a href="#/{{type}}/{{dataset.id}}/permissions" title="{{'permissions' | translate}}"><i
+        class="fa fa-lock"></i></a></li>
+    </ul>
+  </div>
+
+  <permissions-table permissions="permissions" on-add="addPermission" on-load="loadPermissions" on-delete="deletePermission"></permissions-table>
+</div>

@@ -459,6 +459,23 @@ mica.dataset
       $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, onRestore);
     }])
 
+  .controller('DatasetPermissionsController', ['$scope', '$routeParams', 'DraftDatasetPermissionsResource', function ($scope, $routeParams, DraftDatasetPermissionsResource) {
+    $scope.permissions = [];
+
+    $scope.loadPermissions = function () {
+      $scope.permissions = DraftDatasetPermissionsResource.query({id: $routeParams.id, datasetType: $scope.type});
+      return $scope.permissions;
+    };
+
+    $scope.addPermission = function (permission) {
+      return DraftDatasetPermissionsResource.save({id: $routeParams.id, datasetType: $scope.type}, permission);
+    };
+
+    $scope.deletePermission = function(permission) {
+      return DraftDatasetPermissionsResource.delete({id: $routeParams.id, datasetType: $scope.type}, permission);
+    };
+  }])
+
   .controller('HarmonizationDatasetListController', ['$rootScope', '$scope', 'HarmonizationDatasetsResource', 'DatasetService',
     function ($rootScope, $scope, HarmonizationDatasetsResource, DatasetService) {
       $scope.harmonizedDatasets = HarmonizationDatasetsResource.query();

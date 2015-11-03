@@ -506,4 +506,21 @@ mica.network
         }
       });
 
-    }]);
+    }])
+
+  .controller('NetworkPermissionsController', ['$scope','$routeParams', 'DraftNetworkPermissionsResource', function ($scope, $routeParams, DraftNetworkPermissionsResource) {
+    $scope.permissions = [];
+
+    $scope.loadPermissions = function () {
+      $scope.permissions = DraftNetworkPermissionsResource.query({id: $routeParams.id});
+      return $scope.permissions;
+    };
+
+    $scope.deletePermission = function (permission) {
+      return DraftNetworkPermissionsResource.delete({id: $routeParams.id}, permission);
+    };
+
+    $scope.addPermission = function (permission) {
+      return DraftNetworkPermissionsResource.save({id: $routeParams.id}, permission);
+    };
+  }]);

@@ -1,0 +1,42 @@
+<div class="modal-content">
+  <form name="form" role="form" novalidate ng-submit="save(form)">
+    <div class="modal-header">
+      <button type="button" class="close" aria-hidden="true" ng-click="cancel()">&times;</button>
+      <h4 class="modal-title" id="myStudyLabel" translate>permission.add</h4>
+    </div>
+
+    <div class="modal-body">
+      <obiba-alert id="formAlert"></obiba-alert>
+
+      <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
+
+      <div class="form-group"  ng-class="{'has-error': (form['type'].$dirty || form.saveAttempted) && form['type'].$invalid}">
+        <label for="type" class="control-label"><span translate>type</span> <span>*</span></label>
+        <select id="type" name="type" class="form-control" ng-model="permission.type" required="true">
+          <option ng-repeat="type in TYPES" value="{{type}}">{{ 'permission.' + type.toLowerCase() | translate}}</option>
+        </select>
+      </div>
+
+      <div form-input name="principal" model="permission.principal" label="permission.principal" required="true"></div>
+
+      <div class="form-group" ng-class="{'has-error': (form['role'].$dirty || form.saveAttempted) && form['role'].$invalid}">
+        <label class="control-label"><span translate>role</span> <span>*</span></label>
+        <div class="radio" ng-repeat="role in ROLES">
+          <label>
+            <input type="radio" name="role" value="{{role}}" ng-model="permission.role" required>
+            <span>{{'permission.' + role.toLowerCase() | translate}}</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default" ng-click="cancel()">
+        <span translate>cancel</span>
+      </button>
+      <button type="submit" class="btn btn-primary">
+        <span translate>save</span>
+      </button>
+    </div>
+  </form>
+</div>
