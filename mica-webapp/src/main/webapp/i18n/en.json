@@ -785,7 +785,8 @@
     "upload": {
       "button": "Choose file",
       "message": "No file chosen"
-    }
+    },
+    "invalid-paste": "You can not paste in the same path."
   },
   "data-access-requests": "Data Access Requests",
   "data-access-request": {

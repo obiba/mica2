@@ -19,6 +19,8 @@ mica.fileSystem
         'get': {method: 'GET', errorHandler: true},
         'delete': {method: 'DELETE', errorHandler: true},
         'rename': {method: 'PUT', params: {name: '@name'}, errorHandler: true},
+        'copy': {method: 'PUT', params: {copy: '@destinationFolder'}, errorHandler: true},
+        'move': {method: 'PUT', params: {move: '@destinationFolder'}, errorHandler: true},
         'restore': {method: 'PUT', params: {version: '@version'}, errorHandler: true},
         'publish': {method: 'PUT', params: {publish: '@publish'}, errorHandler: true},
         'changeStatus': {method: 'PUT', params: {status: '@status'}, errorHandler: true}

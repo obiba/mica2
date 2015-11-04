@@ -51,9 +51,9 @@
       </a>
 
       <div class="btn-group" role="group">
-        <button ng-disabled="!data.document.permissions.view" type="button" class="btn btn-default btn-responsive"><i class="fa fa-files-o"></i></button>
-        <button ng-disabled="!data.document.permissions.edit || data.document.revisionStatus !== 'DRAFT'" type="button" class="btn btn-default btn-responsive"><i class="fa fa-scissors"></i></button>
-        <button ng-disabled="!data.document.permissions.edit || data.document.revisionStatus !== 'DRAFT'" type="button" class="btn btn-default btn-responsive"><i class="fa fa-clipboard"></i></button>
+        <button ng-disabled="!data.document.permissions.view" type="button" class="btn btn-default btn-responsive" ng-click="copyFilesToClipboard()"><i class="fa fa-files-o"></i></button>
+        <button ng-disabled="!data.document.permissions.edit || data.document.revisionStatus !== 'DRAFT'" type="button" class="btn btn-default btn-responsive" ng-click="cutFilesToClipboard()"><i class="fa fa-scissors"></i></button>
+        <button ng-disabled="clipboard.items.length === 0 || (!data.document.permissions.edit || data.document.revisionStatus !== 'DRAFT')" type="button" class="btn btn-default btn-responsive" ng-click="pasteFilesFromClipboard()"><i class="fa fa-clipboard"></i></button>
       </div>
 
       <file-status-buttons class="inline" ng-class="{'pull-right': screen.is('md, lg')}"

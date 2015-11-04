@@ -133,12 +133,12 @@ public abstract class AbstractFileSystemResource {
     subjectAclService.checkPermission("/draft/file", "EDIT", basePath);
     subjectAclService.checkPermission("/draft/file", "ADD", newPath);
     if(isRoot(basePath)) throw new IllegalArgumentException("Root folder cannot be renamed");
-    if(path.endsWith("/")) renameFolderState(basePath, newPath);
+    if(path.endsWith("/")) moveFolderState(basePath, newPath);
 
     try {
       moveFileState(basePath, newPath);
     } catch(NoSuchEntityException ex) {
-      renameFolderState(basePath, newPath);
+      moveFolderState(basePath, newPath);
     }
   }
 
@@ -203,6 +203,10 @@ public abstract class AbstractFileSystemResource {
   private void moveFileState(String basePath, String newPath) {
     Pair<String, String> pathName = FileSystemService.extractPathName(basePath);
     fileSystemService.move(pathName.getKey(), pathName.getValue(), newPath);
+  }
+
+  private void moveFolderState(String basePath, String newPath) {
+    fileSystemService.rename(basePath, newPath);
   }
 
   private void copyFileState(String basePath, String newPath) {
