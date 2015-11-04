@@ -1,0 +1,43 @@
+/*
+ * Copyright (c) 2014 OBiBa. All rights reserved.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package org.obiba.mica.taxonomy;
+
+import org.obiba.opal.core.domain.taxonomy.Taxonomy;
+
+public class TaxonomyIndexable extends TaxonomyEntityIndexable<Taxonomy> {
+
+  private final Taxonomy taxonomy;
+
+  public TaxonomyIndexable(Taxonomy taxonomy) {
+    this.taxonomy = taxonomy;
+  }
+
+  @Override
+  public String getId() {
+    return getName();
+  }
+
+  @Override
+  public String getMappingName() {
+    return TaxonomyIndexer.TAXONOMY_TYPE;
+  }
+
+  @Override
+  public String getParentId() {
+    return null;
+  }
+
+  @Override
+  protected Taxonomy getTaxonomyEntity() {
+    return taxonomy;
+  }
+}
+

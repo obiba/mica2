@@ -11,6 +11,7 @@
 package org.obiba.mica.taxonomy;
 
 import java.io.IOException;
+import java.util.stream.Stream;
 
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
@@ -22,7 +23,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TaxonomyIndexConfiguration extends AbstractIndexConfiguration implements ElasticSearchIndexer.IndexConfigurationListener {
+public class TaxonomyIndexConfiguration extends AbstractIndexConfiguration
+  implements ElasticSearchIndexer.IndexConfigurationListener {
 
   private static final Logger log = LoggerFactory.getLogger(TaxonomyIndexConfiguration.class);
 
@@ -30,21 +32,59 @@ public class TaxonomyIndexConfiguration extends AbstractIndexConfiguration imple
   public void onIndexCreated(Client client, String indexName) {
     if(TaxonomyIndexer.TAXONOMY_INDEX.equals(indexName)) {
       try {
-        client.admin().indices().preparePutMapping(indexName).setType(TaxonomyIndexer.TAXONOMY_TERM_TYPE)
-          .setSource(createMappingProperties(TaxonomyIndexer.TAXONOMY_TERM_TYPE)).execute().actionGet();
-      } catch (IOException e) {
+        client.admin().indices().preparePutMapping(indexName) //
+          .setType(TaxonomyIndexer.TAXONOMY_TYPE).setSource(createTaxonomyMappingProperties()) //
+          .execute().actionGet();
+
+        client.admin().indices().preparePutMapping(indexName) //
+          .setType(TaxonomyIndexer.TAXONOMY_VOCABULARY_TYPE).setSource(createVocabularyMappingProperties()) //
+          .execute().actionGet();
+
+        client.admin().indices().preparePutMapping(indexName) //
+          .setType(TaxonomyIndexer.TAXONOMY_TERM_TYPE).setSource(createTermMappingProperties()) //
+          .execute().actionGet();
+      } catch(IOException e) {
         throw new RuntimeException(e);
       }
     }
   }
 
-  private XContentBuilder createMappingProperties(String type) throws IOException {
-    XContentBuilder mapping = XContentFactory.jsonBuilder().startObject().startObject(type);
+  private XContentBuilder createTaxonomyMappingProperties() throws IOException {
+    XContentBuilder mapping = XContentFactory.jsonBuilder().startObject().startObject(TaxonomyIndexer.TAXONOMY_TYPE);
+    mapping.startObject("properties");
+    mapping.startObject("id").field("type", "string").field("index", "not_analyzed").endObject();
+    createMappingWithAndWithoutAnalyzer(mapping, "name");
+    Stream.of(TaxonomyIndexer.LOCALIZED_ANALYZED_FIELDS)
+      .forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
+    mapping.endObject(); // properties
+    mapping.endObject().endObject();
+    return mapping;
+  }
+
+  private XContentBuilder createVocabularyMappingProperties() throws IOException {
+    XContentBuilder mapping = XContentFactory.jsonBuilder().startObject()
+      .startObject(TaxonomyIndexer.TAXONOMY_VOCABULARY_TYPE);
+    mapping.startObject("properties");
+    mapping.startObject("id").field("type", "string").field("index", "not_analyzed").endObject();
+    createMappingWithAndWithoutAnalyzer(mapping, "name");
+    createMappingWithAndWithoutAnalyzer(mapping, "taxonomyName");
+    Stream.of(TaxonomyIndexer.LOCALIZED_ANALYZED_FIELDS)
+      .forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
+    mapping.endObject(); // properties
+    mapping.endObject().endObject();
+    return mapping;
+  }
+
+  private XContentBuilder createTermMappingProperties() throws IOException {
+    XContentBuilder mapping = XContentFactory.jsonBuilder().startObject()
+      .startObject(TaxonomyIndexer.TAXONOMY_TERM_TYPE);
     mapping.startObject("properties");
     mapping.startObject("id").field("type", "string").field("index", "not_analyzed").endObject();
     createMappingWithAndWithoutAnalyzer(mapping, "name");
     createMappingWithAndWithoutAnalyzer(mapping, "taxonomyName");
     createMappingWithAndWithoutAnalyzer(mapping, "vocabularyName");
+    Stream.of(TaxonomyIndexer.LOCALIZED_ANALYZED_FIELDS)
+      .forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
     mapping.endObject(); // properties
     mapping.endObject().endObject();
     return mapping;
