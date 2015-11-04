@@ -756,6 +756,7 @@
   "most-recent": "Most Recent",
   "not-published": "Not Published",
   "path": "Path",
+  "view-files": "View files",
   "search-tooltip": {
     "recursively": "Search recursively",
     "clear": "Clear search",
