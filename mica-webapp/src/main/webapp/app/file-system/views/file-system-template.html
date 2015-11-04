@@ -39,24 +39,24 @@
     </ol>
 
     <div class="voffset2">
-      <a ng-if="!data.isFile" ng-disabled="!data.document.permissions.edit || data.document.revisionStatus !== 'DRAFT'" class="btn btn-info"
+      <a ng-if="!data.isFile" ng-disabled="!data.document.permissions.edit || data.document.revisionStatus !== 'DRAFT'" class="btn btn-info btn-responsive"
         ngf-select ngf-change="onFileSelect($files)">
         <i class="fa fa-upload"></i> {{'upload' | translate}}
       </a>
       <a ng-if="data.isFile && data.document.permissions.view"
         target="_self"
-        class="btn btn-info"
+        class="btn btn-info btn-responsive"
         ng-href="ws/draft/file-dl/{{data.document.path}} ">
         <i class="fa fa-download"></i> {{'download' | translate}}
       </a>
 
       <div class="btn-group" role="group">
-        <button ng-disabled="!data.document.permissions.view" type="button" class="btn btn-default"><i class="fa fa-files-o"></i></button>
-        <button ng-disabled="!data.document.permissions.edit || data.document.revisionStatus !== 'DRAFT'" type="button" class="btn btn-default"><i class="fa fa-scissors"></i></button>
-        <button ng-disabled="!data.document.permissions.edit || data.document.revisionStatus !== 'DRAFT'" type="button" class="btn btn-default"><i class="fa fa-clipboard"></i></button>
+        <button ng-disabled="!data.document.permissions.view" type="button" class="btn btn-default btn-responsive"><i class="fa fa-files-o"></i></button>
+        <button ng-disabled="!data.document.permissions.edit || data.document.revisionStatus !== 'DRAFT'" type="button" class="btn btn-default btn-responsive"><i class="fa fa-scissors"></i></button>
+        <button ng-disabled="!data.document.permissions.edit || data.document.revisionStatus !== 'DRAFT'" type="button" class="btn btn-default btn-responsive"><i class="fa fa-clipboard"></i></button>
       </div>
 
-      <file-status-buttons class="inline pull-right"
+      <file-status-buttons class="inline" ng-class="{'pull-right': screen.is('md, lg')}"
         document="data.document"
         documents="selected"
         on-publish="publish(true)"

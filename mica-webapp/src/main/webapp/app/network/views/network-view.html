@@ -16,7 +16,7 @@
     </ol>
   </h2>
 
-  <div class="tabs-menu tabs-left">
+  <div class="tabs-menu" ng-class="{'tabs-left': screen.is('lg')}">
     <ul class="nav nav-tabs">
       <li class="active"><a href="#/network/{{network.id}}" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a></li>
       <li><a href="#/network/{{network.id}}/revisions" title="{{'revisions' | translate}}"><i class="fa fa-list-ol"></i></a></li>
@@ -28,7 +28,7 @@
   <div class="clearfix">
     <h3 class="pull-left no-margin-top" translate>view</h3>
     <div class="pull-right">
-      <a ng-href="#/network/{{network.id}}/edit" class="btn btn-primary"
+      <a ng-href="#/network/{{network.id}}/edit" class="btn btn-primary btn-responsive"
         ng-if="network['obiba.mica.EntityStateDto.state'].permissions.edit && network['obiba.mica.EntityStateDto.state'].revisionStatus === 'DRAFT'"
         ng-disabled="hasRole(['mica-editor']) && network['obiba.mica.EntityStateDto.state'].revisionStatus !== 'DRAFT'">
         <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>

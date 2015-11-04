@@ -2,8 +2,8 @@
 
 /* Controllers */
 
-mica.controller('MainController', ['$rootScope', '$scope', 'MicaConfigResource', 'screenSize',
-  function ($rootScope, $scope, MicaConfigResource, screenSize) {
+mica.controller('MainController', ['$rootScope', '$scope', '$log', 'MicaConfigResource', 'screenSize',
+  function ($rootScope, $scope, $log, MicaConfigResource, screenSize) {
     $scope.micaConfig = MicaConfigResource.get();
     $rootScope.screen = $scope.screen = {size: null, device: null};
 
@@ -15,8 +15,9 @@ mica.controller('MainController', ['$rootScope', '$scope', 'MicaConfigResource',
 
       $scope.screen.size = size ? size[0] : 'lg';
       $scope.screen.device = screenSize.is('md, lg') ? 'desktop' : 'mobile';
+      $scope.screen.is = screenSize.is;
 
-      console.log('>>>>', $scope.screen);
+      $log.debug('Screen', $scope.screen);
     }
 
     getScreenSize();
