@@ -1,6 +1,6 @@
 'use strict';
 
-mica.admin
+mica.search
 
   .factory('TaxonomiesResource', ['$resource',
     function ($resource) {
