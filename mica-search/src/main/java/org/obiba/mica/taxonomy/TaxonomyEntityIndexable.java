@@ -33,6 +33,10 @@ public abstract class TaxonomyEntityIndexable<T extends TaxonomyEntity> implemen
     return LocalizedString.from(getTaxonomyEntity().getDescription());
   }
 
+  public LocalizedString getKeywords() {
+    return LocalizedString.from(getTaxonomyEntity().getKeywords());
+  }
+
   @Override
   public String getClassName() {
     return null;

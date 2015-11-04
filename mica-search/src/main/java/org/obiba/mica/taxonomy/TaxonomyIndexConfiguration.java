@@ -52,7 +52,7 @@ public class TaxonomyIndexConfiguration extends AbstractIndexConfiguration
   private XContentBuilder createTaxonomyMappingProperties() throws IOException {
     XContentBuilder mapping = XContentFactory.jsonBuilder().startObject().startObject(TaxonomyIndexer.TAXONOMY_TYPE);
     mapping.startObject("properties");
-    mapping.startObject("id").field("type", "string").field("index", "not_analyzed").endObject();
+    createMappingWithoutAnalyzer(mapping, "id");
     createMappingWithAndWithoutAnalyzer(mapping, "name");
     Stream.of(TaxonomyIndexer.LOCALIZED_ANALYZED_FIELDS)
       .forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
@@ -65,7 +65,7 @@ public class TaxonomyIndexConfiguration extends AbstractIndexConfiguration
     XContentBuilder mapping = XContentFactory.jsonBuilder().startObject()
       .startObject(TaxonomyIndexer.TAXONOMY_VOCABULARY_TYPE);
     mapping.startObject("properties");
-    mapping.startObject("id").field("type", "string").field("index", "not_analyzed").endObject();
+    createMappingWithoutAnalyzer(mapping, "id");
     createMappingWithAndWithoutAnalyzer(mapping, "name");
     createMappingWithAndWithoutAnalyzer(mapping, "taxonomyName");
     Stream.of(TaxonomyIndexer.LOCALIZED_ANALYZED_FIELDS)
@@ -79,7 +79,7 @@ public class TaxonomyIndexConfiguration extends AbstractIndexConfiguration
     XContentBuilder mapping = XContentFactory.jsonBuilder().startObject()
       .startObject(TaxonomyIndexer.TAXONOMY_TERM_TYPE);
     mapping.startObject("properties");
-    mapping.startObject("id").field("type", "string").field("index", "not_analyzed").endObject();
+    createMappingWithoutAnalyzer(mapping,"id");
     createMappingWithAndWithoutAnalyzer(mapping, "name");
     createMappingWithAndWithoutAnalyzer(mapping, "taxonomyName");
     createMappingWithAndWithoutAnalyzer(mapping, "vocabularyName");
@@ -89,4 +89,5 @@ public class TaxonomyIndexConfiguration extends AbstractIndexConfiguration
     mapping.endObject().endObject();
     return mapping;
   }
+
 }

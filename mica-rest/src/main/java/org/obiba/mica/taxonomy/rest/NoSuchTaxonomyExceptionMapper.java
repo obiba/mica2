@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.micaConfig.rest;
+package org.obiba.mica.taxonomy.rest;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;

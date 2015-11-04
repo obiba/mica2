@@ -29,6 +29,7 @@ import org.obiba.mica.dataset.service.KeyStoreService;
 import org.obiba.mica.micaConfig.AuthType;
 import org.obiba.mica.micaConfig.domain.OpalCredential;
 import org.obiba.opal.core.cfg.NoSuchTaxonomyException;
+import org.obiba.opal.core.cfg.NoSuchVocabularyException;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.rest.client.magma.OpalJavaClient;
 import org.obiba.opal.rest.client.magma.RestDatasource;
@@ -88,14 +89,13 @@ public class OpalService implements EnvironmentAware {
     final String projectUrl = getOpalProjectUrl(opalUrl, project);
     opalUrl = Strings.isNullOrEmpty(opalUrl) ? getDefaultOpal() : opalUrl;
 
-    OpalCredential opalCredential = opalCredentialService.findOpalCredentialById(opalUrl).orElse(
-      new OpalCredential(getDefaultOpal(), AuthType.USERNAME, getOpalUsername(), getOpalPassword()));
+    OpalCredential opalCredential = opalCredentialService.findOpalCredentialById(opalUrl)
+      .orElse(new OpalCredential(getDefaultOpal(), AuthType.USERNAME, getOpalUsername(), getOpalPassword()));
 
-    if (cachedDatasources.containsKey(projectUrl))
-    {
+    if(cachedDatasources.containsKey(projectUrl)) {
       Pair<OpalCredential, RestDatasource> p = cachedDatasources.get(projectUrl);
 
-      if (p.getLeft().equals(opalCredential)) {
+      if(p.getLeft().equals(opalCredential)) {
         log.debug("Using cached rest datasource to " + projectUrl);
         return p.getRight();
       }
@@ -114,20 +114,20 @@ public class OpalService implements EnvironmentAware {
     return datasource;
   }
 
-  private RestDatasource createRestDatasource(OpalCredential opalCredential, String projectUrl,
-    String opalUrl, String project) {
+  private RestDatasource createRestDatasource(OpalCredential opalCredential, String projectUrl, String opalUrl,
+    String project) {
     if(opalCredential.getAuthType() == AuthType.CERTIFICATE) {
       KeyStoreManager kms = keyStoreService.getKeyStore(OPAL_KEYSTORE);
 
-      if(!kms.aliasExists(opalCredential.getOpalUrl()))
-        throw new IllegalStateException("Trying to use opal certificate credential but could not be found in keystore.");
+      if(!kms.aliasExists(opalCredential.getOpalUrl())) throw new IllegalStateException(
+        "Trying to use opal certificate credential but could not be found in keystore.");
 
       return (RestDatasource) new RestDatasourceFactory(projectUrl, opalUrl, kms.getKeyStore(), opalUrl,
         micaConfigService.getConfig().getSecretKey(), project).create();
     }
 
     return (RestDatasource) new RestDatasourceFactory(projectUrl, opalUrl, opalCredential.getUsername(),
-        opalCredential.getPassword(), project).create();
+      opalCredential.getPassword(), project).create();
   }
 
   /**
@@ -171,27 +171,68 @@ public class OpalService implements EnvironmentAware {
   }
 
   /**
-   * Get a summary of the {@link org.obiba.opal.core.domain.taxonomy.Taxonomy}s available from Opal master.
+   * Get a summary of all the {@link org.obiba.opal.core.domain.taxonomy.Taxonomy}s available from Opal master.
    *
    * @return
    */
   public Opal.TaxonomiesDto getTaxonomySummaryDtos() {
-    List<Opal.TaxonomiesDto.TaxonomySummaryDto> summaries = getTaxonomies().stream()
-      .map(Dtos::asSummaryDto).collect(Collectors.toList());
+    List<Opal.TaxonomiesDto.TaxonomySummaryDto> summaries = getTaxonomies().stream().map(Dtos::asSummaryDto)
+      .collect(Collectors.toList());
 
     return Opal.TaxonomiesDto.newBuilder().addAllSummaries(summaries).build();
   }
 
   /**
-   * Get a summary of the {@link org.obiba.opal.core.domain.taxonomy.Vocabulary}s from Opal master.
+   * Get a summary of the {@link org.obiba.opal.core.domain.taxonomy.Taxonomy} available from Opal master.
+   *
+   * @param name the taxonomy name
+   * @return
+   */
+  public Opal.TaxonomiesDto.TaxonomySummaryDto getTaxonomySummaryDto(String name) {
+    return Dtos.asSummaryDto(getTaxonomy(name));
+  }
+
+  /**
+   * Get a summary of all the {@link org.obiba.opal.core.domain.taxonomy.Taxonomy}s with their
+   * {@link org.obiba.opal.core.domain.taxonomy.Vocabulary}s from Opal master.
    *
    * @return
    */
   public Opal.TaxonomiesDto getTaxonomyVocabularySummaryDtos() {
-    List<Opal.TaxonomiesDto.TaxonomySummaryDto> summaries = getTaxonomies().stream()
-      .map(Dtos::asVocabularySummaryDto).collect(Collectors.toList());
+    List<Opal.TaxonomiesDto.TaxonomySummaryDto> summaries = getTaxonomies().stream().map(Dtos::asVocabularySummaryDto)
+      .collect(Collectors.toList());
 
     return Opal.TaxonomiesDto.newBuilder().addAllSummaries(summaries).build();
+  }
+
+  /**
+   * Get a summary of the {@link org.obiba.opal.core.domain.taxonomy.Taxonomy} with its
+   * {@link org.obiba.opal.core.domain.taxonomy.Vocabulary}s from Opal master.
+   *
+   * @param name the taxonomy name
+   * @return
+   */
+  public Opal.TaxonomiesDto.TaxonomySummaryDto getTaxonomyVocabularySummaryDto(String name) {
+    List<Opal.TaxonomiesDto.TaxonomySummaryDto> summaries = getTaxonomies().stream().map(Dtos::asVocabularySummaryDto)
+      .collect(Collectors.toList());
+    return Dtos.asVocabularySummaryDto(getTaxonomy(name));
+  }
+
+  /**
+   * Get a summary of the {@link org.obiba.opal.core.domain.taxonomy.Vocabulary} from Opal master.
+   *
+   * @param name
+   * @param vocabularyName
+   * @return
+   */
+  public Opal.TaxonomiesDto.TaxonomySummaryDto.VocabularySummaryDto getTaxonomyVocabularySummaryDto(String name,
+    String vocabularyName) {
+    // not optimum; opal does not expose the vocabulary summary dto builder
+    for(Opal.TaxonomiesDto.TaxonomySummaryDto.VocabularySummaryDto vocDto : Dtos
+      .asVocabularySummaryDto(getTaxonomy(name)).getVocabularySummariesList()) {
+      if(vocDto.getName().equals(vocabularyName)) return vocDto;
+    }
+    throw new NoSuchVocabularyException(name, vocabularyName);
   }
 
   /**
@@ -215,15 +256,32 @@ public class OpalService implements EnvironmentAware {
   public Opal.TaxonomyDto getTaxonomyDto(String name) {
     Map<String, Taxonomy> taxonomies = getTaxonomiesInternal();
 
-    if (!taxonomies.containsKey(name)) {
+    if(!taxonomies.containsKey(name)) {
       throw new NoSuchTaxonomyException(name);
     }
 
     return Dtos.asDto(taxonomies.get(name));
   }
 
+  /**
+   * Get the {@link org.obiba.opal.core.domain.taxonomy.Vocabulary} as a Dto from Opal master.
+   *
+   * @param name
+   * @param vocabularyName
+   * @return
+   */
+  public Opal.VocabularyDto getTaxonomyVocabularyDto(String name, String vocabularyName) {
+    Map<String, Taxonomy> taxonomies = getTaxonomiesInternal();
+
+    if(!taxonomies.containsKey(name)) {
+      throw new NoSuchTaxonomyException(name);
+    }
+
+    return Dtos.asDto(taxonomies.get(name).getVocabulary(vocabularyName));
+  }
+
   public List<Projects.ProjectDto> getProjectDtos(String opalUrl) throws URISyntaxException {
-    if (Strings.isNullOrEmpty(opalUrl)) opalUrl = getDefaultOpal();
+    if(Strings.isNullOrEmpty(opalUrl)) opalUrl = getDefaultOpal();
 
     OpalJavaClient opalJavaClient = getOpalJavaClient(opalUrl);
     URI uri = opalJavaClient.newUri().segment("projects").build();
@@ -260,16 +318,17 @@ public class OpalService implements EnvironmentAware {
 
   private OpalJavaClient getOpalJavaClient(String opalUrl) throws URISyntaxException {
     String alias = opalUrl;
-    OpalCredential opalCredential = opalCredentialService.findOpalCredentialById(opalUrl).orElse(
-      new OpalCredential(getDefaultOpal(), AuthType.USERNAME, getOpalUsername(), getOpalPassword()));
+    OpalCredential opalCredential = opalCredentialService.findOpalCredentialById(opalUrl)
+      .orElse(new OpalCredential(getDefaultOpal(), AuthType.USERNAME, getOpalUsername(), getOpalPassword()));
 
     if(opalCredential.getAuthType() == AuthType.CERTIFICATE) {
       KeyStoreManager kms = keyStoreService.getKeyStore(OPAL_KEYSTORE);
 
-      if(!kms.aliasExists(alias))
-        throw new IllegalStateException("Trying to use opal certificate credential but could not be found in keystore.");
+      if(!kms.aliasExists(alias)) throw new IllegalStateException(
+        "Trying to use opal certificate credential but could not be found in keystore.");
 
-      return new OpalJavaClient(cleanupOpalUrl(opalUrl), kms.getKeyStore(), alias, micaConfigService.getConfig().getSecretKey());
+      return new OpalJavaClient(cleanupOpalUrl(opalUrl), kms.getKeyStore(), alias,
+        micaConfigService.getConfig().getSecretKey());
     }
 
     return new OpalJavaClient(cleanupOpalUrl(opalUrl), opalCredential.getUsername(), opalCredential.getPassword());

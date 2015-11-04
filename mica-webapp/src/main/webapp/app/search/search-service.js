@@ -4,7 +4,7 @@ mica.search
 
   .factory('TaxonomiesResource', ['$resource',
     function ($resource) {
-      return $resource('ws/config/taxonomies', {}, {
+      return $resource('ws/taxonomies', {}, {
         'get': {
           method: 'GET',
           isArray: true,
