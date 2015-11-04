@@ -63,12 +63,12 @@ mica.fileSystem
         return '';
       };
 
-      this.getLocalizedValue = function(values, lang) {
+      this.getLocalizedValue = function (values, lang) {
         if (!values) {
           return null;
         }
 
-        var result = values.filter(function(value) {
+        var result = values.filter(function (value) {
           return value.lang === lang;
         });
 
@@ -157,6 +157,40 @@ mica.fileSystem
 
     }])
 
+  .service('LocationService', ['$rootScope', '$location', '$log',
+    function ($rootScope, $location, $log) {
+
+      this.hasPathQuery = function() {
+        return $location.search().hasOwnProperty('p');
+      };
+
+      this.getPathQuery = function() {
+        var p = $location.search().p;
+        return p;
+      };
+
+      this.hasSearchQuery = function() {
+        return $location.search().hasOwnProperty('query');
+      };
+
+      this.getSearchQueryParams = function() {
+        var searchQueryParams = angular.copy($location.search());
+        if (this.hasPathQuery()) {
+          delete searchQueryParams.p;
+        }
+        return searchQueryParams;
+      };
+
+      this.update = function (path, q) {
+        var search = {p: path};
+        if (q) {
+          search = angular.extend({}, search, q);
+        }
+
+        $location.search(search).replace();
+      };
+    }])
+
   .service('BreadcrumbHelper', [function () {
     this.toArray = function (path) {
       if (path) {
@@ -174,5 +208,4 @@ mica.fileSystem
       // Should never happen
       return [{name: '', path: ''}];
     };
-  }
-  ]);
+  }]);

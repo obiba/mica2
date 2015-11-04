@@ -42,7 +42,8 @@ mica.dataset
             })
             .when('/' + type + '/:id/files', {
               templateUrl: 'app/dataset/views/dataset-view-files.html',
-              controller: 'DatasetViewController'
+              controller: 'DatasetViewController',
+              reloadOnSearch: false
             })
             .when('/' + type + '/:id/permissions', {
               templateUrl: 'app/dataset/views/dataset-view-permissions.html',

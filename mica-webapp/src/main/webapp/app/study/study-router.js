@@ -26,7 +26,8 @@ mica.study
         })
         .when('/study/:id/files', {
           templateUrl: 'app/study/views/study-view-files.html',
-          controller: 'StudyViewController'
+          controller: 'StudyViewController',
+          reloadOnSearch: false
         })
         .when('/study/:id/permissions', {
           templateUrl: 'app/study/views/study-view-permissions.html',
