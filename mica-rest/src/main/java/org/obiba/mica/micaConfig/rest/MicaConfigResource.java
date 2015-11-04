@@ -31,12 +31,14 @@ import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Opal;
+import org.springframework.stereotype.Component;
 
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.collect.Sets;
 
 import static java.util.stream.Collectors.toList;
 
+@Component
 @Path("/config")
 public class MicaConfigResource {
 
@@ -117,7 +119,7 @@ public class MicaConfigResource {
   @Path("/opal-credential/{id}")
   @Timed
   @RequiresRoles(Roles.MICA_ADMIN)
-  public Mica.OpalCredentialDto getOpalCredential(@PathParam("id")String opalUrl) {
+  public Mica.OpalCredentialDto getOpalCredential(@PathParam("id") String opalUrl) {
     return dtos.asDto(opalCredentialService.getOpalCredential(opalUrl));
   }
 
@@ -125,9 +127,9 @@ public class MicaConfigResource {
   @Path("/opal-credential/{id}/certificate")
   @Timed
   @RequiresRoles(Roles.MICA_ADMIN)
-  public Response getOpalCredentialCertificate(@PathParam("id")String opalUrl) {
-    return Response.ok(opalCredentialService.getCertificate(opalUrl), MediaType.TEXT_PLAIN_TYPE).header(
-      "Content-disposition", "attachment; filename=opal-mica-certificate.pem").build();
+  public Response getOpalCredentialCertificate(@PathParam("id") String opalUrl) {
+    return Response.ok(opalCredentialService.getCertificate(opalUrl), MediaType.TEXT_PLAIN_TYPE)
+      .header("Content-disposition", "attachment; filename=opal-mica-certificate.pem").build();
   }
 
   @POST
@@ -137,15 +139,15 @@ public class MicaConfigResource {
   public Response createCredential(Mica.OpalCredentialDto opalCredentialDto, @Context UriInfo uriInfo) {
     createOrUpdateCredential(opalCredentialDto);
 
-    return Response.created(
-      uriInfo.getBaseUriBuilder().segment("opal-credential", opalCredentialDto.getOpalUrl()).build()).build();
+    return Response
+      .created(uriInfo.getBaseUriBuilder().segment("opal-credential", opalCredentialDto.getOpalUrl()).build()).build();
   }
 
   @PUT
   @Path("/opal-credential/{id}")
   @Timed
   @RequiresRoles(Roles.MICA_ADMIN)
-  public Response updateOpalCredential(@PathParam("id")String id, Mica.OpalCredentialDto opalCredentialDto) {
+  public Response updateOpalCredential(@PathParam("id") String id, Mica.OpalCredentialDto opalCredentialDto) {
     createOrUpdateCredential(opalCredentialDto);
 
     return Response.ok().build();
@@ -155,21 +157,23 @@ public class MicaConfigResource {
   @Path("/opal-credential/{id}")
   @Timed
   @RequiresRoles(Roles.MICA_ADMIN)
-  public Response updateOpalCredential(@PathParam("id")String id) {
+  public Response updateOpalCredential(@PathParam("id") String id) {
     opalCredentialService.deleteOpalCredential(id);
 
     return Response.ok().build();
   }
 
   private void createOrUpdateCredential(Mica.OpalCredentialDto opalCredentialDto) {
-    if (opalCredentialDto.getType() == Mica.OpalCredentialType.USERNAME) {
-      opalCredentialService.createOrUpdateOpalCredential(opalCredentialDto.getOpalUrl(),
-        opalCredentialDto.getUsername(), opalCredentialDto.getPassword());
+    if(opalCredentialDto.getType() == Mica.OpalCredentialType.USERNAME) {
+      opalCredentialService
+        .createOrUpdateOpalCredential(opalCredentialDto.getOpalUrl(), opalCredentialDto.getUsername(),
+          opalCredentialDto.getPassword());
     } else {
       opalCredentialService.saveOrUpdateOpalCertificateCredential(opalCredentialDto.getOpalUrl());
 
-      if (opalCredentialDto.getKeyForm().getKeyType() == Mica.KeyType.KEY_PAIR)
-        doCreateOrImportKeyPair(OpalService.OPAL_KEYSTORE, opalCredentialDto.getOpalUrl(), opalCredentialDto.getKeyForm());
+      if(opalCredentialDto.getKeyForm().getKeyType() == Mica.KeyType.KEY_PAIR)
+        doCreateOrImportKeyPair(OpalService.OPAL_KEYSTORE, opalCredentialDto.getOpalUrl(),
+          opalCredentialDto.getKeyForm());
       else
         doImportCertificate(OpalService.OPAL_KEYSTORE, opalCredentialDto.getOpalUrl(), opalCredentialDto.getKeyForm());
     }
@@ -214,37 +218,37 @@ public class MicaConfigResource {
     //TODO support user locale (http://jira.obiba.org/jira/browse/MICASERVER-39)
     Locale locale = Locale.ENGLISH;
     return Arrays.asList(Locale.getISOLanguages()).stream()
-        .collect(Collectors.toMap(lang -> lang, lang -> new Locale(lang).getDisplayLanguage(locale)));
+      .collect(Collectors.toMap(lang -> lang, lang -> new Locale(lang).getDisplayLanguage(locale)));
   }
 
   @GET
   @Path("/taxonomies")
-  @Timed
   @RequiresAuthentication
+  @Deprecated
   public List<Opal.TaxonomyDto> getTaxonomies() {
     return opalService.getTaxonomyDtos();
   }
 
   @GET
   @Path("/taxonomies/summaries")
-  @Timed
   @RequiresAuthentication
+  @Deprecated
   public Opal.TaxonomiesDto getTaxonomySummaries() {
     return opalService.getTaxonomySummaryDtos();
   }
 
   @GET
   @Path("/taxonomies/vocabularies/summaries")
-  @Timed
   @RequiresAuthentication
+  @Deprecated
   public Opal.TaxonomiesDto getTaxonomyVocabularySummaries() {
     return opalService.getTaxonomyVocabularySummaryDtos();
   }
 
   @GET
   @Path("/taxonomy/{name}")
-  @Timed
   @RequiresAuthentication
+  @Deprecated
   public Opal.TaxonomyDto getTaxonomy(@PathParam("name") String name) {
     return opalService.getTaxonomyDto(name);
   }

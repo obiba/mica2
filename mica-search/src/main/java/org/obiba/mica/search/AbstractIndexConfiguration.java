@@ -49,6 +49,14 @@ public class AbstractIndexConfiguration {
     }
   }
 
+  protected void createMappingWithoutAnalyzer(XContentBuilder mapping, String name) {
+    try {
+      mapping.startObject(name).field("type", "string").field("index", "not_analyzed").endObject();
+    } catch(IOException e) {
+      log.error("Failed to create localized mappings: '{}'", e);
+    }
+  }
+
   protected void createMappingWithAndWithoutAnalyzer(XContentBuilder mapping, String name) {
     try {
       mapping.startObject(name).field("type", "multi_field");

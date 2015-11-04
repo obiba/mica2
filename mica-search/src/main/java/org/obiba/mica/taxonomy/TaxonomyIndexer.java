@@ -35,7 +35,7 @@ public class TaxonomyIndexer {
 
   public static final String TAXONOMY_TERM_TYPE = "Term";
 
-  public static final String[] LOCALIZED_ANALYZED_FIELDS = { "title", "description" };
+  public static final String[] LOCALIZED_ANALYZED_FIELDS = { "title", "description", "keywords" };
 
   @Inject
   private OpalService opalService;
