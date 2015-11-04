@@ -13,7 +13,6 @@ package org.obiba.mica.micaConfig.service;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -162,16 +161,8 @@ public class OpalService implements EnvironmentAware {
 
   public List<Taxonomy> getTaxonomies() {
     Map<String, Taxonomy> taxonomies = getTaxonomiesInternal();
-
     List<Taxonomy> taxonomyList = Lists.newArrayList(taxonomies.values());
-
-    Collections.sort(taxonomyList, new Comparator<Taxonomy>() {
-      @Override
-      public int compare(Taxonomy o1, Taxonomy o2) {
-        return o1.getName().compareTo(o2.getName());
-      }
-    });
-
+    Collections.sort(taxonomyList, (o1, o2) -> o1.getName().compareTo(o2.getName()));
     return taxonomyList;
   }
 

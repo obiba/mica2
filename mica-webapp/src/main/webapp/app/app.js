@@ -14,6 +14,7 @@ var mica = angular.module('mica', [
   'mica.dataset',
   'mica.dataAccesConfig',
   'mica.data-access-request',
+  'mica.search',
   'ngAnimate',
   'ngCookies',
   'ngResource',

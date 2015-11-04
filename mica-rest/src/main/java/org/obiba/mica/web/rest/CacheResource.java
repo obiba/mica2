@@ -7,9 +7,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.micaConfig.service.CacheService;
+import org.obiba.mica.security.Roles;
 
 @Path("/")
+@RequiresRoles(Roles.MICA_ADMIN)
 public class CacheResource {
 
   @Inject

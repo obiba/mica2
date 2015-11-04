@@ -3,6 +3,7 @@ package org.obiba.mica.core.domain;
 import java.text.Normalizer;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -44,6 +45,7 @@ public class LocalizedString extends TreeMap<String, String> {
 
   /**
    * Get the value for the undetermined language.
+   *
    * @return null if not found
    */
   @JsonIgnore
@@ -93,19 +95,19 @@ public class LocalizedString extends TreeMap<String, String> {
     entrySet().forEach(entry -> {
       String name = entry.getValue();
       StringBuffer buffer = new StringBuffer();
-      for (char c : decompose(name).toCharArray()) {
-        if (Character.isUpperCase(c)) buffer.append(c);
+      for(char c : decompose(name).toCharArray()) {
+        if(Character.isUpperCase(c)) buffer.append(c);
       }
 
       // default strategy
       String value = name.toUpperCase();
 
-      if (buffer.length() > 0) {
+      if(buffer.length() > 0) {
         value = buffer.toString();
       } else {
         // extract first character of each word
         String[] letters = name.split("(?<=[\\S])[\\S]*\\s*");
-        if (letters.length > 1) {
+        if(letters.length > 1) {
           value = Stream.of(letters).map(s -> s.toUpperCase()).collect(Collectors.joining());
         }
       }
@@ -116,7 +118,7 @@ public class LocalizedString extends TreeMap<String, String> {
   }
 
   private String decompose(String s) {
-    return normalize(s, Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+","");
+    return normalize(s, Normalizer.Form.NFD).replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
   }
 
   //
@@ -129,6 +131,12 @@ public class LocalizedString extends TreeMap<String, String> {
 
   public static LocalizedString fr(@NotNull String str) {
     return new LocalizedString(Locale.FRENCH, str);
+  }
+
+  public static LocalizedString from(Map<String, String> map) {
+    LocalizedString string = new LocalizedString();
+    if(map != null) string.putAll(map);
+    return string;
   }
 
 }

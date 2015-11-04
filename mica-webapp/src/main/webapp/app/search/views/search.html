@@ -1,0 +1,41 @@
+<div>
+  <h2 translate>search</h2>
+
+  <tabset type="pills">
+    <tab ng-repeat="taxonomy in taxonomies" heading="{{taxonomy.name}}">
+      <div ng-repeat="vocabulary in taxonomy.vocabularies" ng-if="$index % 3 == 0" class="row">
+        <div class="col-xs-4">
+          <h4>{{taxonomy.vocabularies[$index].name}}</h4>
+          <div ng-repeat="term in taxonomy.vocabularies[$index].terms" ng-if="$index<4">{{term.name}}</div>
+          <div id="{{taxonomy.name + taxonomy.vocabularies[$index].name}}" class="collapse">
+            <div ng-repeat="term in taxonomy.vocabularies[$index].terms" ng-if="$index>=4">
+              {{term.name}}
+            </div>
+          </div>
+          <a ng-if="taxonomy.vocabularies[$index].terms.length > 4" data-toggle="collapse"
+            data-target="{{'#' + taxonomy.name + taxonomy.vocabularies[$index].name}}"><i class="fa fa-hand-o-down"></i></a>
+        </div>
+        <div class="col-xs-4">
+          <h4>{{taxonomy.vocabularies[$index + 1].name}}</h4>
+          <div ng-repeat="term in taxonomy.vocabularies[$index + 1].terms">
+            <div ng-repeat="label in term.title" ng-if="label.locale === 'en'">
+              {{label.text}} <a class="collapsed" data-toggle="collapse"
+              data-target="{{'#' + taxonomy.name + taxonomy.vocabularies[$index].name + term.name + label.locale}}"><i
+              class="fa fa-question-circle"></i></a>
+            </div>
+            <div ng-repeat="label in term.description" ng-if="label.locale === 'en'" class="collapse"
+                id="{{taxonomy.name + taxonomy.vocabularies[$index].name + term.name + label.locale}}">
+              <span class="help-block">{{label.text}}</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-4">
+          <h4>{{taxonomy.vocabularies[$index + 2].name}}</h4>
+          <div ng-repeat="term in taxonomy.vocabularies[$index + 2].terms">{{term.name}}</div>
+        </div>
+      </div>
+    </tab>
+  </tabset>
+
+</div>
+
