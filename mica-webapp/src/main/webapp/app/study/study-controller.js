@@ -57,6 +57,7 @@ mica.study
     'ActiveTabService',
     '$modal',
     'DraftStudyDeleteService',
+    'EntityPathBuilder',
 
     function ($rootScope,
               $scope,
@@ -80,7 +81,8 @@ mica.study
               MicaStudiesConfigResource,
               ActiveTabService,
               $modal,
-              DraftStudyDeleteService) {
+              DraftStudyDeleteService,
+              EntityPathBuilder) {
 
       $scope.Mode = {View: 0, Revision: 1, File: 2, Permission: 3};
 
@@ -367,6 +369,12 @@ mica.study
             },
             study: function () {
               return study;
+            },
+            path: function() {
+              return {
+                root: EntityPathBuilder.studyFiles(study),
+                entity: EntityPathBuilder.dce(study, population, dce)
+              };
             }
           }
         });
@@ -419,14 +427,20 @@ mica.study
     };
   }])
 
-  .controller('StudyPopulationDceModalController', ['$scope', '$modalInstance', '$locale', 'dce', 'study',
-    function ($scope, $modalInstance, $locale, dce, study) {
+  .controller('StudyPopulationDceModalController', ['$scope', '$modalInstance', '$locale', '$location', 'dce', 'study', 'path',
+    function ($scope, $modalInstance, $locale, $location, dce, study, path) {
       $scope.months = $locale.DATETIME_FORMATS.MONTH;
       $scope.dce = dce;
       $scope.study = study;
+      $scope.path = path;
 
       $scope.cancel = function () {
         $modalInstance.close();
+      };
+
+      $scope.viewFiles = function () {
+        $modalInstance.close();
+        $location.path(path.root).search({p: path.entity});
       };
     }])
 

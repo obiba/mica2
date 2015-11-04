@@ -157,6 +157,42 @@ mica.fileSystem
 
     }])
 
+  .service('EntityPathBuilder', function() {
+
+    function isValidEntity(entity) {
+      return entity && entity.hasOwnProperty('id');
+    }
+
+    this.study = function(study) {
+      if (isValidEntity(study)) {
+        return ['study', study.id].join('/');
+      }
+      return '';
+    };
+
+    this.dce = function(study, population, dce) {
+      if (isValidEntity(study) && isValidEntity(population) && isValidEntity(dce)) {
+        return ['study', study.id, 'population', population.id, 'data-collection-event', dce.id].join('/');
+      }
+      return '';
+    };
+
+    this.population = function(study, population) {
+      if (isValidEntity(study) && isValidEntity(population)) {
+        return ['study', study.id, 'population', population.id].join('/');
+      }
+      return '';
+    };
+
+    this.studyFiles = function(study) {
+      if (isValidEntity(study)) {
+        return ['study', study.id, 'files'].join('/');
+      }
+      return '';
+    };
+
+  })
+
   .service('LocationService', ['$rootScope', '$location', '$log',
     function ($rootScope, $location, $log) {
 

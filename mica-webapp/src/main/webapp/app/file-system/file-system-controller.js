@@ -156,7 +156,7 @@ mica.fileSystem
       };
 
       var navigateBack = function() {
-        if (!$scope.data.isRoot) {
+        if (!$scope.data.isRoot && $scope.data.document) {
           var parentPath = $scope.data.document.path.replace(/\\/g,'/').replace(/\/[^\/]*$/, '');
           getDocument(parentPath ? parentPath : '/');
         }
