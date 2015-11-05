@@ -13,18 +13,15 @@ package org.obiba.mica.taxonomy.rest;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.obiba.mica.core.service.PublishedDocumentService;
-import org.obiba.mica.micaConfig.service.OpalService;
-import org.obiba.mica.taxonomy.EsTaxonomyTermService;
 import org.obiba.mica.taxonomy.TaxonomyResolver;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
+import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.obiba.opal.web.model.Opal;
 import org.obiba.opal.web.taxonomy.Dtos;
 import org.springframework.context.annotation.Scope;
@@ -37,40 +34,45 @@ import com.google.common.base.Strings;
 @Scope("request")
 @Path("/taxonomy/{name}")
 @RequiresAuthentication
-public class TaxonomySearchResource {
-
-  protected static final String DEFAULT_SORT = "id";
-
-  @Inject
-  private EsTaxonomyTermService esTaxonomyTermService;
-
-  @Inject
-  private OpalService opalService;
+public class TaxonomySearchResource extends AbstractTaxonomySearchResource {
 
   @GET
   @Path("/_filter")
   @Timed
-  public Opal.TaxonomyDto search(@PathParam("name") String name, @QueryParam("query") String query) {
+  public Opal.TaxonomyDto filterTaxonomy(@PathParam("name") String name, @QueryParam("query") String query) {
     if(Strings.isNullOrEmpty(query)) return opalService.getTaxonomyDto(name);
 
-    PublishedDocumentService.Documents<String> termIds = esTaxonomyTermService
-      .find(0, Integer.MAX_VALUE, DEFAULT_SORT, "asc", null, "taxonomyName:" + name + " AND " + query);
+    String filteredQuery = String.format("taxonomyName:%s AND %s", name, query);
+    Map<String, Map<String, List<String>>> taxoNamesMap = TaxonomyResolver
+      .asMap(filterVocabularies(filteredQuery), filterTerms(filteredQuery));
 
-    Map<String, List<String>> vocabularyNames = TaxonomyResolver.asMap(termIds.getList());
+    Taxonomy taxonomy = opalService.getTaxonomy(name);
+    Opal.TaxonomyDto.Builder tBuilder = Dtos.asDto(taxonomy, false).toBuilder();
+    if(taxoNamesMap.isEmpty() || !taxoNamesMap.containsKey(name) || taxoNamesMap.get(name).isEmpty())
+      return tBuilder.build();
+    populate(tBuilder, taxonomy, taxoNamesMap);
+    return tBuilder.build();
+  }
 
-    Taxonomy taxo = opalService.getTaxonomy(name);
-    Opal.TaxonomyDto.Builder tBuilder = Dtos.asDto(taxo, false).toBuilder();
-    if (vocabularyNames.isEmpty() || vocabularyNames.get(name).isEmpty()) return tBuilder.build();
-    taxo.getVocabularies().stream().filter(v -> vocabularyNames.get(taxo.getName()).contains(v.getName()))
-      .forEach(voc -> {
-        Opal.VocabularyDto.Builder vBuilder = Dtos.asDto(voc, false).toBuilder();
-        voc.getTerms().stream()
-          .filter(t -> termIds.getList().contains(TaxonomyResolver.asId(taxo.getName(), voc.getName(), t.getName())))
-          .forEach(term -> {
-            vBuilder.addTerms(Dtos.asDto(term));
-          });
-        tBuilder.addVocabularies(vBuilder);
-      });
+  @GET
+  @Path("/vocabulary/{vocabulary}/_filter")
+  @Timed
+  public Opal.VocabularyDto filterVocabulary(@PathParam("name") String name,
+    @PathParam("vocabulary") String vocabularyName, @QueryParam("query") String query) {
+    if(Strings.isNullOrEmpty(query)) return opalService.getTaxonomyVocabularyDto(name, vocabularyName);
+
+    String filteredQuery = String.format("taxonomyName:%s AND vocabularyName:%s AND %s", name, vocabularyName, query);
+
+    Map<String, Map<String, List<String>>> taxoNamesMap = TaxonomyResolver
+      .asMap(filterTerms(filteredQuery));
+
+    Taxonomy taxonomy = opalService.getTaxonomy(name);
+    Vocabulary vocabulary = taxonomy.getVocabulary(vocabularyName);
+    Opal.VocabularyDto.Builder tBuilder = Dtos.asDto(vocabulary, false).toBuilder();
+    if(taxoNamesMap.isEmpty() || !taxoNamesMap.containsKey(name) || taxoNamesMap.get(name).isEmpty() || taxoNamesMap.get(name).get(vocabularyName).isEmpty())
+      return tBuilder.build();
+
+    taxoNamesMap.get(name).get(vocabularyName).forEach(term -> tBuilder.addTerms(Dtos.asDto(vocabulary.getTerm(term))));
     return tBuilder.build();
   }
 

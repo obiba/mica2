@@ -17,7 +17,7 @@ import org.obiba.mica.search.AbstractPublishedDocumentService;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EsTaxonomyTermService extends AbstractPublishedDocumentService<String> {
+public class EsTaxonomyVocabularyService extends AbstractPublishedDocumentService<String> {
 
   @Override
   protected String processHit(SearchHit hit) throws IOException {
@@ -31,6 +31,6 @@ public class EsTaxonomyTermService extends AbstractPublishedDocumentService<Stri
 
   @Override
   protected String getType() {
-    return TaxonomyIndexer.TAXONOMY_TERM_TYPE;
+    return TaxonomyIndexer.TAXONOMY_VOCABULARY_TYPE;
   }
 }

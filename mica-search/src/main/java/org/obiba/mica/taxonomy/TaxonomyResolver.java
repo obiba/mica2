@@ -64,14 +64,28 @@ public class TaxonomyResolver {
     return taxonomyName + ID_SEPARATOR + vocabularyName;
   }
 
-  public static Map<String, List<String>> asMap(List<String> ids) {
-    Map<String, List<String>> vocabularyNames = Maps.newHashMap();
+  public static Map<String, Map<String, List<String>>> asMap(List<String> ids1, List<String> ids2) {
+    List<String> allIds = Lists.newArrayList();
+    allIds.addAll(ids1);
+    allIds.addAll(ids2);
+    return asMap(allIds);
+  }
+
+  public static Map<String, Map<String, List<String>>> asMap(List<String> ids) {
+    Map<String, Map<String, List<String>>> vocabularyNames = Maps.newHashMap();
     ids.forEach(id -> {
       TaxonomyResolver resolver = fromId(id);
       if(!vocabularyNames.containsKey(resolver.getTaxonomyName()))
-        vocabularyNames.put(resolver.getTaxonomyName(), Lists.newArrayList());
-      if(!vocabularyNames.get(resolver.getTaxonomyName()).contains(resolver.getVocabularyName()))
-        vocabularyNames.get(resolver.getTaxonomyName()).add(resolver.getVocabularyName());
+        vocabularyNames.put(resolver.getTaxonomyName(), Maps.newHashMap());
+
+      Map<String, List<String>> vocMap = vocabularyNames.get(resolver.getTaxonomyName());
+      if(resolver.hasVocabularyName() && !vocMap.containsKey(resolver.getVocabularyName()))
+        vocMap.put(resolver.getVocabularyName(), Lists.newArrayList());
+
+      if (resolver.hasTermName()) {
+         List<String> termList = vocMap.get(resolver.getVocabularyName());
+        if(!termList.contains(resolver.getTermName())) termList.add(resolver.getTermName());
+      }
     });
     return vocabularyNames;
   }
