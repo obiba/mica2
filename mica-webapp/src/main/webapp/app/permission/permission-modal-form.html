@@ -17,7 +17,7 @@
         </select>
       </div>
 
-      <div form-input name="principal" model="permission.principal" label="permission.principal" required="true"></div>
+      <div disabled="editMode" form-input name="principal" model="permission.principal" label="permission.principal" required="!editMode"></div>
 
       <div class="form-group" ng-class="{'has-error': (form['role'].$dirty || form.saveAttempted) && form['role'].$invalid}">
         <label class="control-label"><span translate>role</span> <span>*</span></label>

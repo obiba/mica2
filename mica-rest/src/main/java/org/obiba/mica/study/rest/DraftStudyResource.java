@@ -139,7 +139,7 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
   @Path("/commit/{commitId}/view")
   public Mica.StudyDto getStudyFromCommit(@NotNull @PathParam("commitId") String commitId) throws IOException {
     subjectAclService.checkPermission("/draft/study", "VIEW", id);
-    return dtos.asDto(studyService.getFromCommit(studyService.findDraft(id), commitId));
+    return dtos.asDto(studyService.getFromCommit(studyService.findDraft(id), commitId), true);
   }
 
   @Path("/permissions")

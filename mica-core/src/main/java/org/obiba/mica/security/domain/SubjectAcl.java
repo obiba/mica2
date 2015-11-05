@@ -108,6 +108,15 @@ public class SubjectAcl extends AbstractAuditableDocument {
     Stream.of(action.split(SUBPART_DIVIDER_TOKEN)).forEach(a -> getActions().remove(a));
   }
 
+  /**
+   * Remove all actions.
+   *
+   * @param action
+   */
+  public void removeActions() {
+    actions = null;
+  }
+
   public String getInstance() {
     return instance;
   }

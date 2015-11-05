@@ -164,6 +164,7 @@ public class SubjectAclService {
       subjectAclRepository.save(acl);
     } else {
       acl = acls.get(0);
+      acl.removeActions();
       acl.addAction(action);
     }
     subjectAclRepository.save(acl);

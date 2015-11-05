@@ -6,6 +6,7 @@ mica.attachment
   return {
     restrict: 'E',
     scope: {
+      permission: '=',
       permissions: '=',
       onAdd: '=',
       onLoad: '=',
@@ -16,40 +17,68 @@ mica.attachment
   };
 }])
 
-.controller('PermissionsController', ['$scope', '$modal', function ($scope, $modal) {
-  $scope.pagination = {searchText: ''};
+.controller('PermissionsController', ['$rootScope', '$scope', '$modal','NOTIFICATION_EVENTS',
+  function ($rootScope, $scope, $modal, NOTIFICATION_EVENTS) {
+    $scope.pagination = {searchText: ''};
 
-  $scope.addPermission = function () {
-    $modal.open({
-      templateUrl: 'app/permission/permission-modal-form.html',
-      controller: 'PermissionsModalController',
-      resolve: {
-        onAdd: function() {
-          return $scope.onAdd;
-        },
-        onLoad: function() {
-          return $scope.onLoad;
+    function editPermission(permission) {
+      $modal.open({
+        templateUrl: 'app/permission/permission-modal-form.html',
+        controller: 'PermissionsModalController',
+        resolve: {
+          permission: function() {
+            return angular.copy(permission);
+          },
+          onAdd: function() {
+            return $scope.onAdd;
+          },
+          onLoad: function() {
+            return $scope.onLoad;
+          }
         }
-      }
-    }).result.then(function(reload) {
+      }).result.then(function(reload) {
         if (reload) {
           $scope.onLoad();
         }
       });
-  };
 
-  $scope.deletePermission = function (permission) {
-    $scope.onDelete(permission).$promise.then($scope.onLoad);
-  };
+    }
 
-  $scope.onLoad();
-}])
+    $scope.addPermission = function () {
+      editPermission(null);
+    };
 
-.controller('PermissionsModalController', ['$scope', '$modalInstance', 'AlertService', 'ServerErrorUtils', 'onAdd',
-  function ($scope, $modalInstance, AlertService, ServerErrorUtils, onAdd) {
-    $scope.ROLES = ['READER', 'EDITOR', 'PUBLISHER'];
+    $scope.editPermission = function (permission) {
+      editPermission(permission);
+    };
+
+    $scope.deletePermission = function (permission) {
+      $scope.principalToDelete = permission.principal;
+      $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
+        {
+          titleKey: 'permission.delete-dialog.title',
+          messageKey: 'permission.delete-dialog.message',
+          messageArgs: [permission.type === 'USER' ? 'user' : 'group', permission.principal]
+        }, permission
+      );
+    };
+
+    $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, permission) {
+      if ($scope.principalToDelete === permission.principal) {
+        delete $scope.principalToDelete;
+        $scope.onDelete(permission).$promise.then($scope.onLoad);
+      }
+    });
+
+    $scope.onLoad();
+  }])
+
+.controller('PermissionsModalController', ['$scope', '$modalInstance', 'AlertService', 'ServerErrorUtils', 'permission', 'onAdd',
+  function ($scope, $modalInstance, AlertService, ServerErrorUtils, permission, onAdd) {
+    $scope.ROLES = ['READER', 'EDITOR', 'REVIEWER'];
     $scope.TYPES = ['USER', 'GROUP'];
-    $scope.permission = {};
+    $scope.permission = permission ? permission : {};
+    $scope.editMode = permission ? true : false;
 
     $scope.save = function (form) {
       if(form.$valid) {
