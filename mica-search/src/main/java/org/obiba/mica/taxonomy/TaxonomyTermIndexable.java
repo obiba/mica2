@@ -30,7 +30,7 @@ public class TaxonomyTermIndexable extends TaxonomyEntityIndexable<Term> {
 
   @Override
   public String getId() {
-    return getParentId() + ":" + getName();
+    return TaxonomyResolver.asId(taxonomyName, vocabularyName, getName());
   }
 
   @Override
@@ -40,7 +40,7 @@ public class TaxonomyTermIndexable extends TaxonomyEntityIndexable<Term> {
 
   @Override
   public String getParentId() {
-    return taxonomyName + ":" + vocabularyName;
+    return TaxonomyResolver.asId(taxonomyName, vocabularyName);
   }
 
   public String getTaxonomyName() {
