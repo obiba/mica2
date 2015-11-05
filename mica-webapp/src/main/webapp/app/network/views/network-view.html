@@ -9,21 +9,7 @@
   -->
 
 <div>
-  <h2>
-    <ol class="mica-breadcrumb">
-      <li><a href="/#/network" translate>networks</a></li>
-      <li class="active">{{network.id}}</li>
-    </ol>
-  </h2>
-
-  <div class="tabs-menu" ng-class="{'tabs-left': screen.is('lg')}">
-    <ul class="nav nav-tabs">
-      <li class="active"><a href="#/network/{{network.id}}" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a></li>
-      <li><a href="#/network/{{network.id}}/revisions" title="{{'revisions' | translate}}"><i class="fa fa-list-ol"></i></a></li>
-      <li><a href="#/network/{{network.id}}/files" title="{{'files' | translate}}"><i class="fa fa-file"></i></a></li>
-      <li><a href="#/network/{{network.id}}/permissions" title="{{'permissions' | translate}}"><i class="fa fa-lock"></i></a></li>
-    </ul>
-  </div>
+  <div ng-include="'app/network/views/network-view-header.html'" ng-init="tabName='view'"></div>
 
   <div class="clearfix">
     <h3 class="pull-left no-margin-top" translate>view</h3>

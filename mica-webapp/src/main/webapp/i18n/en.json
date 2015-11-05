@@ -719,10 +719,14 @@
     "group": "Group",
     "reader": "Reader",
     "editor": "Editor",
-    "publisher": "Publisher",
+    "reviewer": "Reviewer",
     "reader-help": "Can view the resource",
     "editor-help": "Can edit the resource",
-    "publisher-help": "Can publish the resource"
+    "publisher-help": "Can publish the resource",
+    "delete-dialog": {
+      "title": "Delete Permission",
+      "message": "Are you sure you want to delete the permission of {{arg0}} {{arg1}}"
+    }
   },
   "role": "Role",
   "files": "Files",

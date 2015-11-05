@@ -1,0 +1,25 @@
+<div>
+  <h2>
+    <ol class="mica-breadcrumb">
+      <li><a href="/#/network" translate>networks</a></li>
+      <li class="active">{{network.id}}</li>
+    </ol>
+  </h2>
+
+  <div class="tabs-menu" ng-class="{'tabs-left': screen.is('lg')}">
+    <ul class="nav nav-tabs">
+      <li ng-class="{'active': tabName === 'view'}">
+        <a href="#/network/{{network.id}}" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>
+      </li>
+      <li ng-class="{'active': tabName === 'revisions'}">
+        <a href="#/network/{{network.id}}/revisions" title="{{'revisions' | translate}}"><i class="fa fa-list-ol"></i></a>
+      </li>
+      <li ng-class="{'active': tabName === 'files'}">
+        <a href="#/network/{{network.id}}/files" title="{{'files' | translate}}"><i class="fa fa-file"></i></a>
+      </li>
+      <li  ng-class="{'active': tabName === 'permissions'}" ng-if="network['obiba.mica.EntityStateDto.state'].permissions.publish">
+        <a href="#/network/{{network.id}}/permissions" title="{{'permissions' | translate}}"><i class="fa fa-lock"></i></a>
+      </li>
+    </ul>
+  </div>
+</div>
