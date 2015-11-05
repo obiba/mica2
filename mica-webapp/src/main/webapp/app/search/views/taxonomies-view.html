@@ -59,19 +59,25 @@
 <div ng-if="taxonomies.taxonomy && taxonomies.vocabulary">
   <div ng-repeat="term in taxonomies.vocabulary.terms" ng-if="$index % 3 == 0" class="row">
     <div class="col-xs-4">
-      {{taxonomies.vocabulary.terms[$index].name}}
+      <h5 ng-repeat="label in taxonomies.vocabulary.terms[$index].title" ng-if="label.locale === lang">
+        {{label.text}}
+      </h5>
       <p ng-repeat="label in taxonomies.vocabulary.terms[$index].description" ng-if="label.locale === lang">
         <span class="help-block">{{label.text}}</span>
       </p>
     </div>
     <div class="col-xs-4">
-      {{taxonomies.vocabulary.terms[$index + 1].name}}
+      <h5 ng-repeat="label in taxonomies.vocabulary.terms[$index + 1].title" ng-if="label.locale === lang">
+        {{label.text}}
+      </h5>
       <p ng-repeat="label in taxonomies.vocabulary.terms[$index + 1].description" ng-if="label.locale === lang">
         <span class="help-block">{{label.text}}</span>
       </p>
     </div>
     <div class="col-xs-4">
-      {{taxonomies.vocabulary.terms[$index + 2].name}}
+      <h5 ng-repeat="label in taxonomies.vocabulary.terms[$index + 2].title" ng-if="label.locale === lang">
+        {{label.text}}
+      </h5>
       <p ng-repeat="label in taxonomies.vocabulary.terms[$index + 2].description" ng-if="label.locale === lang">
         <span class="help-block">{{label.text}}</span>
       </p>
