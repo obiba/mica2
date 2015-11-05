@@ -181,7 +181,8 @@
       <span translate>total</span>
       <span>{{population.dataCollectionEvents.length}}</span>
     </div>
-    <table class="table table-bordered table-striped" ng-show="population.dataCollectionEvents.length">
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped" ng-show="population.dataCollectionEvents.length">
       <thead>
       <tr>
         <th>#</th>
@@ -224,6 +225,7 @@
       </tr>
       </tbody>
     </table>
+    </div>
   </tab>
 </tabset>
 
