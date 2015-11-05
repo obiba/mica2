@@ -457,6 +457,11 @@
         <artifactId>opal-rest-client</artifactId>
         <version>${opal.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.obiba.opal</groupId>
+        <artifactId>opal-core-api</artifactId>
+        <version>${opal.version}</version>
+      </dependency>
 
       <dependency>
         <groupId>org.apache.shiro</groupId>
