@@ -229,7 +229,7 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
 
   private List<Person> replaceExistingPersons(List<Person> persons) {
     ImmutableList.copyOf(persons).forEach(c -> {
-      if(c.getId() == null && Strings.isNullOrEmpty(c.getEmail())) {
+      if(c.getId() == null && !Strings.isNullOrEmpty(c.getEmail())) {
         Person person = personRepository.findOneByEmail(c.getEmail());
 
         if(person != null) {
