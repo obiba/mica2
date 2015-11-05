@@ -8,11 +8,14 @@
     </div>
 
     <div class="modal-body">
-        <div form-input type="url" model="credential.opalUrl" label="config.opalUrl" ng-show="isOpalCredential"  required="true" disabled="!isOpalCredential"></div>
+      <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate>fix-error</p>
 
-        <div form-textarea model="keyForm.privateImport" label="config.keys.private" required="true"></div>
+      <div name="url" form-input type="url" pattern="'https://.+'" model="credential.opalUrl" label="config.opalUrl"
+        ng-if="isOpalCredential" required="true"></div>
 
-        <div form-textarea model="keyForm.publicImport" label="config.keys.public" required="true"></div>
+      <div name="private" form-textarea model="keyForm.privateImport" label="config.keys.private" required="true"></div>
+
+      <div name="public" form-textarea model="keyForm.publicImport" label="config.keys.public" required="true"></div>
     </div>
 
     <div class="modal-footer">

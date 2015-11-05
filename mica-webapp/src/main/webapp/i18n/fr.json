@@ -627,6 +627,7 @@
   "other": "Other",
   "notification": "Notification",
   "required": "Required",
+  "pattern": "Expected pattern is",
   "suppl-info": "Supplementary information about study design",
   "fix-error": "Please fix errors below",
   "dnd-reorder": "Drag and drop to reorder",

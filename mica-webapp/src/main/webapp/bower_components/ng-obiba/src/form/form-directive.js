@@ -26,6 +26,7 @@ angular.module('obiba.form')
         model: '=',
         disabled: '=',
         type: '@',
+        pattern: '=',
         label: '@',
         required: '=',
         min: '@',

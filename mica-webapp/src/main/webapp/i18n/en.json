@@ -332,7 +332,7 @@
     "keys": {
       "titleCreate": "Create Certificate",
       "titleImport": "Import Certificate",
-      "name": "First Name and Last Name",
+      "name": "Common Name",
       "organization": "Organization",
       "organizationalUnit": "Organizational Unit",
       "locality": "Locality",
@@ -675,6 +675,7 @@
   "other": "Other",
   "notification": "Notification",
   "required": "Required",
+  "pattern": "Expected pattern is",
   "suppl-info": "Supplementary Information",
   "fix-error": "Please fix errors below",
   "dnd-reorder": "Drag and drop to reorder",

@@ -226,12 +226,12 @@ message PrivateKeyForm {
 }
 
 message PublicKeyForm {
-  required string name = 1;
-  required string organizationalUnit = 2;
-  required string organization = 3;
-  required string locality = 4;
-  required string state = 5;
-  required string country = 6;
+  optional string name = 1;
+  optional string organizationalUnit = 2;
+  optional string organization = 3;
+  optional string locality = 4;
+  optional string state = 5;
+  optional string country = 6;
 }
 
 message DocumentDigestDto {
