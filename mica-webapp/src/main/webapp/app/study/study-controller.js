@@ -53,6 +53,7 @@ mica.study
     '$location',
     '$translate',
     '$filter',
+    '$timeout',
     'StudyStateResource',
     'DraftStudyResource',
     'DraftStudyPublicationResource',
@@ -78,6 +79,7 @@ mica.study
               $location,
               $translate,
               $filter,
+              $timeout,
               StudyStateResource,
               DraftStudyResource,
               DraftStudyPublicationResource,
@@ -272,9 +274,17 @@ mica.study
         });
       };
 
+      $scope.isOrderingContacts = false; //prevent opening contact modal on reordering (firefox)
+
       $scope.sortableOptions = {
+        start: function() {
+          $scope.isOrderingContacts = true;
+        },
         stop: function () {
           $scope.emitStudyUpdated();
+          $timeout(function () {
+            $scope.isOrderingContacts = false;
+          }, 300);
         }
       };
 

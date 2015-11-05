@@ -14,15 +14,17 @@ mica.contact
     function ($rootScope, $scope, $modal, $translate, CONTACT_EVENTS, NOTIFICATION_EVENTS) {
 
       $scope.viewContact = function (contact) {
-        $modal.open({
-          templateUrl: 'app/contact/contact-modal-view.html',
-          controller: 'ContactViewModalController',
-          resolve: {
-            contact: function () {
-              return contact;
+        if(!$scope.isOrderingContacts) {
+          $modal.open({
+            templateUrl: 'app/contact/contact-modal-view.html',
+            controller: 'ContactViewModalController',
+            resolve: {
+              contact: function () {
+                return contact;
+              }
             }
-          }
-        });
+          });
+        }
       };
 
       $scope.editInvestigator = function (contactable, contact) {
