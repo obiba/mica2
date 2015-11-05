@@ -341,7 +341,8 @@ public class FileSystemService {
   public void copy(String path, String newPath) {
     List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
     states.addAll(findAttachmentStates(String.format("^%s/", path), false));
-    states.stream().forEach(s -> copy(s, newPath, s.getName(), false));
+    states.stream().filter(FileUtils::isDirectory).forEach(s -> mkdirs(s.getPath().replaceFirst(path, newPath)));
+    states.stream().filter(s -> !FileUtils.isDirectory(s)).forEach(s -> copy(s, newPath, s.getName(), false));
   }
 
   /**

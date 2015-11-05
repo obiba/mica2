@@ -41,6 +41,15 @@ mica.fileSystem
               MicaConfigResource,
               $q) {
 
+      function buildClipboardCommand(command, origin, items) {
+        return {
+          command: command,
+          origin: origin,
+          items: items
+        };
+      }
+
+      $scope.clipboard = buildClipboardCommand(null, null, []);
       $scope.selected = [];
       $scope.pagination = {
         currentPage: 1,
@@ -220,11 +229,11 @@ mica.fileSystem
       };
 
       var deleteDocuments = function () {
-        applyToFiles(function (f) {
+        applyToFiles(getSelection(function (f) {
             return f.permissions.delete && f.revisionStatus === 'DELETED';
-          },
-          function (path) {
-            return DraftFileSystemFileResource.delete({path: path});
+          }),
+          function (f) {
+            return DraftFileSystemFileResource.delete({path: f.path});
           })
           .finally(function () {
             if ($scope.selected.length === 0) {
@@ -360,15 +369,15 @@ mica.fileSystem
       };
 
       var publish = function(value) {
-        applyToFiles(function (f) {
-          if(value) {
+        applyToFiles(getSelection(function (f) {
+          if (value) {
             return f.permissions.publish && f.revisionStatus === 'UNDER_REVIEW';
           } else {
             return f.permissions.publish && f.state.publicationDate !== undefined;
           }
-        }, function (path) {
+        }), function (f) {
           return DraftFileSystemFileResource.publish(
-            {path: path, publish: value ? 'true' : 'false'});
+            {path: f.path, publish: value ? 'true' : 'false'});
         }).finally(function () {
           navigateTo($scope.data.document);
         });
@@ -376,7 +385,7 @@ mica.fileSystem
 
       var toStatus = function (value) {
         $log.info('STATUS', value);
-        applyToFiles(function (f) {
+        applyToFiles(getSelection(function (f) {
           switch (value) {
             case 'UNDER_REVIEW':
               return f.revisionStatus === 'DRAFT' && f.state.attachment.id !== f.state.publishedId;
@@ -385,9 +394,9 @@ mica.fileSystem
             case 'DRAFT':
               return f.revisionStatus !== 'DRAFT';
           }
-        }, function (path) {
+        }), function (f) {
           return DraftFileSystemFileResource.changeStatus(
-            {path: path, status: value}
+            {path: f.path, status: value}
           );
         }).finally(function () {
           navigateTo($scope.data.document);
@@ -402,15 +411,16 @@ mica.fileSystem
         return $q.reject(response);
       }
 
-      function applyToFiles(filter, consumer) {
+      function getSelection(filter) {
         var files = $scope.selected.length === 0 ? [$scope.data.document] :
-            $scope.selected,
-          paths = files.filter(filter).map(function (d) {
-            return d.path;
-          });
+            $scope.selected;
 
-        return $q.all(paths.map(function (path) {
-          return consumer(path).$promise.catch(function (response) {
+        return files.filter(filter);
+      }
+
+      function applyToFiles(files, consumer) {
+        return $q.all(files.map(function (f) {
+          return consumer(f).$promise.catch(function (response) {
             if ($scope.selected.length > 0) {
               return ignoreConflicts(response);
             }
@@ -419,6 +429,45 @@ mica.fileSystem
           });
         })).catch(onError);
       }
+
+      $scope.copyFilesToClipboard = function () {
+        var selected = $scope.selected.length ? angular.copy($scope.selected) : [$scope.data.document];
+
+        $scope.clipboard = buildClipboardCommand('copy', $scope.data.document.path, selected.filter(function (d) {
+          return d.permissions.view;
+        }));
+      };
+
+      $scope.cutFilesToClipboard = function () {
+        var selected = $scope.selected.length ? angular.copy($scope.selected) : [$scope.data.document];
+
+        $scope.clipboard = buildClipboardCommand('move', $scope.data.document.path, selected.filter(function (d) {
+          return d.permissions.edit && d.revisionStatus === 'DRAFT';
+        }));
+      };
+
+      $scope.pasteFilesFromClipboard = function () {
+        if ($scope.data.document.path === $scope.clipboard.origin) {
+          AlertService.alert({
+            id: 'FileSystemController',
+            type: 'danger',
+            msgKey: 'file.invalid-paste',
+            delay: 5000
+          });
+
+          return;
+        }
+
+        applyToFiles($scope.clipboard.items, function (d) {
+          return DraftFileSystemFileResource[$scope.clipboard.command]({
+            path: d.path,
+            destinationFolder: d.type === 'FOLDER' ? [$scope.data.document.path, d.name].join('/') : $scope.data.document.path
+          });
+        }).finally(function () {
+          $scope.clipboard = buildClipboardCommand(null, null, []);
+          navigateTo($scope.data.document);
+        });
+      };
 
       $scope.screen = $rootScope.screen;
       $scope.hasRole = $rootScope.hasRole;
