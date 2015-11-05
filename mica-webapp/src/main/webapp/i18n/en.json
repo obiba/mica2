@@ -709,6 +709,8 @@
   "author": "Author",
   "user": "User",
   "users": "Users",
+  "search": "Search",
+  "all-categories": "All categories",
   "permissions": "Permissions",
   "permission": {
     "none": "No permissions.",

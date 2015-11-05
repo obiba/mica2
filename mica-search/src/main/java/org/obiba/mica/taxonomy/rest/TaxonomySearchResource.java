@@ -42,7 +42,7 @@ public class TaxonomySearchResource extends AbstractTaxonomySearchResource {
   public Opal.TaxonomyDto filterTaxonomy(@PathParam("name") String name, @QueryParam("query") String query) {
     if(Strings.isNullOrEmpty(query)) return opalService.getTaxonomyDto(name);
 
-    String filteredQuery = String.format("taxonomyName:%s AND %s", name, query);
+    String filteredQuery = String.format("taxonomyName:%s AND (%s)", name, query);
     Map<String, Map<String, List<String>>> taxoNamesMap = TaxonomyResolver
       .asMap(filterVocabularies(filteredQuery), filterTerms(filteredQuery));
 
@@ -61,7 +61,7 @@ public class TaxonomySearchResource extends AbstractTaxonomySearchResource {
     @PathParam("vocabulary") String vocabularyName, @QueryParam("query") String query) {
     if(Strings.isNullOrEmpty(query)) return opalService.getTaxonomyVocabularyDto(name, vocabularyName);
 
-    String filteredQuery = String.format("taxonomyName:%s AND vocabularyName:%s AND %s", name, vocabularyName, query);
+    String filteredQuery = String.format("taxonomyName:%s AND vocabularyName:%s AND (%s)", name, vocabularyName, query);
 
     Map<String, Map<String, List<String>>> taxoNamesMap = TaxonomyResolver
       .asMap(filterTerms(filteredQuery));

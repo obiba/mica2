@@ -1,0 +1,18 @@
+<ul class="nav nav-list">
+  <li class="nav-header" ng-repeat="label in vocabulary.title" ng-if="label.locale === lang">
+    {{label.text}}
+  </li>
+  <li ng-repeat="label in vocabulary.description" ng-if="label.locale === lang">
+    <span class="help-block">{{label.text}}</span>
+  </li>
+  <li ng-if="vocabulary">
+    <a href ng-click="onSelect(taxonomy, vocabulary)" translate>all</a>
+  </li>
+  <li ng-repeat="term in vocabulary.terms">
+    <a href>
+    <span ng-repeat="label in term.title" ng-if="label.locale === lang">
+      {{label.text}}
+    </span>
+      </a>
+  </li>
+</ul>

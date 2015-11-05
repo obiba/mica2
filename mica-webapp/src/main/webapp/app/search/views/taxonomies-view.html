@@ -1,0 +1,80 @@
+<ol class="mica-breadcrumb no-margin no-padding">
+  <li ng-if="!taxonomies.taxonomy" translate>
+    all-categories
+  </li>
+  <li ng-if="taxonomies.taxonomy">
+    <a href ng-click="selectTaxonomy()" translate>all-categories</a>
+  </li>
+  <li ng-if="taxonomies.taxonomy && !taxonomies.vocabulary">
+    <span ng-repeat="label in taxonomies.taxonomy.title" ng-if="label.locale === lang">
+      {{label.text}}
+    </span>
+  </li>
+  <li ng-if="taxonomies.taxonomy && taxonomies.vocabulary">
+    <a href ng-click="selectTaxonomy(taxonomies.taxonomy)">
+      <span ng-repeat="label in taxonomies.taxonomy.title" ng-if="label.locale === lang">
+      {{label.text}}
+      </span>
+    </a>
+  </li>
+  <li ng-if="taxonomies.vocabulary">
+    <span ng-repeat="label in taxonomies.vocabulary.title" ng-if="label.locale === lang">
+      {{label.text}}
+    </span>
+  </li>
+</ol>
+
+<div ng-if="!taxonomies.taxonomy">
+  <div ng-repeat="taxonomy in taxonomies.all" ng-if="$index % 3 == 0" class="row">
+    <div class="col-xs-4">
+      <div taxonomy-panel taxonomy="taxonomies.all[$index]" lang="lang" on-select="selectTaxonomy"></div>
+    </div>
+    <div class="col-xs-4">
+      <div taxonomy-panel taxonomy="taxonomies.all[$index + 1]" lang="lang" on-select="selectTaxonomy"></div>
+    </div>
+    <div class="col-xs-4">
+      <div taxonomy-panel taxonomy="taxonomies.all[$index + 2]" lang="lang" on-select="selectTaxonomy"></div>
+    </div>
+  </div>
+</div>
+
+
+<div ng-if="taxonomies.taxonomy && !taxonomies.vocabulary">
+  <div ng-repeat="vocabulary in taxonomies.taxonomy.vocabularies" ng-if="$index % 3 == 0" class="row">
+    <div class="col-xs-4">
+      <div vocabulary-panel taxonomy="taxonomies.taxonomy" vocabulary="taxonomies.taxonomy.vocabularies[$index]"
+        lang="lang" on-select="selectTaxonomy"></div>
+    </div>
+    <div class="col-xs-4">
+      <div vocabulary-panel taxonomy="taxonomies.taxonomy" vocabulary="taxonomies.taxonomy.vocabularies[$index + 1]"
+        lang="lang" on-select="selectTaxonomy"></div>
+    </div>
+    <div class="col-xs-4">
+      <div vocabulary-panel taxonomy="taxonomies.taxonomy" vocabulary="taxonomies.taxonomy.vocabularies[$index + 2]"
+        lang="lang" on-select="selectTaxonomy"></div>
+    </div>
+  </div>
+</div>
+
+<div ng-if="taxonomies.taxonomy && taxonomies.vocabulary">
+  <div ng-repeat="term in taxonomies.vocabulary.terms" ng-if="$index % 3 == 0" class="row">
+    <div class="col-xs-4">
+      {{taxonomies.vocabulary.terms[$index].name}}
+      <p ng-repeat="label in taxonomies.vocabulary.terms[$index].description" ng-if="label.locale === lang">
+        <span class="help-block">{{label.text}}</span>
+      </p>
+    </div>
+    <div class="col-xs-4">
+      {{taxonomies.vocabulary.terms[$index + 1].name}}
+      <p ng-repeat="label in taxonomies.vocabulary.terms[$index + 1].description" ng-if="label.locale === lang">
+        <span class="help-block">{{label.text}}</span>
+      </p>
+    </div>
+    <div class="col-xs-4">
+      {{taxonomies.vocabulary.terms[$index + 2].name}}
+      <p ng-repeat="label in taxonomies.vocabulary.terms[$index + 2].description" ng-if="label.locale === lang">
+        <span class="help-block">{{label.text}}</span>
+      </p>
+    </div>
+  </div>
+</div>
