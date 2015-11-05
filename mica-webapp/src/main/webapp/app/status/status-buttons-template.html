@@ -1,22 +1,22 @@
 <div>
-  <a class="btn btn-danger" ng-click="onDelete()"
+  <a class="btn btn-danger btn-responsive" ng-click="onDelete()"
     ng-if="state.permissions.delete && state.revisionStatus === 'DELETED'">
     <i class="fa fa-trash"></i>
     <span translate>delete</span>
   </a>
-  <a ng-click="onPublish()" class="btn btn-info"
+  <a ng-click="onPublish()" class="btn btn-info btn-responsive"
     ng-disabled="state.publishedTag !== undefined && state.revisionsAhead == 0"
     ng-if="state.permissions.publish && state.revisionStatus === 'UNDER_REVIEW'">
     <i class="fa fa-star"></i>
     <span translate>publish.label</span>
   </a>
-  <a class="btn btn-info" ng-click="onUnPublish()"
+  <a class="btn btn-info btn-responsive" ng-click="onUnPublish()"
     ng-if="state.permissions.publish && state.publishedTag !== undefined">
     <i class="fa fa-star-o"></i>
     <span translate>publish.un-publish</span>
   </a>
   <div class="btn-group" ng-if="state.permissions.edit">
-    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+    <button type="button" class="btn btn-default btn-responsive dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
       aria-expanded="false">
       {{'publish.status.' + state.revisionStatus | translate}} <span class="caret"></span>
     </button>

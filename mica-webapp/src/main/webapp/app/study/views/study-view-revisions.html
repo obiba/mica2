@@ -6,7 +6,7 @@
     </ol>
   </h2>
 
-  <div class="tabs-menu tabs-left">
+  <div class="tabs-menu" ng-class="{'tabs-left': screen.is('lg')}">
     <ul class="nav nav-tabs">
       <li><a href="#/study/{{study.id}}" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a></li>
       <li class="active">

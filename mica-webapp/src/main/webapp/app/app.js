@@ -35,6 +35,7 @@ mica
         .when('/login', {
           templateUrl: 'app/views/login.html',
           controller: 'LoginController',
+          reloadOnSearch: false,
           access: {
             authorizedRoles: [USER_ROLES.all]
           }
@@ -159,6 +160,11 @@ mica
         $rootScope.userProfileService = UserProfileService;
 
         if (!$rootScope.authenticated) {
+          var path = $location.path();
+          if ('/login' !== path) {
+            // save path to navigate to after login
+            $location.search({redirect: path});
+          }
           $rootScope.$broadcast('event:auth-loginRequired');
         } else if (!AuthenticationSharedService.isAuthorized(next.access ? next.access.authorizedRoles : '*')) {
           $rootScope.$broadcast('event:auth-notAuthorized');
@@ -168,7 +174,12 @@ mica
       // Call when the the client is confirmed
       $rootScope.$on('event:auth-loginConfirmed', function () {
         if ($location.path() === '/login') {
-          $location.path('/').replace();
+          var path = '/';
+          var search = $location.search();
+          if (search.hasOwnProperty('redirect')) {
+            path = search.redirect;
+          }
+          $location.path(path).search({}).replace();
         }
       });
 
