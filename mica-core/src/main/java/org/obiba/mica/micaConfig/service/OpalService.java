@@ -31,6 +31,7 @@ import org.obiba.mica.micaConfig.domain.OpalCredential;
 import org.obiba.opal.core.cfg.NoSuchTaxonomyException;
 import org.obiba.opal.core.cfg.NoSuchVocabularyException;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
+import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.obiba.opal.rest.client.magma.OpalJavaClient;
 import org.obiba.opal.rest.client.magma.RestDatasource;
 import org.obiba.opal.rest.client.magma.RestDatasourceFactory;
@@ -227,10 +228,8 @@ public class OpalService implements EnvironmentAware {
    */
   public Opal.TaxonomiesDto.TaxonomySummaryDto.VocabularySummaryDto getTaxonomyVocabularySummaryDto(String name,
     String vocabularyName) {
-    // not optimum; opal does not expose the vocabulary summary dto builder
-    for(Opal.TaxonomiesDto.TaxonomySummaryDto.VocabularySummaryDto vocDto : Dtos
-      .asVocabularySummaryDto(getTaxonomy(name)).getVocabularySummariesList()) {
-      if(vocDto.getName().equals(vocabularyName)) return vocDto;
+    for (Vocabulary voc : getTaxonomy(name).getVocabularies()) {
+      if(voc.getName().equals(vocabularyName)) return Dtos.asSummaryDto(voc);
     }
     throw new NoSuchVocabularyException(name, vocabularyName);
   }

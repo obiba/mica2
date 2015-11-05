@@ -21,6 +21,10 @@
       <artifactId>mica-web-model</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.obiba.opal</groupId>
+      <artifactId>opal-web-model</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.elasticsearch</groupId>
       <artifactId>elasticsearch</artifactId>
     </dependency>

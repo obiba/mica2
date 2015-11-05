@@ -26,7 +26,7 @@ public class TaxonomyVocabularyIndexable extends TaxonomyEntityIndexable<Vocabul
 
   @Override
   public String getId() {
-    return getParentId() + ":" + getName();
+    return TaxonomyResolver.asId(taxonomyName, getName());
   }
 
   @Override
