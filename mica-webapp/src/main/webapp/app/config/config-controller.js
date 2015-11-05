@@ -148,9 +148,17 @@ mica.config
         keyType: 0
       };
 
-      $scope.save = function () {
-        var data = isOpalCredential ? {type: 1, opalUrl: $scope.credential.opalUrl, keyForm: $scope.keyForm} : $scope.keyForm;
-        $modalInstance.close(data);
+      $scope.save = function (form) {
+        if (form.$valid) {
+          var data = isOpalCredential ? {
+            type: 1,
+            opalUrl: $scope.credential.opalUrl,
+            keyForm: $scope.keyForm
+          } : $scope.keyForm;
+          $modalInstance.close(data);
+        }
+
+        form.saveAttempted = true;
       };
 
       $scope.cancel = function () {
@@ -176,10 +184,18 @@ mica.config
         keyType: 0
       };
 
-      $scope.save = function () {
-        var data = isOpalCredential ? {type: 1, opalUrl: $scope.credential.opalUrl, keyForm: $scope.keyForm} : $scope.keyForm;
+      $scope.save = function (form) {
+        if(form.$valid) {
+          var data = isOpalCredential ? {
+            type: 1,
+            opalUrl: $scope.credential.opalUrl,
+            keyForm: $scope.keyForm
+          } : $scope.keyForm;
 
-        $modalInstance.close(data);
+          $modalInstance.close(data);
+        }
+
+        form.saveAttempted = true;
       };
 
       $scope.cancel = function () {
@@ -194,14 +210,18 @@ mica.config
       $scope.credential = opalCredential || {opalUrl: '', username: '', password: '', type: 0};
 
       $scope.save = function (form) {
-        if ($scope.credential.confirm !== $scope.credential.password) {
-          form.confirm.$invalid = true;
-          form.$invalid = true;
-          form.saveAttempted = true;
-          return;
+        if(form.$valid) {
+          if ($scope.credential.confirm !== $scope.credential.password) {
+            form.confirm.$invalid = true;
+            form.$invalid = true;
+            form.saveAttempted = true;
+            return;
+          }
+
+          $modalInstance.close($scope.credential);
         }
 
-        $modalInstance.close($scope.credential);
+        form.saveAttempted = true;
       };
 
       $scope.cancel = function () {

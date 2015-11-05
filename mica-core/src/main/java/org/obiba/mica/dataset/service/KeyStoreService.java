@@ -31,6 +31,10 @@ import org.obiba.security.KeyStoreManager;
 import org.obiba.security.KeyStoreRepository;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Strings;
+
+import static java.util.Optional.ofNullable;
+
 /**
  *
  */
@@ -76,7 +80,7 @@ public class KeyStoreService {
 
   @NotNull
   public String getPEMCertificate(@NotNull String name, String alias) throws KeyStoreException, IOException {
-    Certificate certificate = Optional.ofNullable(getKeyStore(name).getKeyStore().getCertificate(alias))
+    Certificate certificate = ofNullable(getKeyStore(name).getKeyStore().getCertificate(alias))
       .orElseThrow(() -> new IllegalArgumentException("Cannot find certificate for alias: " + alias));
 
     StringWriter writer = new StringWriter();
@@ -125,21 +129,22 @@ public class KeyStoreService {
   }
 
   private String getCertificateInfo(String cn, String ou, String o, String locality, String state, String country) {
-    return validateNameAndOrganizationInfo(cn, ou, o) + ", L=" + locality + ", ST=" + state + ", C=" + country;
+    return validateNameAndOrganizationInfo(cn, ou, o) + ", L=" + ofNullable(locality).orElse("") + ", ST=" +
+      ofNullable(state).orElse("") + ", C=" + ofNullable(country).orElse("");
   }
 
   private String validateNameAndOrganizationInfo(String cn, String ou, String o) {
     Optional<String> hostname = Optional.empty();
 
-    if(cn.isEmpty() || o.isEmpty()) {
+    if(Strings.isNullOrEmpty(cn) || Strings.isNullOrEmpty(o)) {
       try {
         hostname = Optional.of(new URL(micaConfigService.getConfig().getPublicUrl()).getHost());
       } catch(MalformedURLException e) {
-        throw new RuntimeException(e);
+        //ignore
       }
     }
 
-    return String.format("CN=%s, OU=%s, O=%s", cn.isEmpty() ? hostname.get() : cn, ou.isEmpty() ? "mica" : ou,
-      o.isEmpty() ? hostname.get() : o);
+    return String.format("CN=%s, OU=%s, O=%s", Strings.isNullOrEmpty(cn) ? hostname.orElse("") : cn,
+      Strings.isNullOrEmpty(ou) ? "mica" : ou, ofNullable(o).orElse(""));
   }
 }

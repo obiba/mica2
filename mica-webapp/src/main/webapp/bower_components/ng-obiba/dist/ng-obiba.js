@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba
 
  * License: GNU Public License version 3
- * Date: 2015-06-12
+ * Date: 2015-11-05
  */
 'use strict';
 
@@ -756,6 +756,7 @@ angular.module('obiba.form')
         model: '=',
         disabled: '=',
         type: '@',
+        pattern: '=',
         label: '@',
         required: '=',
         min: '@',
@@ -1220,11 +1221,13 @@ angular.module("form/form-input-template.tpl.html", []).run(["$templateCache", f
     "      ng-attr-min=\"{{min}}\"\n" +
     "      ng-attr-max=\"{{max}}\"\n" +
     "      ng-attr-step=\"{{step}}\"\n" +
+    "      ng-pattern=\"pattern\"\n" +
     "      ng-disabled=\"disabled\"\n" +
     "      ng-required=\"required\"/>\n" +
     "\n" +
     "  <ul class=\"input-error list-unstyled\" ng-show=\"form[name].$dirty && form[name].$invalid\">\n" +
     "    <li ng-show=\"form[name].$error.required\" translate>required</li>\n" +
+    "    <li ng-show=\"form[name].$error.pattern\">{{'pattern' | translate}} {{pattern}}</li>\n" +
     "    <li ng-repeat=\"error in form[name].errors\">{{error}}</li>\n" +
     "  </ul>\n" +
     "\n" +

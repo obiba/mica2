@@ -8,28 +8,32 @@
     </div>
 
     <div class="modal-body">
-        <div form-input type="url" model="credential.opalUrl" label="config.opalUrl" ng-show="isOpalCredential" required="true" disabled="!isOpalCredential"></div>
+      <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate>fix-error</p>
 
-        <div form-input model="keyForm.publicForm.name" label="config.keys.name" required="true"></div>
+      <div form-input name="url" type="url" pattern="'https://.+'" model="credential.opalUrl" label="config.opalUrl"
+        ng-if="isOpalCredential" required="true" disabled="!isOpalCredential"></div>
 
-        <div form-input model="keyForm.publicForm.organization" label="config.keys.organization"></div>
+      <div form-input name="name" model="keyForm.publicForm.name" label="config.keys.name"></div>
 
-        <div form-input model="keyForm.publicForm.organizationalUnit" label="config.keys.organizationalUnit"></div>
+      <div form-input name="organization" model="keyForm.publicForm.organization" label="config.keys.organization"></div>
 
-        <div form-input model="keyForm.publicForm.locality" label="config.keys.locality"></div>
+      <div form-input name="unit" model="keyForm.publicForm.organizationalUnit" label="config.keys.organizationalUnit"></div>
 
-        <div form-input model="keyForm.publicForm.state" label="config.keys.state"></div>
+      <div form-input name="locality" model="keyForm.publicForm.locality" label="config.keys.locality"></div>
 
-        <div form-input model="keyForm.publicForm.country" label="config.keys.country"></div>
+      <div form-input name="state" model="keyForm.publicForm.state" label="config.keys.state"></div>
 
-        <a href="" ng-click="showAdvanced = !showAdvanced">
-          <span ng-class="{'glyphicon-plus': !showAdvanced, 'glyphicon-minus': showAdvanced}" class="glyphicon"></span> <span translate>Advanced options</span></a>
+      <div form-input name="country" model="keyForm.publicForm.country" label="config.keys.country"></div>
 
-        <div collapse="!showAdvanced" class="voffset4">
-          <div form-input model="keyForm.privateForm.algo" label="config.keys.algo" required="true"></div>
+      <a href="" ng-click="showAdvanced = !showAdvanced">
+        <span ng-class="{'glyphicon-plus': !showAdvanced, 'glyphicon-minus': showAdvanced}" class="glyphicon"></span>
+        <span translate>Advanced options</span></a>
 
-          <div form-input model="keyForm.privateForm.size" label="config.keys.size" required="true"></div>
-        </div>
+      <div collapse="!showAdvanced" class="voffset4">
+        <div form-input name="algo" model="keyForm.privateForm.algo" label="config.keys.algo" required="true"></div>
+
+        <div form-input name="size" model="keyForm.privateForm.size" label="config.keys.size" required="true"></div>
+      </div>
     </div>
 
     <div class="modal-footer">
