@@ -16,6 +16,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
@@ -23,6 +24,7 @@ import org.obiba.mica.core.service.PublishedDocumentService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.taxonomy.EsTaxonomyTermService;
 import org.obiba.mica.taxonomy.TaxonomyResolver;
+import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.web.model.Opal;
 import org.obiba.opal.web.taxonomy.Dtos;
 import org.springframework.context.annotation.Scope;
@@ -30,13 +32,12 @@ import org.springframework.stereotype.Component;
 
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 
 @Component
 @Scope("request")
-@Path("/taxonomies")
+@Path("/taxonomy/{name}")
 @RequiresAuthentication
-public class TaxonomiesSearchResource {
+public class TaxonomySearchResource {
 
   protected static final String DEFAULT_SORT = "id";
 
@@ -49,32 +50,28 @@ public class TaxonomiesSearchResource {
   @GET
   @Path("/_filter")
   @Timed
-  public List<Opal.TaxonomyDto> search(@QueryParam("query") String query) {
-    if(Strings.isNullOrEmpty(query)) return opalService.getTaxonomyDtos();
+  public Opal.TaxonomyDto search(@PathParam("name") String name, @QueryParam("query") String query) {
+    if(Strings.isNullOrEmpty(query)) return opalService.getTaxonomyDto(name);
 
     PublishedDocumentService.Documents<String> termIds = esTaxonomyTermService
-      .find(0, Integer.MAX_VALUE, DEFAULT_SORT, "asc", null, query);
-
-    List<Opal.TaxonomyDto> results = Lists.newArrayList();
+      .find(0, Integer.MAX_VALUE, DEFAULT_SORT, "asc", null, "taxonomyName:" + name + " AND " + query);
 
     Map<String, List<String>> vocabularyNames = TaxonomyResolver.asMap(termIds.getList());
 
-    opalService.getTaxonomies().stream().filter(t -> vocabularyNames.containsKey(t.getName())).forEach(taxo -> {
-      Opal.TaxonomyDto.Builder tBuilder = Dtos.asDto(taxo, false).toBuilder();
-      taxo.getVocabularies().stream().filter(v -> vocabularyNames.get(taxo.getName()).contains(v.getName()))
-        .forEach(voc -> {
-          Opal.VocabularyDto.Builder vBuilder = Dtos.asDto(voc, false).toBuilder();
-          voc.getTerms().stream()
-            .filter(t -> termIds.getList().contains(TaxonomyResolver.asId(taxo.getName(), voc.getName(), t.getName())))
-            .forEach(term -> {
-              vBuilder.addTerms(Dtos.asDto(term));
-            });
-          tBuilder.addVocabularies(vBuilder);
-        });
-      results.add(tBuilder.build());
-    });
-
-    return results;
+    Taxonomy taxo = opalService.getTaxonomy(name);
+    Opal.TaxonomyDto.Builder tBuilder = Dtos.asDto(taxo, false).toBuilder();
+    if (vocabularyNames.isEmpty() || vocabularyNames.get(name).isEmpty()) return tBuilder.build();
+    taxo.getVocabularies().stream().filter(v -> vocabularyNames.get(taxo.getName()).contains(v.getName()))
+      .forEach(voc -> {
+        Opal.VocabularyDto.Builder vBuilder = Dtos.asDto(voc, false).toBuilder();
+        voc.getTerms().stream()
+          .filter(t -> termIds.getList().contains(TaxonomyResolver.asId(taxo.getName(), voc.getName(), t.getName())))
+          .forEach(term -> {
+            vBuilder.addTerms(Dtos.asDto(term));
+          });
+        tBuilder.addVocabularies(vBuilder);
+      });
+    return tBuilder.build();
   }
 
 }
