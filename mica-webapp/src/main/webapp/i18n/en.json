@@ -712,6 +712,8 @@
   "users": "Users",
   "search": "Search",
   "all-categories": "All categories",
+  "browse-categories": "Browse categories",
+  "add-query": "Add to search query",
   "permissions": "Permissions",
   "permission": {
     "none": "No permissions.",

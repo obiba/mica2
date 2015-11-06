@@ -18,7 +18,7 @@ mica.search
       scope: {
         taxonomy: '=',
         lang: '=',
-        onSelect: '='
+        onNavigate: '='
       },
       templateUrl: 'app/search/views/taxonomy-panel-template.html'
     };
@@ -32,8 +32,23 @@ mica.search
         taxonomy: '=',
         vocabulary: '=',
         lang: '=',
-        onSelect: '='
+        onNavigate: '='
       },
       templateUrl: 'app/search/views/vocabulary-panel-template.html'
+    };
+  }])
+
+  .directive('termPanel', [function () {
+    return {
+      restrict: 'EA',
+      replace: true,
+      scope: {
+        taxonomy: '=',
+        vocabulary: '=',
+        term: '=',
+        lang: '=',
+        onSelect: '='
+      },
+      templateUrl: 'app/search/views/term-panel-template.html'
     };
   }]);

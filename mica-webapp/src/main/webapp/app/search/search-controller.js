@@ -93,11 +93,16 @@ mica.search
         // search for matching variables/studies/... count
       };
 
-      var selectTaxonomy = function(taxonomy, vocabulary) {
+      var navigateTaxonomy = function(taxonomy, vocabulary) {
         $scope.taxonomies.taxonomy = taxonomy;
         $scope.taxonomies.vocabulary = vocabulary;
       };
 
+      var selectTerm = function(taxonomy, vocabulary, term) {
+
+      };
+
       $scope.searchKeyUp = searchKeyUp;
-      $scope.selectTaxonomy = selectTaxonomy;
+      $scope.navigateTaxonomy = navigateTaxonomy;
+      $scope.selectTerm = selectTerm;
     }]);
