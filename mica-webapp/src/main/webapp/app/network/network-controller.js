@@ -30,11 +30,22 @@ mica.network
               NetworksResource,
               NetworkService
     ) {
-      $scope.networks = NetworksResource.query();
+      var onSuccess = function(response) {
+        $scope.networks = response;
+        $scope.loading = false;
+      };
+
+      var onError = function() {
+        $scope.loading = false;
+      };
+
+      $scope.loading = true;
+      NetworksResource.query({}, onSuccess, onError);
 
       $scope.deleteNetwork = function(network) {
         NetworkService.deleteNetwork(network, function() {
-          $scope.networks = NetworksResource.query();
+          $scope.loading = true;
+          NetworksResource.query({}, onSuccess, onError);
         });
       };
     }])

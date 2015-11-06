@@ -18,8 +18,11 @@
     <i class="fa fa-plus"></i> <span translate>network.add</span>
   </a>
 
-  <p class="voffset2" ng-if="networks.length == 0">
+  <p class="voffset2" ng-if="networks.length == 0 && !loading">
     <span translate>network.none</span>
+  </p>
+
+  <p class="voffset2" ng-if="loading" class="loading">
   </p>
 
   <div ng-if="networks.length > 0">
