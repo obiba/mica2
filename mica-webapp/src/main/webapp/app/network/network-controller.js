@@ -201,6 +201,7 @@ mica.network
     '$locale',
     '$location',
     '$translate',
+    '$timeout',
     'DraftNetworkResource',
     'DraftNetworkPublicationResource',
     'DraftNetworkStatusResource',
@@ -225,6 +226,7 @@ mica.network
               $locale,
               $location,
               $translate,
+              $timeout,
               DraftNetworkResource,
               DraftNetworkPublicationResource,
               DraftNetworkStatusResource,
@@ -250,6 +252,20 @@ mica.network
           DraftStudiesSummariesResource.summaries({id: network.studyIds},function (summaries){
             $scope.studySummaries = summaries;
           });
+        }
+      };
+
+      $scope.isOrderingContacts = false; //prevent opening contact modal on reordering (firefox)
+
+      $scope.sortableOptions = {
+        start: function() {
+          $scope.isOrderingContacts = true;
+        },
+        stop: function () {
+          $scope.emitNetworkUpdated();
+          $timeout(function () {
+            $scope.isOrderingContacts = false;
+          }, 300);
         }
       };
 
@@ -407,6 +423,10 @@ mica.network
             $scope.network.investigators = [];
           }
 
+          if (!$scope.network.contacts) {
+            $scope.network.contacts = [];
+          }
+
           updateExistingContact(contact, $scope.network.contacts);
 
           $scope.network.investigators.push(contact);
@@ -418,6 +438,10 @@ mica.network
         if (network === $scope.network) {
           if (!$scope.network.contacts) {
             $scope.network.contacts = [];
+          }
+
+          if (!$scope.network.investigators) {
+            $scope.network.investigators = [];
           }
 
           updateExistingContact(contact, $scope.network.investigators);
