@@ -11,6 +11,7 @@
 package org.obiba.mica.web.rest.security;
 
 import java.io.IOException;
+import java.util.Date;
 
 import javax.inject.Inject;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -20,12 +21,13 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.http.HttpStatus;
+import org.joda.time.DateTime;
 import org.obiba.mica.security.ShiroAuditorAware;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-public class AuditInterceptor  implements ContainerResponseFilter {
+public class AuditInterceptor implements ContainerResponseFilter {
 
   private static final Logger log = LoggerFactory.getLogger(AuditInterceptor.class);
 
@@ -40,20 +42,22 @@ public class AuditInterceptor  implements ContainerResponseFilter {
   public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
     throws IOException {
 
-  logServerError(requestContext, responseContext);
-  logClientError(requestContext, responseContext);
-  logInfo(requestContext, responseContext);
-}
+    logServerError(requestContext, responseContext);
+    logClientError(requestContext, responseContext);
+    logInfo(requestContext, responseContext);
+  }
 
   private String getArguments(ContainerRequestContext requestContext, ContainerResponseContext responseContext) {
     MDC.put("username", auditorAware.getCurrentAuditor());
     MDC.put("status", responseContext.getStatus() + "");
     MDC.put("method", requestContext.getMethod());
 
-    // TODO get the remote IP
+    Date d = requestContext.getDate();
+    if(d != null) MDC.put("time", (DateTime.now().getMillis() - d.getTime()) + "");
+
     StringBuilder sb = new StringBuilder("/").append(requestContext.getUriInfo().getPath(true));
     MultivaluedMap<String, String> params = requestContext.getUriInfo().getQueryParameters();
-    if (params.size() > 0) {
+    if(params.size() > 0) {
       sb.append(" queryParams:").append(params.toString());
     }
 
