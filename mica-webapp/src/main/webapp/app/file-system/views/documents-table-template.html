@@ -10,7 +10,7 @@
   <table class="table table-bordered table-striped no-padding no-margin">
     <thead>
     <tr>
-      <th><input type="checkbox" ng-checked="!hasUnselected" ng-click="selectPage()"></th>
+      <th><input type="checkbox" ng-checked="!hasUnselected && data.document.children.length" ng-click="selectPage()"></th>
       <th translate>name</th>
       <th translate>last-modified</th>
       <th translate>size</th>
