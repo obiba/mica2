@@ -56,7 +56,7 @@ mica.fileSystem
         itemsPerPage: 20
       };
 
-      $scope.hasUnselected = true;
+      $scope.hasUnselected = false;
 
       function getCurrentPageDocuments() {
         return $scope.data.document.children.slice(
@@ -67,9 +67,9 @@ mica.fileSystem
       $scope.$watch('data.document.children', function (documents) {
         var items;
 
-        if (!$scope.data.document || !$scope.data.document.children) {
+        if (!$scope.data.document) {
           $scope.selected = [];
-          $scope.hasUnselected = true;
+          $scope.hasUnselected = false;
           return;
         }
 
@@ -88,7 +88,7 @@ mica.fileSystem
       $scope.$watch('pagination', function () {
         var items;
 
-        if (!$scope.data.document || !$scope.data.document.children) {
+        if (!$scope.data.document) {
           return;
         }
 
@@ -130,11 +130,7 @@ mica.fileSystem
         });
 
         if ($scope.data.document) {
-          if ($scope.selected.length === 0) {
-            navigateToParent($scope.data.document);
-          } else {
-            navigateTo($scope.data.document);
-          }
+          navigateTo($scope.data.document);
         }
       };
 
@@ -145,6 +141,11 @@ mica.fileSystem
           function onSuccess(response) {
             $log.info(response);
             $scope.data.document = response;
+
+            if (!$scope.data.document.children) {
+              $scope.data.document.children = [];
+            }
+
             $scope.data.breadcrumbs = BreadcrumbHelper.toArray(path);
             $scope.data.isFile = FileSystemService.isFile(response);
             $scope.data.isRoot = FileSystemService.isRoot(response);
@@ -426,7 +427,7 @@ mica.fileSystem
       function applyToFiles(files, consumer) {
         return $q.all(files.map(function (f) {
           return consumer(f).$promise.catch(function (response) {
-            if ($scope.selected.length > 0) {
+            if (files.length > 1) {
               return ignoreConflicts(response);
             }
 
