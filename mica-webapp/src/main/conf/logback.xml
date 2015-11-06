@@ -5,7 +5,7 @@
   <!-- console log config -->
   <include resource="org/springframework/boot/logging/logback/base.xml"/>
 
-  <logger name="org.obiba" level="debug"/>
+  <logger name="org.obiba" level="info"/>
 
   <!--<logger name="com.codahale.metrics" level="warn"/>-->
   <!--<logger name="com.ryantenney" level="warn"/>-->
@@ -40,9 +40,31 @@
     </encoder>
   </appender>
 
+  <appender name="rest.log" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>${MICA_LOG}/rest.log</file>
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>INFO</level>
+    </filter>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <fileNamePattern>${MICA_LOG}/rest-%i.log</fileNamePattern>
+      <maxIndex>10</maxIndex>
+    </rollingPolicy>
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <maxFileSize>10MB</maxFileSize>
+    </triggeringPolicy>
+    <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+    <!--encoder>
+      <pattern>%date - %level - %X{username} - %X{status} - %X{method} - %message - %X{created}%n</pattern>
+    </encoder-->
+  </appender>
+
   <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
     <resetJUL>true</resetJUL>
   </contextListener>
+
+  <logger name="org.obiba.mica.web.rest.security.AuditInterceptor" additivity="false" level="info">
+    <appender-ref ref="rest.log"/>
+  </logger>
 
   <root level="info">
     <appender-ref ref="mica.log"/>

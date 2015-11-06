@@ -48,6 +48,8 @@
     <jhipsterloaded.version>0.7</jhipsterloaded.version>
     <json-path.version>2.0.0</json-path.version>
     <jsr305.version>2.0.3</jsr305.version>
+    <logback.version>1.1.3</logback.version>
+    <logstash-logback.version>4.5.1</logstash-logback.version>
     <metrics-spring.version>3.0.0</metrics-spring.version>
     <mongeez.version>0.9.4</mongeez.version>
     <nosqlunit.version>0.7.9</nosqlunit.version>
@@ -547,6 +549,26 @@
         <groupId>org.apache.poi</groupId>
         <artifactId>poi-ooxml</artifactId>
         <version>${poi.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>${logback.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-core</artifactId>
+        <version>${logback.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-access</artifactId>
+        <version>${logback.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>net.logstash.logback</groupId>
+        <artifactId>logstash-logback-encoder</artifactId>
+        <version>${logstash-logback.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
