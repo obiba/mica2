@@ -163,7 +163,9 @@ mica
           var path = $location.path();
           if ('/login' !== path) {
             // save path to navigate to after login
-            $location.search({redirect: path});
+            var search = $location.search();
+            search.redirect = path;
+            $location.search(search);
           }
           $rootScope.$broadcast('event:auth-loginRequired');
         } else if (!AuthenticationSharedService.isAuthorized(next.access ? next.access.authorizedRoles : '*')) {
@@ -178,8 +180,9 @@ mica
           var search = $location.search();
           if (search.hasOwnProperty('redirect')) {
             path = search.redirect;
+            delete search.redirect;
           }
-          $location.path(path).search({}).replace();
+          $location.path(path).search(search).replace();
         }
       });
 
