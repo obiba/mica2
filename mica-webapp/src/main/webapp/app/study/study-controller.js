@@ -304,6 +304,10 @@ mica.study
             $scope.study.investigators = [];
           }
 
+          if (!$scope.study.contacts) {
+            $scope.study.contacts = [];
+          }
+
           updateExistingContact(contact, $scope.study.contacts);
 
           $scope.study.investigators.push(contact);
@@ -315,6 +319,10 @@ mica.study
         if (study === $scope.study) {
           if (!$scope.study.contacts) {
             $scope.study.contacts = [];
+          }
+
+          if (!$scope.study.investigators) {
+            $scope.study.investigators = [];
           }
 
           updateExistingContact(contact, $scope.study.investigators);

@@ -423,6 +423,10 @@ mica.network
             $scope.network.investigators = [];
           }
 
+          if (!$scope.network.contacts) {
+            $scope.network.contacts = [];
+          }
+
           updateExistingContact(contact, $scope.network.contacts);
 
           $scope.network.investigators.push(contact);
@@ -434,6 +438,10 @@ mica.network
         if (network === $scope.network) {
           if (!$scope.network.contacts) {
             $scope.network.contacts = [];
+          }
+
+          if (!$scope.network.investigators) {
+            $scope.network.investigators = [];
           }
 
           updateExistingContact(contact, $scope.network.investigators);
