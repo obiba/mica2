@@ -172,6 +172,7 @@ mica.fileSystem
       };
 
       var navigateToPath = function(path) {
+        clearSearchInternal();
         getDocument(path);
       };
 
@@ -296,11 +297,15 @@ mica.fileSystem
         }
       };
 
-      var clearSearch = function() {
+      function clearSearchInternal() {
         LocationService.update($scope.data.document.path);
         $scope.data.search.text = null;
         $scope.data.search.active = false;
-        navigateTo($scope.data.document);
+      }
+
+      var clearSearch = function() {
+        clearSearchInternal();
+        getDocument($scope.data.document.path);
       };
 
       var searchKeyUp = function(event) {
