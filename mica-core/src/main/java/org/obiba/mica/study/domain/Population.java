@@ -147,7 +147,7 @@ public class Population extends AbstractAttributeAware implements Serializable, 
   }
 
   public void setDataCollectionEvents(SortedSet<DataCollectionEvent> dataCollectionEvents) {
-    this.dataCollectionEvents = dataCollectionEvents;
+    this.dataCollectionEvents = dataCollectionEvents == null ? Sets.newTreeSet() : dataCollectionEvents;
   }
 
   @Override
