@@ -6,10 +6,27 @@
     {{label.text}}
   </p>
   <ul>
-  <li ng-repeat="term in vocabulary.terms">
-    <span ng-repeat="label in term.title" ng-if="label.locale === lang">
-      {{label.text}}
-    </span>
-  </li>
+    <li ng-repeat="term in vocabulary.terms" ng-if="$index<4">
+      <span ng-repeat="label in term.title" ng-if="label.locale === lang">
+        {{label.text}}
+      </span>
+      <a href ng-click="onSelect(taxonomy, vocabulary, term)">
+        <i class="fa fa-plus-circle" title="{{'add-query' | translate}}"></i>
+      </a>
+    </li>
+    <div class="collapse" id="{{taxonomy.name + vocabulary.name + '_terms'}}">
+      <li ng-repeat="term in vocabulary.terms" ng-if="$index>=4">
+        <span ng-repeat="label in term.title" ng-if="label.locale === lang">
+          {{label.text}}
+        </span>
+        <a href ng-click="onSelect(taxonomy, vocabulary, term)">
+          <i class="fa fa-plus-circle" title="{{'add-query' | translate}}"></i>
+        </a>
+      </li>
+    </div>
+    <a data-toggle="collapse" data-target="#{{taxonomy.name + vocabulary.name + '_terms'}}"
+      ng-if="vocabulary.terms && vocabulary.terms.length>4">
+      <i class="fa fa-arrow-down"></i>
+    </a>
   </ul>
 </div>

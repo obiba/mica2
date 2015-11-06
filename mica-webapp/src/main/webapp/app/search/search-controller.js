@@ -103,6 +103,7 @@ mica.search
       };
 
       $scope.searchKeyUp = searchKeyUp;
+      $scope.filterTaxonomiesKeyUp = filterTaxonomiesKeyUp;
       $scope.navigateTaxonomy = navigateTaxonomy;
       $scope.selectTerm = selectTerm;
     }]);
