@@ -45,7 +45,7 @@ mica.attachment
     }
 
     $scope.addPermission = function () {
-      editPermission(null);
+      editPermission({type:'USER', role: 'READER'});
     };
 
     $scope.editPermission = function (permission) {
@@ -77,8 +77,8 @@ mica.attachment
   function ($scope, $modalInstance, AlertService, ServerErrorUtils, permission, onAdd) {
     $scope.ROLES = ['READER', 'EDITOR', 'REVIEWER'];
     $scope.TYPES = ['USER', 'GROUP'];
-    $scope.permission = permission ? permission : {};
-    $scope.editMode = permission ? true : false;
+    $scope.permission = permission ? permission : {type:'USER', role: 'READER'};
+    $scope.editMode = permission && permission.principal;
 
     $scope.save = function (form) {
       if(form.$valid) {
