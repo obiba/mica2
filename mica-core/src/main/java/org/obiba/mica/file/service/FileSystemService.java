@@ -531,13 +531,14 @@ public class FileSystemService {
     log.debug("Study {} was updated", event.getPersistable());
     fsLock.lock();
     try {
+      mkdirs(String.format("/study/%s", event.getPersistable().getId()));
+
       if(event.getPersistable().hasPopulations()) {
-        event.getPersistable().getPopulations().stream().filter(Population::hasDataCollectionEvents).forEach(p -> {
-          p.getDataCollectionEvents().forEach(dce -> mkdirs(String
+        event.getPersistable().getPopulations().stream().filter(Population::hasDataCollectionEvents).forEach(
+          p -> p.getDataCollectionEvents().forEach(dce -> mkdirs(String
             .format("/study/%s/population/%s/data-collection-event/%s", event.getPersistable().getId(), p.getId(),
-              dce.getId())));
-        });
-      } else mkdirs(String.format("/study/%s", event.getPersistable().getId()));
+              dce.getId()))));
+      }
     } finally {
       fsLock.unlock();
     }
