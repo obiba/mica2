@@ -17,8 +17,11 @@
     <i class="fa fa-plus"></i> <span translate>data-access-request.add</span>
   </a>
 
-  <p class="voffset2" ng-if="requests.length == 0">
+  <p class="voffset2" ng-if="requests.length == 0 && !loading">
     <span translate>data-access-request.none</span>
+  </p>
+
+  <p ng-if="loading" class="voffset2 loading">
   </p>
 
   <div ng-if="requests.length > 0">
