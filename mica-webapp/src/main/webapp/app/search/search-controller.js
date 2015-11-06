@@ -36,7 +36,7 @@ mica.search
       var filterTaxonomiesKeyUp = function(event) {
         switch(event.keyCode) {
           case 27: // ESC
-            if ($scope.taxonomies.search.active) {
+            if (!$scope.taxonomies.search.active) {
               clearFilterTaxonomies();
             }
             break;
@@ -50,10 +50,15 @@ mica.search
       var clearFilterTaxonomies = function() {
         $scope.taxonomies.search.text = null;
         $scope.taxonomies.search.active = false;
+        filterTaxonomies(null);
       };
 
       var filterTaxonomies = function(query) {
         $scope.taxonomies.search.active = true;
+        if (query && query.length === 1) {
+          $scope.taxonomies.search.active = false;
+          return;
+        }
         // taxonomy filter
         if ($scope.taxonomies.taxonomy) {
           if ($scope.taxonomies.vocabulary) {
