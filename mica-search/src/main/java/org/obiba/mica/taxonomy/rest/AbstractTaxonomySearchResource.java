@@ -21,7 +21,6 @@ import org.elasticsearch.indices.IndexMissingException;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.taxonomy.EsTaxonomyTermService;
 import org.obiba.mica.taxonomy.EsTaxonomyVocabularyService;
-import org.obiba.mica.taxonomy.TaxonomyResolver;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.web.model.Opal;
 import org.obiba.opal.web.taxonomy.Dtos;
@@ -48,7 +47,7 @@ public class AbstractTaxonomySearchResource {
         if(termNames.isEmpty())
           vBuilder.addAllTerms(voc.getTerms().stream().map(Dtos::asDto).collect(Collectors.toList()));
         else voc.getTerms().stream()
-          .filter(t -> termNames.contains(TaxonomyResolver.asId(taxonomy.getName(), voc.getName(), t.getName())))
+          .filter(t -> termNames.contains(t.getName()))
           .forEach(term -> vBuilder.addTerms(Dtos.asDto(term)));
         tBuilder.addVocabularies(vBuilder);
       });
