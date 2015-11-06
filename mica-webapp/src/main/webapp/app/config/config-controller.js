@@ -246,7 +246,7 @@ mica.config
 
         $scope.micaConfig.$save(
           function () {
-            $location.path('/config').replace();
+            $location.path('/admin/general').replace();
           },
           function (response) {
             FormServerValidation.error(response, $scope.form);
