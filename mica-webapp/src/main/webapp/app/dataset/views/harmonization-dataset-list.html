@@ -8,8 +8,11 @@
     <i class="fa fa-plus"></i> <span translate>dataset.add</span>
   </a>
 
-  <p class="voffset2" ng-if="harmonizedDatasets.length == 0">
+  <p class="voffset2" ng-if="harmonizedDatasets.length == 0 && !loading">
     <span translate>dataset.none</span>
+  </p>
+
+  <p class="voffset2" ng-if="loading" class="loading">
   </p>
 
   <div ng-if="harmonizedDatasets.length > 0">

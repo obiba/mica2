@@ -24,11 +24,22 @@ mica.study
               NOTIFICATION_EVENTS,
               DraftStudyDeleteService) {
 
-      $scope.studies = StudyStatesResource.query();
+      var onSuccess = function(response) {
+        $scope.studies = response;
+        $scope.loading = false;
+      };
+
+      var onError = function() {
+        $scope.loading = false;
+      };
+
+      $scope.loading = true;
+      StudyStatesResource.query({}, onSuccess, onError);
 
       $scope.deleteStudy = function (study) {
         DraftStudyDeleteService.delete(study, function() {
-          $scope.studies = StudyStatesResource.query();
+          $scope.loading = true;
+          StudyStatesResource.query({}, onSuccess, onError);
         });
       };
     }])

@@ -4,12 +4,22 @@ mica.dataset
 
   .controller('StudyDatasetListController', ['$rootScope', '$scope', 'StudyDatasetsResource',
     'DatasetService',
-
     function ($rootScope, $scope, StudyDatasetsResource, DatasetService) {
-      $scope.studyDatasets = StudyDatasetsResource.query();
+      var onSuccess = function(response) {
+        $scope.studyDatasets = response;
+        $scope.loading = false;
+      };
+
+      var onError = function() {
+        $scope.loading = false;
+      };
+
+      $scope.loading = true;
+      StudyDatasetsResource.query({}, onSuccess, onError);
       $scope.deleteStudyDataset = function (dataset) {
         DatasetService.deleteDataset(dataset, function () {
-          $scope.studyDatasets = StudyDatasetsResource.query();
+          $scope.loading = true;
+          StudyDatasetsResource.query({}, onSuccess, onError);
         });
       };
     }])
@@ -478,11 +488,22 @@ mica.dataset
 
   .controller('HarmonizationDatasetListController', ['$rootScope', '$scope', 'HarmonizationDatasetsResource', 'DatasetService',
     function ($rootScope, $scope, HarmonizationDatasetsResource, DatasetService) {
-      $scope.harmonizedDatasets = HarmonizationDatasetsResource.query();
+      var onSuccess = function(response) {
+        $scope.harmonizedDatasets = response;
+        $scope.loading = false;
+      };
+
+      var onError = function() {
+        $scope.loading = false;
+      };
+
+      $scope.loading = true;
+      HarmonizationDatasetsResource.query({}, onSuccess, onError);
 
       $scope.deleteHarmonizationDataset = function (dataset) {
         DatasetService.deleteDataset(dataset, function () {
-          $scope.harmonizedDatasets = HarmonizationDatasetsResource.query();
+          $scope.loading = true;
+          HarmonizationDatasetsResource.query({}, onSuccess, onError);
         });
       };
     }])

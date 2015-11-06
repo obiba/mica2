@@ -8,8 +8,11 @@
     <i class="fa fa-plus"></i> <span translate>study.add</span>
   </a>
 
-  <p class="voffset2" ng-if="studies.length == 0">
+  <p class="voffset2" ng-if="studies.length == 0 && !loading">
     <span translate>study.none</span>
+  </p>
+
+  <p class="voffset2" ng-if="loading" class="loading">
   </p>
 
   <div ng-if="studies.length > 0">
