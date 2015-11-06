@@ -2,7 +2,11 @@
   <form name="form" role="form" novalidate ng-submit="save(form)">
     <div class="modal-header">
       <button type="button" class="close" aria-hidden="true" ng-click="cancel()">&times;</button>
-      <h4 class="modal-title" id="myStudyLabel" translate>permission.add</h4>
+      <h4 class="modal-title" id="myStudyLabel">
+        <span ng-if="!editMode" translate>permission.add</span>
+        <span ng-if="editMode && permission.type === 'USER'" translate>permission.edit-user</span>
+        <span ng-if="editMode && permission.type === 'GROUP'" translate>permission.edit-group</span>
+      </h4>
     </div>
 
     <div class="modal-body">
@@ -10,14 +14,15 @@
 
       <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
 
-      <div class="form-group"  ng-class="{'has-error': (form['type'].$dirty || form.saveAttempted) && form['type'].$invalid}">
+      <div class="form-group"  ng-class="{'has-error': (form['type'].$dirty || form.saveAttempted) && form['type'].$invalid}" ng-hide="editMode">
         <label for="type" class="control-label"><span translate>type</span> <span>*</span></label>
         <select id="type" name="type" class="form-control" ng-model="permission.type" required="true">
           <option ng-repeat="type in TYPES" value="{{type}}">{{ 'permission.' + type.toLowerCase() | translate}}</option>
         </select>
       </div>
 
-      <div disabled="editMode" form-input name="principal" model="permission.principal" label="permission.principal" required="!editMode"></div>
+      <div disabled="editMode" form-input name="principal" model="permission.principal"
+        label="permission.principal" help="permission.principal-help" required="!editMode"></div>
 
       <div class="form-group" ng-class="{'has-error': (form['role'].$dirty || form.saveAttempted) && form['role'].$invalid}">
         <label class="control-label"><span translate>role</span> <span>*</span></label>
@@ -26,6 +31,9 @@
             <input type="radio" name="role" value="{{role}}" ng-model="permission.role" required>
             <span>{{'permission.' + role.toLowerCase() | translate}}</span>
           </label>
+          <p class="help-block hoffset3" translate>
+            {{'permission.' + role.toLowerCase() + '-help' | translate}}
+          </p>
         </div>
       </div>
     </div>
