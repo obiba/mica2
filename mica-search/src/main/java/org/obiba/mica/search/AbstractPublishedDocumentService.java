@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -36,12 +37,13 @@ import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.obiba.mica.core.service.PublishedDocumentService;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+
+import sun.util.locale.LanguageTag;
 
 public abstract class AbstractPublishedDocumentService<T> implements PublishedDocumentService<T> {
 
@@ -53,21 +55,21 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
   protected Client client;
 
   @Inject
-  private ObjectMapper objectMapper;
+  private MicaConfigService micaConfigService;
 
   public T findById(String id) {
-    log.debug("findById {} {}", this.getClass(), id);
+    log.debug("findById {} {}", getClass(), id);
     List<T> results = findByIds(Arrays.asList(id));
     return (results != null && results.size() > 0) ? results.get(0) : null;
   }
 
   public List<T> findAll() {
-    log.debug("findAll {}", this.getClass());
+    log.debug("findAll {}", getClass());
     return executeQuery(QueryBuilders.matchAllQuery(), 0, MAX_SIZE);
   }
 
   public List<T> findByIds(List<String> ids) {
-    log.debug("findByIds {} {} ids", this.getClass(), ids.size());
+    log.debug("findByIds {} {} ids", getClass(), ids.size());
     return executeQueryByIds(buildFilteredQuery(ids), 0, MAX_SIZE, ids);
   }
 
@@ -177,7 +179,7 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
     hits.forEach(hit -> {
       try {
         int position = ids.indexOf(hit.getId());
-        if (position != -1) documents.put(position, processHit(hit));
+        if(position != -1) documents.put(position, processHit(hit));
       } catch(IOException e) {
         throw new RuntimeException(e);
       }
@@ -209,4 +211,14 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
     return FilterBuilders.termFilter("studyIds", studyId);
   }
 
+  protected List<String> getLocalizedFields(String... fieldNames) {
+    List<String> fields = Lists.newArrayList();
+    Stream.concat(micaConfigService.getConfig().getLocalesAsString().stream(), Stream.of(LanguageTag.UNDETERMINED))
+      .forEach(locale -> {
+        Arrays.stream(fieldNames).forEach(f -> {
+          fields.add(f + "." + locale + ".analyzed");
+        });
+      });
+    return fields;
+  }
 }

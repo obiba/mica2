@@ -13,6 +13,7 @@ package org.obiba.mica.file.search;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -50,8 +51,8 @@ public class EsPublishedFileService extends AbstractPublishedDocumentService<Att
   @Override
   public Documents<AttachmentState> find(int from, int limit, @Nullable String sort, @Nullable String order, @Nullable String studyId,
     @Nullable String queryString) {
-    return find(from, limit, sort, order, studyId, queryString, Lists
-      .newArrayList("publishedAttachment.name.analyzed", "publishedAttachment.type.analyzed",
-        "publishedAttachment.description.und.analyzed"));
+    List<String> fields = Lists.newArrayList("publishedAttachment.name.analyzed", "publishedAttachment.type.analyzed");
+    fields.addAll(getLocalizedFields("publishedAttachment.description"));
+    return find(from, limit, sort, order, studyId, queryString, fields);
   }
 }
