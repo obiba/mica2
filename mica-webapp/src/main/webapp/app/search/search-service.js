@@ -15,7 +15,7 @@ mica.search
 
   .factory('TaxonomyResource', ['$resource',
     function ($resource) {
-      return $resource('ws/taxonomy/:name/_filter', {}, {
+      return $resource('ws/taxonomy/:taxonomy/_filter', {}, {
         'get': {
           method: 'GET',
           errorHandler: true

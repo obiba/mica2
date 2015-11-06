@@ -22,9 +22,10 @@
         </a>
       </li>
     </div>
-    <a data-toggle="collapse" data-target="#{{taxonomy.name + '_vocabularies'}}"
-      ng-if="taxonomy.vocabularies && taxonomy.vocabularies.length>4">
-      <i class="fa fa-arrow-down"></i>
-    </a>
+    <li ng-if="taxonomy.vocabularies && taxonomy.vocabularies.length>4" class="list-unstyled">
+      <a data-toggle="collapse" data-target="#{{taxonomy.name + '_vocabularies'}}">
+        <i class="fa fa-arrow-down"></i>
+      </a>
+    </li>
   </ul>
 </div>

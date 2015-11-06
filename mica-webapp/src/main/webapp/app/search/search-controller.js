@@ -57,12 +57,28 @@ mica.search
         // taxonomy filter
         if ($scope.taxonomies.taxonomy) {
           if ($scope.taxonomies.vocabulary) {
-            $scope.vocabulary = VocabularyResource.get({ query: query });
+            VocabularyResource.get({
+              taxonomy: $scope.taxonomies.taxonomy.name,
+              vocabulary: $scope.taxonomies.vocabulary.name,
+              query: query
+            }, function onSuccess(response) {
+              $scope.taxonomies.vocabulary.terms = response.terms;
+              $scope.taxonomies.search.active = false;
+            });
           } else {
-            $scope.taxonomy = TaxonomyResource.get({ query: query });
+            TaxonomyResource.get({
+              taxonomy: $scope.taxonomies.taxonomy.name,
+              query: query
+            }, function onSuccess(response) {
+              $scope.taxonomies.taxonomy.vocabularies = response.vocabularies;
+              $scope.taxonomies.search.active = false;
+            });
           }
         } else {
-          $scope.taxonomies.all = TaxonomiesResource.get({ query: query });
+          TaxonomiesResource.get({ query: query }, function onSuccess(response) {
+            $scope.taxonomies.all = response;
+            $scope.taxonomies.search.active = false;
+          });
         }
       };
 
@@ -87,18 +103,22 @@ mica.search
         $scope.documents.search.active = false;
       };
 
-      var searchDocuments = function(query) {
+      var searchDocuments = function(/*query*/) {
         $scope.documents.search.active = true;
         // search for taxonomy terms
         // search for matching variables/studies/... count
       };
 
       var navigateTaxonomy = function(taxonomy, vocabulary) {
+        var toFilter = ($scope.taxonomies.taxonomy && !taxonomy) || ($scope.taxonomies.vocabulary && !vocabulary);
         $scope.taxonomies.taxonomy = taxonomy;
         $scope.taxonomies.vocabulary = vocabulary;
+        if(toFilter) {
+          filterTaxonomies($scope.taxonomies.search.text);
+        }
       };
 
-      var selectTerm = function(taxonomy, vocabulary, term) {
+      var selectTerm = function(/*taxonomy, vocabulary, term*/) {
 
       };
 
