@@ -501,8 +501,8 @@ mica.network
           });
       };
 
-      $scope.deleteStudyEvent = function (network, summary, index) {
-        $scope.studyIndexToDelete = index;
+      $scope.deleteStudyEvent = function (network, summary) {
+        $scope.studyIndexToDelete = $scope.studySummaries.indexOf(summary);
         $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
           {
             titleKey: 'network.study-delete-dialog.title',
