@@ -28,7 +28,7 @@ import com.google.common.eventbus.EventBus;
 
 @Service
 @Validated
-@EnableConfigurationProperties({AggregationsConfiguration.class, StudiesConfiguration.class})
+@EnableConfigurationProperties({ AggregationsConfiguration.class, StudiesConfiguration.class })
 public class MicaConfigService {
 
   @Inject
@@ -52,7 +52,7 @@ public class MicaConfigService {
   public AggregationsConfig getAggregationsConfig() {
     AggregationsConfig aggregationsConfig = getConfig().getAggregations();
 
-    if (aggregationsConfig == null) {
+    if(aggregationsConfig == null) {
       aggregationsConfig = getDefaultAggregationsConfig();
     }
 
@@ -84,13 +84,15 @@ public class MicaConfigService {
   public void save(@NotNull @Valid MicaConfig micaConfig) {
     MicaConfig savedConfig = getOrCreateMicaConfig();
     BeanUtils.copyProperties(micaConfig, savedConfig, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
-        "lastModifiedDate", "secretKey");
+      "lastModifiedDate", "secretKey", "micaVersion");
+    if(micaConfig.getMicaVersion() != null) savedConfig.setMicaVersion(micaConfig.getMicaVersion());
     micaConfigRepository.save(savedConfig);
     eventBus.post(new MicaConfigUpdatedEvent(getConfig()));
   }
 
   /**
    * Get the public url, statically defined if not part of the {@link org.obiba.mica.micaConfig.domain.MicaConfig}.
+   *
    * @return
    */
   public String getPublicUrl() {

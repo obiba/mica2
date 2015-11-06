@@ -18,6 +18,7 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 
+import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 
 @Priority(Integer.MIN_VALUE)
@@ -29,6 +30,8 @@ public class ConfigurationInterceptor implements ContainerResponseFilter {
   @Override
   public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
     throws IOException {
-    responseContext.getHeaders().putSingle("X-Mica-Version", configService.getConfig().getMicaVersion().toString());
+    MicaConfig config = configService.getConfig();
+    if(config != null && config.getMicaVersion() != null)
+      responseContext.getHeaders().putSingle("X-Mica-Version", config.getMicaVersion().toString());
   }
 }
