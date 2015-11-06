@@ -16,9 +16,7 @@ mica.dataAccessRequest
 
     function ($rootScope, $scope, DataAccessRequestsResource, DataAccessRequestResource, DataAccessRequestService, NOTIFICATION_EVENTS, Session, USER_ROLES) {
 
-      $scope.REQUEST_STATUS = DataAccessRequestService.getStatusFilterData();
-      $scope.searchStatus = {};
-      $scope.requests = DataAccessRequestsResource.query(function(reqs) {
+      var onSuccess = function(reqs) {
         for (var i = 0; i < reqs.length; i++) {
           var req = reqs[i];
           if (req.status !== 'OPENED') {
@@ -30,7 +28,18 @@ mica.dataAccessRequest
             }
           }
         }
-      });
+        $scope.requests = reqs;
+        $scope.loading = false;
+      };
+
+      var onError = function() {
+        $scope.loading = false;
+      };
+
+      $scope.REQUEST_STATUS = DataAccessRequestService.getStatusFilterData();
+      $scope.searchStatus = {};
+      $scope.loading = true;
+      DataAccessRequestsResource.query({}, onSuccess, onError);
       $scope.actions = DataAccessRequestService.actions;
       $scope.showApplicant = Session.roles.filter(function(role) {
         return [USER_ROLES.dao, USER_ROLES.admin].indexOf(role) > -1;
@@ -51,7 +60,8 @@ mica.dataAccessRequest
         if ($scope.requestToDelete === id) {
           DataAccessRequestResource.delete({id: $scope.requestToDelete},
             function () {
-              $scope.requests = DataAccessRequestsResource.query();
+              $scope.loading = true;
+              DataAccessRequestsResource.query({}, onSuccess, onError);
             });
 
           delete $scope.requestToDelete;
