@@ -7,7 +7,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -316,22 +315,28 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
       throw Throwables.propagate(e);
     }
 
-    Stream.concat(restoredStudy.getAttachments().stream(),
-      restoredStudy.getPopulations().stream().flatMap(p -> p.getDataCollectionEvents().stream())
-        .flatMap(d -> d.getAttachments().stream())).forEach(a -> {
-      try {
-        fileSystemService.getAttachmentState(a.getPath(), a.getName(), false);
-      } catch(NoSuchEntityException e) {
-        Attachment existingAttachment = attachmentRepository.findOne(a.getId());
-
-        if(existingAttachment != null) {
-          existingAttachment.setPath(existingAttachment.getPath().replaceAll("/attachment/[0-9a-f\\-]+$", ""));
-          fileSystemService.save(existingAttachment);
-        } else fileSystemService.save(a);
-      }
-    });
+    restoredStudy.getAttachments().stream()
+      .forEach(a -> ensureAttachmentState(a, String.format("/study/%s", restoredStudy.getId())));
+    restoredStudy.getPopulations().stream().forEach(p -> p.getDataCollectionEvents().stream().forEach(
+      d -> d.getAttachments().stream().forEach(a -> ensureAttachmentState(a, String
+        .format("/study/%s/population/%s/data-collection-event/%s", restoredStudy.getId(), p.getId(), d.getId())))));
 
     return restoredStudy;
+  }
+
+  private void ensureAttachmentState(Attachment a, String path) {
+    if(!fileSystemService.hasAttachmentState(a.getPath(), a.getName(), false)) {
+      Attachment existingAttachment = attachmentRepository.findOne(a.getId());
+
+      if(existingAttachment != null) {
+        if(!fileSystemService.hasAttachmentState(existingAttachment.getPath(), existingAttachment.getName(), false)) {
+          existingAttachment.setPath(path);
+          fileSystemService.reinstate(existingAttachment);
+        }
+      } else {
+        log.warn("Missing attachment from git. Ignoring.", a);
+      }
+    }
   }
 
   private void ensureAcronym(@NotNull Study study) {
