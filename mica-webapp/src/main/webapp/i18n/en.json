@@ -809,7 +809,7 @@
     "status": "Status",
     "lastUpdate": "Last Update",
     "submissionDate": "Submission Date",
-    "none": "No Data Access requested.",
+    "none": "No data access requested.",
     "add": "Add Data Access Request",
     "edit": "Edit Data Access Request",
     "form": "Application Form",
