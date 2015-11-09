@@ -41,7 +41,7 @@ mica.search
             }
             break;
 
-          default:
+          case 13: // Enter
             filterTaxonomies($scope.taxonomies.search.text);
             break;
         }
