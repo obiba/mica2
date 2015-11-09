@@ -161,7 +161,7 @@ mica
 
         if (!$rootScope.authenticated) {
           var path = $location.path();
-          if ('/login' !== path) {
+          if ('' !== path && '/login' !== path) {
             // save path to navigate to after login
             var search = $location.search();
             search.redirect = path;
@@ -189,9 +189,7 @@ mica
       // Call when the 401 response is returned by the server
       $rootScope.$on('event:auth-loginRequired', function () {
         Session.destroy();
-        if ($location.path() !== '/' && $location.path() !== '') {
-          $location.path('/login').replace();
-        }
+        $location.path('/login').replace();
       });
 
       // Call when the 403 response is returned by the server

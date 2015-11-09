@@ -4,9 +4,10 @@
 
 mica.controller('MainController', ['$rootScope', '$scope', '$log', 'MicaConfigResource', 'screenSize',
   function ($rootScope, $scope, $log, MicaConfigResource, screenSize) {
-    $scope.micaConfig = MicaConfigResource.get();
     $rootScope.screen = $scope.screen = {size: null, device: null};
-
+    $rootScope.$on('event:auth-loginConfirmed', function () {
+      $scope.micaConfig = MicaConfigResource.get();
+    });
 
     function getScreenSize() {
       var size = ['lg', 'md', 'sm', 'xs'].filter(function (size) {
