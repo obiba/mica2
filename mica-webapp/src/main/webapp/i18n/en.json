@@ -711,9 +711,9 @@
   "user": "User",
   "users": "Users",
   "search": "Search",
-  "all-categories": "All categories",
-  "no-categories": "No categories found",
-  "browse-categories": "Browse categories",
+  "all-classifications": "All classifications",
+  "no-classifications": "No classifications found",
+  "browse-classifications": "Browse classifications",
   "add-query": "Add to search query",
   "permissions": "Permissions",
   "permission": {

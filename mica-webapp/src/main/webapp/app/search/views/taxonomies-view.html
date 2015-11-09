@@ -4,10 +4,10 @@
       <div class="col-xs-9 voffset1">
         <ol class="mica-breadcrumb no-margin no-padding">
           <li ng-if="!taxonomies.taxonomy" translate>
-            all-categories
+            all-classifications
           </li>
           <li ng-if="taxonomies.taxonomy">
-            <a href ng-click="navigateTaxonomy()" translate>all-categories</a>
+            <a href ng-click="navigateTaxonomy()" translate>all-classifications</a>
           </li>
           <li ng-if="taxonomies.taxonomy && !taxonomies.vocabulary">
     <span ng-repeat="label in taxonomies.taxonomy.title" ng-if="label.locale === lang">
@@ -46,7 +46,7 @@
   </div>
   <div class="panel-body">
     <div ng-if="!taxonomies.search.active && taxonomies.all.length === 0" translate>
-      no-categories
+      no-classifications
     </div>
     <div ng-if="taxonomies.search.active" class="loading"></div>
 
