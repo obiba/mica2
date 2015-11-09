@@ -6,13 +6,9 @@
   </a>
 </div>
 
-<div class="row voffset2" ng-if="!permissions.length">
-  <div class="col-md-12">
-    <p>
-      <span translate>permission.none</span>
-    </p>
-  </div>
-</div>
+<p class="help-block" ng-if="!permissions.length">
+  <span translate>permission.none</span>
+</p>
 
 <div class="row voffset2" ng-if="permissions.length">
   <div class="col-xs-4">
