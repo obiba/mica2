@@ -2,8 +2,18 @@
 
 /* Controllers */
 
-mica.controller('MainController', ['$rootScope', '$scope', '$log', 'MicaConfigResource', 'screenSize',
-  function ($rootScope, $scope, $log, MicaConfigResource, screenSize) {
+mica.controller('MainController', [
+  '$rootScope',
+  '$scope',
+  '$log',
+  'MicaConfigResource',
+  'screenSize',
+  'AuthenticationSharedService',
+  function ($rootScope, $scope, $log, MicaConfigResource, screenSize, AuthenticationSharedService) {
+    if (AuthenticationSharedService.isAuthenticated()) {
+      $scope.micaConfig = MicaConfigResource.get();
+    }
+
     $rootScope.screen = $scope.screen = {size: null, device: null};
     $rootScope.$on('event:auth-loginConfirmed', function () {
       $scope.micaConfig = MicaConfigResource.get();
