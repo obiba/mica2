@@ -311,15 +311,17 @@ mica.fileSystem
 
       var searchKeyUp = function(event) {
         switch(event.keyCode) {
-          case 27: // ESC
-            if ($scope.data.search.active) {
+          case 13: // ENTER
+            if ($scope.data.search.text) {
+              searchDocuments($scope.data.search.text);
+            } else {
               clearSearch();
             }
             break;
 
-          default:
-            if ($scope.data.search.text) {
-              searchDocuments($scope.data.search.text);
+          case 27: // ESC
+            if ($scope.data.search.active) {
+              clearSearch();
             }
             break;
         }
