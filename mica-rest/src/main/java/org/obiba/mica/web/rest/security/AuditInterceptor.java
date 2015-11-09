@@ -58,7 +58,9 @@ public class AuditInterceptor implements ContainerResponseFilter {
     StringBuilder sb = new StringBuilder("/").append(requestContext.getUriInfo().getPath(true));
     MultivaluedMap<String, String> params = requestContext.getUriInfo().getQueryParameters();
     if(params.size() > 0) {
-      sb.append(" queryParams:").append(params.toString());
+      sb.append(" queryParams:").append("{");
+      params.forEach((k,v) -> sb.append(k).append(": ").append(v));
+      sb.append("}");
     }
 
     return sb.toString();
