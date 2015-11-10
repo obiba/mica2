@@ -10,21 +10,21 @@
             <a href ng-click="navigateTaxonomy()" translate>all-classifications</a>
           </li>
           <li ng-if="taxonomies.taxonomy && !taxonomies.vocabulary">
-    <span ng-repeat="label in taxonomies.taxonomy.title" ng-if="label.locale === lang">
-      {{label.text}}
-    </span>
+            <span ng-repeat="label in taxonomies.taxonomy.title" ng-if="label.locale === lang">
+              {{label.text}}
+            </span>
           </li>
           <li ng-if="taxonomies.taxonomy && taxonomies.vocabulary">
             <a href ng-click="navigateTaxonomy(taxonomies.taxonomy)">
-      <span ng-repeat="label in taxonomies.taxonomy.title" ng-if="label.locale === lang">
-      {{label.text}}
-      </span>
+              <span ng-repeat="label in taxonomies.taxonomy.title" ng-if="label.locale === lang">
+              {{label.text}}
+              </span>
             </a>
           </li>
           <li ng-if="taxonomies.vocabulary">
-    <span ng-repeat="label in taxonomies.vocabulary.title" ng-if="label.locale === lang">
-      {{label.text}}
-    </span>
+            <span ng-repeat="label in taxonomies.vocabulary.title" ng-if="label.locale === lang">
+              {{label.text}}
+            </span>
           </li>
         </ol>
       </div>
@@ -48,16 +48,14 @@
             </div>
           </div>
           <div class="form-group">
-            <a href>
-        <span class="input-group input-group-sm no-padding-top">
-          <span class="input-group-addon"><i class="glyphicon glyphicon-filter"></i></span>
-          <input ng-keyup="filterTaxonomiesKeyUp($event)"
-            ng-model="taxonomies.search.text"
-            type="text"
-            class="form-control ng-pristine ng-untouched ng-valid"
-            aria-describedby="study-search">
-        </span>
-            </a>
+            <span class="input-group input-group-sm no-padding-top">
+              <span class="input-group-addon"><i class="glyphicon glyphicon-filter"></i></span>
+              <input ng-keyup="filterTaxonomiesKeyUp($event)"
+                ng-model="taxonomies.search.text"
+                type="text"
+                class="form-control ng-pristine ng-untouched ng-valid"
+                aria-describedby="study-search">
+            </span>
           </div>
         </div>
       </div>

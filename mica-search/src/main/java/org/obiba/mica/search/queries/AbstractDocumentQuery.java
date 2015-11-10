@@ -202,7 +202,7 @@ public abstract class AbstractDocumentQuery {
    */
   public List<String> query(List<String> studyIds, CountStatsData counts, Scope scope) throws IOException {
     QueryDto tempQueryDto = queryDto == null ? createStudyIdFilters(studyIds) : addStudyIdFilters(studyIds);
-    return mode == COVERAGE ? executeCoverage(tempQueryDto, tempQueryDto.getFrom(), tempQueryDto.getSize(), DIGEST,
+    return mode == COVERAGE ? executeCoverage(tempQueryDto, DIGEST,
       counts) : execute(tempQueryDto, tempQueryDto.getFrom(), tempQueryDto.getSize(), scope, counts);
   }
 
@@ -301,17 +301,16 @@ public abstract class AbstractDocumentQuery {
   /**
    * Executes a query to retrieve documents and aggregations for coverage
    *
-   * @param queryDto
-   * @param from
-   * @param size
+   * @param query
    * @param scope
    * @param counts
    * @return
    * @throws IOException
    */
-  protected List<String> executeCoverage(QueryDto queryDto, int from, int size, Scope scope, CountStatsData counts)
+  @SuppressWarnings("OverlyLongMethod")
+  protected List<String> executeCoverage(QueryDto query, Scope scope, CountStatsData counts)
     throws IOException {
-    if(queryDto == null) return null;
+    if(query == null) return null;
 
     QueryDtoParser queryDtoParser = QueryDtoParser.newParser();
     aggregationTitleResolver.registerProviders(getAggregationMetaDataProviders());
@@ -321,29 +320,29 @@ public abstract class AbstractDocumentQuery {
       .setTypes(getSearchType()) //
       .setSearchType(SearchType.COUNT) //
       .setQuery(QueryBuilders.matchAllQuery()) //
-      .setFrom(from) //
-      .setSize(size) //
+      .setFrom(0) //
+      .setSize(0) // no results needed for a coverage
       .setNoFields().addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT));
 
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
       .setSearchType(SearchType.COUNT) //
-      .setQuery(queryDtoParser.parse(queryDto)) //
-      .setFrom(from) //
-      .setSize(size) //
+      .setQuery(queryDtoParser.parse(query)) //
+      .setFrom(0) //
+      .setSize(0) // no results needed for a coverage
       .addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT));
 
     if(ignoreFields()) requestBuilder.setNoFields();
 
-    SortBuilder sortBuilder = queryDtoParser.parseSort(queryDto);
-    if(sortBuilder != null) requestBuilder.addSort(queryDtoParser.parseSort(queryDto));
+    SortBuilder sortBuilder = queryDtoParser.parseSort(query);
+    if(sortBuilder != null) requestBuilder.addSort(queryDtoParser.parseSort(query));
 
     aggregationYamlParser.setLocales(micaConfigService.getConfig().getLocales());
     Map<String, Properties> subAggregations = Maps.newHashMap();
     Properties aggregationProperties = getAggregationsProperties();
 
-    if(queryDto != null && queryDto.getAggsByCount() > 0) {
-      queryDto.getAggsByList().forEach(field -> subAggregations.put(field, aggregationProperties));
+    if(query.getAggsByCount() > 0) {
+      query.getAggsByList().forEach(field -> subAggregations.put(field, aggregationProperties));
     }
 
     aggregationYamlParser.getAggregations(getAggregationsDescription(), subAggregations).forEach(agg -> {
