@@ -73,15 +73,32 @@ mica.attachment
     $scope.onLoad();
   }])
 
-.controller('PermissionsModalController', ['$scope', '$modalInstance', 'AlertService', 'ServerErrorUtils', 'permission', 'onAdd',
-  function ($scope, $modalInstance, AlertService, ServerErrorUtils, permission, onAdd) {
+.controller('PermissionsModalController', ['$scope',
+  '$modalInstance',
+  '$filter',
+  'AlertService',
+  'ServerErrorUtils',
+  'permission',
+  'onAdd',
+  function ($scope, $modalInstance, $filter, AlertService, ServerErrorUtils, permission, onAdd) {
     $scope.ROLES = ['READER', 'EDITOR', 'REVIEWER'];
-    $scope.TYPES = ['USER', 'GROUP'];
-    $scope.permission = permission ? permission : {type:'USER', role: 'READER'};
+    $scope.TYPES = [
+      {name: 'USER', label: $filter('translate')('permission.user')},
+      {name: 'GROUP', label: $filter('translate')('permission.group')}
+    ];
+
+    var selectedIndex = permission ?
+      $scope.TYPES.findIndex(function(type) {
+        return type.name === permission.type;
+      }) : -1;
+
+    $scope.selectedPermission = selectedIndex > -1 ? $scope.TYPES[selectedIndex] : $scope.TYPES[0];
+    $scope.permission = permission ? permission : {type: $scope.selectedPermission.name, role: 'READER'};
     $scope.editMode = permission && permission.principal;
 
     $scope.save = function (form) {
       if(form.$valid) {
+        $scope.permission.type = $scope.selectedPermission.name;
         onAdd($scope.permission).$promise.then(function () {
           $modalInstance.close(true);
         }, function (response) {

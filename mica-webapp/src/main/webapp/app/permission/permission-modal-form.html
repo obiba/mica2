@@ -16,8 +16,7 @@
 
       <div class="form-group"  ng-class="{'has-error': (form['type'].$dirty || form.saveAttempted) && form['type'].$invalid}" ng-hide="editMode">
         <label for="type" class="control-label"><span translate>type</span> <span>*</span></label>
-        <select id="type" name="type" class="form-control" ng-model="permission.type" required="true">
-          <option ng-repeat="type in TYPES" value="{{type}}">{{ 'permission.' + type.toLowerCase() | translate}}</option>
+        <select id="type" name="type" class="form-control" ng-model="selectedPermission" ng-options="type.label for type in TYPES" required="true">
         </select>
       </div>
 
