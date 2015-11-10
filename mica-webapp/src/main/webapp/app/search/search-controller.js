@@ -24,13 +24,21 @@ mica.search
         }
       };
       $scope.taxonomies = {
-        all: TaxonomiesResource.get(),
+        all: TaxonomiesResource.get({ target: 'variable' }),
         search: {
           text: null,
           active: false
         },
+        target: 'variable',
         taxonomy: null,
         vocabulary: null
+      };
+
+      var selectTaxonomyTarget = function(target) {
+        $scope.taxonomies.target = target;
+        $scope.taxonomies.taxonomy = null;
+        $scope.taxonomies.vocabulary = null;
+        filterTaxonomies($scope.taxonomies.search.text);
       };
 
       var filterTaxonomiesKeyUp = function(event) {
@@ -63,6 +71,7 @@ mica.search
         if ($scope.taxonomies.taxonomy) {
           if ($scope.taxonomies.vocabulary) {
             VocabularyResource.get({
+              target: $scope.taxonomies.target,
               taxonomy: $scope.taxonomies.taxonomy.name,
               vocabulary: $scope.taxonomies.vocabulary.name,
               query: query
@@ -72,6 +81,7 @@ mica.search
             });
           } else {
             TaxonomyResource.get({
+              target: $scope.taxonomies.target,
               taxonomy: $scope.taxonomies.taxonomy.name,
               query: query
             }, function onSuccess(response) {
@@ -80,7 +90,10 @@ mica.search
             });
           }
         } else {
-          TaxonomiesResource.get({ query: query }, function onSuccess(response) {
+          TaxonomiesResource.get({
+            target: $scope.taxonomies.target,
+            query: query
+          }, function onSuccess(response) {
             $scope.taxonomies.all = response;
             $scope.taxonomies.search.active = false;
           });
@@ -130,5 +143,6 @@ mica.search
       $scope.searchKeyUp = searchKeyUp;
       $scope.filterTaxonomiesKeyUp = filterTaxonomiesKeyUp;
       $scope.navigateTaxonomy = navigateTaxonomy;
+      $scope.selectTaxonomyTarget = selectTaxonomyTarget;
       $scope.selectTerm = selectTerm;
     }]);

@@ -12,13 +12,16 @@ package org.obiba.mica.taxonomy.rest;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.taxonomy.TaxonomyResolver;
+import org.obiba.mica.taxonomy.TaxonomyTarget;
 import org.obiba.opal.web.model.Opal;
 import org.obiba.opal.web.taxonomy.Dtos;
 import org.springframework.context.annotation.Scope;
@@ -37,13 +40,18 @@ public class TaxonomiesSearchResource extends AbstractTaxonomySearchResource {
   @GET
   @Path("/_filter")
   @Timed
-  public List<Opal.TaxonomyDto> filter(@QueryParam("query") String query) {
-    if(Strings.isNullOrEmpty(query)) return opalService.getTaxonomyDtos();
+  public List<Opal.TaxonomyDto> filter(@QueryParam("target") @DefaultValue("variable") String target,
+    @QueryParam("query") String query) {
+    TaxonomyTarget taxonomyTarget = getTaxonomyTarget(target);
 
-    Map<String, Map<String, List<String>>> taxoNamesMap = TaxonomyResolver.asMap(filterVocabularies(query), filterTerms(query));
+    if(Strings.isNullOrEmpty(query))
+      return getTaxonomies(taxonomyTarget).stream().map(Dtos::asDto).collect(Collectors.toList());
+
+    Map<String, Map<String, List<String>>> taxoNamesMap = TaxonomyResolver
+      .asMap(filterVocabularies(taxonomyTarget, query), filterTerms(taxonomyTarget, query));
 
     List<Opal.TaxonomyDto> results = Lists.newArrayList();
-    opalService.getTaxonomies().stream().filter(t -> taxoNamesMap.containsKey(t.getName())).forEach(taxo -> {
+    getTaxonomies(taxonomyTarget).stream().filter(t -> taxoNamesMap.containsKey(t.getName())).forEach(taxo -> {
       Opal.TaxonomyDto.Builder tBuilder = Dtos.asDto(taxo, false).toBuilder();
       populate(tBuilder, taxo, taxoNamesMap);
       results.add(tBuilder.build());

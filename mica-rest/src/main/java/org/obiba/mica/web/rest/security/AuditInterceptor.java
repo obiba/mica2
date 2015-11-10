@@ -12,6 +12,8 @@ package org.obiba.mica.web.rest.security;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -26,6 +28,8 @@ import org.obiba.mica.security.ShiroAuditorAware;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+
+import com.google.common.base.Joiner;
 
 public class AuditInterceptor implements ContainerResponseFilter {
 
@@ -59,7 +63,12 @@ public class AuditInterceptor implements ContainerResponseFilter {
     MultivaluedMap<String, String> params = requestContext.getUriInfo().getQueryParameters();
     if(params.size() > 0) {
       sb.append(" queryParams:").append("{");
-      params.forEach((k,v) -> sb.append(k).append(": ").append(v));
+      boolean first = true;
+      for(Map.Entry<String, List<String>> kv : params.entrySet()) {
+        if(first) first = false;
+        else sb.append(", ");
+        sb.append(kv.getKey()).append(": [").append(Joiner.on(", ").join(kv.getValue())).append("]");
+      }
       sb.append("}");
     }
 

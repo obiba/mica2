@@ -16,7 +16,9 @@ public class TaxonomyIndexable extends TaxonomyEntityIndexable<Taxonomy> {
 
   private final Taxonomy taxonomy;
 
-  public TaxonomyIndexable(Taxonomy taxonomy) {
+
+  public TaxonomyIndexable(TaxonomyTarget target, Taxonomy taxonomy) {
+    super(target);
     this.taxonomy = taxonomy;
   }
 
@@ -24,6 +26,8 @@ public class TaxonomyIndexable extends TaxonomyEntityIndexable<Taxonomy> {
   public String getId() {
     return getName();
   }
+
+
 
   @Override
   public String getMappingName() {

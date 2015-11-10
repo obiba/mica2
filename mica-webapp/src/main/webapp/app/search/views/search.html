@@ -3,40 +3,11 @@
 
   <!-- Search region -->
   <div>
-    <div class="btn-group dropdown" is-open="status.isopen">
-      <button type="button" class="btn btn-info btn-sm dropdown-toggle" ng-disabled="disabled" data-toggle="dropdown">
-        Study: All <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu" role="menu">
-        <li><a role="menuitem" href ng-click="selectCriteria()">Atlantic Path</a></li>
-        <li><a role="menuitem" href ng-click="selectCriteria()">CartaGene</a></li>
-      </ul>
-    </div>
-
-    <div class="btn-group dropdown" is-open="status.isopen">
-      <button type="button" class="btn btn-default btn-sm dropdown-toggle" ng-disabled="disabled" data-toggle="dropdown">
-        OR <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu" role="menu">
-        <li><a role="menuitem" href ng-click="selectCriteria()">AND</a></li>
-      </ul>
-    </div>
-
-    <div class="btn-group dropdown" is-open="status.isopen">
-      <button type="button" class="btn btn-info btn-sm dropdown-toggle" ng-disabled="disabled" data-toggle="dropdown">
-        Study design: All <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu" role="menu">
-        <li><a role="menuitem" href ng-click="selectCriteria()">Cohort study (117)</a></li>
-        <li><a role="menuitem" href ng-click="selectCriteria()">Cross sectional (8)</a></li>
-        <li><a role="menuitem" href ng-click="selectCriteria()">Clinical trial (5)</a></li>
-        <li><a role="menuitem" href ng-click="selectCriteria()">Case control (2)</a></li>
-        <li><a role="menuitem" href ng-click="selectCriteria()">Other (2)</a></li>
-      </ul>
-    </div>
-
-    <div class="btn-group width25">
-      <span class="input-group input-group-sm no-padding-top">
+    <div class="row">
+      <div class="col-xs-4"></div>
+      <div class="col-xs-4">
+        <a href>
+        <span class="input-group input-group-sm no-padding-top">
           <input ng-keyup="searchKeyUp($event)"
             ng-model="documents.search.text"
             type="text"
@@ -44,21 +15,63 @@
             aria-describedby="study-search">
           <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
         </span>
-    </div>
-
-    <!-- Classifications region -->
-    <div>
-      <a class="btn btn-primary btn-sm voffset4" data-toggle="collapse" data-target="#taxonomies" translate>
-        browse-classifications
-      </a>
-      <div id="taxonomies" class="collapse voffset2">
-        <div ng-include="'app/search/views/taxonomies-view.html'"></div>
+        </a>
       </div>
     </div>
 
-    <!-- Results region -->
-    <div>
+    <div class="row voffset4">
+      <div class="col-xs-12">
+        <div class="btn-group dropdown" is-open="status.isopen">
+          <button type="button" class="btn btn-info btn-sm dropdown-toggle" ng-disabled="disabled"
+            data-toggle="dropdown">
+            Study: All <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <li><a role="menuitem" href ng-click="selectCriteria()">Atlantic Path</a></li>
+            <li><a role="menuitem" href ng-click="selectCriteria()">CartaGene</a></li>
+          </ul>
+        </div>
 
+        <div class="btn-group dropdown" is-open="status.isopen">
+          <button type="button" class="btn btn-default btn-sm dropdown-toggle" ng-disabled="disabled"
+            data-toggle="dropdown">
+            OR <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <li><a role="menuitem" href ng-click="selectCriteria()">AND</a></li>
+          </ul>
+        </div>
+
+        <div class="btn-group dropdown" is-open="status.isopen">
+          <button type="button" class="btn btn-info btn-sm dropdown-toggle" ng-disabled="disabled"
+            data-toggle="dropdown">
+            Study design: All <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <li><a role="menuitem" href ng-click="selectCriteria()">Cohort study (117)</a></li>
+            <li><a role="menuitem" href ng-click="selectCriteria()">Cross sectional (8)</a></li>
+            <li><a role="menuitem" href ng-click="selectCriteria()">Clinical trial (5)</a></li>
+            <li><a role="menuitem" href ng-click="selectCriteria()">Case control (2)</a></li>
+            <li><a role="menuitem" href ng-click="selectCriteria()">Other (2)</a></li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
+
+  <!-- Classifications region -->
+  <div>
+    <a class="btn btn-primary btn-sm voffset4" data-toggle="collapse" data-target="#taxonomies" translate>
+      browse-classifications
+    </a>
+    <div id="taxonomies" class="collapse voffset2">
+      <div ng-include="'app/search/views/taxonomies-view.html'"></div>
+    </div>
+  </div>
+
+  <!-- Results region -->
+  <div>
+
+  </div>
+</div>
 

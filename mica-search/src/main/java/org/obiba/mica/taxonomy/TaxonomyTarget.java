@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2015 OBiBa. All rights reserved.
  *
@@ -9,9 +8,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.micaConfig.event;
+package org.obiba.mica.taxonomy;
 
-public class TaxonomiesUpdatedEvent {
-
-  public TaxonomiesUpdatedEvent() {}
+public enum TaxonomyTarget {
+  VARIABLE, STUDY
 }

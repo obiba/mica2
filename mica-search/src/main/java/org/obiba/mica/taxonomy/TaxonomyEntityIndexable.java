@@ -18,8 +18,18 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public abstract class TaxonomyEntityIndexable<T extends TaxonomyEntity> implements Indexable {
 
+  private final TaxonomyTarget target;
+
+  protected TaxonomyEntityIndexable(TaxonomyTarget target) {
+    this.target = target;
+  }
+
   @JsonIgnore
   protected abstract T getTaxonomyEntity();
+
+  public TaxonomyTarget getTarget() {
+    return target;
+  }
 
   public String getName() {
     return getTaxonomyEntity().getName();

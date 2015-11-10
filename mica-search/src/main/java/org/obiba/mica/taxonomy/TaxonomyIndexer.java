@@ -13,13 +13,16 @@ package org.obiba.mica.taxonomy;
 import javax.inject.Inject;
 
 import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.search.ElasticSearchIndexer;
+import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 
 @Component
@@ -41,6 +44,9 @@ public class TaxonomyIndexer {
   private OpalService opalService;
 
   @Inject
+  private MicaConfigService micaConfigService;
+
+  @Inject
   private ElasticSearchIndexer elasticSearchIndexer;
 
   @Async
@@ -48,13 +54,19 @@ public class TaxonomyIndexer {
   public void taxonomiesUpdated(TaxonomiesUpdatedEvent event) {
     log.info("Taxonomies were updated");
     if(elasticSearchIndexer.hasIndex(TAXONOMY_INDEX)) elasticSearchIndexer.dropIndex(TAXONOMY_INDEX);
-    opalService.getTaxonomies().forEach(taxo -> {
-      elasticSearchIndexer.index(TAXONOMY_INDEX, new TaxonomyIndexable(taxo));
-      taxo.getVocabularies().forEach(voc -> {
-        elasticSearchIndexer.index(TAXONOMY_INDEX, new TaxonomyVocabularyIndexable(taxo, voc));
-        voc.getTerms()
-          .forEach(term -> elasticSearchIndexer.index(TAXONOMY_INDEX, new TaxonomyTermIndexable(taxo, voc, term)));
+    index(TaxonomyTarget.VARIABLE, opalService.getTaxonomies());
+    index(TaxonomyTarget.STUDY, Lists.newArrayList(micaConfigService.getStudyTaxonomy()));
+  }
+
+  private void index(TaxonomyTarget target, Iterable<Taxonomy> taxonomies) {
+    taxonomies.forEach(taxo -> {
+      elasticSearchIndexer.index(TAXONOMY_INDEX, new TaxonomyIndexable(target, taxo));
+      if(taxo.hasVocabularies()) taxo.getVocabularies().forEach(voc -> {
+        elasticSearchIndexer.index(TAXONOMY_INDEX, new TaxonomyVocabularyIndexable(target, taxo, voc));
+        if(voc.hasTerms()) voc.getTerms().forEach(
+          term -> elasticSearchIndexer.index(TAXONOMY_INDEX, new TaxonomyTermIndexable(target, taxo, voc, term)));
       });
     });
   }
+
 }

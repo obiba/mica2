@@ -24,6 +24,7 @@ import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.taxonomy.EsTaxonomyTermService;
 import org.obiba.mica.taxonomy.EsTaxonomyVocabularyService;
+import org.obiba.mica.taxonomy.TaxonomyTarget;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.web.model.Opal;
 import org.obiba.opal.web.taxonomy.Dtos;
@@ -50,7 +51,7 @@ public class AbstractTaxonomySearchResource {
   private MicaConfigService micaConfigService;
 
   @Inject
-  protected OpalService opalService;
+  private OpalService opalService;
 
   protected void populate(Opal.TaxonomyDto.Builder tBuilder, Taxonomy taxonomy,
     Map<String, Map<String, List<String>>> taxoNamesMap) {
@@ -66,9 +67,22 @@ public class AbstractTaxonomySearchResource {
       });
   }
 
-  protected List<String> filterVocabularies(String query) {
+  protected List<String> filterVocabularies(TaxonomyTarget target, String query) {
     try {
-      return esTaxonomyVocabularyService.find(0, Integer.MAX_VALUE, DEFAULT_SORT, "asc", null, query, getFields(VOCABULARY_FIELDS))
+      return esTaxonomyVocabularyService
+        .find(0, Integer.MAX_VALUE, DEFAULT_SORT, "asc", null, getTargettedQuery(target, query),
+          getFields(VOCABULARY_FIELDS)).getList();
+    } catch(IndexMissingException e) {
+      initTaxonomies();
+      // for a 404 response
+      throw new NoSuchElementException();
+    }
+  }
+
+  protected List<String> filterTerms(TaxonomyTarget target, String query) {
+    try {
+      return esTaxonomyTermService
+        .find(0, Integer.MAX_VALUE, DEFAULT_SORT, "asc", null, getTargettedQuery(target, query), getFields(TERM_FIELDS))
         .getList();
     } catch(IndexMissingException e) {
       initTaxonomies();
@@ -77,14 +91,34 @@ public class AbstractTaxonomySearchResource {
     }
   }
 
-  protected List<String> filterTerms(String query) {
-    try {
-      return esTaxonomyTermService.find(0, Integer.MAX_VALUE, DEFAULT_SORT, "asc", null, query, getFields(TERM_FIELDS)).getList();
-    } catch(IndexMissingException e) {
-      initTaxonomies();
-      // for a 404 response
-      throw new NoSuchElementException();
+  protected List<Taxonomy> getTaxonomies(TaxonomyTarget target) {
+    switch(target) {
+      case STUDY:
+        return Lists.newArrayList(micaConfigService.getStudyTaxonomy());
+      default:
+        return opalService.getTaxonomies();
     }
+  }
+
+  protected Taxonomy getTaxonomy(TaxonomyTarget target, String name) {
+    switch(target) {
+      case STUDY:
+        return micaConfigService.getStudyTaxonomy();
+      default:
+        return opalService.getTaxonomy(name);
+    }
+  }
+
+  protected TaxonomyTarget getTaxonomyTarget(String target) {
+    try {
+      return TaxonomyTarget.valueOf(target.toUpperCase());
+    } catch(Exception e) {
+      throw new NoSuchElementException("No such taxonomy target: " + target);
+    }
+  }
+
+  private String getTargettedQuery(TaxonomyTarget target, String query) {
+    return String.format("target:%s AND (%s)", target.name(), query);
   }
 
   private List<String> getFields(String... fieldNames) {

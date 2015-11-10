@@ -6,10 +6,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import com.google.common.collect.Lists;
 
 @ConfigurationProperties(locations = "classpath:/mica-studies.yml")
-public class StudiesConfiguration extends Taxonomy {
+public class StudyTaxonomy extends Taxonomy {
 
-  public StudiesConfiguration() {
-    super();
+  private static final long serialVersionUID = 4850803732637831829L;
+
+  public StudyTaxonomy() {
     setVocabularies(Lists.newArrayList()); //explicit initialization for yaml bean factory
   }
+
 }

@@ -11,14 +11,16 @@
 package org.obiba.mica.search.aggregations;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.obiba.mica.config.StudiesConfiguration;
+import org.obiba.mica.config.StudyTaxonomy;
 import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.opal.core.domain.taxonomy.TaxonomyEntity;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Maps;
@@ -26,34 +28,33 @@ import com.google.common.collect.Maps;
 @Component
 public class StudyTaxonomyMetaDataProvider implements AggregationMetaDataProvider {
 
+  private static final Logger log = LoggerFactory.getLogger(StudyTaxonomyMetaDataProvider.class);
+
   @Inject
-  private StudiesConfiguration studiesConfiguration;
+  private StudyTaxonomy studyTaxonomy;
 
   Map<String, Map<String, LocalizedMetaData>> cache;
 
   @Override
   public MetaData getMetadata(String aggregation, String termKey, String locale) {
-    if (!cache.containsKey(aggregation)) {
+    if(!cache.containsKey(aggregation)) {
       cache.put(aggregation, getAllLocalizedMetadata(aggregation));
     }
 
     Map<String, LocalizedMetaData> aggs = cache.get(aggregation);
 
-    if (aggs == null) return null;
+    if(aggs == null) return null;
 
     LocalizedMetaData md = aggs.get(termKey);
 
-    if (md == null) return  null;
+    if(md == null) return null;
 
-    return MetaData.newBuilder()
-      .title(md.getTitle().get(locale))
-      .description(md.getDescription().get(locale))
-      .build();
+    return MetaData.newBuilder().title(md.getTitle().get(locale)).description(md.getDescription().get(locale)).build();
   }
 
   @Override
   public boolean containsAggregation(String aggregation) {
-    if (!cache.containsKey(aggregation)) {
+    if(!cache.containsKey(aggregation)) {
       cache.put(aggregation, getAllLocalizedMetadata(aggregation));
     }
 
@@ -67,17 +68,18 @@ public class StudyTaxonomyMetaDataProvider implements AggregationMetaDataProvide
 
   private Map<String, LocalizedMetaData> getAllLocalizedMetadata(String aggregation) {
     Map<String, LocalizedMetaData> r = null;
-    Optional<Vocabulary> v = studiesConfiguration.getVocabularies().stream().filter(v1 -> v1.getName().equals(aggregation)).findFirst();
-
-    if(v.isPresent())
-    {
-      r = v.get().getTerms().stream().collect(Collectors.toMap(e -> e.getName(), t -> {
+    if(studyTaxonomy.hasVocabulary(aggregation)) {
+      log.debug("Found in taxonomy {} a vocabulary with name: {}", studyTaxonomy.getName(), aggregation);
+      Vocabulary v = studyTaxonomy.getVocabulary(aggregation);
+      if(v.hasTerms()) r = v.getTerms().stream().collect(Collectors.toMap(TaxonomyEntity::getName, t -> {
         LocalizedString title = new LocalizedString();
         title.putAll(t.getTitle());
         LocalizedString description = new LocalizedString();
         description.putAll(t.getDescription());
         return new LocalizedMetaData(title, description);
       }));
+    } else {
+      log.warn("Could not find in taxonomy {} any vocabulary with name: {}", studyTaxonomy.getName(), aggregation);
     }
 
     return r;

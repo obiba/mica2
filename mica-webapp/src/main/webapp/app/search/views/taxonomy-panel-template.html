@@ -8,17 +8,23 @@
   <ul>
     <li ng-repeat="vocabulary in taxonomy.vocabularies" ng-if="$index<4">
       <a href ng-click="onNavigate(taxonomy, vocabulary)">
-    <span ng-repeat="label in vocabulary.title" ng-if="label.locale === lang">
-      {{label.text}}
-    </span>
+        <span ng-repeat="label in vocabulary.title" ng-if="label.locale === lang">
+          {{label.text}}
+        </span>
+        <span ng-if="!vocabulary.title">
+          {{vocabulary.name}}
+        </span>
       </a>
     </li>
     <div class="collapse" id="{{taxonomy.name + '_vocabularies'}}">
       <li ng-repeat=" vocabulary in taxonomy.vocabularies" ng-if="$index>=4">
         <a href ng-click="onNavigate(taxonomy, vocabulary)">
-    <span ng-repeat="label in vocabulary.title" ng-if="label.locale === lang">
-      {{label.text}}
-    </span>
+          <span ng-repeat="label in vocabulary.title" ng-if="label.locale === lang">
+            {{label.text}}
+          </span>
+          <span ng-if="!vocabulary.title">
+            {{vocabulary.name}}
+          </span>
         </a>
       </li>
     </div>

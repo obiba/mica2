@@ -1,7 +1,7 @@
 <div class="panel panel-default">
   <div class="panel-heading">
     <div class="row">
-      <div class="col-xs-9 voffset1">
+      <div class="col-xs-8 voffset1">
         <ol class="mica-breadcrumb no-margin no-padding">
           <li ng-if="!taxonomies.taxonomy" translate>
             all-classifications
@@ -28,9 +28,27 @@
           </li>
         </ol>
       </div>
-      <div class="col-xs-3">
-        <div class="pull-right">
-          <a href>
+      <div class="col-xs-4">
+        <div class="form-inline pull-right">
+          <div class="form-group">
+            <div class="btn-group dropdown" is-open="status.isopen">
+              <button type="button" class="btn btn-default btn-sm dropdown-toggle" ng-disabled="disabled"
+                data-toggle="dropdown">
+                {{ 'taxonomy.target.' + taxonomies.target | translate }} <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu" role="menu">
+                <li ng-if="taxonomies.target !== 'variable'">
+                  <a role="menuitem" href ng-click="selectTaxonomyTarget('variable')"
+                    translate>taxonomy.target.variable</a>
+                </li>
+                <li ng-if="taxonomies.target !== 'study'">
+                  <a role="menuitem" href ng-click="selectTaxonomyTarget('study')" translate>taxonomy.target.study</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="form-group">
+            <a href>
         <span class="input-group input-group-sm no-padding-top">
           <span class="input-group-addon"><i class="glyphicon glyphicon-filter"></i></span>
           <input ng-keyup="filterTaxonomiesKeyUp($event)"
@@ -39,7 +57,8 @@
             class="form-control ng-pristine ng-untouched ng-valid"
             aria-describedby="study-search">
         </span>
-          </a>
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -74,11 +93,13 @@
             lang="lang" on-navigate="navigateTaxonomy" on-select="selectTerm"></div>
         </div>
         <div class="col-xs-4">
-          <div vocabulary-panel taxonomy="taxonomies.taxonomy" vocabulary="taxonomies.taxonomy.vocabularies[$index + 1]"
+          <div vocabulary-panel taxonomy="taxonomies.taxonomy"
+            vocabulary="taxonomies.taxonomy.vocabularies[$index + 1]"
             lang="lang" on-navigate="navigateTaxonomy" on-select="selectTerm"></div>
         </div>
         <div class="col-xs-4">
-          <div vocabulary-panel taxonomy="taxonomies.taxonomy" vocabulary="taxonomies.taxonomy.vocabularies[$index + 2]"
+          <div vocabulary-panel taxonomy="taxonomies.taxonomy"
+            vocabulary="taxonomies.taxonomy.vocabularies[$index + 2]"
             lang="lang" on-navigate="navigateTaxonomy" on-select="selectTerm"></div>
         </div>
       </div>

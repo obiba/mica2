@@ -942,6 +942,12 @@
       "title": "Delete Comment",
       "message": "Are you sure you want to delete this comment by '{{arg0}}'?"
     }
+  },
+  "taxonomy": {
+    "target": {
+      "variable": "Variable",
+      "study": "Study"
+    }
   }
 
 }

@@ -53,6 +53,7 @@ public class TaxonomyIndexConfiguration extends AbstractIndexConfiguration
     XContentBuilder mapping = XContentFactory.jsonBuilder().startObject().startObject(TaxonomyIndexer.TAXONOMY_TYPE);
     mapping.startObject("properties");
     createMappingWithoutAnalyzer(mapping, "id");
+    createMappingWithoutAnalyzer(mapping, "target");
     createMappingWithAndWithoutAnalyzer(mapping, "name");
     Stream.of(TaxonomyIndexer.LOCALIZED_ANALYZED_FIELDS)
       .forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
@@ -66,6 +67,7 @@ public class TaxonomyIndexConfiguration extends AbstractIndexConfiguration
       .startObject(TaxonomyIndexer.TAXONOMY_VOCABULARY_TYPE);
     mapping.startObject("properties");
     createMappingWithoutAnalyzer(mapping, "id");
+    createMappingWithoutAnalyzer(mapping, "target");
     createMappingWithAndWithoutAnalyzer(mapping, "name");
     createMappingWithAndWithoutAnalyzer(mapping, "taxonomyName");
     Stream.of(TaxonomyIndexer.LOCALIZED_ANALYZED_FIELDS)
@@ -80,6 +82,7 @@ public class TaxonomyIndexConfiguration extends AbstractIndexConfiguration
       .startObject(TaxonomyIndexer.TAXONOMY_TERM_TYPE);
     mapping.startObject("properties");
     createMappingWithoutAnalyzer(mapping,"id");
+    createMappingWithoutAnalyzer(mapping, "target");
     createMappingWithAndWithoutAnalyzer(mapping, "name");
     createMappingWithAndWithoutAnalyzer(mapping, "taxonomyName");
     createMappingWithAndWithoutAnalyzer(mapping, "vocabularyName");

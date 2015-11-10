@@ -22,7 +22,8 @@ public class TaxonomyTermIndexable extends TaxonomyEntityIndexable<Term> {
 
   private final Term term;
 
-  public TaxonomyTermIndexable(Taxonomy taxonomy, Vocabulary vocabulary, Term term) {
+  public TaxonomyTermIndexable(TaxonomyTarget target, Taxonomy taxonomy, Vocabulary vocabulary, Term term) {
+    super(target);
     taxonomyName = taxonomy.getName();
     vocabularyName = vocabulary.getName();
     this.term = term;

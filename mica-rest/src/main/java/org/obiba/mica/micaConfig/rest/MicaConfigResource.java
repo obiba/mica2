@@ -255,9 +255,9 @@ public class MicaConfigResource {
 
   @GET
   @Path("/studies")
-  @Timed
   @RequiresAuthentication
-  public Opal.TaxonomyDto getStudiesConfig() {
-    return org.obiba.opal.web.taxonomy.Dtos.asDto(micaConfigService.getStudiesConfiguration());
+  @Deprecated
+  public Opal.TaxonomyDto getStudyTaxonomy() {
+    return org.obiba.opal.web.taxonomy.Dtos.asDto(micaConfigService.getStudyTaxonomy());
   }
 }

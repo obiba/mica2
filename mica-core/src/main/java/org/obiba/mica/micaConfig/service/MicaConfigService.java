@@ -11,11 +11,11 @@ import org.apache.shiro.codec.Hex;
 import org.apache.shiro.crypto.AesCipherService;
 import org.apache.shiro.util.ByteSource;
 import org.obiba.mica.config.AggregationsConfiguration;
-import org.obiba.mica.config.StudiesConfiguration;
+import org.obiba.mica.config.StudyTaxonomy;
 import org.obiba.mica.micaConfig.domain.AggregationsConfig;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
-import org.obiba.mica.micaConfig.repository.MicaConfigRepository;
 import org.obiba.mica.micaConfig.event.MicaConfigUpdatedEvent;
+import org.obiba.mica.micaConfig.repository.MicaConfigRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.annotation.CacheEvict;
@@ -28,14 +28,14 @@ import com.google.common.eventbus.EventBus;
 
 @Service
 @Validated
-@EnableConfigurationProperties({ AggregationsConfiguration.class, StudiesConfiguration.class })
+@EnableConfigurationProperties({ AggregationsConfiguration.class, StudyTaxonomy.class })
 public class MicaConfigService {
 
   @Inject
   private AggregationsConfiguration aggregationsConfiguration;
 
   @Inject
-  private StudiesConfiguration studiesConfiguration;
+  private StudyTaxonomy studyTaxonomy;
 
   @Inject
   private MicaConfigRepository micaConfigRepository;
@@ -60,8 +60,8 @@ public class MicaConfigService {
   }
 
   @NotNull
-  public StudiesConfiguration getStudiesConfiguration() {
-    return studiesConfiguration;
+  public StudyTaxonomy getStudyTaxonomy() {
+    return studyTaxonomy;
   }
 
   @Cacheable(value = "micaConfig", key = "#root.methodName")

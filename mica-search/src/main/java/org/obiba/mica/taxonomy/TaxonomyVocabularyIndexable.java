@@ -19,7 +19,8 @@ public class TaxonomyVocabularyIndexable extends TaxonomyEntityIndexable<Vocabul
 
   private final Vocabulary vocabulary;
 
-  public TaxonomyVocabularyIndexable(Taxonomy taxonomy, Vocabulary vocabulary) {
+  public TaxonomyVocabularyIndexable(TaxonomyTarget target, Taxonomy taxonomy, Vocabulary vocabulary) {
+    super(target);
     taxonomyName = taxonomy.getName();
     this.vocabulary = vocabulary;
   }
