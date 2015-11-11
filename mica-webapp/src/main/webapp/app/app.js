@@ -161,7 +161,8 @@ mica
 
         if (!$rootScope.authenticated) {
           var path = $location.path();
-          if ('' !== path && '/login' !== path) {
+          var invalidRedirectPaths = ['', '/error', '/logout', '/login'];
+          if (invalidRedirectPaths.indexOf(path) === -1) {
             // save path to navigate to after login
             var search = $location.search();
             search.redirect = path;
