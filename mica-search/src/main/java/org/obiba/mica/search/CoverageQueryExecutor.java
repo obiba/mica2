@@ -39,18 +39,27 @@ public class CoverageQueryExecutor {
 
   private MicaSearch.JoinQueryDto joinQueryDto;
 
-  public MicaSearch.TaxonomiesCoverageDto coverageQuery(List<String> taxonomyNames,
-    MicaSearch.JoinQueryDto joinQueryDto) throws IOException {
+  public MicaSearch.TaxonomiesCoverageDto coverageQuery(Collection<String> taxonomyNames, boolean withFacets,
+    String locale) throws IOException {
+    return coverageQuery(taxonomyNames,
+      getDefaultJoinQueryDto().toBuilder().setWithFacets(withFacets).setLocale(locale == null ? "" : locale).build());
+  }
 
-    this.joinQueryDto = joinQueryDto == null ? getDefaultJoinQueryDto() : joinQueryDto;
+  public MicaSearch.TaxonomiesCoverageDto coverageQuery(Collection<String> taxonomyNames,
+    MicaSearch.JoinQueryDto joinQuery) throws IOException {
+
+    joinQueryDto = joinQuery == null ? getDefaultJoinQueryDto() : joinQuery;
+    boolean withFacets = joinQueryDto.getWithFacets();
+    // If do not need all the facets and some taxonomy names are provided then we can restrict the
+    // variable aggregations to the ones matching these names.
+    Collection<String> taxonomyFilter = withFacets || taxonomyNames == null ? Collections.emptyList() : taxonomyNames;
 
     // We need the aggregations internally for building the coverage result,
     // but we may not need them in the final result
-    MicaSearch.JoinQueryDto joinQueryDtoWithFacets = MicaSearch.JoinQueryDto.newBuilder().mergeFrom(this.joinQueryDto)
+    MicaSearch.JoinQueryDto joinQueryDtoWithFacets = MicaSearch.JoinQueryDto.newBuilder().mergeFrom(joinQueryDto)
       .setWithFacets(true).build();
 
-    MicaSearch.JoinQueryResultDto result = joinQueryExecutor
-      .queryCoverage(JoinQueryExecutor.QueryType.VARIABLE, joinQueryDtoWithFacets);
+    MicaSearch.JoinQueryResultDto result = joinQueryExecutor.queryCoverage(joinQueryDtoWithFacets, taxonomyFilter);
 
     List<MicaSearch.AggregationResultDto> aggregations = ungroupAggregations(
       result.getVariableResultDto().getAggsList());
@@ -61,7 +70,7 @@ public class CoverageQueryExecutor {
       .addAllTaxonomies(getCoverages(taxonomyNames, aggregations));
 
     // Do not append the aggregations if no facets is requested
-    if(this.joinQueryDto.getWithFacets()) builder.setQueryResult(result);
+    if(withFacets) builder.setQueryResult(result);
 
     return builder.build();
   }
@@ -166,7 +175,7 @@ public class CoverageQueryExecutor {
     Map<String, Map<String, MicaSearch.TermsAggregationResultDto>> aggTermsTitlesMap) {
     if(taxonomy.hasVocabularies()) {
       MicaSearch.TaxonomyCoverageDto.Builder taxoBuilder = MicaSearch.TaxonomyCoverageDto.newBuilder();
-      taxoBuilder.setTaxonomy(dtos.asDto(taxonomy, joinQueryDto.getLocale()));
+      taxoBuilder.setTaxonomy(dtos.asDto(taxonomy, getLocale()));
       List<Integer> hits = Lists.newArrayList();
       String namespace = taxonomy.getName().equals("Default") ? null : taxonomy.getName();
       Map<String, List<BucketResult>> bucketResultsByVocabulary = bucketResults == null
@@ -224,7 +233,7 @@ public class CoverageQueryExecutor {
         : bucketResults.stream().collect(Collectors.groupingBy(BucketResult::getTerm));
 
       MicaSearch.VocabularyCoverageDto.Builder vocBuilder = MicaSearch.VocabularyCoverageDto.newBuilder();
-      vocBuilder.setVocabulary(dtos.asDto(vocabulary, joinQueryDto.getLocale()));
+      vocBuilder.setVocabulary(dtos.asDto(vocabulary, getLocale()));
       vocabulary.getTerms().forEach(
         term -> addTermCoverage(vocBuilder, term, hits, bucketResultsByTerm.get(term.getName()), aggTermsTitlesMap));
       // only one term can be applied at a time, then the sum of the term hits is the number of variables
@@ -281,7 +290,7 @@ public class CoverageQueryExecutor {
     Map<String, Integer> hits, @Nullable List<BucketResult> bucketResults,
     Map<String, Map<String, MicaSearch.TermsAggregationResultDto>> aggTermsTitlesMap) {
     MicaSearch.TermCoverageDto.Builder termBuilder = MicaSearch.TermCoverageDto.newBuilder();
-    termBuilder.setTerm(dtos.asDto(term, joinQueryDto.getLocale()));
+    termBuilder.setTerm(dtos.asDto(term, getLocale()));
     termBuilder.setHits(0);
     // add the hits per buckets
     if(bucketResults != null) {
@@ -318,6 +327,11 @@ public class CoverageQueryExecutor {
       // ignore
     }
     return taxonomies == null ? Collections.emptyList() : taxonomies;
+  }
+
+  @Nullable
+  private String getLocale() {
+    return joinQueryDto.getLocale();
   }
 
   /**

@@ -105,15 +105,17 @@ public class PublishedDatasetVariablesSearchResource {
    * Get the frequency of each taxonomy terms, based on variables aggregation results.
    *
    * @param taxonomyNames
+   * @param withFacets
    * @return
    * @throws IOException
    */
   @GET
   @Timed
   @Path("_coverage")
-  public MicaSearch.TaxonomiesCoverageDto getCoverage(@QueryParam("taxonomy") List<String> taxonomyNames)
-    throws IOException {
-    return coverageQueryExecutor.coverageQuery(taxonomyNames, null);
+  public MicaSearch.TaxonomiesCoverageDto getCoverage(@QueryParam("taxonomy") List<String> taxonomyNames,
+    @QueryParam("facets") @DefaultValue("false") boolean withFacets,
+    @QueryParam("locale") @DefaultValue("") String locale) throws IOException {
+    return coverageQueryExecutor.coverageQuery(taxonomyNames, withFacets, locale);
   }
 
 }

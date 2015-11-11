@@ -19,6 +19,8 @@ import org.obiba.opal.core.domain.taxonomy.Term;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Strings;
+
 @Component
 class TaxonomyDtos {
 
@@ -27,23 +29,26 @@ class TaxonomyDtos {
 
   @NotNull
   public Mica.TaxonomyEntityDto asDto(@NotNull Taxonomy taxonomy, @Nullable String locale) {
-    return Mica.TaxonomyEntityDto.newBuilder().setName(taxonomy.getName()) //
-        .addAllTitles(localizedStringDtos.asDto(taxonomy.getTitle(), locale)) //
-        .addAllDescriptions(localizedStringDtos.asDto(taxonomy.getDescription(), locale)).build();
+    Mica.TaxonomyEntityDto.Builder builder = Mica.TaxonomyEntityDto.newBuilder().setName(taxonomy.getName());
+    if(!Strings.isNullOrEmpty(locale)) builder.addAllTitles(localizedStringDtos.asDto(taxonomy.getTitle(), locale)) //
+      .addAllDescriptions(localizedStringDtos.asDto(taxonomy.getDescription(), locale)).build();
+    return builder.build();
   }
 
   @NotNull
   public Mica.TaxonomyEntityDto asDto(@NotNull Vocabulary vocabulary, @Nullable String locale) {
-    return Mica.TaxonomyEntityDto.newBuilder().setName(vocabulary.getName()) //
-        .addAllTitles(localizedStringDtos.asDto(vocabulary.getTitle(), locale)) //
-        .addAllDescriptions(localizedStringDtos.asDto(vocabulary.getDescription(), locale)).build();
+    Mica.TaxonomyEntityDto.Builder builder = Mica.TaxonomyEntityDto.newBuilder().setName(vocabulary.getName());
+    if(!Strings.isNullOrEmpty(locale)) builder.addAllTitles(localizedStringDtos.asDto(vocabulary.getTitle(), locale)) //
+      .addAllDescriptions(localizedStringDtos.asDto(vocabulary.getDescription(), locale)).build();
+    return builder.build();
   }
 
   @NotNull
   public Mica.TaxonomyEntityDto asDto(@NotNull Term term, @Nullable String locale) {
-    return Mica.TaxonomyEntityDto.newBuilder().setName(term.getName()).addAllTitles(
-        localizedStringDtos.asDto(term.getTitle(), locale)) //
-        .addAllDescriptions(localizedStringDtos.asDto(term.getDescription(), locale)).build();
+    Mica.TaxonomyEntityDto.Builder builder = Mica.TaxonomyEntityDto.newBuilder().setName(term.getName());
+    if(!Strings.isNullOrEmpty(locale)) builder.addAllTitles(localizedStringDtos.asDto(term.getTitle(), locale)) //
+      .addAllDescriptions(localizedStringDtos.asDto(term.getDescription(), locale));
+    return builder.build();
   }
 
 }

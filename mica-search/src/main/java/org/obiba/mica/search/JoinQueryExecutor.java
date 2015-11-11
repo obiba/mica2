@@ -13,6 +13,7 @@ package org.obiba.mica.search;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -86,13 +87,14 @@ public class JoinQueryExecutor {
   private OpalService opalService;
 
   @Timed
-  public JoinQueryResultDto queryCoverage(QueryType type, JoinQueryDto joinQueryDto) throws IOException {
-    return query(type, joinQueryDto, null, DIGEST, Mode.COVERAGE);
+  public JoinQueryResultDto queryCoverage(JoinQueryDto joinQueryDto, Collection<String> taxonomyFilter) throws IOException {
+    variableQuery.setTaxonomyFilter(taxonomyFilter);
+    return query(QueryType.VARIABLE, joinQueryDto, null, DIGEST, Mode.COVERAGE);
   }
 
   @Timed
   public JoinQueryResultDto listQuery(QueryType type, MicaSearch.QueryDto queryDto, String locale) throws IOException {
-    JoinQueryDto joinQueryDto = createJoinQueryByType(type, queryDto);
+    JoinQueryDto joinQueryDto = createJoinQueryByType(type, queryDto).toBuilder().setWithFacets(false).build();
     variableQuery
       .initialize(joinQueryDto.hasVariableQueryDto() ? joinQueryDto.getVariableQueryDto() : null, locale, Mode.SEARCH);
     datasetQuery

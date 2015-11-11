@@ -74,8 +74,8 @@ public abstract class AbstractDocumentQuery {
   private static final Logger log = LoggerFactory.getLogger(AbstractDocumentQuery.class);
 
   public enum Mode {
-    SEARCH,
-    COVERAGE
+    SEARCH, // search for a list of documents
+    COVERAGE // search for coverage of a classification using the aggregated results
   }
 
   public enum Scope {
@@ -202,8 +202,9 @@ public abstract class AbstractDocumentQuery {
    */
   public List<String> query(List<String> studyIds, CountStatsData counts, Scope scope) throws IOException {
     QueryDto tempQueryDto = queryDto == null ? createStudyIdFilters(studyIds) : addStudyIdFilters(studyIds);
-    return mode == COVERAGE ? executeCoverage(tempQueryDto, DIGEST,
-      counts) : execute(tempQueryDto, tempQueryDto.getFrom(), tempQueryDto.getSize(), scope, counts);
+    return mode == COVERAGE
+      ? executeCoverage(tempQueryDto, DIGEST, counts)
+      : execute(tempQueryDto, tempQueryDto.getFrom(), tempQueryDto.getSize(), scope, counts);
   }
 
   /**
@@ -308,13 +309,20 @@ public abstract class AbstractDocumentQuery {
    * @throws IOException
    */
   @SuppressWarnings("OverlyLongMethod")
-  protected List<String> executeCoverage(QueryDto query, Scope scope, CountStatsData counts)
-    throws IOException {
+  protected List<String> executeCoverage(QueryDto query, Scope scope, CountStatsData counts) throws IOException {
     if(query == null) return null;
 
     QueryDtoParser queryDtoParser = QueryDtoParser.newParser();
     aggregationTitleResolver.registerProviders(getAggregationMetaDataProviders());
     aggregationTitleResolver.refresh();
+
+    SearchRequestBuilder defaultRequestBuilder = client.prepareSearch(getSearchIndex()) //
+      .setTypes(getSearchType()) //
+      .setSearchType(SearchType.COUNT) //
+      .setQuery(QueryBuilders.matchAllQuery()) //
+      .setFrom(0) //
+      .setSize(0) // no results needed for a coverage
+      .setNoFields().addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT));
 
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
@@ -337,16 +345,27 @@ public abstract class AbstractDocumentQuery {
       query.getAggsByList().forEach(field -> subAggregations.put(field, aggregationProperties));
     }
 
-    aggregationYamlParser.getAggregations(getAggregationsDescription(), subAggregations).forEach(
-      requestBuilder::addAggregation);
+    aggregationYamlParser.getAggregations(getAggregationsDescription(), subAggregations).forEach(agg -> {
+      requestBuilder.addAggregation(agg);
+      defaultRequestBuilder.addAggregation(agg);
+    });
 
-    aggregationYamlParser.getAggregations(aggregationProperties).forEach(requestBuilder::addAggregation);
+    aggregationYamlParser.getAggregations(aggregationProperties).forEach(agg -> {
+      requestBuilder.addAggregation(agg);
+      defaultRequestBuilder.addAggregation(agg);
+    });
 
     log.info("Request /{}/{}", getSearchIndex(), getSearchType());
     log.debug("Request /{}/{}: {}", getSearchIndex(), getSearchType(), requestBuilder.toString());
 
     try {
-      SearchResponse response = requestBuilder.execute().actionGet();
+      List<SearchResponse> responses = Stream
+        .of(client.prepareMultiSearch().add(defaultRequestBuilder).add(requestBuilder).execute().actionGet())
+        .map(MultiSearchResponse::getResponses).flatMap((d) -> Stream.of(d)).map(MultiSearchResponse.Item::getResponse)
+        .collect(Collectors.toList());
+
+      SearchResponse defaultResponse = responses.get(0);
+      SearchResponse response = responses.get(1);
 
       List<String> rval = null;
       if(response != null) {
@@ -356,7 +375,7 @@ public abstract class AbstractDocumentQuery {
 
         if(scope == DETAIL) processHits(builder, response.getHits(), scope, counts);
 
-        processAggregations(builder, null, response.getAggregations());
+        processAggregations(builder, defaultResponse.getAggregations(), response.getAggregations());
         resultDto = builder.build();
         rval = getResponseStudyIds(resultDto.getAggsList());
       }
