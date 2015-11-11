@@ -205,13 +205,28 @@ mica.study
           return;
         }
 
-        return ((($scope.studiesConfig.vocabularies.filter(function (v) {
+        var result = $scope.studiesConfig.vocabularies.filter(function (v) {
           return v.name === vocabulary;
-        }) || [{terms: []}])[0].terms.filter(function (t) {
+        });
+
+        if (result.length > 0) {
+          result = result[0].terms.filter(function (t) {
             return t.name === term;
-          }) || [{title: []}])[0].title.filter(function (v) {
-            return v.locale === ActiveTabService.getActiveTab($scope.tabs).lang;
-          }) || [{text: term}])[0].text;
+          });
+
+          if (result.length > 0) {
+            result = result[0].title.filter(function (v) {
+              return v.locale === ActiveTabService.getActiveTab($scope.tabs).lang;
+            });
+
+            if (result.length > 0) {
+              return result[0].text;
+            }
+          }
+        }
+
+        // could not find the term, return non-localized term value
+        return term;
       };
 
       if ($scope.viewMode === $scope.Mode.Revision) {
