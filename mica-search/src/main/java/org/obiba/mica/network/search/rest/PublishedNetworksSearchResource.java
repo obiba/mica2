@@ -50,7 +50,7 @@ public class PublishedNetworksSearchResource {
 
   @GET
   @Timed
-  public JoinQueryResultDto query(@QueryParam("from") @DefaultValue("0") int from,
+  public JoinQueryResultDto list(@QueryParam("from") @DefaultValue("0") int from,
       @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") @DefaultValue(DEFAULT_SORT)  String sort,
       @QueryParam("order") @DefaultValue("desc") String order, @QueryParam("study") String studyId, @QueryParam("query") String query,
       @QueryParam("locale") @DefaultValue("en") String locale)
@@ -74,12 +74,15 @@ public class PublishedNetworksSearchResource {
           QueryDtoHelper.BoolQueryType.SHOULD);
     }
 
-    return joinQueryExecutor.listQuery(JoinQueryExecutor.QueryType.NETWORK, queryDto, locale);
+    JoinQueryResultDto result = joinQueryExecutor.listQuery(JoinQueryExecutor.QueryType.NETWORK, queryDto, locale);
+    JoinQueryResultDto.Builder builder = result.toBuilder().clearDatasetResultDto().clearStudyResultDto().clearVariableResultDto();
+    builder.setNetworkResultDto(builder.getNetworkResultDto().toBuilder().clearAggs());
+    return builder.build();
   }
 
   @POST
   @Timed
-  public JoinQueryResultDto list(JoinQueryDto joinQueryDto) throws IOException {
+  public JoinQueryResultDto query(JoinQueryDto joinQueryDto) throws IOException {
     return joinQueryExecutor.query(JoinQueryExecutor.QueryType.NETWORK, joinQueryDto);
   }
 }

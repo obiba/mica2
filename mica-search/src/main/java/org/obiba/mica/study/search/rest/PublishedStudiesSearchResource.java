@@ -44,19 +44,22 @@ public class PublishedStudiesSearchResource {
 
   @GET
   @Timed
-  public JoinQueryResultDto query(@QueryParam("from") @DefaultValue("0") int from,
-      @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
-      @QueryParam("order") @DefaultValue("asc") String order, @QueryParam("query") String query,
-      @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
+  public JoinQueryResultDto list(@QueryParam("from") @DefaultValue("0") int from,
+    @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
+    @QueryParam("order") @DefaultValue("asc") String order, @QueryParam("query") String query,
+    @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
 
-    return joinQueryExecutor.listQuery(JoinQueryExecutor.QueryType.STUDY, QueryDtoHelper
+    JoinQueryResultDto.Builder builder = joinQueryExecutor.listQuery(JoinQueryExecutor.QueryType.STUDY, QueryDtoHelper
       .createQueryDto(from, limit, Strings.isNullOrEmpty(sort) ? StudyIndexer.DEFAULT_SORT_FIELD + "." + locale : sort,
-        order, query, locale, Stream.of(StudyIndexer.LOCALIZED_ANALYZED_FIELDS)), locale);
+        order, query, locale, Stream.of(StudyIndexer.LOCALIZED_ANALYZED_FIELDS)), locale).toBuilder();
+    builder.clearDatasetResultDto().clearNetworkResultDto().clearVariableResultDto();
+    builder.setStudyResultDto(builder.getStudyResultDto().toBuilder().clearAggs());
+    return builder.build();
   }
 
   @POST
   @Timed
-  public JoinQueryResultDto list(MicaSearch.JoinQueryDto joinQueryDto) throws IOException {
+  public JoinQueryResultDto query(MicaSearch.JoinQueryDto joinQueryDto) throws IOException {
     return joinQueryExecutor.query(JoinQueryExecutor.QueryType.STUDY, joinQueryDto);
   }
 }
