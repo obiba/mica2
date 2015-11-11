@@ -326,6 +326,9 @@ mica.network
       };
 
       $scope.viewMode = getViewMode();
+      $scope.inViewMode = function () {
+        return $scope.viewMode === $scope.Mode.View;
+      };
 
       var viewRevision = function (networkId, commitInfo) {
         $scope.commitInfo = commitInfo;
