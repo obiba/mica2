@@ -143,20 +143,14 @@ public class JoinQueryExecutor {
     AbstractDocumentQuery.Scope scope, AbstractDocumentQuery.Mode mode) throws IOException {
     log.debug("Start query");
 
-    DatasetIdProvider datasetIdProvider = new DatasetIdProvider();
-    String locale = joinQueryDto.getLocale();
-
-    variableQuery
-      .initialize(joinQueryDto.hasVariableQueryDto() ? joinQueryDto.getVariableQueryDto() : null, locale, mode);
-    datasetQuery.initialize(joinQueryDto.hasDatasetQueryDto() ? joinQueryDto.getDatasetQueryDto() : null, locale, mode);
-    studyQuery.initialize(joinQueryDto.hasStudyQueryDto() ? joinQueryDto.getStudyQueryDto() : null, locale, mode);
-    networkQuery.initialize(joinQueryDto.hasNetworkQueryDto() ? joinQueryDto.getNetworkQueryDto() : null, locale, mode);
+    initializeQueries(joinQueryDto, mode);
 
     boolean queriesHaveFilters =
       Stream.of(variableQuery, datasetQuery, studyQuery, networkQuery).filter(AbstractDocumentQuery::hasQueryFilters)
         .collect(Collectors.toList()).size() > 0;
 
     if(queriesHaveFilters) {
+      DatasetIdProvider datasetIdProvider = new DatasetIdProvider();
       variableQuery.setDatasetIdProvider(datasetIdProvider);
       datasetQuery.setDatasetIdProvider(datasetIdProvider);
 
@@ -193,32 +187,43 @@ public class JoinQueryExecutor {
     }
 
     log.debug("Building result");
+    JoinQueryResultDto resultDto = buildQueryResult(joinQueryDto);
+    log.debug("Finished query");
 
+    return resultDto;
+  }
+
+  private void initializeQueries(JoinQueryDto joinQueryDto, AbstractDocumentQuery.Mode mode) {
+    String locale = joinQueryDto.getLocale();
+
+    variableQuery
+      .initialize(joinQueryDto.hasVariableQueryDto() ? joinQueryDto.getVariableQueryDto() : null, locale, mode);
+    datasetQuery.initialize(joinQueryDto.hasDatasetQueryDto() ? joinQueryDto.getDatasetQueryDto() : null, locale, mode);
+    studyQuery.initialize(joinQueryDto.hasStudyQueryDto() ? joinQueryDto.getStudyQueryDto() : null, locale, mode);
+    networkQuery.initialize(joinQueryDto.hasNetworkQueryDto() ? joinQueryDto.getNetworkQueryDto() : null, locale, mode);
+  }
+
+  private JoinQueryResultDto buildQueryResult(JoinQueryDto joinQueryDto) {
     JoinQueryResultDto.Builder builder = JoinQueryResultDto.newBuilder();
     AggregationsConfig aggregationsConfig = aggregationsService.getAggregationsConfig();
 
-    builder.setVariableResultDto(!joinQueryDto.getWithFacets()
-      ? removeAggregations(variableQuery.getResultQuery())
-      : addAggregationTitles(variableQuery.getResultQuery(), aggregationsConfig.getVariableAggregations(),
-        aggregationPostProcessor()));
+    builder.setVariableResultDto(joinQueryDto.getWithFacets()
+      ? addAggregationTitles(variableQuery.getResultQuery(), aggregationsConfig.getVariableAggregations(),
+      aggregationPostProcessor())
+      : removeAggregations(variableQuery.getResultQuery()));
 
     if(datasetQuery.getResultQuery() != null) {
-      builder.setDatasetResultDto(!joinQueryDto.getWithFacets()
-        ? removeAggregations(datasetQuery.getResultQuery())
-        : addAggregationTitles(datasetQuery.getResultQuery(), aggregationsConfig.getDatasetAggregations(), null));
+      builder.setDatasetResultDto(joinQueryDto.getWithFacets() ? addAggregationTitles(datasetQuery.getResultQuery(),
+        aggregationsConfig.getDatasetAggregations(), null) : removeAggregations(datasetQuery.getResultQuery()));
     }
 
-    builder.setStudyResultDto(!joinQueryDto.getWithFacets()
-      ? removeAggregations(studyQuery.getResultQuery())
-      : addAggregationTitles(studyQuery.getResultQuery(), aggregationsConfig.getStudyAggregations(), null));
+    builder.setStudyResultDto(joinQueryDto.getWithFacets() ? addAggregationTitles(studyQuery.getResultQuery(),
+      aggregationsConfig.getStudyAggregations(), null) : removeAggregations(studyQuery.getResultQuery()));
 
     if(networkQuery.getResultQuery() != null) {
-      builder.setNetworkResultDto(!joinQueryDto.getWithFacets()
-        ? removeAggregations(networkQuery.getResultQuery())
-        : addAggregationTitles(networkQuery.getResultQuery(), aggregationsConfig.getNetworkAggregations(), null));
+      builder.setNetworkResultDto(joinQueryDto.getWithFacets() ? addAggregationTitles(networkQuery.getResultQuery(),
+        aggregationsConfig.getNetworkAggregations(), null) : removeAggregations(networkQuery.getResultQuery()));
     }
-
-    log.debug("Finished query");
 
     return builder.build();
   }

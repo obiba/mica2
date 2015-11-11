@@ -39,14 +39,14 @@ public class CoverageQueryExecutor {
 
   private MicaSearch.JoinQueryDto joinQueryDto;
 
-  public MicaSearch.TaxonomiesCoverageDto coverageQuery(List<String> taxonomyNames, MicaSearch.JoinQueryDto joinQueryDto)
-    throws IOException {
+  public MicaSearch.TaxonomiesCoverageDto coverageQuery(List<String> taxonomyNames,
+    MicaSearch.JoinQueryDto joinQueryDto) throws IOException {
 
-    this.joinQueryDto = joinQueryDto;
+    this.joinQueryDto = joinQueryDto == null ? getDefaultJoinQueryDto() : joinQueryDto;
 
     // We need the aggregations internally for building the coverage result,
     // but we may not need them in the final result
-    MicaSearch.JoinQueryDto joinQueryDtoWithFacets = MicaSearch.JoinQueryDto.newBuilder().mergeFrom(joinQueryDto)
+    MicaSearch.JoinQueryDto joinQueryDtoWithFacets = MicaSearch.JoinQueryDto.newBuilder().mergeFrom(this.joinQueryDto)
       .setWithFacets(true).build();
 
     MicaSearch.JoinQueryResultDto result = joinQueryExecutor
@@ -61,8 +61,14 @@ public class CoverageQueryExecutor {
       .addAllTaxonomies(getCoverages(taxonomyNames, aggregations));
 
     // Do not append the aggregations if no facets is requested
-    if(joinQueryDto.getWithFacets()) builder.setQueryResult(result);
+    if(this.joinQueryDto.getWithFacets()) builder.setQueryResult(result);
 
+    return builder.build();
+  }
+
+  private MicaSearch.JoinQueryDto getDefaultJoinQueryDto() {
+    MicaSearch.JoinQueryDto.Builder builder = MicaSearch.JoinQueryDto.newBuilder() //
+      .setWithFacets(false);
     return builder.build();
   }
 
