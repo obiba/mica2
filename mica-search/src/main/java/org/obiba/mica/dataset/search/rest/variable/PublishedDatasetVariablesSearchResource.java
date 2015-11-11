@@ -101,5 +101,19 @@ public class PublishedDatasetVariablesSearchResource {
     return coverageQueryExecutor.coverageQuery(taxonomyNames, joinQueryDto);
   }
 
+  /**
+   * Get the frequency of each taxonomy terms, based on variables aggregation results.
+   *
+   * @param taxonomyNames
+   * @return
+   * @throws IOException
+   */
+  @GET
+  @Timed
+  @Path("_coverage")
+  public MicaSearch.TaxonomiesCoverageDto getCoverage(@QueryParam("taxonomy") List<String> taxonomyNames)
+    throws IOException {
+    return coverageQueryExecutor.coverageQuery(taxonomyNames, null);
+  }
 
 }

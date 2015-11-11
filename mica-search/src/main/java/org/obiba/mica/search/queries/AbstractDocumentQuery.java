@@ -316,14 +316,6 @@ public abstract class AbstractDocumentQuery {
     aggregationTitleResolver.registerProviders(getAggregationMetaDataProviders());
     aggregationTitleResolver.refresh();
 
-    SearchRequestBuilder defaultRequestBuilder = client.prepareSearch(getSearchIndex()) //
-      .setTypes(getSearchType()) //
-      .setSearchType(SearchType.COUNT) //
-      .setQuery(QueryBuilders.matchAllQuery()) //
-      .setFrom(0) //
-      .setSize(0) // no results needed for a coverage
-      .setNoFields().addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT));
-
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
       .setSearchType(SearchType.COUNT) //
@@ -345,27 +337,16 @@ public abstract class AbstractDocumentQuery {
       query.getAggsByList().forEach(field -> subAggregations.put(field, aggregationProperties));
     }
 
-    aggregationYamlParser.getAggregations(getAggregationsDescription(), subAggregations).forEach(agg -> {
-      requestBuilder.addAggregation(agg);
-      defaultRequestBuilder.addAggregation(agg);
-    });
+    aggregationYamlParser.getAggregations(getAggregationsDescription(), subAggregations).forEach(
+      requestBuilder::addAggregation);
 
-    aggregationYamlParser.getAggregations(aggregationProperties).forEach(agg -> {
-      requestBuilder.addAggregation(agg);
-      defaultRequestBuilder.addAggregation(agg);
-    });
+    aggregationYamlParser.getAggregations(aggregationProperties).forEach(requestBuilder::addAggregation);
 
     log.info("Request /{}/{}", getSearchIndex(), getSearchType());
     log.debug("Request /{}/{}: {}", getSearchIndex(), getSearchType(), requestBuilder.toString());
 
     try {
-      List<SearchResponse> responses = Stream
-        .of(client.prepareMultiSearch().add(defaultRequestBuilder).add(requestBuilder).execute().actionGet())
-        .map(MultiSearchResponse::getResponses).flatMap((d) -> Stream.of(d)).map(MultiSearchResponse.Item::getResponse)
-        .collect(Collectors.toList());
-
-      SearchResponse defaultResponse = responses.get(0);
-      SearchResponse response = responses.get(1);
+      SearchResponse response = requestBuilder.execute().actionGet();
 
       List<String> rval = null;
       if(response != null) {
@@ -375,7 +356,7 @@ public abstract class AbstractDocumentQuery {
 
         if(scope == DETAIL) processHits(builder, response.getHits(), scope, counts);
 
-        processAggregations(builder, defaultResponse.getAggregations(), response.getAggregations());
+        processAggregations(builder, null, response.getAggregations());
         resultDto = builder.build();
         rval = getResponseStudyIds(resultDto.getAggsList());
       }
