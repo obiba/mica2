@@ -41,14 +41,14 @@
                           (<localized value="investigator.institution.name" lang="tab.lang"></localized>)
                         </span>
                       </a>
-                      <div class="inline" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+                      <div class="inline" ng-if="inViewMode() && hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
                         <a ng-click="editInvestigator(network, investigator)" class="action"><i class="fa fa-pencil"></i></a>
                         <a ng-click="deleteInvestigator(network, investigator)" class="action"><i class="fa fa-trash-o"></i></a>
                       </div>
                     </li>
                   </ul>
                   <button type="button" class="btn btn-info btn-sm" ng-click="addInvestigator(network)"
-                    ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+                    ng-if="inViewMode() && hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
                     <i class="fa fa-plus"></i> <span translate>network.add-investigator</span>
                   </button>
                 </div>
@@ -67,14 +67,14 @@
                           (<localized value="contact.institution.name" lang="tab.lang"></localized>)
                         </span>
                       </a>
-                      <div class="inline" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+                      <div class="inline" ng-if="inViewMode() && hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
                         <a ng-click="editContact(network, contact)" class="action"><i class="fa fa-pencil"></i></a>
                         <a ng-click="deleteContact(network, contact)" class="action"><i class="fa fa-trash-o"></i></a>
                       </div>
                     </li>
                   </ul>
                   <button type="button" class="btn btn-info btn-sm" ng-click="addContact(network)"
-                    ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+                    ng-if="inViewMode() && hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
                     <i class="fa fa-plus"></i> <span translate>network.add-contact</span>
                   </button>
                 </div>
@@ -89,7 +89,7 @@
           <h3 translate>studies</h3>
 
           <a ng-click="addStudyEvent(network)" class="btn btn-info"
-            ng-if="network['obiba.mica.EntityStateDto.state'].permissions.edit">
+            ng-if="inViewMode() && network['obiba.mica.EntityStateDto.state'].permissions.edit">
             <i class="fa fa-plus"></i> <span translate>study.add</span>
           </a>
           <span class="pull-right">
@@ -101,7 +101,7 @@
             <tr>
               <th translate>study.acronym</th>
               <th translate>study.name</th>
-              <th ng-if="network['obiba.mica.EntityStateDto.state'].permissions.edit" translate>actions</th>
+              <th ng-if="inViewMode() && network['obiba.mica.EntityStateDto.state'].permissions.edit" translate>actions</th>
             </tr>
             </thead>
             <tbody>
@@ -114,7 +114,7 @@
               <td>
                 <localized value="studySummary.name" lang="tab.lang"></localized>
               </td>
-              <td ng-if="network['obiba.mica.EntityStateDto.state'].permissions.edit">
+              <td ng-if="inViewMode() && network['obiba.mica.EntityStateDto.state'].permissions.edit">
                 <!--<a ng-click="editStudy(study, population, dce)" class="hand action"><i class="fa fa-pencil"></i></a>-->
                 <a ng-click="deleteStudyEvent(network, studySummary)" class="hand action"><i
                   class="fa fa-trash-o"></i></a>
