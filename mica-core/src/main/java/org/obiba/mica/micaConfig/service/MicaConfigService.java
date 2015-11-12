@@ -16,6 +16,7 @@ import org.obiba.mica.micaConfig.domain.AggregationsConfig;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.event.MicaConfigUpdatedEvent;
 import org.obiba.mica.micaConfig.repository.MicaConfigRepository;
+import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.annotation.CacheEvict;
@@ -60,7 +61,7 @@ public class MicaConfigService {
   }
 
   @NotNull
-  public StudyTaxonomy getStudyTaxonomy() {
+  public Taxonomy getStudyTaxonomy() {
     return studyTaxonomy;
   }
 

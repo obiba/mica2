@@ -15,8 +15,9 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.obiba.mica.config.StudyTaxonomy;
 import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.TaxonomyEntity;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.slf4j.Logger;
@@ -31,7 +32,7 @@ public class StudyTaxonomyMetaDataProvider implements AggregationMetaDataProvide
   private static final Logger log = LoggerFactory.getLogger(StudyTaxonomyMetaDataProvider.class);
 
   @Inject
-  private StudyTaxonomy studyTaxonomy;
+  private MicaConfigService micaConfigService;
 
   Map<String, Map<String, LocalizedMetaData>> cache;
 
@@ -68,6 +69,7 @@ public class StudyTaxonomyMetaDataProvider implements AggregationMetaDataProvide
 
   private Map<String, LocalizedMetaData> getAllLocalizedMetadata(String aggregation) {
     Map<String, LocalizedMetaData> r = null;
+    Taxonomy studyTaxonomy = micaConfigService.getStudyTaxonomy();
     if(studyTaxonomy.hasVocabulary(aggregation)) {
       log.debug("Found in taxonomy {} a vocabulary with name: {}", studyTaxonomy.getName(), aggregation);
       Vocabulary v = studyTaxonomy.getVocabulary(aggregation);

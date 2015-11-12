@@ -52,6 +52,7 @@ public class AuditInterceptor implements ContainerResponseFilter {
   }
 
   private String getArguments(ContainerRequestContext requestContext, ContainerResponseContext responseContext) {
+    MDC.clear();
     MDC.put("username", auditorAware.getCurrentAuditor());
     MDC.put("status", responseContext.getStatus() + "");
     MDC.put("method", requestContext.getMethod());
@@ -98,9 +99,10 @@ public class AuditInterceptor implements ContainerResponseFilter {
     if(responseContext.getStatus() == HttpStatus.SC_CREATED) {
       String resourceUri = responseContext.getHeaderString(HttpHeaders.LOCATION);
       if(resourceUri != null) {
+        String args = getArguments(requestContext, responseContext);
         String path = resourceUri.substring(resourceUri.indexOf(WS_ROOT) + WS_ROOT.length());
         MDC.put("created", path);
-        log.info(LOG_FORMAT, getArguments(requestContext, responseContext));
+        log.info(LOG_FORMAT, args);
         logged = true;
       }
     }

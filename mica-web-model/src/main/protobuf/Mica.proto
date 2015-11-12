@@ -417,9 +417,10 @@ message DatasetDto {
   repeated LocalizedStringDto acronym = 3;
   repeated LocalizedStringDto description = 4;
   required string entityType = 5;
-  required bool published = 6;
+  optional bool published = 6;
   repeated AttributeDto attributes = 7;
   optional TimestampsDto timestamps = 8;
+  optional string variableType = 9;
 
   extensions 1000 to max;
 

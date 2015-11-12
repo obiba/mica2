@@ -81,25 +81,26 @@ public class StudyQuery extends AbstractDocumentQuery {
     StudyCountStatsBuilder studyCountStatsBuilder = counts == null ? null : StudyCountStatsBuilder.newBuilder(counts);
 
     Consumer<Study> addDto = getStudyConsumer(scope, resBuilder, studyCountStatsBuilder);
-    List<Study> publishedStudies =
-      publishedStudyService.findByIds(Stream.of(hits.hits()).map(h -> h.getId()).collect(Collectors.toList()));
+    List<Study> publishedStudies = publishedStudyService
+      .findByIds(Stream.of(hits.hits()).map(h -> h.getId()).collect(Collectors.toList()));
     publishedStudies.forEach(addDto::accept);
     builder.setExtension(StudyResultDto.result, resBuilder.build());
   }
 
   private Consumer<Study> getStudyConsumer(Scope scope, StudyResultDto.Builder resBuilder,
-      StudyCountStatsBuilder studyCountStatsBuilder) {
+    StudyCountStatsBuilder studyCountStatsBuilder) {
 
-    return scope == Scope.DETAIL
-      ? (study) -> {
-        Mica.StudySummaryDto.Builder summaryBuilder = dtos.asSummaryDtoBuilder(study);
-        if(studyCountStatsBuilder != null) {
-          summaryBuilder.setExtension(MicaSearch.CountStatsDto.studyCountStats, studyCountStatsBuilder.build(study))
-              .build();
-        }
-        resBuilder.addSummaries(summaryBuilder.build());
+    return scope == Scope.DETAIL ? (study) -> {
+      Mica.StudySummaryDto.Builder summaryBuilder = dtos.asSummaryDtoBuilder(study);
+      if(mode == Mode.LIST) {
+        summaryBuilder.clearPopulationSummaries();
       }
-      : (study) -> resBuilder.addDigests(dtos.asDigestDtoBuilder(study).build());
+      if(studyCountStatsBuilder != null) {
+        summaryBuilder.setExtension(MicaSearch.CountStatsDto.studyCountStats, studyCountStatsBuilder.build(study))
+          .build();
+      }
+      resBuilder.addSummaries(summaryBuilder.build());
+    } : (study) -> resBuilder.addDigests(dtos.asDigestDtoBuilder(study).build());
   }
 
   @Override

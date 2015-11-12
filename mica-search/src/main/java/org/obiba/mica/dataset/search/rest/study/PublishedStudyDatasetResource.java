@@ -10,7 +10,6 @@
 
 package org.obiba.mica.dataset.search.rest.study;
 
-import javax.inject.Inject;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -21,7 +20,6 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetResource;
-import org.obiba.mica.dataset.service.StudyDatasetService;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -36,11 +34,6 @@ import com.codahale.metrics.annotation.Timed;
 @Path("/study-dataset/{id}")
 @RequiresAuthentication
 public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResource<StudyDataset> {
-
-
-
-  @Inject
-  private StudyDatasetService datasetService;
 
   /**
    * Get {@link org.obiba.mica.dataset.domain.StudyDataset} from published index.
@@ -85,14 +78,15 @@ public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResou
   @GET
   @Path("/variables")
   @Timed
-  public Mica.DatasetVariablesDto getVariables(@PathParam("id") String id, @QueryParam("from") @DefaultValue("0") int from,
-    @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
-    @QueryParam("order") String order) {
+  public Mica.DatasetVariablesDto getVariables(@PathParam("id") String id,
+    @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit,
+    @QueryParam("sort") String sort, @QueryParam("order") String order) {
     return getDatasetVariableDtos(id, DatasetVariable.Type.Study, from, limit, sort, order);
   }
 
   @Path("/variable/{variable}")
-  public PublishedStudyDatasetVariableResource getVariable(@PathParam("id") String id, @PathParam("variable") String variable) {
+  public PublishedStudyDatasetVariableResource getVariable(@PathParam("id") String id,
+    @PathParam("variable") String variable) {
     PublishedStudyDatasetVariableResource resource = applicationContext
       .getBean(PublishedStudyDatasetVariableResource.class);
     resource.setDatasetId(id);

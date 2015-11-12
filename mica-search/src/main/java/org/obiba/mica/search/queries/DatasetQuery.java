@@ -157,6 +157,10 @@ public class DatasetQuery extends AbstractDocumentQuery {
 
     return scope == Scope.DETAIL ? (dataset) -> {
       Mica.DatasetDto.Builder datasetBuilder = dtos.asDtoBuilder(dataset);
+      if(mode == Mode.LIST) {
+        datasetBuilder.clearExtension(Mica.StudyDatasetDto.type);
+        datasetBuilder.clearExtension(Mica.HarmonizationDatasetDto.type);
+      }
       if(datasetCountStatsBuilder != null) {
         datasetBuilder.setExtension(MicaSearch.CountStatsDto.datasetCountStats, datasetCountStatsBuilder.build(dataset))
           .build();
