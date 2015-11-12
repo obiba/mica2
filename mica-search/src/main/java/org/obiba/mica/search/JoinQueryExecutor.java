@@ -96,13 +96,13 @@ public class JoinQueryExecutor {
   public JoinQueryResultDto listQuery(QueryType type, MicaSearch.QueryDto queryDto, String locale) throws IOException {
     JoinQueryDto joinQueryDto = createJoinQueryByType(type, queryDto).toBuilder().setWithFacets(false).build();
     variableQuery
-      .initialize(joinQueryDto.hasVariableQueryDto() ? joinQueryDto.getVariableQueryDto() : null, locale, Mode.SEARCH);
+      .initialize(joinQueryDto.hasVariableQueryDto() ? joinQueryDto.getVariableQueryDto() : null, locale, Mode.LIST);
     datasetQuery
-      .initialize(joinQueryDto.hasDatasetQueryDto() ? joinQueryDto.getDatasetQueryDto() : null, locale, Mode.SEARCH);
+      .initialize(joinQueryDto.hasDatasetQueryDto() ? joinQueryDto.getDatasetQueryDto() : null, locale, Mode.LIST);
     studyQuery
-      .initialize(joinQueryDto.hasStudyQueryDto() ? joinQueryDto.getStudyQueryDto() : null, locale, Mode.SEARCH);
+      .initialize(joinQueryDto.hasStudyQueryDto() ? joinQueryDto.getStudyQueryDto() : null, locale, Mode.LIST);
     networkQuery
-      .initialize(joinQueryDto.hasNetworkQueryDto() ? joinQueryDto.getNetworkQueryDto() : null, locale, Mode.SEARCH);
+      .initialize(joinQueryDto.hasNetworkQueryDto() ? joinQueryDto.getNetworkQueryDto() : null, locale, Mode.LIST);
 
     execute(type, DETAIL, CountStatsData.newBuilder());
 

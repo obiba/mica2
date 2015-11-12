@@ -74,8 +74,9 @@ public abstract class AbstractDocumentQuery {
   private static final Logger log = LoggerFactory.getLogger(AbstractDocumentQuery.class);
 
   public enum Mode {
-    SEARCH, // search for a list of documents
-    COVERAGE // search for coverage of a classification using the aggregated results
+    SEARCH,  // search for documents (with results and aggregations)
+    LIST,    // list documents (with results but no aggregations)
+    COVERAGE // search for documents coverage of classifications (with aggregations but no results)
   }
 
   public enum Scope {

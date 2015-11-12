@@ -253,16 +253,18 @@ public class VariableQuery extends AbstractDocumentQuery {
   @Override
   protected Properties getAggregationsProperties() {
     Properties properties = new Properties();
-    getTaxonomies().forEach(taxonomy -> {
-      if(taxonomy.hasVocabularies()) {
-        taxonomy.getVocabularies().forEach(vocabulary -> {
-          if(vocabulary.hasTerms()) {
-            properties.put("attributes." + AttributeKey.getMapKey(vocabulary.getName(), taxonomy.getName()) + "." +
-              LanguageTag.UNDETERMINED, "");
-          }
-        });
-      }
-    });
+    if (mode != Mode.LIST) {
+      getTaxonomies().forEach(taxonomy -> {
+        if(taxonomy.hasVocabularies()) {
+          taxonomy.getVocabularies().forEach(vocabulary -> {
+            if(vocabulary.hasTerms()) {
+              properties.put("attributes." + AttributeKey.getMapKey(vocabulary.getName(), taxonomy.getName()) + "." +
+                LanguageTag.UNDETERMINED, "");
+            }
+          });
+        }
+      });
+    }
     return properties;
   }
 
