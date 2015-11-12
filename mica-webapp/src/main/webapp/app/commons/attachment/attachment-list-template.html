@@ -9,9 +9,6 @@
     <td>
       {{attachment.size | bytes}}
     </td>
-    <td>
-      <small>MD5: {{attachment.md5}}</small>
-    </td>
   </tr>
   </tbody>
 </table>
