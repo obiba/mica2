@@ -241,8 +241,10 @@ class DatasetDtos {
   }
 
   private Mica.TermAttributesDto asDto(Taxonomy taxonomy, Attributes attributes) {
+    // TODO Have a locale parameter
+    String locale = micaConfigService.getConfig().getLocalesAsString().get(0);
     Mica.TermAttributesDto.Builder builder = Mica.TermAttributesDto.newBuilder() //
-      .setTaxonomy(taxonomyDtos.asDto(taxonomy, null));
+      .setTaxonomy(taxonomyDtos.asDto(taxonomy, locale));
 
     Map<String, Mica.TermAttributeDto.Builder> terms = Maps.newHashMap();
     attributes.getAttributes(taxonomy.getName()).forEach(attr -> {
@@ -257,11 +259,11 @@ class DatasetDtos {
           } else {
             termBuilder = Mica.TermAttributeDto.newBuilder();
             terms.put(vocabulary.getName(), termBuilder);
-            termBuilder.setVocabulary(taxonomyDtos.asDto(vocabulary, null));
+            termBuilder.setVocabulary(taxonomyDtos.asDto(vocabulary, locale));
           }
 
           Term term = vocabulary.getTerm(termStr);
-          termBuilder.addTerms(taxonomyDtos.asDto(term, null));
+          termBuilder.addTerms(taxonomyDtos.asDto(term, locale));
         }
       }
     });
