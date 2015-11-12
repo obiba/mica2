@@ -26,7 +26,6 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.indices.IndexMissingException;
-import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
@@ -112,6 +111,11 @@ public class NetworkQuery extends AbstractDocumentQuery {
 
     return scope == Scope.DETAIL ? (network) -> {
       Mica.NetworkDto.Builder networkBuilder = dtos.asDtoBuilder(network);
+      if (mode == Mode.LIST) {
+        networkBuilder.clearStudySummaries();
+        networkBuilder.clearContacts();
+        networkBuilder.clearInvestigators();
+      }
       if(networkCountStatsBuilder != null) {
         networkBuilder.setExtension(MicaSearch.CountStatsDto.networkCountStats, networkCountStatsBuilder.build(network))
           .build();
