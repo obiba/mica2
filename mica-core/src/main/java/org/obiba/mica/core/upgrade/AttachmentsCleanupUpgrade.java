@@ -42,7 +42,7 @@ public class AttachmentsCleanupUpgrade implements UpgradeStep {
 
   @Override
   public Version getAppliesTo() {
-    return new Version("0.9.2");
+    return new Version("1.0.0");
   }
 
   @Override
