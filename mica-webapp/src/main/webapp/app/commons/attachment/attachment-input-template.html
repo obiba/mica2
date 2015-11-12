@@ -4,18 +4,13 @@
   <tbody>
   <tr ng-repeat="file in files">
     <td>
+      {{file.fileName}}
       <progressbar ng-show="file.showProgressBar" class="progress-striped" value="file.progress">
         {{file.progress}}%
       </progressbar>
     </td>
     <td>
-      {{file.fileName}}
-    </td>
-    <td>
       {{file.size | bytes}}
-    </td>
-    <td>
-      <small ng-show="file.md5">md5: {{file.md5}}</small>
     </td>
     <td>
       <a ng-show="file.id" ng-click="deleteFile(file.id)" class="action">
