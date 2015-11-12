@@ -49,47 +49,47 @@ public class PublishedDatasetSearchResource {
   @GET
   @Path("/study/_search")
   @Timed
-  public MicaSearch.JoinQueryResultDto queryStudy(@QueryParam("from") @DefaultValue("0") int from,
-      @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
-      @QueryParam("order") String order, @QueryParam("query") String query,
-      @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
+  public MicaSearch.JoinQueryResultDto listStudy(@QueryParam("from") @DefaultValue("0") int from,
+    @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
+    @QueryParam("order") String order, @QueryParam("query") String query,
+    @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
 
-    return queryInternal(from, limit, sort, order, query, locale, StudyDataset.class.getSimpleName(), null);
+    return listInternal(from, limit, sort, order, query, locale, StudyDataset.class.getSimpleName(), null);
   }
 
   @GET
   @Path("/harmonization/_search")
   @Timed
-  public MicaSearch.JoinQueryResultDto queryHarmonization(@QueryParam("from") @DefaultValue("0") int from,
-      @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
-      @QueryParam("order") String order, @QueryParam("query") String query,
-      @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
+  public MicaSearch.JoinQueryResultDto listHarmonization(@QueryParam("from") @DefaultValue("0") int from,
+    @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
+    @QueryParam("order") String order, @QueryParam("query") String query,
+    @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
 
-    return queryInternal(from, limit, sort, order, query, locale, HarmonizationDataset.class.getSimpleName(), null);
+    return listInternal(from, limit, sort, order, query, locale, HarmonizationDataset.class.getSimpleName(), null);
   }
 
   @GET
   @Path("/_search")
   @Timed
-  public MicaSearch.JoinQueryResultDto query(@QueryParam("from") @DefaultValue("0") int from,
-      @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
-      @QueryParam("order") String order, @QueryParam("study") String studyId, @QueryParam("query") String query,
-      @QueryParam("locale") @DefaultValue("en") String locale)
-      throws IOException {
+  public MicaSearch.JoinQueryResultDto list(@QueryParam("from") @DefaultValue("0") int from,
+    @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
+    @QueryParam("order") String order, @QueryParam("study") String studyId, @QueryParam("query") String query,
+    @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
 
-    return queryInternal(from, limit, sort, order, query, locale, null, studyId);
+    return listInternal(from, limit, sort, order, query, locale, null, studyId);
   }
 
-  private MicaSearch.JoinQueryResultDto queryInternal(int from, int limit, String sort, String order, String query,
-      String locale, String type, String studyId) throws IOException {
+  private MicaSearch.JoinQueryResultDto listInternal(int from, int limit, String sort, String order, String query,
+    String locale, String type, String studyId) throws IOException {
 
-    MicaSearch.QueryDto queryDto = QueryDtoHelper.createQueryDto(from, limit, sort, order,
-        mergeQueries(createTypeQuery(type), query), locale, Stream.of(DatasetIndexer.LOCALIZED_ANALYZED_FIELDS));
+    MicaSearch.QueryDto queryDto = QueryDtoHelper
+      .createQueryDto(from, limit, sort, order, mergeQueries(createTypeQuery(type), query), locale,
+        Stream.of(DatasetIndexer.LOCALIZED_ANALYZED_FIELDS));
 
     if(!Strings.isNullOrEmpty(studyId)) {
       List<MicaSearch.FieldFilterQueryDto> filters = Lists.newArrayList();
 
-      if (type != null) {
+      if(type != null) {
         if(type.equals(StudyDataset.class.getSimpleName())) {
           filters.add(QueryDtoHelper.createTermFilter(DatasetQuery.STUDY_JOIN_FIELD, Arrays.asList(studyId)));
         } else {
@@ -103,13 +103,17 @@ public class PublishedDatasetSearchResource {
       }
     }
 
-    return joinQueryExecutor.listQuery(JoinQueryExecutor.QueryType.DATASET, queryDto, locale);
+    MicaSearch.JoinQueryResultDto.Builder builder = joinQueryExecutor
+      .listQuery(JoinQueryExecutor.QueryType.DATASET, queryDto, locale).toBuilder();
+    builder.clearNetworkResultDto().clearVariableResultDto().clearStudyResultDto();
+    builder.setDatasetResultDto(builder.getDatasetResultDto().toBuilder().clearAggs().build());
+    return builder.build();
   }
 
   @POST
   @Path("/_search")
   @Timed
-  public MicaSearch.JoinQueryResultDto list(MicaSearch.JoinQueryDto joinQueryDto) throws IOException {
+  public MicaSearch.JoinQueryResultDto query(MicaSearch.JoinQueryDto joinQueryDto) throws IOException {
     return joinQueryExecutor.query(JoinQueryExecutor.QueryType.DATASET, joinQueryDto);
   }
 
@@ -119,8 +123,8 @@ public class PublishedDatasetSearchResource {
 
   private static String mergeQueries(String typeQuery, String query) {
     return Strings.isNullOrEmpty(typeQuery)
-        ? query
-        : Strings.isNullOrEmpty(query) ? typeQuery : String.format("%s AND %s", typeQuery, query);
+      ? query
+      : Strings.isNullOrEmpty(query) ? typeQuery : String.format("%s AND %s", typeQuery, query);
   }
 
 }
