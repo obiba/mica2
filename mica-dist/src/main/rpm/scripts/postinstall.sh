@@ -42,11 +42,11 @@ case "$1" in
     fi
 
     # Some deprecated configuration files
-    if [ ! -e /var/lib/mica2/conf/mica-categories.yml ] ; then
+    if [ -e /var/lib/mica2/conf/mica-categories.yml ] ; then
       mv /var/lib/mica2/conf/mica-categories.yml.old
     fi
 
-    if [ ! -e /var/lib/mica2/conf/mica-aggregations.yml ] ; then
+    if [ -e /var/lib/mica2/conf/mica-aggregations.yml ] ; then
       mv /var/lib/mica2/conf/mica-aggregations.yml.old
     fi
 
