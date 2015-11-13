@@ -51,6 +51,14 @@
   </div>
 
   <div class="modal-footer">
+    <a ng-if="network.studyIds"
+      target="_self"
+      download
+      class="btn btn-info"
+      ng-href="ws/draft/persons/_search?{{getDownloadAllContactsParams()}}">
+      <i class="fa fa-download"></i> {{'download' | translate}}
+    </a>
+
     <button type="button" class="btn btn-default" ng-click="cancel()">
       <span translate>close</span>
     </button>

@@ -176,6 +176,7 @@ mica.network
 
   .controller('NetworkContactsModalController', ['$scope', '$modalInstance', 'ContactsSearchResource', 'network', 'lang',
     function ($scope, $modalInstance, ContactsSearchResource, network, lang) {
+      $scope.network = network;
       $scope.lang = lang;
       var studyIds = network.studyIds.join(' ');
       $scope.persons = [];
@@ -188,6 +189,13 @@ mica.network
           return p.studyMemberships && p.studyMemberships.length > 0;
         });
       });
+
+      $scope.getDownloadAllContactsParams = function () {
+        return $.param({
+          query: 'studyMemberships.parentId:(' + studyIds + ')',
+          limit: 999
+        });
+      };
 
       $scope.cancel = function () {
         $modalInstance.dismiss('cancel');
