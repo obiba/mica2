@@ -39,13 +39,15 @@ public class CoverageQueryExecutor {
 
   private MicaSearch.JoinQueryDto joinQueryDto;
 
-  public MicaSearch.TaxonomiesCoverageDto coverageQuery(Collection<String> taxonomyNames, boolean withFacets,
-    String locale) throws IOException {
-    return coverageQuery(taxonomyNames,
+  private Map<String, Map<String, List<String>>> restrictedTermsMap;
+
+  public MicaSearch.TaxonomiesCoverageDto coverageQuery(Collection<String> taxonomyNames, boolean strict,
+    boolean withFacets, String locale) throws IOException {
+    return coverageQuery(taxonomyNames, strict,
       getDefaultJoinQueryDto().toBuilder().setWithFacets(withFacets).setLocale(locale == null ? "" : locale).build());
   }
 
-  public MicaSearch.TaxonomiesCoverageDto coverageQuery(Collection<String> taxonomyNames,
+  public MicaSearch.TaxonomiesCoverageDto coverageQuery(Collection<String> taxonomyNames, boolean strict,
     MicaSearch.JoinQueryDto joinQuery) throws IOException {
 
     joinQueryDto = joinQuery == null ? getDefaultJoinQueryDto() : joinQuery;
@@ -53,6 +55,13 @@ public class CoverageQueryExecutor {
     // If do not need all the facets and some taxonomy names are provided then we can restrict the
     // variable aggregations to the ones matching these names.
     Collection<String> taxonomyFilter = withFacets || taxonomyNames == null ? Collections.emptyList() : taxonomyNames;
+
+    // Strict coverage means that coverage result is restricted to the terms specified in the variable query.
+    // If no variable query is specified, nothing is returned if strictness is applied, otherwise coverage of all terms is returned.
+    if(strict) {
+      TaxonomyFilterParser parser = new TaxonomyFilterParser(joinQueryDto.getVariableQueryDto());
+      restrictedTermsMap = parser.getTermsMap();
+    }
 
     // We need the aggregations internally for building the coverage result,
     // but we may not need them in the final result
@@ -102,7 +111,7 @@ public class CoverageQueryExecutor {
     aggregations.forEach(agg -> {
       String name = agg.getAggregation();
       List<MicaSearch.TermsAggregationResultDto> results = agg.getExtension(MicaSearch.TermsAggregationResultDto.terms);
-      if(results != null && !results.isEmpty() && name.startsWith("attributes-") && name.endsWith("-und")) {
+      if(results != null && !results.isEmpty() && isAttributeField(name)) {
         String key = name.replaceAll("^attributes-", "").replaceAll("-und$", "");
         if(!aggsMap.containsKey(key)) aggsMap.put(key, Maps.newHashMap());
         results.forEach(res -> aggsMap.get(key).put(res.getKey(), res.getCount()));
@@ -110,13 +119,21 @@ public class CoverageQueryExecutor {
     });
 
     List<MicaSearch.TaxonomyCoverageDto> coverages = Lists.newArrayList();
-    getTaxonomies().stream().filter(
-      taxonomy -> taxonomyNames == null || taxonomyNames.isEmpty() || taxonomyNames.contains(taxonomy.getName()))
-      .forEach(
-        taxonomy -> addTaxonomyCoverage(coverages, taxonomy, aggsMap, bucketResultsByTaxonomy.get(taxonomy.getName()),
-          aggTermsTitlesMap));
+    getTaxonomies().stream().filter(taxonomy -> applyFilter(taxonomyNames, taxonomy)).forEach(
+      taxonomy -> addTaxonomyCoverage(coverages, taxonomy, aggsMap, bucketResultsByTaxonomy.get(taxonomy.getName()),
+        aggTermsTitlesMap));
 
     return coverages;
+  }
+
+  private boolean applyFilter(Collection<String> taxonomyNames, Taxonomy taxonomy) {
+    boolean restricted = restrictedTermsMap == null || restrictedTermsMap.containsKey(taxonomy.getName());
+    boolean filtered = taxonomyNames == null || taxonomyNames.isEmpty() || taxonomyNames.contains(taxonomy.getName());
+    return filtered && restricted;
+  }
+
+  private boolean isAttributeField(String name) {
+    return name.startsWith("attributes-") && name.endsWith("-und");
   }
 
   private List<MicaSearch.AggregationResultDto> ungroupAggregations(List<MicaSearch.AggregationResultDto> aggsList) {
@@ -182,9 +199,10 @@ public class CoverageQueryExecutor {
         ? Maps.newHashMap()
         : bucketResults.stream().collect(Collectors.groupingBy(BucketResult::getVocabulary));
 
-      taxonomy.getVocabularies().forEach(vocabulary -> hits.add(addVocabularyCoverage(taxoBuilder, vocabulary,
-        aggsMap.get(AttributeKey.getMapKey(vocabulary.getName(), namespace)),
-        bucketResults == null ? null : bucketResultsByVocabulary.get(vocabulary.getName()), aggTermsTitlesMap)));
+      taxonomy.getVocabularies().stream().filter(vocabulary -> applyFilter(taxonomy, vocabulary)).forEach(
+        vocabulary -> hits.add(addVocabularyCoverage(taxoBuilder, taxonomy, vocabulary,
+          aggsMap.get(AttributeKey.getMapKey(vocabulary.getName(), namespace)),
+          bucketResults == null ? null : bucketResultsByVocabulary.get(vocabulary.getName()), aggTermsTitlesMap)));
 
       taxoBuilder.setHits(hits.isEmpty() ? 0 : hits.stream().mapToInt(x -> x).sum());
       // compute the sum of the hits for all vocabularies per bucket
@@ -213,6 +231,10 @@ public class CoverageQueryExecutor {
     }
   }
 
+  private boolean applyFilter(Taxonomy taxonomy, Vocabulary vocabulary) {
+    return restrictedTermsMap == null || restrictedTermsMap.get(taxonomy.getName()).containsKey(vocabulary.getName());
+  }
+
   /**
    * For a taxonomy {@link org.obiba.opal.core.domain.taxonomy.Vocabulary}, report the number of hits and optionally the
    * number of hits for each bucket.
@@ -223,8 +245,8 @@ public class CoverageQueryExecutor {
    * @param bucketResults
    * @return
    */
-  private int addVocabularyCoverage(MicaSearch.TaxonomyCoverageDto.Builder taxoBuilder, Vocabulary vocabulary,
-    Map<String, Integer> hits, @Nullable List<BucketResult> bucketResults,
+  private int addVocabularyCoverage(MicaSearch.TaxonomyCoverageDto.Builder taxoBuilder, Taxonomy taxonomy,
+    Vocabulary vocabulary, Map<String, Integer> hits, @Nullable List<BucketResult> bucketResults,
     Map<String, Map<String, MicaSearch.TermsAggregationResultDto>> aggTermsTitlesMap) {
     int sumOfHits = 0;
     if(vocabulary.hasTerms()) {
@@ -234,7 +256,7 @@ public class CoverageQueryExecutor {
 
       MicaSearch.VocabularyCoverageDto.Builder vocBuilder = MicaSearch.VocabularyCoverageDto.newBuilder();
       vocBuilder.setVocabulary(dtos.asDto(vocabulary, getLocale()));
-      vocabulary.getTerms().forEach(
+      vocabulary.getTerms().stream().filter(term -> applyFilter(taxonomy, vocabulary, term)).forEach(
         term -> addTermCoverage(vocBuilder, term, hits, bucketResultsByTerm.get(term.getName()), aggTermsTitlesMap));
       // only one term can be applied at a time, then the sum of the term hits is the number of variables
       // that cover this vocabulary
@@ -275,6 +297,11 @@ public class CoverageQueryExecutor {
       }
     }
     return sumOfHits;
+  }
+
+  private boolean applyFilter(Taxonomy taxonomy, Vocabulary vocabulary, Term term) {
+    return restrictedTermsMap == null ||
+      restrictedTermsMap.get(taxonomy.getName()).get(vocabulary.getName()).contains(term.getName());
   }
 
   /**

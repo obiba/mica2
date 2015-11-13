@@ -22,6 +22,8 @@ public class AttributeKey implements Serializable {
 
   private static final long serialVersionUID = -3129195422457806471L;
 
+  private static String SEPARATOR = "__";
+
   @NotNull
   private String name;
 
@@ -42,19 +44,23 @@ public class AttributeKey implements Serializable {
     return namespace;
   }
 
+  public boolean hasNamespace() {
+    return !Strings.isNullOrEmpty(namespace);
+  }
+
   public boolean hasNamespace(@Nullable String namespace) {
     return namespace == null ? this.namespace == null : namespace.equals(this.namespace);
   }
 
   public static String getMapKey(String name, @Nullable String namespace) {
-    return Strings.isNullOrEmpty(namespace) ? name : namespace + "__" + name;
+    return Strings.isNullOrEmpty(namespace) ? name : namespace + SEPARATOR + name;
   }
 
   public static AttributeKey from(String mapKey) {
-    if (!mapKey.contains("__")) return new AttributeKey(mapKey, null);
+    if (!mapKey.contains(SEPARATOR)) return new AttributeKey(mapKey, null);
     else {
-      String namespace = mapKey.substring(0, mapKey.indexOf("__"));
-      return new AttributeKey(mapKey.substring(mapKey.indexOf("__") + 2), namespace);
+      String namespace = mapKey.substring(0, mapKey.indexOf(SEPARATOR));
+      return new AttributeKey(mapKey.substring(mapKey.indexOf(SEPARATOR) + 2), namespace);
     }
   }
 
