@@ -75,7 +75,7 @@
                   <span translate>population.countries</span>
                 </label>
                 <ui-select multiple theme="bootstrap" ng-model="population.selectionCriteria.countriesIso"
-                  reset-search-input="false">
+                  reset-search-input="true">
                   <ui-select-match><span ng-bind-html="$item.code"></span></ui-select-match>
                   <ui-select-choices
                     repeat="country.code as country in getAvailableCountries(tab.lang) | filter: $select.search">
