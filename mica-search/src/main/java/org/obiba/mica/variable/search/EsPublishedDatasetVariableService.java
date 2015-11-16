@@ -66,7 +66,7 @@ public class EsPublishedDatasetVariableService extends AbstractPublishedDocument
 
   public Map<String, Long> getCountByStudyIds(List<String> studyIds) {
     SearchResponse response = executeCountQuery(buildStudiesFilteredQuery(studyIds),
-      AggregationBuilders.terms(STUDY_IDS_FIELD).field(STUDY_IDS_FIELD));
+      AggregationBuilders.terms(STUDY_IDS_FIELD).field(STUDY_IDS_FIELD).size(0));
 
     if (response == null) {
       return studyIds.stream().collect(Collectors.toMap(s -> s, s -> 0L));
