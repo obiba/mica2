@@ -20,6 +20,7 @@ import org.joda.time.DateTime;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.dataset.NoSuchDatasetException;
@@ -33,6 +34,8 @@ import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.service.support.QueryTermsUtil;
+import org.obiba.mica.file.FileUtils;
+import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.opal.rest.client.magma.RestValueTable;
@@ -66,6 +69,9 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
 
   @Inject
   private OpalService opalService;
+
+  @Inject
+  private FileSystemService fileSystemService;
 
   @Inject
   private StudyDatasetRepository studyDatasetRepository;
@@ -124,21 +130,25 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
     return studyDatasetRepository.findByStudyTableStudyId(studyId);
   }
 
-  /**
-   * Apply dataset publication flag.
-   *
-   * @param id
-   * @param published
-   */
   @Caching(evict = { @CacheEvict(value = "aggregations-metadata", key = "'dataset'") })
   public void publish(@NotNull String id, boolean published) {
+    publish(id, published, PublishCascadingScope.NONE);
+  }
+    /**
+     * Apply dataset publication flag.
+     *
+     * @param id
+     * @param published
+     */
+  @Caching(evict = { @CacheEvict(value = "aggregations-metadata", key = "'dataset'") })
+  public void publish(@NotNull String id, boolean published, PublishCascadingScope cascadingScope) {
     StudyDataset dataset = findById(id);
     helper.evictCache(dataset);
 
     if(published) {
       Iterable<DatasetVariable> variables = wrappedGetDatasetVariables(dataset);
       publishState(id);
-      eventBus.post(new DatasetPublishedEvent(dataset, variables, getCurrentUsername()));
+      eventBus.post(new DatasetPublishedEvent(dataset, variables, getCurrentUsername(), cascadingScope));
       helper.asyncBuildDatasetVariablesCache(dataset, variables);
     } else {
       unPublishState(id);
@@ -224,8 +234,10 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
       throw NoSuchDatasetException.withId(id);
     }
 
+    fileSystemService.delete(FileUtils.getEntityPath(dataset));
     helper.evictCache(dataset);
     studyDatasetRepository.delete(id);
+    studyDatasetStateRepository.delete(id);
     gitService.deleteGitRepository(dataset);
     eventBus.post(new DatasetDeletedEvent(dataset));
   }

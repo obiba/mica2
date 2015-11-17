@@ -221,6 +221,7 @@ mica.network
     'NETWORK_EVENTS',
     'NOTIFICATION_EVENTS',
     'DraftStudiesSummariesResource',
+    'DraftFileSystemSearchResource',
     '$modal',
     'LocalizedValues',
     'ActiveTabService',
@@ -246,6 +247,7 @@ mica.network
               NETWORK_EVENTS,
               NOTIFICATION_EVENTS,
               DraftStudiesSummariesResource,
+              DraftFileSystemSearchResource,
               $modal,
               LocalizedValues,
               ActiveTabService,
@@ -294,9 +296,18 @@ mica.network
 
       $scope.publish = function (publish) {
         if (publish) {
-          DraftNetworkPublicationResource.publish({id: $scope.network.id}, function () {
-            $scope.network = DraftNetworkResource.get({id: $routeParams.id});
-          });
+          DraftFileSystemSearchResource.searchUnderReview({path: '/network/' + $scope.network.id},
+            function onSuccess(response) {
+              DraftNetworkPublicationResource.publish(
+                {id: $scope.network.id, cascading: response.length > 0 ? 'UNDER_REVIEW' : 'NONE'},
+                function () {
+                  $scope.network = DraftNetworkResource.get({id: $routeParams.id});
+                });
+            },
+            function onError() {
+              $log.error('Failed to search for Under Review files.');
+            }
+          );
         } else {
           DraftNetworkPublicationResource.unPublish({id: $scope.network.id}, function () {
             $scope.network = DraftNetworkResource.get({id: $routeParams.id});

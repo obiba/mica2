@@ -10,15 +10,21 @@
 
 package org.obiba.mica.network.event;
 
-import org.obiba.mica.core.event.PersistableUpdatedEvent;
+import org.obiba.mica.core.domain.PublishCascadingScope;
+import org.obiba.mica.core.event.PersistableCascadingPublishedEvent;
 import org.obiba.mica.network.domain.Network;
 
-public class NetworkPublishedEvent extends PersistableUpdatedEvent<Network> {
+public class NetworkPublishedEvent extends PersistableCascadingPublishedEvent<Network> {
 
   private final String publisher;
 
   public NetworkPublishedEvent(Network persistable, String publisher) {
-    super(persistable);
+    super(persistable, PublishCascadingScope.NONE);
+    this.publisher = publisher;
+  }
+
+  public NetworkPublishedEvent(Network persistable, String publisher, PublishCascadingScope cascadingScope) {
+    super(persistable, cascadingScope);
     this.publisher = publisher;
   }
 

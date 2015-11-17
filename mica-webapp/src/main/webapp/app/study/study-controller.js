@@ -61,6 +61,7 @@ mica.study
     'DraftStudyViewRevisionResource',
     'DraftStudyRevisionsResource',
     'DraftStudyRestoreRevisionResource',
+    'DraftFileSystemSearchResource',
     'MicaConfigResource',
     'STUDY_EVENTS',
     'NOTIFICATION_EVENTS',
@@ -87,6 +88,7 @@ mica.study
               DraftStudyViewRevisionResource,
               DraftStudyRevisionsResource,
               DraftStudyRestoreRevisionResource,
+              DraftFileSystemSearchResource,
               MicaConfigResource,
               STUDY_EVENTS,
               NOTIFICATION_EVENTS,
@@ -273,9 +275,18 @@ mica.study
 
       $scope.publish = function (doPublish) {
         if (doPublish) {
-          DraftStudyPublicationResource.publish({id: $scope.study.id}, function () {
-            $scope.studySummary = StudyStateResource.get({id: $routeParams.id});
-          });
+          DraftFileSystemSearchResource.searchUnderReview({path: '/study/' + $scope.study.id},
+            function onSuccess(response) {
+              DraftStudyPublicationResource.publish(
+                {id: $scope.study.id, cascading: response.length > 0 ? 'UNDER_REVIEW' : 'NONE'},
+                function () {
+                  $scope.studySummary = StudyStateResource.get({id: $routeParams.id});
+                });
+            },
+            function onError() {
+              $log.error('Failed to search for Under Review files.');
+            }
+          );
         } else {
           DraftStudyPublicationResource.unPublish({id: $scope.study.id}, function () {
             $scope.studySummary = StudyStateResource.get({id: $routeParams.id});

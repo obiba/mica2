@@ -1,6 +1,9 @@
 package org.obiba.mica.file;
 
 import org.obiba.mica.file.service.FileSystemService;
+import org.springframework.data.domain.Persistable;
+
+import com.google.common.base.CaseFormat;
 
 public class FileUtils {
 
@@ -25,5 +28,12 @@ public class FileUtils {
   public static String getParentPath(String path) {
     int idx = path.lastIndexOf('/');
     return idx == 0 ? "/" : path.substring(0, idx);
+  }
+
+  public static String getEntityPath(Persistable persistable) {
+    return String.format("/%s/%s",
+      CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, persistable.getClass().getSimpleName()),
+      persistable.getId()
+    );
   }
 }

@@ -18,6 +18,7 @@ import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.contact.event.PersonUpdatedEvent;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.Person;
+import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.core.repository.PersonRepository;
@@ -26,6 +27,7 @@ import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.StudyDatasetRepository;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileStoreService;
+import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.study.ConstraintException;
@@ -201,6 +203,7 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
 
     checkStudyConstraints(study);
 
+    fileSystemService.delete(FileUtils.getEntityPath(study));
     studyStateRepository.delete(id);
     studyRepository.deleteWithReferences(study);
     gitService.deleteGitRepository(study);
@@ -210,12 +213,18 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
   @Caching(evict = { @CacheEvict(value = "aggregations-metadata", allEntries = true),
     @CacheEvict(value = { "studies-draft", "studies-published" }, key = "#id") })
   public void publish(@NotNull String id, boolean publish) throws NoSuchEntityException {
+    publish(id, publish, PublishCascadingScope.NONE);
+  }
+
+  @Caching(evict = { @CacheEvict(value = "aggregations-metadata", allEntries = true),
+    @CacheEvict(value = { "studies-draft", "studies-published" }, key = "#id") })
+  public void publish(@NotNull String id, boolean publish, PublishCascadingScope cascadingScope) throws NoSuchEntityException {
     log.info("Publish study: {}", id);
     Study study = studyRepository.findOne(id);
 
     if (publish) {
       publishState(id);
-      eventBus.post(new StudyPublishedEvent(study, getCurrentUsername()));
+      eventBus.post(new StudyPublishedEvent(study, getCurrentUsername(), cascadingScope));
     } else {
       unPublishState(id);
       eventBus.post(new StudyUnpublishedEvent(study));

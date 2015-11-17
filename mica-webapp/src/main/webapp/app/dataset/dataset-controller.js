@@ -326,6 +326,7 @@ mica.dataset
     'DraftDatasetViewRevisionResource',
     'DraftDatasetRevisionsResource',
     'DraftDatasetRestoreRevisionResource',
+    'DraftFileSystemSearchResource',
     'MicaConfigResource',
     'ActiveTabService',
     'NOTIFICATION_EVENTS',
@@ -345,6 +346,7 @@ mica.dataset
               DraftDatasetViewRevisionResource,
               DraftDatasetRevisionsResource,
               DraftDatasetRestoreRevisionResource,
+              DraftFileSystemSearchResource,
               MicaConfigResource,
               ActiveTabService,
               NOTIFICATION_EVENTS,
@@ -371,9 +373,18 @@ mica.dataset
 
       $scope.publish = function (publish) {
         if (publish) {
-          DatasetPublicationResource.publish({id: $scope.dataset.id, type: $scope.type}, function () {
-            $scope.dataset = DraftDatasetResource.get({id: $routeParams.id, type: $scope.type});
-          });
+          DraftFileSystemSearchResource.searchUnderReview({path: '/' + $scope.type + '/' + $scope.dataset.id},
+            function onSuccess(response) {
+              DatasetPublicationResource.publish(
+                {id: $scope.dataset.id, type: $scope.type, cascading: response.length > 0 ? 'UNDER_REVIEW' : 'NONE'},
+                function () {
+                  $scope.dataset = DraftDatasetResource.get({id: $routeParams.id, type: $scope.type});
+                });
+            },
+            function onError() {
+              $log.error('Failed to search for Under Review files.');
+            }
+          );
         } else {
           DatasetPublicationResource.unPublish({id: $scope.dataset.id, type: $scope.type}, function () {
             $scope.dataset = DraftDatasetResource.get({id: $routeParams.id, type: $scope.type});

@@ -13,11 +13,12 @@ package org.obiba.mica.dataset.event;
 import java.util.List;
 import java.util.Map;
 
-import org.obiba.mica.core.event.PersistableUpdatedEvent;
+import org.obiba.mica.core.domain.PublishCascadingScope;
+import org.obiba.mica.core.event.PersistableCascadingPublishedEvent;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 
-public class DatasetPublishedEvent extends PersistableUpdatedEvent<Dataset> {
+public class DatasetPublishedEvent extends PersistableCascadingPublishedEvent<Dataset> {
 
   private final Iterable<DatasetVariable> variables;
 
@@ -27,12 +28,22 @@ public class DatasetPublishedEvent extends PersistableUpdatedEvent<Dataset> {
 
   public DatasetPublishedEvent(Dataset persistable, Iterable<DatasetVariable> variables,
     String publisher) {
-    this(persistable, variables, null, publisher);
+    this(persistable, variables, publisher, PublishCascadingScope.NONE);
+  }
+
+  public DatasetPublishedEvent(Dataset persistable, Iterable<DatasetVariable> variables,
+    String publisher, PublishCascadingScope cascadingScope) {
+    this(persistable, variables, null, publisher, cascadingScope);
   }
 
   public DatasetPublishedEvent(Dataset persistable, Iterable<DatasetVariable> variables,
     Map<String, List<DatasetVariable>> harmonizationVariables, String publisher) {
-    super(persistable);
+    this(persistable, variables, harmonizationVariables, publisher, PublishCascadingScope.NONE);
+  }
+
+  public DatasetPublishedEvent(Dataset persistable, Iterable<DatasetVariable> variables,
+    Map<String, List<DatasetVariable>> harmonizationVariables, String publisher, PublishCascadingScope cascadingScope) {
+    super(persistable, cascadingScope);
     this.publisher = publisher;
     this.variables = variables;
     this.harmonizationVariables = harmonizationVariables;
