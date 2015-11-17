@@ -79,9 +79,9 @@ mica.dataset
 
   .factory('DatasetPublicationResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/:type/:id/_publish', {}, {
-        'publish': {method: 'PUT', params: {id: '@id', type: '@type'}},
-        'unPublish': {method: 'DELETE', params: {id: '@id', type: '@type'}}
+      return $resource('ws/draft/:type/:id/_publish', {id: '@id', type: '@type'}, {
+        'publish': {method: 'PUT', params: {cascading: '@cascading'}},
+        'unPublish': {method: 'DELETE'}
       });
     }])
 

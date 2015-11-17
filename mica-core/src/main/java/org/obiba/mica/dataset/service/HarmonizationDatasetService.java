@@ -29,6 +29,7 @@ import org.obiba.magma.NoSuchVariableException;
 import org.obiba.magma.ValueTable;
 import org.obiba.magma.Variable;
 import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
@@ -42,6 +43,8 @@ import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
 import org.obiba.mica.dataset.service.support.QueryTermsUtil;
+import org.obiba.mica.file.FileUtils;
+import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.service.StudyService;
@@ -94,6 +97,9 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   @Inject
   @Lazy
   private Helper helper;
+
+  @Inject
+  private FileSystemService fileSystemService;
 
   public void save(@NotNull HarmonizationDataset dataset) {
     saveInternal(dataset, null);
@@ -169,14 +175,19 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
       populateHarmonizedVariablesMap(dataset)));
   }
 
-  /**
-   * Apply dataset publication flag.
-   *
-   * @param id
-   * @param published
-   */
   @Caching(evict = { @CacheEvict(value = "aggregations-metadata", key = "'dataset'") })
   public void publish(@NotNull String id, boolean published) {
+    publish(id, published, PublishCascadingScope.NONE);
+  }
+
+    /**
+     * Apply dataset publication flag.
+     *
+     * @param id
+     * @param published
+     */
+  @Caching(evict = { @CacheEvict(value = "aggregations-metadata", key = "'dataset'") })
+  public void publish(@NotNull String id, boolean published, PublishCascadingScope cascadingScope) {
     HarmonizationDataset dataset = findById(id);
     helper.evictCache(dataset);
 
@@ -184,7 +195,7 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
       publishState(id);
       Map<String, List<DatasetVariable>> harmonizationVariables = populateHarmonizedVariablesMap(dataset);
       eventBus.post(new DatasetPublishedEvent(dataset, wrappedGetDatasetVariables(dataset), harmonizationVariables,
-        getCurrentUsername()));
+        getCurrentUsername(), cascadingScope));
       helper.asyncBuildDatasetVariablesCache(dataset, harmonizationVariables);
     } else {
       unPublishState(id);
@@ -210,7 +221,9 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
       throw NoSuchDatasetException.withId(id);
     }
 
+    fileSystemService.delete(FileUtils.getEntityPath(dataset));
     helper.evictCache(dataset);
+    harmonizationDatasetStateRepository.delete(id);
     harmonizationDatasetRepository.delete(id);
     gitService.deleteGitRepository(dataset);
     eventBus.post(new DatasetDeletedEvent(dataset));

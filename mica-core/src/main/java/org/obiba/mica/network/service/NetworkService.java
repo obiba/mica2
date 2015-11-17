@@ -20,9 +20,12 @@ import org.joda.time.DateTime;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.contact.event.PersonUpdatedEvent;
 import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
+import org.obiba.mica.file.FileUtils;
+import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.network.NetworkStateRepository;
 import org.obiba.mica.network.NoSuchNetworkException;
@@ -53,6 +56,9 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
 
   @Inject
   private NetworkStateRepository networkStateRepository;
+
+  @Inject
+  private FileSystemService fileSystemService;
 
   @Inject
   private EventBus eventBus;
@@ -170,6 +176,11 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
     eventBus.post(new IndexNetworksEvent());
   }
 
+  @Caching(evict = { @CacheEvict(value = "aggregations-metadata", key = "'network'") })
+  public void publish(@NotNull String id, boolean publish) throws NoSuchEntityException {
+    publish(id, publish, PublishCascadingScope.NONE);
+  }
+
   /**
    * Set the publication flag on a {@link Network}.
    *
@@ -177,12 +188,12 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
    * @throws NoSuchNetworkException
    */
   @Caching(evict = { @CacheEvict(value = "aggregations-metadata", key = "'network'") })
-  public void publish(@NotNull String id, boolean publish) throws NoSuchEntityException {
+  public void publish(@NotNull String id, boolean publish, PublishCascadingScope cascadingScope) throws NoSuchEntityException {
     Network network = networkRepository.findOne(id);
     if (network == null) return;
     if (publish) {
       publishState(id);
-      eventBus.post(new NetworkPublishedEvent(network, getCurrentUsername()));
+      eventBus.post(new NetworkPublishedEvent(network, getCurrentUsername(), cascadingScope));
     } else {
       unPublishState(id);
       eventBus.post(new NetworkUnpublishedEvent(network));
@@ -217,6 +228,7 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
 
     if (network.getLogo() != null) fileStoreService.delete(network.getLogo().getId());
 
+    fileSystemService.delete(FileUtils.getEntityPath(network));
     networkStateRepository.delete(id);
     gitService.deleteGitRepository(network);
 

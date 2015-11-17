@@ -28,6 +28,7 @@ import org.apache.commons.math3.util.Pair;
 import org.bson.types.ObjectId;
 import org.obiba.jersey.protobuf.AbstractProtobufProvider;
 import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.dataset.NoSuchDatasetException;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
@@ -150,7 +151,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     });
 
     if(publish) {
-      studyService.publish(study.getId(), true);
+      studyService.publish(study.getId(), true, PublishCascadingScope.ALL);
     }
   }
 
@@ -177,7 +178,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     updated.cleanContacts();
     networkService.save(updated);
 
-    if(publish) networkService.publish(updated.getId(), true);
+    if(publish) networkService.publish(updated.getId(), true, PublishCascadingScope.ALL);
   }
 
   private void saveTempFile(Attachment attachment, ByteSource content) throws IOException {
@@ -205,7 +206,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     } catch(NoSuchDatasetException e) {
       studyDatasetService.save(dataset);
     }
-    if(publish) studyDatasetService.publish(dataset.getId(), publish);
+    if(publish) studyDatasetService.publish(dataset.getId(), publish, PublishCascadingScope.ALL);
   }
 
   private void importDataset(HarmonizationDataset dataset, boolean publish) {
@@ -216,7 +217,7 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
     } catch(NoSuchDatasetException e) {
       harmonizationDatasetService.save(dataset);
     }
-    if(publish) harmonizationDatasetService.publish(dataset.getId(), publish);
+    if(publish) harmonizationDatasetService.publish(dataset.getId(), publish, PublishCascadingScope.ALL);
   }
 
   private final class StudyPackage {

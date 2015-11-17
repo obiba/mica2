@@ -48,9 +48,9 @@ mica.network
 
   .factory('DraftNetworkPublicationResource', ['$resource',
     function ($resource) {
-      return $resource('ws/draft/network/:id/_publish', {}, {
-        'publish': {method: 'PUT', params: {id: '@id'}},
-        'unPublish': {method: 'DELETE', params: {id: '@id'}}
+      return $resource('ws/draft/network/:id/_publish', {id: '@id'}, {
+        'publish': {method: 'PUT', params: {cascading: '@cascading'}},
+        'unPublish': {method: 'DELETE'}
       });
     }])
 

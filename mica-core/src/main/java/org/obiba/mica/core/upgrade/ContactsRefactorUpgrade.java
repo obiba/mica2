@@ -6,6 +6,7 @@ import javax.inject.Inject;
 
 import org.obiba.mica.contact.event.PersonUpdatedEvent;
 import org.obiba.mica.core.domain.Person;
+import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.repository.PersonRepository;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.network.service.NetworkService;
@@ -71,7 +72,7 @@ public class ContactsRefactorUpgrade implements UpgradeStep {
       study.getAllPersons().forEach(c -> eventBus.post(new PersonUpdatedEvent(c)));
 
       if(studyState.isPublished()) {
-        eventBus.post(new StudyPublishedEvent(study, studyState.getPublishedBy()));
+        eventBus.post(new StudyPublishedEvent(study, studyState.getPublishedBy(), PublishCascadingScope.ALL));
       }
     });
 

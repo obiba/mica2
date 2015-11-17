@@ -17,6 +17,7 @@ import org.bson.types.ObjectId;
 import org.joda.time.DateTime;
 import org.obiba.git.command.AbstractGitWriteCommand;
 import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.AttachmentStateRepository;
@@ -248,15 +249,34 @@ public class FileSystemService {
    * @param publisher
    */
   public void publish(String path, boolean publish, String publisher) {
-  fsLock.lock();
+    fsLock.lock();
     try {
-    List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
-    states.addAll(findAttachmentStates(String.format("^%s/", path), false));
-    states.stream().forEach(s -> publish(s, publish, publisher));
+      List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
+      states.addAll(findAttachmentStates(String.format("^%s/", path), false));
+      states.stream()
+        .forEach(s -> publish(s, publish, publisher));
     } finally {
       fsLock.unlock();
     }
   }
+
+  private void publishWithCascading(String path, boolean publish, String publisher, PublishCascadingScope cascadingScope) {
+    fsLock.lock();
+    try {
+      if (PublishCascadingScope.ALL == cascadingScope) {
+        publish(path, publish, publisher);
+      } else if (PublishCascadingScope.UNDER_REVIEW == cascadingScope) {
+        List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
+        states.addAll(findAttachmentStates(String.format("^%s/", path), false));
+        states.stream()
+          .filter(s -> !publish || s.getRevisionStatus() == RevisionStatus.UNDER_REVIEW)
+          .forEach(s -> publish(s, publish, publisher));
+      }
+    } finally {
+      fsLock.unlock();
+    }
+  }
+
 
   /**
    * Change the publication status of the existing {@link org.obiba.mica.file.AttachmentState}.
@@ -515,7 +535,14 @@ public class FileSystemService {
   @Subscribe
   public void studyPublished(StudyPublishedEvent event) {
     log.debug("Study {} was published", event.getPersistable());
-    publish(String.format("/study/%s", event.getPersistable().getId()), true, event.getPublisher());
+    PublishCascadingScope cascadingScope = event.getCascadingScope();
+    if (cascadingScope != PublishCascadingScope.NONE) {
+      publishWithCascading( //
+        String.format("/study/%s", event.getPersistable().getId()), //
+        true, //
+        event.getPublisher(), //
+        cascadingScope); //
+    }
   }
 
   @Async
@@ -560,7 +587,14 @@ public class FileSystemService {
   @Subscribe
   public void networkPublished(NetworkPublishedEvent event) {
     log.debug("Network {} was published", event.getPersistable());
-    publish(String.format("/network/%s", event.getPersistable().getId()), true, event.getPublisher());
+    PublishCascadingScope cascadingScope = event.getCascadingScope();
+    if (cascadingScope != PublishCascadingScope.NONE) {
+      publishWithCascading( //
+        String.format("/network/%s", event.getPersistable().getId()), //
+        true, //
+        event.getPublisher(), //
+        cascadingScope); //
+    }
   }
 
   @Async
@@ -586,8 +620,14 @@ public class FileSystemService {
   @Subscribe
   public void datasetPublished(DatasetPublishedEvent event) {
     log.debug("{} {} was published", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
-    publish(String.format("/%s/%s", getDatasetTypeFolder(event.getPersistable()), event.getPersistable().getId()), true,
-      event.getPublisher());
+    PublishCascadingScope cascadingScope = event.getCascadingScope();
+    if (cascadingScope != PublishCascadingScope.NONE) {
+      publishWithCascading( //
+        String.format("/%s/%s", getDatasetTypeFolder(event.getPersistable()), event.getPersistable().getId()), //
+        true, //
+        event.getPublisher(), //
+        cascadingScope); //
+    }
   }
 
   @Async

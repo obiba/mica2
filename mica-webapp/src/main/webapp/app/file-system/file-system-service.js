@@ -37,9 +37,11 @@ mica.fileSystem
   .factory('DraftFileSystemSearchResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/files-search/:path', {path: '@path'}, {
-        'search': {
+        'search': { method: 'GET', isArray: true, errorHandler: true},
+        'searchUnderReview': {
           method: 'GET',
           isArray: true,
+          params: {recursively: true, query: 'revisionStatus:UNDER_REVIEW'},
           errorHandler: true
         }
       });

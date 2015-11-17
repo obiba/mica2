@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -17,6 +18,7 @@ import javax.ws.rs.core.Response;
 
 import org.obiba.mica.AbstractGitPersistableResource;
 import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
 import org.obiba.mica.file.Attachment;
@@ -82,9 +84,9 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
   @PUT
   @Path("/_publish")
   @Timed
-  public Response publish() {
+  public Response publish(@QueryParam("cascading") @DefaultValue("UNDER_REVIEW") String cascadingScope) {
     subjectAclService.checkPermission("/draft/study", "PUBLISH", id);
-    studyService.publish(id, true);
+    studyService.publish(id, true, PublishCascadingScope.valueOf(cascadingScope.toUpperCase()));
     return Response.noContent().build();
   }
 

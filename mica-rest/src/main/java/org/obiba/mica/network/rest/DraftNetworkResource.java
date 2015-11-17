@@ -15,6 +15,7 @@ import java.io.IOException;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -24,6 +25,7 @@ import javax.ws.rs.core.Response;
 
 import org.obiba.mica.AbstractGitPersistableResource;
 import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
 import org.obiba.mica.file.Attachment;
@@ -38,8 +40,6 @@ import org.obiba.mica.web.model.Mica;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import com.codahale.metrics.annotation.Timed;
 
 /**
  * REST controller for managing draft Study.
@@ -90,9 +90,9 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
 
   @PUT
   @Path("/_publish")
-  public Response publish() {
+  public Response publish(@QueryParam("cascading") @DefaultValue("UNDER_REVIEW") String cascadingScope) {
     subjectAclService.checkPermission("/draft/network", "PUBLISH", id);
-    networkService.publish(id, true);
+    networkService.publish(id, true, PublishCascadingScope.valueOf(cascadingScope.toUpperCase()));
     return Response.noContent().build();
   }
 
