@@ -345,11 +345,6 @@ mica.dataAccessRequest
               ServerErrorUtils,
               Session,
               DataAccessRequestService) {
-      $scope.form = {
-        schema: null,
-        definition: null,
-        model: {}
-      };
 
       var onSuccess = function(response, getResponseHeaders) {
         var parts = getResponseHeaders().location.split('/');
@@ -450,4 +445,10 @@ mica.dataAccessRequest
       $scope.save = save;
       $scope.editable = true;
       $scope.validate = validate;
+      $scope.form = {
+        schema: null,
+        definition: null,
+        model: {}
+      };
+
     }]);
