@@ -126,6 +126,7 @@ public class DataAccessRequestResource {
       // remove associated comments
       commentsService.delete(DataAccessRequest.class.getSimpleName(), id);
       eventBus.post(new ResourceDeletedEvent("/data-access-request", id));
+      eventBus.post(new ResourceDeletedEvent("/data-access-request/" + id, "_status"));
     } catch(NoSuchDataAccessRequestException e) {
       // ignore
     }
@@ -237,7 +238,7 @@ public class DataAccessRequestResource {
   private Response open(@PathParam("id") String id) {
     DataAccessRequest request = dataAccessRequestService.updateStatus(id, DataAccessRequest.Status.OPENED);
     // restore applicant permissions
-    subjectAclService.addUserPermission(request.getApplicant(), "/data-access-request", "EDIT,DELETE", id);
+    subjectAclService.addUserPermission(request.getApplicant(), "/data-access-request", "VIEW,EDIT,DELETE", id);
     subjectAclService.addUserPermission(request.getApplicant(), "/data-access-request/" + id, "EDIT", "_status");
     // data access officers cannot change the status of this request anymore
     subjectAclService.removeGroupPermission(Roles.MICA_DAO, "/data-access-request/" + id, "EDIT", "_status");
