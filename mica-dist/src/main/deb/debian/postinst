@@ -60,11 +60,11 @@ case "$1" in
 
       # Some deprecated configuration files
       if [ -e /var/lib/mica2/conf/mica-categories.yml ] ; then
-        mv /var/lib/mica2/conf/mica-categories.yml.old
+        mv /var/lib/mica2/conf/mica-categories.yml /var/lib/mica2/conf/mica-categories.yml.old
       fi
 
       if [ -e /var/lib/mica2/conf/mica-aggregations.yml ] ; then
-        mv /var/lib/mica2/conf/mica-aggregations.yml.old
+        mv /var/lib/mica2/conf/mica-aggregations.yml /var/lib/mica2/conf/mica-aggregations.yml.old
       fi
 
       chown -R mica:adm /var/lib/mica2 /var/log/mica2 /etc/mica2 /tmp/mica2
