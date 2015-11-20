@@ -82,6 +82,8 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
   @Override
   public Documents<T> find(int from, int limit, @Nullable String sort, @Nullable String order, @Nullable String studyId,
     @Nullable String queryString, @Nullable List<String> fields) {
+    if (!indexExists()) return new Documents<>(0, from, limit);
+
     final QueryStringQueryBuilder query = queryString != null ? QueryBuilders.queryString(queryString) : null;
 
     if(query != null && fields != null) fields.forEach(f -> query.field(f));
@@ -152,6 +154,10 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
 
   private List<T> executeQueryByIds(QueryBuilder queryBuilder, int from, int size, List<String> ids) {
     return executeQueryInternal(queryBuilder, from, size, ids);
+  }
+
+  private boolean indexExists() {
+    return client.admin().indices().prepareExists(getIndexName()).get().isExists();
   }
 
   private List<T> executeQueryInternal(QueryBuilder queryBuilder, int from, int size, List<String> ids) {
