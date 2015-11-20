@@ -35,7 +35,7 @@ mica.dataAccesConfig
 
             DataAccessFormResource.save($scope.dataAccessForm,
               function () {
-                $location.path('/config').replace();
+                $location.path('/admin').replace();
               },
               function (response) {
                 AlertService.alert({
