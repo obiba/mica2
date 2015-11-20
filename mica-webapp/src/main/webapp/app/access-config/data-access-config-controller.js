@@ -161,6 +161,7 @@ mica.dataAccesConfig
         model: {}
       };
 
+      $scope.tab = {name: 'form'};
       $scope.dirty = false;
       $scope.selectedTab = 'form-definition';
       $scope.ace = DataAccessFormService.getEditorOptions(aceEditorOnLoadCallback);
