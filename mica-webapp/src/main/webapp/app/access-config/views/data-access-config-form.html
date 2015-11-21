@@ -22,13 +22,13 @@
   <div class="tabs-menu" ng-class="{'tabs-left': screen.is('lg')}">
     <ul class="nav nav-tabs">
       <li ng-class="{'active': tab.name === 'form'}">
-        <a href ng-click="tab.name = 'form'" title="{{'form' | translate}}"><i class="fa fa-pencil-square-o"></i></a>
+        <a href ng-click="tab.name = 'form'" title="{{'form' | translate}}"><i class="fa fa-list"></i></a>
       </li>
       <li ng-class="{'active': tab.name === 'notifications'}">
         <a href ng-click="tab.name = 'notifications'" title="{{'data-access-config.notifications.title' | translate}}"><i class="fa fa-comments"></i></a>
       </li>
-      <li ng-class="{'active': tab.name === 'general'}">
-        <a href ng-click="tab.name = 'general'" title="{{'details' | translate}}"><i class="fa fa-cog"></i></a>
+      <li ng-class="{'active': tab.name === 'settings'}">
+        <a href ng-click="tab.name = 'settings'" title="{{'other-settings' | translate}}"><i class="fa fa-cog"></i></a>
       </li>
     </ul>
   </div>
@@ -69,13 +69,17 @@
         </tab>
 
         <tab ng-click="selectTab('form-preview')" heading="{{'data-access-config.preview.tab' | translate}}">
-          <form id="form-preview" name="formPreview" class="form-preview">
-            <div
-              sf-model="form.model"
-              sf-form="form.definitionJson"
-              sf-schema="form.schemaJson">
+          <div  id="form-preview" class="panel panel-default full-screenable">
+            <div class="panel-body">
+              <form name="formPreview">
+                <div
+                  sf-model="form.model"
+                  sf-form="form.definitionJson"
+                  sf-schema="form.schemaJson">
+                </div>
+              </form>
             </div>
-          </form>
+          </div>
         </tab>
         <tab ng-click="selectTab('form-model')" heading="{{'data-access-config.model.tab' | translate}}">
           <div id="form-model" class="form-control form-definition"
@@ -86,10 +90,8 @@
         </tab>
       </tabset>
     </div>
-  </div>
 
-  <div ng-show="tab.name === 'general'">
-    <h3 translate>data-access-config.general-config</h3>
+    <h3 translate>properties</h3>
 
     <form>
       <div class="row">
@@ -111,7 +113,9 @@
     <div class="help-block">
       <span>{{'allowed-file-types' | translate}}<span><strong>{{fileTypes}}</strong></span></span>
     </div>
+  </div>
 
+  <div ng-show="tab.name === 'settings'">
     <h3 translate>data-access-config.id-generation.title</h3>
 
     <p class="help-block" translate>data-access-config.id-generation.info</p>
