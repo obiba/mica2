@@ -94,6 +94,65 @@ mica.study
       });
     }])
 
+  .service('StudyTaxonomyService', ['MicaStudiesConfigResource',
+    function(MicaStudiesConfigResource) {
+      var studiesConfig = null;
+
+      function getLocalizedLabel(localizedString, lang) {
+        var result = localizedString.filter(function (t) {
+          return t.locale === lang;
+        });
+
+        return (result || [{text: null}])[0].text;
+      }
+
+      this.get = function() {
+        studiesConfig = MicaStudiesConfigResource.get();
+        return studiesConfig.$promise;
+      };
+
+      this.getLabel = function (vocabulary, term, lang) {
+        if (!term || !studiesConfig.$resolved) {
+          return;
+        }
+
+        var result = studiesConfig.vocabularies.filter(function (v) {
+          return v.name === vocabulary;
+        });
+
+        if (result.length > 0) {
+          result = result[0].terms.filter(function (t) {
+            return t.name === term;
+          });
+
+          if (result.length > 0) {
+            result = getLocalizedLabel(result[0].title, lang);
+
+            if (result) {
+              return result;
+            }
+          }
+        }
+
+        // could not find the term, return non-localized term value
+        return term;
+      };
+
+      this.getTerms = function(vocabulary, lang) {
+        var opts = studiesConfig.vocabularies.map(function (v) {
+          if (v.name === vocabulary) {
+            return v.terms.map(function (t) {
+              return {name: t.name, label: getLocalizedLabel(t.title, lang) || t.name};
+            });
+          }
+        }).filter(function (x) { return x; });
+
+        return opts ? opts[0] : [];
+      };
+
+      return this;
+    }])
+
   .factory('DraftStudyDeleteService', [
     '$rootScope',
     '$translate',

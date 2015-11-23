@@ -66,7 +66,7 @@ mica.study
     'STUDY_EVENTS',
     'NOTIFICATION_EVENTS',
     'CONTACT_EVENTS',
-    'MicaStudiesConfigResource',
+    'StudyTaxonomyService',
     'ActiveTabService',
     '$modal',
     'DraftStudyDeleteService',
@@ -93,7 +93,7 @@ mica.study
               STUDY_EVENTS,
               NOTIFICATION_EVENTS,
               CONTACT_EVENTS,
-              MicaStudiesConfigResource,
+              StudyTaxonomyService,
               ActiveTabService,
               $modal,
               DraftStudyDeleteService,
@@ -200,36 +200,9 @@ mica.study
         });
       });
 
-      $scope.studiesConfig = MicaStudiesConfigResource.get();
-
-      $scope.getLabel = function (vocabulary, term) {
-        if (!term || !$scope.studiesConfig.$resolved) {
-          return;
-        }
-
-        var result = $scope.studiesConfig.vocabularies.filter(function (v) {
-          return v.name === vocabulary;
-        });
-
-        if (result.length > 0) {
-          result = result[0].terms.filter(function (t) {
-            return t.name === term;
-          });
-
-          if (result.length > 0) {
-            result = result[0].title.filter(function (v) {
-              return v.locale === ActiveTabService.getActiveTab($scope.tabs).lang;
-            });
-
-            if (result.length > 0) {
-              return result[0].text;
-            }
-          }
-        }
-
-        // could not find the term, return non-localized term value
-        return term;
-      };
+      StudyTaxonomyService.get().then(function() {
+        $scope.getLabel = StudyTaxonomyService.getLabel;
+      });
 
       if ($scope.viewMode === $scope.Mode.Revision) {
         $scope.studyId = $routeParams.id;
@@ -508,6 +481,7 @@ mica.study
     'MicaConfigResource',
     'FormServerValidation',
     'MicaStudiesConfigResource',
+    'StudyTaxonomyService',
     'MicaUtil',
     'ActiveTabService',
     'ObibaCountriesIsoCodes',
@@ -520,6 +494,7 @@ mica.study
               MicaConfigResource,
               FormServerValidation,
               MicaStudiesConfigResource,
+              StudyTaxonomyService,
               MicaUtil,
               ActiveTabService,
               ObibaCountriesIsoCodes) {
@@ -571,12 +546,6 @@ mica.study
         updateActiveDatasourceTab(newVal, oldVal);
       }, true);
 
-      var getLabel = function (localizedString) {
-        return (localizedString.filter(function (t) {
-          return t.locale === ActiveTabService.getActiveTab($scope.tabs).lang;
-        }) || [{text: null}])[0].text;
-      };
-
       var updateActiveDatasourceTab = function (newVal, oldVal) {
         function arrayDiff(source, target) {
           for (var i = 0; i < source.length; i++) {
@@ -615,26 +584,15 @@ mica.study
         });
       });
 
-      MicaStudiesConfigResource.get(function (studiesConfig) {
-        function extractVocabulary(options) {
-          var opts = studiesConfig.vocabularies.map(function (v) {
-            if (v.name === options) {
-              return v.terms.map(function (t) {
-                return {name: t.name, label: getLabel(t.title) || t.name};
-              });
-            }
-          }).filter(function (x) { return x; });
-
-          return opts ? opts[0] : [];
-        }
-
-        $scope.selectionCriteriaGenders = extractVocabulary('populations-selectionCriteria-gender').map(function (obj) {
+      StudyTaxonomyService.get().then(function() {
+        var lang = ActiveTabService.getActiveTab($scope.tabs).lang;
+        $scope.selectionCriteriaGenders = StudyTaxonomyService.getTerms('populations-selectionCriteria-gender', lang).map(function (obj) {
           return {id: obj.name, label: obj.label};
         });
-        $scope.availableSelectionCriteria = extractVocabulary('selectionCriteriaCriteria');
-        $scope.recruitmentSourcesTypes = extractVocabulary('recruitmentDatasources');
-        $scope.generalPopulationTypes = extractVocabulary('recruitmentGeneralPopulation');
-        $scope.specificPopulationTypes = extractVocabulary('recruitmentSpecificPopulation');
+        $scope.availableSelectionCriteria = StudyTaxonomyService.getTerms('populations-selectionCriteria-criteria', lang);
+        $scope.recruitmentSourcesTypes = StudyTaxonomyService.getTerms('populations-recruitment-dataSources', lang);
+        $scope.generalPopulationTypes = StudyTaxonomyService.getTerms('populations-recruitment-generalPopulationSources', lang);
+        $scope.specificPopulationTypes = StudyTaxonomyService.getTerms('populations-recruitment-specificPopulationSources', lang);
       });
 
       $scope.save = function (form) {
@@ -938,6 +896,7 @@ mica.study
     'DraftStudyResource',
     'DraftStudiesResource',
     'MicaConfigResource',
+    'StudyTaxonomyService',
     'StringUtils',
     'ActiveTabService',
     'FormServerValidation',
@@ -951,6 +910,7 @@ mica.study
               DraftStudyResource,
               DraftStudiesResource,
               MicaConfigResource,
+              StudyTaxonomyService,
               StringUtils,
               ActiveTabService,
               FormServerValidation) {
@@ -977,12 +937,21 @@ mica.study
         $scope.datePicker[id].opened = true;
       };
 
+      // TODO ng-obiba's formCheckboxGroup directive must check for empty options array, once that's implemented we no
+      // longer need to initialize these variables to empty arrays
+      $scope.accessTypes = [];
+      $scope.methodDesignTypes = [];
+      $scope.methodRecruitmentTypes = [];
+      StudyTaxonomyService.get().then(function() {
+        var lang = ActiveTabService.getActiveTab($scope.tabs).lang;
+        $scope.methodDesignTypes = StudyTaxonomyService.getTerms('methods-designs', lang);
+        $scope.accessTypes = StudyTaxonomyService.getTerms('access', lang);
+        $scope.methodRecruitmentTypes = StudyTaxonomyService.getTerms('methods-recruitments', lang);
+      });
+
       $scope.defaultMinYear = 1900;
       $scope.defaultMaxYear = 9999;
       $scope.fileTypes = '.doc, .docx, .odm, .odt, .gdoc, .pdf, .txt  .xml  .xls, .xlsx, .ppt';
-      $scope.accessTypes = ['data', 'bio_samples', 'other'];
-      $scope.methodDesignTypes = ['case_control', 'case_only', 'clinical_trial', 'cohort_study', 'cross_sectional', 'other'];
-      $scope.methodRecruitmentTypes = ['individuals', 'families', 'other'];
       $scope.files = [];
       $scope.newStudy = !$routeParams.id;
       $scope.study = $routeParams.id ? DraftStudyResource.get({id: $routeParams.id}, function (response) {

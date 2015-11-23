@@ -125,7 +125,7 @@
               <td>
                 <ul class="list-unstyled">
                   <li ng-repeat="design in study.methods.designs">
-                    {{'study.design.' + design | translate}}
+                    {{getLabel('methods-designs', design, tab.lang)}}
                   </li>
                   <li ng-show="study.methods.otherDesign.length">
                     <localized value="study.methods.otherDesign" lang="tab.lang"></localized>
@@ -144,7 +144,7 @@
               <td>
                 <ul class="list-unstyled">
                   <li ng-repeat="recruitment in study.methods.recruitments">
-                    {{'study.recruitment.' + recruitment | translate}}
+                    {{getLabel('methods-recruitments', recruitment, tab.lang)}}
                   </li>
                   <li ng-show="study.methods.otherRecruitment.length">
                     <localized value="study.methods.otherRecruitment" lang="tab.lang"></localized>
@@ -195,7 +195,7 @@
               <td>
                 <ul class="list-unstyled">
                   <li ng-repeat="access in study.access">
-                    {{'study.access.' + access | translate}}
+                    {{getLabel('access', access, tab.lang)}}
                   </li>
                   <li ng-show="study.otherAccess.length">
                     <localized value="study.otherAccess" lang="tab.lang"></localized>
