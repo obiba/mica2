@@ -4,7 +4,6 @@
     "dist/schema-form.js",
     "dist/bootstrap-decorator.js"
   ],
-  "version": "0.8.2",
   "authors": [
     "Textalk",
     "David Jensen <david.lgj@gmail.com>",
@@ -56,13 +55,14 @@
     "bootstrap-vertical-tabs": "~1.2.0"
   },
   "homepage": "https://github.com/Textalk/angular-schema-form",
-  "_release": "0.8.2",
+  "version": "0.8.12",
+  "_release": "0.8.12",
   "_resolution": {
     "type": "version",
-    "tag": "0.8.2",
-    "commit": "d9de8d3b1b689bd75fa4f775dc617c26a117a77d"
+    "tag": "0.8.12",
+    "commit": "7f298221bb72b9fbef25e4d7e23d48a336f57948"
   },
   "_source": "git://github.com/Textalk/angular-schema-form.git",
-  "_target": "0.8.2",
+  "_target": "0.8.12",
   "_originalSource": "angular-schema-form"
 }

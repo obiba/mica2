@@ -5,16 +5,8 @@ FIXME: real documentation
 
 angular.module('schemaForm')
        .directive('sfSchema',
-['$compile', 'schemaForm', 'schemaFormDecorators', 'sfSelect', 'sfPath',
-  function($compile,  schemaForm,  schemaFormDecorators, sfSelect, sfPath) {
-
-    var SNAKE_CASE_REGEXP = /[A-Z]/g;
-    var snakeCase = function(name, separator) {
-      separator = separator || '_';
-      return name.replace(SNAKE_CASE_REGEXP, function(letter, pos) {
-        return (pos ? separator : '') + letter.toLowerCase();
-      });
-    };
+['$compile', '$http', '$templateCache', '$q','schemaForm', 'schemaFormDecorators', 'sfSelect', 'sfPath', 'sfBuilder',
+  function($compile, $http, $templateCache, $q, schemaForm,  schemaFormDecorators, sfSelect, sfPath, sfBuilder) {
 
     return {
       scope: {
@@ -26,6 +18,15 @@ angular.module('schemaForm')
       controller: ['$scope', function($scope) {
         this.evalInParentScope = function(expr, locals) {
           return $scope.$parent.$eval(expr, locals);
+        };
+
+        // Set up form lookup map
+        var that  = this;
+        $scope.lookup = function(lookup) {
+          if (lookup) {
+            that.lookup = lookup;
+          }
+          return that.lookup;
         };
       }],
       replace: false,
@@ -64,15 +65,36 @@ angular.module('schemaForm')
 
         // Common renderer function, can either be triggered by a watch or by an event.
         var render = function(schema, form) {
-          var merged = schemaForm.merge(schema, form, ignore, scope.options);
-          var frag = document.createDocumentFragment();
+          var asyncTemplates = [];
+          var merged = schemaForm.merge(schema, form, ignore, scope.options, undefined, asyncTemplates);
 
+          if (asyncTemplates.length > 0) {
+            // Pre load all async templates and put them on the form for the builder to use.
+            $q.all(asyncTemplates.map(function(form) {
+              return $http.get(form.templateUrl, {cache: $templateCache}).then(function(res) {
+                                  form.template = res.data;
+                                });
+            })).then(function() {
+              internalRender(schema, form, merged);
+            });
+
+          } else {
+            internalRender(schema, form, merged);
+          }
+
+
+        };
+
+        var internalRender = function(schema, form, merged) {
           // Create a new form and destroy the old one.
           // Not doing keeps old form elements hanging around after
           // they have been removed from the DOM
           // https://github.com/Textalk/angular-schema-form/issues/200
           if (childScope) {
+            // Destroy strategy should not be acted upon
+            scope.externalDestructionInProgress = true;
             childScope.$destroy();
+            scope.externalDestructionInProgress = false;
           }
           childScope = scope.$new();
 
@@ -90,53 +112,48 @@ angular.module('schemaForm')
             slots[slotsFound[i].getAttribute('sf-insert-field')] = slotsFound[i];
           }
 
-          //Create directives from the form definition
-          angular.forEach(merged, function(obj, i) {
-            var n = document.createElement(attrs.sfUseDecorator ||
-                                           snakeCase(schemaFormDecorators.defaultDecorator, '-'));
-            n.setAttribute('form', 'schemaForm.form[' + i + ']');
+          // if sfUseDecorator is undefined the default decorator is used.
+          var decorator = schemaFormDecorators.decorator(attrs.sfUseDecorator);
+          // Use the builder to build it and append the result
+          var lookup = Object.create(null);
+          scope.lookup(lookup); // give the new lookup to the controller.
+          element[0].appendChild(sfBuilder.build(merged, decorator, slots, lookup));
 
-            // Check if there is a slot to put this in...
-            if (obj.key) {
-              var slot = slots[sfPath.stringify(obj.key)];
-              if (slot) {
-                while (slot.firstChild) {
-                  slot.removeChild(slot.firstChild);
-                }
-                slot.appendChild(n);
-                return;
-              }
-            }
-
-            // ...otherwise add it to the frag
-            frag.appendChild(n);
-
-          });
-
-          element[0].appendChild(frag);
+          // We need to know if we're in the first digest looping
+          // I.e. just rendered the form so we know not to validate
+          // empty fields.
+          childScope.firstDigest = true;
+          // We use a ordinary timeout since we don't need a digest after this.
+          setTimeout(function() {
+            childScope.firstDigest = false;
+          }, 0);
 
           //compile only children
           $compile(element.children())(childScope);
 
           //ok, now that that is done let's set any defaults
-          schemaForm.traverseSchema(schema, function(prop, path) {
-            if (angular.isDefined(prop['default'])) {
-              var val = sfSelect(path, scope.model);
-              if (angular.isUndefined(val)) {
-                sfSelect(path, scope.model, prop['default']);
+          if (!scope.options || scope.options.setSchemaDefaults !== false) {
+            schemaForm.traverseSchema(schema, function(prop, path) {
+              if (angular.isDefined(prop['default'])) {
+                var val = sfSelect(path, scope.model);
+                if (angular.isUndefined(val)) {
+                  sfSelect(path, scope.model, prop['default']);
+                }
               }
-            }
-          });
+            });
+          }
 
           scope.$emit('sf-render-finished', element);
         };
+
+        var defaultForm = ['*'];
 
         //Since we are dependant on up to three
         //attributes we'll do a common watch
         scope.$watch(function() {
 
           var schema = scope.schema;
-          var form   = scope.initialForm || ['*'];
+          var form   = scope.initialForm || defaultForm;
 
           //The check for schema.type is to ensure that schema is not {}
           if (form && schema && schema.type &&
@@ -159,6 +176,27 @@ angular.module('schemaForm')
           }
         });
 
+        scope.$on('$destroy', function() {
+          // Each field listens to the $destroy event so that it can remove any value
+          // from the model if that field is removed from the form. This is the default
+          // destroy strategy. But if the entire form (or at least the part we're on)
+          // gets removed, like when routing away to another page, then we definetly want to
+          // keep the model intact. So therefore we set a flag to tell the others it's time to just
+          // let it be.
+          scope.externalDestructionInProgress = true;
+        });
+
+        /**
+         * Evaluate an expression, i.e. scope.$eval
+         * but do it in parent scope
+         *
+         * @param {String} expression
+         * @param {Object} locals (optional)
+         * @return {Any} the result of the expression
+         */
+        scope.evalExpr = function(expression, locals) {
+          return scope.$parent.$eval(expression, locals);
+        };
       }
     };
   }
