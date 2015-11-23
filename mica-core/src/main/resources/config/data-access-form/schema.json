@@ -157,6 +157,7 @@
     "repEmail",
     "projectTitle",
     "abstract",
-    "summary"
+    "summary",
+    "isFormCompleted"
   ]
 }
