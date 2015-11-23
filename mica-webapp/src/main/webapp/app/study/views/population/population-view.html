@@ -22,13 +22,13 @@
             <th translate>study.selection-criteria.criteria</th>
             <td>
           <span ng-repeat="c in population.selectionCriteria.criteria">
-          {{getLabel('selectionCriteriaCriteria', c)}}{{$last ? '' : ', '}}
+          {{getLabel('selectionCriteriaCriteria', c, tab.lang)}}{{$last ? '' : ', '}}
           </span>
             </td>
           </tr>
           <tr>
             <th translate>study.selection-criteria.gender.label</th>
-            <td ng-bind="getLabel('populations-selectionCriteria-gender', population.selectionCriteria.gender)">
+            <td ng-bind="getLabel('populations-selectionCriteria-gender', population.selectionCriteria.gender, tab.lang)">
             </td>
           </tr>
           <tr>
@@ -103,7 +103,7 @@
             <td>
               <ul class="list-unstyled no-margin-bottom">
                 <li ng-repeat="source in population.recruitment.generalPopulationSources">
-                  <span ng-bind="getLabel('populations-recruitment-generalPopulationSources', source)"></span>
+                  <span ng-bind="getLabel('populations-recruitment-generalPopulationSources', source, tab.lang)"></span>
                 </li>
               </ul>
             </td>
@@ -115,7 +115,7 @@
             <td>
               <ul class="list-unstyled no-margin-bottom">
                 <li ng-repeat="source in population.recruitment.specificPopulationSources">
-                  <span ng-bind="getLabel('recruitmentSpecificPopulation', source)"></span>
+                  <span ng-bind="getLabel('populations-recruitment-specificPopulationSources', source, tab.lang)"></span>
                 </li>
                 <li ng-show="population.recruitment.otherSpecificPopulationSource.length">
                   <localized value="population.recruitment.otherSpecificPopulationSource" lang="tab.lang"></localized>
