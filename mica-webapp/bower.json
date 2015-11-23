@@ -32,7 +32,7 @@
     "swagger-ui": "2.0.24",
     "filesize": "3.1.2",
     "angular-utils-pagination": "0.7.0",
-    "angular-schema-form": "0.8.2",
+    "angular-schema-form": "0.8.12",
     "angular-schema-form-ui-ace": "0.1.2",
     "angular-ui-ace": "bower",
     "angular-moment": "0.10.1",
