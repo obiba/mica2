@@ -140,8 +140,17 @@ mica.study
         }
 
         if ($scope.viewMode === $scope.Mode.View || $scope.viewMode === $scope.Mode.Revision) {
-          updateTimeline(study);
+          try {
+            updateTimeline(study);
+          } catch (e) {
+            $log.warn(e);
+          }
         }
+
+        $scope.memberships = study.memberships.reduce(function (res, m) {
+          res[m.role] = m.members;
+          return res;
+        }, {});
       };
 
       var viewRevision = function (studyId, commitInfo) {
@@ -151,6 +160,8 @@ mica.study
           commitId: commitInfo.commitId
         }, initializeStudy);
       };
+
+      $scope.memberships = {};
 
       var fetchStudy = function (studyId) {
         $scope.study = DraftStudyResource.get({id: studyId}, initializeStudy);
@@ -198,6 +209,7 @@ mica.study
         micaConfig.languages.forEach(function (lang) {
           $scope.tabs.push({lang: lang});
         });
+        $scope.roles = micaConfig.roles;
       });
 
       StudyTaxonomyService.get(function() {
@@ -297,43 +309,38 @@ mica.study
         }
       }
 
-      $scope.$on(CONTACT_EVENTS.addInvestigator, function (event, study, contact) {
+      $scope.$on(CONTACT_EVENTS.addContact, function (event, study, contact, type) {
         if (study === $scope.study) {
-          if (!$scope.study.investigators) {
-            $scope.study.investigators = [];
+          var members = $scope.study.memberships.filter(function(m) {
+            if (m.role === type) {
+              return true;
+            }
+
+            return false;
+          })[0];
+
+          if (!members) {
+            members = {role: type, members: []};
+            $scope.study.memberships.push(members);
           }
 
-          if (!$scope.study.contacts) {
-            $scope.study.contacts = [];
-          }
+          updateExistingContact(contact, members.members || []);
+          members.members.push(contact);
 
-          updateExistingContact(contact, $scope.study.contacts);
-
-          $scope.study.investigators.push(contact);
           $scope.emitStudyUpdated();
         }
       });
 
-      $scope.$on(CONTACT_EVENTS.addContact, function (event, study, contact) {
-        if (study === $scope.study) {
-          if (!$scope.study.contacts) {
-            $scope.study.contacts = [];
+      $scope.$on(CONTACT_EVENTS.contactUpdated, function (event, study, contact, type) {
+        var members = $scope.study.memberships.filter(function(m) {
+          if (m.role === type) {
+            return true;
           }
 
-          if (!$scope.study.investigators) {
-            $scope.study.investigators = [];
-          }
+          return false;
+        })[0];
 
-          updateExistingContact(contact, $scope.study.investigators);
-
-          $scope.study.contacts.push(contact);
-          $scope.emitStudyUpdated();
-        }
-      });
-
-      $scope.$on(CONTACT_EVENTS.contactUpdated, function (event, study, contact) {
-        updateExistingContact(contact, $scope.study.contacts);
-        updateExistingContact(contact, $scope.study.investigators);
+        updateExistingContact(contact, members.members || []);
 
         if (study === $scope.study) {
           $scope.emitStudyUpdated();
@@ -346,19 +353,18 @@ mica.study
         }
       });
 
-      $scope.$on(CONTACT_EVENTS.contactDeleted, function (event, study, contact, isInvestigator) {
+      $scope.$on(CONTACT_EVENTS.contactDeleted, function (event, study, contact, type) {
         if (study === $scope.study) {
-          if (isInvestigator) {
-            var investigatorsIndex = $scope.study.investigators.indexOf(contact);
-            if (investigatorsIndex !== -1) {
-              $scope.study.investigators.splice(investigatorsIndex, 1);
-            }
-          } else {
-            var contactsIndex = $scope.study.contacts.indexOf(contact);
-            if (contactsIndex !== -1) {
-              $scope.study.contacts.splice(contactsIndex, 1);
-            }
+          var members = $scope.study.memberships.filter(function (m) {
+              return m.role === type;
+            })[0] || {members: []};
+
+          var idx = members.members.indexOf(contact);
+
+          if (idx !== -1) {
+            members.members.splice(idx, 1);
           }
+
           $scope.emitStudyUpdated();
         }
       });

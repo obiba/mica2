@@ -18,6 +18,8 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
 
+import jersey.repackaged.com.google.common.collect.Sets;
+
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
@@ -47,6 +49,8 @@ class MicaConfigDtos {
       builder.setVersion(config.getMicaVersion().toString());
     }
 
+    builder.addAllRoles(config.getRoles());
+
     return builder.build();
   }
 
@@ -61,6 +65,10 @@ class MicaConfigDtos {
     dto.getLanguagesList().forEach(lang -> config.getLocales().add(new Locale(lang)));
     config.setOpal(dto.getOpal());
     if (dto.hasPrivacyThreshold()) config.setPrivacyThreshold(dto.getPrivacyThreshold());
+
+    if(dto.getRolesCount() > 0) {
+      config.setRoles(Sets.newHashSet(dto.getRolesList()));
+    }
 
     return config;
   }

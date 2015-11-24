@@ -1,19 +1,24 @@
 package org.obiba.mica.web.model;
 
+import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Maps;
+
 import static com.google.common.base.Strings.isNullOrEmpty;
 
-import static org.obiba.mica.web.model.Mica.PersonDto;
+import static java.util.stream.Collectors.toList;
 
 @Component
 @SuppressWarnings("OverlyLongMethod")
@@ -66,12 +71,22 @@ class StudyDtos {
     if(study.getAcronym() != null) builder.addAllAcronym(localizedStringDtos.asDto(study.getAcronym()));
     if(study.getInvestigators() != null) {
       builder.addAllInvestigators(
-        study.getInvestigators().stream().map(p -> personDtos.asDto(p, asDraft)).collect(Collectors.<PersonDto>toList()));
+        study.getInvestigators().stream().map(p -> personDtos.asDto(p, asDraft)).collect(toList()));
     }
     if(study.getContacts() != null) {
       builder
-        .addAllContacts(study.getContacts().stream().map(p -> personDtos.asDto(p, asDraft)).collect(Collectors.<PersonDto>toList()));
+        .addAllContacts(study.getContacts().stream().map(p -> personDtos.asDto(p, asDraft)).collect(toList()));
     }
+
+    if(study.getMemberships() != null) {
+      List<Mica.MembershipsDto> memberships = study.getMemberships().entrySet().stream().map(
+        e -> Mica.MembershipsDto.newBuilder().setRole(e.getKey())
+          .addAllMembers(e.getValue().stream().map(m -> personDtos.asDto(m.getPerson(), asDraft)).collect(toList()))
+          .build()).collect(toList());
+
+      builder.addAllMemberships(memberships);
+    }
+
     if(!isNullOrEmpty(study.getWebsite())) builder.setWebsite(study.getWebsite());
     if(!isNullOrEmpty(study.getOpal())) builder.setOpal(study.getOpal());
     if(study.getSpecificAuthorization() != null) {
@@ -111,13 +126,22 @@ class StudyDtos {
     if(dto.getNameCount() > 0) study.setName(localizedStringDtos.fromDto(dto.getNameList()));
     if(dto.getAcronymCount() > 0) study.setAcronym(localizedStringDtos.fromDto(dto.getAcronymList()));
     if(dto.hasLogo()) study.setLogo(attachmentDtos.fromDto(dto.getLogo()));
-    if(dto.getContactsCount() > 0) {
-      study.setContacts(dto.getContactsList().stream().map(personDtos::fromDto).collect(Collectors.<Person>toList()));
+
+    if(dto.getMembershipsCount() > 0) {
+      Map<String, List<Membership>> memberships = Maps.newHashMap();
+      dto.getMembershipsList().forEach(e -> memberships.put(e.getRole(),
+        e.getMembersList().stream().map(p -> new Membership(personDtos.fromDto(p), e.getRole())).collect(toList())));
+      study.setMemberships(memberships);
+    } else {
+      if(dto.getContactsCount() > 0) {
+        study.setContacts(dto.getContactsList().stream().map(personDtos::fromDto).collect(Collectors.<Person>toList()));
+      }
+      if(dto.getInvestigatorsCount() > 0) {
+        study.setInvestigators(
+          dto.getInvestigatorsList().stream().map(personDtos::fromDto).collect(Collectors.<Person>toList()));
+      }
     }
-    if(dto.getInvestigatorsCount() > 0) {
-      study.setInvestigators(
-        dto.getInvestigatorsList().stream().map(personDtos::fromDto).collect(Collectors.<Person>toList()));
-    }
+
     if(dto.getObjectivesCount() > 0) study.setObjectives(localizedStringDtos.fromDto(dto.getObjectivesList()));
     if(dto.hasWebsite()) study.setWebsite(dto.getWebsite());
     if(dto.hasOpal()) study.setOpal(dto.getOpal());

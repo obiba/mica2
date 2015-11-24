@@ -110,6 +110,7 @@ message StudyDto {
   optional string opalUsername = 26;
   optional string opalPassword = 27;
   optional PermissionsDto permissions = 28;
+  repeated MembershipsDto memberships = 29;
 
   message StudyMethodsDto {
     repeated string designs = 1;
@@ -265,6 +266,7 @@ message NetworkDto {
   optional bool published = 14;
   optional AttachmentDto logo = 15;
   repeated AttributeDto attributes = 16;
+  repeated MembershipsDto memberships = 17;
   extensions 1000 to max;
 }
 
@@ -297,6 +299,11 @@ message LocalizedStringDto {
 
 message LocalizedStringDtos {
   repeated LocalizedStringDto localizedStrings = 1;
+}
+
+message MembershipsDto {
+  required string role = 1;
+  repeated PersonDto members = 2;
 }
 
 message PersonDto {
@@ -377,6 +384,7 @@ message MicaConfigDto {
   required string opal = 5;
   optional string version = 6;
   optional int32 privacyThreshold = 7;
+  repeated string roles = 8;
 }
 
 message AggregationsConfigDto {

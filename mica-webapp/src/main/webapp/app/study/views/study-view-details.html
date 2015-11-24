@@ -45,57 +45,30 @@
                 <a href="{{study.website}}" target="_blank">{{study.website}}</a>
               </td>
             </tr>
-            <tr>
-              <th translate>study.investigators</th>
+            <tr ng-repeat="role in roles">
+              <th>{{'study.member-list' | translate: {type: role} }}</th>
               <td>
                 <div ng-controller="ContactController">
-                  <ul ui-sortable="sortableOptions" ng-model="study.investigators" class="list-unstyled sortable"
-                    ng-show="study.investigators.length">
-                    <li ng-repeat="investigator in study.investigators">
-                      <a ng-click="viewContact(investigator)" title="{{'dnd-reorder' | translate}}">
-                        {{investigator.title}} {{investigator.firstName}} {{investigator.lastName}}
-                        {{investigator.academicLevel}}
-                      <span ng-show="investigator.institution.name.length">
-                        (<localized value="investigator.institution.name" lang="tab.lang"></localized>)
+                  <ul ui-sortable="sortableOptions" ng-model="memberships[role]" class="list-unstyled sortable"
+                    ng-show="memberships[role].length">
+                    <li ng-repeat="person in memberships[role]">
+                      <a ng-click="viewContact(person)" title="{{'dnd-reorder' | translate}}">
+                        {{person.title}} {{person.firstName}} {{person.lastName}}
+                        {{person.academicLevel}}
+                      <span ng-show="person.institution.name.length">
+                        (<localized value="person.institution.name" lang="tab.lang"></localized>)
                       </span>
                       </a>
                       <div class="inline"
                         ng-if="inViewMode() && hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
-                        <a ng-click="editInvestigator(study, investigator)" class="action"><i class="fa fa-pencil"></i></a>
-                        <a ng-click="deleteInvestigator(study, investigator)" class="action"><i class="fa fa-trash-o"></i></a>
+                        <a ng-click="editMember(study, person, role)" class="action"><i class="fa fa-pencil"></i></a>
+                        <a ng-click="deleteMember(study, person, role)" class="action"><i class="fa fa-trash-o"></i></a>
                       </div>
                     </li>
                   </ul>
-                  <button type="button" class="btn btn-info btn-sm" ng-click="addInvestigator(study)"
+                  <button type="button" class="btn btn-info btn-sm" ng-click="addMember(study, role)"
                     ng-if="inViewMode() && hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
-                    <i class="fa fa-plus"></i> <span translate>study.add-investigator</span>
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <th translate>study.contacts</th>
-              <td>
-                <div ng-controller="ContactController">
-                  <ul ui-sortable="sortableOptions" ng-model="study.contacts" class="list-unstyled sortable"
-                    ng-show="study.contacts.length">
-                    <li ng-repeat="contact in study.contacts">
-                      <a ng-click="viewContact(contact)" title="{{'dnd-reorder' | translate}}">
-                        {{contact.title}} {{contact.firstName}} {{contact.lastName}} {{contact.academicLevel}}
-                      <span ng-show="contact.institution.name.length">
-                        (<localized value="contact.institution.name" lang="tab.lang"></localized>)
-                      </span>
-                      </a>
-                      <div class="inline"
-                        ng-if="inViewMode() && hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
-                        <a ng-click="editContact(study, contact)" class="action"><i class="fa fa-pencil"></i></a>
-                        <a ng-click="deleteContact(study, contact)" class="action"><i class="fa fa-trash-o"></i></a>
-                      </div>
-                    </li>
-                  </ul>
-                  <button type="button" class="btn btn-info btn-sm" ng-click="addContact(study)"
-                    ng-if="inViewMode() && hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
-                    <i class="fa fa-plus"></i> <span translate>study.add-contact</span>
+                    <i class="fa fa-plus"></i> <span>{{ 'study.add-member' | translate: {type: role} }}</span>
                   </button>
                 </div>
               </td>

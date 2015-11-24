@@ -6,8 +6,7 @@
     <div class="modal-header">
       <button type="button" class="close" aria-hidden="true" ng-click="cancel()">&times;</button>
       <h4 class="modal-title" id="myStudyLabel">
-        <span ng-show="isInvestigator" translate>contact.edit.investigator</span>
-        <span ng-hide="isInvestigator" translate>contact.edit.contact</span>
+        <span>{{'contact.edit.member' | translate:{type: type} }}</span>
       </h4>
     </div>
 
@@ -17,8 +16,7 @@
 
       <div ng-if="isNew" class="form-group">
         <label class="control-label">
-          <span ng-show="isInvestigator" translate>contact.search.investigator</span>
-          <span ng-hide="isInvestigator" translate>contact.search.contact</span>
+          <span>{{'contact.search.member' | translate:{type: type} }}</span>
         </label>
         <span class="pull-right" ng-show="result.total > 0">Found {{result.current}} of {{result.total}}</span>
         <ui-select theme="bootstrap" ng-model="selected.contact" reset-search-input="true">
@@ -35,7 +33,6 @@
           </ui-select-choices>
         </ui-select>
       </div>
-
       <tabset class="voffset4">
         <tab ng-repeat="tab in tabs" heading="{{tab.labelKey | translate}}" active="tab.active" disabled="tab.disabled">
           <div form-input name="contact.title" model="selected.contact.title" label="contact.title"></div>

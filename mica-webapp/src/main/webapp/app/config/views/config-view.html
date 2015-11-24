@@ -135,6 +135,40 @@
       </div>
 
     </div>
+
+    <div class="col-md-6">
+      <h3 translate>config.roles</h3>
+      <p class="help-block" translate>
+        config.roles-help
+      </p>
+      <button type="button" class="btn btn-info btn-sm voffset2" ng-click="addRole()">
+        <i class="fa fa-plus"></i> <span translate>config.add-role</span>
+      </button>
+
+      <div ng-show="micaConfig.roles && micaConfig.roles.length > 0">
+        <div class="voffset3">
+          <table class="table table-bordered table-striped attributes-column">
+            <thead>
+            <tr>
+              <th class="width75" translate>id</th>
+              <th translate>actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="role in micaConfig.roles">
+              <td class="width75">
+                {{role}}
+              </td>
+              <td>
+                <a href="" ng-click="editRole($index)" class="action"><i class="fa fa-pencil"></i></a>
+                <a href="" ng-click="deleteRole($index)" class="action"><i class="fa fa-trash-o"></i></a>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
 
 

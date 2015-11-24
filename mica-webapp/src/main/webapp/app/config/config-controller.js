@@ -2,10 +2,10 @@
 
 mica.config
   .controller('MicaConfigController', ['$scope', '$resource', '$route', '$window', '$log', 'MicaConfigResource', '$modal',
-    'OpalCredentialsResource', 'OpalCredentialResource', 'KeyStoreResource',
+    'OpalCredentialsResource', 'OpalCredentialResource', 'KeyStoreResource', 'FormServerValidation',
 
     function ($scope, $resource, $route, $window, $log, MicaConfigResource, $modal,
-              OpalCredentialsResource, OpalCredentialResource, KeyStoreResource) {
+              OpalCredentialsResource, OpalCredentialResource, KeyStoreResource, FormServerValidation) {
       $scope.micaConfig = MicaConfigResource.get();
       $scope.availableLanguages = $resource('ws/config/languages').get();
       $scope.opalCredentials = OpalCredentialsResource.query();
@@ -133,6 +133,72 @@ mica.config
       $scope.downloadOpalCredentialCertificate = function (opalCredential) {
         $window.open('ws/config/opal-credential/' + encodeURIComponent(opalCredential.opalUrl) + '/certificate', '_blank', '');
       };
+
+      $scope.deleteRole = function (index) {
+        $scope.micaConfig.roles.splice(index, 1);
+
+        $scope.micaConfig.$save(
+          function () {
+            $route.reload();
+          },
+          function (response) {
+            FormServerValidation.error(response, $scope.form);
+          });
+      };
+
+      $scope.addRole = function() {
+        $modal
+          .open({
+            templateUrl: 'app/config/views/config-roles-modal-form.html',
+            controller: 'RoleModalController',
+            resolve: {
+              role: function () {
+                return null;
+              }
+            }
+          })
+          .result.then(function (role) {
+            $scope.micaConfig.roles = $scope.micaConfig.roles || [];
+            $scope.micaConfig.roles.push(role);
+
+            $scope.micaConfig.$save(
+              function () {
+                $route.reload();
+              },
+              function (response) {
+                FormServerValidation.error(response, $scope.form);
+              });
+          }, function () {
+          });
+      };
+
+      $scope.editRole = function(index) {
+        $modal
+          .open({
+            templateUrl: 'app/config/views/config-roles-modal-form.html',
+            controller: 'RoleModalController',
+            resolve: {
+              role: function () {
+                return $scope.micaConfig.roles[index];
+              },
+              micaConfig: function() {
+                return $scope.micaConfig;
+              }
+            }
+          })
+          .result.then(function (editedRole) {
+            $scope.micaConfig.roles[index] = editedRole;
+
+            $scope.micaConfig.$save(
+              function () {
+                $route.reload();
+              },
+              function (response) {
+                FormServerValidation.error(response, $scope.form);
+              });
+          }, function () {
+          });
+      };
     }])
 
   .controller('ImportKeyPairModalController', ['$scope', '$location', '$modalInstance', 'isOpalCredential',
@@ -196,6 +262,26 @@ mica.config
         }
 
         form.saveAttempted = true;
+      };
+
+      $scope.cancel = function () {
+        $modalInstance.dismiss('cancel');
+      };
+    }])
+
+  .controller('RoleModalController', ['$scope', '$modalInstance', '$log', 'role',
+    function ($scope, $modalInstance, $log, role) {
+      $scope.role = {id: role};
+      $log.debug('Modal Ctrl scope:', $scope.role);
+
+      $scope.save = function (form) {
+        if (form.$valid) {
+          $modalInstance.close($scope.role.id);
+        }
+        else {
+          $scope.form = form;
+          $scope.form.saveAttempted = true;
+        }
       };
 
       $scope.cancel = function () {

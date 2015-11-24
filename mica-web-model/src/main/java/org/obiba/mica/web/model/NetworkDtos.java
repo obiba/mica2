@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.domain.NetworkState;
@@ -20,11 +21,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import jersey.repackaged.com.google.common.collect.Lists;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
+import static java.util.stream.Collectors.toList;
 import static org.obiba.mica.web.model.Mica.PersonDto;
 
 @Component
@@ -90,6 +93,15 @@ class NetworkDtos {
         network.getContacts().stream().map(p -> personDtos.asDto(p, asDraft)).collect(Collectors.<PersonDto>toList()));
     }
 
+    if(network.getMemberships() != null) {
+      List<Mica.MembershipsDto> memberships = network.getMemberships().entrySet().stream().map(
+        e -> Mica.MembershipsDto.newBuilder().setRole(e.getKey())
+          .addAllMembers(e.getValue().stream().map(m -> personDtos.asDto(m.getPerson(), asDraft)).collect(toList()))
+          .build()).collect(toList());
+
+      builder.addAllMemberships(memberships);
+    }
+
     if(!isNullOrEmpty(network.getWebsite())) builder.setWebsite(network.getWebsite());
 
     List<Study> publishedStudies = publishedStudyService.findByIds(network.getStudyIds());
@@ -152,9 +164,18 @@ class NetworkDtos {
     network.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
     network.setAcronym(localizedStringDtos.fromDto(dto.getAcronymList()));
     network.setInfos(localizedStringDtos.fromDto(dto.getInfoList()));
-    network.setInvestigators(
-      dto.getInvestigatorsList().stream().map(personDtos::fromDto).collect(Collectors.<Person>toList()));
-    network.setContacts(dto.getContactsList().stream().map(personDtos::fromDto).collect(Collectors.<Person>toList()));
+
+    if(dto.getMembershipsCount() > 0) {
+      Map<String, List<Membership>> memberships = Maps.newHashMap();
+      dto.getMembershipsList().forEach(e -> memberships.put(e.getRole(),
+        e.getMembersList().stream().map(p -> new Membership(personDtos.fromDto(p), e.getRole())).collect(toList())));
+      network.setMemberships(memberships);
+    } else { //backwards compatibility
+      network.setInvestigators(
+        dto.getInvestigatorsList().stream().map(personDtos::fromDto).collect(Collectors.<Person>toList()));
+      network.setContacts(dto.getContactsList().stream().map(personDtos::fromDto).collect(Collectors.<Person>toList()));
+    }
+
     if(dto.hasWebsite()) network.setWebsite(dto.getWebsite());
 
     if(dto.getStudyIdsCount() > 0) {
