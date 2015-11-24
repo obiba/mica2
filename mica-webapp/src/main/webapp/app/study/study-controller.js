@@ -200,7 +200,7 @@ mica.study
         });
       });
 
-      StudyTaxonomyService.get().then(function() {
+      StudyTaxonomyService.get(function() {
         $scope.getLabel = StudyTaxonomyService.getLabel;
       });
 
@@ -584,7 +584,7 @@ mica.study
         });
       });
 
-      StudyTaxonomyService.get().then(function() {
+      StudyTaxonomyService.get(function() {
         var lang = ActiveTabService.getActiveTab($scope.tabs).lang;
         $scope.selectionCriteriaGenders = StudyTaxonomyService.getTerms('populations-selectionCriteria-gender', lang).map(function (obj) {
           return {id: obj.name, label: obj.label};
@@ -942,7 +942,7 @@ mica.study
       $scope.accessTypes = [];
       $scope.methodDesignTypes = [];
       $scope.methodRecruitmentTypes = [];
-      StudyTaxonomyService.get().then(function() {
+      StudyTaxonomyService.get(function() {
         var lang = ActiveTabService.getActiveTab($scope.tabs).lang;
         $scope.methodDesignTypes = StudyTaxonomyService.getTerms('methods-designs', lang);
         $scope.accessTypes = StudyTaxonomyService.getTerms('access', lang);

@@ -82,8 +82,8 @@ mica.study
 
   .factory('MicaStudiesConfigResource', ['$resource',
     function ($resource) {
-      return $resource('ws/config/studies', {}, {
-        'get': {method: 'GET'}
+      return $resource('ws/taxonomies/_filter', {target: 'study'}, {
+        'get': {method: 'GET', isArray: true}
       });
     }])
 
@@ -106,13 +106,33 @@ mica.study
         return (result || [{text: null}])[0].text;
       }
 
-      this.get = function() {
-        studiesConfig = MicaStudiesConfigResource.get();
-        return studiesConfig.$promise;
+
+      this.get = function(userSuccessCallback, userErrorCallback) {
+        MicaStudiesConfigResource.get().$promise.then(
+          function onSuccess(taxonomies) {
+            if (taxonomies) {
+              var result = taxonomies.filter(function(taxonomy) {
+                return 'Mlstr_study' === taxonomy.name;
+              });
+
+              studiesConfig = result && result.length > 0 ? result[0] : null;
+
+              if (studiesConfig){
+                if (userSuccessCallback) {
+                  userSuccessCallback();
+                }
+              } else if (userErrorCallback) {
+                userErrorCallback();
+              }
+
+            }
+          },
+          userErrorCallback
+        );
       };
 
       this.getLabel = function (vocabulary, term, lang) {
-        if (!term || !studiesConfig.$resolved) {
+        if (!studiesConfig || !vocabulary || !term) {
           return;
         }
 
