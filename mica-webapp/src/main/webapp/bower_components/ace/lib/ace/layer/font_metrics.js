@@ -120,9 +120,9 @@ var FontMetrics = exports.FontMetrics = function(parentEl, interval) {
     this.setPolling = function(val) {
         if (val) {
             this.$pollSizeChanges();
-        } else {
-            if (this.$pollSizeChangesTimer)
-                this.$pollSizeChangesTimer;
+        } else if (this.$pollSizeChangesTimer) {
+            clearInterval(this.$pollSizeChangesTimer);
+            this.$pollSizeChangesTimer = 0;
         }
     };
 
@@ -160,7 +160,7 @@ var FontMetrics = exports.FontMetrics = function(parentEl, interval) {
     this.getCharacterWidth = function(ch) {
         var w = this.charSizes[ch];
         if (w === undefined) {
-            this.charSizes[ch] = this.$measureCharWidth(ch) / this.$characterSize.width;
+            w = this.charSizes[ch] = this.$measureCharWidth(ch) / this.$characterSize.width;
         }
         return w;
     };

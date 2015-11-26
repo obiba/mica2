@@ -2,10 +2,10 @@
 
 /* App Module */
 
+
 var mica = angular.module('mica', [
   'angular-loading-bar',
   'http-auth-interceptor',
-  'localytics.directives',
   'mica.config',
   'ngObiba',
   'mica.admin',
@@ -15,22 +15,59 @@ var mica = angular.module('mica', [
   'mica.dataAccesConfig',
   'mica.data-access-request',
   'mica.search',
-  'ngAnimate',
   'ngCookies',
   'ngResource',
   'ngRoute',
   'pascalprecht.translate',
   'tmh.dynamicLocale',
-  'ui.bootstrap',
-  'ngFileUpload',
   'angularUtils.directives.dirPagination',
   'xeditable',
-  'matchMedia'
+  'matchMedia',
+  'ngObibaMica'
 ]);
 
 mica
-  .config(['$routeProvider', '$httpProvider', '$translateProvider', 'tmhDynamicLocaleProvider', 'USER_ROLES', 'paginationTemplateProvider',
-    function ($routeProvider, $httpProvider, $translateProvider, tmhDynamicLocaleProvider, USER_ROLES, paginationTemplateProvider) {
+  .provider('SessionProxy',
+    function () {
+      function Proxy() {
+        var real;
+        this.update = function (value) {
+          real = value;
+        };
+
+        this.login = function() {
+          return real.login;
+        };
+
+        this.roles = function() {
+          return real.roles;
+        };
+
+        this.profile = function() {
+          return real.profile;
+        };
+      }
+
+      this.$get = function() {
+        return new Proxy();
+      };
+    });
+
+mica
+  .config(['$routeProvider',
+    '$httpProvider',
+    '$translateProvider',
+    'tmhDynamicLocaleProvider',
+    'USER_ROLES',
+    'paginationTemplateProvider',
+    function ($routeProvider,
+              $httpProvider,
+              $translateProvider,
+              tmhDynamicLocaleProvider,
+              USER_ROLES,
+              paginationTemplateProvider) {
+
+
       $routeProvider
         .when('/login', {
           templateUrl: 'app/views/login.html',
@@ -148,8 +185,25 @@ mica
     }]);
   }])
 
-  .run(['$rootScope', '$location', '$http', 'AuthenticationSharedService', 'Session', 'USER_ROLES', 'ServerErrorUtils', 'UserProfileService', 'editableOptions',
-    function ($rootScope, $location, $http, AuthenticationSharedService, Session, USER_ROLES, ServerErrorUtils, UserProfileService, editableOptions) {
+  .run(['$rootScope',
+    '$location',
+    '$http',
+    'AuthenticationSharedService',
+    'Session',
+    'USER_ROLES',
+    'ServerErrorUtils',
+    'UserProfileService',
+    'editableOptions',
+
+    function ($rootScope,
+              $location,
+              $http,
+              AuthenticationSharedService,
+              Session,
+              USER_ROLES,
+              ServerErrorUtils,
+              UserProfileService,
+              editableOptions) {
       $rootScope.$on('$routeChangeStart', function (event, next) {
         editableOptions.theme = 'bs3';
 

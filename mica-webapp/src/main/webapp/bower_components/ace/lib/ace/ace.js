@@ -88,7 +88,7 @@ exports.edit = function(el) {
         value = oldNode.value;
         el = dom.createElement("pre");
         oldNode.parentNode.replaceChild(el, oldNode);
-    } else {
+    } else if (el) {
         value = dom.getInnerText(el);
         el.innerHTML = '';
     }
@@ -126,4 +126,5 @@ exports.createEditSession = function(text, mode) {
 }
 exports.EditSession = EditSession;
 exports.UndoManager = UndoManager;
+exports.version = "1.2.2";
 });
