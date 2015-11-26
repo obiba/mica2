@@ -5,7 +5,6 @@
 var mica = angular.module('mica', [
   'angular-loading-bar',
   'http-auth-interceptor',
-  'localytics.directives',
   'mica.config',
   'ngObiba',
   'mica.admin',
@@ -15,17 +14,15 @@ var mica = angular.module('mica', [
   'mica.dataAccesConfig',
   'mica.data-access-request',
   'mica.search',
-  'ngAnimate',
   'ngCookies',
   'ngResource',
   'ngRoute',
   'pascalprecht.translate',
   'tmh.dynamicLocale',
-  'ui.bootstrap',
-  'ngFileUpload',
   'angularUtils.directives.dirPagination',
   'xeditable',
-  'matchMedia'
+  'matchMedia',
+  'ngObibaMica'
 ]);
 
 mica

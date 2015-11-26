@@ -10,8 +10,7 @@
 
 'use strict';
 
-mica.dataAccessRequest
-
+angular.module('dataAccessRequest')
   .factory('DataAccessRequestsResource', ['$resource',
     function ($resource) {
       return $resource('ws/data-access-requests', {}, {
@@ -66,8 +65,8 @@ mica.dataAccessRequest
       });
     }])
 
-  .service('DataAccessRequestService', ['LocaleStringUtils', 'moment', '$filter',
-    function (LocaleStringUtils, moment, $filter) {
+  .service('DataAccessRequestService', ['$translate',
+    function ($translate) {
       var statusList = {
         OPENED: 'OPENED',
         SUBMITTED: 'SUBMITTED',
@@ -78,10 +77,14 @@ mica.dataAccessRequest
 
       this.status = statusList;
 
-      this.getStatusFilterData = function() {
-        return Object.keys(statusList).map(function(key) {
-           return $filter('translate')(statusList[key]);
-        });
+      this.getStatusFilterData = function(userCallback) {
+        if (userCallback) {
+          $translate(Object.keys(statusList)).then(function(translation) {
+            userCallback(Object.keys(translation).map(function(key){
+              return translation[key];
+            }));
+          });
+        }
       };
 
       var canDoAction = function (request, action) {
@@ -133,39 +136,57 @@ mica.dataAccessRequest
 
       };
 
-      this.getStatusHistoryInfo = function() {
-        return {
+      this.getStatusHistoryInfo = function(userCallback) {
+        if (!userCallback) {
+          return;
+        }
+
+        var keyIdMap = {
+          'data-access-request.histories.opened': 'opened',
+          'data-access-request.histories.reopened': 'reopened',
+          'data-access-request.histories.submitted': 'submitted',
+          'data-access-request.histories.reviewed': 'reviewed',
+          'data-access-request.histories.approved': 'approved',
+          'data-access-request.histories.rejected': 'rejected'
+        };
+
+        var statusHistoryInfo = {
           opened: {
             id: 'opened',
             icon: 'glyphicon glyphicon-saved',
-            msg: $filter('translate')('data-access-request.histories.opened')
           },
           reopened: {
             id: 'reopened',
             icon: 'glyphicon glyphicon-repeat',
-            msg: $filter('translate')('data-access-request.histories.reopened')
           },
           submitted: {
             id: 'submitted',
             icon: 'glyphicon glyphicon-export',
-            msg: $filter('translate')('data-access-request.histories.submitted')
           },
           reviewed: {
             id: 'reviewed',
             icon: 'glyphicon glyphicon-check',
-            msg: $filter('translate')('data-access-request.histories.reviewed')
           },
           approved: {
             id: 'approved',
             icon: 'glyphicon glyphicon-ok',
-            msg: $filter('translate')('data-access-request.histories.approved')
           },
           rejected: {
             id: 'rejected',
             icon: 'glyphicon glyphicon-remove',
-            msg: $filter('translate')('data-access-request.histories.rejected')
           }
         };
+
+        $translate(Object.keys(keyIdMap))
+          .then(
+            function(translation) {
+              Object.keys(translation).forEach(
+                function(key){
+                  statusHistoryInfo[keyIdMap[key]].msg = translation[key];
+                });
+
+              userCallback(statusHistoryInfo);
+            });
       };
 
       this.getStatusHistoryInfoId = function(status) {

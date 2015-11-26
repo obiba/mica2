@@ -10,6 +10,10 @@
 
 'use strict';
 
-mica.dataAccessRequest = angular.module('mica.data-access-request', [
-  'dataAccessRequest'
+angular.module('dataAccessRequest', [
+  'pascalprecht.translate',
+  'obiba.alert',
+  'obiba.comments',
+  'angularMoment',
+  'templates-ngObibaMica'
 ]);
