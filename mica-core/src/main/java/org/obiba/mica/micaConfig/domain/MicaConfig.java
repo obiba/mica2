@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
+import org.obiba.mica.core.domain.Membership;
 import org.obiba.runtime.Version;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -16,6 +18,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 @Document
 public class MicaConfig extends AbstractAuditableDocument {
@@ -34,7 +37,7 @@ public class MicaConfig extends AbstractAuditableDocument {
   private String name = DEFAULT_NAME;
 
   @NotEmpty
-  private List<Locale> locales = new ArrayList<>();
+  private List<Locale> locales = Lists.newArrayList();
 
   @NotBlank
   private String defaultCharacterSet = DEFAULT_CHARSET;
@@ -43,6 +46,8 @@ public class MicaConfig extends AbstractAuditableDocument {
   private String opal = DEFAULT_OPAL;
 
   private AggregationsConfig aggregations;
+
+  private Set<String> roles = Sets.newHashSet(Membership.CONTACT, Membership.INVESTIGATOR);
 
   private String publicUrl;
 
@@ -140,5 +145,13 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public void setPrivacyThreshold(int privacyThreshold) {
     this.privacyThreshold = privacyThreshold;
+  }
+
+  public Set<String> getRoles() {
+    return roles;
+  }
+
+  public void setRoles(Set<String> roles) {
+    this.roles = roles == null ? Sets.newHashSet() : roles;
   }
 }

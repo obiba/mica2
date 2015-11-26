@@ -326,7 +326,11 @@
       "size": "Size",
       "private": "Private Key",
       "public": "Public Key"
-    }
+    },
+    "roles": "Roles",
+    "roles-help": "List of available roles for studies and networks.",
+    "add-role": "Add Role",
+    "edit-role": "Edit Role"
   },
   "publish": {
     "label": "Publish",
@@ -362,12 +366,10 @@
     "description": "Description",
     "objectives-help": "What are the principal objectives of the study?",
     "website": "Website",
-    "investigators": "Investigators",
     "add-population": "Add Population",
     "add-data-collection-event": "Add Data Collection Event",
-    "add-investigator": "Add Investigator",
-    "contacts": "Contacts",
-    "add-contact": "Add Contact",
+    "add-member": "Add {{type}}",
+    "member-list": "List of {{type}}",
     "start-year": "Start Year",
     "end-year": "End Year",
     "general-design": "General Design",
@@ -447,22 +449,16 @@
   "contact": {
     "label": "Contact",
     "delete": {
-      "contact": {
-        "title": "Delete Contact",
-        "confirm": "Are you sure you want to delete contact {{name}}?"
-      },
-      "investigator": {
-        "title": "Delete Investigator",
-        "confirm": "Are you sure you want to delete investigator {{name}}?"
+      "member": {
+        "title": "Delete {{type}}",
+        "confirm": "Are you sure you want to delete {{type}} {{name}}?"
       }
     },
     "edit": {
-      "contact": "Edit Contact",
-      "investigator": "Edit Investigator"
+      "member": "Edit {{type}}"
     },
     "search": {
-      "contact": "Find an existing contact",
-      "investigator": "Find an existing investigator",
+      "member": "Find an existing {{type}}",
       "placeholder": "Search by first name, last name or institution..."
     },
     "title": "Title",
@@ -579,11 +575,9 @@
     "index": "Index",
     "details": "Réseau",
     "add-study": "Ajouter une étude",
-    "contacts": "Contacts",
     "associated-people": "Personnes associées",
-    "investigators": "Investigators",
-    "add-contact": "Add Contact",
-    "add-investigator": "Add Investigator",
+    "add-member": "Add {{type}}",
+    "member-list": "List of {{type}}",
     "delete-dialog": {
       "title": "Delete Network",
       "message": "Are you sure you want to delete the network '{{arg0}}'?"

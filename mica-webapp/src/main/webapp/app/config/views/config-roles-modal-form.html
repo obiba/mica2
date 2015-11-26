@@ -1,0 +1,29 @@
+<div class="modal-content">
+
+  <form name="form" role="form" novalidate
+      class="ng-scope ng-invalid ng-invalid-required ng-dirty ng-valid-minlength" ng-submit="save(form)">
+
+    <div class="modal-header">
+      <button type="button" class="close" aria-hidden="true" ng-click="cancel()">&times;</button>
+      <h4 class="modal-title" id="configRoleModal">
+        <span translate>config.edit-role</span>
+      </h4>
+    </div>
+
+    <div class="modal-body">
+      <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
+      <div form-input name="id" model="role.id" label="id" required="true"></div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default" ng-click="cancel()">
+        <span translate>cancel</span>
+      </button>
+      <button type="submit" class="btn btn-primary">
+        <span translate>save</span>
+      </button>
+    </div>
+
+  </form>
+
+</div>

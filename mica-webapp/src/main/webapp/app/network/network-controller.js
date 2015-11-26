@@ -263,7 +263,14 @@ mica.network
             $scope.studySummaries = summaries;
           });
         }
+
+        $scope.memberships = network.memberships.reduce(function (res, m) {
+          res[m.role] = m.members;
+          return res;
+        }, {});
       };
+
+      $scope.memberships = {};
 
       $scope.isOrderingContacts = false; //prevent opening contact modal on reordering (firefox)
 
@@ -288,6 +295,8 @@ mica.network
         micaConfig.languages.forEach(function (lang) {
           $scope.tabs.push({lang: lang});
         });
+
+        $scope.roles = micaConfig.roles;
       });
 
       $scope.networkId = $routeParams.id;
@@ -412,13 +421,7 @@ mica.network
           $log.debug('save network', networkUpdated);
 
           $scope.network.$save(function () {
-              $scope.network = DraftNetworkResource.get({id: $routeParams.id}, function(network){
-                if (network.studyIds && network.studyIds.length > 0) {
-                  DraftStudiesSummariesResource.summaries({id: network.studyIds},function (summaries){
-                    $scope.studySummaries = summaries;
-                  });
-                }
-              });
+              $scope.network = DraftNetworkResource.get({id: $routeParams.id}, initializeNetwork);
             },
             function (response) {
               $log.error('Error on network save:', response);
@@ -439,43 +442,34 @@ mica.network
         }
       }
 
-      $scope.$on(CONTACT_EVENTS.addInvestigator, function (event, study, contact) {
-        if (study === $scope.network) {
-          if (!$scope.network.investigators) {
-            $scope.network.investigators = [];
-          }
-
-          if (!$scope.network.contacts) {
-            $scope.network.contacts = [];
-          }
-
-          updateExistingContact(contact, $scope.network.contacts);
-
-          $scope.network.investigators.push(contact);
-          $scope.emitNetworkUpdated();
-        }
-      });
-
-      $scope.$on(CONTACT_EVENTS.addContact, function (event, network, contact) {
+      $scope.$on(CONTACT_EVENTS.addContact, function (event, network, contact, type) {
         if (network === $scope.network) {
-          if (!$scope.network.contacts) {
-            $scope.network.contacts = [];
+          var members = $scope.network.memberships.filter(function(m) {
+            if (m.role === type) {
+              return true;
+            }
+
+            return false;
+          })[0];
+
+          if (!members) {
+            members = {role: type, members: []};
+            $scope.network.memberships.push(members);
           }
 
-          if (!$scope.network.investigators) {
-            $scope.network.investigators = [];
-          }
+          updateExistingContact(contact, members.members || []);
+          members.members.push(contact);
 
-          updateExistingContact(contact, $scope.network.investigators);
-
-          $scope.network.contacts.push(contact);
           $scope.emitNetworkUpdated();
         }
       });
 
-      $scope.$on(CONTACT_EVENTS.contactUpdated, function (event, network, contact) {
-        updateExistingContact(contact, $scope.network.contacts);
-        updateExistingContact(contact, $scope.network.investigators);
+      $scope.$on(CONTACT_EVENTS.contactUpdated, function (event, network, contact, type) {
+        var members = $scope.network.memberships.filter(function (m) {
+          return m.role === type;
+        })[0];
+
+        updateExistingContact(contact, members.members || []);
 
         if (network === $scope.network) {
           $scope.emitNetworkUpdated();
@@ -488,19 +482,18 @@ mica.network
         }
       });
 
-      $scope.$on(CONTACT_EVENTS.contactDeleted, function (event, network, contact, isInvestigator) {
+      $scope.$on(CONTACT_EVENTS.contactDeleted, function (event, network, contact, type) {
         if (network === $scope.network) {
-          if (isInvestigator) {
-            var investigatorsIndex = $scope.network.investigators.indexOf(contact);
-            if (investigatorsIndex !== -1) {
-              $scope.network.investigators.splice(investigatorsIndex, 1);
-            }
-          } else {
-            var contactsIndex = $scope.network.contacts.indexOf(contact);
-            if (contactsIndex !== -1) {
-              $scope.network.contacts.splice(contactsIndex, 1);
-            }
+          var members = $scope.network.memberships.filter(function (m) {
+              return m.role === type;
+            })[0] || {members: []};
+
+          var idx = members.members.indexOf(contact);
+
+          if (idx !== -1) {
+            members.members.splice(idx, 1);
           }
+
           $scope.emitNetworkUpdated();
         }
       });
