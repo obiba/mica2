@@ -15,6 +15,7 @@
       <li class="active">{{dataAccessRequest.id}}</li>
     </ol>
   </h2>
+  <p>Testing</p>
 
   <obiba-alert id="DataAccessRequestViewController"></obiba-alert>
 
@@ -81,7 +82,7 @@
         <obiba-comment-editor on-submit="submitComment"></obiba-comment-editor>
       </tab>
       <tab ng-click="selectTab('history')" heading="{{'data-access-request.history' | translate}}">
-        <div ng-include="'app/access/views/data-access-request-histroy-view.html'"></div>
+        <div ng-include="'access/views/data-access-request-histroy-view.html'"></div>
       </tab>
     </tabset>
   </div>

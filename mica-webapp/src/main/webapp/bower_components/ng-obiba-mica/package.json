@@ -1,0 +1,31 @@
+{
+  "name": "ng-obiba-mica",
+  "version": "1.0.0",
+  "description": "OBiBa AngularJS Mica Components",
+  "main": "Gruntfile.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/obiba/ng-obiba-mica.git"
+  },
+  "license": "GNU Public License version 3",
+  "bugs": {
+    "url": "https://github.com/obiba/ng-obiba-mica/issues"
+  },
+  "homepage": "https://github.com/obiba/ng-obiba-mica",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-clean": "^0.5.0",
+    "grunt-contrib-concat": "^0.4.0",
+    "grunt-contrib-jshint": "~0.10.0",
+    "grunt-contrib-less": "^1.0.1",
+    "grunt-contrib-uglify": "^0.4.0",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-html2js": "^0.2.7",
+    "grunt-karma": "^0.8.3",
+    "jasmine-core": "^2.3.4",
+    "karma": "^0.12.16",
+    "karma-coverage": "^0.2.4",
+    "karma-jasmine": "^0.3.6",
+    "phantomjs": "^1.9.19"
+  }
+}

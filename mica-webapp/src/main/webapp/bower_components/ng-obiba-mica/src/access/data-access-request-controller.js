@@ -10,12 +10,12 @@
 
 'use strict';
 
-mica.dataAccessRequest
-
+angular.module('dataAccessRequest')
   .controller('DataAccessRequestListController', ['$rootScope', '$scope', 'DataAccessRequestsResource', 'DataAccessRequestResource', 'DataAccessRequestService', 'NOTIFICATION_EVENTS', 'Session', 'USER_ROLES',
 
     function ($rootScope, $scope, DataAccessRequestsResource, DataAccessRequestResource, DataAccessRequestService, NOTIFICATION_EVENTS, Session, USER_ROLES) {
 
+      console.log('>>>><<<<>>>><<<<');
       var onSuccess = function(reqs) {
         for (var i = 0; i < reqs.length; i++) {
           var req = reqs[i];
@@ -36,7 +36,10 @@ mica.dataAccessRequest
         $scope.loading = false;
       };
 
-      $scope.REQUEST_STATUS = DataAccessRequestService.getStatusFilterData();
+      DataAccessRequestService.getStatusFilterData(function(translated) {
+        $scope.REQUEST_STATUS  = translated;
+      });
+
       $scope.searchStatus = {};
       $scope.loading = true;
       DataAccessRequestsResource.query({}, onSuccess, onError);
@@ -169,7 +172,10 @@ mica.dataAccessRequest
       $scope.updateComment = updateComment;
       $scope.deleteComment = deleteComment;
       $scope.getStatusHistoryInfoId = DataAccessRequestService.getStatusHistoryInfoId;
-      $scope.getStatusHistoryInfo = DataAccessRequestService.getStatusHistoryInfo();
+      DataAccessRequestService.getStatusHistoryInfo(function(statusHistoryInfo) {
+        $scope.getStatusHistoryInfo = statusHistoryInfo;
+      });
+
       $scope.validForm = true;
 
       var getRequest = function () {
@@ -364,7 +370,7 @@ mica.dataAccessRequest
 
         $modal.open({
           scope: $scope,
-          templateUrl: 'app/access/views/data-access-request-validation-modal.html',
+          templateUrl: 'access/views/data-access-request-validation-modal.html',
         });
       };
 

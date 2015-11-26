@@ -10,24 +10,24 @@
 
 'use strict';
 
-mica.dataAccessRequest
+angular.module('dataAccessRequest')
   .config(['$routeProvider',
     function ($routeProvider) {
       $routeProvider
         .when('/data-access-requests', {
-          templateUrl: 'app/access/views/data-access-request-list.html',
+          templateUrl: 'access/views/data-access-request-list.html',
           controller: 'DataAccessRequestListController'
         })
         .when('/data-access-request/new', {
-          templateUrl: 'app/access/views/data-access-request-form.html',
+          templateUrl: 'access/views/data-access-request-form.html',
           controller: 'DataAccessRequestEditController'
         })
         .when('/data-access-request/:id/edit', {
-          templateUrl: 'app/access/views/data-access-request-form.html',
+          templateUrl: 'access/views/data-access-request-form.html',
           controller: 'DataAccessRequestEditController'
         })
         .when('/data-access-request/:id', {
-          templateUrl: 'app/access/views/data-access-request-view.html',
+          templateUrl: 'access/views/data-access-request-view.html',
           controller: 'DataAccessRequestViewController'
         });
     }]);
