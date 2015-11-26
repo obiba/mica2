@@ -19,21 +19,21 @@
     "angular-bootstrap": "0.13.0",
     "angular-translate": "2.7.0",
     "angular-sanitize": "1.3.15",
-    "angular-marked": "~0.0.14",
-    "angular-moment": "~0.10.1"
+    "angular-marked": "0.0.14",
+    "angular-moment": "0.10.1"
   },
   "devDependencies": {
     "angular-mocks": "1.3.15",
     "angular-scenario": "1.3.15"
   },
-  "homepage": "https://github.com/obiba/ng-obiba",
-  "_release": "3bf7e5dc8b",
+  "homepage": "https://github.com/kazoompa/ng-obiba",
+  "_release": "530ccc6b6d",
   "_resolution": {
     "type": "branch",
-    "branch": "master",
-    "commit": "3bf7e5dc8bf193d6f58f4e0d374454402904cfb8"
+    "branch": "rhaeri-dev",
+    "commit": "530ccc6b6d16531832af1f3cefed552332111452"
   },
-  "_source": "git@github.com:obiba/ng-obiba.git",
-  "_target": "*",
-  "_originalSource": "git@github.com:obiba/ng-obiba.git"
+  "_source": "git@github.com:kazoompa/ng-obiba.git",
+  "_target": "rhaeri-dev",
+  "_originalSource": "git@github.com:kazoompa/ng-obiba.git"
 }
