@@ -11,16 +11,13 @@
 'use strict';
 
 mica.dataAccessRequest = angular.module('mica.data-access-request', [
-  'mica.config',
-  'obiba.form',
-  'mica.localized',
-  'mica.attachment',
-  'obiba.notification',
-  'obiba.comments',
-  'ngResource',
-  'ngRoute',
-  'ui.bootstrap',
-  'ui',
-  'pascalprecht.translate',
-  'angularMoment'
-]);
+  'obiba.mica.access'
+])
+  .config(['ngObibaMicaAccessTemplateUrlProvider',
+    function (ngObibaMicaAccessTemplateUrlProvider) {
+      ngObibaMicaAccessTemplateUrlProvider.setHeaderUrl('view','app/access/views/data-access-request-view-header.html');
+      ngObibaMicaAccessTemplateUrlProvider.setHeaderUrl('form','app/access/views/data-access-request-form-header.html');
+      ngObibaMicaAccessTemplateUrlProvider.setHeaderUrl('list','app/access/views/data-access-request-list-header.html');
+    }]);
+
+

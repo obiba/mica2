@@ -1,0 +1,24 @@
+<!--
+  ~ Copyright (c) 2015 OBiBa. All rights reserved.
+  ~
+  ~ This program and the accompanying materials
+  ~ are made available under the terms of the GNU Public License v3.0.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<h2>
+  <ol class="mica-breadcrumb">
+    <li><a href="#/data-access-requests" translate>data-access-requests</a></li>
+    <li ng-if="!newRequest"><a href="#/data-access-request/{{requestId}}">{{requestId}}</a></li>
+    <li class="active">
+      <span ng-if="newRequest" translate>add-sm</span>
+      <span ng-if="!newRequest" translate>edit-sm</span>
+      <small><span translate>or</span>
+        <a ng-click="cancel()">
+          <span translate>cancel-sm</span>
+        </a></small>
+    </li>
+  </ol>
+</h2>
