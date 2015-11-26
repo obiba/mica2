@@ -5,11 +5,10 @@
 mica.controller('MainController', [
   '$rootScope',
   '$scope',
-  '$log',
   'MicaConfigResource',
   'screenSize',
   'AuthenticationSharedService',
-  function ($rootScope, $scope, $log, MicaConfigResource, screenSize, AuthenticationSharedService) {
+  function ($rootScope, $scope, MicaConfigResource, screenSize, AuthenticationSharedService) {
     if (AuthenticationSharedService.isAuthenticated()) {
       $scope.micaConfig = MicaConfigResource.get();
     }
@@ -27,8 +26,6 @@ mica.controller('MainController', [
       $scope.screen.size = size ? size[0] : 'lg';
       $scope.screen.device = screenSize.is('md, lg') ? 'desktop' : 'mobile';
       $scope.screen.is = screenSize.is;
-
-      $log.debug('Screen', $scope.screen);
     }
 
     getScreenSize();
