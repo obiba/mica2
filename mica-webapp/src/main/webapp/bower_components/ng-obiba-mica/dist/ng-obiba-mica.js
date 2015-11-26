@@ -41,7 +41,6 @@ angular.module('dataAccessRequest')
 
     function ($rootScope, $scope, DataAccessRequestsResource, DataAccessRequestResource, DataAccessRequestService, NOTIFICATION_EVENTS, Session, USER_ROLES) {
 
-      console.log('>>>><<<<>>>><<<<');
       var onSuccess = function(reqs) {
         for (var i = 0; i < reqs.length; i++) {
           var req = reqs[i];
