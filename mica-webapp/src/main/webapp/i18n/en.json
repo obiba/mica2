@@ -346,7 +346,8 @@
     "roles": "Roles",
     "roles-help": "List of available roles for studies and networks.",
     "add-role": "Add Role",
-    "edit-role": "Edit Role"
+    "edit-role": "Edit Role",
+    "role-error": "Role id already exists."
   },
   "publish": {
     "label": "Publish",
