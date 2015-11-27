@@ -47,7 +47,7 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   private AggregationsConfig aggregations;
 
-  private Set<String> roles = Sets.newHashSet(Membership.CONTACT, Membership.INVESTIGATOR);
+  private List<String> roles = Lists.newArrayList(Membership.CONTACT, Membership.INVESTIGATOR);
 
   private String publicUrl;
 
@@ -147,11 +147,11 @@ public class MicaConfig extends AbstractAuditableDocument {
     this.privacyThreshold = privacyThreshold;
   }
 
-  public Set<String> getRoles() {
+  public List<String> getRoles() {
     return roles;
   }
 
-  public void setRoles(Set<String> roles) {
-    this.roles = roles == null ? Sets.newHashSet() : roles;
+  public void setRoles(List<String> roles) {
+    this.roles = roles == null ? Lists.newArrayList() : Lists.newArrayList(Sets.newLinkedHashSet(roles));
   }
 }

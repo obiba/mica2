@@ -152,6 +152,9 @@ mica.config
             templateUrl: 'app/config/views/config-roles-modal-form.html',
             controller: 'RoleModalController',
             resolve: {
+              micaConfig: function() {
+                return $scope.micaConfig;
+              },
               role: function () {
                 return null;
               }
@@ -269,16 +272,18 @@ mica.config
       };
     }])
 
-  .controller('RoleModalController', ['$scope', '$modalInstance', '$log', 'role',
-    function ($scope, $modalInstance, $log, role) {
+  .controller('RoleModalController', ['$scope', '$modalInstance', '$log', 'micaConfig', 'role',
+    function ($scope, $modalInstance, $log, micaConfig, role) {
+      var oldRole = role;
       $scope.role = {id: role};
       $log.debug('Modal Ctrl scope:', $scope.role);
 
       $scope.save = function (form) {
+        form.id.$setValidity('text', micaConfig.roles.indexOf($scope.role.id) < 0 || $scope.role.id === oldRole);
+
         if (form.$valid) {
           $modalInstance.close($scope.role.id);
-        }
-        else {
+        } else {
           $scope.form = form;
           $scope.form.saveAttempted = true;
         }
