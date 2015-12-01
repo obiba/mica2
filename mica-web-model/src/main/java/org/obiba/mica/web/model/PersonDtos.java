@@ -124,8 +124,10 @@ class PersonDtos {
       Network network = asDraft
         ? networkService.findById(membership.getParentId())
         : publishedNetworkService.findById(membership.getParentId());
-      builder.addAllParentAcronym(localizedStringDtos.asDto(network.getAcronym()));
-      builder.addAllParentName(localizedStringDtos.asDto(network.getName()));
+      if (network != null) {
+        builder.addAllParentAcronym(localizedStringDtos.asDto(network.getAcronym()));
+        builder.addAllParentName(localizedStringDtos.asDto(network.getName()));
+      }
     }
 
     return builder.build();
