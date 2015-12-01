@@ -18,8 +18,6 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
 
-import jersey.repackaged.com.google.common.collect.Sets;
-
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
@@ -35,7 +33,8 @@ class MicaConfigDtos {
   Mica.MicaConfigDto asDto(@NotNull MicaConfig config) {
     Mica.MicaConfigDto.Builder builder = Mica.MicaConfigDto.newBuilder() //
       .setName(config.getName()) //
-      .setDefaultCharSet(config.getDefaultCharacterSet());
+      .setDefaultCharSet(config.getDefaultCharacterSet())//
+      .setOpenAccess(config.isOpenAccess());
     config.getLocales().forEach(locale -> builder.addLanguages(locale.getLanguage()));
 
     if(!Strings.isNullOrEmpty(config.getPublicUrl())) {
@@ -59,6 +58,7 @@ class MicaConfigDtos {
     MicaConfig config = new MicaConfig();
     config.setName(dto.getName());
     config.setDefaultCharacterSet(dto.getDefaultCharSet());
+    config.setOpenAccess(dto.getOpenAccess());
 
     if(dto.hasPublicUrl()) config.setPublicUrl(dto.getPublicUrl());
 

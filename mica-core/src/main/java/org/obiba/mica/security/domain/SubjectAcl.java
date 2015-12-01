@@ -167,8 +167,6 @@ public class SubjectAcl extends AbstractAuditableDocument {
 
     private final List<String> actions = Lists.newArrayList();
 
-    private String instance;
-
     public Builder(String name, Type type) {
       subjectAcl.principal = name;
       subjectAcl.type = type;

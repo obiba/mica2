@@ -19,11 +19,14 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
+import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.search.SearchHits;
 import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.aggregations.AggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.StudyTaxonomyMetaDataProvider;
 import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.web.model.Dtos;
@@ -63,6 +66,17 @@ public class StudyQuery extends AbstractDocumentQuery {
   @Override
   public String getSearchType() {
     return StudyIndexer.STUDY_TYPE;
+  }
+
+  @Override
+  public FilterBuilder getAccessibilityFilter() {
+    if(micaConfigService.getConfig().isOpenAccess()) return null;
+    List<String> ids = publishedStudyService.getStudyService().findPublishedStates().stream().map(StudyState::getId)
+      .filter(s -> subjectAclService.isAccessible("/study", s))
+      .collect(Collectors.toList());
+    return ids.isEmpty()
+      ? FilterBuilders.notFilter(FilterBuilders.existsFilter("id"))
+      : FilterBuilders.idsFilter().ids(ids.toArray(new String[ids.size()]));
   }
 
   @Override

@@ -385,6 +385,7 @@ message MicaConfigDto {
   optional string version = 6;
   optional int32 privacyThreshold = 7;
   repeated string roles = 8;
+  required bool openAccess = 9 [default = true];
 }
 
 message AggregationsConfigDto {

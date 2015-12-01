@@ -59,6 +59,16 @@
           </td>
           <td>{{micaConfig.privacyThreshold}}</td>
         </tr>
+        <tr>
+          <td>
+            <span translate>config.openAccess</span>
+            <span class="help-block" translate>config.openAccess-help</span>
+          </td>
+          <td>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.openAccess"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.openAccess"></i>
+          </td>
+        </tr>
         </tbody>
       </table>
       <a href="#/admin/general/edit" class="btn btn-primary">

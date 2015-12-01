@@ -24,6 +24,8 @@ import javax.inject.Inject;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.search.SearchHits;
@@ -32,8 +34,12 @@ import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
+import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
+import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.dataset.search.DatasetIndexer;
+import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
+import org.obiba.mica.dataset.service.StudyDatasetService;
 import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.DatasetIdProvider;
 import org.obiba.mica.search.aggregations.AggregationYamlParser;
@@ -83,6 +89,12 @@ public class DatasetQuery extends AbstractDocumentQuery {
   @Inject
   PublishedDatasetService publishedDatasetService;
 
+  @Inject
+  private StudyDatasetService studyDatasetService;
+
+  @Inject
+  private HarmonizationDatasetService harmonizationDatasetService;
+
   private DatasetIdProvider datasetIdProvider;
 
   @Override
@@ -93,6 +105,20 @@ public class DatasetQuery extends AbstractDocumentQuery {
   @Override
   public String getSearchType() {
     return DatasetIndexer.DATASET_TYPE;
+  }
+
+  @Override
+  public FilterBuilder getAccessibilityFilter() {
+    if(micaConfigService.getConfig().isOpenAccess()) return null;
+    List<String> ids = studyDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
+      .filter(s -> subjectAclService.isAccessible("/study-dataset", s))
+      .collect(Collectors.toList());
+    ids.addAll(harmonizationDatasetService.findPublishedStates().stream().map(HarmonizationDatasetState::getId)
+      .filter(s -> subjectAclService.isAccessible("/harmonization-dataset", s))
+      .collect(Collectors.toList()));
+    return ids.isEmpty()
+      ? FilterBuilders.notFilter(FilterBuilders.existsFilter("id"))
+      : FilterBuilders.idsFilter().ids(ids.toArray(new String[ids.size()]));
   }
 
   @Override

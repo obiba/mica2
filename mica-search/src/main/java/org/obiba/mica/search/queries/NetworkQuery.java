@@ -24,12 +24,15 @@ import javax.inject.Inject;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.obiba.mica.network.domain.Network;
+import org.obiba.mica.network.domain.NetworkState;
 import org.obiba.mica.network.search.NetworkIndexer;
 import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.search.CountStatsData;
@@ -83,6 +86,16 @@ public class NetworkQuery extends AbstractDocumentQuery {
   }
 
   @Override
+  public FilterBuilder getAccessibilityFilter() {
+    if(micaConfigService.getConfig().isOpenAccess()) return null;
+    List<String> ids = publishedNetworkService.getNetworkService().findPublishedStates().stream()
+      .map(NetworkState::getId).filter(s -> subjectAclService.isAccessible("/network", s)).collect(Collectors.toList());
+    return ids.isEmpty()
+      ? FilterBuilders.notFilter(FilterBuilders.existsFilter("id"))
+      : FilterBuilders.idsFilter().ids(ids.toArray(new String[ids.size()]));
+  }
+
+  @Override
   public Stream<String> getLocalizedQueryStringFields() {
     return Stream.of(NetworkIndexer.LOCALIZED_ANALYZED_FIELDS);
   }
@@ -100,8 +113,8 @@ public class NetworkQuery extends AbstractDocumentQuery {
       : NetworkCountStatsBuilder.newBuilder(counts);
 
     Consumer<Network> addDto = getNetworkConsumer(scope, resBuilder, networkCountStatsBuilder);
-    List<Network> networks = publishedNetworkService.findByIds(
-      Stream.of(hits.hits()).map(h -> h.getId()).collect(Collectors.toList()));
+    List<Network> networks = publishedNetworkService
+      .findByIds(Stream.of(hits.hits()).map(h -> h.getId()).collect(Collectors.toList()));
     networks.forEach(addDto::accept);
     builder.setExtension(NetworkResultDto.result, resBuilder.build());
   }
@@ -111,7 +124,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
 
     return scope == Scope.DETAIL ? (network) -> {
       Mica.NetworkDto.Builder networkBuilder = dtos.asDtoBuilder(network);
-      if (mode == Mode.LIST) {
+      if(mode == Mode.LIST) {
         networkBuilder.clearStudySummaries();
         networkBuilder.clearContacts();
         networkBuilder.clearInvestigators();

@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
@@ -126,8 +127,10 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
   }
 
   private List<String> loadSubjectPermissions(String name, SubjectAcl.Type type) {
-    return subjectAclService.findBySubject(name, type).stream().map(SubjectAcl::getPermission)
-      .collect(Collectors.toList());
+    // get permissions that apply to the subject and to all subjects
+    return Stream
+      .concat(subjectAclService.findBySubject("*", type).stream(), subjectAclService.findBySubject(name, type).stream())
+      .map(SubjectAcl::getPermission).collect(Collectors.toList());
   }
 
   //
@@ -145,25 +148,34 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
         case Roles.MICA_ADMIN:
           return mergePermissions("*", permissions);
         case Roles.MICA_REVIEWER:
-          // all permissions: edition and publication
+          // all permissions: edition and publication on draft, view on published
           perms = mergePermissions("/files:UPLOAD", permissions);
           Arrays.stream(ALL_RESOURCES).forEach(e -> {
             perms.addAll(toPermissions(String.format("/draft/%s", e)));
             perms.addAll(toPermissions(String.format("/draft/file:*:/%s", e)));
+            perms.addAll(toPermissions(String.format("/%s:VIEW", e)));
+            perms.addAll(toPermissions(String.format("/file:VIEW:/%s", e)));
           });
           return perms;
         case Roles.MICA_EDITOR:
-          // all edition permissions
+          // all edition permissions on draft
           perms = mergePermissions("/files:UPLOAD", permissions);
           Arrays.stream(ALL_RESOURCES).forEach(e -> PermissionsUtils.EDITOR_ACTIONS.forEach(a -> {
             perms.addAll(toPermissions(String.format("/draft/%s:%s", e, a)));
             perms.addAll(toPermissions(String.format("/draft/file:%s:/%s", a, e)));
+
           }));
+          // all view permissions on published
+          Arrays.stream(ALL_RESOURCES).forEach(e -> {
+            perms.addAll(toPermissions(String.format("/%s:VIEW", e)));
+            perms.addAll(toPermissions(String.format("/file:VIEW:/%s", e)));
+          });
           return perms;
         case Roles.MICA_DAO:
           // can view and delete any data access requests
           return mergePermissions(
-            "/data-access-request:ADD,/data-access-request:VIEW,/data-access-request:DELETE,/files:UPLOAD", permissions);
+            "/data-access-request:ADD,/data-access-request:VIEW,/data-access-request:DELETE,/files:UPLOAD",
+            permissions);
         case Roles.MICA_USER:
           return mergePermissions("/data-access-request:ADD,/files:UPLOAD", permissions);
       }

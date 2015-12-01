@@ -12,7 +12,6 @@ import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.service.PublishedStudyService;
-import org.obiba.mica.study.service.StudyService;
 import org.springframework.stereotype.Component;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -24,9 +23,6 @@ class PersonDtos {
 
   @Inject
   private CountryDtos countryDtos;
-
-  @Inject
-  private StudyService studyService;
 
   @Inject
   private PublishedStudyService publishedStudyService;
@@ -56,7 +52,7 @@ class PersonDtos {
       if(asDraft) {
         return subjectAclService.isPermitted("/draft/study", "VIEW", m.getParentId());
       } else {
-        StudyState state = studyService.findStateById(m.getParentId());
+        StudyState state = publishedStudyService.getStudyService().findStateById(m.getParentId());
 
         if(state != null) return state.isPublished();
 
@@ -108,10 +104,12 @@ class PersonDtos {
 
     if(membership.getParentId() != null) {
       Study study = asDraft
-        ? studyService.findStudy(membership.getParentId())
+        ? publishedStudyService.getStudyService().findStudy(membership.getParentId())
         : publishedStudyService.findById(membership.getParentId());
-      builder.addAllParentAcronym(localizedStringDtos.asDto(study.getAcronym()));
-      builder.addAllParentName(localizedStringDtos.asDto(study.getName()));
+      if (study != null) {
+        builder.addAllParentAcronym(localizedStringDtos.asDto(study.getAcronym()));
+        builder.addAllParentName(localizedStringDtos.asDto(study.getName()));
+      }
     }
 
     return builder.build();
@@ -126,8 +124,10 @@ class PersonDtos {
       Network network = asDraft
         ? networkService.findById(membership.getParentId())
         : publishedNetworkService.findById(membership.getParentId());
-      builder.addAllParentAcronym(localizedStringDtos.asDto(network.getAcronym()));
-      builder.addAllParentName(localizedStringDtos.asDto(network.getName()));
+      if (network != null) {
+        builder.addAllParentAcronym(localizedStringDtos.asDto(network.getAcronym()));
+        builder.addAllParentName(localizedStringDtos.asDto(network.getName()));
+      }
     }
 
     return builder.build();

@@ -26,6 +26,7 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.search.SearchHits;
@@ -41,6 +42,7 @@ import org.obiba.mica.search.aggregations.AggregationYamlParser;
 import org.obiba.mica.search.rest.EsQueryResultParser;
 import org.obiba.mica.search.rest.QueryDtoHelper;
 import org.obiba.mica.search.rest.QueryDtoParser;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.MicaSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +68,10 @@ public abstract class AbstractDocumentQuery {
   protected AggregationYamlParser aggregationYamlParser;
 
   @Inject
-  MicaConfigService micaConfigService;
+  protected MicaConfigService micaConfigService;
+
+  @Inject
+  protected SubjectAclService subjectAclService;
 
   @Inject
   AggregationMetaDataResolver aggregationTitleResolver;
@@ -117,6 +122,8 @@ public abstract class AbstractDocumentQuery {
 
   public abstract String getSearchType();
 
+  public abstract FilterBuilder getAccessibilityFilter();
+
   public abstract Stream<String> getLocalizedQueryStringFields();
 
   public Stream<String> getQueryStringFields() {
@@ -161,6 +168,7 @@ public abstract class AbstractDocumentQuery {
 
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
+      .setPostFilter(getAccessibilityFilter()) //
       .setSearchType(SearchType.COUNT) //
       .setQuery(QueryDtoParser.newParser().parse(queryDto)) //
       .setNoFields();
@@ -231,6 +239,7 @@ public abstract class AbstractDocumentQuery {
       .setTypes(getSearchType()) //
       .setSearchType(scope == DETAIL ? SearchType.DFS_QUERY_THEN_FETCH : SearchType.COUNT) //
       .setQuery(QueryBuilders.matchAllQuery()) //
+      .setPostFilter(getAccessibilityFilter()) //
       .setFrom(from) //
       .setSize(size) //
       .setNoFields().addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT)); //
@@ -239,6 +248,7 @@ public abstract class AbstractDocumentQuery {
       .setTypes(getSearchType()) //
       .setSearchType(scope == DETAIL ? SearchType.DFS_QUERY_THEN_FETCH : SearchType.COUNT) //
       .setQuery(queryDtoParser.parse(queryDto)) //
+      .setPostFilter(getAccessibilityFilter()) //
       .setFrom(from) //
       .setSize(size) //
       .addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT)); // ;
@@ -317,10 +327,14 @@ public abstract class AbstractDocumentQuery {
     aggregationTitleResolver.registerProviders(getAggregationMetaDataProviders());
     aggregationTitleResolver.refresh();
 
+    FilterBuilder accessibilityFilter = getAccessibilityFilter();
+
     SearchRequestBuilder defaultRequestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
       .setSearchType(SearchType.COUNT) //
-      .setQuery(QueryBuilders.matchAllQuery()) //
+      .setQuery(accessibilityFilter == null
+        ? QueryBuilders.matchAllQuery()
+        : QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), accessibilityFilter)) //
       .setFrom(0) //
       .setSize(0) // no results needed for a coverage
       .setNoFields().addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT));
@@ -328,7 +342,9 @@ public abstract class AbstractDocumentQuery {
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
       .setSearchType(SearchType.COUNT) //
-      .setQuery(queryDtoParser.parse(query)) //
+      .setQuery(accessibilityFilter == null
+        ? queryDtoParser.parse(query)
+        : QueryBuilders.filteredQuery(queryDtoParser.parse(query), getAccessibilityFilter())) //
       .setFrom(0) //
       .setSize(0) // no results needed for a coverage
       .addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT));

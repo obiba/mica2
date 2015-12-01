@@ -8,6 +8,7 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.domain.SubjectAcl;
 import org.obiba.mica.security.event.ResourceDeletedEvent;
 import org.obiba.mica.security.event.SubjectAclUpdatedEvent;
@@ -26,6 +27,9 @@ public class SubjectAclService {
 
   @Inject
   private SubjectAclRepository subjectAclRepository;
+
+  @Inject
+  private MicaConfigService micaConfigService;
 
   @Inject
   private EventBus eventBus;
@@ -73,6 +77,7 @@ public class SubjectAclService {
       .isPermitted(resource + ":" + action + (Strings.isNullOrEmpty(instance) ? "" : ":" + instance));
   }
 
+
   /**
    * Check if current user has the given permission.
    *
@@ -96,6 +101,33 @@ public class SubjectAclService {
     throws AuthorizationException {
     SecurityUtils.getSubject()
       .checkPermission(resource + ":" + action + (Strings.isNullOrEmpty(instance) ? "" : ":" + instance));
+  }
+
+
+  /**
+   * Verify the {@link org.obiba.mica.micaConfig.domain.MicaConfig} open access property before evaluating the
+   * "VIEW" permission for the current user.
+   *
+   * @param resource Resource is expected to apply to a published document
+   * @param instance
+   * @return
+   */
+  public boolean isAccessible(@NotNull String resource, @Nullable String instance) {
+    return micaConfigService.getConfig().isOpenAccess() || isPermitted(resource, "VIEW", instance);
+  }
+
+
+  /**
+   * Verify the {@link org.obiba.mica.micaConfig.domain.MicaConfig} open access property before evaluating the
+   * "VIEW" permission for the current user.
+   *
+   * @param resource Resource is expected to apply to a published document
+   * @param instance
+   * @return
+   */
+  public void checkAccessibility(@NotNull String resource, @Nullable String instance) {
+    if (micaConfigService.getConfig().isOpenAccess()) return;
+    checkPermission(resource, "VIEW", instance);
   }
 
   /**
