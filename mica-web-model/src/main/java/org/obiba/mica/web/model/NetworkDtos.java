@@ -8,11 +8,13 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.domain.NetworkState;
 import org.obiba.mica.network.service.NetworkService;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.obiba.mica.study.service.PublishedStudyService;
@@ -65,6 +67,9 @@ class NetworkDtos {
   @Inject
   private NetworkService networkService;
 
+  @Inject
+  private SubjectAclService subjectAclService;
+
   @NotNull
   Mica.NetworkDto.Builder asDtoBuilder(@NotNull Network network, boolean asDraft) {
     Mica.NetworkDto.Builder builder = Mica.NetworkDto.newBuilder();
@@ -105,9 +110,11 @@ class NetworkDtos {
     if(!isNullOrEmpty(network.getWebsite())) builder.setWebsite(network.getWebsite());
 
     List<Study> publishedStudies = publishedStudyService.findByIds(network.getStudyIds());
-    Set<String> publishedStudyIds = publishedStudies.stream().map(s -> s.getId()).collect(Collectors.toSet());
-    Sets.SetView<String> unpublishedStudyIds = Sets
-      .difference(ImmutableSet.copyOf(network.getStudyIds()), publishedStudyIds);
+    Set<String> publishedStudyIds = publishedStudies.stream().map(AbstractGitPersistable::getId)
+      .collect(Collectors.toSet());
+    Sets.SetView<String> unpublishedStudyIds = Sets.difference(ImmutableSet.copyOf(
+      network.getStudyIds().stream().filter(sId -> asDraft || subjectAclService.isAccessible("/study", sId))
+        .collect(toList())), publishedStudyIds);
 
     if(!publishedStudies.isEmpty()) {
       Map<String, Long> datasetVariableCounts = datasetVariableService
