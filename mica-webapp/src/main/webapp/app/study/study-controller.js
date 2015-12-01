@@ -147,7 +147,15 @@ mica.study
           }
         }
 
-        $scope.memberships = study.memberships.reduce(function (res, m) {
+        study.populations = study.populations || [];
+
+        $scope.memberships = study.memberships.map(function (m) {
+          if (!m.members) {
+            m.members = [];
+          }
+
+          return m;
+        }).reduce(function (res, m) {
           res[m.role] = m.members;
           return res;
         }, {});
@@ -311,7 +319,7 @@ mica.study
 
       $scope.$on(CONTACT_EVENTS.addContact, function (event, study, contact, type) {
         if (study === $scope.study) {
-          var members = $scope.study.memberships.filter(function(m) {
+          var roleMemberships = $scope.study.memberships.filter(function(m) {
             if (m.role === type) {
               return true;
             }
@@ -319,20 +327,20 @@ mica.study
             return false;
           })[0];
 
-          if (!members) {
-            members = {role: type, members: []};
-            $scope.study.memberships.push(members);
+          if (!roleMemberships) {
+            roleMemberships = {role: type, members: []};
+            $scope.study.memberships.push(roleMemberships);
           }
 
-          updateExistingContact(contact, members.members || []);
-          members.members.push(contact);
+          updateExistingContact(contact, roleMemberships.members || []);
+          roleMemberships.members.push(contact);
 
           $scope.emitStudyUpdated();
         }
       });
 
       $scope.$on(CONTACT_EVENTS.contactUpdated, function (event, study, contact, type) {
-        var members = $scope.study.memberships.filter(function(m) {
+        var roleMemberships = $scope.study.memberships.filter(function(m) {
           if (m.role === type) {
             return true;
           }
@@ -340,7 +348,7 @@ mica.study
           return false;
         })[0];
 
-        updateExistingContact(contact, members.members || []);
+        updateExistingContact(contact, roleMemberships.members || []);
 
         if (study === $scope.study) {
           $scope.emitStudyUpdated();
@@ -355,14 +363,14 @@ mica.study
 
       $scope.$on(CONTACT_EVENTS.contactDeleted, function (event, study, contact, type) {
         if (study === $scope.study) {
-          var members = $scope.study.memberships.filter(function (m) {
+          var roleMemberships = $scope.study.memberships.filter(function (m) {
               return m.role === type;
             })[0] || {members: []};
 
-          var idx = members.members.indexOf(contact);
+          var idx = roleMemberships.members.indexOf(contact);
 
           if (idx !== -1) {
-            members.members.splice(idx, 1);
+            roleMemberships.members.splice(idx, 1);
           }
 
           $scope.emitStudyUpdated();
