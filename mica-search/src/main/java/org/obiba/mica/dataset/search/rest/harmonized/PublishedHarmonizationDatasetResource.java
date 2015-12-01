@@ -28,7 +28,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.search.rest.AbstractPublishedDatasetResource;
-import org.obiba.mica.dataset.service.HarmonizationDatasetService;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,21 +47,22 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
   private static final Logger log = LoggerFactory.getLogger(PublishedHarmonizationDatasetResource.class);
 
   @Inject
-  private HarmonizationDatasetService datasetService;
+  private SubjectAclService subjectAclService;
 
   /**
-   * Get {@link org.obiba.mica.dataset.domain.HarmonizationDataset} from published index.
+   * Get {@link HarmonizationDataset} from published index.
    *
    * @return
    */
   @GET
   @Timed
   public Mica.DatasetDto get(@PathParam("id") String id) {
+    checkAccess(id);
     return getDatasetDto(HarmonizationDataset.class, id);
   }
 
   /**
-   * Get the {@link org.obiba.mica.dataset.domain.DatasetVariable}s from published index.
+   * Get the {@link DatasetVariable}s from published index.
    *
    * @param queryString - Elasticsearch query string 'field1: value AND field2: value'
    * @param from
@@ -76,12 +77,12 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
   public Mica.DatasetVariablesDto queryVariables(@PathParam("id") String id, @QueryParam("query") String queryString,
     @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit,
     @QueryParam("sort") String sort, @QueryParam("order") String order) {
-
+    checkAccess(id);
     return getDatasetVariableDtos(queryString, id, DatasetVariable.Type.Dataschema, from, limit, sort, order);
   }
 
   /**
-   * Get the {@link org.obiba.mica.dataset.domain.DatasetVariable}s from published index.
+   * Get the {@link DatasetVariable}s from published index.
    *
    * @param from
    * @param limit
@@ -95,7 +96,7 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
   public Mica.DatasetVariablesDto getVariables(@PathParam("id") String id,
     @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit,
     @QueryParam("sort") String sort, @QueryParam("order") String order) {
-
+    checkAccess(id);
     return getDatasetVariableDtos(id, DatasetVariable.Type.Dataschema, from, limit, sort, order);
   }
 
@@ -114,6 +115,7 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
   public Mica.DatasetVariablesHarmonizationsDto getVariableHarmonizations(@PathParam("id") String id,
     @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit,
     @QueryParam("sort") @DefaultValue("index") String sort, @QueryParam("order") @DefaultValue("asc") String order) {
+    checkAccess(id);
     Mica.DatasetVariablesHarmonizationsDto.Builder builder = Mica.DatasetVariablesHarmonizationsDto.newBuilder();
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, id);
     Mica.DatasetVariablesDto variablesDto = getDatasetVariableDtos(id, DatasetVariable.Type.Dataschema, from, limit,
@@ -134,7 +136,7 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
   public Response getVariableHarmonizationsAsCsv(@PathParam("id") String id,
     @QueryParam("sort") @DefaultValue("index") String sort, @QueryParam("order") @DefaultValue("asc") String order,
     @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
-
+    checkAccess(id);
     HarmonizationDataset dataset = getDataset(HarmonizationDataset.class, id);
     Mica.DatasetVariablesHarmonizationsDto harmonizationVariables = getVariableHarmonizations(id, 0, 999999, sort, order);
 
@@ -149,6 +151,7 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
   @Path("/variable/{variable}")
   public PublishedDataschemaDatasetVariableResource getVariable(@PathParam("id") String id,
     @PathParam("variable") String variable) {
+    checkAccess(id);
     PublishedDataschemaDatasetVariableResource resource = applicationContext
       .getBean(PublishedDataschemaDatasetVariableResource.class);
     resource.setDatasetId(id);
@@ -162,6 +165,7 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
   public Mica.DatasetVariablesDto getVariables(@PathParam("id") String id, @PathParam("study") String studyId,
     @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue("10") int limit,
     @QueryParam("sort") String sort, @QueryParam("order") String order) {
+    checkAccess(id);
     QueryBuilder query = FilteredQueryBuilder.newBuilder().must("datasetId", id).must("studyIds", studyId)
       .must("variableType", DatasetVariable.Type.Dataschema.toString().toLowerCase())
       .build(QueryBuilders.matchAllQuery());
@@ -173,6 +177,7 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
   public PublishedHarmonizedDatasetVariableResource getVariable(@PathParam("id") String id,
     @PathParam("study") String studyId, @PathParam("population") String populationId, @PathParam("dce") String dceId,
     @PathParam("variable") String variable) {
+    checkAccess(id);
     PublishedHarmonizedDatasetVariableResource resource = applicationContext
       .getBean(PublishedHarmonizedDatasetVariableResource.class);
     resource.setDatasetId(id);
@@ -186,4 +191,7 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
     return resource;
   }
 
+  private void checkAccess(String id) {
+    subjectAclService.checkAccessibility("/harmonization-dataset", id);
+  }
 }

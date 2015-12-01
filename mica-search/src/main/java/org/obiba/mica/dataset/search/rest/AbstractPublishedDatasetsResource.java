@@ -13,6 +13,8 @@ package org.obiba.mica.dataset.search.rest;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -27,7 +29,13 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.obiba.mica.dataset.domain.Dataset;
+import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
+import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.dataset.search.DatasetIndexer;
+import org.obiba.mica.dataset.service.HarmonizationDatasetService;
+import org.obiba.mica.dataset.service.StudyDatasetService;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
@@ -53,36 +61,45 @@ public abstract class AbstractPublishedDatasetsResource<T extends Dataset> {
   @Inject
   private ObjectMapper objectMapper;
 
+  @Inject
+  private MicaConfigService micaConfigService;
+
+  @Inject
+  private SubjectAclService subjectAclService;
+
+  @Inject
+  private StudyDatasetService studyDatasetService;
+
+  @Inject
+  private HarmonizationDatasetService harmonizationDatasetService;
+
   protected Mica.DatasetsDto getDatasetDtos(Class<T> clazz, int from, int limit, @Nullable String sort,
-      @Nullable String order, @Nullable String studyId, @Nullable String queryString) {
+    @Nullable String order, @Nullable String studyId, @Nullable String queryString) {
     QueryBuilder query = QueryBuilders.queryString(clazz.getSimpleName()).field("className");
-    if (queryString != null) {
+    if(queryString != null) {
       query = QueryBuilders.boolQuery().must(query).must(QueryBuilders.queryString(queryString));
-    }
-    FilterBuilder filter = null;
-    if(studyId != null) {
-      filter = FilterBuilders.termFilter(getStudyIdField(), studyId);
     }
 
     SearchRequestBuilder search = client.prepareSearch() //
-        .setIndices(DatasetIndexer.PUBLISHED_DATASET_INDEX) //
-        .setTypes(DatasetIndexer.DATASET_TYPE) //
-        .setQuery(query) //
-        .setPostFilter(filter) //
-        .setFrom(from) //
-        .setSize(limit);
+      .setIndices(DatasetIndexer.PUBLISHED_DATASET_INDEX) //
+      .setTypes(DatasetIndexer.DATASET_TYPE) //
+      .setQuery(query) //
+      .setPostFilter(getPostFilter(clazz, studyId)) //
+      .setFrom(from) //
+      .setSize(limit);
 
     if(sort != null) {
-      search.addSort(SortBuilders.fieldSort(sort).order(order == null ? SortOrder.ASC : SortOrder.valueOf(order.toUpperCase())));
+      search.addSort(
+        SortBuilders.fieldSort(sort).order(order == null ? SortOrder.ASC : SortOrder.valueOf(order.toUpperCase())));
     }
 
     log.debug("Request: {}", search.toString());
     SearchResponse response = search.execute().actionGet();
 
     Mica.DatasetsDto.Builder builder = Mica.DatasetsDto.newBuilder() //
-        .setTotal(Long.valueOf(response.getHits().getTotalHits()).intValue()) //
-        .setFrom(from) //
-        .setLimit(limit);
+      .setTotal(Long.valueOf(response.getHits().getTotalHits()).intValue()) //
+      .setFrom(from) //
+      .setLimit(limit);
     response.getHits().forEach(hit -> {
       InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
       try {
@@ -96,5 +113,31 @@ public abstract class AbstractPublishedDatasetsResource<T extends Dataset> {
   }
 
   protected abstract String getStudyIdField();
+
+  @Nullable
+  private FilterBuilder getPostFilter(Class<T> clazz, @Nullable String studyId) {
+    FilterBuilder filter = filterByAccessibility(clazz);
+
+    if(studyId != null) {
+      FilterBuilder filterByStudy = FilterBuilders.termFilter(getStudyIdField(), studyId);
+      filter = filter == null ? filterByStudy : FilterBuilders.boolFilter().must(filter).must(filterByStudy);
+    }
+
+    return filter;
+  }
+
+  protected FilterBuilder filterByAccessibility(Class<T> clazz) {
+    if(micaConfigService.getConfig().isOpenAccess()) return null;
+    List<String> ids;
+    if("StudyDataset".equals(clazz.getSimpleName()))
+      ids = studyDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
+        .filter(s -> subjectAclService.isAccessible("/study-dataset", s)).collect(Collectors.toList());
+    else ids = harmonizationDatasetService.findPublishedStates().stream().map(HarmonizationDatasetState::getId)
+      .filter(s -> subjectAclService.isAccessible("/harmonization-dataset", s)).collect(Collectors.toList());
+
+    return ids.isEmpty()
+      ? FilterBuilders.notFilter(FilterBuilders.existsFilter("id"))
+      : FilterBuilders.termFilter("id", ids);
+  }
 
 }

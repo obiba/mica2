@@ -38,6 +38,7 @@ import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.obiba.mica.core.service.PublishedDocumentService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,8 +56,12 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
   protected Client client;
 
   @Inject
-  private MicaConfigService micaConfigService;
+  protected MicaConfigService micaConfigService;
 
+  @Inject
+  protected SubjectAclService subjectAclService;
+
+  @Nullable
   public T findById(String id) {
     log.debug("findById {} {}", getClass(), id);
     List<T> results = findByIds(Arrays.asList(id));
@@ -82,23 +87,17 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
   @Override
   public Documents<T> find(int from, int limit, @Nullable String sort, @Nullable String order, @Nullable String studyId,
     @Nullable String queryString, @Nullable List<String> fields) {
-    if (!indexExists()) return new Documents<>(0, from, limit);
+    if(!indexExists()) return new Documents<>(0, from, limit);
 
-    final QueryStringQueryBuilder query = queryString != null ? QueryBuilders.queryString(queryString) : null;
+    QueryStringQueryBuilder query = queryString != null ? QueryBuilders.queryString(queryString) : null;
 
-    if(query != null && fields != null) fields.forEach(f -> query.field(f));
-
-    FilterBuilder filter = null;
-
-    if(studyId != null) {
-      filter = filterByStudy(studyId);
-    }
+    if(query != null && fields != null) fields.forEach(query::field);
 
     SearchRequestBuilder search = client.prepareSearch() //
       .setIndices(getIndexName()) //
       .setTypes(getType()) //
       .setQuery(query) //
-      .setPostFilter(filter) //
+      .setPostFilter(getPostFilter(studyId)) //
       .setFrom(from) //
       .setSize(limit);
 
@@ -148,6 +147,14 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
    */
   protected abstract String getType();
 
+  /**
+   * If accessibility check apply, make it a filter for the corresponding searched type.
+   *
+   * @return
+   */
+  @Nullable
+  protected abstract FilterBuilder filterByAccessibility();
+
   private List<T> executeQuery(QueryBuilder queryBuilder, int from, int size) {
     return executeQueryInternal(queryBuilder, from, size, null);
   }
@@ -165,6 +172,7 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
       .setTypes(getType()) //
       .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
       .setQuery(queryBuilder) //
+      .setPostFilter(filterByAccessibility()) //
       .setFrom(from) //
       .setSize(size);
 
@@ -211,6 +219,18 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
     IdsQueryBuilder builder = QueryBuilders.idsQuery(getType());
     ids.forEach(builder::addIds);
     return builder;
+  }
+
+  @Nullable
+  private FilterBuilder getPostFilter(@Nullable String studyId) {
+    FilterBuilder filter = filterByAccessibility();
+
+    if(studyId != null) {
+      FilterBuilder filterByStudy = filterByStudy(studyId);
+      filter = filter == null ? filterByStudy : FilterBuilders.boolFilter().must(filter).must(filterByStudy);
+    }
+
+    return filter;
   }
 
   protected FilterBuilder filterByStudy(String studyId) {

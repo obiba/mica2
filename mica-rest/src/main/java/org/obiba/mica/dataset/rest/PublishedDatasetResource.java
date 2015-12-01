@@ -14,6 +14,8 @@ import javax.inject.Inject;
 import javax.ws.rs.GET;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.mica.dataset.NoSuchDatasetException;
+import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -45,7 +47,9 @@ public class PublishedDatasetResource {
   @GET
   @Timed
   public Mica.DatasetDto get() {
-    return dtos.asDto(publishedDatasetService.findById(id));
+    Dataset dataset = publishedDatasetService.findById(id);
+    if (dataset == null) throw NoSuchDatasetException.withId(id);
+    return dtos.asDto(dataset);
   }
 
 }

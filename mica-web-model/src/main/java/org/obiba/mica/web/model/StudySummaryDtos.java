@@ -46,7 +46,7 @@ class StudySummaryDtos {
   public Mica.StudySummaryDto.Builder asDtoBuilder(@NotNull Study study) {
     StudyState studyState = studyService.getEntityState(study.getId());
 
-    if (studyState.isPublished()) {
+    if(studyState.isPublished()) {
       return asDtoBuilder(study, studyState.isPublished(), datasetVariableService.getCountByStudyId(study.getId()));
     }
 
@@ -78,8 +78,8 @@ class StudySummaryDtos {
 
     if(populations != null) {
       populations.stream() //
-        .filter(population ->
-          population.getSelectionCriteria() != null && population.getSelectionCriteria().getCountriesIso() != null)
+        .filter(population -> population.getSelectionCriteria() != null &&
+          population.getSelectionCriteria().getCountriesIso() != null)
         .forEach(population -> countries.addAll(population.getSelectionCriteria().getCountriesIso()));
 
       List<String> dataSources = Lists.newArrayList();
@@ -131,7 +131,7 @@ class StudySummaryDtos {
 
     if(studyState.isPublished()) {
       stateBuilder.setPublishedTag(studyState.getPublishedTag());
-      if (studyState.hasPublishedId()) {
+      if(studyState.hasPublishedId()) {
         stateBuilder.setPublishedId(studyState.getPublishedId());
       }
       if(studyState.hasPublicationDate()) {
@@ -163,8 +163,8 @@ class StudySummaryDtos {
     StudyState studyState = studyService.getEntityState(studyId);
 
     if(studyState.isPublished()) {
-      return asDtoBuilder(publishedStudyService.findById(studyId), true,
-        datasetVariableService.getCountByStudyId(studyId)).build();
+      Study study = publishedStudyService.findById(studyId);
+      if(study != null) return asDtoBuilder(study, true, datasetVariableService.getCountByStudyId(studyId)).build();
     }
 
     return asDto(studyState);

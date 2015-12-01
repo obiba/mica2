@@ -26,11 +26,18 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.OrFilterBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.obiba.mica.core.domain.AttributeKey;
 import org.obiba.mica.dataset.domain.DatasetVariable;
+import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
+import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.dataset.search.VariableIndexer;
+import org.obiba.mica.dataset.service.HarmonizationDatasetService;
+import org.obiba.mica.dataset.service.StudyDatasetService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.DatasetIdProvider;
@@ -95,6 +102,12 @@ public class VariableQuery extends AbstractDocumentQuery {
   @Inject
   private ObjectMapper objectMapper;
 
+  @Inject
+  private StudyDatasetService studyDatasetService;
+
+  @Inject
+  private HarmonizationDatasetService harmonizationDatasetService;
+
   private DatasetIdProvider datasetIdProvider;
 
   private Collection<String> taxonomyFilter = Collections.emptyList();
@@ -107,6 +120,24 @@ public class VariableQuery extends AbstractDocumentQuery {
   @Override
   public String getSearchType() {
     return VariableIndexer.VARIABLE_TYPE;
+  }
+
+  @Override
+  public FilterBuilder getAccessibilityFilter() {
+    if(micaConfigService.getConfig().isOpenAccess()) return null;
+    List<String> ids = studyDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
+      .filter(s -> subjectAclService.isAccessible("/study-dataset", s))
+      .collect(Collectors.toList());
+    ids.addAll(harmonizationDatasetService.findPublishedStates().stream().map(HarmonizationDatasetState::getId)
+      .filter(s -> subjectAclService.isAccessible("/harmonization-dataset", s))
+      .collect(Collectors.toList()));
+
+    if(ids.isEmpty()) return FilterBuilders.notFilter(FilterBuilders.existsFilter("id"));
+
+    OrFilterBuilder orFilter = FilterBuilders.orFilter();
+    ids.stream().forEach(id -> orFilter.add(FilterBuilders.termFilter("datasetId", id)));
+
+    return orFilter;
   }
 
   @Override

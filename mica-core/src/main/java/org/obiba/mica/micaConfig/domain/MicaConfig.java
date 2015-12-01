@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -56,6 +55,8 @@ public class MicaConfig extends AbstractAuditableDocument {
   private Version micaVersion;
 
   private int privacyThreshold = 0;
+
+  private boolean openAccess = true;
 
   public String getName() {
     return name;
@@ -153,5 +154,13 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public void setRoles(List<String> roles) {
     this.roles = roles == null ? Lists.newArrayList() : Lists.newArrayList(Sets.newLinkedHashSet(roles));
+  }
+
+  public void setOpenAccess(boolean openAccess) {
+    this.openAccess = openAccess;
+  }
+
+  public boolean isOpenAccess() {
+    return openAccess;
   }
 }

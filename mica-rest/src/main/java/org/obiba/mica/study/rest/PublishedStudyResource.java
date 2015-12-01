@@ -13,6 +13,7 @@ import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.rest.FileResource;
 import org.obiba.mica.file.service.FileSystemService;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
@@ -44,6 +45,9 @@ public class PublishedStudyResource {
   @Inject
   private Dtos dtos;
 
+  @Inject
+  private SubjectAclService subjectAclService;
+
   private String id;
 
   public void setId(String id) {
@@ -53,11 +57,13 @@ public class PublishedStudyResource {
   @GET
   @Timed
   public Mica.StudyDto get() {
+    checkAccess();
     return dtos.asDto(getStudy());
   }
 
   @Path("/file/{fileId}")
   public FileResource study(@PathParam("fileId") String fileId) {
+    checkAccess();
     FileResource fileResource = applicationContext.getBean(FileResource.class);
     Study study = getStudy();
     if(study.hasLogo() && study.getLogo().getId().equals(fileId)) {
@@ -71,6 +77,10 @@ public class PublishedStudyResource {
     }
 
     return fileResource;
+  }
+
+  private void checkAccess() {
+    subjectAclService.checkAccessibility("/study", id);
   }
 
   private Study getStudy() {

@@ -343,6 +343,9 @@
       "private": "Private Key",
       "public": "Public Key"
     },
+    "access": "Access",
+    "openAccess": "Open access",
+    "openAccess-help": "Access to published documents is opened to everyone.",
     "roles": "Roles",
     "roles-help": "List of available roles for studies and networks.",
     "add-role": "Add Role",

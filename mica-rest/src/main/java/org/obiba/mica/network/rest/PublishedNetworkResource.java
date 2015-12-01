@@ -22,6 +22,7 @@ import org.obiba.mica.file.rest.FileResource;
 import org.obiba.mica.network.NoSuchNetworkException;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.service.PublishedNetworkService;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.ApplicationContext;
@@ -47,6 +48,9 @@ public class PublishedNetworkResource {
   @Inject
   private Dtos dtos;
 
+  @Inject
+  private SubjectAclService subjectAclService;
+
   private String id;
 
   public void setId(String id) {
@@ -56,11 +60,13 @@ public class PublishedNetworkResource {
   @GET
   @Timed
   public Mica.NetworkDto get() {
+    checkAccess();
     return dtos.asDto(getNetwork());
   }
 
   @Path("/file/{fileId}")
   public FileResource study(@PathParam("fileId") String fileId) {
+    checkAccess();
     FileResource fileResource = applicationContext.getBean(FileResource.class);
     Network network = getNetwork();
 
@@ -69,6 +75,10 @@ public class PublishedNetworkResource {
     fileResource.setAttachment(network.getLogo());
 
     return fileResource;
+  }
+
+  private void checkAccess() {
+    subjectAclService.checkAccessibility("/network", id);
   }
 
   private Network getNetwork() {

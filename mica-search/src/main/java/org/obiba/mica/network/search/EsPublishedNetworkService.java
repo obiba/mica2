@@ -14,28 +14,21 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-import org.elasticsearch.action.search.SearchRequestBuilder;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
-import org.elasticsearch.search.sort.SortBuilders;
-import org.elasticsearch.search.sort.SortOrder;
 import org.obiba.mica.network.domain.Network;
+import org.obiba.mica.network.domain.NetworkState;
+import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.search.AbstractPublishedDocumentService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
 
 @Service
 public class EsPublishedNetworkService extends AbstractPublishedDocumentService<Network>
@@ -43,6 +36,14 @@ public class EsPublishedNetworkService extends AbstractPublishedDocumentService<
 
   @Inject
   private ObjectMapper objectMapper;
+
+  @Inject
+  private NetworkService networkService;
+
+  @Override
+  public NetworkService getNetworkService() {
+    return networkService;
+  }
 
   @Override
   protected Network processHit(SearchHit hit) throws IOException {
@@ -58,5 +59,16 @@ public class EsPublishedNetworkService extends AbstractPublishedDocumentService<
   @Override
   protected String getType() {
     return NetworkIndexer.NETWORK_TYPE;
+  }
+
+  @Override
+  protected FilterBuilder filterByAccessibility() {
+    if(micaConfigService.getConfig().isOpenAccess()) return null;
+    List<String> ids = networkService.findPublishedStates().stream().map(NetworkState::getId)
+      .filter(s -> subjectAclService.isAccessible("/network", s))
+      .collect(Collectors.toList());
+    return ids.isEmpty()
+      ? FilterBuilders.notFilter(FilterBuilders.existsFilter("id"))
+      : FilterBuilders.idsFilter().ids(ids.toArray(new String[ids.size()]));
   }
 }

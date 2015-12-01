@@ -13,4 +13,8 @@ package org.obiba.mica.network.service;
 import org.obiba.mica.core.service.PublishedDocumentService;
 import org.obiba.mica.network.domain.Network;
 
-public interface PublishedNetworkService extends PublishedDocumentService<Network> {}
+public interface PublishedNetworkService extends PublishedDocumentService<Network> {
+
+  NetworkService getNetworkService();
+
+}

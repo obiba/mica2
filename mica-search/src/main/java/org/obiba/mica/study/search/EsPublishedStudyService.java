@@ -14,28 +14,35 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 
+import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
-import org.obiba.mica.core.service.PublishedDocumentService;
 import org.obiba.mica.search.AbstractPublishedDocumentService;
 import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.service.PublishedStudyService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.obiba.mica.study.service.StudyService;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
 
 @Service
 public class EsPublishedStudyService extends AbstractPublishedDocumentService<Study> implements PublishedStudyService {
 
   @Inject
   private ObjectMapper objectMapper;
+
+  @Inject
+  private StudyService studyService;
+
+  @Override
+  public StudyService getStudyService() {
+    return studyService;
+  }
 
   @Override
   protected Study processHit(SearchHit hit) throws IOException {
@@ -53,5 +60,15 @@ public class EsPublishedStudyService extends AbstractPublishedDocumentService<St
     return StudyIndexer.STUDY_TYPE;
   }
 
+  @Override
+  protected FilterBuilder filterByAccessibility() {
+    if(micaConfigService.getConfig().isOpenAccess()) return null;
+    List<String> ids = studyService.findPublishedStates().stream().map(StudyState::getId)
+      .filter(s -> subjectAclService.isAccessible("/study", s))
+      .collect(Collectors.toList());
+    return ids.isEmpty()
+      ? FilterBuilders.notFilter(FilterBuilders.existsFilter("id"))
+      : FilterBuilders.idsFilter().ids(ids.toArray(new String[ids.size()]));
+  }
 
 }
