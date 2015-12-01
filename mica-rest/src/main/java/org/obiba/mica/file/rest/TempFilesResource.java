@@ -49,8 +49,9 @@ public class TempFilesResource {
     FileItem fileItem = getUploadedFile(request);
     if (fileItem == null) throw new FileUploadException("Failed to extract file item from request");
     TempFile tempFile = tempFileService.addTempFile(fileItem.getName(), fileItem.getInputStream());
-    //TODO make this work
-    URI location = uriInfo.getBaseUriBuilder().path(TempFilesResource.class, "file").build(tempFile.getId());
+    URI location = uriInfo.getBaseUriBuilder().path(TempFilesResource.class).path(TempFilesResource.class, "file")
+      .build(tempFile.getId());
+
     return Response.created(location).build();
   }
 
