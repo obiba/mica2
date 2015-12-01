@@ -153,7 +153,9 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
    * @return
    */
   @Nullable
-  protected abstract FilterBuilder filterByAccessibility();
+  protected FilterBuilder filterByAccessibility() {
+    return null;
+  }
 
   private List<T> executeQuery(QueryBuilder queryBuilder, int from, int size) {
     return executeQueryInternal(queryBuilder, from, size, null);
