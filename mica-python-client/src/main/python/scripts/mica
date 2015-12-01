@@ -2,6 +2,7 @@
 #
 import argparse
 
+import mica.file
 import mica.rest
 import mica.import_zip
 
@@ -37,6 +38,8 @@ add_subcommand('import-zip', 'Import data from zip file(s) that have been extrac
                mica.import_zip.add_arguments, mica.import_zip.do_command)
 add_subcommand('rest', 'Request directly the Mica REST API, for advanced users.', mica.rest.add_arguments,
                mica.rest.do_command)
+add_subcommand('file', 'Mica file system actions, for advanced users.', mica.file.add_arguments,
+               mica.file.do_command)
 
 # Execute selected command
 args = parser.parse_args()
