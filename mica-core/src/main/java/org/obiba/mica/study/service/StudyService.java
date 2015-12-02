@@ -65,9 +65,6 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
   private static final Logger log = LoggerFactory.getLogger(StudyService.class);
 
   @Inject
-  private PublishedStudyService publishedStudyService;
-
-  @Inject
   private StudyStateRepository studyStateRepository;
 
   @Inject
@@ -124,7 +121,7 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
       return defaultState;
     });
 
-    if(!study.isNew()) ensureGitRepository(studyState);
+    if (!study.isNew()) ensureGitRepository(studyState);
 
     studyState.setName(study.getName());
     studyState.incrementRevisionsAhead();
@@ -152,19 +149,9 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
   @NotNull
   public Study findStudy(@NotNull String id) throws NoSuchEntityException {
     // ensure study exists
-    StudyState studyState = getEntityState(id);
-    Study study = null;
-
-    if(studyState.isPublished()) {
-      study = publishedStudyService.findById(id);
-      if(study == null) {
-        // correct the discrepancy between state and the published index
-        study = studyRepository.findOne(id);
-        eventBus.post(new StudyPublishedEvent(study, getCurrentUsername()));
-      }
-    }
-
-    return study == null ? studyRepository.findOne(id) : study;
+    Study study = studyRepository.findOne(id);
+    if (study == null) throw NoSuchEntityException.withId(Study.class, id);
+    return study;
   }
 
   public boolean isPublished(@NotNull String id) throws NoSuchEntityException {
@@ -192,12 +179,12 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
     eventBus.post(new IndexStudiesEvent(publishedStudies, findAllDraftStudies()));
   }
 
-  @Caching(evict = { @CacheEvict(value = "aggregations-metadata", allEntries = true),
-    @CacheEvict(value = { "studies-draft", "studies-published" }, key = "#id") })
+  @Caching(evict = {@CacheEvict(value = "aggregations-metadata", allEntries = true),
+    @CacheEvict(value = {"studies-draft", "studies-published"}, key = "#id")})
   public void delete(@NotNull String id) {
     Study study = studyRepository.findOne(id);
 
-    if(study == null) {
+    if (study == null) {
       throw NoSuchEntityException.withId(Study.class, id);
     }
 
@@ -210,14 +197,14 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
     eventBus.post(new StudyDeletedEvent(study));
   }
 
-  @Caching(evict = { @CacheEvict(value = "aggregations-metadata", allEntries = true),
-    @CacheEvict(value = { "studies-draft", "studies-published" }, key = "#id") })
+  @Caching(evict = {@CacheEvict(value = "aggregations-metadata", allEntries = true),
+    @CacheEvict(value = {"studies-draft", "studies-published"}, key = "#id")})
   public void publish(@NotNull String id, boolean publish) throws NoSuchEntityException {
     publish(id, publish, PublishCascadingScope.NONE);
   }
 
-  @Caching(evict = { @CacheEvict(value = "aggregations-metadata", allEntries = true),
-    @CacheEvict(value = { "studies-draft", "studies-published" }, key = "#id") })
+  @Caching(evict = {@CacheEvict(value = "aggregations-metadata", allEntries = true),
+    @CacheEvict(value = {"studies-draft", "studies-published"}, key = "#id")})
   public void publish(@NotNull String id, boolean publish, PublishCascadingScope cascadingScope) throws NoSuchEntityException {
     log.info("Publish study: {}", id);
     Study study = studyRepository.findOne(id);
@@ -237,10 +224,10 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
 
   private List<Person> replaceExistingPersons(List<Person> persons) {
     ImmutableList.copyOf(persons).forEach(c -> {
-      if(c.getId() == null && !Strings.isNullOrEmpty(c.getEmail())) {
+      if (c.getId() == null && !Strings.isNullOrEmpty(c.getEmail())) {
         Person person = personRepository.findOneByEmail(c.getEmail());
 
-        if(person != null) {
+        if (person != null) {
           int idx = persons.indexOf(c);
           persons.remove(c);
           persons.add(idx, person);
@@ -259,7 +246,7 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
     List<String> networkIds = networkRepository.findByStudyIds(study.getId()).stream().map(n -> n.getId())
       .collect(toList());
 
-    if(!harmonizationDatasetsIds.isEmpty() || !studyDatasetIds.isEmpty() || !networkIds.isEmpty()) {
+    if (!harmonizationDatasetsIds.isEmpty() || !studyDatasetIds.isEmpty() || !networkIds.isEmpty()) {
       Map<String, List<String>> conflicts = new HashMap() {{
         put("harmonizationDataset", harmonizationDatasetsIds);
         put("studyDataset", studyDatasetIds);
@@ -279,18 +266,18 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
 
   @Nullable
   private String getNextId(LocalizedString suggested) {
-    if(suggested == null) return null;
+    if (suggested == null) return null;
     String prefix = suggested.asString().toLowerCase();
-    if(Strings.isNullOrEmpty(prefix)) return null;
+    if (Strings.isNullOrEmpty(prefix)) return null;
     String next = prefix;
     try {
       getEntityState(next);
-      for(int i = 1; i <= 1000; i++) {
+      for (int i = 1; i <= 1000; i++) {
         next = prefix + "-" + i;
         getEntityState(next);
       }
       return null;
-    } catch(NoSuchEntityException e) {
+    } catch (NoSuchEntityException e) {
       return next;
     }
   }
@@ -299,7 +286,6 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
   protected EntityStateRepository<StudyState> getEntityStateRepository() {
     return studyStateRepository;
   }
-
 
 
   @Override
@@ -320,7 +306,7 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
 
     try {
       restoredStudy = objectMapper.readValue(inputStream, Study.class);
-    } catch(IOException e) {
+    } catch (IOException e) {
       throw Throwables.propagate(e);
     }
 
@@ -334,11 +320,11 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
   }
 
   private void ensureAttachmentState(Attachment a, String path) {
-    if(!fileSystemService.hasAttachmentState(a.getPath(), a.getName(), false)) {
+    if (!fileSystemService.hasAttachmentState(a.getPath(), a.getName(), false)) {
       Attachment existingAttachment = attachmentRepository.findOne(a.getId());
 
-      if(existingAttachment != null) {
-        if(!fileSystemService.hasAttachmentState(existingAttachment.getPath(), existingAttachment.getName(), false)) {
+      if (existingAttachment != null) {
+        if (!fileSystemService.hasAttachmentState(existingAttachment.getPath(), existingAttachment.getName(), false)) {
           existingAttachment.setPath(path);
           fileSystemService.reinstate(existingAttachment);
         }
@@ -349,7 +335,7 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
   }
 
   private void ensureAcronym(@NotNull Study study) {
-    if(study.getAcronym() == null || study.getAcronym().isEmpty()) {
+    if (study.getAcronym() == null || study.getAcronym().isEmpty()) {
       study.setAcronym(study.getName().asAcronym());
     }
   }
