@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -134,12 +135,8 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
       investigators.clear();
     }
 
-    return memberships.get(Membership.INVESTIGATOR).stream().map(m -> m.getPerson())
+    return memberships.getOrDefault(Membership.INVESTIGATOR, Lists.newArrayList()).stream().map(m -> m.getPerson())
       .collect(toList());
-  }
-
-  public void addInvestigator(@NotNull Person investigator) {
-    memberships.get(Membership.INVESTIGATOR).add(new Membership(investigator, Membership.INVESTIGATOR));
   }
 
   @JsonProperty
@@ -159,12 +156,8 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
       contacts.clear();
     }
 
-    return memberships.get(Membership.CONTACT).stream().map(m -> m.getPerson())
+    return memberships.getOrDefault(Membership.CONTACT, Lists.newArrayList()).stream().map(m -> m.getPerson())
       .collect(toList());
-  }
-
-  public void addContact(Person contact) {
-    memberships.get(Membership.CONTACT).add(new Membership(contact, Membership.CONTACT));
   }
 
   @Override
@@ -381,6 +374,10 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
     cleanContacts(investigators);
   }
 
+  public Set<String> membershipRoles() {
+    return this.memberships.keySet();
+  }
+
   private void cleanContacts(List<Person> contactList) {
     if(contactList == null) return;
     contactList.forEach(Person::cleanPerson);
@@ -474,6 +471,15 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
         persons.add(idx, existing.get(existing.indexOf(p)));
       }
     });
+  }
+
+  public List<Person> removeRole(String role) {
+    List<Membership> members = this.memberships.getOrDefault(role, Lists.newArrayList());
+    this.memberships.remove(role);
+    return members.stream().map(m -> {
+      m.getPerson().removeStudy(this, role);
+      return m.getPerson();
+    }).collect(toList());
   }
 
   public static class StudyMethods implements Serializable {

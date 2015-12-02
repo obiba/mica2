@@ -29,6 +29,8 @@ import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
+import org.obiba.mica.micaConfig.event.MicaConfigUpdatedEvent;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.study.ConstraintException;
 import org.obiba.mica.study.StudyRepository;
@@ -47,14 +49,19 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 
 import static java.util.stream.Collectors.toList;
 
@@ -94,6 +101,9 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
   @Inject
   private EventBus eventBus;
 
+  @Inject
+  private MicaConfigService micaConfigService;
+
   @CacheEvict(value = "studies-draft", key = "#study.id")
   public void save(@NotNull @Valid Study study) {
     saveInternal(study, null);
@@ -115,6 +125,11 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
     study.setContacts(replaceExistingPersons(study.getContacts()));
     study.setInvestigators(replaceExistingPersons(study.getInvestigators()));
 
+    ImmutableSet<String> invalidRoles = ImmutableSet
+      .copyOf(Sets.difference(study.membershipRoles(), Sets.newHashSet(micaConfigService.getConfig().getRoles())));
+
+    invalidRoles.forEach(r -> study.removeRole(r));
+
     StudyState studyState = findEntityState(study, () -> {
       StudyState defaultState = new StudyState();
       defaultState.setName(study.getName());
@@ -129,6 +144,7 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
 
     study.setName(studyState.getName());
     study.setLastModifiedDate(DateTime.now());
+
     studyRepository.saveWithReferences(study);
 
     gitService.save(study, comment);
@@ -218,6 +234,40 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
     }
   }
 
+  @Override
+  public String getTypeName() {
+    return "study";
+  }
+
+  @Override
+  public Study getFromCommit(@NotNull Study study, @NotNull String commitId) {
+    String studyBlob = gitService.getBlob(study, commitId, Study.class);
+    InputStream inputStream = new ByteArrayInputStream(studyBlob.getBytes(StandardCharsets.UTF_8));
+    Study restoredStudy;
+
+    try {
+      restoredStudy = objectMapper.readValue(inputStream, Study.class);
+    } catch(IOException e) {
+      throw Throwables.propagate(e);
+    }
+
+    restoredStudy.getAttachments().stream()
+      .forEach(a -> ensureAttachmentState(a, String.format("/study/%s", restoredStudy.getId())));
+    restoredStudy.getPopulations().stream().forEach(p -> p.getDataCollectionEvents().stream().forEach(
+      d -> d.getAttachments().stream().forEach(a -> ensureAttachmentState(a, String
+        .format("/study/%s/population/%s/data-collection-event/%s", restoredStudy.getId(), p.getId(), d.getId())))));
+
+    return restoredStudy;
+  }
+
+  @Async
+  @Subscribe
+  public void micaConfigUpdated(MicaConfigUpdatedEvent event) {
+    log.info("Mica config updated. Removing roles.");
+    if(!event.getRemovedRoles().isEmpty())
+      findAllDraftStudies().forEach(s -> removeRoles(s, event.getRemovedRoles()));
+  }
+
   //
   // Private methods
   //
@@ -287,36 +337,19 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
     return studyStateRepository;
   }
 
-
   @Override
   protected Class<Study> getType() {
     return Study.class;
   }
 
-  @Override
-  public String getTypeName() {
-    return "study";
-  }
+  private void removeRoles(@NotNull Study study, Iterable<String> roles) {
+    save(study, String.format("Removed roles: %s", Joiner.on(", ").join(roles)));
+    StudyState state = findStateById(study.getId());
 
-  @Override
-  public Study getFromCommit(@NotNull Study study, @NotNull String commitId) {
-    String studyBlob = gitService.getBlob(study, commitId, Study.class);
-    InputStream inputStream = new ByteArrayInputStream(studyBlob.getBytes(StandardCharsets.UTF_8));
-    Study restoredStudy;
-
-    try {
-      restoredStudy = objectMapper.readValue(inputStream, Study.class);
-    } catch (IOException e) {
-      throw Throwables.propagate(e);
+    if(state.isPublished()) {
+      publishState(study.getId());
+      eventBus.post(new StudyPublishedEvent(study, getCurrentUsername(), PublishCascadingScope.NONE));
     }
-
-    restoredStudy.getAttachments().stream()
-      .forEach(a -> ensureAttachmentState(a, String.format("/study/%s", restoredStudy.getId())));
-    restoredStudy.getPopulations().stream().forEach(p -> p.getDataCollectionEvents().stream().forEach(
-      d -> d.getAttachments().stream().forEach(a -> ensureAttachmentState(a, String
-        .format("/study/%s/population/%s/data-collection-event/%s", restoredStudy.getId(), p.getId(), d.getId())))));
-
-    return restoredStudy;
   }
 
   private void ensureAttachmentState(Attachment a, String path) {

@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.domain.Person;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.springframework.stereotype.Component;
@@ -45,6 +46,9 @@ class StudyDtos {
   @Inject
   private PermissionsDtos permissionsDtos;
 
+  @Inject
+  private MicaConfigService micaConfigService;
+
   @NotNull
   Mica.StudyDto asDto(@NotNull Study study, boolean asDraft) {
     Mica.StudyDto.Builder builder = Mica.StudyDto.newBuilder();
@@ -61,54 +65,70 @@ class StudyDtos {
 
     if(study.getStart() != null) builder.setStartYear(study.getStart());
     if(study.getEnd() != null) builder.setEndYear(study.getEnd());
+
     if(study.getAccess() != null) {
       study.getAccess().forEach(builder::addAccess);
     }
+
     if(study.getOtherAccess() != null) builder.addAllOtherAccess(localizedStringDtos.asDto(study.getOtherAccess()));
     if(study.getMarkerPaper() != null) builder.setMarkerPaper(study.getMarkerPaper());
     if(study.getPubmedId() != null) builder.setPubmedId(study.getPubmedId());
 
     if(study.getAcronym() != null) builder.addAllAcronym(localizedStringDtos.asDto(study.getAcronym()));
-    if(study.getInvestigators() != null) {
+
+    List<String> roles = micaConfigService.getConfig().getRoles();
+
+    if(study.getInvestigators() != null && roles.contains(Membership.INVESTIGATOR)) {
       builder.addAllInvestigators(
         study.getInvestigators().stream().map(p -> personDtos.asDto(p, asDraft)).collect(toList()));
     }
-    if(study.getContacts() != null) {
+
+    if(study.getContacts() != null && roles.contains(Membership.CONTACT)) {
       builder
         .addAllContacts(study.getContacts().stream().map(p -> personDtos.asDto(p, asDraft)).collect(toList()));
     }
 
     if(study.getMemberships() != null) {
-      List<Mica.MembershipsDto> memberships = study.getMemberships().entrySet().stream().map(
-        e -> Mica.MembershipsDto.newBuilder().setRole(e.getKey())
-          .addAllMembers(e.getValue().stream().map(m -> personDtos.asDto(m.getPerson(), asDraft)).collect(toList()))
-          .build()).collect(toList());
+      List<Mica.MembershipsDto> memberships = study.getMemberships().entrySet().stream()
+        .filter(e -> roles.contains(e.getKey())).map(e -> //
+          Mica.MembershipsDto.newBuilder() //
+            .setRole(e.getKey()).addAllMembers(e.getValue().stream().map(m -> //
+            personDtos.asDto(m.getPerson(), asDraft)).collect(toList())).build()) //
+        .collect(toList());
 
       builder.addAllMemberships(memberships);
     }
 
     if(!isNullOrEmpty(study.getWebsite())) builder.setWebsite(study.getWebsite());
     if(!isNullOrEmpty(study.getOpal())) builder.setOpal(study.getOpal());
+
     if(study.getSpecificAuthorization() != null) {
       builder.setSpecificAuthorization(AuthorizationDtos.asDto(study.getSpecificAuthorization()));
     }
+
     if(study.getMaelstromAuthorization() != null) {
       builder.setMaelstromAuthorization(AuthorizationDtos.asDto(study.getMaelstromAuthorization()));
     }
+
     if(study.getMethods() != null) builder.setMethods(asDto(study.getMethods()));
+
     if(study.getNumberOfParticipants() != null) {
       builder.setNumberOfParticipants(numberOfParticipantsDtos.asDto(study.getNumberOfParticipants()));
     }
+
     if(study.getInfo() != null) {
       builder.addAllInfo(localizedStringDtos.asDto(study.getInfo()));
     }
+
     if(study.getPopulations() != null) {
       study.getPopulations().forEach(population -> builder.addPopulations(populationDtos.asDto(population)));
     }
+
     if(study.getAttributes() != null) {
       study.getAttributes().asAttributeList()
         .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
     }
+
     return builder.build();
   }
 

@@ -66,9 +66,7 @@ class MicaConfigDtos {
     config.setOpal(dto.getOpal());
     if (dto.hasPrivacyThreshold()) config.setPrivacyThreshold(dto.getPrivacyThreshold());
 
-    if(dto.getRolesCount() > 0) {
-      config.setRoles(dto.getRolesList());
-    }
+    config.setRoles(dto.getRolesList());
 
     return config;
   }

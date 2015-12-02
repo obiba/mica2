@@ -488,7 +488,7 @@ mica.network
 
       $scope.$on(CONTACT_EVENTS.contactEditionCanceled, function (event, network) {
         if (network === $scope.network) {
-          $scope.network = DraftNetworkResource.get({id: $scope.network.id});
+          $scope.network = DraftNetworkResource.get({id: $scope.network.id}, initializeNetwork);
         }
       });
 

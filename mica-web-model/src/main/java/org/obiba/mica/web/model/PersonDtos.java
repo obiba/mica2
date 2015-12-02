@@ -1,9 +1,12 @@
 package org.obiba.mica.web.model;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.obiba.mica.core.domain.Address;
 import org.obiba.mica.core.domain.Person;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.domain.NetworkState;
 import org.obiba.mica.network.service.NetworkService;
@@ -39,6 +42,9 @@ class PersonDtos {
   @Inject
   private SubjectAclService subjectAclService;
 
+  @Inject
+  private MicaConfigService micaConfigService;
+
   Mica.PersonDto asDto(Person person, boolean asDraft) {
     Mica.PersonDto.Builder builder = Mica.PersonDto.newBuilder().setLastName(person.getLastName());
     if(!isNullOrEmpty(person.getId())) builder.setId(person.getId());
@@ -48,7 +54,12 @@ class PersonDtos {
     if(!isNullOrEmpty(person.getEmail())) builder.setEmail(person.getEmail());
     if(!isNullOrEmpty(person.getPhone())) builder.setPhone(person.getPhone());
     if(person.getInstitution() != null) builder.setInstitution(asDto(person.getInstitution()));
+
+    List<String> roles = micaConfigService.getConfig().getRoles();
+
     builder.addAllStudyMemberships(person.getStudyMemberships().stream().filter(m -> {
+      if(!roles.contains(m.getRole())) return false;
+
       if(asDraft) {
         return subjectAclService.isPermitted("/draft/study", "VIEW", m.getParentId());
       } else {
@@ -57,6 +68,8 @@ class PersonDtos {
       }
     }).map(m -> asStudyMembershipDto(m, asDraft)).collect(toList()));
     builder.addAllNetworkMemberships(person.getNetworkMemberships().stream().filter(m -> {
+      if(!roles.contains(m.getRole())) return false;
+
       if(asDraft) {
         return subjectAclService.isPermitted("/draft/network", "VIEW", m.getParentId());
       } else {

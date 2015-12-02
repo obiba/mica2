@@ -11,6 +11,7 @@ import javax.validation.constraints.NotNull;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.domain.Person;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.domain.NetworkState;
 import org.obiba.mica.network.service.NetworkService;
@@ -70,6 +71,9 @@ class NetworkDtos {
   @Inject
   private SubjectAclService subjectAclService;
 
+  @Inject
+  private MicaConfigService micaConfigService;
+
   @NotNull
   Mica.NetworkDto.Builder asDtoBuilder(@NotNull Network network, boolean asDraft) {
     Mica.NetworkDto.Builder builder = Mica.NetworkDto.newBuilder();
@@ -88,19 +92,21 @@ class NetworkDtos {
           entityStateDtos.asDto(networkState).setPermissions(permissionsDtos.asDto(network)).build());
     }
 
-    if(network.getInvestigators() != null) {
+    List<String> roles = micaConfigService.getConfig().getRoles();
+
+    if(network.getInvestigators() != null && roles.contains(Membership.INVESTIGATOR)) {
       builder.addAllInvestigators(network.getInvestigators().stream().map(p -> personDtos.asDto(p, asDraft))
         .collect(Collectors.<PersonDto>toList()));
     }
 
-    if(network.getContacts() != null) {
+    if(network.getContacts() != null && roles.contains(Membership.CONTACT)) {
       builder.addAllContacts(
         network.getContacts().stream().map(p -> personDtos.asDto(p, asDraft)).collect(Collectors.<PersonDto>toList()));
     }
 
     if(network.getMemberships() != null) {
-      List<Mica.MembershipsDto> memberships = network.getMemberships().entrySet().stream().map(
-        e -> Mica.MembershipsDto.newBuilder().setRole(e.getKey())
+      List<Mica.MembershipsDto> memberships = network.getMemberships().entrySet().stream()
+        .filter(e -> roles.contains(e.getKey())).map(e -> Mica.MembershipsDto.newBuilder().setRole(e.getKey())
           .addAllMembers(e.getValue().stream().map(m -> personDtos.asDto(m.getPerson(), asDraft)).collect(toList()))
           .build()).collect(toList());
 

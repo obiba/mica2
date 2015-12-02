@@ -247,9 +247,7 @@ mica.study
 
           $scope.study.$save(function () {
               $scope.studySummary = StudyStateResource.get({id: $scope.study.id});
-              $scope.study = DraftStudyResource.get({id: $scope.study.id}, function onSuccess(study) {
-                initializeStudy(study);
-              });
+              fetchStudy($scope.study.id);
             },
             function (response) {
               $log.error('Error on study save:', response);
@@ -357,7 +355,7 @@ mica.study
 
       $scope.$on(CONTACT_EVENTS.contactEditionCanceled, function (event, study) {
         if (study === $scope.study) {
-          $scope.study = DraftStudyResource.get({id: $scope.study.id});
+          fetchStudy(study.id);
         }
       });
 

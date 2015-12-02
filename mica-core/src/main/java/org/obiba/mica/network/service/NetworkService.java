@@ -20,12 +20,15 @@ import org.joda.time.DateTime;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.contact.event.PersonUpdatedEvent;
 import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
+import org.obiba.mica.micaConfig.event.MicaConfigUpdatedEvent;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.network.NetworkStateRepository;
 import org.obiba.mica.network.NoSuchNetworkException;
@@ -36,20 +39,32 @@ import org.obiba.mica.network.event.NetworkDeletedEvent;
 import org.obiba.mica.network.event.NetworkPublishedEvent;
 import org.obiba.mica.network.event.NetworkUnpublishedEvent;
 import org.obiba.mica.network.event.NetworkUpdatedEvent;
+import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.domain.StudyState;
+import org.obiba.mica.study.event.StudyPublishedEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 
 import static java.util.stream.Collectors.toList;
 
 @Service
 @Validated
 public class NetworkService extends AbstractGitPersistableService<NetworkState, Network> {
+
+  private static final Logger log = LoggerFactory.getLogger(NetworkService.class);
 
   @Inject
   private NetworkRepository networkRepository;
@@ -65,6 +80,9 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
 
   @Inject
   private FileStoreService fileStoreService;
+
+  @Inject
+  private MicaConfigService micaConfigService;
 
   /**
    * Create or update provided {@link Network}.
@@ -94,6 +112,13 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
     if (saved.getLogo() != null && saved.getLogo().isJustUploaded()) {
       fileStoreService.save(saved.getLogo().getId());
       saved.getLogo().setJustUploaded(false);
+    }
+
+    ImmutableSet<String> invalidRoles = ImmutableSet
+      .copyOf(Sets.difference(saved.membershipRoles(), Sets.newHashSet(micaConfigService.getConfig().getRoles())));
+
+    for(String r : invalidRoles) {
+      saved.removeRole(r);
     }
 
     NetworkState networkState = findEntityState(network, () -> {
@@ -286,5 +311,23 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
   @Override
   public Network findDraft(@NotNull String id) throws NoSuchEntityException {
     return findById(id);
+  }
+
+  @Async
+  @Subscribe
+  public void micaConfigUpdated(MicaConfigUpdatedEvent event) {
+    log.info("Mica config updated. Removing deleted roles from networks.");
+    if(!event.getRemovedRoles().isEmpty())
+      findAllNetworks().forEach(s -> removeRoles(s, event.getRemovedRoles()));
+  }
+
+  private void removeRoles(@NotNull Network network, Iterable<String> roles) {
+    save(network, String.format("Removed roles: %s", Joiner.on(", ").join(roles)));
+    NetworkState state = findStateById(network.getId());
+
+    if(state.isPublished()) {
+      publishState(network.getId());
+      eventBus.post(new NetworkPublishedEvent(network, getCurrentUsername(), PublishCascadingScope.NONE));
+    }
   }
 }
