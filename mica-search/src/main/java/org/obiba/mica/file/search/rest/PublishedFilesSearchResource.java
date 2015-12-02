@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 OBiBa. All rights reserved.
+ * Copyright (c) 2015 OBiBa. All rights reserved.
  *
  * This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0.
@@ -43,6 +43,7 @@ public class PublishedFilesSearchResource extends AbstractFileSearchResource {
     PublishedDocumentService.Documents<AttachmentState> states = esAttachmentService
       .find(from, limit, sort, order, null, queryString);
 
-    return states.getList().stream().map(state -> dtos.asFileDto(state, true, false)).collect(Collectors.toList());
+    return states.getList().stream().filter(s -> subjectAclService.isAccessible("/file", s.getFullPath()))
+      .map(state -> dtos.asFileDto(state, true, false)).collect(Collectors.toList());
   }
 }
