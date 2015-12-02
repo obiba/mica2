@@ -53,10 +53,7 @@ class PersonDtos {
         return subjectAclService.isPermitted("/draft/study", "VIEW", m.getParentId());
       } else {
         StudyState state = publishedStudyService.getStudyService().findStateById(m.getParentId());
-
-        if(state != null) return state.isPublished();
-
-        return false;
+        return state != null && state.isPublished() && subjectAclService.isAccessible("/study", m.getParentId());
       }
     }).map(m -> asStudyMembershipDto(m, asDraft)).collect(toList()));
     builder.addAllNetworkMemberships(person.getNetworkMemberships().stream().filter(m -> {
@@ -64,10 +61,7 @@ class PersonDtos {
         return subjectAclService.isPermitted("/draft/network", "VIEW", m.getParentId());
       } else {
         NetworkState state = networkService.findStateById(m.getParentId());
-
-        if(state != null) return state.isPublished();
-
-        return false;
+        return state != null && state.isPublished() && subjectAclService.isAccessible("/network", m.getParentId());
       }
     }).map(m -> asNetworkMembershipDto(m, asDraft)).collect(toList()));
 
@@ -106,7 +100,7 @@ class PersonDtos {
       Study study = asDraft
         ? publishedStudyService.getStudyService().findStudy(membership.getParentId())
         : publishedStudyService.findById(membership.getParentId());
-      if (study != null) {
+      if(study != null) {
         builder.addAllParentAcronym(localizedStringDtos.asDto(study.getAcronym()));
         builder.addAllParentName(localizedStringDtos.asDto(study.getName()));
       }
@@ -124,7 +118,7 @@ class PersonDtos {
       Network network = asDraft
         ? networkService.findById(membership.getParentId())
         : publishedNetworkService.findById(membership.getParentId());
-      if (network != null) {
+      if(network != null) {
         builder.addAllParentAcronym(localizedStringDtos.asDto(network.getAcronym()));
         builder.addAllParentName(localizedStringDtos.asDto(network.getName()));
       }
