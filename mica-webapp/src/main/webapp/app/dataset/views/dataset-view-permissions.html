@@ -1,5 +1,7 @@
 <div ng-controller="DatasetPermissionsController">
   <div ng-include="'app/dataset/views/dataset-view-header.html'" ng-init="tabName='permissions'"></div>
-
-  <permissions-table permissions="permissions" on-add="addPermission" on-load="loadPermissions" on-delete="deletePermission"></permissions-table>
+  <h3 translate>permissions</h3>
+  <permissions-table permissions="permissions" accesses="accesses" open-access="micaConfig.openAccess"
+    on-add="addPermission" on-load="loadPermissions" on-delete="deletePermission"
+    on-access-add="addAccess" on-access-load="loadAccesses" on-access-delete="deleteAccess"></permissions-table>
 </div>

@@ -190,6 +190,14 @@ public class DraftHarmonizationDatasetResource extends
     return subjectAclResource;
   }
 
+  @Path("/accesses")
+  public SubjectAclResource accesses() {
+    SubjectAclResource subjectAclResource = applicationContext.getBean(SubjectAclResource.class);
+    subjectAclResource.setResourceInstance("/harmonization-dataset", id);
+    subjectAclResource.setFileResourceInstance("/file", "/harmonization-dataset/" + id);
+    return subjectAclResource;
+  }
+
   private HarmonizationDataset getDataset() {
     return datasetService.findById(id);
   }

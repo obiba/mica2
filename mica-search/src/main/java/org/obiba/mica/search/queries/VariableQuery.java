@@ -213,8 +213,10 @@ public class VariableQuery extends AbstractDocumentQuery {
           studyMap.put(studyId, study);
         }
 
-        builder.addAllStudyName(dtos.asDto(study.getName()));
-        builder.addAllStudyAcronym(dtos.asDto(study.getAcronym()));
+        if (study != null) {
+          builder.addAllStudyName(dtos.asDto(study.getName()));
+          builder.addAllStudyAcronym(dtos.asDto(study.getAcronym()));
+        }
       } catch(NoSuchStudyException e) {
       }
     }

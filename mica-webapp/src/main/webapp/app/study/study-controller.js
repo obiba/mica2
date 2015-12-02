@@ -452,8 +452,10 @@ mica.study
       };
     }])
 
-  .controller('StudyPermissionsController', ['$scope','$routeParams', 'DraftStudyPermissionsResource', function ($scope, $routeParams, DraftStudyPermissionsResource) {
+  .controller('StudyPermissionsController', ['$scope','$routeParams', 'DraftStudyPermissionsResource', 'DraftStudyAccessesResource',
+  function ($scope, $routeParams, DraftStudyPermissionsResource, DraftStudyAccessesResource) {
     $scope.permissions = [];
+    $scope.accesses = [];
 
     $scope.loadPermissions = function () {
       $scope.permissions = DraftStudyPermissionsResource.query({id: $routeParams.id});
@@ -466,6 +468,19 @@ mica.study
 
     $scope.addPermission = function (permission) {
       return DraftStudyPermissionsResource.save({id: $routeParams.id}, permission);
+    };
+
+    $scope.loadAccesses = function () {
+      $scope.accesses = DraftStudyAccessesResource.query({id: $routeParams.id});
+      return $scope.accesses;
+    };
+
+    $scope.deleteAccess = function (access) {
+      return DraftStudyAccessesResource.delete({id: $routeParams.id}, access);
+    };
+
+    $scope.addAccess = function (access) {
+      return DraftStudyAccessesResource.save({id: $routeParams.id}, access);
     };
   }])
 

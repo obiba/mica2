@@ -44,6 +44,20 @@ mica.study
       });
     }])
 
+  .factory('DraftStudyAccessesResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/draft/study/:id/accesses', {}, {
+        'save': {
+          method: 'PUT',
+          params: {id: '@id', type: '@type', principal: '@principal'},
+          errorHandler: true
+        },
+        'delete': {method: 'DELETE', params: {id: '@id', type: '@type', principal: '@principal'}, errorHandler: true},
+        'get': {method: 'GET'},
+        'query': {method: 'GET', params: {id: '@id'}, isArray: true}
+      });
+    }])
+
   .factory('DraftStudyPublicationResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/study/:id/_publish', {id: '@id'}, {

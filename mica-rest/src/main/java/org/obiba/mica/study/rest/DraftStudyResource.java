@@ -152,6 +152,14 @@ public class DraftStudyResource extends AbstractGitPersistableResource<StudyStat
     return subjectAclResource;
   }
 
+  @Path("/accesses")
+  public SubjectAclResource accesses() {
+    SubjectAclResource subjectAclResource = applicationContext.getBean(SubjectAclResource.class);
+    subjectAclResource.setResourceInstance("/study", id);
+    subjectAclResource.setFileResourceInstance("/file", "/study/" + id);
+    return subjectAclResource;
+  }
+
   @Override
   protected String getId() {
     return id;

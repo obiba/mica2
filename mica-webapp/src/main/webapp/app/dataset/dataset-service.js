@@ -122,6 +122,20 @@ mica.dataset
       });
     }])
 
+  .factory('DraftDatasetAccessesResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/draft/:datasetType/:id/accesses', {}, {
+        'save': {
+          method: 'PUT',
+          params: {id: '@id', type: '@type', principal: '@principal'},
+          errorHandler: true
+        },
+        'delete': {method: 'DELETE', params: {id: '@id', type: '@type', principal: '@principal'}, errorHandler: true},
+        'get': {method: 'GET'},
+        'query': {method: 'GET', params: {id: '@id'}, isArray: true}
+      });
+    }])
+
   .factory('DraftDatasetRestoreRevisionResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/:type/:id/commit/:commitId/restore', {}, {

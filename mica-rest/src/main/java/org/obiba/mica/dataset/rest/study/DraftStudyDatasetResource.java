@@ -170,6 +170,14 @@ public class DraftStudyDatasetResource extends
     return subjectAclResource;
   }
 
+  @Path("/accesses")
+  public SubjectAclResource accesses() {
+    SubjectAclResource subjectAclResource = applicationContext.getBean(SubjectAclResource.class);
+    subjectAclResource.setResourceInstance("/study-dataset", id);
+    subjectAclResource.setFileResourceInstance("/file", "/study-dataset/" + id);
+    return subjectAclResource;
+  }
+
   private StudyDataset getDataset() {
     return datasetService.findById(id);
   }

@@ -480,8 +480,10 @@ mica.dataset
       $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, onRestore);
     }])
 
-  .controller('DatasetPermissionsController', ['$scope', '$routeParams', 'DraftDatasetPermissionsResource', function ($scope, $routeParams, DraftDatasetPermissionsResource) {
+  .controller('DatasetPermissionsController', ['$scope', '$routeParams', 'DraftDatasetPermissionsResource', 'DraftDatasetAccessesResource',
+    function ($scope, $routeParams, DraftDatasetPermissionsResource, DraftDatasetAccessesResource) {
     $scope.permissions = [];
+    $scope.accesses = [];
 
     $scope.loadPermissions = function () {
       $scope.permissions = DraftDatasetPermissionsResource.query({id: $routeParams.id, datasetType: $scope.type});
@@ -494,6 +496,19 @@ mica.dataset
 
     $scope.deletePermission = function(permission) {
       return DraftDatasetPermissionsResource.delete({id: $routeParams.id, datasetType: $scope.type}, permission);
+    };
+
+    $scope.loadAccesses = function () {
+      $scope.accesses = DraftDatasetAccessesResource.query({id: $routeParams.id, datasetType: $scope.type});
+      return $scope.accesses;
+    };
+
+    $scope.deleteAccess = function (access) {
+      return DraftDatasetAccessesResource.delete({id: $routeParams.id, datasetType: $scope.type}, access);
+    };
+
+    $scope.addAccess = function (access) {
+      return DraftDatasetAccessesResource.save({id: $routeParams.id, datasetType: $scope.type}, access);
     };
   }])
 
