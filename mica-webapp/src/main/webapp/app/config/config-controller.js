@@ -174,43 +174,12 @@ mica.config
           }, function () {
           });
       };
-
-      $scope.editRole = function(index) {
-        $modal
-          .open({
-            templateUrl: 'app/config/views/config-roles-modal-form.html',
-            controller: 'RoleModalController',
-            resolve: {
-              role: function () {
-                return $scope.micaConfig.roles[index];
-              },
-              micaConfig: function() {
-                return $scope.micaConfig;
-              }
-            }
-          })
-          .result.then(function (editedRole) {
-            $scope.micaConfig.roles[index] = editedRole;
-
-            $scope.micaConfig.$save(
-              function () {
-                $route.reload();
-              },
-              function (response) {
-                FormServerValidation.error(response, $scope.form);
-              });
-          }, function () {
-          });
-      };
     }])
 
   .controller('ImportKeyPairModalController', ['$scope', '$location', '$modalInstance', 'isOpalCredential',
     function($scope, $location, $modalInstance, isOpalCredential) {
-
       $scope.isOpalCredential = isOpalCredential;
-
-      $scope.credential = { opalUrl: '' };
-
+      $scope.credential = {opalUrl: ''};
       $scope.keyForm = {
         privateImport: '',
         publicImport: '',
@@ -279,7 +248,7 @@ mica.config
       $log.debug('Modal Ctrl scope:', $scope.role);
 
       $scope.save = function (form) {
-        form.id.$setValidity('text', micaConfig.roles.indexOf($scope.role.id) < 0 || $scope.role.id === oldRole);
+        form.id.$setValidity('text', !micaConfig.roles || micaConfig.roles.indexOf($scope.role.id) < 0 || $scope.role.id === oldRole);
 
         if (form.$valid) {
           $modalInstance.close($scope.role.id);

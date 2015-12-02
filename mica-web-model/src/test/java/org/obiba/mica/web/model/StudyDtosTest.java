@@ -2,6 +2,8 @@ package org.obiba.mica.web.model;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
@@ -18,6 +20,7 @@ import org.obiba.mica.config.StudyTaxonomy;
 import org.obiba.mica.core.domain.Address;
 import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.Authorization;
+import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.domain.Timestamped;
 import org.obiba.mica.core.repository.AttachmentRepository;
@@ -59,6 +62,7 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
+import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 
 import static org.mockito.Matchers.anyString;
@@ -143,8 +147,12 @@ public class StudyDtosTest {
     study.setWebsite("http://www.clsa-elcv.ca");
 
     Person person = createPerson();
-    study.addContact(person);
-    study.addInvestigator(person);
+    study.setMemberships(new HashMap<String, List<Membership>>() {
+      {
+        put(Membership.CONTACT, Lists.newArrayList(new Membership(person, Membership.CONTACT)));
+        put(Membership.INVESTIGATOR, Lists.newArrayList(new Membership(person, Membership.INVESTIGATOR)));
+      }
+    });
 
     study.setStart(2002);
     study.setEnd(2050);

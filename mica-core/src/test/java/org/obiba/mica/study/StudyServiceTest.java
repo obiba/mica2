@@ -19,8 +19,11 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.obiba.core.util.FileUtil;
 import org.obiba.git.command.GitCommandHandler;
+import org.obiba.mica.config.AggregationsConfiguration;
 import org.obiba.mica.config.JsonConfiguration;
 import org.obiba.mica.config.MongoDbConfiguration;
+import org.obiba.mica.config.StudyTaxonomy;
+import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.AttachmentStateRepository;
@@ -29,6 +32,8 @@ import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.impl.GridFsService;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.file.service.TempFileService;
+import org.obiba.mica.micaConfig.domain.MicaConfig;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.study.domain.Study;
@@ -63,6 +68,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.obiba.mica.assertj.Assertions.assertThat;
 import static org.obiba.mica.core.domain.LocalizedString.en;
 
@@ -375,6 +381,26 @@ public class StudyServiceTest {
     @Bean
     public GridFsOperations gridFsOperations() {
       return mock(GridFsOperations.class);
+    }
+
+    @Bean
+    public MicaConfigService micaConfigService() {
+      MicaConfigService micaConfigService = mock(MicaConfigService.class);
+      MicaConfig micaConfig = new MicaConfig();
+      micaConfig.setRoles(Lists.newArrayList(Membership.CONTACT, Membership.INVESTIGATOR));
+      when(micaConfigService.getConfig()).thenReturn(micaConfig);
+
+      return micaConfigService;
+    }
+
+    @Bean
+    public AggregationsConfiguration aggregationsConfiguration() {
+      return mock(AggregationsConfiguration.class);
+    }
+
+    @Bean
+    public StudyTaxonomy studyTaxonomy() {
+      return mock(StudyTaxonomy.class);
     }
 
     @Bean
