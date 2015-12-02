@@ -51,7 +51,9 @@ public abstract class AbstractFileSystemResource {
 
   protected Attachment doGetAttachment(String path, @Nullable String version) {
     String basePath = normalizePath(path);
-    if(!isPublishedFileSystem()) subjectAclService.checkPermission("/draft/file", "VIEW", basePath);
+    if(isPublishedFileSystem()) subjectAclService.checkAccessibility("/file", basePath);
+    else subjectAclService.checkPermission("/draft/file", "VIEW", basePath);
+
     if(path.endsWith("/")) throw new IllegalArgumentException("Folder download is not supported");
 
     Pair<String, String> pathName = FileSystemService.extractPathName(basePath);
@@ -72,7 +74,9 @@ public abstract class AbstractFileSystemResource {
 
   protected Mica.FileDto doGetFile(String path) {
     String basePath = normalizePath(path);
-    if(!isPublishedFileSystem()) subjectAclService.checkPermission("/draft/file", "VIEW", basePath);
+    if(isPublishedFileSystem()) subjectAclService.checkAccessibility("/file", basePath);
+    else subjectAclService.checkPermission("/draft/file", "VIEW", basePath);
+
     if(path.endsWith("/")) return getFolderDto(basePath);
 
     try {
