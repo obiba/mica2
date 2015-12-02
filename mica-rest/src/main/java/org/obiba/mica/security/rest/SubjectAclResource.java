@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.QueryParam;
@@ -65,14 +66,16 @@ public class SubjectAclResource {
 
   @PUT
   public Response update(@QueryParam("principal") String principal, @QueryParam("type") String typeStr,
-    @QueryParam("role") String role) {
+    @QueryParam("role") @DefaultValue("READER") String role) {
     subjectAclService.checkPermission(resource, "EDIT", instance);
     SubjectAcl.Type type = SubjectAcl.Type.valueOf(typeStr.toUpperCase());
-    String actions = PermissionsUtils.asActions(role.toUpperCase());
+    String actions = PermissionsUtils.asActions(isDraft() ? role.toUpperCase() : "READER");
     subjectAclService.addSubjectPermission(type, principal, resource, actions, instance);
-    String[] parts = fileInstance.split("/");
     subjectAclService.addSubjectPermission(type, principal, fileResource, actions, fileInstance);
     return Response.noContent().build();
   }
 
+  private boolean isDraft() {
+    return resource.startsWith("/draft");
+  }
 }

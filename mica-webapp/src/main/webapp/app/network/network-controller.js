@@ -568,8 +568,10 @@ mica.network
 
     }])
 
-  .controller('NetworkPermissionsController', ['$scope','$routeParams', 'DraftNetworkPermissionsResource', function ($scope, $routeParams, DraftNetworkPermissionsResource) {
+  .controller('NetworkPermissionsController', ['$scope','$routeParams', 'DraftNetworkPermissionsResource', 'DraftNetworkAccessesResource',
+    function ($scope, $routeParams, DraftNetworkPermissionsResource, DraftNetworkAccessesResource) {
     $scope.permissions = [];
+    $scope.accesses = [];
 
     $scope.loadPermissions = function () {
       $scope.permissions = DraftNetworkPermissionsResource.query({id: $routeParams.id});
@@ -582,5 +584,18 @@ mica.network
 
     $scope.addPermission = function (permission) {
       return DraftNetworkPermissionsResource.save({id: $routeParams.id}, permission);
+    };
+
+    $scope.loadAccesses = function () {
+      $scope.accesses = DraftNetworkAccessesResource.query({id: $routeParams.id});
+      return $scope.accesses;
+    };
+
+    $scope.deleteAccess = function (access) {
+      return DraftNetworkAccessesResource.delete({id: $routeParams.id}, access);
+    };
+
+    $scope.addAccess = function (access) {
+      return DraftNetworkAccessesResource.save({id: $routeParams.id}, access);
     };
   }]);

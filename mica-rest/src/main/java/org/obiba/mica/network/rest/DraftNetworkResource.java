@@ -152,6 +152,14 @@ public class DraftNetworkResource extends AbstractGitPersistableResource<Network
     return subjectAclResource;
   }
 
+  @Path("/accesses")
+  public SubjectAclResource accesses() {
+    SubjectAclResource subjectAclResource = applicationContext.getBean(SubjectAclResource.class);
+    subjectAclResource.setResourceInstance("/network", id);
+    subjectAclResource.setFileResourceInstance("/file", "/network/" + id);
+    return subjectAclResource;
+  }
+
   @Override
   protected String getId() {
     return id;

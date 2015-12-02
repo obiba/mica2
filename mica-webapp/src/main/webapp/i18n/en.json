@@ -717,10 +717,13 @@
   "add-query": "Add to search query",
   "permissions": "Permissions",
   "permission": {
+    "help": "Grant permission to Read, Edit or Review the current draft.",
     "none": "No permissions.",
     "label": "permission",
     "principal": "Name",
     "principal-help": "User or group unique name.",
+    "everyone": "Everyone",
+    "any-group": "Any group",
     "add": "Add Permission",
     "edit-user": "Edit User Permission",
     "edit-group": "Edit Group Permission",
@@ -737,6 +740,17 @@
       "message": "Are you sure you want to delete the permission of {{arg0}} {{arg1}}"
     }
   },
+  "access": {
+    "help": "Grant Read access to the publication.",
+    "none": "No accesses.",
+    "add": "Add Access",
+    "delete-dialog": {
+      "title": "Delete Access",
+      "message": "Are you sure you want to delete the access of {{arg0}} {{arg1}}"
+    }
+  },
+  "draft": "Draft",
+  "published": "Published",
   "role": "Role",
   "files": "Files",
   "select-all": "Select all",
