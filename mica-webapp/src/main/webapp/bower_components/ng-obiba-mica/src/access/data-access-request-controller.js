@@ -184,7 +184,8 @@ angular.module('obiba.mica.access')
       });
 
       $scope.getDownloadHref = function(attachments, id) {
-        return '/ws/data-access-request/' + $scope.dataAccessRequest.id + '/attachments/' + id + '/_download';
+        return ngObibaMicaUrl.getUrl('DataAccessRequestAttachmentDownloadResource')
+          .replace(':id', $scope.dataAccessRequest.id).replace(':attachmentId', id);
       };
 
       $scope.actions = DataAccessRequestService.actions;
