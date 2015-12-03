@@ -17,10 +17,9 @@ import javax.inject.Inject;
 import javax.ws.rs.Path;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.mica.core.service.PublishedDocumentService;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.search.EsPublishedFileService;
-import org.obiba.mica.core.service.PublishedDocumentService;
-import org.obiba.mica.file.search.FileFilterHelper;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -50,7 +49,6 @@ public class PublishedFilesSearchResource extends AbstractFileSearchResource {
 
   private boolean isAccessible(AttachmentState state) {
     String path = state.getFullPath();
-    // bypass check if access was already done in search filter
-    return FileFilterHelper.appliesToFile(path) || subjectAclService.isAccessible("/draft/file", path);
+    return subjectAclService.isAccessible("/file", path);
   }
 }

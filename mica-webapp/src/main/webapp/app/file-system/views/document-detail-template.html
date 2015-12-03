@@ -53,10 +53,17 @@
       </div>
       <div ng-if="!micaConfig.openAccess">
         <i class="fa fa-unlock" ng-if="data.accesses.length>0"></i>
-        <span ng-repeat="access in data.accesses"
+        <div ng-repeat="access in data.accesses"
           class="label {{access.type === 'USER' ? 'label-success' : 'label-warning'}} hoffset1"
-          style="{{access.principal === '*' ? 'font-style: italic' : ''}}"
-          title="{{'permission.' + access.type.toLowerCase() | translate}}">{{access.principal === '*' ? (access.type === 'USER' ? 'permission.anyone' : 'permission.any-group' | translate) : access.principal}}</span>
+          title="{{'permission.' + access.type.toLowerCase() | translate}}">
+          <em ng-if="access.principal === '*'" translate>
+            {{access.type === 'USER' ? 'permission.anyone' : 'permission.any-group'}}
+          </em>
+          <span ng-if="access.principal !== '*'">
+            {{access.principal}}
+          </span>
+          <a href ng-if="data.document.permissions.delete" ng-click="deleteAccess(data.document, access)">x</a>
+        </div>
       </div>
     </div>
 

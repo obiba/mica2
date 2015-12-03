@@ -486,12 +486,15 @@ mica.fileSystem
       };
 
       $scope.loadAccesses = function (document) {
-        $scope.data.accesses = DraftFileAccessResource.query({path: document.path});
-        return $scope.data.accesses;
+        DraftFileAccessResource.query({path: document.path}, function onSuccess(response) {
+          $scope.data.accesses = response;
+        });
       };
 
       $scope.deleteAccess = function (document, access) {
-        return DraftFileAccessResource.delete({path: document.path}, access);
+        DraftFileAccessResource.delete({path: document.path}, access, function onSuccess() {
+          $scope.loadAccesses(document);
+        });
       };
 
       $scope.addAccess = function (document, access) {
