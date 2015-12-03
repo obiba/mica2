@@ -722,7 +722,7 @@
     "label": "permission",
     "principal": "Name",
     "principal-help": "User or group unique name.",
-    "everyone": "Everyone",
+    "anyone": "Anyone",
     "any-group": "Any group",
     "add": "Add Permission",
     "edit-user": "Edit User Permission",

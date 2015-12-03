@@ -148,12 +148,12 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
   protected abstract String getType();
 
   /**
-   * If accessibility check apply, make it a filter for the corresponding searched type.
+   * If access check apply, make it a filter for the corresponding searched type.
    *
    * @return
    */
   @Nullable
-  protected FilterBuilder filterByAccessibility() {
+  protected FilterBuilder filterByAccess() {
     return null;
   }
 
@@ -174,7 +174,7 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
       .setTypes(getType()) //
       .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
       .setQuery(queryBuilder) //
-      .setPostFilter(filterByAccessibility()) //
+      .setPostFilter(filterByAccess()) //
       .setFrom(from) //
       .setSize(size);
 
@@ -225,7 +225,7 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
 
   @Nullable
   private FilterBuilder getPostFilter(@Nullable String studyId) {
-    FilterBuilder filter = filterByAccessibility();
+    FilterBuilder filter = filterByAccess();
 
     if(studyId != null) {
       FilterBuilder filterByStudy = filterByStudy(studyId);
