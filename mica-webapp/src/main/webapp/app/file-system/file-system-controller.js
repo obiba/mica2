@@ -148,9 +148,11 @@ mica.fileSystem
               $scope.data.document.children = [];
             }
 
-            DraftFileAccessResource.query({path: $scope.data.document.path}, function onSuccess(response) {
-              $scope.data.accesses = response;
-            });
+            if ($scope.data.document.permissions.edit) {
+              DraftFileAccessResource.query({path: $scope.data.document.path}, function onSuccess(response) {
+                $scope.data.accesses = response;
+              });
+            }
 
             $scope.data.breadcrumbs = BreadcrumbHelper.toArray(path);
             $scope.data.isFile = FileSystemService.isFile(response);
