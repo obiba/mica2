@@ -17,6 +17,6 @@ mica.study = angular.module('mica.study', [
   'ui.select',
   'ui',
   'pascalprecht.translate',
-  'mica.attachment',
+  'obiba.mica.attachment',
   'mica.revisions',
 ]);

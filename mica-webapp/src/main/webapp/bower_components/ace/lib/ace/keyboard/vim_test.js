@@ -23,7 +23,7 @@ el.style.width = "500px";
 el.style.height = "300px";
 document.body.appendChild(el);
 
-if (!el.getBoundingClientRect)
+if (window.name == "nodejs")
     return console.log("Skipping test: This test only runs in the browser");
 
 var renderer = new VirtualRenderer(el);
@@ -34,6 +34,7 @@ editor.session.setMode(new JavaScriptMode());
 function CodeMirror(place, opts) {
     if (opts.value != null)
         editor.session.setValue(opts.value);
+    editor.setOption("indentedSoftWrap", false);
     editor.setOption("wrap", opts.lineWrapping);
     editor.setOption("useSoftTabs", !opts.indentWithTabs);
     editor.setKeyboardHandler(null);
@@ -58,6 +59,7 @@ function CodeMirror(place, opts) {
     cm.setSize(500, 300);
     return cm;
 }
+CodeMirror.defineMode = function() {}
 for (var key in vim.CodeMirror)
     CodeMirror[key] = vim.CodeMirror[key];
 var editor;
@@ -90,6 +92,7 @@ var eqPos = assert.deepEqual;
 var eq = assert.equal;
 var is = assert.ok;
 
+CodeMirror.Vim.suppressErrorLogging = true;
 
 var code = '' +
 ' wOrd1 (#%\n' +
@@ -291,16 +294,14 @@ function testVim(name, run, opts, expectedFail) {
     CodeMirror.Vim.resetVimGlobalState_();
     var successful = false;
     var savedOpenNotification = cm.openNotification;
+    var savedOpenDialog = cm.openDialog;
     try {
       run(cm, vim, helpers);
       successful = true;
     } finally {
       cm.openNotification = savedOpenNotification;
-      // if (!successful || verbose) {
-      //   place.style.visibility = "visible";
-      // } else {
-      //   place.removeChild(cm.getWrapperElement());
-      // }
+      cm.openDialog = savedOpenDialog;
+      // ace_patch
     }
   }, expectedFail);
 };
@@ -595,7 +596,7 @@ testVim('{', function(cm, vim, helpers) {
   helpers.doKeys('6', '{');
   helpers.assertCursorAt(0, 0);
 }, { value: 'a\n\nb\nc\n\nd' });
-testVim('paragraph motions', function(cm, vim, helpers) {
+testVim('paragraph_motions', function(cm, vim, helpers) {
   cm.setCursor(10, 0);
   helpers.doKeys('{');
   helpers.assertCursorAt(4, 0);
@@ -1075,6 +1076,17 @@ testVim('cc_multiply_repeat', function(cm, vim, helpers) {
   is(register.linewise);
   eq('vim-insert', cm.getOption('keyMap'));
 });
+testVim('ct', function(cm, vim, helpers) {
+  cm.setCursor(0, 9);
+  helpers.doKeys('c', 't', 'w');
+  eq('  word1  word3', cm.getValue());
+  helpers.doKeys('<Esc>', 'c', '|');
+  eq(' word3', cm.getValue());
+  helpers.assertCursorAt(0, 0);
+  helpers.doKeys('<Esc>', '2', 'u', 'w', 'h');
+  helpers.doKeys('c', '2', 'g', 'e');
+  eq('  wordword3', cm.getValue());
+}, { value: '  word1  word2  word3'});
 testVim('cc_should_not_append_to_document', function(cm, vim, helpers) {
   var expectedLineCount = cm.lineCount();
   cm.setCursor(cm.lastLine(), 0);
@@ -1975,7 +1987,11 @@ testVim('visual_block_move_to_eol', function(cm, vim, helpers) {
   cm.setCursor(0, 0);
   helpers.doKeys('<C-v>', 'G', '$');
   var selections = cm.getSelections().join();
-  eq("123,45,6", selections);
+  eq('123,45,6', selections);
+  // Checks that with cursor at Infinity, finding words backwards still works.
+  helpers.doKeys('2', 'k', 'b');
+  selections = cm.getSelections().join();
+  eq('1', selections);
 }, {value: '123\n45\n6'});
 testVim('visual_block_different_line_lengths', function(cm, vim, helpers) {
   // test the block selection with lines of different length
@@ -2536,6 +2552,13 @@ testVim('macro_multislash_search', function(cm, vim, helpers) {
   helpers.doKeys('@', 'd');
   helpers.assertCursorAt(0, 15);
 }, { value: 'one line of text to rule them all.'});
+testVim('macro_last_ex_command_register', function (cm, vim, helpers) {
+  cm.setCursor(0, 0);
+  helpers.doEx('s/a/b');
+  helpers.doKeys('2', '@', ':');
+  eq('bbbaa', cm.getValue());
+  helpers.assertCursorAt(0, 2);
+}, { value: 'aaaaa'});
 testVim('macro_parens', function(cm, vim, helpers) {
   cm.setCursor(0, 0);
   helpers.doKeys('q', 'z', 'i');
@@ -2803,6 +2826,44 @@ testVim('exCommand_history', function(cm, vim, helpers) {
   onKeyDown({keyCode: keyCodes.Up}, input, close);
   eq(input, 'sort');
 }, {value: ''});
+testVim('search_clear', function(cm, vim, helpers) {
+  var onKeyDown;
+  var input = '';
+  var keyCodes = {
+    Ctrl: 17,
+    u: 85
+  };
+  cm.openDialog = function(template, callback, options) {
+    onKeyDown = options.onKeyDown;
+  };
+  var close = function(newVal) {
+    if (typeof newVal == 'string') input = newVal;
+  }
+  helpers.doKeys('/');
+  input = 'foo';
+  onKeyDown({keyCode: keyCodes.Ctrl}, input, close);
+  onKeyDown({keyCode: keyCodes.u, ctrlKey: true}, input, close);
+  eq(input, '');
+});
+testVim('exCommand_clear', function(cm, vim, helpers) {
+  var onKeyDown;
+  var input = '';
+  var keyCodes = {
+    Ctrl: 17,
+    u: 85
+  };
+  cm.openDialog = function(template, callback, options) {
+    onKeyDown = options.onKeyDown;
+  };
+  var close = function(newVal) {
+    if (typeof newVal == 'string') input = newVal;
+  }
+  helpers.doKeys(':');
+  input = 'foo';
+  onKeyDown({keyCode: keyCodes.Ctrl}, input, close);
+  onKeyDown({keyCode: keyCodes.u, ctrlKey: true}, input, close);
+  eq(input, '');
+});
 testVim('.', function(cm, vim, helpers) {
   cm.setCursor(0, 0);
   helpers.doKeys('2', 'd', 'w');
@@ -3109,7 +3170,7 @@ testVim('HML', function(cm, vim, helpers) {
   var textHeight = cm.defaultTextHeight();
   cm.setSize(600, lines*textHeight);
   cm.setCursor(120, 0);
-  cm.refresh(); //ace!
+  cm.refresh(); //ace_patch
   helpers.doKeys('H');
   helpers.assertCursorAt(86, 2);
   helpers.doKeys('L');
@@ -3222,12 +3283,12 @@ testVim('scrollMotion', function(cm, vim, helpers){
   is(prevScrollInfo.top < cm.getScrollInfo().top);
   // Jump to the end of the sandbox.
   cm.setCursor(1000, 0);
-  cm.refresh(); //ace!
+  cm.refresh(); //ace_patch
   prevCursor = cm.getCursor();
   // ctrl-e at the bottom of the file should have no effect.
   helpers.doKeys('<C-e>');
   eq(prevCursor.line, cm.getCursor().line);
-  cm.refresh(); //ace!
+  cm.refresh(); //ace_patch
   prevScrollInfo = cm.getScrollInfo();
   helpers.doKeys('<C-y>');
   eq(prevCursor.line - 1, cm.getCursor().line, "Y");
@@ -3590,6 +3651,10 @@ testSubstitute('ex_substitute_multibackslash_replacement', {
   value: 'one,two \n three,four',
   expectedValue: 'one\\\\\\\\two \n three\\\\\\\\four', // 2*8 backslashes.
   expr: '%s/,/\\\\\\\\\\\\\\\\/g'}); // 16 backslashes.
+testSubstitute('ex_substitute_newline_replacement', {
+  value: 'one,two \n three,four',
+  expectedValue: 'one\ntwo \n three\nfour',
+  expr: '%s/,/\\n/g'});
 testSubstitute('ex_substitute_braces_word', {
   value: 'ababab abb ab{2}',
   expectedValue: 'ab abb ab{2}',
@@ -3753,17 +3818,111 @@ testVim('set_string', function(cm, vim, helpers) {
   eq('c', CodeMirror.Vim.getOption('testoption'));
 });
 testVim('ex_set_string', function(cm, vim, helpers) {
-  CodeMirror.Vim.defineOption('testoption', 'a', 'string');
+  CodeMirror.Vim.defineOption('testopt', 'a', 'string');
   // Test default value is set.
-  eq('a', CodeMirror.Vim.getOption('testoption'));
+  eq('a', CodeMirror.Vim.getOption('testopt'));
   try {
-    // Test fail to set 'notestoption'
-    helpers.doEx('set notestoption=b');
+    // Test fail to set 'notestopt'
+    helpers.doEx('set notestopt=b');
     fail();
   } catch (expected) {};
   // Test setOption
-  helpers.doEx('set testoption=c')
-  eq('c', CodeMirror.Vim.getOption('testoption'));
+  helpers.doEx('set testopt=c')
+  eq('c', CodeMirror.Vim.getOption('testopt'));
+  helpers.doEx('set testopt=c')
+  eq('c', CodeMirror.Vim.getOption('testopt', cm)); //local || global
+  eq('c', CodeMirror.Vim.getOption('testopt', cm, {scope: 'local'})); // local
+  eq('c', CodeMirror.Vim.getOption('testopt', cm, {scope: 'global'})); // global
+  eq('c', CodeMirror.Vim.getOption('testopt')); // global
+  // Test setOption global
+  helpers.doEx('setg testopt=d')
+  eq('c', CodeMirror.Vim.getOption('testopt', cm));
+  eq('c', CodeMirror.Vim.getOption('testopt', cm, {scope: 'local'}));
+  eq('d', CodeMirror.Vim.getOption('testopt', cm, {scope: 'global'}));
+  eq('d', CodeMirror.Vim.getOption('testopt'));
+  // Test setOption local
+  helpers.doEx('setl testopt=e')
+  eq('e', CodeMirror.Vim.getOption('testopt', cm));
+  eq('e', CodeMirror.Vim.getOption('testopt', cm, {scope: 'local'}));
+  eq('d', CodeMirror.Vim.getOption('testopt', cm, {scope: 'global'}));
+  eq('d', CodeMirror.Vim.getOption('testopt'));
+});
+testVim('ex_set_callback', function(cm, vim, helpers) {
+  var global;
+
+  function cb(val, cm, cfg) {
+    if (val === undefined) {
+      // Getter
+      if (cm) {
+        return cm._local;
+      } else {
+        return global;
+      }
+    } else {
+      // Setter
+      if (cm) {
+        cm._local = val;
+      } else {
+        global = val;
+      }
+    }
+  }
+
+  CodeMirror.Vim.defineOption('testopt', 'a', 'string', cb);
+  // Test default value is set.
+  eq('a', CodeMirror.Vim.getOption('testopt'));
+  try {
+    // Test fail to set 'notestopt'
+    helpers.doEx('set notestopt=b');
+    fail();
+  } catch (expected) {};
+  // Test setOption (Identical to the string tests, but via callback instead)
+  helpers.doEx('set testopt=c')
+  eq('c', CodeMirror.Vim.getOption('testopt', cm)); //local || global
+  eq('c', CodeMirror.Vim.getOption('testopt', cm, {scope: 'local'})); // local
+  eq('c', CodeMirror.Vim.getOption('testopt', cm, {scope: 'global'})); // global
+  eq('c', CodeMirror.Vim.getOption('testopt')); // global
+  // Test setOption global
+  helpers.doEx('setg testopt=d')
+  eq('c', CodeMirror.Vim.getOption('testopt', cm));
+  eq('c', CodeMirror.Vim.getOption('testopt', cm, {scope: 'local'}));
+  eq('d', CodeMirror.Vim.getOption('testopt', cm, {scope: 'global'}));
+  eq('d', CodeMirror.Vim.getOption('testopt'));
+  // Test setOption local
+  helpers.doEx('setl testopt=e')
+  eq('e', CodeMirror.Vim.getOption('testopt', cm));
+  eq('e', CodeMirror.Vim.getOption('testopt', cm, {scope: 'local'}));
+  eq('d', CodeMirror.Vim.getOption('testopt', cm, {scope: 'global'}));
+  eq('d', CodeMirror.Vim.getOption('testopt'));
+})
+testVim('ex_set_filetype', function(cm, vim, helpers) {
+  CodeMirror.defineMode('test_mode', function() {
+    return {token: function(stream) {
+      stream.match(/^\s+|^\S+/);
+    }};
+  });
+  CodeMirror.defineMode('test_mode_2', function() {
+    return {token: function(stream) {
+      stream.match(/^\s+|^\S+/);
+    }};
+  });
+  // Test mode is set.
+  helpers.doEx('set filetype=test_mode');
+  eq('test_mode', cm.getMode().name);
+  // Test 'ft' alias also sets mode.
+  helpers.doEx('set ft=test_mode_2');
+  eq('test_mode_2', cm.getMode().name);
+});
+testVim('ex_set_filetype_null', function(cm, vim, helpers) {
+  CodeMirror.defineMode('test_mode', function() {
+    return {token: function(stream) {
+      stream.match(/^\s+|^\S+/);
+    }};
+  });
+  cm.setOption('mode', 'test_mode');
+  // Test mode is set to null.
+  helpers.doEx('set filetype=');
+  eq('null', cm.getMode().name);
 });
 // TODO: Reset key maps after each test.
 testVim('ex_map_key2key', function(cm, vim, helpers) {

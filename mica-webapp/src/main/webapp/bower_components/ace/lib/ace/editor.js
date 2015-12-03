@@ -162,8 +162,12 @@ var Editor = function(renderer, session) {
             var command = this.curOp.command;
             if (command.name && this.$blockScrolling > 0)
                 this.$blockScrolling--;
-            if (command && command.scrollIntoView) {
-                switch (command.scrollIntoView) {
+            var scrollIntoView = command && command.scrollIntoView;
+            if (scrollIntoView) {
+                switch (scrollIntoView) {
+                    case "center-animate":
+                        scrollIntoView = "animate";
+                        /* fall through */
                     case "center":
                         this.renderer.scrollCursorIntoView(null, 0.5);
                         break;
@@ -181,7 +185,7 @@ var Editor = function(renderer, session) {
                     default:
                         break;
                 }
-                if (command.scrollIntoView == "animate")
+                if (scrollIntoView == "animate")
                     this.renderer.animateScrolling(this.curOp.scrollTop);
             }
             
@@ -274,6 +278,10 @@ var Editor = function(renderer, session) {
     this.setSession = function(session) {
         if (this.session == session)
             return;
+        
+        // make sure operationEnd events are not emitted to wrong session
+        if (this.curOp) this.endOperation();
+        this.curOp = {};
 
         var oldSession = this.session;
         if (oldSession) {
@@ -373,6 +381,8 @@ var Editor = function(renderer, session) {
             oldSession: oldSession
         });
         
+        this.curOp = null;
+        
         oldSession && oldSession._signal("changeEditor", {oldEditor: this});
         session && session._signal("changeEditor", {editor: this});
     };
@@ -419,7 +429,7 @@ var Editor = function(renderer, session) {
     /**
      *
      * Returns the currently highlighted selection.
-     * @returns {String} The highlighted selection
+     * @returns {Selection} The selection object
      **/
     this.getSelection = function() {
         return this.selection;
@@ -682,20 +692,15 @@ var Editor = function(renderer, session) {
      *
      *
      **/
-    this.onDocumentChange = function(e) {
-        var delta = e.data;
-        var range = delta.range;
-        var lastRow;
+    this.onDocumentChange = function(delta) {
+        // Rerender and emit "change" event.
+        var wrap = this.session.$useWrapMode;
+        var lastRow = (delta.start.row == delta.end.row ? delta.end.row : Infinity);
+        this.renderer.updateLines(delta.start.row, lastRow, wrap);
 
-        if (range.start.row == range.end.row && delta.action != "insertLines" && delta.action != "removeLines")
-            lastRow = range.end.row;
-        else
-            lastRow = Infinity;
-        this.renderer.updateLines(range.start.row, lastRow, this.session.$useWrapMode);
-
-        this._signal("change", e);
-
-        // update cursor because tab characters can influence the cursor position
+        this._signal("change", delta);
+        
+        // Update cursor because tab characters can influence the cursor position.
         this.$cursorChange();
         this.$updateHighlightActiveLine();
     };
@@ -910,14 +915,16 @@ var Editor = function(renderer, session) {
      *
      *
      **/
-    this.onPaste = function(text) {
-        // todo this should change when paste becomes a command
-        if (this.$readOnly)
-            return;
-
-        var e = {text: text};
+    this.onPaste = function(text, event) {
+        var e = {text: text, event: event};
+        this.commands.exec("paste", this, e);
+    };
+    
+    this.$handlePaste = function(e) {
+        if (typeof e == "string") 
+            e = {text: e};
         this._signal("paste", e);
-        text = e.text;
+        var text = e.text;
         if (!this.inMultiSelectMode || this.inVirtualSelectionMode) {
             this.insert(text);
         } else {
@@ -935,7 +942,6 @@ var Editor = function(renderer, session) {
                 this.session.insert(range.start, lines[i]);
             }
         }
-        this.renderer.scrollCursorIntoView();
     };
 
     this.execCommand = function(command, args) {
@@ -1623,15 +1629,7 @@ var Editor = function(renderer, session) {
      **/
     this.removeLines = function() {
         var rows = this.$getSelectedRows();
-        var range;
-        if (rows.first === 0 || rows.last+1 < this.session.getLength())
-            range = new Range(rows.first, 0, rows.last+1, 0);
-        else
-            range = new Range(
-                rows.first-1, this.session.getLine(rows.first-1).length,
-                rows.last, this.session.getLine(rows.last).length
-            );
-        this.session.remove(range);
+        this.session.removeFullLines(rows.first, rows.last);
         this.clearSelection();
     };
 
@@ -2684,6 +2682,7 @@ config.defineOptions(Editor.prototype, "editor", {
     useSoftTabs: "session",
     tabSize: "session",
     wrap: "session",
+    indentedSoftWrap: "session",
     foldStyle: "session",
     mode: "session"
 });

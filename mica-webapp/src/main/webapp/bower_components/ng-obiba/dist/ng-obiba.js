@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba
 
  * License: GNU Public License version 3
- * Date: 2015-11-05
+ * Date: 2015-11-26
  */
 'use strict';
 
@@ -560,9 +560,34 @@ angular.module('obiba.utils', [])
 
       return message ? message : 'Server Error (' + response.status + '): ' + response.statusText;
     };
+  }])
 
+  .service('JsonUtils',
+    function () {
+      return {
+        parseJsonSafely: function (json, defaultValue) {
+          try {
+            return JSON.parse(json);
+          } catch (e) {
+            return defaultValue;
+          }
+        },
 
-  }]);
+        prettifyJson: function (jsonData) {
+          var str = typeof jsonData === 'string' ? jsonData : JSON.stringify(jsonData, undefined, 2);
+          return str;
+        },
+
+        isJsonValid: function (json) {
+          try {
+            JSON.parse(json);
+          } catch (e) {
+            return false;
+          }
+          return true;
+        }
+      };
+  });
 ;'use strict';
 
 angular.module('obiba.notification', [
