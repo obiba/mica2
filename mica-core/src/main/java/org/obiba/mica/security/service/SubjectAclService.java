@@ -15,6 +15,7 @@ import org.obiba.mica.security.event.SubjectAclUpdatedEvent;
 import org.obiba.mica.security.repository.SubjectAclRepository;
 import org.springframework.stereotype.Service;
 
+import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -67,6 +68,7 @@ public class SubjectAclService {
    * @param action
    * @return
    */
+  @Timed
   public boolean isPermitted(@NotNull String resource, @NotNull String action) {
     return isPermitted(resource, action, null);
   }
@@ -79,6 +81,7 @@ public class SubjectAclService {
    * @param instance any instances if null
    * @return
    */
+  @Timed
   public boolean isPermitted(@NotNull String resource, @NotNull String action, @Nullable String instance) {
     return SecurityUtils.getSubject()
       .isPermitted(resource + ":" + action + (Strings.isNullOrEmpty(instance) ? "" : ":" + instance));
@@ -92,6 +95,7 @@ public class SubjectAclService {
    * @param action
    * @throws AuthorizationException
    */
+  @Timed
   public void checkPermission(@NotNull String resource, @NotNull String action) throws AuthorizationException {
     checkPermission(resource, action, null);
   }
@@ -104,6 +108,7 @@ public class SubjectAclService {
    * @param instance any instances if null
    * @throws AuthorizationException
    */
+  @Timed
   public void checkPermission(@NotNull String resource, @NotNull String action, @Nullable String instance)
     throws AuthorizationException {
     SecurityUtils.getSubject()
@@ -119,6 +124,7 @@ public class SubjectAclService {
    * @param instance
    * @return
    */
+  @Timed
   public boolean isAccessible(@NotNull String resource, @Nullable String instance) {
     return micaConfigService.getConfig().isOpenAccess() || isPermitted(resource, "VIEW", instance);
   }
@@ -132,6 +138,7 @@ public class SubjectAclService {
    * @param instance
    * @return
    */
+  @Timed
   public void checkAccessibility(@NotNull String resource, @Nullable String instance) {
     if (micaConfigService.getConfig().isOpenAccess()) return;
     checkPermission(resource, "VIEW", instance);
