@@ -23,6 +23,7 @@ mica.fileSystem
     'ServerErrorUtils',
     'DraftFileSystemFileResource',
     'DraftFileSystemFilesResource',
+    'DraftFileAccessResource',
     'DraftFileSystemSearchResource',
     'MicaConfigResource',
     '$q',
@@ -37,6 +38,7 @@ mica.fileSystem
               ServerErrorUtils,
               DraftFileSystemFileResource,
               DraftFileSystemFilesResource,
+              DraftFileAccessResource,
               DraftFileSystemSearchResource,
               MicaConfigResource,
               $q) {
@@ -145,6 +147,10 @@ mica.fileSystem
             if (!$scope.data.document.children) {
               $scope.data.document.children = [];
             }
+
+            DraftFileAccessResource.query({path: $scope.data.document.path}, function onSuccess(response) {
+              $scope.data.accesses = response;
+            });
 
             $scope.data.breadcrumbs = BreadcrumbHelper.toArray(path);
             $scope.data.isFile = FileSystemService.isFile(response);
@@ -477,6 +483,19 @@ mica.fileSystem
         });
       };
 
+      $scope.loadAccesses = function (document) {
+        $scope.data.accesses = DraftFileAccessResource.query({path: document.path});
+        return $scope.data.accesses;
+      };
+
+      $scope.deleteAccess = function (document, access) {
+        return DraftFileAccessResource.delete({path: document.path}, access);
+      };
+
+      $scope.addAccess = function (document, access) {
+        return DraftFileAccessResource.save({path: document.path}, access);
+      };
+
       $scope.screen = $rootScope.screen;
       $scope.hasRole = $rootScope.hasRole;
       $scope.getDocumentTypeTitle = FileSystemService.getDocumentTypeTitle;
@@ -506,6 +525,7 @@ mica.fileSystem
       $scope.toStatus = toStatus;
 
       MicaConfigResource.get(function (micaConfig) {
+        $scope.micaConfig = micaConfig;
         $scope.tabs = [];
         $scope.languages = [];
         micaConfig.languages.forEach(function (lang) {
@@ -517,6 +537,7 @@ mica.fileSystem
       $scope.data = {
         rootPath: null,
         document: null,
+        accesses: [],
         search: {
           text: null,
           active: false,

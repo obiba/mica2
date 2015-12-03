@@ -13,6 +13,7 @@ import org.obiba.mica.security.domain.SubjectAcl;
 import org.obiba.mica.security.event.ResourceDeletedEvent;
 import org.obiba.mica.security.event.SubjectAclUpdatedEvent;
 import org.obiba.mica.security.repository.SubjectAclRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.codahale.metrics.annotation.Timed;
@@ -58,7 +59,8 @@ public class SubjectAclService {
    * @return
    */
   public List<SubjectAcl> findByResourceInstance(String resource, String instance) {
-    return subjectAclRepository.findByResourceAndInstance(resource, instance);
+    return subjectAclRepository.findByResourceAndInstance(resource, instance,
+      new Sort(new Sort.Order(Sort.Direction.DESC, "type"), new Sort.Order(Sort.Direction.ASC, "principal")));
   }
 
   /**
@@ -87,7 +89,6 @@ public class SubjectAclService {
       .isPermitted(resource + ":" + action + (Strings.isNullOrEmpty(instance) ? "" : ":" + instance));
   }
 
-
   /**
    * Check if current user has the given permission.
    *
@@ -115,7 +116,6 @@ public class SubjectAclService {
       .checkPermission(resource + ":" + action + (Strings.isNullOrEmpty(instance) ? "" : ":" + instance));
   }
 
-
   /**
    * Verify the {@link org.obiba.mica.micaConfig.domain.MicaConfig} open access property before evaluating the
    * "VIEW" permission for the current user.
@@ -129,7 +129,6 @@ public class SubjectAclService {
     return micaConfigService.getConfig().isOpenAccess() || isPermitted(resource, "VIEW", instance);
   }
 
-
   /**
    * Verify the {@link org.obiba.mica.micaConfig.domain.MicaConfig} open access property before evaluating the
    * "VIEW" permission for the current user.
@@ -140,7 +139,7 @@ public class SubjectAclService {
    */
   @Timed
   public void checkAccessibility(@NotNull String resource, @Nullable String instance) {
-    if (micaConfigService.getConfig().isOpenAccess()) return;
+    if(micaConfigService.getConfig().isOpenAccess()) return;
     checkPermission(resource, "VIEW", instance);
   }
 

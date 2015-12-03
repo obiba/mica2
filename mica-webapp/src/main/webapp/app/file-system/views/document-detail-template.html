@@ -22,7 +22,7 @@
 
     <div class="voffset">
       <label class="text-muted no-margin">
-      <small>{{'created-on' | translate}}</small>
+        <small>{{'created-on' | translate}}</small>
       </label>
       <div>
         <span>{{data.document.timestamps.created | amDateFormat : 'lll'}}</span>
@@ -30,7 +30,7 @@
     </div>
     <div class="voffset">
       <label class="text-muted no-margin">
-      <small>{{'last-modified' | translate}}</small>
+        <small>{{'last-modified' | translate}}</small>
       </label>
       <div>
         <span>{{data.document.timestamps.lastUpdate | amDateFormat : 'lll'}}</span>
@@ -51,6 +51,13 @@
           publish.not-published
         </span>
       </div>
+      <div ng-if="!micaConfig.openAccess">
+        <i class="fa fa-unlock" ng-if="data.accesses.length>0"></i>
+        <span ng-repeat="access in data.accesses"
+          class="label {{access.type === 'USER' ? 'label-success' : 'label-warning'}} hoffset1"
+          style="{{access.principal === '*' ? 'font-style: italic' : ''}}"
+          title="{{'permission.' + access.type.toLowerCase() | translate}}">{{access.principal === '*' ? (access.type === 'USER' ? 'permission.anyone' : 'permission.any-group' | translate) : access.principal}}</span>
+      </div>
     </div>
 
     <div ng-if="data.isFile" class="voffset">
@@ -61,7 +68,8 @@
         e-form="buttonChangeType"
         onbeforesave="updateDocumentType(data.document, $data)">
         {{data.document.state.attachment.type || 'empty'}}
-        <span class="hoffset1" ng-if="data.document.permissions.edit && data.document.revisionStatus === 'DRAFT'"><a href ng-click="buttonChangeType.$show()" ng-hide="buttonChangeType.$visible">
+        <span class="hoffset1" ng-if="data.document.permissions.edit && data.document.revisionStatus === 'DRAFT'"><a
+          href ng-click="buttonChangeType.$show()" ng-hide="buttonChangeType.$visible">
           <i class="fa fa-pencil"></i></a>
         </span>
       </div>
@@ -82,7 +90,9 @@
               </label>
               <localized ng-if="getLocalizedValue(data.document.state.attachment.description, tab.lang)"
                 value="data.document.state.attachment.description" lang="tab.lang"></localized>
-              <a ng-if="data.document.permissions.edit && data.document.revisionStatus === 'DRAFT'" ng-click="data.editDescField = true" ng-hide="buttonChangeType.$visible && data.document.revisionStatus !== DRAFT">
+              <a ng-if="data.document.permissions.edit && data.document.revisionStatus === 'DRAFT'"
+                ng-click="data.editDescField = true"
+                ng-hide="buttonChangeType.$visible && data.document.revisionStatus !== DRAFT">
                 <i class="fa fa-pencil"></i>
               </a>
             </div>
