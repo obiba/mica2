@@ -12,6 +12,7 @@ function NgObibaMicaUrlProvider() {
     'DataAccessFormConfigResource': 'ws/config/data-access-form',
     'DataAccessRequestsResource': 'ws/data-access-requests',
     'DataAccessRequestResource': 'ws/data-access-request/:id',
+    'DataAccessRequestAttachmentDownloadResource': '/ws/data-access-request/:id/attachments/:attachmentId/_download',
     'DataAccessRequestDownloadPdfResource': '/ws/data-access-request/:id/_pdf',
     'DataAccessRequestCommentsResource': 'ws/data-access-request/:id/comments',
     'DataAccessRequestCommentResource': 'ws/data-access-request/:id/comment/:commentId',
@@ -509,7 +510,8 @@ angular.module('obiba.mica.access')
       });
 
       $scope.getDownloadHref = function(attachments, id) {
-        return '/ws/data-access-request/' + $scope.dataAccessRequest.id + '/attachments/' + id + '/_download';
+        return ngObibaMicaUrl.getUrl('DataAccessRequestAttachmentDownloadResource')
+          .replace(':id', $scope.dataAccessRequest.id).replace(':attachmentId', id);
       };
 
       $scope.actions = DataAccessRequestService.actions;
