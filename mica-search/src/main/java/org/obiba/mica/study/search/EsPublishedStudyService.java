@@ -61,7 +61,7 @@ public class EsPublishedStudyService extends AbstractPublishedDocumentService<St
   }
 
   @Override
-  protected FilterBuilder filterByAccessibility() {
+  protected FilterBuilder filterByAccess() {
     if(micaConfigService.getConfig().isOpenAccess()) return null;
     List<String> ids = studyService.findPublishedStates().stream().map(StudyState::getId)
       .filter(s -> subjectAclService.isAccessible("/study", s))

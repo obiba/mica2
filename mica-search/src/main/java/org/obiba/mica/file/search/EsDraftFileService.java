@@ -18,6 +18,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
+import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.search.AbstractPublishedDocumentService;
@@ -31,6 +32,9 @@ public class EsDraftFileService extends AbstractPublishedDocumentService<Attachm
 
   @Inject
   private ObjectMapper objectMapper;
+
+  @Inject
+  private FileFilterHelper fileFilterHelper;
 
   @Override
   protected AttachmentState processHit(SearchHit hit) throws IOException {
@@ -55,4 +59,12 @@ public class EsDraftFileService extends AbstractPublishedDocumentService<Attachm
     fields.addAll(getLocalizedFields("attachment.description"));
     return find(from, limit, sort, order, studyId, queryString, fields);
   }
+
+  @Nullable
+  @Override
+  protected FilterBuilder filterByAccess() {
+    return fileFilterHelper.makeDraftFilesFilter();
+  }
+
+
 }

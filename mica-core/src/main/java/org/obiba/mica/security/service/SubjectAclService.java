@@ -49,6 +49,13 @@ public class SubjectAclService {
     return subjectAclRepository.findByPrincipalAndType(principal, type);
   }
 
+  /**
+   * Get all permissions for the given resource and instance and for any subject.
+   *
+   * @param resource
+   * @param instance
+   * @return
+   */
   public List<SubjectAcl> findByResourceInstance(String resource, String instance) {
     return subjectAclRepository.findByResourceAndInstance(resource, instance);
   }

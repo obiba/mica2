@@ -18,6 +18,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
+import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.search.AbstractPublishedDocumentService;
@@ -31,6 +32,9 @@ public class EsPublishedFileService extends AbstractPublishedDocumentService<Att
 
   @Inject
   private ObjectMapper objectMapper;
+
+  @Inject
+  private FileFilterHelper fileFilterHelper;
 
   @Override
   protected AttachmentState processHit(SearchHit hit) throws IOException {
@@ -49,10 +53,17 @@ public class EsPublishedFileService extends AbstractPublishedDocumentService<Att
   }
 
   @Override
-  public Documents<AttachmentState> find(int from, int limit, @Nullable String sort, @Nullable String order, @Nullable String studyId,
-    @Nullable String queryString) {
+  public Documents<AttachmentState> find(int from, int limit, @Nullable String sort, @Nullable String order,
+    @Nullable String studyId, @Nullable String queryString) {
     List<String> fields = Lists.newArrayList("publishedAttachment.name.analyzed", "publishedAttachment.type.analyzed");
     fields.addAll(getLocalizedFields("publishedAttachment.description"));
     return find(from, limit, sort, order, studyId, queryString, fields);
   }
+
+  @Nullable
+  @Override
+  protected FilterBuilder filterByAccess() {
+    return fileFilterHelper.makePublishedFilesFilter();
+  }
+
 }

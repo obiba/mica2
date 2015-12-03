@@ -20,6 +20,7 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.core.service.PublishedDocumentService;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.search.EsDraftFileService;
+import org.obiba.mica.file.search.FileFilterHelper;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -43,7 +44,13 @@ public class DraftFilesSearchResource extends AbstractFileSearchResource {
     PublishedDocumentService.Documents<AttachmentState> states = esAttachmentService
       .find(from, limit, sort, order, null, queryString);
 
-    return states.getList().stream().filter(s -> subjectAclService.isPermitted("/draft/file", "VIEW", s.getFullPath()))
-      .map(state -> dtos.asFileDto(state, false, false)).collect(Collectors.toList());
+    return states.getList().stream().filter(this::isPermitted).map(state -> dtos.asFileDto(state, false, false))
+      .collect(Collectors.toList());
+  }
+
+  private boolean isPermitted(AttachmentState state) {
+    String path = state.getFullPath();
+    // bypass check if access was already done in search filter
+    return FileFilterHelper.appliesToFile(path) || subjectAclService.isPermitted("/draft/file", "VIEW", path);
   }
 }

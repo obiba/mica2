@@ -79,7 +79,7 @@ class EsPublishedDatasetService extends AbstractPublishedDocumentService<Dataset
   }
 
   @Override
-  protected FilterBuilder filterByAccessibility() {
+  protected FilterBuilder filterByAccess() {
     if(micaConfigService.getConfig().isOpenAccess()) return null;
     List<String> ids = studyDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
       .filter(s -> subjectAclService.isAccessible("/study-dataset", s))
