@@ -498,7 +498,11 @@ mica.fileSystem
       };
 
       $scope.addAccess = function (document, access) {
-        return DraftFileAccessResource.save({path: document.path}, access);
+        DraftFileAccessResource.save({path: document.path}, access, function onSuccess() {
+          $scope.loadAccesses(document);
+          $scope.data.access = {};
+        });
+        $scope.data.addAccess = false;
       };
 
       $scope.screen = $rootScope.screen;
