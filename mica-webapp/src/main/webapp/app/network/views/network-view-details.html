@@ -98,6 +98,43 @@
             </tr>
             </tbody>
           </table>
+
+          <h3 translate>networks</h3>
+
+          <a ng-click="addNetwork(network)" class="btn btn-info"
+            ng-if="inViewMode() && network['obiba.mica.EntityStateDto.state'].permissions.edit">
+            <i class="fa fa-plus"></i> <span translate>network.add</span>
+          </a>
+
+          <span class="pull-right">
+            <dir-pagination-controls></dir-pagination-controls>
+          </span>
+
+          <table class="table table-bordered table-striped" ng-show="network.networkSummaries.length">
+            <thead>
+            <tr>
+              <th translate>network.acronym</th>
+              <th translate>network.name</th>
+              <th ng-if="inViewMode() && network['obiba.mica.EntityStateDto.state'].permissions.edit" translate>actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr dir-paginate="networkSummary in network.networkSummaries | itemsPerPage: 10">
+              <td>
+                <a ng-href="#/network/{{networkSummary.id}}">
+                  <localized value="networkSummary.acronym" lang="tab.lang"></localized>
+                </a>
+              </td>
+              <td>
+                <localized value="networkSummary.name" lang="tab.lang"></localized>
+              </td>
+              <td ng-if="inViewMode() && network['obiba.mica.EntityStateDto.state'].permissions.edit">
+                <a ng-click="deleteNetwork(network, networkSummary)" class="hand action"><i
+                  class="fa fa-trash-o"></i></a>
+              </td>
+            </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 

@@ -30,7 +30,9 @@ import com.google.common.collect.Sets;
 import jersey.repackaged.com.google.common.collect.Lists;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static org.obiba.mica.web.model.Mica.PersonDto;
 
 @Component
@@ -73,6 +75,9 @@ class NetworkDtos {
 
   @Inject
   private MicaConfigService micaConfigService;
+
+  @Inject
+  private NetworkSummaryDtos networkSummaryDtos;
 
   @NotNull
   Mica.NetworkDto.Builder asDtoBuilder(@NotNull Network network, boolean asDraft) {
@@ -150,6 +155,12 @@ class NetworkDtos {
         .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
     }
 
+    network.getNetworkIds().stream().filter(nId -> asDraft || subjectAclService.isAccessible("/network", nId))
+      .forEach(nId -> {
+        builder.addNetworkIds(nId);
+        builder.addNetworkSummaries(networkSummaryDtos.asDtoBuilder(nId, asDraft));
+      });
+
     return builder;
   }
 
@@ -210,7 +221,11 @@ class NetworkDtos {
     if(dto.getAttributesCount() > 0) {
       dto.getAttributesList().forEach(attributeDto -> network.addAttribute(attributeDtos.fromDto(attributeDto)));
     }
+
+    if(dto.getNetworkIdsCount() > 0) {
+      network.setNetworkIds(Lists.newArrayList(Sets.newHashSet(dto.getNetworkIdsList())));
+    }
+
     return network;
   }
-
 }

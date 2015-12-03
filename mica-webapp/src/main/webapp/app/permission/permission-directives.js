@@ -100,7 +100,7 @@ mica.attachment
           $scope.onAccessLoad();
         }
       });
-    };
+    }
 
     $scope.addAccess = function () {
       editAccess({type:'USER', role: 'READER'});

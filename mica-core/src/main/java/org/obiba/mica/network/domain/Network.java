@@ -72,6 +72,8 @@ public class Network extends AbstractGitPersistable implements AttributeAware, P
 
   private Attributes attributes;
 
+  private List<String> networkIds = Lists.newArrayList();
+
   //
   // Accessors
   //
@@ -343,5 +345,13 @@ public class Network extends AbstractGitPersistable implements AttributeAware, P
         persons.add(idx, existing.get(existing.indexOf(p)));
       }
     });
+  }
+
+  public List<String> getNetworkIds() {
+    return networkIds;
+  }
+
+  public void setNetworkIds(@NotNull List<String> networkIds) {
+    this.networkIds = networkIds;
   }
 }

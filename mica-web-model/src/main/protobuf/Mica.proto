@@ -267,6 +267,8 @@ message NetworkDto {
   optional AttachmentDto logo = 15;
   repeated AttributeDto attributes = 16;
   repeated MembershipsDto memberships = 17;
+  repeated string networkIds = 18;
+  repeated NetworkSummaryDto networkSummaries = 19;
   extensions 1000 to max;
 }
 
@@ -275,6 +277,14 @@ message NetworksDto {
   required int32 from = 2;
   required int32 limit = 3;
   repeated NetworkDto networks = 4;
+}
+
+message NetworkSummaryDto {
+  optional string id = 1;
+  optional TimestampsDto timestamps = 2;
+  repeated LocalizedStringDto name = 3;
+  repeated LocalizedStringDto acronym = 4;
+  required bool published = 5;
 }
 
 message TimestampsDto {
