@@ -64,8 +64,8 @@ public class FileFilterHelper {
    */
   public static boolean appliesToFile(String path) {
     return path != null &&
-      (path.startsWith("/network") || path.startsWith("/study") || path.startsWith("/study-dataset") ||
-        path.startsWith("/harmonization-dataset"));
+      (path.startsWith("/network/") || path.startsWith("/study/") || path.startsWith("/study-dataset/") ||
+        path.startsWith("/harmonization-dataset/"));
   }
 
   public FilterBuilder makeDraftFilesFilter() {

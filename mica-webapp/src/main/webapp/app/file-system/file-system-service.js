@@ -47,6 +47,20 @@ mica.fileSystem
       });
     }])
 
+  .factory('DraftFileAccessResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/draft/file-access/:path', {path: '@path'}, {
+        'save': {
+          method: 'PUT',
+          params: {path: '@path', type: '@type', principal: '@principal'},
+          errorHandler: true
+        },
+        'delete': {method: 'DELETE', params: {path: '@path', type: '@type', principal: '@principal'}, errorHandler: true},
+        'get': {method: 'GET'},
+        'query': {method: 'GET', params: {path: '@path'}, isArray: true}
+      });
+    }])
+
   .service('FileSystemService', ['TempFileResource', 'Upload',
     function (TempFileResource, Upload) {
 

@@ -17,7 +17,7 @@ import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Lists;
 
 @Document
-public class SubjectAcl extends AbstractAuditableDocument {
+public class SubjectAcl extends AbstractAuditableDocument implements Comparable<SubjectAcl> {
 
   private static final long serialVersionUID = -3689274856936068056L;
 
@@ -145,6 +145,16 @@ public class SubjectAcl extends AbstractAuditableDocument {
     return builder.toString();
   }
 
+  @Override
+  public int compareTo(SubjectAcl o) {
+    if (equals(o)) return 0;
+    int cmp = getType().toString().compareTo(o.getType().toString());
+    if (cmp != 0) return cmp;
+    cmp = getPrincipal().compareToIgnoreCase(o.getPrincipal());
+    if (cmp != 0) return cmp;
+    return getResource().compareTo(o.getResource());
+  }
+
   //
   // Inner classes and enum
   //
@@ -152,6 +162,7 @@ public class SubjectAcl extends AbstractAuditableDocument {
   public static Builder newBuilder(String name, Type type) {
     return new Builder(name, type);
   }
+
 
   public enum Type {
     USER, GROUP;
