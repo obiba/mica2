@@ -33,7 +33,8 @@ import com.google.common.collect.Lists;
 
 /**
  * {@link FilterBuilder} factory for files. Check the associated document ({@link org.obiba.mica.network.domain.Study},
- * {@link org.obiba.mica.network.domain.Network} etc.) visible in order to have only visible files in the search result.
+ * {@link org.obiba.mica.network.domain.Network} etc.) is visible in order to have only (potentially) visible files in
+ * the search result.
  */
 @Component
 public class FileFilterHelper {
@@ -62,8 +63,9 @@ public class FileFilterHelper {
    * @return
    */
   public static boolean appliesToFile(String path) {
-    return path != null && (path.startsWith("/network") || path.startsWith("/study") || path.startsWith("/study-dataset") ||
-      path.startsWith("/harmonization-dataset"));
+    return path != null &&
+      (path.startsWith("/network") || path.startsWith("/study") || path.startsWith("/study-dataset") ||
+        path.startsWith("/harmonization-dataset"));
   }
 
   public FilterBuilder makeDraftFilesFilter() {
@@ -99,7 +101,8 @@ public class FileFilterHelper {
   private FilterBuilder makeFilterBuilder(List<String> networkIds, List<String> studyIds, List<String> studyDatasetIds,
     List<String> harmonizationDatasetIds) {
     List<FilterBuilder> excludes = Lists.newArrayList();
-    List<FilterBuilder> includes = Lists.newArrayList(FilterBuilders.prefixFilter("path", "/user"));
+    List<FilterBuilder> includes = Lists
+      .newArrayList(FilterBuilders.termFilter("path", "/user"), FilterBuilders.prefixFilter("path", "/user/"));
     addFilter(excludes, includes, "/network", networkIds);
     addFilter(excludes, includes, "/study", studyIds);
     addFilter(excludes, includes, "/study-dataset", studyDatasetIds);
@@ -118,7 +121,10 @@ public class FileFilterHelper {
     if(ids.isEmpty()) {
       excludes.add(FilterBuilders.prefixFilter("path", prefix));
     } else {
-      ids.forEach(id -> includes.add(FilterBuilders.prefixFilter("path", prefix + "/" + id)));
+      ids.forEach(id -> {
+        includes.add(FilterBuilders.termFilter("path", prefix + "/" + id));
+        includes.add(FilterBuilders.prefixFilter("path", prefix + "/" + id + "/"));
+      });
     }
   }
 
