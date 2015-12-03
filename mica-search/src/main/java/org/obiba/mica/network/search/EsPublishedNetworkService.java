@@ -62,7 +62,7 @@ public class EsPublishedNetworkService extends AbstractPublishedDocumentService<
   }
 
   @Override
-  protected FilterBuilder filterByAccessibility() {
+  protected FilterBuilder filterByAccess() {
     if(micaConfigService.getConfig().isOpenAccess()) return null;
     List<String> ids = networkService.findPublishedStates().stream().map(NetworkState::getId)
       .filter(s -> subjectAclService.isAccessible("/network", s))

@@ -42,7 +42,7 @@
               <tr dir-paginate="permission in permissions | filter: pagination.searchText | itemsPerPage: 20"
                 pagination-id="permissionsTable">
                 <td>
-                  <i ng-if="permission.principal === '*' && permission.type === 'USER'" translate>permission.everyone</i>
+                  <i ng-if="permission.principal === '*' && permission.type === 'USER'" translate>permission.anyone</i>
                   <i ng-if="permission.principal === '*' && permission.type === 'GROUP'" translate>permission.any-group</i>
                   <span ng-if="permission.principal !== '*'">{{permission.principal}}</span>
                 </td>
@@ -113,7 +113,7 @@
               <tr dir-paginate="access in accesses | filter: pagination.searchText | itemsPerPage: 20"
                 pagination-id="accessesTable">
                 <td>
-                  <i ng-if="access.principal === '*' && access.type === 'USER'" translate>permission.everyone</i>
+                  <i ng-if="access.principal === '*' && access.type === 'USER'" translate>permission.anyone</i>
                   <i ng-if="access.principal === '*' && access.type === 'GROUP'" translate>permission.any-group</i>
                   <span ng-if="access.principal !== '*'">{{access.principal}}</span>
                 </td>
