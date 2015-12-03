@@ -52,7 +52,7 @@
         </span>
       </div>
       <div ng-if="!micaConfig.openAccess">
-        <i class="fa fa-unlock" ng-if="data.accesses.length>0"></i>
+        <i class="fa fa-unlock"></i>
         <div ng-repeat="access in data.accesses"
           class="label {{access.type === 'USER' ? 'label-success' : 'label-warning'}} hoffset1"
           title="{{'permission.' + access.type.toLowerCase() | translate}}">
@@ -64,6 +64,24 @@
           </span>
           <a href ng-if="data.document.permissions.delete" ng-click="deleteAccess(data.document, access)">x</a>
         </div>
+        <span class="hoffset1" ng-if="data.document.permissions.publish">
+          <a href ng-click="data.addAccess = true" ng-hide="">
+            <i class="fa fa-plus"></i>
+          </a>
+          <div ng-if="data.addAccess">
+            <form name="form" role="form" novalidate>
+              <div form-input name="principal" model="data.access.principal"></div>
+                <span class="editable-buttons">
+                  <button ng-click="addAccess(data.document, data.access)" class="btn btn-primary">
+                    <span class="glyphicon glyphicon-ok"></span>
+                  </button>
+                  <button type="button" class="btn btn-default" ng-click="data.addAccess = false">
+                    <span class="glyphicon glyphicon-remove"></span>
+                  </button>
+                </span>
+            </form>
+          </div>
+        </span>
       </div>
     </div>
 
