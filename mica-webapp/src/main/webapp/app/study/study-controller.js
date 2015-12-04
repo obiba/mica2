@@ -149,7 +149,7 @@ mica.study
 
         study.populations = study.populations || [];
 
-        $scope.memberships = study.memberships.map(function (m) {
+        Memberships = study.memberships.map(function (m) {
           if (!m.members) {
             m.members = [];
           }
@@ -218,6 +218,7 @@ mica.study
           $scope.tabs.push({lang: lang});
         });
         $scope.roles = micaConfig.roles;
+        $scope.openAccess = micaConfig.openAccess;
       });
 
       StudyTaxonomyService.get(function() {

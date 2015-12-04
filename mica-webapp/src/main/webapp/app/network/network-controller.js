@@ -316,6 +316,7 @@ mica.network
         });
 
         $scope.roles = micaConfig.roles;
+        $scope.openAccess = micaConfig.openAccess;
       });
 
       $scope.networkId = $routeParams.id;

@@ -68,14 +68,17 @@ public class SubjectAclResource {
 
   @PUT
   public Response update(@QueryParam("principal") String principal,
-    @QueryParam("type") @DefaultValue("USER") String typeStr, @QueryParam("role") @DefaultValue("READER") String role) {
-    if (principal == null) return Response.status(Response.Status.BAD_REQUEST).build();
+    @QueryParam("type") @DefaultValue("USER") String typeStr, @QueryParam("role") @DefaultValue("READER") String role,
+    @QueryParam("file") @DefaultValue("true") boolean file) {
+    if(principal == null) return Response.status(Response.Status.BAD_REQUEST).build();
     subjectAclService.checkPermission(resource, "EDIT", instance);
 
     SubjectAcl.Type type = SubjectAcl.Type.valueOf(typeStr.toUpperCase());
     String actions = PermissionsUtils.asActions(isDraft() ? role.toUpperCase() : "READER");
     subjectAclService.addSubjectPermission(type, principal, resource, actions, instance);
-    subjectAclService.addSubjectPermission(type, principal, fileResource, actions, fileInstance);
+    if (file) {
+      subjectAclService.addSubjectPermission(type, principal, fileResource, actions, fileInstance);
+    }
     return Response.noContent().build();
   }
 

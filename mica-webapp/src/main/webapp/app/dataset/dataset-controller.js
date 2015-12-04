@@ -357,6 +357,7 @@ mica.dataset
         micaConfig.languages.forEach(function (lang) {
           $scope.tabs.push({lang: lang});
         });
+        $scope.openAccess = micaConfig.openAccess;
       });
 
       var getTypeFromUrl = function() {
