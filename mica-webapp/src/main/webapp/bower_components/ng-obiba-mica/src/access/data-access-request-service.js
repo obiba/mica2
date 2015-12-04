@@ -73,6 +73,32 @@ angular.module('obiba.mica.access')
       });
     }])
 
+  .service('DataAccessRequestConfig', function() {
+    var options = {
+      newRequestButtonCaption: null,
+      documentsSectionTitle: null,
+      documentsSectionHelpText: null,
+      downloadButtonCaption: null,
+      commentsEnabled: null,
+      userListPageTitle: null
+    };
+
+    this.setOptions = function(newOptions) {
+      if (typeof(newOptions) === 'object') {
+        Object.keys(newOptions).forEach(function(option) {
+          if (option in options) {
+            options[option] = newOptions[option];
+          }
+        });
+      }
+    };
+
+    this.getOptions = function() {
+      return angular.copy(options);
+    };
+
+  })
+
   .service('DataAccessRequestService', ['$translate',
     function ($translate) {
       var statusList = {

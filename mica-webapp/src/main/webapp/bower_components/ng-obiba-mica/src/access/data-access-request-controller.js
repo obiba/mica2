@@ -20,6 +20,7 @@ angular.module('obiba.mica.access')
     'SessionProxy',
     'USER_ROLES',
     'ngObibaMicaAccessTemplateUrl',
+    'DataAccessRequestConfig',
 
     function ($rootScope,
               $scope,
@@ -29,7 +30,8 @@ angular.module('obiba.mica.access')
               NOTIFICATION_EVENTS,
               SessionProxy,
               USER_ROLES,
-              ngObibaMicaAccessTemplateUrl) {
+              ngObibaMicaAccessTemplateUrl,
+              DataAccessRequestConfig) {
 
       var onSuccess = function(reqs) {
         for (var i = 0; i < reqs.length; i++) {
@@ -58,6 +60,7 @@ angular.module('obiba.mica.access')
 
       $scope.headerTemplateUrl = ngObibaMicaAccessTemplateUrl.getHeaderUrl('list');
       $scope.footerTemplateUrl = ngObibaMicaAccessTemplateUrl.getFooterUrl('list');
+      $scope.config = DataAccessRequestConfig.getOptions();
       $scope.searchStatus = {};
       $scope.loading = true;
       DataAccessRequestsResource.query({}, onSuccess, onError);
@@ -108,6 +111,7 @@ angular.module('obiba.mica.access')
       'AlertService',
       'ServerErrorUtils',
       'NOTIFICATION_EVENTS',
+      'DataAccessRequestConfig',
 
     function ($rootScope,
               $scope,
@@ -125,14 +129,8 @@ angular.module('obiba.mica.access')
               ngObibaMicaAccessTemplateUrl,
               AlertService,
               ServerErrorUtils,
-              NOTIFICATION_EVENTS) {
-
-      $scope.form = {
-        schema: null,
-        definition: null,
-        model: {},
-        comments: null
-      };
+              NOTIFICATION_EVENTS,
+              DataAccessRequestConfig) {
 
       var onError = function (response) {
         AlertService.alert({
@@ -177,6 +175,13 @@ angular.module('obiba.mica.access')
         );
       };
 
+      $scope.form = {
+        schema: null,
+        definition: null,
+        model: {},
+        comments: null
+      };
+
       $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, id) {
         if ($scope.commentToDelete === id) {
            DataAccessRequestCommentResource.delete({id: $routeParams.id, commentId: id}, {}, retrieveComments, onError);
@@ -188,6 +193,7 @@ angular.module('obiba.mica.access')
           .replace(':id', $scope.dataAccessRequest.id).replace(':attachmentId', id);
       };
 
+      $scope.config = DataAccessRequestConfig.getOptions();
       $scope.actions = DataAccessRequestService.actions;
       $scope.nextStatus = DataAccessRequestService.nextStatus;
       $scope.selectTab = selectTab;
@@ -373,6 +379,7 @@ angular.module('obiba.mica.access')
     'SessionProxy',
     'DataAccessRequestService',
     'ngObibaMicaAccessTemplateUrl',
+    'DataAccessRequestConfig',
 
     function ($log, $scope, $routeParams, $location, $modal,
               DataAccessRequestsResource,
@@ -383,7 +390,8 @@ angular.module('obiba.mica.access')
               ServerErrorUtils,
               SessionProxy,
               DataAccessRequestService,
-              ngObibaMicaAccessTemplateUrl) {
+              ngObibaMicaAccessTemplateUrl,
+              DataAccessRequestConfig) {
 
       var onSuccess = function(response, getResponseHeaders) {
         var parts = getResponseHeaders().location.split('/');
@@ -477,6 +485,7 @@ angular.module('obiba.mica.access')
         onError
         );
 
+      $scope.config = DataAccessRequestConfig.getOptions();
       $scope.validForm = true;
       $scope.requestId = $routeParams.id;
       $scope.newRequest = $routeParams.id ? false : true;

@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2015-12-03
+ * Date: 2015-12-04
  */
 'use strict';
 
@@ -346,6 +346,7 @@ angular.module('obiba.mica.access')
     'SessionProxy',
     'USER_ROLES',
     'ngObibaMicaAccessTemplateUrl',
+    'DataAccessRequestConfig',
 
     function ($rootScope,
               $scope,
@@ -355,7 +356,8 @@ angular.module('obiba.mica.access')
               NOTIFICATION_EVENTS,
               SessionProxy,
               USER_ROLES,
-              ngObibaMicaAccessTemplateUrl) {
+              ngObibaMicaAccessTemplateUrl,
+              DataAccessRequestConfig) {
 
       var onSuccess = function(reqs) {
         for (var i = 0; i < reqs.length; i++) {
@@ -384,6 +386,7 @@ angular.module('obiba.mica.access')
 
       $scope.headerTemplateUrl = ngObibaMicaAccessTemplateUrl.getHeaderUrl('list');
       $scope.footerTemplateUrl = ngObibaMicaAccessTemplateUrl.getFooterUrl('list');
+      $scope.config = DataAccessRequestConfig.getOptions();
       $scope.searchStatus = {};
       $scope.loading = true;
       DataAccessRequestsResource.query({}, onSuccess, onError);
@@ -434,6 +437,7 @@ angular.module('obiba.mica.access')
       'AlertService',
       'ServerErrorUtils',
       'NOTIFICATION_EVENTS',
+      'DataAccessRequestConfig',
 
     function ($rootScope,
               $scope,
@@ -451,14 +455,8 @@ angular.module('obiba.mica.access')
               ngObibaMicaAccessTemplateUrl,
               AlertService,
               ServerErrorUtils,
-              NOTIFICATION_EVENTS) {
-
-      $scope.form = {
-        schema: null,
-        definition: null,
-        model: {},
-        comments: null
-      };
+              NOTIFICATION_EVENTS,
+              DataAccessRequestConfig) {
 
       var onError = function (response) {
         AlertService.alert({
@@ -503,6 +501,13 @@ angular.module('obiba.mica.access')
         );
       };
 
+      $scope.form = {
+        schema: null,
+        definition: null,
+        model: {},
+        comments: null
+      };
+
       $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, id) {
         if ($scope.commentToDelete === id) {
            DataAccessRequestCommentResource.delete({id: $routeParams.id, commentId: id}, {}, retrieveComments, onError);
@@ -514,6 +519,7 @@ angular.module('obiba.mica.access')
           .replace(':id', $scope.dataAccessRequest.id).replace(':attachmentId', id);
       };
 
+      $scope.config = DataAccessRequestConfig.getOptions();
       $scope.actions = DataAccessRequestService.actions;
       $scope.nextStatus = DataAccessRequestService.nextStatus;
       $scope.selectTab = selectTab;
@@ -699,6 +705,7 @@ angular.module('obiba.mica.access')
     'SessionProxy',
     'DataAccessRequestService',
     'ngObibaMicaAccessTemplateUrl',
+    'DataAccessRequestConfig',
 
     function ($log, $scope, $routeParams, $location, $modal,
               DataAccessRequestsResource,
@@ -709,7 +716,8 @@ angular.module('obiba.mica.access')
               ServerErrorUtils,
               SessionProxy,
               DataAccessRequestService,
-              ngObibaMicaAccessTemplateUrl) {
+              ngObibaMicaAccessTemplateUrl,
+              DataAccessRequestConfig) {
 
       var onSuccess = function(response, getResponseHeaders) {
         var parts = getResponseHeaders().location.split('/');
@@ -803,6 +811,7 @@ angular.module('obiba.mica.access')
         onError
         );
 
+      $scope.config = DataAccessRequestConfig.getOptions();
       $scope.validForm = true;
       $scope.requestId = $routeParams.id;
       $scope.newRequest = $routeParams.id ? false : true;
@@ -926,6 +935,32 @@ angular.module('obiba.mica.access')
         'update': {method: 'PUT', params: {id: '@id', status: '@status'}, errorHandler: true}
       });
     }])
+
+  .service('DataAccessRequestConfig', function() {
+    var options = {
+      newRequestButtonCaption: null,
+      documentsSectionTitle: null,
+      documentsSectionHelpText: null,
+      downloadButtonCaption: null,
+      commentsEnabled: null,
+      userListPageTitle: null
+    };
+
+    this.setOptions = function(newOptions) {
+      if (typeof(newOptions) === 'object') {
+        Object.keys(newOptions).forEach(function(option) {
+          if (option in options) {
+            options[option] = newOptions[option];
+          }
+        });
+      }
+    };
+
+    this.getOptions = function() {
+      return angular.copy(options);
+    };
+
+  })
 
   .service('DataAccessRequestService', ['$translate',
     function ($translate) {
@@ -1119,8 +1154,8 @@ angular.module("access/views/data-access-request-form.html", []).run(["$template
     "\n" +
     "    <form name=\"form.requestForm\" ng-submit=\"submit(form.requestForm)\">\n" +
     "      <div sf-model=\"form.model\" sf-form=\"form.definition\" sf-schema=\"form.schema\" required=\"true\"></div>\n" +
-    "      <h2 translate>data-access-request.documents</h2>\n" +
-    "      <p translate>data-access-request.documents-help</p>\n" +
+    "      <h2>{{config.documentsSectionTitle || 'data-access-request.documents' | translate}}</h2>\n" +
+    "      <p>{{config.documentsSectionHelpText || 'data-access-request.documents-help' | translate}}</p>\n" +
     "      <div class=\"form-group\">\n" +
     "        <attachment-input files=\"dataAccessRequest.attachments\" multiple=\"true\"></attachment-input>\n" +
     "      </div>\n" +
@@ -1181,7 +1216,7 @@ angular.module("access/views/data-access-request-list.html", []).run(["$template
     "  <div ng-if=\"headerTemplateUrl\" ng-include=\"headerTemplateUrl\"></div>\n" +
     "\n" +
     "  <a ng-href=\"#/data-access-request/new\" class=\"btn btn-info\">\n" +
-    "    <i class=\"fa fa-plus\"></i> <span translate>data-access-request.add</span>\n" +
+    "    <i class=\"fa fa-plus\"></i> <span>{{config.newRequestButtonCaption || 'data-access-request.add' | translate}}</span>\n" +
     "  </a>\n" +
     "\n" +
     "  <p class=\"help-block\" ng-if=\"requests.length == 0 && !loading\">\n" +
@@ -1353,7 +1388,7 @@ angular.module("access/views/data-access-request-view.html", []).run(["$template
     "        <i class=\"fa fa-pencil-square-o\"></i>\n" +
     "      </a>\n" +
     "      <a target=\"_self\" href=\"{{requestDownloadUrl}}\" class=\"btn btn-default\">\n" +
-    "        <i class=\"glyphicon glyphicon-download-alt\"></i> <span translate>download</span>\n" +
+    "        <i class=\"glyphicon glyphicon-download-alt\"></i> <span>{{config.downloadButtonCaption || 'download' | translate}}</span>\n" +
     "      </a>\n" +
     "      <a ng-click=\"delete()\"\n" +
     "        ng-if=\"actions.canDelete(dataAccessRequest)\"\n" +
@@ -1369,7 +1404,7 @@ angular.module("access/views/data-access-request-view.html", []).run(["$template
     "        <form id=\"request-form\" name=\"forms.requestForm\">\n" +
     "          <div sf-model=\"form.model\" sf-form=\"form.definition\" sf-schema=\"form.schema\"></div>\n" +
     "        </form>\n" +
-    "        <h2 translate>data-access-request.documents</h2>\n" +
+    "        <h2>{{config.documentsSectionTitle || 'data-access-request.documents' | translate}}</h2>\n" +
     "\n" +
     "        <p ng-if=\"dataAccessRequest.attachments.length == 0\" translate>\n" +
     "          data-access-request.no-documents\n" +
@@ -1378,7 +1413,7 @@ angular.module("access/views/data-access-request-view.html", []).run(["$template
     "        <attachment-list files=\"dataAccessRequest.attachments\"\n" +
     "            href-builder=\"getDownloadHref(attachments, id)\"></attachment-list>\n" +
     "      </tab>\n" +
-    "      <tab ng-click=\"selectTab('comments')\" heading=\"{{'data-access-request.comments' | translate}}\">\n" +
+    "      <tab ng-if=\"config.commentsEnabled\" ng-click=\"selectTab('comments')\" heading=\"{{'data-access-request.comments' | translate}}\">\n" +
     "        <obiba-comments comments=\"form.comments\" on-update=\"updateComment\" on-delete=\"deleteComment\" name-resolver=\"userProfileService.getFullName\" edit-action=\"EDIT\" delete-action=\"DELETE\"></obiba-comments>\n" +
     "        <obiba-comment-editor on-submit=\"submitComment\"></obiba-comment-editor>\n" +
     "      </tab>\n" +
