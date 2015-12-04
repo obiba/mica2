@@ -12,7 +12,7 @@
   <div ng-if="headerTemplateUrl" ng-include="headerTemplateUrl"></div>
 
   <a ng-href="#/data-access-request/new" class="btn btn-info">
-    <i class="fa fa-plus"></i> <span translate>data-access-request.add</span>
+    <i class="fa fa-plus"></i> <span>{{config.newRequestButtonCaption || 'data-access-request.add' | translate}}</span>
   </a>
 
   <p class="help-block" ng-if="requests.length == 0 && !loading">
