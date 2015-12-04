@@ -103,7 +103,7 @@ mica.attachment
     }
 
     $scope.addAccess = function () {
-      editAccess({type:'USER', role: 'READER'});
+      editAccess({type:'USER', role: 'READER', file: true});
     };
 
     $scope.deleteAccess = function (acl) {

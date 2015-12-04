@@ -51,7 +51,7 @@ mica.network
       return $resource('ws/draft/network/:id/accesses', {}, {
         'save': {
           method: 'PUT',
-          params: {id: '@id', type: '@type', principal: '@principal'},
+          params: {id: '@id', type: '@type', principal: '@principal', file: '@file'},
           errorHandler: true
         },
         'delete': {method: 'DELETE', params: {id: '@id', type: '@type', principal: '@principal'}, errorHandler: true},

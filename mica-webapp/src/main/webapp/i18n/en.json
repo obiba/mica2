@@ -739,6 +739,7 @@
     "editor-help": "Edit access to the document in draft mode with its revisions and its associated files. Publication or permanent deletion are not permitted.",
     "reviewer": "Reviewer",
     "reviewer-help": "Full access to the document, including its publication, permanent deletion and permissions.",
+    "file-access": "Apply Read access to all associated files",
     "delete-dialog": {
       "title": "Delete Permission",
       "message": "Are you sure you want to delete the permission of {{arg0}} {{arg1}}"
