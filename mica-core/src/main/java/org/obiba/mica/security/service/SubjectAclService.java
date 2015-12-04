@@ -211,7 +211,6 @@ public class SubjectAclService {
     SubjectAcl acl;
     if(acls == null || acls.isEmpty()) {
       acl = SubjectAcl.newBuilder(principal, type).resource(resource).action(action).instance(instance).build();
-      subjectAclRepository.save(acl);
     } else {
       acl = acls.get(0);
       acl.removeActions();
