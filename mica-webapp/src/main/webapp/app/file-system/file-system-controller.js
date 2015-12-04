@@ -543,7 +543,7 @@ mica.fileSystem
       $scope.toStatus = toStatus;
 
       MicaConfigResource.get(function (micaConfig) {
-        $scope.micaConfig = micaConfig;
+        $scope.openAccess = micaConfig.openAccess;
         $scope.tabs = [];
         $scope.languages = [];
         micaConfig.languages.forEach(function (lang) {
