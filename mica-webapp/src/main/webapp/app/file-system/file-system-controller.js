@@ -16,6 +16,7 @@ mica.fileSystem
     '$rootScope',
     '$scope',
     '$log',
+    '$filter',
     'FileSystemService',
     'BreadcrumbHelper',
     'LocationService',
@@ -31,6 +32,7 @@ mica.fileSystem
     function ($rootScope,
               $scope,
               $log,
+              $filter,
               FileSystemService,
               BreadcrumbHelper,
               LocationService,
@@ -498,12 +500,19 @@ mica.fileSystem
       };
 
       $scope.addAccess = function (document, access) {
-        DraftFileAccessResource.save({path: document.path}, access, function onSuccess() {
+        var submittedAccess = angular.copy(access);
+        submittedAccess.type = access.type.name ? access.type.name : 'USER';
+        DraftFileAccessResource.save({path: document.path}, submittedAccess, function onSuccess() {
           $scope.loadAccesses(document);
-          $scope.data.access = {};
+          $scope.data.access = { type: $scope.ACCESS_TYPES[0] };
         });
         $scope.data.addAccess = false;
       };
+
+      $scope.ACCESS_TYPES = [
+        {name: 'USER', label: $filter('translate')('permission.user')},
+        {name: 'GROUP', label: $filter('translate')('permission.group')}
+      ];
 
       $scope.screen = $rootScope.screen;
       $scope.hasRole = $rootScope.hasRole;
@@ -547,6 +556,7 @@ mica.fileSystem
         rootPath: null,
         document: null,
         accesses: [],
+        access: { type: $scope.ACCESS_TYPES[0] },
         search: {
           text: null,
           active: false,

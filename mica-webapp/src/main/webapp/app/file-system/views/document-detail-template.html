@@ -52,25 +52,34 @@
         </span>
       </div>
       <div ng-if="!micaConfig.openAccess">
-        <i class="fa fa-unlock"></i>
-        <div ng-repeat="access in data.accesses"
-          class="label {{access.type === 'USER' ? 'label-success' : 'label-warning'}} hoffset1"
-          title="{{'permission.' + access.type.toLowerCase() | translate}}">
-          <em ng-if="access.principal === '*'" translate>
-            {{access.type === 'USER' ? 'permission.anyone' : 'permission.any-group'}}
-          </em>
-          <span ng-if="access.principal !== '*'">
-            {{access.principal}}
-          </span>
-          <a href ng-if="data.document.permissions.delete" ng-click="deleteAccess(data.document, access)">x</a>
-        </div>
-        <span class="hoffset1" ng-if="data.document.permissions.publish">
-          <a href ng-click="data.addAccess = true" ng-hide="">
-            <i class="fa fa-plus"></i>
-          </a>
-          <div ng-if="data.addAccess">
+        <ul class="list-inline">
+          <li>
+            <i class="fa fa-unlock-alt"></i>
+          </li>
+          <li ng-repeat="access in data.accesses"
+            class="label {{access.type === 'USER' ? 'label-success' : 'label-warning'}} hoffset1"
+            title="{{'permission.' + access.type.toLowerCase() | translate}}">
+            <em ng-if="access.principal === '*'" translate>
+              {{access.type === 'USER' ? 'permission.anyone' : 'permission.any-group'}}
+            </em>
+            <span ng-if="access.principal !== '*'">
+              {{access.principal}}
+            </span>
+            <a href ng-if="data.document.permissions.delete" ng-click="deleteAccess(data.document, access)" class="hoffset1">x</a>
+          </li>
+          <li ng-if="data.document.permissions.publish && !data.addAccess">
+            <a href ng-click="data.addAccess = true">
+              <i class="fa fa-plus"></i>
+            </a>
+          </li>
+        </ul>
+        <div ng-if="data.document.permissions.publish && data.addAccess" class="panel panel-default">
+          <div class="panel-body">
             <form name="form" role="form" novalidate>
-              <div form-input name="principal" model="data.access.principal"></div>
+              <select id="type" name="type" class="form-control" ng-model="data.access.type"
+                ng-options="type.label for type in ACCESS_TYPES" required="true">
+              </select>
+              <div form-input name="principal" model="data.access.principal" placeholder="permission.principal-help"></div>
                 <span class="editable-buttons">
                   <button ng-click="addAccess(data.document, data.access)" class="btn btn-primary">
                     <span class="glyphicon glyphicon-ok"></span>
@@ -81,7 +90,7 @@
                 </span>
             </form>
           </div>
-        </span>
+        </div>
       </div>
     </div>
 
