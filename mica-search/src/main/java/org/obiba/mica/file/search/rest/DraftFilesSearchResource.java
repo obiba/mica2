@@ -42,7 +42,7 @@ public class DraftFilesSearchResource extends AbstractFileSearchResource {
   @Override
   protected List<Mica.FileDto> searchFiles(int from, int limit, String sort, String order, String queryString) {
     PublishedDocumentService.Documents<AttachmentState> states = esAttachmentService
-      .find(from, limit, sort, order, null, queryString);
+      .find(from, limit, sort, order, getBasePath(), queryString);
 
     return states.getList().stream().filter(this::isPermitted).map(state -> dtos.asFileDto(state, false, false))
       .collect(Collectors.toList());

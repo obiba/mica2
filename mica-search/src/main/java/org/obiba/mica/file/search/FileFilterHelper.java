@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
@@ -68,34 +69,108 @@ public class FileFilterHelper {
         path.startsWith("/harmonization-dataset/"));
   }
 
-  public FilterBuilder makeDraftFilesFilter() {
-    List<String> networkIds = networkService.findPublishedStates().stream().map(NetworkState::getId)
-      .filter(s -> subjectAclService.isPermitted("/draft/network", "VIEW", s)).collect(Collectors.toList());
-    List<String> studyIds = studyService.findPublishedStates().stream().map(StudyState::getId)
-      .filter(s -> subjectAclService.isPermitted("/draft/study", "VIEW", s)).collect(Collectors.toList());
-    List<String> studyDatasetIds = studyDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
-      .filter(s -> subjectAclService.isPermitted("/draft/study-dataset", "VIEW", s)).collect(Collectors.toList());
-    List<String> harmonizationDatasetIds = harmonizationDatasetService.findPublishedStates().stream()
-      .map(HarmonizationDatasetState::getId)
-      .filter(s -> subjectAclService.isPermitted("/draft/harmonization-dataset", "VIEW", s))
-      .collect(Collectors.toList());
+  public FilterBuilder makeDraftFilesFilter(@NotNull String basePath) {
+    List<String> networkIds = getNetworkIds(basePath, true);
+    List<String> studyIds = getStudyIds(basePath, true);
+    List<String> studyDatasetIds = getStudyDatasetIds(basePath, true);
+    List<String> harmonizationDatasetIds = getHarmonizationDatasetIds(basePath, true);
 
     return makeFilterBuilder(networkIds, studyIds, studyDatasetIds, harmonizationDatasetIds);
   }
 
-  public FilterBuilder makePublishedFilesFilter() {
+  public FilterBuilder makePublishedFilesFilter(String basePath) {
     if(micaConfigService.getConfig().isOpenAccess()) return null;
-    List<String> networkIds = networkService.findPublishedStates().stream().map(NetworkState::getId)
-      .filter(s -> subjectAclService.isAccessible("/network", s)).collect(Collectors.toList());
-    List<String> studyIds = studyService.findPublishedStates().stream().map(StudyState::getId)
-      .filter(s -> subjectAclService.isAccessible("/study", s)).collect(Collectors.toList());
-    List<String> studyDatasetIds = studyDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
-      .filter(s -> subjectAclService.isAccessible("/study-dataset", s)).collect(Collectors.toList());
-    List<String> harmonizationDatasetIds = harmonizationDatasetService.findPublishedStates().stream()
-      .map(HarmonizationDatasetState::getId).filter(s -> subjectAclService.isAccessible("/harmonization-dataset", s))
-      .collect(Collectors.toList());
+    List<String> networkIds = getNetworkIds(basePath, false);
+    List<String> studyIds = getStudyIds(basePath, false);
+    List<String> studyDatasetIds = getStudyDatasetIds(basePath, false);
+    List<String> harmonizationDatasetIds = getHarmonizationDatasetIds(basePath, false);
 
     return makeFilterBuilder(networkIds, studyIds, studyDatasetIds, harmonizationDatasetIds);
+  }
+
+  //
+  // Private methods
+  //
+
+  private List<String> getNetworkIds(String basePath, boolean draft) {
+    if("/".equals(basePath) || "/network".equals(basePath)) {
+      return draft
+        ? networkService.findAllStates().stream().map(NetworkState::getId)
+        .filter(s -> subjectAclService.isPermitted("/draft/network", "VIEW", s)).collect(Collectors.toList())
+        : networkService.findPublishedStates().stream().map(NetworkState::getId)
+          .filter(s -> subjectAclService.isAccessible("/network", s)).collect(Collectors.toList());
+    }
+    if(basePath.startsWith("/network/")) {
+      String id = extractId(basePath,"/network/");
+      if(draft
+        ? subjectAclService.isPermitted("/draft/network", "VIEW", id)
+        : subjectAclService.isAccessible("/network", id)) return Lists.newArrayList(id);
+    }
+    return Lists.newArrayList();
+  }
+
+  private List<String> getStudyIds(String basePath, boolean draft) {
+    if("/".equals(basePath) || "/study".equals(basePath)) {
+      return draft
+        ? studyService.findAllStates().stream().map(StudyState::getId)
+        .filter(s -> subjectAclService.isPermitted("/draft/study", "VIEW", s)).collect(Collectors.toList())
+        : studyService.findPublishedStates().stream().map(StudyState::getId)
+          .filter(s -> subjectAclService.isAccessible("/study", s)).collect(Collectors.toList());
+    }
+    if(basePath.startsWith("/study/")) {
+      String id = extractId(basePath,"/study/");
+      if(draft
+        ? subjectAclService.isPermitted("/draft/study", "VIEW", id)
+        : subjectAclService.isAccessible("/study", id)) return Lists.newArrayList(id);
+    }
+    return Lists.newArrayList();
+  }
+
+  private List<String> getStudyDatasetIds(String basePath, boolean draft) {
+    if("/".equals(basePath) || "/study-dataset".equals(basePath)) {
+      return draft
+        ? studyDatasetService.findAllStates().stream().map(StudyDatasetState::getId)
+        .filter(s -> subjectAclService.isPermitted("/draft/study-dataset", "VIEW", s)).collect(Collectors.toList())
+        : studyDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
+          .filter(s -> subjectAclService.isAccessible("/study-dataset", s)).collect(Collectors.toList());
+    }
+    if(basePath.startsWith("/study-dataset/")) {
+      String id = extractId(basePath,"/study-dataset/");
+      if(draft
+        ? subjectAclService.isPermitted("/draft/study-dataset", "VIEW", id)
+        : subjectAclService.isAccessible("/study-dataset", id)) return Lists.newArrayList(id);
+    }
+    return Lists.newArrayList();
+  }
+
+  private List<String> getHarmonizationDatasetIds(String basePath, boolean draft) {
+    if("/".equals(basePath) || "/harmonization-dataset".equals(basePath)) {
+      return draft
+        ? harmonizationDatasetService.findAllStates().stream().map(HarmonizationDatasetState::getId)
+        .filter(s -> subjectAclService.isPermitted("/draft/harmonization-dataset", "VIEW", s))
+        .collect(Collectors.toList())
+        : harmonizationDatasetService.findPublishedStates().stream().map(HarmonizationDatasetState::getId)
+          .filter(s -> subjectAclService.isAccessible("/harmonization-dataset", s)).collect(Collectors.toList());
+    }
+    if(basePath.startsWith("/harmonization-dataset/")) {
+      String id = extractId(basePath,"/harmonization-dataset/");
+      if(draft
+        ? subjectAclService.isPermitted("/draft/harmonization-dataset", "VIEW", id)
+        : subjectAclService.isAccessible("/harmonization-dataset", id)) return Lists.newArrayList(id);
+    }
+    return Lists.newArrayList();
+  }
+
+  /**
+   * Extract the entity identifier from base path.
+   * @param basePath
+   * @param replace String to be removed at the beginning of base path
+   * @return
+   */
+  private String extractId(String basePath, String replace) {
+    String p = basePath.replaceFirst(replace, "");
+    int idx = p.lastIndexOf('/');
+    return idx <= 0 ? p : p.substring(0, idx);
   }
 
   private FilterBuilder makeFilterBuilder(List<String> networkIds, List<String> studyIds, List<String> studyDatasetIds,

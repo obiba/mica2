@@ -36,6 +36,8 @@ public abstract class AbstractFileSearchResource {
   @Inject
   protected Dtos dtos;
 
+  private String basePath;
+
   /**
    * Specify if the file system view is published or draft. If published, only the published {@link AttachmentState}s
    * will be looked up and the corresponding {@link Attachment} will be returned. Otherwise all {@link AttachmentState}
@@ -69,11 +71,21 @@ public abstract class AbstractFileSearchResource {
     @QueryParam("from") @DefaultValue("0") int from, @QueryParam("limit") @DefaultValue(MAX_SIZE) int limit,
     @QueryParam("sort") @DefaultValue(DEFAULT_SORT) String sort,
     @QueryParam("order") @DefaultValue("desc") String order) {
+    basePath = normalizePath(path);
     if(!isPublishedFileSystem()) {
       subjectAclService.checkPermission("/draft/file", "VIEW", normalizePath(path));
     }
     String queryString = getQueryString(path, query, recursively);
 
     return searchFiles(from, limit, sort, order, queryString);
+  }
+
+  /**
+   * The path being searched.
+   * 
+   * @return
+   */
+  public String getBasePath() {
+    return basePath;
   }
 }

@@ -22,12 +22,14 @@ import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.search.AbstractPublishedDocumentService;
-import org.springframework.stereotype.Service;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 
-@Service
+@Component
+@Scope("request")
 public class EsPublishedFileService extends AbstractPublishedDocumentService<AttachmentState> {
 
   @Inject
@@ -35,6 +37,8 @@ public class EsPublishedFileService extends AbstractPublishedDocumentService<Att
 
   @Inject
   private FileFilterHelper fileFilterHelper;
+
+  private String basePath = "/";
 
   @Override
   protected AttachmentState processHit(SearchHit hit) throws IOException {
@@ -54,16 +58,17 @@ public class EsPublishedFileService extends AbstractPublishedDocumentService<Att
 
   @Override
   public Documents<AttachmentState> find(int from, int limit, @Nullable String sort, @Nullable String order,
-    @Nullable String studyId, @Nullable String queryString) {
+    @Nullable String basePath, @Nullable String queryString) {
+    this.basePath = basePath;
     List<String> fields = Lists.newArrayList("publishedAttachment.name.analyzed", "publishedAttachment.type.analyzed");
     fields.addAll(getLocalizedFields("publishedAttachment.description"));
-    return find(from, limit, sort, order, studyId, queryString, fields);
+    return find(from, limit, sort, order, null, queryString, fields);
   }
 
   @Nullable
   @Override
   protected FilterBuilder filterByAccess() {
-    return fileFilterHelper.makePublishedFilesFilter();
+    return fileFilterHelper.makePublishedFilesFilter(basePath);
   }
 
 }

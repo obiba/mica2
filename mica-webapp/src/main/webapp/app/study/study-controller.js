@@ -149,7 +149,7 @@ mica.study
 
         study.populations = study.populations || [];
 
-        Memberships = study.memberships.map(function (m) {
+        $scope.memberships = study.memberships.map(function (m) {
           if (!m.members) {
             m.members = [];
           }
