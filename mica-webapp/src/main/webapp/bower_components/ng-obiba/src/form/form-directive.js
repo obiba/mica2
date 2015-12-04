@@ -33,6 +33,7 @@ angular.module('obiba.form')
         max: '@',
         step: '@',
         help: '@',
+        placeholder: '@',
         readonly: '@'
       },
       templateUrl: 'form/form-input-template.tpl.html',

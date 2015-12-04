@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba
 
  * License: GNU Public License version 3
- * Date: 2015-11-05
+ * Date: 2015-12-04
  */
 'use strict';
 
@@ -560,9 +560,34 @@ angular.module('obiba.utils', [])
 
       return message ? message : 'Server Error (' + response.status + '): ' + response.statusText;
     };
+  }])
 
+  .service('JsonUtils',
+    function () {
+      return {
+        parseJsonSafely: function (json, defaultValue) {
+          try {
+            return JSON.parse(json);
+          } catch (e) {
+            return defaultValue;
+          }
+        },
 
-  }]);
+        prettifyJson: function (jsonData) {
+          var str = typeof jsonData === 'string' ? jsonData : JSON.stringify(jsonData, undefined, 2);
+          return str;
+        },
+
+        isJsonValid: function (json) {
+          try {
+            JSON.parse(json);
+          } catch (e) {
+            return false;
+          }
+          return true;
+        }
+      };
+  });
 ;'use strict';
 
 angular.module('obiba.notification', [
@@ -763,6 +788,7 @@ angular.module('obiba.form')
         max: '@',
         step: '@',
         help: '@',
+        placeholder: '@',
         readonly: '@'
       },
       templateUrl: 'form/form-input-template.tpl.html',
@@ -1216,6 +1242,7 @@ angular.module("form/form-input-template.tpl.html", []).run(["$templateCache", f
     "      class=\"form-control\"\n" +
     "      id=\"{{name}}\"\n" +
     "      name=\"{{name}}\"\n" +
+    "      placeholder=\"{{placeholder | translate}}\"\n" +
     "      form-server-error\n" +
     "      ng-readonly=\"{{readonly}}\"\n" +
     "      ng-attr-min=\"{{min}}\"\n" +
