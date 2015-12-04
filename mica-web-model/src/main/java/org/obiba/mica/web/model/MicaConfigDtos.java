@@ -50,6 +50,10 @@ class MicaConfigDtos {
 
     builder.addAllRoles(config.getRoles());
 
+    builder.setIsFsNotificationsEnabled(config.isFsNotificationsEnabled());
+
+    if(config.getFsNotificationSubject() != null) builder.setFsNotificationsSubject(config.getFsNotificationSubject());
+
     return builder.build();
   }
 
@@ -67,6 +71,8 @@ class MicaConfigDtos {
     if (dto.hasPrivacyThreshold()) config.setPrivacyThreshold(dto.getPrivacyThreshold());
 
     config.setRoles(dto.getRolesList());
+    config.setFsNotificationsEnabled(dto.getIsFsNotificationsEnabled());
+    config.setFsNotificationSubject(dto.getFsNotificationsSubject());
 
     return config;
   }

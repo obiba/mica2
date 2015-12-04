@@ -27,6 +27,7 @@ import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.AttachmentStateRepository;
 import org.obiba.mica.core.repository.PersonRepository;
 import org.obiba.mica.core.service.GitService;
+import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.StudyDatasetRepository;
 import org.obiba.mica.file.Attachment;
@@ -399,6 +400,11 @@ public class StudyDtosTest {
     @Bean
     public HarmonizationDatasetRepository harmonizationDatasetRepository() {
       return Mockito.mock(HarmonizationDatasetRepository.class);
+    }
+
+    @Bean
+    public MailService mailService() {
+      return mock(MailService.class);
     }
 
     @Bean

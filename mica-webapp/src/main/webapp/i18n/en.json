@@ -350,7 +350,14 @@
     "roles-help": "A person can be member of a study or of a network with one of the listed roles.",
     "add-role": "Add Role",
     "role-help": "Role unique identifier.",
-    "role-error": "Role identifier already exists."
+    "role-error": "Role identifier already exists.",
+    "notifications": {
+      "title": "Notifications",
+      "file-system": "File system notifications",
+      "file-system-subject": "File system notifications subject",
+      "file-system-help": "Send email notifications when files status change to Deleted or Under review.",
+      "file-system-subject-help": "Email subject for file system notifications."
+    }
   },
   "publish": {
     "label": "Publish",

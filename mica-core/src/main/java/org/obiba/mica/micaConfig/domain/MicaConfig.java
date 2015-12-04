@@ -58,6 +58,10 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   private boolean openAccess = true;
 
+  private boolean isFsNotificationsEnabled = false;
+
+  private String fsNotificationsSubject;
+
   public String getName() {
     return name;
   }
@@ -162,5 +166,21 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public boolean isOpenAccess() {
     return openAccess;
+  }
+
+  public boolean isFsNotificationsEnabled() {
+    return isFsNotificationsEnabled;
+  }
+
+  public void setFsNotificationsEnabled(boolean isFsNotificationsEnabled) {
+    this.isFsNotificationsEnabled = isFsNotificationsEnabled;
+  }
+
+  public String getFsNotificationSubject() {
+    return fsNotificationsSubject;
+  }
+
+  public void setFsNotificationSubject(String fsNotificationSubject) {
+    this.fsNotificationsSubject = fsNotificationSubject;
   }
 }

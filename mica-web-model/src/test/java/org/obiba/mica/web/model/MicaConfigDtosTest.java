@@ -37,5 +37,4 @@ public class MicaConfigDtosTest {
     MicaConfig fromDto = dtos.fromDto(dto);
     assertThat(fromDto).isEqualToIgnoringGivenFields(config, "createdDate");
   }
-
 }

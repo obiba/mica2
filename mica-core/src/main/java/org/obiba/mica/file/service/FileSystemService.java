@@ -1,15 +1,17 @@
 package org.obiba.mica.file.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.math3.util.Pair;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -21,6 +23,7 @@ import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.AttachmentStateRepository;
+import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.event.DatasetPublishedEvent;
@@ -35,9 +38,15 @@ import org.obiba.mica.file.event.FileDeletedEvent;
 import org.obiba.mica.file.event.FilePublishedEvent;
 import org.obiba.mica.file.event.FileUnPublishedEvent;
 import org.obiba.mica.file.event.FileUpdatedEvent;
+import org.obiba.mica.micaConfig.domain.MicaConfig;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.event.NetworkPublishedEvent;
 import org.obiba.mica.network.event.NetworkUnpublishedEvent;
 import org.obiba.mica.network.event.NetworkUpdatedEvent;
+import org.obiba.mica.security.PermissionsUtils;
+import org.obiba.mica.security.Roles;
+import org.obiba.mica.security.domain.SubjectAcl;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
 import org.obiba.mica.study.event.StudyPublishedEvent;
@@ -49,8 +58,15 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+
+import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
 
 @Component
 public class FileSystemService {
@@ -70,6 +86,15 @@ public class FileSystemService {
 
   @Inject
   private FileStoreService fileStoreService;
+
+  @Inject
+  private MicaConfigService micaConfigService;
+
+  @Inject
+  private SubjectAclService subjectAclService;
+
+  @Inject
+  private MailService mailService;
 
   private ReentrantLock fsLock = new ReentrantLock();
 
@@ -424,8 +449,15 @@ public class FileSystemService {
    */
   public void updateStatus(String path, RevisionStatus status) {
     List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
+    AttachmentState state = states.stream().filter(s -> DIR_NAME.equals(s.getName())).findFirst()
+      .orElseThrow(() -> NoSuchEntityException.withPath(AttachmentState.class, path));
+    RevisionStatus currentStatus = state.getRevisionStatus();
     states.addAll(findAttachmentStates(String.format("^%s/", path), false));
     states.stream().forEach(s -> updateStatus(s, status));
+
+    if(checkNotification(currentStatus, status)) {
+      sendNotification(path, status);
+    }
   }
 
   /**
@@ -437,7 +469,56 @@ public class FileSystemService {
    */
   public void updateStatus(String path, String name, RevisionStatus status) {
     AttachmentState state = getAttachmentState(path, name, false);
+    RevisionStatus currentStatus = state.getRevisionStatus();
+
     updateStatus(state, status);
+
+    if(checkNotification(currentStatus, status)) {
+      sendNotification(String.format("%s/%s", path, name), status);
+    }
+  }
+
+  private boolean checkNotification(RevisionStatus current, RevisionStatus status) {
+    return micaConfigService.getConfig().isFsNotificationsEnabled() && !current.equals(status) &&
+      (status.equals(RevisionStatus.DELETED) || status.equals(RevisionStatus.UNDER_REVIEW));
+  }
+
+  private void sendNotification(String path, RevisionStatus status) {
+    List<SubjectAcl> acls = Lists.newArrayList(
+      SubjectAcl.newBuilder(Roles.MICA_REVIEWER, SubjectAcl.Type.GROUP).action(PermissionsUtils.asActions("REVIEWER"))
+        .build());
+    String[] documentParts = StringUtils.stripStart(path, "/").split("/");
+
+    if(documentParts.length < 2) return;
+
+    String documentInstance = String.format("/%s/%s", documentParts[0], documentParts[1]);
+    acls.addAll(subjectAclService.findByResourceInstance("/draft/file", documentInstance));
+
+    Map<RevisionStatus, String> requiredActions = new HashMap<RevisionStatus, String>() {
+      {
+        put(RevisionStatus.UNDER_REVIEW, "PUBLISH");
+        put(RevisionStatus.DELETED, "DELETE");
+      }
+    };
+
+    Map<SubjectAcl.Type, List<String>> recipients = acls.stream()
+      .filter(a -> a.getActions().contains(requiredActions.get(status))).map(
+        a -> Pair.create(a.getPrincipal(), a.getType()))
+      .collect(groupingBy(a -> a.getSecond(), mapping(p -> p.getFirst(), toList())));
+
+    if (recipients.isEmpty()) return;
+
+    MicaConfig config = micaConfigService.getConfig();
+    Map<String, String> ctx = Maps.newHashMap();
+    ctx.put("publicUrl", micaConfigService.getPublicUrl());
+    ctx.put("status", status.toString());
+    ctx.put("document", documentInstance);
+    ctx.put("path", path);
+
+    mailService
+      .sendEmailToGroupsAndUsers(ofNullable(config.getFsNotificationSubject()).orElse(""), "fileStatusChanged", ctx,
+        recipients.getOrDefault(SubjectAcl.Type.GROUP, Lists.newArrayList()),
+        recipients.getOrDefault(SubjectAcl.Type.USER, Lists.newArrayList()));
   }
 
   /**
@@ -681,7 +762,7 @@ public class FileSystemService {
    * @return
    */
   private List<AttachmentState> findDraftAttachmentStates(String pathRegEx) {
-    return attachmentStateRepository.findByPath(pathRegEx).stream().collect(Collectors.toList());
+    return attachmentStateRepository.findByPath(pathRegEx).stream().collect(toList());
   }
 
   /**
@@ -692,7 +773,7 @@ public class FileSystemService {
    */
   private List<AttachmentState> findPublishedAttachmentStates(String pathRegEx) {
     return attachmentStateRepository.findByPathAndPublishedAttachmentNotNull(pathRegEx).stream()
-      .collect(Collectors.toList());
+      .collect(toList());
   }
 
   /**
@@ -703,7 +784,7 @@ public class FileSystemService {
    */
   private List<Attachment> findDraftAttachments(String pathRegEx) {
     return findDraftAttachmentStates(pathRegEx).stream().map(AttachmentState::getAttachment)
-      .collect(Collectors.toList());
+      .collect(toList());
   }
 
   /**
@@ -714,7 +795,7 @@ public class FileSystemService {
    */
   private List<Attachment> findPublishedAttachments(String pathRegEx) {
     return findPublishedAttachmentStates(pathRegEx).stream().map(AttachmentState::getPublishedAttachment)
-      .collect(Collectors.toList());
+      .collect(toList());
   }
 
   private static String extractDirName(String pathWithName, @Nullable String prefix) {

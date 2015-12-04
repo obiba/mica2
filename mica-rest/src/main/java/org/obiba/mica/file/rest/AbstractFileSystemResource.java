@@ -162,7 +162,9 @@ public abstract class AbstractFileSystemResource {
 
   protected void doUpdateStatus(String path, @NotNull RevisionStatus status) {
     String basePath = normalizePath(path);
+
     subjectAclService.checkPermission("/draft/file", "EDIT", basePath);
+
     if(path.endsWith("/")) updateFolderStatus(basePath, status);
 
     try {

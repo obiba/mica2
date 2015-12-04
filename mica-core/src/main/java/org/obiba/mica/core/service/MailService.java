@@ -1,6 +1,7 @@
 package org.obiba.mica.core.service;
 
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -16,9 +17,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 
 import static java.net.URLEncoder.encode;
+import static java.util.stream.Collectors.toList;
 
 /**
  * Service for sending e-mails.
@@ -56,6 +60,15 @@ public class MailService extends AgateRestService {
   @Async
   public void sendEmailToGroups(String subject, String template, Map<String, String> context, String... groups) {
     sendEmail(subject, template, context, toRecipientFormParam("group", groups));
+  }
+
+  @Async
+  public void sendEmailToGroupsAndUsers(String subject, String template, Map<String, String> context,
+    List<String> groups, List<String> users) {
+    String groupsParam = toRecipientFormParam("group", groups.stream().toArray(String[]::new));
+    String usernameParam = toRecipientFormParam("username", users.stream().toArray(String[]::new));
+    sendEmail(subject, template, context, Joiner.on("&")
+      .join(Stream.of(groupsParam, usernameParam).filter(s -> !Strings.isNullOrEmpty(s)).collect(toList())));
   }
 
   @Async
