@@ -8,12 +8,17 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
+import org.obiba.mica.dataset.event.DatasetDeletedEvent;
+import org.obiba.mica.file.event.FileDeletedEvent;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.network.event.NetworkDeletedEvent;
 import org.obiba.mica.security.domain.SubjectAcl;
 import org.obiba.mica.security.event.ResourceDeletedEvent;
 import org.obiba.mica.security.event.SubjectAclUpdatedEvent;
 import org.obiba.mica.security.repository.SubjectAclRepository;
+import org.obiba.mica.study.event.StudyDeletedEvent;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.codahale.metrics.annotation.Timed;
@@ -289,9 +294,64 @@ public class SubjectAclService {
       .delete(subjectAclRepository.findByResourceStartingWith(event.getResource() + "/" + event.getInstance() + "/.+"));
   }
 
+  @Async
+  @Subscribe
+  public void studyDeleted(StudyDeletedEvent event) {
+    removeInstance("/study", event.getPersistable().getId());
+  }
+
+  @Async
+  @Subscribe
+  public void networkDeleted(NetworkDeletedEvent event) {
+    removeInstance("/network", event.getPersistable().getId());
+  }
+
+  @Async
+  @Subscribe
+  public void datasetDeleted(DatasetDeletedEvent event) {
+    removeInstance(event.isStudyDataset() ? "/study-dataset" : "/harmonization-dataset", event.getPersistable().getId());
+  }
+
+  @Async
+  @Subscribe
+  public void fileDeleted(FileDeletedEvent event) {
+    subjectAclRepository
+      .delete(subjectAclRepository.findByResourceAndInstance("/file", event.getPersistable().getFullPath()));
+    subjectAclRepository
+      .delete(subjectAclRepository.findByResourceAndInstanceRegex("/file", "^" + event.getPersistable().getFullPath() + "/"));
+    subjectAclRepository
+      .delete(subjectAclRepository.findByResourceAndInstance("/draft/file", event.getPersistable().getFullPath()));
+    subjectAclRepository
+      .delete(subjectAclRepository.findByResourceAndInstanceRegex("/draft/file", "^" + event.getPersistable().getFullPath() + "/"));
+  }
+
   //
   // Private methods
   //
+
+  /**
+   * Remove all access controls associated to the instance: draft and published, entity and files.
+   *
+   * @param resource
+   * @param instance
+   */
+  private void removeInstance(String resource, String instance) {
+    // entity, published and draft
+    subjectAclRepository
+      .delete(subjectAclRepository.findByResourceAndInstance(resource, instance));
+    subjectAclRepository
+      .delete(subjectAclRepository.findByResourceAndInstance("/draft" + resource, instance));
+
+    // file and descendants, published and draft
+    subjectAclRepository
+      .delete(subjectAclRepository.findByResourceAndInstance("/file", resource + "/" + instance));
+    subjectAclRepository
+      .delete(subjectAclRepository.findByResourceAndInstanceRegex("/file", "^" + resource + "/" + instance + "/"));
+    subjectAclRepository
+      .delete(subjectAclRepository.findByResourceAndInstance("/draft/file", resource + "/" + instance));
+    subjectAclRepository
+      .delete(subjectAclRepository.findByResourceAndInstanceRegex("/draft/file", "^" + resource + "/" + instance + "/"));
+  }
 
   private void removeSubjectPermission(@NotNull SubjectAcl.Type type, @NotNull String principal,
     @NotNull String resource, @NotNull String action, @NotNull String instance) {
