@@ -13,20 +13,22 @@ if (!fs.exists)
     fs.exists = path.exists;
 
 var allowSave = process.argv.indexOf("--allow-save") != -1;
+if (allowSave)
+    console.warn("writing files from browser is enabled");
 
 http.createServer(function(req, res) {
-    var uri = url.parse(req.url).pathname
+    var uri = unescape(url.parse(req.url).pathname)
       , filename = path.join(process.cwd(), uri);
 
     if (req.method == "PUT") {
         if (!allowSave)
             return error(res, 404, "Saving not allowed pass --allow-save to enable");
-        save(req, res, filename);
+        return save(req, res, filename);
     }
 
     fs.exists(filename, function(exists) {
         if (!exists)
-            return error(res, 404, "404 Not Found\n");
+            return error(res, 404, "404 Not Found\n" + filename);
 
         if (fs.statSync(filename).isDirectory()) {
             var files = fs.readdirSync(filename);
@@ -36,10 +38,13 @@ http.createServer(function(req, res) {
             var html = files.map(function(name) {
                 var href = uri + "/" + name;
                 href = href.replace(/[\/\\]+/g, "/").replace(/\/$/g, "");
-                if (fs.statSync(filename + "/" + name + "/").isDirectory())
-                    href += "/";
-                return "<a href='" + href + "'>" + name + "</a><br>";
-            });
+                try {
+                    var stat = fs.statSync(filename + "/" + name);
+                    if (stat.isDirectory())
+                        href += "/";
+                    return "<a href='" + href + "'>" + name + "</a><br>";
+                } catch(e) {}
+            }).filter(Boolean);
 
             res._hasBody && res.write(html.join(""));
             res.end();
@@ -86,6 +91,7 @@ function save(req, res, filePath) {
         }
         res.statusCode = 200;
         res.end("OK");
+        console.log("saved ", filePath);
     });
 }
 

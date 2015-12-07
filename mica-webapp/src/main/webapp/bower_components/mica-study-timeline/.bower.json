@@ -28,7 +28,7 @@
     "branch": "master",
     "commit": "5e0b75736ed0af1b2d6650d6e01bfbdc0eb8c6b9"
   },
-  "_source": "git@github.com:obiba/mica-study-timeline.git",
+  "_source": "https://github.com/obiba/mica-study-timeline.git",
   "_target": "*",
-  "_originalSource": "git@github.com:obiba/mica-study-timeline.git"
+  "_originalSource": "https://github.com/obiba/mica-study-timeline.git"
 }
