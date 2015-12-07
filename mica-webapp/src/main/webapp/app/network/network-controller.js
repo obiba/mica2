@@ -179,23 +179,39 @@ mica.network
     function ($scope, $modalInstance, ContactsSearchResource, network, lang) {
       $scope.network = network;
       $scope.lang = lang;
-      var studyIds = network.studyIds.join(' ');
       $scope.persons = [];
 
-      if(network.studyIds.length > 0) {
+      var studyIds = network.studyIds.concat([]);
+      var networkIds = network.networkIds.concat([]);
+      if (network.networkSummaries) {
+        network.networkSummaries.forEach(function(n) {
+          studyIds = studyIds.concat(studyIds, n.studyIds);
+        });
+      }
+
+      $scope.query = studyIds.length == 0 ? '' : 'studyMemberships.parentId:(' + studyIds.join(' ') + ')';
+      if (networkIds.length > 0) {
+        if ($scope.query.length > 0) {
+          $scope.query = $scope.query + ' OR ';
+        }
+        $scope.query = $scope.query + 'networkMemberships.parentId:(' + networkIds.join(' ') + ')';
+
+      }
+
+      if(network.studyIds.length > 0 || network.networkIds.length > 0) {
         ContactsSearchResource.get({
-          query: 'studyMemberships.parentId:(' + studyIds + ')',
+          query: $scope.query,
           limit: 999
         }).$promise.then(function (result) {
             $scope.persons = result.persons.filter(function (p) {
-              return p.studyMemberships && p.studyMemberships.length > 0;
+              return p.studyMemberships && p.studyMemberships.length > 0 || p.networkMemberships && p.networkMemberships.length > 0;
             });
           });
       }
 
       $scope.getDownloadAllContactsParams = function () {
         return $.param({
-          query: 'studyMemberships.parentId:(' + studyIds + ')',
+          query: $scope.query,
           limit: 999
         });
       };

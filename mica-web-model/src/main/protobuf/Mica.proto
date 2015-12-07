@@ -285,6 +285,8 @@ message NetworkSummaryDto {
   repeated LocalizedStringDto name = 3;
   repeated LocalizedStringDto acronym = 4;
   required bool published = 5;
+  repeated string studyIds = 6;
+  repeated string networkIds = 7;
 }
 
 message TimestampsDto {

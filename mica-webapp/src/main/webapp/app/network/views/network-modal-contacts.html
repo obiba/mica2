@@ -26,6 +26,7 @@
           <th translate>contact.name</th>
           <th translate>contact.email</th>
           <th translate>studies</th>
+          <th translate>networks</th>
         </tr>
         </thead>
         <tbody>
@@ -39,6 +40,14 @@
           <td>
             <span ng-repeat="m in person.studyMemberships">
               <a ng-href="#/study/{{m.parentId}}" ng-click="cancel()">
+                <localized value="m.parentAcronym" lang="lang"></localized>
+              </a>
+              (<em>{{m.role}}</em>)<span ng-if="!$last">,</span>
+            </span>
+          </td>
+          <td>
+            <span ng-repeat="m in person.networkMemberships">
+              <a ng-href="#/network/{{m.parentId}}" ng-click="cancel()">
                 <localized value="m.parentAcronym" lang="lang"></localized>
               </a>
               (<em>{{m.role}}</em>)<span ng-if="!$last">,</span>
