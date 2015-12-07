@@ -4,14 +4,14 @@
     <div class="modal-header">
       <button type="button" class="close" aria-hidden="true" ng-click="cancel()">&times;</button>
       <h4 class="modal-title" id="configRoleModal">
-        <span translate>config.edit-role</span>
+        <span translate>config.add-role</span>
       </h4>
     </div>
 
     <div class="modal-body">
       <p class="alert alert-danger" ng-show="form.saveAttempted && form.id.$error.text" translate>
         config.role-error</p>
-      <div form-input name="id" model="role.id" label="id" required="true"></div>
+      <div form-input name="id" model="role.id" label="id" help="config.role-help" required="true"></div>
     </div>
 
     <div class="modal-footer">
