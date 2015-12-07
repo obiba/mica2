@@ -77,14 +77,19 @@ var TextInput = function(parentNode, host) {
     });
     this.focus = function() {
         if (tempStyle) return text.focus();
+        var top = text.style.top;
         text.style.position = "fixed";
         text.style.top = "-1000px";
         text.focus();
         setTimeout(function() {
             text.style.position = "";
+            if (text.style.top == "-1000px")
+                text.style.top = top;
         }, 0);
     };
-    this.blur = function() { text.blur(); };
+    this.blur = function() {
+        text.blur();
+    };
     this.isFocused = function() {
         return isFocused;
     };
@@ -306,7 +311,7 @@ var TextInput = function(parentNode, host) {
         var data = handleClipboardData(e);
         if (typeof data == "string") {
             if (data)
-                host.onPaste(data);
+                host.onPaste(data, e);
             if (useragent.isIE)
                 setTimeout(resetSelection);
             event.preventDefault(e);
@@ -485,7 +490,7 @@ var TextInput = function(parentNode, host) {
     this.onContextMenuClose = onContextMenuClose;
     var closeTimeout;
     function onContextMenuClose() {
-        clearTimeout(closeTimeout)
+        clearTimeout(closeTimeout);
         closeTimeout = setTimeout(function () {
             if (tempStyle) {
                 text.style.cssText = tempStyle;
