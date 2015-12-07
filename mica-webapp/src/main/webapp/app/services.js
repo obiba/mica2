@@ -2,15 +2,6 @@
 
 'use strict';
 
-mica.constant('USER_ROLES', {
-  all: '*',
-  admin: 'mica-administrator',
-  reviewer: 'mica-reviewer',
-  editor: 'mica-editor',
-  user: 'mica-user',
-  dao: 'mica-data-access-officer'
-});
-
 /* Services */
 
 mica.factory('BrowserDetector', ['$window',
@@ -58,44 +49,16 @@ mica.factory('Password', ['$resource',
     });
   }]);
 
-
-mica.factory('UserProfileService',
-  function () {
-
-    var getAttributeValue = function(attributes, key) {
-      var result = attributes.filter(function (attribute) {
-        return attribute.key === key;
-      });
-
-      return result && result.length > 0 ? result[0].value : null;
-    };
-
-    return {
-
-      'getAttribute': function (attributes, key) {
-        return getAttributeValue(attributes, key);
-      },
-
-      'getFullName': function (profile) {
-        if (profile) {
-          if (profile.attributes) {
-            return getAttributeValue(profile.attributes, 'firstName') + ' ' + getAttributeValue(profile.attributes, 'lastName');
-          }
-          return profile.username;
-        }
-        return null;
-      }
-    };
-  });
-
-mica.factory('Session', ['$cookieStore',
-  function ($cookieStore) {
+mica.factory('Session', ['SessionProxy','$cookieStore',
+  function (SessionProxy, $cookieStore) {
     this.create = function (login, roles) {
       this.login = login;
       this.roles = roles;
+      SessionProxy.update(this);
     };
     this.setProfile = function(profile) {
       this.profile = profile;
+      SessionProxy.update(this);
     };
     this.destroy = function () {
       this.login = null;
@@ -104,7 +67,9 @@ mica.factory('Session', ['$cookieStore',
       $cookieStore.remove('mica_subject');
       $cookieStore.remove('micasid');
       $cookieStore.remove('obibaid');
+      SessionProxy.update(this);
     };
+
     return this;
   }]);
 

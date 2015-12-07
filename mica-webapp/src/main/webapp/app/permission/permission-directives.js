@@ -1,6 +1,6 @@
 'use strict';
 
-mica.attachment
+mica.permission
 
 .directive('permissionsTable', [function () {
   return {
