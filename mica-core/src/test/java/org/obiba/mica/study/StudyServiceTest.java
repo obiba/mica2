@@ -28,6 +28,7 @@ import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.AttachmentStateRepository;
 import org.obiba.mica.core.service.GitService;
+import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.impl.GridFsService;
 import org.obiba.mica.file.service.FileSystemService;
@@ -36,6 +37,7 @@ import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.network.domain.Network;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
@@ -366,6 +368,16 @@ public class StudyServiceTest {
     @Bean
     public FileSystemService fileSystemService() {
       return mock(FileSystemService.class);
+    }
+
+    @Bean
+    public SubjectAclService subjectAclService() {
+      return mock(SubjectAclService.class);
+    }
+
+    @Bean
+    public MailService mailService() {
+      return mock(MailService.class);
     }
 
     @Bean

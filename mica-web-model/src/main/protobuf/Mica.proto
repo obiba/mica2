@@ -398,6 +398,8 @@ message MicaConfigDto {
   optional int32 privacyThreshold = 7;
   repeated string roles = 8;
   required bool openAccess = 9 [default = true];
+  optional bool isFsNotificationsEnabled = 10;
+  optional string fsNotificationsSubject = 11;
 }
 
 message AggregationsConfigDto {

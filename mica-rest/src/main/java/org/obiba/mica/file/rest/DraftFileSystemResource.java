@@ -75,6 +75,7 @@ public class DraftFileSystemResource extends AbstractFileSystemResource {
     } else if(!Strings.isNullOrEmpty(newName)) doRenameFile(path, newName);
 
     if(publish != null) doPublishFile(path, publish);
+
     if (!Strings.isNullOrEmpty(status)) doUpdateStatus(path, RevisionStatus.valueOf(status.toUpperCase()));
 
     return Response.noContent().build();

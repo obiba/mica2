@@ -55,6 +55,15 @@
 
         <div form-checkbox min="0" name="openAccess" model="micaConfig.openAccess" label="config.openAccess"
           help="config.openAccess-help"></div>
+
+        <h3 translate>config.notifications.title</h3>
+
+        <div form-checkbox name="isFsNotificationsEnabled" model="micaConfig.isFsNotificationsEnabled"
+          label="config.notifications.file-system"
+          help="config.notifications.file-system-help"></div>
+        <div form-input name="fsNotificationsSubject" model="micaConfig.fsNotificationsSubject"
+          label="config.notifications.file-system-subject"
+          required="false" disabled="!micaConfig.isFsNotificationsEnabled"></div>
       </div>
 
     </div>
