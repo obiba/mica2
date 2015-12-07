@@ -29,6 +29,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import static java.util.stream.Collectors.toList;
 
@@ -316,6 +317,15 @@ public class Network extends AbstractGitPersistable implements AttributeAware, P
 
   public void setMemberships(Map<String, List<Membership>> memberships) {
     this.memberships = memberships;
+    Map<String, Person> seen = Maps.newHashMap();
+
+    this.memberships.entrySet().forEach(e -> e.getValue().forEach(m -> {
+      if(seen.containsKey(m.getPerson().getId())) {
+        m.setPerson(seen.get(m.getPerson().getId()));
+      } else if(!m.getPerson().isNew()) {
+        seen.put(m.getPerson().getId(), m.getPerson());
+      }
+    }));
   }
 
   @Override

@@ -91,6 +91,15 @@ class PersonDtos {
     if(dto.hasEmail()) person.setEmail(dto.getEmail());
     if(dto.hasPhone()) person.setPhone(dto.getPhone());
     if(dto.hasInstitution()) person.setInstitution(fromDto(dto.getInstitution()));
+
+    if(dto.getNetworkMembershipsCount() > 0) {
+      person.setNetworkMemberships(dto.getNetworkMembershipsList().stream().map(m -> fromDto(m)).collect(toList()));
+    }
+
+    if(dto.getStudyMembershipsCount() > 0) {
+      person.setStudyMemberships(dto.getStudyMembershipsList().stream().map(m -> fromDto(m)).collect(toList()));
+    }
+
     return person;
   }
 
@@ -138,6 +147,10 @@ class PersonDtos {
     }
 
     return builder.build();
+  }
+
+  private Person.Membership fromDto(Mica.PersonDto.MembershipDto dto) {
+    return new Person.Membership(dto.getParentId(), dto.getRole());
   }
 
   private Person.Institution fromDto(Mica.PersonDto.InstitutionDtoOrBuilder dto) {

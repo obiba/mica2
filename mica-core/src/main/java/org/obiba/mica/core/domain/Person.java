@@ -138,6 +138,11 @@ public class Person implements Persistable<String> {
     }
   }
 
+  public void removeAllMemberships(String role) {
+    networkMemberships = networkMemberships.stream().filter(m -> !role.equals(m.getRole())).collect(toList());
+    studyMemberships = studyMemberships.stream().filter(m -> !role.equals(m.getRole())).collect(toList());
+  }
+
   public Institution getInstitution() {
     return institution;
   }

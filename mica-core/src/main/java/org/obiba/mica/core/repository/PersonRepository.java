@@ -13,5 +13,11 @@ public interface PersonRepository extends MongoRepository<Person, String> {
   @Query(value = "{'networkMemberships.parentId' : ?0 }")
   List<Person> findByNetworkMemberships(String networkId);
 
+  @Query(value = "{'studyMemberships.role' : ?0 }")
+  List<Person> findByStudyMembershipsRole(String role);
+
+  @Query(value = "{'networkMemberships.role' : ?0 }")
+  List<Person> findByNetworkMembershipsRole(String role);
+
   Person findOneByEmail(String email);
 }
