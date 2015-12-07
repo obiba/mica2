@@ -189,7 +189,7 @@ mica.network
         });
       }
 
-      $scope.query = studyIds.length == 0 ? '' : 'studyMemberships.parentId:(' + studyIds.join(' ') + ')';
+      $scope.query = studyIds.length === 0 ? '' : 'studyMemberships.parentId:(' + studyIds.join(' ') + ')';
       if (networkIds.length > 0) {
         if ($scope.query.length > 0) {
           $scope.query = $scope.query + ' OR ';
