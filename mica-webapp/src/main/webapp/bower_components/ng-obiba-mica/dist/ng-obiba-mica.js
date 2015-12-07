@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2015-12-04
+ * Date: 2015-12-07
  */
 'use strict';
 
@@ -942,7 +942,7 @@ angular.module('obiba.mica.access')
       documentsSectionTitle: null,
       documentsSectionHelpText: null,
       downloadButtonCaption: null,
-      commentsEnabled: null,
+      commentsEnabled: true,
       userListPageTitle: null
     };
 

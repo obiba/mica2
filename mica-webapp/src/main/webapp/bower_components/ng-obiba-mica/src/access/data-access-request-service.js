@@ -79,7 +79,7 @@ angular.module('obiba.mica.access')
       documentsSectionTitle: null,
       documentsSectionHelpText: null,
       downloadButtonCaption: null,
-      commentsEnabled: null,
+      commentsEnabled: true,
       userListPageTitle: null
     };
 
