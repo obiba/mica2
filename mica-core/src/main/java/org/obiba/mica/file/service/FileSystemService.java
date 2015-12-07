@@ -63,7 +63,6 @@ import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
-import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
 import static java.util.stream.Collectors.toList;
@@ -278,30 +277,28 @@ public class FileSystemService {
     try {
       List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
       states.addAll(findAttachmentStates(String.format("^%s/", path), false));
-      states.stream()
-        .forEach(s -> publish(s, publish, publisher));
+      states.stream().forEach(s -> publish(s, publish, publisher));
     } finally {
       fsLock.unlock();
     }
   }
 
-  private void publishWithCascading(String path, boolean publish, String publisher, PublishCascadingScope cascadingScope) {
+  private void publishWithCascading(String path, boolean publish, String publisher,
+    PublishCascadingScope cascadingScope) {
     fsLock.lock();
     try {
-      if (PublishCascadingScope.ALL == cascadingScope) {
+      if(PublishCascadingScope.ALL == cascadingScope) {
         publish(path, publish, publisher);
-      } else if (PublishCascadingScope.UNDER_REVIEW == cascadingScope) {
+      } else if(PublishCascadingScope.UNDER_REVIEW == cascadingScope) {
         List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
         states.addAll(findAttachmentStates(String.format("^%s/", path), false));
-        states.stream()
-          .filter(s -> !publish || s.getRevisionStatus() == RevisionStatus.UNDER_REVIEW)
+        states.stream().filter(s -> !publish || s.getRevisionStatus() == RevisionStatus.UNDER_REVIEW)
           .forEach(s -> publish(s, publish, publisher));
       }
     } finally {
       fsLock.unlock();
     }
   }
-
 
   /**
    * Change the publication status of the existing {@link org.obiba.mica.file.AttachmentState}.
@@ -313,7 +310,7 @@ public class FileSystemService {
   public void publish(String path, String name, boolean publish) {
     fsLock.lock();
     try {
-    publish(getAttachmentState(path, name, false), publish);
+      publish(getAttachmentState(path, name, false), publish);
     } finally {
       fsLock.unlock();
     }
@@ -387,7 +384,8 @@ public class FileSystemService {
     List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
     states.addAll(findAttachmentStates(String.format("^%s/", path), false));
     states.stream().filter(FileUtils::isDirectory).forEach(s -> mkdirs(s.getPath().replaceFirst(path, newPath)));
-    states.stream().filter(s -> !FileUtils.isDirectory(s)).forEach(s -> copy(s, s.getPath().replaceFirst(path, newPath), s.getName(), false));
+    states.stream().filter(s -> !FileUtils.isDirectory(s))
+      .forEach(s -> copy(s, s.getPath().replaceFirst(path, newPath), s.getName(), false));
   }
 
   /**
@@ -502,11 +500,11 @@ public class FileSystemService {
     };
 
     Map<SubjectAcl.Type, List<String>> recipients = acls.stream()
-      .filter(a -> a.getActions().contains(requiredActions.get(status))).map(
-        a -> Pair.create(a.getPrincipal(), a.getType()))
+      .filter(a -> a.getActions().contains(requiredActions.get(status)))
+      .map(a -> Pair.create(a.getPrincipal(), a.getType()))
       .collect(groupingBy(a -> a.getSecond(), mapping(p -> p.getFirst(), toList())));
 
-    if (recipients.isEmpty()) return;
+    if(recipients.isEmpty()) return;
 
     MicaConfig config = micaConfigService.getConfig();
     Map<String, String> ctx = Maps.newHashMap();
@@ -515,10 +513,11 @@ public class FileSystemService {
     ctx.put("document", documentInstance);
     ctx.put("path", path);
 
-    mailService
-      .sendEmailToGroupsAndUsers(ofNullable(config.getFsNotificationSubject()).orElse(""), "fileStatusChanged", ctx,
-        recipients.getOrDefault(SubjectAcl.Type.GROUP, Lists.newArrayList()),
-        recipients.getOrDefault(SubjectAcl.Type.USER, Lists.newArrayList()));
+    mailService.sendEmailToGroupsAndUsers(Strings.isNullOrEmpty(config.getFsNotificationSubject())
+        ? "File status changed"
+        : config.getFsNotificationSubject(), "fileStatusChanged", ctx,
+      recipients.getOrDefault(SubjectAcl.Type.GROUP, Lists.newArrayList()),
+      recipients.getOrDefault(SubjectAcl.Type.USER, Lists.newArrayList()));
   }
 
   /**
@@ -617,7 +616,7 @@ public class FileSystemService {
   public void studyPublished(StudyPublishedEvent event) {
     log.debug("Study {} was published", event.getPersistable());
     PublishCascadingScope cascadingScope = event.getCascadingScope();
-    if (cascadingScope != PublishCascadingScope.NONE) {
+    if(cascadingScope != PublishCascadingScope.NONE) {
       publishWithCascading( //
         String.format("/study/%s", event.getPersistable().getId()), //
         true, //
@@ -669,7 +668,7 @@ public class FileSystemService {
   public void networkPublished(NetworkPublishedEvent event) {
     log.debug("Network {} was published", event.getPersistable());
     PublishCascadingScope cascadingScope = event.getCascadingScope();
-    if (cascadingScope != PublishCascadingScope.NONE) {
+    if(cascadingScope != PublishCascadingScope.NONE) {
       publishWithCascading( //
         String.format("/network/%s", event.getPersistable().getId()), //
         true, //
@@ -702,7 +701,7 @@ public class FileSystemService {
   public void datasetPublished(DatasetPublishedEvent event) {
     log.debug("{} {} was published", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
     PublishCascadingScope cascadingScope = event.getCascadingScope();
-    if (cascadingScope != PublishCascadingScope.NONE) {
+    if(cascadingScope != PublishCascadingScope.NONE) {
       publishWithCascading( //
         String.format("/%s/%s", getDatasetTypeFolder(event.getPersistable()), event.getPersistable().getId()), //
         true, //
@@ -772,8 +771,7 @@ public class FileSystemService {
    * @return
    */
   private List<AttachmentState> findPublishedAttachmentStates(String pathRegEx) {
-    return attachmentStateRepository.findByPathAndPublishedAttachmentNotNull(pathRegEx).stream()
-      .collect(toList());
+    return attachmentStateRepository.findByPathAndPublishedAttachmentNotNull(pathRegEx).stream().collect(toList());
   }
 
   /**
@@ -783,8 +781,7 @@ public class FileSystemService {
    * @return
    */
   private List<Attachment> findDraftAttachments(String pathRegEx) {
-    return findDraftAttachmentStates(pathRegEx).stream().map(AttachmentState::getAttachment)
-      .collect(toList());
+    return findDraftAttachmentStates(pathRegEx).stream().map(AttachmentState::getAttachment).collect(toList());
   }
 
   /**
