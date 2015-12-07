@@ -28,7 +28,7 @@
     "mica-study-timeline": "https://github.com/obiba/mica-study-timeline.git",
     "ng-file-upload": "4.2.1",
     "ng-obiba": "https://github.com/obiba/ng-obiba.git",
-    "ng-obiba-mica": "https://github.com/obiba/ng-obiba-mica.git#rhaeri-dev",
+    "ng-obiba-mica": "https://github.com/obiba/ng-obiba-mica.git",
     "modernizr": "2.8.3",
     "swagger-ui": "2.0.24",
     "filesize": "3.1.2",
