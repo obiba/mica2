@@ -171,7 +171,7 @@
         "blocked": "Blocked",
         "dump": {
           "title": "Threads dump",
-          "id": "Id: ",
+          "id": "ID: ",
           "blockedtime": "Blocked Time",
           "blockedcount": "Blocked Count",
           "waitedtime": "Waited Time",
@@ -347,10 +347,10 @@
     "openAccess": "Open access",
     "openAccess-help": "Access to published documents is opened to everyone.",
     "roles": "Roles",
-    "roles-help": "List of available roles for studies and networks.",
+    "roles-help": "A person can be member of a study or of a network with one of the listed roles.",
     "add-role": "Add Role",
-    "edit-role": "Edit Role",
-    "role-error": "Role id already exists."
+    "role-help": "Role unique identifier.",
+    "role-error": "Role identifier already exists."
   },
   "publish": {
     "label": "Publish",
@@ -573,7 +573,7 @@
   },
   "population": {
     "label-edit": "Edit Population",
-    "id": "Id",
+    "id": "ID",
     "name": "Name",
     "info": "Supplementary information",
     "description": "Description",
@@ -589,7 +589,7 @@
   },
   "data-collection-event": {
     "label-edit": "Edit Data Collection Event",
-    "id": "Id",
+    "id": "ID",
     "name": "Name",
     "description": "Description",
     "start-year": "Start Year",
@@ -621,7 +621,7 @@
     "label": "Network",
     "add-study": "Add Study",
     "contacts": "Contacts",
-    "associated-people": "Associated People",
+    "associated-people": "Affiliated Members",
     "add-member": "Add {{type}}",
     "member-list": "List of {{type}}",
     "delete-dialog": {
@@ -644,7 +644,7 @@
   },
   "all": "All",
   "name": "Name",
-  "id": "Id",
+  "id": "ID",
   "size": "Size",
   "value": "Value",
   "values": "Values",
