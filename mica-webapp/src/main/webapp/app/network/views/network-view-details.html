@@ -57,7 +57,7 @@
             </tr>
             </tbody>
           </table>
-          <a ng-if="inViewMode()" href class="btn btn-info"
+          <a ng-if="inViewMode() && (network.studyIds.length > 0 || network.networkIds.length > 0)" href class="btn btn-info"
             ng-click="showAllContacts()"><i class="fa fa-group"></i> <span translate>network.associated-people</span></a>
           <attributes-list attributes="network.attributes"></attributes-list>
         </div>

@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.domain.Person;
@@ -30,9 +31,7 @@ import com.google.common.collect.Sets;
 import jersey.repackaged.com.google.common.collect.Lists;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
 import static org.obiba.mica.web.model.Mica.PersonDto;
 
 @Component
@@ -138,8 +137,13 @@ class NetworkDtos {
     }
 
     unpublishedStudyIds.forEach(studyId -> {
-      builder.addStudyIds(studyId);
-      builder.addStudySummaries(studySummaryDtos.asDto(studyId));
+      try {
+        builder.addStudySummaries(studySummaryDtos.asDto(studyId));
+        builder.addStudyIds(studyId);
+      } catch(NoSuchEntityException e) {
+        log.warn("Study not found in network {}: {}", network.getId(), studyId);
+        // ignore
+      }
     });
 
     if(network.getMaelstromAuthorization() != null) {
@@ -157,8 +161,13 @@ class NetworkDtos {
 
     network.getNetworkIds().stream().filter(nId -> asDraft || subjectAclService.isAccessible("/network", nId))
       .forEach(nId -> {
-        builder.addNetworkIds(nId);
-        builder.addNetworkSummaries(networkSummaryDtos.asDtoBuilder(nId, asDraft));
+        try {
+          builder.addNetworkSummaries(networkSummaryDtos.asDtoBuilder(nId, asDraft));
+          builder.addNetworkIds(nId);
+        } catch(NoSuchEntityException e) {
+          log.warn("Network not found in network {}: {}", network.getId(), nId);
+          // ignore
+        }
       });
 
     return builder;
