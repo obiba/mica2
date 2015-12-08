@@ -400,6 +400,8 @@ message MicaConfigDto {
   required bool openAccess = 9 [default = true];
   optional bool isFsNotificationsEnabled = 10;
   optional string fsNotificationsSubject = 11;
+  optional bool isCommentNotificationsEnabled = 12;
+  optional string commentNotificationsSubject = 13;
 }
 
 message AggregationsConfigDto {

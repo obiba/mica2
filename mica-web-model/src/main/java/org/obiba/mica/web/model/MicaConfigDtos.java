@@ -54,6 +54,10 @@ class MicaConfigDtos {
 
     if(config.getFsNotificationSubject() != null) builder.setFsNotificationsSubject(config.getFsNotificationSubject());
 
+    builder.setIsCommentNotificationsEnabled(config.isCommentNotificationsEnabled());
+
+    if(config.getCommentNotiticationsSubject() != null) builder.setCommentNotificationsSubject(config.getCommentNotiticationsSubject());
+
     return builder.build();
   }
 
@@ -72,7 +76,9 @@ class MicaConfigDtos {
 
     config.setRoles(dto.getRolesList());
     config.setFsNotificationsEnabled(dto.getIsFsNotificationsEnabled());
-    config.setFsNotificationSubject(dto.getFsNotificationsSubject());
+    if(dto.hasFsNotificationsSubject()) config.setFsNotificationSubject(dto.getFsNotificationsSubject());
+    config.setCommentNotificationsEnabled(dto.getIsCommentNotificationsEnabled());
+    if(dto.hasCommentNotificationsSubject()) config.setCommentNotiticationsSubject(dto.getCommentNotificationsSubject());
 
     return config;
   }

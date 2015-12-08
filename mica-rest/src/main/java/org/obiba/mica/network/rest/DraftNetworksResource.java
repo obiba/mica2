@@ -86,7 +86,7 @@ public class DraftNetworksResource {
   public DraftNetworkResource dataset(@PathParam("id") String id) {
     DraftNetworkResource resource = applicationContext.getBean(DraftNetworkResource.class);
     resource.setId(id);
+
     return resource;
   }
-
 }

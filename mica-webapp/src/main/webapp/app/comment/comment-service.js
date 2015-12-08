@@ -10,22 +10,7 @@
 
 'use strict';
 
-mica.commons
-  .service('ActiveTabService', function() {
-
-    this.getActiveTab = function(tabs) {
-      if (tabs) {
-        return tabs.filter(function (tab) {
-          return tab.active;
-        })[0];
-      }
-
-      return null;
-    };
-
-    return this;
-  })
-
+mica.comment
   .factory('CommentsResource', ['$resource',
     function ($resource) {
       return $resource('/ws/draft/:type/:id/comments', {}, {

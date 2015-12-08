@@ -66,11 +66,6 @@ public class DataAccessRequestResource {
   @Inject
   private FileStoreService fileStoreService;
 
-  @PostConstruct
-  public void init() {
-    commentsService.setMailNotification(commentMailNotification);
-  }
-
   @GET
   @Timed
   public Mica.DataAccessRequestDto get(@PathParam("id") String id) {
@@ -154,7 +149,7 @@ public class DataAccessRequestResource {
         .message(message) //
         .resourceId("/data-access-request") //
         .instanceId(id) //
-        .build()); //
+        .build(), commentMailNotification); //
 
     subjectAclService.addPermission("/data-access-request/" + id + "/comment", "VIEW,EDIT,DELETE", comment.getId());
     subjectAclService.addGroupPermission(Roles.MICA_DAO, "/data-access-request/" + id + "/comment", "DELETE", comment.getId());
@@ -179,7 +174,7 @@ public class DataAccessRequestResource {
     commentsService.save(Comment.newBuilder(commentsService.findById(commentId)) //
       .message(message) //
       .modifiedBy(SecurityUtils.getSubject().getPrincipal().toString()) //
-      .build()); //
+      .build(), commentMailNotification); //
 
     return Response.noContent().build();
   }

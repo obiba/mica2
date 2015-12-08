@@ -42,5 +42,9 @@ mica.network
         .when('/network/:id/permissions', {
           templateUrl: 'app/network/views/network-view-permissions.html',
           controller: 'NetworkViewController'
+        })
+        .when('/network/:id/comments', {
+          templateUrl: 'app/network/views/network-view-comments.html',
+          controller: 'NetworkViewController'
         });
     }]);

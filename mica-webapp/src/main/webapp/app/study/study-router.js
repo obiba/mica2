@@ -33,6 +33,10 @@ mica.study
           templateUrl: 'app/study/views/study-view-permissions.html',
           controller: 'StudyViewController'
         })
+        .when('/study/:id/comments', {
+          templateUrl: 'app/study/views/study-view-comments.html',
+          controller: 'StudyViewController'
+        })
         .when('/study/:id/population/add', {
           templateUrl: 'app/study/views/population/population-form.html',
           controller: 'StudyPopulationController'

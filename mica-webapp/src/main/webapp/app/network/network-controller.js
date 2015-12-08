@@ -321,7 +321,7 @@ mica.network
         }
       };
 
-      $scope.Mode = {View: 0, Revision: 1, File: 2, Permission: 3};
+      $scope.Mode = {View: 0, Revision: 1, File: 2, Permission: 3, Comment: 4};
 
       $scope.getActiveTab = ActiveTabService.getActiveTab;
 
@@ -373,7 +373,8 @@ mica.network
       };
 
       var getViewMode = function() {
-        var result = /\/(revision[s\/]*|files|permissions)/.exec($location.path());
+        var result = /\/(revision[s\/]*|files|permissions|comments)/.exec($location.path());
+
         if (result && result.length > 1) {
           switch (result[1]) {
             case 'revision':
@@ -383,13 +384,14 @@ mica.network
               return $scope.Mode.File;
             case 'permissions':
               return $scope.Mode.Permission;
+            case 'comments':
+              return $scope.Mode.Comment;
           }
         }
 
         return $scope.Mode.View;
       };
 
-      $scope.viewMode = getViewMode();
       $scope.inViewMode = function () {
         return $scope.viewMode === $scope.Mode.View;
       };
@@ -441,6 +443,12 @@ mica.network
         }
       };
 
+      var onError = function (response) {
+        $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
+          message: response.data ? response.data : angular.fromJson(response)
+        });
+      };
+
       $scope.fetchNetwork = fetchNetwork;
       $scope.viewRevision = viewRevision;
       $scope.restoreRevision = restoreRevision;
@@ -458,13 +466,7 @@ mica.network
 
           $scope.network.$save(function () {
               $scope.network = DraftNetworkResource.get({id: $routeParams.id}, initializeNetwork);
-            },
-            function (response) {
-              $log.error('Error on network save:', response);
-              $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
-                message: response.data ? response.data : angular.fromJson(response)
-              });
-            });
+            }, onError);
         }
       });
 
@@ -642,6 +644,8 @@ mica.network
           }
         }
       });
+
+      $scope.viewMode = getViewMode();
     }])
 
   .controller('NetworkPermissionsController', ['$scope','$routeParams', 'DraftNetworkPermissionsResource', 'DraftNetworkAccessesResource',

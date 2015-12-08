@@ -88,6 +88,25 @@
             <span>{{micaConfig.fsNotificationsSubject}}</span>
           </td>
         </tr>
+        <tr>
+          <td>
+            <span translate>config.notifications.comment</span>
+            <span class="help-block" translate>config.notifications.comment-help</span>
+          </td>
+          <td>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isCommentNotificationsEnabled"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.isCommentNotificationsEnabled"></i>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <span translate>config.notifications.comment-subject</span>
+            <span class="help-block" translate>config.notifications.comment-subject-help</span>
+          </td>
+          <td>
+            <span>{{micaConfig.commentNotificationsSubject}}</span>
+          </td>
+        </tr>
         </tbody>
       </table>
       <a href="#/admin/general/edit" class="btn btn-primary">

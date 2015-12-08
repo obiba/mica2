@@ -62,6 +62,10 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   private String fsNotificationsSubject;
 
+  private boolean isCommentNotificationsEnabled = false;
+
+  private String commentNotiticationsSubject;
+
   public String getName() {
     return name;
   }
@@ -182,5 +186,21 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public void setFsNotificationSubject(String fsNotificationSubject) {
     this.fsNotificationsSubject = fsNotificationSubject;
+  }
+
+  public boolean isCommentNotificationsEnabled() {
+    return isCommentNotificationsEnabled;
+  }
+
+  public void setCommentNotificationsEnabled(boolean isCommentNotificationsEnabled) {
+    this.isCommentNotificationsEnabled = isCommentNotificationsEnabled;
+  }
+
+  public String getCommentNotiticationsSubject() {
+    return commentNotiticationsSubject;
+  }
+
+  public void setCommentNotiticationsSubject(String commentNotiticationsSubject) {
+    this.commentNotiticationsSubject = commentNotiticationsSubject;
   }
 }

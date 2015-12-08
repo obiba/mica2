@@ -30,9 +30,7 @@ public class CommentsService {
   @Inject
   CommentsRepository commentsRepository;
 
-  private MailNotification<Comment> mailNotification;
-
-  public Comment save(Comment comment) {
+  public Comment save(Comment comment, MailNotification<Comment> mailNotification) {
     if (comment.getMessage().isEmpty()) throw new IllegalArgumentException("Comment message cannot be empty");
 
     Comment saved = comment;
@@ -73,9 +71,5 @@ public class CommentsService {
 
   public List<Comment> findByResourceAndInstance(String name, String id) {
     return commentsRepository.findByResourceIdAndInstanceId(name, id);
-  }
-
-  public void setMailNotification(MailNotification<Comment> value) {
-    mailNotification = value;
   }
 }

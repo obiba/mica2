@@ -68,6 +68,15 @@
           help="config.notifications.file-system-subject-help"
           placeholder="[${organization}] ${documentId}: file status has changed"
           required="false" disabled="!micaConfig.isFsNotificationsEnabled"></div>
+
+        <div form-checkbox name="isCommentNotificationsEnabled" model="micaConfig.isCommentNotificationsEnabled"
+          label="config.notifications.comment"
+          help="config.notifications.comment-help"></div>
+        <div form-input name="commentNotificationsSubject" model="micaConfig.commentNotificationsSubject"
+          label="config.notifications.comment-subject"
+          help="config.notifications.comment-subject-help"
+          placeholder="New comment added"
+          required="false" disabled="!micaConfig.isCommentNotificationsEnabled"></div>
       </div>
 
     </div>
