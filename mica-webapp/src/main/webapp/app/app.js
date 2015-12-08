@@ -6,6 +6,7 @@
 var mica = angular.module('mica', [
   'angular-loading-bar',
   'http-auth-interceptor',
+  'localytics.directives',
   'mica.config',
   'ngObiba',
   'mica.admin',

@@ -3,8 +3,10 @@ package org.obiba.mica.core.service;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang.text.StrSubstitutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
@@ -19,7 +21,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 
 import static java.net.URLEncoder.encode;
 import static java.util.stream.Collectors.toList;
@@ -79,6 +80,16 @@ public class MailService extends AgateRestService {
   @Async
   public void sendEmailToGroups(String subject, String text, String... groups) {
     sendEmail(subject, text, toRecipientFormParam("group", groups));
+  }
+
+  public String getSubject(String subjectFormat, Map<String, String> ctx, String defaultSubject) {
+    StrSubstitutor sub = new StrSubstitutor(ctx, "${", "}");
+
+    String temp = Optional.ofNullable(subjectFormat) //
+      .filter(s -> !s.isEmpty()) //
+      .orElse(defaultSubject);
+
+    return sub.replace(temp);
   }
 
   //

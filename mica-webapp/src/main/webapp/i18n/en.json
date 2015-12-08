@@ -353,10 +353,11 @@
     "role-error": "Role identifier already exists.",
     "notifications": {
       "title": "Notifications",
-      "file-system": "File system notifications",
-      "file-system-subject": "File system notifications subject",
-      "file-system-help": "Send email notifications when files status change to Deleted or Under review.",
-      "file-system-subject-help": "Email subject for file system notifications."
+      "help": "Emails can be sent to users with Reviewer permission. Notification email subjects can contain the following placeholders: ${organization}, ${documentType}, ${documentId}, ${status} and ${path} where document refers to the study (or network etc.) to which the file is attached.",
+      "file-system": "On file status changed notification",
+      "file-system-subject": "Subject of file status notification",
+      "file-system-help": "Send email notifications when files status changes to Deleted or to Under review.",
+      "file-system-subject-help": "Email subject for file status change notifications."
     }
   },
   "publish": {

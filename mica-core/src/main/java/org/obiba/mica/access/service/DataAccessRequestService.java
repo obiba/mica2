@@ -100,7 +100,7 @@ public class DataAccessRequestService {
         // validate the status
         dataAccessRequestUtilService.checkStatusTransition(saved, request.getStatus());
         saved.setStatus(request.getStatus());
-        if (request.hasStatusChangeHistory()) saved.setStatusChangeHistory(request.getStatusChangeHistory());
+        if(request.hasStatusChangeHistory()) saved.setStatusChangeHistory(request.getStatusChangeHistory());
         // merge beans
         BeanUtils.copyProperties(request, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
           "lastModifiedDate", "statusChangeHistory");
@@ -110,12 +110,11 @@ public class DataAccessRequestService {
       }
     }
 
-    if(toSave != null)
-      toSave.forEach(a -> {
-        fileStoreService.save(a.getId());
-        a.setJustUploaded(false);
-        attachmentRepository.save(a);
-      });
+    if(toSave != null) toSave.forEach(a -> {
+      fileStoreService.save(a.getId());
+      a.setJustUploaded(false);
+      attachmentRepository.save(a);
+    });
 
     dataAccessRequestRepository.saveWithReferences(saved);
 
@@ -279,10 +278,12 @@ public class DataAccessRequestService {
     if(dataAccessForm.isNotifySubmitted()) {
       Map<String, String> ctx = getNotificationEmailContext(request);
 
-      mailService.sendEmailToUsers(dataAccessRequestUtilService.getSubject(dataAccessForm.getSubmittedSubject(), ctx),
-        "dataAccessRequestSubmittedApplicantEmail", ctx, request.getApplicant());
-      mailService.sendEmailToGroups(dataAccessRequestUtilService.getSubject(dataAccessForm.getSubmittedSubject(), ctx),
-        "dataAccessRequestSubmittedDAOEmail", ctx, Roles.MICA_DAO);
+      mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getSubmittedSubject(), ctx,
+        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestSubmittedApplicantEmail", ctx,
+        request.getApplicant());
+      mailService.sendEmailToGroups(mailService.getSubject(dataAccessForm.getSubmittedSubject(), ctx,
+        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestSubmittedDAOEmail", ctx,
+        Roles.MICA_DAO);
     }
   }
 
@@ -291,8 +292,9 @@ public class DataAccessRequestService {
     if(dataAccessForm.isNotifyReviewed() && dataAccessForm.isWithReview()) {
       Map<String, String> ctx = getNotificationEmailContext(request);
 
-      mailService.sendEmailToUsers(dataAccessRequestUtilService.getSubject(dataAccessForm.getReviewedSubject(), ctx),
-        "dataAccessRequestReviewedApplicantEmail", ctx, request.getApplicant());
+      mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getReviewedSubject(), ctx,
+        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestReviewedApplicantEmail", ctx,
+        request.getApplicant());
     }
   }
 
@@ -301,8 +303,9 @@ public class DataAccessRequestService {
     if(dataAccessForm.isNotifyReopened()) {
       Map<String, String> ctx = getNotificationEmailContext(request);
 
-      mailService.sendEmailToUsers(dataAccessRequestUtilService.getSubject(dataAccessForm.getReopenedSubject(), ctx),
-        "dataAccessRequestReopenedApplicantEmail", ctx, request.getApplicant());
+      mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getReopenedSubject(), ctx,
+        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestReopenedApplicantEmail", ctx,
+        request.getApplicant());
     }
   }
 
@@ -311,8 +314,9 @@ public class DataAccessRequestService {
     if(dataAccessForm.isNotifyApproved()) {
       Map<String, String> ctx = getNotificationEmailContext(request);
 
-      mailService.sendEmailToUsers(dataAccessRequestUtilService.getSubject(dataAccessForm.getApprovedSubject(), ctx),
-        "dataAccessRequestApprovedApplicantEmail", ctx, request.getApplicant());
+      mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getApprovedSubject(), ctx,
+        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestApprovedApplicantEmail", ctx,
+        request.getApplicant());
     }
   }
 
@@ -321,8 +325,9 @@ public class DataAccessRequestService {
     if(dataAccessForm.isNotifyRejected()) {
       Map<String, String> ctx = getNotificationEmailContext(request);
 
-      mailService.sendEmailToUsers(dataAccessRequestUtilService.getSubject(dataAccessForm.getRejectedSubject(), ctx),
-        "dataAccessRequestRejectedApplicantEmail", ctx, request.getApplicant());
+      mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getRejectedSubject(), ctx,
+        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestRejectedApplicantEmail", ctx,
+        request.getApplicant());
     }
   }
 
@@ -350,8 +355,8 @@ public class DataAccessRequestService {
 
   private void fillPdfTemplateFromRequest(byte[] template, OutputStream output, Object content)
     throws IOException, DocumentException {
-    Map<String, Object> requestValues = PdfUtils.getFieldNames(template).stream().map(
-      k -> getMapEntryFromContent(content, k)) //
+    Map<String, Object> requestValues = PdfUtils.getFieldNames(template).stream()
+      .map(k -> getMapEntryFromContent(content, k)) //
       .filter(e -> e != null && !e.getValue().isEmpty()) //
       .map(e -> Maps.immutableEntry(e.getKey(), e.getValue().get(0))) //
       .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
