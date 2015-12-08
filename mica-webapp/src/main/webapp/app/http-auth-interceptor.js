@@ -6,7 +6,7 @@
 (function () {
   'use strict';
 
-  angular.module('http-auth-interceptor', ['http-auth-interceptor-buffer'])
+  angular.module('http-auth-interceptor', ['http-auth-interceptor-buffer', 'cfp.loadingBar'])
 
     .factory('authService', ['$rootScope', 'httpBuffer', function ($rootScope, httpBuffer) {
       return {
@@ -37,50 +37,58 @@
       };
     }])
 
-    .factory('MicaHttpInterceptor', ['$rootScope', '$q', 'httpBuffer', function($rootScope, $q, httpBuffer) {
-      return {
-        // optional method
-        'request': function(config) {
-          // do something on success
-          return config;
-        },
+    .factory('MicaHttpInterceptor', ['$rootScope', '$q', 'httpBuffer', '$timeout', 'cfpLoadingBar', '$location',
+      function($rootScope, $q, httpBuffer, $timeout, cfpLoadingBar, $location) {
+        return {
+          // optional method
+          'request': function(config) {
+            // do something on success
+            return config;
+          },
 
-        // optional method
-        'requestError': function(rejection) {
-          // do something on error
-          return $q.reject(rejection);
-        },
+          // optional method
+          'requestError': function(rejection) {
+            // do something on error
+            return $q.reject(rejection);
+          },
 
-        // optional method
-        'response': function(response) {
-          // do something on success
-          return response;
-        },
+          // optional method
+          'response': function(response) {
+            // do something on success
+            return response;
+          },
 
-        // optional method
-        'responseError': function(response) {
-          if (response.status === 401 && !response.config.ignoreAuthModule) {
-            var deferred = $q.defer();
-            httpBuffer.append(response.config, deferred);
-            $rootScope.$broadcast('event:auth-loginRequired', response);
-            return deferred.promise;
-          } else {
-            if (angular.isObject(response.data) && !response.data.messageTemplate) {
-              response.data.messageTemplate = 'server.error.' + response.status;
+          // optional method
+          'responseError': function(response) {
+            if (response.status === 401 && !response.config.ignoreAuthModule) {
+              var deferred = $q.defer();
+              httpBuffer.append(response.config, deferred);
+              // WORKAROUND the progressbar has its own interceptor to control the animation based on HTTP calls. Since
+              // the request is not rejected and the promise is returned, the progressbar never completes and animation
+              // never stops.
+              $timeout(function() {
+                cfpLoadingBar.complete();
+              }, 500);
+
+              $rootScope.$broadcast('event:auth-loginRequired', response);
+              return deferred.promise;
+            } else {
+              if (angular.isObject(response.data) && !response.data.messageTemplate) {
+                response.data.messageTemplate = 'server.error.' + response.status;
+              }
+
+              if (response.status === 403 && !response.config.ignoreAuthModule) {
+                $rootScope.$broadcast('event:auth-notAuthorized', response);
+              } else if (!response.config.errorHandler) {
+                $rootScope.$broadcast('event:unhandled-server-error', response);
+              }
             }
 
-            if (response.status === 403 && !response.config.ignoreAuthModule) {
-              $rootScope.$broadcast('event:auth-notAuthorized', response);
-            } else if (!response.config.errorHandler) {
-              $rootScope.$broadcast('event:unhandled-server-error', response);
-            }
+            // otherwise, default behaviour
+            return $q.reject(response);
           }
-
-          // otherwise, default behaviour
-          return $q.reject(response);
-        }
-      };
-    }])
+        };
+      }])
 
   /**
    * $http interceptor.

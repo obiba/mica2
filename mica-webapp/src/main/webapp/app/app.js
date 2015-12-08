@@ -24,7 +24,9 @@ var mica = angular.module('mica', [
   'angularUtils.directives.dirPagination',
   'xeditable',
   'matchMedia',
-  'ngObibaMica'
+  'ngObibaMica',
+  'ui.bootstrap',
+
 ]);
 
 mica
@@ -215,13 +217,8 @@ mica
         $rootScope.userProfileService = UserProfileService;
 
         if (!$rootScope.authenticated) {
-          var path = $location.path();
-          var invalidRedirectPaths = ['', '/error', '/logout', '/login'];
-          if (invalidRedirectPaths.indexOf(path) === -1) {
-            // save path to navigate to after login
-            var search = $location.search();
-            search.redirect = path;
-            $location.search(search);
+          if ('/login' !== $location.path()) {
+            delete $rootScope.routeToLogin;
           }
           $rootScope.$broadcast('event:auth-loginRequired');
         } else if (!AuthenticationSharedService.isAuthorized(next.access ? next.access.authorizedRoles : '*')) {
@@ -231,6 +228,8 @@ mica
 
       // Call when the the client is confirmed
       $rootScope.$on('event:auth-loginConfirmed', function () {
+        delete $rootScope.routeToLogin;
+
         if ($location.path() === '/login') {
           var path = '/';
           var search = $location.search();
@@ -242,16 +241,34 @@ mica
         }
       });
 
-      // Call when the 401 response is returned by the server
+      function updateRedirect() {
+        var path = $location.path();
+        var invalidRedirectPaths = ['', '/error', '/logout', '/login'];
+        if (invalidRedirectPaths.indexOf(path) === -1) {
+          // save path to navigate to after login
+          var search = $location.search();
+          search.redirect = path;
+          $location.search(search);
+        }
+      }
+
+      function login() {
+        if (!$rootScope.routeToLogin) {
+          $rootScope.routeToLogin = true;
+          updateRedirect();
+        }
+        $location.path('/login').replace();
+      }
+
       $rootScope.$on('event:auth-loginRequired', function () {
         Session.destroy();
-        $location.path('/login').replace();
+        login();
       });
 
       // Call when the 403 response is returned by the server
       $rootScope.$on('event:auth-notAuthorized', function () {
         if (!$rootScope.authenticated) {
-          $location.path('/login').replace();
+          login();
         } else {
           $rootScope.errorMessage = 'errors.403';
           $location.path('/error').replace();
@@ -266,6 +283,6 @@ mica
       // Call when the user logs out
       $rootScope.$on('event:auth-loginCancelled', function () {
         $rootScope.authenticated = undefined;
-        $location.path('/login');
+        login();
       });
     }]);
