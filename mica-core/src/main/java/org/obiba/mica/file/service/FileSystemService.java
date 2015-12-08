@@ -74,6 +74,8 @@ public class FileSystemService {
 
   public static final String DIR_NAME = ".";
 
+  public static final String DEFAULT_NOTIFICATION_SUBJECT = "[${organization}] ${documentId}: file status has changed";
+
   @Inject
   private EventBus eventBus;
 
@@ -508,15 +510,17 @@ public class FileSystemService {
 
     MicaConfig config = micaConfigService.getConfig();
     Map<String, String> ctx = Maps.newHashMap();
+    ctx.put("organization", config.getName());
     ctx.put("publicUrl", micaConfigService.getPublicUrl());
     ctx.put("status", status.toString());
     ctx.put("document", documentInstance);
+    ctx.put("documentType", documentParts[0]);
+    ctx.put("documentId", documentParts[1]);
     ctx.put("path", path);
 
-    mailService.sendEmailToGroupsAndUsers(Strings.isNullOrEmpty(config.getFsNotificationSubject())
-        ? "File status changed"
-        : config.getFsNotificationSubject(), "fileStatusChanged", ctx,
-      recipients.getOrDefault(SubjectAcl.Type.GROUP, Lists.newArrayList()),
+    mailService.sendEmailToGroupsAndUsers(
+      mailService.getSubject(config.getFsNotificationSubject(), ctx, DEFAULT_NOTIFICATION_SUBJECT), "fileStatusChanged",
+      ctx, recipients.getOrDefault(SubjectAcl.Type.GROUP, Lists.newArrayList()),
       recipients.getOrDefault(SubjectAcl.Type.USER, Lists.newArrayList()));
   }
 

@@ -58,11 +58,15 @@
 
         <h3 translate>config.notifications.title</h3>
 
+        <p class="help-block" translate>config.notifications.help</p>
+
         <div form-checkbox name="isFsNotificationsEnabled" model="micaConfig.isFsNotificationsEnabled"
           label="config.notifications.file-system"
           help="config.notifications.file-system-help"></div>
         <div form-input name="fsNotificationsSubject" model="micaConfig.fsNotificationsSubject"
           label="config.notifications.file-system-subject"
+          help="config.notifications.file-system-subject-help"
+          placeholder="[${organization}] ${documentId}: file status has changed"
           required="false" disabled="!micaConfig.isFsNotificationsEnabled"></div>
       </div>
 
