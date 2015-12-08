@@ -19,6 +19,9 @@ mica.contact
             templateUrl: 'app/contact/contact-modal-view.html',
             controller: 'ContactViewModalController',
             resolve: {
+              micaConfig: function() {
+                return $scope.micaConfig;
+              },
               contact: function () {
                 return contact;
               }
