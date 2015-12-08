@@ -820,7 +820,13 @@
   },
   "server": {
     "error": {
-      "403": "Server rejected your request, please make sure you are logged in and try again."
+      "403": "Server rejected your request, please make sure you are logged in and try again.",
+      "409": {
+        "network": {
+          "delete-conflict": "Conflict deleting network",
+          "delete-conflict-message": "Found conflicts when trying to delete network. Remove all references from the following networks: {{arg0}}"
+        }
+      }
     }
   },
   "file": {

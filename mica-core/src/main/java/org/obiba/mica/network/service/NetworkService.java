@@ -10,7 +10,9 @@
 
 package org.obiba.mica.network.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -22,8 +24,8 @@ import org.obiba.mica.contact.event.PersonUpdatedEvent;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.repository.EntityStateRepository;
-import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
+import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.micaConfig.event.MicaConfigUpdatedEvent;
@@ -38,6 +40,7 @@ import org.obiba.mica.network.event.NetworkDeletedEvent;
 import org.obiba.mica.network.event.NetworkPublishedEvent;
 import org.obiba.mica.network.event.NetworkUnpublishedEvent;
 import org.obiba.mica.network.event.NetworkUpdatedEvent;
+import org.obiba.mica.study.ConstraintException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -251,6 +254,9 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
    */
   public void delete(@NotNull String id) throws NoSuchNetworkException {
     Network network = findById(id);
+
+    checkStudyConstraints(network);
+
     networkRepository.deleteWithReferences(network);
 
     if (network.getLogo() != null) fileStoreService.delete(network.getLogo().getId());
@@ -285,6 +291,19 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
       return null;
     } catch (NoSuchNetworkException e) {
       return next;
+    }
+  }
+
+  private void checkStudyConstraints(Network network) {
+    List<String> networkIds = networkRepository.findByNetworkIds(network.getId()).stream().map(n -> n.getId())
+      .collect(toList());
+
+    if (!networkIds.isEmpty()) {
+      Map<String, List<String>> conflicts = new HashMap() {{
+        put("network", networkIds);
+      }};
+
+      throw new ConstraintException(conflicts);
     }
   }
 
