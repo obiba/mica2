@@ -96,17 +96,42 @@ mica.network
       });
     }])
 
-  .factory('NetworkService', ['$rootScope', '$translate', 'DraftNetworkResource',
-    'NOTIFICATION_EVENTS', 'LocalizedValues', function ($rootScope, $translate, DraftNetworkResource,
-                                                        NOTIFICATION_EVENTS,
-                                                        LocalizedValues) {
+  .factory('NetworkService', ['$rootScope',
+    '$translate',
+    'DraftNetworkResource',
+    'LocaleStringUtils',
+    'NOTIFICATION_EVENTS',
+    'LocalizedValues',
+
+    function ($rootScope,
+      $translate,
+      DraftNetworkResource,
+      LocaleStringUtils,
+      NOTIFICATION_EVENTS,
+      LocalizedValues) {
+
       return {
         deleteNetwork: function (network, onSuccess) {
           var networkToDelete;
 
+          function onError(response) {
+            if (response.status === 409) {
+              var networkIds = response.data.network ? response.data.network.join(', ') : '';
+              $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
+                title: LocaleStringUtils.translate('server.error.409.network.delete-conflict'),
+                message: LocaleStringUtils.translate( 'server.error.409.network.delete-conflict-message', [networkIds])
+              });
+            } else {
+              $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
+                titleKey: 'form-server-error',
+                message: angular.toJson(response)
+              });
+            }
+          }
+
           var removeSubscriber = $rootScope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, id) {
             if (networkToDelete === id) {
-              DraftNetworkResource.delete({id: id}, onSuccess);
+              DraftNetworkResource.delete({id: id}, onSuccess, onError);
               removeSubscriber();
             }
           });
