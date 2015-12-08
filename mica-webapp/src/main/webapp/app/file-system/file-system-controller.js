@@ -133,7 +133,7 @@ mica.fileSystem
           msg: ServerErrorUtils.buildMessage(response)
         });
 
-        if ($scope.data.document) {
+        if (response.status !== 403 && $scope.data.document) {
           navigateTo($scope.data.document);
         }
       };

@@ -204,7 +204,7 @@ public class SubjectAclService {
    * @param action
    * @param instance
    */
-  public void addSubjectPermission(@NotNull SubjectAcl.Type type, @NotNull String principal, @NotNull String resource,
+  synchronized public void addSubjectPermission(@NotNull SubjectAcl.Type type, @NotNull String principal, @NotNull String resource,
     @Nullable String action, @Nullable String instance) {
     List<SubjectAcl> acls = subjectAclRepository
       .findByPrincipalAndTypeAndResourceAndInstance(principal, type, resource, instance);

@@ -14,13 +14,19 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
 
 @Provider
 public class AuthorizationExceptionMapper implements ExceptionMapper<AuthorizationException> {
 
+
   @Override
   public Response toResponse(AuthorizationException exception) {
-    return Response.status(Response.Status.FORBIDDEN).build();
+    Response.Status status = SecurityUtils.getSubject().isAuthenticated() //
+      ? Response.Status.FORBIDDEN //
+      : Response.Status.UNAUTHORIZED; //
+
+    return Response.status(status).build();
   }
 }
