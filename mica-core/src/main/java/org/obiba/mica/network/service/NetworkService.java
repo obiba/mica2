@@ -20,7 +20,6 @@ import org.joda.time.DateTime;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.contact.event.PersonUpdatedEvent;
 import org.obiba.mica.core.domain.LocalizedString;
-import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.file.FileStoreService;
@@ -39,9 +38,6 @@ import org.obiba.mica.network.event.NetworkDeletedEvent;
 import org.obiba.mica.network.event.NetworkPublishedEvent;
 import org.obiba.mica.network.event.NetworkUnpublishedEvent;
 import org.obiba.mica.network.event.NetworkUpdatedEvent;
-import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.domain.StudyState;
-import org.obiba.mica.study.event.StudyPublishedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -93,9 +89,13 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
     save(network, null);
   }
 
-  @SuppressWarnings("OverlyLongMethod")
   @Override
   public void save(@NotNull Network network, String comment) {
+    saveInternal(network, comment, true);
+  }
+
+  @SuppressWarnings("OverlyLongMethod")
+  private void saveInternal(@NotNull Network network, String comment, boolean cascade) {
     Network saved = network;
     if(network.isNew()) {
       generateId(saved);
@@ -135,10 +135,12 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
 
     saved.setLastModifiedDate(DateTime.now());
 
-    networkRepository.saveWithReferences(saved);
+    if(cascade) networkRepository.saveWithReferences(saved);
+    else networkRepository.save(saved);
+
     eventBus.post(new NetworkUpdatedEvent(saved));
 
-    saved.getAllPersons().forEach(c -> eventBus.post(new PersonUpdatedEvent(c)));
+    if(cascade) saved.getAllPersons().forEach(c -> eventBus.post(new PersonUpdatedEvent(c)));
 
     gitService.save(saved, comment);
   }
@@ -322,7 +324,7 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
   }
 
   private void removeRoles(@NotNull Network network, Iterable<String> roles) {
-    save(network, String.format("Removed roles: %s", Joiner.on(", ").join(roles)));
+    saveInternal(network, String.format("Removed roles: %s", Joiner.on(", ").join(roles)), false);
     NetworkState state = findStateById(network.getId());
 
     if(state.isPublished()) {

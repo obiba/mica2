@@ -106,15 +106,15 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
 
   @CacheEvict(value = "studies-draft", key = "#study.id")
   public void save(@NotNull @Valid Study study) {
-    saveInternal(study, null);
+    saveInternal(study, null, true);
   }
 
   @CacheEvict(value = "studies-draft", key = "#study.id")
   public void save(@NotNull @Valid Study study, @Nullable String comment) {
-    saveInternal(study, comment);
+    saveInternal(study, comment, true);
   }
 
-  private void saveInternal(final Study study, String comment) {
+  private void saveInternal(final Study study, String comment, boolean cascade) {
     log.info("Saving study: {}", study.getId());
 
     if (study.getLogo() != null && study.getLogo().isJustUploaded()) {
@@ -145,12 +145,14 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
     study.setName(studyState.getName());
     study.setLastModifiedDate(DateTime.now());
 
-    studyRepository.saveWithReferences(study);
+    if(cascade) studyRepository.saveWithReferences(study);
+    else studyRepository.save(study);
 
     gitService.save(study, comment);
 
     eventBus.post(new DraftStudyUpdatedEvent(study));
-    study.getAllPersons().forEach(c -> eventBus.post(new PersonUpdatedEvent(c)));
+
+    if(cascade) study.getAllPersons().forEach(c -> eventBus.post(new PersonUpdatedEvent(c)));
   }
 
   @NotNull
@@ -343,7 +345,7 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
   }
 
   private void removeRoles(@NotNull Study study, Iterable<String> roles) {
-    save(study, String.format("Removed roles: %s", Joiner.on(", ").join(roles)));
+    saveInternal(study, String.format("Removed roles: %s", Joiner.on(", ").join(roles)), false);
     StudyState state = findStateById(study.getId());
 
     if(state.isPublished()) {
