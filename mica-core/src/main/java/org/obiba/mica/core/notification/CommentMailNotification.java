@@ -57,8 +57,8 @@ public class CommentMailNotification implements MailNotification<Comment> {
         .build());
 
     acls.addAll(subjectAclService.findByResourceInstance(comment.getResourceId(), comment.getInstanceId()));
-    List<String> users = acls.stream().filter(s -> s.hasAction("VIEW") && s.getType() == SubjectAcl.Type.USER)
-      .map(SubjectAcl::getPrincipal).collect(toList());
+    List<String> users = acls.stream().filter(s -> s.hasAction("VIEW") && s.getType() == SubjectAcl.Type.USER &&
+      !s.getPrincipal().equals(comment.getCreatedBy())).map(SubjectAcl::getPrincipal).collect(toList());
     List<String> groups = acls.stream().filter(s -> s.hasAction("VIEW") && s.getType() == SubjectAcl.Type.GROUP)
       .map(SubjectAcl::getPrincipal).collect(toList());
 
