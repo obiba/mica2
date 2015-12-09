@@ -353,15 +353,21 @@
     "role-error": "Role identifier already exists.",
     "notifications": {
       "title": "Notifications",
-      "help": "Emails can be sent to users with Reviewer permission. Notification email subjects can contain the following placeholders: ${organization}, ${documentType}, ${documentId}, ${status} and ${path} where document refers to the study (or network etc.) to which the file is attached.",
-      "file-system": "On file status changed notification",
-      "file-system-subject": "Subject of file status notification",
-      "file-system-help": "Send email notifications when files status changes to Deleted or to Under review.",
-      "file-system-subject-help": "Email subject for file status change notifications.",
+      "info": "Notification emails can be sent to relevant users and groups.",
+      "file-title": "File Updates",
+      "file-info": "Recipients of file updates notifications have Reviewer permission.",
+      "file": "On file status changed notification",
+      "file-subject": "Subject of file status notification",
+      "file-help": "Send email notifications when files status changes to Deleted or to Under review.",
+      "file-subject-help": "Email subject for file status change notifications.",
+      "file-subject-help-long": "Email subject can contain the following placeholders: ${organization}, ${documentType}, ${documentId}, ${status} and ${path} where document refers to the study (or network etc.) to which the file is attached.",
+      "comment-title": "Comment Updates",
       "comment": "On comment notification",
+      "comment-info": "Recipients of comment updates notifications have at least Reader permission.",
       "comment-subject": "Subject of comment notification",
-      "comment-help": "Send email notifications when comment is added.",
-      "comment-subject-help": "Email subject for comment notifications."
+      "comment-help": "Send email notifications when a comment is added or updated.",
+      "comment-subject-help": "Email subject for comment notifications.",
+      "comment-subject-help-long": "Email subject can contain the following placeholders: ${organization}, ${documentType}, ${documentId} and ${status} where document refers to the study (or network etc.) that was commented."
     }
   },
   "publish": {
