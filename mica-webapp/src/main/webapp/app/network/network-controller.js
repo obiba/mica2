@@ -181,11 +181,13 @@ mica.network
       $scope.lang = lang;
       $scope.persons = [];
 
-      var studyIds = network.studyIds.concat([]);
-      var networkIds = network.networkIds.concat([]);
+      var studyIds = network.studyIds ? network.studyIds.concat([]) : [];
+      var networkIds = network.networkIds ? network.networkIds.concat([]) : [];
       if (network.networkSummaries) {
         network.networkSummaries.forEach(function(n) {
-          studyIds = studyIds.concat(studyIds, n.studyIds);
+          if (n.studyIds) {
+            studyIds = studyIds.concat(studyIds, n.studyIds);
+          }
         });
       }
 
