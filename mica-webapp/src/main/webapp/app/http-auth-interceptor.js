@@ -37,8 +37,8 @@
       };
     }])
 
-    .factory('MicaHttpInterceptor', ['$rootScope', '$q', 'httpBuffer', '$timeout', 'cfpLoadingBar', '$location',
-      function($rootScope, $q, httpBuffer, $timeout, cfpLoadingBar, $location) {
+    .factory('MicaHttpInterceptor', ['$rootScope', '$q', 'httpBuffer', '$timeout', 'cfpLoadingBar',
+      function($rootScope, $q, httpBuffer, $timeout, cfpLoadingBar) {
         return {
           // optional method
           'request': function(config) {

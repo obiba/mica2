@@ -15,6 +15,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
 import org.obiba.git.CommitInfo;
+import org.obiba.mica.comment.rest.CommentResource;
+import org.obiba.mica.comment.rest.CommentsResource;
 import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.core.domain.GitPersistable;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
@@ -33,6 +35,12 @@ public abstract class AbstractGitPersistableResource<T extends EntityState, T1 e
 
   @Inject
   Dtos dtos;
+
+  @Inject
+  private CommentsResource commentsResource;
+
+  @Inject
+  private CommentResource commentResource;
 
   @GET
   @Path("/commits")
@@ -60,6 +68,18 @@ public abstract class AbstractGitPersistableResource<T extends EntityState, T1 e
     subjectAclService.checkPermission("/draft/" + getService().getTypeName(), "VIEW", getId());
     return dtos.asDto(
       getCommitInfoInternal(getService().getCommitInfo(getService().findDraft(getId()), commitId), commitId, null));
+  }
+
+  @Path("/comments")
+  public CommentsResource comments() {
+    commentsResource.setService(getService());
+    return commentsResource;
+  }
+
+  @Path("/comment/{commentId}")
+  public CommentResource getCommentResource() {
+    commentResource.setService(getService());
+    return commentResource;
   }
 
   private CommitInfo getCommitInfoInternal(@NotNull CommitInfo commitInfo, @NotNull String commitId,

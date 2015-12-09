@@ -99,10 +99,10 @@ mica.study
               DraftStudyDeleteService,
               EntityPathBuilder) {
 
-      $scope.Mode = {View: 0, Revision: 1, File: 2, Permission: 3};
+      $scope.Mode = {View: 0, Revision: 1, File: 2, Permission: 3, Comment: 4};
 
       var getViewMode = function() {
-        var result = /\/(revision[s\/]*|files|permissions)/.exec($location.path());
+        var result = /\/(revision[s\/]*|files|permissions|comments)/.exec($location.path());
         if (result && result.length > 1) {
           switch (result[1]) {
             case 'revision':
@@ -112,6 +112,8 @@ mica.study
               return $scope.Mode.File;
             case 'permissions':
               return $scope.Mode.Permission;
+            case 'comments':
+              return $scope.Mode.Comment;
           }
         }
 

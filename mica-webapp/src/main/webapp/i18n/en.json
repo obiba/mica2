@@ -357,7 +357,11 @@
       "file-system": "On file status changed notification",
       "file-system-subject": "Subject of file status notification",
       "file-system-help": "Send email notifications when files status changes to Deleted or to Under review.",
-      "file-system-subject-help": "Email subject for file status change notifications."
+      "file-system-subject-help": "Email subject for file status change notifications.",
+      "comment": "On comment notification",
+      "comment-subject": "Subject of comment notification",
+      "comment-help": "Send email notifications when comment is added.",
+      "comment-subject-help": "Email subject for comment notifications."
     }
   },
   "publish": {
