@@ -971,6 +971,8 @@
       "schema": "Form schema is not a valid document, please contact your administrator to configure the form schema."
     }
   },
+  "comments": "Comments",
+  "comment-placeholder": "Leave a comment",
   "comment": {
     "write": "Write",
     "preview": "Preview",
