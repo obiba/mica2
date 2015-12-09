@@ -48,7 +48,7 @@ public class CommentsResource {
 
   @POST
   public Response createComment(@PathParam("id") String id, String message) {
-    subjectAclService.checkPermission(String.format("/draft/%s/%s/comments", service.getTypeName(), id), "ADD");
+    subjectAclService.checkPermission(String.format("/draft/%s", service.getTypeName()), "VIEW", id);
     Comment comment = commentsService.save( //
       Comment.newBuilder() //
         .createdBy(SecurityUtils.getSubject().getPrincipal().toString()) //
@@ -57,7 +57,7 @@ public class CommentsResource {
         .instanceId(id) //
         .build(), commentMailNotification);
 
-    subjectAclService.addPermission(String.format("/draft/%s/%s/comments", service.getTypeName(), id), "VIEW,EDIT,DELETE", comment.getId());
+    subjectAclService.addPermission(String.format("/draft/%s/%s/comment", service.getTypeName(), id), "VIEW,EDIT,DELETE", comment.getId());
 
     return Response.noContent().build();
   }

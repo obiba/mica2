@@ -49,7 +49,7 @@ public class SubjectAclResource {
 
   @GET
   public List<AclDto> get() {
-    subjectAclService.checkPermission(resource, "EDIT", instance);
+    checkPermission();
 
     return subjectAclService.findByResourceInstance(resource, instance).stream().map(
       a -> AclDto.newBuilder().setType(a.getType().name()).setPrincipal(a.getPrincipal()).setResource(resource)
@@ -58,7 +58,7 @@ public class SubjectAclResource {
 
   @DELETE
   public Response delete(@QueryParam("principal") String principal, @QueryParam("type") String typeStr) {
-    subjectAclService.checkPermission(resource, "EDIT", instance);
+    checkPermission();
 
     SubjectAcl.Type type = SubjectAcl.Type.valueOf(typeStr.toUpperCase());
     subjectAclService.removeSubjectPermissions(type, principal, resource, instance);
@@ -71,7 +71,7 @@ public class SubjectAclResource {
     @QueryParam("type") @DefaultValue("USER") String typeStr, @QueryParam("role") @DefaultValue("READER") String role,
     @QueryParam("file") @DefaultValue("true") boolean file) {
     if(principal == null) return Response.status(Response.Status.BAD_REQUEST).build();
-    subjectAclService.checkPermission(resource, "EDIT", instance);
+    checkPermission();
 
     SubjectAcl.Type type = SubjectAcl.Type.valueOf(typeStr.toUpperCase());
     String actions = PermissionsUtils.asActions(isDraft() ? role.toUpperCase() : "READER");
@@ -80,6 +80,11 @@ public class SubjectAclResource {
       subjectAclService.addSubjectPermission(type, principal, fileResource, actions, fileInstance);
     }
     return Response.noContent().build();
+  }
+
+  private void checkPermission() {
+    String res = resource.startsWith("/draft") ? resource : "/draft" + resource;
+    subjectAclService.checkPermission(res, "EDIT", instance);
   }
 
   private boolean isDraft() {

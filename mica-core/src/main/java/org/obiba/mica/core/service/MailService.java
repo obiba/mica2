@@ -1,7 +1,7 @@
 package org.obiba.mica.core.service;
 
 import java.io.UnsupportedEncodingException;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -65,7 +65,7 @@ public class MailService extends AgateRestService {
 
   @Async
   public void sendEmailToGroupsAndUsers(String subject, String template, Map<String, String> context,
-    List<String> groups, List<String> users) {
+    Collection<String> groups, Collection<String> users) {
     String groupsParam = toRecipientFormParam("group", groups.stream().toArray(String[]::new));
     String usernameParam = toRecipientFormParam("username", users.stream().toArray(String[]::new));
     sendEmail(subject, template, context, Joiner.on("&")

@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba
 
  * License: GNU Public License version 3
- * Date: 2015-12-04
+ * Date: 2015-12-09
  */
 'use strict';
 
@@ -1155,7 +1155,7 @@ angular.module("comments/comment-editor-template.tpl.html", []).run(["$templateC
     "      </li>\n" +
     "    </ul>\n" +
     "    <tab heading=\"{{'comment.write' | translate}}\">\n" +
-    "      <textarea id=\"obiba-comment-form-message\" ng-model=\"comment.message\" class=\"form-control obiba-comment-form-message\"></textarea>\n" +
+    "      <textarea id=\"obiba-comment-form-message\" ng-model=\"comment.message\" class=\"form-control obiba-comment-form-message\" placeholder=\"{{'comment-placeholder' | translate}}\"></textarea>\n" +
     "    </tab>\n" +
     "    <tab heading=\"{{'comment.preview' | translate}}\">\n" +
     "      <div id=\"obiba-comment-form-marked\" class=\"obiba-comment-form-marked\" marked=\"comment.message\"></div>\n" +
@@ -1177,22 +1177,28 @@ angular.module("comments/comments-template.tpl.html", []).run(["$templateCache",
     "<div id=\"obiba-comments\">\n" +
     "  <div class=\"obiba-comment-top-offset1 obiba-comment-bottom-offset1\" ng-repeat=\"comment in comments\">\n" +
     "    <div ng-hide=\"selected === $index\">\n" +
-    "      <div class=\"obiba-comment-top-offset obiba-comment-bottom-offset\">\n" +
-    "        <span class=\"obiba-comment-icon\"><i class=\"glyphicon glyphicon-comment\"></i></span>\n" +
-    "        <span ng-if=\"!comment.modifiedBy\">{{'comment.created-by' | translate}} {{nameResolver()(comment.createdByProfile) || comment.createdBy}} {{comment.timestamps.created | fromNow }}</span>\n" +
-    "        <span ng-if=\"comment.modifiedBy\"> {{'comment.modified-by' | translate}} {{nameResolver()(comment.modifiedByProfile) || comment.modifiedBy}} {{comment.timestamps.lastUpdate | fromNow }}</span>\n" +
-    "        <span class=\"pull-right\">\n" +
-    "          <a ng-if=\"canEdit($index)\" ng-click=\"edit($index)\"\n" +
-    "             class=\"btn btn-primary btn-xs\">\n" +
-    "            <i class=\"fa fa-pencil-square-o\"></i>\n" +
-    "          </a>\n" +
-    "          <a ng-if=\"canDelete($index)\" ng-click=\"remove($index)\"\n" +
-    "             class=\"btn btn-danger btn-xs\">\n" +
-    "            <i class=\"fa fa-trash-o\"></i>\n" +
-    "          </a>\n" +
-    "        </span>\n" +
+    "      <div class=\"panel panel-default\">\n" +
+    "        <div class=\"panel-heading\">\n" +
+    "          <div>\n" +
+    "            <span class=\"obiba-comment-icon\"><i class=\"glyphicon glyphicon-comment\"></i></span>\n" +
+    "            <span ng-if=\"!comment.modifiedBy\">{{'comment.created-by' | translate}} {{nameResolver()(comment.createdByProfile) || comment.createdBy}} {{comment.timestamps.created | fromNow }}</span>\n" +
+    "            <span ng-if=\"comment.modifiedBy\"> {{'comment.modified-by' | translate}} {{nameResolver()(comment.modifiedByProfile) || comment.modifiedBy}} {{comment.timestamps.lastUpdate | fromNow }}</span>\n" +
+    "            <span class=\"pull-right\">\n" +
+    "              <a ng-if=\"canEdit($index)\" ng-click=\"edit($index)\"\n" +
+    "                 class=\"btn btn-primary btn-xs\">\n" +
+    "                <i class=\"fa fa-pencil-square-o\"></i>\n" +
+    "              </a>\n" +
+    "              <a ng-if=\"canDelete($index)\" ng-click=\"remove($index)\"\n" +
+    "                 class=\"btn btn-danger btn-xs\">\n" +
+    "                <i class=\"fa fa-trash-o\"></i>\n" +
+    "              </a>\n" +
+    "            </span>\n" +
+    "          </div>\n" +
+    "        </div>\n" +
+    "        <div class=\"panel-body\">\n" +
+    "          <div marked=\"comment.message\"></div>\n" +
+    "        </div>\n" +
     "      </div>\n" +
-    "      <div class=\"obiba-comment-comment-view\" marked=\"comment.message\"></div>\n" +
     "    </div>\n" +
     "    <obiba-comment-editor ng-show=\"selected === $index\" on-cancel=\"cancel\" on-submit=\"submit\" comment=\"comments[$index]\"></obiba-comment-editor>\n" +
     "  </div>\n" +

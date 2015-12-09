@@ -1,18 +1,29 @@
-@obiba-comment-message-border-color: rgba(51, 51, 51, 0.2);
+@obiba-comment-message-border-color: #ecf0f1;
+@obiba-comment-message-textarea-bg-color: #fafafa;
 @obiba-comment-comment-view-bg-color: #fff;
 @obiba-comment-offest: 10px;
 @obiba-comment-offest1: 30px;
 
 .obiba-comment-content {
   padding: 10px 10px;
-  min-height: 200px;
+  min-height: 100px;
 }
 
 form.obiba-comment-form {
-  min-height: 200px;
+  min-height: 100px;
+  margin-bottom: 20px;
 
   .tab-content {
-    border: 1px solid @obiba-comment-message-border-color;
+    border-right: 1px solid @obiba-comment-message-border-color;
+    border-bottom: 1px solid @obiba-comment-message-border-color;
+    border-left: 1px solid @obiba-comment-message-border-color;
+    padding: 10px;
+    background-color: #fff;
+
+    textarea {
+      background-color: @obiba-comment-message-textarea-bg-color;
+      border: 1px solid @obiba-comment-message-border-color;
+    }
   }
 
   .obiba-comment-form-marked {
@@ -31,6 +42,7 @@ form.obiba-comment-form {
 
   .obiba-comment-form-marked-doc {
     padding-right: 0;
+    font-size: small;
   }
 }
 
@@ -40,26 +52,7 @@ div#obiba-comments {
     margin-right: 4px;
   }
 
-  .obiba-comment-top-offset {
-    margin-top: @obiba-comment-offest;
-  }
-
-  .obiba-comment-bottom-offset {
-    margin-bottom: @obiba-comment-offest;
-  }
-
-  .obiba-comment-top-offset1 {
-    margin-top: @obiba-comment-offest1;
-  }
-
-  .obiba-comment-bottom-offset1 {
-    margin-bottom: @obiba-comment-offest1;
-  }
-
-  .obiba-comment-comment-view {
-    .obiba-comment-content;
-    background-color: @obiba-comment-comment-view-bg-color;
-    border: 1px solid @obiba-comment-message-border-color;
-    min-height: 100px;
+  .panel-heading {
+    font-size: small; 
   }
 }
