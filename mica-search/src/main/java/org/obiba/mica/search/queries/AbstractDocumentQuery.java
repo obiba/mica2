@@ -122,7 +122,7 @@ public abstract class AbstractDocumentQuery {
 
   public abstract String getSearchType();
 
-  public abstract FilterBuilder getAccessibilityFilter();
+  public abstract FilterBuilder getAccessFilter();
 
   public abstract Stream<String> getLocalizedQueryStringFields();
 
@@ -167,14 +167,14 @@ public abstract class AbstractDocumentQuery {
     if(queryDto == null) return null;
 
     QueryDtoParser queryDtoParser = QueryDtoParser.newParser();
-    FilterBuilder accessibilityFilter = getAccessibilityFilter();
+    FilterBuilder accessFilter = getAccessFilter();
 
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
       .setSearchType(SearchType.COUNT) //
-      .setQuery(accessibilityFilter == null
+      .setQuery(accessFilter == null
         ? queryDtoParser.parse(queryDto)
-        : QueryBuilders.filteredQuery(queryDtoParser.parse(queryDto), accessibilityFilter)) //
+        : QueryBuilders.filteredQuery(queryDtoParser.parse(queryDto), accessFilter)) //
       .setNoFields();
 
     aggregationYamlParser.getAggregations(getJoinFieldsAsProperties()).forEach(requestBuilder::addAggregation);
@@ -239,14 +239,14 @@ public abstract class AbstractDocumentQuery {
     aggregationTitleResolver.registerProviders(getAggregationMetaDataProviders());
     aggregationTitleResolver.refresh();
 
-    FilterBuilder accessibilityFilter = getAccessibilityFilter();
+    FilterBuilder accessFilter = getAccessFilter();
 
     SearchRequestBuilder defaultRequestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
       .setSearchType(scope == DETAIL ? SearchType.DFS_QUERY_THEN_FETCH : SearchType.COUNT) //
-      .setQuery(accessibilityFilter == null
+      .setQuery(accessFilter == null
         ? QueryBuilders.matchAllQuery()
-        : QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), accessibilityFilter)) //
+        : QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), accessFilter)) //
       .setFrom(from) //
       .setSize(size) //
       .setNoFields().addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT)); //
@@ -254,9 +254,9 @@ public abstract class AbstractDocumentQuery {
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
       .setSearchType(scope == DETAIL ? SearchType.DFS_QUERY_THEN_FETCH : SearchType.COUNT) //
-      .setQuery(accessibilityFilter == null
+      .setQuery(accessFilter == null
         ? queryDtoParser.parse(queryDto)
-        : QueryBuilders.filteredQuery(queryDtoParser.parse(queryDto), accessibilityFilter)) //
+        : QueryBuilders.filteredQuery(queryDtoParser.parse(queryDto), accessFilter)) //
       .setFrom(from) //
       .setSize(size) //
       .addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT)); // ;
@@ -335,14 +335,14 @@ public abstract class AbstractDocumentQuery {
     aggregationTitleResolver.registerProviders(getAggregationMetaDataProviders());
     aggregationTitleResolver.refresh();
 
-    FilterBuilder accessibilityFilter = getAccessibilityFilter();
+    FilterBuilder accessFilter = getAccessFilter();
 
     SearchRequestBuilder defaultRequestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
       .setSearchType(SearchType.COUNT) //
-      .setQuery(accessibilityFilter == null
+      .setQuery(accessFilter == null
         ? QueryBuilders.matchAllQuery()
-        : QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), accessibilityFilter)) //
+        : QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), accessFilter)) //
       .setFrom(0) //
       .setSize(0) // no results needed for a coverage
       .setNoFields().addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT));
@@ -350,9 +350,9 @@ public abstract class AbstractDocumentQuery {
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
       .setSearchType(SearchType.COUNT) //
-      .setQuery(accessibilityFilter == null
+      .setQuery(accessFilter == null
         ? queryDtoParser.parse(query)
-        : QueryBuilders.filteredQuery(queryDtoParser.parse(query), accessibilityFilter)) //
+        : QueryBuilders.filteredQuery(queryDtoParser.parse(query), accessFilter)) //
       .setFrom(0) //
       .setSize(0) // no results needed for a coverage
       .addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT));

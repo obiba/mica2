@@ -86,7 +86,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  public FilterBuilder getAccessibilityFilter() {
+  public FilterBuilder getAccessFilter() {
     if(micaConfigService.getConfig().isOpenAccess()) return null;
     List<String> ids = publishedNetworkService.getNetworkService().findPublishedStates().stream()
       .map(NetworkState::getId).filter(s -> subjectAclService.isAccessible("/network", s)).collect(Collectors.toList());

@@ -123,7 +123,7 @@ public class VariableQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  public FilterBuilder getAccessibilityFilter() {
+  public FilterBuilder getAccessFilter() {
     if(micaConfigService.getConfig().isOpenAccess()) return null;
     List<String> ids = studyDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
       .filter(s -> subjectAclService.isAccessible("/study-dataset", s))
