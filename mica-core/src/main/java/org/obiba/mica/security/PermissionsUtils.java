@@ -26,6 +26,18 @@ public class PermissionsUtils {
     throw new NoSuchElementException("Unknown role for the set of actions: " + Joiner.on(",").join(actions));
   }
 
+  public static String getReaderActions() {
+    return asActions("READER");
+  }
+
+  public static String getEditorActions() {
+    return asActions("EDITOR");
+  }
+
+  public static String getReviewerActions() {
+    return asActions("REVIEWER");
+  }
+
   public static String asActions(String role) {
     switch(role) {
       case "READER":
