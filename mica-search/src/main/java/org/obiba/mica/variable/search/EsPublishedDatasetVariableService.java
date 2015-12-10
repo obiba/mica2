@@ -62,7 +62,7 @@ public class EsPublishedDatasetVariableService extends AbstractPublishedDocument
 
   @Inject
   private ObjectMapper objectMapper;
-  
+
   @Inject
   private StudyDatasetService studyDatasetService;
 
