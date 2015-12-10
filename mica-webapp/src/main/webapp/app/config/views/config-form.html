@@ -99,6 +99,68 @@
 
       <div class="row">
         <div class="col-md-6">
+          <h4 translate>config.notifications.network-title</h4>
+
+          <p class="help-block" translate>config.notifications.network-info</p>
+
+          <div form-checkbox name="isNetworkNotificationsEnabled" model="micaConfig.isNetworkNotificationsEnabled"
+            label="config.notifications.network"
+            help="config.notifications.network-help"></div>
+          <div form-input name="networkNotificationsSubject" model="micaConfig.networkNotificationsSubject"
+            label="config.notifications.network-subject"
+            help="config.notifications.network-subject-help-long"
+            placeholder="[${organization}] ${documentId}: Network status has changed"
+            required="false" disabled="!micaConfig.isNetworkNotificationsEnabled"></div>
+        </div>
+        <div class="col-md-6">
+          <h4 translate>config.notifications.study-title</h4>
+
+          <p class="help-block" translate>config.notifications.study-info</p>
+
+          <div form-checkbox name="isStudyNotificationsEnabled" model="micaConfig.isStudyNotificationsEnabled"
+            label="config.notifications.study"
+            help="config.notifications.study-help"></div>
+          <div form-input name="studyNotificationsSubject" model="micaConfig.studyNotificationsSubject"
+            label="config.notifications.study-subject"
+            help="config.notifications.study-subject-help-long"
+            placeholder="[${organization}] ${documentId}: Study status has changed"
+            required="false" disabled="!micaConfig.isStudyNotificationsEnabled"></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <h4 translate>config.notifications.study-dataset-title</h4>
+
+          <p class="help-block" translate>config.notifications.study-dataset-info</p>
+
+          <div form-checkbox name="isStudyDatasetNotificationsEnabled" model="micaConfig.isStudyDatasetNotificationsEnabled"
+            label="config.notifications.study-dataset"
+            help="config.notifications.study-dataset-help"></div>
+          <div form-input name="studyDatasetNotificationsSubject" model="micaConfig.studyDatasetNotificationsSubject"
+            label="config.notifications.study-dataset-subject"
+            help="config.notifications.study-dataset-subject-help-long"
+            placeholder="[${organization}] ${documentId}: Study Dataset status has changed"
+            required="false" disabled="!micaConfig.isStudyDatasetNotificationsEnabled"></div>
+        </div>
+        <div class="col-md-6">
+          <h4 translate>config.notifications.harmonization-dataset-title</h4>
+
+          <p class="help-block" translate>config.notifications.harmonization-dataset-info</p>
+
+          <div form-checkbox name="isHarmonizationDatasetNotificationsEnabled" model="micaConfig.isHarmonizationDatasetNotificationsEnabled"
+            label="config.notifications.harmonization-dataset"
+            help="config.notifications.harmonization-dataset-help"></div>
+          <div form-input name="harmonizationDatasetNotificationsSubject" model="micaConfig.harmonizationDatasetNotificationsSubject"
+            label="config.notifications.harmonization-dataset-subject"
+            help="config.notifications.harmonization-dataset-subject-help-long"
+            placeholder="[${organization}] ${documentId}: Harmonization Dataset status has changed"
+            required="false" disabled="!micaConfig.isHarmonizationDatasetNotificationsEnabled"></div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
           <h4 translate>config.notifications.file-title</h4>
 
           <p class="help-block" translate>config.notifications.file-info</p>

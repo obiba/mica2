@@ -23,6 +23,7 @@ import org.obiba.mica.core.domain.Authorization;
 import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.domain.Timestamped;
+import org.obiba.mica.core.notification.EntityPublicationFlowMailNotification;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.AttachmentStateRepository;
 import org.obiba.mica.core.repository.PersonRepository;
@@ -32,8 +33,9 @@ import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.StudyDatasetRepository;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileStoreService;
-import org.obiba.mica.file.impl.GridFsService;
 import org.obiba.mica.file.TempFileRepository;
+import org.obiba.mica.file.impl.GridFsService;
+import org.obiba.mica.file.notification.FilePublicationFlowMailNotification;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.file.service.TempFileService;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
@@ -475,6 +477,16 @@ public class StudyDtosTest {
     @Bean
     public AttachmentStateRepository attachmentStateRepository() {
       return mock(AttachmentStateRepository.class);
+    }
+
+    @Bean
+    public EntityPublicationFlowMailNotification entityPublicationFlowNotification() {
+      return mock(EntityPublicationFlowMailNotification.class);
+    }
+
+    @Bean
+    public FilePublicationFlowMailNotification filePublicationFlowNotification() {
+      return mock(FilePublicationFlowMailNotification.class);
     }
   }
 }

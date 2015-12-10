@@ -21,6 +21,7 @@ import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.EntityState;
 import org.obiba.mica.core.domain.GitPersistable;
 import org.obiba.mica.core.domain.RevisionStatus;
+import org.obiba.mica.core.notification.EntityPublicationFlowMailNotification;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +38,9 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
 
   @Inject
   protected ObjectMapper objectMapper;
+
+  @Inject
+  protected EntityPublicationFlowMailNotification entityPublicationFlowNotification;
 
   @Inject
   protected GitService gitService;
@@ -166,8 +170,10 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
 
   public T updateStatus(String id, RevisionStatus status) {
     T entityState = findStateById(id);
+    RevisionStatus current = entityState.getRevisionStatus();
     entityState.setRevisionStatus(status);
     getEntityStateRepository().save(entityState);
+    entityPublicationFlowNotification.send(id, getTypeName(), current, status);
 
     return entityState;
   }
