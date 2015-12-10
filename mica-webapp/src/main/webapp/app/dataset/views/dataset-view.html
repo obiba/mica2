@@ -11,7 +11,7 @@
 <div>
   <div ng-include="'app/dataset/views/dataset-view-header.html'" ng-init="tabName='view'"></div>
 
-  <div class="clearfix">
+  <div ng-class="{'voffset3': !screen.is('lg')}" class="clearfix">
     <h3 class="pull-left no-margin-top" translate>view</h3>
     <div class="pull-right">
       <a ng-href="#/{{type}}/{{dataset.id}}/edit" class="btn btn-primary btn-responsive"
