@@ -4,7 +4,7 @@
     "dist/ng-obiba.js",
     "dist/css/ng-obiba.css"
   ],
-  "version": "0.1.0",
+  "version": "1.1",
   "description": "OBiBa AngularJS commons",
   "license": "GNU Public License version 3",
   "ignore": [

@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba
 
  * License: GNU Public License version 3
- * Date: 2015-12-09
+ * Date: 2015-12-10
  */
 'use strict';
 
@@ -1155,7 +1155,7 @@ angular.module("comments/comment-editor-template.tpl.html", []).run(["$templateC
     "      </li>\n" +
     "    </ul>\n" +
     "    <tab heading=\"{{'comment.write' | translate}}\">\n" +
-    "      <textarea id=\"obiba-comment-form-message\" ng-model=\"comment.message\" class=\"form-control obiba-comment-form-message\" placeholder=\"{{'comment-placeholder' | translate}}\"></textarea>\n" +
+    "      <textarea id=\"obiba-comment-form-message\" ng-model=\"comment.message\" class=\"form-control obiba-comment-form-message\" placeholder=\"{{'comment.placeholder' | translate}}\"></textarea>\n" +
     "    </tab>\n" +
     "    <tab heading=\"{{'comment.preview' | translate}}\">\n" +
     "      <div id=\"obiba-comment-form-marked\" class=\"obiba-comment-form-marked\" marked=\"comment.message\"></div>\n" +
