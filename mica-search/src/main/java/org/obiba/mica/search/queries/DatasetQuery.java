@@ -109,7 +109,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  public FilterBuilder getAccessibilityFilter() {
+  public FilterBuilder getAccessFilter() {
     if(micaConfigService.getConfig().isOpenAccess()) return null;
     List<String> ids = studyDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
       .filter(s -> subjectAclService.isAccessible("/study-dataset", s)).collect(Collectors.toList());
@@ -270,7 +270,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
   }
 
   public Map<String, Map<String, List<String>>> getStudyCountsByDataset() {
-    FilterBuilder accessibilityFilter = getAccessibilityFilter();
+    FilterBuilder accessFilter = getAccessFilter();
     BaseQueryBuilder query = queryDto == null
       ? QueryBuilders.matchAllQuery()
       : QueryDtoParser.newParser().parse(queryDto);
@@ -278,7 +278,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
       .setSearchType(SearchType.COUNT) //
-      .setQuery(accessibilityFilter == null ? query : QueryBuilders.filteredQuery(query, accessibilityFilter)) //
+      .setQuery(accessFilter == null ? query : QueryBuilders.filteredQuery(query, accessFilter)) //
       .setNoFields();
 
     Properties props = new Properties();

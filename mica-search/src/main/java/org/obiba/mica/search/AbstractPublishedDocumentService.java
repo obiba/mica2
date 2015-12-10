@@ -171,13 +171,13 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
   }
 
   private List<T> executeQueryInternal(QueryBuilder queryBuilder, int from, int size, List<String> ids) {
-    FilterBuilder accessibilityFilter = filterByAccess();
+    FilterBuilder accessFilter = filterByAccess();
 
     SearchRequestBuilder requestBuilder = client.prepareSearch(getIndexName()) //
       .setTypes(getType()) //
       .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
       .setQuery(
-        accessibilityFilter == null ? queryBuilder : QueryBuilders.filteredQuery(queryBuilder, accessibilityFilter)) //
+        accessFilter == null ? queryBuilder : QueryBuilders.filteredQuery(queryBuilder, accessFilter)) //
       .setFrom(from) //
       .setSize(size);
 

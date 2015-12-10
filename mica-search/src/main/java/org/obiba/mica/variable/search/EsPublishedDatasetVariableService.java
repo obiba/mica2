@@ -120,13 +120,13 @@ public class EsPublishedDatasetVariableService extends AbstractPublishedDocument
   }
 
   private SearchResponse executeCountQuery(QueryBuilder queryBuilder, AbstractAggregationBuilder aggregationBuilder) {
-    FilterBuilder accessibilityFilter = filterByAccess();
+    FilterBuilder accessFilter = filterByAccess();
 
     SearchRequestBuilder requestBuilder = client.prepareSearch(getIndexName()) //
       .setTypes(getType()) //
       .setSearchType(SearchType.COUNT) //
       .setQuery(
-        accessibilityFilter == null ? queryBuilder : QueryBuilders.filteredQuery(queryBuilder, accessibilityFilter)) //
+        accessFilter == null ? queryBuilder : QueryBuilders.filteredQuery(queryBuilder, accessFilter)) //
       .setFrom(0) //
       .setSize(0);
 

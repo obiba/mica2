@@ -69,7 +69,7 @@ public class StudyQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  public FilterBuilder getAccessibilityFilter() {
+  public FilterBuilder getAccessFilter() {
     if(micaConfigService.getConfig().isOpenAccess()) return null;
     List<String> ids = publishedStudyService.getStudyService().findPublishedStates().stream().map(StudyState::getId)
       .filter(s -> subjectAclService.isAccessible("/study", s))
