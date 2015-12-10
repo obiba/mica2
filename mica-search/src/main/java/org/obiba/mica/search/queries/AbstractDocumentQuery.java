@@ -166,11 +166,15 @@ public abstract class AbstractDocumentQuery {
   protected List<String> queryStudyIds(QueryDto queryDto) throws IOException {
     if(queryDto == null) return null;
 
+    QueryDtoParser queryDtoParser = QueryDtoParser.newParser();
+    FilterBuilder accessibilityFilter = getAccessibilityFilter();
+
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
-      .setPostFilter(getAccessibilityFilter()) //
       .setSearchType(SearchType.COUNT) //
-      .setQuery(QueryDtoParser.newParser().parse(queryDto)) //
+      .setQuery(accessibilityFilter == null
+        ? queryDtoParser.parse(queryDto)
+        : QueryBuilders.filteredQuery(queryDtoParser.parse(queryDto), accessibilityFilter)) //
       .setNoFields();
 
     aggregationYamlParser.getAggregations(getJoinFieldsAsProperties()).forEach(requestBuilder::addAggregation);
@@ -235,11 +239,14 @@ public abstract class AbstractDocumentQuery {
     aggregationTitleResolver.registerProviders(getAggregationMetaDataProviders());
     aggregationTitleResolver.refresh();
 
+    FilterBuilder accessibilityFilter = getAccessibilityFilter();
+
     SearchRequestBuilder defaultRequestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
       .setSearchType(scope == DETAIL ? SearchType.DFS_QUERY_THEN_FETCH : SearchType.COUNT) //
-      .setQuery(QueryBuilders.matchAllQuery()) //
-      .setPostFilter(getAccessibilityFilter()) //
+      .setQuery(accessibilityFilter == null
+        ? QueryBuilders.matchAllQuery()
+        : QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), accessibilityFilter)) //
       .setFrom(from) //
       .setSize(size) //
       .setNoFields().addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT)); //
@@ -247,8 +254,9 @@ public abstract class AbstractDocumentQuery {
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
       .setSearchType(scope == DETAIL ? SearchType.DFS_QUERY_THEN_FETCH : SearchType.COUNT) //
-      .setQuery(queryDtoParser.parse(queryDto)) //
-      .setPostFilter(getAccessibilityFilter()) //
+      .setQuery(accessibilityFilter == null
+        ? queryDtoParser.parse(queryDto)
+        : QueryBuilders.filteredQuery(queryDtoParser.parse(queryDto), accessibilityFilter)) //
       .setFrom(from) //
       .setSize(size) //
       .addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT)); // ;
@@ -344,7 +352,7 @@ public abstract class AbstractDocumentQuery {
       .setSearchType(SearchType.COUNT) //
       .setQuery(accessibilityFilter == null
         ? queryDtoParser.parse(query)
-        : QueryBuilders.filteredQuery(queryDtoParser.parse(query), getAccessibilityFilter())) //
+        : QueryBuilders.filteredQuery(queryDtoParser.parse(query), accessibilityFilter)) //
       .setFrom(0) //
       .setSize(0) // no results needed for a coverage
       .addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT));

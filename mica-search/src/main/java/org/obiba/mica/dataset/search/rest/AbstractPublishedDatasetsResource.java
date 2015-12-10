@@ -80,11 +80,12 @@ public abstract class AbstractPublishedDatasetsResource<T extends Dataset> {
       query = QueryBuilders.boolQuery().must(query).must(QueryBuilders.queryString(queryString));
     }
 
+    FilterBuilder postFilter = getPostFilter(clazz, studyId);
+
     SearchRequestBuilder search = client.prepareSearch() //
       .setIndices(DatasetIndexer.PUBLISHED_DATASET_INDEX) //
       .setTypes(DatasetIndexer.DATASET_TYPE) //
-      .setQuery(query) //
-      .setPostFilter(getPostFilter(clazz, studyId)) //
+      .setQuery(postFilter == null ? query : QueryBuilders.filteredQuery(query, postFilter)) //
       .setFrom(from) //
       .setSize(limit);
 

@@ -93,11 +93,12 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
 
     if(query != null && fields != null) fields.forEach(query::field);
 
+    FilterBuilder postFilter = getPostFilter(studyId);
+
     SearchRequestBuilder search = client.prepareSearch() //
       .setIndices(getIndexName()) //
       .setTypes(getType()) //
-      .setQuery(query) //
-      .setPostFilter(getPostFilter(studyId)) //
+      .setQuery(postFilter == null ? query : QueryBuilders.filteredQuery(query, postFilter)) //
       .setFrom(from) //
       .setSize(limit);
 
@@ -170,11 +171,13 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
   }
 
   private List<T> executeQueryInternal(QueryBuilder queryBuilder, int from, int size, List<String> ids) {
+    FilterBuilder accessibilityFilter = filterByAccess();
+
     SearchRequestBuilder requestBuilder = client.prepareSearch(getIndexName()) //
       .setTypes(getType()) //
       .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
-      .setQuery(queryBuilder) //
-      .setPostFilter(filterByAccess()) //
+      .setQuery(
+        accessibilityFilter == null ? queryBuilder : QueryBuilders.filteredQuery(queryBuilder, accessibilityFilter)) //
       .setFrom(from) //
       .setSize(size);
 

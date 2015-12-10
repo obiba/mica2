@@ -24,6 +24,7 @@ import javax.inject.Inject;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.index.query.BaseQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -111,11 +112,9 @@ public class DatasetQuery extends AbstractDocumentQuery {
   public FilterBuilder getAccessibilityFilter() {
     if(micaConfigService.getConfig().isOpenAccess()) return null;
     List<String> ids = studyDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
-      .filter(s -> subjectAclService.isAccessible("/study-dataset", s))
-      .collect(Collectors.toList());
+      .filter(s -> subjectAclService.isAccessible("/study-dataset", s)).collect(Collectors.toList());
     ids.addAll(harmonizationDatasetService.findPublishedStates().stream().map(HarmonizationDatasetState::getId)
-      .filter(s -> subjectAclService.isAccessible("/harmonization-dataset", s))
-      .collect(Collectors.toList()));
+      .filter(s -> subjectAclService.isAccessible("/harmonization-dataset", s)).collect(Collectors.toList()));
     return ids.isEmpty()
       ? FilterBuilders.notFilter(FilterBuilders.existsFilter("id"))
       : FilterBuilders.idsFilter().ids(ids.toArray(new String[ids.size()]));
@@ -151,7 +150,8 @@ public class DatasetQuery extends AbstractDocumentQuery {
       : DatasetCountStatsBuilder.newBuilder(counts);
 
     Consumer<Dataset> addDto = getDatasetConsumer(scope, resBuilder, datasetCountStatsBuilder);
-    List<Dataset> datasets = publishedDatasetService.findByIds(Stream.of(hits.hits()).map(h -> h.getId()).collect(Collectors.toList()));
+    List<Dataset> datasets = publishedDatasetService
+      .findByIds(Stream.of(hits.hits()).map(h -> h.getId()).collect(Collectors.toList()));
     datasets.forEach(addDto::accept);
     builder.setExtension(DatasetResultDto.result, resBuilder.build());
   }
@@ -270,10 +270,15 @@ public class DatasetQuery extends AbstractDocumentQuery {
   }
 
   public Map<String, Map<String, List<String>>> getStudyCountsByDataset() {
+    FilterBuilder accessibilityFilter = getAccessibilityFilter();
+    BaseQueryBuilder query = queryDto == null
+      ? QueryBuilders.matchAllQuery()
+      : QueryDtoParser.newParser().parse(queryDto);
+
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
       .setSearchType(SearchType.COUNT) //
-      .setQuery(queryDto == null ? QueryBuilders.matchAllQuery() : QueryDtoParser.newParser().parse(queryDto)) //
+      .setQuery(accessibilityFilter == null ? query : QueryBuilders.filteredQuery(query, accessibilityFilter)) //
       .setNoFields();
 
     Properties props = new Properties();
