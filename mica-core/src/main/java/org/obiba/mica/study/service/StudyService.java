@@ -15,7 +15,6 @@ import javax.validation.constraints.NotNull;
 
 import org.joda.time.DateTime;
 import org.obiba.mica.NoSuchEntityException;
-import org.obiba.mica.contact.event.PersonUpdatedEvent;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.domain.PublishCascadingScope;
@@ -149,10 +148,7 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
     else studyRepository.save(study);
 
     gitService.save(study, comment);
-
     eventBus.post(new DraftStudyUpdatedEvent(study));
-
-    if(cascade) study.getAllPersons().forEach(c -> eventBus.post(new PersonUpdatedEvent(c)));
   }
 
   @NotNull

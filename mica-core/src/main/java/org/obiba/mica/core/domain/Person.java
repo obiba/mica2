@@ -177,7 +177,7 @@ public class Person implements Persistable<String> {
   }
 
   public void removeStudy(@NotNull Study study) {
-    studyMemberships = studyMemberships.stream().filter(m -> m.getParentId() != study.getId()).collect(toList());
+    studyMemberships = studyMemberships.stream().filter(m -> !m.getParentId().equals(study.getId())).collect(toList());
   }
 
   public void removeStudy(@NotNull Study study, @NotNull String role) {
@@ -201,7 +201,7 @@ public class Person implements Persistable<String> {
   }
 
   public void removeNetwork(@NotNull Network network) {
-    networkMemberships = networkMemberships.stream().filter(m -> m.getParentId() != network.getId()).collect(toList());
+    networkMemberships = networkMemberships.stream().filter(m -> !m.getParentId().equals(network.getId())).collect(toList());
   }
 
   public void removeNetwork(@NotNull Network network, @NotNull String role) {

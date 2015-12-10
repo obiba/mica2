@@ -11,6 +11,8 @@ import org.obiba.mica.network.domain.Network;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
+import com.google.common.eventbus.EventBus;
+
 @Component
 public class NetworkRepositoryImpl implements NetworkRepositoryCustom, PersonAwareRepository<Network> {
 
@@ -20,9 +22,17 @@ public class NetworkRepositoryImpl implements NetworkRepositoryCustom, PersonAwa
   @Inject
   PersonRepository personRepository;
 
+  @Inject
+  EventBus eventBus;
+
   @Override
   public PersonRepository getPersonRepository() {
     return personRepository;
+  }
+
+  @Override
+  public EventBus getEventBus() {
+    return eventBus;
   }
 
   @Override

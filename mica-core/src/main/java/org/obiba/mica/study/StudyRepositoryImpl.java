@@ -14,6 +14,8 @@ import org.obiba.mica.study.domain.Study;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 
+import com.google.common.eventbus.EventBus;
+
 @Component
 public class StudyRepositoryImpl implements StudyRepositoryCustom, PersonAwareRepository<Study> {
 
@@ -32,9 +34,17 @@ public class StudyRepositoryImpl implements StudyRepositoryCustom, PersonAwareRe
   @Inject
   MongoTemplate mongoTemplate;
 
+  @Inject
+  EventBus eventBus;
+
   @Override
   public PersonRepository getPersonRepository() {
     return personRepository;
+  }
+
+  @Override
+  public EventBus getEventBus() {
+    return eventBus;
   }
 
   @Override
