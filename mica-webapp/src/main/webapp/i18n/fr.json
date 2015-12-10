@@ -822,6 +822,7 @@
   "comment": {
     "write": "Write",
     "preview": "Preview",
+    "placeholder": "Leave a comment",
     "send": "Comment",
     "markdown-doc-link": "Markdown documentation",
     "created-by": "Created by",
