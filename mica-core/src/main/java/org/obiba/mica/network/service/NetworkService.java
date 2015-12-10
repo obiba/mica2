@@ -21,8 +21,10 @@ import javax.validation.constraints.NotNull;
 import org.joda.time.DateTime;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.repository.EntityStateRepository;
+import org.obiba.mica.core.repository.PersonRepository;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.FileUtils;
@@ -51,6 +53,7 @@ import org.springframework.validation.annotation.Validated;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
@@ -82,6 +85,9 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
   @Inject
   private MicaConfigService micaConfigService;
 
+  @Inject
+  private PersonRepository personRepository;
+
   /**
    * Create or update provided {@link Network}.
    *
@@ -110,6 +116,9 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
         saved = network;
       }
     }
+
+    network.setContacts(replaceExistingPersons(network.getContacts()));
+    network.setInvestigators(replaceExistingPersons(network.getInvestigators()));
 
     if (saved.getLogo() != null && saved.getLogo().isJustUploaded()) {
       fileStoreService.save(saved.getLogo().getId());
@@ -271,6 +280,22 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
     network.setId(nextId);
 
     return nextId;
+  }
+
+  private List<Person> replaceExistingPersons(List<Person> persons) {
+    ImmutableList.copyOf(persons).forEach(c -> {
+      if (c.getId() == null && !Strings.isNullOrEmpty(c.getEmail())) {
+        Person person = personRepository.findOneByEmail(c.getEmail());
+
+        if (person != null) {
+          int idx = persons.indexOf(c);
+          persons.remove(c);
+          persons.add(idx, person);
+        }
+      }
+    });
+
+    return persons;
   }
 
   private String getNextId(LocalizedString suggested) {
