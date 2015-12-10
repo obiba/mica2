@@ -497,19 +497,23 @@ mica.network
             $scope.network.memberships.push(roleMemberships);
           }
 
-          updateExistingContact(contact, roleMemberships.members || []);
+          var members = $scope.network.memberships.map(function(m) {
+            return m.members;
+          });
+
+          updateExistingContact(contact, [].concat.apply([], members) || []);
           roleMemberships.members.push(contact);
 
           $scope.emitNetworkUpdated();
         }
       });
 
-      $scope.$on(CONTACT_EVENTS.contactUpdated, function (event, network, contact, type) {
-        var roleMemberships = $scope.network.memberships.filter(function (m) {
-          return m.role === type;
-        })[0];
+      $scope.$on(CONTACT_EVENTS.contactUpdated, function (event, network, contact) {
+        var members = $scope.network.memberships.map(function (m) {
+          return m.members;
+        });
 
-        updateExistingContact(contact, roleMemberships.members || []);
+        updateExistingContact(contact, [].concat.apply([], members) || []);
 
         if (network === $scope.network) {
           $scope.emitNetworkUpdated();

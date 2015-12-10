@@ -333,23 +333,23 @@ mica.study
             $scope.study.memberships.push(roleMemberships);
           }
 
-          updateExistingContact(contact, roleMemberships.members || []);
+          var members = $scope.study.memberships.map(function(m) {
+            return m.members;
+          });
+
+          updateExistingContact(contact, [].concat.apply([], members) || []);
           roleMemberships.members.push(contact);
 
           $scope.emitStudyUpdated();
         }
       });
 
-      $scope.$on(CONTACT_EVENTS.contactUpdated, function (event, study, contact, type) {
-        var roleMemberships = $scope.study.memberships.filter(function(m) {
-          if (m.role === type) {
-            return true;
-          }
+      $scope.$on(CONTACT_EVENTS.contactUpdated, function (event, study, contact) {
+        var members = $scope.study.memberships.map(function(m) {
+          return m.members;
+        });
 
-          return false;
-        })[0];
-
-        updateExistingContact(contact, roleMemberships.members || []);
+        updateExistingContact(contact, [].concat.apply([], members) || []);
 
         if (study === $scope.study) {
           $scope.emitStudyUpdated();
