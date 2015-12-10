@@ -768,6 +768,7 @@
     "help": "Grant Read access to the publication.",
     "none": "No accesses.",
     "add": "Add Access",
+    "principal-help": "User or group unique name. Use wildcard * for specifying anyone or any group.",
     "delete-dialog": {
       "title": "Delete Access",
       "message": "Are you sure you want to delete the access of {{arg0}} {{arg1}}"
