@@ -18,23 +18,28 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.index.query.BoolFilterBuilder;
+import org.elasticsearch.index.query.FilterBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.OrFilterBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
-import org.elasticsearch.search.aggregations.AggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
-import org.elasticsearch.transport.TransportResponse;
 import org.obiba.mica.dataset.domain.DatasetVariable;
+import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
+import org.obiba.mica.dataset.domain.StudyDatasetState;
+import org.obiba.mica.dataset.service.HarmonizationDatasetService;
+import org.obiba.mica.dataset.service.StudyDatasetService;
 import org.obiba.mica.search.AbstractPublishedDocumentService;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.slf4j.Logger;
@@ -50,14 +55,25 @@ public class EsPublishedDatasetVariableService extends AbstractPublishedDocument
   private static final Logger log = LoggerFactory.getLogger(EsPublishedDatasetVariableService.class);
 
   private static final String VARIABLE_PUBLISHED = "variable-published";
+
   private static final String VARIABLE_TYPE = "Variable";
-  private static final String STUDY_IDS_FIELD= "studyIds";
+
+  private static final String STUDY_IDS_FIELD = "studyIds";
+
+  @Inject
+  private ObjectMapper objectMapper;
+  
+  @Inject
+  private StudyDatasetService studyDatasetService;
+
+  @Inject
+  private HarmonizationDatasetService harmonizationDatasetService;
 
   @Override
   public long getCountByStudyId(String studyId) {
     SearchResponse response = executeCountQuery(buildStudyFilteredQuery(studyId), null);
 
-    if (response == null) {
+    if(response == null) {
       return 0;
     }
 
@@ -68,17 +84,14 @@ public class EsPublishedDatasetVariableService extends AbstractPublishedDocument
     SearchResponse response = executeCountQuery(buildStudiesFilteredQuery(studyIds),
       AggregationBuilders.terms(STUDY_IDS_FIELD).field(STUDY_IDS_FIELD).size(0));
 
-    if (response == null) {
+    if(response == null) {
       return studyIds.stream().collect(Collectors.toMap(s -> s, s -> 0L));
     }
 
     Terms aggregation = response.getAggregations().get(STUDY_IDS_FIELD);
-    return studyIds.stream().collect(Collectors.toMap(s -> s, s -> Optional.ofNullable(aggregation.getBucketByKey(s)).map(
-      Terms.Bucket::getDocCount).orElse(0L)));
+    return studyIds.stream().collect(Collectors.toMap(s -> s,
+      s -> Optional.ofNullable(aggregation.getBucketByKey(s)).map(Terms.Bucket::getDocCount).orElse(0L)));
   }
-
-  @Inject
-  private ObjectMapper objectMapper;
 
   @Override
   protected DatasetVariable processHit(SearchHit hit) throws IOException {
@@ -107,10 +120,13 @@ public class EsPublishedDatasetVariableService extends AbstractPublishedDocument
   }
 
   private SearchResponse executeCountQuery(QueryBuilder queryBuilder, AbstractAggregationBuilder aggregationBuilder) {
+    FilterBuilder accessibilityFilter = filterByAccess();
+
     SearchRequestBuilder requestBuilder = client.prepareSearch(getIndexName()) //
       .setTypes(getType()) //
       .setSearchType(SearchType.COUNT) //
-      .setQuery(queryBuilder) //
+      .setQuery(
+        accessibilityFilter == null ? queryBuilder : QueryBuilders.filteredQuery(queryBuilder, accessibilityFilter)) //
       .setFrom(0) //
       .setSize(0);
 
@@ -123,5 +139,22 @@ public class EsPublishedDatasetVariableService extends AbstractPublishedDocument
     } catch(IndexMissingException e) {
       return null; //ignoring
     }
+  }
+
+  @Nullable
+  @Override
+  protected FilterBuilder filterByAccess() {
+    if(micaConfigService.getConfig().isOpenAccess()) return null;
+    List<String> ids = studyDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
+      .filter(s -> subjectAclService.isAccessible("/study-dataset", s)).collect(Collectors.toList());
+    ids.addAll(harmonizationDatasetService.findPublishedStates().stream().map(HarmonizationDatasetState::getId)
+      .filter(s -> subjectAclService.isAccessible("/harmonization-dataset", s)).collect(Collectors.toList()));
+
+    if(ids.isEmpty()) return FilterBuilders.notFilter(FilterBuilders.existsFilter("id"));
+
+    OrFilterBuilder orFilter = FilterBuilders.orFilter();
+    ids.stream().forEach(id -> orFilter.add(FilterBuilders.termFilter("datasetId", id)));
+
+    return orFilter;
   }
 }
