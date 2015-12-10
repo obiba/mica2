@@ -7,99 +7,140 @@
     </ol>
   </h2>
 
-  <form name="form" role="form" novalidate ng-submit="save()">
+  <div class="tabs-menu" ng-class="{'tabs-left': screen.is('lg')}">
+    <ul class="nav nav-tabs">
+      <li ng-class="{'active': tab.name === undefined || tab.name === 'settings'}">
+        <a href ng-click="tab.name = 'settings'" title="{{'settings' | translate}}"><i class="fa fa-cog"></i></a>
+      </li>
+      <li ng-class="{'active': tab.name === 'notifications'}">
+        <a href ng-click="tab.name = 'notifications'"
+          title="{{'config.notifications.title' | translate}}"><i class="fa fa-envelope"></i></a>
+      </li>
+    </ul>
+  </div>
 
-    <div class="row">
-      <div class="col-md-6">
-        <h3 translate>config.serverIdentification</h3>
+  <div ng-show="tab.name === undefined || tab.name === 'settings'">
+    <form name="form" role="form" novalidate ng-submit="save()">
 
-        <div form-input name="name" model="micaConfig.name" label="config.name" required="true"
-          help="config.name-help"></div>
+      <div class="row">
+        <div class="col-md-6">
+          <h3 ng-class="{'no-margin-top': screen.is('lg')}" translate>config.serverIdentification</h3>
 
-        <div form-input name="publicUrl" model="micaConfig.publicUrl" label="config.publicUrl"
-          help="config.publicUrl-help"></div>
+          <div form-input name="name" model="micaConfig.name" label="config.name" required="true"
+            help="config.name-help"></div>
 
-        <h3 translate>config.dataSource</h3>
-
-        <div form-input name="opal" model="micaConfig.opal" label="config.opal" help="config.opal-help"
-          required="true"></div>
-
-        <div form-input name="threshold" model="micaConfig.privacy-threshold" label="config.privacy-threshold"
-          type="number"
-          required="false"
-          help="config.privacy-threshold-help"></div>
-
-        <h3 translate>config.contentEdition</h3>
-
-        <div class="form-group"
-          ng-class="{'has-error': (form.languages.$dirty || form.saveAttempted) && form.languages.$invalid}">
-          <label for="languages" class="control-label">
-            <span translate>config.languages</span> *
-          </label>
-          <select chosen multiple id="languages" name="languages" ng-model="micaConfig.languages"
-            ng-options="code as name for (code, name) in availableLanguages" class="chosen-select" required>
-          </select>
-          <p class="input-error" ng-show="form.languages.$dirty && form.languages.$invalid">
-            <span ng-show="form.languages.$error.server">{{ errors.name }}</span>
-            <span ng-show="form.languages.$error.required" translate>required</span>
-          </p>
-          <p class="help-block" translate>config.languages-help</p>
+          <div form-input name="publicUrl" model="micaConfig.publicUrl" label="config.publicUrl"
+            help="config.publicUrl-help"></div>
         </div>
 
-        <div form-input name="defaultCharSet" model="micaConfig.defaultCharSet" label="config.defaultCharSet"
-          required="true"></div>
-      </div>
+        <div class="col-md-6">
+          <h3 ng-class="{'no-margin-top': screen.is('lg')}" translate>config.dataSource</h3>
 
-      <div class="col-md-6">
+          <div form-input name="opal" model="micaConfig.opal" label="config.opal" help="config.opal-help"
+            required="true"></div>
 
-        <h3 translate>config.access</h3>
-
-        <div form-checkbox min="0" name="openAccess" model="micaConfig.openAccess" label="config.openAccess"
-          help="config.openAccess-help"></div>
-
-        <h3 translate>config.notifications.title</h3>
-
-        <p class="help-block" translate>config.notifications.info</p>
-
-        <h4 translate>config.notifications.file-title</h4>
-
-        <p class="help-block" translate>config.notifications.file-info</p>
-
-        <div form-checkbox name="isFsNotificationsEnabled" model="micaConfig.isFsNotificationsEnabled"
-          label="config.notifications.file"
-          help="config.notifications.file-help"></div>
-        <div form-input name="fsNotificationsSubject" model="micaConfig.fsNotificationsSubject"
-          label="config.notifications.file-subject"
-          help="config.notifications.file-subject-help-long"
-          placeholder="[${organization}] ${documentId}: file status has changed"
-          required="false" disabled="!micaConfig.isFsNotificationsEnabled"></div>
-
-        <h4 translate>config.notifications.comment-title</h4>
-
-        <p class="help-block" translate>config.notifications.comment-info</p>
-
-        <div form-checkbox name="isCommentNotificationsEnabled" model="micaConfig.isCommentNotificationsEnabled"
-          label="config.notifications.comment"
-          help="config.notifications.comment-help"></div>
-        <div form-input name="commentNotificationsSubject" model="micaConfig.commentNotificationsSubject"
-          label="config.notifications.comment-subject"
-          help="config.notifications.comment-subject-help-long"
-          placeholder="[${organization}] ${documentId} was commented"
-          required="false" disabled="!micaConfig.isCommentNotificationsEnabled"></div>
+          <div form-input name="threshold" model="micaConfig.privacy-threshold" label="config.privacy-threshold"
+            type="number"
+            required="false"
+            help="config.privacy-threshold-help"></div>
+        </div>
 
       </div>
 
-    </div>
+      <h3 translate>config.content</h3>
 
-    <a href="#/admin/general" class="btn btn-default">
-      <span translate>cancel</span>
-    </a>
+      <div class="row">
+        <div class="col-md-6">
 
-    <button type="submit" class="btn btn-primary">
-      <span translate>save</span>
-    </button>
+          <h4 translate>config.content-edition</h4>
 
-  </form>
+          <div class="form-group"
+            ng-class="{'has-error': (form.languages.$dirty || form.saveAttempted) && form.languages.$invalid}">
+            <label for="languages" class="control-label">
+              <span translate>config.languages</span> *
+            </label>
+            <select chosen multiple id="languages" name="languages" ng-model="micaConfig.languages"
+              ng-options="code as name for (code, name) in availableLanguages" class="chosen-select" required>
+            </select>
+            <p class="input-error" ng-show="form.languages.$dirty && form.languages.$invalid">
+              <span ng-show="form.languages.$error.server">{{ errors.name }}</span>
+              <span ng-show="form.languages.$error.required" translate>required</span>
+            </p>
+            <p class="help-block" translate>config.languages-help</p>
+          </div>
+
+          <div form-input name="defaultCharSet" model="micaConfig.defaultCharSet" label="config.defaultCharSet"
+            required="true"></div>
+
+        </div>
+        <div class="col-md-6">
+          <h4 translate>config.content-access</h4>
+
+          <div form-checkbox min="0" name="openAccess" model="micaConfig.openAccess" label="config.openAccess"
+            help="config.openAccess-help"></div>
+        </div>
+      </div>
+
+      <a href="#/admin/general" class="btn btn-default">
+        <span translate>cancel</span>
+      </a>
+
+      <button type="submit" class="btn btn-primary">
+        <span translate>save</span>
+      </button>
+    </form>
+  </div>
+
+  <div ng-show="tab.name === 'notifications'">
+    <h3 translate>config.notifications.title</h3>
+
+    <p class="help-block" translate>config.notifications.info</p>
+
+    <form novalidate ng-submit="save()">
+
+      <div class="row">
+        <div class="col-md-6">
+          <h4 translate>config.notifications.file-title</h4>
+
+          <p class="help-block" translate>config.notifications.file-info</p>
+
+          <div form-checkbox name="isFsNotificationsEnabled" model="micaConfig.isFsNotificationsEnabled"
+            label="config.notifications.file"
+            help="config.notifications.file-help"></div>
+          <div form-input name="fsNotificationsSubject" model="micaConfig.fsNotificationsSubject"
+            label="config.notifications.file-subject"
+            help="config.notifications.file-subject-help-long"
+            placeholder="[${organization}] ${documentId}: file status has changed"
+            required="false" disabled="!micaConfig.isFsNotificationsEnabled"></div>
+        </div>
+
+        <div class="col-md-6">
+          <h4 translate>config.notifications.comment-title</h4>
+
+          <p class="help-block" translate>config.notifications.comment-info</p>
+
+          <div form-checkbox name="isCommentNotificationsEnabled" model="micaConfig.isCommentNotificationsEnabled"
+            label="config.notifications.comment"
+            help="config.notifications.comment-help"></div>
+          <div form-input name="commentNotificationsSubject" model="micaConfig.commentNotificationsSubject"
+            label="config.notifications.comment-subject"
+            help="config.notifications.comment-subject-help-long"
+            placeholder="[${organization}] ${documentId} was commented"
+            required="false" disabled="!micaConfig.isCommentNotificationsEnabled"></div>
+
+        </div>
+
+      </div>
+
+      <a href="#/admin/general" class="btn btn-default">
+        <span translate>cancel</span>
+      </a>
+
+      <button type="submit" class="btn btn-primary">
+        <span translate>save</span>
+      </button>
+    </form>
+  </div>
 
 
 </div>
