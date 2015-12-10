@@ -479,13 +479,14 @@ public class FileSystemService {
   }
 
   private boolean checkNotification(RevisionStatus current, RevisionStatus status) {
-    return micaConfigService.getConfig().isFsNotificationsEnabled() && !current.equals(status) &&
-      (status.equals(RevisionStatus.DELETED) || status.equals(RevisionStatus.UNDER_REVIEW));
+    return micaConfigService.getConfig().isFsNotificationsEnabled() && current != status;
   }
 
   private void sendNotification(String path, RevisionStatus status) {
     List<SubjectAcl> acls = Lists.newArrayList(
-      SubjectAcl.newBuilder(Roles.MICA_REVIEWER, SubjectAcl.Type.GROUP).action(PermissionsUtils.asActions("REVIEWER"))
+      SubjectAcl.newBuilder(Roles.MICA_REVIEWER, SubjectAcl.Type.GROUP).action(PermissionsUtils.getReviewerActions())
+        .build(),
+      SubjectAcl.newBuilder(Roles.MICA_EDITOR, SubjectAcl.Type.GROUP).action(PermissionsUtils.getEditorActions())
         .build());
     String[] documentParts = StringUtils.stripStart(path, "/").split("/");
 
@@ -496,6 +497,7 @@ public class FileSystemService {
 
     Map<RevisionStatus, String> requiredActions = new HashMap<RevisionStatus, String>() {
       {
+        put(RevisionStatus.DRAFT, "EDIT");
         put(RevisionStatus.UNDER_REVIEW, "PUBLISH");
         put(RevisionStatus.DELETED, "DELETE");
       }
@@ -504,7 +506,7 @@ public class FileSystemService {
     Map<SubjectAcl.Type, List<String>> recipients = acls.stream()
       .filter(a -> a.getActions().contains(requiredActions.get(status)))
       .map(a -> Pair.create(a.getPrincipal(), a.getType()))
-      .collect(groupingBy(a -> a.getSecond(), mapping(p -> p.getFirst(), toList())));
+      .collect(groupingBy(Pair::getSecond, mapping(Pair::getFirst, toList())));
 
     if(recipients.isEmpty()) return;
 
