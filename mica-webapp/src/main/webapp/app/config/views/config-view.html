@@ -8,7 +8,7 @@
   </h2>
 
   <h3 translate>properties</h3>
-  
+
   <div class="row">
     <div class="col-md-6">
       <table class="table table-bordered table-striped">
@@ -91,16 +91,6 @@
         </tr>
         <tr>
           <td>
-            <span translate>config.notifications.network-subject</span>
-            <span class="help-block" translate>config.notifications.network-subject-help</span>
-          </td>
-          <td>
-            <span>{{micaConfig.fsNotificationsSubject}}</span>
-          </td>
-        </tr>
-
-        <tr>
-          <td>
             <span translate>config.notifications.study</span>
             <span class="help-block" translate>config.notifications.study-help</span>
           </td>
@@ -111,14 +101,24 @@
         </tr>
         <tr>
           <td>
-            <span translate>config.notifications.study-subject</span>
-            <span class="help-block" translate>config.notifications.study-subject-help</span>
+            <span translate>config.notifications.study-dataset</span>
+            <span class="help-block" translate>config.notifications.study-dataset-help</span>
           </td>
           <td>
-            <span>{{micaConfig.fsNotificationsSubject}}</span>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isStudyDatasetNotificationsEnabled"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.isStudyDatasetNotificationsEnabled"></i>
           </td>
         </tr>
-
+        <tr>
+          <td>
+            <span translate>config.notifications.harmonization-dataset</span>
+            <span class="help-block" translate>config.notifications.harmonization-dataset-help</span>
+          </td>
+          <td>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isHarmonizationDatasetNotificationsEnabled"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.isHarmonizationDatasetNotificationsEnabled"></i>
+          </td>
+        </tr>
         <tr>
           <td>
             <span translate>config.notifications.file</span>
@@ -131,30 +131,12 @@
         </tr>
         <tr>
           <td>
-            <span translate>config.notifications.file-subject</span>
-            <span class="help-block" translate>config.notifications.file-subject-help</span>
-          </td>
-          <td>
-            <span>{{micaConfig.fsNotificationsSubject}}</span>
-          </td>
-        </tr>
-        <tr>
-          <td>
             <span translate>config.notifications.comment</span>
             <span class="help-block" translate>config.notifications.comment-help</span>
           </td>
           <td>
             <i class="fa fa-check-square-o" ng-hide="!micaConfig.isCommentNotificationsEnabled"></i>
             <i class="fa fa-square-o" ng-hide="micaConfig.isCommentNotificationsEnabled"></i>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <span translate>config.notifications.comment-subject</span>
-            <span class="help-block" translate>config.notifications.comment-subject-help</span>
-          </td>
-          <td>
-            <span>{{micaConfig.commentNotificationsSubject}}</span>
           </td>
         </tr>
         </tbody>
