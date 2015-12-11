@@ -78,7 +78,7 @@ public class PublishedNetworkResource {
   }
 
   private void checkAccess() {
-    subjectAclService.checkAccessibility("/network", id);
+    subjectAclService.checkAccess("/network", id);
   }
 
   private Network getNetwork() {

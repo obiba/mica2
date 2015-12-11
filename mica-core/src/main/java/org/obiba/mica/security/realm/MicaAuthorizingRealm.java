@@ -113,8 +113,7 @@ public class MicaAuthorizingRealm extends AuthorizingRealm implements RolePermis
   @Subscribe
   public void onSubjectAclUpdate(SubjectAclUpdatedEvent event) {
     if(isCachingEnabled()) {
-      if(event.hasSubject()) getAuthorizationCache().remove(event.getSubject());
-      else getAuthorizationCache().clear();
+      getAuthorizationCache().clear();
     }
   }
 

@@ -103,6 +103,6 @@ public class PublishedStudyDatasetResource extends AbstractPublishedDatasetResou
   }
 
   private void checkAccess(String id) {
-    subjectAclService.checkAccessibility("/study-dataset", id);
+    subjectAclService.checkAccess("/study-dataset", id);
   }
 }

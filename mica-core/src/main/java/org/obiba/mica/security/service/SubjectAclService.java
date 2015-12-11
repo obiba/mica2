@@ -143,7 +143,7 @@ public class SubjectAclService {
    * @return
    */
   @Timed
-  public void checkAccessibility(@NotNull String resource, @Nullable String instance) {
+  public void checkAccess(@NotNull String resource, @Nullable String instance) {
     if(micaConfigService.getConfig().isOpenAccess()) return;
     checkPermission(resource, "VIEW", instance);
   }

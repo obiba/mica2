@@ -192,6 +192,6 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
   }
 
   private void checkAccess(String id) {
-    subjectAclService.checkAccessibility("/harmonization-dataset", id);
+    subjectAclService.checkAccess("/harmonization-dataset", id);
   }
 }
