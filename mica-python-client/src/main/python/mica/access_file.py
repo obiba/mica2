@@ -10,7 +10,7 @@ def add_arguments(parser):
     """
     Add command specific options
     """
-    mica.access.add_permission_arguments(parser)
+    mica.access.add_permission_arguments(parser, False)
     parser.add_argument('path', help='File path in Mica file system')
 
 def do_command(args):

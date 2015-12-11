@@ -10,7 +10,7 @@ def add_arguments(parser):
     """
     Add command specific options
     """
-    mica.access.add_permission_arguments(parser)
+    mica.access.add_permission_arguments(parser, True)
     parser.add_argument('id', help='Harmonization dataset ID')
 
 def do_command(args):

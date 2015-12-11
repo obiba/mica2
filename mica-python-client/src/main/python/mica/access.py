@@ -6,12 +6,14 @@ import mica.core
 
 SUBJECT_TYPES = ('USER', 'GROUP')
 
-def add_permission_arguments(parser):
+def add_permission_arguments(parser, fileArg):
   """
   Add permission arguments
   """
   parser.add_argument('--add', '-a', action='store_true', help='Grant an access right')
   parser.add_argument('--delete', '-d', action='store_true', required=False, help='Delete an access right')
+  if fileArg:
+    parser.add_argument('--no-file', '-nf', action='store_true', help='Do not apply the access to the associated files')
   parser.add_argument('--subject', '-s', required=True, help='Subject name to which the access will be granted. Use wildcard * to specify anyone or any group')
   parser.add_argument('--type', '-ty', required=False, help='Subject type: user or group')
 
@@ -29,10 +31,14 @@ def do_ws(args, path):
   """
   Build the web service resource path
   """
+  file = 'true'
+  if args.no_file:
+    file = 'false'
   if args.add:
     return mica.core.UriBuilder(path) \
       .query('type', args.type.upper()) \
       .query('principal', args.subject) \
+      .query('file', file) \
       .build()
 
   if args.delete:
