@@ -1,25 +1,25 @@
 """
-Apply permissions on a harmonization dataset.
+Apply access on a study.
 """
 
 import sys
 import mica.core
-import mica.perm
+import mica.access
 
 def add_arguments(parser):
     """
     Add command specific options
     """
-    mica.perm.add_permission_arguments(parser)
-    parser.add_argument('id', help='Harmonization dataset ID')
+    mica.access.add_permission_arguments(parser)
+    parser.add_argument('path', help='File path in Mica file system')
 
 def do_command(args):
     """
-    Execute permission command
+    Execute access command
     """
     # Build and send requests
     try:
-        mica.perm.validate_args(args)
+        mica.access.validate_args(args)
 
         request = mica.core.MicaClient.build(mica.core.MicaClient.LoginInfo.parse(args)).new_request()
 
@@ -33,7 +33,10 @@ def do_command(args):
             request.put()
 
         try:
-            response = request.resource(mica.perm.do_ws(args, ['draft','harmonization-dataset', args.id, 'permissions'])).send()
+            path = args.path
+            while path.startswith('/'):
+                path = path[1:]
+            response = request.resource(mica.access.do_ws(args, ['draft','file-access', path])).send()
         except Exception, e:
             print Exception, e
 

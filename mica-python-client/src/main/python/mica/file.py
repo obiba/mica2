@@ -44,19 +44,19 @@ def add_arguments(parser):
     """
     Add file command specific options
     """
-    parser.add_argument('path', help='File path in Mica file system.')
+    parser.add_argument('path', help='File path in Mica file system')
     parser.add_argument('--json', '-j', action='store_true', help='Pretty JSON formatting of the response')
     group = parser.add_mutually_exclusive_group()
-    group.add_argument('--download', '-dl', action=StoreTrueFileAction, help='Download file.')
-    group.add_argument('--upload', '-up', action=FileAction, help='Upload a local file to a folder in Mica file system, requires the folder to be in DRAFT state.')
-    group.add_argument('--create', '-c', action=FileAction, help='Create a folder at a specific location, requires the file to be in DRAFT state.')
-    group.add_argument('--copy', '-cp', action=FileAction, help='Copy a file to the specified destination.')
-    group.add_argument('--move', '-mv', action=FileAction, help='Move a file to the specified destination, requires the file to be in DRAFT state.')
-    group.add_argument('--delete', '-d', action=StoreTrueFileAction, help='Delete a file on Mica file system, requires the file to be in DELETED state.')
-    group.add_argument('--name', '-n', action=FileAction, help='Rename a file, requires the file to be in DRAFT state.')
-    group.add_argument('--status', '-st', action=FileAction, help='Change file status.')
-    group.add_argument('--publish', '-pu', action=StoreTrueFileAction, help='Publish a file, requires the file to be in UNDER_REVIEW state.')
-    group.add_argument('--unpublish', '-un', action=StoreTrueFileAction, help='Unpublish a file.')
+    group.add_argument('--download', '-dl', action=StoreTrueFileAction, help='Download file')
+    group.add_argument('--upload', '-up', action=FileAction, help='Upload a local file to a folder in Mica file system, requires the folder to be in DRAFT state')
+    group.add_argument('--create', '-c', action=FileAction, help='Create a folder at a specific location, requires the file to be in DRAFT state')
+    group.add_argument('--copy', '-cp', action=FileAction, help='Copy a file to the specified destination')
+    group.add_argument('--move', '-mv', action=FileAction, help='Move a file to the specified destination, requires the file to be in DRAFT state')
+    group.add_argument('--delete', '-d', action=StoreTrueFileAction, help='Delete a file on Mica file system, requires the file to be in DELETED state')
+    group.add_argument('--name', '-n', action=FileAction, help='Rename a file, requires the file to be in DRAFT state')
+    group.add_argument('--status', '-st', action=FileAction, help='Change file status')
+    group.add_argument('--publish', '-pu', action=StoreTrueFileAction, help='Publish a file, requires the file to be in UNDER_REVIEW state')
+    group.add_argument('--unpublish', '-un', action=StoreTrueFileAction, help='Unpublish a file')
 
 
 class MicaFileClient(object):
