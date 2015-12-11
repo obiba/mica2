@@ -5,7 +5,10 @@ import argparse
 import mica.file
 import mica.rest
 import mica.import_zip
-
+import mica.perm_network
+import mica.perm_study
+import mica.perm_study_dataset
+import mica.perm_harmonization_dataset
 
 def add_mica_arguments(parser):
     """
@@ -36,10 +39,18 @@ subparsers = parser.add_subparsers(title='sub-commands',
 # Add subcommands
 add_subcommand('import-zip', 'Import data from zip file(s) that have been extracted from old Mica',
                mica.import_zip.add_arguments, mica.import_zip.do_command)
-add_subcommand('rest', 'Request directly the Mica REST API, for advanced users.', mica.rest.add_arguments,
-               mica.rest.do_command)
 add_subcommand('file', 'Mica file system actions, for advanced users.', mica.file.add_arguments,
                mica.file.do_command)
+add_subcommand('perm-network', 'Apply permission on a network.',
+               mica.perm_network.add_arguments, mica.perm_network.do_command)
+add_subcommand('perm-study', 'Apply permission on a study.',
+               mica.perm_study.add_arguments, mica.perm_study.do_command)
+add_subcommand('perm-study-dataset', 'Apply permission on a study dataset.',
+               mica.perm_study_dataset.add_arguments, mica.perm_study_dataset.do_command)
+add_subcommand('perm-harmonization-dataset', 'Apply permission on a harmonization dataset.',
+               mica.perm_harmonization_dataset.add_arguments, mica.perm_harmonization_dataset.do_command)
+add_subcommand('rest', 'Request directly the Mica REST API, for advanced users.', mica.rest.add_arguments,
+               mica.rest.do_command)
 
 # Execute selected command
 args = parser.parse_args()
