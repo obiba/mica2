@@ -250,7 +250,7 @@
     "agate-subjects": "Agate users",
     "agate-subjects-help": "Users details are cached once retrieved from Agate server. To be cleared to synchronize with updated user details.",
     "authorization": "Authorizations",
-    "authorization-help": "Anything accessed in Mica requires authorization."
+    "authorization-help": "Anything accessed in Mica requires authorization. Cache is automatically cleared after a permission is updated."
   },
   "logs": {
     "title": "Logs",
