@@ -402,6 +402,14 @@ message MicaConfigDto {
   optional string fsNotificationsSubject = 11;
   optional bool isCommentNotificationsEnabled = 12;
   optional string commentNotificationsSubject = 13;
+  optional bool isStudyNotificationsEnabled = 14;
+  optional string studyNotificationsSubject = 15;
+  optional bool isNetworkNotificationsEnabled = 16;
+  optional string networkNotificationsSubject = 17;
+  optional bool isStudyDatasetNotificationsEnabled = 18;
+  optional string studyDatasetNotificationsSubject = 19;
+  optional bool isHarmonizationDatasetNotificationsEnabled = 20;
+  optional string harmonizationDatasetNotificationsSubject = 21;
 }
 
 message AggregationsConfigDto {

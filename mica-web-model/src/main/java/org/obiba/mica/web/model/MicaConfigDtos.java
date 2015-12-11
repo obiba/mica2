@@ -58,6 +58,22 @@ class MicaConfigDtos {
 
     if(config.getCommentNotiticationsSubject() != null) builder.setCommentNotificationsSubject(config.getCommentNotiticationsSubject());
 
+    builder.setIsNetworkNotificationsEnabled(config.isNetworkNotificationsEnabled());
+
+    if(config.getNetworkNotificationSubject() != null) builder.setNetworkNotificationsSubject(config.getNetworkNotificationSubject());
+
+    builder.setIsStudyNotificationsEnabled(config.isStudyNotificationsEnabled());
+
+    if(config.getStudyNotificationSubject() != null) builder.setStudyNotificationsSubject(config.getStudyNotificationSubject());
+
+    builder.setIsStudyDatasetNotificationsEnabled(config.isStudyDatasetNotificationsEnabled());
+
+    if(config.getStudyDatasetNotificationSubject() != null) builder.setStudyDatasetNotificationsSubject(config.getStudyDatasetNotificationSubject());
+
+    builder.setIsHarmonizationDatasetNotificationsEnabled(config.isHarmonizationDatasetNotificationsEnabled());
+
+    if(config.getHarmonizationDatasetNotificationSubject() != null) builder.setHarmonizationDatasetNotificationsSubject(config.getHarmonizationDatasetNotificationSubject());
+
     return builder.build();
   }
 
@@ -79,6 +95,14 @@ class MicaConfigDtos {
     if(dto.hasFsNotificationsSubject()) config.setFsNotificationSubject(dto.getFsNotificationsSubject());
     config.setCommentNotificationsEnabled(dto.getIsCommentNotificationsEnabled());
     if(dto.hasCommentNotificationsSubject()) config.setCommentNotiticationsSubject(dto.getCommentNotificationsSubject());
+    config.setStudyNotificationsEnabled(dto.getIsStudyNotificationsEnabled());
+    if(dto.hasStudyNotificationsSubject()) config.setStudyNotificationSubject(dto.getStudyNotificationsSubject());
+    config.setNetworkNotificationsEnabled(dto.getIsNetworkNotificationsEnabled());
+    if(dto.hasNetworkNotificationsSubject()) config.setNetworkNotificationSubject(dto.getNetworkNotificationsSubject());
+    config.setStudyDatasetNotificationsEnabled(dto.getIsStudyDatasetNotificationsEnabled());
+    if(dto.hasStudyDatasetNotificationsSubject()) config.setStudyDatasetNotificationSubject(dto.getStudyDatasetNotificationsSubject());
+    config.setHarmonizationDatasetNotificationsEnabled(dto.getIsHarmonizationDatasetNotificationsEnabled());
+    if(dto.hasHarmonizationDatasetNotificationsSubject()) config.setHarmonizationDatasetNotificationSubject(dto.getHarmonizationDatasetNotificationsSubject());
 
     return config;
   }

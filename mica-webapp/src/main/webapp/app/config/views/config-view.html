@@ -81,6 +81,46 @@
         <tbody>
         <tr>
           <td>
+            <span translate>config.notifications.network</span>
+            <span class="help-block" translate>config.notifications.network-help</span>
+          </td>
+          <td>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isNetworkNotificationsEnabled"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.isNetworkNotificationsEnabled"></i>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <span translate>config.notifications.network-subject</span>
+            <span class="help-block" translate>config.notifications.network-subject-help</span>
+          </td>
+          <td>
+            <span>{{micaConfig.fsNotificationsSubject}}</span>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            <span translate>config.notifications.study</span>
+            <span class="help-block" translate>config.notifications.study-help</span>
+          </td>
+          <td>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isStudyNotificationsEnabled"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.isStudyNotificationsEnabled"></i>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <span translate>config.notifications.study-subject</span>
+            <span class="help-block" translate>config.notifications.study-subject-help</span>
+          </td>
+          <td>
+            <span>{{micaConfig.fsNotificationsSubject}}</span>
+          </td>
+        </tr>
+
+        <tr>
+          <td>
             <span translate>config.notifications.file</span>
             <span class="help-block" translate>config.notifications.file-help</span>
           </td>

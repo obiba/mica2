@@ -25,12 +25,14 @@ import org.obiba.mica.config.MongoDbConfiguration;
 import org.obiba.mica.config.StudyTaxonomy;
 import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.domain.Person;
+import org.obiba.mica.core.notification.EntityPublicationFlowMailNotification;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.AttachmentStateRepository;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.impl.GridFsService;
+import org.obiba.mica.file.notification.FilePublicationFlowMailNotification;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.file.service.TempFileService;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
@@ -413,6 +415,16 @@ public class StudyServiceTest {
     @Bean
     public StudyTaxonomy studyTaxonomy() {
       return mock(StudyTaxonomy.class);
+    }
+
+    @Bean
+    public EntityPublicationFlowMailNotification entityPublicationFlowNotification() {
+      return mock(EntityPublicationFlowMailNotification.class);
+    }
+
+    @Bean
+    public FilePublicationFlowMailNotification filePublicationFlowNotification() {
+      return mock(FilePublicationFlowMailNotification.class);
     }
 
     @Bean

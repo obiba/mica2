@@ -58,6 +58,22 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   private boolean openAccess = true;
 
+  private boolean isStudyNotificationsEnabled = false;
+
+  private String studyNotificationsSubject;
+
+  private boolean isNetworkNotificationsEnabled = false;
+
+  private String networkNotificationsSubject;
+
+  private boolean isStudyDatasetNotificationsEnabled = false;
+
+  private String studyDatasetNotificationsSubject;
+
+  private boolean isHarmonizationDatasetNotificationsEnabled = false;
+
+  private String harmonizationDatasetNotificationsSubject;
+
   private boolean isFsNotificationsEnabled = false;
 
   private String fsNotificationsSubject;
@@ -170,6 +186,70 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public boolean isOpenAccess() {
     return openAccess;
+  }
+
+  public boolean isStudyNotificationsEnabled() {
+    return isStudyNotificationsEnabled;
+  }
+
+  public void setStudyNotificationsEnabled(boolean isStudyNotificationsEnabled) {
+    this.isStudyNotificationsEnabled = isStudyNotificationsEnabled;
+  }
+
+  public String getStudyNotificationSubject() {
+    return studyNotificationsSubject;
+  }
+
+  public void setStudyNotificationSubject(String studyNotificationSubject) {
+    this.studyNotificationsSubject = studyNotificationSubject;
+  }
+
+  public boolean isNetworkNotificationsEnabled() {
+    return isNetworkNotificationsEnabled;
+  }
+
+  public void setNetworkNotificationsEnabled(boolean isNetworkNotificationsEnabled) {
+    this.isNetworkNotificationsEnabled = isNetworkNotificationsEnabled;
+  }
+
+  public String getNetworkNotificationSubject() {
+    return networkNotificationsSubject;
+  }
+
+  public void setNetworkNotificationSubject(String networkNotificationSubject) {
+    this.networkNotificationsSubject = networkNotificationSubject;
+  }
+
+  public boolean isStudyDatasetNotificationsEnabled() {
+    return isStudyDatasetNotificationsEnabled;
+  }
+
+  public void setStudyDatasetNotificationsEnabled(boolean isStudyDatasetNotificationsEnabled) {
+    this.isStudyDatasetNotificationsEnabled = isStudyDatasetNotificationsEnabled;
+  }
+
+  public String getStudyDatasetNotificationSubject() {
+    return studyDatasetNotificationsSubject;
+  }
+
+  public void setStudyDatasetNotificationSubject(String studyDatasetNotificationSubject) {
+    this.studyDatasetNotificationsSubject = studyDatasetNotificationSubject;
+  }
+
+  public boolean isHarmonizationDatasetNotificationsEnabled() {
+    return isHarmonizationDatasetNotificationsEnabled;
+  }
+
+  public void setHarmonizationDatasetNotificationsEnabled(boolean isHarmonizationDatasetNotificationsEnabled) {
+    this.isHarmonizationDatasetNotificationsEnabled = isHarmonizationDatasetNotificationsEnabled;
+  }
+
+  public String getHarmonizationDatasetNotificationSubject() {
+    return harmonizationDatasetNotificationsSubject;
+  }
+
+  public void setHarmonizationDatasetNotificationSubject(String harmonizationDatasetNotificationSubject) {
+    this.harmonizationDatasetNotificationsSubject = harmonizationDatasetNotificationSubject;
   }
 
   public boolean isFsNotificationsEnabled() {
