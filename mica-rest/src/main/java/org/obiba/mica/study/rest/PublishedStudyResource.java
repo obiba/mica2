@@ -80,7 +80,7 @@ public class PublishedStudyResource {
   }
 
   private void checkAccess() {
-    subjectAclService.checkAccessibility("/study", id);
+    subjectAclService.checkAccess("/study", id);
   }
 
   private Study getStudy() {
