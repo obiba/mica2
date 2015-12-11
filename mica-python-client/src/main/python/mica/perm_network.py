@@ -38,7 +38,7 @@ def do_command(args):
             print Exception, e
 
         # format response
-        if response.code != 200:
+        if response.code != 204:
             print response.content
 
     except Exception, e:
