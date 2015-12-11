@@ -32,7 +32,7 @@ def do_ws(args, path):
   Build the web service resource path
   """
   file = 'true'
-  if args.no_file:
+  if 'no_file' in args and args.no_file:
     file = 'false'
   if args.add:
     return mica.core.UriBuilder(path) \
