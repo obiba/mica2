@@ -72,7 +72,7 @@
             <li><a href="#/harmonization-dataset"><span translate>harmonization-datasets</span></a></li>
           </ul>
         </li>
-        <li ng-if="authenticated">
+        <li ng-if="hasRole(['mica-administrator', 'mica-user', 'mica-data-access-officer'])">
           <a href="#/data-access-requests">
             <span translate>data-access-requests</span>
           </a>

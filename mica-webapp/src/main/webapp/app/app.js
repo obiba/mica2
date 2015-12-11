@@ -43,7 +43,7 @@ mica
         };
 
         this.roles = function() {
-          return real.roles;
+          return real.roles || [];
         };
 
         this.profile = function() {
