@@ -68,6 +68,11 @@
             ng-if="inViewMode() && network['obiba.mica.EntityStateDto.state'].permissions.edit">
             <i class="fa fa-plus"></i> <span translate>study.add</span>
           </a>
+
+          <p class="help-block" ng-if="!studySummaries || studySummaries.length === 0">
+            <span translate>study.none</span>
+          </p>
+
           <span class="pull-right">
             <dir-pagination-controls></dir-pagination-controls>
           </span>
@@ -105,6 +110,10 @@
             ng-if="inViewMode() && network['obiba.mica.EntityStateDto.state'].permissions.edit">
             <i class="fa fa-plus"></i> <span translate>network.add</span>
           </a>
+
+          <p class="help-block" ng-if="!network.networkSummaries || network.networkSummaries.length === 0">
+            <span translate>network.none</span>
+          </p>
 
           <span class="pull-right">
             <dir-pagination-controls></dir-pagination-controls>
