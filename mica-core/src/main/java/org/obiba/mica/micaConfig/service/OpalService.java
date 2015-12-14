@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.math3.util.Pair;
 import org.obiba.magma.support.Initialisables;
 import org.obiba.mica.dataset.service.KeyStoreService;
 import org.obiba.mica.micaConfig.AuthType;
@@ -96,9 +96,9 @@ public class OpalService implements EnvironmentAware {
     if(cachedDatasources.containsKey(projectUrl)) {
       Pair<OpalCredential, RestDatasource> p = cachedDatasources.get(projectUrl);
 
-      if(p.getLeft().equals(opalCredential)) {
+      if(p.getKey().equals(opalCredential)) {
         log.debug("Using cached rest datasource to " + projectUrl);
-        return p.getRight();
+        return p.getValue();
       }
 
       log.debug("Opal credential changed, evicting rest datasource for " + projectUrl);
@@ -108,7 +108,7 @@ public class OpalService implements EnvironmentAware {
 
     RestDatasource datasource = createRestDatasource(opalCredential, projectUrl, opalUrl, project);
     Initialisables.initialise(datasource);
-    cachedDatasources.put(projectUrl, Pair.of(opalCredential, datasource));
+    cachedDatasources.put(projectUrl, Pair.create(opalCredential, datasource));
 
     log.debug("Initializaed rest datasource for " + projectUrl);
 
@@ -132,7 +132,7 @@ public class OpalService implements EnvironmentAware {
   }
 
   /**
-   * Get a {@link org.obiba.opal.rest.client.magma.RestDatasource} from the default Opal server.
+   * Get a {@link RestDatasource} from the default Opal server.
    *
    * @param project
    * @return
@@ -172,7 +172,7 @@ public class OpalService implements EnvironmentAware {
   }
 
   /**
-   * Get a summary of all the {@link org.obiba.opal.core.domain.taxonomy.Taxonomy}s available from Opal master.
+   * Get a summary of all the {@link Taxonomy}s available from Opal master.
    *
    * @return
    */
@@ -184,7 +184,7 @@ public class OpalService implements EnvironmentAware {
   }
 
   /**
-   * Get a summary of the {@link org.obiba.opal.core.domain.taxonomy.Taxonomy} available from Opal master.
+   * Get a summary of the {@link Taxonomy} available from Opal master.
    *
    * @param name the taxonomy name
    * @return
@@ -194,8 +194,8 @@ public class OpalService implements EnvironmentAware {
   }
 
   /**
-   * Get a summary of all the {@link org.obiba.opal.core.domain.taxonomy.Taxonomy}s with their
-   * {@link org.obiba.opal.core.domain.taxonomy.Vocabulary}s from Opal master.
+   * Get a summary of all the {@link Taxonomy}s with their
+   * {@link Vocabulary}s from Opal master.
    *
    * @return
    */
@@ -207,8 +207,8 @@ public class OpalService implements EnvironmentAware {
   }
 
   /**
-   * Get a summary of the {@link org.obiba.opal.core.domain.taxonomy.Taxonomy} with its
-   * {@link org.obiba.opal.core.domain.taxonomy.Vocabulary}s from Opal master.
+   * Get a summary of the {@link Taxonomy} with its
+   * {@link Vocabulary}s from Opal master.
    *
    * @param name the taxonomy name
    * @return
@@ -220,7 +220,7 @@ public class OpalService implements EnvironmentAware {
   }
 
   /**
-   * Get a summary of the {@link org.obiba.opal.core.domain.taxonomy.Vocabulary} from Opal master.
+   * Get a summary of the {@link Vocabulary} from Opal master.
    *
    * @param name
    * @param vocabularyName
@@ -235,22 +235,22 @@ public class OpalService implements EnvironmentAware {
   }
 
   /**
-   * Get the {@link org.obiba.opal.core.domain.taxonomy.Taxonomy} from Opal master.
+   * Get the {@link Taxonomy} from Opal master.
    *
    * @param name
    * @return
-   * @throws org.obiba.opal.core.cfg.NoSuchTaxonomyException
+   * @throws NoSuchTaxonomyException
    */
   public Taxonomy getTaxonomy(String name) {
     return Dtos.fromDto(getTaxonomyDto(name));
   }
 
   /**
-   * Get the {@link org.obiba.opal.core.domain.taxonomy.Taxonomy} as a Dto from Opal master.
+   * Get the {@link Taxonomy} as a Dto from Opal master.
    *
    * @param name
    * @return
-   * @throws org.obiba.opal.core.cfg.NoSuchTaxonomyException
+   * @throws NoSuchTaxonomyException
    */
   public Opal.TaxonomyDto getTaxonomyDto(String name) {
     Map<String, Taxonomy> taxonomies = getTaxonomiesInternal();
@@ -263,7 +263,7 @@ public class OpalService implements EnvironmentAware {
   }
 
   /**
-   * Get the {@link org.obiba.opal.core.domain.taxonomy.Vocabulary} as a Dto from Opal master.
+   * Get the {@link Vocabulary} as a Dto from Opal master.
    *
    * @param name
    * @param vocabularyName

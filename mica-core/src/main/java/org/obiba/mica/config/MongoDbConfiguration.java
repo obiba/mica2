@@ -5,7 +5,6 @@ import java.util.Arrays;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-import org.mongeez.MongeezRunner;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.runtime.Version;
 import org.slf4j.Logger;
@@ -13,11 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.bind.RelaxedPropertyResolver;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.context.EnvironmentAware;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.data.authentication.UserCredentials;
 import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
 import org.springframework.data.mongodb.core.convert.CustomConversions;
@@ -76,24 +73,6 @@ public class MongoDbConfiguration extends AbstractMongoConfiguration implements 
     String username = propertyResolver.getProperty("username");
     String password = propertyResolver.getProperty("password");
     return isNullOrEmpty(username) || isNullOrEmpty(password) ? null : new UserCredentials(username, password);
-  }
-
-  @Bean
-  public MongeezRunner mongeez() throws Exception {
-    log.debug("Configuring Mongeez");
-    MongeezRunner mongeez = new MongeezRunner();
-    mongeez.setMongo(mongoDbFactory().getDb().getMongo());
-    mongeez.setExecuteEnabled(true);
-    mongeez.setFile(new DefaultResourceLoader().getResource("classpath:config/mongeez/mongeez.xml"));
-    mongeez.setDbName(propertyResolver.getProperty("databaseName"));
-
-    String username = propertyResolver.getProperty("username");
-    if(!isNullOrEmpty(username)) mongeez.setUserName(username);
-
-    String password = propertyResolver.getProperty("password");
-    if(!isNullOrEmpty(username)) mongeez.setPassWord(password);
-
-    return mongeez;
   }
 
   public static class LocalizedStringWriteConverter implements Converter<LocalizedString, DBObject> {
