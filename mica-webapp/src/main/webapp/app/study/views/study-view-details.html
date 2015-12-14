@@ -222,7 +222,7 @@
         <span translate>study.populations</span>
       </h3>
       <a ng-click="addPopulation()" class="btn btn-info"
-        ng-if="inViewMode() && hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+        ng-if="inViewMode() && permissions.canEdit()">
         <i class="fa fa-plus"></i> <span translate>study.add-population</span>
       </a>
 

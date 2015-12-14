@@ -175,7 +175,7 @@
 
   <tab heading="{{'study.data-collection-events' | translate}}">
     <div>
-      <a ng-if="inViewMode()" ng-click="addDataCollectionEvent(study, population)" class="btn btn-info btn-sm voffset1">
+      <a ng-if="inViewMode() && permissions.canEdit()" ng-click="addDataCollectionEvent(study, population)" class="btn btn-info btn-sm voffset1">
         <i class="fa fa-plus"></i> <span translate>study.add-data-collection-event</span>
       </a>
       <div ng-show="population.dataCollectionEvents.length > 1" class="label label-default pull-right voffset3">
