@@ -350,6 +350,8 @@
     "roles": "Roles",
     "roles-help": "A person can be member of a study or of a network with one of the listed roles.",
     "add-role": "Add Role",
+    "delete-role-title": "Delete Role",
+    "delete-role-confirm": "This operation will remove members with this role from all documents, i.e. studies, networks. Are you sure you want to delete role \"{{role}}\"?",
     "role-help": "Role unique identifier.",
     "role-error": "Role identifier already exists.",
     "notifications": {

@@ -1,11 +1,11 @@
 'use strict';
 
 mica.config
-  .controller('MicaConfigController', ['$scope', '$resource', '$route', '$window', '$log', 'MicaConfigResource', '$modal',
-    'OpalCredentialsResource', 'OpalCredentialResource', 'KeyStoreResource', 'FormServerValidation',
+  .controller('MicaConfigController', ['$rootScope', '$scope', '$resource', '$route', '$window', '$log', 'MicaConfigResource', '$modal', '$translate',
+    'OpalCredentialsResource', 'OpalCredentialResource', 'KeyStoreResource', 'FormServerValidation', 'NOTIFICATION_EVENTS',
 
-    function ($scope, $resource, $route, $window, $log, MicaConfigResource, $modal,
-              OpalCredentialsResource, OpalCredentialResource, KeyStoreResource, FormServerValidation) {
+    function ($rootScope, $scope, $resource, $route, $window, $log, MicaConfigResource, $modal, $translate,
+              OpalCredentialsResource, OpalCredentialResource, KeyStoreResource, FormServerValidation, NOTIFICATION_EVENTS) {
       $scope.micaConfig = MicaConfigResource.get();
       $scope.availableLanguages = $resource('ws/config/languages').get();
       $scope.opalCredentials = OpalCredentialsResource.query();
@@ -134,17 +134,36 @@ mica.config
         $window.open('ws/config/opal-credential/' + encodeURIComponent(opalCredential.opalUrl) + '/certificate', '_blank', '');
       };
 
-      $scope.deleteRole = function (index) {
-        $scope.micaConfig.roles.splice(index, 1);
+      var roleToDelete;
 
-        $scope.micaConfig.$save(
-          function () {
-            $route.reload();
-          },
-          function (response) {
-            FormServerValidation.error(response, $scope.form);
+      $scope.deleteRole = function (index) {
+        var titleKey = 'config.delete-role-title';
+        var messageKey = 'config.delete-role-confirm';
+
+        roleToDelete = $scope.micaConfig.roles[index];
+        $translate([titleKey, messageKey], {
+          role: roleToDelete
+        })
+          .then(function (translation) {
+            $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
+              {title: translation[titleKey], message: translation[messageKey]},
+              index);
           });
       };
+
+      $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, index) {
+        if (roleToDelete === $scope.micaConfig.roles[index]) {
+          $scope.micaConfig.roles.splice(index, 1);
+
+          $scope.micaConfig.$save(
+            function () {
+              $route.reload();
+            },
+            function (response) {
+              FormServerValidation.error(response, $scope.form);
+            });
+        }
+      });
 
       $scope.addRole = function() {
         $modal
