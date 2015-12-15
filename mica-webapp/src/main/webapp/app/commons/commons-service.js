@@ -64,23 +64,23 @@ mica.commons
         this.permissions = value.permissions;
         this.status = value.revisionStatus;
         return this;
-      }
+      };
 
       factory.canView = function() {
         return this.permissions ? this.permissions.view : false;
-      }
+      };
 
       factory.canEdit = function() {
-        return this.permissions ? this.permissions.edit && this.status === 'DRAFT': false
-      }
+        return this.permissions ? this.permissions.edit && this.status === 'DRAFT': false;
+      };
 
       factory.canDelete = function() {
-        return this.permissions ? this.permissions.delete && this.status === 'DELETED' : false
-      }
+        return this.permissions ? this.permissions.delete && this.status === 'DELETED' : false;
+      };
 
       factory.canPublish = function() {
-        return this.permissions ? this.permissions.publish && this.status === 'UNDER_REVIEW': false
-      }
+        return this.permissions ? this.permissions.publish && this.status === 'UNDER_REVIEW': false;
+      };
 
       return factory;
     });

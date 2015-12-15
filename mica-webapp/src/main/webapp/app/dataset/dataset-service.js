@@ -85,15 +85,6 @@ mica.dataset
       });
     }])
 
-  .factory('DraftDatasetResource', ['$resource',
-    function ($resource) {
-      return $resource('ws/draft/:type/:id', {}, {
-        'save': {method: 'PUT', params: {id: '@id', type: '@type'}, errorHandler: true},
-        'delete': {method: 'DELETE', params: {id: '@id', type: '@type'}, errorHandler: true},
-        'get': {method: 'GET'}
-      });
-    }])
-
   .factory('DraftDatasetStatusResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/:type/:id/_status', {}, {
