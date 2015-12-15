@@ -235,13 +235,15 @@ mica.study
         fetchStudy($routeParams.id);
       }
 
+      var initializeState = function(studyState) {
+        $scope.permissions = DocumentPermissionsService.state(studyState['obiba.mica.StudyStateDto.state']);
+      };
+
       $scope.fetchStudy = fetchStudy;
       $scope.viewRevision = viewRevision;
       $scope.restoreRevision = restoreRevision;
       $scope.fetchRevisions = fetchRevisions;
-      $scope.studySummary = StudyStateResource.get({id: $routeParams.id}, function onSuccess(response) {
-        $scope.permissions = DocumentPermissionsService.state(response['obiba.mica.StudyStateDto.state']);
-      });
+      $scope.studySummary = StudyStateResource.get({id: $routeParams.id}, initializeState);
 
       $scope.months = $locale.DATETIME_FORMATS.MONTH;
 
@@ -254,7 +256,7 @@ mica.study
           $log.debug('save study', studyUpdated);
 
           $scope.study.$save(function () {
-              $scope.studySummary = StudyStateResource.get({id: $scope.study.id});
+              $scope.studySummary = StudyStateResource.get({id: $scope.study.id}, initializeState);
               fetchStudy($scope.study.id);
             },
             function (response) {
@@ -279,7 +281,7 @@ mica.study
               DraftStudyPublicationResource.publish(
                 {id: $scope.study.id, cascading: response.length > 0 ? 'UNDER_REVIEW' : 'NONE'},
                 function () {
-                  $scope.studySummary = StudyStateResource.get({id: $routeParams.id});
+                  $scope.studySummary = StudyStateResource.get({id: $routeParams.id}, initializeState);
                 });
             },
             function onError() {
@@ -288,14 +290,14 @@ mica.study
           );
         } else {
           DraftStudyPublicationResource.unPublish({id: $scope.study.id}, function () {
-            $scope.studySummary = StudyStateResource.get({id: $routeParams.id});
+            $scope.studySummary = StudyStateResource.get({id: $routeParams.id}, initializeState);
           });
         }
       };
 
       $scope.toStatus = function (value) {
         DraftStudyStatusResource.toStatus({id: $scope.study.id, value: value}, function () {
-          $scope.studySummary = StudyStateResource.get({id: $routeParams.id});
+          $scope.studySummary = StudyStateResource.get({id: $routeParams.id}, initializeState);
         });
       };
 

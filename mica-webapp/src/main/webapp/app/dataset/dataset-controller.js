@@ -321,7 +321,6 @@ mica.dataset
     '$location',
     'DatasetResource',
     'DatasetPublicationResource',
-    'DraftDatasetResource',
     'DraftDatasetStatusResource',
     'DraftDatasetViewRevisionResource',
     'DraftDatasetRevisionsResource',
@@ -332,6 +331,7 @@ mica.dataset
     'NOTIFICATION_EVENTS',
     '$filter',
     'DatasetService',
+    'DocumentPermissionsService',
 
     function ($rootScope,
               $scope,
@@ -341,7 +341,6 @@ mica.dataset
               $location,
               DatasetResource,
               DatasetPublicationResource,
-              DraftDatasetResource,
               DraftDatasetStatusResource,
               DraftDatasetViewRevisionResource,
               DraftDatasetRevisionsResource,
@@ -351,7 +350,8 @@ mica.dataset
               ActiveTabService,
               NOTIFICATION_EVENTS,
               $filter,
-              DatasetService) {
+              DatasetService,
+              DocumentPermissionsService) {
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
         micaConfig.languages.forEach(function (lang) {
@@ -359,6 +359,10 @@ mica.dataset
         });
         $scope.openAccess = micaConfig.openAccess;
       });
+
+      var initializeDataset = function(dataset) {
+        $scope.permissions = DocumentPermissionsService.state(dataset['obiba.mica.EntityStateDto.datasetState']);
+      };
 
       var getTypeFromUrl = function() {
         var matched = /\/(\w+-dataset)\//.exec($location.path());
@@ -370,7 +374,7 @@ mica.dataset
       $log.info('TYPE', $scope.type);
       $scope.datasetId = $routeParams.id;
       $scope.getActiveTab = ActiveTabService.getActiveTab;
-      $scope.dataset = DatasetResource.get({id: $routeParams.id, type: $scope.type});
+      $scope.dataset = DatasetResource.get({id: $routeParams.id, type: $scope.type}, initializeDataset);
 
       $scope.publish = function (publish) {
         if (publish) {
@@ -379,7 +383,7 @@ mica.dataset
               DatasetPublicationResource.publish(
                 {id: $scope.dataset.id, type: $scope.type, cascading: response.length > 0 ? 'UNDER_REVIEW' : 'NONE'},
                 function () {
-                  $scope.dataset = DraftDatasetResource.get({id: $routeParams.id, type: $scope.type});
+                  $scope.dataset = DatasetResource.get({id: $routeParams.id, type: $scope.type}, initializeDataset);
                 });
             },
             function onError() {
@@ -388,14 +392,14 @@ mica.dataset
           );
         } else {
           DatasetPublicationResource.unPublish({id: $scope.dataset.id, type: $scope.type}, function () {
-            $scope.dataset = DraftDatasetResource.get({id: $routeParams.id, type: $scope.type});
+            $scope.dataset = DatasetResource.get({id: $routeParams.id, type: $scope.type}, initializeDataset);
           });
         }
       };
 
       $scope.toStatus = function (value) {
         DraftDatasetStatusResource.toStatus({id: $scope.dataset.id, type:$scope.type, value: value}, function () {
-          $scope.dataset = DraftDatasetResource.get({id: $routeParams.id, type: $scope.type});
+          $scope.dataset = DatasetResource.get({id: $routeParams.id, type: $scope.type}, initializeDataset);
         });
       };
 
@@ -437,7 +441,7 @@ mica.dataset
       };
 
       var fetchDataset = function (datasetId) {
-        $scope.dataset = DraftDatasetResource.get({id: datasetId, type: $scope.type});
+        $scope.dataset = DatasetResource.get({id: datasetId, type: $scope.type}, initializeDataset);
       };
 
       var fetchRevisions = function (datasetId, onSuccess) {

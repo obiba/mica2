@@ -250,6 +250,7 @@ mica.network
     'ActiveTabService',
     '$filter',
     'NetworkService',
+    'DocumentPermissionsService',
 
     function ($rootScope,
               $scope,
@@ -277,11 +278,14 @@ mica.network
               LocalizedValues,
               ActiveTabService,
               $filter,
-              NetworkService) {
+              NetworkService,
+              DocumentPermissionsService) {
       var initializeNetwork = function(network){
         if (network.logo) {
           $scope.logoUrl = 'ws/draft/network/'+network.id+'/file/'+network.logo.id+'/_download';
         }
+
+        $scope.permissions = DocumentPermissionsService.state(network['obiba.mica.EntityStateDto.state']);
 
         $scope.studySummaries = [];
 
@@ -348,7 +352,7 @@ mica.network
               DraftNetworkPublicationResource.publish(
                 {id: $scope.network.id, cascading: response.length > 0 ? 'UNDER_REVIEW' : 'NONE'},
                 function () {
-                  $scope.network = DraftNetworkResource.get({id: $routeParams.id});
+                  $scope.network = DraftNetworkResource.get({id: $routeParams.id}, initializeNetwork);
                 });
             },
             function onError() {
@@ -357,14 +361,14 @@ mica.network
           );
         } else {
           DraftNetworkPublicationResource.unPublish({id: $scope.network.id}, function () {
-            $scope.network = DraftNetworkResource.get({id: $routeParams.id});
+            $scope.network = DraftNetworkResource.get({id: $routeParams.id}, initializeNetwork);
           });
         }
       };
 
       $scope.toStatus = function (value) {
         DraftNetworkStatusResource.toStatus({id: $scope.network.id, value: value}, function () {
-          $scope.network = DraftNetworkResource.get({id: $routeParams.id});
+          $scope.network = DraftNetworkResource.get({id: $routeParams.id}, initializeNetwork);
         });
       };
 

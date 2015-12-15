@@ -5,8 +5,7 @@
     <h3 class="pull-left no-margin-top" translate>view</h3>
     <div class="pull-right">
       <a ng-href="#/study/{{study.id}}/edit" class="btn btn-primary btn-responsive"
-        ng-if="studySummary['obiba.mica.StudyStateDto.state'].permissions.edit && studySummary['obiba.mica.StudyStateDto.state'].revisionStatus === 'DRAFT'"
-        ng-disabled="hasRole(['mica-editor']) && studySummary['obiba.mica.StudyStateDto.state'].revisionStatus !== 'DRAFT'">
+        ng-if="permissions.canEdit()">
         <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
       </a>
 
