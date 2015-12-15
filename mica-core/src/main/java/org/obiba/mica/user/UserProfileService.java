@@ -32,7 +32,7 @@ public class UserProfileService extends AgateRestService {
   public void init() {
     initInternal();
   }
-  
+
   @Cacheable(value="agate-subjects")
   public synchronized Subject getProfile(@NotNull String username) {
     Assert.notNull(username, "Username cannot be null");
@@ -67,7 +67,7 @@ public class UserProfileService extends AgateRestService {
 
       return Arrays.asList(response.getBody());
     } catch(RestClientException e) {
-      log.error("Agate connection failure: {}", e.getMessage(), e);
+      log.error("Agate connection failure: {}", e.getMessage());
     }
 
     return Lists.newArrayList();
@@ -84,7 +84,7 @@ public class UserProfileService extends AgateRestService {
       Subject subject = response.getBody();
       return subject;
     } catch(RestClientException e) {
-      log.error("Agate connection failure: {}", e.getMessage(), e);
+      log.error("Agate connection failure: {}", e.getMessage());
     }
 
     return null;

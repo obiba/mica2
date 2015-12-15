@@ -137,7 +137,7 @@ public class MailService extends AgateRestService {
         log.error("Sending email via Agate failed with status: {}", response.getStatusCode());
       }
     } catch(Exception e) {
-      log.error("Agate connection failure: {}", e.getMessage(), e);
+      log.error("Agate connection failure: {}", e.getMessage());
     }
   }
 
@@ -159,7 +159,7 @@ public class MailService extends AgateRestService {
         log.error("Sending email via Agate failed with status: {}", response.getStatusCode());
       }
     } catch(Exception e) {
-      log.error("Agate connection failure: {}", e.getMessage(), e);
+      log.error("Agate connection failure: {}", e.getMessage());
     }
   }
 
