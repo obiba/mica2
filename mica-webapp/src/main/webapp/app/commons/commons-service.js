@@ -62,6 +62,7 @@ mica.commons
 
       factory.state = function(value) {
         this.permissions = value.permissions;
+        this.status = value.revisionStatus;
         return this;
       }
 
@@ -70,15 +71,15 @@ mica.commons
       }
 
       factory.canEdit = function() {
-        return this.permissions ? this.permissions.edit : false
+        return this.permissions ? this.permissions.edit && this.status === 'DRAFT': false
       }
 
       factory.canDelete = function() {
-        return this.permissions ? this.permissions.delete : false
+        return this.permissions ? this.permissions.delete && this.status === 'DELETED' : false
       }
 
       factory.canPublish = function() {
-        return this.permissions ? this.permissions.publish : false
+        return this.permissions ? this.permissions.publish && this.status === 'UNDER_REVIEW': false
       }
 
       return factory;

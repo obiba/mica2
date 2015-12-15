@@ -254,7 +254,9 @@ mica.study
           $log.debug('save study', studyUpdated);
 
           $scope.study.$save(function () {
-              $scope.studySummary = StudyStateResource.get({id: $scope.study.id});
+              $scope.studySummary = StudyStateResource.get({id: $scope.study.id}, function onSuccess(response) {
+                $scope.permissions = DocumentPermissionsService.state(response['obiba.mica.StudyStateDto.state']);
+              });
               fetchStudy($scope.study.id);
             },
             function (response) {
@@ -279,7 +281,9 @@ mica.study
               DraftStudyPublicationResource.publish(
                 {id: $scope.study.id, cascading: response.length > 0 ? 'UNDER_REVIEW' : 'NONE'},
                 function () {
-                  $scope.studySummary = StudyStateResource.get({id: $routeParams.id});
+                  $scope.studySummary = StudyStateResource.get({id: $routeParams.id}, function onSuccess(response) {
+                    $scope.permissions = DocumentPermissionsService.state(response['obiba.mica.StudyStateDto.state']);
+                  });
                 });
             },
             function onError() {
@@ -288,14 +292,18 @@ mica.study
           );
         } else {
           DraftStudyPublicationResource.unPublish({id: $scope.study.id}, function () {
-            $scope.studySummary = StudyStateResource.get({id: $routeParams.id});
+            $scope.studySummary = StudyStateResource.get({id: $routeParams.id}, function onSuccess(response) {
+              $scope.permissions = DocumentPermissionsService.state(response['obiba.mica.StudyStateDto.state']);
+            });
           });
         }
       };
 
       $scope.toStatus = function (value) {
         DraftStudyStatusResource.toStatus({id: $scope.study.id, value: value}, function () {
-          $scope.studySummary = StudyStateResource.get({id: $routeParams.id});
+          $scope.studySummary = StudyStateResource.get({id: $routeParams.id}, function onSuccess(response) {
+            $scope.permissions = DocumentPermissionsService.state(response['obiba.mica.StudyStateDto.state']);
+          });
         });
       };
 

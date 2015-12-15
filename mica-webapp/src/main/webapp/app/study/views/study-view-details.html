@@ -1,4 +1,5 @@
 <div>
+  {{permissions}}
   <tabset>
     <tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active"
       disabled="tab.disabled">
@@ -60,14 +61,14 @@
                       </span>
                       </a>
                       <div class="inline"
-                        ng-if="inViewMode() && hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+                        ng-if="inViewMode() && permissions.canEdit()">
                         <a ng-click="editMember(study, person, role)" class="action"><i class="fa fa-pencil"></i></a>
                         <a ng-click="deleteMember(study, person, role)" class="action"><i class="fa fa-trash-o"></i></a>
                       </div>
                     </li>
                   </ul>
                   <button type="button" class="btn btn-info btn-sm" ng-click="addMember(study, role)"
-                    ng-if="inViewMode() && hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+                    ng-if="inViewMode() && permissions.canEdit()">
                     <i class="fa fa-plus"></i> <span>{{ 'study.add-member' | translate: {type: role} }}</span>
                   </button>
                 </div>

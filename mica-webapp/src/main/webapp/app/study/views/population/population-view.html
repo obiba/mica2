@@ -1,7 +1,7 @@
 <h4>
   <span class="badge">{{population.id}}</span>
   <localized value="population.name" lang="tab.lang"></localized>
-  <div class="inline" ng-if="$parent.inViewMode() && hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+  <div class="inline" ng-if="$parent.inViewMode() && permissions.canEdit()">
     <a ng-click="editPopulation(study, population)" class="action"><i class="fa fa-pencil"></i></a>
     <a ng-click="deletePopulation(population, $index)" class="action"><i class="fa fa-trash-o"></i></a>
   </div>
@@ -216,7 +216,7 @@
           <td ng-if="inViewMode()" class="action-column">
             <a ng-click="showDataCollectionEvent(study, population, dce)" class="hand action"><i
               class="fa fa-eye"></i></a>
-            <div class="inline" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+            <div class="inline" ng-if="permissions.canEdit()">
               <a ng-click="editDataCollectionEvent(study, population, dce)" class="hand action"><i
                 class="fa fa-pencil"></i></a>
               <a ng-click="addDataCollectionEvent(study, population, dce)" class="hand action"  translate title="{{'clone' | translate}}"><i
