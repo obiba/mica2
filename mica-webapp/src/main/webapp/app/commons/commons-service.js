@@ -54,4 +54,32 @@ mica.commons
           errorHandler: true
         }
       });
-    }]);
+    }])
+
+  .factory('DocumentPermissionsService',
+    function () {
+      var factory = {};
+
+      factory.state = function(value) {
+        this.permissions = value.permissions;
+        return this;
+      }
+
+      factory.canView = function() {
+        return this.permissions ? this.permissions.view : false;
+      }
+
+      factory.canEdit = function() {
+        return this.permissions ? this.permissions.edit : false
+      }
+
+      factory.canDelete = function() {
+        return this.permissions ? this.permissions.delete : false
+      }
+
+      factory.canPublish = function() {
+        return this.permissions ? this.permissions.publish : false
+      }
+
+      return factory;
+    });

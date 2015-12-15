@@ -71,6 +71,7 @@ mica.study
     '$modal',
     'DraftStudyDeleteService',
     'EntityPathBuilder',
+    'DocumentPermissionsService',
 
     function ($rootScope,
               $scope,
@@ -97,7 +98,8 @@ mica.study
               ActiveTabService,
               $modal,
               DraftStudyDeleteService,
-              EntityPathBuilder) {
+              EntityPathBuilder,
+              DocumentPermissionsService) {
 
       $scope.Mode = {View: 0, Revision: 1, File: 2, Permission: 3, Comment: 4};
 
@@ -237,7 +239,10 @@ mica.study
       $scope.viewRevision = viewRevision;
       $scope.restoreRevision = restoreRevision;
       $scope.fetchRevisions = fetchRevisions;
-      $scope.studySummary = StudyStateResource.get({id: $routeParams.id});
+      $scope.studySummary = StudyStateResource.get({id: $routeParams.id}, function onSuccess(response) {
+        $scope.permissions = DocumentPermissionsService.state(response['obiba.mica.StudyStateDto.state']);
+      });
+
       $scope.months = $locale.DATETIME_FORMATS.MONTH;
 
       $scope.emitStudyUpdated = function () {
