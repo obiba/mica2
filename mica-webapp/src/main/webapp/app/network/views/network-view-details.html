@@ -42,14 +42,14 @@
                       </span>
                       </a>
                       <div class="inline"
-                        ng-if="inViewMode() && hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+                        ng-if="inViewMode() && permissions.canEdit()">
                         <a ng-click="editMember(network, person, role)" class="action"><i class="fa fa-pencil"></i></a>
                         <a ng-click="deleteMember(network, person, role)" class="action"><i class="fa fa-trash-o"></i></a>
                       </div>
                     </li>
                   </ul>
                   <button type="button" class="btn btn-info btn-sm" ng-click="addMember(network, role)"
-                    ng-if="inViewMode() && hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+                    ng-if="inViewMode() && permissions.canEdit()">
                     <i class="fa fa-plus"></i> <span>{{ 'network.add-member' | translate: {type: role} }}</span>
                   </button>
                 </div>
@@ -65,7 +65,7 @@
           <h3 translate>studies</h3>
 
           <a ng-click="addStudyEvent(network)" class="btn btn-info"
-            ng-if="inViewMode() && network['obiba.mica.EntityStateDto.state'].permissions.edit">
+            ng-if="inViewMode() && permissions.canEdit()">
             <i class="fa fa-plus"></i> <span translate>study.add</span>
           </a>
 
@@ -82,7 +82,7 @@
             <tr>
               <th translate>study.acronym</th>
               <th translate>study.name</th>
-              <th ng-if="inViewMode() && network['obiba.mica.EntityStateDto.state'].permissions.edit" translate>actions</th>
+              <th ng-if="inViewMode() && permissions.canEdit()" translate>actions</th>
             </tr>
             </thead>
             <tbody>
@@ -95,8 +95,7 @@
               <td>
                 <localized value="studySummary.name" lang="tab.lang"></localized>
               </td>
-              <td ng-if="inViewMode() && network['obiba.mica.EntityStateDto.state'].permissions.edit">
-                <!--<a ng-click="editStudy(study, population, dce)" class="hand action"><i class="fa fa-pencil"></i></a>-->
+              <td ng-if="inViewMode() && permissions.canEdit()">
                 <a ng-click="deleteStudyEvent(network, studySummary)" class="hand action"><i
                   class="fa fa-trash-o"></i></a>
               </td>
@@ -107,7 +106,7 @@
           <h3 translate>networks</h3>
 
           <a ng-click="addNetwork(network)" class="btn btn-info"
-            ng-if="inViewMode() && network['obiba.mica.EntityStateDto.state'].permissions.edit">
+            ng-if="inViewMode() && permissions.canEdit()">
             <i class="fa fa-plus"></i> <span translate>network.add</span>
           </a>
 
@@ -124,7 +123,7 @@
             <tr>
               <th translate>network.acronym</th>
               <th translate>network.name</th>
-              <th ng-if="inViewMode() && network['obiba.mica.EntityStateDto.state'].permissions.edit" translate>actions</th>
+              <th ng-if="inViewMode() && permissions.canEdit()" translate>actions</th>
             </tr>
             </thead>
             <tbody>
@@ -137,7 +136,7 @@
               <td>
                 <localized value="networkSummary.name" lang="tab.lang"></localized>
               </td>
-              <td ng-if="inViewMode() && network['obiba.mica.EntityStateDto.state'].permissions.edit">
+              <td ng-if="inViewMode() && permissions.canEdit()">
                 <a ng-click="deleteNetwork(network, networkSummary)" class="hand action"><i
                   class="fa fa-trash-o"></i></a>
               </td>

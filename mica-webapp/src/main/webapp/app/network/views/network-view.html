@@ -15,8 +15,7 @@
     <h3 class="pull-left no-margin-top" translate>view</h3>
     <div class="pull-right">
       <a ng-href="#/network/{{network.id}}/edit" class="btn btn-primary btn-responsive"
-        ng-if="network['obiba.mica.EntityStateDto.state'].permissions.edit && network['obiba.mica.EntityStateDto.state'].revisionStatus === 'DRAFT'"
-        ng-disabled="hasRole(['mica-editor']) && network['obiba.mica.EntityStateDto.state'].revisionStatus !== 'DRAFT'">
+        ng-if="permissions.canEdit()">
         <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
       </a>
 
