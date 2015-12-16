@@ -31,23 +31,6 @@
       <div class="col-xs-4">
         <div class="form-inline pull-right">
           <div class="form-group">
-            <div class="btn-group dropdown" is-open="status.isopen">
-              <button type="button" class="btn btn-default btn-sm dropdown-toggle" ng-disabled="disabled"
-                data-toggle="dropdown">
-                {{ 'taxonomy.target.' + taxonomies.target | translate }} <span class="caret"></span>
-              </button>
-              <ul class="dropdown-menu" role="menu">
-                <li ng-if="taxonomies.target !== 'variable'">
-                  <a role="menuitem" href ng-click="selectTaxonomyTarget('variable')"
-                    translate>taxonomy.target.variable</a>
-                </li>
-                <li ng-if="taxonomies.target !== 'study'">
-                  <a role="menuitem" href ng-click="selectTaxonomyTarget('study')" translate>taxonomy.target.study</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div class="form-group">
             <span class="input-group input-group-sm no-padding-top">
               <span class="input-group-addon"><i class="glyphicon glyphicon-filter"></i></span>
               <input ng-keyup="filterTaxonomiesKeyUp($event)"

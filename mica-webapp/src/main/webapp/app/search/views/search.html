@@ -1,6 +1,26 @@
 <div>
   <h2 translate>search</h2>
 
+  <!-- Classifications region -->
+  <nav class="navbar navbar-static-top" style="margin-bottom: 0">
+    <div class="container-fluide">
+
+        <ul class="nav navbar-nav">
+          <li>
+            <a ng-click="selectTaxonomyTarget('variable')" translate>variable-classifications</a>
+          </li>
+          <li>
+            <a ng-click="selectTaxonomyTarget('study')" translate>study-classifications</a>
+          </li>
+        </ul>
+
+    </div>
+  </nav>
+
+  <div id="taxonomies" class="collapse">
+    <div ng-include="'app/search/views/taxonomies-view.html'"></div>
+  </div>
+
   <!-- Search region -->
   <div>
     <div class="row">
@@ -59,15 +79,6 @@
     </div>
   </div>
 
-  <!-- Classifications region -->
-  <div>
-    <a class="btn btn-primary btn-sm voffset4" data-toggle="collapse" data-target="#taxonomies" translate>
-      browse-classifications
-    </a>
-    <div id="taxonomies" class="collapse voffset2">
-      <div ng-include="'app/search/views/taxonomies-view.html'"></div>
-    </div>
-  </div>
 
   <!-- Results region -->
   <div>

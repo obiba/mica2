@@ -35,6 +35,11 @@ mica.search
       };
 
       var selectTaxonomyTarget = function(target) {
+        if ($scope.taxonomies.target === target) {
+          $('#taxonomies').collapse('toggle');
+          return;
+        }
+        $('#taxonomies').collapse('show');
         $scope.taxonomies.target = target;
         $scope.taxonomies.taxonomy = null;
         $scope.taxonomies.vocabulary = null;

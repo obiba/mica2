@@ -766,7 +766,8 @@
   "search": "Search",
   "all-classifications": "All classifications",
   "no-classifications": "No classifications found",
-  "browse-classifications": "Browse classifications",
+  "variable-classifications": "Variable classifications",
+  "study-classifications": "Study classifications",
   "add-query": "Add to search query",
   "permissions": "Permissions",
   "permission": {
