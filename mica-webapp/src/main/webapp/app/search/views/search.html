@@ -23,10 +23,10 @@
       <div class="col-xs-6">
         <ul class="nav nav-pills">
           <li ng-class="{'active': taxonomies.target === 'variable' && taxonomiesShown}" title="{{'variable-classifications' | translate}}">
-            <a ng-click="selectTaxonomyTarget('variable')" translate>variables</a>
+            <a ng-mouseover="selectTaxonomyTarget('variable')" translate>variables</a>
           </li>
           <li ng-class="{'active': taxonomies.target === 'study' && taxonomiesShown}" title="{{'study-classifications' | translate}}">
-            <a ng-click="selectTaxonomyTarget('study')" translate>studies</a>
+            <a ng-mouseover="selectTaxonomyTarget('study')" translate>studies</a>
           </li>
           <li ng-if="taxonomiesShown">
             <a href ng-click="closeTaxonomies()" title="{{'close' | translate}}"><i class="fa fa-close"></i> </a>
