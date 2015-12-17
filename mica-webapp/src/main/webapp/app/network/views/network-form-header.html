@@ -1,0 +1,13 @@
+<div>
+  <h2>
+    <ol class="mica-breadcrumb">
+      <li><a href="/#/network" translate>networks</a></li>
+      <li class="active">
+        <span ng-if="network.id">{{network.id}}</span>
+        <span ng-if="!network.id" translate>new-network</span>
+      </li>
+    </ol>
+  </h2>
+
+  <div ng-if="network.id" ng-include="'app/network/views/network-tabs.html'"></div>
+</div>

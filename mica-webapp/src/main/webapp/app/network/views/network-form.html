@@ -10,26 +10,7 @@
 
 <div>
 
-  <h2>
-    <ol class="mica-breadcrumb">
-      <li><a href="/#/network" translate>networks</a></li>
-      <li class="active">
-        <span ng-if="network.id">{{network.id}}</span>
-        <span ng-if="!network.id" translate>new-network</span>
-      </li>
-    </ol>
-  </h2>
-
-  <div ng-if="network.id" class="tabs-menu" ng-class="{'tabs-left': screen.is('lg')}">
-    <ul class="nav nav-tabs">
-      <li class="active"><a href="#/network/{{network.id}}" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>
-      </li>
-      <li><a href="#/network/{{network.id}}/revisions" title="{{'revisions' | translate}}"><i class="fa fa-list-ol"></i></a>
-      </li>
-      <li><a href="#/network/{{network.id}}/files" title="{{'files' | translate}}"><i class="fa fa-file"></i></a>
-      </li>
-    </ul>
-  </div>
+  <div ng-include="'app/network/views/network-form-header.html'" ng-init="tabName='view'"></div>
 
   <h3 ng-if="network.id"><a ng-click="cancel()">
     <i class="fa fa-chevron-left"> </i>

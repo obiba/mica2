@@ -93,6 +93,12 @@ mica.dataset
         });
       };
 
+      var getTypeFromUrl = function() {
+        var matched = /\/(\w+-dataset)\//.exec($location.path());
+        return matched ? matched[1] : '';
+      };
+
+      $scope.type = getTypeFromUrl();
       $scope.getActiveTab = ActiveTabService.getActiveTab;
       $scope.newDataset = !$routeParams.id;
       if ($routeParams.id) {
@@ -210,6 +216,13 @@ mica.dataset
               FormServerValidation,
               ActiveTabService) {
 
+
+      var getTypeFromUrl = function() {
+        var matched = /\/(\w+-dataset)\//.exec($location.path());
+        return matched ? matched[1] : '';
+      };
+
+      $scope.type = getTypeFromUrl();
       $scope.getActiveTab = ActiveTabService.getActiveTab;
       $scope.newDataset = !$routeParams.id;
       $scope.dataset = $routeParams.id ? HarmonizationDatasetResource.get({id: $routeParams.id}) : {
@@ -371,7 +384,6 @@ mica.dataset
 
       $scope.Mode = {View: 0, Revision: 1, File: 2, Permission: 3, Comment: 4};
       $scope.type = getTypeFromUrl();
-      $log.info('TYPE', $scope.type);
       $scope.datasetId = $routeParams.id;
       $scope.getActiveTab = ActiveTabService.getActiveTab;
       $scope.dataset = DatasetResource.get({id: $routeParams.id, type: $scope.type}, initializeDataset);
