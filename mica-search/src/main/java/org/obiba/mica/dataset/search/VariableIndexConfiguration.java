@@ -39,10 +39,10 @@ public class VariableIndexConfiguration extends AbstractIndexConfiguration imple
 
   private void setMappingProperties(Client client, String indexName) {
     try {
+      client.admin().indices().preparePutMapping(indexName).setType(VariableIndexer.HARMONIZED_VARIABLE_TYPE)
+        .setSource(createMappingProperties(VariableIndexer.HARMONIZED_VARIABLE_TYPE)).execute().actionGet();
       client.admin().indices().preparePutMapping(indexName).setType(VariableIndexer.VARIABLE_TYPE)
           .setSource(createMappingProperties(VariableIndexer.VARIABLE_TYPE)).execute().actionGet();
-      client.admin().indices().preparePutMapping(indexName).setType(VariableIndexer.HARMONIZED_VARIABLE_TYPE)
-          .setSource(createMappingProperties(VariableIndexer.HARMONIZED_VARIABLE_TYPE)).execute().actionGet();
     } catch(IOException e) {
       throw new RuntimeException(e);
     }

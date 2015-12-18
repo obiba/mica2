@@ -67,7 +67,7 @@ public class EsPublishedStudyService extends AbstractPublishedDocumentService<St
       .filter(s -> subjectAclService.isAccessible("/study", s))
       .collect(Collectors.toList());
     return ids.isEmpty()
-      ? QueryBuilders.notQuery(QueryBuilders.existsQuery("id"))
+      ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
       : QueryBuilders.idsQuery().ids(ids);
   }
 

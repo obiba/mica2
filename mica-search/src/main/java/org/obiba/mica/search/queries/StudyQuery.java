@@ -75,7 +75,7 @@ public class StudyQuery extends AbstractDocumentQuery {
       .filter(s -> subjectAclService.isAccessible("/study", s))
       .collect(Collectors.toList());
     return ids.isEmpty()
-      ? QueryBuilders.notQuery(QueryBuilders.existsQuery("id"))
+      ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
       : QueryBuilders.idsQuery().ids(ids.toArray(new String[ids.size()]));
   }
 
