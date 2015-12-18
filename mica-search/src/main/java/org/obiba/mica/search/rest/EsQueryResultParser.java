@@ -22,6 +22,7 @@ import javax.validation.constraints.NotNull;
 import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.InternalAggregation;
+import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.global.Global;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.metrics.stats.Stats;
@@ -85,7 +86,7 @@ public class EsQueryResultParser {
           List<Terms.Bucket> queriedBuckets = ((Terms) queriedAgg).getBuckets().stream().collect(Collectors.toList());
 
           Map<String, Terms.Bucket> queriedBucketsMap = queriedBuckets.stream()
-            .collect(Collectors.toMap(q -> q.getKey(), r -> r));
+            .collect(Collectors.toMap(MultiBucketsAggregation.Bucket::getKeyAsString, r -> r));
           int queriedBucketsSize = queriedBuckets.size();
 
           IntStream.range(0, defaultBuckets.size()).forEach(j -> {
@@ -111,7 +112,7 @@ public class EsQueryResultParser {
               termsBuilder.addAllAggs(parseAggregations(defaultBucket.getAggregations(), queriedAggregations.get()));
             }
 
-            String key = defaultBucket.getKey();
+            String key = defaultBucket.getKeyAsString();
 
             AggregationMetaDataProvider.MetaData metaData = aggregationTitleResolver
               .getTitle(defaultAgg.getName(), key, locale);
@@ -179,12 +180,12 @@ public class EsQueryResultParser {
             }
 
             AggregationMetaDataProvider.MetaData metaData = aggregationTitleResolver
-              .getTitle(aggregation.getName(), bucket.getKey(), locale);
+              .getTitle(aggregation.getName(), bucket.getKeyAsString(), locale);
             if(metaData.hasTitle()) termsBuilder.setTitle(metaData.getTitle());
             if(metaData.hasDescription()) termsBuilder.setDescription(metaData.getDescription());
 
             aggResultBuilder.addExtension(TermsAggregationResultDto.terms,
-              termsBuilder.setKey(bucket.getKey()).setDefault(-1).setCount((int) bucket.getDocCount()).build());
+              termsBuilder.setKey(bucket.getKeyAsString()).setDefault(-1).setCount((int) bucket.getDocCount()).build());
           });
           break;
         case "global":

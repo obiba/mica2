@@ -23,14 +23,10 @@ import javax.inject.Inject;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.index.query.BoolFilterBuilder;
-import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
-import org.elasticsearch.index.query.OrFilterBuilder;
+import org.elasticsearch.index.IndexNotFoundException;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
@@ -110,21 +106,21 @@ public class EsPublishedDatasetVariableService extends AbstractPublishedDocument
   }
 
   private QueryBuilder buildStudiesFilteredQuery(List<String> ids) {
-    BoolFilterBuilder boolFilter = FilterBuilders.boolFilter().must(FilterBuilders.termsFilter(STUDY_IDS_FIELD, ids));
+    BoolQueryBuilder boolFilter = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery(STUDY_IDS_FIELD, ids));
     return QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), boolFilter);
   }
 
   private QueryBuilder buildStudyFilteredQuery(String id) {
-    BoolFilterBuilder boolFilter = FilterBuilders.boolFilter().must(FilterBuilders.termFilter(STUDY_IDS_FIELD, id));
+    BoolQueryBuilder boolFilter = QueryBuilders.boolQuery().must(QueryBuilders.termQuery(STUDY_IDS_FIELD, id));
     return QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), boolFilter);
   }
 
   private SearchResponse executeCountQuery(QueryBuilder queryBuilder, AbstractAggregationBuilder aggregationBuilder) {
-    FilterBuilder accessFilter = filterByAccess();
+    QueryBuilder accessFilter = filterByAccess();
 
     SearchRequestBuilder requestBuilder = client.prepareSearch(getIndexName()) //
       .setTypes(getType()) //
-      .setSearchType(SearchType.COUNT) //
+      .setSize(0) //
       .setQuery(
         accessFilter == null ? queryBuilder : QueryBuilders.filteredQuery(queryBuilder, accessFilter)) //
       .setFrom(0) //
@@ -136,24 +132,24 @@ public class EsPublishedDatasetVariableService extends AbstractPublishedDocument
 
     try {
       return requestBuilder.execute().actionGet();
-    } catch(IndexMissingException e) {
+    } catch(IndexNotFoundException e) {
       return null; //ignoring
     }
   }
 
   @Nullable
   @Override
-  protected FilterBuilder filterByAccess() {
+  protected QueryBuilder filterByAccess() {
     if(micaConfigService.getConfig().isOpenAccess()) return null;
     List<String> ids = studyDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
       .filter(s -> subjectAclService.isAccessible("/study-dataset", s)).collect(Collectors.toList());
     ids.addAll(harmonizationDatasetService.findPublishedStates().stream().map(HarmonizationDatasetState::getId)
       .filter(s -> subjectAclService.isAccessible("/harmonization-dataset", s)).collect(Collectors.toList()));
 
-    if(ids.isEmpty()) return FilterBuilders.notFilter(FilterBuilders.existsFilter("id"));
+    if(ids.isEmpty()) return QueryBuilders.notQuery(QueryBuilders.existsQuery("id"));
 
-    OrFilterBuilder orFilter = FilterBuilders.orFilter();
-    ids.stream().forEach(id -> orFilter.add(FilterBuilders.termFilter("datasetId", id)));
+    BoolQueryBuilder orFilter = QueryBuilders.boolQuery();
+    ids.stream().forEach(id -> orFilter.should(QueryBuilders.termQuery("datasetId", id)));
 
     return orFilter;
   }

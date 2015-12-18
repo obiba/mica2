@@ -1,7 +1,9 @@
 package org.obiba.mica.search;
 
+import java.io.InputStream;
+
 import org.elasticsearch.client.Client;
-import org.elasticsearch.common.settings.ImmutableSettings;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
 import org.slf4j.Logger;
@@ -17,6 +19,8 @@ public class ElasticSearchConfiguration implements EnvironmentAware {
 
   private static final Logger log = LoggerFactory.getLogger(ElasticSearchConfiguration.class);
 
+  private static final String ES_CONFIG_FILE = "elasticsearch.yml";
+
   public static final String PATH_DATA = "${MICA_HOME}/work/elasticsearch/data";
 
   public static final String PATH_WORK = "${MICA_HOME}/work/elasticsearch/work";
@@ -31,12 +35,13 @@ public class ElasticSearchConfiguration implements EnvironmentAware {
   @Bean
   public Client client() {
     String micaHome = System.getProperty("MICA_HOME");
+    InputStream is = getClass().getClassLoader().getResourceAsStream(ES_CONFIG_FILE);
     Node node = NodeBuilder.nodeBuilder() //
         .client(!propertyResolver.getProperty("dataNode", Boolean.class, true)) //
-        .settings(ImmutableSettings.settingsBuilder() //
-            .classLoader(getClass().getClassLoader()) //
-            .loadFromClasspath("elasticsearch.yml") //
+        .settings(Settings.builder() //
+            .loadFromStream(ES_CONFIG_FILE, is) //
             .put("path.data", PATH_DATA.replace("${MICA_HOME}", micaHome)) //
+            .put("path.home", micaHome) //
             .put("path.work", PATH_WORK.replace("${MICA_HOME}", micaHome)) //
             .loadFromSource(propertyResolver.getProperty("settings")) //
         ) //

@@ -15,10 +15,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.elasticsearch.action.deletebyquery.DeleteByQueryResponse;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.rest.RestStatus;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.DatasetVariable;
 import org.obiba.mica.dataset.event.DatasetDeletedEvent;
@@ -114,13 +112,7 @@ public class VariableIndexer {
   private void deleteDatasetVariables(String indexName, Dataset dataset) {
     // remove variables that have this dataset as parent
     QueryBuilder query = QueryBuilders.termQuery("datasetId", dataset.getId());
-    checkDeleteResponse(indexName, query, elasticSearchIndexer.delete(indexName, VARIABLE_TYPE, query));
-    checkDeleteResponse(indexName, query, elasticSearchIndexer.delete(indexName, HARMONIZED_VARIABLE_TYPE, query));
-  }
-
-  private void checkDeleteResponse(String indexName, QueryBuilder query, DeleteByQueryResponse response) {
-    if(response.status().getStatus() >= RestStatus.BAD_REQUEST.getStatus()) {
-      log.error("Delete variables from {} failed ({}): {}", indexName, response.status(), query.toString());
-    }
+    elasticSearchIndexer.delete(indexName, VARIABLE_TYPE, query);
+    elasticSearchIndexer.delete(indexName, HARMONIZED_VARIABLE_TYPE, query);
   }
 }

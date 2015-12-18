@@ -18,8 +18,8 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.domain.NetworkState;
@@ -62,13 +62,13 @@ public class EsPublishedNetworkService extends AbstractPublishedDocumentService<
   }
 
   @Override
-  protected FilterBuilder filterByAccess() {
+  protected QueryBuilder filterByAccess() {
     if(micaConfigService.getConfig().isOpenAccess()) return null;
     List<String> ids = networkService.findPublishedStates().stream().map(NetworkState::getId)
       .filter(s -> subjectAclService.isAccessible("/network", s))
       .collect(Collectors.toList());
     return ids.isEmpty()
-      ? FilterBuilders.notFilter(FilterBuilders.existsFilter("id"))
-      : FilterBuilders.idsFilter().ids(ids.toArray(new String[ids.size()]));
+      ? QueryBuilders.notQuery(QueryBuilders.existsQuery("id"))
+      : QueryBuilders.idsQuery().ids(ids);
   }
 }

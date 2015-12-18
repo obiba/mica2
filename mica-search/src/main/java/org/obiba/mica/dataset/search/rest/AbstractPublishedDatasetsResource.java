@@ -22,8 +22,6 @@ import javax.inject.Inject;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilders;
@@ -75,12 +73,12 @@ public abstract class AbstractPublishedDatasetsResource<T extends Dataset> {
 
   protected Mica.DatasetsDto getDatasetDtos(Class<T> clazz, int from, int limit, @Nullable String sort,
     @Nullable String order, @Nullable String studyId, @Nullable String queryString) {
-    QueryBuilder query = QueryBuilders.queryString(clazz.getSimpleName()).field("className");
+    QueryBuilder query = QueryBuilders.queryStringQuery(clazz.getSimpleName()).field("className");
     if(queryString != null) {
-      query = QueryBuilders.boolQuery().must(query).must(QueryBuilders.queryString(queryString));
+      query = QueryBuilders.boolQuery().must(query).must(QueryBuilders.queryStringQuery(queryString));
     }
 
-    FilterBuilder postFilter = getPostFilter(clazz, studyId);
+    QueryBuilder postFilter = getPostFilter(clazz, studyId);
 
     SearchRequestBuilder search = client.prepareSearch() //
       .setIndices(DatasetIndexer.PUBLISHED_DATASET_INDEX) //
@@ -116,18 +114,18 @@ public abstract class AbstractPublishedDatasetsResource<T extends Dataset> {
   protected abstract String getStudyIdField();
 
   @Nullable
-  private FilterBuilder getPostFilter(Class<T> clazz, @Nullable String studyId) {
-    FilterBuilder filter = filterByAccessibility(clazz);
+  private QueryBuilder getPostFilter(Class<T> clazz, @Nullable String studyId) {
+    QueryBuilder filter = filterByAccessibility(clazz);
 
     if(studyId != null) {
-      FilterBuilder filterByStudy = FilterBuilders.termFilter(getStudyIdField(), studyId);
-      filter = filter == null ? filterByStudy : FilterBuilders.boolFilter().must(filter).must(filterByStudy);
+      QueryBuilder filterByStudy = QueryBuilders.termQuery(getStudyIdField(), studyId);
+      filter = filter == null ? filterByStudy : QueryBuilders.boolQuery().must(filter).must(filterByStudy);
     }
 
     return filter;
   }
 
-  protected FilterBuilder filterByAccessibility(Class<T> clazz) {
+  protected QueryBuilder filterByAccessibility(Class<T> clazz) {
     if(micaConfigService.getConfig().isOpenAccess()) return null;
     List<String> ids;
     if("StudyDataset".equals(clazz.getSimpleName()))
@@ -137,8 +135,8 @@ public abstract class AbstractPublishedDatasetsResource<T extends Dataset> {
       .filter(s -> subjectAclService.isAccessible("/harmonization-dataset", s)).collect(Collectors.toList());
 
     return ids.isEmpty()
-      ? FilterBuilders.notFilter(FilterBuilders.existsFilter("id"))
-      : FilterBuilders.termFilter("id", ids);
+      ? QueryBuilders.notQuery(QueryBuilders.existsQuery("id"))
+      : QueryBuilders.termQuery("id", ids);
   }
 
 }

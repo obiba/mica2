@@ -24,10 +24,9 @@ import javax.inject.Inject;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.IndexNotFoundException;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
@@ -86,13 +85,13 @@ public class NetworkQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  public FilterBuilder getAccessFilter() {
+  public QueryBuilder getAccessFilter() {
     if(micaConfigService.getConfig().isOpenAccess()) return null;
     List<String> ids = publishedNetworkService.getNetworkService().findPublishedStates().stream()
       .map(NetworkState::getId).filter(s -> subjectAclService.isAccessible("/network", s)).collect(Collectors.toList());
     return ids.isEmpty()
-      ? FilterBuilders.notFilter(FilterBuilders.existsFilter("id"))
-      : FilterBuilders.idsFilter().ids(ids.toArray(new String[ids.size()]));
+      ? QueryBuilders.notQuery(QueryBuilders.existsQuery("id"))
+      : QueryBuilders.idsQuery().ids(ids);
   }
 
   @Override
@@ -173,8 +172,8 @@ public class NetworkQuery extends AbstractDocumentQuery {
 
       response.getAggregations().forEach(
         aggregation -> ((Terms) aggregation).getBuckets().stream().filter(bucket -> bucket.getDocCount() > 0)
-          .forEach(bucket -> map.put(bucket.getKey(), getStudyCounts(bucket.getAggregations()))));
-    } catch(IndexMissingException e) {
+          .forEach(bucket -> map.put(bucket.getKeyAsString(), getStudyCounts(bucket.getAggregations()))));
+    } catch(IndexNotFoundException e) {
       // ignore
     }
 
@@ -185,7 +184,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
     List<String> list = Lists.newArrayList();
     aggregations.forEach(
       aggregation -> ((Terms) aggregation).getBuckets().stream().filter(bucket -> bucket.getDocCount() > 0)
-        .forEach(bucket -> list.add(bucket.getKey())));
+        .forEach(bucket -> list.add(bucket.getKeyAsString())));
 
     return list;
   }
