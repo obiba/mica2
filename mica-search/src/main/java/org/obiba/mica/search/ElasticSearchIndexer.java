@@ -9,6 +9,7 @@ import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.delete.DeleteRequestBuilder;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
@@ -140,7 +141,12 @@ public class ElasticSearchIndexer {
 
       for(SearchHit hit : response.getHits()) {
         try {
-          lastResponse = client.prepareDelete(indexName, type, hit.getId()).execute().actionGet();
+          DeleteRequestBuilder request = client.prepareDelete(indexName, type, hit.getId());
+          if (hit.getFields() != null && hit.getFields().containsKey("_parent")) {
+            String parent = hit.field("_parent").value();
+            request.setParent(parent);
+          }
+          lastResponse = request.execute().actionGet();
         } catch(Exception e) {
           //ignore
         }

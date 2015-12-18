@@ -112,7 +112,7 @@ public class VariableIndexer {
   private void deleteDatasetVariables(String indexName, Dataset dataset) {
     // remove variables that have this dataset as parent
     QueryBuilder query = QueryBuilders.termQuery("datasetId", dataset.getId());
-    elasticSearchIndexer.delete(indexName, VARIABLE_TYPE, query);
     elasticSearchIndexer.delete(indexName, HARMONIZED_VARIABLE_TYPE, query);
+    elasticSearchIndexer.delete(indexName, VARIABLE_TYPE, query);
   }
 }
