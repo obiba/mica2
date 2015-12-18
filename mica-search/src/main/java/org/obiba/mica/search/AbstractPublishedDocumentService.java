@@ -12,6 +12,7 @@ package org.obiba.mica.search;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -48,7 +49,7 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
 
   private static final Logger log = LoggerFactory.getLogger(AbstractPublishedDocumentService.class);
 
-  private static final int MAX_SIZE = 99999;
+  private static final int MAX_SIZE = 10000;
 
   @Inject
   protected Client client;
@@ -59,18 +60,21 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
   @Inject
   protected SubjectAclService subjectAclService;
 
+  @Override
   @Nullable
   public T findById(String id) {
     log.debug("findById {} {}", getClass(), id);
-    List<T> results = findByIds(Arrays.asList(id));
-    return (results != null && results.size() > 0) ? results.get(0) : null;
+    List<T> results = findByIds(Collections.singletonList(id));
+    return results != null && results.size() > 0 ? results.get(0) : null;
   }
 
+  @Override
   public List<T> findAll() {
     log.debug("findAll {}", getClass());
     return executeQuery(QueryBuilders.matchAllQuery(), 0, MAX_SIZE);
   }
 
+  @Override
   public List<T> findByIds(List<String> ids) {
     log.debug("findByIds {} {} ids", getClass(), ids.size());
     return executeQueryByIds(buildFilteredQuery(ids), 0, MAX_SIZE, ids);

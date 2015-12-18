@@ -35,6 +35,8 @@ import sun.util.locale.LanguageTag;
 
 public class AbstractTaxonomySearchResource {
 
+  private static final int MAX_SIZE = 10000;
+
   private static final String DEFAULT_SORT = "id";
 
   private static final String[] VOCABULARY_FIELDS = { "title", "description" };
@@ -70,7 +72,7 @@ public class AbstractTaxonomySearchResource {
   protected List<String> filterVocabularies(TaxonomyTarget target, String query) {
     try {
       return esTaxonomyVocabularyService
-        .find(0, Integer.MAX_VALUE, DEFAULT_SORT, "asc", null, getTargettedQuery(target, query),
+        .find(0, MAX_SIZE, DEFAULT_SORT, "asc", null, getTargettedQuery(target, query),
           getFields(VOCABULARY_FIELDS)).getList();
     } catch(IndexNotFoundException e) {
       initTaxonomies();
@@ -82,7 +84,7 @@ public class AbstractTaxonomySearchResource {
   protected List<String> filterTerms(TaxonomyTarget target, String query) {
     try {
       return esTaxonomyTermService
-        .find(0, Integer.MAX_VALUE, DEFAULT_SORT, "asc", null, getTargettedQuery(target, query), getFields(TERM_FIELDS))
+        .find(0, MAX_SIZE, DEFAULT_SORT, "asc", null, getTargettedQuery(target, query), getFields(TERM_FIELDS))
         .getList();
     } catch(IndexNotFoundException e) {
       initTaxonomies();
