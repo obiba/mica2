@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
-import org.elasticsearch.indices.IndexMissingException;
+import org.elasticsearch.index.IndexNotFoundException;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.taxonomy.EsTaxonomyTermService;
@@ -72,7 +72,7 @@ public class AbstractTaxonomySearchResource {
       return esTaxonomyVocabularyService
         .find(0, Integer.MAX_VALUE, DEFAULT_SORT, "asc", null, getTargettedQuery(target, query),
           getFields(VOCABULARY_FIELDS)).getList();
-    } catch(IndexMissingException e) {
+    } catch(IndexNotFoundException e) {
       initTaxonomies();
       // for a 404 response
       throw new NoSuchElementException();
@@ -84,7 +84,7 @@ public class AbstractTaxonomySearchResource {
       return esTaxonomyTermService
         .find(0, Integer.MAX_VALUE, DEFAULT_SORT, "asc", null, getTargettedQuery(target, query), getFields(TERM_FIELDS))
         .getList();
-    } catch(IndexMissingException e) {
+    } catch(IndexNotFoundException e) {
       initTaxonomies();
       // for a 404 response
       throw new NoSuchElementException();

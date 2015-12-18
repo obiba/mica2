@@ -5,24 +5,20 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteResponse;
-import org.elasticsearch.action.deletebyquery.DeleteByQueryResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
-import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
 import org.obiba.mica.core.domain.Indexable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,7 +53,7 @@ public class ElasticSearchIndexer {
     createIndexIfNeeded(indexName);
     String parentId = parent == null ? null : parent.getId();
     return getIndexRequestBuilder(indexName, persistable).setSource(toJson(persistable)).setParent(parentId).execute()
-        .actionGet();
+      .actionGet();
   }
 
   public IndexResponse index(String indexName, Indexable indexable) {
@@ -68,7 +64,7 @@ public class ElasticSearchIndexer {
     createIndexIfNeeded(indexName);
     String parentId = parent == null ? null : parent.getId();
     return getIndexRequestBuilder(indexName, indexable).setSource(toJson(indexable)).setParent(parentId).execute()
-        .actionGet();
+      .actionGet();
   }
 
   public BulkResponse indexAll(String indexName, Iterable<? extends Persistable<String>> persistables) {
@@ -76,12 +72,12 @@ public class ElasticSearchIndexer {
   }
 
   public BulkResponse indexAll(String indexName, Iterable<? extends Persistable<String>> persistables,
-      Persistable<String> parent) {
+    Persistable<String> parent) {
     createIndexIfNeeded(indexName);
     String parentId = parent == null ? null : parent.getId();
     BulkRequestBuilder bulkRequest = client.prepareBulk();
     persistables.forEach(persistable -> bulkRequest
-        .add(getIndexRequestBuilder(indexName, persistable).setSource(toJson(persistable)).setParent(parentId)));
+      .add(getIndexRequestBuilder(indexName, persistable).setSource(toJson(persistable)).setParent(parentId)));
     return bulkRequest.numberOfActions() > 0 ? bulkRequest.execute().actionGet() : null;
   }
 
@@ -90,17 +86,17 @@ public class ElasticSearchIndexer {
   }
 
   public BulkResponse indexAllIndexables(String indexName, Iterable<? extends Indexable> indexables,
-      @Nullable Indexable parent) {
+    @Nullable Indexable parent) {
     String parentId = parent == null ? null : parent.getId();
     return indexAllIndexables(indexName, indexables, parentId);
   }
 
   public BulkResponse indexAllIndexables(String indexName, Iterable<? extends Indexable> indexables,
-      @Nullable String parentId) {
+    @Nullable String parentId) {
     createIndexIfNeeded(indexName);
     BulkRequestBuilder bulkRequest = client.prepareBulk();
     indexables.forEach(indexable -> bulkRequest
-        .add(getIndexRequestBuilder(indexName, indexable).setSource(toJson(indexable)).setParent(parentId)));
+      .add(getIndexRequestBuilder(indexName, indexable).setSource(toJson(indexable)).setParent(parentId)));
     return bulkRequest.execute().actionGet();
   }
 
@@ -115,7 +111,7 @@ public class ElasticSearchIndexer {
   public DeleteResponse delete(String indexName, Persistable<String> persistable) {
     createIndexIfNeeded(indexName);
     return client.prepareDelete(indexName, persistable.getClass().getSimpleName(), persistable.getId()).execute()
-        .actionGet();
+      .actionGet();
   }
 
   public DeleteResponse delete(String indexName, Indexable indexable) {
@@ -123,34 +119,30 @@ public class ElasticSearchIndexer {
     return client.prepareDelete(indexName, getType(indexable), indexable.getId()).execute().actionGet();
   }
 
-  public DeleteByQueryResponse delete(String indexName, String type, QueryBuilder query) {
+  public DeleteResponse delete(String indexName, String type, QueryBuilder query) {
     return deleteParentChild(indexName, type, query);
     //createIndexIfNeeded(indexName);
     //return client.prepareDeleteByQuery(indexName).setTypes(type).setQuery(query).execute().actionGet();
   }
 
-  private DeleteByQueryResponse deleteParentChild(String indexName, String type, QueryBuilder query) {
+  private DeleteResponse deleteParentChild(String indexName, String type, QueryBuilder query) {
     createIndexIfNeeded(indexName);
 
-    // ES does not support (yet?) delete by query with has_parent or has_child
-    // workaround is to search the ids, then delete them explicitly
-    try {
-      SearchRequestBuilder search = client.prepareSearch() //
-          .setIndices(indexName) //
-          .setTypes(type) //
-          .setQuery(query) //
-          .setSize(Integer.MAX_VALUE) //
-          .setNoFields();
+    SearchRequestBuilder search = client.prepareSearch() //
+      .setIndices(indexName) //
+      .setTypes(type) //
+      .setQuery(query) //
+      .setSize(Integer.MAX_VALUE) //
+      .setNoFields();
 
-      log.debug("Request: {}", search.toString());
-      SearchResponse response = search.execute().actionGet();
+    log.debug("Request: {}", search.toString());
+    SearchResponse response = search.execute().actionGet();
 
-      IdsQueryBuilder idsQuery = QueryBuilders.idsQuery(type);
-      response.getHits().forEach(hit -> idsQuery.addIds(hit.getId()));
-      return client.prepareDeleteByQuery(indexName).setTypes(type).setQuery(idsQuery).execute().actionGet();
-    } catch(ElasticsearchException e) {
-      return client.prepareDeleteByQuery(indexName).setTypes(type).setQuery(query).execute().actionGet();
+    DeleteResponse lastResponse = null;
+    for(SearchHit hit : response.getHits()) {
+      lastResponse = client.prepareDelete(indexName, type, hit.getId()).execute().actionGet();
     }
+    return lastResponse;
   }
 
   public boolean hasIndex(String indexName) {
@@ -186,9 +178,9 @@ public class ElasticSearchIndexer {
     IndicesAdminClient indicesAdmin = client.admin().indices();
     if(!hasIndex(indexName)) {
       log.info("Creating index {}", indexName);
-      Settings settings = ImmutableSettings.settingsBuilder() //
-          .put("number_of_shards", elasticSearchConfiguration.getNbShards()) //
-          .put("number_of_replicas", elasticSearchConfiguration.getNbReplicas()).build();
+      Settings settings = Settings.builder() //
+        .put("number_of_shards", elasticSearchConfiguration.getNbShards()) //
+        .put("number_of_replicas", elasticSearchConfiguration.getNbReplicas()).build();
 
       indicesAdmin.prepareCreate(indexName).setSettings(settings).execute().actionGet();
       if(indexConfigurationListeners != null) {

@@ -24,8 +24,7 @@ import javax.validation.constraints.NotNull;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.BoolFilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder;
@@ -74,7 +73,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   protected OpalService opalService;
 
   protected T getDataset(Class<T> clazz, @NotNull String datasetId) throws NoSuchDatasetException {
-    QueryBuilder query = QueryBuilders.queryString(clazz.getSimpleName()).field("className");
+    QueryBuilder query = QueryBuilders.queryStringQuery(clazz.getSimpleName()).field("className");
     query = QueryBuilders.boolQuery().must(query)
       .must(QueryBuilders.idsQuery(DatasetIndexer.DATASET_TYPE).addIds(datasetId));
 
@@ -122,7 +121,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   protected Mica.DatasetVariablesDto getDatasetVariableDtosInternal(QueryBuilder query, int from, int limit, @Nullable String sort,
     @Nullable String order) {
 
-    SearchRequestBuilder search = new SearchRequestBuilder(client) //
+    SearchRequestBuilder search = client.prepareSearch() //
       .setIndices(VariableIndexer.PUBLISHED_VARIABLE_INDEX) //
       .setTypes(VariableIndexer.VARIABLE_TYPE) //
       .setQuery(query) //
@@ -281,7 +280,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
     private final QueryStringQueryBuilder builder;
 
     private QueryStringBuilder(String queryString) {
-      builder = QueryBuilders.queryString(queryString);
+      builder = QueryBuilders.queryStringQuery(queryString);
     }
 
     public static QueryStringBuilder newBuilder(String queryString) {
@@ -299,14 +298,14 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   }
 
   protected static class FilteredQueryBuilder {
-    private BoolFilterBuilder boolFilter = FilterBuilders.boolFilter();
+    private BoolQueryBuilder boolFilter = QueryBuilders.boolQuery();
 
     public static FilteredQueryBuilder newBuilder() {
       return new FilteredQueryBuilder();
     }
 
     public FilteredQueryBuilder must(String field, String value) {
-      boolFilter.must(FilterBuilders.termFilter(field, value));
+      boolFilter.must(QueryBuilders.termQuery(field, value));
       return this;
     }
 

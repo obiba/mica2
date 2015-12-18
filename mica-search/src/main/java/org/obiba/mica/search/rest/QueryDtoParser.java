@@ -12,13 +12,11 @@ package org.obiba.mica.search.rest;
 
 import java.util.stream.Stream;
 
-import org.elasticsearch.index.query.BaseQueryBuilder;
-import org.elasticsearch.index.query.BoolFilterBuilder;
-import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder;
-import org.elasticsearch.index.query.RangeFilterBuilder;
+import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
@@ -32,11 +30,11 @@ public class QueryDtoParser {
     return new QueryDtoParser();
   }
 
-  public BaseQueryBuilder parse(MicaSearch.QueryDto queryDto) {
-    BaseQueryBuilder query = null;
+  public QueryBuilder parse(MicaSearch.QueryDto queryDto) {
+    QueryBuilder query = null;
 
     if(queryDto.hasQueryString()) {
-      QueryStringQueryBuilder queryStringBuilder = QueryBuilders.queryString(queryDto.getQueryString().getQuery());
+      QueryStringQueryBuilder queryStringBuilder = QueryBuilders.queryStringQuery(queryDto.getQueryString().getQuery());
       queryDto.getQueryString().getFieldsList().forEach(queryStringBuilder::field);
       query = queryStringBuilder;
     } else {
@@ -50,23 +48,20 @@ public class QueryDtoParser {
     if(queryDto.hasSort()) {
       MicaSearch.QueryDto.SortDto sortDto = queryDto.getSort();
 
-      if(sortDto.hasScript()) {
-        return SortBuilders.scriptSort(sortDto.getScript(), sortDto.getType())
-          .order(SortOrder.valueOf(sortDto.getOrder().name()));
-      } else {
-        return SortBuilders.fieldSort(sortDto.getField())
-          .order(SortOrder.valueOf(sortDto.getOrder().name()));
-      }
+      return sortDto.hasScript()
+        ? SortBuilders.scriptSort(sortDto.getScript(), sortDto.getType())
+        .order(SortOrder.valueOf(sortDto.getOrder().name()))
+        : SortBuilders.fieldSort(sortDto.getField()).order(SortOrder.valueOf(sortDto.getOrder().name()));
     }
 
     return null;
   }
 
-  private BaseQueryBuilder parseFilterQuery(BaseQueryBuilder query, MicaSearch.FilteredQueryDto filteredQueryDto) {
+  private QueryBuilder parseFilterQuery(QueryBuilder query, MicaSearch.FilteredQueryDto filteredQueryDto) {
     return QueryBuilders.filteredQuery(query, parseFilteredQuery(filteredQueryDto));
   }
 
-  private FilterBuilder parseFilteredQuery(MicaSearch.FilteredQueryDto filteredQueryDto) {
+  private QueryBuilder parseFilteredQuery(MicaSearch.FilteredQueryDto filteredQueryDto) {
     if(filteredQueryDto.hasExtension(MicaSearch.BoolFilterQueryDto.filter)) {
       MicaSearch.BoolFilterQueryDto boolFilterDto = filteredQueryDto.getExtension(MicaSearch.BoolFilterQueryDto.filter);
       return parseFilter(boolFilterDto);
@@ -87,10 +82,10 @@ public class QueryDtoParser {
     return null;
   }
 
-  private FilterBuilder parseFilter(MicaSearch.BoolFilterQueryDto boolFilterDto) {
-    BoolFilterBuilder boolFilter = FilterBuilders.boolFilter();
+  private QueryBuilder parseFilter(MicaSearch.BoolFilterQueryDto boolFilterDto) {
+    BoolQueryBuilder boolFilter = QueryBuilders.boolQuery();
 
-    Stream<FilterBuilder> filterBuilders = boolFilterDto.getFilteredQueryList().stream().map(this::parseFilteredQuery);
+    Stream<QueryBuilder> filterBuilders = boolFilterDto.getFilteredQueryList().stream().map(this::parseFilteredQuery);
 
     switch(boolFilterDto.getOp()) {
       case MUST:
@@ -107,21 +102,21 @@ public class QueryDtoParser {
     return boolFilter;
   }
 
-  private FilterBuilder parseFilter(MicaSearch.LogicalFilterQueryDto logicalFilterDto) {
+  private QueryBuilder parseFilter(MicaSearch.LogicalFilterQueryDto logicalFilterDto) {
     if(logicalFilterDto.getFieldsCount() == 0) return null;
     if(logicalFilterDto.getFieldsCount() == 1) return parseFilter(logicalFilterDto.getFields(0).getField());
 
-    BoolFilterBuilder currentFilter = null;
+    BoolQueryBuilder currentFilter = null;
     MicaSearch.FieldStatementDto.Operator lastOperator = null;
 
     for(MicaSearch.FieldStatementDto statement : logicalFilterDto.getFieldsList()) {
       if(currentFilter == null) {
-        currentFilter = FilterBuilders.boolFilter();
+        currentFilter = QueryBuilders.boolQuery();
       }
 
       if(lastOperator == null) append(currentFilter, statement.getOp(), parseFilter(statement.getField()));
       else if(lastOperator == MicaSearch.FieldStatementDto.Operator._AND_NOT)
-        append(currentFilter, lastOperator, FilterBuilders.boolFilter().mustNot(parseFilter(statement.getField())));
+        append(currentFilter, lastOperator, QueryBuilders.boolQuery().mustNot(parseFilter(statement.getField())));
       else append(currentFilter, lastOperator, parseFilter(statement.getField()));
 
       if(!statement.hasOp()) {
@@ -129,7 +124,7 @@ public class QueryDtoParser {
       }
 
       if(lastOperator != null && statement.getOp() != lastOperator) {
-        BoolFilterBuilder nextFilter = FilterBuilders.boolFilter();
+        BoolQueryBuilder nextFilter = QueryBuilders.boolQuery();
         append(nextFilter, statement.getOp(), currentFilter);
         currentFilter = nextFilter;
       }
@@ -139,8 +134,8 @@ public class QueryDtoParser {
     return currentFilter;
   }
 
-  private void append(BoolFilterBuilder boolFilter, MicaSearch.FieldStatementDto.Operator operator,
-    FilterBuilder filterBuilder) {
+  private void append(BoolQueryBuilder boolFilter, MicaSearch.FieldStatementDto.Operator operator,
+    QueryBuilder filterBuilder) {
     switch(operator) {
       case _AND:
         boolFilter.must(filterBuilder);
@@ -154,12 +149,12 @@ public class QueryDtoParser {
     }
   }
 
-  private FilterBuilder parseFilter(MicaSearch.FieldFilterQueryDto filter) {
+  private QueryBuilder parseFilter(MicaSearch.FieldFilterQueryDto filter) {
     String field = filter.getField();
 
     if(filter.hasExtension(MicaSearch.TermsFilterQueryDto.terms)) {
-      return FilterBuilders
-        .termsFilter(field, filter.getExtension(MicaSearch.TermsFilterQueryDto.terms).getValuesList());
+      return QueryBuilders
+        .termsQuery(field, filter.getExtension(MicaSearch.TermsFilterQueryDto.terms).getValuesList());
     }
 
     if(filter.hasExtension(MicaSearch.RangeFilterQueryDto.range)) {
@@ -169,14 +164,14 @@ public class QueryDtoParser {
     throw new IllegalArgumentException("Invalid field filter extension");
   }
 
-  private FilterBuilder parseRangeFilter(String field, MicaSearch.RangeFilterQueryDto rangeFilterDto) {
-    RangeFilterBuilder filterBuilder = FilterBuilders.rangeFilter(field);
+  private QueryBuilder parseRangeFilter(String field, MicaSearch.RangeFilterQueryDto rangeFilterDto) {
+    RangeQueryBuilder filterBuilder = QueryBuilders.rangeQuery(field);
     if(rangeFilterDto.hasFrom()) parseRangeFilterCondition(filterBuilder, rangeFilterDto.getFrom());
     if(rangeFilterDto.hasTo()) parseRangeFilterCondition(filterBuilder, rangeFilterDto.getTo());
     return filterBuilder;
   }
 
-  private void parseRangeFilterCondition(RangeFilterBuilder filterBuilder, MicaSearch.RangeConditionDto condition) {
+  private void parseRangeFilterCondition(RangeQueryBuilder filterBuilder, MicaSearch.RangeConditionDto condition) {
     String value = condition.getValue();
     switch(condition.getOp()) {
       case LT:

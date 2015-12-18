@@ -18,7 +18,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
-import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.search.AbstractPublishedDocumentService;
@@ -67,7 +67,7 @@ public class EsPublishedFileService extends AbstractPublishedDocumentService<Att
 
   @Nullable
   @Override
-  protected FilterBuilder filterByAccess() {
+  protected QueryBuilder filterByAccess() {
     return fileFilterHelper.makePublishedFilesFilter(basePath);
   }
 

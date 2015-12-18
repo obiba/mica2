@@ -26,9 +26,9 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.IndexNotFoundException;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
@@ -122,7 +122,7 @@ public abstract class AbstractDocumentQuery {
 
   public abstract String getSearchType();
 
-  public abstract FilterBuilder getAccessFilter();
+  public abstract QueryBuilder getAccessFilter();
 
   public abstract Stream<String> getLocalizedQueryStringFields();
 
@@ -167,7 +167,7 @@ public abstract class AbstractDocumentQuery {
     if(queryDto == null) return null;
 
     QueryDtoParser queryDtoParser = QueryDtoParser.newParser();
-    FilterBuilder accessFilter = getAccessFilter();
+    QueryBuilder accessFilter = getAccessFilter();
 
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
@@ -185,7 +185,7 @@ public abstract class AbstractDocumentQuery {
 
     response.getAggregations().forEach(aggregation -> ((Terms) aggregation).getBuckets().stream().forEach(bucket -> {
       if(bucket.getDocCount() > 0) {
-        ids.add(bucket.getKey());
+        ids.add(bucket.getKeyAsString());
       }
     }));
 
@@ -239,7 +239,7 @@ public abstract class AbstractDocumentQuery {
     aggregationTitleResolver.registerProviders(getAggregationMetaDataProviders());
     aggregationTitleResolver.refresh();
 
-    FilterBuilder accessFilter = getAccessFilter();
+    QueryBuilder accessFilter = getAccessFilter();
 
     SearchRequestBuilder defaultRequestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
@@ -310,7 +310,7 @@ public abstract class AbstractDocumentQuery {
       resultDto = builder.build();
 
       return getResponseStudyIds(resultDto.getAggsList());
-    } catch(IndexMissingException e) {
+    } catch(IndexNotFoundException e) {
       return null; //ignoring
     } finally {
       aggregationTitleResolver.unregisterProviders(getAggregationMetaDataProviders());
@@ -335,7 +335,7 @@ public abstract class AbstractDocumentQuery {
     aggregationTitleResolver.registerProviders(getAggregationMetaDataProviders());
     aggregationTitleResolver.refresh();
 
-    FilterBuilder accessFilter = getAccessFilter();
+    QueryBuilder accessFilter = getAccessFilter();
 
     SearchRequestBuilder defaultRequestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
@@ -408,7 +408,7 @@ public abstract class AbstractDocumentQuery {
       log.info("Response /{}/{}", getSearchIndex(), getSearchType());
       log.debug("Response: {}", response);
       return rval;
-    } catch(IndexMissingException e) {
+    } catch(IndexNotFoundException e) {
       return null; //ignoring
     }
   }

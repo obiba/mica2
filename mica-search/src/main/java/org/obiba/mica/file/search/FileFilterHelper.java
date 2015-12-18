@@ -10,14 +10,16 @@
 
 package org.obiba.mica.file.search;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
@@ -69,7 +71,7 @@ public class FileFilterHelper {
         path.startsWith("/harmonization-dataset/"));
   }
 
-  public FilterBuilder makeDraftFilesFilter(@NotNull String basePath) {
+  public QueryBuilder makeDraftFilesFilter(@NotNull String basePath) {
     List<String> networkIds = getNetworkIds(basePath, true);
     List<String> studyIds = getStudyIds(basePath, true);
     List<String> studyDatasetIds = getStudyDatasetIds(basePath, true);
@@ -78,7 +80,7 @@ public class FileFilterHelper {
     return makeFilterBuilder(networkIds, studyIds, studyDatasetIds, harmonizationDatasetIds);
   }
 
-  public FilterBuilder makePublishedFilesFilter(String basePath) {
+  public QueryBuilder makePublishedFilesFilter(String basePath) {
     if(micaConfigService.getConfig().isOpenAccess()) return null;
     List<String> networkIds = getNetworkIds(basePath, false);
     List<String> studyIds = getStudyIds(basePath, false);
@@ -173,32 +175,33 @@ public class FileFilterHelper {
     return idx <= 0 ? p : p.substring(0, idx);
   }
 
-  private FilterBuilder makeFilterBuilder(List<String> networkIds, List<String> studyIds, List<String> studyDatasetIds,
+  private QueryBuilder makeFilterBuilder(List<String> networkIds, List<String> studyIds, List<String> studyDatasetIds,
     List<String> harmonizationDatasetIds) {
-    List<FilterBuilder> excludes = Lists.newArrayList();
-    List<FilterBuilder> includes = Lists
-      .newArrayList(FilterBuilders.termFilter("path", "/user"), FilterBuilders.prefixFilter("path", "/user/"));
+    List<QueryBuilder> excludes = Lists.newArrayList();
+    List<QueryBuilder> includes = Lists
+      .newArrayList(QueryBuilders.termQuery("path", "/user"), QueryBuilders.prefixQuery("path", "/user/"));
     addFilter(excludes, includes, "/network", networkIds);
     addFilter(excludes, includes, "/study", studyIds);
     addFilter(excludes, includes, "/study-dataset", studyDatasetIds);
     addFilter(excludes, includes, "/harmonization-dataset", harmonizationDatasetIds);
 
-    FilterBuilder includedFilter = FilterBuilders.orFilter(includes.toArray(new FilterBuilder[includes.size()]));
+    BoolQueryBuilder includedFilter = QueryBuilders.boolQuery();
+    includes.forEach(includedFilter::should);
     if(excludes.isEmpty()) return includedFilter;
 
-    FilterBuilder excludedFilter = FilterBuilders
-      .notFilter(FilterBuilders.orFilter(excludes.toArray(new FilterBuilder[excludes.size()])));
+    BoolQueryBuilder excludedFilter = QueryBuilders.boolQuery();
+    excludes.forEach(excludedFilter::should);
 
-    return FilterBuilders.andFilter(excludedFilter, includedFilter);
+    return QueryBuilders.boolQuery().must(includedFilter).mustNot(excludedFilter);
   }
 
-  private void addFilter(List<FilterBuilder> excludes, List<FilterBuilder> includes, String prefix, List<String> ids) {
+  private void addFilter(Collection<QueryBuilder> excludes, Collection<QueryBuilder> includes, String prefix, List<String> ids) {
     if(ids.isEmpty()) {
-      excludes.add(FilterBuilders.prefixFilter("path", prefix));
+      excludes.add(QueryBuilders.prefixQuery("path", prefix));
     } else {
       ids.forEach(id -> {
-        includes.add(FilterBuilders.termFilter("path", prefix + "/" + id));
-        includes.add(FilterBuilders.prefixFilter("path", prefix + "/" + id + "/"));
+        includes.add(QueryBuilders.termQuery("path", prefix + "/" + id));
+        includes.add(QueryBuilders.prefixQuery("path", prefix + "/" + id + "/"));
       });
     }
   }

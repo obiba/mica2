@@ -74,7 +74,7 @@ public class AbstractIndexConfiguration {
         .startObject()
           .field("type", "string")
           .field("index", "analyzed")
-          .field("index_analyzer", "mica_index_analyzer")
+          .field("analyzer", "mica_index_analyzer")
           .field("search_analyzer", "mica_search_analyzer")
         .endObject()
         .field(name)

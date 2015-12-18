@@ -26,9 +26,9 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
-import org.elasticsearch.index.query.OrFilterBuilder;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.obiba.mica.core.domain.AttributeKey;
@@ -123,7 +123,7 @@ public class VariableQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  public FilterBuilder getAccessFilter() {
+  public QueryBuilder getAccessFilter() {
     if(micaConfigService.getConfig().isOpenAccess()) return null;
     List<String> ids = studyDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
       .filter(s -> subjectAclService.isAccessible("/study-dataset", s))
@@ -132,10 +132,10 @@ public class VariableQuery extends AbstractDocumentQuery {
       .filter(s -> subjectAclService.isAccessible("/harmonization-dataset", s))
       .collect(Collectors.toList()));
 
-    if(ids.isEmpty()) return FilterBuilders.notFilter(FilterBuilders.existsFilter("id"));
+    if(ids.isEmpty()) return QueryBuilders.notQuery(QueryBuilders.existsQuery("id"));
 
-    OrFilterBuilder orFilter = FilterBuilders.orFilter();
-    ids.stream().forEach(id -> orFilter.add(FilterBuilders.termFilter("datasetId", id)));
+    BoolQueryBuilder orFilter = QueryBuilders.boolQuery();
+    ids.stream().forEach(id -> orFilter.should(QueryBuilders.termQuery("datasetId", id)));
 
     return orFilter;
   }

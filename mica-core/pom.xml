@@ -61,6 +61,11 @@
       <artifactId>jackson-datatype-guava</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.carrotsearch</groupId>
+      <artifactId>hppc</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>com.ryantenney.metrics</groupId>
       <artifactId>metrics-spring</artifactId>
     </dependency>

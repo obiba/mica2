@@ -1,5 +1,7 @@
 http.enabled: false
-script.disable_dynamic: sandbox
+script:
+    inline: on
+    indexed: on
 discovery.zen.ping.multicast.enabled: false
 index:
     analysis:

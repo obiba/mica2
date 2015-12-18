@@ -25,13 +25,11 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.IndexNotFoundException;
 import org.elasticsearch.index.query.IdsQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder;
-import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.sort.SortBuilders;
@@ -89,16 +87,16 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
     @Nullable String queryString, @Nullable List<String> fields) {
     if(!indexExists()) return new Documents<>(0, from, limit);
 
-    QueryStringQueryBuilder query = queryString != null ? QueryBuilders.queryString(queryString) : null;
+    QueryStringQueryBuilder query = queryString != null ? QueryBuilders.queryStringQuery(queryString) : null;
 
     if(query != null && fields != null) fields.forEach(query::field);
 
-    FilterBuilder postFilter = getPostFilter(studyId);
+    QueryBuilder postFilter = getPostFilter(studyId);
 
     SearchRequestBuilder search = client.prepareSearch() //
       .setIndices(getIndexName()) //
       .setTypes(getType()) //
-      .setQuery(postFilter == null ? query : QueryBuilders.filteredQuery(query, postFilter)) //
+      .setQuery(postFilter == null ? query : QueryBuilders.boolQuery().must(query).filter(postFilter)) //
       .setFrom(from) //
       .setSize(limit);
 
@@ -154,7 +152,7 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
    * @return
    */
   @Nullable
-  protected FilterBuilder filterByAccess() {
+  protected QueryBuilder filterByAccess() {
     return null;
   }
 
@@ -171,7 +169,7 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
   }
 
   private List<T> executeQueryInternal(QueryBuilder queryBuilder, int from, int size, List<String> ids) {
-    FilterBuilder accessFilter = filterByAccess();
+    QueryBuilder accessFilter = filterByAccess();
 
     SearchRequestBuilder requestBuilder = client.prepareSearch(getIndexName()) //
       .setTypes(getType()) //
@@ -187,7 +185,7 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
       return ids == null || ids.size() != hits.totalHits()
         ? processHits(response.getHits())
         : processHitsOrderByIds(response.getHits(), ids);
-    } catch(IndexMissingException e) {
+    } catch(IndexNotFoundException e) {
       return Lists.newArrayList(); //ignoring
     }
   }
@@ -227,19 +225,19 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
   }
 
   @Nullable
-  private FilterBuilder getPostFilter(@Nullable String studyId) {
-    FilterBuilder filter = filterByAccess();
+  private QueryBuilder getPostFilter(@Nullable String studyId) {
+    QueryBuilder filter = filterByAccess();
 
     if(studyId != null) {
-      FilterBuilder filterByStudy = filterByStudy(studyId);
-      filter = filter == null ? filterByStudy : FilterBuilders.boolFilter().must(filter).must(filterByStudy);
+      QueryBuilder filterByStudy = filterByStudy(studyId);
+      filter = filter == null ? filterByStudy : QueryBuilders.boolQuery().must(filter).must(filterByStudy);
     }
 
     return filter;
   }
 
-  protected FilterBuilder filterByStudy(String studyId) {
-    return FilterBuilders.termFilter("studyIds", studyId);
+  protected QueryBuilder filterByStudy(String studyId) {
+    return QueryBuilders.termQuery("studyIds", studyId);
   }
 
   protected List<String> getLocalizedFields(String... fieldNames) {

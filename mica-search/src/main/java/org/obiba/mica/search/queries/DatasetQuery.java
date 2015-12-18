@@ -23,15 +23,13 @@ import javax.inject.Inject;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.index.query.BaseQueryBuilder;
-import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.IndexNotFoundException;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.Aggregations;
+import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
@@ -109,15 +107,15 @@ public class DatasetQuery extends AbstractDocumentQuery {
   }
 
   @Override
-  public FilterBuilder getAccessFilter() {
+  public QueryBuilder getAccessFilter() {
     if(micaConfigService.getConfig().isOpenAccess()) return null;
     List<String> ids = studyDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
       .filter(s -> subjectAclService.isAccessible("/study-dataset", s)).collect(Collectors.toList());
     ids.addAll(harmonizationDatasetService.findPublishedStates().stream().map(HarmonizationDatasetState::getId)
       .filter(s -> subjectAclService.isAccessible("/harmonization-dataset", s)).collect(Collectors.toList()));
     return ids.isEmpty()
-      ? FilterBuilders.notFilter(FilterBuilders.existsFilter("id"))
-      : FilterBuilders.idsFilter().ids(ids.toArray(new String[ids.size()]));
+      ? QueryBuilders.notQuery(QueryBuilders.existsQuery("id"))
+      : QueryBuilders.idsQuery().ids(ids);
   }
 
   @Override
@@ -232,7 +230,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
     QueryDtoParser queryDtoParser = QueryDtoParser.newParser();
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
-      .setSearchType(SearchType.COUNT) //
+      .setSize(0) //
       .setQuery(queryDtoParser.parse(queryDto)) //
       .setNoFields();
 
@@ -252,7 +250,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
     List<String> classNames = Lists.newArrayList();
 
     response.getAggregations().forEach(aggregation -> ((Terms) aggregation).getBuckets().stream().forEach(bucket -> {
-      if(bucket.getDocCount() > 0) classNames.add(bucket.getKey());
+      if(bucket.getDocCount() > 0) classNames.add(bucket.getKeyAsString());
     }));
 
     int count = classNames.size();
@@ -270,14 +268,14 @@ public class DatasetQuery extends AbstractDocumentQuery {
   }
 
   public Map<String, Map<String, List<String>>> getStudyCountsByDataset() {
-    FilterBuilder accessFilter = getAccessFilter();
-    BaseQueryBuilder query = queryDto == null
+    QueryBuilder accessFilter = getAccessFilter();
+    QueryBuilder query = queryDto == null
       ? QueryBuilders.matchAllQuery()
       : QueryDtoParser.newParser().parse(queryDto);
 
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
-      .setSearchType(SearchType.COUNT) //
+      .setSize(0) //
       .setQuery(accessFilter == null ? query : QueryBuilders.filteredQuery(query, accessFilter)) //
       .setNoFields();
 
@@ -299,8 +297,8 @@ public class DatasetQuery extends AbstractDocumentQuery {
       SearchResponse response = requestBuilder.execute().actionGet();
       Aggregation idAgg = response.getAggregations().get("id");
       ((Terms) idAgg).getBuckets().stream().filter(bucket -> bucket.getDocCount() > 0)
-        .forEach(bucket -> map.put(bucket.getKey(), getStudyCounts(bucket.getAggregations())));
-    } catch(IndexMissingException e) {
+        .forEach(bucket -> map.put(bucket.getKeyAsString(), getStudyCounts(bucket.getAggregations())));
+    } catch(IndexNotFoundException e) {
       // ignore
     }
 
@@ -311,7 +309,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
     Map<String, List<String>> map = Maps.newHashMap();
     aggregations.forEach(aggregation -> map.put(AggregationYamlParser.unformatName(aggregation.getName()),
       ((Terms) aggregation).getBuckets().stream().filter(bucket -> bucket.getDocCount() > 0)
-        .map(bucket -> bucket.getKey()).collect(Collectors.toList())));
+        .map(MultiBucketsAggregation.Bucket::getKeyAsString).collect(Collectors.toList())));
 
     return map;
   }
