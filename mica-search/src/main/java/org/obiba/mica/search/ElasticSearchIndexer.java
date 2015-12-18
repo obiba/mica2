@@ -33,6 +33,8 @@ public class ElasticSearchIndexer {
 
   private static final Logger log = LoggerFactory.getLogger(ElasticSearchIndexer.class);
 
+  private static final int MAX_SIZE = 10000;
+
   @Inject
   private ElasticSearchConfiguration elasticSearchConfiguration;
 
@@ -120,28 +122,31 @@ public class ElasticSearchIndexer {
   }
 
   public DeleteResponse delete(String indexName, String type, QueryBuilder query) {
-    return deleteParentChild(indexName, type, query);
-    //createIndexIfNeeded(indexName);
-    //return client.prepareDeleteByQuery(indexName).setTypes(type).setQuery(query).execute().actionGet();
-  }
-
-  private DeleteResponse deleteParentChild(String indexName, String type, QueryBuilder query) {
     createIndexIfNeeded(indexName);
 
-    SearchRequestBuilder search = client.prepareSearch() //
-      .setIndices(indexName) //
-      .setTypes(type) //
-      .setQuery(query) //
-      .setSize(Integer.MAX_VALUE) //
-      .setNoFields();
-
-    log.debug("Request: {}", search.toString());
-    SearchResponse response = search.execute().actionGet();
-
     DeleteResponse lastResponse = null;
-    for(SearchHit hit : response.getHits()) {
-      lastResponse = client.prepareDelete(indexName, type, hit.getId()).execute().actionGet();
+    SearchResponse response = null;
+
+    while(response == null || response.getHits().totalHits() > 0) {
+      SearchRequestBuilder search = client.prepareSearch() //
+        .setIndices(indexName) //
+        .setTypes(type) //
+        .setQuery(query) //
+        .setSize(MAX_SIZE) //
+        .setNoFields();
+
+      log.debug("Request: {}", search.toString());
+      response = search.execute().actionGet();
+
+      for(SearchHit hit : response.getHits()) {
+        try {
+          lastResponse = client.prepareDelete(indexName, type, hit.getId()).execute().actionGet();
+        } catch(Exception e) {
+          //ignore
+        }
+      }
     }
+
     return lastResponse;
   }
 

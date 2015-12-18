@@ -28,7 +28,7 @@ public abstract class AbstractFileSearchResource {
 
   protected static final String DEFAULT_SORT = "name";
 
-  protected static final String MAX_SIZE = "999";
+  protected static final String MAX_SIZE = "10000";
 
   @Inject
   protected SubjectAclService subjectAclService;
@@ -82,7 +82,7 @@ public abstract class AbstractFileSearchResource {
 
   /**
    * The path being searched.
-   * 
+   *
    * @return
    */
   public String getBasePath() {
