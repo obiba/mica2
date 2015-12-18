@@ -135,7 +135,7 @@ public abstract class AbstractPublishedDatasetsResource<T extends Dataset> {
       .filter(s -> subjectAclService.isAccessible("/harmonization-dataset", s)).collect(Collectors.toList());
 
     return ids.isEmpty()
-      ? QueryBuilders.notQuery(QueryBuilders.existsQuery("id"))
+      ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
       : QueryBuilders.termQuery("id", ids);
   }
 

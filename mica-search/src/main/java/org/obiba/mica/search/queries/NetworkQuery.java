@@ -90,7 +90,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
     List<String> ids = publishedNetworkService.getNetworkService().findPublishedStates().stream()
       .map(NetworkState::getId).filter(s -> subjectAclService.isAccessible("/network", s)).collect(Collectors.toList());
     return ids.isEmpty()
-      ? QueryBuilders.notQuery(QueryBuilders.existsQuery("id"))
+      ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
       : QueryBuilders.idsQuery().ids(ids);
   }
 
