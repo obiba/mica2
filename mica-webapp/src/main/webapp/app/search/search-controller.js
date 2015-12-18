@@ -35,15 +35,19 @@ mica.search
       };
 
       var selectTaxonomyTarget = function(target) {
-        if ($scope.taxonomies.target === target) {
-          $('#taxonomies').collapse('toggle');
-          return;
+        if (!$scope.taxonomiesShown) {
+          $('#taxonomies').collapse('show');
         }
-        $('#taxonomies').collapse('show');
-        $scope.taxonomies.target = target;
-        $scope.taxonomies.taxonomy = null;
-        $scope.taxonomies.vocabulary = null;
-        filterTaxonomies($scope.taxonomies.search.text);
+        if ($scope.taxonomies.target !== target) {
+          $scope.taxonomies.target = target;
+          $scope.taxonomies.taxonomy = null;
+          $scope.taxonomies.vocabulary = null;
+          filterTaxonomies($scope.taxonomies.search.text);
+        }
+      };
+
+      var closeTaxonomies = function() {
+        $('#taxonomies').collapse('hide');
       };
 
       var filterTaxonomiesKeyUp = function(event) {
@@ -145,9 +149,18 @@ mica.search
 
       };
 
+      $scope.clearFilterTaxonomies = clearFilterTaxonomies;
       $scope.searchKeyUp = searchKeyUp;
       $scope.filterTaxonomiesKeyUp = filterTaxonomiesKeyUp;
       $scope.navigateTaxonomy = navigateTaxonomy;
       $scope.selectTaxonomyTarget = selectTaxonomyTarget;
       $scope.selectTerm = selectTerm;
+      $scope.closeTaxonomies = closeTaxonomies;
+      $scope.taxonomiesShown = false;
+      $('#taxonomies').on('show.bs.collapse', function () {
+        $scope.taxonomiesShown = true;
+      });
+      $('#taxonomies').on('hide.bs.collapse', function () {
+        $scope.taxonomiesShown = false;
+      });
     }]);

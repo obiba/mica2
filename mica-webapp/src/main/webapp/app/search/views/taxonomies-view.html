@@ -3,11 +3,11 @@
     <div class="row">
       <div class="col-xs-8 voffset1">
         <ol class="mica-breadcrumb no-margin no-padding">
-          <li ng-if="!taxonomies.taxonomy" translate>
-            all-classifications
+          <li ng-if="!taxonomies.taxonomy">
+            {{'all-' + taxonomies.target + '-classifications' | translate}}
           </li>
           <li ng-if="taxonomies.taxonomy">
-            <a href ng-click="navigateTaxonomy()" translate>all-classifications</a>
+            <a href ng-click="navigateTaxonomy()">{{'all-' + taxonomies.target + '-classifications' | translate}}</a>
           </li>
           <li ng-if="taxonomies.taxonomy && !taxonomies.vocabulary">
             <span ng-repeat="label in taxonomies.taxonomy.title" ng-if="label.locale === lang">
@@ -38,6 +38,7 @@
                 type="text"
                 class="form-control ng-pristine ng-untouched ng-valid"
                 aria-describedby="study-search">
+              <span class="input-group-addon"><i class="glyphicon glyphicon-remove" ng-click="clearFilterTaxonomies()"></i></span>
             </span>
           </div>
         </div>
