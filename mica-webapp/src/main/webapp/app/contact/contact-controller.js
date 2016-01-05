@@ -10,12 +10,12 @@ mica.contact
     contactDeleted: 'event:contact-deleted'
   })
 
-  .controller('ContactController', ['$rootScope', '$scope', '$modal', '$translate', 'MicaConfigResource', 'CONTACT_EVENTS', 'NOTIFICATION_EVENTS',
-    function ($rootScope, $scope, $modal, $translate, MicaConfigResource, CONTACT_EVENTS, NOTIFICATION_EVENTS) {
+  .controller('ContactController', ['$rootScope', '$scope', '$uibModal', '$translate', 'MicaConfigResource', 'CONTACT_EVENTS', 'NOTIFICATION_EVENTS',
+    function ($rootScope, $scope, $uibModal, $translate, MicaConfigResource, CONTACT_EVENTS, NOTIFICATION_EVENTS) {
       $scope.micaConfig = MicaConfigResource.get();
       $scope.viewContact = function (contact) {
         if(!$scope.isOrderingContacts) {
-          $modal.open({
+          $uibModal.open({
             templateUrl: 'app/contact/contact-modal-view.html',
             controller: 'ContactViewModalController',
             resolve: {
@@ -47,7 +47,7 @@ mica.contact
       };
 
       $scope.editMemberModal = function (contactable, contact, type) {
-        $modal
+        $uibModal
           .open({
             templateUrl: 'app/contact/contact-modal-form.html',
             controller: 'ContactEditModalController',
@@ -78,7 +78,7 @@ mica.contact
       };
 
       $scope.addMemberModal = function (contactable, excludes, type) {
-        $modal
+        $uibModal
           .open({
             templateUrl: 'app/contact/contact-modal-form.html',
             controller: 'ContactEditModalController',
@@ -130,27 +130,27 @@ mica.contact
       };
     }])
 
-  .controller('ContactViewModalController', ['$scope', '$modalInstance', 'micaConfig', 'contact',
-    function ($scope, $modalInstance, micaConfig, contact) {
+  .controller('ContactViewModalController', ['$scope', '$uibModalInstance', 'micaConfig', 'contact',
+    function ($scope, $uibModalInstance, micaConfig, contact) {
       $scope.contact = contact;
       $scope.tabs = (micaConfig.languages || []).map(function (lang) {
         return {lang: lang, labelKey: 'language.' + lang};
       });
 
       $scope.close = function () {
-        $modalInstance.dismiss('close');
+        $uibModalInstance.dismiss('close');
       };
     }])
 
   .controller('ContactEditModalController', ['$scope',
-    '$modalInstance',
+    '$uibModalInstance',
     '$translate',
     'ContactsSearchResource',
     'micaConfig',
     'contact',
     'excludes',
     'type',
-    function ($scope, $modalInstance, $translate, ContactsSearchResource, micaConfig, contact, excludes, type) {
+    function ($scope, $uibModalInstance, $translate, ContactsSearchResource, micaConfig, contact, excludes, type) {
       $translate(type).then(function(tranlation) {
         $scope.type = tranlation;
       });
@@ -161,7 +161,7 @@ mica.contact
 
       var save = function (form) {
         if (form.$valid) {
-          $modalInstance.close($scope.selected.contact);
+          $uibModalInstance.close($scope.selected.contact);
         } else {
           $scope.form = form;
           $scope.form.saveAttempted = true;
@@ -169,7 +169,7 @@ mica.contact
       };
 
       var cancel = function () {
-        $modalInstance.dismiss('cancel');
+        $uibModalInstance.dismiss('cancel');
       };
 
       var findContacts = function(search) {

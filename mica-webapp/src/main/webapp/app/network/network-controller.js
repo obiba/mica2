@@ -136,8 +136,8 @@ mica.network
       };
     }])
 
-  .controller('NetworkLinksModalController', ['$scope', '$modalInstance', 'entityStatesResource', 'currentLinks', 'type', 'lang',
-    function ($scope, $modalInstance, entityStatesResource, currentLinks, type, lang) {
+  .controller('NetworkLinksModalController', ['$scope', '$uibModalInstance', 'entityStatesResource', 'currentLinks', 'type', 'lang',
+    function ($scope, $uibModalInstance, entityStatesResource, currentLinks, type, lang) {
       $scope.type = type;
       $scope.lang = lang;
       $scope.entities = [];
@@ -167,16 +167,16 @@ mica.network
           .filter(function(s){ return s.selected; }) //
           .map(function(s) { return s.id; });
 
-        $modalInstance.close(selectedIds);
+        $uibModalInstance.close(selectedIds);
       };
 
       $scope.cancel = function () {
-        $modalInstance.dismiss('cancel');
+        $uibModalInstance.dismiss('cancel');
       };
     }])
 
-  .controller('NetworkContactsModalController', ['$scope', '$modalInstance', 'ContactsSearchResource', 'network', 'lang',
-    function ($scope, $modalInstance, ContactsSearchResource, network, lang) {
+  .controller('NetworkContactsModalController', ['$scope', '$uibModalInstance', 'ContactsSearchResource', 'network', 'lang',
+    function ($scope, $uibModalInstance, ContactsSearchResource, network, lang) {
       $scope.network = network;
       $scope.lang = lang;
       $scope.persons = [];
@@ -219,7 +219,7 @@ mica.network
       };
 
       $scope.cancel = function () {
-        $modalInstance.dismiss('cancel');
+        $uibModalInstance.dismiss('cancel');
       };
     }])
 
@@ -245,7 +245,7 @@ mica.network
     'DraftStudiesSummariesResource',
     'DraftFileSystemSearchResource',
     'StudyStatesResource',
-    '$modal',
+    '$uibModal',
     'LocalizedValues',
     'ActiveTabService',
     '$filter',
@@ -274,7 +274,7 @@ mica.network
               DraftStudiesSummariesResource,
               DraftFileSystemSearchResource,
               StudyStatesResource,
-              $modal,
+              $uibModal,
               LocalizedValues,
               ActiveTabService,
               $filter,
@@ -547,7 +547,7 @@ mica.network
       });
 
       $scope.addStudyEvent = function () {
-        $modal.open({
+        $uibModal.open({
           templateUrl: 'app/network/views/network-modal-add-links.html',
           controller: 'NetworkLinksModalController',
           resolve: {
@@ -581,7 +581,7 @@ mica.network
       };
 
       $scope.addNetwork = function () {
-        $modal.open({
+        $uibModal.open({
           templateUrl: 'app/network/views/network-modal-add-links.html',
           controller: 'NetworkLinksModalController',
           resolve: {
@@ -615,7 +615,7 @@ mica.network
       };
 
       $scope.showAllContacts = function () {
-        $modal.open({
+        $uibModal.open({
           templateUrl: 'app/network/views/network-modal-contacts.html',
           controller: 'NetworkContactsModalController',
           resolve: {

@@ -1,7 +1,7 @@
 {
   "name": "angular-strap",
   "description": "AngularStrap - AngularJS directives for Bootstrap",
-  "version": "2.2.4",
+  "version": "2.3.6",
   "keywords": [
     "angular",
     "bootstrap"
@@ -24,34 +24,34 @@
     "type": "git",
     "url": "https://github.com/mgcrea/angular-strap.git"
   },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://github.com/mgcrea/angular-strap/blob/master/LICENSE.md"
-    }
-  ],
+  "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "del": "^1.2.0",
-    "factory-angular-channels": "^0.7.2",
-    "gulp": "gulpjs/gulp#4.0",
-    "gulp-jshint": "^1.11.0",
-    "gulp-util": "^3.0.4",
+    "codeclimate-test-reporter": "^0.1.1",
+    "del": "^2.1.0",
+    "eslint": "^1.9.0",
+    "eslint-config-airbnb": "^1.0.0",
+    "factory-angular-channels": "^0.9.0",
+    "gulp-jshint": "^1.12.0",
+    "gulp-ng-annotate": "^1.1.0",
+    "gulp-pre": "^4.0.0-alpha.4",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^1.5.1",
+    "gulp-util": "^3.0.7",
     "jasmine-core": "^2.3.4",
-    "jshint-stylish": "^2.0.0",
-    "karma": "^0.12.33",
-    "karma-chrome-launcher": "^0.1.12",
-    "karma-coverage": "^0.3.1",
-    "karma-jasmine": "^0.3.5",
-    "karma-phantomjs-launcher": "^0.1.4",
-    "karma-sauce-launcher": "^0.2.11",
-    "ng-factory": "^1.0",
-    "undertaker-lib-tasks": "^0.3.1"
-  },
-  "engines": {
-    "node": "^0.10"
+    "jshint-stylish": "^2.0.1",
+    "karma": "^0.13.15",
+    "karma-chrome-launcher": "^0.2.1",
+    "karma-coverage": "^0.5.3",
+    "karma-jasmine": "^0.3.6",
+    "karma-phantomjs-launcher": "^0.2.1",
+    "karma-sauce-launcher": "^0.3.0",
+    "ng-factory": "^1.1.0",
+    "phantomjs": "^1.9.18",
+    "through2": "^2.0.0",
+    "undertaker-lib-tasks": "^0.5.1"
   },
   "scripts": {
-    "test": "gulp jshint karma:unit"
+    "test": "$(npm bin)/gulp jshint karma:unit"
   }
 }

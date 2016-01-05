@@ -11,13 +11,7 @@
               </a>
             </span>
             <span>
-              <a href
-                ng-model="data.search.recursively"
-                class="btn btn-xs"
-                ng-class="{'btn-info': data.search.recursively, 'btn-default': !data.search.recursively}"
-                data-toggle="button"
-                ng-click="toggleRecursively()"
-                title="{{'search-tooltip.recursively' | translate}}">
+              <a href ng-model="data.search.recursively" class="btn btn-xs" ng-class="{'btn-info': data.search.recursively, 'btn-default': !data.search.recursively}" data-toggle="button" ng-click="toggleRecursively()" title="{{'search-tooltip.recursively' | translate}}">
                 <i class="fa i-obiba-hierarchy"></i>
               </a>
             </span>
@@ -28,11 +22,7 @@
         <a href>
           <span class="input-group input-group-sm no-padding-top">
             <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
-            <input ng-keyup="searchKeyUp($event)"
-              ng-model="data.search.text"
-              type="text"
-              class="form-control ng-pristine ng-untouched ng-valid"
-              aria-describedby="study-search">
+            <input ng-keyup="searchKeyUp($event)" ng-model="data.search.text" type="text" class="form-control ng-pristine ng-untouched ng-valid" aria-describedby="study-search">
           </span>
         </a>
       </li>

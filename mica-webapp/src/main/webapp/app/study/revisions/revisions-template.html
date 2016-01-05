@@ -26,14 +26,12 @@
     </tr>
     </thead>
     <tbody>
-    <tr ng-class="{'active-row': $index === active.index && active.page === pages.index}"
-      dir-paginate="commitInfo in commitInfos | filter:searchText | itemsPerPage: 5" current-page="pages.index" pagination-id="revisions">
+    <tr ng-class="{'active-row': $index === active.index && active.page === pages.index}" dir-paginate="commitInfo in commitInfos | filter:searchText | itemsPerPage: 5" current-page="pages.index" pagination-id="revisions">
       <td>
         <span class="ellipsis pull-left" title="{{commitInfo.commitId}}">
           {{commitInfo.commitId}}
         </span>
-        <i class="fa fa-star pull-left" ng-if="state.publishedId === commitInfo.commitId"
-          title="{{'publish.published' | translate}} ({{state.publicationDate | amDateFormat : 'lll'}} [{{state.publishedBy}}])"></i>
+        <i class="fa fa-star pull-left" ng-if="state.publishedId === commitInfo.commitId" title="{{'publish.published' | translate}} ({{state.publicationDate | amDateFormat : 'lll'}} [{{state.publishedBy}}])"></i>
       </td>
       <td>
         {{commitInfo.date | amDateFormat: 'lll'}}
@@ -47,18 +45,15 @@
       <td>
         <ul ng-if="pages.index === 1 && $index === 0" class="list-inline">
           <li>
-            <a ng-click="viewRevision($index, id, commitInfo)" href="" title="{{'view' | translate}}"><i
-              class="fa fa-eye"></i></a>
+            <a ng-click="viewRevision($index, id, commitInfo)" href="" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>
           </li>
         </ul>
         <ul ng-if="pages.index > 1 || $index > 0" class="list-inline">
           <li>
-            <a ng-click="viewRevision($index, id, commitInfo)" href="" title="{{'view' | translate}}"><i
-              class="fa fa-eye"></i></a>
+            <a ng-click="viewRevision($index, id, commitInfo)" href="" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>
           </li>
           <li ng-if="state.permissions.edit && state.revisionStatus === 'DRAFT'">
-            <a ng-click="restoreRevision(id, commitInfo)" href="" title="{{'restore' | translate}}"><i
-              class="fa fa-rotate-left"></i></a>
+            <a ng-click="restoreRevision(id, commitInfo)" href="" title="{{'restore' | translate}}"><i class="fa fa-rotate-left"></i></a>
           </li>
         </ul>
       </td>
@@ -67,4 +62,3 @@
   </table>
 
 </div>
-

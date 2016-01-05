@@ -4,12 +4,10 @@
 
   <div class="row">
     <div class="col-md-8">
-      <div class="alert alert-success" ng-show="hasRole('mica-user')"
-          translate translate-values="{username: '{{subject.login}}'}">
+      <div class="alert alert-success" ng-show="hasRole('mica-user')" translate translate-values="{username: '{{subject.login}}'}">
         main.logged.userMessage
       </div>
-      <div class="alert alert-warning" ng-show="hasRole('mica-administrator')"
-          translate translate-values="{username: '{{subject.login}}'}">
+      <div class="alert alert-warning" ng-show="hasRole('mica-administrator')" translate translate-values="{username: '{{subject.login}}'}">
         main.logged.adminMessage
       </div>
     </div>

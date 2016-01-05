@@ -1,11 +1,10 @@
 {
   "name": "angular-marked",
-  "version": "0.0.14",
   "authors": [
     "J. Harshbarger"
   ],
   "description": "AngularJS Markdown using marked.",
-  "main": "angular-marked.js",
+  "main": "dist/angular-marked.js",
   "keywords": [
     "angularjs",
     "markdown",
@@ -18,24 +17,30 @@
     "**/.*",
     "node_modules",
     "bower_components",
+    ".grunt",
     "test",
-    "tests"
+    "tests",
+    "docs",
+    "docs-template",
+    "example"
   ],
   "dependencies": {
-    "angular": ">= 1.2.5",
+    "angular": ">= 1.3.0",
     "marked": "~0.3.1"
   },
   "devDependencies": {
-    "angular-mocks": ">= 1.2.5"
+    "angular-mocks": ">= 1.3.0",
+    "angular-animate": "~1.4.3"
   },
   "homepage": "https://github.com/Hypercubed/angular-marked",
-  "_release": "0.0.14",
+  "version": "1.0.1",
+  "_release": "1.0.1",
   "_resolution": {
     "type": "version",
-    "tag": "v0.0.14",
-    "commit": "358d13711d63e17f947b659b1de45e9344044320"
+    "tag": "v1.0.1",
+    "commit": "f16e65befe4592c914218d5a5313299d673dd610"
   },
   "_source": "git://github.com/Hypercubed/angular-marked.git",
-  "_target": "0.0.14",
+  "_target": "1.0.1",
   "_originalSource": "angular-marked"
 }

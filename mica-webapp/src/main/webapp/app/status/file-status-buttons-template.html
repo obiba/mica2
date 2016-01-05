@@ -1,48 +1,39 @@
 <div>
-  <a class="btn btn-danger btn-responsive" ng-click="onDelete()"
-    ng-if="canDelete">
+  <a class="btn btn-danger btn-responsive" ng-click="onDelete()" ng-if="canDelete">
     <i class="fa fa-trash"></i>
     <span translate>delete</span>
   </a>
 
-  <a ng-click="onPublish()" class="btn btn-info btn-responsive"
-    ng-disabled="isPublishDisabled"
-    ng-if="canPublish">
+  <a ng-click="onPublish()" class="btn btn-info btn-responsive" ng-disabled="isPublishDisabled" ng-if="canPublish">
     <i class="fa fa-star"></i>
     <span translate>publish.label</span>
   </a>
 
-  <a class="btn btn-info btn-responsive" ng-click="onUnPublish()"
-    ng-if="canUnpublish">
+  <a class="btn btn-info btn-responsive" ng-click="onUnPublish()" ng-if="canUnpublish">
     <i class="fa fa-star-o"></i>
     <span translate>publish.un-publish</span>
   </a>
 
   <div class="btn-group" ng-if="document.permissions.edit">
-    <button type="button" class="btn btn-default btn-responsive dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-      aria-expanded="false">
+    <button type="button" class="btn btn-default btn-responsive dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
       <span ng-if="documents.length"><i class="fa fa-ellipsis-v"></i></span>
-      <span ng-if="!documents.length">{{'publish.status.' + document.revisionStatus | translate}}</span> <span
-      class="caret"></span>
+      <span ng-if="!documents.length">{{'publish.status.' + document.revisionStatus | translate}}</span> <span class="caret"></span>
     </button>
     <ul class="dropdown-menu pull-right">
       <li>
-        <a ng-click="toDraft()"
-          ng-if="canToDraft">
+        <a ng-click="toDraft()" ng-if="canToDraft">
           <i class="fa fa-arrow-left"></i>
           <span translate>publish.status.draft</span>
         </a>
       </li>
       <li>
-        <a ng-click="toUnderReview()"
-          ng-if="canToUnderReview">
+        <a ng-click="toUnderReview()" ng-if="canToUnderReview">
           <i class="fa fa-arrow-right"></i>
           <span translate>publish.status.under-review</span>
         </a>
       </li>
       <li>
-        <a ng-click="toDeleted()"
-          ng-if="canToDeleted">
+        <a ng-click="toDeleted()" ng-if="canToDeleted">
           <i class="fa fa-arrow-right"></i>
           <span translate>publish.status.deleted</span>
         </a>

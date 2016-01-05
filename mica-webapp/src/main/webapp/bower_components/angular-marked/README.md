@@ -1,79 +1,145 @@
-# angular-marked [![Bower version](https://badge.fury.io/bo/angular-marked.svg)](http://badge.fury.io/bo/angular-marked)
-===
+# angular-marked
+
+[![NPM version][npm-badge]][npm]
+[![Downloads][download-badge]][npm]
+![Downloads][bower-badge]
+
+[![Build Status][travis-image]][travis-url]
+[![Codacy Badge][codacy-badge]][Codacy]
+
+[![js-semistandard-style][standard-badge]][semistandard]
+[![License][license-badge]][MIT License]
 
 AngularJS Markdown using [marked](https://github.com/chjj/marked).
 
-**Please note:** neither this directive nor marked (by default) implementation sanitization. As always, sanitizing is necessary for user-generated content.
+**Please note:** neither this directive nor marked (by default) implement sanitization. As always, sanitizing is necessary for user-generated content.
 
-[![get this with bower](http://benschwarz.github.io/bower-badges/badge@2x.png)](http://bower.io/ "get this with bower")
+## Install
+
+`bower install angular-marked`
+
+or
+
+`npm install angular-marked`
+
+or
+
+`jspm install angular-marked=npm:angular-marked`
+
+Depending on your setup you may need include script tags in your html:
+
+```html
+<script src="bower_components/marked/lib/marked.js"></script>
+<script src="bower_components/angular-marked/dist/angular-marked.js"></script>
+```
 
 ## Usage
-1. `bower install angular-marked` or `bower install Hypercubed/angular-marked`
-2. Include the `marked.js` script into your app.  By default should be at `bower_components/marked/lib/marked.js`.
-3. Include the `angular-marked.js` into your app.  By default should be at `bower_components/angular-marked/angular-marked.js`.
-4. Add `hc.marked` as a module dependency to your app.
+
+```js
+var app = angular.module('example-app', ['hc.marked']);
+```
 
 ### Set default options (optional)
 
 ```js
-	app.config(['markedProvider', function(markedProvider) {
-	  markedProvider.setOptions({gfm: true});
-	}]);
+app.config(['markedProvider', function (markedProvider) {
+  markedProvider.setOptions({gfm: true});
+}]);
 ```
 
 Example using [highlight.js Javascript syntax highlighter](http://highlightjs.org/) (must include highlight.js script).
 
 ```js
-	markedProvider.setOptions({
-      gfm: true,
-      tables: true,
-      highlight: function (code) {
+app.config(['markedProvider', function (markedProvider) {
+  markedProvider.setOptions({
+    gfm: true,
+    tables: true,
+    highlight: function (code, lang) {
+      if (lang) {
+        return hljs.highlight(lang, code, true).value;
+      } else {
         return hljs.highlightAuto(code).value;
       }
-    });
+    }
+  });
+}]);
+
 ```
 
-### As a directive
+### Override Rendered Markdown Links
+
+Example overriding the way custom markdown links are displayed to open in new windows:
+
+```js
+app.config(['markedProvider', function (markedProvider) {
+  markedProvider.setRenderer({
+    link: function(href, title, text) {
+      return "<a href='" + href + "'" + (title ? " title='" + title + "'" : '') + " target='_blank'>" + text + "</a>";
+    }
+  });
+}]);
+```
+
+### Use as a directive
 
 ```html
-	<marked>
-	     #Markdown directive
-	     *It works!*  
-	</marked>
+<marked>
+  # Markdown directive
+  *It works!*  
+</marked>
 ```
 
 Bind the markdown input to a scope variable:
 
 ```html
-	<div marked="my_markdown">
-	</div>
-	<!-- Uses $scope.my_markdown -->
+<div marked="my_markdown">
+</div>
+<!-- Uses $scope.my_markdown -->
 ```
 
 Include a markdown file:
 
 ```html
-	<div marked ng-include="'README.md'">
-	</div>
-	<!-- Uses markdown content from README.md -->
+<div marked src="'README.md'">
+</div>
+<!-- Uses markdown content from README.md -->
+```
+
+Or a template (great for md that includes code blocks):
+
+```html
+<script type="text/ng-template" id="tpl.md">
+  ## Markdown
+
+  **Code blocks**
+
+      This is <b>bold</b>
+
+  **Ampersands**
+
+  Star Trek & Star Wars
+</script>
+
+<div marked src="'tpl.md'"></div>
+<!-- Uses markdown content from tpl.md -->
 ```
 
 ### As a service
 
 ```js
-	app.controller('myCtrl', ['marked', function(marked) {
-	  $scope.html = marked('#TEST');
-	}]);
+app.controller('myCtrl', ['marked', function (marked) {
+  $scope.html = marked('#TEST');
+}]);
 ```
 
 ## Testing
 
 Install npm and bower dependencies:
 
-```bash
-	npm install
-	bower install
-	npm test
+```sh
+npm install
+bower install
+npm test
 ```
 
 ## Why?
@@ -84,7 +150,21 @@ I wanted to use `marked` instead of `showdown` as used in `angular-markdown-dire
 Based on [angular-markdown-directive](https://github.com/btford/angular-markdown-directive) by [briantford](http://briantford.com/) which, in turn, is based on [this excellent tutorial](http://blog.angularjs.org/2012/05/custom-components-part-1.html) by [@johnlinquist](https://twitter.com/johnlindquist).
 
 ## License
-Copyright (c) 2013 Jayson Harshbarger [![Gittip donate button](http://img.shields.io/gratipay/Hypercubed.svg)](https://www.gittip.com/hypercubed/ "Donate weekly to this project using Gittip")
-[![Paypal donate button](http://img.shields.io/badge/paypal-donate-brightgreen.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=X7KYR6T9U2NHC "One time donation to this project using Paypal")
+Copyright (c) 2013-2015 Jayson Harshbarger
 
-[MIT License](http://en.wikipedia.org/wiki/MIT_License)
+[MIT License]
+
+[npm]: https://npmjs.org/package/angular-marked
+[bower]: https://npmjs.org/package/angular-marked
+[semistandard]: https://github.com/Flet/semistandard
+[Codacy]: https://www.codacy.com/app/hypercubed/angular-marked
+[MIT License]: http://en.wikipedia.org/wiki/MIT_License
+[travis-url]: https://travis-ci.org/Hypercubed/angular-marked
+
+[travis-image]: https://img.shields.io/travis/Hypercubed/angular-marked.svg
+[npm-badge]: https://img.shields.io/npm/v/angular-marked.svg
+[bower-badge]: https://img.shields.io/bower/v/angular-marked.svg
+[standard-badge]: https://img.shields.io/badge/code%20style-semistandard-brightgreen.svg
+[download-badge]: http://img.shields.io/npm/dm/angular-marked.svg
+[codacy-badge]: https://api.codacy.com/project/badge/grade/eef9605446ce4555bebb1c55f7b93e2b
+[license-badge]: https://img.shields.io/badge/license-MIT-blue.svg

@@ -51,7 +51,8 @@ mica.admin
 
       $scope.refresh();
 
-      $scope.threadDump = function () {
+      $scope.threadDump = [];
+      $scope.dumpThread = function () {
         ThreadDumpService.dump().then(function (data) {
           $scope.threadDump = data;
           $scope.threadDumpRunnable = 0;

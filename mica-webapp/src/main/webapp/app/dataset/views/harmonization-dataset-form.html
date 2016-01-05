@@ -25,15 +25,13 @@
     <i class="fa fa-chevron-left"> </i>
   </a> {{'edit' | translate}}</h3>
 
-  <form name="form" role="form" novalidate
-      class="ng-scope ng-invalid ng-invalid-required ng-dirty" ng-submit="save()">
+  <form name="form" role="form" novalidate class="ng-scope ng-invalid ng-invalid-required ng-dirty" ng-submit="save()">
 
     <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
 
-    <tabset>
+    <uib-tabset>
 
-      <tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active"
-          disabled="tab.disabled">
+      <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active" disable="tab.disable">
 
         <div class="row">
           <div class="col-md-6">
@@ -46,20 +44,18 @@
 
               <p class="help-block" translate>dataset.data-schema.info</p>
 
-              <div form-input name="dataset.project" model="dataset['obiba.mica.HarmonizationDatasetDto.type'].project"
-                label="dataset.project" help="dataset.project-dataschema-help" required="true"></div>
+              <div form-input name="dataset.project" model="dataset['obiba.mica.HarmonizationDatasetDto.type'].project" label="dataset.project" help="dataset.project-dataschema-help" required="true"></div>
 
-              <div form-input name="dataset.table" model="dataset['obiba.mica.HarmonizationDatasetDto.type'].table"
-                label="dataset.table" help="dataset.table-dataschema-help" required="true"></div>
+              <div form-input name="dataset.table" model="dataset['obiba.mica.HarmonizationDatasetDto.type'].table" label="dataset.table" help="dataset.table-dataschema-help" required="true"></div>
             </div>
           </div>
         </div>
 
         <div ng-include="'app/dataset/views/harmonization-study-tables-form.html'"></div>
 
-      </tab>
+      </uib-tab>
 
-    </tabset>
+    </uib-tabset>
 
     <div class="voffset4">
       <button type="button" class="btn btn-default" ng-click="cancel()">

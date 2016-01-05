@@ -13,4 +13,13 @@
 mica.admin = angular.module('mica.admin', [
   'ui.bootstrap',
   'pascalprecht.translate'
-]);
+])
+.filter('threadDumpFilterX', function () {
+  return function (obj) {
+    console.log(obj);
+    return true;
+  };
+});
+
+
+

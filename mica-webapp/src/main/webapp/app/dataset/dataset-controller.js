@@ -194,7 +194,7 @@ mica.dataset
     '$log',
     '$locale',
     '$location',
-    '$modal',
+    '$uibModal',
     'HarmonizationDatasetResource',
     'DraftHarmonizationDatasetsResource',
     'HarmonizationDatasetPublicationResource',
@@ -208,7 +208,7 @@ mica.dataset
               $log,
               $locale,
               $location,
-              $modal,
+              $uibModal,
               HarmonizationDatasetResource,
               DraftHarmonizationDatasetsResource,
               HarmonizationDatasetPublicationResource,
@@ -250,7 +250,7 @@ mica.dataset
       };
 
       $scope.addStudyTable = function (tab) {
-        $modal
+        $uibModal
           .open({
             templateUrl: 'app/dataset/views/study-table-modal-form.html',
             controller: 'StudyTableModalController',
@@ -273,7 +273,7 @@ mica.dataset
       };
 
       $scope.editStudyTable = function (index, tab) {
-        $modal
+        $uibModal
           .open({
             templateUrl: 'app/dataset/views/study-table-modal-form.html',
             controller: 'StudyTableModalController',
@@ -608,8 +608,8 @@ mica.dataset
 
     }])
 
-  .controller('StudyTableModalController', ['$scope', '$modalInstance', '$log', 'MicaConfigResource', 'StudyStatesResource', 'StudyStateProjectsResource', 'studyTable', 'tab',
-    function ($scope, $modalInstance, $log, MicaConfigResource, StudyStatesResource, StudyStateProjectsResource, studyTable, tab) {
+  .controller('StudyTableModalController', ['$scope', '$uibModalInstance', '$log', 'MicaConfigResource', 'StudyStatesResource', 'StudyStateProjectsResource', 'studyTable', 'tab',
+    function ($scope, $uibModalInstance, $log, MicaConfigResource, StudyStatesResource, StudyStateProjectsResource, studyTable, tab) {
       $scope.studies = [];
       $scope.projects = [];
       $scope.selected = {};
@@ -679,7 +679,7 @@ mica.dataset
             table: $scope.selected.project.table
           });
 
-          $modalInstance.close($scope.studyTable);
+          $uibModalInstance.close($scope.studyTable);
           return;
         }
 
@@ -688,7 +688,7 @@ mica.dataset
       };
 
       $scope.cancel = function () {
-        $modalInstance.dismiss('cancel');
+        $uibModalInstance.dismiss('cancel');
       };
 
     }]);

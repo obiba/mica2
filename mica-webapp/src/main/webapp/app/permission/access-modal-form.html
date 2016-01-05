@@ -22,16 +22,13 @@
 
       <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
 
-      <div class="form-group"
-        ng-class="{'has-error': (form['type'].$dirty || form.saveAttempted) && form['type'].$invalid}">
+      <div class="form-group" ng-class="{'has-error': (form['type'].$dirty || form.saveAttempted) && form['type'].$invalid}">
         <label for="type" class="control-label"><span translate>type</span> <span>*</span></label>
-        <select id="type" name="type" class="form-control" ng-model="selectedType"
-          ng-options="type.label for type in TYPES" required="true">
+        <select id="type" name="type" class="form-control" ng-model="selectedType" ng-options="type.label for type in TYPES" required="true">
         </select>
       </div>
 
-      <div form-input name="principal" model="acl.principal"
-        label="permission.principal" help="access.principal-help"></div>
+      <div form-input name="principal" model="acl.principal" label="permission.principal" help="access.principal-help"></div>
 
       <div form-checkbox name="file" model="acl.file" label="permission.file-access"></div>
 

@@ -41,13 +41,10 @@
         <small>{{'publish.publication' | translate}}</small>
       </label>
       <div>
-        <span translate
-          translate-values="{ publicationDate: data.document.state.publicationDate, publishedBy: data.document.state.publishedBy }"
-          ng-if="data.document.state.publicationDate !== undefined">
+        <span translate translate-values="{ publicationDate: data.document.state.publicationDate, publishedBy: data.document.state.publishedBy }" ng-if="data.document.state.publicationDate !== undefined">
           publish.published-ago-by
         </span>
-        <span translate
-          ng-if="data.document.state.publicationDate === undefined">
+        <span translate ng-if="data.document.state.publicationDate === undefined">
           publish.not-published
         </span>
       </div>
@@ -56,9 +53,7 @@
           <li>
             <i class="fa fa-unlock-alt"></i>
           </li>
-          <li ng-repeat="access in data.accesses"
-            class="label {{access.type === 'USER' ? 'label-success' : 'label-warning'}} hoffset1"
-            title="{{'permission.' + access.type.toLowerCase() | translate}}">
+          <li ng-repeat="access in data.accesses" class="label {{access.type === 'USER' ? 'label-success' : 'label-warning'}} hoffset1" title="{{'permission.' + access.type.toLowerCase() | translate}}">
             <em ng-if="access.principal === '*'" translate>
               {{access.type === 'USER' ? 'permission.anyone' : 'permission.any-group'}}
             </em>
@@ -76,8 +71,7 @@
         <div ng-if="data.document.permissions.publish && data.addAccess" class="panel panel-default">
           <div class="panel-body">
             <form name="form" role="form" novalidate>
-              <select id="type" name="type" class="form-control" ng-model="data.access.type"
-                ng-options="type.label for type in ACCESS_TYPES" required="true">
+              <select id="type" name="type" class="form-control" ng-model="data.access.type" ng-options="type.label for type in ACCESS_TYPES" required="true">
               </select>
               <div form-input name="principal" model="data.access.principal" placeholder="permission.principal-help"></div>
                 <span class="editable-buttons">
@@ -98,20 +92,16 @@
       <label class="text-muted no-margin">
         <small>{{'type' | translate}}</small>
       </label>
-      <div editable-text="data.document.state.attachment.type"
-        e-form="buttonChangeType"
-        onbeforesave="updateDocumentType(data.document, $data)">
+      <div editable-text="data.document.state.attachment.type" e-form="buttonChangeType" onbeforesave="updateDocumentType(data.document, $data)">
         {{data.document.state.attachment.type || 'empty'}}
-        <span class="hoffset1" ng-if="data.document.permissions.edit && data.document.revisionStatus === 'DRAFT'"><a
-          href ng-click="buttonChangeType.$show()" ng-hide="buttonChangeType.$visible">
+        <span class="hoffset1" ng-if="data.document.permissions.edit && data.document.revisionStatus === 'DRAFT'"><a href ng-click="buttonChangeType.$show()" ng-hide="buttonChangeType.$visible">
           <i class="fa fa-pencil"></i></a>
         </span>
       </div>
 
       <!-- TODO create a directive (see MK-568) -->
-      <tabset class="voffset2">
-        <tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active"
-          disabled="tab.disabled">
+      <uib-tabset class="voffset2">
+        <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active" disable="tab.disable">
 
           <div class="voffset">
             <label class="text-muted no-margin">
@@ -122,19 +112,15 @@
               <label ng-if="!getLocalizedValue(data.document.state.attachment.description, tab.lang)">
                 <span class="text-danger"><em>empty</em></span>
               </label>
-              <localized ng-if="getLocalizedValue(data.document.state.attachment.description, tab.lang)"
-                value="data.document.state.attachment.description" lang="tab.lang"></localized>
-              <a ng-if="data.document.permissions.edit && data.document.revisionStatus === 'DRAFT'"
-                ng-click="data.editDescField = true"
-                ng-hide="buttonChangeType.$visible && data.document.revisionStatus !== DRAFT">
+              <localized ng-if="getLocalizedValue(data.document.state.attachment.description, tab.lang)" value="data.document.state.attachment.description" lang="tab.lang"></localized>
+              <a ng-if="data.document.permissions.edit && data.document.revisionStatus === 'DRAFT'" ng-click="data.editDescField = true" ng-hide="buttonChangeType.$visible && data.document.revisionStatus !== DRAFT">
                 <i class="fa fa-pencil"></i>
               </a>
             </div>
 
             <div ng-if="data.editDescField">
               <form name="form" role="form" novalidate>
-                <div localized-textarea name="description" model="data.document.state.attachment.description"
-                  lang="tab.lang"></div>
+                <div localized-textarea name="description" model="data.document.state.attachment.description" lang="tab.lang"></div>
                 <span class="editable-buttons">
                   <button ng-click="updateDocumentDescription(data.document)" class="btn btn-primary">
                     <span class="glyphicon glyphicon-ok"></span>
@@ -146,8 +132,8 @@
               </form>
             </div>
           </div>
-        </tab>
-      </tabset>
+        </uib-tab>
+      </uib-tabset>
     </div>
   </div>
 </div>

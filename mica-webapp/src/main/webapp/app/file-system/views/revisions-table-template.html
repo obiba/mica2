@@ -15,8 +15,7 @@
           <span class="ellipsis pull-left" title="{{revision.id}}">
             {{revision.id}}
           </span>
-          <i class="fa fa-star pull-left" ng-if="data.document.state.publishedId === revision.id"
-            title="{{'publish.published' | translate}} ({{data.document.state.publicationDate | amDateFormat : 'lll'}} [{{data.document.state.publishedBy}}])"></i>
+          <i class="fa fa-star pull-left" ng-if="data.document.state.publishedId === revision.id" title="{{'publish.published' | translate}} ({{data.document.state.publicationDate | amDateFormat : 'lll'}} [{{data.document.state.publishedBy}}])"></i>
         </td>
         <td>
           {{revision.timestamps.created | amDateFormat : 'lll'}}
@@ -28,12 +27,11 @@
           <ul class="list-inline pull-right">
             <li ng-show="!$first && data.document.revisionStatus === 'DRAFT'">
               <a href ng-click="restoreRevision(revision)">
-                <span><i class="fa fa-undo"></i> {{restore | translate}}</span></i>
+                <span><i class="fa fa-undo"></i> {{restore | translate}}</span>
               </a>
             </li>
             <li>
-              <a target="_self" ng-href="ws/draft/file-dl/{{data.document.path}}?version={{revision.id}}"><i
-                class="fa fa-download"></i></a>
+              <a target="_self" ng-href="ws/draft/file-dl/{{data.document.path}}?version={{revision.id}}"><i class="fa fa-download"></i></a>
             </li>
           </ul>
         </td>

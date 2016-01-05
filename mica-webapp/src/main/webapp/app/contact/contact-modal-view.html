@@ -7,8 +7,8 @@
 
   <div class="modal-body">
 
-    <tabset>
-      <tab ng-repeat="tab in tabs" heading="{{tab.labelKey | translate}}" active="tab.active" disabled="tab.disabled">
+    <uib-tabset>
+      <uib-tab ng-repeat="tab in tabs" heading="{{tab.labelKey | translate}}" active="tab.active" disable="tab.disable">
 
       <table class="table table-bordered table-striped">
           <tbody>
@@ -30,22 +30,22 @@
               <address>
                 <strong ng-show="contact.institution.name.length">
                   <localized value="contact.institution.name" lang="tab.lang"></localized>
-                  <br/>
+                  <br>
                 </strong>
             <span ng-show="contact.institution.department.length">
               <localized value="contact.institution.department" lang="tab.lang"></localized>
-              <br/>
+              <br>
             </span>
             <span ng-show="contact.institution.address && contact.institution.address.street.length">
               <localized value="contact.institution.address.street" lang="tab.lang"></localized>
-              <br/>
+              <br>
             </span>
             <span ng-show="contact.institution.address
                 && (contact.institution.address.city.length || contact.institution.address.zip || contact.institution.address.state)">
               <localized value="contact.institution.address.city" lang="tab.lang"></localized>,
               {{contact.institution.address.state}},
               {{contact.institution.address.zip}}
-              <br/>
+              <br>
             </span>
             <span ng-show="contact.institution.address && contact.institution.address.country
                 && contact.institution.address.country.name.length">
@@ -57,8 +57,8 @@
           </tbody>
         </table>
 
-      </tab>
-    </tabset>
+      </uib-tab>
+    </uib-tabset>
 
   </div>
 

@@ -9,10 +9,10 @@
     <li ng-class="{'active': tabName === 'files'}">
       <a href="#/network/{{network.id}}/files" title="{{'files' | translate}}"><i class="fa fa-file"></i></a>
     </li>
-    <li  ng-class="{'active': tabName === 'comments'}">
+    <li ng-class="{'active': tabName === 'comments'}">
       <a href="#/network/{{network.id}}/comments" title="{{'comments' | translate}}"><i class="fa fa-comments"></i></a>
     </li>
-    <li  ng-class="{'active': tabName === 'permissions'}" ng-if="network['obiba.mica.EntityStateDto.state'].permissions.publish">
+    <li ng-class="{'active': tabName === 'permissions'}" ng-if="network['obiba.mica.EntityStateDto.state'].permissions.publish">
       <a href="#/network/{{network.id}}/permissions" title="{{'permissions' | translate}}"><i class="fa fa-lock"></i></a>
     </li>
   </ul>

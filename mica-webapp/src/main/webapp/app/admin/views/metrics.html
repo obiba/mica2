@@ -5,7 +5,7 @@
       <li class="active" translate>metrics.title</li>
     </ol>
   </h2>
-
+  <!--<p>threadDump&nbsp;{{threadDump}}</p>-->
   <p>
     <button type="button" class="btn btn-primary" ng-click="refresh()"><span class="glyphicon glyphicon-refresh"></span>&nbsp;{{'metrics.refresh.button'
       | translate}}
@@ -22,11 +22,7 @@
         number:0}}M / {{metrics.gauges['jvm.memory.total.max'].value / 1000000 | number:0}}M)</p>
 
       <div class="progress progress-striped">
-        <div class="progress-bar progress-bar-success" role="progressbar"
-            aria-valuenow="{{metrics.gauges['jvm.memory.total.used'].value / 1000000 | number:0}}"
-            aria-valuemin="0"
-            aria-valuemax="{{metrics.gauges['jvm.memory.total.max'].value / 1000000 | number:0}}"
-            style="width: {{metrics.gauges['jvm.memory.total.used'].value * 100 / metrics.gauges['jvm.memory.total.max'].value  | number:0}}%">
+        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{metrics.gauges['jvm.memory.total.used'].value / 1000000 | number:0}}" aria-valuemin="0" aria-valuemax="{{metrics.gauges['jvm.memory.total.max'].value / 1000000 | number:0}}" style="width: {{metrics.gauges['jvm.memory.total.used'].value * 100 / metrics.gauges['jvm.memory.total.max'].value  | number:0}}%">
           {{metrics.gauges['jvm.memory.total.used'].value * 100 / metrics.gauges['jvm.memory.total.max'].value |
           number:0}}%
         </div>
@@ -36,11 +32,7 @@
         / {{metrics.gauges['jvm.memory.heap.max'].value / 1000000 | number:0}}M)</p>
 
       <div class="progress progress-striped">
-        <div class="progress-bar progress-bar-success" role="progressbar"
-            aria-valuenow="{{metrics.gauges['jvm.memory.heap.used'].value / 1000000 | number:0}}"
-            aria-valuemin="0"
-            aria-valuemax="{{metrics.gauges['jvm.memory.heap.max'].value / 1000000 | number:0}}"
-            style="width: {{metrics.gauges['jvm.memory.heap.usage'].value * 100 | number:0}}%">
+        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{metrics.gauges['jvm.memory.heap.used'].value / 1000000 | number:0}}" aria-valuemin="0" aria-valuemax="{{metrics.gauges['jvm.memory.heap.max'].value / 1000000 | number:0}}" style="width: {{metrics.gauges['jvm.memory.heap.usage'].value * 100 | number:0}}%">
           {{(metrics.gauges['jvm.memory.heap.usage'].value * 100 | number:0)}}%
         </div>
       </div>
@@ -48,28 +40,18 @@
         number:0}}M / {{metrics.gauges['jvm.memory.non-heap.max'].value / 1000000 | number:0}}M)</p>
 
       <div class="progress progress-striped">
-        <div class="progress-bar progress-bar-success" role="progressbar"
-            aria-valuenow="{{metrics.gauges['jvm.memory.non-heap.used'].value / 1000000 | number:0}}"
-            aria-valuemin="0"
-            aria-valuemax="{{metrics.gauges['jvm.memory.non-heap.max'].value / 1000000 | number:0}}"
-            style="width: {{metrics.gauges['jvm.memory.non-heap.usage'].value * 100 | number:0}}%">
+        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{metrics.gauges['jvm.memory.non-heap.used'].value / 1000000 | number:0}}" aria-valuemin="0" aria-valuemax="{{metrics.gauges['jvm.memory.non-heap.max'].value / 1000000 | number:0}}" style="width: {{metrics.gauges['jvm.memory.non-heap.usage'].value * 100 | number:0}}%">
           {{(metrics.gauges['jvm.memory.non-heap.usage'].value * 100 | number:0)}}%
         </div>
       </div>
     </div>
     <div class="col-md-4">
-      <b translate="metrics.jvm.threads.title">Threads</b> (Total: {{metrics.gauges['jvm.threads.count'].value}}) <a
-        class="hand" ng-click="threadDump()" data-toggle="modal" data-target="#threadDump"><i
-        class="glyphicon glyphicon-eye-open"></i></a>
+      <b translate="metrics.jvm.threads.title">Threads</b> (Total: {{metrics.gauges['jvm.threads.count'].value}}) <a class="hand" ng-click="dumpThread()" data-toggle="modal" data-target="#threadDump"><i class="glyphicon glyphicon-eye-open"></i></a>
 
       <p>{{'metrics.jvm.threads.runnable' | translate}} {{metrics.gauges['jvm.threads.runnable.count'].value}}</p>
 
       <div class="progress progress-striped">
-        <div class="progress-bar progress-bar-success" role="progressbar"
-            aria-valuenow="{{metrics.gauges['jvm.threads.runnable.count'].value}}"
-            aria-valuemin="0"
-            aria-valuemax="{{metrics.gauges['jvm.threads.count'].value}}"
-            style="width: {{metrics.gauges['jvm.threads.runnable.count'].value * 100 / metrics.gauges['jvm.threads.count'].value | number:0}}%">
+        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{metrics.gauges['jvm.threads.runnable.count'].value}}" aria-valuemin="0" aria-valuemax="{{metrics.gauges['jvm.threads.count'].value}}" style="width: {{metrics.gauges['jvm.threads.runnable.count'].value * 100 / metrics.gauges['jvm.threads.count'].value | number:0}}%">
           {{metrics.gauges['jvm.threads.runnable.count'].value * 100 / metrics.gauges['jvm.threads.count'].value |
           number:0}}%
         </div>
@@ -78,11 +60,7 @@
         ({{metrics.gauges['jvm.threads.timed_waiting.count'].value}})</p>
 
       <div class="progress progress-striped">
-        <div class="progress-bar progress-bar-warning" role="progressbar"
-            aria-valuenow="{{metrics.gauges['jvm.threads.timed_waiting.count'].value}}"
-            aria-valuemin="0"
-            aria-valuemax="{{metrics.gauges['jvm.threads.count'].value}}"
-            style="width: {{metrics.gauges['jvm.threads.timed_waiting.count'].value * 100 / metrics.gauges['jvm.threads.count'].value | number:0}}%">
+        <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="{{metrics.gauges['jvm.threads.timed_waiting.count'].value}}" aria-valuemin="0" aria-valuemax="{{metrics.gauges['jvm.threads.count'].value}}" style="width: {{metrics.gauges['jvm.threads.timed_waiting.count'].value * 100 / metrics.gauges['jvm.threads.count'].value | number:0}}%">
           {{metrics.gauges['jvm.threads.timed_waiting.count'].value * 100 / metrics.gauges['jvm.threads.count'].value |
           number:0}}%
         </div>
@@ -90,11 +68,7 @@
       <p>{{'metrics.jvm.threads.waiting' | translate}} ({{metrics.gauges['jvm.threads.waiting.count'].value}})</p>
 
       <div class="progress progress-striped">
-        <div class="progress-bar progress-bar-warning" role="progressbar"
-            aria-valuenow="{{metrics.gauges['jvm.threads.waiting.count'].value}}"
-            aria-valuemin="0"
-            aria-valuemax="{{metrics.gauges['jvm.threads.count'].value}}"
-            style="width: {{metrics.gauges['jvm.threads.waiting.count'].value * 100 / metrics.gauges['jvm.threads.count'].value | number:0}}%">
+        <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="{{metrics.gauges['jvm.threads.waiting.count'].value}}" aria-valuemin="0" aria-valuemax="{{metrics.gauges['jvm.threads.count'].value}}" style="width: {{metrics.gauges['jvm.threads.waiting.count'].value * 100 / metrics.gauges['jvm.threads.count'].value | number:0}}%">
           {{metrics.gauges['jvm.threads.waiting.count'].value * 100 / metrics.gauges['jvm.threads.count'].value |
           number:0}}%
         </div>
@@ -102,11 +76,7 @@
       <p>{{'metrics.jvm.threads.blocked' | translate}} ({{metrics.gauges['jvm.threads.blocked.count'].value}})</p>
 
       <div class="progress progress-striped">
-        <div class="progress-bar progress-bar-danger" role="progressbar"
-            aria-valuenow="{{metrics.gauges['jvm.threads.blocked.count'].value}}"
-            aria-valuemin="0"
-            aria-valuemax="{{metrics.gauges['jvm.threads.count'].value}}"
-            style="width: {{metrics.gauges['jvm.threads.blocked.count'].value * 100 / metrics.gauges['jvm.threads.count'].value | number:0}}%">
+        <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="{{metrics.gauges['jvm.threads.blocked.count'].value}}" aria-valuemin="0" aria-valuemax="{{metrics.gauges['jvm.threads.count'].value}}" style="width: {{metrics.gauges['jvm.threads.blocked.count'].value * 100 / metrics.gauges['jvm.threads.count'].value | number:0}}%">
           {{metrics.gauges['jvm.threads.blocked.count'].value * 100 / metrics.gauges['jvm.threads.count'].value |
           number:0}}%
         </div>
@@ -157,14 +127,10 @@
         <td translate="metrics.jvm.http.code.ok">OK</td>
         <td>
           <div class="progress progress-striped">
-            <div class="progress-bar progress-bar-success" role="progressbar"
-                aria-valuenow="{{metrics.meters['com.codahale.metrics.servlet.AbstractInstrumentedFilter.responseCodes.ok'].count * 100 / metrics.timers['com.codahale.metrics.servlet.AbstractInstrumentedFilter.requests'].count}}"
-                aria-valuemin="0"
-                aria-valuemax="{{metrics.timers['com.codahale.metrics.servlet.AbstractInstrumentedFilter.requests'].count}}"
-                style="width: {{(metrics.meters['com.codahale.metrics.servlet.AbstractInstrumentedFilter.responseCodes.ok'].count * 100 / metrics.timers['com.codahale.metrics.servlet.AbstractInstrumentedFilter.requests'].count) | number:0}}%">
+            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="{{metrics.meters['com.codahale.metrics.servlet.AbstractInstrumentedFilter.responseCodes.ok'].count * 100 / metrics.timers['com.codahale.metrics.servlet.AbstractInstrumentedFilter.requests'].count}}" aria-valuemin="0" aria-valuemax="{{metrics.timers['com.codahale.metrics.servlet.AbstractInstrumentedFilter.requests'].count}}" style="width: {{(metrics.meters['com.codahale.metrics.servlet.AbstractInstrumentedFilter.responseCodes.ok'].count * 100 / metrics.timers['com.codahale.metrics.servlet.AbstractInstrumentedFilter.requests'].count) | number:0}}%">
               {{metrics.meters['com.codahale.metrics.servlet.AbstractInstrumentedFilter.responseCodes.ok'].count}}
             </div>
-        </td>
+        </div></td>
         <td>
           {{metrics.meters['com.codahale.metrics.servlet.AbstractInstrumentedFilter.responseCodes.ok'].mean_rate |
           number:2}}
@@ -184,14 +150,10 @@
         <td translate="metrics.jvm.http.code.notfound">Not Found</td>
         <td>
           <div class="progress progress-striped">
-            <div class="progress-bar progress-bar-warning" role="progressbar"
-                aria-valuenow="{{metrics.meters['com.codahale.metrics.servlet.AbstractInstrumentedFilter.responseCodes.notFound'].count * 100 / metrics.timers['com.codahale.metrics.servlet.AbstractInstrumentedFilter.requests'].count}}"
-                aria-valuemin="0"
-                aria-valuemax="{{metrics.timers['com.codahale.metrics.servlet.AbstractInstrumentedFilter.requests'].count}}"
-                style="width:{{(metrics.meters['com.codahale.metrics.servlet.AbstractInstrumentedFilter.responseCodes.notFound'].count * 100 / metrics.timers['com.codahale.metrics.servlet.AbstractInstrumentedFilter.requests'].count) | number:0}}%">
+            <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="{{metrics.meters['com.codahale.metrics.servlet.AbstractInstrumentedFilter.responseCodes.notFound'].count * 100 / metrics.timers['com.codahale.metrics.servlet.AbstractInstrumentedFilter.requests'].count}}" aria-valuemin="0" aria-valuemax="{{metrics.timers['com.codahale.metrics.servlet.AbstractInstrumentedFilter.requests'].count}}" style="width:{{(metrics.meters['com.codahale.metrics.servlet.AbstractInstrumentedFilter.responseCodes.notFound'].count * 100 / metrics.timers['com.codahale.metrics.servlet.AbstractInstrumentedFilter.requests'].count) | number:0}}%">
               {{metrics.meters['com.codahale.metrics.servlet.AbstractInstrumentedFilter.responseCodes.notFound'].count}}
             </div>
-        </td>
+        </div></td>
         <td>
           {{metrics.meters['com.codahale.metrics.servlet.AbstractInstrumentedFilter.responseCodes.notFound'].mean_rate |
           number:2}}
@@ -213,14 +175,10 @@
         <td translate="metrics.jvm.http.code.servererror">Server error</td>
         <td>
           <div class="progress progress-striped">
-            <div class="progress-bar progress-bar-danger" role="progressbar"
-                aria-valuenow="{{metrics.meters['com.codahale.metrics.servlet.AbstractInstrumentedFilter.responseCodes.serverError'].count * 100 / metrics.timers['com.codahale.metrics.servlet.AbstractInstrumentedFilter.requests'].count}}"
-                aria-valuemin="0"
-                aria-valuemax="{{metrics.timers['com.codahale.metrics.servlet.AbstractInstrumentedFilter.requests'].count}}"
-                style="width:{{(metrics.meters['com.codahale.metrics.servlet.AbstractInstrumentedFilter.responseCodes.serverError'].count * 100 / metrics.timers['com.codahale.metrics.servlet.AbstractInstrumentedFilter.requests'].count) | number:0}}%">
+            <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="{{metrics.meters['com.codahale.metrics.servlet.AbstractInstrumentedFilter.responseCodes.serverError'].count * 100 / metrics.timers['com.codahale.metrics.servlet.AbstractInstrumentedFilter.requests'].count}}" aria-valuemin="0" aria-valuemax="{{metrics.timers['com.codahale.metrics.servlet.AbstractInstrumentedFilter.requests'].count}}" style="width:{{(metrics.meters['com.codahale.metrics.servlet.AbstractInstrumentedFilter.responseCodes.serverError'].count * 100 / metrics.timers['com.codahale.metrics.servlet.AbstractInstrumentedFilter.requests'].count) | number:0}}%">
               {{metrics.meters['com.codahale.metrics.servlet.AbstractInstrumentedFilter.responseCodes.serverError'].count}}
             </div>
-        </td>
+        </div></td>
         <td>
           {{metrics.meters['com.codahale.metrics.servlet.AbstractInstrumentedFilter.responseCodes.serverError'].mean_rate
           | number:2}}
@@ -316,16 +274,11 @@
         <h4 class="modal-title" id="myModalLabel" translate="metrics.jvm.threads.dump.title">Threads dump</h4>
       </div>
       <div class="modal-body well">
-        <span class="label label-primary" ng-click="threadDumpFilter = {}">{{'metrics.jvm.threads.all' | translate}}&nbsp;<span
-            class="badge">{{threadDumpAll}}</span></span>&nbsp;
-        <span class="label label-success" ng-click="threadDumpFilter = {threadState: 'RUNNABLE'}">{{'metrics.jvm.threads.waiting' | translate}}&nbsp;<span
-            class="badge">{{threadDumpRunnable}}</span></span>&nbsp;
-        <span class="label label-info" ng-click="threadDumpFilter = {threadState: 'WAITING'}">{{'metrics.jvm.threads.waiting' | translate}}&nbsp;<span
-            class="badge">{{threadDumpWaiting}}</span></span>&nbsp;
-        <span class="label label-warning" ng-click="threadDumpFilter = {threadState: 'TIMED_WAITING'}">{{'metrics.jvm.threads.timedwaiting' | translate}}&nbsp;<span
-            class="badge">{{threadDumpTimedWaiting}}</span></span>&nbsp;
-        <span class="label label-danger" ng-click="threadDumpFilter = {threadState: 'BLOCKED'}">{{'metrics.jvm.threads.blocked' | translate}}&nbsp;<span
-            class="badge">{{threadDumpBlocked}}</span></span>&nbsp;
+        <span class="label label-primary hand" ng-click="threadDumpFilter = {}">{{'metrics.jvm.threads.all' | translate}}&nbsp;<span class="badge">{{threadDumpAll}}</span></span>&nbsp;
+        <span class="label label-success hand" ng-click="threadDumpFilter = {threadState: 'RUNNABLE'}">{{'metrics.jvm.threads.waiting' | translate}}&nbsp;<span class="badge">{{threadDumpRunnable}}</span></span>&nbsp;
+        <span class="label label-info hand" ng-click="threadDumpFilter = {threadState: 'WAITING'}">{{'metrics.jvm.threads.waiting' | translate}}&nbsp;<span class="badge">{{threadDumpWaiting}}</span></span>&nbsp;
+        <span class="label label-warning hand" ng-click="threadDumpFilter = {threadState: 'TIMED_WAITING'}">{{'metrics.jvm.threads.timedwaiting' | translate}}&nbsp;<span class="badge">{{threadDumpTimedWaiting}}</span></span>&nbsp;
+        <span class="label label-danger hand" ng-click="threadDumpFilter = {threadState: 'BLOCKED'}">{{'metrics.jvm.threads.blocked' | translate}}&nbsp;<span class="badge">{{threadDumpBlocked}}</span></span>&nbsp;
         <div class="voffset2">&nbsp;</div>
         <div class="row" ng-repeat="(k, v) in threadDump | filter:threadDumpFilter">
           <h5><span class="label" ng-class="getLabelClass(v.threadState)">&nbsp;</span>&nbsp;{{v.threadName}}

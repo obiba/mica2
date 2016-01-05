@@ -369,7 +369,7 @@ angular.module('obiba.mica.access')
     '$scope',
     '$routeParams',
     '$location',
-    '$modal',
+    '$uibModal',
     'DataAccessRequestsResource',
     'DataAccessRequestResource',
     'DataAccessFormConfigResource',
@@ -381,7 +381,7 @@ angular.module('obiba.mica.access')
     'ngObibaMicaAccessTemplateUrl',
     'DataAccessRequestConfig',
 
-    function ($log, $scope, $routeParams, $location, $modal,
+    function ($log, $scope, $routeParams, $location, $uibModal,
               DataAccessRequestsResource,
               DataAccessRequestResource,
               DataAccessFormConfigResource,
@@ -409,7 +409,7 @@ angular.module('obiba.mica.access')
       var validate = function() {
         $scope.$broadcast('schemaFormValidate');
 
-        $modal.open({
+        $uibModal.open({
           scope: $scope,
           templateUrl: 'access/views/data-access-request-validation-modal.html',
         });

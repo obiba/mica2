@@ -5,14 +5,12 @@
     <i class="fa fa-chevron-left"> </i>
   </a> {{'edit' | translate}}</h3>
 
-  <form name="form" role="form" novalidate
-    class="ng-scope ng-invalid ng-invalid-required ng-dirty" ng-submit="save()">
+  <form name="form" role="form" novalidate class="ng-scope ng-invalid ng-invalid-required ng-dirty" ng-submit="save()">
 
     <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
 
-    <tabset>
-      <tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active"
-        disabled="tab.disabled">
+    <uib-tabset>
+      <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active" disable="tab.disabled">
 
 
         <div class="row">
@@ -48,13 +46,12 @@
         <!--TODO -->
         <!--<div ng-include="'app/study/views/study-supplementary-info-form.html'"></div>-->
 
-      </tab>
-    </tabset>
+      </uib-tab>
+    </uib-tabset>
 
     <div class="row">
       <div class="col-md-6">
-        <input class="form-control" ng-model="revision.comment"
-          placeholder="{{'study.revision.update-comment' | translate}}" type="text">
+        <input class="form-control" ng-model="revision.comment" placeholder="{{'study.revision.update-comment' | translate}}" type="text">
         <div class="voffset1">
           <button type="button" class="btn btn-default" ng-click="cancel()">
             <span translate>cancel</span>

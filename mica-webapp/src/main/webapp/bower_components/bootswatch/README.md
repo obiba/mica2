@@ -1,15 +1,20 @@
 Bootswatch
 ==========
 
-Bootswatch is a collection of free themes for [Bootstrap](http://getbootstrap.com/). Check it out at [bootswatch.com](http://bootswatch.com).
+[![Bootswatch Logo](./assets/img/logo-dark.png)](http://bootswatch.com)
+
+Bootswatch is a collection of open source themes for [Bootstrap](http://getbootstrap.com/). Check it out at [bootswatch.com](http://bootswatch.com).
 
 Usage
 -----
 Download the `bootstrap.min.css` file associated with a theme and replace Bootstrap's default stylesheet.
 
-The themes are also hosted on [BootstrapCDN](http://www.bootstrapcdn.com/).
+The themes are also hosted on [BootstrapCDN](http://www.bootstrapcdn.com/bootswatch/).
 
-Rails users should check out [twitter-bootswatch-rails](https://github.com/scottvrosenthal/twitter-bootswatch-rails).
+ Rails users should check out:
+
+* [twitter-bootswatch-rails](https://github.com/scottvrosenthal/twitter-bootswatch-rails) if using _LESS_.
+* [bootswatch-rails](https://github.com/maxim/bootswatch-rails) if using _SASS_.
 
 
 Customization
@@ -25,11 +30,19 @@ Check out the [Help page](http://bootswatch.com/help/) for more details on build
 API
 -----
 
-A simple API is available for integrating your platform with Bootswatch. Send your request to `http://api.bootswatch.com/3/`.
+A simple API is available for integrating your platform with Bootswatch. More info at http://bootswatch.com/help/#api
 
-The swatch objects are returned in an array called `themes`, each one with the following properties:  `name`, `description`, `preview`, `thumbnail`, `css`, `cssMin`, `less`, and `lessVariables`.
+Contributing
+-----
+It's through your contributions that Bootswatch will continue to improve. You can contribute in several ways.
 
-More info at http://bootswatch.com/help/#api
+**Issues:** Provide a detailed report of any bugs you encounter and open an issue on [GitHub](https://github.com/thomaspark/bootswatch/issues).
+
+**Documentation:** If you'd like to fix a typo or beef up the docs, you can fork the project, make your changes, and submit a pull request.
+
+**Code:** Make a fix and submit it as a pull request. When making changes, it's important to keep the CSS, LESS and SASS versions in sync. To do this, be sure to edit the LESS source files for the particular theme, then run the  tasks `grunt swatch` and `grunt:convert_less` to build the CSS and LESS.
+
+**Donation:** Donations are gratefully accepted via [PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=F22JEM3Q78JC2) and [Gratipay](https://gratipay.com/bootswatch/).
 
 Author
 ------
@@ -40,7 +53,7 @@ Thomas Park
 
 Thanks
 ------
-[Mark Otto](https://github.com/markdotto) and [Jacob Thornton](https://github.com/fat) for [Bootstrap](https://github.com/twitter/bootstrap).
+[Mark Otto](https://github.com/mdo) and [Jacob Thornton](https://github.com/fat) for [Bootstrap](https://github.com/twbs/bootstrap).
 
 [Jenil Gogari](http://www.jgog.in/) for his contributions to the Flatly theme.
 

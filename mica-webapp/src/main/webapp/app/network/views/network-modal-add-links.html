@@ -45,7 +45,7 @@
           <tbody>
             <tr dir-paginate="entity in entities | filter:searchText | itemsPerPage: 10" pagination-id="entitiesSelection">
               <td>
-                <input type="checkbox" ng-model="entity.selected"/>
+                <input type="checkbox" ng-model="entity.selected">
               </td>
               <td>
                 <localized value="entity.acronym" lang="lang"></localized>
