@@ -1,23 +1,15 @@
 <h3 translate>study.general-info</h3>
 
-<div localized-input name="study.name" model="study.name" label="study.name" lang="tab.lang" required="true"
-  help="study.name-help"></div>
+<div localized-input name="study.name" model="study.name" label="study.name" lang="tab.lang" required="true" help="study.name-help"></div>
 
-<div localized-input name="study.acronym" model="study.acronym" label="study.acronym" lang="tab.lang" required="true"
-  help="study.acronym-help"></div>
+<div localized-input name="study.acronym" model="study.acronym" label="study.acronym" lang="tab.lang" required="true" help="study.acronym-help"></div>
 
-<div localized-textarea name="study.objectives" model="study.objectives" label="study.objectives" lang="tab.lang"
-  required="true" help="study.objectives-help"></div>
-<div form-input name="study.startYear" model="study.startYear" type="number" label="study.start-year"
-  min="{{defaultMinYear}}" max="{{defaultMaxYear}}"></div>
+<div localized-textarea name="study.objectives" model="study.objectives" label="study.objectives" lang="tab.lang" required="true" help="study.objectives-help"></div>
+<div form-input name="study.startYear" model="study.startYear" type="number" label="study.start-year" min="{{defaultMinYear}}" max="{{defaultMaxYear}}"></div>
 
-<div form-input name="study.endYear" model="study.endYear" type="number" label="study.end-year" min="{{defaultMinYear}}"
-  max="{{defaultMaxYear}}"></div>
+<div form-input name="study.endYear" model="study.endYear" type="number" label="study.end-year" min="{{defaultMinYear}}" max="{{defaultMaxYear}}"></div>
 
 <div form-input name="study.website" model="study.website" type="url" label="study.website"></div>
 
 <label class="control-label" translate>logo</label>
-<attachment-input files="files" accept="image/*"/>
-
-
-
+<attachment-input files="files" accept="image/*">

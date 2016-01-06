@@ -1,7 +1,5 @@
 <div ng-controller="NetworkPermissionsController">
   <div ng-include="'app/network/views/network-view-header.html'" ng-init="tabName='permissions'"></div>
   <h3 translate>permissions</h3>
-  <permissions-table permissions="permissions" accesses="accesses" open-access="openAccess"
-    on-add="addPermission" on-load="loadPermissions" on-delete="deletePermission"
-    on-access-add="addAccess" on-access-load="loadAccesses" on-access-delete="deleteAccess"></permissions-table>
+  <permissions-table permissions="permissions" accesses="accesses" open-access="openAccess" on-add="addPermission" on-load="loadPermissions" on-delete="deletePermission" on-access-add="addAccess" on-access-load="loadAccesses" on-access-delete="deleteAccess"></permissions-table>
 </div>

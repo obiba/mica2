@@ -114,7 +114,7 @@ angular.module('mgcrea.ngStrap.helpers.dateParser', [])
         'M'     : function(value) { return this.setMonth(1 * value - 1); },
         'yyyy'  : proto.setFullYear,
         'yy'    : function(value) { return this.setFullYear(2000 + 1 * value); },
-        'y'     : proto.setFullYear
+        'y'     : function(value) { return (1 * value <= 50 && value.length === 2) ? this.setFullYear(2000 + 1 * value) : this.setFullYear(1 * value); }
       };
 
       var regex, setMap;
@@ -228,48 +228,94 @@ angular.module('mgcrea.ngStrap.helpers.dateParser', [])
 
       // Private functions
 
-      function setMapForFormat(format) {
-        var keys = Object.keys(setFnMap), i;
-        var map = [], sortedMap = [];
-        // Map to setFn
-        var clonedFormat = format;
-        for(i = 0; i < keys.length; i++) {
-          if(format.split(keys[i]).length > 1) {
-            var index = clonedFormat.search(keys[i]);
-            format = format.split(keys[i]).join('');
-            if(setFnMap[keys[i]]) {
-              map[index] = setFnMap[keys[i]];
+      function regExpForFormat(format) {
+        // `format` string can contain literal values.
+        // These need to be escaped by surrounding with
+        // single quotes (e.g. `"h 'in the morning'"`).
+        // In order to output a single quote, escape it - i.e.,
+        // two single quotes in a sequence (e.g. `"h 'o''clock'"`).
+
+        var re = buildDateAbstractRegex(format);
+        return buildDateParseRegex(re);
+      }
+
+      function buildDateAbstractRegex(format) {
+        var escapedFormat = escapeReservedSymbols(format);
+        var escapedLiteralFormat = escapedFormat.replace(/''/g, '\\\'');
+        var literalRegex = /('(?:\\'|.)*?')/;
+        var formatParts = escapedLiteralFormat.split(literalRegex);
+        var dateElements = Object.keys(regExpMap);
+        var dateRegexParts = [];
+
+        angular.forEach(formatParts, function (part) {
+          if (isFormatStringLiteral(part)) {
+            part = trimLiteralEscapeChars(part);
+          }
+          else {
+            // Abstract replaces to avoid collisions
+            for(var i = 0; i < dateElements.length; i++) {
+              part = part.split(dateElements[i]).join('${' + i + '}');
             }
           }
-        }
-        // Sort result map
-        angular.forEach(map, function(v) {
-          // conditional required since angular.forEach broke around v1.2.21
-          // related pr: https://github.com/angular/angular.js/pull/8525
-          if(v) sortedMap.push(v);
+          dateRegexParts.push(part);
         });
-        return sortedMap;
+
+        return dateRegexParts.join('');
       }
 
       function escapeReservedSymbols(text) {
-        return text.replace(/\//g, '[\\/]').replace('/-/g', '[-]').replace(/\./g, '[.]').replace(/\\s/g, '[\\s]');
+        return text.replace(/\\/g, '[\\\\]')
+                   .replace(/-/g, '[-]')
+                   .replace(/\./g, '[.]')
+                   .replace(/\*/g, '[*]')
+                   .replace(/\+/g, '[+]')
+                   .replace(/\?/g, '[?]')
+                   .replace(/\$/g, '[$]')
+                   .replace(/\^/g, '[^]')
+                   .replace(/\//g, '[/]')
+                   .replace(/\\s/g, '[\\s]');
       }
 
-      function regExpForFormat(format) {
-        var keys = Object.keys(regExpMap), i;
+      function isFormatStringLiteral(text) {
+        return /^'.*'$/.test(text);
+      }
 
-        var re = format;
-        // Abstract replaces to avoid collisions
-        for(i = 0; i < keys.length; i++) {
-          re = re.split(keys[i]).join('${' + i + '}');
-        }
+      function trimLiteralEscapeChars(text) {
+        return text.replace(/^'(.*)'$/, '$1');
+      }
+
+      function buildDateParseRegex(abstractRegex) {
+        var dateElements = Object.keys(regExpMap);
+        var re = abstractRegex;
+
         // Replace abstracted values
-        for(i = 0; i < keys.length; i++) {
-          re = re.split('${' + i + '}').join('(' + regExpMap[keys[i]] + ')');
+        for(var i = 0; i < dateElements.length; i++) {
+          re = re.split('${' + i + '}').join('(' + regExpMap[dateElements[i]] + ')');
         }
-        format = escapeReservedSymbols(format);
 
         return new RegExp('^' + re + '$', ['i']);
+      }
+
+      function setMapForFormat(format) {
+        var re = buildDateAbstractRegex(format);
+        return buildDateParseValuesMap(re);
+      }
+
+      function buildDateParseValuesMap(abstractRegex) {
+        var dateElements = Object.keys(regExpMap);
+        var valuesRegex = new RegExp('\\${(\\d+)}', 'g');
+        var valuesMatch, keyIndex, valueKey, valueFunction;
+        var valuesFunctionMap = [];
+
+        while((valuesMatch = valuesRegex.exec(abstractRegex)) !== null) {
+          keyIndex = valuesMatch[1];
+          valueKey = dateElements[keyIndex];
+          valueFunction = setFnMap[valueKey];
+
+          valuesFunctionMap.push(valueFunction);
+        }
+
+        return valuesFunctionMap;
       }
 
       $dateParser.init();

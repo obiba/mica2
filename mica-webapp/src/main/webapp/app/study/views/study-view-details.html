@@ -1,11 +1,9 @@
 <div>
-  <tabset>
-    <tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active"
-      disabled="tab.disabled">
+  <uib-tabset>
+    <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active" disable="tab.disabled">
 
       <div class="voffset4">
-        <img class="img-responsive desaturate" ng-show="study.logo"
-          ng-src="{{logoUrl}}"/>
+        <img class="img-responsive desaturate" ng-show="study.logo" ng-src="{{logoUrl}}">
 
         <h2>
           <localized value="study.name" lang="tab.lang"></localized>
@@ -49,8 +47,7 @@
               <th>{{'study.member-list' | translate: {type: role} }}</th>
               <td>
                 <div ng-controller="ContactController">
-                  <ul ui-sortable="sortableOptions" ng-model="memberships[role]" class="list-unstyled sortable"
-                    ng-show="memberships[role].length">
+                  <ul ui-sortable="sortableOptions" ng-model="memberships[role]" class="list-unstyled sortable" ng-show="memberships[role].length">
                     <li ng-repeat="person in memberships[role]">
                       <a ng-click="viewContact(person)" title="{{'dnd-reorder' | translate}}">
                         {{person.title}} {{person.firstName}} {{person.lastName}}
@@ -59,15 +56,13 @@
                         (<localized value="person.institution.name" lang="tab.lang"></localized>)
                       </span>
                       </a>
-                      <div class="inline"
-                        ng-if="inViewMode() && permissions.canEdit()">
+                      <div class="inline" ng-if="inViewMode() && permissions.canEdit()">
                         <a ng-click="editMember(study, person, role)" class="action"><i class="fa fa-pencil"></i></a>
                         <a ng-click="deleteMember(study, person, role)" class="action"><i class="fa fa-trash-o"></i></a>
                       </div>
                     </li>
                   </ul>
-                  <button type="button" class="btn btn-info btn-sm" ng-click="addMember(study, role)"
-                    ng-if="inViewMode() && permissions.canEdit()">
+                  <button type="button" class="btn btn-info btn-sm" ng-click="addMember(study, role)" ng-if="inViewMode() && permissions.canEdit()">
                     <i class="fa fa-plus"></i> <span>{{ 'study.add-member' | translate: {type: role} }}</span>
                   </button>
                 </div>
@@ -129,16 +124,14 @@
               <th translate>numberOfParticipants.participants</th>
               <td>
                 <span ng-hide="study.numberOfParticipants.participant.noLimit">{{study.numberOfParticipants.participant.number | number}}</span>
-                <span ng-show="study.numberOfParticipants.participant.noLimit"
-                  translate>numberOfParticipants.no-limit</span>
+                <span ng-show="study.numberOfParticipants.participant.noLimit" translate>numberOfParticipants.no-limit</span>
               </td>
             </tr>
             <tr ng-show="study.numberOfParticipants.sample">
               <th translate>numberOfParticipants.sample</th>
               <td>
                 <span ng-hide="study.numberOfParticipants.sample.noLimit">{{study.numberOfParticipants.sample.number | number}}</span>
-                  <span ng-show="study.numberOfParticipants.sample.noLimit"
-                    translate>numberOfParticipants.no-limit</span>
+                  <span ng-show="study.numberOfParticipants.sample.noLimit" translate>numberOfParticipants.no-limit</span>
               </td>
             </tr>
             <tr ng-show="study.numberOfParticipants.info.length">
@@ -221,16 +214,15 @@
       <h3>
         <span translate>study.populations</span>
       </h3>
-      <a ng-click="addPopulation()" class="btn btn-info"
-        ng-if="inViewMode() && permissions.canEdit()">
+      <a ng-click="addPopulation()" class="btn btn-info" ng-if="inViewMode() && permissions.canEdit()">
         <i class="fa fa-plus"></i> <span translate>study.add-population</span>
       </a>
 
-      <!--<tabset vertical="true">-->
-      <!--<tab ng-repeat="population in study.populations" heading="{{population.id}}" active="{{$index === 0}}">-->
+      <!--<uib-tabset vertical="true">-->
+      <!--<uib-tab ng-repeat="population in study.populations" heading="{{population.id}}" active="{{$index === 0}}">-->
       <!--<div ng-include="'app/study/views/population/population-view.html'"></div>-->
-      <!--</tab>-->
-      <!--</tabset>-->
+      <!--</uib-tab>-->
+      <!--</uib-tabset>-->
 
       <div ng-repeat="population in study.populations">
         <div ng-include="'app/study/views/population/population-view.html'"></div>
@@ -238,8 +230,7 @@
 
       <h3 translate ng-show="study.specificAuthorization || study.maelstromAuthorization">
         study.authorization.label</h3>
-      <table class="table table-bordered table-striped"
-        ng-show="study.specificAuthorization || study.maelstromAuthorization">
+      <table class="table table-bordered table-striped" ng-show="study.specificAuthorization || study.maelstromAuthorization">
         <tbody>
         <tr ng-show="study.maelstromAuthorization">
           <td translate>study.authorization.maelstrom</td>
@@ -280,6 +271,6 @@
         </tbody>
       </table>
 
-    </tab>
-  </tabset>
+    </uib-tab>
+  </uib-tabset>
 </div>

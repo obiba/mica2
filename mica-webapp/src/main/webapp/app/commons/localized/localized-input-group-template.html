@@ -1,20 +1,10 @@
-<div class="form-group"
-    ng-class="{'has-error': (form[fieldName].$dirty || form.saveAttempted) && form[fieldName].$invalid}">
+<div class="form-group" ng-class="{'has-error': (form[fieldName].$dirty || form.saveAttempted) && form[fieldName].$invalid}">
   <label for="{{fieldName}}" class="control-label">
     {{label | translate}}
     <span ng-show="required">*</span>
   </label>
   <div class="input-group">
-    <input
-      ng-repeat="localized in model | filter:{lang:lang}"
-      ng-model="localized.value"
-      type="text"
-      class="form-control"
-      id="{{fieldName}}"
-      name="{{fieldName}}"
-      ng-disabled="disabled"
-      form-server-error
-      ng-required="required">
+    <input ng-repeat="localized in model | filter:{lang:lang}" ng-model="localized.value" type="text" class="form-control" id="{{fieldName}}" name="{{fieldName}}" ng-disabled="disabled" form-server-error ng-required="required">
   <span class="input-group-btn" ng-show="remove">
     <button class="btn btn-default" type="button" ng-click="remove(model)"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
   </span>

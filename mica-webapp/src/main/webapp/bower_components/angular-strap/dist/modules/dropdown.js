@@ -1,6 +1,6 @@
 /**
  * angular-strap
- * @version v2.2.4 - 2015-05-28
+ * @version v2.3.6 - 2015-11-14
  * @link http://mgcrea.github.io/angular-strap
  * @author Olivier Louvignes <olivier@mg-crea.com> (https://github.com/mgcrea)
  * @license MIT License, http://www.opensource.org/licenses/MIT
@@ -13,7 +13,7 @@ angular.module('mgcrea.ngStrap.dropdown', [ 'mgcrea.ngStrap.tooltip' ]).provider
     prefixClass: 'dropdown',
     prefixEvent: 'dropdown',
     placement: 'bottom-left',
-    template: 'dropdown/dropdown.tpl.html',
+    templateUrl: 'dropdown/dropdown.tpl.html',
     trigger: 'click',
     container: false,
     keyboard: true,
@@ -76,31 +76,44 @@ angular.module('mgcrea.ngStrap.dropdown', [ 'mgcrea.ngStrap.tooltip' ]).provider
   return {
     restrict: 'EAC',
     scope: true,
-    link: function postLink(scope, element, attr, transclusion) {
-      var options = {
-        scope: scope
+    compile: function(tElement, tAttrs) {
+      if (!tAttrs.bsDropdown) {
+        var nextSibling = tElement[0].nextSibling;
+        while (nextSibling && nextSibling.nodeType !== 1) {
+          nextSibling = nextSibling.nextSibling;
+        }
+        if (nextSibling.classList.contains('dropdown-menu')) {
+          tAttrs.template = nextSibling.outerHTML;
+          tAttrs.templateUrl = undefined;
+          nextSibling.parentNode.removeChild(nextSibling);
+        }
+      }
+      return function postLink(scope, element, attr) {
+        var options = {
+          scope: scope
+        };
+        angular.forEach([ 'template', 'templateUrl', 'controller', 'controllerAs', 'placement', 'container', 'delay', 'trigger', 'keyboard', 'html', 'animation', 'id', 'autoClose' ], function(key) {
+          if (angular.isDefined(tAttrs[key])) options[key] = tAttrs[key];
+        });
+        var falseValueRegExp = /^(false|0|)$/i;
+        angular.forEach([ 'html', 'container' ], function(key) {
+          if (angular.isDefined(attr[key]) && falseValueRegExp.test(attr[key])) options[key] = false;
+        });
+        attr.bsDropdown && scope.$watch(attr.bsDropdown, function(newValue, oldValue) {
+          scope.content = newValue;
+        }, true);
+        attr.bsShow && scope.$watch(attr.bsShow, function(newValue, oldValue) {
+          if (!dropdown || !angular.isDefined(newValue)) return;
+          if (angular.isString(newValue)) newValue = !!newValue.match(/true|,?(dropdown),?/i);
+          newValue === true ? dropdown.show() : dropdown.hide();
+        });
+        var dropdown = $dropdown(element, options);
+        scope.$on('$destroy', function() {
+          if (dropdown) dropdown.destroy();
+          options = null;
+          dropdown = null;
+        });
       };
-      angular.forEach([ 'placement', 'container', 'delay', 'trigger', 'keyboard', 'html', 'animation', 'template', 'id' ], function(key) {
-        if (angular.isDefined(attr[key])) options[key] = attr[key];
-      });
-      var falseValueRegExp = /^(false|0|)$/i;
-      angular.forEach([ 'html', 'container' ], function(key) {
-        if (angular.isDefined(attr[key]) && falseValueRegExp.test(attr[key])) options[key] = false;
-      });
-      attr.bsDropdown && scope.$watch(attr.bsDropdown, function(newValue, oldValue) {
-        scope.content = newValue;
-      }, true);
-      attr.bsShow && scope.$watch(attr.bsShow, function(newValue, oldValue) {
-        if (!dropdown || !angular.isDefined(newValue)) return;
-        if (angular.isString(newValue)) newValue = !!newValue.match(/true|,?(dropdown),?/i);
-        newValue === true ? dropdown.show() : dropdown.hide();
-      });
-      var dropdown = $dropdown(element, options);
-      scope.$on('$destroy', function() {
-        if (dropdown) dropdown.destroy();
-        options = null;
-        dropdown = null;
-      });
     }
   };
 } ]);

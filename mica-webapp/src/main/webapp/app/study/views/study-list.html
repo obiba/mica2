@@ -73,8 +73,7 @@
                 <a ng-href="#/study/{{study.id}}/edit" title="{{'edit' | translate}}"><i class="fa fa-pencil"></i></a>
               </li>
               <li ng-if="study['obiba.mica.StudyStateDto.state'].permissions.delete && study['obiba.mica.StudyStateDto.state'].revisionStatus === 'DELETED'">
-                <a href ng-click="deleteStudy(study)" title="{{'delete' | translate}}"><i
-                  class="fa fa-trash-o"></i></a>
+                <a href ng-click="deleteStudy(study)" title="{{'delete' | translate}}"><i class="fa fa-trash-o"></i></a>
               </li>
               <li ng-if="study['obiba.mica.StudyStateDto.state'].revisionStatus === 'UNDER_REVIEW'">
                 <a ng-href="#/study/{{study.id}}" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>

@@ -16,22 +16,20 @@
     <i class="fa fa-chevron-left"> </i>
   </a> {{'edit' | translate}}</h3>
 
-  <form name="form" role="form" novalidate
-      class="ng-scope ng-invalid ng-invalid-required ng-dirty" ng-submit="save()">
+  <form name="form" role="form" novalidate class="ng-scope ng-invalid ng-invalid-required ng-dirty" ng-submit="save()">
 
     <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
 
-    <tabset>
-      <tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active"
-          disabled="tab.disabled">
+    <uib-tabset>
+      <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active" disable="tab.disabled">
 
         <div ng-include="'app/network/views/network-general-info-form.html'"></div>
 
         <label translate>attributes</label>
         <attributes-editable-list attributes="network.attributes"></attributes-editable-list>
 
-      </tab>
-    </tabset>
+      </uib-tab>
+    </uib-tabset>
 
     <button type="button" class="btn btn-default" ng-click="cancel()">
       <span translate>cancel</span>

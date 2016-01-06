@@ -27,6 +27,8 @@ module.exports = function (grunt) {
     less: {
       development: {
         options: {
+          sourceMap: true,
+          sourceMapBasepath: '"dist/css/',
           compress: true,
           yuicompress: true,
           optimization: 2

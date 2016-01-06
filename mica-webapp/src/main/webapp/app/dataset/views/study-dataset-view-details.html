@@ -1,7 +1,6 @@
 <div class="voffset4">
-  <tabset>
-    <tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active"
-      disabled="tab.disabled">
+  <uib-tabset>
+    <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active" disable="tab.disable">
       <div class="row">
         <div class="col-md-6">
           <h3 translate>dataset.general-info</h3>
@@ -83,14 +82,13 @@
             <tr>
               <th translate>dataset.table-description</th>
               <td>
-                <localized value="dataset['obiba.mica.StudyDatasetDto.type'].studyTable.description"
-                  lang="tab.lang"></localized>
+                <localized value="dataset['obiba.mica.StudyDatasetDto.type'].studyTable.description" lang="tab.lang"></localized>
               </td>
             </tr>
             </tbody>
           </table>
         </div>
       </div>
-    </tab>
-  </tabset>
+    </uib-tab>
+  </uib-tabset>
 </div>

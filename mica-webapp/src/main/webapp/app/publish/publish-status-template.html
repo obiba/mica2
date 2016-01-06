@@ -1,10 +1,6 @@
 <div>
-  <i class="fa fa-star-o" ng-if="state.publishedTag === undefined"
-      title="{{'publish.not-published' | translate}}"></i>
-  <i class="fa fa-star-half-o" ng-if="state.publishedTag !== undefined && state.revisionsAhead > 0"
-      title="{{'publish.published-out-of-date' | translate}} ({{state.publicationDate | amDateFormat : 'lll'}} [{{state.publishedBy}}])"></i>
-  <i class="fa fa-star" ng-if="state.publishedTag !== undefined && state.revisionsAhead == 0"
-      title="{{'publish.published' | translate}} ({{state.publicationDate | amDateFormat : 'lll'}} [{{state.publishedBy}}])"></i>
-  <span class="label label-info" ng-if="state.publishedTag !== undefined && state.revisionsAhead > 0"
-      title="{{'publish.revisions-ahead' | translate}} ({{state.publicationDate | amDateFormat : 'lll'}} [{{state.publishedBy}}])">{{state.revisionsAhead}}</span>
+  <i class="fa fa-star-o" ng-if="state.publishedTag === undefined" title="{{'publish.not-published' | translate}}"></i>
+  <i class="fa fa-star-half-o" ng-if="state.publishedTag !== undefined && state.revisionsAhead > 0" title="{{'publish.published-out-of-date' | translate}} ({{state.publicationDate | amDateFormat : 'lll'}} [{{state.publishedBy}}])"></i>
+  <i class="fa fa-star" ng-if="state.publishedTag !== undefined && state.revisionsAhead == 0" title="{{'publish.published' | translate}} ({{state.publicationDate | amDateFormat : 'lll'}} [{{state.publishedBy}}])"></i>
+  <span class="label label-info" ng-if="state.publishedTag !== undefined && state.revisionsAhead > 0" title="{{'publish.revisions-ahead' | translate}} ({{state.publicationDate | amDateFormat : 'lll'}} [{{state.publishedBy}}])">{{state.revisionsAhead}}</span>
 </div>

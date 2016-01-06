@@ -11,8 +11,8 @@
   <localized value="population.description" lang="tab.lang"></localized>
 </p>
 
-<tabset>
-  <tab heading="{{'study.definition' | translate}}">
+<uib-tabset>
+  <uib-tab heading="{{'study.definition' | translate}}">
     <div class="row">
       <div class="col-md-6">
         <h4 translate>study.selection-criteria.label</h4>
@@ -151,8 +151,7 @@
             <th translate>numberOfParticipants.participants</th>
             <td>
               <span ng-hide="population.numberOfParticipants.participant.noLimit">{{population.numberOfParticipants.participant.number}}</span>
-          <span ng-show="population.numberOfParticipants.participant.noLimit"
-            translate>numberOfParticipants.no-limit</span>
+          <span ng-show="population.numberOfParticipants.participant.noLimit" translate>numberOfParticipants.no-limit</span>
             </td>
           </tr>
           <tr>
@@ -166,14 +165,14 @@
         </table>
       </div>
     </div>
-  </tab>
+  </uib-tab>
 
 
-  <tab heading="{{'suppl-info' | translate}}" ng-show="population.info">
+  <uib-tab heading="{{'suppl-info' | translate}}" ng-show="population.info">
     <localized value="population.info" lang="tab.lang"></localized>
-  </tab>
+  </uib-tab>
 
-  <tab heading="{{'study.data-collection-events' | translate}}">
+  <uib-tab heading="{{'study.data-collection-events' | translate}}">
     <div>
       <a ng-if="inViewMode() && permissions.canEdit()" ng-click="addDataCollectionEvent(study, population)" class="btn btn-info btn-sm voffset1">
         <i class="fa fa-plus"></i> <span translate>study.add-data-collection-event</span>
@@ -214,23 +213,16 @@
             {{dce.endYear}} <span ng-show="dce.endMonth">({{months[dce.endMonth - 1]}})</span>
           </td>
           <td ng-if="inViewMode()" class="action-column">
-            <a ng-click="showDataCollectionEvent(study, population, dce)" class="hand action"><i
-              class="fa fa-eye"></i></a>
+            <a ng-click="showDataCollectionEvent(study, population, dce)" class="hand action"><i class="fa fa-eye"></i></a>
             <div class="inline" ng-if="permissions.canEdit()">
-              <a ng-click="editDataCollectionEvent(study, population, dce)" class="hand action"><i
-                class="fa fa-pencil"></i></a>
-              <a ng-click="addDataCollectionEvent(study, population, dce)" class="hand action"  translate title="{{'clone' | translate}}"><i
-                class="fa fa-files-o"></i></a>
-              <a ng-click="deleteDataCollectionEvent(population, dce)" class="hand action"><i
-                class="fa fa-trash-o"></i></a>
+              <a ng-click="editDataCollectionEvent(study, population, dce)" class="hand action"><i class="fa fa-pencil"></i></a>
+              <a ng-click="addDataCollectionEvent(study, population, dce)" class="hand action" translate title="{{'clone' | translate}}"><i class="fa fa-files-o"></i></a>
+              <a ng-click="deleteDataCollectionEvent(population, dce)" class="hand action"><i class="fa fa-trash-o"></i></a>
             </div>
           </td>
         </tr>
         </tbody>
       </table>
     </div>
-  </tab>
-</tabset>
-
-
-
+  </uib-tab>
+</uib-tabset>

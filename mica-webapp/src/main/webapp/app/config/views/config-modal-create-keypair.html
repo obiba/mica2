@@ -10,8 +10,7 @@
     <div class="modal-body">
       <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate>fix-error</p>
 
-      <div form-input name="url" type="url" pattern="'https://.+'" model="credential.opalUrl" label="config.opalUrl"
-        ng-if="isOpalCredential" required="true" disabled="!isOpalCredential"></div>
+      <div form-input name="url" type="url" pattern="'https://.+'" model="credential.opalUrl" label="config.opalUrl" ng-if="isOpalCredential" required="true" disable="!isOpalCredential"></div>
 
       <div form-input name="name" model="keyForm.publicForm.name" label="config.keys.name"></div>
 

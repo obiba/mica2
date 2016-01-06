@@ -78,18 +78,13 @@
           </td>
           <td>
             <ul class="list-inline">
-              <li
-                ng-if="network['obiba.mica.EntityStateDto.state'].permissions.edit && network['obiba.mica.EntityStateDto.state'].revisionStatus === 'DRAFT'">
-                <a ng-href="#/network/{{network.id}}/edit" title="{{'edit' | translate}}"><i
-                  class="fa fa-pencil"></i></a>
+              <li ng-if="network['obiba.mica.EntityStateDto.state'].permissions.edit && network['obiba.mica.EntityStateDto.state'].revisionStatus === 'DRAFT'">
+                <a ng-href="#/network/{{network.id}}/edit" title="{{'edit' | translate}}"><i class="fa fa-pencil"></i></a>
               </li>
-              <li
-                ng-if="network['obiba.mica.EntityStateDto.state'].permissions.delete && network['obiba.mica.EntityStateDto.state'].revisionStatus === 'DELETED'">
-                <a href ng-click="deleteNetwork(network)" title="{{'delete' | translate}}"><i
-                  class="fa fa-trash-o"></i></a>
+              <li ng-if="network['obiba.mica.EntityStateDto.state'].permissions.delete && network['obiba.mica.EntityStateDto.state'].revisionStatus === 'DELETED'">
+                <a href ng-click="deleteNetwork(network)" title="{{'delete' | translate}}"><i class="fa fa-trash-o"></i></a>
               </li>
-              <li
-                ng-if="network['obiba.mica.EntityStateDto.state'].revisionStatus === 'UNDER_REVIEW'">
+              <li ng-if="network['obiba.mica.EntityStateDto.state'].revisionStatus === 'UNDER_REVIEW'">
                 <a ng-href="#/network/{{network.id}}" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>
               </li>
             </ul>

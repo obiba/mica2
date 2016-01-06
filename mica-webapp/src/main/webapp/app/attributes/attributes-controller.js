@@ -21,16 +21,16 @@ mica.attributes
 
     }])
 
-  .controller('AttributesEditableListController', ['$scope', '$log', '$modal', 'attributesService',
+  .controller('AttributesEditableListController', ['$scope', '$log', '$uibModal', 'attributesService',
 
-    function ($scope, $log, $modal, attributesService) {
+    function ($scope, $log, $uibModal, attributesService) {
 
       $scope.deleteAttribute = function(index) {
         attributesService.deleteAttribute($scope, index);
       };
 
       $scope.addAttribute = function() {
-        $modal
+        $uibModal
           .open({
             templateUrl: 'app/attributes/views/attribute-modal-form.html',
             controller: 'AttributeModalController',
@@ -48,7 +48,7 @@ mica.attributes
 
       $scope.editAttribute = function(index) {
 
-        $modal
+        $uibModal
           .open({
             templateUrl: 'app/attributes/views/attribute-modal-form.html',
             controller: 'AttributeModalController',
@@ -71,16 +71,15 @@ mica.attributes
 
     }])
 
-  .controller('AttributeModalController', ['$scope', '$modalInstance', '$log', 'attributeModalService', 'attribute',
-    function ($scope, $modalInstance, $log, attributeModalService, attribute) {
+  .controller('AttributeModalController', ['$scope', '$uibModalInstance', '$log', 'attributeModalService', 'attribute',
+    function ($scope, $uibModalInstance, $log, attributeModalService, attribute) {
       $scope.attribute =  $.extend(true, {}, attribute);
-      $log.debug('Modal Ctrl scope:', $scope.attribute);
       attributeModalService.normalizeLocales($scope);
 
       $scope.save = function (form) {
         if (form.$valid) {
           attributeModalService.validateLocales($scope);
-          $modalInstance.close($scope.attribute);
+          $uibModalInstance.close($scope.attribute);
         }
         else {
           $scope.form = form;
@@ -89,7 +88,7 @@ mica.attributes
       };
 
       $scope.cancel = function () {
-        $modalInstance.dismiss('cancel');
+        $uibModalInstance.dismiss('cancel');
       };
 
     }]);

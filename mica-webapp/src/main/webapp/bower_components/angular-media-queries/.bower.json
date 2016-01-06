@@ -1,6 +1,6 @@
 {
   "name": "angular-media-queries",
-  "version": "0.4.1",
+  "version": "0.6.0",
   "authors": [
     "Jack <jack@ofspades.com>"
   ],
@@ -28,14 +28,13 @@
   "dependencies": {
     "angular": ">=1.2.0"
   },
-  "_release": "0.4.1",
+  "_release": "0.6.0",
   "_resolution": {
     "type": "version",
-    "tag": "0.4.1",
-    "commit": "42a5885d0dedd32a7a835ef9f12f8cf214354069"
+    "tag": "0.6.0",
+    "commit": "141d8aa8dbe5f7eeed4380f97c31e75244368260"
   },
   "_source": "git://github.com/jacopotarantino/angular-match-media.git",
-  "_target": "~0.4.1",
-  "_originalSource": "angular-media-queries",
-  "_direct": true
+  "_target": "0.6.0",
+  "_originalSource": "angular-media-queries"
 }

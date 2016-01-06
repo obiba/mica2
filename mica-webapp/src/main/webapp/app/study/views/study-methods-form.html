@@ -1,24 +1,16 @@
 <h3 translate>study.design</h3>
 <div class="form-group">
   <div form-checkbox-group options="methodDesignTypes" model="study.methods.designs"></div>
-  <div localized-input disabled="study.methods.designs.indexOf('other') < 0" name="study.methods.otherDesign"
-    model="study.methods.otherDesign" lang="tab.lang" label="other"></div>
-  <div localized-input name="study.methods.followUpInfo" model="study.methods.followUpInfo" lang="tab.lang"
-    label="study.follow-up"></div>
+  <div localized-input disable="study.methods.designs.indexOf('other') < 0" name="study.methods.otherDesign" model="study.methods.otherDesign" lang="tab.lang" label="other"></div>
+  <div localized-input name="study.methods.followUpInfo" model="study.methods.followUpInfo" lang="tab.lang" label="study.follow-up"></div>
   <div localized-input name="study.methods.info" model="study.methods.info" lang="tab.lang" label="suppl-info"></div>
 </div>
 
 <h4 translate>study.recruitment-sources.label</h4>
 <div class="form-group">
   <div form-checkbox-group options="methodRecruitmentTypes" model="study.methods.recruitments"></div>
-  <div localized-input disabled="study.methods.recruitments.indexOf('other') < 0" name="study.methods.otherRecruitment"
-    model="study.methods.otherRecruitment" lang="tab.lang" label="study.recruitment-sources.other"></div>
+  <div localized-input disable="study.methods.recruitments.indexOf('other') < 0" name="study.methods.otherRecruitment" model="study.methods.otherRecruitment" lang="tab.lang" label="study.recruitment-sources.other"></div>
 </div>
 
 <h4 translate>numberOfParticipants.label</h4>
 <number-of-participants number-of-participants="study.numberOfParticipants" lang="tab.lang"></number-of-participants>
-
-
-
-
-

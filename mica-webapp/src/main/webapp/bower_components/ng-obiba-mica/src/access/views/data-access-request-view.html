@@ -57,8 +57,8 @@
 
     <div class="clearfix"></div>
 
-    <tabset class="voffset5">
-      <tab ng-click="selectTab('form')" heading="{{'data-access-request.form' | translate}}">
+    <uib-tabset class="voffset5">
+      <uib-tab ng-click="selectTab('form')" heading="{{'data-access-request.form' | translate}}">
         <form id="request-form" name="forms.requestForm">
           <div sf-model="form.model" sf-form="form.definition" sf-schema="form.schema"></div>
         </form>
@@ -70,15 +70,15 @@
 
         <attachment-list files="dataAccessRequest.attachments"
             href-builder="getDownloadHref(attachments, id)"></attachment-list>
-      </tab>
-      <tab ng-if="config.commentsEnabled" ng-click="selectTab('comments')" heading="{{'data-access-request.comments' | translate}}">
+      </uib-tab>
+      <uib-tab ng-if="config.commentsEnabled" ng-click="selectTab('comments')" heading="{{'data-access-request.comments' | translate}}">
         <obiba-comments comments="form.comments" on-update="updateComment" on-delete="deleteComment" name-resolver="userProfileService.getFullName" edit-action="EDIT" delete-action="DELETE"></obiba-comments>
         <obiba-comment-editor on-submit="submitComment"></obiba-comment-editor>
-      </tab>
-      <tab ng-click="selectTab('history')" heading="{{'data-access-request.history' | translate}}">
+      </uib-tab>
+      <uib-tab ng-click="selectTab('history')" heading="{{'data-access-request.history' | translate}}">
         <div ng-include="'access/views/data-access-request-histroy-view.html'"></div>
-      </tab>
-    </tabset>
+      </uib-tab>
+    </uib-tabset>
   </div>
 
 </div>

@@ -9,11 +9,11 @@ angular.module('obiba.notification')
     confirmDialogRejected: 'event:confirmation-rejected'
   })
 
-  .controller('NotificationController', ['$rootScope', '$scope', '$modal', 'NOTIFICATION_EVENTS',
-    function ($rootScope, $scope, $modal, NOTIFICATION_EVENTS) {
+  .controller('NotificationController', ['$rootScope', '$scope', '$uibModal', 'NOTIFICATION_EVENTS',
+    function ($rootScope, $scope, $uibModal, NOTIFICATION_EVENTS) {
 
       $scope.$on(NOTIFICATION_EVENTS.showNotificationDialog, function (event, notification) {
-        $modal.open({
+        $uibModal.open({
           templateUrl: 'notification/notification-modal.tpl.html',
           controller: 'NotificationModalController',
           resolve: {
@@ -25,7 +25,7 @@ angular.module('obiba.notification')
       });
 
       $scope.$on(NOTIFICATION_EVENTS.showConfirmDialog, function (event, confirm, args) {
-        $modal.open({
+        $uibModal.open({
           templateUrl: 'notification/notification-confirm-modal.tpl.html',
           controller: 'NotificationConfirmationController',
           resolve: {
@@ -42,8 +42,8 @@ angular.module('obiba.notification')
 
     }])
 
-  .controller('NotificationModalController', ['$scope', '$modalInstance', 'notification',
-    function ($scope, $modalInstance, notification) {
+  .controller('NotificationModalController', ['$scope', '$uibModalInstance', 'notification',
+    function ($scope, $uibModalInstance, notification) {
 
       $scope.notification = notification;
       if (!$scope.notification.iconClass) {
@@ -54,13 +54,13 @@ angular.module('obiba.notification')
       }
 
       $scope.close = function () {
-        $modalInstance.dismiss('close');
+        $uibModalInstance.dismiss('close');
       };
 
     }])
 
-  .controller('NotificationConfirmationController', ['$scope', '$modalInstance', 'confirm', 'LocaleStringUtils',
-    function ($scope, $modalInstance, confirm, LocaleStringUtils) {
+  .controller('NotificationConfirmationController', ['$scope', '$uibModalInstance', 'confirm', 'LocaleStringUtils',
+    function ($scope, $uibModalInstance, confirm, LocaleStringUtils) {
 
       function getMessage() {
         return {
@@ -72,11 +72,11 @@ angular.module('obiba.notification')
       $scope.confirm = getMessage();
 
       $scope.ok = function () {
-        $modalInstance.close();
+        $uibModalInstance.close();
       };
 
       $scope.cancel = function () {
-        $modalInstance.dismiss('cancel');
+        $uibModalInstance.dismiss('cancel');
       };
 
     }]);

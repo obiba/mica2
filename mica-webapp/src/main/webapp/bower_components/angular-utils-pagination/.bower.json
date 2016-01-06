@@ -1,6 +1,6 @@
 {
   "name": "angularUtils-pagination",
-  "version": "0.7.0",
+  "version": "0.9.3",
   "homepage": "https://github.com/michaelbromley/angularUtils/tree/master/src/directives/pagination",
   "authors": [
     "Michael Bromley <michael@michaelbromley.co.uk>"
@@ -13,6 +13,9 @@
   "moduleType": [
     "globals"
   ],
+  "dependencies": {
+    "angular": ">=1.1.4"
+  },
   "keywords": [
     "angularjs",
     "pagination",
@@ -28,13 +31,13 @@
     "test",
     "tests"
   ],
-  "_release": "0.7.0",
+  "_release": "0.9.3",
   "_resolution": {
     "type": "version",
-    "tag": "v0.7.0",
-    "commit": "a325cf1ac86783f601691a0f056683d9be8ef74d"
+    "tag": "v0.9.3",
+    "commit": "0369451c6a0fcbc7d9254d5b13ce7733b79cbcef"
   },
   "_source": "git://github.com/michaelbromley/angularUtils-pagination.git",
-  "_target": "0.7.0",
+  "_target": "0.9.3",
   "_originalSource": "angular-utils-pagination"
 }

@@ -8,11 +8,7 @@
       <div class="col-xs-6">
         <a href>
         <span class="input-group input-group-sm no-padding-top">
-          <input ng-keyup="searchKeyUp($event)"
-            ng-model="documents.search.text"
-            type="text"
-            class="form-control ng-pristine ng-untouched ng-valid"
-            aria-describedby="study-search">
+          <input ng-keyup="searchKeyUp($event)" ng-model="documents.search.text" type="text" class="form-control ng-pristine ng-untouched ng-valid" aria-describedby="study-search">
           <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
         </span>
         </a>
@@ -44,8 +40,7 @@
     <div class="row voffset4">
       <div class="col-xs-12">
         <div class="btn-group dropdown" is-open="status.isopen">
-          <button type="button" class="btn btn-info btn-sm dropdown-toggle" ng-disabled="disabled"
-            data-toggle="dropdown">
+          <button type="button" class="btn btn-info btn-sm dropdown-toggle" ng-disabled="disabled" data-toggle="dropdown">
             Study: All <span class="caret"></span>
           </button>
           <ul class="dropdown-menu" role="menu">
@@ -55,8 +50,7 @@
         </div>
 
         <div class="btn-group dropdown" is-open="status.isopen">
-          <button type="button" class="btn btn-default btn-sm dropdown-toggle" ng-disabled="disabled"
-            data-toggle="dropdown">
+          <button type="button" class="btn btn-default btn-sm dropdown-toggle" ng-disabled="disabled" data-toggle="dropdown">
             OR <span class="caret"></span>
           </button>
           <ul class="dropdown-menu" role="menu">
@@ -65,8 +59,7 @@
         </div>
 
         <div class="btn-group dropdown" is-open="status.isopen">
-          <button type="button" class="btn btn-info btn-sm dropdown-toggle" ng-disabled="disabled"
-            data-toggle="dropdown">
+          <button type="button" class="btn btn-info btn-sm dropdown-toggle" ng-disabled="disabled" data-toggle="dropdown">
             Study designs: All <span class="caret"></span>
           </button>
           <ul class="dropdown-menu" role="menu">
@@ -87,4 +80,3 @@
 
   </div>
 </div>
-

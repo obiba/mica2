@@ -14,9 +14,7 @@
           <i class="fa fa-hdd-o"></i> /
         </span>
         <!-- Editable part of breadcrumb -->
-        <span ng-if="part.name !== '/' && $last" editable-text="data.document.name"
-          e-form="buttonRename"
-          onbeforesave="renameDocument($form, data.document, $data)">
+        <span ng-if="part.name !== '/' && $last" editable-text="data.document.name" e-form="buttonRename" onbeforesave="renameDocument($form, data.document, $data)">
           <i class="fa {{getDocumentIcon(data.document)}}"></i> {{data.document.name || 'empty'}}
           <span ng-if="data.document.permissions.edit && data.document.revisionStatus === 'DRAFT'" class="hoffset1">
             <a href ng-click="buttonRename.$show()" ng-hide="buttonRename.$visible">
@@ -26,9 +24,7 @@
         </span>
       </li>
       <li ng-if="!data.isFile && !data.isRoot && data.document.permissions.edit && data.document.revisionStatus === 'DRAFT'">
-        <span editable-text="data.new.folder"
-          e-form="buttonCreate"
-          onaftersave="createFolder($data)">
+        <span editable-text="data.new.folder" e-form="buttonCreate" onaftersave="createFolder($data)">
           <span class="hoffset1">
             <a href ng-click="buttonCreate.$show()" ng-hide="buttonCreate.$visible">
               <i class="fa fa-plus"></i>
@@ -39,14 +35,10 @@
     </ol>
 
     <div class="voffset2">
-      <a ng-if="!data.isFile" ng-disabled="!data.document.permissions.edit || data.document.revisionStatus !== 'DRAFT'" class="btn btn-info btn-responsive"
-        ngf-select ngf-change="onFileSelect($files)">
+      <a ng-if="!data.isFile" ng-disabled="!data.document.permissions.edit || data.document.revisionStatus !== 'DRAFT'" class="btn btn-info btn-responsive" ngf-select ngf-change="onFileSelect($files)">
         <i class="fa fa-upload"></i> {{'upload' | translate}}
       </a>
-      <a ng-if="data.isFile && data.document.permissions.view"
-        target="_self"
-        class="btn btn-info btn-responsive"
-        ng-href="ws/draft/file-dl/{{data.document.path}} ">
+      <a ng-if="data.isFile && data.document.permissions.view" target="_self" class="btn btn-info btn-responsive" ng-href="ws/draft/file-dl/{{data.document.path}} ">
         <i class="fa fa-download"></i> {{'download' | translate}}
       </a>
 
@@ -56,15 +48,7 @@
         <button ng-disabled="clipboard.items.length === 0 || (!data.document.permissions.edit || data.document.revisionStatus !== 'DRAFT')" type="button" class="btn btn-default btn-responsive" ng-click="pasteFilesFromClipboard()"><i class="fa fa-clipboard"></i></button>
       </div>
 
-      <file-status-buttons class="inline" ng-class="{'pull-right': screen.is('md, lg')}"
-        document="data.document"
-        documents="selected"
-        on-publish="publish(true)"
-        on-un-publish="publish(false)"
-        on-delete="deleteDocuments()"
-        to-draft="toStatus('DRAFT')"
-        to-under-review="toStatus('UNDER_REVIEW')"
-        to-deleted="toStatus('DELETED')">
+      <file-status-buttons class="inline" ng-class="{'pull-right': screen.is('md, lg')}" document="data.document" documents="selected" on-publish="publish(true)" on-un-publish="publish(false)" on-delete="deleteDocuments()" to-draft="toStatus('DRAFT')" to-under-review="toStatus('UNDER_REVIEW')" to-deleted="toStatus('DELETED')">
       </file-status-buttons>
     </div>
 

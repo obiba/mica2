@@ -1,10 +1,10 @@
 'use strict';
 
 mica.config
-  .controller('MicaConfigController', ['$rootScope', '$scope', '$resource', '$route', '$window', '$log', 'MicaConfigResource', '$modal', '$translate',
+  .controller('MicaConfigController', ['$rootScope', '$scope', '$resource', '$route', '$window', '$log', 'MicaConfigResource', '$uibModal', '$translate',
     'OpalCredentialsResource', 'OpalCredentialResource', 'KeyStoreResource', 'FormServerValidation', 'NOTIFICATION_EVENTS',
 
-    function ($rootScope, $scope, $resource, $route, $window, $log, MicaConfigResource, $modal, $translate,
+    function ($rootScope, $scope, $resource, $route, $window, $log, MicaConfigResource, $uibModal, $translate,
               OpalCredentialsResource, OpalCredentialResource, KeyStoreResource, FormServerValidation, NOTIFICATION_EVENTS) {
       $scope.micaConfig = MicaConfigResource.get();
       $scope.availableLanguages = $resource('ws/config/languages').get();
@@ -29,7 +29,7 @@ mica.config
       };
 
       $scope.createKeyPair = function () {
-        $modal.open({
+        $uibModal.open({
           templateUrl: 'app/config/views/config-modal-create-keypair.html',
           controller: 'CreateKeyPairModalController',
           resolve : {
@@ -45,7 +45,7 @@ mica.config
       };
 
       $scope.importKeyPair = function () {
-        $modal.open({
+        $uibModal.open({
           templateUrl: 'app/config/views/config-modal-import-keypair.html',
           controller: 'ImportKeyPairModalController',
           resolve : {
@@ -61,7 +61,7 @@ mica.config
       };
 
       $scope.createOpalCredentialKeyPair = function () {
-        $modal.open({
+        $uibModal.open({
           templateUrl: 'app/config/views/config-modal-create-keypair.html',
           controller: 'CreateKeyPairModalController',
           resolve: {
@@ -77,7 +77,7 @@ mica.config
       };
 
       $scope.importOpalCredentialKeyPair = function () {
-        $modal.open({
+        $uibModal.open({
           templateUrl: 'app/config/views/config-modal-import-keypair.html',
           controller: 'ImportKeyPairModalController',
           resolve: {
@@ -93,7 +93,7 @@ mica.config
       };
 
       $scope.addOpalCredentialUserPass = function () {
-        $modal.open({
+        $uibModal.open({
           templateUrl: 'app/config/views/config-modal-username-credential.html',
           controller: 'UsernamePasswordModalController',
           resolve: {
@@ -115,7 +115,7 @@ mica.config
       };
 
       $scope.editOpalCredentialCertificate = function(opalCredential) {
-        $modal.open({
+        $uibModal.open({
           templateUrl: 'app/config/views/config-modal-username-credential.html',
           controller: 'UsernamePasswordModalController',
           resolve: {
@@ -166,7 +166,7 @@ mica.config
       });
 
       $scope.addRole = function() {
-        $modal
+        $uibModal
           .open({
             templateUrl: 'app/config/views/config-roles-modal-form.html',
             controller: 'RoleModalController',
@@ -195,8 +195,8 @@ mica.config
       };
     }])
 
-  .controller('ImportKeyPairModalController', ['$scope', '$location', '$modalInstance', 'isOpalCredential',
-    function($scope, $location, $modalInstance, isOpalCredential) {
+  .controller('ImportKeyPairModalController', ['$scope', '$location', '$uibModalInstance', 'isOpalCredential',
+    function($scope, $location, $uibModalInstance, isOpalCredential) {
       $scope.isOpalCredential = isOpalCredential;
       $scope.credential = {opalUrl: ''};
       $scope.keyForm = {
@@ -212,19 +212,19 @@ mica.config
             opalUrl: $scope.credential.opalUrl,
             keyForm: $scope.keyForm
           } : $scope.keyForm;
-          $modalInstance.close(data);
+          $uibModalInstance.close(data);
         }
 
         form.saveAttempted = true;
       };
 
       $scope.cancel = function () {
-        $modalInstance.dismiss('cancel');
+        $uibModalInstance.dismiss('cancel');
       };
     }])
 
-  .controller('CreateKeyPairModalController', ['$scope', '$location', '$modalInstance', 'isOpalCredential',
-    function($scope, $location, $modalInstance, isOpalCredential) {
+  .controller('CreateKeyPairModalController', ['$scope', '$location', '$uibModalInstance', 'isOpalCredential',
+    function($scope, $location, $uibModalInstance, isOpalCredential) {
 
       $scope.isOpalCredential = isOpalCredential;
 
@@ -249,28 +249,27 @@ mica.config
             keyForm: $scope.keyForm
           } : $scope.keyForm;
 
-          $modalInstance.close(data);
+          $uibModalInstance.close(data);
         }
 
         form.saveAttempted = true;
       };
 
       $scope.cancel = function () {
-        $modalInstance.dismiss('cancel');
+        $uibModalInstance.dismiss('cancel');
       };
     }])
 
-  .controller('RoleModalController', ['$scope', '$modalInstance', '$log', 'micaConfig', 'role',
-    function ($scope, $modalInstance, $log, micaConfig, role) {
+  .controller('RoleModalController', ['$scope', '$uibModalInstance', '$log', 'micaConfig', 'role',
+    function ($scope, $uibModalInstance, $log, micaConfig, role) {
       var oldRole = role;
       $scope.role = {id: role};
-      $log.debug('Modal Ctrl scope:', $scope.role);
 
       $scope.save = function (form) {
         form.id.$setValidity('text', !micaConfig.roles || micaConfig.roles.indexOf($scope.role.id) < 0 || $scope.role.id === oldRole);
 
         if (form.$valid) {
-          $modalInstance.close($scope.role.id);
+          $uibModalInstance.close($scope.role.id);
         } else {
           $scope.form = form;
           $scope.form.saveAttempted = true;
@@ -278,14 +277,14 @@ mica.config
       };
 
       $scope.cancel = function () {
-        $modalInstance.dismiss('cancel');
+        $uibModalInstance.dismiss('cancel');
       };
     }])
 
   .controller('UsernamePasswordModalController', ['$scope', '$location',
-    '$modalInstance', 'opalCredential',
+    '$uibModalInstance', 'opalCredential',
 
-    function($scope, $location, $modalInstance, opalCredential) {
+    function($scope, $location, $uibModalInstance, opalCredential) {
       $scope.credential = opalCredential || {opalUrl: '', username: '', password: '', type: 0};
 
       $scope.save = function (form) {
@@ -297,14 +296,14 @@ mica.config
             return;
           }
 
-          $modalInstance.close($scope.credential);
+          $uibModalInstance.close($scope.credential);
         }
 
         form.saveAttempted = true;
       };
 
       $scope.cancel = function () {
-        $modalInstance.dismiss('cancel');
+        $uibModalInstance.dismiss('cancel');
       };
     }])
 

@@ -68,7 +68,7 @@ mica.study
     'CONTACT_EVENTS',
     'StudyTaxonomyService',
     'ActiveTabService',
-    '$modal',
+    '$uibModal',
     'DraftStudyDeleteService',
     'EntityPathBuilder',
     'DocumentPermissionsService',
@@ -96,7 +96,7 @@ mica.study
               CONTACT_EVENTS,
               StudyTaxonomyService,
               ActiveTabService,
-              $modal,
+              $uibModal,
               DraftStudyDeleteService,
               EntityPathBuilder,
               DocumentPermissionsService) {
@@ -410,7 +410,7 @@ mica.study
       };
 
       $scope.showDataCollectionEvent = function (study, population, dce) {
-        $modal.open({
+        $uibModal.open({
           templateUrl: 'app/study/views/population/dce/data-collection-event-view.html',
           controller: 'StudyPopulationDceModalController',
           resolve: {
@@ -492,19 +492,19 @@ mica.study
     };
   }])
 
-  .controller('StudyPopulationDceModalController', ['$scope', '$modalInstance', '$locale', '$location', 'dce', 'study', 'path',
-    function ($scope, $modalInstance, $locale, $location, dce, study, path) {
+  .controller('StudyPopulationDceModalController', ['$scope', '$uibModalInstance', '$locale', '$location', 'dce', 'study', 'path',
+    function ($scope, $uibModalInstance, $locale, $location, dce, study, path) {
       $scope.months = $locale.DATETIME_FORMATS.MONTH;
       $scope.dce = dce;
       $scope.study = study;
       $scope.path = path;
 
       $scope.cancel = function () {
-        $modalInstance.close();
+        $uibModalInstance.close();
       };
 
       $scope.viewFiles = function () {
-        $modalInstance.close();
+        $uibModalInstance.close();
         $location.path(path.root).search({p: path.entity});
       };
     }])
@@ -929,7 +929,7 @@ mica.study
     '$routeParams',
     '$log',
     '$location',
-    '$modal',
+    '$uibModal',
     'DraftStudyResource',
     'DraftStudiesResource',
     'MicaConfigResource',
@@ -943,7 +943,7 @@ mica.study
               $routeParams,
               $log,
               $location,
-              $modal,
+              $uibModal,
               DraftStudyResource,
               DraftStudiesResource,
               MicaConfigResource,

@@ -21,14 +21,14 @@ mica.permission
   };
 }])
 
-.controller('PermissionsController', ['$rootScope', '$scope', '$modal','NOTIFICATION_EVENTS',
-  function ($rootScope, $scope, $modal, NOTIFICATION_EVENTS) {
+.controller('PermissionsController', ['$rootScope', '$scope', '$uibModal','NOTIFICATION_EVENTS',
+  function ($rootScope, $scope, $uibModal, NOTIFICATION_EVENTS) {
     $scope.pagination = {searchText: ''};
 
     // draft permissions
 
     function editPermission(acl) {
-      $modal.open({
+      $uibModal.open({
         templateUrl: 'app/permission/permission-modal-form.html',
         controller: 'PermissionsModalController',
         resolve: {
@@ -81,7 +81,7 @@ mica.permission
     // published permissions (=access)
 
     function editAccess(acl) {
-      $modal.open({
+      $uibModal.open({
         templateUrl: 'app/permission/access-modal-form.html',
         controller: 'AccessesModalController',
         resolve: {
@@ -128,13 +128,13 @@ mica.permission
   }])
 
 .controller('PermissionsModalController', ['$scope',
-  '$modalInstance',
+  '$uibModalInstance',
   '$filter',
   'AlertService',
   'ServerErrorUtils',
   'acl',
   'onAdd',
-  function ($scope, $modalInstance, $filter, AlertService, ServerErrorUtils, acl, onAdd) {
+  function ($scope, $uibModalInstance, $filter, AlertService, ServerErrorUtils, acl, onAdd) {
     $scope.ROLES = ['READER', 'EDITOR', 'REVIEWER'];
     $scope.TYPES = [
       {name: 'USER', label: $filter('translate')('permission.user')},
@@ -154,7 +154,7 @@ mica.permission
       if(form.$valid) {
         $scope.acl.type = $scope.selectedType.name;
         onAdd($scope.acl).$promise.then(function () {
-          $modalInstance.close(true);
+          $uibModalInstance.close(true);
         }, function (response) {
           AlertService.alert({
             id: 'formAlert',
@@ -168,18 +168,18 @@ mica.permission
     };
 
     $scope.cancel = function () {
-      $modalInstance.close();
+      $uibModalInstance.close();
     };
   }])
 
 .controller('AccessesModalController', ['$scope',
-  '$modalInstance',
+  '$uibModalInstance',
   '$filter',
   'AlertService',
   'ServerErrorUtils',
   'acl',
   'onAdd',
-  function ($scope, $modalInstance, $filter, AlertService, ServerErrorUtils, acl, onAdd) {
+  function ($scope, $uibModalInstance, $filter, AlertService, ServerErrorUtils, acl, onAdd) {
     $scope.TYPES = [
       {name: 'USER', label: $filter('translate')('permission.user')},
       {name: 'GROUP', label: $filter('translate')('permission.group')}
@@ -197,7 +197,7 @@ mica.permission
       if(form.$valid) {
         $scope.acl.type = $scope.selectedType.name;
         onAdd($scope.acl).$promise.then(function () {
-          $modalInstance.close(true);
+          $uibModalInstance.close(true);
         }, function (response) {
           AlertService.alert({
             id: 'formAlert',
@@ -211,6 +211,6 @@ mica.permission
     };
 
     $scope.cancel = function () {
-      $modalInstance.close();
+      $uibModalInstance.close();
     };
   }]);

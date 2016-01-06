@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2015-12-07
+ * Date: 2016-01-06
  */
 'use strict';
 
@@ -695,7 +695,7 @@ angular.module('obiba.mica.access')
     '$scope',
     '$routeParams',
     '$location',
-    '$modal',
+    '$uibModal',
     'DataAccessRequestsResource',
     'DataAccessRequestResource',
     'DataAccessFormConfigResource',
@@ -707,7 +707,7 @@ angular.module('obiba.mica.access')
     'ngObibaMicaAccessTemplateUrl',
     'DataAccessRequestConfig',
 
-    function ($log, $scope, $routeParams, $location, $modal,
+    function ($log, $scope, $routeParams, $location, $uibModal,
               DataAccessRequestsResource,
               DataAccessRequestResource,
               DataAccessFormConfigResource,
@@ -735,7 +735,7 @@ angular.module('obiba.mica.access')
       var validate = function() {
         $scope.$broadcast('schemaFormValidate');
 
-        $modal.open({
+        $uibModal.open({
           scope: $scope,
           templateUrl: 'access/views/data-access-request-validation-modal.html',
         });
@@ -1399,8 +1399,8 @@ angular.module("access/views/data-access-request-view.html", []).run(["$template
     "\n" +
     "    <div class=\"clearfix\"></div>\n" +
     "\n" +
-    "    <tabset class=\"voffset5\">\n" +
-    "      <tab ng-click=\"selectTab('form')\" heading=\"{{'data-access-request.form' | translate}}\">\n" +
+    "    <uib-tabset class=\"voffset5\">\n" +
+    "      <uib-tab ng-click=\"selectTab('form')\" heading=\"{{'data-access-request.form' | translate}}\">\n" +
     "        <form id=\"request-form\" name=\"forms.requestForm\">\n" +
     "          <div sf-model=\"form.model\" sf-form=\"form.definition\" sf-schema=\"form.schema\"></div>\n" +
     "        </form>\n" +
@@ -1412,15 +1412,15 @@ angular.module("access/views/data-access-request-view.html", []).run(["$template
     "\n" +
     "        <attachment-list files=\"dataAccessRequest.attachments\"\n" +
     "            href-builder=\"getDownloadHref(attachments, id)\"></attachment-list>\n" +
-    "      </tab>\n" +
-    "      <tab ng-if=\"config.commentsEnabled\" ng-click=\"selectTab('comments')\" heading=\"{{'data-access-request.comments' | translate}}\">\n" +
+    "      </uib-tab>\n" +
+    "      <uib-tab ng-if=\"config.commentsEnabled\" ng-click=\"selectTab('comments')\" heading=\"{{'data-access-request.comments' | translate}}\">\n" +
     "        <obiba-comments comments=\"form.comments\" on-update=\"updateComment\" on-delete=\"deleteComment\" name-resolver=\"userProfileService.getFullName\" edit-action=\"EDIT\" delete-action=\"DELETE\"></obiba-comments>\n" +
     "        <obiba-comment-editor on-submit=\"submitComment\"></obiba-comment-editor>\n" +
-    "      </tab>\n" +
-    "      <tab ng-click=\"selectTab('history')\" heading=\"{{'data-access-request.history' | translate}}\">\n" +
+    "      </uib-tab>\n" +
+    "      <uib-tab ng-click=\"selectTab('history')\" heading=\"{{'data-access-request.history' | translate}}\">\n" +
     "        <div ng-include=\"'access/views/data-access-request-histroy-view.html'\"></div>\n" +
-    "      </tab>\n" +
-    "    </tabset>\n" +
+    "      </uib-tab>\n" +
+    "    </uib-tabset>\n" +
     "  </div>\n" +
     "\n" +
     "</div>\n" +
@@ -1436,9 +1436,9 @@ angular.module("attachment/attachment-input-template.html", []).run(["$templateC
     "  <tr ng-repeat=\"file in files\">\n" +
     "    <td>\n" +
     "      {{file.fileName}}\n" +
-    "      <progressbar ng-show=\"file.showProgressBar\" class=\"progress-striped\" value=\"file.progress\">\n" +
+    "      <uib-progressbar ng-show=\"file.showProgressBar\" class=\"progress-striped\" value=\"file.progress\">\n" +
     "        {{file.progress}}%\n" +
-    "      </progressbar>\n" +
+    "      </uib-progressbar>\n" +
     "    </td>\n" +
     "    <td>\n" +
     "      {{file.size | bytes}}\n" +

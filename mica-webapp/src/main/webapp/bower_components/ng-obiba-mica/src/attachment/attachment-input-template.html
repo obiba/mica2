@@ -5,9 +5,9 @@
   <tr ng-repeat="file in files">
     <td>
       {{file.fileName}}
-      <progressbar ng-show="file.showProgressBar" class="progress-striped" value="file.progress">
+      <uib-progressbar ng-show="file.showProgressBar" class="progress-striped" value="file.progress">
         {{file.progress}}%
-      </progressbar>
+      </uib-progressbar>
     </td>
     <td>
       {{file.size | bytes}}

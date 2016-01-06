@@ -1,14 +1,41 @@
 {
   "name": "filesize",
-  "homepage": "https://github.com/avoidwork/filesize.js",
-  "version": "3.1.2",
-  "_release": "3.1.2",
+  "description": "JavaScript library to generate a human readable String describing the file size",
+  "keywords": [
+    "file",
+    "filesize",
+    "size",
+    "readable",
+    "file system"
+  ],
+  "homepage": "http://filesizejs.com",
+  "main": [
+    "./lib/filesize.js"
+  ],
+  "ignore": [
+    "test",
+    ".gitignore"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:avoidwork/filesize.js.git"
+  },
+  "authors": [
+    {
+      "name": "Jason Mulligan",
+      "email": "jason.mulligan@avoidwork.com",
+      "homepage": "http://avoidwork.com"
+    }
+  ],
+  "license": "BSD-3-Clause",
+  "version": "3.1.5",
+  "_release": "3.1.5",
   "_resolution": {
     "type": "version",
-    "tag": "3.1.2",
-    "commit": "a4448cdb63d1828c07ae3d2f8e1385d31f693135"
+    "tag": "3.1.5",
+    "commit": "3d91a7f260b0dabec952342fc1da82f473d10c3e"
   },
   "_source": "git://github.com/avoidwork/filesize.js.git",
-  "_target": "3.1.2",
+  "_target": "3.1.5",
   "_originalSource": "filesize"
 }
