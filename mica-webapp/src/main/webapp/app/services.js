@@ -107,7 +107,9 @@ mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStor
           return (result === null) ? null : result[1];
         }
 
-        if (!getSidCookie('obibaid') && !getSidCookie('micasid')) {
+        var obibaCookie = getSidCookie('obibaid');
+
+        if (!obibaCookie && !getSidCookie('micasid')) {
           // session has terminated, cleanup
           Session.destroy();
           return false;
@@ -118,7 +120,7 @@ mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStor
           // check if there is a cookie for the subject
           var subjectCookie = $cookieStore.get('mica_subject');
           if (subjectCookie !== null && subjectCookie) {
-            var account = JSON.parse($cookieStore.get('mica_subject'));
+            var account = JSON.parse(subjectCookie);
             Session.create(account.login, account.roles);
             UserProfile.get({id: account.login}, function(data){
               Session.setProfile(data);
@@ -127,13 +129,15 @@ mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStor
             return true;
           }
           // check if there is a Obiba session
-          var obibaCookie = $cookies.obibaid;
-          if (obibaCookie !== null && obibaCookie) {
+          if (obibaCookie) {
             CurrentSession.get(function (data) {
               Session.create(data.username, data.roles);
               $cookieStore.put('mica_subject', JSON.stringify(Session));
               authService.loginConfirmed(data);
+            }, function () {
+              Session.destroy();
             });
+            return true;
           }
         }
         return !!Session.login;
