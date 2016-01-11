@@ -25,7 +25,6 @@ import org.eclipse.jetty.servlets.GzipFilter;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.obiba.mica.web.filter.CachingHttpHeadersFilter;
 import org.obiba.mica.web.filter.StaticResourcesProductionFilter;
-import org.obiba.shiro.web.filter.AuthenticationFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -75,9 +74,6 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
 
   @Inject
   private MetricRegistry metricRegistry;
-
-  @Inject
-  private AuthenticationFilter authenticationFilter;
 
   @Inject
   private org.obiba.ssl.SslContextFactory sslContextFactory;
@@ -131,7 +127,7 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
     log.info("Web application configuration, using profiles: {}", Arrays.toString(env.getActiveProfiles()));
 
     initAllowedMethods(servletContext);
-    initAuthenticationFilter(servletContext);
+    // Note: authentication filter was already added by Spring
 
     EnumSet<DispatcherType> disps = EnumSet.of(REQUEST, FORWARD, ASYNC);
     initMetrics(servletContext, disps);
@@ -152,22 +148,6 @@ public class WebConfiguration implements ServletContextInitializer, JettyServerC
     FilterRegistration.Dynamic filterRegistration = servletContext.addFilter("noTrace", new NoTraceFilter());
 
     filterRegistration.addMappingForUrlPatterns(EnumSet.of(REQUEST, FORWARD, ASYNC, INCLUDE, ERROR), true, "/*");
-    filterRegistration.setAsyncSupported(true);
-  }
-
-  private void initAuthenticationFilter(ServletContext servletContext) {
-    log.debug("Registering Authentication Filter");
-    FilterRegistration.Dynamic filterRegistration = servletContext
-      .addFilter("authenticationFilter", authenticationFilter);
-
-    if(filterRegistration == null) {
-      filterRegistration = (FilterRegistration.Dynamic) servletContext.getFilterRegistration("authenticationFilter");
-    }
-
-    log.debug("Adding mappging to authentication filter registration");
-
-    filterRegistration
-      .addMappingForUrlPatterns(EnumSet.of(REQUEST, FORWARD, ASYNC, INCLUDE, ERROR), true, WS_ROOT + "/*");
     filterRegistration.setAsyncSupported(true);
   }
 
