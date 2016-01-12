@@ -132,6 +132,9 @@ mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStor
           if (obibaCookie) {
             CurrentSession.get(function (data) {
               Session.create(data.username, data.roles);
+              UserProfile.get({id: data.username}, function(data){
+                Session.setProfile(data);
+              });
               $cookieStore.put('mica_subject', JSON.stringify(Session));
               authService.loginConfirmed(data);
             }, function () {
