@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Copyright 2014(c) The OBiBa Consortium. All rights reserved.
- *
+ * <p>
  * This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
@@ -23,6 +23,7 @@ import javax.ws.rs.core.Response;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.session.InvalidSessionException;
+import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.web.model.Mica;
@@ -39,20 +40,28 @@ public class CurrentSessionResource {
   public Response deleteSession() {
     // Delete the Shiro session
     try {
+      Session session = SecurityUtils.getSubject().getSession();
+      Object cookieValue = session.getAttribute(HttpHeaders.SET_COOKIE);
       SecurityUtils.getSubject().logout();
-      return Response.ok().header(HttpHeaders.SET_COOKIE,
-          new NewCookie(OBIBA_ID_COOKIE_NAME, null, "/", null, "Obiba session deleted", 0, false)).build();
+
+      if(cookieValue != null) {
+        NewCookie cookie = NewCookie.valueOf(cookieValue.toString());
+        if (OBIBA_ID_COOKIE_NAME.equals(cookie.getName())) {
+          return Response.ok().header(HttpHeaders.SET_COOKIE,
+            new NewCookie(OBIBA_ID_COOKIE_NAME, null, "/", cookie.getDomain(), "Obiba session deleted", 0, cookie.isSecure())).build();
+        }
+      }
     } catch(InvalidSessionException e) {
       // Ignore
-      return Response.ok().build();
     }
+    return Response.ok().build();
   }
 
   @GET
   public Mica.SessionDto get() {
     Subject subject = SecurityUtils.getSubject();
     Mica.SessionDto.Builder builder = Mica.SessionDto.newBuilder() //
-        .setUsername(subject.getPrincipal().toString());
+      .setUsername(subject.getPrincipal().toString());
     List<String> roles = //
       Arrays.asList(Roles.MICA_ADMIN, Roles.MICA_REVIEWER, Roles.MICA_EDITOR, Roles.MICA_DAO, Roles.MICA_USER); //
 
