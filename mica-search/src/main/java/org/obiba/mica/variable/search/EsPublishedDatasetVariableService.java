@@ -107,12 +107,12 @@ public class EsPublishedDatasetVariableService extends AbstractPublishedDocument
 
   private QueryBuilder buildStudiesFilteredQuery(List<String> ids) {
     BoolQueryBuilder boolFilter = QueryBuilders.boolQuery().must(QueryBuilders.termsQuery(STUDY_IDS_FIELD, ids));
-    return QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), boolFilter);
+    return QueryBuilders.boolQuery().must(QueryBuilders.matchAllQuery()).must(boolFilter);
   }
 
   private QueryBuilder buildStudyFilteredQuery(String id) {
     BoolQueryBuilder boolFilter = QueryBuilders.boolQuery().must(QueryBuilders.termQuery(STUDY_IDS_FIELD, id));
-    return QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), boolFilter);
+    return QueryBuilders.boolQuery().must(QueryBuilders.matchAllQuery()).must(boolFilter);
   }
 
   private SearchResponse executeCountQuery(QueryBuilder queryBuilder, AbstractAggregationBuilder aggregationBuilder) {
@@ -122,7 +122,7 @@ public class EsPublishedDatasetVariableService extends AbstractPublishedDocument
       .setTypes(getType()) //
       .setSize(0) //
       .setQuery(
-        accessFilter == null ? queryBuilder : QueryBuilders.filteredQuery(queryBuilder, accessFilter)) //
+        accessFilter == null ? queryBuilder : QueryBuilders.boolQuery().must(queryBuilder).must(accessFilter)) //
       .setFrom(0) //
       .setSize(0);
 

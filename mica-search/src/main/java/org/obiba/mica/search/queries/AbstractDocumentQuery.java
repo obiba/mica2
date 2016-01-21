@@ -174,7 +174,7 @@ public abstract class AbstractDocumentQuery {
       .setSearchType(SearchType.COUNT) //
       .setQuery(accessFilter == null
         ? queryDtoParser.parse(queryDto)
-        : QueryBuilders.filteredQuery(queryDtoParser.parse(queryDto), accessFilter)) //
+        : QueryBuilders.boolQuery().must(queryDtoParser.parse(queryDto)).must(accessFilter)) //
       .setNoFields();
 
     aggregationYamlParser.getAggregations(getJoinFieldsAsProperties()).forEach(requestBuilder::addAggregation);
@@ -246,7 +246,7 @@ public abstract class AbstractDocumentQuery {
       .setSearchType(scope == DETAIL ? SearchType.DFS_QUERY_THEN_FETCH : SearchType.COUNT) //
       .setQuery(accessFilter == null
         ? QueryBuilders.matchAllQuery()
-        : QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), accessFilter)) //
+        : QueryBuilders.boolQuery().must(QueryBuilders.matchAllQuery()).must(accessFilter)) //
       .setFrom(from) //
       .setSize(size) //
       .setNoFields().addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT)); //
@@ -256,7 +256,7 @@ public abstract class AbstractDocumentQuery {
       .setSearchType(scope == DETAIL ? SearchType.DFS_QUERY_THEN_FETCH : SearchType.COUNT) //
       .setQuery(accessFilter == null
         ? queryDtoParser.parse(queryDto)
-        : QueryBuilders.filteredQuery(queryDtoParser.parse(queryDto), accessFilter)) //
+        : QueryBuilders.boolQuery().must(queryDtoParser.parse(queryDto)).must(accessFilter)) //
       .setFrom(from) //
       .setSize(size) //
       .addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT)); // ;
@@ -342,7 +342,7 @@ public abstract class AbstractDocumentQuery {
       .setSearchType(SearchType.COUNT) //
       .setQuery(accessFilter == null
         ? QueryBuilders.matchAllQuery()
-        : QueryBuilders.filteredQuery(QueryBuilders.matchAllQuery(), accessFilter)) //
+        : QueryBuilders.boolQuery().must(QueryBuilders.matchAllQuery()).must(accessFilter)) //
       .setFrom(0) //
       .setSize(0) // no results needed for a coverage
       .setNoFields().addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT));
@@ -352,7 +352,7 @@ public abstract class AbstractDocumentQuery {
       .setSearchType(SearchType.COUNT) //
       .setQuery(accessFilter == null
         ? queryDtoParser.parse(query)
-        : QueryBuilders.filteredQuery(queryDtoParser.parse(query), accessFilter)) //
+        : QueryBuilders.boolQuery().must(queryDtoParser.parse(query)).must(accessFilter)) //
       .setFrom(0) //
       .setSize(0) // no results needed for a coverage
       .addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT));

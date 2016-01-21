@@ -179,7 +179,7 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
       .setTypes(getType()) //
       .setSearchType(SearchType.DFS_QUERY_THEN_FETCH) //
       .setQuery(
-        accessFilter == null ? queryBuilder : QueryBuilders.filteredQuery(queryBuilder, accessFilter)) //
+        accessFilter == null ? queryBuilder : QueryBuilders.boolQuery().must(queryBuilder).must(accessFilter)) //
       .setFrom(from) //
       .setSize(size);
 
