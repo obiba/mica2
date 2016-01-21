@@ -21,7 +21,9 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.search.CoverageQueryExecutor;
@@ -64,6 +66,14 @@ public class PublishedDatasetVariablesSearchResource {
   @Path("_search")
   public MicaSearch.JoinQueryResultDto list(MicaSearch.JoinQueryDto joinQueryDto) throws IOException {
     return joinQueryExecutor.query(JoinQueryExecutor.QueryType.VARIABLE, joinQueryDto);
+  }
+
+  @GET
+  @Path("/_query")
+  @Timed
+  public Response get(@Context UriInfo uriInfo) {
+    String query = uriInfo.getRequestUri().getQuery();
+    return Response.ok().build();
   }
 
   /**

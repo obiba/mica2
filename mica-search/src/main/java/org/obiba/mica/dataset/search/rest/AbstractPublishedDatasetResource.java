@@ -310,7 +310,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
     }
 
     public QueryBuilder build(QueryBuilder query) {
-      return QueryBuilders.filteredQuery(query, boolFilter);
+      return QueryBuilders.boolQuery().must(query).must(boolFilter);
     }
   }
 }

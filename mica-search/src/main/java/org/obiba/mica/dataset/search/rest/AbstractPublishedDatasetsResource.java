@@ -83,7 +83,7 @@ public abstract class AbstractPublishedDatasetsResource<T extends Dataset> {
     SearchRequestBuilder search = client.prepareSearch() //
       .setIndices(DatasetIndexer.PUBLISHED_DATASET_INDEX) //
       .setTypes(DatasetIndexer.DATASET_TYPE) //
-      .setQuery(postFilter == null ? query : QueryBuilders.filteredQuery(query, postFilter)) //
+      .setQuery(postFilter == null ? query : QueryBuilders.boolQuery().must(query).must(postFilter)) //
       .setFrom(from) //
       .setSize(limit);
 

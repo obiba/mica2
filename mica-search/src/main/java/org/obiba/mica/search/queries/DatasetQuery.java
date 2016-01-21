@@ -276,7 +276,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
       .setSize(0) //
-      .setQuery(accessFilter == null ? query : QueryBuilders.filteredQuery(query, accessFilter)) //
+      .setQuery(accessFilter == null ? query : QueryBuilders.boolQuery().must(query).must(accessFilter)) //
       .setNoFields();
 
     Properties props = new Properties();

@@ -58,7 +58,7 @@ public class QueryDtoParser {
   }
 
   private QueryBuilder parseFilterQuery(QueryBuilder query, MicaSearch.FilteredQueryDto filteredQueryDto) {
-    return QueryBuilders.filteredQuery(query, parseFilteredQuery(filteredQueryDto));
+    return QueryBuilders.boolQuery().must(query).must(parseFilteredQuery(filteredQueryDto));
   }
 
   private QueryBuilder parseFilteredQuery(MicaSearch.FilteredQueryDto filteredQueryDto) {

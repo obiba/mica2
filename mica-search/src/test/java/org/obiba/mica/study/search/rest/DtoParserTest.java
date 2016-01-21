@@ -59,10 +59,10 @@ public class DtoParserTest {
     QueryDtoParser parser = QueryDtoParser.newParser();
 
     ObjectMapper mapper = new ObjectMapper();
-    JsonNode node1 = mapper.readTree(
-      "{\"filtered\": {\"query\": {\"match_all\": {} }, \"filter\": {\"bool\": {\"must\": [{\"terms\": {\"access\": [\"data\", \"bio-samples\"] } }, {\"terms\": {\"start\": [\"2002\"] } } ] } } } }");
-    JsonNode node2 = mapper.readTree(parser.parse(queryDto).toString());
-    assertThat(node1).isEqualTo(node2);
+    JsonNode expected = mapper.readTree(
+      "{\"bool\":{\"must\":[{\"match_all\":{}},{\"bool\":{\"must\":[{\"terms\":{\"access\":[\"data\",\"bio-samples\"]}},{\"terms\":{\"start\":[\"2002\"]}}]}}]}}");
+    JsonNode actual = mapper.readTree(parser.parse(queryDto).toString());
+    assertThat(actual).isEqualTo(expected);
   }
 
   @Test
@@ -89,33 +89,10 @@ public class DtoParserTest {
     QueryDtoParser parser = QueryDtoParser.newParser();
     System.out.println(parser.parse(queryDto).toString());
     ObjectMapper mapper = new ObjectMapper();
-    JsonNode expected = mapper.readTree("{\n" +
-      "  \"filtered\" : {\n" +
-      "    \"query\" : {\n" +
-      "      \"match_all\" : { }\n" +
-      "    },\n" +
-      "    \"filter\" : {\n" +
-      "      \"bool\" : {\n" +
-      "        \"must\" : [ {\n" +
-      "          \"terms\" : {\n" +
-      "            \"Study.populations.dataCollectionEvents.id\" : [ \"53f4b8ab6cf07b0996deb4f7\" ]\n" +
-      "          }\n" +
-      "        }, {\n" +
-      "          \"range\" : {\n" +
-      "            \"Study.populations.dataCollectionEvents.end\" : {\n" +
-      "              \"from\" : \"2002\",\n" +
-      "              \"to\" : \"2012\",\n" +
-      "              \"include_lower\" : true,\n" +
-      "              \"include_upper\" : true\n" +
-      "            }\n" +
-      "          }\n" +
-      "        } ]\n" +
-      "      }\n" +
-      "    }\n" +
-      "  }\n" +
-      "}");
+    JsonNode expected = mapper.readTree(
+      "{\"bool\":{\"must\":[{\"match_all\":{}},{\"bool\":{\"must\":[{\"terms\":{\"Study.populations.dataCollectionEvents.id\":[\"53f4b8ab6cf07b0996deb4f7\"]}},{\"range\":{\"Study.populations.dataCollectionEvents.end\":{\"from\":\"2002\",\"to\":\"2012\",\"include_lower\":true,\"include_upper\":true}}}]}}]}}");
     JsonNode actual = mapper.readTree(parser.parse(queryDto).toString());
-    assertThat(expected).isEqualTo(actual);
+    assertThat(actual).isEqualTo(expected);
   }
 
   @Test
@@ -151,47 +128,11 @@ public class DtoParserTest {
     QueryDtoParser parser = QueryDtoParser.newParser();
     //System.out.println(parser.parse(queryDto).toString());
     ObjectMapper mapper = new ObjectMapper();
-    JsonNode expected = mapper.readTree("{\n" +
-      "  \"filtered\" : {\n" +
-      "    \"query\" : {\n" +
-      "      \"match_all\" : { }\n" +
-      "    },\n" +
-      "    \"filter\" : {\n" +
-      "      \"bool\" : {\n" +
-      "        \"must\" : [ {\n" +
-      "          \"terms\" : {\n" +
-      "            \"Study.populations.dataCollectionEvents.id\" : [ \"53f4b8ab6cf07b0996deb4f7\" ]\n" +
-      "          }\n" +
-      "        }, {\n" +
-      "          \"bool\" : {\n" +
-      "            \"should\" : {\n" +
-      "              \"range\" : {\n" +
-      "                \"Study.populations.dataCollectionEvents.end\" : {\n" +
-      "                  \"from\" : \"2002\",\n" +
-      "                  \"to\" : \"2012\",\n" +
-      "                  \"include_lower\" : true,\n" +
-      "                  \"include_upper\" : true\n" +
-      "                }\n" +
-      "              }\n" +
-      "            }\n" +
-      "          }\n" +
-      "        }, {\n" +
-      "          \"bool\" : {\n" +
-      "            \"must_not\" : {\n" +
-      "              \"terms\" : {\n" +
-      "                \"Study.populations.dataCollectionEvents.id\" : [ \"aaaaaa\" ]\n" +
-      "              }\n" +
-      "            }\n" +
-      "          }\n" +
-      "        } ]\n" +
-      "      }\n" +
-      "    }\n" +
-      "  }\n" +
-      "}");
+    JsonNode expected = mapper.readTree(
+      "{\"bool\":{\"must\":[{\"match_all\":{}},{\"bool\":{\"must\":[{\"terms\":{\"Study.populations.dataCollectionEvents.id\":[\"53f4b8ab6cf07b0996deb4f7\"]}},{\"bool\":{\"should\":{\"range\":{\"Study.populations.dataCollectionEvents.end\":{\"from\":\"2002\",\"to\":\"2012\",\"include_lower\":true,\"include_upper\":true}}}}},{\"bool\":{\"must_not\":{\"terms\":{\"Study.populations.dataCollectionEvents.id\":[\"aaaaaa\"]}}}}]}}]}}");
     JsonNode actual = mapper.readTree(parser.parse(queryDto).toString());
     assertThat(actual).isEqualTo(expected);
   }
-
 
   @Test
   public void test_query_dto_parser_logical_or_and() throws IOException {
@@ -211,10 +152,8 @@ public class DtoParserTest {
         TermsFilterQueryDto.newBuilder().addAllValues(Arrays.asList("aaaaaa")).build()).build();
 
     LogicalFilterQueryDto logicalDto = LogicalFilterQueryDto.newBuilder() //
-      .addFields(FieldStatementDto.newBuilder().setField(termsDto)
-        .setOp(FieldStatementDto.Operator._OR)) //
-      .addFields(FieldStatementDto.newBuilder().setField(rangeDto).setOp(
-        FieldStatementDto.Operator._AND)) //
+      .addFields(FieldStatementDto.newBuilder().setField(termsDto).setOp(FieldStatementDto.Operator._OR)) //
+      .addFields(FieldStatementDto.newBuilder().setField(rangeDto).setOp(FieldStatementDto.Operator._AND)) //
       .addFields(FieldStatementDto.newBuilder().setField(badTermsDto)) //
       .build();
 
@@ -224,39 +163,8 @@ public class DtoParserTest {
     QueryDtoParser parser = QueryDtoParser.newParser();
     System.out.println(parser.parse(queryDto).toString());
     ObjectMapper mapper = new ObjectMapper();
-    JsonNode expected = mapper.readTree("{\n" +
-      "  \"filtered\" : {\n" +
-      "    \"query\" : {\n" +
-      "      \"match_all\" : { }\n" +
-      "    },\n" +
-      "    \"filter\" : {\n" +
-      "      \"bool\" : {\n" +
-      "        \"must\" : [ {\n" +
-      "          \"bool\" : {\n" +
-      "            \"should\" : [ {\n" +
-      "              \"terms\" : {\n" +
-      "                \"Study.populations.dataCollectionEvents.id\" : [ \"53f4b8ab6cf07b0996deb4f7\" ]\n" +
-      "              }\n" +
-      "            }, {\n" +
-      "              \"range\" : {\n" +
-      "                \"Study.populations.dataCollectionEvents.end\" : {\n" +
-      "                  \"from\" : \"2002\",\n" +
-      "                  \"to\" : \"2012\",\n" +
-      "                  \"include_lower\" : true,\n" +
-      "                  \"include_upper\" : true\n" +
-      "                }\n" +
-      "              }\n" +
-      "            } ]\n" +
-      "          }\n" +
-      "        }, {\n" +
-      "          \"terms\" : {\n" +
-      "            \"Study.populations.dataCollectionEvents.id\" : [ \"aaaaaa\" ]\n" +
-      "          }\n" +
-      "        } ]\n" +
-      "      }\n" +
-      "    }\n" +
-      "  }\n" +
-      "}");
+    JsonNode expected = mapper.readTree(
+      "{\"bool\":{\"must\":[{\"match_all\":{}},{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"terms\":{\"Study.populations.dataCollectionEvents.id\":[\"53f4b8ab6cf07b0996deb4f7\"]}},{\"range\":{\"Study.populations.dataCollectionEvents.end\":{\"from\":\"2002\",\"to\":\"2012\",\"include_lower\":true,\"include_upper\":true}}}]}},{\"terms\":{\"Study.populations.dataCollectionEvents.id\":[\"aaaaaa\"]}}]}}]}}");
     JsonNode actual = mapper.readTree(parser.parse(queryDto).toString());
     assertThat(actual).isEqualTo(expected);
   }
@@ -279,10 +187,8 @@ public class DtoParserTest {
         TermsFilterQueryDto.newBuilder().addAllValues(Arrays.asList("aaaaaa")).build()).build();
 
     LogicalFilterQueryDto logicalDto = LogicalFilterQueryDto.newBuilder() //
-      .addFields(FieldStatementDto.newBuilder().setField(termsDto)
-        .setOp(FieldStatementDto.Operator._OR)) //
-      .addFields(FieldStatementDto.newBuilder().setField(rangeDto).setOp(
-        FieldStatementDto.Operator._AND_NOT)) //
+      .addFields(FieldStatementDto.newBuilder().setField(termsDto).setOp(FieldStatementDto.Operator._OR)) //
+      .addFields(FieldStatementDto.newBuilder().setField(rangeDto).setOp(FieldStatementDto.Operator._AND_NOT)) //
       .addFields(FieldStatementDto.newBuilder().setField(badTermsDto)) //
       .build();
 
@@ -292,43 +198,8 @@ public class DtoParserTest {
     QueryDtoParser parser = QueryDtoParser.newParser();
     System.out.println(parser.parse(queryDto).toString());
     ObjectMapper mapper = new ObjectMapper();
-    JsonNode expected = mapper.readTree("{\n" +
-      "  \"filtered\" : {\n" +
-      "    \"query\" : {\n" +
-      "      \"match_all\" : { }\n" +
-      "    },\n" +
-      "    \"filter\" : {\n" +
-      "      \"bool\" : {\n" +
-      "        \"must\" : [ {\n" +
-      "          \"bool\" : {\n" +
-      "            \"should\" : [ {\n" +
-      "              \"terms\" : {\n" +
-      "                \"Study.populations.dataCollectionEvents.id\" : [ \"53f4b8ab6cf07b0996deb4f7\" ]\n" +
-      "              }\n" +
-      "            }, {\n" +
-      "              \"range\" : {\n" +
-      "                \"Study.populations.dataCollectionEvents.end\" : {\n" +
-      "                  \"from\" : \"2002\",\n" +
-      "                  \"to\" : \"2012\",\n" +
-      "                  \"include_lower\" : true,\n" +
-      "                  \"include_upper\" : true\n" +
-      "                }\n" +
-      "              }\n" +
-      "            } ]\n" +
-      "          }\n" +
-      "        }, {\n" +
-      "          \"bool\" : {\n" +
-      "            \"must_not\" : {\n" +
-      "              \"terms\" : {\n" +
-      "                \"Study.populations.dataCollectionEvents.id\" : [ \"aaaaaa\" ]\n" +
-      "              }\n" +
-      "            }\n" +
-      "          }\n" +
-      "        } ]\n" +
-      "      }\n" +
-      "    }\n" +
-      "  }\n" +
-      "}");
+    JsonNode expected = mapper.readTree(
+      "{\"bool\":{\"must\":[{\"match_all\":{}},{\"bool\":{\"must\":[{\"bool\":{\"should\":[{\"terms\":{\"Study.populations.dataCollectionEvents.id\":[\"53f4b8ab6cf07b0996deb4f7\"]}},{\"range\":{\"Study.populations.dataCollectionEvents.end\":{\"from\":\"2002\",\"to\":\"2012\",\"include_lower\":true,\"include_upper\":true}}}]}},{\"bool\":{\"must_not\":{\"terms\":{\"Study.populations.dataCollectionEvents.id\":[\"aaaaaa\"]}}}}]}}]}}");
     JsonNode actual = mapper.readTree(parser.parse(queryDto).toString());
     assertThat(actual).isEqualTo(expected);
   }
