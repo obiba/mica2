@@ -37,7 +37,6 @@ import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.aggregations.AggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.NetworkAggregationMetaDataProvider;
-import org.obiba.mica.search.rest.QueryDtoParser;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
@@ -150,7 +149,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
       .setSearchType(SearchType.COUNT) //
-      .setQuery(queryDto == null ? QueryBuilders.matchAllQuery() : QueryDtoParser.newParser().parse(queryDto)) //
+      .setQuery(hasQueryBuilder() ? getQueryBuilder() : QueryBuilders.matchAllQuery()) //
       .setNoFields();
 
     Properties props = new Properties();
