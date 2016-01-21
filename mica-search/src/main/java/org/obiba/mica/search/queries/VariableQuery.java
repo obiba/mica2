@@ -29,6 +29,7 @@ import javax.validation.constraints.NotNull;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.TermsQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.obiba.mica.core.domain.AttributeKey;
@@ -46,7 +47,6 @@ import org.obiba.mica.search.aggregations.DataCollectionEventAggregationMetaData
 import org.obiba.mica.search.aggregations.DatasetAggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.StudyAggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.TaxonomyAggregationMetaDataProvider;
-import org.obiba.mica.search.rest.QueryDtoHelper;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
@@ -126,11 +126,9 @@ public class VariableQuery extends AbstractDocumentQuery {
   public QueryBuilder getAccessFilter() {
     if(micaConfigService.getConfig().isOpenAccess()) return null;
     List<String> ids = studyDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
-      .filter(s -> subjectAclService.isAccessible("/study-dataset", s))
-      .collect(Collectors.toList());
+      .filter(s -> subjectAclService.isAccessible("/study-dataset", s)).collect(Collectors.toList());
     ids.addAll(harmonizationDatasetService.findPublishedStates().stream().map(HarmonizationDatasetState::getId)
-      .filter(s -> subjectAclService.isAccessible("/harmonization-dataset", s))
-      .collect(Collectors.toList()));
+      .filter(s -> subjectAclService.isAccessible("/harmonization-dataset", s)).collect(Collectors.toList()));
 
     if(ids.isEmpty()) return QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"));
 
@@ -213,7 +211,7 @@ public class VariableQuery extends AbstractDocumentQuery {
           studyMap.put(studyId, study);
         }
 
-        if (study != null) {
+        if(study != null) {
           builder.addAllStudyName(dtos.asDto(study.getName()));
           builder.addAllStudyAcronym(dtos.asDto(study.getAcronym()));
         }
@@ -235,7 +233,7 @@ public class VariableQuery extends AbstractDocumentQuery {
   public List<String> query(List<String> studyIds, CountStatsData counts, Scope scope) throws IOException {
     updateDatasetQuery();
     List<String> ids = super.query(studyIds, null, scope == DETAIL ? DETAIL : NONE);
-    if(datasetIdProvider != null & hasQueryFilters()) datasetIdProvider.setDatasetIds(getDatasetIds());
+    if(datasetIdProvider != null & hasQueryBuilder()) datasetIdProvider.setDatasetIds(getDatasetIds());
     return ids;
   }
 
@@ -243,14 +241,10 @@ public class VariableQuery extends AbstractDocumentQuery {
     if(datasetIdProvider == null) return;
     List<String> datasetIds = datasetIdProvider.getDatasetIds();
     if(datasetIds.size() > 0) {
-      if(queryDto == null) {
-        queryDto = QueryDtoHelper
-          .createTermFiltersQuery(Arrays.asList(DATASET_ID), datasetIds, QueryDtoHelper.BoolQueryType.MUST);
-      } else {
-        queryDto = QueryDtoHelper
-          .addTermFilters(queryDto, QueryDtoHelper.createTermFilters(Arrays.asList(DATASET_ID), datasetIds),
-            QueryDtoHelper.BoolQueryType.MUST);
-      }
+      TermsQueryBuilder termsQueryBuilder = QueryBuilders.termsQuery(DATASET_ID, datasetIds);
+      setQueryBuilder(hasQueryBuilder()
+        ? QueryBuilders.boolQuery().must(getQueryBuilder()).must(termsQueryBuilder)
+        : termsQueryBuilder);
     }
   }
 
@@ -286,7 +280,7 @@ public class VariableQuery extends AbstractDocumentQuery {
   @Override
   protected Properties getAggregationsProperties() {
     Properties properties = new Properties();
-    if (mode != Mode.LIST) {
+    if(mode != Mode.LIST) {
       getTaxonomies().forEach(taxonomy -> {
         if(taxonomy.hasVocabularies()) {
           taxonomy.getVocabularies().forEach(vocabulary -> {
@@ -307,7 +301,7 @@ public class VariableQuery extends AbstractDocumentQuery {
 
     try {
       taxonomies = opalService.getTaxonomies();
-      if (!taxonomyFilter.isEmpty())
+      if(!taxonomyFilter.isEmpty())
         taxonomies = taxonomies.stream().filter(t -> taxonomyFilter.contains(t.getName())).collect(Collectors.toList());
     } catch(Exception e) {
       // ignore

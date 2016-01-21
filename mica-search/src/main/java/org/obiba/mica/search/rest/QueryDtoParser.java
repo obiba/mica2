@@ -31,6 +31,8 @@ public class QueryDtoParser {
   }
 
   public QueryBuilder parse(MicaSearch.QueryDto queryDto) {
+    if(queryDto == null) return null;
+
     QueryBuilder query = null;
 
     if(queryDto.hasQueryString()) {
@@ -45,16 +47,14 @@ public class QueryDtoParser {
   }
 
   public SortBuilder parseSort(MicaSearch.QueryDto queryDto) {
-    if(queryDto.hasSort()) {
-      MicaSearch.QueryDto.SortDto sortDto = queryDto.getSort();
+    if(queryDto == null || !queryDto.hasSort()) return null;
 
-      return sortDto.hasScript()
-        ? SortBuilders.scriptSort(sortDto.getScript(), sortDto.getType())
-        .order(SortOrder.valueOf(sortDto.getOrder().name()))
-        : SortBuilders.fieldSort(sortDto.getField()).order(SortOrder.valueOf(sortDto.getOrder().name()));
-    }
+    MicaSearch.QueryDto.SortDto sortDto = queryDto.getSort();
 
-    return null;
+    return sortDto.hasScript()
+      ? SortBuilders.scriptSort(sortDto.getScript(), sortDto.getType())
+      .order(SortOrder.valueOf(sortDto.getOrder().name()))
+      : SortBuilders.fieldSort(sortDto.getField()).order(SortOrder.valueOf(sortDto.getOrder().name()));
   }
 
   private QueryBuilder parseFilterQuery(QueryBuilder query, MicaSearch.FilteredQueryDto filteredQueryDto) {
@@ -153,8 +153,7 @@ public class QueryDtoParser {
     String field = filter.getField();
 
     if(filter.hasExtension(MicaSearch.TermsFilterQueryDto.terms)) {
-      return QueryBuilders
-        .termsQuery(field, filter.getExtension(MicaSearch.TermsFilterQueryDto.terms).getValuesList());
+      return QueryBuilders.termsQuery(field, filter.getExtension(MicaSearch.TermsFilterQueryDto.terms).getValuesList());
     }
 
     if(filter.hasExtension(MicaSearch.RangeFilterQueryDto.range)) {

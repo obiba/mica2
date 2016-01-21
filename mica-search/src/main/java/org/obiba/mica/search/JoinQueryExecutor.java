@@ -95,14 +95,15 @@ public class JoinQueryExecutor {
   @Timed
   public JoinQueryResultDto listQuery(QueryType type, MicaSearch.QueryDto queryDto, String locale) throws IOException {
     JoinQueryDto joinQueryDto = createJoinQueryByType(type, queryDto).toBuilder().setWithFacets(false).build();
+
     variableQuery
-      .initialize(joinQueryDto.hasVariableQueryDto() ? joinQueryDto.getVariableQueryDto() : null, locale, Mode.LIST);
+      .initialize(joinQueryDto.getVariableQueryDto(), locale, Mode.LIST);
     datasetQuery
-      .initialize(joinQueryDto.hasDatasetQueryDto() ? joinQueryDto.getDatasetQueryDto() : null, locale, Mode.LIST);
+      .initialize(joinQueryDto.getDatasetQueryDto(), locale, Mode.LIST);
     studyQuery
-      .initialize(joinQueryDto.hasStudyQueryDto() ? joinQueryDto.getStudyQueryDto() : null, locale, Mode.LIST);
+      .initialize(joinQueryDto.getStudyQueryDto(), locale, Mode.LIST);
     networkQuery
-      .initialize(joinQueryDto.hasNetworkQueryDto() ? joinQueryDto.getNetworkQueryDto() : null, locale, Mode.LIST);
+      .initialize(joinQueryDto.getNetworkQueryDto(), locale, Mode.LIST);
 
     execute(type, DETAIL, CountStatsData.newBuilder());
 
@@ -148,7 +149,7 @@ public class JoinQueryExecutor {
     initializeQueries(joinQueryDto, mode);
 
     boolean queriesHaveFilters =
-      Stream.of(variableQuery, datasetQuery, studyQuery, networkQuery).filter(AbstractDocumentQuery::hasQueryFilters)
+      Stream.of(variableQuery, datasetQuery, studyQuery, networkQuery).filter(AbstractDocumentQuery::hasQueryBuilder)
         .collect(Collectors.toList()).size() > 0;
 
     if(queriesHaveFilters) {
@@ -167,7 +168,7 @@ public class JoinQueryExecutor {
         } else if(type == QueryType.DATASET) {
           variableQuery.query(joinedIds, null, DIGEST);
         }
-      } else if(!studyQuery.hasQueryFilters()) {
+      } else if(!studyQuery.hasQueryBuilder()) {
         variableQuery.query(joinedIds, null, DIGEST); //to set datasetprovider datasets if any
 
         if(!datasetIdProvider.getDatasetIds().isEmpty()) {
@@ -199,10 +200,10 @@ public class JoinQueryExecutor {
     String locale = joinQueryDto.getLocale();
 
     variableQuery
-      .initialize(joinQueryDto.hasVariableQueryDto() ? joinQueryDto.getVariableQueryDto() : null, locale, mode);
-    datasetQuery.initialize(joinQueryDto.hasDatasetQueryDto() ? joinQueryDto.getDatasetQueryDto() : null, locale, mode);
-    studyQuery.initialize(joinQueryDto.hasStudyQueryDto() ? joinQueryDto.getStudyQueryDto() : null, locale, mode);
-    networkQuery.initialize(joinQueryDto.hasNetworkQueryDto() ? joinQueryDto.getNetworkQueryDto() : null, locale, mode);
+      .initialize(joinQueryDto.getVariableQueryDto(), locale, mode);
+    datasetQuery.initialize(joinQueryDto.getDatasetQueryDto(), locale, mode);
+    studyQuery.initialize(joinQueryDto.getStudyQueryDto(), locale, mode);
+    networkQuery.initialize(joinQueryDto.getNetworkQueryDto(), locale, mode);
   }
 
   private JoinQueryResultDto buildQueryResult(JoinQueryDto joinQueryDto) {
@@ -406,14 +407,14 @@ public class JoinQueryExecutor {
 
   private List<String> execute(AbstractDocumentQuery docQuery, AbstractDocumentQuery... subQueries) throws IOException {
     List<AbstractDocumentQuery> queries = Arrays.asList(subQueries).stream()
-      .filter(AbstractDocumentQuery::hasQueryFilters).collect(Collectors.toList());
+      .filter(AbstractDocumentQuery::hasQueryBuilder).collect(Collectors.toList());
 
     List<String> studyIds = null;
     List<String> docQueryStudyIds = null;
     if(queries.size() > 0) studyIds = queryStudyIds(queries);
     if(studyIds == null || studyIds.size() > 0) docQueryStudyIds = docQuery.queryStudyIds(studyIds);
 
-    List<String> aggStudyIds = docQuery.hasQueryFilters() && docQueryStudyIds != null ? joinStudyIds(studyIds,
+    List<String> aggStudyIds = docQuery.hasQueryBuilder() && docQueryStudyIds != null ? joinStudyIds(studyIds,
       docQueryStudyIds) : studyIds;
 
     if(aggStudyIds == null || aggStudyIds.size() > 0) {

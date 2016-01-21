@@ -12,6 +12,7 @@ package org.obiba.mica.search.queries;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -27,6 +28,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.IndexNotFoundException;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHits;
@@ -61,6 +63,10 @@ public abstract class AbstractDocumentQuery {
 
   private static final String AGG_TOTAL_COUNT = "totalCount";
 
+  public static final int DEFAULT_FROM = 0;
+
+  public static final int DEFAULT_SIZE = 10;
+
   @Inject
   protected Client client;
 
@@ -92,25 +98,45 @@ public abstract class AbstractDocumentQuery {
 
   protected Mode mode = Mode.SEARCH;
 
-  protected QueryDto queryDto;
+  private int from = DEFAULT_FROM;
+
+  private int size = DEFAULT_SIZE;
+
+  private List<String> aggsBy = Lists.newArrayList();
+
+  private QueryBuilder queryBuilder;
 
   protected QueryResultDto resultDto;
 
   private String locale;
 
-  public QueryDto getQuery() {
-    return queryDto;
+  private final QueryDtoParser queryDtoParser = QueryDtoParser.newParser();
+
+  public QueryBuilder getQueryBuilder() {
+    return queryBuilder;
   }
 
-  public boolean hasQueryFilters() {
-    return QueryDtoHelper.hasQuery(queryDto);
+  public void setQueryBuilder(QueryBuilder queryBuilder) {
+    this.queryBuilder = queryBuilder;
   }
 
-  public void initialize(QueryDto query, String localeName, Mode mode) {
-    this.mode = mode;
-    locale = localeName;
-    queryDto = QueryDtoHelper
+  public boolean hasQueryBuilder() {
+    return queryBuilder != null;
+  }
+
+  public void initialize(QueryDto query, String locale, Mode mode) {
+    QueryDto queryDto = QueryDtoHelper
       .ensureQueryStringDtoFields(query, locale, getLocalizedQueryStringFields(), getQueryStringFields());
+    initialize(queryDtoParser.parse(queryDto), queryDto.getFrom(), query.getSize(), query.getAggsByList(), locale, mode);
+  }
+
+  public void initialize(QueryBuilder queryBuilder, int from, int size, List<String> aggsBy, String locale, Mode mode) {
+    this.from = from;
+    this.size = size;
+    this.mode = mode;
+    this.locale = locale;
+    this.aggsBy = aggsBy;
+    this.queryBuilder = queryBuilder;
     resultDto = null;
   }
 
@@ -148,8 +174,7 @@ public abstract class AbstractDocumentQuery {
    * @throws IOException
    */
   public List<String> queryStudyIds() throws IOException {
-    if(queryDto == null) return null;
-    return queryStudyIds(queryDto);
+    return queryStudyIds(queryBuilder);
   }
 
   /**
@@ -160,21 +185,19 @@ public abstract class AbstractDocumentQuery {
    * @throws IOException
    */
   public List<String> queryStudyIds(List<String> studyIds) throws IOException {
-    return queryStudyIds(queryDto == null ? createStudyIdFilters(studyIds) : addStudyIdFilters(studyIds));
+    return queryStudyIds(queryBuilder == null ? createStudyIdQuery(studyIds) : addStudyIdQuery(studyIds));
   }
 
-  protected List<String> queryStudyIds(QueryDto queryDto) throws IOException {
-    if(queryDto == null) return null;
+  protected List<String> queryStudyIds(QueryBuilder queryBuilder) throws IOException {
+    if(queryBuilder == null) return null;
 
-    QueryDtoParser queryDtoParser = QueryDtoParser.newParser();
     QueryBuilder accessFilter = getAccessFilter();
 
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
       .setSearchType(SearchType.COUNT) //
-      .setQuery(accessFilter == null
-        ? queryDtoParser.parse(queryDto)
-        : QueryBuilders.boolQuery().must(queryDtoParser.parse(queryDto)).must(accessFilter)) //
+      .setQuery(
+        accessFilter == null ? queryBuilder : QueryBuilders.boolQuery().must(queryBuilder).must(accessFilter)) //
       .setNoFields();
 
     aggregationYamlParser.getAggregations(getJoinFieldsAsProperties()).forEach(requestBuilder::addAggregation);
@@ -191,6 +214,7 @@ public abstract class AbstractDocumentQuery {
 
     List<String> rval = ids.stream().distinct().collect(Collectors.toList());
     log.info("Response /{}/{}", getSearchIndex(), getSearchType());
+    log.debug("Response /{}/{}", getSearchIndex(), getSearchType(), response);
     return rval;
   }
 
@@ -214,28 +238,29 @@ public abstract class AbstractDocumentQuery {
    * @throws IOException
    */
   public List<String> query(List<String> studyIds, CountStatsData counts, Scope scope) throws IOException {
-    QueryDto tempQueryDto = queryDto == null ? createStudyIdFilters(studyIds) : addStudyIdFilters(studyIds);
+    QueryBuilder tempQuery = queryBuilder == null ? createStudyIdQuery(studyIds) : addStudyIdQuery(studyIds);
     return mode == COVERAGE
-      ? executeCoverage(tempQueryDto, DIGEST, counts)
-      : execute(tempQueryDto, tempQueryDto.getFrom(), tempQueryDto.getSize(), scope, counts);
+      ? executeCoverage(tempQuery, null, DIGEST, counts, aggsBy)
+      : execute(tempQuery, null, from, size, scope, counts, aggsBy);
   }
 
   /**
-   * Executes a query to retrieve documents and aggregations
+   * Executes a query to retrieve documents and aggregations.
    *
-   * @param queryDto
+   * @param query
+   * @param sortBuilder
    * @param from
    * @param size
    * @param scope
    * @param counts
+   * @param aggsBy
    * @return
    * @throws IOException
    */
-  protected List<String> execute(QueryDto queryDto, int from, int size, Scope scope, CountStatsData counts)
-    throws IOException {
-    if(queryDto == null) return null;
+  protected List<String> execute(QueryBuilder query, SortBuilder sortBuilder, int from, int size, Scope scope,
+    CountStatsData counts, List<String> aggsBy) throws IOException {
+    if(query == null) return null;
 
-    QueryDtoParser queryDtoParser = QueryDtoParser.newParser();
     aggregationTitleResolver.registerProviders(getAggregationMetaDataProviders());
     aggregationTitleResolver.refresh();
 
@@ -254,25 +279,19 @@ public abstract class AbstractDocumentQuery {
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
       .setSearchType(scope == DETAIL ? SearchType.DFS_QUERY_THEN_FETCH : SearchType.COUNT) //
-      .setQuery(accessFilter == null
-        ? queryDtoParser.parse(queryDto)
-        : QueryBuilders.boolQuery().must(queryDtoParser.parse(queryDto)).must(accessFilter)) //
+      .setQuery(accessFilter == null ? query : QueryBuilders.boolQuery().must(query).must(accessFilter)) //
       .setFrom(from) //
       .setSize(size) //
       .addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT)); // ;
 
     if(ignoreFields()) requestBuilder.setNoFields();
 
-    SortBuilder sortBuilder = queryDtoParser.parseSort(queryDto);
-
-    if(sortBuilder != null) requestBuilder.addSort(queryDtoParser.parseSort(queryDto));
+    if(sortBuilder != null) requestBuilder.addSort(sortBuilder);
 
     aggregationYamlParser.setLocales(micaConfigService.getConfig().getLocales());
     Map<String, Properties> subAggregations = Maps.newHashMap();
     Properties aggregationProperties = getAggregationsProperties();
-    if(queryDto.getAggsByCount() > 0) {
-      queryDto.getAggsByList().forEach(field -> subAggregations.put(field, aggregationProperties));
-    }
+    if(aggsBy != null) aggsBy.forEach(field -> subAggregations.put(field, aggregationProperties));
 
     aggregationYamlParser.getAggregations(getAggregationsDescription(), subAggregations).forEach(agg -> {
       defaultRequestBuilder.addAggregation(agg);
@@ -315,23 +334,23 @@ public abstract class AbstractDocumentQuery {
     } finally {
       aggregationTitleResolver.unregisterProviders(getAggregationMetaDataProviders());
     }
-
   }
 
   /**
-   * Executes a query to retrieve documents and aggregations for coverage
+   * Executes a query to retrieve documents and aggregations for coverage.
    *
-   * @param query
+   * @param queryBuilder
+   * @param sortBuilder
    * @param scope
    * @param counts
+   * @param aggsBy
    * @return
    * @throws IOException
    */
-  @SuppressWarnings("OverlyLongMethod")
-  protected List<String> executeCoverage(QueryDto query, Scope scope, CountStatsData counts) throws IOException {
-    if(query == null) return null;
+  protected List<String> executeCoverage(QueryBuilder queryBuilder, SortBuilder sortBuilder, Scope scope,
+    CountStatsData counts, List<String> aggsBy) throws IOException {
+    if(queryBuilder == null) return null;
 
-    QueryDtoParser queryDtoParser = QueryDtoParser.newParser();
     aggregationTitleResolver.registerProviders(getAggregationMetaDataProviders());
     aggregationTitleResolver.refresh();
 
@@ -339,7 +358,7 @@ public abstract class AbstractDocumentQuery {
 
     SearchRequestBuilder defaultRequestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
-      .setSearchType(SearchType.COUNT) //
+      .setSearchType(SearchType.QUERY_THEN_FETCH) //
       .setQuery(accessFilter == null
         ? QueryBuilders.matchAllQuery()
         : QueryBuilders.boolQuery().must(QueryBuilders.matchAllQuery()).must(accessFilter)) //
@@ -349,26 +368,22 @@ public abstract class AbstractDocumentQuery {
 
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
-      .setSearchType(SearchType.COUNT) //
-      .setQuery(accessFilter == null
-        ? queryDtoParser.parse(query)
-        : QueryBuilders.boolQuery().must(queryDtoParser.parse(query)).must(accessFilter)) //
+      .setSearchType(SearchType.QUERY_THEN_FETCH) //
+      .setQuery(
+        accessFilter == null ? queryBuilder : QueryBuilders.boolQuery().must(queryBuilder).must(accessFilter)) //
       .setFrom(0) //
       .setSize(0) // no results needed for a coverage
       .addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT));
 
     if(ignoreFields()) requestBuilder.setNoFields();
 
-    SortBuilder sortBuilder = queryDtoParser.parseSort(query);
-    if(sortBuilder != null) requestBuilder.addSort(queryDtoParser.parseSort(query));
+    if(sortBuilder != null) requestBuilder.addSort(sortBuilder);
 
     aggregationYamlParser.setLocales(micaConfigService.getConfig().getLocales());
     Map<String, Properties> subAggregations = Maps.newHashMap();
     Properties aggregationProperties = getAggregationsProperties();
 
-    if(query.getAggsByCount() > 0) {
-      query.getAggsByList().forEach(field -> subAggregations.put(field, aggregationProperties));
-    }
+    if(aggsBy != null) aggsBy.forEach(field -> subAggregations.put(field, aggregationProperties));
 
     aggregationYamlParser.getAggregations(getAggregationsDescription(), subAggregations).forEach(agg -> {
       requestBuilder.addAggregation(agg);
@@ -454,15 +469,19 @@ public abstract class AbstractDocumentQuery {
    */
   protected abstract List<String> getJoinFields();
 
-  protected QueryDto addStudyIdFilters(List<String> studyIds) {
-    if(studyIds == null || studyIds.size() == 0) return queryDto;
-
-    return QueryDtoHelper.addTermFilters(QueryDto.newBuilder(queryDto).build(),
-      QueryDtoHelper.createTermFilters(getJoinFields(), studyIds), QueryDtoHelper.BoolQueryType.MUST);
+  protected QueryBuilder addStudyIdQuery(List<String> studyIds) {
+    if(studyIds == null || studyIds.isEmpty()) return queryBuilder;
+    return QueryBuilders.boolQuery().must(queryBuilder).must(createStudyIdQuery(studyIds));
   }
 
-  protected QueryDto createStudyIdFilters(List<String> studyIds) {
-    return QueryDtoHelper.createTermFiltersQuery(getJoinFields(), studyIds, QueryDtoHelper.BoolQueryType.MUST);
+  protected QueryBuilder createStudyIdQuery(List<String> studyIds) {
+    List<String> joinFields = getJoinFields();
+    if(joinFields.size() == 1) return QueryBuilders.termsQuery(joinFields.get(0), studyIds);
+    else {
+      BoolQueryBuilder builder = QueryBuilders.boolQuery();
+      getJoinFields().stream().map(field -> builder.should(QueryBuilders.termsQuery(field, studyIds)));
+      return builder;
+    }
   }
 
   public abstract Map<String, Integer> getStudyCounts();
@@ -482,7 +501,7 @@ public abstract class AbstractDocumentQuery {
     return resultDto.getAggsList().stream() //
       .filter(agg -> joinField.equals(AggregationYamlParser.unformatName(agg.getAggregation()))) //
       .map(d -> d.getExtension(MicaSearch.TermsAggregationResultDto.terms)) //
-      .flatMap((d) -> d.stream()) //
+      .flatMap(Collection::stream) //
       .filter(s -> s.getCount() > 0) //
       .collect(Collectors.toMap(MicaSearch.TermsAggregationResultDto::getKey, term -> term.getCount()));
   }
