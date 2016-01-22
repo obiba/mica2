@@ -14,8 +14,8 @@ import java.util.Arrays;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.obiba.mica.search.rest.QueryDtoHelper;
-import org.obiba.mica.search.rest.QueryDtoParser;
+import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
+import org.obiba.mica.search.queries.protobuf.QueryDtoParser;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;

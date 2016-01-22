@@ -28,7 +28,9 @@ import javax.ws.rs.core.UriInfo;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.search.CoverageQueryExecutor;
 import org.obiba.mica.search.JoinQueryExecutor;
-import org.obiba.mica.search.rest.QueryDtoHelper;
+import org.obiba.mica.search.queries.protobuf.JoinQueryDtoWrapper;
+import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
+import org.obiba.mica.search.queries.rql.JoinRQLQueryWrapper;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -63,17 +65,17 @@ public class PublishedDatasetVariablesSearchResource {
 
   @POST
   @Timed
-  @Path("_search")
+  @Path("/_search")
   public MicaSearch.JoinQueryResultDto list(MicaSearch.JoinQueryDto joinQueryDto) throws IOException {
-    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.VARIABLE, joinQueryDto);
+    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.VARIABLE, new JoinQueryDtoWrapper(joinQueryDto));
   }
 
   @GET
-  @Path("/_query")
+  @Path("/_rql")
   @Timed
-  public Response get(@Context UriInfo uriInfo) {
+  public MicaSearch.JoinQueryResultDto rqlQuery(@Context UriInfo uriInfo) throws IOException {
     String query = uriInfo.getRequestUri().getQuery();
-    return Response.ok().build();
+    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.VARIABLE, new JoinRQLQueryWrapper(query));
   }
 
   /**
@@ -87,7 +89,7 @@ public class PublishedDatasetVariablesSearchResource {
    */
   @POST
   @Timed
-  @Path("_coverage")
+  @Path("/_coverage")
   @Produces("text/csv")
   public Response coverageCsv(@QueryParam("taxonomy") List<String> taxonomyNames,
     @QueryParam("strict") @DefaultValue("true") boolean strict, MicaSearch.JoinQueryDto joinQueryDto)
@@ -116,7 +118,7 @@ public class PublishedDatasetVariablesSearchResource {
    */
   @POST
   @Timed
-  @Path("_coverage")
+  @Path("/_coverage")
   public MicaSearch.TaxonomiesCoverageDto coverage(@QueryParam("taxonomy") List<String> taxonomyNames,
     @QueryParam("strict") @DefaultValue("true") boolean strict, MicaSearch.JoinQueryDto joinQueryDto)
     throws IOException {
@@ -134,7 +136,7 @@ public class PublishedDatasetVariablesSearchResource {
    */
   @GET
   @Timed
-  @Path("_coverage")
+  @Path("/_coverage")
   public MicaSearch.TaxonomiesCoverageDto getCoverage(@QueryParam("taxonomy") List<String> taxonomyNames,
     @QueryParam("facets") @DefaultValue("false") boolean withFacets,
     @QueryParam("locale") @DefaultValue("") String locale) throws IOException {

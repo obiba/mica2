@@ -20,12 +20,16 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.network.search.NetworkIndexer;
 import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.search.queries.NetworkQuery;
-import org.obiba.mica.search.rest.QueryDtoHelper;
+import org.obiba.mica.search.queries.protobuf.JoinQueryDtoWrapper;
+import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
+import org.obiba.mica.search.queries.rql.JoinRQLQueryWrapper;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -36,7 +40,7 @@ import com.google.common.base.Strings;
 import static org.obiba.mica.web.model.MicaSearch.JoinQueryDto;
 import static org.obiba.mica.web.model.MicaSearch.JoinQueryResultDto;
 
-@Path("/networks/_search")
+@Path("/networks")
 @RequiresAuthentication
 @Scope("request")
 @Component
@@ -49,6 +53,7 @@ public class PublishedNetworksSearchResource {
   JoinQueryExecutor joinQueryExecutor;
 
   @GET
+  @Path("/_search")
   @Timed
   public JoinQueryResultDto list(@QueryParam("from") @DefaultValue("0") int from,
       @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") @DefaultValue(DEFAULT_SORT)  String sort,
@@ -81,8 +86,17 @@ public class PublishedNetworksSearchResource {
   }
 
   @POST
+  @Path("/_search")
   @Timed
   public JoinQueryResultDto query(JoinQueryDto joinQueryDto) throws IOException {
-    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.NETWORK, joinQueryDto);
+    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.NETWORK, new JoinQueryDtoWrapper(joinQueryDto));
+  }
+
+  @GET
+  @Path("/_rql")
+  @Timed
+  public JoinQueryResultDto rqlQuery(@Context UriInfo uriInfo) throws IOException {
+    String query = uriInfo.getRequestUri().getQuery();
+    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.NETWORK, new JoinRQLQueryWrapper(query));
   }
 }

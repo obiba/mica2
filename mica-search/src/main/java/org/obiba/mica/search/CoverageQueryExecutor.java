@@ -13,6 +13,7 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.core.domain.AttributeKey;
 import org.obiba.mica.micaConfig.service.OpalService;
+import org.obiba.mica.search.queries.protobuf.JoinQueryDtoWrapper;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.MicaSearch;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
@@ -68,7 +69,8 @@ public class CoverageQueryExecutor {
     MicaSearch.JoinQueryDto joinQueryDtoWithFacets = MicaSearch.JoinQueryDto.newBuilder().mergeFrom(joinQueryDto)
       .setWithFacets(true).build();
 
-    MicaSearch.JoinQueryResultDto result = joinQueryExecutor.queryCoverage(joinQueryDtoWithFacets, taxonomyFilter);
+    MicaSearch.JoinQueryResultDto result = joinQueryExecutor
+      .queryCoverage(new JoinQueryDtoWrapper(joinQueryDtoWithFacets), taxonomyFilter);
 
     List<MicaSearch.AggregationResultDto> aggregations = ungroupAggregations(
       result.getVariableResultDto().getAggsList());

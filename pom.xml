@@ -61,6 +61,7 @@
     <poi.version>3.9</poi.version>
     <protobuf.version>2.5.0</protobuf.version>
     <protobuf-java-format.version>1.2.1-obiba</protobuf-java-format.version>
+    <rql-parser.version>0.3.1</rql-parser.version>
     <shiro.version>1.2.3-java8</shiro.version>
     <shiro-extras.version>1.0.3-obiba</shiro-extras.version>
 
@@ -365,6 +366,12 @@
         <groupId>com.fasterxml.jackson.jaxrs</groupId>
         <artifactId>jackson-jaxrs-json-provider</artifactId>
         <version>${jackson.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>net.jazdw</groupId>
+        <artifactId>rql-parser</artifactId>
+        <version>${rql-parser.version}</version>
       </dependency>
 
       <dependency>
