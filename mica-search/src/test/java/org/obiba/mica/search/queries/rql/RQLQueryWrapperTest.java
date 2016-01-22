@@ -75,18 +75,22 @@ public class RQLQueryWrapperTest {
   }
 
   @Test
-  public void test_rql_query_term_and_limit() throws IOException {
-    String rql = "network(eq(id,ialsa),limit(3,4))";
+  public void test_rql_query_term_and_limit_and_sort() throws IOException {
+    String rql = "network(eq(id,ialsa),limit(3,4),sort(-name))";
     RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
     assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
-    String expected = "{\n" +
+    String expectedQuery = "{\n" +
       "  \"term\" : {\n" +
       "    \"id\" : \"ialsa\"\n" +
       "  }\n" +
       "}";
-    assertThat(rqlQueryWrapper.getQueryBuilder().toString()).isEqualTo(expected);
+    assertThat(rqlQueryWrapper.getQueryBuilder().toString()).isEqualTo(expectedQuery);
     assertThat(rqlQueryWrapper.getFrom()).isEqualTo(3);
     assertThat(rqlQueryWrapper.getSize()).isEqualTo(4);
+    String expectedSort = "\n" +
+      "\"name\"{\n" +
+      "  \"order\" : \"desc\"\n" +
+      "}";
+    assertThat(rqlQueryWrapper.getSortBuilder().toString()).isEqualTo(expectedSort);
   }
-
 }

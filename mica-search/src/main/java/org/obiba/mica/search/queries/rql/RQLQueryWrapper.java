@@ -20,6 +20,8 @@ import net.jazdw.rql.parser.SimpleASTVisitor;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.obiba.mica.search.queries.QueryWrapper;
 
 /**
@@ -35,6 +37,8 @@ public class RQLQueryWrapper implements QueryWrapper {
 
   private QueryBuilder queryBuilder;
 
+  private SortBuilder sortBuilder;
+
   public RQLQueryWrapper(String rql) {
     this(new RQLParser().parse(rql));
   }
@@ -47,8 +51,14 @@ public class RQLQueryWrapper implements QueryWrapper {
         case DATASET:
         case STUDY:
         case NETWORK:
-          parseQuery((ASTNode) node.getArgument(0));
-          if(node.getArgumentsSize() > 1) parseLimit((ASTNode) node.getArgument(1));
+          node.getArguments().stream().map(a -> (ASTNode)a).forEach(n -> {
+            if (n.getName().equals(RQLNode.LIMIT.name().toLowerCase()))
+              parseLimit(n);
+            else if (n.getName().equals(RQLNode.SORT.name().toLowerCase()))
+              parseSort(n);
+            else
+              parseQuery(n);
+          });
           break;
         default:
           parseQuery(node);
@@ -74,6 +84,12 @@ public class RQLQueryWrapper implements QueryWrapper {
     }
   }
 
+  private void parseSort(ASTNode node) {
+    this.node = node;
+    RQLSortBuilder sort = new RQLSortBuilder();
+    sortBuilder = node.accept(sort);
+  }
+
   @Override
   public boolean hasQueryBuilder() {
     return queryBuilder != null;
@@ -91,7 +107,7 @@ public class RQLQueryWrapper implements QueryWrapper {
 
   @Override
   public SortBuilder getSortBuilder() {
-    return null;
+    return sortBuilder;
   }
 
   @Override
@@ -217,6 +233,29 @@ public class RQLQueryWrapper implements QueryWrapper {
         // ignore
       }
       return Boolean.FALSE;
+    }
+  }
+
+  private static class RQLSortBuilder implements SimpleASTVisitor<SortBuilder> {
+
+    @Override
+    public SortBuilder visit(ASTNode node) {
+      try {
+        RQLNode type = RQLNode.valueOf(node.getName().toUpperCase());
+        switch(type) {
+          case SORT:
+            String arg = node.getArgument(0).toString();
+            if (arg.startsWith("-"))
+              return SortBuilders.fieldSort(arg.substring(1)).order(SortOrder.DESC);
+            else if (arg.startsWith("+"))
+              return SortBuilders.fieldSort(arg.substring(1)).order(SortOrder.ASC);
+            else
+              return SortBuilders.fieldSort(arg).order(SortOrder.ASC);
+        }
+      } catch(IllegalArgumentException e) {
+        // ignore
+      }
+      return null;
     }
   }
 }
