@@ -19,10 +19,14 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.search.JoinQueryExecutor;
-import org.obiba.mica.search.rest.QueryDtoHelper;
+import org.obiba.mica.search.queries.protobuf.JoinQueryDtoWrapper;
+import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
+import org.obiba.mica.search.queries.rql.JoinRQLQueryWrapper;
 import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
@@ -34,7 +38,7 @@ import com.google.common.base.Strings;
 import static org.obiba.mica.web.model.MicaSearch.JoinQueryResultDto;
 
 @Component
-@Path("/studies/_search")
+@Path("/studies")
 @RequiresAuthentication
 @Scope("request")
 public class PublishedStudiesSearchResource {
@@ -43,6 +47,7 @@ public class PublishedStudiesSearchResource {
   private JoinQueryExecutor joinQueryExecutor;
 
   @GET
+  @Path("/_search")
   @Timed
   public JoinQueryResultDto list(@QueryParam("from") @DefaultValue("0") int from,
     @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") String sort,
@@ -58,8 +63,17 @@ public class PublishedStudiesSearchResource {
   }
 
   @POST
+  @Path("/_search")
   @Timed
   public JoinQueryResultDto query(MicaSearch.JoinQueryDto joinQueryDto) throws IOException {
-    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.STUDY, joinQueryDto);
+    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.STUDY, new JoinQueryDtoWrapper(joinQueryDto));
+  }
+
+  @GET
+  @Path("/_rql")
+  @Timed
+  public JoinQueryResultDto rqlQuery(@Context UriInfo uriInfo) throws IOException {
+    String query = uriInfo.getRequestUri().getQuery();
+    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.STUDY, new JoinRQLQueryWrapper(query));
   }
 }

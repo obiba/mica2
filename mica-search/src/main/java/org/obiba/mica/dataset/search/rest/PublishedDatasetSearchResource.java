@@ -21,6 +21,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
@@ -28,7 +30,9 @@ import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.search.DatasetIndexer;
 import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.search.queries.DatasetQuery;
-import org.obiba.mica.search.rest.QueryDtoHelper;
+import org.obiba.mica.search.queries.protobuf.JoinQueryDtoWrapper;
+import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
+import org.obiba.mica.search.queries.rql.JoinRQLQueryWrapper;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -114,7 +118,15 @@ public class PublishedDatasetSearchResource {
   @Path("/_search")
   @Timed
   public MicaSearch.JoinQueryResultDto query(MicaSearch.JoinQueryDto joinQueryDto) throws IOException {
-    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.DATASET, joinQueryDto);
+    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.DATASET, new JoinQueryDtoWrapper(joinQueryDto));
+  }
+
+  @GET
+  @Path("/_rql")
+  @Timed
+  public MicaSearch.JoinQueryResultDto rqlQuery(@Context UriInfo uriInfo) throws IOException {
+    String query = uriInfo.getRequestUri().getQuery();
+    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.DATASET, new JoinRQLQueryWrapper(query));
   }
 
   private static String createTypeQuery(String type) {

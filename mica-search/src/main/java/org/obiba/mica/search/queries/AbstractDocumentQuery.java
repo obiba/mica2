@@ -41,9 +41,8 @@ import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.aggregations.AggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.AggregationMetaDataResolver;
 import org.obiba.mica.search.aggregations.AggregationYamlParser;
-import org.obiba.mica.search.rest.EsQueryResultParser;
-import org.obiba.mica.search.rest.QueryDtoHelper;
-import org.obiba.mica.search.rest.QueryDtoParser;
+import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
+import org.obiba.mica.search.queries.protobuf.QueryDtoWrapper;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.MicaSearch;
 import org.slf4j.Logger;
@@ -98,45 +97,50 @@ public abstract class AbstractDocumentQuery {
 
   protected Mode mode = Mode.SEARCH;
 
-  private int from = DEFAULT_FROM;
-
-  private int size = DEFAULT_SIZE;
-
-  private List<String> aggsBy = Lists.newArrayList();
-
-  private QueryBuilder queryBuilder;
+  private QueryWrapper queryWrapper;
 
   protected QueryResultDto resultDto;
 
   private String locale;
 
-  private final QueryDtoParser queryDtoParser = QueryDtoParser.newParser();
-
   public QueryBuilder getQueryBuilder() {
-    return queryBuilder;
+    return queryWrapper.getQueryBuilder();
   }
 
   public void setQueryBuilder(QueryBuilder queryBuilder) {
-    this.queryBuilder = queryBuilder;
+    queryWrapper.setQueryBuilder(queryBuilder);
   }
 
   public boolean hasQueryBuilder() {
-    return queryBuilder != null;
+    return queryWrapper.hasQueryBuilder();
+  }
+
+  private List<String> getAggregationGroupBy() {
+    return hasQueryBuilder() ? queryWrapper.getAggregationGroupBy() : Lists.newArrayList();
+  }
+
+  private int getFrom() {
+    return hasQueryBuilder() ? queryWrapper.getFrom() : DEFAULT_FROM;
+  }
+
+  private int getSize() {
+    return hasQueryBuilder() ? queryWrapper.getSize() : DEFAULT_SIZE;
+  }
+
+  private SortBuilder getSortBuilder() {
+    return hasQueryBuilder() ? queryWrapper.getSortBuilder() : null;
   }
 
   public void initialize(QueryDto query, String locale, Mode mode) {
     QueryDto queryDto = QueryDtoHelper
       .ensureQueryStringDtoFields(query, locale, getLocalizedQueryStringFields(), getQueryStringFields());
-    initialize(queryDtoParser.parse(queryDto), queryDto.getFrom(), query.getSize(), query.getAggsByList(), locale, mode);
+    initialize(new QueryDtoWrapper(queryDto), locale, mode);
   }
 
-  public void initialize(QueryBuilder queryBuilder, int from, int size, List<String> aggsBy, String locale, Mode mode) {
-    this.from = from;
-    this.size = size;
+  public void initialize(@Nullable QueryWrapper queryWrapper, String locale, Mode mode) {
     this.mode = mode;
     this.locale = locale;
-    this.aggsBy = aggsBy;
-    this.queryBuilder = queryBuilder;
+    this.queryWrapper = queryWrapper == null ? new EmptyQueryWrapper() : queryWrapper;
     resultDto = null;
   }
 
@@ -174,7 +178,7 @@ public abstract class AbstractDocumentQuery {
    * @throws IOException
    */
   public List<String> queryStudyIds() throws IOException {
-    return queryStudyIds(queryBuilder);
+    return queryStudyIds(queryWrapper.getQueryBuilder());
   }
 
   /**
@@ -185,7 +189,7 @@ public abstract class AbstractDocumentQuery {
    * @throws IOException
    */
   public List<String> queryStudyIds(List<String> studyIds) throws IOException {
-    return queryStudyIds(queryBuilder == null ? createStudyIdQuery(studyIds) : addStudyIdQuery(studyIds));
+    return queryStudyIds(newStudyIdQuery(studyIds));
   }
 
   protected List<String> queryStudyIds(QueryBuilder queryBuilder) throws IOException {
@@ -195,7 +199,8 @@ public abstract class AbstractDocumentQuery {
 
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
-      .setSearchType(SearchType.COUNT) //
+      .setSearchType(SearchType.QUERY_THEN_FETCH) //
+      .setSize(0) //
       .setQuery(
         accessFilter == null ? queryBuilder : QueryBuilders.boolQuery().must(queryBuilder).must(accessFilter)) //
       .setNoFields();
@@ -231,17 +236,17 @@ public abstract class AbstractDocumentQuery {
   }
 
   /**
-   * Executes a filtered query to retrieve documents and aggregations
+   * Executes a filtered query to retrieve documents and aggregations.
    *
    * @param studyIds
    * @return List of study IDs
    * @throws IOException
    */
   public List<String> query(List<String> studyIds, CountStatsData counts, Scope scope) throws IOException {
-    QueryBuilder tempQuery = queryBuilder == null ? createStudyIdQuery(studyIds) : addStudyIdQuery(studyIds);
+    QueryBuilder tempQuery = newStudyIdQuery(studyIds);
     return mode == COVERAGE
-      ? executeCoverage(tempQuery, null, DIGEST, counts, aggsBy)
-      : execute(tempQuery, null, from, size, scope, counts, aggsBy);
+      ? executeCoverage(tempQuery, null, DIGEST, counts, getAggregationGroupBy())
+      : execute(tempQuery, getSortBuilder(), getFrom(), getSize(), scope, counts, getAggregationGroupBy());
   }
 
   /**
@@ -463,18 +468,22 @@ public abstract class AbstractDocumentQuery {
   }
 
   /**
-   * Returns study ID fields (aggregtaion fields)
+   * Returns study ID fields (aggregation fields)
    *
    * @return
    */
   protected abstract List<String> getJoinFields();
 
-  protected QueryBuilder addStudyIdQuery(List<String> studyIds) {
-    if(studyIds == null || studyIds.isEmpty()) return queryBuilder;
-    return QueryBuilders.boolQuery().must(queryBuilder).must(createStudyIdQuery(studyIds));
+  private QueryBuilder newStudyIdQuery(List<String> studyIds) {
+    return hasQueryBuilder() ? addStudyIdQuery(studyIds) : createStudyIdQuery(studyIds);
   }
 
-  protected QueryBuilder createStudyIdQuery(List<String> studyIds) {
+  private QueryBuilder addStudyIdQuery(List<String> studyIds) {
+    if(studyIds == null || studyIds.isEmpty()) return queryWrapper.getQueryBuilder();
+    return QueryBuilders.boolQuery().must(queryWrapper.getQueryBuilder()).must(createStudyIdQuery(studyIds));
+  }
+
+  private QueryBuilder createStudyIdQuery(List<String> studyIds) {
     List<String> joinFields = getJoinFields();
     if(joinFields.size() == 1) return QueryBuilders.termsQuery(joinFields.get(0), studyIds);
     else {

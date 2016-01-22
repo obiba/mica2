@@ -31,9 +31,11 @@ import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.search.queries.AbstractDocumentQuery;
 import org.obiba.mica.search.queries.AbstractDocumentQuery.Mode;
 import org.obiba.mica.search.queries.DatasetQuery;
+import org.obiba.mica.search.queries.JoinQueryWrapper;
 import org.obiba.mica.search.queries.NetworkQuery;
 import org.obiba.mica.search.queries.StudyQuery;
 import org.obiba.mica.search.queries.VariableQuery;
+import org.obiba.mica.search.queries.protobuf.JoinQueryDtoWrapper;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
@@ -87,23 +89,24 @@ public class JoinQueryExecutor {
   private OpalService opalService;
 
   @Timed
-  public JoinQueryResultDto queryCoverage(JoinQueryDto joinQueryDto, Collection<String> taxonomyFilter) throws IOException {
+  public JoinQueryResultDto query(QueryType type, JoinQueryWrapper joinQueryWrapper) throws IOException {
+    return query(type, joinQueryWrapper, CountStatsData.newBuilder(), DETAIL, Mode.SEARCH);
+  }
+
+  @Timed
+  public JoinQueryResultDto queryCoverage(JoinQueryWrapper joinQueryWrapper, Collection<String> taxonomyFilter)
+    throws IOException {
     variableQuery.setTaxonomyFilter(taxonomyFilter);
-    return query(QueryType.VARIABLE, joinQueryDto, null, DIGEST, Mode.COVERAGE);
+    return query(QueryType.VARIABLE, joinQueryWrapper, null, DIGEST, Mode.COVERAGE);
   }
 
   @Timed
   public JoinQueryResultDto listQuery(QueryType type, MicaSearch.QueryDto queryDto, String locale) throws IOException {
-    JoinQueryDto joinQueryDto = createJoinQueryByType(type, queryDto).toBuilder().setWithFacets(false).build();
+    JoinQueryDto joinQueryDto = createJoinQueryByType(type, queryDto).toBuilder().setWithFacets(false).setLocale(locale)
+      .build();
 
-    variableQuery
-      .initialize(joinQueryDto.getVariableQueryDto(), locale, Mode.LIST);
-    datasetQuery
-      .initialize(joinQueryDto.getDatasetQueryDto(), locale, Mode.LIST);
-    studyQuery
-      .initialize(joinQueryDto.getStudyQueryDto(), locale, Mode.LIST);
-    networkQuery
-      .initialize(joinQueryDto.getNetworkQueryDto(), locale, Mode.LIST);
+    JoinQueryWrapper joinQueryWrapper = new JoinQueryDtoWrapper(joinQueryDto);
+    initializeQueries(joinQueryWrapper, Mode.LIST);
 
     execute(type, DETAIL, CountStatsData.newBuilder());
 
@@ -137,17 +140,16 @@ public class JoinQueryExecutor {
     return builder.build();
   }
 
-  @Timed
-  public JoinQueryResultDto query(QueryType type, JoinQueryDto joinQueryDto) throws IOException {
-    return query(type, joinQueryDto, CountStatsData.newBuilder(), DETAIL, Mode.SEARCH);
+  private JoinQueryResultDto query(QueryType type, JoinQueryWrapper joinQueryWrapper,
+    CountStatsData.Builder countBuilder, AbstractDocumentQuery.Scope scope, AbstractDocumentQuery.Mode mode)
+    throws IOException {
+    log.debug("Start query");
+    initializeQueries(joinQueryWrapper, mode);
+    return doQueries(type, joinQueryWrapper, countBuilder, scope);
   }
 
-  private JoinQueryResultDto query(QueryType type, JoinQueryDto joinQueryDto, CountStatsData.Builder countBuilder,
-    AbstractDocumentQuery.Scope scope, AbstractDocumentQuery.Mode mode) throws IOException {
-    log.debug("Start query");
-
-    initializeQueries(joinQueryDto, mode);
-
+  private JoinQueryResultDto doQueries(QueryType type, JoinQueryWrapper joinQueryWrapper,
+    CountStatsData.Builder countBuilder, AbstractDocumentQuery.Scope scope) throws IOException {
     boolean queriesHaveFilters =
       Stream.of(variableQuery, datasetQuery, studyQuery, networkQuery).filter(AbstractDocumentQuery::hasQueryBuilder)
         .collect(Collectors.toList()).size() > 0;
@@ -190,41 +192,40 @@ public class JoinQueryExecutor {
     }
 
     log.debug("Building result");
-    JoinQueryResultDto resultDto = buildQueryResult(joinQueryDto);
+    JoinQueryResultDto resultDto = buildQueryResult(joinQueryWrapper);
     log.debug("Finished query");
 
     return resultDto;
   }
 
-  private void initializeQueries(JoinQueryDto joinQueryDto, AbstractDocumentQuery.Mode mode) {
-    String locale = joinQueryDto.getLocale();
+  private void initializeQueries(JoinQueryWrapper joinQueryWrapper, AbstractDocumentQuery.Mode mode) {
+    String locale = joinQueryWrapper.getLocale();
 
-    variableQuery
-      .initialize(joinQueryDto.getVariableQueryDto(), locale, mode);
-    datasetQuery.initialize(joinQueryDto.getDatasetQueryDto(), locale, mode);
-    studyQuery.initialize(joinQueryDto.getStudyQueryDto(), locale, mode);
-    networkQuery.initialize(joinQueryDto.getNetworkQueryDto(), locale, mode);
+    variableQuery.initialize(joinQueryWrapper.getVariableQueryWrapper(), locale, mode);
+    datasetQuery.initialize(joinQueryWrapper.getDatasetQueryWrapper(), locale, mode);
+    studyQuery.initialize(joinQueryWrapper.getStudyQueryWrapper(), locale, mode);
+    networkQuery.initialize(joinQueryWrapper.getNetworkQueryWrapper(), locale, mode);
   }
 
-  private JoinQueryResultDto buildQueryResult(JoinQueryDto joinQueryDto) {
+  private JoinQueryResultDto buildQueryResult(JoinQueryWrapper joinQueryDto) {
     JoinQueryResultDto.Builder builder = JoinQueryResultDto.newBuilder();
     AggregationsConfig aggregationsConfig = aggregationsService.getAggregationsConfig();
 
-    builder.setVariableResultDto(joinQueryDto.getWithFacets()
+    builder.setVariableResultDto(joinQueryDto.isWithFacets()
       ? addAggregationTitles(variableQuery.getResultQuery(), aggregationsConfig.getVariableAggregations(),
       aggregationPostProcessor())
       : removeAggregations(variableQuery.getResultQuery()));
 
     if(datasetQuery.getResultQuery() != null) {
-      builder.setDatasetResultDto(joinQueryDto.getWithFacets() ? addAggregationTitles(datasetQuery.getResultQuery(),
+      builder.setDatasetResultDto(joinQueryDto.isWithFacets() ? addAggregationTitles(datasetQuery.getResultQuery(),
         aggregationsConfig.getDatasetAggregations(), null) : removeAggregations(datasetQuery.getResultQuery()));
     }
 
-    builder.setStudyResultDto(joinQueryDto.getWithFacets() ? addAggregationTitles(studyQuery.getResultQuery(),
+    builder.setStudyResultDto(joinQueryDto.isWithFacets() ? addAggregationTitles(studyQuery.getResultQuery(),
       aggregationsConfig.getStudyAggregations(), null) : removeAggregations(studyQuery.getResultQuery()));
 
     if(networkQuery.getResultQuery() != null) {
-      builder.setNetworkResultDto(joinQueryDto.getWithFacets() ? addAggregationTitles(networkQuery.getResultQuery(),
+      builder.setNetworkResultDto(joinQueryDto.isWithFacets() ? addAggregationTitles(networkQuery.getResultQuery(),
         aggregationsConfig.getNetworkAggregations(), null) : removeAggregations(networkQuery.getResultQuery()));
     }
 

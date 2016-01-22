@@ -16,14 +16,14 @@ import java.util.stream.Stream;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.obiba.mica.search.rest.QueryDtoHelper;
+import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.obiba.mica.search.rest.QueryDtoHelper.addTermFilters;
+import static org.obiba.mica.search.queries.protobuf.QueryDtoHelper.addTermFilters;
 import static org.obiba.mica.web.model.MicaSearch.QueryDto;
 import static org.obiba.mica.web.model.MicaSearch.QueryDto.QueryStringDto;
 import static org.obiba.mica.web.model.MicaSearch.TermsFilterQueryDto;
