@@ -35,7 +35,8 @@
     "branch": "master",
     "commit": "6fbcd216d213485819571b5942c352c39c6aebe9"
   },
-  "_source": "https://github.com/obiba/ng-obiba-mica.git",
+  "_source": "git://github.com/obiba/ng-obiba-mica.git",
   "_target": "*",
-  "_originalSource": "https://github.com/obiba/ng-obiba-mica.git"
+  "_originalSource": "ng-obiba-mica",
+  "_direct": true
 }
