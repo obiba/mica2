@@ -1,0 +1,45 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <button type="button" class="close" aria-hidden="true"
+      ng-click="$dismiss()">&times;</button>
+    <h4 class="modal-title">
+      {{'data-access-request.profile.title' | translate}}
+    </h4>
+  </div>
+  <div class="modal-body">
+    <div>
+      <label class="control-label">
+        {{'data-access-request.profile.name' | translate}}
+      </label> :
+      <span>
+        {{getFullName(applicant)}}
+      </span>
+    </div>
+
+    <div>
+      <label class="control-label">
+        {{'data-access-request.profile.email' | translate}}
+      </label> :
+      <span>
+        {{getProfileEmail(applicant)}}
+      </span>
+    </div>
+
+    <div
+      ng-repeat="attribute in applicant.attributes | filterProfileAttributes">
+      <label  class="control-label">
+        {{attribute.key}}
+      </label> :
+      <span >{{attribute.value}}</span>
+    </div>
+    <a  class="btn btn-default" href="mailto:{{getProfileEmail(applicant)}}" target="_blank">
+      {{'data-access-request.profile.send-email' | translate}}</a>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary voffest4"
+      ng-click="$dismiss()">
+      <span ng-hide="confirm.close" translate>close</span>
+      {{confirm.close}}
+    </button>
+  </div>
+</div>
