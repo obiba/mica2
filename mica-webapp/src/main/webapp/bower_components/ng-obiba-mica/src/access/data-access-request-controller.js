@@ -13,6 +13,7 @@
 angular.module('obiba.mica.access')
   .controller('DataAccessRequestListController', ['$rootScope',
     '$scope',
+    '$uibModal',
     'DataAccessRequestsResource',
     'DataAccessRequestResource',
     'DataAccessRequestService',
@@ -24,6 +25,7 @@ angular.module('obiba.mica.access')
 
     function ($rootScope,
               $scope,
+              $uibModal,
               DataAccessRequestsResource,
               DataAccessRequestResource,
               DataAccessRequestService,
@@ -80,6 +82,41 @@ angular.module('obiba.mica.access')
         );
       };
 
+      $scope.userProfile = function (profile) {
+        $scope.applicant = profile;
+        $uibModal.open({
+          scope: $scope,
+          templateUrl: 'access/views/data-access-request-profile-user-modal.html'
+        });
+      };
+
+      var getAttributeValue = function(attributes, key) {
+        var result = attributes.filter(function (attribute) {
+          return attribute.key === key;
+        });
+
+        return result && result.length > 0 ? result[0].value : null;
+      };
+
+      $scope.getFullName = function (profile) {
+        if (profile) {
+          if (profile.attributes) {
+            return getAttributeValue(profile.attributes, 'firstName') + ' ' + getAttributeValue(profile.attributes, 'lastName');
+          }
+          return profile.username;
+        }
+        return null;
+      };
+
+      $scope.getProfileEmail = function (profile) {
+        if (profile) {
+          if (profile.attributes) {
+            return getAttributeValue(profile.attributes, 'email');
+          }
+        }
+        return null;
+      };
+
       $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, id) {
         if ($scope.requestToDelete === id) {
           DataAccessRequestResource.delete({id: $scope.requestToDelete},
@@ -97,6 +134,7 @@ angular.module('obiba.mica.access')
     ['$rootScope',
       '$scope',
       '$location',
+      '$uibModal',
       '$routeParams',
       '$filter',
       'DataAccessRequestResource',
@@ -116,6 +154,7 @@ angular.module('obiba.mica.access')
     function ($rootScope,
               $scope,
               $location,
+              $uibModal,
               $routeParams,
               $filter,
               DataAccessRequestResource,
@@ -314,7 +353,13 @@ angular.module('obiba.mica.access')
           DataAccessRequestStatusResource.update({
             id: $scope.dataAccessRequest.id,
             status: DataAccessRequestService.status.SUBMITTED
-          }, onUpdatStatusSuccess, onError);
+          }, function onSubmitted() {
+            $uibModal.open({
+              scope: $scope,
+              templateUrl:'access/views/data-access-request-submitted-modal.html'
+            });
+            onUpdatStatusSuccess();
+          }, onError);
         } else {
           AlertService.alert({
             id: 'DataAccessRequestViewController',
@@ -335,6 +380,41 @@ angular.module('obiba.mica.access')
       };
       $scope.reject = function () {
         confirmStatusChange(DataAccessRequestService.status.REJECTED, null, 'reject');
+      };
+
+      $scope.userProfile = function (profile) {
+        $scope.applicant = profile;
+        $uibModal.open({
+          scope: $scope,
+          templateUrl: 'access/views/data-access-request-profile-user-modal.html'
+        });
+      };
+
+      var getAttributeValue = function(attributes, key) {
+        var result = attributes.filter(function (attribute) {
+          return attribute.key === key;
+        });
+
+        return result && result.length > 0 ? result[0].value : null;
+      };
+
+      $scope.getFullName = function (profile) {
+        if (profile) {
+          if (profile.attributes) {
+            return getAttributeValue(profile.attributes, 'firstName') + ' ' + getAttributeValue(profile.attributes, 'lastName');
+          }
+          return profile.username;
+        }
+        return null;
+      };
+
+      $scope.getProfileEmail = function (profile) {
+        if (profile) {
+          if (profile.attributes) {
+            return getAttributeValue(profile.attributes, 'email');
+          }
+        }
+        return null;
       };
 
       $scope.$on(
@@ -411,7 +491,7 @@ angular.module('obiba.mica.access')
 
         $uibModal.open({
           scope: $scope,
-          templateUrl: 'access/views/data-access-request-validation-modal.html',
+          templateUrl: 'access/views/data-access-request-validation-modal.html'
         });
       };
 

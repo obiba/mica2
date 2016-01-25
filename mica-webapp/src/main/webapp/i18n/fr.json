@@ -1,5 +1,6 @@
 {
   "language": {
+    "title": "Language",
     "en": "Anglais",
     "fr": "Français"
   },
@@ -231,16 +232,25 @@
   },
   "caching": {
     "title": "Caching",
-    "titleBuild": "Build Cache",
+    "help": "Various caches help Mica to be more responsive. Depending on the cache settings, the retention policy can vary a lot (time out, memory and/or disk persistence etc.). See server documentation for more details. After a cache was deleted, it is rebuild during the flow of queries. Dataset variable statistics can be rebuild explicitly, making Mica more resilient when a remote Opal server is down.",
+    "delete-cache": "Delete cache",
+    "build-cache": "Build cache",
     "all": "All",
+    "all-help": "All caches.",
     "clear": "Clear",
     "run": "Run",
-    "opalTaxonomies": "Opal taxonomies",
-    "micaConfig": "Mica configuration",
-    "aggregationsMetadata": "Aggregations metadata",
-    "datasetVariables": "Dataset variables statistics",
-    "agateSubjects": "Agate subjects",
-    "authorization": "Authorizations"
+    "opal-taxonomies": "Opal taxonomies",
+    "opal-taxonomies-help": "Taxonomies from primary Opal server. To be cleared after taxonomies have been updated in Opal.",
+    "mica-config": "Mica configuration",
+    "mica-config-help": "Mica system various settings. Cache is automatically cleared each time the configuration is updated.",
+    "aggregations-metadata": "Aggregations metadata",
+    "aggregations-metadata-help": "Acronyms and names of published studies, networks etc. that are used to decorate search results. Cache is automatically cleared each time a new publication is made.",
+    "dataset-variables": "Dataset variables statistics",
+    "dataset-variables-help": "For each dataset, variable summaries are extracted from remote Opal servers. Cache is automatically cleared after a dataset is published.",
+    "agate-subjects": "Agate users",
+    "agate-subjects-help": "Users details are cached once retrieved from Agate server. To be cleared to synchronize with updated user details.",
+    "authorization": "Authorizations",
+    "authorization-help": "Anything accessed in Mica requires authorization. Cache is automatically cleared after a permission is updated."
   },
   "logs": {
     "title": "Logs",
@@ -286,7 +296,9 @@
     "title": "General Configuration",
     "title-edit": "Edit General Configuration",
     "serverIdentification": "Server Identification",
-    "contentEdition": "Content Edition",
+    "content": "Content",
+    "content-edition": "Edition",
+    "content-access": "Access",
     "dataSource": "Data Source",
     "name": "Name",
     "name-help": "Name of your organization",
@@ -297,13 +309,19 @@
     "languages-help": "Supported languages for studies, networks and datasets descriptions.",
     "opal": "Primary Opal Server",
     "opal-help": "This Opal server is the source of variables and data summaries when no study-specific one is defined.",
-    "privacyThreshold": "Participant Privacy Threshold",
-    "privacyThreshold-help": "No data summary will be returned if the number of participants is below this threshold.",
-    "opalCredentials": "Opal Credentials",
-    "encryptionKeys": "Encyption Keys",
+    "privacy-threshold": "Participant Privacy Threshold",
+    "privacy-threshold-help": "No data summary will be returned if the number of participants is below this threshold.",
+    "opal-credentials": "Opal Credentials",
+    "opal-credentials-help": "When Mica needs to connect to remote Opal server, some credentials must be provided for authentication. These credentials can be based on an encryption key pair (HTTPS only) or a user name and password. See also <a href='http://wiki.obiba.org/display/OPALDOC/Users+and+Groups+Administration' target='_blank'>Opal data access administration documentation</a>.",
+    "encryption-keys": "Encryption Keys",
+    "encryption-keys-help": "HTTPS connection requires to have a private key and a public key (certificate) defined. A self-signed key-pair is available by default. You can provide your own.",
     "addKeyPair": "Add Keys",
-    "downloadCertificate": "Download Certificate",
-    "addOpalCredential": "Add Opal credential",
+    "download-certificate": "Download Certificate",
+    "opal-credential-add": "Add Opal Credential",
+    "opal-credential-type": {
+      "USERNAME": "User Name",
+      "PUBLIC_KEY_CERTIFICATE": "Key Pair"
+    },
     "opalCredentialTitle": "Opal Credential",
     "opalUrl": "Opal URL",
     "actions": "Actions",
@@ -327,10 +345,61 @@
       "private": "Private Key",
       "public": "Public Key"
     },
+    "openAccess": "Open access",
+    "openAccess-help": "Access to published documents is opened to everyone.",
     "roles": "Roles",
     "roles-help": "List of available roles for studies and networks.",
     "add-role": "Add Role",
-    "edit-role": "Edit Role"
+    "delete-role-title": "Delete Role",
+    "delete-role-confirm": "This operation will remove members with this role from all documents, i.e. studies, networks. Are you sure you want to delete role \"{{role}}\"?",
+    "role-help": "Role unique identifier.",
+    "role-error": "Role identifier already exists.",
+    "notifications": {
+      "title": "Notifications",
+      "info": "Notification emails can be sent to relevant users and groups.",
+      "study-title": "Study Updates",
+      "study-info": "Recipients of study updates notifications have at least Editor permission (when status is Draft) or Reviewer permission (when status is Deleted or Under Review).",
+      "study": "On study status changed notification",
+      "study-subject": "Subject of study status notification",
+      "study-help": "Send email notifications when study status changes to Deleted, to Under review or to Draft.",
+      "study-subject-help": "Email subject for study status change notifications.",
+      "study-subject-help-long": "Email subject can contain the following placeholders: ${organization}, ${documentType}, ${documentId}, ${status}.",
+      "network-title": "Network Updates",
+      "network-info": "Recipients of network updates notifications have at least Editor permission (when status is Draft) or Reviewer permission (when status is Deleted or Under Review).",
+      "network": "On network status changed notification",
+      "network-subject": "Subject of network status notification",
+      "network-help": "Send email notifications when network status changes to Deleted, to Under review or to Draft.",
+      "network-subject-help": "Email subject for network status change notifications.",
+      "network-subject-help-long": "Email subject can contain the following placeholders: ${organization}, ${documentType}, ${documentId}, ${status}.",
+      "study-dataset-title": "Study Dataset Updates",
+      "study-dataset-info": "Recipients of study dataset updates notifications have at least Editor permission (when status is Draft) or Reviewer permission (when status is Deleted or Under Review).",
+      "study-dataset": "On study dataset status changed notification",
+      "study-dataset-subject": "Subject of study dataset status notification",
+      "study-dataset-help": "Send email notifications when study dataset status changes to Deleted, to Under review or to Draft.",
+      "study-dataset-subject-help": "Email subject for study dataset status change notifications.",
+      "study-dataset-subject-help-long": "Email subject can contain the following placeholders: ${organization}, ${documentType}, ${documentId}, ${status}.",
+      "harmonization-dataset-title": "Harmonization Dataset Updates",
+      "harmonization-dataset-info": "Recipients of harmonization dataset updates notifications have at least Editor permission (when status is Draft) or Reviewer permission (when status is Deleted or Under Review).",
+      "harmonization-dataset": "On harmonization dataset status changed notification",
+      "harmonization-dataset-subject": "Subject of harmonization dataset status notification",
+      "harmonization-dataset-help": "Send email notifications when harmonization dataset status changes to Deleted, to Under review or to Draft.",
+      "harmonization-dataset-subject-help": "Email subject for harmonization dataset status change notifications.",
+      "harmonization-dataset-subject-help-long": "Email subject can contain the following placeholders: ${organization}, ${documentType}, ${documentId}, ${status}.",
+      "file-title": "File Updates",
+      "file-info": "Recipients of file updates notifications have at least Editor permission (when status is Draft) or Reviewer permission (when status is Deleted or Under Review).",
+      "file": "On file status changed notification",
+      "file-subject": "Subject of file status notification",
+      "file-help": "Send email notifications when files status changes to Deleted, to Under review or to Draft.",
+      "file-subject-help": "Email subject for file status change notifications.",
+      "file-subject-help-long": "Email subject can contain the following placeholders: ${organization}, ${documentType}, ${documentId}, ${status} and ${path} where document refers to the study (or network etc.) to which the file is attached.",
+      "comment-title": "Comment Updates",
+      "comment": "On comment notification",
+      "comment-info": "Recipients of comment updates notifications have at least Reader permission.",
+      "comment-subject": "Subject of comment notification",
+      "comment-help": "Send email notifications when a comment is added or updated.",
+      "comment-subject-help": "Email subject for comment notifications.",
+      "comment-subject-help-long": "Email subject can contain the following placeholders: ${organization}, ${documentType}, ${documentId} and ${status} where document refers to the study (or network etc.) that was commented."
+    }
   },
   "publish": {
     "label": "Publish",
@@ -339,7 +408,17 @@
     "not-published": "Not published",
     "published-out-of-date": "Published, out of date",
     "published": "Published",
-    "revisions-ahead": "Revisions ahead"
+    "publication": "Publication",
+    "published-ago-by": "Published {{publicationDate | amTimeAgo}} [{{publishedBy}}]",
+    "revisions-ahead": "Revisions ahead",
+    "status": {
+      "DRAFT": "Draft",
+      "UNDER_REVIEW": "Under Review",
+      "DELETED": "Deleted",
+      "draft": "To Draft",
+      "under-review": "To Under Review",
+      "deleted": "To Deleted"
+    }
   },
   "studies": "Studies",
   "numberOfParticipants": {
@@ -352,6 +431,10 @@
   "study": {
     "input-placeholder": "Study name",
     "add": "Add Study",
+    "add-population": "Add Population",
+    "edit-population": "Edit Population",
+    "add-dce": "Add Data Collection Event",
+    "edit-dce": "Edit Data Collection Event",
     "label": "Study",
     "label-edit": "Edit Study",
     "details": "Study",
@@ -433,7 +516,7 @@
       "published": "Published",
       "revisions-ahead": "Revisions ahead"
     },
-    "opal" : "Opal Server",
+    "opal": "Opal Server",
     "opal-help": "URL of the opal server for this study",
     "delete-conflict": "Conflict deleting study",
     "delete-conflict-message": "Found conflicts when trying to delete study. Remove dependencies and try again.",
@@ -441,10 +524,15 @@
     "revision": {
       "update-comment": "Add a comment to describe the changes."
     },
+    "delete-dialog":{
+      "title": "Delete Study",
+      "message": "Are you sure to delete the study '{{arg0}}'?"
+    },
     "restore-dialog": {
       "title": "Restoring Study from Revision",
-      "message": "Are you sure you want to restore this revision from {{arg0}}?"
-    }
+      "message": "Are you sure you want to restore this revision from '{{arg0}}'?"
+    },
+    "none": "No studies."
   },
   "contact": {
     "label": "Contact",
@@ -485,6 +573,7 @@
     "name": "Name",
     "acronym": "Acronym",
     "add": "Add Dataset",
+    "details": "Dataset",
     "label-edit": "Edit Dataset",
     "general-info": "General Information",
     "description": "Description",
@@ -506,6 +595,10 @@
       "title": "Study Tables",
       "info": "The study tables define implementations of the Data Schema variables. The data summaries will be extracted from the corresponding Opal tables."
     },
+    "restore-dialog": {
+      "title": "Restoring Dataset from Revision",
+      "message": "Are you sure you want to restore this revision from '{{arg0}}'?"
+    },
     "project": "Project",
     "project-help": "Project name from the study's Opal server (if this one is defined, otherwise the project is expected to be found in Opal primary server).",
     "project-dataschema-help": "Project name from the Opal primary server.",
@@ -519,7 +612,8 @@
       "info": "The variables of the Data Schema are the reference variables of the Harmonization dataset. This is a simple data dictionary: no data summaries will be extracted from the Opal table."
     },
     "index": "Index",
-    "add-study-table": "Add Study Table"
+    "add-study-table": "Add Study Table",
+    "none": "No datasets."
   },
   "attributes": "Attributes",
   "attribute": {
@@ -573,9 +667,10 @@
     "general-info": "Informations Générales",
     "description" : "Description",
     "index": "Index",
-    "details": "Réseau",
-    "add-study": "Ajouter une étude",
-    "associated-people": "Personnes associées",
+    "label": "Network",
+    "add-study": "Add Study",
+    "contacts": "Contacts",
+    "associated-people": "Affiliated Members",
     "add-member": "Add {{type}}",
     "member-list": "List of {{type}}",
     "delete-dialog": {
@@ -586,16 +681,25 @@
       "title": "Delete Study",
       "message": "Are you sure you want to delete the study '{{arg0}}'?"
     },
+    "network-delete-dialog": {
+      "title": "Delete Network",
+      "message": "Are you sure you want to delete the network '{{arg0}}'?"
+    },
     "restore-dialog": {
       "title": "Restoring Network from Revision",
       "message": "Are you sure you want to restore this revision from '{{arg0}}'?"
-    }
+    },
+    "none": "No networks."
   },
   "all": "All",
   "name": "Name",
+  "id": "ID",
+  "size": "Size",
   "value": "Value",
   "values": "Values",
+  "details": "Details",
   "namespace": "Namespace",
+  "documents": "Documents",
   "edit": "Edit",
   "clone": "Clone",
   "view": "View",
@@ -614,10 +718,13 @@
   "save": "Save",
   "validate": "Validate",
   "download": "Download",
+  "upload": "Upload",
   "apply": "Apply",
   "on": "On",
   "by": "By",
   "created-by": "Created by",
+  "created-on": "Created on",
+  "last-modified": "Last Modified",
   "other": "Other",
   "notification": "Notification",
   "required": "Required",
@@ -633,6 +740,10 @@
   "attachments": "Attachments",
   "no-attachments": "No attachments.",
   "allowed-file-types": "Allowed file types:",
+  "file-system": "File System",
+  "places": "Places",
+  "homes": "Homes",
+  "home": "Home",
   "total": "Total",
   "type": "Type",
   "fullscreen": "Switch to fullscreen mode",
@@ -652,34 +763,118 @@
   "author": "Author",
   "user": "User",
   "users": "Users",
+  "search": "Search",
+  "variables": "Variables",
+  "classifications": "Classifications",
+  "all-null-classifications": "",
+  "all-variable-classifications": "All variable classifications",
+  "all-study-classifications": "All study classifications",
+  "no-classifications": "No classifications found",
+  "variable-classifications": "Variable classifications",
+  "study-classifications": "Study classifications",
+  "add-query": "Add to search query",
   "permissions": "Permissions",
   "permission": {
+    "help": "Grant permission to Read, Edit or Review the current draft.",
     "none": "No permissions.",
     "label": "permission",
     "principal": "Name",
+    "principal-help": "User or group unique name.",
+    "anyone": "Anyone",
+    "any-group": "Any group",
     "add": "Add Permission",
+    "edit-user": "Edit User Permission",
+    "edit-group": "Edit Group Permission",
     "user": "User",
     "group": "Group",
     "reader": "Reader",
+    "reader-help": "Read-only access to the document in draft mode with its revisions and its associated files.",
     "editor": "Editor",
-    "publisher": "Publisher",
-    "reader-help": "Can view the resource",
-    "editor-help": "Can edit the resource",
-    "publisher-help": "Can publish the resource"
+    "editor-help": "Edit access to the document in draft mode with its revisions and its associated files. Publication or permanent deletion are not permitted.",
+    "reviewer": "Reviewer",
+    "reviewer-help": "Full access to the document, including its publication, permanent deletion and permissions.",
+    "file-access": "Apply Read access to all associated files",
+    "delete-dialog": {
+      "title": "Delete Permission",
+      "message": "Are you sure you want to delete the permission of {{arg0}} {{arg1}}"
+    }
   },
+  "access": {
+    "help": "Grant Read access to the publication.",
+    "none": "No accesses.",
+    "add": "Add Access",
+    "principal-help": "User or group unique name. Use wildcard * for specifying anyone or any group.",
+    "delete-dialog": {
+      "title": "Delete Access",
+      "message": "Are you sure you want to delete the access of {{arg0}} {{arg1}}"
+    }
+  },
+  "draft": "Draft",
+  "published": "Published",
   "role": "Role",
   "files": "Files",
   "select-all": "Select all",
   "clear-selection": "Clear",
-  "items-selected": "Items selected",
-  "item-selected": "Item selected",
+  "items-selected": "items selected",
+  "item-selected": "item selected",
+  "files-selected": "files selected",
+  "file-selected": "file selected",
+  "form": "Form",
+  "settings": "Settings",
+  "other-settings": "Other Settings",
   "revisions": "Revisions",
   "revision": "Revision",
+  "revision-date": "Revision Date",
   "comment-label": "Comment",
   "restore": "Restore",
+  "history": "History",
+  "new-folder": "New Folder",
+  "new-network": "New Network",
+  "new-study": "New Study",
+  "new-study-dataset": "New Study Dataset",
+  "new-harmonization-dataset": "New Harmonization Dataset",
+  "description": "Description",
+  "help": "Help",
+  "general": "General",
+  "configuration": "Configuration",
+  "security": "Security",
+  "data-management": "Data Management",
+  "data-access": "Data Access",
+  "properties": "Properties",
+  "searching": "Searching",
+  "search-results": "Search results",
+  "most-recent": "Most Recent",
+  "not-published": "Not Published",
+  "path": "Path",
+  "view-files": "View files",
+  "search-tooltip": {
+    "recursively": "Search recursively",
+    "clear": "Clear search",
+    "under-review": "Search files under review",
+    "deleted": "Search deleted files",
+    "most-recent": "Search 10 most recently modified files",
+    "not-published": "Search not published files"
+  },
+  "admin-page": {
+    "help": {
+      "general": "Configure Opal server, locale and server properties.",
+      "security": "Configure encryption and Opal server credentials.",
+      "metrics": "View JVM and HTTP metrics.",
+      "logs": "Configure server logs.",
+      "caching": "Manage server caches.",
+      "data-access-config": "Configure Data Access Request form.",
+      "file-system": "Manage file system."
+    }
+  },
   "server": {
     "error": {
-      "403": "Server rejected your request, please make sure you are logged in and try again."
+      "403": "Server rejected your request, please make sure you are logged in and try again.",
+      "409": {
+        "network": {
+          "delete-conflict": "Conflict deleting network",
+          "delete-conflict-message": "Found conflicts when trying to delete network. Remove all references from the following networks: {{arg0}}"
+        }
+      }
     }
   },
   "file": {
@@ -697,7 +892,7 @@
     "status": "Status",
     "lastUpdate": "Last Update",
     "submissionDate": "Submission Date",
-    "none": "No Data Access requested.",
+    "none": "No data access requested.",
     "add": "Add Data Access Request",
     "edit": "Edit Data Access Request",
     "form": "Application Form",
@@ -734,6 +929,21 @@
       "message": "Are you sure you want to {{arg0}} this access request?",
       "message-review": "Are you sure you want to put this access request under review?"
     },
+    "submit-confirmation": {
+      "title": "Form Submitted",
+      "message": "Your access form was successfully submitted."
+    },
+    "status-change-confirmation": {
+      "title": "Status Change Confirmation",
+      "message": "Are you sure you want to {{arg0}} this access request?",
+      "message-review": "Are you sure you want to put this access request under review?"
+    },
+    "profile" :{
+      "title" : "Profile Utilisateur",
+      "name" : "Nom",
+      "send-email" : "Envoyer un courriel",
+      "email" : "Courriel"
+    },
     "parse-error": "Form content is not a valid document, please contact your administrator for more help."
   },
   "data-access-config": {
@@ -742,6 +952,7 @@
     "title-edit": "Edit Data Access Configuration",
     "title-field": "Title Field",
     "title-field-help": "The title of the request will be extracted from the application form model according to the specified JSON field path.",
+    "general-config": "General Configuration",
     "saved": "Data Access Form is successfully updated.",
     "pdf-template": {
       "title": "PDF Template",
@@ -819,6 +1030,7 @@
       "schema": "Form schema is not a valid document, please contact your administrator to configure the form schema."
     }
   },
+  "comments": "Comments",
   "comment": {
     "write": "Write",
     "preview": "Preview",
@@ -831,6 +1043,11 @@
       "title": "Delete Comment",
       "message": "Are you sure you want to delete this comment by '{{arg0}}'?"
     }
+  },
+  "taxonomy": {
+    "target": {
+      "variable": "Variable",
+      "study": "Study"
+    }
   }
-
 }

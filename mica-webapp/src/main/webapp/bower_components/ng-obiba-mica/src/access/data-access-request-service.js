@@ -42,7 +42,7 @@ angular.module('obiba.mica.access')
         'save': {
           method: 'POST',
           params: {id: '@id'},
-          headers : {'Content-Type' : 'text/plain' },
+          headers: {'Content-Type': 'text/plain'},
           errorHandler: true
         },
         'get': {method: 'GET', params: {id: '@id'}, errorHandler: true}
@@ -60,7 +60,7 @@ angular.module('obiba.mica.access')
         'update': {
           method: 'PUT',
           params: {id: '@id', commentId: '@commentId'},
-          headers : {'Content-Type' : 'text/plain' },
+          headers: {'Content-Type': 'text/plain'},
           errorHandler: true
         }
       });
@@ -69,11 +69,15 @@ angular.module('obiba.mica.access')
   .factory('DataAccessRequestStatusResource', ['$resource', 'ngObibaMicaUrl',
     function ($resource, ngObibaMicaUrl) {
       return $resource(ngObibaMicaUrl.getUrl('DataAccessRequestStatusResource'), {}, {
-        'update': {method: 'PUT', params: {id: '@id', status: '@status'}, errorHandler: true}
+        'update': {
+          method: 'PUT',
+          params: {id: '@id', status: '@status'},
+          errorHandler: true
+        }
       });
     }])
 
-  .service('DataAccessRequestConfig', function() {
+  .service('DataAccessRequestConfig', function () {
     var options = {
       newRequestButtonCaption: null,
       documentsSectionTitle: null,
@@ -83,9 +87,9 @@ angular.module('obiba.mica.access')
       userListPageTitle: null
     };
 
-    this.setOptions = function(newOptions) {
+    this.setOptions = function (newOptions) {
       if (typeof(newOptions) === 'object') {
-        Object.keys(newOptions).forEach(function(option) {
+        Object.keys(newOptions).forEach(function (option) {
           if (option in options) {
             options[option] = newOptions[option];
           }
@@ -93,14 +97,14 @@ angular.module('obiba.mica.access')
       }
     };
 
-    this.getOptions = function() {
+    this.getOptions = function () {
       return angular.copy(options);
     };
 
   })
 
-  .service('DataAccessRequestService', ['$translate',
-    function ($translate) {
+  .service('DataAccessRequestService', ['$translate', 'SessionProxy',
+    function ($translate, SessionProxy) {
       var statusList = {
         OPENED: 'OPENED',
         SUBMITTED: 'SUBMITTED',
@@ -111,10 +115,10 @@ angular.module('obiba.mica.access')
 
       this.status = statusList;
 
-      this.getStatusFilterData = function(userCallback) {
+      this.getStatusFilterData = function (userCallback) {
         if (userCallback) {
-          $translate(Object.keys(statusList)).then(function(translation) {
-            userCallback(Object.keys(translation).map(function(key){
+          $translate(Object.keys(statusList)).then(function (translation) {
+            userCallback(Object.keys(translation).map(function (key) {
               return translation[key];
             }));
           });
@@ -122,10 +126,20 @@ angular.module('obiba.mica.access')
       };
 
       var canDoAction = function (request, action) {
-        return request.actions ? request.actions.indexOf(action) !== -1 : null;
+        return request.actions ? request.actions.indexOf(action) !== - 1 : null;
       };
 
       this.actions = {
+        canViewProfile: function (role) {
+          var found = false;
+          var currentUserRoles = SessionProxy.roles();
+          angular.forEach(currentUserRoles, function (value) {
+            if (value === role) {
+              found = true;
+            }
+          });
+          return found;
+        },
         canView: function (request) {
           return canDoAction(request, 'VIEW');
         },
@@ -144,7 +158,7 @@ angular.module('obiba.mica.access')
       };
 
       var canChangeStatus = function (request, to) {
-        return request.nextStatus ? request.nextStatus.indexOf(to) !== -1 : null;
+        return request.nextStatus ? request.nextStatus.indexOf(to) !== - 1 : null;
       };
 
       this.nextStatus = {
@@ -170,8 +184,8 @@ angular.module('obiba.mica.access')
 
       };
 
-      this.getStatusHistoryInfo = function(userCallback) {
-        if (!userCallback) {
+      this.getStatusHistoryInfo = function (userCallback) {
+        if (! userCallback) {
           return;
         }
 
@@ -213,9 +227,9 @@ angular.module('obiba.mica.access')
 
         $translate(Object.keys(keyIdMap))
           .then(
-            function(translation) {
+            function (translation) {
               Object.keys(translation).forEach(
-                function(key){
+                function (key) {
                   statusHistoryInfo[keyIdMap[key]].msg = translation[key];
                 });
 
@@ -223,7 +237,7 @@ angular.module('obiba.mica.access')
             });
       };
 
-      this.getStatusHistoryInfoId = function(status) {
+      this.getStatusHistoryInfoId = function (status) {
         var id = 'opened';
 
         if (status.from !== 'OPENED' || status.from !== status.to) {
@@ -250,4 +264,12 @@ angular.module('obiba.mica.access')
       };
 
       return this;
-    }]);
+    }])
+  .filter('filterProfileAttributes', function () {
+    return function (attributes) {
+      var exclude = ['email', 'firstName', 'lastName', 'createdDate', 'lastLogin', 'username'];
+      return attributes.filter(function (attribute) {
+        return exclude.indexOf(attribute.key) === - 1;
+      });
+    };
+  });

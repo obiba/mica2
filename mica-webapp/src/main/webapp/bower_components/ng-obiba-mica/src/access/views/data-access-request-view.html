@@ -15,7 +15,14 @@
 
   <div ng-if="validForm">
 
-    <p class="help-block pull-left"><span translate>created-by</span> {{userProfileService.getFullName(dataAccessRequest.profile) || dataAccessRequest.applicant}},
+    <p class="help-block pull-left"><span translate>created-by</span>
+       <span ng-if="actions.canViewProfile('mica-user')">
+         {{getFullName(dataAccessRequest.profile) || dataAccessRequest.applicant}}
+      </span>
+      <a href ng-click="userProfile(dataAccessRequest.profile)"
+          ng-if="actions.canViewProfile('mica-data-access-officer')">
+        {{getFullName(dataAccessRequest.profile) || dataAccessRequest.applicant}}
+      </a>,
       <span>{{dataAccessRequest.timestamps.created | amCalendar}}</span>
       <span class="label label-success">{{dataAccessRequest.status}}</span></p>
 
