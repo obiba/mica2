@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-01-06
+ * Date: 2016-01-25
  */
 'use strict';
 
@@ -18,13 +18,16 @@ function NgObibaMicaUrlProvider() {
     'DataAccessRequestCommentResource': 'ws/data-access-request/:id/comment/:commentId',
     'DataAccessRequestStatusResource': 'ws/data-access-request/:id/_status?to=:status',
     'TempFileUploadResource': 'ws/files/temp',
-    'TempFileResource': 'ws/files/temp/:id'
+    'TempFileResource': 'ws/files/temp/:id',
+    'PublishedStudiesSearchResource': 'ws/:type/_search',
+    'TaxonomiesResource': 'ws/taxonomies/_filter',
+    'TaxonomyResource': 'ws/taxonomy/:taxonomy/_filter',
+    'VocabularyResource': 'ws/taxonomy/:taxonomy/vocabulary/:vocabulary/_filter'
   };
-
   function UrlProvider(registry) {
     var urlRegistry = registry;
 
-    this.getUrl =function(resource) {
+    this.getUrl = function (resource) {
       if (resource in urlRegistry) {
         return urlRegistry[resource];
       }
@@ -33,13 +36,13 @@ function NgObibaMicaUrlProvider() {
     };
   }
 
-  this.setUrl = function(key, url) {
+  this.setUrl = function (key, url) {
     if (key in registry) {
       registry[key] = url;
     }
   };
 
-  this.$get = function() {
+  this.$get = function () {
     return new UrlProvider(registry);
   };
 }
@@ -51,7 +54,7 @@ function NgObibaMicaTemplateUrlFactory() {
   function TemplateUrlProvider(registry) {
     var urlRegistry = registry;
 
-    this.getHeaderUrl =function(key) {
+    this.getHeaderUrl = function (key) {
       if (key in urlRegistry) {
         return urlRegistry[key].header;
       }
@@ -59,7 +62,7 @@ function NgObibaMicaTemplateUrlFactory() {
       return null;
     };
 
-    this.getFooterUrl =function(key) {
+    this.getFooterUrl = function (key) {
       if (key in urlRegistry) {
         return urlRegistry[key].footer;
       }
@@ -68,35 +71,37 @@ function NgObibaMicaTemplateUrlFactory() {
     };
   }
 
-  factory.setHeaderUrl = function(key, url) {
+  factory.setHeaderUrl = function (key, url) {
     if (key in this.registry) {
       this.registry[key].header = url;
     }
   };
 
-  factory.setFooterUrl = function(key, url) {
+  factory.setFooterUrl = function (key, url) {
     if (key in this.registry) {
       this.registry[key].footer = url;
     }
   };
 
-  factory.$get = function() {
+  factory.$get = function () {
     return new TemplateUrlProvider(this.registry);
   };
 
-  this.create = function(inputRegistry) {
+  this.create = function (inputRegistry) {
     factory.registry = inputRegistry;
     return factory;
   };
 }
 
 angular.module('ngObibaMica', [
-  'schemaForm',
-  'obiba.mica.utils',
-  'obiba.mica.file',
-  'obiba.mica.attachment',
-  'obiba.mica.access'
-])
+    'schemaForm',
+    'obiba.mica.utils',
+    'obiba.mica.file',
+    'obiba.mica.attachment',
+    'obiba.mica.access',
+    'obiba.mica.search',
+    'obiba.mica.graphics'
+  ])
   .constant('USER_ROLES', {
     all: '*',
     admin: 'mica-administrator',
@@ -105,7 +110,7 @@ angular.module('ngObibaMica', [
     user: 'mica-user',
     dao: 'mica-data-access-officer'
   })
-  .config(['$provide', function($provide) {
+  .config(['$provide', function ($provide) {
     $provide.provider('ngObibaMicaUrl', NgObibaMicaUrlProvider);
   }]);
 
@@ -304,26 +309,23 @@ angular.module('obiba.mica.attachment')
 
 /*global NgObibaMicaTemplateUrlFactory */
 angular.module('obiba.mica.access', [
-  'pascalprecht.translate',
-  'obiba.alert',
-  'obiba.comments',
-  'obiba.mica.attachment',
-  'obiba.utils',
-  'angularMoment',
-  'templates-ngObibaMica'
-])
-  .config(['$provide', function($provide) {
+    'pascalprecht.translate',
+    'obiba.alert',
+    'obiba.comments',
+    'obiba.mica.attachment',
+    'obiba.utils',
+    'angularMoment',
+    'templates-ngObibaMica'
+  ])
+  .config(['$provide', function ($provide) {
     $provide.provider('ngObibaMicaAccessTemplateUrl', new NgObibaMicaTemplateUrlFactory().create(
       {
-        list: { header: null, footer: null},
-        view: { header: null, footer: null},
-        form: { header: null, footer: null}
+        list: {header: null, footer: null},
+        view: {header: null, footer: null},
+        form: {header: null, footer: null}
       }
     ));
   }]);
-
-
-
 ;/*
  * Copyright (c) 2014 OBiBa. All rights reserved.
  *
@@ -339,6 +341,7 @@ angular.module('obiba.mica.access', [
 angular.module('obiba.mica.access')
   .controller('DataAccessRequestListController', ['$rootScope',
     '$scope',
+    '$uibModal',
     'DataAccessRequestsResource',
     'DataAccessRequestResource',
     'DataAccessRequestService',
@@ -350,6 +353,7 @@ angular.module('obiba.mica.access')
 
     function ($rootScope,
               $scope,
+              $uibModal,
               DataAccessRequestsResource,
               DataAccessRequestResource,
               DataAccessRequestService,
@@ -406,6 +410,41 @@ angular.module('obiba.mica.access')
         );
       };
 
+      $scope.userProfile = function (profile) {
+        $scope.applicant = profile;
+        $uibModal.open({
+          scope: $scope,
+          templateUrl: 'access/views/data-access-request-profile-user-modal.html'
+        });
+      };
+
+      var getAttributeValue = function(attributes, key) {
+        var result = attributes.filter(function (attribute) {
+          return attribute.key === key;
+        });
+
+        return result && result.length > 0 ? result[0].value : null;
+      };
+
+      $scope.getFullName = function (profile) {
+        if (profile) {
+          if (profile.attributes) {
+            return getAttributeValue(profile.attributes, 'firstName') + ' ' + getAttributeValue(profile.attributes, 'lastName');
+          }
+          return profile.username;
+        }
+        return null;
+      };
+
+      $scope.getProfileEmail = function (profile) {
+        if (profile) {
+          if (profile.attributes) {
+            return getAttributeValue(profile.attributes, 'email');
+          }
+        }
+        return null;
+      };
+
       $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, id) {
         if ($scope.requestToDelete === id) {
           DataAccessRequestResource.delete({id: $scope.requestToDelete},
@@ -423,6 +462,7 @@ angular.module('obiba.mica.access')
     ['$rootScope',
       '$scope',
       '$location',
+      '$uibModal',
       '$routeParams',
       '$filter',
       'DataAccessRequestResource',
@@ -442,6 +482,7 @@ angular.module('obiba.mica.access')
     function ($rootScope,
               $scope,
               $location,
+              $uibModal,
               $routeParams,
               $filter,
               DataAccessRequestResource,
@@ -640,7 +681,13 @@ angular.module('obiba.mica.access')
           DataAccessRequestStatusResource.update({
             id: $scope.dataAccessRequest.id,
             status: DataAccessRequestService.status.SUBMITTED
-          }, onUpdatStatusSuccess, onError);
+          }, function onSubmitted() {
+            $uibModal.open({
+              scope: $scope,
+              templateUrl:'access/views/data-access-request-submitted-modal.html'
+            });
+            onUpdatStatusSuccess();
+          }, onError);
         } else {
           AlertService.alert({
             id: 'DataAccessRequestViewController',
@@ -661,6 +708,41 @@ angular.module('obiba.mica.access')
       };
       $scope.reject = function () {
         confirmStatusChange(DataAccessRequestService.status.REJECTED, null, 'reject');
+      };
+
+      $scope.userProfile = function (profile) {
+        $scope.applicant = profile;
+        $uibModal.open({
+          scope: $scope,
+          templateUrl: 'access/views/data-access-request-profile-user-modal.html'
+        });
+      };
+
+      var getAttributeValue = function(attributes, key) {
+        var result = attributes.filter(function (attribute) {
+          return attribute.key === key;
+        });
+
+        return result && result.length > 0 ? result[0].value : null;
+      };
+
+      $scope.getFullName = function (profile) {
+        if (profile) {
+          if (profile.attributes) {
+            return getAttributeValue(profile.attributes, 'firstName') + ' ' + getAttributeValue(profile.attributes, 'lastName');
+          }
+          return profile.username;
+        }
+        return null;
+      };
+
+      $scope.getProfileEmail = function (profile) {
+        if (profile) {
+          if (profile.attributes) {
+            return getAttributeValue(profile.attributes, 'email');
+          }
+        }
+        return null;
       };
 
       $scope.$on(
@@ -737,7 +819,7 @@ angular.module('obiba.mica.access')
 
         $uibModal.open({
           scope: $scope,
-          templateUrl: 'access/views/data-access-request-validation-modal.html',
+          templateUrl: 'access/views/data-access-request-validation-modal.html'
         });
       };
 
@@ -905,7 +987,7 @@ angular.module('obiba.mica.access')
         'save': {
           method: 'POST',
           params: {id: '@id'},
-          headers : {'Content-Type' : 'text/plain' },
+          headers: {'Content-Type': 'text/plain'},
           errorHandler: true
         },
         'get': {method: 'GET', params: {id: '@id'}, errorHandler: true}
@@ -923,7 +1005,7 @@ angular.module('obiba.mica.access')
         'update': {
           method: 'PUT',
           params: {id: '@id', commentId: '@commentId'},
-          headers : {'Content-Type' : 'text/plain' },
+          headers: {'Content-Type': 'text/plain'},
           errorHandler: true
         }
       });
@@ -932,11 +1014,15 @@ angular.module('obiba.mica.access')
   .factory('DataAccessRequestStatusResource', ['$resource', 'ngObibaMicaUrl',
     function ($resource, ngObibaMicaUrl) {
       return $resource(ngObibaMicaUrl.getUrl('DataAccessRequestStatusResource'), {}, {
-        'update': {method: 'PUT', params: {id: '@id', status: '@status'}, errorHandler: true}
+        'update': {
+          method: 'PUT',
+          params: {id: '@id', status: '@status'},
+          errorHandler: true
+        }
       });
     }])
 
-  .service('DataAccessRequestConfig', function() {
+  .service('DataAccessRequestConfig', function () {
     var options = {
       newRequestButtonCaption: null,
       documentsSectionTitle: null,
@@ -946,9 +1032,9 @@ angular.module('obiba.mica.access')
       userListPageTitle: null
     };
 
-    this.setOptions = function(newOptions) {
+    this.setOptions = function (newOptions) {
       if (typeof(newOptions) === 'object') {
-        Object.keys(newOptions).forEach(function(option) {
+        Object.keys(newOptions).forEach(function (option) {
           if (option in options) {
             options[option] = newOptions[option];
           }
@@ -956,14 +1042,14 @@ angular.module('obiba.mica.access')
       }
     };
 
-    this.getOptions = function() {
+    this.getOptions = function () {
       return angular.copy(options);
     };
 
   })
 
-  .service('DataAccessRequestService', ['$translate',
-    function ($translate) {
+  .service('DataAccessRequestService', ['$translate', 'SessionProxy',
+    function ($translate, SessionProxy) {
       var statusList = {
         OPENED: 'OPENED',
         SUBMITTED: 'SUBMITTED',
@@ -974,10 +1060,10 @@ angular.module('obiba.mica.access')
 
       this.status = statusList;
 
-      this.getStatusFilterData = function(userCallback) {
+      this.getStatusFilterData = function (userCallback) {
         if (userCallback) {
-          $translate(Object.keys(statusList)).then(function(translation) {
-            userCallback(Object.keys(translation).map(function(key){
+          $translate(Object.keys(statusList)).then(function (translation) {
+            userCallback(Object.keys(translation).map(function (key) {
               return translation[key];
             }));
           });
@@ -985,10 +1071,20 @@ angular.module('obiba.mica.access')
       };
 
       var canDoAction = function (request, action) {
-        return request.actions ? request.actions.indexOf(action) !== -1 : null;
+        return request.actions ? request.actions.indexOf(action) !== - 1 : null;
       };
 
       this.actions = {
+        canViewProfile: function (role) {
+          var found = false;
+          var currentUserRoles = SessionProxy.roles();
+          angular.forEach(currentUserRoles, function (value) {
+            if (value === role) {
+              found = true;
+            }
+          });
+          return found;
+        },
         canView: function (request) {
           return canDoAction(request, 'VIEW');
         },
@@ -1007,7 +1103,7 @@ angular.module('obiba.mica.access')
       };
 
       var canChangeStatus = function (request, to) {
-        return request.nextStatus ? request.nextStatus.indexOf(to) !== -1 : null;
+        return request.nextStatus ? request.nextStatus.indexOf(to) !== - 1 : null;
       };
 
       this.nextStatus = {
@@ -1033,8 +1129,8 @@ angular.module('obiba.mica.access')
 
       };
 
-      this.getStatusHistoryInfo = function(userCallback) {
-        if (!userCallback) {
+      this.getStatusHistoryInfo = function (userCallback) {
+        if (! userCallback) {
           return;
         }
 
@@ -1076,9 +1172,9 @@ angular.module('obiba.mica.access')
 
         $translate(Object.keys(keyIdMap))
           .then(
-            function(translation) {
+            function (translation) {
               Object.keys(translation).forEach(
-                function(key){
+                function (key) {
                   statusHistoryInfo[keyIdMap[key]].msg = translation[key];
                 });
 
@@ -1086,7 +1182,7 @@ angular.module('obiba.mica.access')
             });
       };
 
-      this.getStatusHistoryInfoId = function(status) {
+      this.getStatusHistoryInfoId = function (status) {
         var id = 'opened';
 
         if (status.from !== 'OPENED' || status.from !== status.to) {
@@ -1113,8 +1209,534 @@ angular.module('obiba.mica.access')
       };
 
       return this;
+    }])
+  .filter('filterProfileAttributes', function () {
+    return function (attributes) {
+      var exclude = ['email', 'firstName', 'lastName', 'createdDate', 'lastLogin', 'username'];
+      return attributes.filter(function (attribute) {
+        return exclude.indexOf(attribute.key) === - 1;
+      });
+    };
+  });
+;/*
+ * Copyright (c) 2016 OBiBa. All rights reserved.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+'use strict';
+
+/*global NgObibaMicaTemplateUrlFactory */
+angular.module('obiba.mica.search', [
+    'ui.bootstrap',
+    'pascalprecht.translate',
+    'templates-ngObibaMica'
+  ])
+  .config(['$provide', function ($provide) {
+    $provide.provider('ngObibaMicaSearchTemplateUrl', new NgObibaMicaTemplateUrlFactory().create(
+      {
+        list: {header: null, footer: null},
+        view: {header: null, footer: null},
+        form: {header: null, footer: null}
+      }
+    ));
+  }]);;/*
+ * Copyright (c) 2016 OBiBa. All rights reserved.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+'use strict';
+
+angular.module('obiba.mica.search')
+  .controller('SearchController', [
+    '$scope',
+    '$timeout',
+    'TaxonomiesResource',
+    'TaxonomyResource',
+    'VocabularyResource',
+    'ngObibaMicaSearchTemplateUrl',
+    function ($scope,
+              $timeout,
+              TaxonomiesResource,
+              TaxonomyResource,
+              VocabularyResource,
+              ngObibaMicaSearchTemplateUrl) {
+
+      $scope.lang = 'en';
+
+      $scope.documents = {
+        search: {
+          text: null,
+          active: false
+        }
+      };
+      $scope.taxonomies = {
+        all: TaxonomiesResource.get({ target: 'variable' }),
+        search: {
+          text: null,
+          active: false
+        },
+        target: 'variable',
+        taxonomy: null,
+        vocabulary: null
+      };
+
+      var selectTaxonomyTarget = function(target) {
+        if (!$scope.taxonomiesShown) {
+          $('#taxonomies').collapse('show');
+        }
+        if ($scope.taxonomies.target !== target) {
+          $scope.taxonomies.target = target;
+          $scope.taxonomies.taxonomy = null;
+          $scope.taxonomies.vocabulary = null;
+          filterTaxonomies($scope.taxonomies.search.text);
+        }
+      };
+
+      var closeTaxonomies = function() {
+        $('#taxonomies').collapse('hide');
+      };
+
+      var filterTaxonomiesKeyUp = function(event) {
+        switch(event.keyCode) {
+          case 27: // ESC
+            if (!$scope.taxonomies.search.active) {
+              clearFilterTaxonomies();
+            }
+            break;
+
+          case 13: // Enter
+            filterTaxonomies($scope.taxonomies.search.text);
+            break;
+        }
+      };
+
+      var clearFilterTaxonomies = function() {
+        $scope.taxonomies.search.text = null;
+        $scope.taxonomies.search.active = false;
+        filterTaxonomies(null);
+      };
+
+      var filterTaxonomies = function(query) {
+        $scope.taxonomies.search.active = true;
+        if (query && query.length === 1) {
+          $scope.taxonomies.search.active = false;
+          return;
+        }
+        // taxonomy filter
+        if ($scope.taxonomies.taxonomy) {
+          if ($scope.taxonomies.vocabulary) {
+            VocabularyResource.get({
+              target: $scope.taxonomies.target,
+              taxonomy: $scope.taxonomies.taxonomy.name,
+              vocabulary: $scope.taxonomies.vocabulary.name,
+              query: query
+            }, function onSuccess(response) {
+              $scope.taxonomies.vocabulary.terms = response.terms;
+              $scope.taxonomies.search.active = false;
+            });
+          } else {
+            TaxonomyResource.get({
+              target: $scope.taxonomies.target,
+              taxonomy: $scope.taxonomies.taxonomy.name,
+              query: query
+            }, function onSuccess(response) {
+              $scope.taxonomies.taxonomy.vocabularies = response.vocabularies;
+              $scope.taxonomies.search.active = false;
+            });
+          }
+        } else {
+          TaxonomiesResource.get({
+            target: $scope.taxonomies.target,
+            query: query
+          }, function onSuccess(response) {
+            $scope.taxonomies.all = response;
+            $scope.taxonomies.search.active = false;
+          });
+        }
+      };
+
+      var searchKeyUp = function(event) {
+        switch(event.keyCode) {
+          case 27: // ESC
+            if ($scope.documents.search.active) {
+              clearSearch();
+            }
+            break;
+
+          default:
+            if ($scope.documents.search.text) {
+              searchDocuments($scope.documents.search.text);
+            }
+            break;
+        }
+      };
+
+      var clearSearch = function() {
+        $scope.documents.search.text = null;
+        $scope.documents.search.active = false;
+      };
+
+      var searchDocuments = function(/*query*/) {
+        $scope.documents.search.active = true;
+        // search for taxonomy terms
+        // search for matching variables/studies/... count
+      };
+
+      var navigateTaxonomy = function(taxonomy, vocabulary) {
+        var toFilter = ($scope.taxonomies.taxonomy && !taxonomy) || ($scope.taxonomies.vocabulary && !vocabulary);
+        $scope.taxonomies.taxonomy = taxonomy;
+        $scope.taxonomies.vocabulary = vocabulary;
+        if(toFilter) {
+          filterTaxonomies($scope.taxonomies.search.text);
+        }
+      };
+
+      var selectTerm = function(/*taxonomy, vocabulary, term*/) {
+
+      };
+
+      $scope.headerTemplateUrl = ngObibaMicaSearchTemplateUrl.getHeaderUrl('view');
+      $scope.clearFilterTaxonomies = clearFilterTaxonomies;
+      $scope.searchKeyUp = searchKeyUp;
+      $scope.filterTaxonomiesKeyUp = filterTaxonomiesKeyUp;
+      $scope.navigateTaxonomy = navigateTaxonomy;
+      $scope.selectTaxonomyTarget = selectTaxonomyTarget;
+      $scope.selectTerm = selectTerm;
+      $scope.closeTaxonomies = closeTaxonomies;
+      $scope.taxonomiesShown = false;
+      $('#taxonomies').on('show.bs.collapse', function () {
+        $scope.taxonomiesShown = true;
+      });
+      $('#taxonomies').on('hide.bs.collapse', function () {
+        $scope.taxonomiesShown = false;
+      });
     }]);
-;angular.module('templates-ngObibaMica', ['access/views/data-access-request-form.html', 'access/views/data-access-request-histroy-view.html', 'access/views/data-access-request-list.html', 'access/views/data-access-request-validation-modal.html', 'access/views/data-access-request-view.html', 'attachment/attachment-input-template.html', 'attachment/attachment-list-template.html']);
+;/*
+ * Copyright (c) 2016 OBiBa. All rights reserved.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+'use strict';
+
+angular.module('obiba.mica.search')
+  .directive('taxonomyPanel', [function () {
+    return {
+      restrict: 'EA',
+      replace: true,
+      scope: {
+        taxonomy: '=',
+        lang: '=',
+        onNavigate: '='
+      },
+      templateUrl: 'search/views/taxonomy-panel-template.html'
+    };
+  }])
+
+  .directive('vocabularyPanel', [function () {
+    return {
+      restrict: 'EA',
+      replace: true,
+      scope: {
+        taxonomy: '=',
+        vocabulary: '=',
+        lang: '=',
+        onNavigate: '='
+      },
+      templateUrl: 'search/views/vocabulary-panel-template.html'
+    };
+  }])
+
+  .directive('termPanel', [function () {
+    return {
+      restrict: 'EA',
+      replace: true,
+      scope: {
+        taxonomy: '=',
+        vocabulary: '=',
+        term: '=',
+        lang: '=',
+        onSelect: '='
+      },
+      templateUrl: 'search/views/term-panel-template.html'
+    };
+  }]);
+;/*
+ * Copyright (c) 2016 OBiBa. All rights reserved.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+'use strict';
+
+angular.module('obiba.mica.search')
+  .config(['$routeProvider',
+    function ($routeProvider) {
+      $routeProvider
+        .when('/search', {
+          templateUrl: 'search/views/search.html',
+          controller: 'SearchController'
+        });
+    }]);
+;/*
+ * Copyright (c) 2016 OBiBa. All rights reserved.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+'use strict';
+
+angular.module('obiba.mica.search')
+  .factory('TaxonomiesResource', ['$resource', 'ngObibaMicaUrl',
+    function ($resource, ngObibaMicaUrl) {
+      return $resource(ngObibaMicaUrl.getUrl('TaxonomiesResource'), {}, {
+        'get': {
+          method: 'GET',
+          isArray: true,
+          errorHandler: true
+        }
+      });
+    }])
+
+  .factory('TaxonomyResource', ['$resource', 'ngObibaMicaUrl',
+    function ($resource, ngObibaMicaUrl) {
+      return $resource(ngObibaMicaUrl.getUrl('TaxonomyResource'), {}, {
+        'get': {
+          method: 'GET',
+          errorHandler: true
+        }
+      });
+    }])
+
+  .factory('VocabularyResource', ['$resource', 'ngObibaMicaUrl',
+    function ($resource, ngObibaMicaUrl) {
+      return $resource(ngObibaMicaUrl.getUrl('VocabularyResource'), {}, {
+        'get': {
+          method: 'GET',
+          errorHandler: true
+        }
+      });
+    }]);
+;/*
+ * Copyright (c) 2014 OBiBa. All rights reserved.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+'use strict';
+
+function GraphicChartsDataProvider() {
+
+  function DataProvider(dataResponse) {
+    var data = dataResponse;
+    this.getData = function (callback) {
+      if (callback) {
+        data.$promise.then(callback);
+      }
+    };
+  }
+
+  this.$get = function (GraphicChartsDataResource, GraphicChartsConfig, GraphicChartsQuery) {
+    var queryDto = GraphicChartsQuery.queryDtoBuilder(GraphicChartsConfig.getOptions().entityIds);
+    return new DataProvider(GraphicChartsDataResource.get({
+      type: GraphicChartsConfig.getOptions().entityType,
+      id: GraphicChartsConfig.getOptions().entityIds
+    }, queryDto));
+  };
+}
+
+angular.module('obiba.mica.graphics', [
+    'googlechart',
+    'obiba.utils',
+    'templates-ngObibaMica'
+  ])
+  .config(['$provide', function ($provide) {
+    $provide.provider('GraphicChartsData', GraphicChartsDataProvider);
+  }]);
+;/*
+ * Copyright (c) 2014 OBiBa. All rights reserved.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+'use strict';
+
+angular.module('obiba.mica.graphics')
+
+  .directive('obibaChart', [function () {
+    return {
+      restrict: 'EA',
+      replace: true,
+      scope: {
+        fieldTransformer: '@',
+        chartType: '@',
+        chartAggregationName: '@',
+        chartEntityDto: '@',
+        chartOptionsName: '@',
+        chartOptions: '=',
+        chartHeader: '='
+      },
+      templateUrl: 'graphics/views/charts-directive.html',
+      controller: 'GraphicChartsController'
+    };
+  }]);;/*
+ * Copyright (c) 2014 OBiBa. All rights reserved.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+'use strict';
+
+angular.module('obiba.mica.graphics')
+
+  .controller('GraphicChartsController', [
+    '$rootScope',
+    '$scope',
+    '$filter',
+    'GraphicChartsConfig',
+    'GraphicChartsUtils',
+    'GraphicChartsData',
+    function ($rootScope,
+              $scope,
+              $filter,
+              GraphicChartsConfig,
+              GraphicChartsUtils,
+              GraphicChartsData) {
+
+      GraphicChartsData.getData(function (StudiesData) {
+        if (StudiesData) {
+          $scope.ItemDataJSon = GraphicChartsUtils.getArrayByAggregation($scope.chartAggregationName, StudiesData[$scope.chartEntityDto], $scope.fieldTransformer);
+          $scope.ItemDataJSon.unshift($scope.chartHeader);
+          if ($scope.ItemDataJSon) {
+            $scope.chartObject = {};
+            $scope.chartObject.type = $scope.chartType;
+            $scope.chartObject.data = $scope.ItemDataJSon;
+            $scope.chartObject.options = {backgroundColor: {fill: 'transparent'}};
+            angular.extend($scope.chartObject.options, $scope.chartOptions);
+            $scope.chartObject.options.title = $scope.chartOptions.title + ' (N=' + StudiesData.studyResultDto.totalHits + ')';
+          }
+        }
+      });
+
+    }]);
+;/*
+ * Copyright (c) 2014 OBiBa. All rights reserved.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+'use strict';
+
+angular.module('obiba.mica.graphics')
+  .factory('GraphicChartsDataResource', ['$resource', 'ngObibaMicaUrl',
+    function ($resource, ngObibaMicaUrl) {
+      return $resource(ngObibaMicaUrl.getUrl('PublishedStudiesSearchResource'), {}, {
+        'get': {method: 'POST', errorHandler: true}
+      });
+    }])
+  .service('GraphicChartsConfig', function () {
+    var factory = {
+      options: {
+        entityIds: 'NaN',
+        entityType: null
+      }
+    };
+    factory.setOptions = function (newOptions) {
+      if (typeof(newOptions) === 'object') {
+        Object.keys(newOptions).forEach(function (option) {
+          if (option in factory.options) {
+            factory.options[option] = newOptions[option];
+          }
+        });
+      }
+    };
+
+    factory.getOptions = function () {
+      return angular.copy(factory.options);
+    };
+    return factory;
+
+  })
+  .service('GraphicChartsUtils', [
+    'CountriesIsoUtils',
+    'LocalizedStringService',
+    function (CountriesIsoUtils,
+              LocalizedStringService) {
+
+      this.getArrayByAggregation = function (AggregationName, EntityDto, fieldTransformer) {
+        var ArrayData = [];
+        angular.forEach(EntityDto.aggs, function (aggragation) {
+          var itemName = [];
+          if (aggragation.aggregation === AggregationName) {
+            var i = 0;
+            angular.forEach(aggragation['obiba.mica.TermsAggregationResultDto.terms'], function (term) {
+              switch (fieldTransformer) {
+                case 'country' :
+                  itemName.name = CountriesIsoUtils.findByCode(term.title.toUpperCase(), LocalizedStringService.getLocal());
+                  break;
+                default :
+                  itemName.name = term.title;
+                  break;
+              }
+              if (term.count) {
+                ArrayData[i] = [itemName.name, term.count];
+                i ++;
+              }
+            });
+          }
+        });
+        return ArrayData;
+      };
+    }])
+  .service('GraphicChartsQuery', [function () {
+    this.queryDtoBuilder = function (entityIds) {
+      if (!(entityIds) || entityIds ==='NaN') {
+        return '{"studyQueryDto":{"from":0,"size":0,"sort":{"field":"acronym.en","order":0}},"locale":"en","withFacets":true}';
+      }
+      else{
+        return '{"studyQueryDto":{"from":0,"size":0,"sort":{"field":"acronym.en","order":0}},"networkQueryDto":{"from":0,"size":0,"sort":{"field":"acronym.en","order":0},"filteredQuery":{"obiba.mica.LogicalFilterQueryDto.filter":{"fields":[{"field":{"field":"id","obiba.mica.TermsFilterQueryDto.terms":{"values":["'+entityIds+'"]}},"op":1}]}}},"locale":"en","withFacets":true}';
+      }
+    };
+  }]);
+;angular.module('templates-ngObibaMica', ['access/views/data-access-request-form.html', 'access/views/data-access-request-histroy-view.html', 'access/views/data-access-request-list.html', 'access/views/data-access-request-profile-user-modal.html', 'access/views/data-access-request-submitted-modal.html', 'access/views/data-access-request-validation-modal.html', 'access/views/data-access-request-view.html', 'attachment/attachment-input-template.html', 'attachment/attachment-list-template.html', 'graphics/views/charts-directive.html', 'search/views/search.html', 'search/views/taxonomies-view.html', 'search/views/taxonomy-panel-template.html', 'search/views/taxonomy-template.html', 'search/views/term-panel-template.html', 'search/views/vocabulary-panel-template.html']);
 
 angular.module("access/views/data-access-request-form.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("access/views/data-access-request-form.html",
@@ -1231,15 +1853,17 @@ angular.module("access/views/data-access-request-list.html", []).run(["$template
     "      <div class=\"col-xs-4\">\n" +
     "        <span class=\"input-group input-group-sm no-padding-top\">\n" +
     "          <span class=\"input-group-addon\" id=\"data-access-requests-search\"><i\n" +
-    "            class=\"glyphicon glyphicon-search\"></i></span>\n" +
+    "              class=\"glyphicon glyphicon-search\"></i></span>\n" +
     "          <input ng-model=\"searchText\" type=\"text\" class=\"form-control\"\n" +
-    "            aria-describedby=\"data-access-requests-search\">\n" +
+    "              aria-describedby=\"data-access-requests-search\">\n" +
     "        </span>\n" +
     "      </div>\n" +
     "      <div class=\"col-xs-2\">\n" +
     "        <div class=\"input-group\">\n" +
-    "          <ui-select id=\"status-select\" theme=\"bootstrap\" ng-model=\"searchStatus.filter\" reset-search-input=\"true\">\n" +
-    "            <ui-select-match allow-clear=\"true\" placeholder=\"{{'data-access-request.status-placeholder' | translate}}\">\n" +
+    "          <ui-select id=\"status-select\" theme=\"bootstrap\"\n" +
+    "              ng-model=\"searchStatus.filter\" reset-search-input=\"true\">\n" +
+    "            <ui-select-match allow-clear=\"true\"\n" +
+    "                placeholder=\"{{'data-access-request.status-placeholder' | translate}}\">\n" +
     "              <span ng-bind-html=\"$select.selected\"></span>\n" +
     "            </ui-select-match>\n" +
     "            <ui-select-choices repeat=\"data in REQUEST_STATUS\">\n" +
@@ -1247,7 +1871,7 @@ angular.module("access/views/data-access-request-list.html", []).run(["$template
     "            </ui-select-choices>\n" +
     "          </ui-select>\n" +
     "        </div>\n" +
-    "        </div>\n" +
+    "      </div>\n" +
     "      <div class=\"col-xs-6\">\n" +
     "        <dir-pagination-controls class=\"pull-right\"></dir-pagination-controls>\n" +
     "      </div>\n" +
@@ -1268,19 +1892,28 @@ angular.module("access/views/data-access-request-list.html", []).run(["$template
     "        </thead>\n" +
     "        <tbody>\n" +
     "        <tr\n" +
-    "          dir-paginate=\"request in requests | filter:{status: searchStatus.filter} | filter:searchText | itemsPerPage: 20\">\n" +
+    "            dir-paginate=\"request in requests | filter:{status: searchStatus.filter} | filter:searchText | itemsPerPage: 20\">\n" +
     "          <td>\n" +
-    "            <a ng-href=\"#/data-access-request/{{request.id}}\" ng-if=\"actions.canView(request)\" translate>{{request.id}}</a>\n" +
+    "            <a ng-href=\"#/data-access-request/{{request.id}}\"\n" +
+    "                ng-if=\"actions.canView(request)\" translate>{{request.id}}</a>\n" +
     "            <span ng-if=\"!actions.canView(request)\">{{request.id}}</span>\n" +
     "          </td>\n" +
     "          <td ng-if=\"showApplicant\">\n" +
-    "            {{userProfileService.getFullName(request.profile) || request.applicant}}\n" +
+    "            <span ng-if=\"actions.canViewProfile('mica-user')\">\n" +
+    "         {{getFullName(request.profile) || request.applicant}}\n" +
+    "            </span>\n" +
+    "            <a href ng-click=\"userProfile(request.profile)\"\n" +
+    "                ng-if=\"actions.canViewProfile('mica-data-access-officer')\">\n" +
+    "              {{getFullName(request.profile) ||\n" +
+    "              request.applicant}}\n" +
+    "            </a>\n" +
     "          </td>\n" +
     "          <td>\n" +
     "            {{request.title}}\n" +
     "          </td>\n" +
     "          <td>\n" +
-    "            {{(request.timestamps.lastUpdate || request.timestamps.created) | fromNow}}\n" +
+    "            {{(request.timestamps.lastUpdate || request.timestamps.created) |\n" +
+    "            fromNow}}\n" +
     "          </td>\n" +
     "          <td>\n" +
     "            <span ng-if=\"request.submissionDate\">{{request.submissionDate | fromNow}}</span>\n" +
@@ -1291,11 +1924,14 @@ angular.module("access/views/data-access-request-list.html", []).run(["$template
     "          <td>\n" +
     "            <ul class=\"list-inline\">\n" +
     "              <li ng-if=\"actions.canEdit(request)\">\n" +
-    "                <a ng-href=\"#/data-access-request/{{request.id}}/edit\"  title=\"{{'edit' | translate}}\"><i class=\"fa fa-pencil\"></i></a>\n" +
+    "                <a ng-href=\"#/data-access-request/{{request.id}}/edit\"\n" +
+    "                    title=\"{{'edit' | translate}}\"><i class=\"fa fa-pencil\"></i></a>\n" +
     "              </li>\n" +
     "              <li>\n" +
-    "                <a ng-if=\"actions.canDelete(request)\" ng-click=\"deleteRequest(request)\" title=\"{{'delete' | translate}}\"><i\n" +
-    "                  class=\"fa fa-trash-o\"></i></a>\n" +
+    "                <a ng-if=\"actions.canDelete(request)\"\n" +
+    "                    ng-click=\"deleteRequest(request)\"\n" +
+    "                    title=\"{{'delete' | translate}}\"><i\n" +
+    "                    class=\"fa fa-trash-o\"></i></a>\n" +
     "              </li>\n" +
     "            </ul>\n" +
     "          </td>\n" +
@@ -1306,6 +1942,96 @@ angular.module("access/views/data-access-request-list.html", []).run(["$template
     "  </div>\n" +
     "\n" +
     "\n" +
+    "</div>\n" +
+    "");
+}]);
+
+angular.module("access/views/data-access-request-profile-user-modal.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("access/views/data-access-request-profile-user-modal.html",
+    "<div class=\"modal-content\">\n" +
+    "  <div class=\"modal-header\">\n" +
+    "    <button type=\"button\" class=\"close\" aria-hidden=\"true\"\n" +
+    "      ng-click=\"$dismiss()\">&times;</button>\n" +
+    "    <h4 class=\"modal-title\">\n" +
+    "      {{'data-access-request.profile.title' | translate}}\n" +
+    "    </h4>\n" +
+    "  </div>\n" +
+    "  <div class=\"modal-body\">\n" +
+    "    <div>\n" +
+    "      <label class=\"control-label\">\n" +
+    "        {{'data-access-request.profile.name' | translate}}\n" +
+    "      </label> :\n" +
+    "      <span>\n" +
+    "        {{getFullName(applicant)}}\n" +
+    "      </span>\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div>\n" +
+    "      <label class=\"control-label\">\n" +
+    "        {{'data-access-request.profile.email' | translate}}\n" +
+    "      </label> :\n" +
+    "      <span>\n" +
+    "        {{getProfileEmail(applicant)}}\n" +
+    "      </span>\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div\n" +
+    "      ng-repeat=\"attribute in applicant.attributes | filterProfileAttributes\">\n" +
+    "      <label  class=\"control-label\">\n" +
+    "        {{attribute.key}}\n" +
+    "      </label> :\n" +
+    "      <span >{{attribute.value}}</span>\n" +
+    "    </div>\n" +
+    "    <a  class=\"btn btn-default\" href=\"mailto:{{getProfileEmail(applicant)}}\" target=\"_blank\">\n" +
+    "      {{'data-access-request.profile.send-email' | translate}}</a>\n" +
+    "  </div>\n" +
+    "  <div class=\"modal-footer\">\n" +
+    "    <button type=\"button\" class=\"btn btn-primary voffest4\"\n" +
+    "      ng-click=\"$dismiss()\">\n" +
+    "      <span ng-hide=\"confirm.close\" translate>close</span>\n" +
+    "      {{confirm.close}}\n" +
+    "    </button>\n" +
+    "  </div>\n" +
+    "</div>\n" +
+    "");
+}]);
+
+angular.module("access/views/data-access-request-submitted-modal.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("access/views/data-access-request-submitted-modal.html",
+    "<?php\n" +
+    "/**\n" +
+    " * @file\n" +
+    " * Code for the obiba_mica_data_access_request modules.\n" +
+    " */\n" +
+    "\n" +
+    "?>\n" +
+    "<!--\n" +
+    "  ~ Copyright (c) 2015 OBiBa. All rights reserved.\n" +
+    "  ~\n" +
+    "  ~ This program and the accompanying materials\n" +
+    "  ~ are made available under the terms of the GNU Public License v3.0.\n" +
+    "  ~\n" +
+    "  ~ You should have received a copy of the GNU General Public License\n" +
+    "  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n" +
+    "  -->\n" +
+    "\n" +
+    "<div class=\"modal-content\">\n" +
+    "  <div class=\"modal-header\">\n" +
+    "    <button type=\"button\" class=\"close\" aria-hidden=\"true\" ng-click=\"$dismiss()\">&times;</button>\n" +
+    "    <h4 class=\"modal-title\">\n" +
+    "      <i class=\"fa fa-check fa-lg\"></i>\n" +
+    "      {{'data-access-request.submit-confirmation.title' | translate}}\n" +
+    "    </h4>\n" +
+    "  </div>\n" +
+    "  <div class=\"modal-body\">\n" +
+    "    <p>{{'data-access-request.submit-confirmation.message' | translate}}</p>\n" +
+    "  </div>\n" +
+    "  <div class=\"modal-footer\">\n" +
+    "    <button type=\"button\" class=\"btn btn-primary voffest4\" ng-click=\"$dismiss()\">\n" +
+    "      <span ng-hide=\"confirm.ok\" translate>ok</span>\n" +
+    "      {{confirm.ok}}\n" +
+    "    </button>\n" +
+    "  </div>\n" +
     "</div>\n" +
     "");
 }]);
@@ -1357,7 +2083,14 @@ angular.module("access/views/data-access-request-view.html", []).run(["$template
     "\n" +
     "  <div ng-if=\"validForm\">\n" +
     "\n" +
-    "    <p class=\"help-block pull-left\"><span translate>created-by</span> {{userProfileService.getFullName(dataAccessRequest.profile) || dataAccessRequest.applicant}},\n" +
+    "    <p class=\"help-block pull-left\"><span translate>created-by</span>\n" +
+    "       <span ng-if=\"actions.canViewProfile('mica-user')\">\n" +
+    "         {{getFullName(dataAccessRequest.profile) || dataAccessRequest.applicant}}\n" +
+    "      </span>\n" +
+    "      <a href ng-click=\"userProfile(dataAccessRequest.profile)\"\n" +
+    "          ng-if=\"actions.canViewProfile('mica-data-access-officer')\">\n" +
+    "        {{getFullName(dataAccessRequest.profile) || dataAccessRequest.applicant}}\n" +
+    "      </a>,\n" +
     "      <span>{{dataAccessRequest.timestamps.created | amCalendar}}</span>\n" +
     "      <span class=\"label label-success\">{{dataAccessRequest.status}}</span></p>\n" +
     "\n" +
@@ -1474,4 +2207,331 @@ angular.module("attachment/attachment-list-template.html", []).run(["$templateCa
     "  </tbody>\n" +
     "</table>\n" +
     "");
+}]);
+
+angular.module("graphics/views/charts-directive.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("graphics/views/charts-directive.html",
+    "<div>\n" +
+    "  <div google-chart chart=\"chartObject\">\n" +
+    "  </div>\n" +
+    "</div>\n" +
+    "");
+}]);
+
+angular.module("search/views/search.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("search/views/search.html",
+    "<!--\n" +
+    "  ~ Copyright (c) 2016 OBiBa. All rights reserved.\n" +
+    "  ~\n" +
+    "  ~ This program and the accompanying materials\n" +
+    "  ~ are made available under the terms of the GNU Public License v3.0.\n" +
+    "  ~\n" +
+    "  ~ You should have received a copy of the GNU General Public License\n" +
+    "  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n" +
+    "  -->\n" +
+    "\n" +
+    "<div>\n" +
+    "  <!--<h2 translate>search</h2>-->\n" +
+    "  <div ng-if=\"headerTemplateUrl\" ng-include=\"headerTemplateUrl\"></div>\n" +
+    "\n" +
+    "  <!-- Classifications region -->\n" +
+    "  <div ng-mouseleave=\"closeTaxonomies()\">\n" +
+    "    <div class=\"row\">\n" +
+    "      <div class=\"col-xs-3\"></div>\n" +
+    "      <div class=\"col-xs-6\">\n" +
+    "        <a href>\n" +
+    "        <span class=\"input-group input-group-sm no-padding-top\">\n" +
+    "          <input ng-keyup=\"searchKeyUp($event)\" ng-model=\"documents.search.text\" type=\"text\" class=\"form-control ng-pristine ng-untouched ng-valid\" aria-describedby=\"study-search\">\n" +
+    "          <span class=\"input-group-addon\"><i class=\"glyphicon glyphicon-search\"></i></span>\n" +
+    "        </span>\n" +
+    "        </a>\n" +
+    "      </div>\n" +
+    "    </div>\n" +
+    "    <div class=\"row\">\n" +
+    "      <div class=\"col-xs-3\"></div>\n" +
+    "      <div class=\"col-xs-6\">\n" +
+    "        <ul class=\"nav nav-pills\">\n" +
+    "          <li ng-class=\"{'active': taxonomies.target === 'variable' && taxonomiesShown}\" title=\"{{'variable-classifications' | translate}}\">\n" +
+    "            <a ng-mouseover=\"selectTaxonomyTarget('variable')\" translate>variables</a>\n" +
+    "          </li>\n" +
+    "          <li ng-class=\"{'active': taxonomies.target === 'study' && taxonomiesShown}\" title=\"{{'study-classifications' | translate}}\">\n" +
+    "            <a ng-mouseover=\"selectTaxonomyTarget('study')\" translate>studies</a>\n" +
+    "          </li>\n" +
+    "          <li ng-if=\"taxonomiesShown\">\n" +
+    "            <a href ng-click=\"closeTaxonomies()\" title=\"{{'close' | translate}}\"><i class=\"fa fa-close\"></i> </a>\n" +
+    "          </li>\n" +
+    "        </ul>\n" +
+    "      </div>\n" +
+    "    </div>\n" +
+    "    <div id=\"taxonomies\" class=\"collapse card card-static container\">\n" +
+    "      <div ng-include=\"'search/views/taxonomies-view.html'\"></div>\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "\n" +
+    "  <!-- Search criteria region -->\n" +
+    "  <div class=\"voffset4\">\n" +
+    "    <div class=\"row voffset4\">\n" +
+    "      <div class=\"col-xs-12\">\n" +
+    "        <div class=\"btn-group dropdown\" is-open=\"status.isopen\">\n" +
+    "          <button type=\"button\" class=\"btn btn-info btn-sm dropdown-toggle\" ng-disabled=\"disabled\" data-toggle=\"dropdown\">\n" +
+    "            Study: All <span class=\"caret\"></span>\n" +
+    "          </button>\n" +
+    "          <ul class=\"dropdown-menu\" role=\"menu\">\n" +
+    "            <li><a role=\"menuitem\" href ng-click=\"selectCriteria()\">Atlantic Path</a></li>\n" +
+    "            <li><a role=\"menuitem\" href ng-click=\"selectCriteria()\">CartaGene</a></li>\n" +
+    "          </ul>\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <div class=\"btn-group dropdown\" is-open=\"status.isopen\">\n" +
+    "          <button type=\"button\" class=\"btn btn-default btn-sm dropdown-toggle\" ng-disabled=\"disabled\" data-toggle=\"dropdown\">\n" +
+    "            OR <span class=\"caret\"></span>\n" +
+    "          </button>\n" +
+    "          <ul class=\"dropdown-menu\" role=\"menu\">\n" +
+    "            <li><a role=\"menuitem\" href ng-click=\"selectCriteria()\">AND</a></li>\n" +
+    "          </ul>\n" +
+    "        </div>\n" +
+    "\n" +
+    "        <div class=\"btn-group dropdown\" is-open=\"status.isopen\">\n" +
+    "          <button type=\"button\" class=\"btn btn-info btn-sm dropdown-toggle\" ng-disabled=\"disabled\" data-toggle=\"dropdown\">\n" +
+    "            Study designs: All <span class=\"caret\"></span>\n" +
+    "          </button>\n" +
+    "          <ul class=\"dropdown-menu\" role=\"menu\">\n" +
+    "            <li><a role=\"menuitem\" href ng-click=\"selectCriteria()\">Cohort study (117)</a></li>\n" +
+    "            <li><a role=\"menuitem\" href ng-click=\"selectCriteria()\">Cross sectional (8)</a></li>\n" +
+    "            <li><a role=\"menuitem\" href ng-click=\"selectCriteria()\">Clinical trial (5)</a></li>\n" +
+    "            <li><a role=\"menuitem\" href ng-click=\"selectCriteria()\">Case control (2)</a></li>\n" +
+    "            <li><a role=\"menuitem\" href ng-click=\"selectCriteria()\">Other (2)</a></li>\n" +
+    "          </ul>\n" +
+    "        </div>\n" +
+    "      </div>\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "\n" +
+    "\n" +
+    "  <!-- Results region -->\n" +
+    "  <div>\n" +
+    "\n" +
+    "  </div>\n" +
+    "</div>");
+}]);
+
+angular.module("search/views/taxonomies-view.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("search/views/taxonomies-view.html",
+    "<div class=\"panel panel-default\">\n" +
+    "  <div class=\"panel-heading\">\n" +
+    "    <div class=\"row\">\n" +
+    "      <div class=\"col-xs-8 voffset1\">\n" +
+    "        <ol class=\"mica-breadcrumb no-margin no-padding\">\n" +
+    "          <li ng-if=\"!taxonomies.taxonomy\">\n" +
+    "            {{'all-' + taxonomies.target + '-classifications' | translate}}\n" +
+    "          </li>\n" +
+    "          <li ng-if=\"taxonomies.taxonomy\">\n" +
+    "            <a href ng-click=\"navigateTaxonomy()\">{{'all-' + taxonomies.target + '-classifications' | translate}}</a>\n" +
+    "          </li>\n" +
+    "          <li ng-if=\"taxonomies.taxonomy && !taxonomies.vocabulary\">\n" +
+    "            <span ng-repeat=\"label in taxonomies.taxonomy.title\" ng-if=\"label.locale === lang\">\n" +
+    "              {{label.text}}\n" +
+    "            </span>\n" +
+    "          </li>\n" +
+    "          <li ng-if=\"taxonomies.taxonomy && taxonomies.vocabulary\">\n" +
+    "            <a href ng-click=\"navigateTaxonomy(taxonomies.taxonomy)\">\n" +
+    "              <span ng-repeat=\"label in taxonomies.taxonomy.title\" ng-if=\"label.locale === lang\">\n" +
+    "              {{label.text}}\n" +
+    "              </span>\n" +
+    "            </a>\n" +
+    "          </li>\n" +
+    "          <li ng-if=\"taxonomies.vocabulary\">\n" +
+    "            <span ng-repeat=\"label in taxonomies.vocabulary.title\" ng-if=\"label.locale === lang\">\n" +
+    "              {{label.text}}\n" +
+    "            </span>\n" +
+    "          </li>\n" +
+    "        </ol>\n" +
+    "      </div>\n" +
+    "      <div class=\"col-xs-4\">\n" +
+    "        <div class=\"form-inline pull-right\">\n" +
+    "          <div class=\"form-group\">\n" +
+    "            <span class=\"input-group input-group-sm no-padding-top\">\n" +
+    "              <span class=\"input-group-addon\"><i class=\"glyphicon glyphicon-filter\"></i></span>\n" +
+    "              <input ng-keyup=\"filterTaxonomiesKeyUp($event)\" ng-model=\"taxonomies.search.text\" type=\"text\" class=\"form-control ng-pristine ng-untouched ng-valid\" aria-describedby=\"study-search\">\n" +
+    "              <span class=\"input-group-addon\"><i class=\"glyphicon glyphicon-remove\" ng-click=\"clearFilterTaxonomies()\"></i></span>\n" +
+    "            </span>\n" +
+    "          </div>\n" +
+    "        </div>\n" +
+    "      </div>\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "  <div class=\"panel-body\">\n" +
+    "    <div ng-if=\"!taxonomies.search.active && taxonomies.all.length === 0\" translate>\n" +
+    "      no-classifications\n" +
+    "    </div>\n" +
+    "    <div ng-if=\"taxonomies.search.active\" class=\"loading\"></div>\n" +
+    "\n" +
+    "    <div ng-if=\"!taxonomies.taxonomy\">\n" +
+    "      <div ng-repeat=\"taxonomy in taxonomies.all\" ng-if=\"$index % 3 == 0\" class=\"row\">\n" +
+    "        <div class=\"col-xs-4\">\n" +
+    "          <div taxonomy-panel taxonomy=\"taxonomies.all[$index]\" lang=\"lang\" on-navigate=\"navigateTaxonomy\"></div>\n" +
+    "        </div>\n" +
+    "        <div class=\"col-xs-4\">\n" +
+    "          <div taxonomy-panel taxonomy=\"taxonomies.all[$index + 1]\" lang=\"lang\" on-navigate=\"navigateTaxonomy\"></div>\n" +
+    "        </div>\n" +
+    "        <div class=\"col-xs-4\">\n" +
+    "          <div taxonomy-panel taxonomy=\"taxonomies.all[$index + 2]\" lang=\"lang\" on-navigate=\"navigateTaxonomy\"></div>\n" +
+    "        </div>\n" +
+    "      </div>\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div ng-if=\"taxonomies.taxonomy && !taxonomies.vocabulary\">\n" +
+    "      <p class=\"help-block\" ng-repeat=\"label in taxonomies.taxonomy.description\" ng-if=\"label.locale === lang\">\n" +
+    "        {{label.text}}\n" +
+    "      </p>\n" +
+    "      <div ng-repeat=\"vocabulary in taxonomies.taxonomy.vocabularies\" ng-if=\"$index % 3 == 0\" class=\"row\">\n" +
+    "        <div class=\"col-xs-4\">\n" +
+    "          <div vocabulary-panel taxonomy=\"taxonomies.taxonomy\" vocabulary=\"taxonomies.taxonomy.vocabularies[$index]\" lang=\"lang\" on-navigate=\"navigateTaxonomy\" on-select=\"selectTerm\"></div>\n" +
+    "        </div>\n" +
+    "        <div class=\"col-xs-4\">\n" +
+    "          <div vocabulary-panel taxonomy=\"taxonomies.taxonomy\" vocabulary=\"taxonomies.taxonomy.vocabularies[$index + 1]\" lang=\"lang\" on-navigate=\"navigateTaxonomy\" on-select=\"selectTerm\"></div>\n" +
+    "        </div>\n" +
+    "        <div class=\"col-xs-4\">\n" +
+    "          <div vocabulary-panel taxonomy=\"taxonomies.taxonomy\" vocabulary=\"taxonomies.taxonomy.vocabularies[$index + 2]\" lang=\"lang\" on-navigate=\"navigateTaxonomy\" on-select=\"selectTerm\"></div>\n" +
+    "        </div>\n" +
+    "      </div>\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div ng-if=\"taxonomies.taxonomy && taxonomies.vocabulary\">\n" +
+    "      <p class=\"help-block\" ng-repeat=\"label in taxonomies.vocabulary.description\" ng-if=\"label.locale === lang\">\n" +
+    "        {{label.text}}\n" +
+    "      </p>\n" +
+    "      <div ng-repeat=\"term in taxonomies.vocabulary.terms\" ng-if=\"$index % 3 == 0\" class=\"row\">\n" +
+    "        <div class=\"col-xs-4\">\n" +
+    "          <div term-panel taxonomy=\"taxonomies.taxonomy\" vocabulary=\"taxonomies.taxonomy.vocabulary\" term=\"taxonomies.vocabulary.terms[$index]\" lang=\"lang\" on-select=\"selectTerm\"></div>\n" +
+    "        </div>\n" +
+    "        <div class=\"col-xs-4\">\n" +
+    "          <div term-panel taxonomy=\"taxonomies.taxonomy\" vocabulary=\"taxonomies.taxonomy.vocabulary\" term=\"taxonomies.vocabulary.terms[$index + 1]\" lang=\"lang\" on-select=\"selectTerm\"></div>\n" +
+    "        </div>\n" +
+    "        <div class=\"col-xs-4\">\n" +
+    "          <div term-panel taxonomy=\"taxonomies.taxonomy\" vocabulary=\"taxonomies.taxonomy.vocabulary\" term=\"taxonomies.vocabulary.terms[$index + 2]\" lang=\"lang\" on-select=\"selectTerm\"></div>\n" +
+    "        </div>\n" +
+    "      </div>\n" +
+    "    </div>\n" +
+    "  </div>\n" +
+    "</div>");
+}]);
+
+angular.module("search/views/taxonomy-panel-template.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("search/views/taxonomy-panel-template.html",
+    "<div>\n" +
+    "  <h4 ng-repeat=\"label in taxonomy.title\" ng-if=\"label.locale === lang\">\n" +
+    "    <a href ng-click=\"onNavigate(taxonomy)\">{{label.text}}</a>\n" +
+    "  </h4>\n" +
+    "  <p class=\"help-block\" ng-repeat=\"label in taxonomy.description\" ng-if=\"label.locale === lang\">\n" +
+    "    {{label.text}}\n" +
+    "  </p>\n" +
+    "  <ul>\n" +
+    "    <li ng-repeat=\"vocabulary in taxonomy.vocabularies\" ng-if=\"$index<4\">\n" +
+    "      <a href ng-click=\"onNavigate(taxonomy, vocabulary)\">\n" +
+    "        <span ng-repeat=\"label in vocabulary.title\" ng-if=\"label.locale === lang\">\n" +
+    "          {{label.text}}\n" +
+    "        </span>\n" +
+    "        <span ng-if=\"!vocabulary.title\">\n" +
+    "          {{vocabulary.name}}\n" +
+    "        </span>\n" +
+    "      </a>\n" +
+    "    </li>\n" +
+    "    <div class=\"collapse\" id=\"{{taxonomy.name + '_vocabularies'}}\">\n" +
+    "      <li ng-repeat=\" vocabulary in taxonomy.vocabularies\" ng-if=\"$index>=4\">\n" +
+    "        <a href ng-click=\"onNavigate(taxonomy, vocabulary)\">\n" +
+    "          <span ng-repeat=\"label in vocabulary.title\" ng-if=\"label.locale === lang\">\n" +
+    "            {{label.text}}\n" +
+    "          </span>\n" +
+    "          <span ng-if=\"!vocabulary.title\">\n" +
+    "            {{vocabulary.name}}\n" +
+    "          </span>\n" +
+    "        </a>\n" +
+    "      </li>\n" +
+    "    </div>\n" +
+    "    <li ng-if=\"taxonomy.vocabularies && taxonomy.vocabularies.length>4\" class=\"list-unstyled\">\n" +
+    "      <a data-toggle=\"collapse\" data-target=\"#{{taxonomy.name + '_vocabularies'}}\">\n" +
+    "        <i class=\"fa fa-arrow-down\"></i>\n" +
+    "      </a>\n" +
+    "    </li>\n" +
+    "  </ul>\n" +
+    "</div>");
+}]);
+
+angular.module("search/views/taxonomy-template.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("search/views/taxonomy-template.html",
+    "<div ng-repeat=\"vocabulary in taxonomies.taxonomy.vocabularies\" ng-if=\"$index % 3 == 0\" class=\"row\">\n" +
+    "  <div class=\"col-xs-4\">\n" +
+    "    <div vocabulary-panel taxonomy=\"taxonomies.taxonomy.vocabularies[$index]\"></div>\n" +
+    "  </div>\n" +
+    "  <div class=\"col-xs-4\">\n" +
+    "    <div taxonomy-panel taxonomy=\"taxonomies.taxonomy.vocabularies[$index + 1]\"></div>\n" +
+    "  </div>\n" +
+    "  <div class=\"col-xs-4\">\n" +
+    "    <div taxonomy-panel taxonomy=\"taxonomies.taxonomy.vocabularies[$index + 2]\"></div>\n" +
+    "  </div>\n" +
+    "</div>");
+}]);
+
+angular.module("search/views/term-panel-template.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("search/views/term-panel-template.html",
+    "<div>\n" +
+    "  <h4 ng-repeat=\"label in term.title\" ng-if=\"label.locale === lang\">\n" +
+    "    {{label.text}}\n" +
+    "    <small>\n" +
+    "    <a href ng-click=\"onSelect(taxonomy, vocabulary, term)\">\n" +
+    "      <i class=\"fa fa-plus-circle\" title=\"{{'add-query' | translate}}\"></i>\n" +
+    "    </a>\n" +
+    "    </small>\n" +
+    "  </h4>\n" +
+    "  <p ng-repeat=\"label in term.description\" ng-if=\"label.locale === lang\">\n" +
+    "    <span class=\"help-block\">{{label.text}}</span>\n" +
+    "  </p>\n" +
+    "</div>");
+}]);
+
+angular.module("search/views/vocabulary-panel-template.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("search/views/vocabulary-panel-template.html",
+    "<div>\n" +
+    "  <h4 ng-repeat=\"label in vocabulary.title\" ng-if=\"label.locale === lang\">\n" +
+    "    <a href ng-click=\"onNavigate(taxonomy, vocabulary)\">{{label.text}}</a>\n" +
+    "  </h4>\n" +
+    "  <h4 ng-if=\"!vocabulary.title\">\n" +
+    "    <a href ng-click=\"onNavigate(taxonomy, vocabulary)\">{{vocabulary.name}}</a>\n" +
+    "  </h4>\n" +
+    "  <p class=\"help-block\" ng-repeat=\"label in vocabulary.description\" ng-if=\"label.locale === lang\">\n" +
+    "    {{label.text}}\n" +
+    "  </p>\n" +
+    "  <ul>\n" +
+    "    <li ng-repeat=\"term in vocabulary.terms\" ng-if=\"$index<4\">\n" +
+    "      <span ng-repeat=\"label in term.title\" ng-if=\"label.locale === lang\">\n" +
+    "        {{label.text}}\n" +
+    "      </span>\n" +
+    "      <span ng-if=\"!term.title\">\n" +
+    "        {{term.name}}\n" +
+    "      </span>\n" +
+    "      <a href ng-click=\"onSelect(taxonomy, vocabulary, term)\">\n" +
+    "        <i class=\"fa fa-plus-circle\" title=\"{{'add-query' | translate}}\"></i>\n" +
+    "      </a>\n" +
+    "    </li>\n" +
+    "    <div class=\"collapse\" id=\"{{taxonomy.name + vocabulary.name + '_terms'}}\">\n" +
+    "      <li ng-repeat=\"term in vocabulary.terms\" ng-if=\"$index>=4\">\n" +
+    "        <span ng-repeat=\"label in term.title\" ng-if=\"label.locale === lang\">\n" +
+    "          {{label.text}}\n" +
+    "        </span>\n" +
+    "        <span ng-if=\"!term.title\">\n" +
+    "          {{term.name}}\n" +
+    "        </span>\n" +
+    "        <a href ng-click=\"onSelect(taxonomy, vocabulary, term)\">\n" +
+    "          <i class=\"fa fa-plus-circle\" title=\"{{'add-query' | translate}}\"></i>\n" +
+    "        </a>\n" +
+    "      </li>\n" +
+    "    </div>\n" +
+    "    <li ng-if=\"vocabulary.terms && vocabulary.terms.length>4\" class=\"list-unstyled\">\n" +
+    "      <a data-toggle=\"collapse\" data-target=\"#{{taxonomy.name + vocabulary.name + '_terms'}}\">\n" +
+    "        <i class=\"fa fa-arrow-down\"></i>\n" +
+    "      </a>\n" +
+    "    </li>\n" +
+    "  </ul>\n" +
+    "</div>");
 }]);

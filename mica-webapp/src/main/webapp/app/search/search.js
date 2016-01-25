@@ -11,6 +11,9 @@
 'use strict';
 
 mica.search = angular.module('mica.search', [
-  'ui.bootstrap',
-  'pascalprecht.translate'
-]);
+    'obiba.mica.search'
+  ])
+  .config(['ngObibaMicaSearchTemplateUrlProvider',
+    function (ngObibaMicaSearchTemplateUrlProvider) {
+      ngObibaMicaSearchTemplateUrlProvider.setHeaderUrl('view', 'app/search/views/search-view-header.html');
+    }]);

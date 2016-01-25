@@ -23,10 +23,10 @@
     "grunt-contrib-watch": "^0.6.1",
     "grunt-html2js": "^0.2.7",
     "grunt-karma": "^0.8.3",
-    "jasmine-core": "^2.3.4",
     "karma": "^0.12.16",
     "karma-coverage": "^0.2.4",
-    "karma-jasmine": "^0.3.6",
-    "phantomjs": "^1.9.19"
+    "karma-jasmine": "^0.2.2",
+    "karma-phantomjs-launcher": "^0.1.4",
+    "phantomjs": "^1.9.7-8"
   }
 }

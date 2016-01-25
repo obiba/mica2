@@ -19,7 +19,16 @@ module.exports = function (grunt) {
           'src/access/data-access-request.js',
           'src/access/data-access-request-controller.js',
           'src/access/data-access-request-router.js',
-          'src/access/data-access-request-service.js'
+          'src/access/data-access-request-service.js',
+          'src/search/search.js',
+          'src/search/search-controller.js',
+          'src/search/search-directive.js',
+          'src/search/search-router.js',
+          'src/search/search-service.js',
+          'src/graphics/graphics.js',
+          'src/graphics/graphics-directive.js',
+          'src/graphics/graphics-controller.js',
+          'src/graphics/graphics-service.js'
         ]
       }
     },
@@ -64,11 +73,11 @@ module.exports = function (grunt) {
       options: {
         separator: ';',
         banner: '/*!\n' +
-          ' * <%= meta.pkg.name %> - v<%= meta.pkg.version %>\n' +
-          ' * <%= meta.pkg.homepage %>\n\n' +
-          ' * License: <%= meta.pkg.license %>\n' +
-          ' * Date: <%= grunt.template.today("yyyy-mm-dd") %>\n' +
-          ' */\n'
+        ' * <%= meta.pkg.name %> - v<%= meta.pkg.version %>\n' +
+        ' * <%= meta.pkg.homepage %>\n\n' +
+        ' * License: <%= meta.pkg.license %>\n' +
+        ' * Date: <%= grunt.template.today("yyyy-mm-dd") %>\n' +
+        ' */\n'
       },
       dist: {
         src: ['<%= meta.src.js %>', 'tmp/*.js'],
@@ -114,7 +123,10 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-html2js');
+  grunt.loadNpmTasks('grunt-karma');
 
+  // TODO uncomment below and remove last line once unit tests are implemented
+  //grunt.registerTask('default', ['clean:build', 'less', 'jshint', 'html2js', 'concat', 'clean:tmp', 'karma', 'uglify', 'copy']);
   grunt.registerTask('default', ['clean:build', 'less', 'jshint', 'html2js', 'concat', 'clean:tmp', 'uglify', 'copy']);
 
 };

@@ -27,15 +27,17 @@
       <div class="col-xs-4">
         <span class="input-group input-group-sm no-padding-top">
           <span class="input-group-addon" id="data-access-requests-search"><i
-            class="glyphicon glyphicon-search"></i></span>
+              class="glyphicon glyphicon-search"></i></span>
           <input ng-model="searchText" type="text" class="form-control"
-            aria-describedby="data-access-requests-search">
+              aria-describedby="data-access-requests-search">
         </span>
       </div>
       <div class="col-xs-2">
         <div class="input-group">
-          <ui-select id="status-select" theme="bootstrap" ng-model="searchStatus.filter" reset-search-input="true">
-            <ui-select-match allow-clear="true" placeholder="{{'data-access-request.status-placeholder' | translate}}">
+          <ui-select id="status-select" theme="bootstrap"
+              ng-model="searchStatus.filter" reset-search-input="true">
+            <ui-select-match allow-clear="true"
+                placeholder="{{'data-access-request.status-placeholder' | translate}}">
               <span ng-bind-html="$select.selected"></span>
             </ui-select-match>
             <ui-select-choices repeat="data in REQUEST_STATUS">
@@ -43,7 +45,7 @@
             </ui-select-choices>
           </ui-select>
         </div>
-        </div>
+      </div>
       <div class="col-xs-6">
         <dir-pagination-controls class="pull-right"></dir-pagination-controls>
       </div>
@@ -64,19 +66,28 @@
         </thead>
         <tbody>
         <tr
-          dir-paginate="request in requests | filter:{status: searchStatus.filter} | filter:searchText | itemsPerPage: 20">
+            dir-paginate="request in requests | filter:{status: searchStatus.filter} | filter:searchText | itemsPerPage: 20">
           <td>
-            <a ng-href="#/data-access-request/{{request.id}}" ng-if="actions.canView(request)" translate>{{request.id}}</a>
+            <a ng-href="#/data-access-request/{{request.id}}"
+                ng-if="actions.canView(request)" translate>{{request.id}}</a>
             <span ng-if="!actions.canView(request)">{{request.id}}</span>
           </td>
           <td ng-if="showApplicant">
-            {{userProfileService.getFullName(request.profile) || request.applicant}}
+            <span ng-if="actions.canViewProfile('mica-user')">
+         {{getFullName(request.profile) || request.applicant}}
+            </span>
+            <a href ng-click="userProfile(request.profile)"
+                ng-if="actions.canViewProfile('mica-data-access-officer')">
+              {{getFullName(request.profile) ||
+              request.applicant}}
+            </a>
           </td>
           <td>
             {{request.title}}
           </td>
           <td>
-            {{(request.timestamps.lastUpdate || request.timestamps.created) | fromNow}}
+            {{(request.timestamps.lastUpdate || request.timestamps.created) |
+            fromNow}}
           </td>
           <td>
             <span ng-if="request.submissionDate">{{request.submissionDate | fromNow}}</span>
@@ -87,11 +98,14 @@
           <td>
             <ul class="list-inline">
               <li ng-if="actions.canEdit(request)">
-                <a ng-href="#/data-access-request/{{request.id}}/edit"  title="{{'edit' | translate}}"><i class="fa fa-pencil"></i></a>
+                <a ng-href="#/data-access-request/{{request.id}}/edit"
+                    title="{{'edit' | translate}}"><i class="fa fa-pencil"></i></a>
               </li>
               <li>
-                <a ng-if="actions.canDelete(request)" ng-click="deleteRequest(request)" title="{{'delete' | translate}}"><i
-                  class="fa fa-trash-o"></i></a>
+                <a ng-if="actions.canDelete(request)"
+                    ng-click="deleteRequest(request)"
+                    title="{{'delete' | translate}}"><i
+                    class="fa fa-trash-o"></i></a>
               </li>
             </ul>
           </td>
