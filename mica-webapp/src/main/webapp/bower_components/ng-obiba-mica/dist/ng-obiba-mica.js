@@ -682,11 +682,11 @@ angular.module('obiba.mica.access')
             id: $scope.dataAccessRequest.id,
             status: DataAccessRequestService.status.SUBMITTED
           }, function onSubmitted() {
+            onUpdatStatusSuccess();
             $uibModal.open({
               scope: $scope,
               templateUrl:'access/views/data-access-request-submitted-modal.html'
             });
-            onUpdatStatusSuccess();
           }, onError);
         } else {
           AlertService.alert({
