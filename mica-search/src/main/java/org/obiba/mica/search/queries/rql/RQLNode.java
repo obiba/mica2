@@ -22,11 +22,16 @@ enum RQLNode {
   SORT, //
   AND, //
   OR, //
+  NOT, //
   IN, //
+  OUT, //
   EQ, //
   GT, //
   GE, //
   LT, //
   LE, //
-  FACET
+  BETWEEN, //
+  MATCH, //
+  FACET, //
+  AGGREGATE
 }
