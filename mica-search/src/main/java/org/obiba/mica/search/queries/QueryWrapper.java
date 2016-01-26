@@ -37,4 +37,6 @@ public interface QueryWrapper {
   int getSize();
 
   List<String> getAggregationGroupBy();
+
+  List<String> getAggregations();
 }

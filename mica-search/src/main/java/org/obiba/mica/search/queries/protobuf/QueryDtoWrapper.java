@@ -71,4 +71,9 @@ public class QueryDtoWrapper implements QueryWrapper {
   public List<String> getAggregationGroupBy() {
     return queryDto != null ? queryDto.getAggsByList() : Lists.newArrayList();
   }
+
+  @Override
+  public List<String> getAggregations() {
+    return Lists.newArrayList();
+  }
 }

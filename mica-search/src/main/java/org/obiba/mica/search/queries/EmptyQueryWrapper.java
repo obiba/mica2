@@ -56,4 +56,9 @@ public class EmptyQueryWrapper implements QueryWrapper {
   public List<String> getAggregationGroupBy() {
     return null;
   }
+
+  @Override
+  public List<String> getAggregations() {
+    return null;
+  }
 }

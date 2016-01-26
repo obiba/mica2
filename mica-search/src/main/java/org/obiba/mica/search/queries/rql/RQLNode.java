@@ -28,5 +28,7 @@ enum RQLNode {
   GE, //
   LT, //
   LE, //
-  FACET
+  BETWEEN, //
+  FACET, //
+  AGGREGATE
 }

@@ -10,6 +10,7 @@
 
 package org.obiba.mica.search.queries.rql;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -23,6 +24,8 @@ import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.obiba.mica.search.queries.QueryWrapper;
+
+import com.google.common.collect.Lists;
 
 /**
  *
@@ -39,6 +42,10 @@ public class RQLQueryWrapper implements QueryWrapper {
 
   private SortBuilder sortBuilder;
 
+  private List<String> aggregations;
+
+  private List<String> aggregationGroupBy;
+
   public RQLQueryWrapper(String rql) {
     this(new RQLParser().parse(rql));
   }
@@ -51,13 +58,11 @@ public class RQLQueryWrapper implements QueryWrapper {
         case DATASET:
         case STUDY:
         case NETWORK:
-          node.getArguments().stream().map(a -> (ASTNode)a).forEach(n -> {
-            if (n.getName().equals(RQLNode.LIMIT.name().toLowerCase()))
-              parseLimit(n);
-            else if (n.getName().equals(RQLNode.SORT.name().toLowerCase()))
-              parseSort(n);
-            else
-              parseQuery(n);
+          node.getArguments().stream().map(a -> (ASTNode) a).forEach(n -> {
+            if(n.getName().equals(RQLNode.LIMIT.name().toLowerCase())) parseLimit(n);
+            else if(n.getName().equals(RQLNode.SORT.name().toLowerCase())) parseSort(n);
+            else if(n.getName().equals(RQLNode.AGGREGATE.name().toLowerCase())) parseAggregate(n);
+            else parseQuery(n);
           });
           break;
         default:
@@ -88,6 +93,15 @@ public class RQLQueryWrapper implements QueryWrapper {
     this.node = node;
     RQLSortBuilder sort = new RQLSortBuilder();
     sortBuilder = node.accept(sort);
+  }
+
+  private void parseAggregate(ASTNode node) {
+    this.node = node;
+    RQLAggregateBuilder aggregate = new RQLAggregateBuilder();
+    if(node.accept(aggregate)) {
+      aggregations = aggregate.getAggregations();
+      aggregationGroupBy = aggregate.getAggregationGroupBy();
+    }
   }
 
   @Override
@@ -122,7 +136,12 @@ public class RQLQueryWrapper implements QueryWrapper {
 
   @Override
   public List<String> getAggregationGroupBy() {
-    return null;
+    return aggregationGroupBy;
+  }
+
+  @Override
+  public List<String> getAggregations() {
+    return aggregations;
   }
 
   private static class RQLQueryBuilder implements SimpleASTVisitor<QueryBuilder> {
@@ -148,6 +167,8 @@ public class RQLQueryWrapper implements QueryWrapper {
             return visitGe(node);
           case GT:
             return visitGt(node);
+          case BETWEEN:
+            return visitBetween(node);
           default:
         }
       } catch(IllegalArgumentException e) {
@@ -203,6 +224,12 @@ public class RQLQueryWrapper implements QueryWrapper {
       Object value = node.getArgument(1);
       return QueryBuilders.rangeQuery(field).gt(value);
     }
+
+    private QueryBuilder visitBetween(ASTNode node) {
+      String field = node.getArgument(0).toString();
+      ArrayList values = (ArrayList) node.getArgument(1);
+      return QueryBuilders.rangeQuery(field).gte(values.get(0)).lt(values.get(1));
+    }
   }
 
   private static class RQLLimitBuilder implements SimpleASTVisitor<Boolean> {
@@ -245,17 +272,49 @@ public class RQLQueryWrapper implements QueryWrapper {
         switch(type) {
           case SORT:
             String arg = node.getArgument(0).toString();
-            if (arg.startsWith("-"))
-              return SortBuilders.fieldSort(arg.substring(1)).order(SortOrder.DESC);
-            else if (arg.startsWith("+"))
-              return SortBuilders.fieldSort(arg.substring(1)).order(SortOrder.ASC);
-            else
-              return SortBuilders.fieldSort(arg).order(SortOrder.ASC);
+            if(arg.startsWith("-")) return SortBuilders.fieldSort(arg.substring(1)).order(SortOrder.DESC);
+            else if(arg.startsWith("+")) return SortBuilders.fieldSort(arg.substring(1)).order(SortOrder.ASC);
+            else return SortBuilders.fieldSort(arg).order(SortOrder.ASC);
         }
       } catch(IllegalArgumentException e) {
         // ignore
       }
       return null;
+    }
+  }
+
+  private static class RQLAggregateBuilder implements SimpleASTVisitor<Boolean> {
+
+    private List<String> aggregations = Lists.newArrayList();
+
+    private List<String> aggregationGroupBy = Lists.newArrayList();
+
+    public List<String> getAggregations() {
+      return aggregations;
+    }
+
+    public List<String> getAggregationGroupBy() {
+      return aggregationGroupBy;
+    }
+
+    @Override
+    public Boolean visit(ASTNode node) {
+      try {
+        RQLNode type = RQLNode.valueOf(node.getName().toUpperCase());
+        switch(type) {
+          case AGGREGATE:
+            if(node.getArgumentsSize() == 0) return Boolean.TRUE;
+            node.getArguments().stream().filter(a -> a instanceof String).map(Object::toString)
+              .forEach(aggregations::add);
+            node.getArguments().stream().filter(a -> a instanceof ASTNode).map(a -> (ASTNode)a)
+              .forEach(a -> a.getArguments().stream().map(Object::toString).forEach(aggregationGroupBy::add));
+            return Boolean.TRUE;
+          default:
+        }
+      } catch(IllegalArgumentException e) {
+        // ignore
+      }
+      return Boolean.FALSE;
     }
   }
 }
