@@ -20,6 +20,7 @@ import net.jazdw.rql.parser.SimpleASTVisitor;
 
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
@@ -157,6 +158,10 @@ public class RQLQueryWrapper implements QueryWrapper {
             return visitOr(node);
           case IN:
             return visitIn(node);
+          case OUT:
+            return visitOut(node);
+          case NOT:
+            return visitNot(node);
           case EQ:
             return visitEq(node);
           case LE:
@@ -169,6 +174,8 @@ public class RQLQueryWrapper implements QueryWrapper {
             return visitGt(node);
           case BETWEEN:
             return visitBetween(node);
+          case MATCH:
+            return visitMatch(node);
           default:
         }
       } catch(IllegalArgumentException e) {
@@ -193,6 +200,18 @@ public class RQLQueryWrapper implements QueryWrapper {
       String field = node.getArgument(0).toString();
       Object terms = node.getArgument(1);
       return QueryBuilders.termsQuery(field, terms instanceof Collection ? (Collection) terms : terms);
+    }
+
+    private QueryBuilder visitOut(ASTNode node) {
+      String field = node.getArgument(0).toString();
+      Object terms = node.getArgument(1);
+      return QueryBuilders.boolQuery()
+        .mustNot(QueryBuilders.termsQuery(field, terms instanceof Collection ? (Collection) terms : terms));
+    }
+
+    private QueryBuilder visitNot(ASTNode node) {
+      QueryBuilder expr = visit((ASTNode) node.getArgument(0));
+      return QueryBuilders.boolQuery().mustNot(expr);
     }
 
     private QueryBuilder visitEq(ASTNode node) {
@@ -227,8 +246,22 @@ public class RQLQueryWrapper implements QueryWrapper {
 
     private QueryBuilder visitBetween(ASTNode node) {
       String field = node.getArgument(0).toString();
-      ArrayList values = (ArrayList) node.getArgument(1);
+      ArrayList<Object> values = (ArrayList<Object>) node.getArgument(1);
       return QueryBuilders.rangeQuery(field).gte(values.get(0)).lt(values.get(1));
+    }
+
+    private QueryBuilder visitMatch(ASTNode node) {
+      // if there is only one argument, the fields to be matched are the default ones
+      // otherwise, the first argument can be the field name or a list of filed names
+      if(node.getArgumentsSize() == 1) return QueryBuilders.queryStringQuery(node.getArgument(0).toString());
+      QueryStringQueryBuilder builder = QueryBuilders.queryStringQuery(node.getArgument(1).toString());
+      if(node.getArgument(1) instanceof ArrayList) {
+        ArrayList<Object> fields = (ArrayList<Object>) node.getArgument(1);
+        fields.stream().map(Object::toString).forEach(builder::field);
+      } else {
+        builder.field(node.getArgument(0).toString());
+      }
+      return builder;
     }
   }
 
@@ -306,7 +339,7 @@ public class RQLQueryWrapper implements QueryWrapper {
             if(node.getArgumentsSize() == 0) return Boolean.TRUE;
             node.getArguments().stream().filter(a -> a instanceof String).map(Object::toString)
               .forEach(aggregations::add);
-            node.getArguments().stream().filter(a -> a instanceof ASTNode).map(a -> (ASTNode)a)
+            node.getArguments().stream().filter(a -> a instanceof ASTNode).map(a -> (ASTNode) a)
               .forEach(a -> a.getArguments().stream().map(Object::toString).forEach(aggregationGroupBy::add));
             return Boolean.TRUE;
           default:

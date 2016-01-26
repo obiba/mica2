@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class RQLQueryWrapperTest {
 
   @Test
-  public void test_rql_query_terms() throws IOException {
+  public void test_rql_query_terms_in() throws IOException {
     String rql
       = "variable(or(in(attributes.Mlstr_area__Lifestyle_behaviours.und,(Phys_act,Tobacco)),in(attributes.Mlstr_area__Diseases.und,Neoplasms)))";
     RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
@@ -38,6 +38,42 @@ public class RQLQueryWrapperTest {
       "        \"attributes.Mlstr_area__Diseases.und\" : [ \"Neoplasms\" ]\n" +
       "      }\n" +
       "    } ]\n" +
+      "  }\n" +
+      "}";
+    assertThat(rqlQueryWrapper.getQueryBuilder().toString()).isEqualTo(expected);
+  }
+
+  @Test
+  public void test_rql_query_terms_out() throws IOException {
+    String rql
+      = "variable(out(attributes.Mlstr_area__Diseases.und,Neoplasms))";
+    RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
+    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    String expected = "{\n" +
+      "  \"bool\" : {\n" +
+      "    \"must_not\" : {\n" +
+      "      \"terms\" : {\n" +
+      "        \"attributes.Mlstr_area__Diseases.und\" : [ \"Neoplasms\" ]\n" +
+      "      }\n" +
+      "    }\n" +
+      "  }\n" +
+      "}";
+    assertThat(rqlQueryWrapper.getQueryBuilder().toString()).isEqualTo(expected);
+  }
+
+  @Test
+  public void test_rql_query_terms_not_in() throws IOException {
+    String rql
+      = "variable(not(in(attributes.Mlstr_area__Diseases.und,Neoplasms)))";
+    RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
+    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    String expected = "{\n" +
+      "  \"bool\" : {\n" +
+      "    \"must_not\" : {\n" +
+      "      \"terms\" : {\n" +
+      "        \"attributes.Mlstr_area__Diseases.und\" : [ \"Neoplasms\" ]\n" +
+      "      }\n" +
+      "    }\n" +
       "  }\n" +
       "}";
     assertThat(rqlQueryWrapper.getQueryBuilder().toString()).isEqualTo(expected);
@@ -75,6 +111,82 @@ public class RQLQueryWrapperTest {
   }
 
   @Test
+  public void test_rql_query_match() throws IOException {
+    String rql
+      = "variable(match(tutu))";
+    RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
+    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    String expected = "{\n" +
+      "  \"query_string\" : {\n" +
+      "    \"query\" : \"tutu\"\n" +
+      "  }\n" +
+      "}";
+    assertThat(rqlQueryWrapper.getQueryBuilder().toString()).isEqualTo(expected);
+  }
+
+  @Test
+  public void test_rql_query_not_match() throws IOException {
+    String rql
+      = "variable(not(match(tutu)))";
+    RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
+    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    String expected = "{\n" +
+      "  \"bool\" : {\n" +
+      "    \"must_not\" : {\n" +
+      "      \"query_string\" : {\n" +
+      "        \"query\" : \"tutu\"\n" +
+      "      }\n" +
+      "    }\n" +
+      "  }\n" +
+      "}";
+    assertThat(rqlQueryWrapper.getQueryBuilder().toString()).isEqualTo(expected);
+  }
+
+  @Test
+  public void test_rql_query_complex_match() throws IOException {
+    String rql
+      = "variable(match(name:tutu description:tata pwel))";
+    RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
+    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    String expected = "{\n" +
+      "  \"query_string\" : {\n" +
+      "    \"query\" : \"name:tutu description:tata pwel\"\n" +
+      "  }\n" +
+      "}";
+    assertThat(rqlQueryWrapper.getQueryBuilder().toString()).isEqualTo(expected);
+  }
+
+  @Test
+  public void test_rql_query_match_with_field() throws IOException {
+    String rql
+      = "variable(match(name,tutu))";
+    RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
+    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    String expected = "{\n" +
+      "  \"query_string\" : {\n" +
+      "    \"query\" : \"tutu\",\n" +
+      "    \"fields\" : [ \"name\" ]\n" +
+      "  }\n" +
+      "}";
+    assertThat(rqlQueryWrapper.getQueryBuilder().toString()).isEqualTo(expected);
+  }
+
+  @Test
+  public void test_rql_query_match_with_fields() throws IOException {
+    String rql
+      = "variable(match((name,description),tutu))";
+    RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
+    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    String expected = "{\n" +
+      "  \"query_string\" : {\n" +
+      "    \"query\" : \"tutu\",\n" +
+      "    \"fields\" : [ \"[name, description]\" ]\n" +
+      "  }\n" +
+      "}";
+    assertThat(rqlQueryWrapper.getQueryBuilder().toString()).isEqualTo(expected);
+  }
+
+  @Test
   public void test_rql_query_between() throws IOException {
     String rql = "study(between(populations.selectionCriteria.ageMin,(50,60)))";
     RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
@@ -86,6 +198,28 @@ public class RQLQueryWrapperTest {
       "      \"to\" : 60,\n" +
       "      \"include_lower\" : true,\n" +
       "      \"include_upper\" : false\n" +
+      "    }\n" +
+      "  }\n" +
+      "}";
+    assertThat(rqlQueryWrapper.getQueryBuilder().toString()).isEqualTo(expected);
+  }
+
+  @Test
+  public void test_rql_query_not_between() throws IOException {
+    String rql = "study(not(between(populations.selectionCriteria.ageMin,(50,60))))";
+    RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
+    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    String expected = "{\n" +
+      "  \"bool\" : {\n" +
+      "    \"must_not\" : {\n" +
+      "      \"range\" : {\n" +
+      "        \"populations.selectionCriteria.ageMin\" : {\n" +
+      "          \"from\" : 50,\n" +
+      "          \"to\" : 60,\n" +
+      "          \"include_lower\" : true,\n" +
+      "          \"include_upper\" : false\n" +
+      "        }\n" +
+      "      }\n" +
       "    }\n" +
       "  }\n" +
       "}";
