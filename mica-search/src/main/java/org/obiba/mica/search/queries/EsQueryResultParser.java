@@ -17,6 +17,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.elasticsearch.search.aggregations.Aggregation;
@@ -31,6 +32,8 @@ import org.obiba.mica.search.aggregations.AggregationMetaDataResolver;
 import org.obiba.mica.web.model.MicaSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Lists;
 
 import static org.obiba.mica.web.model.MicaSearch.AggregationResultDto;
 import static org.obiba.mica.web.model.MicaSearch.StatsAggregationResultDto;
@@ -55,16 +58,18 @@ public class EsQueryResultParser {
     return new EsQueryResultParser(aggregationTitleResolver, locale);
   }
 
-  public List<AggregationResultDto> parseAggregations(@NotNull Aggregations defaults, @NotNull Aggregations queried) {
+  public List<AggregationResultDto> parseAggregations(@Nullable Aggregations defaults, @NotNull Aggregations queried) {
+    if (defaults == null) return parseAggregations(queried);
+
     List<Aggregation> defaultAggs = defaults.asList();
     List<Aggregation> queriedAggs = queried.asList();
-    List<AggregationResultDto> aggResults = new ArrayList();
+    List<AggregationResultDto> aggResults = Lists.newArrayList();
 
     IntStream.range(0, defaultAggs.size()).forEach(i -> {
       Aggregation defaultAgg = defaultAggs.get(i);
       Aggregation queriedAgg = queriedAggs.get(i);
 
-      AggregationResultDto.Builder aggResultBuilder = MicaSearch.AggregationResultDto.newBuilder();
+      AggregationResultDto.Builder aggResultBuilder = AggregationResultDto.newBuilder();
       aggResultBuilder.setAggregation(defaultAgg.getName());
       String aggType = ((InternalAggregation) defaultAgg).type().name();
 
