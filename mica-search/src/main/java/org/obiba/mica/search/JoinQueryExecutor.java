@@ -255,21 +255,13 @@ public class JoinQueryExecutor {
       builder.clearAggs();
 
       aggregationsList.forEach(a -> {
-        boolean found = false;
         for(MicaSearch.AggregationResultDto.Builder b : builders) {
           if(b.getAggregation().equals(a.getId())) {
             b.addAllTitle(dtos.asDto(a.getTitle()));
             aggregationResultDtos.add(b.build());
-            found = true;
             break;
           }
         }
-
-//        if(!found) {
-//          aggregationResultDtos.add(
-//            MicaSearch.AggregationResultDto.newBuilder().setAggregation(a.getId()).addAllTitle(dtos.asDto(a.getTitle()))
-//              .build());
-//        }
       });
 
       builder.addAllAggs(postProcessor == null ? aggregationResultDtos : postProcessor.apply(aggregationResultDtos));
