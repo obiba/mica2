@@ -265,11 +265,11 @@ public class JoinQueryExecutor {
           }
         }
 
-        if(!found) {
-          aggregationResultDtos.add(
-            MicaSearch.AggregationResultDto.newBuilder().setAggregation(a.getId()).addAllTitle(dtos.asDto(a.getTitle()))
-              .build());
-        }
+//        if(!found) {
+//          aggregationResultDtos.add(
+//            MicaSearch.AggregationResultDto.newBuilder().setAggregation(a.getId()).addAllTitle(dtos.asDto(a.getTitle()))
+//              .build());
+//        }
       });
 
       builder.addAllAggs(postProcessor == null ? aggregationResultDtos : postProcessor.apply(aggregationResultDtos));
@@ -299,20 +299,24 @@ public class JoinQueryExecutor {
 
       Pattern pattern = Pattern.compile("attributes-(\\w+)__(\\w+)-\\w+$");
       List<MicaSearch.AggregationResultDto> newList = Lists.newArrayList();
+      // report only aggregations for which we have results
+      List<String> aggregationNames = Lists.newArrayList();
       aggregationResultDtos.forEach(dto -> {
         Matcher matcher = pattern.matcher(dto.getAggregation());
         if(matcher.find()) {
           String taxonomy = matcher.group(1);
           MicaSearch.AggregationResultDto.Builder builder = buildres.get(taxonomy);
           builder.addChildren(dto);
+          aggregationNames.add(builder.getAggregation());
         } else {
           newList.add(dto);
         }
       });
 
       newList.addAll(buildres.values().stream() //
+        .filter(b -> aggregationNames.contains(b.getAggregation())) //
         .sorted((b1, b2) -> b1.getAggregation().compareTo(b2.getAggregation())) //
-        .map(builder -> builder.build()) //
+        .map(MicaSearch.AggregationResultDto.Builder::build) //
         .collect(Collectors.toList())); //
 
       return newList;

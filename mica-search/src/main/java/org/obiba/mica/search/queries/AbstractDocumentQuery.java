@@ -119,6 +119,8 @@ public abstract class AbstractDocumentQuery {
     return hasQueryBuilder() ? queryWrapper.getAggregationGroupBy() : Lists.newArrayList();
   }
 
+
+
   private int getFrom() {
     return hasQueryBuilder() ? queryWrapper.getFrom() : DEFAULT_FROM;
   }
@@ -167,8 +169,12 @@ public abstract class AbstractDocumentQuery {
   }
 
   @Nullable
-  protected Properties getAggregationsProperties() {
+  protected Properties getAggregationsProperties(List<String> filter) {
     return null;
+  }
+
+  private Properties getFilteredAggregationsProperties() {
+    return getAggregationsProperties(queryWrapper.getAggregations());
   }
 
   /**
@@ -258,12 +264,12 @@ public abstract class AbstractDocumentQuery {
    * @param size
    * @param scope
    * @param counts
-   * @param aggsBy
+   * @param aggregationGroupBy
    * @return
    * @throws IOException
    */
   protected List<String> execute(QueryBuilder query, SortBuilder sortBuilder, int from, int size, Scope scope,
-    CountStatsData counts, List<String> aggsBy) throws IOException {
+    CountStatsData counts, List<String> aggregationGroupBy) throws IOException {
     if(query == null) return null;
 
     aggregationTitleResolver.registerProviders(getAggregationMetaDataProviders());
@@ -273,47 +279,34 @@ public abstract class AbstractDocumentQuery {
 
     SearchRequestBuilder defaultRequestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
-      .setSearchType(scope == DETAIL ? SearchType.DFS_QUERY_THEN_FETCH : SearchType.COUNT) //
+      .setSearchType(SearchType.QUERY_THEN_FETCH) //
       .setQuery(accessFilter == null
         ? QueryBuilders.matchAllQuery()
         : QueryBuilders.boolQuery().must(QueryBuilders.matchAllQuery()).must(accessFilter)) //
       .setFrom(from) //
-      .setSize(size) //
+      .setSize(scope == DETAIL ? size : 0) //
       .setNoFields().addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT)); //
 
     SearchRequestBuilder requestBuilder = client.prepareSearch(getSearchIndex()) //
       .setTypes(getSearchType()) //
-      .setSearchType(scope == DETAIL ? SearchType.DFS_QUERY_THEN_FETCH : SearchType.COUNT) //
+      .setSearchType(SearchType.QUERY_THEN_FETCH) //
       .setQuery(accessFilter == null ? query : QueryBuilders.boolQuery().must(query).must(accessFilter)) //
       .setFrom(from) //
-      .setSize(size) //
+      .setSize(scope == DETAIL ? size : 0) //
       .addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT)); // ;
 
     if(ignoreFields()) requestBuilder.setNoFields();
 
     if(sortBuilder != null) requestBuilder.addSort(sortBuilder);
 
-    aggregationYamlParser.setLocales(micaConfigService.getConfig().getLocales());
-    Map<String, Properties> subAggregations = Maps.newHashMap();
-    Properties aggregationProperties = getAggregationsProperties();
-    if(aggsBy != null) aggsBy.forEach(field -> subAggregations.put(field, aggregationProperties));
-
-    aggregationYamlParser.getAggregations(getAggregationsDescription(), subAggregations).forEach(agg -> {
-      defaultRequestBuilder.addAggregation(agg);
-      requestBuilder.addAggregation(agg);
-    });
-
-    aggregationYamlParser.getAggregations(aggregationProperties).forEach(agg -> {
-      defaultRequestBuilder.addAggregation(agg);
-      requestBuilder.addAggregation(agg);
-    });
+    appendAggregations(defaultRequestBuilder, requestBuilder, aggregationGroupBy);
 
     log.debug("Request /{}/{}: {}", getSearchIndex(), getSearchType(), requestBuilder.toString());
 
     try {
       List<SearchResponse> responses = Stream
         .of(client.prepareMultiSearch().add(defaultRequestBuilder).add(requestBuilder).execute().actionGet())
-        .map(MultiSearchResponse::getResponses).flatMap((d) -> Stream.of(d)).map(MultiSearchResponse.Item::getResponse)
+        .map(MultiSearchResponse::getResponses).flatMap(Stream::of).map(MultiSearchResponse.Item::getResponse)
         .collect(Collectors.toList());
 
       SearchResponse aggResponse = responses.get(0);
@@ -348,12 +341,12 @@ public abstract class AbstractDocumentQuery {
    * @param sortBuilder
    * @param scope
    * @param counts
-   * @param aggsBy
+   * @param aggregationGroupBy
    * @return
    * @throws IOException
    */
   protected List<String> executeCoverage(QueryBuilder queryBuilder, SortBuilder sortBuilder, Scope scope,
-    CountStatsData counts, List<String> aggsBy) throws IOException {
+    CountStatsData counts, List<String> aggregationGroupBy) throws IOException {
     if(queryBuilder == null) return null;
 
     aggregationTitleResolver.registerProviders(getAggregationMetaDataProviders());
@@ -378,27 +371,11 @@ public abstract class AbstractDocumentQuery {
         accessFilter == null ? queryBuilder : QueryBuilders.boolQuery().must(queryBuilder).must(accessFilter)) //
       .setFrom(0) //
       .setSize(0) // no results needed for a coverage
-      .addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT));
-
-    if(ignoreFields()) requestBuilder.setNoFields();
+      .setNoFields().addAggregation(AggregationBuilders.global(AGG_TOTAL_COUNT));
 
     if(sortBuilder != null) requestBuilder.addSort(sortBuilder);
 
-    aggregationYamlParser.setLocales(micaConfigService.getConfig().getLocales());
-    Map<String, Properties> subAggregations = Maps.newHashMap();
-    Properties aggregationProperties = getAggregationsProperties();
-
-    if(aggsBy != null) aggsBy.forEach(field -> subAggregations.put(field, aggregationProperties));
-
-    aggregationYamlParser.getAggregations(getAggregationsDescription(), subAggregations).forEach(agg -> {
-      requestBuilder.addAggregation(agg);
-      defaultRequestBuilder.addAggregation(agg);
-    });
-
-    aggregationYamlParser.getAggregations(aggregationProperties).forEach(agg -> {
-      requestBuilder.addAggregation(agg);
-      defaultRequestBuilder.addAggregation(agg);
-    });
+    appendAggregations(defaultRequestBuilder, requestBuilder, aggregationGroupBy);
 
     log.info("Request /{}/{}", getSearchIndex(), getSearchType());
     log.debug("Request /{}/{}: {}", getSearchIndex(), getSearchType(), requestBuilder.toString());
@@ -406,7 +383,7 @@ public abstract class AbstractDocumentQuery {
     try {
       List<SearchResponse> responses = Stream
         .of(client.prepareMultiSearch().add(defaultRequestBuilder).add(requestBuilder).execute().actionGet())
-        .map(MultiSearchResponse::getResponses).flatMap((d) -> Stream.of(d)).map(MultiSearchResponse.Item::getResponse)
+        .map(MultiSearchResponse::getResponses).flatMap(Stream::of).map(MultiSearchResponse.Item::getResponse)
         .collect(Collectors.toList());
 
       SearchResponse defaultResponse = responses.get(0);
@@ -432,6 +409,27 @@ public abstract class AbstractDocumentQuery {
       return null; //ignoring
     }
   }
+
+
+  private void appendAggregations(SearchRequestBuilder defaultRequestBuilder, SearchRequestBuilder requestBuilder, List<String> aggregationGroupBy)
+    throws IOException {
+    aggregationYamlParser.setLocales(micaConfigService.getConfig().getLocales());
+    Map<String, Properties> subAggregations = Maps.newHashMap();
+    Properties aggregationProperties = getFilteredAggregationsProperties();
+
+    if(aggregationGroupBy != null) aggregationGroupBy.forEach(field -> subAggregations.put(field, aggregationProperties));
+
+    aggregationYamlParser.getAggregations(getAggregationsDescription(), subAggregations).forEach(agg -> {
+      defaultRequestBuilder.addAggregation(agg);
+      requestBuilder.addAggregation(agg);
+    });
+
+    aggregationYamlParser.getAggregations(aggregationProperties).forEach(agg -> {
+      defaultRequestBuilder.addAggregation(agg);
+      requestBuilder.addAggregation(agg);
+    });
+  }
+
 
   /**
    * Returning 'false' will include documents in the query result
@@ -461,9 +459,7 @@ public abstract class AbstractDocumentQuery {
   protected void processAggregations(QueryResultDto.Builder builder, Aggregations defaults, Aggregations aggregations) {
     log.debug("start processAggregations");
     EsQueryResultParser parser = EsQueryResultParser.newParser(aggregationTitleResolver, locale);
-    builder.addAllAggs(defaults == null //
-      ? parser.parseAggregations(aggregations) //
-      : parser.parseAggregations(defaults, aggregations)); //
+    builder.addAllAggs(parser.parseAggregations(defaults, aggregations)); //
     builder.setTotalCount(parser.getTotalCount());
   }
 

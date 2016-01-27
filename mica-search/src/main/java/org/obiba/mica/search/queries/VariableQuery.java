@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -54,6 +55,7 @@ import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
+import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -278,19 +280,19 @@ public class VariableQuery extends AbstractDocumentQuery {
 
   @NotNull
   @Override
-  protected Properties getAggregationsProperties() {
+  protected Properties getAggregationsProperties(List<String> filter) {
+    if(filter == null) return null;
+
     Properties properties = new Properties();
     if(mode != Mode.LIST) {
-      getTaxonomies().forEach(taxonomy -> {
-        if(taxonomy.hasVocabularies()) {
-          taxonomy.getVocabularies().forEach(vocabulary -> {
-            if(vocabulary.hasTerms()) {
-              properties.put("attributes." + AttributeKey.getMapKey(vocabulary.getName(), taxonomy.getName()) + "." +
-                LanguageTag.UNDETERMINED, "");
-            }
-          });
-        }
-      });
+      List<Pattern> patterns = filter.stream().map(Pattern::compile).collect(Collectors.toList());
+      getTaxonomies().stream().filter(Taxonomy::hasVocabularies)
+        .forEach(taxonomy -> taxonomy.getVocabularies().stream().filter(Vocabulary::hasTerms).forEach(vocabulary -> {
+          String key = "attributes." + AttributeKey.getMapKey(vocabulary.getName(), taxonomy.getName()) + "." +
+            LanguageTag.UNDETERMINED;
+          if(patterns.isEmpty() || patterns.stream().filter(p -> p.matcher(key).matches()).findFirst().isPresent())
+            properties.put(key, "");
+        }));
     }
     return properties;
   }
