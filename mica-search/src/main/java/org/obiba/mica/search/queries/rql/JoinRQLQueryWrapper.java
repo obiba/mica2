@@ -40,8 +40,9 @@ public class JoinRQLQueryWrapper implements JoinQueryWrapper {
   private RQLQueryWrapper networkQueryWrapper;
 
   public JoinRQLQueryWrapper(String rql) {
+    String rqlStr = rql == null ? "" : rql;
     RQLParser parser = new RQLParser();
-    node = parser.parse(rql);
+    node = parser.parse(rqlStr);
     if(Strings.isNullOrEmpty(node.getName()))
       node.getArguments().stream().filter(a -> a instanceof ASTNode).map(a -> (ASTNode) a).forEach(this::initialize);
     else initialize(node);

@@ -251,6 +251,7 @@ public class RQLQueryWrapper implements QueryWrapper {
     }
 
     private QueryBuilder visitMatch(ASTNode node) {
+      if (node.getArgumentsSize() == 0) return QueryBuilders.matchAllQuery();
       // if there is only one argument, the fields to be matched are the default ones
       // otherwise, the first argument can be the field name or a list of filed names
       if(node.getArgumentsSize() == 1) return QueryBuilders.queryStringQuery(node.getArgument(0).toString());
