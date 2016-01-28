@@ -1,0 +1,33 @@
+<div>
+  <uib-tabset class="voffset5">
+    <!-- Networks -->
+    <uib-tab active="activeTab.networks" ng-click="selectTab(QUERY_TYPES.NETWORKS)"
+             heading="{{'networks' | translate}} ({{dto.networkResultDto.totalHits}})">
+      <networks-result-table
+        summaries="dto.networkResultDto['obiba.mica.NetworkResultDto.result'].networks"></networks-result-table>
+    </uib-tab>
+
+    <!-- Studies -->
+    <uib-tab active="activeTab.studies" ng-click="selectTab(QUERY_TYPES.STUDIES)"
+             heading="{{'studies' | translate}} ({{dto.studyResultDto.totalHits}})">
+      <studies-result-table
+        summaries="dto.studyResultDto['obiba.mica.StudyResultDto.result'].summaries"></studies-result-table>
+    </uib-tab>
+
+    <!-- Datasets -->
+    <uib-tab active="activeTab.datasets" ng-click="selectTab(QUERY_TYPES.DATASETS)"
+             heading="{{'datasets' | translate}} ({{dto.datasetResultDto.totalHits}})">
+      <datasets-result-table
+        summaries="dto.datasetResultDto['obiba.mica.DatasetResultDto.result'].datasets"></datasets-result-table>
+
+    </uib-tab>
+
+    <!-- Variables -->
+    <uib-tab active="activeTab.variables" ng-click="selectTab(QUERY_TYPES.VARIABLES)"
+             heading="{{'variables' | translate}} ({{dto.variableResultDto.totalHits}})">
+      <variables-result-table
+        summaries="dto.variableResultDto['obiba.mica.DatasetVariableResultDto.result'].summaries"></variables-result-table>
+    </uib-tab>
+  </uib-tabset>
+
+</div>

@@ -33,5 +33,9 @@ enum RQLNode {
   BETWEEN, //
   MATCH, //
   FACET, //
-  AGGREGATE
+  AGGREGATE;
+
+  public static RQLNode getType(String name) {
+    return valueOf(name.trim().toUpperCase());
+  }
 }

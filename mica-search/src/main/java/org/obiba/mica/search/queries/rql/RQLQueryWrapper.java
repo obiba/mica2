@@ -53,7 +53,7 @@ public class RQLQueryWrapper implements QueryWrapper {
 
   public RQLQueryWrapper(ASTNode node) {
     try {
-      RQLNode type = RQLNode.valueOf(node.getName().toUpperCase());
+      RQLNode type = RQLNode.getType(node.getName());
       switch(type) {
         case VARIABLE:
         case DATASET:
@@ -150,7 +150,7 @@ public class RQLQueryWrapper implements QueryWrapper {
     @Override
     public QueryBuilder visit(ASTNode node) {
       try {
-        RQLNode type = RQLNode.valueOf(node.getName().toUpperCase());
+        RQLNode type = RQLNode.getType(node.getName());
         switch(type) {
           case AND:
             return visitAnd(node);
@@ -281,7 +281,7 @@ public class RQLQueryWrapper implements QueryWrapper {
     @Override
     public Boolean visit(ASTNode node) {
       try {
-        RQLNode type = RQLNode.valueOf(node.getName().toUpperCase());
+        RQLNode type = RQLNode.getType(node.getName());
         switch(type) {
           case LIMIT:
             from = (Integer) node.getArgument(0);
@@ -301,7 +301,7 @@ public class RQLQueryWrapper implements QueryWrapper {
     @Override
     public SortBuilder visit(ASTNode node) {
       try {
-        RQLNode type = RQLNode.valueOf(node.getName().toUpperCase());
+        RQLNode type = RQLNode.getType(node.getName());
         switch(type) {
           case SORT:
             String arg = node.getArgument(0).toString();
@@ -333,7 +333,7 @@ public class RQLQueryWrapper implements QueryWrapper {
     @Override
     public Boolean visit(ASTNode node) {
       try {
-        RQLNode type = RQLNode.valueOf(node.getName().toUpperCase());
+        RQLNode type = RQLNode.getType(node.getName());
         switch(type) {
           case AGGREGATE:
             if(node.getArgumentsSize() == 0) return Boolean.TRUE;

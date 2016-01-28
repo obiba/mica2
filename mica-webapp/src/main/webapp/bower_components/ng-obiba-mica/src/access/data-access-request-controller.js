@@ -179,6 +179,10 @@ angular.module('obiba.mica.access')
         });
       };
 
+      var retrieveComments = function() {
+        $scope.form.comments = DataAccessRequestCommentsResource.query({id: $routeParams.id});
+      };
+
       var selectTab = function(id) {
         $scope.selectedTab = id;
         switch (id) {
@@ -188,10 +192,6 @@ angular.module('obiba.mica.access')
             retrieveComments();
             break;
         }
-      };
-
-      var retrieveComments = function() {
-        $scope.form.comments = DataAccessRequestCommentsResource.query({id: $routeParams.id});
       };
 
       var submitComment = function(comment) {
