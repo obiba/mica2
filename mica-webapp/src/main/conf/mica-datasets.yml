@@ -1,0 +1,17 @@
+"name": "Mlstr_datasets"
+"title":
+  "en": "Datasets"
+  "fr": "Jeux de données"
+"description":
+  "en": "Datasets classification developed by Maelstrom"
+  "fr": "Classification des jeux de données développée par Maelstrom"
+"keywords": {}
+"license": "CC BY-NC 4.0"
+"vocabularies":
+- "name": "id"
+  "title":
+    "en": "Dataset"
+    "fr": "Jeux de données"
+  "description": {}
+  "keywords": {}
+  "terms": []

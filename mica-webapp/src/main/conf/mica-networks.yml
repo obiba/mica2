@@ -1,0 +1,17 @@
+"name": "Mlstr_networks"
+"title":
+  "en": "Networks"
+  "fr": "Réseaux"
+"description":
+  "en": "Networks classification developed by Maelstrom"
+  "fr": "Classification des réseaux développée par Maelstrom"
+"keywords": {}
+"license": "CC BY-NC 4.0"
+"vocabularies":
+- "name": "id"
+  "title":
+    "en": "Network"
+    "fr": "Réseau"
+  "description": {}
+  "keywords": {}
+  "terms": []

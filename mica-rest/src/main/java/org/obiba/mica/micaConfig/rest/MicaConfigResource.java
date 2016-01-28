@@ -246,14 +246,6 @@ public class MicaConfigResource {
   }
 
   @GET
-  @Path("/taxonomy/{name}")
-  @RequiresAuthentication
-  @Deprecated
-  public Opal.TaxonomyDto getTaxonomy(@PathParam("name") String name) {
-    return opalService.getTaxonomyDto(name);
-  }
-
-  @GET
   @Path("/studies")
   @RequiresAuthentication
   @Deprecated

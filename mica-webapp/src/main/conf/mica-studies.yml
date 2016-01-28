@@ -6,7 +6,15 @@
   "en": "Study classification developed by Maelstrom"
   "fr": "Classification des études développée par Maelstrom"
 "keywords": {}
+"license": "CC BY-NC 4.0"
 "vocabularies":
+- "name": "id"
+  "title":
+    "en": "Study"
+    "fr": "Étude"
+  "description": {}
+  "keywords": {}
+  "terms": []
 - "name": "methods-designs"
   "title":
     "en": "Study designs"
@@ -1688,6 +1696,20 @@
       "fr": "Zimbabwe"
     "description": {}
     "keywords": {}
+- "name": "populations-selectionCriteria-ageMin"
+  "title":
+    "en": "Minimum age"
+    "fr": "Age minimum"
+  "description": {}
+  "keywords": {}
+  "terms": []
+- "name": "populations-selectionCriteria-ageMax"
+  "title":
+    "en": "Maximum age"
+    "fr": "Age maximum"
+  "description": {}
+  "keywords": {}
+  "terms": []
 - "name": "populations-selectionCriteria-gender"
   "title":
     "en": "Gender"
@@ -1735,6 +1757,20 @@
     "description": {}
     "keywords": {}
     "terms": []
+- "name": "numberOfParticipants-participant-number"
+  "title":
+    "en": "Target number of participants"
+    "fr": "Nombre de participants ciblé"
+  "description": {}
+  "keywords": {}
+  "terms": []
+- "name": "numberOfParticipants-sample-number"
+  "title":
+    "en": "Target number of participants with samples"
+    "fr": "Nombre de participants avec échantillon ciblé"
+  "description": {}
+  "keywords": {}
+  "terms": []
 - "name": "populations-dataCollectionEvents-dataSources"
   "title":
     "en": "Data collection sources"
