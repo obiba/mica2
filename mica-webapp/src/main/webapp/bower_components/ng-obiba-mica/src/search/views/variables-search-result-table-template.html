@@ -1,0 +1,39 @@
+<div ng-show="summaries.length > 0">
+  <div class="row voffset2">
+    <div class="col-xs-4">
+    </div>
+    <div class="col-xs-8">
+      <dir-pagination-controls class="pull-right"></dir-pagination-controls>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        <th translate>name</th>
+        <th translate>label</th>
+        <th translate>study</th>
+        <th translate>dataset</th>
+      </tr>
+      </thead>
+      <tbody>
+
+      <tr ng-repeat="summary in summaries">
+        <td>
+          {{summary.name}}
+        </td>
+        <td>
+          <localized value="summary.variableLabel" lang="lang"></localized>
+        </td>
+        <td>
+          <localized value="summary.studyName" lang="lang"></localized>
+        </td>
+        <td>
+          <localized value="summary.datasetName" lang="lang"></localized>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

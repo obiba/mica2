@@ -32,6 +32,33 @@ angular.module('obiba.mica.search')
       });
     }])
 
+
+  .factory('JoinQuerySearchResource', ['$resource', 'ngObibaMicaUrl',
+    function ($resource, ngObibaMicaUrl) {
+      return $resource(ngObibaMicaUrl.getUrl('JoinQuerySearchResource'), {}, {
+        'variables': {
+          method: 'GET',
+          errorHandler: true,
+          params: {type: 'variables'}
+        },
+        'studies': {
+          method: 'GET',
+          errorHandler: true,
+          params: {type: 'studies'}
+        },
+        'networks': {
+          method: 'GET',
+          errorHandler: true,
+          params: {type: 'networks'}
+        },
+        'datasets': {
+          method: 'GET',
+          errorHandler: true,
+          params: {type: 'datasets'}
+        }
+      });
+    }])
+
   .factory('VocabularyResource', ['$resource', 'ngObibaMicaUrl',
     function ($resource, ngObibaMicaUrl) {
       return $resource(ngObibaMicaUrl.getUrl('VocabularyResource'), {}, {

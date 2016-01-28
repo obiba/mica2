@@ -40,13 +40,6 @@ angular.module('obiba.mica.attachment')
   }])
   .controller('AttachmentCtrl', ['$scope', '$timeout', '$log', 'Upload', 'TempFileResource', 'ngObibaMicaUrl',
     function ($scope, $timeout, $log, Upload, TempFileResource, ngObibaMicaUrl) {
-      $scope.onFileSelect = function (file) {
-        $scope.uploadedFiles = file;
-        $scope.uploadedFiles.forEach(function (f) {
-          uploadFile(f);
-        });
-      };
-
       var uploadFile = function (file) {
         $log.debug('file', file);
 
@@ -89,6 +82,13 @@ angular.module('obiba.mica.attachment')
               }
             );
           });
+      };
+
+      $scope.onFileSelect = function (file) {
+        $scope.uploadedFiles = file;
+        $scope.uploadedFiles.forEach(function (f) {
+          uploadFile(f);
+        });
       };
 
       $scope.deleteTempFile = function (tempFileId) {

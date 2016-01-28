@@ -1,0 +1,47 @@
+<div ng-show="summaries.length > 0">
+  <div class="row voffset2">
+    <div class="col-xs-4">
+    </div>
+    <div class="col-xs-8">
+      <dir-pagination-controls class="pull-right"></dir-pagination-controls>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        <th translate>acronym</th>
+        <th translate>name</th>
+        <th translate>type</th>
+        <th translate>networks</th>
+        <th translate>studies</th>
+        <th translate>variables</th>
+      </tr>
+      </thead>
+      <tbody>
+
+      <tr ng-repeat="summary in summaries">
+        <td>
+          <localized value="summary.acronym" lang="lang"></localized>
+        </td>
+        <td>
+          <localized value="summary.name" lang="lang"></localized>
+        </td>
+        <td>
+          <localized value="summary.type" lang="lang"></localized>
+        </td>
+        <td>
+          {{summary['obiba.mica.CountStatsDto.datasetCountStats'].networks}}
+        </td>
+        <td>
+          {{summary['obiba.mica.CountStatsDto.datasetCountStats'].studies}}
+        </td>
+        <td>
+          {{summary['obiba.mica.CountStatsDto.datasetCountStats'].variables}}
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

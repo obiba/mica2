@@ -51,4 +51,64 @@ angular.module('obiba.mica.search')
       },
       templateUrl: 'search/views/term-panel-template.html'
     };
+  }])
+
+  .directive('networksResultTable', [function () {
+    return {
+      restrict: 'EA',
+      replace: true,
+      scope: {
+        summaries: '='
+      },
+      templateUrl: 'search/views/networks-search-result-table-template.html'
+    };
+  }])
+
+  .directive('datasetsResultTable', [function () {
+    return {
+      restrict: 'EA',
+      replace: true,
+      scope: {
+        summaries: '='
+      },
+      templateUrl: 'search/views/datasets-search-result-table-template.html'
+    };
+  }])
+
+  .directive('studiesResultTable', [function () {
+    return {
+      restrict: 'EA',
+      replace: true,
+      scope: {
+        summaries: '='
+      },
+      templateUrl: 'search/views/studies-search-result-table-template.html'
+    };
+  }])
+
+  .directive('variablesResultTable', [function () {
+    return {
+      restrict: 'EA',
+      replace: true,
+      scope: {
+        summaries: '='
+      },
+      templateUrl: 'search/views/variables-search-result-table-template.html'
+    };
+  }])
+
+  .directive('resultPanel', [function () {
+    return {
+      restrict: 'EA',
+      replace: true,
+      scope: {
+        type: '=',
+        dto: '=',
+        lang: '=',
+        onTypeChanged: '='
+      },
+      controller: 'SearchResultController',
+      templateUrl: 'search/views/search-result-panel-template.html'
+    };
+
   }]);

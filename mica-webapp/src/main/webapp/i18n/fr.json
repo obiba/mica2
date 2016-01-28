@@ -449,7 +449,6 @@
     "description": "Description",
     "objectives-help": "What are the principal objectives of the study?",
     "website": "Website",
-    "add-population": "Add Population",
     "add-data-collection-event": "Add Data Collection Event",
     "add-member": "Add {{type}}",
     "member-list": "List of {{type}}",
