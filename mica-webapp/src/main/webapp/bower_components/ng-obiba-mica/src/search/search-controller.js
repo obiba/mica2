@@ -42,6 +42,8 @@ angular.module('obiba.mica.search')
               QUERY_TYPES) {
 
 
+console.log('THIS IS SEARCH CONTROLLER');
+
 
       var closeTaxonomies = function () {
         $('#taxonomies').collapse('hide');
@@ -165,20 +167,63 @@ angular.module('obiba.mica.search')
         });
       }
 
+      function updateSearchData() {
+        var search = $location.search();
+        $scope.search.type = ensureValidType(search.type);
+        $scope.search.query = ensureValidQuery(search.query, $scope.search.type);
+      }
+
+      function ensureValidType(type) {
+        var validType = null;
+
+        if (type) {
+          validType = QUERY_TYPES[type.toUpperCase()];
+        }
+
+        return validType || $scope.search.type || QUERY_TYPES.VARIABLES;
+      }
+
+      function getDefaultQuery(type) {
+        var query = ':q(match())';
+
+        switch (type) {
+          case QUERY_TYPES.NETWORKS:
+            return query.replace(/:q/, 'network');
+          case QUERY_TYPES.STUDIES:
+            return query.replace(/:q/, 'study');
+          case QUERY_TYPES.DATASETS:
+            return query.replace(/:q/, 'dataset');
+          case QUERY_TYPES.VARIABLES:
+            return query.replace(/:q/, 'variable');
+        }
+
+        throw new Error('Invalid query type: ' + type);
+      }
+
+      function ensureValidQuery(query, type) {
+        // TODO validate query with RQL parser
+        if (!query) {
+          return getDefaultQuery(type);
+        }
+
+        return query;
+      }
+
       var onTypeChanged = function(type) {
-        if (type && QUERY_TYPES[type.toUpperCase()]) {
+        if (type) {
           var search = $location.search();
-          search.type = type;
+          search.type = ensureValidType(type);
           $location.search(search).replace();
-          executeQuery();
         }
       };
 
       $scope.QUERY_TYPES = QUERY_TYPES;
       $scope.lang = 'en';
+      var type = ensureValidType($routeParams.type);
+
       $scope.search = {
-        query: $routeParams.query || '',
-        type: $routeParams.type || QUERY_TYPES.VARIABLES,
+        query: ensureValidQuery($routeParams.query, type),
+        type: type,
         result: null
       };
 
@@ -209,21 +254,28 @@ angular.module('obiba.mica.search')
       $scope.selectTerm = selectTerm;
       $scope.closeTaxonomies = closeTaxonomies;
       $scope.onTypeChanged = onTypeChanged;
-      $scope.taxonomiesShown = true;
+      $scope.taxonomiesShown = false;
 
-      //
       //// TODO replace with angular code
-      //$('#taxonomies').on('show.bs.collapse', function () {
-      //  $scope.taxonomiesShown = true;
-      //});
-      //$('#taxonomies').on('hide.bs.collapse', function () {
-      //  $scope.taxonomiesShown = false;
-      //});
+      $('#taxonomies').on('show.bs.collapse', function () {
+        $scope.taxonomiesShown = true;
+      });
+      $('#taxonomies').on('hide.bs.collapse', function () {
+        $scope.taxonomiesShown = false;
+      });
 
       $scope.$watch('search', function () {
         //if ($scope.search.query) {
           executeQuery();
         //}
+      });
+
+
+      $scope.$on('$locationChangeSuccess', function(newLocation, oldLocation) {
+        if (newLocation !== oldLocation) {
+          updateSearchData(newLocation);
+          executeQuery();
+        }
       });
 
     }])

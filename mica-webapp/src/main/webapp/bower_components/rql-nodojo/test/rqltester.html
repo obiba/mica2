@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="main.css">
+        <title>RQL-NoDojo Testing</title>
+    </head>
+    <body>
+        <h1>RQL-NoDojo Testing</h1>
+        <div class="input" id="json">
+            <h3>Data Array: (don't use single quotes)</h3>
+            <textarea id="jsonInput" placeholder="JSON HERE"></textarea>
+        </div>
+        <div class="input" id="thequery">
+            <h3>RQL Query:</h3>
+            <textarea id="queryInput" placeholder="QUERY HERE"></textarea>
+        </div>
+        <div id="otherStuff">
+            <button id="submitButton"> Go </button>
+        </div>
+        <div id="resultDisplay">
+            <h3>Result:</h3>
+            <p id="output"></p>
+        </div>
+        <script src="../js/rql.js"></script>
+        <script>
+            var output = document.getElementById('output');
+            var rArray = new RqlArray();
+            var data;
+            var query;
+            var result;
+            $("#submitButton").click( function () {
+                data = $('#jsonInput')[0].value
+                data = data.replace(/(\r\n|\n|\r)/gm,"");
+                data = JSON.parse(data);
+                query = $('#queryInput')[0].value;
+                result = rArray.executeQuery(query, {}, data);
+                output.innerHTML = JSON.stringify(result, null, 4);
+            });
+        </script>
+    </body>
+</html>

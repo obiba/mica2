@@ -1,0 +1,139 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=yes">
+    <title>Test Time - RQL with No Dojo</title>    
+    <style>
+        html, body, #map {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+
+</head>
+<body>
+    RQL Without Dojo.  Will Aly be pleased?  Will the code work?
+    <br />
+    <br />
+    <div id="Content"></div>
+</body>
+    <!-- use the unminified version so we can debug -->    
+    <script src="../js/rql.js"></script>
+    <script>
+        var output = document.getElementById('Content');
+        var rArray = new RqlArray();
+        var mahData = [
+            {
+                "hoss": "snout",
+                "gerth": "puck",
+                "size": 50,
+                "doofus": {
+                    "dog": "biff",
+                    "guts": "red"
+                },
+                "arrr": ["aa","bb", "cc"]
+            },
+            {
+                "hoss": "griss",
+                "gerth": "alpo",
+                "size": 100,
+                "doofus": {
+                    "dog": "buff",
+                    "guts": "green"
+                },
+                "arrr": ["dd","bb", "ff"]
+            },
+            {
+                "hoss": "griss",
+                "gerth": "allanWRENCH",
+                "size": 8,
+                "doofus": {
+                    "dog": "mcgillicutty",
+                    "guts": "orange"
+                },
+                "arrr": ["gg","hh", "ii"]
+            }
+        ];
+        var oneData = [{name: "snausage"}];
+        var numberData = [2,3,5,8,13];
+        
+        //var mahQuery = "eq(gerth,puck)";
+        //var mahQuery = "gt(size,70)";
+        //var mahQuery = "and(lt(size,70),eq(hoss,griss))";
+        //var mahQuery = "match(gerth,al)";
+        //var mahQuery = "match((doofus,dog),ff)";
+        //var mahQuery = "select(hoss,gerth)";
+        //var mahQuery = "contains(arrr,bb)";
+        //var mahQuery = "excludes(arrr,bb)";
+        //var mahQuery = "match((doofus,dog),ff),sort(+hoss)";
+        //var mahQuery = "matchcase(gerth,C)";
+        //var mahQuery = "in(gerth,(puck,alpo))";
+        //var mahQuery = "values(gerth)";
+        //var mahQuery = "values(gerth,hoss)";
+        //var mahQuery = "limit(2,1)";
+        //var mahQuery = "values(gerth),limit(2,1)";
+        //var mahQuery = "values(hoss),distinct()";
+        //var mahQuery = "or(eq(hoss,snout),eq((doofus,guts),green),gt(size,500))";
+        //var mahQuery = "out(gerth,(alpo,silly))";
+        //var mahQuery = "unselect(arrr,size)";
+        //var mahQuery = "first()";
+        //var mahQuery = "select(hoss),first()";
+        //var mahQuery = "count()";
+        //var mahQuery = "lt(size,70),count()";
+        //var mahQuery = "min(size)";
+        //var mahQuery = "min(hoss)";
+        //var mahQuery = "max(size)";
+        //var mahQuery = "mean(size)";
+        //var mahQuery = "sum(size)";
+        //var mahQuery = "gt(size,40),sum(size)";
+        //var mahQuery = "between(size,(40,80))";
+        //var mahQuery = "between(hoss,(a,n))";
+        //var mahQuery = "aggregate(hoss,sum(size))"; 
+        //var mahQuery = "aggregate(hoss,sum(size),mean(size))";
+        //var mahQuery = "aggregate(hoss,gerth,sum(size),mean(size))";
+        //var mahQuery = "ne((doofus,dog),mcgillicutty),aggregate(hoss,sum(size),mean(size))";
+        //var mahQuery = "recurse(arrr)";
+        //var mahQuery = "gerth=puck";
+        //var mahQuery = "gerth==puck";
+        //var mahQuery = "gerth!=puck";    
+        //var mahQuery = "size<70";
+        //var mahQuery = "size<70&doofus/dog=biff";
+        //var mahQuery = "hoss=snout|(hoss=griss&gerth=alpo)";  //why dont i work??   also fails in regular RQL
+        //var mahQuery = "or(eq(hoss,snout),and(eq(hoss,griss),eq(gerth,alpo)))";
+        
+        //var mahQuery = "one()";
+        //var result = rArray.executeQuery(mahQuery, {}, oneData);
+        
+        //var mahQuery = "min()";
+        //var mahQuery = "max()";
+        //var mahQuery = "mean()";
+        //var mahQuery = "sum()";
+        //var mahQuery = "between(,(4,10))";
+        //var result = rArray.executeQuery(mahQuery, {}, numberData);
+        
+        /*
+        var mahQuery = "last()";
+        var option = {
+            operators: {
+                last: function () {
+                    return this[this.length -1];
+                }  
+            }
+        };
+        var result = rArray.executeQuery(mahQuery, option, mahData);
+        */
+        
+        var mahQuery = "or(eq(hoss,$1),lt(size,$2))";
+        var option = {
+            parameters: ["snout", 90]           
+        };
+        var result = rArray.executeQuery(mahQuery, option, mahData);
+        
+        //var result = rArray.executeQuery(mahQuery, {}, mahData);
+        output.innerHTML = JSON.stringify(result, null, 2);
+
+    </script>
+</html>

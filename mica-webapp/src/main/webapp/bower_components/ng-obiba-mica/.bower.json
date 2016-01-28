@@ -22,18 +22,19 @@
     "angular-sanitize": "1.4.8",
     "ng-obiba": "https://github.com/obiba/ng-obiba.git",
     "filesize": "3.1.5",
-    "angular-google-chart": "0.1.0"
+    "angular-google-chart": "0.1.0",
+    "rql-nodojo": "https://github.com/RAMP-PCAR/rql-nodojo.git#1.0.0"
   },
   "devDependencies": {
     "angular-mocks": "1.4.8",
     "angular-scenario": "1.4.8"
   },
   "homepage": "https://github.com/obiba/ng-obiba-mica",
-  "_release": "707ff1b69b",
+  "_release": "cac5a17fc7",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "707ff1b69b737b342ad75d7092772fcbfb0d1bd1"
+    "commit": "cac5a17fc787f20203873ffdc5624583c8aa900a"
   },
   "_source": "https://github.com/obiba/ng-obiba-mica.git",
   "_target": "*",
