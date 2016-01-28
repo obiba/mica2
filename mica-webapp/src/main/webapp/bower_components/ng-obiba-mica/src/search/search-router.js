@@ -16,6 +16,7 @@ angular.module('obiba.mica.search')
       $routeProvider
         .when('/search', {
           templateUrl: 'search/views/search.html',
-          controller: 'SearchController'
+          controller: 'SearchController',
+          reloadOnSearch: false
         });
     }]);

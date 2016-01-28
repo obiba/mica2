@@ -1,0 +1,46 @@
+{
+  "name": "rql-nodojo",
+  "version": "0.1.0",
+  "author": "Kris Zyp",
+  "contributors": [
+    "Vladimir Dronnikov <dronnikov@gmail.com>",
+    {
+      "name": "RAMP Dev Team",
+      "web": "http://ramp-pcar.github.io/"
+    }
+  ],
+  "keywords": [
+    "resource",
+    "query",
+    "uri"
+  ],
+  "description": "Query language for the web, NoSQL",
+  "licenses": [
+    {
+      "type": "AFLv2.1",
+      "url": "http://trac.dojotoolkit.org/browser/dojo/trunk/LICENSE#L43"
+    },
+    {
+      "type": "BSD",
+      "url": "http://trac.dojotoolkit.org/browser/dojo/trunk/LICENSE#L13"
+    }
+  ],
+  "directories": {
+    "lib": "."
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/RAMP-PCAR/rql-nodojo"
+  },
+  "maintainers": [
+    {
+      "name": "RAMP Dev Team",
+      "web": "http://ramp-pcar.github.io/"
+    }
+  ],
+  "devDependencies": {
+    "grunt": "~0.4.2",   
+    "grunt-contrib-uglify": "latest"   
+  }
+  
+}
