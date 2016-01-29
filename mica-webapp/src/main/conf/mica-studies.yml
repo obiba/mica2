@@ -1,10 +1,10 @@
-"name": "Mlstr_study"
+"name": "Mica_studies"
 "title":
   "en": "Study"
-  "fr": "Études"
+  "fr": "Étude"
 "description":
-  "en": "Study classification developed by Maelstrom"
-  "fr": "Classification des études développée par Maelstrom"
+  "en": "Study classification"
+  "fr": "Classification des études"
 "keywords": {}
 "license": "CC BY-NC 4.0"
 "vocabularies":
@@ -1827,9 +1827,9 @@
       "fr": "Urine"
     "description": {}
     "keywords": {}
-  - "name": "salivia"
+  - "name": "saliva"
     "title":
-      "en": "Salivia"
+      "en": "Saliva"
       "fr": "Salive"
     "description": {}
     "keywords": {}

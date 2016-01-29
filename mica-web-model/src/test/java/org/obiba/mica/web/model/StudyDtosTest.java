@@ -12,11 +12,9 @@ import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.obiba.git.command.GitCommandHandler;
-import org.obiba.mica.config.AggregationsConfiguration;
-import org.obiba.mica.config.taxonomies.DatasetTaxonomy;
 import org.obiba.mica.config.JsonConfiguration;
+import org.obiba.mica.config.taxonomies.DatasetTaxonomy;
 import org.obiba.mica.config.taxonomies.NetworkTaxonomy;
 import org.obiba.mica.config.taxonomies.StudyTaxonomy;
 import org.obiba.mica.config.taxonomies.VariableTaxonomy;
@@ -348,11 +346,6 @@ public class StudyDtosTest {
   static class Config {
 
     @Bean
-    public AggregationsConfiguration aggregationsConfiguration() {
-      return mock(AggregationsConfiguration.class);
-    }
-
-    @Bean
     public NetworkTaxonomy networksConfiguration() {
       return mock(NetworkTaxonomy.class);
     }
@@ -374,52 +367,52 @@ public class StudyDtosTest {
 
     @Bean
     public StudyService studyService() {
-      return Mockito.mock(StudyService.class);
+      return mock(StudyService.class);
     }
 
     @Bean
     public NetworkService networkService() {
-      return Mockito.mock(NetworkService.class);
+      return mock(NetworkService.class);
     }
 
     @Bean
     public PublishedStudyService publishedStudyService() {
-      return Mockito.mock(PublishedStudyService.class);
+      return mock(PublishedStudyService.class);
     }
 
     @Bean
     public PublishedNetworkService publishedNetworkService() {
-      return Mockito.mock(PublishedNetworkService.class);
+      return mock(PublishedNetworkService.class);
     }
 
     @Bean
     public MicaConfigService micaConfigService() {
-      return Mockito.mock(MicaConfigService.class);
+      return mock(MicaConfigService.class);
     }
 
     @Bean
     public EventBus eventBus() {
-      return Mockito.mock(EventBus.class);
+      return mock(EventBus.class);
     }
 
     @Bean
     public MicaConfigRepository micaConfigRepository() {
-      return Mockito.mock(MicaConfigRepository.class);
+      return mock(MicaConfigRepository.class);
     }
 
     @Bean
     public StudyDatasetRepository studyDatasetRepository() {
-      return Mockito.mock(StudyDatasetRepository.class);
+      return mock(StudyDatasetRepository.class);
     }
 
     @Bean
     public PersonRepository contactRepository() {
-      return Mockito.mock(PersonRepository.class);
+      return mock(PersonRepository.class);
     }
 
     @Bean
     public HarmonizationDatasetRepository harmonizationDatasetRepository() {
-      return Mockito.mock(HarmonizationDatasetRepository.class);
+      return mock(HarmonizationDatasetRepository.class);
     }
 
     @Bean
@@ -429,47 +422,47 @@ public class StudyDtosTest {
 
     @Bean
     public NetworkRepository networkRepository() {
-      return Mockito.mock(NetworkRepository.class);
+      return mock(NetworkRepository.class);
     }
 
     @Bean
     public NetworkStateRepository networkStateRepository() {
-      return Mockito.mock(NetworkStateRepository.class);
+      return mock(NetworkStateRepository.class);
     }
 
     @Bean
     public GitService gitService() {
-      return Mockito.mock(GitService.class);
+      return mock(GitService.class);
     }
 
     @Bean
     public TempFileService tempFileService() {
-      return Mockito.mock(TempFileService.class);
+      return mock(TempFileService.class);
     }
 
     @Bean
     public TempFileRepository tempFileRepository() {
-      return Mockito.mock(TempFileRepository.class);
+      return mock(TempFileRepository.class);
     }
 
     @Bean
     public GitCommandHandler gitCommandHandler() {
-      return Mockito.mock(GitCommandHandler.class);
+      return mock(GitCommandHandler.class);
     }
 
     @Bean
     public StudyStateRepository studyStateRepository() {
-      return Mockito.mock(StudyStateRepository.class);
+      return mock(StudyStateRepository.class);
     }
 
     @Bean
     public SubjectAclService subjectAclService() {
-      return Mockito.mock(SubjectAclService.class);
+      return mock(SubjectAclService.class);
     }
 
     @Bean
     public SubjectAclRepository subjectAclRepository() {
-      return Mockito.mock(SubjectAclRepository.class);
+      return mock(SubjectAclRepository.class);
     }
 
     @Bean

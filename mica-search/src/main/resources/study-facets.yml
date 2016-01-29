@@ -61,8 +61,4 @@ populations:
 
   dataCollectionEvents:
     dataSources:
-    end:
-      yearMonth:
-    start:
-      yearMonth:
     bioSamples:

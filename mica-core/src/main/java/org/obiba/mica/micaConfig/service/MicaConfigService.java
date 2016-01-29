@@ -2,6 +2,8 @@ package org.obiba.mica.micaConfig.service;
 
 import java.security.Key;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -11,11 +13,12 @@ import org.apache.shiro.codec.CodecSupport;
 import org.apache.shiro.codec.Hex;
 import org.apache.shiro.crypto.AesCipherService;
 import org.apache.shiro.util.ByteSource;
-import org.obiba.mica.config.AggregationsConfiguration;
 import org.obiba.mica.config.taxonomies.DatasetTaxonomy;
 import org.obiba.mica.config.taxonomies.NetworkTaxonomy;
 import org.obiba.mica.config.taxonomies.StudyTaxonomy;
 import org.obiba.mica.config.taxonomies.VariableTaxonomy;
+import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.micaConfig.domain.AggregationInfo;
 import org.obiba.mica.micaConfig.domain.AggregationsConfig;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.event.MicaConfigUpdatedEvent;
@@ -35,11 +38,8 @@ import com.google.common.eventbus.EventBus;
 
 @Service
 @Validated
-@EnableConfigurationProperties({ AggregationsConfiguration.class, StudyTaxonomy.class })
+@EnableConfigurationProperties({ NetworkTaxonomy.class, StudyTaxonomy.class, DatasetTaxonomy.class, VariableTaxonomy.class })
 public class MicaConfigService {
-
-  @Inject
-  private AggregationsConfiguration aggregationsConfiguration;
 
   @Inject
   private NetworkTaxonomy networkTaxonomy;
@@ -66,11 +66,12 @@ public class MicaConfigService {
 
   @NotNull
   public AggregationsConfig getAggregationsConfig() {
-    AggregationsConfig aggregationsConfig = getConfig().getAggregations();
+    AggregationsConfig aggregationsConfig = new AggregationsConfig();
 
-    if(aggregationsConfig == null) {
-      aggregationsConfig = getDefaultAggregationsConfig();
-    }
+    aggregationsConfig.setNetworkAggregations(asAggregationInfos(getNetworkTaxonomy()));
+    aggregationsConfig.setStudyAggregations(asAggregationInfos(getStudyTaxonomy()));
+    aggregationsConfig.setDatasetAggregations(asAggregationInfos(getDatasetTaxonomy()));
+    aggregationsConfig.setVariableAggregations(asAggregationInfos(getVariableTaxonomy()));
 
     return aggregationsConfig;
   }
@@ -163,13 +164,14 @@ public class MicaConfigService {
     return Hex.decode(getOrCreateMicaConfig().getSecretKey());
   }
 
-  private AggregationsConfig getDefaultAggregationsConfig() {
-    AggregationsConfig aggregationsConfig = new AggregationsConfig();
-    aggregationsConfig.setNetworkAggregations(aggregationsConfiguration.getNetwork());
-    aggregationsConfig.setStudyAggregations(aggregationsConfiguration.getStudy());
-    aggregationsConfig.setDatasetAggregations(aggregationsConfiguration.getDataset());
-    aggregationsConfig.setVariableAggregations(aggregationsConfiguration.getVariable());
-
-    return aggregationsConfig;
+  private List<AggregationInfo> asAggregationInfos(Taxonomy taxonomy) {
+    return taxonomy.getVocabularies().stream().map(voc -> {
+      AggregationInfo info = new AggregationInfo();
+      info.setId(voc.getName());
+      LocalizedString title = new LocalizedString();
+      voc.getTitle().forEach(title::put);
+      info.setTitle(title);
+      return info;
+    }).collect(Collectors.toList());
   }
 }

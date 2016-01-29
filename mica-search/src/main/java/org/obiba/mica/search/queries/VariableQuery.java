@@ -48,6 +48,7 @@ import org.obiba.mica.search.aggregations.DataCollectionEventAggregationMetaData
 import org.obiba.mica.search.aggregations.DatasetAggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.StudyAggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.TaxonomyAggregationMetaDataProvider;
+import org.obiba.mica.search.aggregations.VariableTaxonomyMetaDataProvider;
 import org.obiba.mica.study.NoSuchStudyException;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
@@ -57,8 +58,6 @@ import org.obiba.mica.web.model.MicaSearch;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.springframework.context.annotation.Scope;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -73,8 +72,6 @@ import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.NONE;
 @Component
 @Scope("request")
 public class VariableQuery extends AbstractDocumentQuery {
-
-  private static final String VARIABLE_FACETS_YML = "variable-facets.yml";
 
   private static final String JOIN_FIELD = "studyIds";
 
@@ -94,6 +91,9 @@ public class VariableQuery extends AbstractDocumentQuery {
 
   @Inject
   private TaxonomyAggregationMetaDataProvider taxonomyAggregationMetaDataProvider;
+
+  @Inject
+  private VariableTaxonomyMetaDataProvider variableTaxonomyMetaDataProvider;
 
   @Inject
   private DataCollectionEventAggregationMetaDataProvider dceAggregationMetaDataProvider;
@@ -173,8 +173,8 @@ public class VariableQuery extends AbstractDocumentQuery {
   @Override
   protected List<AggregationMetaDataProvider> getAggregationMetaDataProviders() {
     return Arrays
-      .asList(taxonomyAggregationMetaDataProvider, datasetAggregationMetaDataProvider, dceAggregationMetaDataProvider,
-        studyAggregationMetaDataProvider);
+      .asList(taxonomyAggregationMetaDataProvider, variableTaxonomyMetaDataProvider, datasetAggregationMetaDataProvider,
+        dceAggregationMetaDataProvider, studyAggregationMetaDataProvider);
   }
 
   @Override
@@ -262,11 +262,6 @@ public class VariableQuery extends AbstractDocumentQuery {
     return Lists.newArrayList();
   }
 
-  @Override
-  protected Resource getAggregationsDescription() {
-    return new ClassPathResource(VARIABLE_FACETS_YML);
-  }
-
   @Nullable
   @Override
   public Map<String, Integer> getStudyCounts() {
@@ -286,19 +281,26 @@ public class VariableQuery extends AbstractDocumentQuery {
     Properties properties = new Properties();
     if(mode != Mode.LIST) {
       List<Pattern> patterns = filter.stream().map(Pattern::compile).collect(Collectors.toList());
-      getTaxonomies().stream().filter(Taxonomy::hasVocabularies)
+
+      getOpalTaxonomies().stream().filter(Taxonomy::hasVocabularies)
         .forEach(taxonomy -> taxonomy.getVocabularies().stream().filter(Vocabulary::hasTerms).forEach(vocabulary -> {
           String key = "attributes." + AttributeKey.getMapKey(vocabulary.getName(), taxonomy.getName()) + "." +
             LanguageTag.UNDETERMINED;
           if(patterns.isEmpty() || patterns.stream().filter(p -> p.matcher(key).matches()).findFirst().isPresent())
             properties.put(key, "");
         }));
+
+      micaConfigService.getVariableTaxonomy().getVocabularies().forEach(vocabulary -> {
+        String key = vocabulary.getName().replace('-','.');
+        if(patterns.isEmpty() || patterns.stream().filter(p -> p.matcher(key).matches()).findFirst().isPresent())
+          properties.put(key,"");
+      });
     }
     return properties;
   }
 
   @NotNull
-  protected List<Taxonomy> getTaxonomies() {
+  private List<Taxonomy> getOpalTaxonomies() {
     List<Taxonomy> taxonomies = null;
 
     try {

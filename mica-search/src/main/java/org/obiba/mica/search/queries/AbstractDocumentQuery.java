@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -45,9 +46,9 @@ import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
 import org.obiba.mica.search.queries.protobuf.QueryDtoWrapper;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.MicaSearch;
+import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.Resource;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -162,8 +163,6 @@ public abstract class AbstractDocumentQuery {
     return null;
   }
 
-  protected abstract Resource getAggregationsDescription();
-
   protected List<AggregationMetaDataProvider> getAggregationMetaDataProviders() {
     return Lists.newArrayList();
   }
@@ -171,6 +170,21 @@ public abstract class AbstractDocumentQuery {
   @Nullable
   protected Properties getAggregationsProperties(List<String> filter) {
     return null;
+  }
+
+  protected Properties getAggregationsProperties(List<String> filter, Taxonomy taxonomy) {
+    if(filter == null) return null;
+
+    Properties properties = new Properties();
+    if(mode != Mode.LIST) {
+      List<Pattern> patterns = filter.stream().map(Pattern::compile).collect(Collectors.toList());
+      taxonomy.getVocabularies().forEach(vocabulary -> {
+        String key = vocabulary.getName().replace('-','.');
+        if(patterns.isEmpty() || patterns.stream().filter(p -> p.matcher(key).matches()).findFirst().isPresent())
+          properties.put(key,"");
+      });
+    }
+    return properties;
   }
 
   private Properties getFilteredAggregationsProperties() {
@@ -419,12 +433,7 @@ public abstract class AbstractDocumentQuery {
 
     if(aggregationGroupBy != null) aggregationGroupBy.forEach(field -> subAggregations.put(field, aggregationProperties));
 
-    aggregationYamlParser.getAggregations(getAggregationsDescription(), subAggregations).forEach(agg -> {
-      defaultRequestBuilder.addAggregation(agg);
-      requestBuilder.addAggregation(agg);
-    });
-
-    aggregationYamlParser.getAggregations(aggregationProperties).forEach(agg -> {
+    aggregationYamlParser.getAggregations(aggregationProperties, subAggregations).forEach(agg -> {
       defaultRequestBuilder.addAggregation(agg);
       requestBuilder.addAggregation(agg);
     });

@@ -14,7 +14,7 @@ import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.springframework.stereotype.Service;
 
 /**
- * A service to merge {@link org.obiba.opal.core.domain.taxonomy.Taxonomy}s from Opal with
+ * A service to merge {@link Taxonomy}s from Opal with
  * aggregations configuration from Mica.
  */
 @Service
@@ -32,7 +32,7 @@ public class AggregationsService {
     AggregationsConfig aggregationsConfig = new AggregationsConfig(micaConfigService.getAggregationsConfig());
 
     // contribute with vocabularies of each taxonomy
-    getTaxonomies().forEach(taxo -> taxo.getVocabularies().forEach(voc -> {
+    getOpalTaxonomies().forEach(taxo -> taxo.getVocabularies().forEach(voc -> {
       if(voc.hasTerms()) {
         AggregationInfo info = new AggregationInfo();
         info.setId("attributes-" + AttributeKey.getMapKey(voc.getName(), taxo.getName()) + "-und");
@@ -47,7 +47,7 @@ public class AggregationsService {
   }
 
   @NotNull
-  protected List<Taxonomy> getTaxonomies() {
+  private List<Taxonomy> getOpalTaxonomies() {
     List<Taxonomy> taxonomies = null;
     try {
       taxonomies = opalService.getTaxonomies();

@@ -25,11 +25,6 @@ entityType:
 mimeType:
 valueType:
 repeatable:
-occurrenceGroup:
 datasetId:
 studyIds:
 dceIds:
-
-categories:
-  missing:
-

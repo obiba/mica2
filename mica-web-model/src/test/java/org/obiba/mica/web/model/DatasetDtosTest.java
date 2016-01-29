@@ -20,7 +20,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.obiba.mica.access.service.DataAccessRequestUtilService;
-import org.obiba.mica.config.AggregationsConfiguration;
 import org.obiba.mica.config.JsonConfiguration;
 import org.obiba.mica.config.taxonomies.StudyTaxonomy;
 import org.obiba.mica.core.domain.Attribute;
@@ -158,23 +157,18 @@ public class DatasetDtosTest {
   static class Config {
 
     @Bean
-    public AggregationsConfiguration aggregationsConfiguration() {
-      return  Mockito.mock(AggregationsConfiguration.class);
-    }
-
-    @Bean
     public StudyTaxonomy studiesConfiguration() {
-      return  Mockito.mock(StudyTaxonomy.class);
+      return  mock(StudyTaxonomy.class);
     }
 
     @Bean
     public MicaConfigService micaConfigService() {
-      return Mockito.mock(MicaConfigService.class);
+      return mock(MicaConfigService.class);
     }
 
     @Bean
     public PublishedDatasetVariableService datasetVariableService() {
-      return Mockito.mock(PublishedDatasetVariableService.class);
+      return mock(PublishedDatasetVariableService.class);
     }
 
     @Bean
@@ -189,12 +183,12 @@ public class DatasetDtosTest {
 
     @Bean
     public StudyDatasetStateRepository studyDatasetStaetRepository() {
-      return Mockito.mock(StudyDatasetStateRepository.class);
+      return mock(StudyDatasetStateRepository.class);
     }
 
     @Bean
     public HarmonizationDatasetStateRepository harmonizationDatasetStaetRepository() {
-      return Mockito.mock(HarmonizationDatasetStateRepository.class);
+      return mock(HarmonizationDatasetStateRepository.class);
     }
 
     @Bean

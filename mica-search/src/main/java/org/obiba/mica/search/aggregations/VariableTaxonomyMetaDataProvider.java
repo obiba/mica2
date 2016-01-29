@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 OBiBa. All rights reserved.
+ * Copyright (c) 2016 OBiBa. All rights reserved.
  *
  * This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0.
@@ -14,10 +14,10 @@ import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.springframework.stereotype.Component;
 
 @Component
-public class StudyTaxonomyMetaDataProvider extends ConfigurationTaxonomyMetaDataProvider {
+public class VariableTaxonomyMetaDataProvider extends ConfigurationTaxonomyMetaDataProvider {
 
   @Override
   protected Taxonomy getTaxonomy() {
-    return micaConfigService.getStudyTaxonomy();
+    return micaConfigService.getVariableTaxonomy();
   }
 }
