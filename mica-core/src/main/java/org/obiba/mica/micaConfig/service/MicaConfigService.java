@@ -12,7 +12,10 @@ import org.apache.shiro.codec.Hex;
 import org.apache.shiro.crypto.AesCipherService;
 import org.apache.shiro.util.ByteSource;
 import org.obiba.mica.config.AggregationsConfiguration;
-import org.obiba.mica.config.StudyTaxonomy;
+import org.obiba.mica.config.taxonomies.DatasetTaxonomy;
+import org.obiba.mica.config.taxonomies.NetworkTaxonomy;
+import org.obiba.mica.config.taxonomies.StudyTaxonomy;
+import org.obiba.mica.config.taxonomies.VariableTaxonomy;
 import org.obiba.mica.micaConfig.domain.AggregationsConfig;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.event.MicaConfigUpdatedEvent;
@@ -39,7 +42,16 @@ public class MicaConfigService {
   private AggregationsConfiguration aggregationsConfiguration;
 
   @Inject
+  private NetworkTaxonomy networkTaxonomy;
+
+  @Inject
   private StudyTaxonomy studyTaxonomy;
+
+  @Inject
+  private DatasetTaxonomy datasetTaxonomy;
+
+  @Inject
+  private VariableTaxonomy variableTaxonomy;
 
   @Inject
   private MicaConfigRepository micaConfigRepository;
@@ -64,8 +76,23 @@ public class MicaConfigService {
   }
 
   @NotNull
+  public Taxonomy getNetworkTaxonomy() {
+    return networkTaxonomy;
+  }
+
+  @NotNull
   public Taxonomy getStudyTaxonomy() {
     return studyTaxonomy;
+  }
+
+  @NotNull
+  public Taxonomy getDatasetTaxonomy() {
+    return datasetTaxonomy;
+  }
+
+  @NotNull
+  public Taxonomy getVariableTaxonomy() {
+    return variableTaxonomy;
   }
 
   @Cacheable(value = "micaConfig", key = "#root.methodName")

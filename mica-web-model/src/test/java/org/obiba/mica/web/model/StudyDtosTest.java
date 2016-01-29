@@ -15,8 +15,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.obiba.git.command.GitCommandHandler;
 import org.obiba.mica.config.AggregationsConfiguration;
+import org.obiba.mica.config.taxonomies.DatasetTaxonomy;
 import org.obiba.mica.config.JsonConfiguration;
-import org.obiba.mica.config.StudyTaxonomy;
+import org.obiba.mica.config.taxonomies.NetworkTaxonomy;
+import org.obiba.mica.config.taxonomies.StudyTaxonomy;
+import org.obiba.mica.config.taxonomies.VariableTaxonomy;
 import org.obiba.mica.core.domain.Address;
 import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.Authorization;
@@ -346,12 +349,27 @@ public class StudyDtosTest {
 
     @Bean
     public AggregationsConfiguration aggregationsConfiguration() {
-      return Mockito.mock(AggregationsConfiguration.class);
+      return mock(AggregationsConfiguration.class);
+    }
+
+    @Bean
+    public NetworkTaxonomy networksConfiguration() {
+      return mock(NetworkTaxonomy.class);
     }
 
     @Bean
     public StudyTaxonomy studiesConfiguration() {
-      return Mockito.mock(StudyTaxonomy.class);
+      return mock(StudyTaxonomy.class);
+    }
+
+    @Bean
+    public DatasetTaxonomy datasetsConfiguration() {
+      return mock(DatasetTaxonomy.class);
+    }
+
+    @Bean
+    public VariableTaxonomy variablesConfiguration() {
+      return mock(VariableTaxonomy.class);
     }
 
     @Bean

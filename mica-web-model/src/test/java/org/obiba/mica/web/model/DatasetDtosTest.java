@@ -22,7 +22,7 @@ import org.mockito.Mockito;
 import org.obiba.mica.access.service.DataAccessRequestUtilService;
 import org.obiba.mica.config.AggregationsConfiguration;
 import org.obiba.mica.config.JsonConfiguration;
-import org.obiba.mica.config.StudyTaxonomy;
+import org.obiba.mica.config.taxonomies.StudyTaxonomy;
 import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.core.repository.AttachmentRepository;

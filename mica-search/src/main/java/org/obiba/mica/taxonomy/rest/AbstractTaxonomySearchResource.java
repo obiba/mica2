@@ -95,18 +95,30 @@ public class AbstractTaxonomySearchResource {
 
   protected List<Taxonomy> getTaxonomies(TaxonomyTarget target) {
     switch(target) {
+      case NETWORK:
+        return Lists.newArrayList(micaConfigService.getNetworkTaxonomy());
       case STUDY:
         return Lists.newArrayList(micaConfigService.getStudyTaxonomy());
+      case DATASET:
+        return Lists.newArrayList(micaConfigService.getDatasetTaxonomy());
       default:
-        return opalService.getTaxonomies();
+        List<Taxonomy> taxonomies = opalService.getTaxonomies();
+        taxonomies.add(micaConfigService.getVariableTaxonomy());
+        return taxonomies;
     }
   }
 
   protected Taxonomy getTaxonomy(TaxonomyTarget target, String name) {
     switch(target) {
+      case NETWORK:
+        return micaConfigService.getNetworkTaxonomy();
       case STUDY:
         return micaConfigService.getStudyTaxonomy();
+      case DATASET:
+        return micaConfigService.getDatasetTaxonomy();
       default:
+        Taxonomy varTaxonomy = micaConfigService.getVariableTaxonomy();
+        if (varTaxonomy.getName().equals(name)) return varTaxonomy;
         return opalService.getTaxonomy(name);
     }
   }

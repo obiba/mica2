@@ -1,0 +1,143 @@
+"name": "Mlstr_variables"
+"title":
+  "en": "Variables"
+  "fr": "Variables"
+"description":
+  "en": "Variables classification developed by Maelstrom"
+  "fr": "Classification des variables développée par Maelstrom"
+"keywords": {}
+"license": "CC BY-NC 4.0"
+"vocabularies":
+- "name": "studyIds"
+  "title":
+    "en": "Study"
+    "fr": "Étude"
+  "description": {}
+  "keywords": {}
+  "terms": []
+- "name": "dceIds"
+  "title":
+    "en": "Data Collection Event"
+    "fr": "Événement de collecte"
+  "description": {}
+  "keywords": {}
+  "terms": []
+- "name": "datasetId"
+  "title":
+    "en": "Dataset"
+    "fr": "Jeux de données"
+  "description": {}
+  "keywords": {}
+  "terms": []
+- "name": "variableType"
+  "title":
+    "en": "Type of variable"
+    "fr": "Type de variable"
+  "description": {}
+  "keywords": {}
+  "terms": []
+- "name": "entityType"
+  "title":
+    "en": "Type of entity"
+    "fr": "Type d'entite"
+  "description": {}
+  "keywords": {}
+  "terms": []
+- "name": "mimeType"
+  "title":
+    "en": "Media type"
+    "fr": "Type de media"
+  "description": {}
+  "keywords": {}
+  "terms": []
+- "name": "valueType"
+  "title":
+    "en": "Type of value"
+    "fr": "Type de valeur"
+  "description": {}
+  "keywords": {}
+  "terms":
+  - "name": "boolean"
+    "title":
+      "en": "Boolean"
+      "fr": "Logique"
+    "description": {}
+    "keywords": {}
+    "terms": []
+  - "name": "integer"
+    "title":
+      "en": "Integer"
+      "fr": "Entiere"
+    "description": {}
+    "keywords": {}
+    "terms": []
+  - "name": "decimal"
+    "title":
+      "en": "Decimal"
+      "fr": "Decimale"
+    "description": {}
+    "keywords": {}
+    "terms": []
+  - "name": "text"
+    "title":
+      "en": "Textual"
+      "fr": "Textuelle"
+    "description": {}
+    "keywords": {}
+    "terms": []
+  - "name": "locale"
+    "title":
+      "en": "Locale"
+      "fr": "Locale"
+    "description": {}
+    "keywords": {}
+    "terms": []
+  - "name": "binary"
+    "title":
+      "en": "Binary"
+      "fr": "Binaire"
+    "description": {}
+    "keywords": {}
+    "terms": []
+  - "name": "datetime"
+    "title":
+      "en": "Datetime"
+      "fr": "Date et temps"
+    "description": {}
+    "keywords": {}
+    "terms": []
+  - "name": "date"
+    "title":
+      "en": "Date"
+      "fr": "Date"
+    "description": {}
+    "keywords": {}
+    "terms": []
+  - "name": "point"
+    "title":
+      "en": "Point"
+      "fr": "Point"
+    "description": {}
+    "keywords": {}
+    "terms": []
+  - "name": "linestring"
+    "title":
+      "en": "Linestring"
+      "fr": "Ligne"
+    "description": {}
+    "keywords": {}
+    "terms": []
+  - "name": "polygon"
+    "title":
+      "en": "Polygon"
+      "fr": "Polygone"
+    "description": {}
+    "keywords": {}
+    "terms": []
+- "name": "repeatable"
+  "title":
+    "en": "Repeatable values"
+    "fr": "Valeurs repetables"
+  "description": {}
+  "keywords": {}
+  "terms": []
