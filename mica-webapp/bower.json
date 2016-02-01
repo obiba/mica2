@@ -60,6 +60,12 @@
     },
     "ace-builds": {
       "main": "./src-noconflict/ace.js"
+    },
+    "rql-nodojo": {
+      "main": "./js/rql.js"
     }
+  },
+  "resolutions": {
+    "angular": ">1.2.8"
   }
 }

@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba
 
  * License: GNU Public License version 3
- * Date: 2016-01-06
+ * Date: 2016-01-07
  */
 'use strict';
 
@@ -513,6 +513,48 @@ angular.module('obiba.utils', [])
       {'code': 'ZWE', 'name': 'Zimbabwe'}
     ]
   })
+
+  .service('CountriesIsoUtils', ['$log','ObibaCountriesIsoCodes',
+    function($log, ObibaCountriesIsoCodes) {
+      this.findByCode = function(code, locale) {
+        var theLocale = locale || 'en';
+
+        if (!(theLocale in ObibaCountriesIsoCodes)) {
+          $log.error('ng-obiba: Invalid locale ', locale);
+          return code;
+        }
+
+        var filtered = ObibaCountriesIsoCodes[theLocale].filter(function (country) {
+          return country.code === code;
+        });
+
+        if (filtered && filtered.length > 0) {
+          return filtered[0].name;
+        }
+
+        $log.error('ng-obiba: Invalid name ', code);
+        return code;
+      };
+
+      this.findByName = function(name, locale) {
+        var theLocale = locale || 'en';
+        if (!(theLocale in ObibaCountriesIsoCodes)) {
+          $log.error('ng-obiba: Invalid locale ', locale);
+          return name;
+        }
+
+        var filtered = ObibaCountriesIsoCodes[theLocale].filter(function (country) {
+          return country.name.toLowerCase() === name.toLowerCase();
+        });
+
+        if (filtered && filtered.length > 0) {
+          return filtered[0].code;
+        }
+        
+        $log.error('ng-obiba: Invalid name ', name);
+        return name;
+      };
+    }])
 
   .service('StringUtils', function () {
     this.capitaliseFirstLetter = function (string) {

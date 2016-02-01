@@ -79,11 +79,11 @@ var TextInput = function(parentNode, host) {
         if (tempStyle) return text.focus();
         var top = text.style.top;
         text.style.position = "fixed";
-        text.style.top = "-1000px";
+        text.style.top = "0px";
         text.focus();
         setTimeout(function() {
             text.style.position = "";
-            if (text.style.top == "-1000px")
+            if (text.style.top == "0px")
                 text.style.top = top;
         }, 0);
     };
@@ -482,6 +482,7 @@ var TextInput = function(parentNode, host) {
         if (host.renderer.$keepTextAreaAtCursor)
             host.renderer.$keepTextAreaAtCursor = null;
 
+        clearTimeout(closeTimeout);
         // on windows context menu is opened after mouseup
         if (useragent.isWin && !useragent.isOldIE)
             event.capture(host.container, move, onContextMenuClose);
@@ -507,6 +508,11 @@ var TextInput = function(parentNode, host) {
         host.textInput.onContextMenu(e);
         onContextMenuClose();
     };
+    event.addListener(text, "mouseup", onContextMenu);
+    event.addListener(text, "mousedown", function(e) {
+        e.preventDefault();
+        onContextMenuClose();
+    });
     event.addListener(host.renderer.scroller, "contextmenu", onContextMenu);
     event.addListener(text, "contextmenu", onContextMenu);
 };
