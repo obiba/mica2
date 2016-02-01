@@ -12,21 +12,27 @@
   "title":
     "en": "Study"
     "fr": "Étude"
-  "description": {}
+  "description":
+    "en": "Study in which the variable appears."
+    "fr": "Étude dans laquelle est définie la variable."
   "keywords": {}
   "terms": []
 - "name": "dceIds"
   "title":
     "en": "Data Collection Event"
     "fr": "Événement de collecte"
-  "description": {}
+  "description":
+    "en": "Event during which variable's data were collected."
+    "fr": "Événement durant lequel des données ont été collectées."
   "keywords": {}
   "terms": []
 - "name": "datasetId"
   "title":
     "en": "Dataset"
     "fr": "Jeux de données"
-  "description": {}
+  "description":
+    "en": "Dataset in which the variable appears."
+    "fr": "Jeux de données dans lequel est définie la variable."
   "keywords": {}
   "terms": []
 - "name": "variableType"
@@ -53,7 +59,7 @@
 - "name": "entityType"
   "title":
     "en": "Type of entity"
-    "fr": "Type d'entite"
+    "fr": "Type d'entité"
   "description": {}
   "keywords": {}
   "terms":
@@ -74,8 +80,10 @@
 - "name": "mimeType"
   "title":
     "en": "Media type"
-    "fr": "Type de media"
-  "description": {}
+    "fr": "Type de média"
+  "description":
+    "en": "Data format."
+    "fr": "Format des données."
   "keywords": {}
   "terms": []
 - "name": "valueType"
@@ -95,21 +103,21 @@
   - "name": "integer"
     "title":
       "en": "Integer"
-      "fr": "Entiere"
+      "fr": "Entier"
     "description": {}
     "keywords": {}
     "terms": []
   - "name": "decimal"
     "title":
       "en": "Decimal"
-      "fr": "Decimale"
+      "fr": "Décimal"
     "description": {}
     "keywords": {}
     "terms": []
   - "name": "text"
     "title":
       "en": "Textual"
-      "fr": "Textuelle"
+      "fr": "Textuel"
     "description": {}
     "keywords": {}
     "terms": []
