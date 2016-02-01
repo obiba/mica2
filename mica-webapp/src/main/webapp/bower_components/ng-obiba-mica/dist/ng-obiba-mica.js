@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-01-28
+ * Date: 2016-01-29
  */
 'use strict';
 
@@ -1233,6 +1233,7 @@ angular.module('obiba.mica.access')
 
 /*global NgObibaMicaTemplateUrlFactory */
 angular.module('obiba.mica.search', [
+    'obiba.alert',
     'ui.bootstrap',
     'pascalprecht.translate',
     'templates-ngObibaMica'
@@ -1277,6 +1278,8 @@ angular.module('obiba.mica.search')
     'ngObibaMicaSearchTemplateUrl',
     'JoinQuerySearchResource',
     'QUERY_TYPES',
+    'AlertService',
+    'ServerErrorUtils',
     function ($scope,
               $timeout,
               $routeParams,
@@ -1286,7 +1289,9 @@ angular.module('obiba.mica.search')
               VocabularyResource,
               ngObibaMicaSearchTemplateUrl,
               JoinQuerySearchResource,
-              QUERY_TYPES) {
+              QUERY_TYPES,
+              AlertService,
+              ServerErrorUtils) {
 
 
 console.log('THIS IS SEARCH CONTROLLER');
@@ -1407,27 +1412,57 @@ console.log('THIS IS SEARCH CONTROLLER');
 
       };
 
-      function executeQuery() {
-        JoinQuerySearchResource[$scope.search.type]({query: $scope.search.query}, function onSuccess(response) {
-          $scope.search.result = response;
-          console.log('>>> Response', $scope.search.result);
+      function onError(response) {
+        AlertService.alert({
+          id: 'SearchController',
+          type: 'danger',
+          msg: ServerErrorUtils.buildMessage(response),
+          delay: 5000
         });
       }
 
-      function updateSearchData() {
-        var search = $location.search();
-        $scope.search.type = ensureValidType(search.type);
-        $scope.search.query = ensureValidQuery(search.query, $scope.search.type);
+      function executeQuery() {
+        if (validateQueryData()) {
+           JoinQuerySearchResource[$scope.search.type]({query: $scope.search.query},
+            function onSuccess(response) {
+              $scope.search.result = response;
+              console.log('>>> Response', $scope.search.result);
+            },
+            onError);
+        }
       }
 
-      function ensureValidType(type) {
-        var validType = null;
+      function validateQueryData() {
+        try {
+          var search = $location.search();
+          var type = search.type || QUERY_TYPES.VARIABLES;
+          var query = search.query || getDefaultQuery(type);
+          validateType(type);
+          validateQuery(query);
+          $scope.search.type = type;
+          $scope.search.query = query;
+          return true;
 
-        if (type) {
-          validType = QUERY_TYPES[type.toUpperCase()];
+        } catch (e) {
+          AlertService.alert({
+            id: 'SearchController',
+            type: 'danger',
+            msg: e.message,
+            delay: 5000
+          });
         }
 
-        return validType || $scope.search.type || QUERY_TYPES.VARIABLES;
+        return false;
+      }
+
+      function validateType(type) {
+        if (!type || !QUERY_TYPES[type.toUpperCase()]) {
+          throw new Error('Invalid type: ' + type);
+        }
+      }
+
+      function validateQuery(query) {
+        new RqlParser().parse(query);
       }
 
       function getDefaultQuery(type) {
@@ -1447,30 +1482,34 @@ console.log('THIS IS SEARCH CONTROLLER');
         throw new Error('Invalid query type: ' + type);
       }
 
-      function ensureValidQuery(query, type) {
-        // TODO validate query with RQL parser
-        if (!query) {
-          return getDefaultQuery(type);
+      function initialize() {
+        var search = angular.copy($location.search());
+
+        if ({} !== search) {
+          validateQueryData();
         }
 
-        return query;
+        search.type = $scope.search.type;
+        search.query = $scope.search.query;
+
+        executeQuery();
       }
 
       var onTypeChanged = function(type) {
         if (type) {
+          validateType(type);
           var search = $location.search();
-          search.type = ensureValidType(type);
+          search.type = type;
           $location.search(search).replace();
         }
       };
 
       $scope.QUERY_TYPES = QUERY_TYPES;
       $scope.lang = 'en';
-      var type = ensureValidType($routeParams.type);
 
       $scope.search = {
-        query: ensureValidQuery($routeParams.query, type),
-        type: type,
+        query: null,
+        type: null,
         result: null
       };
 
@@ -1512,15 +1551,11 @@ console.log('THIS IS SEARCH CONTROLLER');
       });
 
       $scope.$watch('search', function () {
-        //if ($scope.search.query) {
-          executeQuery();
-        //}
+        initialize();
       });
-
 
       $scope.$on('$locationChangeSuccess', function(newLocation, oldLocation) {
         if (newLocation !== oldLocation) {
-          updateSearchData(newLocation);
           executeQuery();
         }
       });
@@ -1537,15 +1572,17 @@ console.log('THIS IS SEARCH CONTROLLER');
         $scope.$parent.onTypeChanged(type);
       };
 
-      $scope.activeTab = {
-        networks: $scope.type === QUERY_TYPES.NETWORKS || false,
-        studies: $scope.type === QUERY_TYPES.STUDIES || false,
-        datasets: $scope.type === QUERY_TYPES.DATASETS || false,
-        variables: $scope.type === QUERY_TYPES.VARIABLES || false
-      };
-
       $scope.selectTab = selectTab;
       $scope.QUERY_TYPES = QUERY_TYPES;
+
+      $scope.$watch('type', function() {
+        $scope.activeTab = {
+          networks: $scope.type === QUERY_TYPES.NETWORKS || false,
+          studies: $scope.type === QUERY_TYPES.STUDIES || false,
+          datasets: $scope.type === QUERY_TYPES.DATASETS || false,
+          variables: $scope.type === QUERY_TYPES.VARIABLES || false
+        };
+      });
 
     }]);
 ;/*
@@ -2582,19 +2619,11 @@ angular.module("search/views/search-result-panel-template.html", []).run(["$temp
 
 angular.module("search/views/search.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("search/views/search.html",
-    "<!--\n" +
-    "  ~ Copyright (c) 2016 OBiBa. All rights reserved.\n" +
-    "  ~\n" +
-    "  ~ This program and the accompanying materials\n" +
-    "  ~ are made available under the terms of the GNU Public License v3.0.\n" +
-    "  ~\n" +
-    "  ~ You should have received a copy of the GNU General Public License\n" +
-    "  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n" +
-    "  -->\n" +
-    "\n" +
     "<div>\n" +
     "  <!--<h2 translate>search</h2>-->\n" +
     "  <div ng-if=\"headerTemplateUrl\" ng-include=\"headerTemplateUrl\"></div>\n" +
+    "\n" +
+    "  <obiba-alert id=\"SearchController\"></obiba-alert>\n" +
     "\n" +
     "  <!-- Classifications region -->\n" +
     "  <div ng-mouseleave=\"closeTaxonomies()\">\n" +
@@ -2669,7 +2698,6 @@ angular.module("search/views/search.html", []).run(["$templateCache", function($
     "      </div>\n" +
     "    </div>\n" +
     "  </div>\n" +
-    "\n" +
     "\n" +
     "  <!-- Results region -->\n" +
     "  <div>\n" +

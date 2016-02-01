@@ -73,7 +73,7 @@ function test(name, fn) {
     else
         exports["test " + name] = fn;
 }
-
+var fail
 vim.CodeMirror.Vim.unmap("Y");
 vim.CodeMirror.Vim.defineEx('write', 'w', function(cm) {
   CodeMirror.commands.save(cm);
@@ -304,7 +304,7 @@ function testVim(name, run, opts, expectedFail) {
       // ace_patch
     }
   }, expectedFail);
-};
+}
 testVim('qq@q', function(cm, vim, helpers) {
   cm.setCursor(0, 0);
   helpers.doKeys('q', 'q', 'l', 'l', 'q');
@@ -341,7 +341,7 @@ function testJumplist(name, keys, endPos, startPos, dialog) {
     helpers.doKeys.apply(null, keys);
     helpers.assertCursorAt(endPos);
   }, {value: jumplistScene});
-};
+}
 testJumplist('jumplist_H', ['H', '<C-o>'], [5,2], [5,2]);
 testJumplist('jumplist_M', ['M', '<C-o>'], [2,2], [2,2]);
 testJumplist('jumplist_L', ['L', '<C-o>'], [2,2], [2,2]);
@@ -385,15 +385,15 @@ function testMotion(name, keys, endPos, startPos) {
     helpers.doKeys(keys);
     helpers.assertCursorAt(endPos);
   });
-};
+}
 
 function makeCursor(line, ch) {
   return { line: line, ch: ch };
-};
+}
 
 function offsetCursor(cur, offsetLine, offsetCh) {
   return { line: cur.line + offsetLine, ch: cur.ch + offsetCh };
-};
+}
 
 // Motion tests
 testMotion('|', '|', makeCursor(0, 0), makeCursor(0,4));
@@ -480,7 +480,6 @@ testVim('%_skip_string', function(cm, vim, helpers) {
   helpers.doKeys(['%']);
   helpers.assertCursorAt(0,0);
 }, {value:'(")")'});
-(')')
 testVim('%_skip_comment', function(cm, vim, helpers) {
   cm.setCursor(0,0);
   helpers.doKeys(['%']);
@@ -2031,7 +2030,7 @@ testVim('visual_block_mode_switch', function(cm, vim, helpers) {
   cm.setCursor(1, 1);
   // blockwise to characterwise visual
   helpers.doKeys('<C-v>', 'j', 'l', 'v');
-  selections = cm.getSelections();
+  var selections = cm.getSelections();
   eq('7891\nabc', selections.join(''));
   // characterwise to blockwise
   helpers.doKeys('<C-v>');
@@ -2239,9 +2238,18 @@ testVim('S_normal', function(cm, vim, helpers) {
   cm.setCursor(0, 1);
   helpers.doKeys('j', 'S');
   helpers.doKeys('<Esc>');
-  helpers.assertCursorAt(1, 0);
-  eq('aa\n\ncc', cm.getValue());
-}, { value: 'aa\nbb\ncc'});
+  helpers.assertCursorAt(1, 1);
+  eq('aa{\n  \ncc', cm.getValue());
+  helpers.doKeys('j', 'S');
+  eq('aa{\n  \n  ', cm.getValue());
+  helpers.assertCursorAt(2, 2);
+  helpers.doKeys('<Esc>');
+  helpers.doKeys('d', 'd', 'd', 'd');
+  helpers.assertCursorAt(0, 0);
+  helpers.doKeys('S');
+  is(vim.insertMode);
+  eq('', cm.getValue());
+}, { value: 'aa{\nbb\ncc'});
 testVim('blockwise_paste', function(cm, vim, helpers) {
   cm.setCursor(0, 0);
   helpers.doKeys('<C-v>', '3', 'j', 'l', 'y');
@@ -3219,8 +3227,7 @@ testVim('zt==z<CR>', function(cm, vim, helpers){
 });
 
 var moveTillCharacterSandbox =
-  'The quick brown fox \n'
-  'jumped over the lazy dog.'
+  'The quick brown fox \n';
 testVim('moveTillCharacter', function(cm, vim, helpers){
   cm.setCursor(0, 0);
   // Search for the 'q'.
@@ -3267,9 +3274,6 @@ testVim('searchForPipe', function(cm, vim, helpers){
 
 
 var scrollMotionSandbox =
-  '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'
-  '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'
-  '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'
   '\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n';
 testVim('scrollMotion', function(cm, vim, helpers){
   var prevCursor, prevScrollInfo;
@@ -3490,6 +3494,14 @@ testVim('ex_sort_decimal_mixed_reverse', function(cm, vim, helpers) {
   helpers.doEx('sort! d');
   eq('a3\nb2\nc1\nz\ny', cm.getValue());
 }, { value: 'a3\nz\nc1\ny\nb2'});
+testVim('ex_sort_patterns_not_supported', function(cm, vim, helpers) {
+  var notified = false;
+  cm.openNotification = helpers.fakeOpenNotification(function(text) {
+    notified = /patterns not supported/.test(text);
+  });
+  helpers.doEx('sort /abc/');
+  is(notified, 'No notification.');
+});
 // test for :global command
 testVim('ex_global', function(cm, vim, helpers) {
   cm.setCursor(0, 0);
@@ -3735,7 +3747,7 @@ function testSubstituteConfirm(name, command, initialValue, expectedValue, keys,
       cm.openDialog = savedOpenDialog;
     }
   }, { value: initialValue });
-};
+}
 testSubstituteConfirm('ex_substitute_confirm_emptydoc',
     '%s/x/b/c', '', '', '', makeCursor(0, 0));
 testSubstituteConfirm('ex_substitute_confirm_nomatch',
@@ -3781,7 +3793,7 @@ testVim('set_boolean', function(cm, vim, helpers) {
     // Test fail to set to non-boolean
     CodeMirror.Vim.setOption('testoption', '5');
     fail();
-  } catch (expected) {};
+  } catch (expected) {}
   // Test setOption
   CodeMirror.Vim.setOption('testoption', false);
   is(!CodeMirror.Vim.getOption('testoption'));
@@ -3794,7 +3806,7 @@ testVim('ex_set_boolean', function(cm, vim, helpers) {
     // Test fail to set to non-boolean
     helpers.doEx('set testoption=22');
     fail();
-  } catch (expected) {};
+  } catch (expected) {}
   // Test setOption
   helpers.doEx('set notestoption');
   is(!CodeMirror.Vim.getOption('testoption'));
@@ -3807,12 +3819,12 @@ testVim('set_string', function(cm, vim, helpers) {
     // Test fail to set non-string.
     CodeMirror.Vim.setOption('testoption', true);
     fail();
-  } catch (expected) {};
+  } catch (expected) {}
   try {
     // Test fail to set 'notestoption'
     CodeMirror.Vim.setOption('notestoption', 'b');
     fail();
-  } catch (expected) {};
+  } catch (expected) {}
   // Test setOption
   CodeMirror.Vim.setOption('testoption', 'c');
   eq('c', CodeMirror.Vim.getOption('testoption'));
@@ -3825,7 +3837,7 @@ testVim('ex_set_string', function(cm, vim, helpers) {
     // Test fail to set 'notestopt'
     helpers.doEx('set notestopt=b');
     fail();
-  } catch (expected) {};
+  } catch (expected) {}
   // Test setOption
   helpers.doEx('set testopt=c')
   eq('c', CodeMirror.Vim.getOption('testopt'));
@@ -3875,7 +3887,7 @@ testVim('ex_set_callback', function(cm, vim, helpers) {
     // Test fail to set 'notestopt'
     helpers.doEx('set notestopt=b');
     fail();
-  } catch (expected) {};
+  } catch (expected) {}
   // Test setOption (Identical to the string tests, but via callback instead)
   helpers.doEx('set testopt=c')
   eq('c', CodeMirror.Vim.getOption('testopt', cm)); //local || global

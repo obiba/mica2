@@ -12,6 +12,7 @@
 
 /*global NgObibaMicaTemplateUrlFactory */
 angular.module('obiba.mica.search', [
+    'obiba.alert',
     'ui.bootstrap',
     'pascalprecht.translate',
     'templates-ngObibaMica'
