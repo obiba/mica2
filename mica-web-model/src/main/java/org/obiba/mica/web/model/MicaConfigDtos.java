@@ -9,8 +9,6 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.micaConfig.AuthType;
-import org.obiba.mica.micaConfig.domain.AggregationInfo;
-import org.obiba.mica.micaConfig.domain.AggregationsConfig;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.domain.OpalCredential;
@@ -105,48 +103,6 @@ class MicaConfigDtos {
     if(dto.hasHarmonizationDatasetNotificationsSubject()) config.setHarmonizationDatasetNotificationSubject(dto.getHarmonizationDatasetNotificationsSubject());
 
     return config;
-  }
-
-  @NotNull
-  AggregationsConfig fromDto(@NotNull Mica.AggregationsConfigDtoOrBuilder dto) {
-    AggregationsConfig aggregationsConfig = new AggregationsConfig();
-    aggregationsConfig.setStudyAggregations(dto.getStudyList().stream().map(a -> fromDto(a)).collect(toList()));
-    aggregationsConfig.setVariableAggregations(dto.getVariableList().stream().map(a -> fromDto(a)).collect(toList()));
-
-    return aggregationsConfig;
-  }
-
-  @NotNull
-  Mica.AggregationsConfigDto asDto(@NotNull AggregationsConfig aggregationsConfig) {
-    Mica.AggregationsConfigDto.Builder builder = Mica.AggregationsConfigDto.newBuilder();
-
-    aggregationsConfig.getStudyAggregations().forEach(a -> {
-      builder.addStudy(asDto(a));
-    });
-
-    aggregationsConfig.getVariableAggregations().forEach(a -> {
-      builder.addVariable(asDto(a));
-    });
-
-    return builder.build();
-  }
-
-  @NotNull
-  AggregationInfo fromDto(@NotNull Mica.AggregationInfoDtoOrBuilder dto) {
-    AggregationInfo aggregation = new AggregationInfo();
-    aggregation.setId(dto.getId());
-    aggregation.setTitle(localizedStringDtos.fromDto(dto.getTitleList()));
-
-    return aggregation;
-  }
-
-  @NotNull
-  Mica.AggregationInfoDto asDto(@NotNull AggregationInfo agg) {
-    Mica.AggregationInfoDto.Builder builder = Mica.AggregationInfoDto.newBuilder().setId(agg.getId());
-
-    localizedStringDtos.asDto(agg.getTitle()).forEach(t -> builder.addTitle(t));
-
-    return builder.build();
   }
 
   @NotNull

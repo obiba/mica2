@@ -44,10 +44,6 @@ public class MicaConfig extends AbstractAuditableDocument {
   @NotBlank
   private String opal = DEFAULT_OPAL;
 
-  // legacy
-  @Deprecated
-  private AggregationsConfig aggregations;
-
   private List<String> roles = Lists.newArrayList(Membership.CONTACT, Membership.INVESTIGATOR);
 
   private String publicUrl;

@@ -21,7 +21,6 @@ import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.TempFile;
-import org.obiba.mica.micaConfig.domain.AggregationsConfig;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.domain.OpalCredential;
@@ -181,16 +180,6 @@ public class Dtos {
 
   @NotNull
   public MicaConfig fromDto(@NotNull MicaConfigDtoOrBuilder dto) {
-    return micaConfigDtos.fromDto(dto);
-  }
-
-  @NotNull
-  public Mica.AggregationsConfigDto asDto(@NotNull AggregationsConfig aggregationsConfig) {
-    return micaConfigDtos.asDto(aggregationsConfig);
-  }
-
-  @NotNull
-  public AggregationsConfig fromDto(@NotNull Mica.AggregationsConfigDtoOrBuilder dto) {
     return micaConfigDtos.fromDto(dto);
   }
 

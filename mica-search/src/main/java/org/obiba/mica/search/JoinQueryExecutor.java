@@ -24,9 +24,9 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
-import org.obiba.mica.micaConfig.domain.AggregationInfo;
-import org.obiba.mica.micaConfig.domain.AggregationsConfig;
-import org.obiba.mica.micaConfig.service.AggregationsService;
+import org.elasticsearch.common.Strings;
+import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.search.queries.AbstractDocumentQuery;
 import org.obiba.mica.search.queries.AbstractDocumentQuery.Mode;
@@ -39,7 +39,8 @@ import org.obiba.mica.search.queries.protobuf.JoinQueryDtoWrapper;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
-import org.obiba.opal.web.model.Opal;
+import org.obiba.opal.core.domain.taxonomy.Taxonomy;
+import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -68,7 +69,7 @@ public class JoinQueryExecutor {
   }
 
   @Inject
-  private AggregationsService aggregationsService;
+  private MicaConfigService micaConfigService;
 
   @Inject
   private VariableQuery variableQuery;
@@ -209,24 +210,35 @@ public class JoinQueryExecutor {
 
   private JoinQueryResultDto buildQueryResult(JoinQueryWrapper joinQueryDto) {
     JoinQueryResultDto.Builder builder = JoinQueryResultDto.newBuilder();
-    AggregationsConfig aggregationsConfig = aggregationsService.getAggregationsConfig();
 
-    builder.setVariableResultDto(joinQueryDto.isWithFacets()
-      ? addAggregationTitles(variableQuery.getResultQuery(), aggregationsConfig.getVariableAggregations(),
-      aggregationPostProcessor())
-      : removeAggregations(variableQuery.getResultQuery()));
-
-    if(datasetQuery.getResultQuery() != null) {
-      builder.setDatasetResultDto(joinQueryDto.isWithFacets() ? addAggregationTitles(datasetQuery.getResultQuery(),
-        aggregationsConfig.getDatasetAggregations(), null) : removeAggregations(datasetQuery.getResultQuery()));
+    if(variableQuery.getResultQuery() != null) {
+      if(joinQueryDto.isWithFacets()) {
+        List<Taxonomy> taxonomies = Lists.newArrayList(micaConfigService.getVariableTaxonomy());
+        taxonomies.addAll(opalService.getTaxonomies());
+        builder.setVariableResultDto(
+          addAggregationTitles(variableQuery.getResultQuery(), taxonomies, aggregationPostProcessor()));
+      } else {
+        builder.setVariableResultDto(removeAggregations(variableQuery.getResultQuery()));
+      }
     }
 
-    builder.setStudyResultDto(joinQueryDto.isWithFacets() ? addAggregationTitles(studyQuery.getResultQuery(),
-      aggregationsConfig.getStudyAggregations(), null) : removeAggregations(studyQuery.getResultQuery()));
+    if(datasetQuery.getResultQuery() != null) {
+      builder.setDatasetResultDto(joinQueryDto.isWithFacets()
+        ? addAggregationTitles(datasetQuery.getResultQuery(),
+        Lists.newArrayList(micaConfigService.getDatasetTaxonomy()), null)
+        : removeAggregations(datasetQuery.getResultQuery()));
+    }
+
+    builder.setStudyResultDto(joinQueryDto.isWithFacets()
+      ? addAggregationTitles(studyQuery.getResultQuery(), Lists.newArrayList(micaConfigService.getStudyTaxonomy()),
+      null)
+      : removeAggregations(studyQuery.getResultQuery()));
 
     if(networkQuery.getResultQuery() != null) {
-      builder.setNetworkResultDto(joinQueryDto.isWithFacets() ? addAggregationTitles(networkQuery.getResultQuery(),
-        aggregationsConfig.getNetworkAggregations(), null) : removeAggregations(networkQuery.getResultQuery()));
+      builder.setNetworkResultDto(joinQueryDto.isWithFacets()
+        ? addAggregationTitles(networkQuery.getResultQuery(),
+        Lists.newArrayList(micaConfigService.getNetworkTaxonomy()), null)
+        : removeAggregations(networkQuery.getResultQuery()));
     }
 
     return builder.build();
@@ -245,7 +257,7 @@ public class JoinQueryExecutor {
   }
 
   private MicaSearch.QueryResultDto addAggregationTitles(MicaSearch.QueryResultDto queryResultDto,
-    List<AggregationInfo> aggregationsList,
+    List<Taxonomy> taxonomies,
     Function<List<MicaSearch.AggregationResultDto>, List<MicaSearch.AggregationResultDto>> postProcessor) {
 
     if(queryResultDto != null) {
@@ -254,15 +266,15 @@ public class JoinQueryExecutor {
       List<MicaSearch.AggregationResultDto> aggregationResultDtos = Lists.newArrayList();
       builder.clearAggs();
 
-      aggregationsList.forEach(a -> {
+      taxonomies.forEach(taxonomy -> taxonomy.getVocabularies().forEach(voc -> {
         for(MicaSearch.AggregationResultDto.Builder b : builders) {
-          if(b.getAggregation().equals(a.getId())) {
-            b.addAllTitle(dtos.asDto(a.getTitle()));
+          if(b.getAggregation().equals(getVocabularyAggregationName(voc))) {
+            b.addAllTitle(dtos.asDto(LocalizedString.from(voc.getTitle())));
             aggregationResultDtos.add(b.build());
             break;
           }
         }
-      });
+      }));
 
       builder.addAllAggs(postProcessor == null ? aggregationResultDtos : postProcessor.apply(aggregationResultDtos));
 
@@ -270,9 +282,10 @@ public class JoinQueryExecutor {
     } else {
       MicaSearch.QueryResultDto.Builder builder = MicaSearch.QueryResultDto.newBuilder();
 
-      aggregationsList.forEach(a -> builder.addAggs(
-        MicaSearch.AggregationResultDto.newBuilder().setAggregation(a.getId()).addAllTitle(dtos.asDto(a.getTitle()))
-          .build()));
+      taxonomies.forEach(taxonomy -> taxonomy.getVocabularies().forEach(voc -> {
+        builder.addAggs(MicaSearch.AggregationResultDto.newBuilder().setAggregation(getVocabularyAggregationName(voc))
+          .addAllTitle(dtos.asDto(LocalizedString.from(voc.getTitle()))).build());
+      }));
 
       builder.setTotalHits(0).setTotalCount(0);
 
@@ -280,14 +293,21 @@ public class JoinQueryExecutor {
     }
   }
 
+  private String getVocabularyAggregationName(Vocabulary vocabulary) {
+    String alias = vocabulary.getAttributeValue("alias");
+    return Strings.isNullOrEmpty(alias) ? vocabulary.getName() : alias;
+  }
+
   protected Function<List<MicaSearch.AggregationResultDto>, List<MicaSearch.AggregationResultDto>> aggregationPostProcessor() {
     return (aggregationResultDtos) -> {
-      Map<String, MicaSearch.AggregationResultDto.Builder> buildres = opalService.getTaxonomySummaryDtos()
-        .getSummariesList().stream().collect(Collectors.toMap(Opal.TaxonomiesDto.TaxonomySummaryDto::getName,
-          t -> MicaSearch.AggregationResultDto.newBuilder().setAggregation(t.getName()).addAllTitle(
-            t.getTitleList().stream().map(
-              title -> Mica.LocalizedStringDto.newBuilder().setLang(title.getLocale()).setValue(title.getText())
-                .build()).collect(Collectors.toList()))));
+      Map<String, MicaSearch.AggregationResultDto.Builder> buildres = opalService.getTaxonomies().stream()
+        .collect(Collectors.toMap(Taxonomy::getName, t -> {
+          MicaSearch.AggregationResultDto.Builder builder = MicaSearch.AggregationResultDto.newBuilder()
+            .setAggregation(t.getName());
+          t.getTitle()
+            .forEach((k, v) -> builder.addTitle(Mica.LocalizedStringDto.newBuilder().setLang(k).setValue(v).build()));
+          return builder;
+        }));
 
       Pattern pattern = Pattern.compile("attributes-(\\w+)__(\\w+)-\\w+$");
       List<MicaSearch.AggregationResultDto> newList = Lists.newArrayList();
