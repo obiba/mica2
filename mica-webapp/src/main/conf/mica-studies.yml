@@ -105,7 +105,9 @@
   "title":
     "en": "Start Year"
     "fr": "Année de début"
-  "description": {}
+  "description":
+    "en": "Year in which the study has started."
+    "fr": "Année à laquelle l'étude a commencé."
   "keywords": {}
   "attributes":
     "type": "integer"
@@ -114,7 +116,9 @@
   "title":
     "en": "End Year"
     "fr": "Année de fin"
-  "description": {}
+  "description":
+    "en": "Year in which the study has ended or will end."
+    "fr": "Année à laquelle l'étude a fini ou finira."
   "keywords": {}
   "attributes":
     "type": "integer"
@@ -1711,7 +1715,9 @@
   "title":
     "en": "Minimum age"
     "fr": "Age minimum"
-  "description": {}
+  "description":
+    "en": "Participant's minimum age."
+    "fr": "Age minimum du participant."
   "keywords": {}
   "attributes":
     "type": "integer"
@@ -1720,7 +1726,9 @@
   "title":
     "en": "Maximum age"
     "fr": "Age maximum"
-  "description": {}
+  "description":
+    "en": "Participant's maximum age."
+    "fr": "Age maximum du participant."
   "keywords": {}
   "attributes":
     "type": "integer"
@@ -1776,7 +1784,9 @@
   "title":
     "en": "Target number of participants"
     "fr": "Nombre de participants ciblé"
-  "description": {}
+  "description":
+    "en": "The target number of participants can be lower than the actual number."
+    "fr": "Le nombre de participants ciblé peut être inférieur au nombre effectivement atteint."
   "keywords": {}
   "attributes":
     "type": "integer"
@@ -1785,7 +1795,9 @@
   "title":
     "en": "Target number of participants with samples"
     "fr": "Nombre de participants avec échantillon ciblé"
-  "description": {}
+  "description":
+    "en": "The target number of participants with samples can be lower than the actual number."
+    "fr": "Le nombre de participants avec échantillon ciblé peut être inférieur au nombre effectivement atteint."
   "keywords": {}
   "attributes":
     "type": "integer"
