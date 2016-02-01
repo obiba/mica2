@@ -14,4 +14,13 @@
     "fr": "Réseau"
   "description": {}
   "keywords": {}
+  "attributes":
+    "alias": "networkId"
+  "terms": []
+- "name": "studyIds"
+  "title":
+    "en": "Study"
+    "fr": "Étude"
+  "description": {}
+  "keywords": {}
   "terms": []

@@ -28,6 +28,7 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.common.Strings;
 import org.elasticsearch.index.IndexNotFoundException;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -180,8 +181,22 @@ public abstract class AbstractDocumentQuery {
       List<Pattern> patterns = filter.stream().map(Pattern::compile).collect(Collectors.toList());
       taxonomy.getVocabularies().forEach(vocabulary -> {
         String key = vocabulary.getName().replace('-','.');
-        if(patterns.isEmpty() || patterns.stream().filter(p -> p.matcher(key).matches()).findFirst().isPresent())
+
+        if(patterns.isEmpty() || patterns.stream().filter(p -> p.matcher(key).matches()).findFirst().isPresent()) {
           properties.put(key,"");
+          String type = vocabulary.getAttributeValue("type");
+          if ("integer".equals(type) || "decimal".equals(type)) {
+            if (vocabulary.hasTerms()) {
+              // TODO: use the terms for a range query
+            } else {
+              properties.put(key + AggregationYamlParser.TYPE, AggregationYamlParser.AGG_STATS);
+            }
+          }
+          String alias = vocabulary.getAttributeValue("alias");
+          if (!Strings.isNullOrEmpty(alias)) {
+            properties.put(key + AggregationYamlParser.ALIAS, alias);
+          }
+        }
       });
     }
     return properties;

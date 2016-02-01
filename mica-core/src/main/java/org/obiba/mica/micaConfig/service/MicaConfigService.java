@@ -32,6 +32,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
@@ -167,7 +168,8 @@ public class MicaConfigService {
   private List<AggregationInfo> asAggregationInfos(Taxonomy taxonomy) {
     return taxonomy.getVocabularies().stream().map(voc -> {
       AggregationInfo info = new AggregationInfo();
-      info.setId(voc.getName());
+      String alias = voc.getAttributeValue("alias");
+      info.setId(Strings.isNullOrEmpty(alias) ? voc.getName() : alias);
       LocalizedString title = new LocalizedString();
       voc.getTitle().forEach(title::put);
       info.setTitle(title);
