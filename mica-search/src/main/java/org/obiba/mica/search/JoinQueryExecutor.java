@@ -211,16 +211,9 @@ public class JoinQueryExecutor {
   private JoinQueryResultDto buildQueryResult(JoinQueryWrapper joinQueryDto) {
     JoinQueryResultDto.Builder builder = JoinQueryResultDto.newBuilder();
 
-    if(variableQuery.getResultQuery() != null) {
-      if(joinQueryDto.isWithFacets()) {
-        List<Taxonomy> taxonomies = Lists.newArrayList(micaConfigService.getVariableTaxonomy());
-        taxonomies.addAll(opalService.getTaxonomies());
-        builder.setVariableResultDto(
-          addAggregationTitles(variableQuery.getResultQuery(), taxonomies, aggregationPostProcessor()));
-      } else {
-        builder.setVariableResultDto(removeAggregations(variableQuery.getResultQuery()));
-      }
-    }
+    builder.setVariableResultDto(joinQueryDto.isWithFacets() ? addAggregationTitles(variableQuery.getResultQuery(),
+      ImmutableList.<Taxonomy>builder().add(micaConfigService.getVariableTaxonomy()).addAll(opalService.getTaxonomies())
+        .build(), aggregationPostProcessor()) : removeAggregations(variableQuery.getResultQuery()));
 
     if(datasetQuery.getResultQuery() != null) {
       builder.setDatasetResultDto(joinQueryDto.isWithFacets()
