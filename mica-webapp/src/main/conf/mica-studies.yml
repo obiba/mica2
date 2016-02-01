@@ -3,8 +3,8 @@
   "en": "Study"
   "fr": "Étude"
 "description":
-  "en": "Study classification"
-  "fr": "Classification des études"
+  "en": "Study properties"
+  "fr": "Propriétés des études"
 "keywords": {}
 "license": "CC BY-NC 4.0"
 "vocabularies":
@@ -104,7 +104,7 @@
 - "name": "start"
   "title":
     "en": "Start Year"
-    "fr": "Annee debut"
+    "fr": "Année de début"
   "description": {}
   "keywords": {}
   "attributes":
@@ -113,7 +113,7 @@
 - "name": "end"
   "title":
     "en": "End Year"
-    "fr": "Annee fin"
+    "fr": "Année de fin"
   "description": {}
   "keywords": {}
   "attributes":

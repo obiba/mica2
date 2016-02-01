@@ -3,8 +3,8 @@
   "en": "Variables"
   "fr": "Variables"
 "description":
-  "en": "Variables classification"
-  "fr": "Classification des variables"
+  "en": "Variable properties"
+  "fr": "Propriétés des variables"
 "keywords": {}
 "license": "CC BY-NC 4.0"
 "vocabularies":
@@ -162,24 +162,52 @@
     "description": {}
     "keywords": {}
     "terms": []
-- "name": "repeatable"
+- "name": "nature"
   "title":
-    "en": "Repeatable values"
-    "fr": "Valeurs repetables"
+    "en": "Nature"
+    "fr": "Nature"
   "description": {}
   "keywords": {}
   "terms":
-  - "name": "1"
+  - "name": "categorical"
     "title":
-      "en": "Yes"
-      "fr": "Oui"
+      "en": "Categorical"
+      "fr": "Catégorielle"
     "description": {}
     "keywords": {}
     "terms": []
-  - "name": "0"
+  - "name": "continuous"
     "title":
-      "en": "No"
-      "fr": "Non"
+      "en": "Continuous"
+      "fr": "Continue"
+    "description": {}
+    "keywords": {}
+    "terms": []
+  - "name": "temporal"
+    "title":
+      "en": "Temporal"
+      "fr": "Temporelle"
+    "description": {}
+    "keywords": {}
+    "terms": []
+  - "name": "geo"
+    "title":
+      "en": "Geographical"
+      "fr": "Géographique"
+    "description": {}
+    "keywords": {}
+    "terms": []
+  - "name": "binary"
+    "title":
+      "en": "Binary"
+      "fr": "Binaire"
+    "description": {}
+    "keywords": {}
+    "terms": []
+  - "name": "undetermined"
+    "title":
+      "en": "Other"
+      "fr": "Autre"
     "description": {}
     "keywords": {}
     "terms": []
