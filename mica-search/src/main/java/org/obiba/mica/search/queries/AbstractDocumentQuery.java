@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -27,6 +28,7 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.common.Strings;
 import org.elasticsearch.index.IndexNotFoundException;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -45,9 +47,9 @@ import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
 import org.obiba.mica.search.queries.protobuf.QueryDtoWrapper;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.MicaSearch;
+import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.Resource;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -162,8 +164,6 @@ public abstract class AbstractDocumentQuery {
     return null;
   }
 
-  protected abstract Resource getAggregationsDescription();
-
   protected List<AggregationMetaDataProvider> getAggregationMetaDataProviders() {
     return Lists.newArrayList();
   }
@@ -171,6 +171,35 @@ public abstract class AbstractDocumentQuery {
   @Nullable
   protected Properties getAggregationsProperties(List<String> filter) {
     return null;
+  }
+
+  protected Properties getAggregationsProperties(List<String> filter, Taxonomy taxonomy) {
+    if(filter == null) return null;
+
+    Properties properties = new Properties();
+    if(mode != Mode.LIST) {
+      List<Pattern> patterns = filter.stream().map(Pattern::compile).collect(Collectors.toList());
+      taxonomy.getVocabularies().forEach(vocabulary -> {
+        String key = vocabulary.getName().replace('-','.');
+
+        if(patterns.isEmpty() || patterns.stream().filter(p -> p.matcher(key).matches()).findFirst().isPresent()) {
+          properties.put(key,"");
+          String type = vocabulary.getAttributeValue("type");
+          if ("integer".equals(type) || "decimal".equals(type)) {
+            if (vocabulary.hasTerms()) {
+              // TODO: use the terms for a range query
+            } else {
+              properties.put(key + AggregationYamlParser.TYPE, AggregationYamlParser.AGG_STATS);
+            }
+          }
+          String alias = vocabulary.getAttributeValue("alias");
+          if (!Strings.isNullOrEmpty(alias)) {
+            properties.put(key + AggregationYamlParser.ALIAS, alias);
+          }
+        }
+      });
+    }
+    return properties;
   }
 
   private Properties getFilteredAggregationsProperties() {
@@ -419,12 +448,7 @@ public abstract class AbstractDocumentQuery {
 
     if(aggregationGroupBy != null) aggregationGroupBy.forEach(field -> subAggregations.put(field, aggregationProperties));
 
-    aggregationYamlParser.getAggregations(getAggregationsDescription(), subAggregations).forEach(agg -> {
-      defaultRequestBuilder.addAggregation(agg);
-      requestBuilder.addAggregation(agg);
-    });
-
-    aggregationYamlParser.getAggregations(aggregationProperties).forEach(agg -> {
+    aggregationYamlParser.getAggregations(aggregationProperties, subAggregations).forEach(agg -> {
       defaultRequestBuilder.addAggregation(agg);
       requestBuilder.addAggregation(agg);
     });

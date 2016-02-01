@@ -12,11 +12,9 @@ package org.obiba.mica.config.taxonomies;
 
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
 
-@Component
 @ConfigurationProperties(locations = "classpath:/mica-variables.yml")
 public class VariableTaxonomy extends Taxonomy {
 

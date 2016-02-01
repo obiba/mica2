@@ -10,6 +10,7 @@
 
 package org.obiba.mica.search.aggregations;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -102,7 +103,7 @@ public class TaxonomyAggregationMetaDataProvider implements AggregationMetaDataP
     return getTaxonomies().stream() //
       .filter(taxonomy -> !Strings.isNullOrEmpty(targetTaxonomy) && taxonomy.getName().equals(targetTaxonomy)) //
       .map(Taxonomy::getVocabularies) //
-      .flatMap((v) -> v.stream()) //
+      .flatMap(Collection::stream) //
       .filter(vocabulary -> vocabulary.getName().equals(targetVocabulary)) //
       .findFirst();
   }

@@ -51,15 +51,15 @@ public class AggregationYamlParser {
 
   private static final String PROPERTIES = FIELD_SEPARATOR + "properties";
 
-  private static final String TYPE = PROPERTIES + FIELD_SEPARATOR + "type";
+  public static final String TYPE = PROPERTIES + FIELD_SEPARATOR + "type";
 
-  private static final String ALIAS = PROPERTIES + FIELD_SEPARATOR + "alias";
+  public static final String ALIAS = PROPERTIES + FIELD_SEPARATOR + "alias";
 
-  private static final String LOCALIZED = PROPERTIES + FIELD_SEPARATOR + "localized";
+  public static final String LOCALIZED = PROPERTIES + FIELD_SEPARATOR + "localized";
 
-  private static final String AGG_TERMS = "terms";
+  public static final String AGG_TERMS = "terms";
 
-  private static final String AGG_STATS = "stats";
+  public static final String AGG_STATS = "stats";
 
   private List<Locale> locales;
 

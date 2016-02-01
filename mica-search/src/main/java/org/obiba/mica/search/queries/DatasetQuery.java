@@ -19,6 +19,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -48,8 +49,6 @@ import org.obiba.mica.web.model.MicaSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
@@ -65,13 +64,9 @@ public class DatasetQuery extends AbstractDocumentQuery {
 
   private static final Logger log = LoggerFactory.getLogger(DatasetQuery.class);
 
-  private static final String DATASET_FACETS_YML = "dataset-facets.yml";
-
   public static final String STUDY_JOIN_FIELD = "studyTable.studyId";
 
   public static final String HARMONIZATION_JOIN_FIELD = "studyTables.studyId";
-
-  private static final String CLASS_NAME_AGG = "className";
 
   private enum DatasetType {
     STUDY,
@@ -132,9 +127,10 @@ public class DatasetQuery extends AbstractDocumentQuery {
     return ids;
   }
 
+  @Nullable
   @Override
-  protected Resource getAggregationsDescription() {
-    return new ClassPathResource(DATASET_FACETS_YML);
+  protected Properties getAggregationsProperties(List<String> filter) {
+    return getAggregationsProperties(filter, micaConfigService.getDatasetTaxonomy());
   }
 
   @Override

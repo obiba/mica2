@@ -44,8 +44,6 @@ public class MicaConfig extends AbstractAuditableDocument {
   @NotBlank
   private String opal = DEFAULT_OPAL;
 
-  private AggregationsConfig aggregations;
-
   private List<String> roles = Lists.newArrayList(Membership.CONTACT, Membership.INVESTIGATOR);
 
   private String publicUrl;
@@ -146,14 +144,6 @@ public class MicaConfig extends AbstractAuditableDocument {
         .add("locales", locales) //
         .add("defaultCharacterSet", defaultCharacterSet) //
         .add("publicUrl", publicUrl);
-  }
-
-  public AggregationsConfig getAggregations() {
-    return aggregations;
-  }
-
-  public void setAggregations(AggregationsConfig aggregations) {
-    this.aggregations = aggregations;
   }
 
   public Version getMicaVersion() {

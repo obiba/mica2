@@ -19,6 +19,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -43,8 +44,6 @@ import org.obiba.mica.web.model.MicaSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
@@ -59,8 +58,6 @@ import static org.obiba.mica.web.model.MicaSearch.QueryResultDto;
 public class NetworkQuery extends AbstractDocumentQuery {
 
   private static final Logger log = LoggerFactory.getLogger(NetworkQuery.class);
-
-  private static final String NETWORK_FACETS_YML = "network-facets.yml";
 
   public static final String JOIN_FIELD = "studyIds";
 
@@ -98,9 +95,10 @@ public class NetworkQuery extends AbstractDocumentQuery {
     return Stream.of(NetworkIndexer.LOCALIZED_ANALYZED_FIELDS);
   }
 
+  @Nullable
   @Override
-  protected Resource getAggregationsDescription() {
-    return new ClassPathResource(NETWORK_FACETS_YML);
+  protected Properties getAggregationsProperties(List<String> filter) {
+    return getAggregationsProperties(filter, micaConfigService.getNetworkTaxonomy());
   }
 
   @Override

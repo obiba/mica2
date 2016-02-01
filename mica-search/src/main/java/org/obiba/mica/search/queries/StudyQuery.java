@@ -13,10 +13,12 @@ package org.obiba.mica.search.queries;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import org.elasticsearch.index.query.QueryBuilder;
@@ -33,8 +35,6 @@ import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import static org.obiba.mica.search.CountStatsDtoBuilders.StudyCountStatsBuilder;
@@ -44,8 +44,6 @@ import static org.obiba.mica.web.model.MicaSearch.StudyResultDto;
 @Component
 @Scope("request")
 public class StudyQuery extends AbstractDocumentQuery {
-
-  private static final String STUDY_FACETS_YML = "study-facets.yml";
 
   @Inject
   PublishedStudyService publishedStudyService;
@@ -117,9 +115,10 @@ public class StudyQuery extends AbstractDocumentQuery {
     } : (study) -> resBuilder.addDigests(dtos.asDigestDtoBuilder(study).build());
   }
 
+  @Nullable
   @Override
-  protected Resource getAggregationsDescription() {
-    return new ClassPathResource(STUDY_FACETS_YML);
+  protected Properties getAggregationsProperties(List<String> filter) {
+    return getAggregationsProperties(filter, micaConfigService.getStudyTaxonomy());
   }
 
   @Override

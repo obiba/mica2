@@ -10,15 +10,19 @@
 
 package org.obiba.mica.search.aggregations;
 
-import org.apache.commons.lang.WordUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DefaultAggregationMetaDataProvider implements AggregationMetaDataProvider {
 
+  private static final Logger log = LoggerFactory.getLogger(DefaultAggregationMetaDataProvider.class);
+
   @Override
   public MetaData getMetadata(String aggregation, String termKey, String locale) {
-    return MetaData.newBuilder().title(WordUtils.capitalize(termKey.replaceAll("[-_]", " "))).description("").build();
+    log.warn("Could not find in taxonomies any vocabulary with name '{}' and term '{}'", aggregation, termKey);
+    return MetaData.newBuilder().title(termKey).description("").build();
   }
 
   @Override

@@ -1,10 +1,10 @@
-"name": "Mlstr_variables"
+"name": "Mica_variables"
 "title":
   "en": "Variables"
   "fr": "Variables"
 "description":
-  "en": "Variables classification developed by Maelstrom"
-  "fr": "Classification des variables développée par Maelstrom"
+  "en": "Variable properties"
+  "fr": "Propriétés des variables"
 "keywords": {}
 "license": "CC BY-NC 4.0"
 "vocabularies":
@@ -35,14 +35,42 @@
     "fr": "Type de variable"
   "description": {}
   "keywords": {}
-  "terms": []
+  "terms":
+  - "name": "study"
+    "title":
+      "en": "Study"
+      "fr": "Étude"
+    "description": {}
+    "keywords": {}
+    "terms": []
+  - "name": "dataschema"
+    "title":
+      "en": "Dataschema"
+      "fr": "Dataschema"
+    "description": {}
+    "keywords": {}
+    "terms": []
 - "name": "entityType"
   "title":
     "en": "Type of entity"
     "fr": "Type d'entite"
   "description": {}
   "keywords": {}
-  "terms": []
+  "terms":
+  - "name": "participant"
+    "title":
+      "en": "Participant"
+      "fr": "Participant"
+    "description": {}
+    "keywords": {}
+    "terms": []
+  - "name": "sample"
+    "title":
+      "en": "Sample"
+      "fr": "Échantillon"
+    "description": {}
+    "keywords": {}
+    "terms": []
 - "name": "mimeType"
   "title":
     "en": "Media type"
@@ -134,10 +162,52 @@
     "description": {}
     "keywords": {}
     "terms": []
-- "name": "repeatable"
+- "name": "nature"
   "title":
-    "en": "Repeatable values"
-    "fr": "Valeurs repetables"
+    "en": "Nature"
+    "fr": "Nature"
   "description": {}
   "keywords": {}
-  "terms": []
+  "terms":
+  - "name": "categorical"
+    "title":
+      "en": "Categorical"
+      "fr": "Catégorielle"
+    "description": {}
+    "keywords": {}
+    "terms": []
+  - "name": "continuous"
+    "title":
+      "en": "Continuous"
+      "fr": "Continue"
+    "description": {}
+    "keywords": {}
+    "terms": []
+  - "name": "temporal"
+    "title":
+      "en": "Temporal"
+      "fr": "Temporelle"
+    "description": {}
+    "keywords": {}
+    "terms": []
+  - "name": "geo"
+    "title":
+      "en": "Geographical"
+      "fr": "Géographique"
+    "description": {}
+    "keywords": {}
+    "terms": []
+  - "name": "binary"
+    "title":
+      "en": "Binary"
+      "fr": "Binaire"
+    "description": {}
+    "keywords": {}
+    "terms": []
+  - "name": "undetermined"
+    "title":
+      "en": "Other"
+      "fr": "Autre"
+    "description": {}
+    "keywords": {}
+    "terms": []

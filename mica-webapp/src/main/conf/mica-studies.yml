@@ -1,20 +1,13 @@
-"name": "Mlstr_study"
+"name": "Mica_studies"
 "title":
   "en": "Study"
-  "fr": "Études"
+  "fr": "Étude"
 "description":
-  "en": "Study classification developed by Maelstrom"
-  "fr": "Classification des études développée par Maelstrom"
+  "en": "Study properties"
+  "fr": "Propriétés des études"
 "keywords": {}
 "license": "CC BY-NC 4.0"
 "vocabularies":
-- "name": "id"
-  "title":
-    "en": "Study"
-    "fr": "Étude"
-  "description": {}
-  "keywords": {}
-  "terms": []
 - "name": "methods-designs"
   "title":
     "en": "Study designs"
@@ -108,6 +101,24 @@
       "fr": "Autre"
     "description": {}
     "keywords": {}
+- "name": "start"
+  "title":
+    "en": "Start Year"
+    "fr": "Année de début"
+  "description": {}
+  "keywords": {}
+  "attributes":
+    "type": "integer"
+  "terms": []
+- "name": "end"
+  "title":
+    "en": "End Year"
+    "fr": "Année de fin"
+  "description": {}
+  "keywords": {}
+  "attributes":
+    "type": "integer"
+  "terms": []
 - "name": "populations-recruitment-dataSources"
   "title":
     "en": "Sources of recruitment"
@@ -660,7 +671,7 @@
     "keywords": {}
   - "name": "GBR"
     "title":
-      "en": "United Kingdom of Great Britain and Northern Ir"
+      "en": "United Kingdom of Great Britain and Northern Irland"
       "fr": "Royaume-Uni"
     "description": {}
     "keywords": {}
@@ -1702,6 +1713,8 @@
     "fr": "Age minimum"
   "description": {}
   "keywords": {}
+  "attributes":
+    "type": "integer"
   "terms": []
 - "name": "populations-selectionCriteria-ageMax"
   "title":
@@ -1709,6 +1722,8 @@
     "fr": "Age maximum"
   "description": {}
   "keywords": {}
+  "attributes":
+    "type": "integer"
   "terms": []
 - "name": "populations-selectionCriteria-gender"
   "title":
@@ -1763,6 +1778,8 @@
     "fr": "Nombre de participants ciblé"
   "description": {}
   "keywords": {}
+  "attributes":
+    "type": "integer"
   "terms": []
 - "name": "numberOfParticipants-sample-number"
   "title":
@@ -1770,6 +1787,8 @@
     "fr": "Nombre de participants avec échantillon ciblé"
   "description": {}
   "keywords": {}
+  "attributes":
+    "type": "integer"
   "terms": []
 - "name": "populations-dataCollectionEvents-dataSources"
   "title":
@@ -1827,9 +1846,9 @@
       "fr": "Urine"
     "description": {}
     "keywords": {}
-  - "name": "salivia"
+  - "name": "saliva"
     "title":
-      "en": "Salivia"
+      "en": "Saliva"
       "fr": "Salive"
     "description": {}
     "keywords": {}

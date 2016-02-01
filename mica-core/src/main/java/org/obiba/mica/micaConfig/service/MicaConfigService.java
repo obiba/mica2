@@ -11,12 +11,10 @@ import org.apache.shiro.codec.CodecSupport;
 import org.apache.shiro.codec.Hex;
 import org.apache.shiro.crypto.AesCipherService;
 import org.apache.shiro.util.ByteSource;
-import org.obiba.mica.config.AggregationsConfiguration;
 import org.obiba.mica.config.taxonomies.DatasetTaxonomy;
 import org.obiba.mica.config.taxonomies.NetworkTaxonomy;
 import org.obiba.mica.config.taxonomies.StudyTaxonomy;
 import org.obiba.mica.config.taxonomies.VariableTaxonomy;
-import org.obiba.mica.micaConfig.domain.AggregationsConfig;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.event.MicaConfigUpdatedEvent;
 import org.obiba.mica.micaConfig.repository.MicaConfigRepository;
@@ -35,11 +33,8 @@ import com.google.common.eventbus.EventBus;
 
 @Service
 @Validated
-@EnableConfigurationProperties({ AggregationsConfiguration.class, StudyTaxonomy.class })
+@EnableConfigurationProperties({ NetworkTaxonomy.class, StudyTaxonomy.class, DatasetTaxonomy.class, VariableTaxonomy.class })
 public class MicaConfigService {
-
-  @Inject
-  private AggregationsConfiguration aggregationsConfiguration;
 
   @Inject
   private NetworkTaxonomy networkTaxonomy;
@@ -63,17 +58,6 @@ public class MicaConfigService {
   private Environment env;
 
   private final AesCipherService cipherService = new AesCipherService();
-
-  @NotNull
-  public AggregationsConfig getAggregationsConfig() {
-    AggregationsConfig aggregationsConfig = getConfig().getAggregations();
-
-    if(aggregationsConfig == null) {
-      aggregationsConfig = getDefaultAggregationsConfig();
-    }
-
-    return aggregationsConfig;
-  }
 
   @NotNull
   public Taxonomy getNetworkTaxonomy() {
@@ -163,13 +147,4 @@ public class MicaConfigService {
     return Hex.decode(getOrCreateMicaConfig().getSecretKey());
   }
 
-  private AggregationsConfig getDefaultAggregationsConfig() {
-    AggregationsConfig aggregationsConfig = new AggregationsConfig();
-    aggregationsConfig.setNetworkAggregations(aggregationsConfiguration.getNetwork());
-    aggregationsConfig.setStudyAggregations(aggregationsConfiguration.getStudy());
-    aggregationsConfig.setDatasetAggregations(aggregationsConfiguration.getDataset());
-    aggregationsConfig.setVariableAggregations(aggregationsConfiguration.getVariable());
-
-    return aggregationsConfig;
-  }
 }
