@@ -61,10 +61,10 @@ public class AbstractTaxonomySearchResource {
       .forEach(voc -> {
         Opal.VocabularyDto.Builder vBuilder = Dtos.asDto(voc, false).toBuilder();
         List<String> termNames = taxoNamesMap.get(taxonomy.getName()).get(voc.getName());
-        if(termNames.isEmpty())
-          vBuilder.addAllTerms(voc.getTerms().stream().map(Dtos::asDto).collect(Collectors.toList()));
-        else voc.getTerms().stream().filter(t -> termNames.contains(t.getName()))
-          .forEach(term -> vBuilder.addTerms(Dtos.asDto(term)));
+        if (voc.hasTerms()) {
+          if(termNames.isEmpty()) vBuilder.addAllTerms(voc.getTerms().stream().map(Dtos::asDto).collect(Collectors.toList()));
+          else voc.getTerms().stream().filter(t -> termNames.contains(t.getName())).forEach(term -> vBuilder.addTerms(Dtos.asDto(term)));
+        }
         tBuilder.addVocabularies(vBuilder);
       });
   }
