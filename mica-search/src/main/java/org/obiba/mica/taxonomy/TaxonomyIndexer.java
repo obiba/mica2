@@ -10,6 +10,8 @@
 
 package org.obiba.mica.taxonomy;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
@@ -22,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.Subscribe;
 
@@ -54,11 +57,15 @@ public class TaxonomyIndexer {
   public void taxonomiesUpdated(TaxonomiesUpdatedEvent event) {
     log.info("Taxonomies were updated");
     if(elasticSearchIndexer.hasIndex(TAXONOMY_INDEX)) elasticSearchIndexer.dropIndex(TAXONOMY_INDEX);
-    index(TaxonomyTarget.VARIABLE, opalService.getTaxonomies());
+    index(TaxonomyTarget.VARIABLE,
+      ImmutableList.<Taxonomy>builder().addAll(opalService.getTaxonomies()).add(micaConfigService.getVariableTaxonomy())
+        .build());
     index(TaxonomyTarget.STUDY, Lists.newArrayList(micaConfigService.getStudyTaxonomy()));
+    index(TaxonomyTarget.DATASET, Lists.newArrayList(micaConfigService.getDatasetTaxonomy()));
+    index(TaxonomyTarget.NETWORK, Lists.newArrayList(micaConfigService.getNetworkTaxonomy()));
   }
 
-  private void index(TaxonomyTarget target, Iterable<Taxonomy> taxonomies) {
+  private void index(TaxonomyTarget target, List<Taxonomy> taxonomies) {
     taxonomies.forEach(taxo -> {
       elasticSearchIndexer.index(TAXONOMY_INDEX, new TaxonomyIndexable(target, taxo));
       if(taxo.hasVocabularies()) taxo.getVocabularies().forEach(voc -> {
