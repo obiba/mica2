@@ -276,10 +276,8 @@ public class VariableQuery extends AbstractDocumentQuery {
   @NotNull
   @Override
   protected Properties getAggregationsProperties(List<String> filter) {
-    if(filter == null) return null;
-
     Properties properties = new Properties();
-    if(mode != Mode.LIST) {
+    if(mode != Mode.LIST && filter != null) {
       List<Pattern> patterns = filter.stream().map(Pattern::compile).collect(Collectors.toList());
 
       getOpalTaxonomies().stream().filter(Taxonomy::hasVocabularies)
@@ -296,6 +294,11 @@ public class VariableQuery extends AbstractDocumentQuery {
           properties.put(key,"");
       });
     }
+
+    if(!properties.containsKey(JOIN_FIELD)) properties.put(JOIN_FIELD,"");
+    if(!properties.containsKey(DATASET_ID)) properties.put(DATASET_ID,"");
+
+
     return properties;
   }
 
