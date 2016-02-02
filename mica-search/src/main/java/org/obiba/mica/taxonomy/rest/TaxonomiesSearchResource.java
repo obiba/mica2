@@ -60,4 +60,17 @@ public class TaxonomiesSearchResource extends AbstractTaxonomySearchResource {
     return results;
   }
 
+  @GET
+  @Path("/_search")
+  @Timed
+  public List<Opal.TaxonomyBundleDto> search(@QueryParam("query") String query) {
+    List<Opal.TaxonomyBundleDto> results = Lists.newArrayList();
+    Lists.newArrayList(TaxonomyTarget.values()).forEach(target -> {
+      filter(target.name(), query).stream().map(
+        taxo -> Opal.TaxonomyBundleDto.newBuilder().setTarget(target.name().toLowerCase()).setTaxonomy(taxo).build())
+        .forEach(results::add);
+    });
+    return results;
+  }
+
 }
