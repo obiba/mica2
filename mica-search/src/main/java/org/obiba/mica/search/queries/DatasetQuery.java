@@ -130,7 +130,10 @@ public class DatasetQuery extends AbstractDocumentQuery {
   @Nullable
   @Override
   protected Properties getAggregationsProperties(List<String> filter) {
-    return getAggregationsProperties(filter, micaConfigService.getDatasetTaxonomy());
+    Properties properties = getAggregationsProperties(filter, micaConfigService.getDatasetTaxonomy());
+    if(!properties.containsKey(STUDY_JOIN_FIELD)) properties.put(STUDY_JOIN_FIELD,"");
+    if(!properties.containsKey(HARMONIZATION_JOIN_FIELD)) properties.put(HARMONIZATION_JOIN_FIELD,"");
+    return properties;
   }
 
   @Override

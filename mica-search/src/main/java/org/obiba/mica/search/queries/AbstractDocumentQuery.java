@@ -174,10 +174,8 @@ public abstract class AbstractDocumentQuery {
   }
 
   protected Properties getAggregationsProperties(List<String> filter, Taxonomy taxonomy) {
-    if(filter == null) return null;
-
     Properties properties = new Properties();
-    if(mode != Mode.LIST) {
+    if(mode != Mode.LIST && filter != null) {
       List<Pattern> patterns = filter.stream().map(Pattern::compile).collect(Collectors.toList());
       taxonomy.getVocabularies().forEach(vocabulary -> {
         String key = vocabulary.getName().replace('-','.');
