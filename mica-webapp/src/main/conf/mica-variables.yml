@@ -1,10 +1,10 @@
 "name": "Mica_variables"
 "title":
-  "en": "Variables"
-  "fr": "Variables"
-"description":
   "en": "Variable properties"
   "fr": "Propriétés des variables"
+"description":
+  "en": "Variable properties as defined in the catalog."
+  "fr": "Propriétés des variables telles que définies dans le catalogue."
 "keywords": {}
 "license": "CC BY-NC 4.0"
 "vocabularies":
@@ -60,7 +60,9 @@
   "title":
     "en": "Type of entity"
     "fr": "Type d'entité"
-  "description": {}
+  "description":
+    "en": "What entity is measured by the variable."
+    "fr": "Quel type d'entité est mesurée par cette variable."
   "keywords": {}
   "terms":
   - "name": "participant"
@@ -90,7 +92,9 @@
   "title":
     "en": "Type of value"
     "fr": "Type de valeur"
-  "description": {}
+  "description":
+    "en": "Raw type of variable's values."
+    "fr": "Type primitif des valeurs de la variable."
   "keywords": {}
   "terms":
   - "name": "boolean"
@@ -174,7 +178,9 @@
   "title":
     "en": "Nature"
     "fr": "Nature"
-  "description": {}
+  "description":
+    "en": "The nature of the variable affects the type of data summary that can be extracted."
+    "fr": "La nature de la variable affecte le type de sommaire des données pouvant être extrait."
   "keywords": {}
   "terms":
   - "name": "categorical"

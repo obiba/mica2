@@ -1,10 +1,10 @@
 "name": "Mica_studies"
 "title":
-  "en": "Study"
-  "fr": "Étude"
-"description":
   "en": "Study properties"
-  "fr": "Propriétés des études"
+  "fr": "Propriétés des étude"
+"description":
+  "en": "Study properties as defined in the catalog."
+  "fr": "Propriétés des études telles que définies dans le catalogue."
 "keywords": {}
 "license": "CC BY-NC 4.0"
 "vocabularies":

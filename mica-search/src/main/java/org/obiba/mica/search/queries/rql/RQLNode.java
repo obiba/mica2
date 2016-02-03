@@ -32,6 +32,8 @@ enum RQLNode {
   LE, //
   BETWEEN, //
   MATCH, //
+  EXISTS, //
+  MISSING, //
   FACET, //
   AGGREGATE;
 
