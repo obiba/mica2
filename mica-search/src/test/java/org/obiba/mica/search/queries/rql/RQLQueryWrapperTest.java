@@ -125,6 +125,34 @@ public class RQLQueryWrapperTest {
   }
 
   @Test
+  public void test_rql_query_exists() throws IOException {
+    String rql
+      = "variable(exists(tutu))";
+    RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
+    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    String expected = "{\n" +
+      "  \"exists\" : {\n" +
+      "    \"field\" : \"tutu\"\n" +
+      "  }\n" +
+      "}";
+    assertThat(rqlQueryWrapper.getQueryBuilder().toString()).isEqualTo(expected);
+  }
+
+  @Test
+  public void test_rql_query_missing() throws IOException {
+    String rql
+      = "variable(missing(tutu))";
+    RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
+    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    String expected = "{\n" +
+      "  \"missing\" : {\n" +
+      "    \"field\" : \"tutu\"\n" +
+      "  }\n" +
+      "}";
+    assertThat(rqlQueryWrapper.getQueryBuilder().toString()).isEqualTo(expected);
+  }
+
+  @Test
   public void test_rql_query_not_match() throws IOException {
     String rql
       = "variable(not(match(tutu)))";

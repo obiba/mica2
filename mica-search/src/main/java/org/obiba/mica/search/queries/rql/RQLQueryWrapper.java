@@ -176,6 +176,10 @@ public class RQLQueryWrapper implements QueryWrapper {
             return visitBetween(node);
           case MATCH:
             return visitMatch(node);
+          case EXISTS:
+            return visitExists(node);
+          case MISSING:
+            return visitMissing(node);
           default:
         }
       } catch(IllegalArgumentException e) {
@@ -264,7 +268,16 @@ public class RQLQueryWrapper implements QueryWrapper {
       }
       return builder;
     }
+
+    private QueryBuilder visitExists(ASTNode node) {
+      return QueryBuilders.existsQuery(node.getArgument(0).toString());
+    }
+
+    private QueryBuilder visitMissing(ASTNode node) {
+      return QueryBuilders.missingQuery(node.getArgument(0).toString());
+    }
   }
+
 
   private static class RQLLimitBuilder implements SimpleASTVisitor<Boolean> {
     private int from = DEFAULT_FROM;
