@@ -3,7 +3,7 @@
 mica.study = angular.module('mica.study', [
   'mica.config',
   'obiba.form',
-  'mica.localized',
+  'obiba.mica.localized',
   'mica.attributes',
   'mica.fileSystem',
   'obiba.notification',

@@ -14,7 +14,7 @@ mica.network = angular.module('mica.network', [
   'mica.config',
   'obiba.form',
   'mica.comment',
-  'mica.localized',
+  'obiba.mica.localized',
   'obiba.mica.attachment',
   'mica.publish',
   'mica.attributes',
