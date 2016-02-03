@@ -1,0 +1,27 @@
+<span class='btn-group btn-info' ng-class='{open: open}'>
+  <button class='btn btn-small btn-info dropdown'
+          ng-click='open=!open;openDropdown()' title="{{localize(criterion.vocabulary.title)}}">
+    {{truncate(localize(criterion.vocabulary.title))}}
+    <span class='fa fa-caret-down'></span>
+  </button>
+
+  <button class='btn btn-small btn-danger' ng-click='remove(criterion.id)'>
+    <span class='fa fa-times'></span>
+  </button>
+
+  <ul class='dropdown-menu query-dropdown-menu' aria-labelledby='dropdownMenu'>
+    <li>
+      <a ng-click='selectAll()'><i class='fa fa-check'></i> Check All</a>
+    </li>
+    <li>
+      <a ng-click='deselectAll();'><i class='fa fa-times'></i> Uncheck All</a>
+    </li>
+    <li class='divider'></li>
+    <li ng-repeat='term in criterion.vocabulary.terms'>
+      <a href ng-click='toggleSelection(term)' title="{{localize(term.title)}}">
+        {{truncate(localize(term.title))}} <span ng-show="isSelected(term.name)"
+                                                     class="fa fa-check pull-right"></span>
+      </a>
+    </li>
+  </ul>
+</span>

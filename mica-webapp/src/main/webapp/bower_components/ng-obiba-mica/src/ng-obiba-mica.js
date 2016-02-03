@@ -13,6 +13,7 @@ function NgObibaMicaUrlProvider() {
     'TempFileUploadResource': 'ws/files/temp',
     'TempFileResource': 'ws/files/temp/:id',
     'PublishedStudiesSearchResource': 'ws/:type/_search',
+    'TaxonomiesSearchResource': 'ws/taxonomies/_search',
     'TaxonomiesResource': 'ws/taxonomies/_filter',
     'TaxonomyResource': 'ws/taxonomy/:taxonomy/_filter',
     'VocabularyResource': 'ws/taxonomy/:taxonomy/vocabulary/:vocabulary/_filter',
@@ -94,7 +95,8 @@ angular.module('ngObibaMica', [
     'obiba.mica.attachment',
     'obiba.mica.access',
     'obiba.mica.search',
-    'obiba.mica.graphics'
+    'obiba.mica.graphics',
+    'obiba.mica.localized'
   ])
   .constant('USER_ROLES', {
     all: '*',
