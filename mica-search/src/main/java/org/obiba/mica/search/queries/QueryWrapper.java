@@ -11,6 +11,7 @@
 package org.obiba.mica.search.queries;
 
 import java.util.List;
+import java.util.Map;
 
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
@@ -39,4 +40,6 @@ public interface QueryWrapper {
   List<String> getAggregationGroupBy();
 
   List<String> getAggregations();
+
+  Map<String, Map<String, List<String>>> getTaxonomyTermsMap();
 }

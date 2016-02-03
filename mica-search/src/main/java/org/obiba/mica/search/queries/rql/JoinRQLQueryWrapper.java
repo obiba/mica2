@@ -10,17 +10,12 @@
 
 package org.obiba.mica.search.queries.rql;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import net.jazdw.rql.parser.ASTNode;
 import net.jazdw.rql.parser.RQLParser;
 
 import org.elasticsearch.common.Strings;
 import org.obiba.mica.search.queries.JoinQueryWrapper;
 import org.obiba.mica.search.queries.QueryWrapper;
-
-import com.google.common.collect.Lists;
 
 /**
  *
@@ -29,7 +24,7 @@ public class JoinRQLQueryWrapper implements JoinQueryWrapper {
 
   private ASTNode node;
 
-  private List<String> facets;
+  private boolean withFacets;
 
   private String locale = DEFAULT_LOCALE;
 
@@ -69,16 +64,14 @@ public class JoinRQLQueryWrapper implements JoinQueryWrapper {
         if(node.getArgumentsSize() > 0) locale = node.getArgument(0).toString();
         break;
       case FACET:
-        facets = Lists.newArrayList();
-        if(node.getArgumentsSize() == 1) facets.add(node.getArgument(0).toString());
-        if(node.getArgumentsSize() > 1)
-          facets.addAll(node.getArguments().stream().map(Object::toString).collect(Collectors.toList()));
+        withFacets = true;
+        break;
     }
   }
 
   @Override
   public boolean isWithFacets() {
-    return facets != null;
+    return withFacets;
   }
 
   @Override

@@ -11,9 +11,11 @@
 package org.obiba.mica.search.queries.protobuf;
 
 import java.util.List;
+import java.util.Map;
 
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
+import org.obiba.mica.search.TaxonomyFilterParser;
 import org.obiba.mica.search.queries.QueryWrapper;
 import org.obiba.mica.web.model.MicaSearch;
 
@@ -75,5 +77,11 @@ public class QueryDtoWrapper implements QueryWrapper {
   @Override
   public List<String> getAggregations() {
     return Lists.newArrayList();
+  }
+
+  @Override
+  public Map<String, Map<String, List<String>>> getTaxonomyTermsMap() {
+    TaxonomyFilterParser parser = new TaxonomyFilterParser(queryDto);
+    return parser.getTermsMap();
   }
 }

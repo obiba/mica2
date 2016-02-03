@@ -13,6 +13,8 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.core.domain.AttributeKey;
 import org.obiba.mica.micaConfig.service.OpalService;
+import org.obiba.mica.search.queries.JoinQueryWrapper;
+import org.obiba.mica.search.queries.QueryWrapper;
 import org.obiba.mica.search.queries.protobuf.JoinQueryDtoWrapper;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.MicaSearch;
@@ -38,39 +40,39 @@ public class CoverageQueryExecutor {
   @Inject
   private Dtos dtos;
 
-  private MicaSearch.JoinQueryDto joinQueryDto;
+  private JoinQueryWrapper joinQueryWrapper;
 
   private Map<String, Map<String, List<String>>> restrictedTermsMap;
 
   public MicaSearch.TaxonomiesCoverageDto coverageQuery(Collection<String> taxonomyNames, boolean strict,
-    boolean withFacets, String locale) throws IOException {
-    return coverageQuery(taxonomyNames, strict,
-      getDefaultJoinQueryDto().toBuilder().setWithFacets(withFacets).setLocale(locale == null ? "" : locale).build());
+    MicaSearch.JoinQueryDto joinQuery) throws IOException {
+    return coverageQuery(taxonomyNames, strict, new JoinQueryDtoWrapper(joinQuery == null ? getDefaultJoinQueryDto() : joinQuery));
+  }
+
+  public MicaSearch.TaxonomiesCoverageDto coverageQuery(JoinQueryWrapper joinQueryWrapper) throws IOException {
+    // always strict
+    return coverageQuery(Lists.newArrayList(), true, joinQueryWrapper);
   }
 
   public MicaSearch.TaxonomiesCoverageDto coverageQuery(Collection<String> taxonomyNames, boolean strict,
-    MicaSearch.JoinQueryDto joinQuery) throws IOException {
+    JoinQueryWrapper joinQueryWrapper) throws IOException {
+    this.joinQueryWrapper = joinQueryWrapper;
 
-    joinQueryDto = joinQuery == null ? getDefaultJoinQueryDto() : joinQuery;
-    boolean withFacets = joinQueryDto.getWithFacets();
+    // Strict coverage means that coverage result is restricted to the terms specified in the variable query.
+    // If no variable query is specified, nothing is returned if strictness is applied, otherwise coverage of all terms is returned.
+    if(strict) restrictedTermsMap = joinQueryWrapper.getVariableQueryWrapper().getTaxonomyTermsMap();
+
+    boolean withFacets = joinQueryWrapper.isWithFacets();
     // If do not need all the facets and some taxonomy names are provided then we can restrict the
     // variable aggregations to the ones matching these names.
     Collection<String> taxonomyFilter = withFacets || taxonomyNames == null ? Collections.emptyList() : taxonomyNames;
 
-    // Strict coverage means that coverage result is restricted to the terms specified in the variable query.
-    // If no variable query is specified, nothing is returned if strictness is applied, otherwise coverage of all terms is returned.
-    if(strict) {
-      TaxonomyFilterParser parser = new TaxonomyFilterParser(joinQueryDto.getVariableQueryDto());
-      restrictedTermsMap = parser.getTermsMap();
-    }
-
     // We need the aggregations internally for building the coverage result,
     // but we may not need them in the final result
-    MicaSearch.JoinQueryDto joinQueryDtoWithFacets = MicaSearch.JoinQueryDto.newBuilder().mergeFrom(joinQueryDto)
-      .setWithFacets(true).build();
+    JoinQueryWrapper joinQueryDtoWrapperWithFacets = new JoinQueryWrapperWithFacets(joinQueryWrapper);
 
     MicaSearch.JoinQueryResultDto result = joinQueryExecutor
-      .queryCoverage(new JoinQueryDtoWrapper(joinQueryDtoWithFacets), taxonomyFilter);
+      .queryCoverage(joinQueryDtoWrapperWithFacets, taxonomyFilter);
 
     List<MicaSearch.AggregationResultDto> aggregations = ungroupAggregations(
       result.getVariableResultDto().getAggsList());
@@ -81,7 +83,7 @@ public class CoverageQueryExecutor {
       .addAllTaxonomies(getCoverages(taxonomyNames, aggregations));
 
     // Do not append the aggregations if no facets is requested
-    if(withFacets) builder.setQueryResult(result);
+    if(joinQueryWrapper.isWithFacets()) builder.setQueryResult(result);
 
     return builder.build();
   }
@@ -159,10 +161,10 @@ public class CoverageQueryExecutor {
    */
   @NotNull
   private Collection<BucketResult> extractBucketResults(List<MicaSearch.AggregationResultDto> aggregations) {
-    if(joinQueryDto == null || !joinQueryDto.hasVariableQueryDto() ||
-      joinQueryDto.getVariableQueryDto().getAggsByCount() == 0) return Collections.emptyList();
+    if(joinQueryWrapper == null || joinQueryWrapper.getVariableQueryWrapper() == null ||
+      joinQueryWrapper.getVariableQueryWrapper().getAggregationGroupBy().isEmpty()) return Collections.emptyList();
 
-    List<String> aggsBy = joinQueryDto.getVariableQueryDto().getAggsByList();
+    List<String> aggsBy = joinQueryWrapper.getVariableQueryWrapper().getAggregationGroupBy();
 
     List<BucketResult> termResults = Lists.newArrayList();
 
@@ -181,7 +183,7 @@ public class CoverageQueryExecutor {
   }
 
   /**
-   * For a {@link org.obiba.opal.core.domain.taxonomy.Taxonomy}, report the number of hits and optionally the
+   * For a {@link Taxonomy}, report the number of hits and optionally the
    * number of hits for each bucket.
    *
    * @param coverages
@@ -238,7 +240,7 @@ public class CoverageQueryExecutor {
   }
 
   /**
-   * For a taxonomy {@link org.obiba.opal.core.domain.taxonomy.Vocabulary}, report the number of hits and optionally the
+   * For a taxonomy {@link Vocabulary}, report the number of hits and optionally the
    * number of hits for each bucket.
    *
    * @param taxoBuilder
@@ -307,7 +309,7 @@ public class CoverageQueryExecutor {
   }
 
   /**
-   * For a taxonomy {@link org.obiba.opal.core.domain.taxonomy.Term}, report the number of hits and optionally
+   * For a taxonomy {@link Term}, report the number of hits and optionally
    * the number of hits for each bucket.
    *
    * @param vocBuilder
@@ -360,7 +362,7 @@ public class CoverageQueryExecutor {
 
   @Nullable
   private String getLocale() {
-    return joinQueryDto.getLocale();
+    return joinQueryWrapper.getLocale();
   }
 
   /**
@@ -445,4 +447,42 @@ public class CoverageQueryExecutor {
     }
   }
 
+  private static class JoinQueryWrapperWithFacets implements JoinQueryWrapper {
+
+    private final JoinQueryWrapper joinQueryWrapper;
+
+    JoinQueryWrapperWithFacets(JoinQueryWrapper joinQueryWrapper) {
+      this.joinQueryWrapper = joinQueryWrapper;
+    }
+
+    @Override
+    public boolean isWithFacets() {
+      return true;
+    }
+
+    @Override
+    public String getLocale() {
+      return joinQueryWrapper.getLocale();
+    }
+
+    @Override
+    public QueryWrapper getVariableQueryWrapper() {
+      return joinQueryWrapper.getVariableQueryWrapper();
+    }
+
+    @Override
+    public QueryWrapper getDatasetQueryWrapper() {
+      return joinQueryWrapper.getDatasetQueryWrapper();
+    }
+
+    @Override
+    public QueryWrapper getStudyQueryWrapper() {
+      return joinQueryWrapper.getStudyQueryWrapper();
+    }
+
+    @Override
+    public QueryWrapper getNetworkQueryWrapper() {
+      return joinQueryWrapper.getNetworkQueryWrapper();
+    }
+  }
 }

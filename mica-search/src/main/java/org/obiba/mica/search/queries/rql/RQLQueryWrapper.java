@@ -12,7 +12,10 @@ package org.obiba.mica.search.queries.rql;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import net.jazdw.rql.parser.ASTNode;
 import net.jazdw.rql.parser.RQLParser;
@@ -24,9 +27,11 @@ import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
+import org.obiba.mica.core.domain.AttributeKey;
 import org.obiba.mica.search.queries.QueryWrapper;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 /**
  *
@@ -46,6 +51,8 @@ public class RQLQueryWrapper implements QueryWrapper {
   private List<String> aggregations;
 
   private List<String> aggregationGroupBy;
+
+  private final Map<String, Map<String, List<String>>> taxonomyTermsMap = Maps.newHashMap();
 
   public RQLQueryWrapper(String rql) {
     this(new RQLParser().parse(rql));
@@ -73,6 +80,10 @@ public class RQLQueryWrapper implements QueryWrapper {
 
     }
     if(queryBuilder == null) queryBuilder = QueryBuilders.matchAllQuery();
+  }
+
+  public Map<String, Map<String, List<String>>> getTaxonomyTermsMap() {
+    return taxonomyTermsMap;
   }
 
   private void parseQuery(ASTNode node) {
@@ -138,7 +149,7 @@ public class RQLQueryWrapper implements QueryWrapper {
 
   @Override
   public List<String> getAggregationGroupBy() {
-    return aggregationGroupBy;
+    return aggregationGroupBy == null ? Lists.newArrayList() : aggregationGroupBy;
   }
 
   @Override
@@ -146,7 +157,7 @@ public class RQLQueryWrapper implements QueryWrapper {
     return aggregations;
   }
 
-  private static class RQLQueryBuilder implements SimpleASTVisitor<QueryBuilder> {
+  private class RQLQueryBuilder implements SimpleASTVisitor<QueryBuilder> {
 
     @Override
     public QueryBuilder visit(ASTNode node) {
@@ -204,6 +215,8 @@ public class RQLQueryWrapper implements QueryWrapper {
     private QueryBuilder visitIn(ASTNode node) {
       String field = node.getArgument(0).toString();
       Object terms = node.getArgument(1);
+      visitField(field, terms instanceof Collection ? ((Collection<Object>) terms).stream().map(Object::toString).collect(
+        Collectors.toList()) : Collections.singleton(terms.toString()));
       return QueryBuilders.termsQuery(field, terms instanceof Collection ? (Collection) terms : terms);
     }
 
@@ -222,41 +235,47 @@ public class RQLQueryWrapper implements QueryWrapper {
     private QueryBuilder visitEq(ASTNode node) {
       String field = node.getArgument(0).toString();
       Object term = node.getArgument(1);
+      visitField(field, Collections.singleton(term.toString()));
       return QueryBuilders.termQuery(field, term);
     }
 
     private QueryBuilder visitLe(ASTNode node) {
       String field = node.getArgument(0).toString();
       Object value = node.getArgument(1);
+      visitField(field);
       return QueryBuilders.rangeQuery(field).lte(value);
     }
 
     private QueryBuilder visitLt(ASTNode node) {
       String field = node.getArgument(0).toString();
       Object value = node.getArgument(1);
+      visitField(field);
       return QueryBuilders.rangeQuery(field).lt(value);
     }
 
     private QueryBuilder visitGe(ASTNode node) {
       String field = node.getArgument(0).toString();
       Object value = node.getArgument(1);
+      visitField(field);
       return QueryBuilders.rangeQuery(field).gte(value);
     }
 
     private QueryBuilder visitGt(ASTNode node) {
       String field = node.getArgument(0).toString();
       Object value = node.getArgument(1);
+      visitField(field);
       return QueryBuilders.rangeQuery(field).gt(value);
     }
 
     private QueryBuilder visitBetween(ASTNode node) {
       String field = node.getArgument(0).toString();
+      visitField(field);
       ArrayList<Object> values = (ArrayList<Object>) node.getArgument(1);
       return QueryBuilders.rangeQuery(field).gte(values.get(0)).lt(values.get(1));
     }
 
     private QueryBuilder visitMatch(ASTNode node) {
-      if (node.getArgumentsSize() == 0) return QueryBuilders.matchAllQuery();
+      if(node.getArgumentsSize() == 0) return QueryBuilders.matchAllQuery();
       // if there is only one argument, the fields to be matched are the default ones
       // otherwise, the first argument can be the field name or a list of filed names
       if(node.getArgumentsSize() == 1) return QueryBuilders.queryStringQuery(node.getArgument(0).toString());
@@ -271,14 +290,43 @@ public class RQLQueryWrapper implements QueryWrapper {
     }
 
     private QueryBuilder visitExists(ASTNode node) {
-      return QueryBuilders.existsQuery(node.getArgument(0).toString());
+      String field = node.getArgument(0).toString();
+      visitField(field);
+      return QueryBuilders.existsQuery(field);
     }
 
     private QueryBuilder visitMissing(ASTNode node) {
-      return QueryBuilders.missingQuery(node.getArgument(0).toString());
+      String field = node.getArgument(0).toString();
+      visitField(field);
+      return QueryBuilders.missingQuery(field);
+    }
+
+    private void visitField(String field) {
+      visitField(field, null);
+    }
+
+    private void visitField(String field, Collection<String> terms) {
+      if(!isAttributeField(field)) return;
+      AttributeKey key = AttributeKey.from(field.replaceAll("^attributes\\.", "").replaceAll("\\.und$", ""));
+      if(!key.hasNamespace()) return;
+
+      if(!taxonomyTermsMap.containsKey(key.getNamespace())) {
+        taxonomyTermsMap.put(key.getNamespace(), Maps.newHashMap());
+      }
+      Map<String, List<String>> vocMap = taxonomyTermsMap.get(key.getNamespace());
+      if(!vocMap.containsKey(key.getName())) {
+        vocMap.put(key.getName(), Lists.newArrayList());
+      }
+
+      if(terms != null) {
+        vocMap.get(key.getName()).addAll(terms);
+      }
+    }
+
+    private boolean isAttributeField(String field) {
+      return field.startsWith("attributes.") && field.endsWith(".und");
     }
   }
-
 
   private static class RQLLimitBuilder implements SimpleASTVisitor<Boolean> {
     private int from = DEFAULT_FROM;
