@@ -3,7 +3,7 @@
 mica.dataset = angular.module('mica.dataset', [
   'mica.config',
   'obiba.form',
-  'mica.localized',
+  'obiba.mica.localized',
   'mica.publish',
   'mica.attributes',
   'mica.commons',
