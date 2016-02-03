@@ -11,6 +11,17 @@
 'use strict';
 
 angular.module('obiba.mica.search')
+  .factory('TaxonomiesSearchResource', ['$resource', 'ngObibaMicaUrl',
+    function ($resource, ngObibaMicaUrl) {
+      return $resource(ngObibaMicaUrl.getUrl('TaxonomiesSearchResource'), {}, {
+        'get': {
+          method: 'GET',
+          isArray: true,
+          errorHandler: true
+        }
+      });
+    }])
+
   .factory('TaxonomiesResource', ['$resource', 'ngObibaMicaUrl',
     function ($resource, ngObibaMicaUrl) {
       return $resource(ngObibaMicaUrl.getUrl('TaxonomiesResource'), {}, {

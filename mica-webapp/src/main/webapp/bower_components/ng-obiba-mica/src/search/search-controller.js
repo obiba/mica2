@@ -24,6 +24,7 @@ angular.module('obiba.mica.search')
     '$timeout',
     '$routeParams',
     '$location',
+    'TaxonomiesSearchResource',
     'TaxonomiesResource',
     'TaxonomyResource',
     'VocabularyResource',
@@ -32,10 +33,12 @@ angular.module('obiba.mica.search')
     'QUERY_TYPES',
     'AlertService',
     'ServerErrorUtils',
+    'LocalizedValues',
     function ($scope,
               $timeout,
               $routeParams,
               $location,
+              TaxonomiesSearchResource,
               TaxonomiesResource,
               TaxonomyResource,
               VocabularyResource,
@@ -43,14 +46,124 @@ angular.module('obiba.mica.search')
               JoinQuerySearchResource,
               QUERY_TYPES,
               AlertService,
-              ServerErrorUtils) {
+              ServerErrorUtils,
+              LocalizedValues) {
 
+      function createCriteria(target, taxonomy, vocabulary, term) {
+        var id = taxonomy.name + '::' + vocabulary.name;
+        if (term) {
+          id = id + ':' + term.name;
+        }
+        var criteria = {
+          id: id,
+          taxonomy: taxonomy,
+          vocabulary: vocabulary,
+          term: term,
+          target: target,
+          lang: $scope.lang,
+          itemTitle: '',
+          itemDescription: '',
+          itemParentTitle: '',
+          itemParentDescription: ''
+        };
 
-console.log('THIS IS SEARCH CONTROLLER');
+        // prepare some labels for display
+        if(term) {
+          criteria.itemTitle = LocalizedValues.forLocale(term.title, $scope.lang);
+          criteria.itemDescription = LocalizedValues.forLocale(term.description,$scope.lang);
+          criteria.itemParentTitle = LocalizedValues.forLocale(vocabulary.title, $scope.lang);
+          criteria.itemParentDescription = LocalizedValues.forLocale(vocabulary.description, $scope.lang);
+          if (!criteria.itemTitle) {
+            criteria.itemTitle = term.name;
+          }
+          if (!criteria.itemParentTitle) {
+            criteria.itemParentTitle = vocabulary.name;
+          }
+        } else {
+          criteria.itemTitle = LocalizedValues.forLocale(vocabulary.title, $scope.lang);
+          criteria.itemDescription = LocalizedValues.forLocale(vocabulary.description, $scope.lang);
+          criteria.itemParentTitle = LocalizedValues.forLocale(taxonomy.title, $scope.lang);
+          criteria.itemParentDescription = LocalizedValues.forLocale(taxonomy.description, $scope.lang);
+          if (!criteria.itemTitle) {
+            criteria.itemTitle = vocabulary.name;
+          }
+          if (!criteria.itemParentTitle) {
+            criteria.itemParentTitle = taxonomy.name;
+          }
+        }
 
+        return criteria;
+      }
+
+      function onError(response) {
+        AlertService.alert({
+          id: 'SearchController',
+          type: 'danger',
+          msg: ServerErrorUtils.buildMessage(response),
+          delay: 5000
+        });
+      }
+
+      function validateType(type) {
+        if (!type || !QUERY_TYPES[type.toUpperCase()]) {
+          throw new Error('Invalid type: ' + type);
+        }
+      }
+
+      function getDefaultQuery(type) {
+        var query = ':q(match())';
+
+        switch (type) {
+          case QUERY_TYPES.NETWORKS:
+            return query.replace(/:q/, 'network');
+          case QUERY_TYPES.STUDIES:
+            return query.replace(/:q/, 'study');
+          case QUERY_TYPES.DATASETS:
+            return query.replace(/:q/, 'dataset');
+          case QUERY_TYPES.VARIABLES:
+            return query.replace(/:q/, 'variable');
+        }
+
+        throw new Error('Invalid query type: ' + type);
+      }
+
+      function validateQueryData() {
+        try {
+          var search = $location.search();
+          var type = search.type || QUERY_TYPES.VARIABLES;
+          var query = search.query || getDefaultQuery(type);
+          validateType(type);
+          new RqlParser().parse(query);
+
+          $scope.search.type = type;
+          $scope.search.query = query;
+          return true;
+
+        } catch (e) {
+          AlertService.alert({
+            id: 'SearchController',
+            type: 'danger',
+            msg: e.message,
+            delay: 5000
+          });
+        }
+
+        return false;
+      }
+
+      function executeQuery() {
+        if (validateQueryData()) {
+          JoinQuerySearchResource[$scope.search.type]({query: $scope.search.query},
+            function onSuccess(response) {
+              $scope.search.result = response;
+              console.log('>>> Response', $scope.search.result);
+            },
+            onError);
+        }
+      }
 
       var closeTaxonomies = function () {
-        $('#taxonomies').collapse('hide');
+        angular.element('#taxonomies').collapse('hide');
       };
 
       var filterTaxonomies = function (query) {
@@ -94,7 +207,7 @@ console.log('THIS IS SEARCH CONTROLLER');
 
       var selectTaxonomyTarget = function (target) {
         if (!$scope.taxonomiesShown) {
-          $('#taxonomies').collapse('show');
+          angular.element('#taxonomies').collapse('show');
         }
         if ($scope.taxonomies.target !== target) {
           $scope.taxonomies.target = target;
@@ -129,10 +242,68 @@ console.log('THIS IS SEARCH CONTROLLER');
         $scope.documents.search.active = false;
       };
 
-      var searchDocuments = function (/*query*/) {
-        $scope.documents.search.active = true;
+      var searchCriteria = function (query) {
         // search for taxonomy terms
         // search for matching variables/studies/... count
+        return TaxonomiesSearchResource.get({
+          query: query
+        }).$promise.then(function (response) {
+          if (response) {
+            var results = [];
+            var total = 0;
+            var size = 10;
+            response.forEach(function (bundle) {
+              var target = bundle.target;
+              var taxonomy = bundle.taxonomy;
+              if (taxonomy.vocabularies) {
+                taxonomy.vocabularies.forEach(function (vocabulary) {
+                  if (vocabulary.terms) {
+                    vocabulary.terms.forEach(function (term) {
+                      if (results.length < size) {
+                        results.push(createCriteria(target, taxonomy, vocabulary, term));
+                      }
+                      total++;
+                    });
+                  } else {
+                    if (results.length < size) {
+                      results.push(createCriteria(target, taxonomy, vocabulary));
+                    }
+                    total++;
+                  }
+                });
+              }
+            });
+            if(total > results.length) {
+              var note = {
+                query: query,
+                total: total,
+                size: size,
+                message: 'Showing ' + size + ' / ' + total,
+                status: 'has-warning'
+              };
+              results.push(note);
+            }
+            return results;
+          } else {
+            return [];
+          }
+        });
+      };
+
+      var selectCriteria = function (item) {
+        console.log('selectCriteria', item);
+        if(item.id){
+          var found = $scope.search.criteria.filter(function(criterion) {
+            return item.vocabulary.name === criterion.vocabulary.name;
+          });
+          console.log('Found', found);
+          if (found && found.length === 0) {
+            $scope.search.criteria.push(item);
+          }
+          $scope.selectedCriteria = null;
+        } else {
+          $scope.selectedCriteria = item.query;
+        }
       };
 
       var searchKeyUp = function (event) {
@@ -145,7 +316,7 @@ console.log('THIS IS SEARCH CONTROLLER');
 
           default:
             if ($scope.documents.search.text) {
-              searchDocuments($scope.documents.search.text);
+              searchCriteria($scope.documents.search.text);
             }
             break;
         }
@@ -160,94 +331,11 @@ console.log('THIS IS SEARCH CONTROLLER');
         }
       };
 
-      var selectTerm = function (/*taxonomy, vocabulary, term*/) {
-
+      var selectTerm = function (target, taxonomy, vocabulary, term) {
+        selectCriteria(createCriteria(target, taxonomy, vocabulary, term));
       };
 
-      function onError(response) {
-        AlertService.alert({
-          id: 'SearchController',
-          type: 'danger',
-          msg: ServerErrorUtils.buildMessage(response),
-          delay: 5000
-        });
-      }
-
-      function executeQuery() {
-        if (validateQueryData()) {
-           JoinQuerySearchResource[$scope.search.type]({query: $scope.search.query},
-            function onSuccess(response) {
-              $scope.search.result = response;
-              console.log('>>> Response', $scope.search.result);
-            },
-            onError);
-        }
-      }
-
-      function validateQueryData() {
-        try {
-          var search = $location.search();
-          var type = search.type || QUERY_TYPES.VARIABLES;
-          var query = search.query || getDefaultQuery(type);
-          validateType(type);
-          validateQuery(query);
-          $scope.search.type = type;
-          $scope.search.query = query;
-          return true;
-
-        } catch (e) {
-          AlertService.alert({
-            id: 'SearchController',
-            type: 'danger',
-            msg: e.message,
-            delay: 5000
-          });
-        }
-
-        return false;
-      }
-
-      function validateType(type) {
-        if (!type || !QUERY_TYPES[type.toUpperCase()]) {
-          throw new Error('Invalid type: ' + type);
-        }
-      }
-
-      function validateQuery(query) {
-        new RqlParser().parse(query);
-      }
-
-      function getDefaultQuery(type) {
-        var query = ':q(match())';
-
-        switch (type) {
-          case QUERY_TYPES.NETWORKS:
-            return query.replace(/:q/, 'network');
-          case QUERY_TYPES.STUDIES:
-            return query.replace(/:q/, 'study');
-          case QUERY_TYPES.DATASETS:
-            return query.replace(/:q/, 'dataset');
-          case QUERY_TYPES.VARIABLES:
-            return query.replace(/:q/, 'variable');
-        }
-
-        throw new Error('Invalid query type: ' + type);
-      }
-
-      function initialize() {
-        var search = angular.copy($location.search());
-
-        if ({} !== search) {
-          validateQueryData();
-        }
-
-        search.type = $scope.search.type;
-        search.query = $scope.search.query;
-
-        executeQuery();
-      }
-
-      var onTypeChanged = function(type) {
+      var onTypeChanged = function (type) {
         if (type) {
           validateType(type);
           var search = $location.search();
@@ -262,7 +350,8 @@ console.log('THIS IS SEARCH CONTROLLER');
       $scope.search = {
         query: null,
         type: null,
-        result: null
+        result: null,
+        criteria: []
       };
 
       $scope.documents = {
@@ -285,6 +374,8 @@ console.log('THIS IS SEARCH CONTROLLER');
 
       $scope.headerTemplateUrl = ngObibaMicaSearchTemplateUrl.getHeaderUrl('view');
       $scope.clearFilterTaxonomies = clearFilterTaxonomies;
+      $scope.searchCriteria = searchCriteria;
+      $scope.selectCriteria = selectCriteria;
       $scope.searchKeyUp = searchKeyUp;
       $scope.filterTaxonomiesKeyUp = filterTaxonomiesKeyUp;
       $scope.navigateTaxonomy = navigateTaxonomy;
@@ -295,18 +386,18 @@ console.log('THIS IS SEARCH CONTROLLER');
       $scope.taxonomiesShown = false;
 
       //// TODO replace with angular code
-      $('#taxonomies').on('show.bs.collapse', function () {
+      angular.element('#taxonomies').on('show.bs.collapse', function () {
         $scope.taxonomiesShown = true;
       });
-      $('#taxonomies').on('hide.bs.collapse', function () {
+      angular.element('#taxonomies').on('hide.bs.collapse', function () {
         $scope.taxonomiesShown = false;
       });
 
       $scope.$watch('search', function () {
-        initialize();
+        executeQuery();
       });
 
-      $scope.$on('$locationChangeSuccess', function(newLocation, oldLocation) {
+      $scope.$on('$locationChangeSuccess', function (newLocation, oldLocation) {
         if (newLocation !== oldLocation) {
           executeQuery();
         }
@@ -318,7 +409,7 @@ console.log('THIS IS SEARCH CONTROLLER');
     '$scope',
     'QUERY_TYPES',
     function ($scope, QUERY_TYPES) {
-      var selectTab = function(type) {
+      var selectTab = function (type) {
         console.log('Type', type);
         $scope.type = type;
         $scope.$parent.onTypeChanged(type);
@@ -327,7 +418,7 @@ console.log('THIS IS SEARCH CONTROLLER');
       $scope.selectTab = selectTab;
       $scope.QUERY_TYPES = QUERY_TYPES;
 
-      $scope.$watch('type', function() {
+      $scope.$watch('type', function () {
         $scope.activeTab = {
           networks: $scope.type === QUERY_TYPES.NETWORKS || false,
           studies: $scope.type === QUERY_TYPES.STUDIES || false,
@@ -335,5 +426,63 @@ console.log('THIS IS SEARCH CONTROLLER');
           variables: $scope.type === QUERY_TYPES.VARIABLES || false
         };
       });
+
+    }])
+
+  .controller('CriterionDropdownController', [
+    '$scope',
+    'LocalizedValues',
+    function ($scope, LocalizedValues) {
+      console.log('QueryDropdownController', $scope);
+
+      var isSelected = function(name) {
+        return $scope.selectedTerms.indexOf(name) !== -1;
+      };
+
+      var selectAll = function () {
+        $scope.selectedTerms = $scope.criterion.vocabulary.terms.map(function (term) {
+          return term.name;
+        });
+      };
+
+      var toggleSelection = function(term) {
+        if (!isSelected(term.name)) {
+          $scope.selectedTerms.push(term.name);
+          return;
+        }
+
+        $scope.selectedTerms = $scope.selectedTerms.filter(function(name) {
+          return name !== term.name;
+        });
+      };
+
+      var localize = function(values) {
+        return LocalizedValues.forLocale(values, $scope.criterion.lang);
+      };
+
+      var truncate = function(text) {
+        return text.length > 40 ? text.substring(0, 40) + '...' : text;
+      };
+
+      $scope.selectedTerms = [];
+      $scope.selectAll = selectAll;
+      $scope.deselectAll = function() { $scope.selectedTerms = []; };
+      $scope.toggleSelection = toggleSelection;
+      $scope.isSelected = isSelected;
+      $scope.localize = localize;
+      $scope.truncate = truncate;
+
+    }])
+
+  .controller('CriteriaPanelController', [
+    '$scope',
+    function ($scope) {
+      console.log('QueryPanelController', $scope);
+
+      $scope.removeCriteria = function(id) {
+        $scope.criteria = $scope.criteria.filter(function(criterion) {
+          return id !== criterion.id;
+        });
+      };
 
     }]);

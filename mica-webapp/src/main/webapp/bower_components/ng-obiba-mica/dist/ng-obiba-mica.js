@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-01-29
+ * Date: 2016-02-03
  */
 'use strict';
 
@@ -20,6 +20,7 @@ function NgObibaMicaUrlProvider() {
     'TempFileUploadResource': 'ws/files/temp',
     'TempFileResource': 'ws/files/temp/:id',
     'PublishedStudiesSearchResource': 'ws/:type/_search',
+    'TaxonomiesSearchResource': 'ws/taxonomies/_search',
     'TaxonomiesResource': 'ws/taxonomies/_filter',
     'TaxonomyResource': 'ws/taxonomy/:taxonomy/_filter',
     'VocabularyResource': 'ws/taxonomy/:taxonomy/vocabulary/:vocabulary/_filter',
@@ -101,7 +102,8 @@ angular.module('ngObibaMica', [
     'obiba.mica.attachment',
     'obiba.mica.access',
     'obiba.mica.search',
-    'obiba.mica.graphics'
+    'obiba.mica.graphics',
+    'obiba.mica.localized'
   ])
   .constant('USER_ROLES', {
     all: '*',
@@ -1272,6 +1274,7 @@ angular.module('obiba.mica.search')
     '$timeout',
     '$routeParams',
     '$location',
+    'TaxonomiesSearchResource',
     'TaxonomiesResource',
     'TaxonomyResource',
     'VocabularyResource',
@@ -1280,10 +1283,12 @@ angular.module('obiba.mica.search')
     'QUERY_TYPES',
     'AlertService',
     'ServerErrorUtils',
+    'LocalizedValues',
     function ($scope,
               $timeout,
               $routeParams,
               $location,
+              TaxonomiesSearchResource,
               TaxonomiesResource,
               TaxonomyResource,
               VocabularyResource,
@@ -1291,14 +1296,124 @@ angular.module('obiba.mica.search')
               JoinQuerySearchResource,
               QUERY_TYPES,
               AlertService,
-              ServerErrorUtils) {
+              ServerErrorUtils,
+              LocalizedValues) {
 
+      function createCriteria(target, taxonomy, vocabulary, term) {
+        var id = taxonomy.name + '::' + vocabulary.name;
+        if (term) {
+          id = id + ':' + term.name;
+        }
+        var criteria = {
+          id: id,
+          taxonomy: taxonomy,
+          vocabulary: vocabulary,
+          term: term,
+          target: target,
+          lang: $scope.lang,
+          itemTitle: '',
+          itemDescription: '',
+          itemParentTitle: '',
+          itemParentDescription: ''
+        };
 
-console.log('THIS IS SEARCH CONTROLLER');
+        // prepare some labels for display
+        if(term) {
+          criteria.itemTitle = LocalizedValues.forLocale(term.title, $scope.lang);
+          criteria.itemDescription = LocalizedValues.forLocale(term.description,$scope.lang);
+          criteria.itemParentTitle = LocalizedValues.forLocale(vocabulary.title, $scope.lang);
+          criteria.itemParentDescription = LocalizedValues.forLocale(vocabulary.description, $scope.lang);
+          if (!criteria.itemTitle) {
+            criteria.itemTitle = term.name;
+          }
+          if (!criteria.itemParentTitle) {
+            criteria.itemParentTitle = vocabulary.name;
+          }
+        } else {
+          criteria.itemTitle = LocalizedValues.forLocale(vocabulary.title, $scope.lang);
+          criteria.itemDescription = LocalizedValues.forLocale(vocabulary.description, $scope.lang);
+          criteria.itemParentTitle = LocalizedValues.forLocale(taxonomy.title, $scope.lang);
+          criteria.itemParentDescription = LocalizedValues.forLocale(taxonomy.description, $scope.lang);
+          if (!criteria.itemTitle) {
+            criteria.itemTitle = vocabulary.name;
+          }
+          if (!criteria.itemParentTitle) {
+            criteria.itemParentTitle = taxonomy.name;
+          }
+        }
 
+        return criteria;
+      }
+
+      function onError(response) {
+        AlertService.alert({
+          id: 'SearchController',
+          type: 'danger',
+          msg: ServerErrorUtils.buildMessage(response),
+          delay: 5000
+        });
+      }
+
+      function validateType(type) {
+        if (!type || !QUERY_TYPES[type.toUpperCase()]) {
+          throw new Error('Invalid type: ' + type);
+        }
+      }
+
+      function getDefaultQuery(type) {
+        var query = ':q(match())';
+
+        switch (type) {
+          case QUERY_TYPES.NETWORKS:
+            return query.replace(/:q/, 'network');
+          case QUERY_TYPES.STUDIES:
+            return query.replace(/:q/, 'study');
+          case QUERY_TYPES.DATASETS:
+            return query.replace(/:q/, 'dataset');
+          case QUERY_TYPES.VARIABLES:
+            return query.replace(/:q/, 'variable');
+        }
+
+        throw new Error('Invalid query type: ' + type);
+      }
+
+      function validateQueryData() {
+        try {
+          var search = $location.search();
+          var type = search.type || QUERY_TYPES.VARIABLES;
+          var query = search.query || getDefaultQuery(type);
+          validateType(type);
+          new RqlParser().parse(query);
+
+          $scope.search.type = type;
+          $scope.search.query = query;
+          return true;
+
+        } catch (e) {
+          AlertService.alert({
+            id: 'SearchController',
+            type: 'danger',
+            msg: e.message,
+            delay: 5000
+          });
+        }
+
+        return false;
+      }
+
+      function executeQuery() {
+        if (validateQueryData()) {
+          JoinQuerySearchResource[$scope.search.type]({query: $scope.search.query},
+            function onSuccess(response) {
+              $scope.search.result = response;
+              console.log('>>> Response', $scope.search.result);
+            },
+            onError);
+        }
+      }
 
       var closeTaxonomies = function () {
-        $('#taxonomies').collapse('hide');
+        angular.element('#taxonomies').collapse('hide');
       };
 
       var filterTaxonomies = function (query) {
@@ -1342,7 +1457,7 @@ console.log('THIS IS SEARCH CONTROLLER');
 
       var selectTaxonomyTarget = function (target) {
         if (!$scope.taxonomiesShown) {
-          $('#taxonomies').collapse('show');
+          angular.element('#taxonomies').collapse('show');
         }
         if ($scope.taxonomies.target !== target) {
           $scope.taxonomies.target = target;
@@ -1377,10 +1492,68 @@ console.log('THIS IS SEARCH CONTROLLER');
         $scope.documents.search.active = false;
       };
 
-      var searchDocuments = function (/*query*/) {
-        $scope.documents.search.active = true;
+      var searchCriteria = function (query) {
         // search for taxonomy terms
         // search for matching variables/studies/... count
+        return TaxonomiesSearchResource.get({
+          query: query
+        }).$promise.then(function (response) {
+          if (response) {
+            var results = [];
+            var total = 0;
+            var size = 10;
+            response.forEach(function (bundle) {
+              var target = bundle.target;
+              var taxonomy = bundle.taxonomy;
+              if (taxonomy.vocabularies) {
+                taxonomy.vocabularies.forEach(function (vocabulary) {
+                  if (vocabulary.terms) {
+                    vocabulary.terms.forEach(function (term) {
+                      if (results.length < size) {
+                        results.push(createCriteria(target, taxonomy, vocabulary, term));
+                      }
+                      total++;
+                    });
+                  } else {
+                    if (results.length < size) {
+                      results.push(createCriteria(target, taxonomy, vocabulary));
+                    }
+                    total++;
+                  }
+                });
+              }
+            });
+            if(total > results.length) {
+              var note = {
+                query: query,
+                total: total,
+                size: size,
+                message: 'Showing ' + size + ' / ' + total,
+                status: 'has-warning'
+              };
+              results.push(note);
+            }
+            return results;
+          } else {
+            return [];
+          }
+        });
+      };
+
+      var selectCriteria = function (item) {
+        console.log('selectCriteria', item);
+        if(item.id){
+          var found = $scope.search.criteria.filter(function(criterion) {
+            return item.vocabulary.name === criterion.vocabulary.name;
+          });
+          console.log('Found', found);
+          if (found && found.length === 0) {
+            $scope.search.criteria.push(item);
+          }
+          $scope.selectedCriteria = null;
+        } else {
+          $scope.selectedCriteria = item.query;
+        }
       };
 
       var searchKeyUp = function (event) {
@@ -1393,7 +1566,7 @@ console.log('THIS IS SEARCH CONTROLLER');
 
           default:
             if ($scope.documents.search.text) {
-              searchDocuments($scope.documents.search.text);
+              searchCriteria($scope.documents.search.text);
             }
             break;
         }
@@ -1408,94 +1581,11 @@ console.log('THIS IS SEARCH CONTROLLER');
         }
       };
 
-      var selectTerm = function (/*taxonomy, vocabulary, term*/) {
-
+      var selectTerm = function (target, taxonomy, vocabulary, term) {
+        selectCriteria(createCriteria(target, taxonomy, vocabulary, term));
       };
 
-      function onError(response) {
-        AlertService.alert({
-          id: 'SearchController',
-          type: 'danger',
-          msg: ServerErrorUtils.buildMessage(response),
-          delay: 5000
-        });
-      }
-
-      function executeQuery() {
-        if (validateQueryData()) {
-           JoinQuerySearchResource[$scope.search.type]({query: $scope.search.query},
-            function onSuccess(response) {
-              $scope.search.result = response;
-              console.log('>>> Response', $scope.search.result);
-            },
-            onError);
-        }
-      }
-
-      function validateQueryData() {
-        try {
-          var search = $location.search();
-          var type = search.type || QUERY_TYPES.VARIABLES;
-          var query = search.query || getDefaultQuery(type);
-          validateType(type);
-          validateQuery(query);
-          $scope.search.type = type;
-          $scope.search.query = query;
-          return true;
-
-        } catch (e) {
-          AlertService.alert({
-            id: 'SearchController',
-            type: 'danger',
-            msg: e.message,
-            delay: 5000
-          });
-        }
-
-        return false;
-      }
-
-      function validateType(type) {
-        if (!type || !QUERY_TYPES[type.toUpperCase()]) {
-          throw new Error('Invalid type: ' + type);
-        }
-      }
-
-      function validateQuery(query) {
-        new RqlParser().parse(query);
-      }
-
-      function getDefaultQuery(type) {
-        var query = ':q(match())';
-
-        switch (type) {
-          case QUERY_TYPES.NETWORKS:
-            return query.replace(/:q/, 'network');
-          case QUERY_TYPES.STUDIES:
-            return query.replace(/:q/, 'study');
-          case QUERY_TYPES.DATASETS:
-            return query.replace(/:q/, 'dataset');
-          case QUERY_TYPES.VARIABLES:
-            return query.replace(/:q/, 'variable');
-        }
-
-        throw new Error('Invalid query type: ' + type);
-      }
-
-      function initialize() {
-        var search = angular.copy($location.search());
-
-        if ({} !== search) {
-          validateQueryData();
-        }
-
-        search.type = $scope.search.type;
-        search.query = $scope.search.query;
-
-        executeQuery();
-      }
-
-      var onTypeChanged = function(type) {
+      var onTypeChanged = function (type) {
         if (type) {
           validateType(type);
           var search = $location.search();
@@ -1510,7 +1600,8 @@ console.log('THIS IS SEARCH CONTROLLER');
       $scope.search = {
         query: null,
         type: null,
-        result: null
+        result: null,
+        criteria: []
       };
 
       $scope.documents = {
@@ -1533,6 +1624,8 @@ console.log('THIS IS SEARCH CONTROLLER');
 
       $scope.headerTemplateUrl = ngObibaMicaSearchTemplateUrl.getHeaderUrl('view');
       $scope.clearFilterTaxonomies = clearFilterTaxonomies;
+      $scope.searchCriteria = searchCriteria;
+      $scope.selectCriteria = selectCriteria;
       $scope.searchKeyUp = searchKeyUp;
       $scope.filterTaxonomiesKeyUp = filterTaxonomiesKeyUp;
       $scope.navigateTaxonomy = navigateTaxonomy;
@@ -1543,18 +1636,18 @@ console.log('THIS IS SEARCH CONTROLLER');
       $scope.taxonomiesShown = false;
 
       //// TODO replace with angular code
-      $('#taxonomies').on('show.bs.collapse', function () {
+      angular.element('#taxonomies').on('show.bs.collapse', function () {
         $scope.taxonomiesShown = true;
       });
-      $('#taxonomies').on('hide.bs.collapse', function () {
+      angular.element('#taxonomies').on('hide.bs.collapse', function () {
         $scope.taxonomiesShown = false;
       });
 
       $scope.$watch('search', function () {
-        initialize();
+        executeQuery();
       });
 
-      $scope.$on('$locationChangeSuccess', function(newLocation, oldLocation) {
+      $scope.$on('$locationChangeSuccess', function (newLocation, oldLocation) {
         if (newLocation !== oldLocation) {
           executeQuery();
         }
@@ -1566,7 +1659,7 @@ console.log('THIS IS SEARCH CONTROLLER');
     '$scope',
     'QUERY_TYPES',
     function ($scope, QUERY_TYPES) {
-      var selectTab = function(type) {
+      var selectTab = function (type) {
         console.log('Type', type);
         $scope.type = type;
         $scope.$parent.onTypeChanged(type);
@@ -1575,7 +1668,7 @@ console.log('THIS IS SEARCH CONTROLLER');
       $scope.selectTab = selectTab;
       $scope.QUERY_TYPES = QUERY_TYPES;
 
-      $scope.$watch('type', function() {
+      $scope.$watch('type', function () {
         $scope.activeTab = {
           networks: $scope.type === QUERY_TYPES.NETWORKS || false,
           studies: $scope.type === QUERY_TYPES.STUDIES || false,
@@ -1583,6 +1676,64 @@ console.log('THIS IS SEARCH CONTROLLER');
           variables: $scope.type === QUERY_TYPES.VARIABLES || false
         };
       });
+
+    }])
+
+  .controller('CriterionDropdownController', [
+    '$scope',
+    'LocalizedValues',
+    function ($scope, LocalizedValues) {
+      console.log('QueryDropdownController', $scope);
+
+      var isSelected = function(name) {
+        return $scope.selectedTerms.indexOf(name) !== -1;
+      };
+
+      var selectAll = function () {
+        $scope.selectedTerms = $scope.criterion.vocabulary.terms.map(function (term) {
+          return term.name;
+        });
+      };
+
+      var toggleSelection = function(term) {
+        if (!isSelected(term.name)) {
+          $scope.selectedTerms.push(term.name);
+          return;
+        }
+
+        $scope.selectedTerms = $scope.selectedTerms.filter(function(name) {
+          return name !== term.name;
+        });
+      };
+
+      var localize = function(values) {
+        return LocalizedValues.forLocale(values, $scope.criterion.lang);
+      };
+
+      var truncate = function(text) {
+        return text.length > 40 ? text.substring(0, 40) + '...' : text;
+      };
+
+      $scope.selectedTerms = [];
+      $scope.selectAll = selectAll;
+      $scope.deselectAll = function() { $scope.selectedTerms = []; };
+      $scope.toggleSelection = toggleSelection;
+      $scope.isSelected = isSelected;
+      $scope.localize = localize;
+      $scope.truncate = truncate;
+
+    }])
+
+  .controller('CriteriaPanelController', [
+    '$scope',
+    function ($scope) {
+      console.log('QueryPanelController', $scope);
+
+      $scope.removeCriteria = function(id) {
+        $scope.criteria = $scope.criteria.filter(function(criterion) {
+          return id !== criterion.id;
+        });
+      };
 
     }]);
 ;/*
@@ -1630,6 +1781,7 @@ angular.module('obiba.mica.search')
       restrict: 'EA',
       replace: true,
       scope: {
+        target: '=',
         taxonomy: '=',
         vocabulary: '=',
         term: '=',
@@ -1697,7 +1849,39 @@ angular.module('obiba.mica.search')
       controller: 'SearchResultController',
       templateUrl: 'search/views/search-result-panel-template.html'
     };
+  }])
 
+  .directive('criterionDropdown', [function () {
+    return {
+      restrict: 'EA',
+      replace: true,
+      scope: {
+        criterion: '=',
+        onSelect: '=',
+        onRemove: '='
+      },
+      controller: 'CriterionDropdownController',
+      templateUrl: 'search/views/criterion-dropdown-template.html',
+      link: function(scope, element) {
+        scope.remove = function(id) {
+          scope.onRemove(id);
+          element.remove();
+          scope.$destroy();
+        };
+      }
+    };
+  }])
+
+  .directive('criteriaPanel', [function () {
+    return {
+      restrict: 'EA',
+      replace: true,
+      scope: {
+        criteria: '='
+      },
+      controller: 'CriteriaPanelController',
+      templateUrl: 'search/views/criteria-panel-template.html'
+    };
   }]);
 ;/*
  * Copyright (c) 2016 OBiBa. All rights reserved.
@@ -1734,6 +1918,17 @@ angular.module('obiba.mica.search')
 'use strict';
 
 angular.module('obiba.mica.search')
+  .factory('TaxonomiesSearchResource', ['$resource', 'ngObibaMicaUrl',
+    function ($resource, ngObibaMicaUrl) {
+      return $resource(ngObibaMicaUrl.getUrl('TaxonomiesSearchResource'), {}, {
+        'get': {
+          method: 'GET',
+          isArray: true,
+          errorHandler: true
+        }
+      });
+    }])
+
   .factory('TaxonomiesResource', ['$resource', 'ngObibaMicaUrl',
     function ($resource, ngObibaMicaUrl) {
       return $resource(ngObibaMicaUrl.getUrl('TaxonomiesResource'), {}, {
@@ -1988,7 +2183,196 @@ angular.module('obiba.mica.graphics')
       }
     };
   }]);
-;angular.module('templates-ngObibaMica', ['access/views/data-access-request-form.html', 'access/views/data-access-request-histroy-view.html', 'access/views/data-access-request-list.html', 'access/views/data-access-request-profile-user-modal.html', 'access/views/data-access-request-submitted-modal.html', 'access/views/data-access-request-validation-modal.html', 'access/views/data-access-request-view.html', 'attachment/attachment-input-template.html', 'attachment/attachment-list-template.html', 'graphics/views/charts-directive.html', 'search/views/datasets-search-result-table-template.html', 'search/views/networks-search-result-table-template.html', 'search/views/search-result-panel-template.html', 'search/views/search.html', 'search/views/studies-search-result-table-template.html', 'search/views/taxonomies-view.html', 'search/views/taxonomy-panel-template.html', 'search/views/taxonomy-template.html', 'search/views/term-panel-template.html', 'search/views/variables-search-result-table-template.html', 'search/views/vocabulary-panel-template.html']);
+;'use strict';
+
+angular.module('obiba.mica.localized', [
+  'obiba.notification',
+  'pascalprecht.translate',
+  'templates-ngObibaMica'
+]);
+;'use strict';
+
+angular.module('obiba.mica.localized')
+
+  .directive('localized', [function () {
+    return {
+      restrict: 'AE',
+      scope: {
+        value: '=',
+        lang: '='
+      },
+      template: '<span ng-repeat="localizedValue in value | filter:{lang:lang}">{{localizedValue.value}}</span>'
+    };
+  }])
+
+  .directive('localizedInput', [function () {
+    return {
+      restrict: 'AE',
+      require: '^form',
+      scope: {
+        name: '@',
+        model: '=',
+        label: '@',
+        required: '@',
+        disabled: '=',
+        lang: '=',
+        help: '@'
+      },
+      templateUrl: 'localized/localized-input-template.html',
+      link: function ($scope, elem, attr, ctrl) {
+        if (angular.isUndefined($scope.model) || $scope.model === null) {
+          $scope.model = [
+            {lang: $scope.lang, value: ''}
+          ];
+        }
+
+        $scope.$watch('model', function(newModel) {
+          if (angular.isUndefined(newModel) || newModel === null) {
+            $scope.model = [{lang: $scope.lang, value: ''}];
+          }
+
+          var currentLang = $scope.model.filter(function(e) {
+            if (e.lang === $scope.lang) {
+              return e;
+            }
+          });
+
+          if (currentLang.length === 0) {
+            $scope.model.push({lang:$scope.lang, value: ''});
+          }
+        }, true);
+
+        $scope.fieldName = $scope.name + '-' + $scope.lang;
+        $scope.form = ctrl;
+      }
+    };
+  }])
+
+  .directive('localizedInputGroup', [function () {
+    return {
+      restrict: 'AE',
+      require: '^form',
+      scope: {
+        name: '@',
+        model: '=',
+        label: '@',
+        required: '@',
+        disabled: '=',
+        lang: '=',
+        help: '@',
+        remove: '='
+      },
+      templateUrl: 'localized/localized-input-group-template.html',
+      link: function ($scope, elem, attr, ctrl) {
+        if (angular.isUndefined($scope.model) || $scope.model === null) {
+          $scope.model = [
+            {lang: $scope.lang, value: ''}
+          ];
+        }
+
+        $scope.$watch('model', function(newModel) {
+          if (angular.isUndefined(newModel) || newModel === null) {
+            $scope.model = [{lang: $scope.lang, value: ''}];
+          }
+
+          var currentLang = $scope.model.filter(function(e) {
+            if (e.lang === $scope.lang) {
+              return e;
+            }
+          });
+
+          if (currentLang.length === 0) {
+            $scope.model.push({lang:$scope.lang, value: ''});
+          }
+        }, true);
+
+        $scope.fieldName = $scope.name + '-' + $scope.lang;
+        $scope.form = ctrl;
+      }
+    };
+  }])
+
+  .directive('localizedTextarea', [function () {
+    return {
+      restrict: 'AE',
+      require: '^form',
+      scope: {
+        name: '@',
+        model: '=',
+        label: '@',
+        required: '@',
+        disabled: '=',
+        lang: '=',
+        help: '@',
+        rows: '@'
+      },
+      templateUrl: 'localized/localized-textarea-template.html',
+      link: function ($scope, elem, attr, ctrl) {
+        if (angular.isUndefined($scope.model) || $scope.model === null) {
+          $scope.model = [
+            {lang: $scope.lang, value: ''}
+          ];
+        }
+
+        $scope.$watch('model', function(newModel) {
+          if (angular.isUndefined(newModel) || newModel === null) {
+            $scope.model = [{lang: $scope.lang, value: ''}];
+          }
+
+          var currentLang = $scope.model.filter(function(e) {
+            if (e.lang === $scope.lang) {
+              return e;
+            }
+          });
+
+          if (currentLang.length === 0) {
+            $scope.model.push({lang:$scope.lang, value: ''});
+          }
+        }, true);
+
+        $scope.fieldName = $scope.name + '-' + $scope.lang;
+        $scope.form = ctrl;
+      }
+    };
+  }]);
+;/*
+ * Copyright (c) 2015 OBiBa. All rights reserved.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+'use strict';
+
+angular.module('obiba.mica.localized')
+
+  .service('LocalizedValues',
+    function () {
+      this.for = function (values, lang, keyLang, keyValue) {
+        if (angular.isArray(values)) {
+          var result = values.filter(function (item) {
+            return item[keyLang] === lang;
+          });
+
+          if (result && result.length > 0) {
+            return result[0][keyValue];
+          }
+          return values;
+        }
+      };
+
+      this.forLocale = function (values, lang) {
+        return this.for(values, lang, 'locale', 'text');
+      };
+
+      this.forLang = function (values, lang) {
+        return this.for(values, lang, 'lang', 'value');
+      };
+    });
+;angular.module('templates-ngObibaMica', ['access/views/data-access-request-form.html', 'access/views/data-access-request-histroy-view.html', 'access/views/data-access-request-list.html', 'access/views/data-access-request-profile-user-modal.html', 'access/views/data-access-request-submitted-modal.html', 'access/views/data-access-request-validation-modal.html', 'access/views/data-access-request-view.html', 'attachment/attachment-input-template.html', 'attachment/attachment-list-template.html', 'graphics/views/charts-directive.html', 'localized/localized-input-group-template.html', 'localized/localized-input-template.html', 'localized/localized-textarea-template.html', 'search/views/criteria-panel-template.html', 'search/views/criterion-dropdown-template.html', 'search/views/datasets-search-result-table-template.html', 'search/views/networks-search-result-table-template.html', 'search/views/search-result-panel-template.html', 'search/views/search.html', 'search/views/studies-search-result-table-template.html', 'search/views/taxonomies-view.html', 'search/views/taxonomy-panel-template.html', 'search/views/taxonomy-template.html', 'search/views/term-panel-template.html', 'search/views/variables-search-result-table-template.html', 'search/views/vocabulary-panel-template.html']);
 
 angular.module("access/views/data-access-request-form.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("access/views/data-access-request-form.html",
@@ -2470,6 +2854,104 @@ angular.module("graphics/views/charts-directive.html", []).run(["$templateCache"
     "");
 }]);
 
+angular.module("localized/localized-input-group-template.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("localized/localized-input-group-template.html",
+    "<div class=\"form-group\" ng-class=\"{'has-error': (form[fieldName].$dirty || form.saveAttempted) && form[fieldName].$invalid}\">\n" +
+    "  <label for=\"{{fieldName}}\" class=\"control-label\">\n" +
+    "    {{label | translate}}\n" +
+    "    <span ng-show=\"required\">*</span>\n" +
+    "  </label>\n" +
+    "  <div class=\"input-group\">\n" +
+    "    <input ng-repeat=\"localized in model | filter:{lang:lang}\" ng-model=\"localized.value\" type=\"text\" class=\"form-control\" id=\"{{fieldName}}\" name=\"{{fieldName}}\" ng-disabled=\"disabled\" form-server-error ng-required=\"required\">\n" +
+    "  <span class=\"input-group-btn\" ng-show=\"remove\">\n" +
+    "    <button class=\"btn btn-default\" type=\"button\" ng-click=\"remove(model)\"><span class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"></span></button>\n" +
+    "  </span>\n" +
+    "  </div>\n" +
+    "  <ul class=\"input-error list-unstyled\" ng-show=\"form[fieldName].$dirty && form[fieldName].$invalid\">\n" +
+    "    <li ng-show=\"form[fieldName].$error.required\" translate>required</li>\n" +
+    "    <li ng-repeat=\"error in form[fieldName].errors\">{{error}}</li>\n" +
+    "  </ul>\n" +
+    "  <p ng-show=\"help\" class=\"help-block\">{{help | translate}}</p>\n" +
+    "</div>");
+}]);
+
+angular.module("localized/localized-input-template.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("localized/localized-input-template.html",
+    "<div class=\"form-group\" ng-class=\"{'has-error': (form[fieldName].$dirty || form.saveAttempted) && form[fieldName].$invalid}\">\n" +
+    "  <label for=\"{{fieldName}}\" class=\"control-label\">\n" +
+    "    {{label | translate}}\n" +
+    "    <span ng-show=\"required\">*</span>\n" +
+    "  </label>\n" +
+    "  <input ng-repeat=\"localized in model | filter:{lang:lang}\" ng-model=\"localized.value\" type=\"text\" class=\"form-control\" id=\"{{fieldName}}\" name=\"{{fieldName}}\" ng-disabled=\"disabled\" form-server-error ng-required=\"required\">\n" +
+    "  <ul class=\"input-error list-unstyled\" ng-show=\"form[fieldName].$dirty && form[fieldName].$invalid\">\n" +
+    "    <li ng-show=\"form[fieldName].$error.required\" translate>required</li>\n" +
+    "    <li ng-repeat=\"error in form[fieldName].errors\">{{error}}</li>\n" +
+    "  </ul>\n" +
+    "  <p ng-show=\"help\" class=\"help-block\">{{help | translate}}</p>\n" +
+    "</div>");
+}]);
+
+angular.module("localized/localized-textarea-template.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("localized/localized-textarea-template.html",
+    "<div class=\"form-group\" ng-class=\"{'has-error': (form[fieldName].$dirty || form.saveAttempted) && form[fieldName].$invalid}\">\n" +
+    "\n" +
+    "  <label for=\"{{fieldName}}\" class=\"control-label\">\n" +
+    "    {{label | translate}}\n" +
+    "    <span ng-show=\"required\">*</span>\n" +
+    "  </label>\n" +
+    "\n" +
+    "  <textarea ng-repeat=\"localized in model | filter:{lang:lang}\" ng-model=\"localized.value\" rows=\"{{rows ? rows : 5}}\" class=\"form-control\" id=\"{{fieldName}}\" name=\"{{fieldName}}\" form-server-error ng-disabled=\"disabled\" ng-required=\"required\"></textarea>\n" +
+    "\n" +
+    "  <ul class=\"input-error list-unstyled\" ng-show=\"form[fieldName].$dirty && form[fieldName].$invalid\">\n" +
+    "    <li ng-show=\"form[fieldName].$error.required\" translate>required</li>\n" +
+    "    <li ng-repeat=\"error in form[fieldName].errors\">{{error}}</li>\n" +
+    "  </ul>\n" +
+    "\n" +
+    "  <p ng-show=\"help\" class=\"help-block\">{{help | translate}}</p>\n" +
+    "\n" +
+    "</div>");
+}]);
+
+angular.module("search/views/criteria-panel-template.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("search/views/criteria-panel-template.html",
+    "<span class=\"voffset4\">\n" +
+    "  <span criterion-dropdown ng-repeat=\"criterion in criteria\" criterion=\"criterion\" on-select=\"selectTerm\" on-remove=\"removeCriteria\">\n" +
+    "  </span>\n" +
+    "</span>\n" +
+    "");
+}]);
+
+angular.module("search/views/criterion-dropdown-template.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("search/views/criterion-dropdown-template.html",
+    "<span class='btn-group btn-info' ng-class='{open: open}'>\n" +
+    "  <button class='btn btn-small btn-info dropdown'\n" +
+    "          ng-click='open=!open;openDropdown()' title=\"{{localize(criterion.vocabulary.title)}}\">\n" +
+    "    {{truncate(localize(criterion.vocabulary.title))}}\n" +
+    "    <span class='fa fa-caret-down'></span>\n" +
+    "  </button>\n" +
+    "\n" +
+    "  <button class='btn btn-small btn-danger' ng-click='remove(criterion.id)'>\n" +
+    "    <span class='fa fa-times'></span>\n" +
+    "  </button>\n" +
+    "\n" +
+    "  <ul class='dropdown-menu query-dropdown-menu' aria-labelledby='dropdownMenu'>\n" +
+    "    <li>\n" +
+    "      <a ng-click='selectAll()'><i class='fa fa-check'></i> Check All</a>\n" +
+    "    </li>\n" +
+    "    <li>\n" +
+    "      <a ng-click='deselectAll();'><i class='fa fa-times'></i> Uncheck All</a>\n" +
+    "    </li>\n" +
+    "    <li class='divider'></li>\n" +
+    "    <li ng-repeat='term in criterion.vocabulary.terms'>\n" +
+    "      <a href ng-click='toggleSelection(term)' title=\"{{localize(term.title)}}\">\n" +
+    "        {{truncate(localize(term.title))}} <span ng-show=\"isSelected(term.name)\"\n" +
+    "                                                     class=\"fa fa-check pull-right\"></span>\n" +
+    "      </a>\n" +
+    "    </li>\n" +
+    "  </ul>\n" +
+    "</span>");
+}]);
+
 angular.module("search/views/datasets-search-result-table-template.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("search/views/datasets-search-result-table-template.html",
     "<div ng-show=\"summaries.length > 0\">\n" +
@@ -2626,14 +3108,36 @@ angular.module("search/views/search.html", []).run(["$templateCache", function($
     "  <obiba-alert id=\"SearchController\"></obiba-alert>\n" +
     "\n" +
     "  <!-- Classifications region -->\n" +
-    "  <div ng-mouseleave=\"closeTaxonomies()\">\n" +
-    "  <!--<div>-->\n" +
+    "  <div>\n" +
+    "    <!--<div>-->\n" +
     "    <div class=\"row\">\n" +
     "      <div class=\"col-xs-3\"></div>\n" +
     "      <div class=\"col-xs-6\">\n" +
+    "        <script type=\"text/ng-template\" id=\"customTemplate.html\">\n" +
+    "          <a ng-if=\"match.model.id\">\n" +
+    "            <span title=\"{{match.model.target + '-classifications' | translate}}\">\n" +
+    "              <i class=\"{{'i-obiba-' + match.model.target}}\"></i>\n" +
+    "            </span>\n" +
+    "            <span title=\"{{match.model.itemDescription}}\">{{match.model.itemTitle}}</span>\n" +
+    "            <small class=\"help-block no-margin hoffset3\" title=\"{{match.model.itemParentDescription}}\">\n" +
+    "              {{match.model.itemParentTitle}}\n" +
+    "            </small>\n" +
+    "          </a>\n" +
+    "          <a ng-if=\"!match.model.id\" class=\"{{match.model.status}}\">\n" +
+    "            <small class=\"help-block no-margin\">\n" +
+    "              {{match.model.message}}\n" +
+    "            </small>\n" +
+    "          </a>\n" +
+    "        </script>\n" +
     "        <a href>\n" +
     "        <span class=\"input-group input-group-sm no-padding-top\">\n" +
-    "          <input ng-keyup=\"searchKeyUp($event)\" ng-model=\"documents.search.text\" type=\"text\" class=\"form-control ng-pristine ng-untouched ng-valid\" aria-describedby=\"study-search\">\n" +
+    "          <input type=\"text\" ng-model=\"selectedCriteria\" placeholder=\"Search for criteria\"\n" +
+    "            uib-typeahead=\"criteria for criteria in searchCriteria($viewValue)\"\n" +
+    "            typeahead-min-length=\"2\"\n" +
+    "            typeahead-loading=\"documents.search.active\"\n" +
+    "            typeahead-template-url=\"customTemplate.html\"\n" +
+    "            typeahead-on-select=\"selectCriteria($item)\"\n" +
+    "            class=\"form-control\">\n" +
     "          <span class=\"input-group-addon\"><i class=\"glyphicon glyphicon-search\"></i></span>\n" +
     "        </span>\n" +
     "        </a>\n" +
@@ -2643,19 +3147,26 @@ angular.module("search/views/search.html", []).run(["$templateCache", function($
     "      <div class=\"col-xs-3\"></div>\n" +
     "      <div class=\"col-xs-6\">\n" +
     "        <ul class=\"nav nav-pills\">\n" +
-    "          <li ng-class=\"{'active': taxonomies.target === 'variable' && taxonomiesShown}\" title=\"{{'variable-classifications' | translate}}\">\n" +
-    "            <a ng-mouseover=\"selectTaxonomyTarget('variable')\" translate>variables</a>\n" +
+    "          <li ng-class=\"{'active': taxonomies.target === 'variable' && taxonomiesShown}\"\n" +
+    "            title=\"{{'variable-classifications' | translate}}\">\n" +
+    "            <a ng-click=\"selectTaxonomyTarget('variable')\" translate>variables</a>\n" +
     "          </li>\n" +
-    "          <li ng-class=\"{'active': taxonomies.target === 'study' && taxonomiesShown}\" title=\"{{'study-classifications' | translate}}\">\n" +
-    "            <a ng-mouseover=\"selectTaxonomyTarget('study')\" translate>studies</a>\n" +
+    "          <li ng-class=\"{'active': taxonomies.target === 'dataset' && taxonomiesShown}\"\n" +
+    "            title=\"{{'dataset-classifications' | translate}}\">\n" +
+    "            <a ng-click=\"selectTaxonomyTarget('dataset')\" translate>datasets</a>\n" +
     "          </li>\n" +
-    "          <li ng-if=\"taxonomiesShown\">\n" +
-    "            <a href ng-click=\"closeTaxonomies()\" title=\"{{'close' | translate}}\"><i class=\"fa fa-close\"></i> </a>\n" +
+    "          <li ng-class=\"{'active': taxonomies.target === 'study' && taxonomiesShown}\"\n" +
+    "            title=\"{{'study-classifications' | translate}}\">\n" +
+    "            <a ng-click=\"selectTaxonomyTarget('study')\" translate>studies</a>\n" +
+    "          </li>\n" +
+    "          <li ng-class=\"{'active': taxonomies.target === 'network' && taxonomiesShown}\"\n" +
+    "            title=\"{{'network-classifications' | translate}}\">\n" +
+    "            <a ng-click=\"selectTaxonomyTarget('network')\" translate>networks</a>\n" +
     "          </li>\n" +
     "        </ul>\n" +
     "      </div>\n" +
     "    </div>\n" +
-    "    <div id=\"taxonomies\" class=\"collapse card card-static container\">\n" +
+    "    <div id=\"taxonomies\" class=\"collapse\">\n" +
     "      <div ng-include=\"'search/views/taxonomies-view.html'\"></div>\n" +
     "    </div>\n" +
     "  </div>\n" +
@@ -2664,37 +3175,7 @@ angular.module("search/views/search.html", []).run(["$templateCache", function($
     "  <div class=\"voffset4\">\n" +
     "    <div class=\"row voffset4\">\n" +
     "      <div class=\"col-xs-12\">\n" +
-    "        <div class=\"btn-group dropdown\" is-open=\"status.isopen\">\n" +
-    "          <button type=\"button\" class=\"btn btn-info btn-sm dropdown-toggle\" ng-disabled=\"disabled\" data-toggle=\"dropdown\">\n" +
-    "            Study: All <span class=\"caret\"></span>\n" +
-    "          </button>\n" +
-    "          <ul class=\"dropdown-menu\" role=\"menu\">\n" +
-    "            <li><a role=\"menuitem\" href ng-click=\"selectCriteria()\">Atlantic Path</a></li>\n" +
-    "            <li><a role=\"menuitem\" href ng-click=\"selectCriteria()\">CartaGene</a></li>\n" +
-    "          </ul>\n" +
-    "        </div>\n" +
-    "\n" +
-    "        <div class=\"btn-group dropdown\" is-open=\"status.isopen\">\n" +
-    "          <button type=\"button\" class=\"btn btn-default btn-sm dropdown-toggle\" ng-disabled=\"disabled\" data-toggle=\"dropdown\">\n" +
-    "            OR <span class=\"caret\"></span>\n" +
-    "          </button>\n" +
-    "          <ul class=\"dropdown-menu\" role=\"menu\">\n" +
-    "            <li><a role=\"menuitem\" href ng-click=\"selectCriteria()\">AND</a></li>\n" +
-    "          </ul>\n" +
-    "        </div>\n" +
-    "\n" +
-    "        <div class=\"btn-group dropdown\" is-open=\"status.isopen\">\n" +
-    "          <button type=\"button\" class=\"btn btn-info btn-sm dropdown-toggle\" ng-disabled=\"disabled\" data-toggle=\"dropdown\">\n" +
-    "            Study designs: All <span class=\"caret\"></span>\n" +
-    "          </button>\n" +
-    "          <ul class=\"dropdown-menu\" role=\"menu\">\n" +
-    "            <li><a role=\"menuitem\" href ng-click=\"selectCriteria()\">Cohort study (117)</a></li>\n" +
-    "            <li><a role=\"menuitem\" href ng-click=\"selectCriteria()\">Cross sectional (8)</a></li>\n" +
-    "            <li><a role=\"menuitem\" href ng-click=\"selectCriteria()\">Clinical trial (5)</a></li>\n" +
-    "            <li><a role=\"menuitem\" href ng-click=\"selectCriteria()\">Case control (2)</a></li>\n" +
-    "            <li><a role=\"menuitem\" href ng-click=\"selectCriteria()\">Other (2)</a></li>\n" +
-    "          </ul>\n" +
-    "        </div>\n" +
+    "        <div criteria-panel criteria=\"search.criteria\"></div>\n" +
     "      </div>\n" +
     "    </div>\n" +
     "  </div>\n" +
@@ -2812,9 +3293,11 @@ angular.module("search/views/taxonomies-view.html", []).run(["$templateCache", f
     "          <div class=\"form-group\">\n" +
     "            <span class=\"input-group input-group-sm no-padding-top\">\n" +
     "              <span class=\"input-group-addon\"><i class=\"glyphicon glyphicon-filter\"></i></span>\n" +
-    "              <input ng-keyup=\"filterTaxonomiesKeyUp($event)\" ng-model=\"taxonomies.search.text\" type=\"text\" class=\"form-control ng-pristine ng-untouched ng-valid\" aria-describedby=\"study-search\">\n" +
-    "              <span class=\"input-group-addon\"><i class=\"glyphicon glyphicon-remove\" ng-click=\"clearFilterTaxonomies()\"></i></span>\n" +
+    "              <input ng-keyup=\"filterTaxonomiesKeyUp($event)\" ng-model=\"taxonomies.search.text\" type=\"text\"\n" +
+    "                class=\"form-control ng-pristine ng-untouched ng-valid\" aria-describedby=\"study-search\">\n" +
     "            </span>\n" +
+    "            <span ng-click=\"closeTaxonomies()\" title=\"{{'close' | translate}}\" class=\"hoffset3\"><i\n" +
+    "              class=\"fa fa-close\"></i></span>\n" +
     "          </div>\n" +
     "        </div>\n" +
     "      </div>\n" +
@@ -2846,13 +3329,16 @@ angular.module("search/views/taxonomies-view.html", []).run(["$templateCache", f
     "      </p>\n" +
     "      <div ng-repeat=\"vocabulary in taxonomies.taxonomy.vocabularies\" ng-if=\"$index % 3 == 0\" class=\"row\">\n" +
     "        <div class=\"col-xs-4\">\n" +
-    "          <div vocabulary-panel taxonomy=\"taxonomies.taxonomy\" vocabulary=\"taxonomies.taxonomy.vocabularies[$index]\" lang=\"lang\" on-navigate=\"navigateTaxonomy\" on-select=\"selectTerm\"></div>\n" +
+    "          <div vocabulary-panel taxonomy=\"taxonomies.taxonomy\" vocabulary=\"taxonomies.taxonomy.vocabularies[$index]\"\n" +
+    "            lang=\"lang\" on-navigate=\"navigateTaxonomy\" on-select=\"selectTerm\"></div>\n" +
     "        </div>\n" +
     "        <div class=\"col-xs-4\">\n" +
-    "          <div vocabulary-panel taxonomy=\"taxonomies.taxonomy\" vocabulary=\"taxonomies.taxonomy.vocabularies[$index + 1]\" lang=\"lang\" on-navigate=\"navigateTaxonomy\" on-select=\"selectTerm\"></div>\n" +
+    "          <div vocabulary-panel taxonomy=\"taxonomies.taxonomy\" vocabulary=\"taxonomies.taxonomy.vocabularies[$index + 1]\"\n" +
+    "            lang=\"lang\" on-navigate=\"navigateTaxonomy\" on-select=\"selectTerm\"></div>\n" +
     "        </div>\n" +
     "        <div class=\"col-xs-4\">\n" +
-    "          <div vocabulary-panel taxonomy=\"taxonomies.taxonomy\" vocabulary=\"taxonomies.taxonomy.vocabularies[$index + 2]\" lang=\"lang\" on-navigate=\"navigateTaxonomy\" on-select=\"selectTerm\"></div>\n" +
+    "          <div vocabulary-panel taxonomy=\"taxonomies.taxonomy\" vocabulary=\"taxonomies.taxonomy.vocabularies[$index + 2]\"\n" +
+    "            lang=\"lang\" on-navigate=\"navigateTaxonomy\" on-select=\"selectTerm\"></div>\n" +
     "        </div>\n" +
     "      </div>\n" +
     "    </div>\n" +
@@ -2863,13 +3349,16 @@ angular.module("search/views/taxonomies-view.html", []).run(["$templateCache", f
     "      </p>\n" +
     "      <div ng-repeat=\"term in taxonomies.vocabulary.terms\" ng-if=\"$index % 3 == 0\" class=\"row\">\n" +
     "        <div class=\"col-xs-4\">\n" +
-    "          <div term-panel taxonomy=\"taxonomies.taxonomy\" vocabulary=\"taxonomies.taxonomy.vocabulary\" term=\"taxonomies.vocabulary.terms[$index]\" lang=\"lang\" on-select=\"selectTerm\"></div>\n" +
+    "          <div term-panel target=\"taxonomies.target\" taxonomy=\"taxonomies.taxonomy\" vocabulary=\"taxonomies.vocabulary\"\n" +
+    "            term=\"taxonomies.vocabulary.terms[$index]\" lang=\"lang\" on-select=\"selectTerm\"></div>\n" +
     "        </div>\n" +
     "        <div class=\"col-xs-4\">\n" +
-    "          <div term-panel taxonomy=\"taxonomies.taxonomy\" vocabulary=\"taxonomies.taxonomy.vocabulary\" term=\"taxonomies.vocabulary.terms[$index + 1]\" lang=\"lang\" on-select=\"selectTerm\"></div>\n" +
+    "          <div term-panel target=\"taxonomies.target\" taxonomy=\"taxonomies.taxonomy\" vocabulary=\"taxonomies.vocabulary\"\n" +
+    "            term=\"taxonomies.vocabulary.terms[$index + 1]\" lang=\"lang\" on-select=\"selectTerm\"></div>\n" +
     "        </div>\n" +
     "        <div class=\"col-xs-4\">\n" +
-    "          <div term-panel taxonomy=\"taxonomies.taxonomy\" vocabulary=\"taxonomies.taxonomy.vocabulary\" term=\"taxonomies.vocabulary.terms[$index + 2]\" lang=\"lang\" on-select=\"selectTerm\"></div>\n" +
+    "          <div term-panel target=\"taxonomies.target\" taxonomy=\"taxonomies.taxonomy\" vocabulary=\"taxonomies.vocabulary\"\n" +
+    "            term=\"taxonomies.vocabulary.terms[$index + 2]\" lang=\"lang\" on-select=\"selectTerm\"></div>\n" +
     "        </div>\n" +
     "      </div>\n" +
     "    </div>\n" +
@@ -2939,7 +3428,7 @@ angular.module("search/views/term-panel-template.html", []).run(["$templateCache
     "  <h4 ng-repeat=\"label in term.title\" ng-if=\"label.locale === lang\">\n" +
     "    {{label.text}}\n" +
     "    <small>\n" +
-    "    <a href ng-click=\"onSelect(taxonomy, vocabulary, term)\">\n" +
+    "    <a href ng-click=\"onSelect(target, taxonomy, vocabulary, term)\">\n" +
     "      <i class=\"fa fa-plus-circle\" title=\"{{'add-query' | translate}}\"></i>\n" +
     "    </a>\n" +
     "    </small>\n" +
@@ -2981,10 +3470,10 @@ angular.module("search/views/variables-search-result-table-template.html", []).r
     "          <localized value=\"summary.variableLabel\" lang=\"lang\"></localized>\n" +
     "        </td>\n" +
     "        <td>\n" +
-    "          <localized value=\"summary.studyName\" lang=\"lang\"></localized>\n" +
+    "          <localized value=\"summary.studyAcronym\" lang=\"lang\"></localized>\n" +
     "        </td>\n" +
     "        <td>\n" +
-    "          <localized value=\"summary.datasetName\" lang=\"lang\"></localized>\n" +
+    "          <localized value=\"summary.datasetAcronym\" lang=\"lang\"></localized>\n" +
     "        </td>\n" +
     "      </tr>\n" +
     "      </tbody>\n" +

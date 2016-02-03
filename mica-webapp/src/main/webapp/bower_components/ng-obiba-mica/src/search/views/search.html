@@ -5,14 +5,36 @@
   <obiba-alert id="SearchController"></obiba-alert>
 
   <!-- Classifications region -->
-  <div ng-mouseleave="closeTaxonomies()">
-  <!--<div>-->
+  <div>
+    <!--<div>-->
     <div class="row">
       <div class="col-xs-3"></div>
       <div class="col-xs-6">
+        <script type="text/ng-template" id="customTemplate.html">
+          <a ng-if="match.model.id">
+            <span title="{{match.model.target + '-classifications' | translate}}">
+              <i class="{{'i-obiba-' + match.model.target}}"></i>
+            </span>
+            <span title="{{match.model.itemDescription}}">{{match.model.itemTitle}}</span>
+            <small class="help-block no-margin hoffset3" title="{{match.model.itemParentDescription}}">
+              {{match.model.itemParentTitle}}
+            </small>
+          </a>
+          <a ng-if="!match.model.id" class="{{match.model.status}}">
+            <small class="help-block no-margin">
+              {{match.model.message}}
+            </small>
+          </a>
+        </script>
         <a href>
         <span class="input-group input-group-sm no-padding-top">
-          <input ng-keyup="searchKeyUp($event)" ng-model="documents.search.text" type="text" class="form-control ng-pristine ng-untouched ng-valid" aria-describedby="study-search">
+          <input type="text" ng-model="selectedCriteria" placeholder="Search for criteria"
+            uib-typeahead="criteria for criteria in searchCriteria($viewValue)"
+            typeahead-min-length="2"
+            typeahead-loading="documents.search.active"
+            typeahead-template-url="customTemplate.html"
+            typeahead-on-select="selectCriteria($item)"
+            class="form-control">
           <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
         </span>
         </a>
@@ -22,19 +44,26 @@
       <div class="col-xs-3"></div>
       <div class="col-xs-6">
         <ul class="nav nav-pills">
-          <li ng-class="{'active': taxonomies.target === 'variable' && taxonomiesShown}" title="{{'variable-classifications' | translate}}">
-            <a ng-mouseover="selectTaxonomyTarget('variable')" translate>variables</a>
+          <li ng-class="{'active': taxonomies.target === 'variable' && taxonomiesShown}"
+            title="{{'variable-classifications' | translate}}">
+            <a ng-click="selectTaxonomyTarget('variable')" translate>variables</a>
           </li>
-          <li ng-class="{'active': taxonomies.target === 'study' && taxonomiesShown}" title="{{'study-classifications' | translate}}">
-            <a ng-mouseover="selectTaxonomyTarget('study')" translate>studies</a>
+          <li ng-class="{'active': taxonomies.target === 'dataset' && taxonomiesShown}"
+            title="{{'dataset-classifications' | translate}}">
+            <a ng-click="selectTaxonomyTarget('dataset')" translate>datasets</a>
           </li>
-          <li ng-if="taxonomiesShown">
-            <a href ng-click="closeTaxonomies()" title="{{'close' | translate}}"><i class="fa fa-close"></i> </a>
+          <li ng-class="{'active': taxonomies.target === 'study' && taxonomiesShown}"
+            title="{{'study-classifications' | translate}}">
+            <a ng-click="selectTaxonomyTarget('study')" translate>studies</a>
+          </li>
+          <li ng-class="{'active': taxonomies.target === 'network' && taxonomiesShown}"
+            title="{{'network-classifications' | translate}}">
+            <a ng-click="selectTaxonomyTarget('network')" translate>networks</a>
           </li>
         </ul>
       </div>
     </div>
-    <div id="taxonomies" class="collapse card card-static container">
+    <div id="taxonomies" class="collapse">
       <div ng-include="'search/views/taxonomies-view.html'"></div>
     </div>
   </div>
@@ -43,37 +72,7 @@
   <div class="voffset4">
     <div class="row voffset4">
       <div class="col-xs-12">
-        <div class="btn-group dropdown" is-open="status.isopen">
-          <button type="button" class="btn btn-info btn-sm dropdown-toggle" ng-disabled="disabled" data-toggle="dropdown">
-            Study: All <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu" role="menu">
-            <li><a role="menuitem" href ng-click="selectCriteria()">Atlantic Path</a></li>
-            <li><a role="menuitem" href ng-click="selectCriteria()">CartaGene</a></li>
-          </ul>
-        </div>
-
-        <div class="btn-group dropdown" is-open="status.isopen">
-          <button type="button" class="btn btn-default btn-sm dropdown-toggle" ng-disabled="disabled" data-toggle="dropdown">
-            OR <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu" role="menu">
-            <li><a role="menuitem" href ng-click="selectCriteria()">AND</a></li>
-          </ul>
-        </div>
-
-        <div class="btn-group dropdown" is-open="status.isopen">
-          <button type="button" class="btn btn-info btn-sm dropdown-toggle" ng-disabled="disabled" data-toggle="dropdown">
-            Study designs: All <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu" role="menu">
-            <li><a role="menuitem" href ng-click="selectCriteria()">Cohort study (117)</a></li>
-            <li><a role="menuitem" href ng-click="selectCriteria()">Cross sectional (8)</a></li>
-            <li><a role="menuitem" href ng-click="selectCriteria()">Clinical trial (5)</a></li>
-            <li><a role="menuitem" href ng-click="selectCriteria()">Case control (2)</a></li>
-            <li><a role="menuitem" href ng-click="selectCriteria()">Other (2)</a></li>
-          </ul>
-        </div>
+        <div criteria-panel criteria="search.criteria"></div>
       </div>
     </div>
   </div>

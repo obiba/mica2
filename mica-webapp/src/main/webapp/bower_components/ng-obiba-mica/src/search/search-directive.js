@@ -43,6 +43,7 @@ angular.module('obiba.mica.search')
       restrict: 'EA',
       replace: true,
       scope: {
+        target: '=',
         taxonomy: '=',
         vocabulary: '=',
         term: '=',
@@ -110,5 +111,37 @@ angular.module('obiba.mica.search')
       controller: 'SearchResultController',
       templateUrl: 'search/views/search-result-panel-template.html'
     };
+  }])
 
+  .directive('criterionDropdown', [function () {
+    return {
+      restrict: 'EA',
+      replace: true,
+      scope: {
+        criterion: '=',
+        onSelect: '=',
+        onRemove: '='
+      },
+      controller: 'CriterionDropdownController',
+      templateUrl: 'search/views/criterion-dropdown-template.html',
+      link: function(scope, element) {
+        scope.remove = function(id) {
+          scope.onRemove(id);
+          element.remove();
+          scope.$destroy();
+        };
+      }
+    };
+  }])
+
+  .directive('criteriaPanel', [function () {
+    return {
+      restrict: 'EA',
+      replace: true,
+      scope: {
+        criteria: '='
+      },
+      controller: 'CriteriaPanelController',
+      templateUrl: 'search/views/criteria-panel-template.html'
+    };
   }]);

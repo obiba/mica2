@@ -28,7 +28,10 @@ module.exports = function (grunt) {
           'src/graphics/graphics.js',
           'src/graphics/graphics-directive.js',
           'src/graphics/graphics-controller.js',
-          'src/graphics/graphics-service.js'
+          'src/graphics/graphics-service.js',
+          'src/localized/localized.js',
+          'src/localized/localized-directives.js',
+          'src/localized/localized-service.js'
         ]
       }
     },
