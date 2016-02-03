@@ -35,6 +35,7 @@ enum RQLNode {
   EXISTS, //
   MISSING, //
   FACET, //
+  LOCALE, //
   AGGREGATE;
 
   public static RQLNode getType(String name) {

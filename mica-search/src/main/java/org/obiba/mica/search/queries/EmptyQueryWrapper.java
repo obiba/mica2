@@ -11,9 +11,12 @@
 package org.obiba.mica.search.queries;
 
 import java.util.List;
+import java.util.Map;
 
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
+
+import com.google.common.collect.Maps;
 
 /**
  *
@@ -60,5 +63,10 @@ public class EmptyQueryWrapper implements QueryWrapper {
   @Override
   public List<String> getAggregations() {
     return null;
+  }
+
+  @Override
+  public Map<String, Map<String, List<String>>> getTaxonomyTermsMap() {
+    return Maps.newHashMap();
   }
 }

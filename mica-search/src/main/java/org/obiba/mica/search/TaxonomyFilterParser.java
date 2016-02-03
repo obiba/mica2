@@ -87,8 +87,6 @@ public class TaxonomyFilterParser {
       vocMap.get(key.getName())
         .addAll(fieldFilterDto.getExtension(MicaSearch.TermsFilterQueryDto.terms).getValuesList());
     }
-
-    return;
   }
 
   private boolean isAttributeField(String name) {

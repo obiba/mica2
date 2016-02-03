@@ -78,6 +78,28 @@ public class PublishedDatasetVariablesSearchResource {
     return joinQueryExecutor.query(JoinQueryExecutor.QueryType.VARIABLE, new JoinRQLQueryWrapper(query));
   }
 
+  @GET
+  @Path("/_coverage")
+  @Timed
+  public MicaSearch.TaxonomiesCoverageDto rqlCoverage(@Context UriInfo uriInfo) throws IOException {
+    String query = uriInfo.getRequestUri().getQuery();
+    return coverageQueryExecutor.coverageQuery(new JoinRQLQueryWrapper(query));
+  }
+
+  @GET
+  @Timed
+  @Path("/_coverage")
+  @Produces("text/csv")
+  public Response rqlCoverageCsv(@Context UriInfo uriInfo)
+    throws IOException {
+    MicaSearch.TaxonomiesCoverageDto coverage = rqlCoverage(uriInfo);
+    CsvTaxonomyCoverageWriter writer = new CsvTaxonomyCoverageWriter();
+    ByteArrayOutputStream values = writer.write(coverage);
+
+    return Response.ok(values.toByteArray(), "text/csv")
+      .header("Content-Disposition", "attachment; filename=\"coverage.csv\"").build();
+  }
+
   /**
    * Get the frequency of each taxonomy terms, based on variables aggregation results after search query was applied.
    *
@@ -123,24 +145,6 @@ public class PublishedDatasetVariablesSearchResource {
     @QueryParam("strict") @DefaultValue("true") boolean strict, MicaSearch.JoinQueryDto joinQueryDto)
     throws IOException {
     return coverageQueryExecutor.coverageQuery(taxonomyNames, strict, joinQueryDto);
-  }
-
-  /**
-   * Get the frequency of each taxonomy terms, based on variables aggregation results (convenient resource for testing).
-   *
-   * @param taxonomyNames
-   * @param withFacets
-   * @param locale
-   * @return
-   * @throws IOException
-   */
-  @GET
-  @Timed
-  @Path("/_coverage")
-  public MicaSearch.TaxonomiesCoverageDto getCoverage(@QueryParam("taxonomy") List<String> taxonomyNames,
-    @QueryParam("facets") @DefaultValue("false") boolean withFacets,
-    @QueryParam("locale") @DefaultValue("") String locale) throws IOException {
-    return coverageQueryExecutor.coverageQuery(taxonomyNames, false, withFacets, locale);
   }
 
 }
