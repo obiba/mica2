@@ -1,10 +1,10 @@
 "name": "Mica_datasets"
 "title":
-  "en": "Datasets"
-  "fr": "Jeux de données"
-"description":
-  "en": "Datasets properties"
+  "en": "Dataset properties"
   "fr": "Propriétés des jeux de données"
+"description":
+  "en": "Datasets properties as defined in the catalog."
+  "fr": "Propriétés des jeux de données telles que définies dans le catalogue."
 "keywords": {}
 "license": "CC BY-NC 4.0"
 "vocabularies":
