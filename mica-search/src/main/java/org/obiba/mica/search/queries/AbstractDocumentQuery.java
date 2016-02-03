@@ -118,10 +118,8 @@ public abstract class AbstractDocumentQuery {
   }
 
   private List<String> getAggregationGroupBy() {
-    return hasQueryBuilder() ? queryWrapper.getAggregationGroupBy() : Lists.newArrayList();
+    return hasQueryBuilder() ? queryWrapper.getAggregationBuckets() : Lists.newArrayList();
   }
-
-
 
   private int getFrom() {
     return hasQueryBuilder() ? queryWrapper.getFrom() : DEFAULT_FROM;
@@ -178,20 +176,20 @@ public abstract class AbstractDocumentQuery {
     if(mode != Mode.LIST && filter != null) {
       List<Pattern> patterns = filter.stream().map(Pattern::compile).collect(Collectors.toList());
       taxonomy.getVocabularies().forEach(vocabulary -> {
-        String key = vocabulary.getName().replace('-','.');
+        String key = vocabulary.getName().replace('-', '.');
 
         if(patterns.isEmpty() || patterns.stream().filter(p -> p.matcher(key).matches()).findFirst().isPresent()) {
-          properties.put(key,"");
+          properties.put(key, "");
           String type = vocabulary.getAttributeValue("type");
-          if ("integer".equals(type) || "decimal".equals(type)) {
-            if (vocabulary.hasTerms()) {
+          if("integer".equals(type) || "decimal".equals(type)) {
+            if(vocabulary.hasTerms()) {
               // TODO: use the terms for a range query
             } else {
               properties.put(key + AggregationYamlParser.TYPE, AggregationYamlParser.AGG_STATS);
             }
           }
           String alias = vocabulary.getAttributeValue("alias");
-          if (!Strings.isNullOrEmpty(alias)) {
+          if(!Strings.isNullOrEmpty(alias)) {
             properties.put(key + AggregationYamlParser.ALIAS, alias);
           }
         }
@@ -201,7 +199,15 @@ public abstract class AbstractDocumentQuery {
   }
 
   private Properties getFilteredAggregationsProperties() {
-    return getAggregationsProperties(queryWrapper.getAggregations());
+    Properties properties = getAggregationsProperties(queryWrapper.getAggregations());
+
+    // make sure the buckets are part of the aggregations
+    if(properties != null) {
+      queryWrapper.getAggregationBuckets().stream().filter(b -> !properties.containsKey(b))
+        .forEach(b -> properties.put(b, ""));
+    }
+
+    return properties;
   }
 
   /**
@@ -437,21 +443,20 @@ public abstract class AbstractDocumentQuery {
     }
   }
 
-
-  private void appendAggregations(SearchRequestBuilder defaultRequestBuilder, SearchRequestBuilder requestBuilder, List<String> aggregationGroupBy)
-    throws IOException {
+  private void appendAggregations(SearchRequestBuilder defaultRequestBuilder, SearchRequestBuilder requestBuilder,
+    List<String> aggregationGroupBy) throws IOException {
     aggregationYamlParser.setLocales(micaConfigService.getConfig().getLocales());
     Map<String, Properties> subAggregations = Maps.newHashMap();
     Properties aggregationProperties = getFilteredAggregationsProperties();
 
-    if(aggregationGroupBy != null) aggregationGroupBy.forEach(field -> subAggregations.put(field, aggregationProperties));
+    if(aggregationGroupBy != null)
+      aggregationGroupBy.forEach(field -> subAggregations.put(field, aggregationProperties));
 
     aggregationYamlParser.getAggregations(aggregationProperties, subAggregations).forEach(agg -> {
       defaultRequestBuilder.addAggregation(agg);
       requestBuilder.addAggregation(agg);
     });
   }
-
 
   /**
    * Returning 'false' will include documents in the query result

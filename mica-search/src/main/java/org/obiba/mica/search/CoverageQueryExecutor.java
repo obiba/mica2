@@ -164,9 +164,9 @@ public class CoverageQueryExecutor {
   @NotNull
   private Collection<BucketResult> extractBucketResults(List<MicaSearch.AggregationResultDto> aggregations) {
     if(joinQueryWrapper == null || joinQueryWrapper.getVariableQueryWrapper() == null ||
-      joinQueryWrapper.getVariableQueryWrapper().getAggregationGroupBy().isEmpty()) return Collections.emptyList();
+      joinQueryWrapper.getVariableQueryWrapper().getAggregationBuckets().isEmpty()) return Collections.emptyList();
 
-    List<String> aggsBy = joinQueryWrapper.getVariableQueryWrapper().getAggregationGroupBy();
+    List<String> aggsBy = joinQueryWrapper.getVariableQueryWrapper().getAggregationBuckets();
 
     List<BucketResult> termResults = Lists.newArrayList();
 

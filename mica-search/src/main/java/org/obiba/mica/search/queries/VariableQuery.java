@@ -292,9 +292,9 @@ public class VariableQuery extends AbstractDocumentQuery {
       });
     }
 
+    // required for the counts to work
     if(!properties.containsKey(JOIN_FIELD)) properties.put(JOIN_FIELD,"");
     if(!properties.containsKey(DATASET_ID)) properties.put(DATASET_ID,"");
-
 
     return properties;
   }

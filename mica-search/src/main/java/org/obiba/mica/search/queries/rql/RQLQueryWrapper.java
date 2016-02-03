@@ -50,7 +50,7 @@ public class RQLQueryWrapper implements QueryWrapper {
 
   private List<String> aggregations;
 
-  private List<String> aggregationGroupBy;
+  private List<String> aggregationBuckets;
 
   private final Map<String, Map<String, List<String>>> taxonomyTermsMap = Maps.newHashMap();
 
@@ -113,7 +113,7 @@ public class RQLQueryWrapper implements QueryWrapper {
     RQLAggregateBuilder aggregate = new RQLAggregateBuilder();
     if(node.accept(aggregate)) {
       aggregations = aggregate.getAggregations();
-      aggregationGroupBy = aggregate.getAggregationGroupBy();
+      aggregationBuckets = aggregate.getAggregationBuckets();
     }
   }
 
@@ -148,14 +148,14 @@ public class RQLQueryWrapper implements QueryWrapper {
   }
 
   @Override
-  public List<String> getAggregationGroupBy() {
-    if (aggregationGroupBy == null) aggregationGroupBy = Lists.newArrayList();
-    return aggregationGroupBy;
+  public List<String> getAggregationBuckets() {
+    if(aggregationBuckets == null) aggregationBuckets = Lists.newArrayList();
+    return aggregationBuckets;
   }
 
   @Override
   public List<String> getAggregations() {
-    if (aggregations == null) aggregations = Lists.newArrayList();
+    if(aggregations == null) aggregations = Lists.newArrayList();
     return aggregations;
   }
 
@@ -217,8 +217,8 @@ public class RQLQueryWrapper implements QueryWrapper {
     private QueryBuilder visitIn(ASTNode node) {
       String field = node.getArgument(0).toString();
       Object terms = node.getArgument(1);
-      visitField(field, terms instanceof Collection ? ((Collection<Object>) terms).stream().map(Object::toString).collect(
-        Collectors.toList()) : Collections.singleton(terms.toString()));
+      visitField(field, terms instanceof Collection ? ((Collection<Object>) terms).stream().map(Object::toString)
+        .collect(Collectors.toList()) : Collections.singleton(terms.toString()));
       return QueryBuilders.termsQuery(field, terms instanceof Collection ? (Collection) terms : terms);
     }
 
@@ -385,14 +385,14 @@ public class RQLQueryWrapper implements QueryWrapper {
 
     private List<String> aggregations = Lists.newArrayList();
 
-    private List<String> aggregationGroupBy = Lists.newArrayList();
+    private List<String> aggregationBuckets = Lists.newArrayList();
 
     public List<String> getAggregations() {
       return aggregations;
     }
 
-    public List<String> getAggregationGroupBy() {
-      return aggregationGroupBy;
+    public List<String> getAggregationBuckets() {
+      return aggregationBuckets;
     }
 
     @Override
@@ -405,7 +405,8 @@ public class RQLQueryWrapper implements QueryWrapper {
             node.getArguments().stream().filter(a -> a instanceof String).map(Object::toString)
               .forEach(aggregations::add);
             node.getArguments().stream().filter(a -> a instanceof ASTNode).map(a -> (ASTNode) a)
-              .forEach(a -> a.getArguments().stream().map(Object::toString).forEach(aggregationGroupBy::add));
+              .filter(a -> RQLNode.BUCKET.name().equalsIgnoreCase(a.getName()))
+              .forEach(a -> a.getArguments().stream().map(Object::toString).forEach(aggregationBuckets::add));
             return Boolean.TRUE;
           default:
         }
