@@ -31,6 +31,8 @@ public class JoinRQLQueryWrapper implements JoinQueryWrapper {
 
   private List<String> facets;
 
+  private String locale = DEFAULT_LOCALE;
+
   private RQLQueryWrapper variableQueryWrapper;
 
   private RQLQueryWrapper datasetQueryWrapper;
@@ -63,6 +65,9 @@ public class JoinRQLQueryWrapper implements JoinQueryWrapper {
       case NETWORK:
         networkQueryWrapper = new RQLQueryWrapper(node);
         break;
+      case LOCALE:
+        if(node.getArgumentsSize() > 0) locale = node.getArgument(0).toString();
+        break;
       case FACET:
         facets = Lists.newArrayList();
         if(node.getArgumentsSize() == 1) facets.add(node.getArgument(0).toString());
@@ -78,7 +83,7 @@ public class JoinRQLQueryWrapper implements JoinQueryWrapper {
 
   @Override
   public String getLocale() {
-    return DEFAULT_LOCALE;
+    return locale;
   }
 
   @Override
