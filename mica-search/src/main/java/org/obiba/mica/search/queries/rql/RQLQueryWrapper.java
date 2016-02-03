@@ -149,11 +149,13 @@ public class RQLQueryWrapper implements QueryWrapper {
 
   @Override
   public List<String> getAggregationGroupBy() {
-    return aggregationGroupBy == null ? Lists.newArrayList() : aggregationGroupBy;
+    if (aggregationGroupBy == null) aggregationGroupBy = Lists.newArrayList();
+    return aggregationGroupBy;
   }
 
   @Override
   public List<String> getAggregations() {
+    if (aggregations == null) aggregations = Lists.newArrayList();
     return aggregations;
   }
 

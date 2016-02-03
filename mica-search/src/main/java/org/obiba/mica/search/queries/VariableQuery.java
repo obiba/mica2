@@ -14,7 +14,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -111,8 +110,6 @@ public class VariableQuery extends AbstractDocumentQuery {
   private HarmonizationDatasetService harmonizationDatasetService;
 
   private DatasetIdProvider datasetIdProvider;
-
-  private Collection<String> taxonomyFilter = Collections.emptyList();
 
   @Override
   public String getSearchIndex() {
@@ -308,16 +305,10 @@ public class VariableQuery extends AbstractDocumentQuery {
 
     try {
       taxonomies = opalService.getTaxonomies();
-      if(!taxonomyFilter.isEmpty())
-        taxonomies = taxonomies.stream().filter(t -> taxonomyFilter.contains(t.getName())).collect(Collectors.toList());
     } catch(Exception e) {
       // ignore
     }
 
     return taxonomies == null ? Collections.emptyList() : taxonomies;
-  }
-
-  public void setTaxonomyFilter(Collection<String> taxonomyFilter) {
-    this.taxonomyFilter = taxonomyFilter == null ? Collections.emptyList() : taxonomyFilter;
   }
 }

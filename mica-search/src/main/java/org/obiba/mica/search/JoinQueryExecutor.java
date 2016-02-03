@@ -13,7 +13,6 @@ package org.obiba.mica.search;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -95,9 +94,8 @@ public class JoinQueryExecutor {
   }
 
   @Timed
-  public JoinQueryResultDto queryCoverage(JoinQueryWrapper joinQueryWrapper, Collection<String> taxonomyFilter)
+  public JoinQueryResultDto queryCoverage(JoinQueryWrapper joinQueryWrapper)
     throws IOException {
-    variableQuery.setTaxonomyFilter(taxonomyFilter);
     return query(QueryType.VARIABLE, joinQueryWrapper, null, DIGEST, Mode.COVERAGE);
   }
 
