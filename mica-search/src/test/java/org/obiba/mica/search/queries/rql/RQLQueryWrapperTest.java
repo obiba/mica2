@@ -285,16 +285,16 @@ public class RQLQueryWrapperTest {
   }
 
   @Test
-  public void test_rql_query_sub_aggregation() throws IOException {
-    String rql = "variable(aggregate(Mlstr_area.Lifestyle_behaviours,Mlstr_area.Diseases,aggregate(studyId,datasetId)))";
+  public void test_rql_query_aggregation_bucket() throws IOException {
+    String rql = "variable(aggregate(Mlstr_area.Lifestyle_behaviours,Mlstr_area.Diseases,bucket(studyId,datasetId)))";
     RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
     assertThat(rqlQueryWrapper.getAggregations()).isNotNull();
     assertThat(rqlQueryWrapper.getAggregations().size()).isEqualTo(2);
     assertThat(rqlQueryWrapper.getAggregations().get(0)).isEqualTo("Mlstr_area.Lifestyle_behaviours");
     assertThat(rqlQueryWrapper.getAggregations().get(1)).isEqualTo("Mlstr_area.Diseases");
-    assertThat(rqlQueryWrapper.getAggregationGroupBy()).isNotNull();
-    assertThat(rqlQueryWrapper.getAggregationGroupBy().size()).isEqualTo(2);
-    assertThat(rqlQueryWrapper.getAggregationGroupBy().get(0)).isEqualTo("studyId");
-    assertThat(rqlQueryWrapper.getAggregationGroupBy().get(1)).isEqualTo("datasetId");
+    assertThat(rqlQueryWrapper.getAggregationBuckets()).isNotNull();
+    assertThat(rqlQueryWrapper.getAggregationBuckets().size()).isEqualTo(2);
+    assertThat(rqlQueryWrapper.getAggregationBuckets().get(0)).isEqualTo("studyId");
+    assertThat(rqlQueryWrapper.getAggregationBuckets().get(1)).isEqualTo("datasetId");
   }
 }

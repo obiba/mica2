@@ -32,6 +32,8 @@ public class QueryDtoWrapper implements QueryWrapper {
 
   private final SortBuilder sortBuilder;
 
+  private List<String> aggregations;
+
   public QueryDtoWrapper(MicaSearch.QueryDto queryDto) {
     this.queryDto = queryDto;
     QueryDtoParser queryDtoParser = QueryDtoParser.newParser();
@@ -70,13 +72,14 @@ public class QueryDtoWrapper implements QueryWrapper {
   }
 
   @Override
-  public List<String> getAggregationGroupBy() {
+  public List<String> getAggregationBuckets() {
     return queryDto != null ? queryDto.getAggsByList() : Lists.newArrayList();
   }
 
   @Override
   public List<String> getAggregations() {
-    return Lists.newArrayList();
+    if (aggregations == null) aggregations = Lists.newArrayList();
+    return aggregations;
   }
 
   @Override

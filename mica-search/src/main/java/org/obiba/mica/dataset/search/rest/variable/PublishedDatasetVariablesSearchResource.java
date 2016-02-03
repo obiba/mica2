@@ -12,7 +12,6 @@ package org.obiba.mica.dataset.search.rest.variable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.ws.rs.DefaultValue;
@@ -90,8 +89,7 @@ public class PublishedDatasetVariablesSearchResource {
   @Timed
   @Path("/_coverage")
   @Produces("text/csv")
-  public Response rqlCoverageCsv(@Context UriInfo uriInfo)
-    throws IOException {
+  public Response rqlCoverageCsv(@Context UriInfo uriInfo) throws IOException {
     MicaSearch.TaxonomiesCoverageDto coverage = rqlCoverage(uriInfo);
     CsvTaxonomyCoverageWriter writer = new CsvTaxonomyCoverageWriter();
     ByteArrayOutputStream values = writer.write(coverage);
@@ -103,7 +101,6 @@ public class PublishedDatasetVariablesSearchResource {
   /**
    * Get the frequency of each taxonomy terms, based on variables aggregation results after search query was applied.
    *
-   * @param taxonomyNames Taxonomy filter
    * @param strict Return coverage matching the search criteria, if any.
    * @param joinQueryDto
    * @return
@@ -113,15 +110,14 @@ public class PublishedDatasetVariablesSearchResource {
   @Timed
   @Path("/_coverage")
   @Produces("text/csv")
-  public Response coverageCsv(@QueryParam("taxonomy") List<String> taxonomyNames,
-    @QueryParam("strict") @DefaultValue("true") boolean strict, MicaSearch.JoinQueryDto joinQueryDto)
-    throws IOException {
+  public Response coverageCsv(@QueryParam("strict") @DefaultValue("true") boolean strict,
+    MicaSearch.JoinQueryDto joinQueryDto) throws IOException {
     // We need the aggregations internally for building the coverage result,
     // but we do not need them in the final result
     MicaSearch.JoinQueryDto joinQueryDtoWithoutFacets = MicaSearch.JoinQueryDto.newBuilder().mergeFrom(joinQueryDto)
       .setWithFacets(false).build();
 
-    MicaSearch.TaxonomiesCoverageDto coverage = coverage(taxonomyNames, strict, joinQueryDtoWithoutFacets);
+    MicaSearch.TaxonomiesCoverageDto coverage = coverage(strict, joinQueryDtoWithoutFacets);
     CsvTaxonomyCoverageWriter writer = new CsvTaxonomyCoverageWriter();
     ByteArrayOutputStream values = writer.write(coverage);
 
@@ -132,7 +128,6 @@ public class PublishedDatasetVariablesSearchResource {
   /**
    * Get the frequency of each taxonomy terms, based on variables aggregation results after search query was applied.
    *
-   * @param taxonomyNames Taxonomy filter
    * @param strict Return coverage matching the search criteria, if any.
    * @param joinQueryDto
    * @return
@@ -141,10 +136,9 @@ public class PublishedDatasetVariablesSearchResource {
   @POST
   @Timed
   @Path("/_coverage")
-  public MicaSearch.TaxonomiesCoverageDto coverage(@QueryParam("taxonomy") List<String> taxonomyNames,
-    @QueryParam("strict") @DefaultValue("true") boolean strict, MicaSearch.JoinQueryDto joinQueryDto)
-    throws IOException {
-    return coverageQueryExecutor.coverageQuery(taxonomyNames, strict, joinQueryDto);
+  public MicaSearch.TaxonomiesCoverageDto coverage(@QueryParam("strict") @DefaultValue("true") boolean strict,
+    MicaSearch.JoinQueryDto joinQueryDto) throws IOException {
+    return coverageQueryExecutor.coverageQuery(joinQueryDto, strict);
   }
 
 }

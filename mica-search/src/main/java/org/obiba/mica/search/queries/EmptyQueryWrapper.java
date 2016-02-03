@@ -16,6 +16,7 @@ import java.util.Map;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 /**
@@ -56,13 +57,13 @@ public class EmptyQueryWrapper implements QueryWrapper {
   }
 
   @Override
-  public List<String> getAggregationGroupBy() {
-    return null;
+  public List<String> getAggregationBuckets() {
+    return Lists.newArrayList();
   }
 
   @Override
   public List<String> getAggregations() {
-    return null;
+    return Lists.newArrayList();
   }
 
   @Override
