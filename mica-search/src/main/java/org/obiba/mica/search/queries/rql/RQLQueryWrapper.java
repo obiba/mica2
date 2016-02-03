@@ -72,6 +72,7 @@ public class RQLQueryWrapper implements QueryWrapper {
     } catch(IllegalArgumentException e) {
 
     }
+    if(queryBuilder == null) queryBuilder = QueryBuilders.matchAllQuery();
   }
 
   private void parseQuery(ASTNode node) {
