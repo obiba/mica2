@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-02-03
+ * Date: 2016-02-04
  */
 'use strict';
 
@@ -24,7 +24,8 @@ function NgObibaMicaUrlProvider() {
     'TaxonomiesResource': 'ws/taxonomies/_filter',
     'TaxonomyResource': 'ws/taxonomy/:taxonomy/_filter',
     'VocabularyResource': 'ws/taxonomy/:taxonomy/vocabulary/:vocabulary/_filter',
-    'JoinQuerySearchResource': 'ws/:type/_rql?:query'
+    'JoinQuerySearchResource': 'ws/:type/_rql?:query',
+    'JoinQueryCoverageResource': 'ws/variables/_coverage?:query'
   };
   function UrlProvider(registry) {
     var urlRegistry = registry;
@@ -1260,13 +1261,46 @@ angular.module('obiba.mica.search', [
 
 'use strict';
 
+
+var QUERY_TYPES = {
+  NETWORKS: 'networks',
+  STUDIES: 'studies',
+  DATASETS: 'datasets',
+  VARIABLES: 'variables'
+};
+
+var QUERY_TARGETS = {
+  NETWORKS: 'networks',
+  STUDIES: 'studies',
+  DATASETS: 'datasets',
+  VARIABLES: 'variables'
+};
+
+function targetToType(target) {
+  switch (target.toLocaleString()) {
+    case 'network':
+      return 'networks';
+    case 'study':
+      return 'studies';
+    case 'dataset':
+        return 'datasets';
+    case'variable':
+      return 'variables';
+  }
+
+  throw new Error('Invalid target: ' + target);
+}
+
 angular.module('obiba.mica.search')
 
-  .constant('QUERY_TYPES', {
-    NETWORKS: 'networks',
-    STUDIES: 'studies',
-    DATASETS: 'datasets',
-    VARIABLES: 'variables'
+  .constant('QUERY_TYPES', QUERY_TYPES)
+
+  .constant('QUERY_TARGETS', QUERY_TARGETS)
+
+  .constant('DISPLAY_TYPES', {
+    LIST: 'list',
+    COVERAGE: 'coverage',
+    GRAPHICS: 'graphics'
   })
 
   .controller('SearchController', [
@@ -1280,10 +1314,14 @@ angular.module('obiba.mica.search')
     'VocabularyResource',
     'ngObibaMicaSearchTemplateUrl',
     'JoinQuerySearchResource',
+    'JoinQueryCoverageResource',
     'QUERY_TYPES',
+    'DISPLAY_TYPES',
     'AlertService',
     'ServerErrorUtils',
     'LocalizedValues',
+    'ObibaSearchConfig',
+    'RqlQueryService',
     function ($scope,
               $timeout,
               $routeParams,
@@ -1294,56 +1332,16 @@ angular.module('obiba.mica.search')
               VocabularyResource,
               ngObibaMicaSearchTemplateUrl,
               JoinQuerySearchResource,
+              JoinQueryCoverageResource,
               QUERY_TYPES,
+              DISPLAY_TYPES,
               AlertService,
               ServerErrorUtils,
-              LocalizedValues) {
+              LocalizedValues,
+              ObibaSearchConfig,
+              RqlQueryService) {
 
-      function createCriteria(target, taxonomy, vocabulary, term) {
-        var id = taxonomy.name + '::' + vocabulary.name;
-        if (term) {
-          id = id + ':' + term.name;
-        }
-        var criteria = {
-          id: id,
-          taxonomy: taxonomy,
-          vocabulary: vocabulary,
-          term: term,
-          target: target,
-          lang: $scope.lang,
-          itemTitle: '',
-          itemDescription: '',
-          itemParentTitle: '',
-          itemParentDescription: ''
-        };
-
-        // prepare some labels for display
-        if(term) {
-          criteria.itemTitle = LocalizedValues.forLocale(term.title, $scope.lang);
-          criteria.itemDescription = LocalizedValues.forLocale(term.description,$scope.lang);
-          criteria.itemParentTitle = LocalizedValues.forLocale(vocabulary.title, $scope.lang);
-          criteria.itemParentDescription = LocalizedValues.forLocale(vocabulary.description, $scope.lang);
-          if (!criteria.itemTitle) {
-            criteria.itemTitle = term.name;
-          }
-          if (!criteria.itemParentTitle) {
-            criteria.itemParentTitle = vocabulary.name;
-          }
-        } else {
-          criteria.itemTitle = LocalizedValues.forLocale(vocabulary.title, $scope.lang);
-          criteria.itemDescription = LocalizedValues.forLocale(vocabulary.description, $scope.lang);
-          criteria.itemParentTitle = LocalizedValues.forLocale(taxonomy.title, $scope.lang);
-          criteria.itemParentDescription = LocalizedValues.forLocale(taxonomy.description, $scope.lang);
-          if (!criteria.itemTitle) {
-            criteria.itemTitle = vocabulary.name;
-          }
-          if (!criteria.itemParentTitle) {
-            criteria.itemParentTitle = taxonomy.name;
-          }
-        }
-
-        return criteria;
-      }
+      $scope.settingsDisplay = ObibaSearchConfig.getOptions();
 
       function onError(response) {
         AlertService.alert({
@@ -1357,6 +1355,12 @@ angular.module('obiba.mica.search')
       function validateType(type) {
         if (!type || !QUERY_TYPES[type.toUpperCase()]) {
           throw new Error('Invalid type: ' + type);
+        }
+      }
+
+      function validateDisplay(display) {
+        if (!display || !DISPLAY_TYPES[display.toUpperCase()]) {
+          throw new Error('Invalid display: ' + display);
         }
       }
 
@@ -1377,15 +1381,39 @@ angular.module('obiba.mica.search')
         throw new Error('Invalid query type: ' + type);
       }
 
+      function getDefaultQueryType() {
+        if ($scope.settingsDisplay.variables.showSearchTab) {
+          return QUERY_TYPES.VARIABLES;
+        }
+        else {
+          var result =  Object.keys($scope.settingsDisplay).filter(function (key) {
+            return $scope.settingsDisplay[key].showSearchTab===1;
+          });
+          console.log(result);
+          return result[result.length-1];
+        }
+      }
+
+
       function validateQueryData() {
         try {
           var search = $location.search();
-          var type = search.type || QUERY_TYPES.VARIABLES;
+          var type = search.type || getDefaultQueryType();
+          var display = search.display || DISPLAY_TYPES.LIST;
           var query = search.query || getDefaultQuery(type);
           validateType(type);
+          validateDisplay(display);
           new RqlParser().parse(query);
+          var rqlQuery = new RqlParser().parse(query);
+          // TODO implement RqlQueryService.buildCriteria to take care of all types
+          RqlQueryService.buildVariableCriteria(rqlQuery, $scope.lang).then(function (criteriaList) {
+            criteriaList.forEach(function (criterion) {
+              selectCriteria(criterion);
+            });
+          });
 
           $scope.search.type = type;
+          $scope.search.display = display;
           $scope.search.query = query;
           return true;
 
@@ -1401,14 +1429,28 @@ angular.module('obiba.mica.search')
         return false;
       }
 
-      function executeQuery() {
+      function executeSearchQuery() {
         if (validateQueryData()) {
-          JoinQuerySearchResource[$scope.search.type]({query: $scope.search.query},
-            function onSuccess(response) {
-              $scope.search.result = response;
-              console.log('>>> Response', $scope.search.result);
-            },
-            onError);
+          $scope.search.result = null;
+          switch ($scope.search.display) {
+            case DISPLAY_TYPES.LIST:
+              JoinQuerySearchResource[$scope.search.type]({query: $scope.search.query},
+                function onSuccess(response) {
+                  $scope.search.result = response;
+                },
+                onError);
+              break;
+            case DISPLAY_TYPES.COVERAGE:
+              JoinQueryCoverageResource.get({query: RqlQueryService.prepareCoverageQuery($scope.search.query, ['studyIds'])},
+                function onSuccess(response) {
+                  $scope.search.result = response;
+                },
+                onError);
+              break;
+            case DISPLAY_TYPES.GRAPHICS:
+              // TODO
+              break;
+          }
         }
       }
 
@@ -1510,20 +1552,20 @@ angular.module('obiba.mica.search')
                   if (vocabulary.terms) {
                     vocabulary.terms.forEach(function (term) {
                       if (results.length < size) {
-                        results.push(createCriteria(target, taxonomy, vocabulary, term));
+                        results.push(RqlQueryService.createCriteria(target, taxonomy, vocabulary, term, $scope.lang));
                       }
                       total++;
                     });
                   } else {
                     if (results.length < size) {
-                      results.push(createCriteria(target, taxonomy, vocabulary));
+                      results.push(RqlQueryService.createCriteria(target, taxonomy, vocabulary, null, $scope.lang));
                     }
                     total++;
                   }
                 });
               }
             });
-            if(total > results.length) {
+            if (total > results.length) {
               var note = {
                 query: query,
                 total: total,
@@ -1542,8 +1584,8 @@ angular.module('obiba.mica.search')
 
       var selectCriteria = function (item) {
         console.log('selectCriteria', item);
-        if(item.id){
-          var found = $scope.search.criteria.filter(function(criterion) {
+        if (item.id) {
+          var found = $scope.search.criteria.filter(function (criterion) {
             return item.vocabulary.name === criterion.vocabulary.name;
           });
           console.log('Found', found);
@@ -1582,7 +1624,7 @@ angular.module('obiba.mica.search')
       };
 
       var selectTerm = function (target, taxonomy, vocabulary, term) {
-        selectCriteria(createCriteria(target, taxonomy, vocabulary, term));
+        selectCriteria(RqlQueryService.createCriteria(target, taxonomy, vocabulary, term, $scope.lang));
       };
 
       var onTypeChanged = function (type) {
@@ -1590,6 +1632,15 @@ angular.module('obiba.mica.search')
           validateType(type);
           var search = $location.search();
           search.type = type;
+          $location.search(search).replace();
+        }
+      };
+
+      var onDisplayChanged = function (display) {
+        if (display) {
+          validateDisplay(display);
+          var search = $location.search();
+          search.display = display;
           $location.search(search).replace();
         }
       };
@@ -1633,6 +1684,7 @@ angular.module('obiba.mica.search')
       $scope.selectTerm = selectTerm;
       $scope.closeTaxonomies = closeTaxonomies;
       $scope.onTypeChanged = onTypeChanged;
+      $scope.onDisplayChanged = onDisplayChanged;
       $scope.taxonomiesShown = false;
 
       //// TODO replace with angular code
@@ -1644,12 +1696,12 @@ angular.module('obiba.mica.search')
       });
 
       $scope.$watch('search', function () {
-        executeQuery();
+        executeSearchQuery();
       });
 
       $scope.$on('$locationChangeSuccess', function (newLocation, oldLocation) {
         if (newLocation !== oldLocation) {
-          executeQuery();
+          executeSearchQuery();
         }
       });
 
@@ -1658,22 +1710,42 @@ angular.module('obiba.mica.search')
   .controller('SearchResultController', [
     '$scope',
     'QUERY_TYPES',
-    function ($scope, QUERY_TYPES) {
-      var selectTab = function (type) {
-        console.log('Type', type);
+    'DISPLAY_TYPES',
+    'ObibaSearchConfig',
+    function ($scope,
+              QUERY_TYPES,
+              DISPLAY_TYPES,
+              ObibaSearchConfig) {
+
+      $scope.settingsDisplay = ObibaSearchConfig.getOptions();
+
+      $scope.selectDisplay = function (display) {
+        console.log('Display', display);
+        $scope.display = display;
+        $scope.$parent.onDisplayChanged(display);
+      };
+      $scope.selectTarget = function (type) {
+        console.log('Target', type);
         $scope.type = type;
         $scope.$parent.onTypeChanged(type);
       };
-
-      $scope.selectTab = selectTab;
       $scope.QUERY_TYPES = QUERY_TYPES;
+      $scope.DISPLAY_TYPES = DISPLAY_TYPES;
 
       $scope.$watch('type', function () {
-        $scope.activeTab = {
-          networks: $scope.type === QUERY_TYPES.NETWORKS || false,
-          studies: $scope.type === QUERY_TYPES.STUDIES || false,
-          datasets: $scope.type === QUERY_TYPES.DATASETS || false,
-          variables: $scope.type === QUERY_TYPES.VARIABLES || false
+        $scope.activeTarget = {
+          networks: ($scope.type === QUERY_TYPES.NETWORKS && $scope.settingsDisplay.networks.showSearchTab) || false,
+          studies: ($scope.type === QUERY_TYPES.STUDIES && $scope.settingsDisplay.studies.showSearchTab) || false,
+          datasets: ($scope.type === QUERY_TYPES.DATASETS && $scope.settingsDisplay.datasets.showSearchTab) || false,
+          variables: ($scope.type === QUERY_TYPES.VARIABLES && $scope.settingsDisplay.variables.showSearchTab) || false
+        };
+      });
+
+      $scope.$watch('display', function () {
+        $scope.activeDisplay = {
+          list: $scope.display === DISPLAY_TYPES.LIST || false,
+          coverage: $scope.display === DISPLAY_TYPES.COVERAGE || false,
+          graphics: $scope.display === DISPLAY_TYPES.GRAPHICS || false
         };
       });
 
@@ -1681,11 +1753,13 @@ angular.module('obiba.mica.search')
 
   .controller('CriterionDropdownController', [
     '$scope',
+    'RqlQueryService',
     'LocalizedValues',
-    function ($scope, LocalizedValues) {
+    'JoinQuerySearchResource',
+    function ($scope, RqlQueryService, LocalizedValues, JoinQuerySearchResource) {
       console.log('QueryDropdownController', $scope);
 
-      var isSelected = function(name) {
+      var isSelected = function (name) {
         return $scope.selectedTerms.indexOf(name) !== -1;
       };
 
@@ -1695,28 +1769,53 @@ angular.module('obiba.mica.search')
         });
       };
 
-      var toggleSelection = function(term) {
+      var toggleSelection = function (term) {
         if (!isSelected(term.name)) {
           $scope.selectedTerms.push(term.name);
           return;
         }
 
-        $scope.selectedTerms = $scope.selectedTerms.filter(function(name) {
+        $scope.selectedTerms = $scope.selectedTerms.filter(function (name) {
           return name !== term.name;
         });
       };
 
-      var localize = function(values) {
+      var localize = function (values) {
         return LocalizedValues.forLocale(values, $scope.criterion.lang);
       };
 
-      var truncate = function(text) {
+      var truncate = function (text) {
         return text.length > 40 ? text.substring(0, 40) + '...' : text;
       };
 
-      $scope.selectedTerms = [];
+      var openDropdown = function() {
+        if ($scope.open) {
+          $scope.open = false;
+          return;
+        }
+
+        var target = $scope.criterion.target;
+        var joinQuery =
+          RqlQueryService.prepareCriteriaTermsQuery(
+            target,
+            $scope.query,
+            $scope.criterion.taxonomy.name,
+            $scope.criterion.vocabulary.name);
+
+
+        JoinQuerySearchResource[targetToType(target)]({query: joinQuery}).$promise.then(function (response) {
+          console.log('GOT THE RESULT', response);
+          $scope.open = true;
+        });
+      };
+
+      $scope.selectedTerms = $scope.criterion.selectedTerms.map(function(term){
+        return term.name;
+      });
+      $scope.isOpen = false;
+      $scope.openDropdown = openDropdown;
       $scope.selectAll = selectAll;
-      $scope.deselectAll = function() { $scope.selectedTerms = []; };
+      $scope.deselectAll = function () { $scope.selectedTerms = []; };
       $scope.toggleSelection = toggleSelection;
       $scope.isSelected = isSelected;
       $scope.localize = localize;
@@ -1727,13 +1826,103 @@ angular.module('obiba.mica.search')
   .controller('CriteriaPanelController', [
     '$scope',
     function ($scope) {
-      console.log('QueryPanelController', $scope);
 
-      $scope.removeCriteria = function(id) {
-        $scope.criteria = $scope.criteria.filter(function(criterion) {
+      $scope.removeCriteria = function (id) {
+        $scope.criteria = $scope.criteria.filter(function (criterion) {
           return id !== criterion.id;
         });
       };
+
+    }])
+
+  .controller('CoverageResultTableController', [
+    '$scope',
+    function ($scope) {
+
+      function processCoverageResponse() {
+        var response = $scope.result;
+        var taxonomyHeaders = [];
+        var vocabularyHeaders = [];
+        var termHeaders = [];
+        var rows = {};
+        var footers = {
+          total: []
+        };
+        if (response.taxonomies) {
+          var termsCount = 0;
+          response.taxonomies.forEach(function (taxo) {
+            if (taxo.vocabularies) {
+              taxo.vocabularies.forEach(function (voc) {
+                if (voc.terms) {
+                  voc.terms.forEach(function (trm) {
+                    termsCount++;
+                    termHeaders.push({
+                      taxonomy: taxo.taxonomy,
+                      vocabulary: voc.vocabulary,
+                      term: trm.term
+                    });
+                    footers.total.push(trm.hits);
+                    if (trm.buckets) {
+                      trm.buckets.forEach(function (bucket) {
+                        if (!(bucket.field in rows)) {
+                          rows[bucket.field] = {};
+                        }
+                        if (!(bucket.value in rows[bucket.field])) {
+                          rows[bucket.field][bucket.value] = {
+                            field: bucket.field,
+                            title: bucket.title,
+                            description: bucket.description,
+                            hits: {}
+                          };
+                        }
+                        // store the hits per field, per value at the position of the term
+                        rows[bucket.field][bucket.value].hits[termsCount] = bucket.hits;
+                      });
+                    }
+                  });
+                  vocabularyHeaders.push({
+                    taxonomy: taxo.taxonomy,
+                    vocabulary: voc.vocabulary,
+                    termsCount: voc.terms.length
+                  });
+                }
+              });
+              taxonomyHeaders.push({
+                taxonomy: taxo.taxonomy,
+                termsCount: termsCount
+              });
+            }
+          });
+        }
+
+        // compute totalHits for each row
+        Object.keys(rows).forEach(function (field) {
+          Object.keys(rows[field]).forEach(function (value) {
+            var hits = rows[field][value].hits;
+            rows[field][value].totalHits = Object.keys(hits).map(function (idx) {
+              return hits[idx];
+            }).reduce(function (a, b) {
+              return a + b;
+            });
+          });
+        });
+
+        return {
+          taxonomyHeaders: taxonomyHeaders,
+          vocabularyHeaders: vocabularyHeaders,
+          termHeaders: termHeaders,
+          rows: rows,
+          footers: footers,
+          totalHits: response.totalHits,
+          totalCount: response.totalCount
+        };
+      }
+
+      $scope.$watch('result', function () {
+        if ($scope.result) {
+          $scope.table = processCoverageResponse();
+        }
+      });
 
     }]);
 ;/*
@@ -1836,12 +2025,25 @@ angular.module('obiba.mica.search')
     };
   }])
 
+  .directive('coverageResultTable', [function () {
+    return {
+      restrict: 'EA',
+      replace: true,
+      scope: {
+        result: '='
+      },
+      controller: 'CoverageResultTableController',
+      templateUrl: 'search/views/coverage-search-result-table-template.html'
+    };
+  }])
+
   .directive('resultPanel', [function () {
     return {
       restrict: 'EA',
       replace: true,
       scope: {
         type: '=',
+        display: '=',
         dto: '=',
         lang: '=',
         onTypeChanged: '='
@@ -1857,6 +2059,7 @@ angular.module('obiba.mica.search')
       replace: true,
       scope: {
         criterion: '=',
+        query: '=',
         onSelect: '=',
         onRemove: '='
       },
@@ -1877,7 +2080,8 @@ angular.module('obiba.mica.search')
       restrict: 'EA',
       replace: true,
       scope: {
-        criteria: '='
+        criteria: '=',
+        query: '='
       },
       controller: 'CriteriaPanelController',
       templateUrl: 'search/views/criteria-panel-template.html'
@@ -1917,6 +2121,313 @@ angular.module('obiba.mica.search')
 
 'use strict';
 
+/**
+ * Visitor used to walk the JSON query and return a node matching input name
+ * @param name
+ * @constructor
+ */
+var FindNodeVisitor = function (name) {
+  this.node = null;
+  this.name = name;
+};
+
+/**
+ * Returns TRUE if node is found
+ * @param node
+ * @returns {boolean}
+ */
+FindNodeVisitor.prototype.accept = function (node) {
+
+  if (this.name === node.name) {
+    this.node = node;
+    return true;
+  }
+  // must go on!
+  return false;
+};
+
+/**
+ * Returns the found node while traversing JSON
+ * @returns {null|*}
+ */
+FindNodeVisitor.prototype.getNode = function () {
+  return this.node;
+};
+
+
+/**
+ * Criteria Item builder
+ */
+function CriteriaItemBuilder(LocalizedValues, useLang) {
+  var criteria = {
+    id: '',
+    taxonomy: [],
+    vocabulary: [],
+    term: null,
+    selectedTerms: [],
+    target: '',
+    lang: useLang,
+    itemTitle: '',
+    itemDescription: '',
+    itemParentTitle: '',
+    itemParentDescription: ''
+  };
+
+  this.target = function(value) {
+    criteria.target = value;
+    return this;
+  };
+
+  this.taxonomy = function(value) {
+    criteria.taxonomy = value;
+    return this;
+  };
+
+  this.vocabulary = function(value) {
+    criteria.vocabulary = value;
+    return this;
+  };
+
+  this.term = function(value) {
+    criteria.term = value;
+    return this;
+  };
+
+  this.selectedTerm = function(value) {
+    criteria.selectedTerms.push(value);
+    return this;
+  };
+
+  this.selectedTerms = function(values) {
+    criteria.selectedTerms = values;
+    return this;
+  };
+
+  this.build = function() {
+    criteria.id = criteria.taxonomy.name + '::' + criteria.vocabulary.name;
+
+    if (criteria.term) {
+      criteria.id += ':' + criteria.term.name;
+
+      criteria.itemTitle = LocalizedValues.forLocale(criteria.term.title, criteria.lang);
+      criteria.itemDescription = LocalizedValues.forLocale(criteria.term.description,criteria.lang);
+      criteria.itemParentTitle = LocalizedValues.forLocale(criteria.vocabulary.title, criteria.lang);
+      criteria.itemParentDescription = LocalizedValues.forLocale(criteria.vocabulary.description, criteria.lang);
+      if (!criteria.itemTitle) {
+        criteria.itemTitle = criteria.term.name;
+      }
+      if (!criteria.itemParentTitle) {
+        criteria.itemParentTitle = criteria.vocabulary.name;
+      }
+    } else {
+      criteria.itemTitle = LocalizedValues.forLocale(criteria.vocabulary.title, criteria.lang);
+      criteria.itemDescription = LocalizedValues.forLocale(criteria.vocabulary.description, criteria.lang);
+      criteria.itemParentTitle = LocalizedValues.forLocale(criteria.taxonomy.title, criteria.lang);
+      criteria.itemParentDescription = LocalizedValues.forLocale(criteria.taxonomy.description, criteria.lang);
+      if (!criteria.itemTitle) {
+        criteria.itemTitle = criteria.vocabulary.name;
+      }
+      if (!criteria.itemParentTitle) {
+        criteria.itemParentTitle = criteria.taxonomy.name;
+      }
+    }
+
+    return criteria;
+  };
+
+}
+
+/**
+ * Abstract class for all criteria builders
+ * @param root
+ * @param taxonomies
+ * @param LocalizedValues
+ * @param lang
+ * @constructor
+ */
+function AbstractCriteriaBuilder(root, taxonomies, LocalizedValues, lang) {
+  this.target = null;
+  this.root = root;
+  this.taxonomies = taxonomies;
+  this.criteriaList = [];
+  this.LocalizedValues = LocalizedValues;
+  this.lang = lang;
+
+  /**
+   * Called by the leaf visitor to create a criteria
+   * @param targetTaxonomy
+   * @param targetVocabulary
+   * @param targetTerms
+   */
+  this.addCriteria = function(targetTaxonomy, targetVocabulary, targetTerms) {
+    var self = this;
+
+    var foundTaxonmy = this.taxonomies.filter(function(taxonomy){
+      return targetTaxonomy === taxonomy.name;
+    });
+
+    if (foundTaxonmy.length === 0 ) {
+      throw new Error('Could not find taxonomy:', targetTaxonomy);
+    }
+
+    foundTaxonmy = foundTaxonmy[0];
+
+    var foundVocabulary = foundTaxonmy.vocabularies.filter(function(vocabulary){
+      return targetVocabulary === vocabulary.name;
+    });
+
+    if (foundVocabulary.length === 0 ) {
+      throw new Error('Could not find vocabulary:', targetVocabulary);
+    }
+
+    var foundCount = 0;
+    foundVocabulary = foundVocabulary[0];
+
+    var builder = new CriteriaItemBuilder(self.LocalizedValues, self.lang)
+      .target(self.target)
+      .taxonomy(foundTaxonmy)
+      .vocabulary(foundVocabulary);
+
+    if (foundVocabulary.terms) {
+      foundVocabulary.terms.some(function (term) {
+        if (targetTerms.indexOf(term.name) !== -1) {
+          builder.selectedTerm(term).build();
+          foundCount++;
+
+          // stop searching
+          return foundCount === targetTerms.length;
+        }
+      });
+    }
+
+    self.criteriaList.push(builder.build());
+  };
+}
+
+/**
+ * This method is where a criteria gets created
+ */
+AbstractCriteriaBuilder.prototype.visitLeaf = function (/*node*/) {
+
+};
+
+/**
+ * Returns all the criterias found
+ * @returns {Array}
+ */
+AbstractCriteriaBuilder.prototype.getCriteriaList = function (/*node*/) {
+  return this.criteriaList;
+};
+
+/**
+ * Node condition visitor
+ * @param node
+ */
+AbstractCriteriaBuilder.prototype.visitCondition =function (node) {
+  this.visit(node.args[0]);
+  this.visit(node.args[1]);
+};
+
+/**
+ * General purpose node visitor
+ * @param node
+ */
+AbstractCriteriaBuilder.prototype.visit = function(node) {
+  console.log('Visit', node);
+
+  switch (node.name) {
+    case 'and':
+    case 'or':
+      this.visitCondition(node);
+      break;
+    case 'in':
+    case 'out':
+    case 'eq':
+    case 'le':
+    case 'lt':
+    case 'ge':
+    case 'gt':
+    case 'between':
+      this.visitLeaf(node);
+      break;
+    case 'not':
+    case 'match':
+      break;
+    default:
+  }
+};
+
+/**
+ * Builds a criteria list for this target
+ */
+AbstractCriteriaBuilder.prototype.build = function() {
+  var self = this;
+  this.root.args.forEach(function(node){
+    self.visit(node);
+  });
+};
+
+/**
+ * Variable criteria builder
+ * @param root
+ * @param taxonomies
+ * @param criteriaItemBuilder
+ * @param lang
+ * @constructor
+ */
+
+var VariableCriteriaBuilder = function(root, taxonomies, LocalizedValues, lang) {
+  AbstractCriteriaBuilder.call(this, root, taxonomies, LocalizedValues, lang);
+  this.target = 'variable';
+
+  this.parserFieldName = function(name) {
+    var re = /(\w+)__(\w+)/;
+    var m = re.exec(name.replace(/attributes\./, '').replace(/\.\w+$/,''));
+
+    if (m && m.length > 2) {
+      return {taxonomy: m[1], vocabulary: m[2]};
+    }
+
+    throw new Error('Invalid field name', name);
+  };
+};
+
+VariableCriteriaBuilder.prototype = Object.create(AbstractCriteriaBuilder.prototype);
+
+VariableCriteriaBuilder.prototype.visitLeaf = function(node) {
+  console.log('VariableCriteriaBuilder');
+  var field = node.args[0];
+  var values = node.args[1];
+  var searchInfo = this.parserFieldName(field);
+  console.log(node.name, 'F:', field, 'V:', values);
+
+  this.addCriteria(searchInfo.taxonomy, searchInfo.vocabulary, values instanceof Array ? values : [values]);
+};
+
+/**
+ * TODO Given a target node, it adds a RQLQuery
+ * @param parser
+ * @constructor
+ */
+
+var RqlQueryBuilder = function(parser) {
+  this.rqlParser = parser;
+};
+
+/**
+ * TODO implement real code...
+ * @param name
+ * @param field
+ * @param args
+ * @returns {*}
+ */
+RqlQueryBuilder.prototype.node = function(name, field, args) {
+  var q = ':name(:f,(:args))'.replace(/:name/,name).replace(/:f/, field).replace(/:args/, args.join(','));
+  return this.rqlParser.parse(q).args[0];
+};
+/**
+ * Module services and factories
+ */
 angular.module('obiba.mica.search')
   .factory('TaxonomiesSearchResource', ['$resource', 'ngObibaMicaUrl',
     function ($resource, ngObibaMicaUrl) {
@@ -1950,7 +2461,6 @@ angular.module('obiba.mica.search')
       });
     }])
 
-
   .factory('JoinQuerySearchResource', ['$resource', 'ngObibaMicaUrl',
     function ($resource, ngObibaMicaUrl) {
       return $resource(ngObibaMicaUrl.getUrl('JoinQuerySearchResource'), {}, {
@@ -1977,6 +2487,16 @@ angular.module('obiba.mica.search')
       });
     }])
 
+  .factory('JoinQueryCoverageResource', ['$resource', 'ngObibaMicaUrl',
+    function ($resource, ngObibaMicaUrl) {
+      return $resource(ngObibaMicaUrl.getUrl('JoinQueryCoverageResource'), {}, {
+        'get': {
+          method: 'GET',
+          errorHandler: true
+        }
+      });
+    }])
+
   .factory('VocabularyResource', ['$resource', 'ngObibaMicaUrl',
     function ($resource, ngObibaMicaUrl) {
       return $resource(ngObibaMicaUrl.getUrl('VocabularyResource'), {}, {
@@ -1985,6 +2505,206 @@ angular.module('obiba.mica.search')
           errorHandler: true
         }
       });
+    }])
+
+  .service('ObibaSearchConfig', function () {
+    var options = {
+      networks: {
+        showSearchTab:1
+      },
+      studies: {
+        showSearchTab:1
+      },
+      datasets: {
+        showSearchTab:1
+      },
+      variables: {
+        showSearchTab:1
+      }
+    };
+
+    this.setOptions = function (newOptions) {
+      if (typeof(newOptions) === 'object') {
+        Object.keys(newOptions).forEach(function (option) {
+          if (option in options) {
+            options[option] = newOptions[option];
+          }
+        });
+      }
+    };
+
+    this.getOptions = function () {
+      return angular.copy(options);
+    };
+
+  })
+
+  /**
+   * Service providing RQL related functionality
+   */
+  .service('RqlQueryService', [
+    '$q',
+    'TaxonomiesResource',
+    'LocalizedValues',
+    function ($q, TaxonomiesResource, LocalizedValues) {
+      // TODO add the rest of the target taxonomy caches
+      var variableTaxonomies = null;
+
+      /**
+       * Walks through the JSON query and calls a visitor
+       * @param node
+       * @param visitor
+       * @returns {boolean}
+       */
+      function walk(node, visitor) {
+        console.log('findNode', node);
+        if (node instanceof RqlQuery) {
+
+          if (visitor.accept(node)) {
+            return true;
+          } else if (node.args) {
+            node.args.some(function (child) {
+              return walk(child, visitor);
+            });
+          }
+        }
+        return false;
+      }
+
+      /**
+       * Finds a query node by name
+       * @param root
+       * @param name
+       * @returns {null|*}
+       */
+      function findNode(root, name) {
+        var visitor = new FindNodeVisitor(name);
+        walk(root, visitor);
+        return visitor.getNode();
+      }
+
+      /**
+       * Creates a criteria item
+       * @param target
+       * @param taxonomy
+       * @param vocabulary
+       * @param term
+       * @param lang
+       * @returns A criteria item
+       */
+      this.createCriteria = function(target, taxonomy, vocabulary, term, lang) {
+
+        return new CriteriaItemBuilder(LocalizedValues, lang)
+          .target(target)
+          .taxonomy(taxonomy)
+          .vocabulary(vocabulary)
+          .term(term)
+          .build();
+      };
+
+      /**
+       * Finds the variable query node
+       * @param root
+       * @returns {null|*}
+       */
+      this.variableNode = function (root) {
+        return findNode(root, 'variable');
+      };
+
+      /**
+       * Builds the variable query criterias
+       * @param root
+       * @param lang
+       * @returns {*}
+       */
+      this.buildVariableCriteria = function(root, lang) {
+        var self = this;
+        var deferred = $q.defer();
+
+        function build() {
+          var variableNode = self.variableNode(root);
+          if (variableNode) {
+            var builder = new VariableCriteriaBuilder(variableNode, self.variableTaxonomies, LocalizedValues, lang);
+
+            builder.build();
+            deferred.resolve(builder.getCriteriaList());
+          }
+        }
+
+        if (variableTaxonomies) {
+          build();
+        } else {
+          TaxonomiesResource.get({
+            target: 'variable'
+          }).$promise.then(function(response) {
+            self.variableTaxonomies = response;
+            build();
+          });
+        }
+
+        return deferred.promise;
+      };
+
+      this.normalizeAggregationFieldName = function(type, taxonomy, vocabulary) {
+
+        // TODO complete and create type-based functions
+        switch (type) {
+          case 'variable':
+            return 'attributes.' + taxonomy + '__' + vocabulary + '.und';
+        }
+
+        throw new Error('Not implemented: ' + taxonomy + ' ' + vocabulary);
+      };
+
+      /**
+       * Append the aggregate and facet for criteria term listing.
+       *
+       * @param type
+       * @param query
+       * @param taxonomy
+       * @param vocabulary
+       * @returns the new query
+       */
+      this.prepareCriteriaTermsQuery = function(type, query, taxonomy, vocabulary) {
+        var parsedQuery = new RqlParser().parse(query);
+        var aggregate = new RqlQuery('aggregate');
+        var facet = new RqlQuery('facet');
+        aggregate.args.push(this.normalizeAggregationFieldName(type, taxonomy, vocabulary));
+        parsedQuery.args.some(function(arg) {
+          if(arg.name === type) {
+            arg.args.push(aggregate);
+            return true;
+          }
+          return false;
+        });
+        parsedQuery.args.push(facet);
+
+        return parsedQuery.serializeArgs(parsedQuery.args);
+      };
+
+      /**
+       * Append the aggregate and bucket operations to the variable.
+       *
+       * @param query
+       * @param bucketArgs
+       * @returns the new query
+       */
+      this.prepareCoverageQuery = function(query, bucketArgs) {
+        var parsedQuery = new RqlParser().parse(query);
+        var aggregate = new RqlQuery('aggregate');
+        var bucket = new RqlQuery('bucket');
+        bucketArgs.forEach(function(b){
+          bucket.args.push(b);
+        });
+        aggregate.args.push(bucket);
+        parsedQuery.args.forEach(function(arg) {
+          if(arg.name === 'variable') {
+            arg.args.push(aggregate);
+          }
+        });
+        return parsedQuery.serializeArgs(parsedQuery.args);
+      };
+
     }]);
 ;/*
  * Copyright (c) 2014 OBiBa. All rights reserved.
@@ -2372,7 +3092,7 @@ angular.module('obiba.mica.localized')
         return this.for(values, lang, 'lang', 'value');
       };
     });
-;angular.module('templates-ngObibaMica', ['access/views/data-access-request-form.html', 'access/views/data-access-request-histroy-view.html', 'access/views/data-access-request-list.html', 'access/views/data-access-request-profile-user-modal.html', 'access/views/data-access-request-submitted-modal.html', 'access/views/data-access-request-validation-modal.html', 'access/views/data-access-request-view.html', 'attachment/attachment-input-template.html', 'attachment/attachment-list-template.html', 'graphics/views/charts-directive.html', 'localized/localized-input-group-template.html', 'localized/localized-input-template.html', 'localized/localized-textarea-template.html', 'search/views/criteria-panel-template.html', 'search/views/criterion-dropdown-template.html', 'search/views/datasets-search-result-table-template.html', 'search/views/networks-search-result-table-template.html', 'search/views/search-result-panel-template.html', 'search/views/search.html', 'search/views/studies-search-result-table-template.html', 'search/views/taxonomies-view.html', 'search/views/taxonomy-panel-template.html', 'search/views/taxonomy-template.html', 'search/views/term-panel-template.html', 'search/views/variables-search-result-table-template.html', 'search/views/vocabulary-panel-template.html']);
+;angular.module('templates-ngObibaMica', ['access/views/data-access-request-form.html', 'access/views/data-access-request-histroy-view.html', 'access/views/data-access-request-list.html', 'access/views/data-access-request-profile-user-modal.html', 'access/views/data-access-request-submitted-modal.html', 'access/views/data-access-request-validation-modal.html', 'access/views/data-access-request-view.html', 'attachment/attachment-input-template.html', 'attachment/attachment-list-template.html', 'graphics/views/charts-directive.html', 'localized/localized-input-group-template.html', 'localized/localized-input-template.html', 'localized/localized-textarea-template.html', 'search/views/coverage-search-result-table-template.html', 'search/views/criteria-panel-template.html', 'search/views/criterion-dropdown-template.html', 'search/views/datasets-search-result-table-template.html', 'search/views/networks-search-result-table-template.html', 'search/views/search-result-panel-template.html', 'search/views/search.html', 'search/views/studies-search-result-table-template.html', 'search/views/taxonomies-view.html', 'search/views/taxonomy-panel-template.html', 'search/views/taxonomy-template.html', 'search/views/term-panel-template.html', 'search/views/variables-search-result-table-template.html', 'search/views/vocabulary-panel-template.html']);
 
 angular.module("access/views/data-access-request-form.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("access/views/data-access-request-form.html",
@@ -2912,10 +3632,73 @@ angular.module("localized/localized-textarea-template.html", []).run(["$template
     "</div>");
 }]);
 
+angular.module("search/views/coverage-search-result-table-template.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("search/views/coverage-search-result-table-template.html",
+    "<div>\n" +
+    "  <p class=\"help-block\" ng-if=\"table.taxonomyHeaders.length === 0\" translate>no-coverage</p>\n" +
+    "\n" +
+    "  <div class=\"table-responsive\" ng-if=\"table.taxonomyHeaders.length > 0\">\n" +
+    "    <table class=\"table table-bordered table-striped\">\n" +
+    "      <thead>\n" +
+    "      <tr>\n" +
+    "        <th rowspan=\"2\" translate>study.label</th>\n" +
+    "        <th ng-repeat=\"header in table.vocabularyHeaders\" title=\"{{header.vocabulary.descriptions[0].value}}\"\n" +
+    "          colspan=\"{{header.termsCount}}\">\n" +
+    "          {{header.vocabulary.titles[0].value}}\n" +
+    "        </th>\n" +
+    "        <th rowspan=\"2\" translate>all</th>\n" +
+    "      </tr>\n" +
+    "      <tr>\n" +
+    "        <th ng-repeat=\"header in table.termHeaders\" title=\"{{header.term.descriptions[0].value}}\">\n" +
+    "          {{header.term.titles[0].value}}\n" +
+    "        </th>\n" +
+    "      </tr>\n" +
+    "      </thead>\n" +
+    "      <tbody>\n" +
+    "\n" +
+    "      <tr ng-repeat=\"row in table.rows.studyIds\">\n" +
+    "        <td title=\"{{row.description}}\">{{row.title}}</td>\n" +
+    "        <td ng-repeat=\"h in table.termHeaders\">\n" +
+    "          <span class=\"label label-info\" ng-if=\"row.hits[$index + 1]\">{{row.hits[$index + 1]}}</span>\n" +
+    "          <span ng-if=\"!row.hits[$index + 1]\">0</span>\n" +
+    "        </td>\n" +
+    "        <th>\n" +
+    "          <a>{{row.totalHits}}</a>\n" +
+    "        </th>\n" +
+    "      </tr>\n" +
+    "\n" +
+    "      </tbody>\n" +
+    "      <tfoot>\n" +
+    "      <tr>\n" +
+    "        <th translate>all</th>\n" +
+    "        <th ng-repeat=\"hit in table.footers.total\">\n" +
+    "          <a>{{hit}}</a>\n" +
+    "        </th>\n" +
+    "        <th>\n" +
+    "          <a>{{table.totalHits}}</a>\n" +
+    "        </th>\n" +
+    "      </tr>\n" +
+    "      </tfoot>\n" +
+    "    </table>\n" +
+    "  </div>\n" +
+    "\n" +
+    "      <!--<pre>-->\n" +
+    "<!--{{table | json}}-->\n" +
+    "      <!--</pre>-->\n" +
+    "</div>");
+}]);
+
 angular.module("search/views/criteria-panel-template.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("search/views/criteria-panel-template.html",
     "<span class=\"voffset4\">\n" +
-    "  <span criterion-dropdown ng-repeat=\"criterion in criteria\" criterion=\"criterion\" on-select=\"selectTerm\" on-remove=\"removeCriteria\">\n" +
+    "  <span criterion-dropdown\n" +
+    "        ng-repeat=\"criterion in criteria\"\n" +
+    "        criterion=\"criterion\"\n" +
+    "        query=\"query\"\n" +
+    "        on-select=\"selectTerm\"\n" +
+    "        on-remove=\"removeCriteria\"\n" +
+    "        class=\"{{$first ? '' : 'hoffset2'}}\">\n" +
+    "\n" +
     "  </span>\n" +
     "</span>\n" +
     "");
@@ -2925,7 +3708,7 @@ angular.module("search/views/criterion-dropdown-template.html", []).run(["$templ
   $templateCache.put("search/views/criterion-dropdown-template.html",
     "<span class='btn-group btn-info' ng-class='{open: open}'>\n" +
     "  <button class='btn btn-small btn-info dropdown'\n" +
-    "          ng-click='open=!open;openDropdown()' title=\"{{localize(criterion.vocabulary.title)}}\">\n" +
+    "          ng-click='openDropdown()' title=\"{{localize(criterion.vocabulary.title)}}\">\n" +
     "    {{truncate(localize(criterion.vocabulary.title))}}\n" +
     "    <span class='fa fa-caret-down'></span>\n" +
     "  </button>\n" +
@@ -3064,36 +3847,58 @@ angular.module("search/views/networks-search-result-table-template.html", []).ru
 
 angular.module("search/views/search-result-panel-template.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("search/views/search-result-panel-template.html",
-    "<div ng-show=\"dto\">\n" +
-    "  <uib-tabset class=\"voffset5\">\n" +
-    "    <!-- Networks -->\n" +
-    "    <uib-tab active=\"activeTab.networks\" ng-click=\"selectTab(QUERY_TYPES.NETWORKS)\"\n" +
-    "             heading=\"{{'networks' | translate}} ({{dto.networkResultDto.totalHits}})\">\n" +
-    "      <networks-result-table\n" +
-    "        summaries=\"dto.networkResultDto['obiba.mica.NetworkResultDto.result'].networks\"></networks-result-table>\n" +
+    "<div>\n" +
+    "\n" +
+    "  <uib-tabset class=\"voffset2\" type=\"tabs\">\n" +
+    "\n" +
+    "    <uib-tab heading=\"{{'list' | translate}}\" active=\"activeDisplay.list\" ng-click=\"selectDisplay(DISPLAY_TYPES.LIST)\">\n" +
+    "\n" +
+    "      <uib-tabset class=\"voffset2\" type=\"pills\">\n" +
+    "\n" +
+    "        <!-- Variables -->\n" +
+    "        <uib-tab ng-show=\"settingsDisplay.variables.showSearchTab\" active=\"activeTarget.variables\" ng-click=\"selectTarget(QUERY_TYPES.VARIABLES)\"\n" +
+    "          heading=\"{{'variables' | translate}} ({{dto.variableResultDto.totalHits}})\">\n" +
+    "          <variables-result-table\n" +
+    "            summaries=\"dto.variableResultDto['obiba.mica.DatasetVariableResultDto.result'].summaries\"></variables-result-table>\n" +
+    "        </uib-tab>\n" +
+    "\n" +
+    "        <!-- Datasets -->\n" +
+    "        <uib-tab ng-show=\"settingsDisplay.datasets.showSearchTab\" active=\"activeTarget.datasets\" ng-click=\"selectTarget(QUERY_TYPES.DATASETS)\"\n" +
+    "          heading=\"{{'datasets' | translate}} ({{dto.datasetResultDto.totalHits}})\">\n" +
+    "          <datasets-result-table\n" +
+    "            summaries=\"dto.datasetResultDto['obiba.mica.DatasetResultDto.result'].datasets\"></datasets-result-table>\n" +
+    "        </uib-tab>\n" +
+    "\n" +
+    "        <!-- Studies -->\n" +
+    "        <uib-tab ng-show=\"settingsDisplay.studies.showSearchTab\" active=\"activeTarget.studies\" ng-click=\"selectTarget(QUERY_TYPES.STUDIES)\"\n" +
+    "          heading=\"{{'studies' | translate}} ({{dto.studyResultDto.totalHits}})\">\n" +
+    "          <studies-result-table\n" +
+    "            summaries=\"dto.studyResultDto['obiba.mica.StudyResultDto.result'].summaries\"></studies-result-table>\n" +
+    "        </uib-tab>\n" +
+    "\n" +
+    "        <!-- Networks -->\n" +
+    "        <uib-tab ng-show=\"settingsDisplay.networks.showSearchTab\" active=\"activeTarget.networks\" ng-click=\"selectTarget(QUERY_TYPES.NETWORKS)\"\n" +
+    "          heading=\"{{'networks' | translate}} ({{dto.networkResultDto.totalHits}})\">\n" +
+    "          <networks-result-table\n" +
+    "            summaries=\"dto.networkResultDto['obiba.mica.NetworkResultDto.result'].networks\"></networks-result-table>\n" +
+    "        </uib-tab>\n" +
+    "      </uib-tabset>\n" +
+    "\n" +
     "    </uib-tab>\n" +
     "\n" +
-    "    <!-- Studies -->\n" +
-    "    <uib-tab active=\"activeTab.studies\" ng-click=\"selectTab(QUERY_TYPES.STUDIES)\"\n" +
-    "             heading=\"{{'studies' | translate}} ({{dto.studyResultDto.totalHits}})\">\n" +
-    "      <studies-result-table\n" +
-    "        summaries=\"dto.studyResultDto['obiba.mica.StudyResultDto.result'].summaries\"></studies-result-table>\n" +
-    "    </uib-tab>\n" +
-    "\n" +
-    "    <!-- Datasets -->\n" +
-    "    <uib-tab active=\"activeTab.datasets\" ng-click=\"selectTab(QUERY_TYPES.DATASETS)\"\n" +
-    "             heading=\"{{'datasets' | translate}} ({{dto.datasetResultDto.totalHits}})\">\n" +
-    "      <datasets-result-table\n" +
-    "        summaries=\"dto.datasetResultDto['obiba.mica.DatasetResultDto.result'].datasets\"></datasets-result-table>\n" +
+    "    <uib-tab heading=\"{{'coverage' | translate}}\" active=\"activeDisplay.coverage\"\n" +
+    "      ng-click=\"selectDisplay(DISPLAY_TYPES.COVERAGE)\">\n" +
+    "      <coverage-result-table result=\"dto\"  class=\"voffset2\"></coverage-result-table>\n" +
     "\n" +
     "    </uib-tab>\n" +
     "\n" +
-    "    <!-- Variables -->\n" +
-    "    <uib-tab active=\"activeTab.variables\" ng-click=\"selectTab(QUERY_TYPES.VARIABLES)\"\n" +
-    "             heading=\"{{'variables' | translate}} ({{dto.variableResultDto.totalHits}})\">\n" +
-    "      <variables-result-table\n" +
-    "        summaries=\"dto.variableResultDto['obiba.mica.DatasetVariableResultDto.result'].summaries\"></variables-result-table>\n" +
+    "    <uib-tab heading=\"{{'graphics' | translate}}\" active=\"activeDisplay.graphics\"\n" +
+    "      ng-click=\"selectDisplay(DISPLAY_TYPES.GRAPHICS)\">\n" +
+    "      <pre class=\"voffset2\">\n" +
+    "{{dto | json}}\n" +
+    "      </pre>\n" +
     "    </uib-tab>\n" +
+    "\n" +
     "  </uib-tabset>\n" +
     "\n" +
     "</div>");
@@ -3147,19 +3952,19 @@ angular.module("search/views/search.html", []).run(["$templateCache", function($
     "      <div class=\"col-xs-3\"></div>\n" +
     "      <div class=\"col-xs-6\">\n" +
     "        <ul class=\"nav nav-pills\">\n" +
-    "          <li ng-class=\"{'active': taxonomies.target === 'variable' && taxonomiesShown}\"\n" +
+    "          <li ng-show=\"settingsDisplay.variables.showSearchTab\" ng-class=\"{'active': taxonomies.target === 'variable' && taxonomiesShown}\"\n" +
     "            title=\"{{'variable-classifications' | translate}}\">\n" +
     "            <a ng-click=\"selectTaxonomyTarget('variable')\" translate>variables</a>\n" +
     "          </li>\n" +
-    "          <li ng-class=\"{'active': taxonomies.target === 'dataset' && taxonomiesShown}\"\n" +
+    "          <li ng-show=\"settingsDisplay.datasets.showSearchTab\" ng-class=\"{'active': taxonomies.target === 'dataset' && taxonomiesShown}\"\n" +
     "            title=\"{{'dataset-classifications' | translate}}\">\n" +
     "            <a ng-click=\"selectTaxonomyTarget('dataset')\" translate>datasets</a>\n" +
     "          </li>\n" +
-    "          <li ng-class=\"{'active': taxonomies.target === 'study' && taxonomiesShown}\"\n" +
+    "          <li ng-show=\"settingsDisplay.studies.showSearchTab\" ng-class=\"{'active': taxonomies.target === 'study' && taxonomiesShown}\"\n" +
     "            title=\"{{'study-classifications' | translate}}\">\n" +
     "            <a ng-click=\"selectTaxonomyTarget('study')\" translate>studies</a>\n" +
     "          </li>\n" +
-    "          <li ng-class=\"{'active': taxonomies.target === 'network' && taxonomiesShown}\"\n" +
+    "          <li ng-show=\"settingsDisplay.networks.showSearchTab\" ng-class=\"{'active': taxonomies.target === 'network' && taxonomiesShown}\"\n" +
     "            title=\"{{'network-classifications' | translate}}\">\n" +
     "            <a ng-click=\"selectTaxonomyTarget('network')\" translate>networks</a>\n" +
     "          </li>\n" +
@@ -3175,14 +3980,14 @@ angular.module("search/views/search.html", []).run(["$templateCache", function($
     "  <div class=\"voffset4\">\n" +
     "    <div class=\"row voffset4\">\n" +
     "      <div class=\"col-xs-12\">\n" +
-    "        <div criteria-panel criteria=\"search.criteria\"></div>\n" +
+    "        <div criteria-panel criteria=\"search.criteria\" query=\"search.query\"></div>\n" +
     "      </div>\n" +
     "    </div>\n" +
     "  </div>\n" +
     "\n" +
     "  <!-- Results region -->\n" +
     "  <div>\n" +
-    "    <result-panel type=\"search.type\" dto=\"search.result\" on-type-changed=\"onTypeChanged\"></result-panel>\n" +
+    "    <result-panel display=\"search.display\" type=\"search.type\" dto=\"search.result\" on-type-changed=\"onTypeChanged\"></result-panel>\n" +
     "  </div>\n" +
     "</div>");
 }]);

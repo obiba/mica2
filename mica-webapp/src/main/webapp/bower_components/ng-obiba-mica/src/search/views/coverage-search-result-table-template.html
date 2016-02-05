@@ -1,0 +1,52 @@
+<div>
+  <p class="help-block" ng-if="table.taxonomyHeaders.length === 0" translate>no-coverage</p>
+
+  <div class="table-responsive" ng-if="table.taxonomyHeaders.length > 0">
+    <table class="table table-bordered table-striped">
+      <thead>
+      <tr>
+        <th rowspan="2" translate>study.label</th>
+        <th ng-repeat="header in table.vocabularyHeaders" title="{{header.vocabulary.descriptions[0].value}}"
+          colspan="{{header.termsCount}}">
+          {{header.vocabulary.titles[0].value}}
+        </th>
+        <th rowspan="2" translate>all</th>
+      </tr>
+      <tr>
+        <th ng-repeat="header in table.termHeaders" title="{{header.term.descriptions[0].value}}">
+          {{header.term.titles[0].value}}
+        </th>
+      </tr>
+      </thead>
+      <tbody>
+
+      <tr ng-repeat="row in table.rows.studyIds">
+        <td title="{{row.description}}">{{row.title}}</td>
+        <td ng-repeat="h in table.termHeaders">
+          <span class="label label-info" ng-if="row.hits[$index + 1]">{{row.hits[$index + 1]}}</span>
+          <span ng-if="!row.hits[$index + 1]">0</span>
+        </td>
+        <th>
+          <a>{{row.totalHits}}</a>
+        </th>
+      </tr>
+
+      </tbody>
+      <tfoot>
+      <tr>
+        <th translate>all</th>
+        <th ng-repeat="hit in table.footers.total">
+          <a>{{hit}}</a>
+        </th>
+        <th>
+          <a>{{table.totalHits}}</a>
+        </th>
+      </tr>
+      </tfoot>
+    </table>
+  </div>
+
+      <!--<pre>-->
+<!--{{table | json}}-->
+      <!--</pre>-->
+</div>
