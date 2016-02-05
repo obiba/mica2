@@ -45,7 +45,7 @@ public interface QueryWrapper {
   @NotNull
   List<String> getAggregationBuckets();
 
-  @NotNull
+  @Nullable
   List<String> getAggregations();
 
   @NotNull
