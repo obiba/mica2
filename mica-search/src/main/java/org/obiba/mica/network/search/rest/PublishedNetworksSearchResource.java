@@ -20,8 +20,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.network.search.NetworkIndexer;
@@ -95,8 +93,7 @@ public class PublishedNetworksSearchResource {
   @GET
   @Path("/_rql")
   @Timed
-  public JoinQueryResultDto rqlQuery(@Context UriInfo uriInfo) throws IOException {
-    String query = uriInfo.getRequestUri().getQuery();
+  public JoinQueryResultDto rqlQuery(@QueryParam("query") String query) throws IOException {
     return joinQueryExecutor.query(JoinQueryExecutor.QueryType.NETWORK, new JoinRQLQueryWrapper(query));
   }
 }

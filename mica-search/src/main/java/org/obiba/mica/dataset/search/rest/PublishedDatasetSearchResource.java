@@ -21,8 +21,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
@@ -124,8 +122,7 @@ public class PublishedDatasetSearchResource {
   @GET
   @Path("/_rql")
   @Timed
-  public MicaSearch.JoinQueryResultDto rqlQuery(@Context UriInfo uriInfo) throws IOException {
-    String query = uriInfo.getRequestUri().getQuery();
+  public MicaSearch.JoinQueryResultDto rqlQuery(@QueryParam("query") String query) throws IOException {
     return joinQueryExecutor.query(JoinQueryExecutor.QueryType.DATASET, new JoinRQLQueryWrapper(query));
   }
 
