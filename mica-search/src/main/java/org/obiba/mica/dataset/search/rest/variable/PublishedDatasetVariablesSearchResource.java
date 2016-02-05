@@ -20,9 +20,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.search.CoverageQueryExecutor;
@@ -72,16 +70,14 @@ public class PublishedDatasetVariablesSearchResource {
   @GET
   @Path("/_rql")
   @Timed
-  public MicaSearch.JoinQueryResultDto rqlQuery(@Context UriInfo uriInfo) throws IOException {
-    String query = uriInfo.getRequestUri().getQuery();
+  public MicaSearch.JoinQueryResultDto rqlQuery(@QueryParam("query") String query) throws IOException {
     return joinQueryExecutor.query(JoinQueryExecutor.QueryType.VARIABLE, new JoinRQLQueryWrapper(query));
   }
 
   @GET
   @Path("/_coverage")
   @Timed
-  public MicaSearch.TaxonomiesCoverageDto rqlCoverage(@Context UriInfo uriInfo) throws IOException {
-    String query = uriInfo.getRequestUri().getQuery();
+  public MicaSearch.TaxonomiesCoverageDto rqlCoverage(@QueryParam("query") String query) throws IOException {
     return coverageQueryExecutor.coverageQuery(new JoinRQLQueryWrapper(query));
   }
 
@@ -89,8 +85,8 @@ public class PublishedDatasetVariablesSearchResource {
   @Timed
   @Path("/_coverage")
   @Produces("text/csv")
-  public Response rqlCoverageCsv(@Context UriInfo uriInfo) throws IOException {
-    MicaSearch.TaxonomiesCoverageDto coverage = rqlCoverage(uriInfo);
+  public Response rqlCoverageCsv(@QueryParam("query") String query) throws IOException {
+    MicaSearch.TaxonomiesCoverageDto coverage = rqlCoverage(query);
     CsvTaxonomyCoverageWriter writer = new CsvTaxonomyCoverageWriter();
     ByteArrayOutputStream values = writer.write(coverage);
 
