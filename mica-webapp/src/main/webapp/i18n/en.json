@@ -768,6 +768,8 @@
   "list": "List",
   "coverage": "Coverage",
   "no-coverage": "Select some variable search criteria to see their corresponding coverage.",
+  "coverage-hide-missing": "Hide missing",
+  "coverage-show-missing": "Show missing",
   "graphics": "Graphics",
   "all-null-classifications": "",
   "all-variable-classifications": "All variable classifications",
