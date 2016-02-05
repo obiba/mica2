@@ -63,7 +63,7 @@ public class EmptyQueryWrapper implements QueryWrapper {
 
   @Override
   public List<String> getAggregations() {
-    return Lists.newArrayList();
+    return null;
   }
 
   @Override
