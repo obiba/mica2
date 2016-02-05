@@ -1,4 +1,11 @@
 <span class="voffset4">
-  <span criterion-dropdown ng-repeat="criterion in criteria" criterion="criterion" on-select="selectTerm" on-remove="removeCriteria">
+  <span criterion-dropdown
+        ng-repeat="criterion in criteria"
+        criterion="criterion"
+        query="query"
+        on-select="selectTerm"
+        on-remove="removeCriteria"
+        class="{{$first ? '' : 'hoffset2'}}">
+
   </span>
 </span>

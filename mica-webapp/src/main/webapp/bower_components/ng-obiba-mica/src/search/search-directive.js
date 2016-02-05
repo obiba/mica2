@@ -98,12 +98,25 @@ angular.module('obiba.mica.search')
     };
   }])
 
+  .directive('coverageResultTable', [function () {
+    return {
+      restrict: 'EA',
+      replace: true,
+      scope: {
+        result: '='
+      },
+      controller: 'CoverageResultTableController',
+      templateUrl: 'search/views/coverage-search-result-table-template.html'
+    };
+  }])
+
   .directive('resultPanel', [function () {
     return {
       restrict: 'EA',
       replace: true,
       scope: {
         type: '=',
+        display: '=',
         dto: '=',
         lang: '=',
         onTypeChanged: '='
@@ -119,6 +132,7 @@ angular.module('obiba.mica.search')
       replace: true,
       scope: {
         criterion: '=',
+        query: '=',
         onSelect: '=',
         onRemove: '='
       },
@@ -139,7 +153,8 @@ angular.module('obiba.mica.search')
       restrict: 'EA',
       replace: true,
       scope: {
-        criteria: '='
+        criteria: '=',
+        query: '='
       },
       controller: 'CriteriaPanelController',
       templateUrl: 'search/views/criteria-panel-template.html'
