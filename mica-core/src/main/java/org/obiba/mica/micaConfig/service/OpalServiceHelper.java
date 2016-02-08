@@ -50,6 +50,11 @@ public class OpalServiceHelper {
   private Taxonomy fromDto(Opal.TaxonomyDto dto) {
     Taxonomy taxonomy = Dtos.fromDto(dto);
     taxonomy.getVocabularies().forEach(vocabulary -> {
+      String field = vocabulary.getAttributeValue("field");
+      if(Strings.isNullOrEmpty(field)) {
+        vocabulary.addAttribute("field",
+          "attributes." + AttributeKey.getMapKey(vocabulary.getName(), taxonomy.getName()) + ".und");
+      }
       String alias = vocabulary.getAttributeValue("alias");
       if(Strings.isNullOrEmpty(alias)) {
         vocabulary.addAttribute("alias",

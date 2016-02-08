@@ -279,22 +279,26 @@ public class VariableQuery extends AbstractDocumentQuery {
 
       getOpalTaxonomies().stream().filter(Taxonomy::hasVocabularies)
         .forEach(taxonomy -> taxonomy.getVocabularies().stream().filter(Vocabulary::hasTerms).forEach(vocabulary -> {
-          String key = "attributes." + AttributeKey.getMapKey(vocabulary.getName(), taxonomy.getName()) + "." +
-            LanguageTag.UNDETERMINED;
-          if(patterns.isEmpty() || patterns.stream().filter(p -> p.matcher(key).matches()).findFirst().isPresent())
-            properties.put(key, "");
+          String field = vocabulary.getAttributes().containsKey("field")
+            ? vocabulary.getAttributeValue("field")
+            : "attributes." + AttributeKey.getMapKey(vocabulary.getName(), taxonomy.getName()) + "." +
+              LanguageTag.UNDETERMINED;
+          if(patterns.isEmpty() || patterns.stream().filter(p -> p.matcher(field).matches()).findFirst().isPresent())
+            properties.put(field, "");
         }));
 
       micaConfigService.getVariableTaxonomy().getVocabularies().forEach(vocabulary -> {
-        String key = vocabulary.getName().replace('-','.');
-        if(patterns.isEmpty() || patterns.stream().filter(p -> p.matcher(key).matches()).findFirst().isPresent())
-          properties.put(key,"");
+        String field = vocabulary.getAttributes().containsKey("field")
+          ? vocabulary.getAttributeValue("field")
+          : vocabulary.getName().replace('-', '.');
+        if(patterns.isEmpty() || patterns.stream().filter(p -> p.matcher(field).matches()).findFirst().isPresent())
+          properties.put(field, "");
       });
     }
 
     // required for the counts to work
-    if(!properties.containsKey(JOIN_FIELD)) properties.put(JOIN_FIELD,"");
-    if(!properties.containsKey(DATASET_ID)) properties.put(DATASET_ID,"");
+    if(!properties.containsKey(JOIN_FIELD)) properties.put(JOIN_FIELD, "");
+    if(!properties.containsKey(DATASET_ID)) properties.put(DATASET_ID, "");
 
     return properties;
   }
