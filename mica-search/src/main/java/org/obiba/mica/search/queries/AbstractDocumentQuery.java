@@ -176,21 +176,23 @@ public abstract class AbstractDocumentQuery {
     if(mode != Mode.LIST && filter != null) {
       List<Pattern> patterns = filter.stream().map(Pattern::compile).collect(Collectors.toList());
       taxonomy.getVocabularies().forEach(vocabulary -> {
-        String key = vocabulary.getName().replace('-', '.');
+        String field = vocabulary.getAttributes().containsKey("field")
+          ? vocabulary.getAttributeValue("field")
+          : vocabulary.getName().replace('-', '.');
 
-        if(patterns.isEmpty() || patterns.stream().filter(p -> p.matcher(key).matches()).findFirst().isPresent()) {
-          properties.put(key, "");
+        if(patterns.isEmpty() || patterns.stream().filter(p -> p.matcher(field).matches()).findFirst().isPresent()) {
+          properties.put(field, "");
           String type = vocabulary.getAttributeValue("type");
           if("integer".equals(type) || "decimal".equals(type)) {
             if(vocabulary.hasTerms()) {
               // TODO: use the terms for a range query
             } else {
-              properties.put(key + AggregationYamlParser.TYPE, AggregationYamlParser.AGG_STATS);
+              properties.put(field + AggregationYamlParser.TYPE, AggregationYamlParser.AGG_STATS);
             }
           }
           String alias = vocabulary.getAttributeValue("alias");
           if(!Strings.isNullOrEmpty(alias)) {
-            properties.put(key + AggregationYamlParser.ALIAS, alias);
+            properties.put(field + AggregationYamlParser.ALIAS, alias);
           }
         }
       });
