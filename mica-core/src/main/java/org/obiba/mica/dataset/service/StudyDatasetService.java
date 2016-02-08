@@ -182,7 +182,13 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
    */
   public void indexAll() {
     findAllDatasets()
-      .forEach(dataset -> eventBus.post(new DatasetUpdatedEvent(dataset, wrappedGetDatasetVariables(dataset))));
+      .forEach(dataset -> {
+        try {
+          eventBus.post(new DatasetUpdatedEvent(dataset, wrappedGetDatasetVariables(dataset)));
+        } catch(Exception e) {
+          log.error("Error indexing dataset {}", dataset, e);
+        }
+      });
   }
 
   @Override

@@ -10,7 +10,6 @@
 
 package org.obiba.mica.core.service;
 
-import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -43,14 +42,6 @@ public class PersonService {
 
   public Person findById(String id) {
     return personRepository.findOne(id);
-  }
-
-  public List<Person> find(String query) {
-    return null;
-  }
-
-  public List<Person> findAllPersons() {
-    return null;
   }
 
   @Async

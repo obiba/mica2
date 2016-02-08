@@ -18,6 +18,9 @@ import org.obiba.mica.dataset.event.DatasetDeletedEvent;
 import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
+import org.obiba.mica.dataset.event.IndexDatasetsEvent;
+import org.obiba.mica.dataset.service.HarmonizationDatasetService;
+import org.obiba.mica.dataset.service.StudyDatasetService;
 import org.obiba.mica.search.ElasticSearchIndexer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,11 +45,16 @@ public class DatasetIndexer {
   @Inject
   protected ElasticSearchIndexer elasticSearchIndexer;
 
+  @Inject
+  private HarmonizationDatasetService harmonizationDatasetService;
+
+  @Inject
+  private StudyDatasetService studyDatasetService;
+
   @Async
   @Subscribe
   public void datasetUpdated(DatasetUpdatedEvent event) {
     log.debug("{} {} was updated", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
-    elasticSearchIndexer.delete(DRAFT_DATASET_INDEX, (Indexable) event.getPersistable());
     elasticSearchIndexer.index(DRAFT_DATASET_INDEX, (Indexable) event.getPersistable());
   }
 
@@ -62,7 +70,6 @@ public class DatasetIndexer {
   @Subscribe
   public void datasetPublished(DatasetPublishedEvent event) {
     log.debug("{} {} was published", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
-    elasticSearchIndexer.delete(PUBLISHED_DATASET_INDEX, (Indexable) event.getPersistable());
     elasticSearchIndexer.index(PUBLISHED_DATASET_INDEX, (Indexable) event.getPersistable());
   }
 
@@ -71,5 +78,15 @@ public class DatasetIndexer {
   public void datasetUnpublished(DatasetUnpublishedEvent event) {
     log.debug("{} {} was unpublished", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
     elasticSearchIndexer.delete(PUBLISHED_DATASET_INDEX, (Indexable) event.getPersistable());
+  }
+
+  @Async
+  @Subscribe
+  public void reIndexAll(IndexDatasetsEvent event) {
+    if(elasticSearchIndexer.hasIndex(PUBLISHED_DATASET_INDEX)) elasticSearchIndexer.dropIndex(PUBLISHED_DATASET_INDEX);
+    if(elasticSearchIndexer.hasIndex(DRAFT_DATASET_INDEX)) elasticSearchIndexer.dropIndex(DRAFT_DATASET_INDEX);
+
+    harmonizationDatasetService.indexAll();
+    studyDatasetService.indexAll();
   }
 }

@@ -2,6 +2,7 @@ http.enabled: false
 script:
     inline: on
     indexed: on
+node.local: true
 discovery.zen.ping.multicast.enabled: false
 index:
     analysis:
