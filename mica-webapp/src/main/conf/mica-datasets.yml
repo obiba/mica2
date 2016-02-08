@@ -15,3 +15,24 @@
   "description": {}
   "keywords": {}
   "terms": []
+- "name": "className"
+  "title":
+    "en": "Dataset type"
+    "fr": "Type de jeux de données"
+  "description": {}
+  "keywords": {}
+  "terms":
+  - "name": "StudyDataset"
+    "title":
+      "en": "Study"
+      "fr": "Étude"
+    "description":
+      "en": "Study specific dataset."
+      "fr": "Jeux de données spécifique à une étude."
+    "keywords": {}
+  - "name": "HarmonizationDataset"
+    "title":
+      "en": "Harmonization"
+      "fr": "Harmonisation"
+    "description": {}
+    "keywords": {}
