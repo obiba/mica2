@@ -1,0 +1,10 @@
+<span>
+  <span ng-if="item.children.length > 0">
+    {{item.type}}(<span ng-repeat="child in item.children">
+      <criteria-leaf item="child" parent-type="$parent.item.type"></criteria-leaf>
+    </span>)
+  </span>
+  <span ng-if="item.children.length === 0">
+    <criteria-leaf item="item" parent-type="item.parent.type"></criteria-leaf>
+  </span>
+</span>

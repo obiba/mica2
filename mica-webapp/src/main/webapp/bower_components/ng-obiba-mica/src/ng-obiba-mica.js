@@ -17,8 +17,8 @@ function NgObibaMicaUrlProvider() {
     'TaxonomiesResource': 'ws/taxonomies/_filter',
     'TaxonomyResource': 'ws/taxonomy/:taxonomy/_filter',
     'VocabularyResource': 'ws/taxonomy/:taxonomy/vocabulary/:vocabulary/_filter',
-    'JoinQuerySearchResource': 'ws/:type/_rql?:query',
-    'JoinQueryCoverageResource': 'ws/variables/_coverage?:query'
+    'JoinQuerySearchResource': 'ws/:type/_rql?query=:query',
+    'JoinQueryCoverageResource': 'ws/variables/_coverage?query=:query'
   };
   function UrlProvider(registry) {
     var urlRegistry = registry;

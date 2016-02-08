@@ -1,11 +1,15 @@
-<span class="voffset4">
+<span>
+  {{item.id}}
   <span criterion-dropdown
-        ng-repeat="criterion in criteria"
+        ng-repeat="criterion in children"
         criterion="criterion"
         query="query"
         on-select="selectTerm"
         on-remove="removeCriteria"
-        class="{{$first ? '' : 'hoffset2'}}">
+        class="hoffset2"></span>
+
+  <span ng-if="item.children.length > 1">
+    AND
 
   </span>
 </span>
