@@ -12,14 +12,20 @@ package org.obiba.mica.file.search;
 
 import javax.inject.Inject;
 
+import org.obiba.mica.core.repository.AttachmentStateRepository;
+import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.event.FileDeletedEvent;
 import org.obiba.mica.file.event.FilePublishedEvent;
 import org.obiba.mica.file.event.FileUnPublishedEvent;
 import org.obiba.mica.file.event.FileUpdatedEvent;
+import org.obiba.mica.file.event.IndexFilesEvent;
 import org.obiba.mica.search.ElasticSearchIndexer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -38,6 +44,9 @@ public class FileIndexer {
 
   @Inject
   private ElasticSearchIndexer elasticSearchIndexer;
+
+  @Inject
+  private AttachmentStateRepository attachmentStateRepository;
 
   @Async
   @Subscribe
@@ -72,5 +81,28 @@ public class FileIndexer {
     log.debug("File {} was updated", event.getPersistable());
     if (FileUtils.isDirectory(event.getPersistable())) return;
     elasticSearchIndexer.index(ATTACHMENT_DRAFT_INDEX, event.getPersistable());
+  }
+
+  @Async
+  @Subscribe
+  public void reIndexAll(IndexFilesEvent event) {
+    if(elasticSearchIndexer.hasIndex(ATTACHMENT_DRAFT_INDEX)) elasticSearchIndexer.dropIndex(ATTACHMENT_DRAFT_INDEX);
+    if(elasticSearchIndexer.hasIndex(ATTACHMENT_PUBLISHED_INDEX)) elasticSearchIndexer.dropIndex(ATTACHMENT_PUBLISHED_INDEX);
+
+    Pageable pageRequest = new PageRequest(0, 100);
+    Page<AttachmentState> attachments;
+
+    do {
+      attachments = attachmentStateRepository.findAll(pageRequest);
+      attachments.forEach(a -> {
+        if (FileUtils.isDirectory(a)) return;
+
+        elasticSearchIndexer.index(ATTACHMENT_DRAFT_INDEX, a);
+
+        if(a.getPublishedAttachment() != null) {
+          elasticSearchIndexer.index(ATTACHMENT_PUBLISHED_INDEX, a);
+        }
+      });
+    } while((pageRequest = attachments.nextPageable()) != null);
   }
 }

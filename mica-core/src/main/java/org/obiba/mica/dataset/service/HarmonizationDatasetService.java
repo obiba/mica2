@@ -171,8 +171,14 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
    * Index or re-index all datasets with their variables.
    */
   public void indexAll() {
-    findAllDatasets().forEach(dataset -> new DatasetUpdatedEvent(dataset, wrappedGetDatasetVariables(dataset),
-      populateHarmonizedVariablesMap(dataset)));
+    findAllDatasets().forEach(dataset -> {
+      try {
+        eventBus.post(new DatasetUpdatedEvent(dataset, wrappedGetDatasetVariables(dataset),
+          populateHarmonizedVariablesMap(dataset)));
+      } catch(Exception e) {
+        log.error("Error indexing dataset {}", dataset, e);
+      }
+    });
   }
 
   @Caching(evict = { @CacheEvict(value = "aggregations-metadata", key = "'dataset'") })
