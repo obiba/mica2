@@ -30,7 +30,7 @@ import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.search.queries.DatasetQuery;
 import org.obiba.mica.search.queries.protobuf.JoinQueryDtoWrapper;
 import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
-import org.obiba.mica.search.queries.rql.JoinRQLQueryWrapper;
+import org.obiba.mica.search.queries.rql.RQLQueryFactory;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -46,7 +46,10 @@ import com.google.common.collect.Lists;
 public class PublishedDatasetSearchResource {
 
   @Inject
-  JoinQueryExecutor joinQueryExecutor;
+  private JoinQueryExecutor joinQueryExecutor;
+
+  @Inject
+  private RQLQueryFactory rqlQueryFactory;
 
   @GET
   @Path("/study/_search")
@@ -123,7 +126,7 @@ public class PublishedDatasetSearchResource {
   @Path("/_rql")
   @Timed
   public MicaSearch.JoinQueryResultDto rqlQuery(@QueryParam("query") String query) throws IOException {
-    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.DATASET, new JoinRQLQueryWrapper(query));
+    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.DATASET, rqlQueryFactory.makeJoinQuery(query));
   }
 
   private static String createTypeQuery(String type) {

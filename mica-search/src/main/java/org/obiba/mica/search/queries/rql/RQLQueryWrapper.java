@@ -30,6 +30,7 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.obiba.mica.core.domain.AttributeKey;
 import org.obiba.mica.search.queries.QueryWrapper;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -54,7 +55,8 @@ public class RQLQueryWrapper implements QueryWrapper {
 
   private final Map<String, Map<String, List<String>>> taxonomyTermsMap = Maps.newHashMap();
 
-  public RQLQueryWrapper(String rql) {
+  @VisibleForTesting
+  RQLQueryWrapper(String rql) {
     this(new RQLParser().parse(rql));
   }
 

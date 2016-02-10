@@ -24,7 +24,7 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.search.queries.protobuf.JoinQueryDtoWrapper;
 import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
-import org.obiba.mica.search.queries.rql.JoinRQLQueryWrapper;
+import org.obiba.mica.search.queries.rql.RQLQueryFactory;
 import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
@@ -43,6 +43,9 @@ public class PublishedStudiesSearchResource {
 
   @Inject
   private JoinQueryExecutor joinQueryExecutor;
+
+  @Inject
+  private RQLQueryFactory rqlQueryFactory;
 
   @GET
   @Path("/_search")
@@ -71,6 +74,6 @@ public class PublishedStudiesSearchResource {
   @Path("/_rql")
   @Timed
   public JoinQueryResultDto rqlQuery(@QueryParam("query") String query) throws IOException {
-    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.STUDY, new JoinRQLQueryWrapper(query));
+    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.STUDY, rqlQueryFactory.makeJoinQuery(query));
   }
 }
