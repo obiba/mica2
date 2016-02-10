@@ -28,7 +28,7 @@
         </script>
         <a href>
         <span class="input-group input-group-sm no-padding-top">
-          <input type="text" ng-model="selectedCriteria" placeholder="Search for criteria"
+          <input type="text" ng-model="selectedCriteria" placeholder="{{'search.placeholder' | translate}}"
             uib-typeahead="criteria for criteria in searchCriteria($viewValue)"
             typeahead-min-length="2"
             typeahead-loading="documents.search.active"
@@ -69,16 +69,16 @@
   </div>
 
   <!-- Search criteria region -->
-  <div class="voffset4">
-    <div class="row voffset4">
+  <div class="voffset3">
+    <div class="row">
       <div class="col-xs-12">
-        <div criteria-root item="search.criteria" on-remove="removeCriteriaItem" on-select="updateTerm"></div>
+        <div criteria-root item="search.criteria" on-remove="removeCriteriaItem" on-select="updateTerm" on-refresh="refreshQuery"></div>
       </div>
     </div>
   </div>
 
   <!-- Results region -->
-  <div>
-    <result-panel display="search.display" type="search.type" dto="search.result" loading="search.loading" on-type-changed="onTypeChanged"></result-panel>
+  <div class="voffset3">
+    <result-panel display="search.display" type="search.type" result="search.result" loading="search.loading" on-type-changed="onTypeChanged"></result-panel>
   </div>
 </div>

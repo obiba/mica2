@@ -1,6 +1,9 @@
 <div>
   <div ng-if="loading" class="loading"></div>
-        <pre class="voffset2">
-{{result | json}}
-      </pre>
+<div class="row">
+  <div ng-repeat="chart in chartObjects ">
+    <div class="col-md-6" google-chart chart="chart.chartObject">
+    </div>
+  </div>
+</div>
 </div>

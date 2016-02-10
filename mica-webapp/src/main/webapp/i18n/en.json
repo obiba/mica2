@@ -762,7 +762,10 @@
   "author": "Author",
   "user": "User",
   "users": "Users",
-  "search": "Search",
+  "search": {
+    "title": "Search",
+    "placeholder": "Examples: alcohol pregnancy cancer cohort ..."
+  },
   "variables": "Variables",
   "classifications": "Classifications",
   "list": "List",

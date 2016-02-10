@@ -21,7 +21,51 @@ angular.module('obiba.mica.graphics')
     var factory = {
       options: {
         entityIds: 'NaN',
-        entityType: null
+        entityType: null,
+        ChartsOptions: {
+          geoChartOptions: {
+            options: {
+              backgroundColor: {fill: 'transparent'},
+              title: 'Distribution of studies by participants countries of residence',
+              colors: [
+                '#4db300',
+                '#409400',
+                '#317000',
+                '#235200'
+              ],
+              width: 500,
+              height: 300
+            }
+          },
+          studiesDesigns: {
+            options: {
+              backgroundColor: {fill: 'transparent'},
+              title: 'Distribution of studies by study design',
+              colors: ['#006600',
+                '#009900',
+                '#009966',
+                '#009933',
+                '#66CC33'],
+              width: 500,
+              height: 300
+            }
+          },
+          biologicalSamples: {
+            options: {
+              backgroundColor: {fill: 'transparent'},
+              title: 'Distribution of studies by Biological Samples',
+              colors: ['#006600',
+                '#009900',
+                '#009966',
+                '#009933',
+                '#66CC33'],
+              width: 500,
+              height: 300
+            }
+          }
+
+        }
+
       }
     };
     factory.setOptions = function (newOptions) {
@@ -42,42 +86,45 @@ angular.module('obiba.mica.graphics')
   })
   .service('GraphicChartsUtils', [
     'CountriesIsoUtils',
-    'LocalizedStringService',
-    function (CountriesIsoUtils,
-              LocalizedStringService) {
+    function (CountriesIsoUtils) {
+      this.getArrayByAggregation = function (aggregationName, entityDto, fieldTransformer, lang) {
+        var arrayData = [];
+        if (!entityDto) {
+          return arrayData;
+        }
 
-      this.getArrayByAggregation = function (AggregationName, EntityDto, fieldTransformer) {
-        var ArrayData = [];
-        angular.forEach(EntityDto.aggs, function (aggragation) {
+        angular.forEach(entityDto.aggs, function (aggregation) {
           var itemName = [];
-          if (aggragation.aggregation === AggregationName) {
+          if (aggregation.aggregation === aggregationName) {
             var i = 0;
-            angular.forEach(aggragation['obiba.mica.TermsAggregationResultDto.terms'], function (term) {
+            angular.forEach(aggregation['obiba.mica.TermsAggregationResultDto.terms'], function (term) {
               switch (fieldTransformer) {
-                case 'country' :
-                  itemName.name = CountriesIsoUtils.findByCode(term.title.toUpperCase(), LocalizedStringService.getLocal());
+                // TODO countries are already translated on server side (term title)
+                case 'country':
+                  itemName.name = CountriesIsoUtils.findByCode(term.key.toUpperCase(), lang);
                   break;
                 default :
                   itemName.name = term.title;
                   break;
               }
               if (term.count) {
-                ArrayData[i] = [itemName.name, term.count];
-                i ++;
+                arrayData[i] = [itemName.name, term.count];
+                i++;
               }
             });
           }
         });
-        return ArrayData;
+
+        return arrayData;
       };
     }])
   .service('GraphicChartsQuery', [function () {
     this.queryDtoBuilder = function (entityIds) {
-      if (!(entityIds) || entityIds ==='NaN') {
+      if (!(entityIds) || entityIds === 'NaN') {
         return '{"studyQueryDto":{"from":0,"size":0,"sort":{"field":"acronym.en","order":0}},"locale":"en","withFacets":true}';
       }
-      else{
-        return '{"studyQueryDto":{"from":0,"size":0,"sort":{"field":"acronym.en","order":0}},"networkQueryDto":{"from":0,"size":0,"sort":{"field":"acronym.en","order":0},"filteredQuery":{"obiba.mica.LogicalFilterQueryDto.filter":{"fields":[{"field":{"field":"id","obiba.mica.TermsFilterQueryDto.terms":{"values":["'+entityIds+'"]}},"op":1}]}}},"locale":"en","withFacets":true}';
+      else {
+        return '{"studyQueryDto":{"from":0,"size":0,"sort":{"field":"acronym.en","order":0}},"networkQueryDto":{"from":0,"size":0,"sort":{"field":"acronym.en","order":0},"filteredQuery":{"obiba.mica.LogicalFilterQueryDto.filter":{"fields":[{"field":{"field":"id","obiba.mica.TermsFilterQueryDto.terms":{"values":["' + entityIds + '"]}},"op":1}]}}},"locale":"en","withFacets":true}';
       }
     };
   }]);

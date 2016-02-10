@@ -77,6 +77,11 @@
             <span translate>data-access-requests</span>
           </a>
         </li>
+        <li ng-if="authenticated">
+          <a href="#/search">
+            <span translate>search.title</span>
+          </a>
+        </li>
       </ul>
 
       <ul class="nav navbar-nav navbar-right" ng-hide="!authenticated">
