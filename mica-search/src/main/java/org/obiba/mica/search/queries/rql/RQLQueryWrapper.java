@@ -215,6 +215,8 @@ public class RQLQueryWrapper implements QueryWrapper {
           String f = vocabulary.get().getAttributeValue("field");
           if(!Strings.isNullOrEmpty(f)) field = f;
           else field = vocabulary.get().getName();
+        } else {
+          field = vocabularyName;
         }
       }
       return field;
@@ -432,7 +434,7 @@ public class RQLQueryWrapper implements QueryWrapper {
     }
   }
 
-  private static class RQLSortBuilder implements SimpleASTVisitor<SortBuilder> {
+  private class RQLSortBuilder extends RQLBuilder<SortBuilder> {
 
     @Override
     public SortBuilder visit(ASTNode node) {
@@ -441,9 +443,9 @@ public class RQLQueryWrapper implements QueryWrapper {
         switch(type) {
           case SORT:
             String arg = node.getArgument(0).toString();
-            if(arg.startsWith("-")) return SortBuilders.fieldSort(arg.substring(1)).order(SortOrder.DESC);
-            else if(arg.startsWith("+")) return SortBuilders.fieldSort(arg.substring(1)).order(SortOrder.ASC);
-            else return SortBuilders.fieldSort(arg).order(SortOrder.ASC);
+            if(arg.startsWith("-")) return SortBuilders.fieldSort(resolveField(arg.substring(1))).order(SortOrder.DESC);
+            else if(arg.startsWith("+")) return SortBuilders.fieldSort(resolveField(arg.substring(1))).order(SortOrder.ASC);
+            else return SortBuilders.fieldSort(resolveField(arg)).order(SortOrder.ASC);
         }
       } catch(IllegalArgumentException e) {
         // ignore
