@@ -21,6 +21,7 @@ enum RQLNode {
   LIMIT, //
   SORT, //
   AND, //
+  NAND, //
   OR, //
   NOT, //
   IN, //

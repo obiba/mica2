@@ -12,17 +12,19 @@ package org.obiba.mica.search.queries.rql;
 
 import javax.inject.Inject;
 
-import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component
 public class RQLQueryFactory {
 
   @Inject
-  protected MicaConfigService micaConfigService;
+  private ApplicationContext applicationContext;
 
   public JoinRQLQueryWrapper makeJoinQuery(String query) {
-    return new JoinRQLQueryWrapper(query);
+    JoinRQLQueryWrapper joinQuery = applicationContext.getBean(JoinRQLQueryWrapper.class);
+    joinQuery.initialize(query);
+    return joinQuery;
   }
 
 }

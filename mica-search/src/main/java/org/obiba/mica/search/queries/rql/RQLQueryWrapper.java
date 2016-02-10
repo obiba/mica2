@@ -15,12 +15,16 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import javax.annotation.Nullable;
 
 import net.jazdw.rql.parser.ASTNode;
 import net.jazdw.rql.parser.RQLParser;
 import net.jazdw.rql.parser.SimpleASTVisitor;
 
+import org.elasticsearch.common.Strings;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.QueryStringQueryBuilder;
@@ -29,6 +33,9 @@ import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.obiba.mica.core.domain.AttributeKey;
 import org.obiba.mica.search.queries.QueryWrapper;
+import org.obiba.opal.core.domain.taxonomy.Taxonomy;
+import org.obiba.opal.core.domain.taxonomy.TaxonomyEntity;
+import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
@@ -39,11 +46,17 @@ import com.google.common.collect.Maps;
  */
 public class RQLQueryWrapper implements QueryWrapper {
 
+  private static final String DEFAULT_TAXO_PREFIX = "Mica_";
+
   private int from = DEFAULT_FROM;
 
   private int size = DEFAULT_SIZE;
 
   private ASTNode node;
+
+  private final List<Taxonomy> taxonomies;
+
+  private final String defaultTaxonomyName;
 
   private QueryBuilder queryBuilder;
 
@@ -57,10 +70,22 @@ public class RQLQueryWrapper implements QueryWrapper {
 
   @VisibleForTesting
   RQLQueryWrapper(String rql) {
-    this(new RQLParser().parse(rql));
+    this(new RQLParser().parse(rql), Collections.emptyList());
   }
 
-  public RQLQueryWrapper(ASTNode node) {
+  public RQLQueryWrapper(ASTNode node, List<Taxonomy> taxonomies) {
+    this.taxonomies = taxonomies;
+    defaultTaxonomyName = taxonomies.stream().filter(t -> t.getName().startsWith(DEFAULT_TAXO_PREFIX))
+      .map(TaxonomyEntity::getName).findFirst().orElse("");
+    parseNode(node);
+    if(queryBuilder == null) queryBuilder = QueryBuilders.matchAllQuery();
+  }
+
+  public Map<String, Map<String, List<String>>> getTaxonomyTermsMap() {
+    return taxonomyTermsMap;
+  }
+
+  private void parseNode(ASTNode node) {
     try {
       RQLNode type = RQLNode.getType(node.getName());
       switch(type) {
@@ -81,11 +106,6 @@ public class RQLQueryWrapper implements QueryWrapper {
     } catch(IllegalArgumentException e) {
 
     }
-    if(queryBuilder == null) queryBuilder = QueryBuilders.matchAllQuery();
-  }
-
-  public Map<String, Map<String, List<String>>> getTaxonomyTermsMap() {
-    return taxonomyTermsMap;
   }
 
   private void parseQuery(ASTNode node) {
@@ -160,7 +180,48 @@ public class RQLQueryWrapper implements QueryWrapper {
     return aggregations;
   }
 
-  private class RQLQueryBuilder implements SimpleASTVisitor<QueryBuilder> {
+  //
+  // Private classes
+  //
+
+  private abstract class RQLBuilder<T> implements SimpleASTVisitor<T> {
+
+    private static final String TAXO_SEPARATOR = ".";
+
+    protected String resolveField(String rqlField) {
+      String field = rqlField;
+
+      // normalize field name
+      if(!field.contains(TAXO_SEPARATOR)) {
+        field = defaultTaxonomyName + TAXO_SEPARATOR + field;
+      }
+
+      int idx = field.indexOf(TAXO_SEPARATOR);
+      if(idx < 1) return rqlField;
+
+      field = resolveField(field.substring(0, idx), field.substring(idx + 1, field.length()));
+
+      return field == null ? rqlField : field;
+    }
+
+    @Nullable
+    protected String resolveField(String taxonomyName, String vocabularyName) {
+      String field = null;
+      Optional<Taxonomy> taxonomy = taxonomies.stream().filter(t -> t.getName().equals(taxonomyName)).findFirst();
+      if(taxonomy.isPresent() && taxonomy.get().hasVocabularies()) {
+        Optional<Vocabulary> vocabulary = taxonomy.get().getVocabularies().stream()
+          .filter(v -> v.getName().equals(vocabularyName)).findFirst();
+        if(vocabulary.isPresent()) {
+          String f = vocabulary.get().getAttributeValue("field");
+          if(!Strings.isNullOrEmpty(f)) field = f;
+        }
+      }
+      return field;
+    }
+
+  }
+
+  private class RQLQueryBuilder extends RQLBuilder<QueryBuilder> {
 
     @Override
     public QueryBuilder visit(ASTNode node) {
@@ -169,6 +230,8 @@ public class RQLQueryWrapper implements QueryWrapper {
         switch(type) {
           case AND:
             return visitAnd(node);
+          case NAND:
+            return visitNand(node);
           case OR:
             return visitOr(node);
           case IN:
@@ -209,6 +272,12 @@ public class RQLQueryWrapper implements QueryWrapper {
       return QueryBuilders.boolQuery().must(left).must(right);
     }
 
+    private QueryBuilder visitNand(ASTNode node) {
+      QueryBuilder left = visit((ASTNode) node.getArgument(0));
+      QueryBuilder right = visit((ASTNode) node.getArgument(1));
+      return QueryBuilders.boolQuery().must(left).mustNot(right);
+    }
+
     private QueryBuilder visitOr(ASTNode node) {
       QueryBuilder left = visit((ASTNode) node.getArgument(0));
       QueryBuilder right = visit((ASTNode) node.getArgument(1));
@@ -216,7 +285,7 @@ public class RQLQueryWrapper implements QueryWrapper {
     }
 
     private QueryBuilder visitIn(ASTNode node) {
-      String field = node.getArgument(0).toString();
+      String field = resolveField(node.getArgument(0).toString());
       Object terms = node.getArgument(1);
       visitField(field, terms instanceof Collection ? ((Collection<Object>) terms).stream().map(Object::toString)
         .collect(Collectors.toList()) : Collections.singleton(terms.toString()));
@@ -224,7 +293,7 @@ public class RQLQueryWrapper implements QueryWrapper {
     }
 
     private QueryBuilder visitOut(ASTNode node) {
-      String field = node.getArgument(0).toString();
+      String field = resolveField(node.getArgument(0).toString());
       Object terms = node.getArgument(1);
       return QueryBuilders.boolQuery()
         .mustNot(QueryBuilders.termsQuery(field, terms instanceof Collection ? (Collection) terms : terms));
@@ -236,42 +305,42 @@ public class RQLQueryWrapper implements QueryWrapper {
     }
 
     private QueryBuilder visitEq(ASTNode node) {
-      String field = node.getArgument(0).toString();
+      String field = resolveField(node.getArgument(0).toString());
       Object term = node.getArgument(1);
       visitField(field, Collections.singleton(term.toString()));
       return QueryBuilders.termQuery(field, term);
     }
 
     private QueryBuilder visitLe(ASTNode node) {
-      String field = node.getArgument(0).toString();
+      String field = resolveField(node.getArgument(0).toString());
       Object value = node.getArgument(1);
       visitField(field);
       return QueryBuilders.rangeQuery(field).lte(value);
     }
 
     private QueryBuilder visitLt(ASTNode node) {
-      String field = node.getArgument(0).toString();
+      String field = resolveField(node.getArgument(0).toString());
       Object value = node.getArgument(1);
       visitField(field);
       return QueryBuilders.rangeQuery(field).lt(value);
     }
 
     private QueryBuilder visitGe(ASTNode node) {
-      String field = node.getArgument(0).toString();
+      String field = resolveField(node.getArgument(0).toString());
       Object value = node.getArgument(1);
       visitField(field);
       return QueryBuilders.rangeQuery(field).gte(value);
     }
 
     private QueryBuilder visitGt(ASTNode node) {
-      String field = node.getArgument(0).toString();
+      String field = resolveField(node.getArgument(0).toString());
       Object value = node.getArgument(1);
       visitField(field);
       return QueryBuilders.rangeQuery(field).gt(value);
     }
 
     private QueryBuilder visitBetween(ASTNode node) {
-      String field = node.getArgument(0).toString();
+      String field = resolveField(node.getArgument(0).toString());
       visitField(field);
       ArrayList<Object> values = (ArrayList<Object>) node.getArgument(1);
       return QueryBuilders.rangeQuery(field).gte(values.get(0)).lt(values.get(1));
@@ -293,13 +362,13 @@ public class RQLQueryWrapper implements QueryWrapper {
     }
 
     private QueryBuilder visitExists(ASTNode node) {
-      String field = node.getArgument(0).toString();
+      String field = resolveField(node.getArgument(0).toString());
       visitField(field);
       return QueryBuilders.existsQuery(field);
     }
 
     private QueryBuilder visitMissing(ASTNode node) {
-      String field = node.getArgument(0).toString();
+      String field = resolveField(resolveField(node.getArgument(0).toString()));
       visitField(field);
       return QueryBuilders.missingQuery(field);
     }
@@ -382,18 +451,18 @@ public class RQLQueryWrapper implements QueryWrapper {
     }
   }
 
-  private static class RQLAggregateBuilder implements SimpleASTVisitor<Boolean> {
+  private class RQLAggregateBuilder extends RQLBuilder<Boolean> {
 
     private List<String> aggregations = Lists.newArrayList();
 
     private List<String> aggregationBuckets = Lists.newArrayList();
 
     public List<String> getAggregations() {
-      return aggregations;
+      return aggregations.stream().map(this::resolveField).collect(Collectors.toList());
     }
 
     public List<String> getAggregationBuckets() {
-      return aggregationBuckets;
+      return aggregationBuckets.stream().map(this::resolveField).collect(Collectors.toList());
     }
 
     @Override

@@ -10,17 +10,34 @@
 
 package org.obiba.mica.search.queries.rql;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import javax.inject.Inject;
+
 import net.jazdw.rql.parser.ASTNode;
 import net.jazdw.rql.parser.RQLParser;
 
 import org.elasticsearch.common.Strings;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.search.queries.JoinQueryWrapper;
 import org.obiba.mica.search.queries.QueryWrapper;
+import org.obiba.opal.core.domain.taxonomy.Taxonomy;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
-/**
- *
- */
+@Component
+@Scope("prototype")
 public class JoinRQLQueryWrapper implements JoinQueryWrapper {
+
+  @Inject
+  private MicaConfigService micaConfigService;
+
+  @Inject
+  private OpalService opalService;
 
   private ASTNode node;
 
@@ -36,7 +53,9 @@ public class JoinRQLQueryWrapper implements JoinQueryWrapper {
 
   private RQLQueryWrapper networkQueryWrapper;
 
-  public JoinRQLQueryWrapper(String rql) {
+  public JoinRQLQueryWrapper() {}
+
+  public void initialize(String rql) {
     String rqlStr = rql == null ? "" : rql;
     RQLParser parser = new RQLParser();
     node = parser.parse(rqlStr);
@@ -49,16 +68,16 @@ public class JoinRQLQueryWrapper implements JoinQueryWrapper {
 
     switch(RQLNode.valueOf(node.getName().toUpperCase())) {
       case VARIABLE:
-        variableQueryWrapper = new RQLQueryWrapper(node);
+        variableQueryWrapper = new RQLQueryWrapper(node, getVariableTaxonomies());
         break;
       case DATASET:
-        datasetQueryWrapper = new RQLQueryWrapper(node);
+        datasetQueryWrapper = new RQLQueryWrapper(node, getDatasetTaxonomies());
         break;
       case STUDY:
-        studyQueryWrapper = new RQLQueryWrapper(node);
+        studyQueryWrapper = new RQLQueryWrapper(node, getStudyTaxonomies());
         break;
       case NETWORK:
-        networkQueryWrapper = new RQLQueryWrapper(node);
+        networkQueryWrapper = new RQLQueryWrapper(node, getNetworkTaxonomies());
         break;
       case LOCALE:
         if(node.getArgumentsSize() > 0) locale = node.getArgument(0).toString();
@@ -98,4 +117,26 @@ public class JoinRQLQueryWrapper implements JoinQueryWrapper {
   public QueryWrapper getNetworkQueryWrapper() {
     return networkQueryWrapper;
   }
+
+  //
+  // Private methods
+  //
+
+  private List<Taxonomy> getVariableTaxonomies() {
+    return Stream.concat(opalService.getTaxonomies().stream(), Stream.of(micaConfigService.getVariableTaxonomy()))
+      .collect(Collectors.toList());
+  }
+
+  private List<Taxonomy> getDatasetTaxonomies() {
+    return Collections.singletonList(micaConfigService.getDatasetTaxonomy());
+  }
+
+  private List<Taxonomy> getStudyTaxonomies() {
+    return Collections.singletonList(micaConfigService.getStudyTaxonomy());
+  }
+
+  private List<Taxonomy> getNetworkTaxonomies() {
+    return Collections.singletonList(micaConfigService.getNetworkTaxonomy());
+  }
+
 }
