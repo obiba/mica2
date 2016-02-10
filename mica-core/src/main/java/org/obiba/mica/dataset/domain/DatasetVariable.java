@@ -48,6 +48,8 @@ public class DatasetVariable implements Indexable, AttributeAware {
   @NotNull
   private String datasetId;
 
+  private String networkId;
+
   private List<String> studyIds;
 
   private List<String> dceIds;
@@ -99,9 +101,13 @@ public class DatasetVariable implements Indexable, AttributeAware {
   public DatasetVariable(HarmonizationDataset dataset, Variable variable) {
     this(dataset, Type.Dataschema, variable);
     studyIds = Lists.newArrayList();
+
     dataset.getStudyTables().forEach(table -> {
       if(!studyIds.contains(table.getStudyId())) studyIds.add(table.getStudyId());
     });
+
+    networkId = dataset.getNetworkId();
+
     dceIds = Lists.newArrayList();
     dataset.getStudyTables().forEach(table -> {
       if(!dceIds.contains(table.getDataCollectionEventUId())) dceIds.add(table.getDataCollectionEventUId());
@@ -302,6 +308,14 @@ public class DatasetVariable implements Indexable, AttributeAware {
     return variableType.equals(Type.Harmonized)
       ? datasetId + ID_SEPARATOR + name + ID_SEPARATOR + Type.Dataschema
       : null;
+  }
+
+  public String getNetworkId() {
+    return networkId;
+  }
+
+  public void setNetworkId(String networkId) {
+    this.networkId = networkId;
   }
 
   public static class IdResolver {

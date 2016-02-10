@@ -14,5 +14,6 @@ mica.dataset = angular.module('mica.dataset', [
   'ui',
   'pascalprecht.translate',
   'mica.status',
-  'mica.revisions'
+  'mica.revisions',
+  'mica.network'
 ]);

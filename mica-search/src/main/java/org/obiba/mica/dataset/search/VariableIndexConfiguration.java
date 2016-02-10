@@ -60,6 +60,7 @@ public class VariableIndexConfiguration extends AbstractIndexConfiguration imple
     mapping.startObject("studyIds").field("type", "string").field("index", "not_analyzed").endObject();
     mapping.startObject("dceIds").field("type", "string").field("index", "not_analyzed").endObject();
     mapping.startObject("datasetId").field("type", "string").field("index", "not_analyzed").endObject();
+    mapping.startObject("networkId").field("type", "string").field("index", "not_analyzed").endObject();
     createMappingWithAndWithoutAnalyzer(mapping, "name");
 
     // attributes from taxonomies

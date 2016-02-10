@@ -483,6 +483,7 @@ message HarmonizationDatasetDto {
   required string project = 1;
   required string table = 2;
   repeated DatasetDto.StudyTableDto studyTables = 3;
+  optional string networkId = 4;
   extensions 1000 to max;
 
   extend DatasetDto {

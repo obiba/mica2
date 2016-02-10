@@ -114,6 +114,9 @@ class DatasetDtos {
     Mica.HarmonizationDatasetDto.Builder hbuilder = Mica.HarmonizationDatasetDto.newBuilder();
     hbuilder.setProject(dataset.getProject());
     hbuilder.setTable(dataset.getTable());
+
+    if(!Strings.isNullOrEmpty(dataset.getNetworkId())) hbuilder.setNetworkId(dataset.getNetworkId());
+
     if(!dataset.getStudyTables().isEmpty()) {
       dataset.getStudyTables().forEach(studyTable -> hbuilder
         .addStudyTables(asDto(studyTable).setStudySummary(studySummaryDtos.asDto(studyTable.getStudyId()))));
@@ -557,9 +560,12 @@ class DatasetDtos {
       Mica.HarmonizationDatasetDto ext = dto.getExtension(Mica.HarmonizationDatasetDto.type);
       harmonizationDataset.setProject(ext.getProject());
       harmonizationDataset.setTable(ext.getTable());
+
       if(ext.getStudyTablesCount() > 0) {
         ext.getStudyTablesList().forEach(tableDto -> harmonizationDataset.addStudyTable(fromDto(tableDto)));
       }
+
+      harmonizationDataset.setNetworkId(ext.getNetworkId());
       dataset = harmonizationDataset;
     } else {
       StudyDataset studyDataset = new StudyDataset();

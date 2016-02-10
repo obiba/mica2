@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
+import javax.security.auth.callback.CallbackHandler;
 
 import org.bson.types.ObjectId;
 import org.junit.Before;
@@ -32,6 +33,8 @@ import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.dataset.HarmonizationDatasetRepository;
 import org.obiba.mica.dataset.StudyDatasetRepository;
+import org.obiba.mica.dataset.service.HarmonizationDatasetService;
+import org.obiba.mica.dataset.service.KeyStoreService;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.TempFileRepository;
@@ -41,7 +44,11 @@ import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.file.service.TempFileService;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.repository.MicaConfigRepository;
+import org.obiba.mica.micaConfig.repository.OpalCredentialRepository;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.micaConfig.service.OpalCredentialService;
+import org.obiba.mica.micaConfig.service.OpalService;
+import org.obiba.mica.micaConfig.service.OpalServiceHelper;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.network.NetworkStateRepository;
 import org.obiba.mica.network.service.NetworkService;
@@ -373,6 +380,41 @@ public class StudyDtosTest {
     @Bean
     public NetworkService networkService() {
       return mock(NetworkService.class);
+    }
+
+    @Bean
+    public HarmonizationDatasetService harmonizationDatasetService() {
+      return mock(HarmonizationDatasetService.class);
+    }
+
+    @Bean
+    public OpalService opalService() {
+      return mock(OpalService.class);
+    }
+
+    @Bean
+    public OpalServiceHelper opalServiceHelper() {
+      return mock(OpalServiceHelper.class);
+    }
+
+    @Bean
+    public KeyStoreService keyStoreService() {
+      return mock(KeyStoreService.class);
+    }
+
+    @Bean
+    public OpalCredentialService opalCredentialService() {
+      return mock(OpalCredentialService.class);
+    }
+
+    @Bean
+    public OpalCredentialRepository opalCredentialRepository() {
+      return mock(OpalCredentialRepository.class);
+    }
+
+    @Bean
+    public CallbackHandler callbackHandler() {
+      return mock(CallbackHandler.class);
     }
 
     @Bean

@@ -22,4 +22,5 @@ public interface HarmonizationDatasetRepository extends MongoRepository<Harmoniz
 
   List<HarmonizationDataset> findByStudyTablesStudyId(String studyId);
 
+  List<HarmonizationDataset> findByNetworkId(String networkId);
 }
