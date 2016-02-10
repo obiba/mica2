@@ -214,6 +214,7 @@ public class RQLQueryWrapper implements QueryWrapper {
         if(vocabulary.isPresent()) {
           String f = vocabulary.get().getAttributeValue("field");
           if(!Strings.isNullOrEmpty(f)) field = f;
+          else field = vocabulary.get().getName();
         }
       }
       return field;
