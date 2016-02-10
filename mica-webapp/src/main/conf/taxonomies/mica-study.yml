@@ -1,4 +1,4 @@
-"name": "Mica_studies"
+"name": "Mica_study"
 "title":
   "en": "Study properties"
   "fr": "Propriétés des étude"
@@ -8,6 +8,13 @@
 "keywords": {}
 "license": "CC BY-NC 4.0"
 "vocabularies":
+- "name": "id"
+  "title":
+    "en": "Study"
+    "fr": "Étude"
+  "description": {}
+  "keywords": {}
+  "terms": []
 - "name": "methods-designs"
   "title":
     "en": "Study designs"

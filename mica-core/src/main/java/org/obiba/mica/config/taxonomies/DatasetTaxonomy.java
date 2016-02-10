@@ -15,7 +15,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.google.common.collect.Lists;
 
-@ConfigurationProperties(locations = "classpath:/mica-datasets.yml")
+@ConfigurationProperties(locations = "classpath:/taxonomies/mica-dataset.yml")
 public class DatasetTaxonomy extends Taxonomy {
 
   private static final long serialVersionUID = -8426375064515872649L;

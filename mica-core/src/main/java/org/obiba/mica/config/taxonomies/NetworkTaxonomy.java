@@ -15,7 +15,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.google.common.collect.Lists;
 
-@ConfigurationProperties(locations = "classpath:/mica-networks.yml")
+@ConfigurationProperties(locations = "classpath:/taxonomies/mica-network.yml")
 public class NetworkTaxonomy extends Taxonomy {
 
   private static final long serialVersionUID = -1141411552705744866L;
