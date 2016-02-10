@@ -366,6 +366,7 @@ mica.dataset
               DatasetService,
               DocumentPermissionsService) {
       MicaConfigResource.get(function (micaConfig) {
+        $scope.opal = micaConfig.opal;
         $scope.tabs = [];
         micaConfig.languages.forEach(function (lang) {
           $scope.tabs.push({lang: lang});
@@ -375,6 +376,11 @@ mica.dataset
 
       var initializeDataset = function(dataset) {
         $scope.permissions = DocumentPermissionsService.state(dataset['obiba.mica.EntityStateDto.datasetState']);
+
+        if($scope.type === 'harmonization-dataset') {
+          $scope.datasetProject = dataset['obiba.mica.HarmonizationDatasetDto.type'].project;
+          $scope.datasetTable = dataset['obiba.mica.HarmonizationDatasetDto.type'].table;
+        }
       };
 
       var getTypeFromUrl = function() {
@@ -574,7 +580,6 @@ mica.dataset
               HarmonizationDatasetPublicationResource,
               MicaConfigResource,
               ActiveTabService) {
-
       MicaConfigResource.get(function (micaConfig) {
         $scope.opal = micaConfig.opal;
         $scope.tabs = [];
