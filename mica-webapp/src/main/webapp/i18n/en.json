@@ -1058,5 +1058,8 @@
       "variable": "Variable",
       "study": "Study"
     }
-  }
+  },
+  "and": "AND",
+  "nand": "AND NOT",
+  "or": "OR"
 }
