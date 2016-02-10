@@ -27,7 +27,7 @@ import org.obiba.mica.search.JoinQueryExecutor;
 import org.obiba.mica.search.queries.NetworkQuery;
 import org.obiba.mica.search.queries.protobuf.JoinQueryDtoWrapper;
 import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
-import org.obiba.mica.search.queries.rql.JoinRQLQueryWrapper;
+import org.obiba.mica.search.queries.rql.RQLQueryFactory;
 import org.obiba.mica.web.model.MicaSearch;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -46,39 +46,41 @@ public class PublishedNetworksSearchResource {
 
   public static final String DEFAULT_SORT = "script";
 
-
   @Inject
   JoinQueryExecutor joinQueryExecutor;
+
+  @Inject
+  private RQLQueryFactory rqlQueryFactory;
 
   @GET
   @Path("/_search")
   @Timed
   public JoinQueryResultDto list(@QueryParam("from") @DefaultValue("0") int from,
-      @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") @DefaultValue(DEFAULT_SORT)  String sort,
-      @QueryParam("order") @DefaultValue("desc") String order, @QueryParam("study") String studyId, @QueryParam("query") String query,
-      @QueryParam("locale") @DefaultValue("en") String locale)
-      throws IOException {
+    @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") @DefaultValue(DEFAULT_SORT) String sort,
+    @QueryParam("order") @DefaultValue("desc") String order, @QueryParam("study") String studyId,
+    @QueryParam("query") String query, @QueryParam("locale") @DefaultValue("en") String locale) throws IOException {
     String sortScript = "doc['studyIds'].values.size()"; //groovy sort script
     String type = "number";
 
     MicaSearch.QueryDto queryDto;
 
-    if (!Strings.isNullOrEmpty(sort) && !sort.equals(DEFAULT_SORT)) {
+    if(!Strings.isNullOrEmpty(sort) && !sort.equals(DEFAULT_SORT)) {
       queryDto = QueryDtoHelper
         .createQueryDto(from, limit, sort, order, query, locale, Stream.of(NetworkIndexer.LOCALIZED_ANALYZED_FIELDS));
     } else {
-      queryDto = QueryDtoHelper
-        .createQueryDto(from, limit, sortScript, type, order, query, locale, Stream.of(NetworkIndexer.LOCALIZED_ANALYZED_FIELDS));
+      queryDto = QueryDtoHelper.createQueryDto(from, limit, sortScript, type, order, query, locale,
+        Stream.of(NetworkIndexer.LOCALIZED_ANALYZED_FIELDS));
     }
 
-    if (!Strings.isNullOrEmpty(studyId)) {
+    if(!Strings.isNullOrEmpty(studyId)) {
       queryDto = QueryDtoHelper.addTermFilters(queryDto,
-          Arrays.asList(QueryDtoHelper.createTermFilter(NetworkQuery.JOIN_FIELD, Arrays.asList(studyId))),
-          QueryDtoHelper.BoolQueryType.SHOULD);
+        Arrays.asList(QueryDtoHelper.createTermFilter(NetworkQuery.JOIN_FIELD, Arrays.asList(studyId))),
+        QueryDtoHelper.BoolQueryType.SHOULD);
     }
 
     JoinQueryResultDto result = joinQueryExecutor.listQuery(JoinQueryExecutor.QueryType.NETWORK, queryDto, locale);
-    JoinQueryResultDto.Builder builder = result.toBuilder().clearDatasetResultDto().clearStudyResultDto().clearVariableResultDto();
+    JoinQueryResultDto.Builder builder = result.toBuilder().clearDatasetResultDto().clearStudyResultDto()
+      .clearVariableResultDto();
     builder.setNetworkResultDto(builder.getNetworkResultDto().toBuilder().clearAggs());
     return builder.build();
   }
@@ -94,6 +96,6 @@ public class PublishedNetworksSearchResource {
   @Path("/_rql")
   @Timed
   public JoinQueryResultDto rqlQuery(@QueryParam("query") String query) throws IOException {
-    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.NETWORK, new JoinRQLQueryWrapper(query));
+    return joinQueryExecutor.query(JoinQueryExecutor.QueryType.NETWORK, rqlQueryFactory.makeJoinQuery(query));
   }
 }

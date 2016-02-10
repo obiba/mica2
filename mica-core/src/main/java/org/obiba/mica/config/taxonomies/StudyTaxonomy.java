@@ -15,7 +15,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.google.common.collect.Lists;
 
-@ConfigurationProperties(locations = "classpath:/mica-studies.yml")
+@ConfigurationProperties(locations = "classpath:/taxonomies/mica-study.yml")
 public class StudyTaxonomy extends Taxonomy {
 
   private static final long serialVersionUID = 4850803732637831829L;

@@ -15,7 +15,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import com.google.common.collect.Lists;
 
-@ConfigurationProperties(locations = "classpath:/mica-variables.yml")
+@ConfigurationProperties(locations = "classpath:/taxonomies/mica-variable.yml")
 public class VariableTaxonomy extends Taxonomy {
 
   private static final long serialVersionUID = -8199570366417933332L;
