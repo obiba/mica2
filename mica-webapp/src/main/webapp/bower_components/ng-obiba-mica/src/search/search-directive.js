@@ -15,7 +15,8 @@
 /* exported CRITERIA_ITEM_EVENT */
 var CRITERIA_ITEM_EVENT = {
   selected: 'event:select-criteria-item',
-  deleted: 'event:delete-criteria-item'
+  deleted: 'event:delete-criteria-item',
+  refresh: 'event:refresh-criteria-item'
 };
 
 angular.module('obiba.mica.search')
@@ -145,7 +146,7 @@ angular.module('obiba.mica.search')
       scope: {
         type: '=',
         display: '=',
-        dto: '=',
+        result: '=',
         lang: '=',
         loading: '=',
         onTypeChanged: '='
@@ -162,7 +163,8 @@ angular.module('obiba.mica.search')
       scope: {
         item: '=',
         onRemove: '=',
-        onSelect: '='
+        onSelect: '=',
+        onRefresh: '='
       },
       template: '<span ng-repeat="child in item.children"><criteria-target item="child"></criteria-target></span>',
       link: function(scope) {
@@ -172,6 +174,10 @@ angular.module('obiba.mica.search')
 
         scope.$on(CRITERIA_ITEM_EVENT.selected, function(){
           scope.onSelect();
+        });
+
+        scope.$on(CRITERIA_ITEM_EVENT.refresh, function(){
+          scope.onRefresh();
         });
       }
     };
@@ -198,7 +204,8 @@ angular.module('obiba.mica.search')
       scope: {
         item: '='
       },
-      templateUrl: 'search/views/criteria-node-template.html',
+      controller: 'CriterionLogicalController',
+      templateUrl: 'search/views/criteria/criteria-node-template.html',
       link: function(scope) {
         console.log('criteriaNode', scope.item);
       }
@@ -224,7 +231,7 @@ angular.module('obiba.mica.search')
           console.log('criteriaLeaf', scope);
 
           var template = '';
-          if (scope.item.type === RQL_NODE.OR) {
+          if (scope.item.type === RQL_NODE.OR || scope.item.type === RQL_NODE.AND || scope.item.type === RQL_NODE.NAND) {
             template = '<criteria-node item="item"></criteria-node>';
             $compile(template)(scope, function(cloned){
               element.append(cloned);
@@ -239,7 +246,7 @@ angular.module('obiba.mica.search')
       };
     }])
 
-  .directive('criterionDropdown', [function () {
+  .directive('criterionDropdown', ['$document', function ($document) {
     return {
       restrict: 'EA',
       replace: true,
@@ -248,8 +255,20 @@ angular.module('obiba.mica.search')
         query: '='
       },
       controller: 'CriterionDropdownController',
-      templateUrl: 'search/views/criterion-dropdown-template.html'
+      templateUrl: 'search/views/criteria/criterion-dropdown-template.html',//
+      link: function( $scope, $element){
+        var onDocumentClick = function (event) {
+          var isChild = document.querySelector('#'+$scope.criterion.vocabulary.name+'-dropdown').contains(event.target);
+          if (!isChild) {
+            $scope.closeDropdown();
+          }
+        };
 
+        $document.on('click', onDocumentClick);
+        $element.on('$destroy', function () {
+          $document.off('click', onDocumentClick);
+        });
+      }
     };
   }])
 

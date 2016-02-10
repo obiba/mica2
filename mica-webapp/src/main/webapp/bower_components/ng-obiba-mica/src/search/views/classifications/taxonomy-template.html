@@ -1,11 +1,11 @@
 <div ng-repeat="vocabulary in taxonomies.taxonomy.vocabularies" ng-if="$index % 3 == 0" class="row">
-  <div class="col-xs-4">
+  <div class="col-md-4">
     <div vocabulary-panel taxonomy="taxonomies.taxonomy.vocabularies[$index]"></div>
   </div>
-  <div class="col-xs-4">
+  <div class="col-md-4">
     <div taxonomy-panel taxonomy="taxonomies.taxonomy.vocabularies[$index + 1]"></div>
   </div>
-  <div class="col-xs-4">
+  <div class="col-md-4">
     <div taxonomy-panel taxonomy="taxonomies.taxonomy.vocabularies[$index + 2]"></div>
   </div>
 </div>

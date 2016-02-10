@@ -8,35 +8,4 @@
   <p class="help-block" ng-repeat="label in vocabulary.description" ng-if="label.locale === lang">
     {{label.text}}
   </p>
-  <ul>
-    <li ng-repeat="term in vocabulary.terms" ng-if="$index<4">
-      <span ng-repeat="label in term.title" ng-if="label.locale === lang">
-        {{label.text}}
-      </span>
-      <span ng-if="!term.title">
-        {{term.name}}
-      </span>
-      <a href ng-click="onSelect(taxonomy, vocabulary, term)">
-        <i class="fa fa-plus-circle" title="{{'add-query' | translate}}"></i>
-      </a>
-    </li>
-    <div class="collapse" id="{{taxonomy.name + vocabulary.name + '_terms'}}">
-      <li ng-repeat="term in vocabulary.terms" ng-if="$index>=4">
-        <span ng-repeat="label in term.title" ng-if="label.locale === lang">
-          {{label.text}}
-        </span>
-        <span ng-if="!term.title">
-          {{term.name}}
-        </span>
-        <a href ng-click="onSelect(taxonomy, vocabulary, term)">
-          <i class="fa fa-plus-circle" title="{{'add-query' | translate}}"></i>
-        </a>
-      </li>
-    </div>
-    <li ng-if="vocabulary.terms && vocabulary.terms.length>4" class="list-unstyled">
-      <a data-toggle="collapse" data-target="#{{taxonomy.name + vocabulary.name + '_terms'}}">
-        <i class="fa fa-arrow-down"></i>
-      </a>
-    </li>
-  </ul>
 </div>

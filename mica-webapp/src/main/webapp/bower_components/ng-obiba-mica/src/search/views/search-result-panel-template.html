@@ -8,30 +8,30 @@
 
         <!-- Variables -->
         <uib-tab ng-show="settingsDisplay.variables.showSearchTab" active="activeTarget.variables" ng-click="selectTarget(QUERY_TYPES.VARIABLES)"
-          heading="{{'variables' | translate}} ({{dto.variableResultDto.totalHits}})">
+          heading="{{'variables' | translate}} ({{result.list.variableResultDto.totalHits}})">
           <variables-result-table  loading="loading"
-            summaries="dto.variableResultDto['obiba.mica.DatasetVariableResultDto.result'].summaries"></variables-result-table>
+            summaries="result.list.variableResultDto['obiba.mica.DatasetVariableResultDto.result'].summaries"></variables-result-table>
         </uib-tab>
 
         <!-- Datasets -->
         <uib-tab ng-show="settingsDisplay.datasets.showSearchTab" active="activeTarget.datasets" ng-click="selectTarget(QUERY_TYPES.DATASETS)"
-          heading="{{'datasets' | translate}} ({{dto.datasetResultDto.totalHits}})">
+          heading="{{'datasets' | translate}} ({{result.list.datasetResultDto.totalHits}})">
           <datasets-result-table  loading="loading"
-            summaries="dto.datasetResultDto['obiba.mica.DatasetResultDto.result'].datasets"></datasets-result-table>
+            summaries="result.list.datasetResultDto['obiba.mica.DatasetResultDto.result'].datasets"></datasets-result-table>
         </uib-tab>
 
         <!-- Studies -->
         <uib-tab ng-show="settingsDisplay.studies.showSearchTab" active="activeTarget.studies" ng-click="selectTarget(QUERY_TYPES.STUDIES)"
-          heading="{{'studies' | translate}} ({{dto.studyResultDto.totalHits}})">
+          heading="{{'studies' | translate}} ({{result.list.studyResultDto.totalHits}})">
           <studies-result-table  loading="loading"
-            summaries="dto.studyResultDto['obiba.mica.StudyResultDto.result'].summaries"></studies-result-table>
+            summaries="result.list.studyResultDto['obiba.mica.StudyResultDto.result'].summaries"></studies-result-table>
         </uib-tab>
 
         <!-- Networks -->
         <uib-tab ng-show="settingsDisplay.networks.showSearchTab" active="activeTarget.networks" ng-click="selectTarget(QUERY_TYPES.NETWORKS)"
-          heading="{{'networks' | translate}} ({{dto.networkResultDto.totalHits}})">
+          heading="{{'networks' | translate}} ({{result.list.networkResultDto.totalHits}})">
           <networks-result-table  loading="loading"
-            summaries="dto.networkResultDto['obiba.mica.NetworkResultDto.result'].networks"></networks-result-table>
+            summaries="result.list.networkResultDto['obiba.mica.NetworkResultDto.result'].networks"></networks-result-table>
         </uib-tab>
       </uib-tabset>
 
@@ -39,13 +39,13 @@
 
     <uib-tab heading="{{'coverage' | translate}}" active="activeDisplay.coverage"
       ng-click="selectDisplay(DISPLAY_TYPES.COVERAGE)">
-      <coverage-result-table result="dto" loading="loading" class="voffset2"></coverage-result-table>
+      <coverage-result-table result="result.coverage" loading="loading" class="voffset2"></coverage-result-table>
 
     </uib-tab>
 
     <uib-tab heading="{{'graphics' | translate}}" active="activeDisplay.graphics"
       ng-click="selectDisplay(DISPLAY_TYPES.GRAPHICS)">
-      <graphics-result result="dto" loading="loading" class="voffset2"></graphics-result>
+      <graphics-result result="result.graphics" loading="loading" class="voffset2"></graphics-result>
     </uib-tab>
 
   </uib-tabset>
