@@ -237,6 +237,8 @@ public class RQLQueryWrapper implements QueryWrapper {
             return visitNand(node);
           case OR:
             return visitOr(node);
+          case NOR:
+            return visitNor(node);
           case IN:
             return visitIn(node);
           case OUT:
@@ -278,13 +280,19 @@ public class RQLQueryWrapper implements QueryWrapper {
     private QueryBuilder visitNand(ASTNode node) {
       QueryBuilder left = visit((ASTNode) node.getArgument(0));
       QueryBuilder right = visit((ASTNode) node.getArgument(1));
-      return QueryBuilders.boolQuery().must(left).mustNot(right);
+      return QueryBuilders.boolQuery().mustNot(QueryBuilders.boolQuery().must(left).must(right));
     }
 
     private QueryBuilder visitOr(ASTNode node) {
       QueryBuilder left = visit((ASTNode) node.getArgument(0));
       QueryBuilder right = visit((ASTNode) node.getArgument(1));
       return QueryBuilders.boolQuery().should(left).should(right);
+    }
+
+    private QueryBuilder visitNor(ASTNode node) {
+      QueryBuilder left = visit((ASTNode) node.getArgument(0));
+      QueryBuilder right = visit((ASTNode) node.getArgument(1));
+      return QueryBuilders.boolQuery().mustNot(QueryBuilders.boolQuery().should(left).should(right));
     }
 
     private QueryBuilder visitIn(ASTNode node) {

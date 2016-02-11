@@ -35,6 +35,15 @@
     "fr": "Jeux de données dans lequel est définie la variable."
   "keywords": {}
   "terms": []
+- "name": "networkId"
+  "title":
+    "en": "Network"
+    "fr": "Réseau"
+  "description":
+    "en": "Network associated to the harmonised dataset."
+    "fr": "Réseau associé à ce jeux de données harmonisé."
+  "keywords": {}
+  "terms": []
 - "name": "variableType"
   "title":
     "en": "Type of variable"

@@ -171,6 +171,58 @@ public class RQLQueryWrapperTest {
   }
 
   @Test
+  public void test_rql_query_nand() throws IOException {
+    String rql
+      = "variable(nand(in(Mlstr_area.Lifestyle_behaviours,Alcohol),in(Mlstr_area.Diseases,Neoplasms)))";
+    RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
+    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    String expected = "{\n" +
+      "  \"bool\" : {\n" +
+      "    \"must_not\" : {\n" +
+      "      \"bool\" : {\n" +
+      "        \"must\" : [ {\n" +
+      "          \"terms\" : {\n" +
+      "            \"Mlstr_area.Lifestyle_behaviours\" : [ \"Alcohol\" ]\n" +
+      "          }\n" +
+      "        }, {\n" +
+      "          \"terms\" : {\n" +
+      "            \"Mlstr_area.Diseases\" : [ \"Neoplasms\" ]\n" +
+      "          }\n" +
+      "        } ]\n" +
+      "      }\n" +
+      "    }\n" +
+      "  }\n" +
+      "}";
+    assertThat(rqlQueryWrapper.getQueryBuilder().toString()).isEqualTo(expected);
+  }
+
+  @Test
+  public void test_rql_query_nor() throws IOException {
+    String rql
+      = "variable(nor(in(Mlstr_area.Lifestyle_behaviours,Alcohol),in(Mlstr_area.Diseases,Neoplasms)))";
+    RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
+    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    String expected = "{\n" +
+      "  \"bool\" : {\n" +
+      "    \"must_not\" : {\n" +
+      "      \"bool\" : {\n" +
+      "        \"should\" : [ {\n" +
+      "          \"terms\" : {\n" +
+      "            \"Mlstr_area.Lifestyle_behaviours\" : [ \"Alcohol\" ]\n" +
+      "          }\n" +
+      "        }, {\n" +
+      "          \"terms\" : {\n" +
+      "            \"Mlstr_area.Diseases\" : [ \"Neoplasms\" ]\n" +
+      "          }\n" +
+      "        } ]\n" +
+      "      }\n" +
+      "    }\n" +
+      "  }\n" +
+      "}";
+    assertThat(rqlQueryWrapper.getQueryBuilder().toString()).isEqualTo(expected);
+  }
+
+  @Test
   public void test_rql_query_complex_match() throws IOException {
     String rql
       = "variable(match(name:tutu description:tata pwel))";
