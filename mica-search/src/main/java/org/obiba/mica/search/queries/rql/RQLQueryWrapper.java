@@ -222,6 +222,18 @@ public class RQLQueryWrapper implements QueryWrapper {
       return field;
     }
 
+    protected Vocabulary getVocabulary(String taxonomyName, String vocabularyName) {
+      Optional<Taxonomy> taxonomy = taxonomies.stream().filter(t -> t.getName().equals(taxonomyName)).findFirst();
+      if(taxonomy.isPresent() && taxonomy.get().hasVocabularies()) {
+        Optional<Vocabulary> vocabulary = taxonomy.get().getVocabularies().stream()
+          .filter(v -> v.getName().equals(vocabularyName)).findFirst();
+        if(vocabulary.isPresent()) {
+          return vocabulary.get();
+        }
+      }
+      return null;
+    }
+
   }
 
   private class RQLQueryBuilder extends RQLBuilder<QueryBuilder> {
@@ -403,6 +415,13 @@ public class RQLQueryWrapper implements QueryWrapper {
 
       if(terms != null) {
         vocMap.get(key.getName()).addAll(terms);
+      } else {
+        // add all terms from taxonomy vocabulary
+        Vocabulary vocabulary = getVocabulary(key.getNamespace(), key.getName());
+        if(vocabulary != null && vocabulary.hasTerms()) {
+          vocMap.get(key.getName())
+            .addAll(vocabulary.getTerms().stream().map(TaxonomyEntity::getName).collect(Collectors.toList()));
+        }
       }
     }
 
@@ -452,7 +471,8 @@ public class RQLQueryWrapper implements QueryWrapper {
           case SORT:
             String arg = node.getArgument(0).toString();
             if(arg.startsWith("-")) return SortBuilders.fieldSort(resolveField(arg.substring(1))).order(SortOrder.DESC);
-            else if(arg.startsWith("+")) return SortBuilders.fieldSort(resolveField(arg.substring(1))).order(SortOrder.ASC);
+            else if(arg.startsWith("+"))
+              return SortBuilders.fieldSort(resolveField(arg.substring(1))).order(SortOrder.ASC);
             else return SortBuilders.fieldSort(resolveField(arg)).order(SortOrder.ASC);
         }
       } catch(IllegalArgumentException e) {
