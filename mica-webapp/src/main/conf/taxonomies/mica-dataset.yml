@@ -22,7 +22,7 @@
   "description": {}
   "keywords": {}
   "terms":
-  - "name": "StudyDataset"
+  - "name": "studydataset"
     "title":
       "en": "Study"
       "fr": "Étude"
@@ -30,7 +30,7 @@
       "en": "Study specific dataset."
       "fr": "Jeux de données spécifique à une étude."
     "keywords": {}
-  - "name": "HarmonizationDataset"
+  - "name": "harmonizationdataset"
     "title":
       "en": "Harmonization"
       "fr": "Harmonisation"
