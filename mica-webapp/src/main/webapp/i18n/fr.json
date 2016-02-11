@@ -586,6 +586,10 @@
       "info": "Reference to the Opal table from which variables and data summaries will be extracted from."
     },
     "options": "Options",
+    "network": {   
+      "title": "Network",    
+      "info": "A network linked to this dataset."    
+    },
     "study-table": {
       "title": "Study Table",
       "info": "A study table defines which study data collection event it applies to and which Opal table the variables and data summaries are to be extracted from."
@@ -612,7 +616,18 @@
     },
     "index": "Index",
     "add-study-table": "Add Study Table",
-    "none": "No datasets."
+    "none": "No datasets.",
+    "crosstab": {
+      "title": "Contingency Table",
+      "categorical": "Select a categorical variable...",
+      "another": "Select another variable...",
+      "query-help": "Displays the multivariate frequency distribution of selected variables.",
+      "privacy-check-failed": "To prevent disclosure risk, results in the table above are not shown because at least one cell has between 1 to {{arg0}} observations.",
+      "total-privacy-check-failed": "To prevent disclosure risk, results in the table above are not shown because at least one category has between 1 to {{arg0}} observations.",
+      "chi-squared": {
+        "test": "Chi-Squared Test"
+      }
+    }
   },
   "attributes": "Attributes",
   "attribute": {
@@ -1048,5 +1063,15 @@
       "variable": "Variable",
       "study": "Study"
     }
+  },
+    "graphics": {
+    "nbr-studies": "Nbr of Studies",
+    "geo-charts": "Geographical Distribution",
+    "study-design": "Study Designs",
+    "bio-samples": "Collected biological samples",
+    "geo-chart-title": "Distribution of studies by participants countries of residence",
+    "study-design-chart-title": "Distribution of studies by study design",
+    "bio-samples-chart-title": "Distribution of studies by Biological Samples",
+    "country": "Country"
   }
 }
