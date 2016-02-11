@@ -94,8 +94,7 @@ public class JoinQueryExecutor {
   }
 
   @Timed
-  public JoinQueryResultDto queryCoverage(JoinQueryWrapper joinQueryWrapper)
-    throws IOException {
+  public JoinQueryResultDto queryCoverage(JoinQueryWrapper joinQueryWrapper) throws IOException {
     return query(QueryType.VARIABLE, joinQueryWrapper, null, DIGEST, Mode.COVERAGE);
   }
 
@@ -213,24 +212,20 @@ public class JoinQueryExecutor {
       ImmutableList.<Taxonomy>builder().add(micaConfigService.getVariableTaxonomy()).addAll(opalService.getTaxonomies())
         .build(), aggregationPostProcessor()) : removeAggregations(variableQuery.getResultQuery()));
 
-    if(datasetQuery.getResultQuery() != null) {
-      builder.setDatasetResultDto(joinQueryDto.isWithFacets()
-        ? addAggregationTitles(datasetQuery.getResultQuery(),
-        Lists.newArrayList(micaConfigService.getDatasetTaxonomy()), null)
-        : removeAggregations(datasetQuery.getResultQuery()));
-    }
+    builder.setDatasetResultDto(joinQueryDto.isWithFacets()
+      ? addAggregationTitles(datasetQuery.getResultQuery(), Lists.newArrayList(micaConfigService.getDatasetTaxonomy()),
+      null)
+      : removeAggregations(datasetQuery.getResultQuery()));
 
     builder.setStudyResultDto(joinQueryDto.isWithFacets()
       ? addAggregationTitles(studyQuery.getResultQuery(), Lists.newArrayList(micaConfigService.getStudyTaxonomy()),
       null)
       : removeAggregations(studyQuery.getResultQuery()));
 
-    if(networkQuery.getResultQuery() != null) {
-      builder.setNetworkResultDto(joinQueryDto.isWithFacets()
-        ? addAggregationTitles(networkQuery.getResultQuery(),
-        Lists.newArrayList(micaConfigService.getNetworkTaxonomy()), null)
-        : removeAggregations(networkQuery.getResultQuery()));
-    }
+    builder.setNetworkResultDto(joinQueryDto.isWithFacets()
+      ? addAggregationTitles(networkQuery.getResultQuery(), Lists.newArrayList(micaConfigService.getNetworkTaxonomy()),
+      null)
+      : removeAggregations(networkQuery.getResultQuery()));
 
     return builder.build();
   }
