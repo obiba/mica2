@@ -86,6 +86,11 @@ public class DatasetIndexer {
     if(elasticSearchIndexer.hasIndex(PUBLISHED_DATASET_INDEX)) elasticSearchIndexer.dropIndex(PUBLISHED_DATASET_INDEX);
     if(elasticSearchIndexer.hasIndex(DRAFT_DATASET_INDEX)) elasticSearchIndexer.dropIndex(DRAFT_DATASET_INDEX);
 
+    if(elasticSearchIndexer.hasIndex(VariableIndexer.DRAFT_VARIABLE_INDEX))
+      elasticSearchIndexer.dropIndex(VariableIndexer.DRAFT_VARIABLE_INDEX);
+    if(elasticSearchIndexer.hasIndex(VariableIndexer.PUBLISHED_VARIABLE_INDEX))
+      elasticSearchIndexer.dropIndex(VariableIndexer.PUBLISHED_VARIABLE_INDEX);
+
     harmonizationDatasetService.indexAll();
     studyDatasetService.indexAll();
   }

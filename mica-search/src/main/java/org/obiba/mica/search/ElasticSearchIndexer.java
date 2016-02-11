@@ -8,7 +8,6 @@ import javax.inject.Inject;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequest;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
-import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteRequestBuilder;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
@@ -70,37 +69,38 @@ public class ElasticSearchIndexer {
       .actionGet();
   }
 
-  public BulkResponse indexAll(String indexName, Iterable<? extends Persistable<String>> persistables) {
-    return indexAll(indexName, persistables, null);
+  public void indexAll(String indexName, Iterable<? extends Persistable<String>> persistables) {
+    indexAll(indexName, persistables, null);
   }
 
-  public BulkResponse indexAll(String indexName, Iterable<? extends Persistable<String>> persistables,
+  public void indexAll(String indexName, Iterable<? extends Persistable<String>> persistables,
     Persistable<String> parent) {
     createIndexIfNeeded(indexName);
     String parentId = parent == null ? null : parent.getId();
     BulkRequestBuilder bulkRequest = client.prepareBulk();
     persistables.forEach(persistable -> bulkRequest
       .add(getIndexRequestBuilder(indexName, persistable).setSource(toJson(persistable)).setParent(parentId)));
-    return bulkRequest.numberOfActions() > 0 ? bulkRequest.execute().actionGet() : null;
+
+    if (bulkRequest.numberOfActions() > 0) bulkRequest.execute().actionGet();
   }
 
-  public BulkResponse indexAllIndexables(String indexName, Iterable<? extends Indexable> indexables) {
-    return indexAllIndexables(indexName, indexables, (String) null);
+  public void indexAllIndexables(String indexName, Iterable<? extends Indexable> indexables) {
+    indexAllIndexables(indexName, indexables, (String) null);
   }
 
-  public BulkResponse indexAllIndexables(String indexName, Iterable<? extends Indexable> indexables,
+  public void indexAllIndexables(String indexName, Iterable<? extends Indexable> indexables,
     @Nullable Indexable parent) {
     String parentId = parent == null ? null : parent.getId();
-    return indexAllIndexables(indexName, indexables, parentId);
+    indexAllIndexables(indexName, indexables, parentId);
   }
 
-  public BulkResponse indexAllIndexables(String indexName, Iterable<? extends Indexable> indexables,
-    @Nullable String parentId) {
+  public void indexAllIndexables(String indexName, Iterable<? extends Indexable> indexables, @Nullable String parentId) {
     createIndexIfNeeded(indexName);
     BulkRequestBuilder bulkRequest = client.prepareBulk();
     indexables.forEach(indexable -> bulkRequest
       .add(getIndexRequestBuilder(indexName, indexable).setSource(toJson(indexable)).setParent(parentId)));
-    return bulkRequest.execute().actionGet();
+
+    if(bulkRequest.numberOfActions() > 0) bulkRequest.execute().actionGet();
   }
 
   private String toJson(Object obj) {

@@ -201,6 +201,7 @@ mica.dataset
     'MicaConfigResource',
     'FormServerValidation',
     'ActiveTabService',
+    'DraftNetworksResource',
 
     function ($rootScope,
               $scope,
@@ -214,21 +215,32 @@ mica.dataset
               HarmonizationDatasetPublicationResource,
               MicaConfigResource,
               FormServerValidation,
-              ActiveTabService) {
-
+              ActiveTabService,
+              DraftNetworksResource) {
 
       var getTypeFromUrl = function() {
         var matched = /\/(\w+-dataset)\//.exec($location.path());
         return matched ? matched[1] : '';
       };
 
+      $scope.selected = {network: {}};
+      $scope.networks = DraftNetworksResource.query();
       $scope.type = getTypeFromUrl();
       $scope.getActiveTab = ActiveTabService.getActiveTab;
       $scope.newDataset = !$routeParams.id;
-      $scope.dataset = $routeParams.id ? HarmonizationDatasetResource.get({id: $routeParams.id}) : {
-        published: false,
-        'obiba.mica.HarmonizationDatasetDto.type': {}
-      };
+      if ($routeParams.id) {
+        $scope.dataset = HarmonizationDatasetResource.get({id: $routeParams.id});
+        $scope.dataset.$promise.then(function (dataset) {
+          $scope.networks.$promise.then(function (networks) {
+            $scope.selected.network = networks.filter(function (n) {return n.id === dataset['obiba.mica.HarmonizationDatasetDto.type'].networkId; })[0];
+          });
+        });
+      } else {
+        $scope.dataset = {
+          published: false,
+          'obiba.mica.HarmonizationDatasetDto.type': {}
+        };
+      }
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
@@ -304,6 +316,8 @@ mica.dataset
       };
 
       var updateDataset = function () {
+        $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].networkId = $scope.selected.network ? $scope.selected.network.id : null;
+
         $scope.dataset.$save(
           function (dataset) {
             $location.path('/harmonization-dataset/' + dataset.id).replace();
@@ -312,6 +326,7 @@ mica.dataset
       };
 
       var createDataset = function () {
+        $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].networkId = $scope.selected.network ? $scope.selected.network.id : null;
         DraftHarmonizationDatasetsResource.save($scope.dataset,
           function (resource, getResponseHeaders) {
             var parts = getResponseHeaders().location.split('/');
@@ -345,6 +360,7 @@ mica.dataset
     '$filter',
     'DatasetService',
     'DocumentPermissionsService',
+    'DraftNetworkResource',
 
     function ($rootScope,
               $scope,
@@ -364,8 +380,10 @@ mica.dataset
               NOTIFICATION_EVENTS,
               $filter,
               DatasetService,
-              DocumentPermissionsService) {
+              DocumentPermissionsService,
+              DraftNetworkResource) {
       MicaConfigResource.get(function (micaConfig) {
+        $scope.opal = micaConfig.opal;
         $scope.tabs = [];
         micaConfig.languages.forEach(function (lang) {
           $scope.tabs.push({lang: lang});
@@ -375,6 +393,15 @@ mica.dataset
 
       var initializeDataset = function(dataset) {
         $scope.permissions = DocumentPermissionsService.state(dataset['obiba.mica.EntityStateDto.datasetState']);
+        if($scope.type === 'harmonization-dataset') {
+          if(dataset['obiba.mica.HarmonizationDatasetDto.type'].networkId) {
+            DraftNetworkResource.get({id: dataset['obiba.mica.HarmonizationDatasetDto.type'].networkId}).$promise.then(function (network) {
+              $scope.datasetNetwork = network.id;
+            }).catch(function () {});
+          }
+          $scope.datasetProject = dataset['obiba.mica.HarmonizationDatasetDto.type'].project;
+          $scope.datasetTable = dataset['obiba.mica.HarmonizationDatasetDto.type'].table;
+        }
       };
 
       var getTypeFromUrl = function() {
@@ -574,7 +601,6 @@ mica.dataset
               HarmonizationDatasetPublicationResource,
               MicaConfigResource,
               ActiveTabService) {
-
       MicaConfigResource.get(function (micaConfig) {
         $scope.opal = micaConfig.opal;
         $scope.tabs = [];

@@ -586,6 +586,11 @@
       "info": "Reference to the Opal table from which variables and data summaries will be extracted from."
     },
     "options": "Options",
+    "network": "Network",
+    "network": {
+      "title": "Network",
+      "info": "A network linked to this dataset."
+    },
     "study-table": {
       "title": "Study Table",
       "info": "A study table defines which study data collection event it applies to and which Opal table the variables and data summaries are to be extracted from."
@@ -884,7 +889,7 @@
       "409": {
         "network": {
           "delete-conflict": "Conflict deleting network",
-          "delete-conflict-message": "Found conflicts when trying to delete network. Remove all references from the following networks: {{arg0}}"
+          "delete-conflict-message": "Found conflicts when trying to delete network. Remove all references from the following {{arg0}}{{arg1}}."
         }
       }
     }

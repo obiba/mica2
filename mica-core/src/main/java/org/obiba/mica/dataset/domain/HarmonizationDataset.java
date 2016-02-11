@@ -33,6 +33,11 @@ public class HarmonizationDataset extends Dataset {
   private List<StudyTable> studyTables;
 
   /**
+   * Linked network.
+   */
+  private String networkId;
+
+  /**
    * Project in which the table is located.
    */
   @NotNull
@@ -87,5 +92,13 @@ public class HarmonizationDataset extends Dataset {
         put(self.getClass().getSimpleName(), self);
       }
     };
+  }
+
+  public String getNetworkId() {
+    return networkId;
+  }
+
+  public void setNetworkId(String networkId) {
+    this.networkId = networkId;
   }
 }

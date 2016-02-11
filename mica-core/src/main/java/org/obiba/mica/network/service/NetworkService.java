@@ -13,6 +13,7 @@ package org.obiba.mica.network.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -26,6 +27,9 @@ import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.core.repository.PersonRepository;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
+import org.obiba.mica.dataset.HarmonizationDatasetRepository;
+import org.obiba.mica.dataset.domain.HarmonizationDataset;
+import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
@@ -88,6 +92,12 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
   @Inject
   private PersonRepository personRepository;
 
+  @Inject
+  private HarmonizationDatasetRepository harmonizationDatasetRepository;
+
+  @Inject
+  private HarmonizationDatasetService harmonizationDatasetService;
+
   /**
    * Create or update provided {@link Network}.
    *
@@ -105,10 +115,12 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
   @SuppressWarnings("OverlyLongMethod")
   private void saveInternal(@NotNull Network network, String comment, boolean cascade) {
     Network saved = network;
+
     if(network.isNew()) {
       generateId(saved);
     } else {
       saved = networkRepository.findOne(network.getId());
+
       if (saved != null) {
         BeanUtils.copyProperties(network, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
             "lastModifiedDate");
@@ -252,16 +264,14 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
   }
 
   /**
-     * Delete a {@link Network}.
+   * Delete a {@link Network}.
    *
    * @param id
    * @throws NoSuchNetworkException
    */
   public void delete(@NotNull String id) throws NoSuchNetworkException {
     Network network = findById(id);
-
-    checkStudyConstraints(network);
-
+    checkConstraints(network);
     networkRepository.deleteWithReferences(network);
 
     if (network.getLogo() != null) fileStoreService.delete(network.getLogo().getId());
@@ -269,7 +279,6 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
     fileSystemService.delete(FileUtils.getEntityPath(network));
     networkStateRepository.delete(id);
     gitService.deleteGitRepository(network);
-
     eventBus.post(new NetworkDeletedEvent(network));
   }
 
@@ -315,15 +324,19 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
     }
   }
 
-  private void checkStudyConstraints(Network network) {
-    List<String> networkIds = networkRepository.findByNetworkIds(network.getId()).stream().map(n -> n.getId())
+  private void checkConstraints(Network network) {
+    Map<String, List<String>> conflicts = new HashMap();
+    List<String> networkIds = networkRepository.findByNetworkIds(network.getId()).stream().map(Network::getId)
       .collect(toList());
 
-    if (!networkIds.isEmpty()) {
-      Map<String, List<String>> conflicts = new HashMap() {{
-        put("network", networkIds);
-      }};
+    if(!networkIds.isEmpty()) conflicts.put("network", networkIds);
 
+    List<String> datasetIds = harmonizationDatasetRepository.findByNetworkId(network.getId()).stream()
+      .map(HarmonizationDataset::getId).collect(toList());
+
+    if(!datasetIds.isEmpty()) conflicts.put("dataset", datasetIds);
+
+    if(!conflicts.isEmpty()) {
       throw new ConstraintException(conflicts);
     }
   }

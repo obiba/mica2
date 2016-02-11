@@ -28,7 +28,7 @@ mica.network
       return $resource('ws/draft/network/:id', {}, {
         'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true},
         'delete': {method: 'DELETE', params: {id: '@id'}, errorHandler: true},
-        'get': {method: 'GET'}
+        'get': {method: 'GET', errorHandler: true}
       });
     }])
 
@@ -116,10 +116,16 @@ mica.network
 
           function onError(response) {
             if (response.status === 409) {
-              var networkIds = response.data.network ? response.data.network.join(', ') : '';
+              var networkIds = response.data.network ? LocaleStringUtils.translate('networks') + ': ' + response.data.network.join(', ') : '',
+                datasetIds = response.data.dataset ? LocaleStringUtils.translate('datasets') + ': ' + response.data.dataset.join(', ') : '';
+
+              if (networkIds !== '') {
+                networkIds += '; ';
+              }
+
               $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
                 title: LocaleStringUtils.translate('server.error.409.network.delete-conflict'),
-                message: LocaleStringUtils.translate( 'server.error.409.network.delete-conflict-message', [networkIds])
+                message: LocaleStringUtils.translate( 'server.error.409.network.delete-conflict-message', [networkIds, datasetIds])
               });
             } else {
               $rootScope.$broadcast(NOTIFICATION_EVENTS.showNotificationDialog, {
