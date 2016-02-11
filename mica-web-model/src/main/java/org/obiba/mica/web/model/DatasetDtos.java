@@ -565,7 +565,8 @@ class DatasetDtos {
         ext.getStudyTablesList().forEach(tableDto -> harmonizationDataset.addStudyTable(fromDto(tableDto)));
       }
 
-      harmonizationDataset.setNetworkId(ext.getNetworkId());
+      String networkId = ext.getNetworkId();
+      harmonizationDataset.setNetworkId(Strings.isNullOrEmpty(networkId) ? null : networkId);
       dataset = harmonizationDataset;
     } else {
       StudyDataset studyDataset = new StudyDataset();
