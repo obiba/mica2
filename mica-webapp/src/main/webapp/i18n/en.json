@@ -586,10 +586,9 @@
       "info": "Reference to the Opal table from which variables and data summaries will be extracted from."
     },
     "options": "Options",
-    "network": "Network",
-    "network": {
-      "title": "Network",
-      "info": "A network linked to this dataset."
+    "network": {   
+      "title": "Network",    
+      "info": "A network linked to this dataset."    
     },
     "study-table": {
       "title": "Study Table",
@@ -617,7 +616,18 @@
     },
     "index": "Index",
     "add-study-table": "Add Study Table",
-    "none": "No datasets."
+    "none": "No datasets.",
+    "crosstab": {
+      "title": "Contingency Table",
+      "categorical": "Select a categorical variable...",
+      "another": "Select another variable...",
+      "query-help": "Displays the multivariate frequency distribution of selected variables.",
+      "privacy-check-failed": "To prevent disclosure risk, results in the table above are not shown because at least one cell has between 1 to {{arg0}} observations.",
+      "total-privacy-check-failed": "To prevent disclosure risk, results in the table above are not shown because at least one category has between 1 to {{arg0}} observations.",
+      "chi-squared": {
+        "test": "Chi-Squared Test"
+      }
+    }
   },
   "attributes": "Attributes",
   "attribute": {
@@ -778,7 +788,6 @@
   "no-coverage": "Select some variable search criteria to see their corresponding coverage.",
   "coverage-hide-missing": "Hide missing",
   "coverage-show-missing": "Show missing",
-  "graphics": "Graphics",
   "all-null-classifications": "",
   "all-variable-classifications": "All variable classifications",
   "all-dataset-classifications": "All dataset classifications",
@@ -889,7 +898,7 @@
       "409": {
         "network": {
           "delete-conflict": "Conflict deleting network",
-          "delete-conflict-message": "Found conflicts when trying to delete network. Remove all references from the following {{arg0}}{{arg1}}."
+          "delete-conflict-message": "Found conflicts when trying to delete network. Remove all references from the following networks: {{arg0}}"
         }
       }
     }
@@ -1068,7 +1077,16 @@
     }
   },
   "and": "AND",
-  "nand": "NAND",
+  "nand": "AND NOT",
   "or": "OR",
-  "nor": "NOR"
+  "graphics": {
+    "nbr-studies": "Nbr of Studies",
+    "country": "Country",
+    "geo-charts": "Geographical Distribution",
+    "study-design": "Study Designs",
+    "bio-samples": "Collected biological samples",
+    "geo-chart-title": "Distribution of studies by participants countries of residence",
+    "study-design-chart-title": "Distribution of studies by study design",
+    "bio-samples-chart-title": "Distribution of studies by Biological Samples"
+  }
 }
