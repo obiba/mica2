@@ -13,6 +13,7 @@ package org.obiba.mica.search.queries;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -249,19 +250,23 @@ public abstract class AbstractDocumentQuery {
     aggregationYamlParser.getAggregations(getJoinFieldsAsProperties()).forEach(requestBuilder::addAggregation);
     log.info("Request /{}/{}", getSearchIndex(), getSearchType());
     log.debug("Request /{}/{}: {}", getSearchIndex(), getSearchType(), requestBuilder);
-    SearchResponse response = requestBuilder.execute().actionGet();
-    List<String> ids = Lists.newArrayList();
+    try {
+      SearchResponse response = requestBuilder.execute().actionGet();
+      List<String> ids = Lists.newArrayList();
 
-    response.getAggregations().forEach(aggregation -> ((Terms) aggregation).getBuckets().stream().forEach(bucket -> {
-      if(bucket.getDocCount() > 0) {
-        ids.add(bucket.getKeyAsString());
-      }
-    }));
+      response.getAggregations().forEach(aggregation -> ((Terms) aggregation).getBuckets().stream().forEach(bucket -> {
+        if(bucket.getDocCount() > 0) {
+          ids.add(bucket.getKeyAsString());
+        }
+      }));
 
-    List<String> rval = ids.stream().distinct().collect(Collectors.toList());
-    log.info("Response /{}/{}", getSearchIndex(), getSearchType());
-    log.debug("Response /{}/{}", getSearchIndex(), getSearchType(), response);
-    return rval;
+      List<String> rval = ids.stream().distinct().collect(Collectors.toList());
+      log.info("Response /{}/{}", getSearchIndex(), getSearchType());
+      log.debug("Response /{}/{}", getSearchIndex(), getSearchType(), response);
+      return rval;
+    } catch(IndexNotFoundException e) {
+      return Collections.emptyList(); //ignoring
+    }
   }
 
   private Properties getJoinFieldsAsProperties() {
