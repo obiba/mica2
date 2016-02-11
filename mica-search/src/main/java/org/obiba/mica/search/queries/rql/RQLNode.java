@@ -23,6 +23,7 @@ enum RQLNode {
   AND, //
   NAND, //
   OR, //
+  NOR, //
   NOT, //
   IN, //
   OUT, //
