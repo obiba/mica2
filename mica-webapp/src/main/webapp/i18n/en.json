@@ -1077,7 +1077,7 @@
     }
   },
   "and": "AND",
-  "nand": "AND NOT",
+  "nand": "NAND",
   "or": "OR",
   "nor": "NOR",
   "graphics": {
