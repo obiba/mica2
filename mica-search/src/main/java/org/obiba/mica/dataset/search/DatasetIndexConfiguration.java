@@ -43,6 +43,8 @@ public class DatasetIndexConfiguration extends AbstractIndexConfiguration implem
     // properties
     mapping.startObject("properties");
     mapping.startObject("id").field("type", "string").field("index","not_analyzed").endObject();
+    mapping.startObject("networkId").field("type", "string").field("index", "not_analyzed").endObject();
+    mapping.startObject("className").field("type", "string").field("index", "not_analyzed").endObject();
     Stream.of(DatasetIndexer.LOCALIZED_ANALYZED_FIELDS).forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
 
     mapping.startObject("studyTables") //
