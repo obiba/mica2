@@ -586,9 +586,9 @@
       "info": "Reference to the Opal table from which variables and data summaries will be extracted from."
     },
     "options": "Options",
-    "network": {   
-      "title": "Network",    
-      "info": "A network linked to this dataset."    
+    "network": {
+      "title": "Network",
+      "info": "A network linked to this dataset."
     },
     "study-table": {
       "title": "Study Table",
@@ -779,15 +779,16 @@
   "users": "Users",
   "search": {
     "title": "Search",
-    "placeholder": "Examples: alcohol pregnancy cancer cohort ..."
+    "placeholder": "Examples: alcohol pregnancy cancer cohort ...",
+    "list": "List",
+    "coverage": "Coverage",
+    "graphics": "Graphics",
+    "no-coverage": "Select some variable search criteria to see their corresponding coverage.",
+    "coverage-hide-missing": "Hide missing",
+    "coverage-show-missing": "Show missing"
   },
   "variables": "Variables",
   "classifications": "Classifications",
-  "list": "List",
-  "coverage": "Coverage",
-  "no-coverage": "Select some variable search criteria to see their corresponding coverage.",
-  "coverage-hide-missing": "Hide missing",
-  "coverage-show-missing": "Show missing",
   "all-null-classifications": "",
   "all-variable-classifications": "All variable classifications",
   "all-dataset-classifications": "All dataset classifications",
@@ -1086,8 +1087,8 @@
     "geo-charts": "Geographical Distribution",
     "study-design": "Study Designs",
     "bio-samples": "Collected biological samples",
-    "geo-chart-title": "Distribution of studies by participants countries of residence",
+    "geo-chart-title": "Distribution of studies by country of residence",
     "study-design-chart-title": "Distribution of studies by study design",
-    "bio-samples-chart-title": "Distribution of studies by Biological Samples"
+    "bio-samples-chart-title": "Distribution of studies by biological samples"
   }
 }
