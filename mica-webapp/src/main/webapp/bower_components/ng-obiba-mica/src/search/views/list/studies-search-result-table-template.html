@@ -35,8 +35,7 @@
         </tr>
         </thead>
         <tbody>
-
-        <tr ng-repeat="summary in summaries">
+        <tr ng-repeat="summary in summaries" ng-init="lang = $parent.$parent.lang">
           <td>
             <a href>
               <localized value="summary.acronym" lang="lang"></localized>

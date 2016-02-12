@@ -40,6 +40,7 @@ var RQL_NODE = {
   AND: 'and',
   NAND: 'nand',
   OR: 'or',
+  NOR: 'nor',
   NOT: 'not',
   FACET: 'facet',
   LOCALE: 'locale',
@@ -116,17 +117,19 @@ function CriteriaItemBuilder(LocalizedValues, useLang) {
     return this;
   };
 
-  this.selectedTerm = function (value) {
+  this.selectedTerm = function (term) {
     if (!criteria.selectedTerms) {
       criteria.selectedTerms = [];
     }
 
-    criteria.selectedTerms.push(value);
+    criteria.selectedTerms.push(term.name);
     return this;
   };
 
-  this.selectedTerms = function (values) {
-    criteria.selectedTerms = values;
+  this.selectedTerms = function (terms) {
+    criteria.selectedTerms = terms.map(function(term){
+      return term.name;
+    });
     return this;
   };
 
@@ -347,6 +350,7 @@ CriteriaBuilder.prototype.visit = function (node, parentItem) {
     case RQL_NODE.AND:
     case RQL_NODE.NAND:
     case RQL_NODE.OR:
+    case RQL_NODE.NOR:
       this.visitCondition(node, parentItem);
       break;
 
@@ -395,6 +399,7 @@ angular.module('obiba.mica.search')
           case RQL_NODE.AND:
           case RQL_NODE.NAND:
           case RQL_NODE.OR:
+          case RQL_NODE.NOR:
           case RQL_NODE.NOT:
           case RQL_NODE.IN:
           case RQL_NODE.OUT:
@@ -432,6 +437,14 @@ angular.module('obiba.mica.search')
       return query;
     };
 
+    this.aggregate = function (fields) {
+      var query = new RqlQuery(RQL_NODE.AGGREGATE);
+      fields.forEach(function(field) {
+        query.args.push(field);
+      });
+      return query;
+    };
+
     this.inQuery = function (field, terms) {
       var hasValues = terms && terms.length > 0;
       var name = hasValues ? RQL_NODE.IN : RQL_NODE.EXISTS;
@@ -459,17 +472,6 @@ angular.module('obiba.mica.search')
     };
 
     /**
-     * Helper finding the vocabulary field, return name if none was found
-     *
-     * @param taxonomy
-     * @param vocabulary
-     * @returns {*}
-     */
-    this.vocabularyFieldName = function (taxonomy, vocabulary) {
-      return taxonomy.name + '.' + vocabulary.name;
-    };
-
-    /**
      * Creates a RqlQuery from an item
      *
      * @param item
@@ -477,7 +479,7 @@ angular.module('obiba.mica.search')
      */
     this.buildRqlQuery = function (item) {
       // TODO take care of other type (min, max, in, ...)
-      return this.inQuery(this.vocabularyFieldName(item.taxonomy, item.vocabulary), item.term ? item.term.name : []);
+      return this.inQuery(this.criteriaId(item.taxonomy, item.vocabulary), item.term ? item.term.name : []);
     };
 
     /**
@@ -519,12 +521,12 @@ angular.module('obiba.mica.search')
 
     };
 
-    this.vocabularyType = function(vocabulary) {
-      var type = VOCABULARY_TYPES.STRING;
+    function vocabularyAttributeValue(vocabulary, key, defaultValue) {
+      var value = defaultValue;
       if (vocabulary.attributes) {
         vocabulary.attributes.some(function(attribute){
-          if (attribute.key === 'type') {
-            type = attribute.value;
+          if (attribute.key === key) {
+            value = attribute.value;
             return true;
           }
 
@@ -532,7 +534,42 @@ angular.module('obiba.mica.search')
         });
       }
 
-      return type;
+      return value;
+    }
+
+    this.addLocaleQuery = function(rqlQuery, locale) {
+      var found = rqlQuery.args.filter(function(arg){
+        return arg.name === RQL_NODE.LOCALE;
+      }).pop();
+
+      if (!found) {
+        var localeQuery = new RqlQuery('locale');
+        localeQuery.args.push(locale);
+        rqlQuery.args.push(localeQuery);
+      }
+    };
+
+    /**
+     * Helper finding the vocabulary field, return name if none was found
+     *
+     * @param taxonomy
+     * @param vocabulary
+     * @returns {*}
+     */
+    this.criteriaId = function (taxonomy, vocabulary) {
+      return taxonomy.name + '.' + vocabulary.name;
+    };
+
+    this.vocabularyType = function(vocabulary) {
+      return vocabularyAttributeValue(vocabulary, 'type', VOCABULARY_TYPES.STRING);
+    };
+
+    this.vocabularyField = function(vocabulary) {
+      return vocabularyAttributeValue(vocabulary, 'field', vocabulary.name);
+    };
+
+    this.vocabularyAlias = function(vocabulary) {
+      return vocabularyAttributeValue(vocabulary, 'alias', vocabulary.name);
     };
   }])
 
@@ -635,7 +672,7 @@ angular.module('obiba.mica.search')
 
         parentQuery.args.splice(index, 1);
 
-        if ([RQL_NODE.OR, RQL_NODE.AND, RQL_NODE.NAND].indexOf(parent.type) !== -1) {
+        if ([RQL_NODE.OR, RQL_NODE.AND, RQL_NODE.NAND, RQL_NODE.NOR].indexOf(parent.type) !== -1) {
           deleteNodeCriteriaWithOrphans(parent);
         } else if (parentQuery.args.length === 0) {
           deleteNode(parent);
@@ -763,26 +800,20 @@ angular.module('obiba.mica.search')
       /**
        * Append the aggregate and facet for criteria term listing.
        *
-       * @param type
        * @param query
-       * @param taxonomy
-       * @param vocabulary
+       * @para
        * @returns the new query
        */
-      this.prepareCriteriaTermsQuery = function (target, query, taxonomy, vocabulary) {
+      this.prepareCriteriaTermsQuery = function (query, item) {
         var parsedQuery = new RqlParser().parse(query);
-        var aggregate = new RqlQuery('aggregate');
-        var facet = new RqlQuery('facet');
-        aggregate.args.push(RqlQueryUtils.vocabularyFieldName(taxonomy, vocabulary));
-        parsedQuery.args.some(function (arg) {
-          if (arg.name === target) {
-            arg.args.push(aggregate);
-            return true;
-          }
-          return false;
-        });
+        var targetQuery = parsedQuery.args.filter(function(node) {
+          return node.name === item.target;
+        }).pop();
 
-        parsedQuery.args.push(facet);
+        if (targetQuery) {
+          targetQuery.args.push(RqlQueryUtils.aggregate([RqlQueryUtils.criteriaId(item.taxonomy, item.vocabulary)]));
+        }
+        parsedQuery.args.push(new RqlQuery(RQL_NODE.FACET));
 
         return parsedQuery.serializeArgs(parsedQuery.args);
       };
@@ -843,6 +874,30 @@ angular.module('obiba.mica.search')
         // facet
         parsedQuery.args.push(new RqlQuery('facet'));
         return parsedQuery.serializeArgs(parsedQuery.args);
+      };
+
+      this.getTargetAggregegations =function(joinQueryResponse, criterion) {
+
+        var alias = RqlQueryUtils.vocabularyAlias(criterion.vocabulary);
+        var targetResponse = joinQueryResponse[criterion.target+'ResultDto'];
+
+        if (targetResponse && targetResponse.aggs) {
+          var taxonomy = targetResponse.aggs.filter(function(agg) {
+            return agg.aggregation === criterion.taxonomy.name;
+          }).pop();
+
+          if (taxonomy) {
+            var vocabulary = taxonomy.children.filter(function(agg) {
+              return agg.aggregation === alias;
+            }).pop();
+
+            if (vocabulary) {
+              return vocabulary['obiba.mica.TermsAggregationResultDto.terms'];
+            }
+          }
+        }
+
+        return [];
       };
 
     }]);

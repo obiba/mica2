@@ -6,41 +6,11 @@
     {{truncate(localize(criterion.vocabulary.title))}}
     <span class='fa fa-caret-down'></span>
   </button>
-  <button class='btn btn-xs btn-danger' ng-click='remove(criterion.id)'>
+  <button class='btn btn-xs btn-default' ng-click='remove(criterion.id)'>
     <span class='fa fa-times'></span>
   </button>
 
+  <string-criterion-terms criterion="criterion" query="query" state="state"></string-criterion-terms>
 
-  <ul class="dropdown-menu query-dropdown-menu" aria-labelledby="{{criterion.vocabulary.name}}-button">
-    <li class="btn-group" >
-      <ul class="criteria-radio-list">
-        <li>
-          <label>
-            <input ng-click="updateFilter()" type="radio" ng-model="selectedFilter" value="{{RQL_NODE.EXISTS}}">
-            {{'any' | translate}}
-          </label>
-        </li>
-        <li>
-          <label>
-            <input ng-click="updateFilter()" type="radio" ng-model="selectedFilter" value="{{RQL_NODE.MISSING}}">
-            {{'none' | translate}}
-          </label>
-        </li>
-        <li>
-          <label>
-            <input ng-click="updateFilter()" type="radio" ng-model="selectedFilter" value="{{RQL_NODE.IN}}">
-            {{'in' | translate}}
-          </label>
-        </li>
-      </ul>
-    </li>
-    <li ng-show="isInFilter()" class='divider'></li>
-    <li ng-show="isInFilter()"  ng-repeat='term in criterion.vocabulary.terms'>
-      <a href ng-click='toggleSelection($event, term)' title="{{localize(term.title)}}">
-        {{truncate(localize(term.title))}} <span ng-show="isSelected(term.name)"
-                                                 class="fa fa-check pull-right"></span>
-      </a>
-    </li>
-  </ul>
 </span>
 

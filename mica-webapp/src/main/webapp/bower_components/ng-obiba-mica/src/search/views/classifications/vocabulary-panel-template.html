@@ -1,9 +1,9 @@
 <div>
   <h4 ng-repeat="label in vocabulary.title" ng-if="label.locale === lang">
     <a href ng-click="onNavigate(taxonomy, vocabulary)">{{label.text}}</a>
-  </h4>
-  <h4 ng-if="!vocabulary.title">
-    <a href ng-click="onNavigate(taxonomy, vocabulary)">{{vocabulary.name}}</a>
+    <a href ng-click="onSelect(target, taxonomy, vocabulary)">
+      <small><i class="fa fa-plus-circle" title="{{'add-query' | translate}}"></i></small>
+    </a>
   </h4>
   <p class="help-block" ng-repeat="label in vocabulary.description" ng-if="label.locale === lang">
     {{label.text}}

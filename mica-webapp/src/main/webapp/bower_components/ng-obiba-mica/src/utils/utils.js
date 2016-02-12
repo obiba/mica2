@@ -29,5 +29,19 @@ angular.module('obiba.mica.utils', [])
           return null;
         }
       };
-    });
+    })
+
+  .service('StringUtils', ['LocalizedValues',function(LocalizedValues){
+
+    this.localize = function (values, lang) {
+      return LocalizedValues.forLocale(values, lang);
+    };
+
+    this.truncate = function (text, size) {
+      var max = size || 30;
+      return text.length > max ? text.substring(0, max) + '...' : text;
+    };
+
+    return this;
+  }]);
 

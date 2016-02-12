@@ -14,7 +14,6 @@
 
 /* exported CRITERIA_ITEM_EVENT */
 var CRITERIA_ITEM_EVENT = {
-  selected: 'event:select-criteria-item',
   deleted: 'event:delete-criteria-item',
   refresh: 'event:refresh-criteria-item'
 };
@@ -40,10 +39,12 @@ angular.module('obiba.mica.search')
       restrict: 'EA',
       replace: true,
       scope: {
+        target: '=',
         taxonomy: '=',
         vocabulary: '=',
         lang: '=',
-        onNavigate: '='
+        onNavigate: '=',
+        onSelect: '='
       },
       templateUrl: 'search/views/classifications/vocabulary-panel-template.html'
     };
@@ -162,18 +163,14 @@ angular.module('obiba.mica.search')
       replace: true,
       scope: {
         item: '=',
+        query: '=',
         onRemove: '=',
-        onSelect: '=',
         onRefresh: '='
       },
-      template: '<span ng-repeat="child in item.children"><criteria-target item="child"></criteria-target></span>',
+      template: '<span ng-repeat="child in item.children"><criteria-target item="child" query="$parent.query"></criteria-target></span>',
       link: function(scope) {
         scope.$on(CRITERIA_ITEM_EVENT.deleted, function(event, item){
           scope.onRemove(item);
-        });
-
-        scope.$on(CRITERIA_ITEM_EVENT.selected, function(){
-          scope.onSelect();
         });
 
         scope.$on(CRITERIA_ITEM_EVENT.refresh, function(){
@@ -188,11 +185,12 @@ angular.module('obiba.mica.search')
       restrict: 'EA',
       replace: true,
       scope: {
-        item: '='
+        item: '=',
+        query: '='
       },
-      template: '<span ng-repeat="child in item.children" ><criteria-node item="child"></criteria-node></span>',
+      template: '<span ng-repeat="child in item.children" ><criteria-node item="child" query="$parent.query"></criteria-node></span>',
       link: function(scope) {
-        console.log('criteriaTarget', scope.item);
+        console.log('criteriaTarget Query', scope.query);
       }
     };
   }])
@@ -202,20 +200,19 @@ angular.module('obiba.mica.search')
       restrict: 'EA',
       replace: true,
       scope: {
-        item: '='
+        item: '=',
+        query: '='
       },
       controller: 'CriterionLogicalController',
       templateUrl: 'search/views/criteria/criteria-node-template.html',
       link: function(scope) {
-        console.log('criteriaNode', scope.item);
+        console.log('criteriaNode', scope.query);
       }
     };
   }])
 
   /**
-   * This directive is responsible to build the proper type of drop-down leaf
-   *
-   * TODO needs more specialization
+   * This directive creates a hierarchical structure matching that of a RqlQuery tree.
    */
   .directive('criteriaLeaf', ['$compile',
     function($compile){
@@ -224,20 +221,21 @@ angular.module('obiba.mica.search')
         replace: true,
         scope: {
           item: '=',
+          query: '=',
           parentType: '='
         },
         template: '<span></span>',
         link: function(scope, element) {
-          console.log('criteriaLeaf', scope);
+          console.log('criteriaLeaf >>>', scope.query);
 
           var template = '';
-          if (scope.item.type === RQL_NODE.OR || scope.item.type === RQL_NODE.AND || scope.item.type === RQL_NODE.NAND) {
-            template = '<criteria-node item="item"></criteria-node>';
+          if (scope.item.type === RQL_NODE.OR || scope.item.type === RQL_NODE.AND || scope.item.type === RQL_NODE.NAND || scope.item.type === RQL_NODE.NOR) {
+            template = '<criteria-node item="item" query="query"></criteria-node>';
             $compile(template)(scope, function(cloned){
               element.append(cloned);
             });
           } else {
-            template = '<span criterion-dropdown criterion="item"></span>';
+            template = '<span criterion-dropdown criterion="item" query="query"></span>';
             $compile(template)(scope, function(cloned){
               element.append(cloned);
             });
@@ -246,6 +244,10 @@ angular.module('obiba.mica.search')
       };
     }])
 
+  /**
+   * This directive serves as the container for each time of criterion based on a vocabulary type.
+   * Specialize contents types as directives and share the state with this container.
+   */
   .directive('criterionDropdown', ['$document', function ($document) {
     return {
       restrict: 'EA',
@@ -260,7 +262,7 @@ angular.module('obiba.mica.search')
         var onDocumentClick = function (event) {
           var isChild = document.querySelector('#'+$scope.criterion.vocabulary.name+'-dropdown').contains(event.target);
           if (!isChild) {
-            $scope.closeDropdown();
+            $scope.$apply('closeDropdown()');
           }
         };
 
@@ -272,15 +274,19 @@ angular.module('obiba.mica.search')
     };
   }])
 
-  .directive('criteriaPanel', [function () {
+  /**
+   * Directive specialized for vocabulary of type String
+   */
+  .directive('stringCriterionTerms', [function () {
     return {
       restrict: 'EA',
       replace: true,
       scope: {
-        criteria: '=',
-        query: '='
+        criterion: '=',
+        query: '=',
+        state: '='
       },
-      controller: 'CriteriaPanelController',
-      templateUrl: 'search/views/criteria-panel-template.html'
+      controller: 'StringCriterionTermsController',
+      templateUrl: 'search/views/criteria/criterion-string-terms-template.html'
     };
   }]);

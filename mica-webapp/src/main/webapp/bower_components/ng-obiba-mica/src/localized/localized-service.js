@@ -23,7 +23,7 @@ angular.module('obiba.mica.localized')
           if (result && result.length > 0) {
             return result[0][keyValue];
           }
-          return values;
+          return result[0][keyValue];
         }
       };
 
@@ -33,5 +33,8 @@ angular.module('obiba.mica.localized')
 
       this.forLang = function (values, lang) {
         return this.for(values, lang, 'lang', 'value');
+      };
+      this.getLocal = function () {
+        return 'en';
       };
     });
