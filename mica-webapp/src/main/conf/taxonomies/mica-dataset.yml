@@ -22,7 +22,7 @@
   "description": {}
   "keywords": {}
   "terms":
-  - "name": "studydataset"
+  - "name": "StudyDataset"
     "title":
       "en": "Study"
       "fr": "Étude"
@@ -30,9 +30,18 @@
       "en": "Study specific dataset."
       "fr": "Jeux de données spécifique à une étude."
     "keywords": {}
-  - "name": "harmonizationdataset"
+  - "name": "HarmonizationDataset"
     "title":
       "en": "Harmonization"
       "fr": "Harmonisation"
     "description": {}
     "keywords": {}
+- "name": "networkId"
+  "title":
+    "en": "Network"
+    "fr": "Réseau"
+  "description":
+    "en": "Network associated to the harmonised dataset."
+    "fr": "Réseau associé à ce jeux de données harmonisé."
+  "keywords": {}
+  "terms": []
