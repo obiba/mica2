@@ -1,0 +1,44 @@
+<ul class="dropdown-menu query-dropdown-menu" aria-labelledby="{{criterion.vocabulary.name}}-button">
+  <li class="btn-group">
+    <ul class="criteria-list-item">
+      <li>
+        <label>
+          <input ng-click="updateFilter()" type="radio" ng-model="selectedFilter" value="{{RQL_NODE.EXISTS}}">
+          {{'any' | translate}}
+        </label>
+      </li>
+      <li>
+        <label>
+          <input ng-click="updateFilter()" type="radio" ng-model="selectedFilter" value="{{RQL_NODE.MISSING}}">
+          {{'none' | translate}}
+        </label>
+      </li>
+      <li>
+        <label>
+          <input ng-click="updateFilter()" type="radio" ng-model="selectedFilter" value="{{RQL_NODE.IN}}">
+          {{'in' | translate}}
+        </label>
+      </li>
+    </ul>
+  </li>
+  <li ng-show="isInFilter()" class='divider'>
+  </li>
+  <li>
+    <ul class="no-padding criteria-list-terms">
+      <li class="criteria-list-item" ng-show="isInFilter()" ng-repeat='term in terms' title='{{term.title}}'>
+          <span>
+            <label class="control-label">
+              <input ng-model="checkboxTerms[term.key]"
+                     type="checkbox"
+                     ng-click="updateSelection()">
+              <span>{{truncate(term.title)}}</span>
+            </label>
+          </span>
+          <span class="pull-right">
+            <span class="agg-term-count" ng-show="term.count !== 0">{{term.count}}</span>
+            <span class="agg-term-count-default" ng-show="term.count === 0">{{term.default}}</span>
+          </span>
+      </li>
+    </ul>
+  </li>
+</ul>

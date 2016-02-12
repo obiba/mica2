@@ -26,7 +26,6 @@ angular.module('obiba.mica.graphics')
           geoChartOptions: {
             options: {
               backgroundColor: {fill: 'transparent'},
-              title: 'Distribution of studies by participants countries of residence',
               colors: [
                 '#4db300',
                 '#409400',
@@ -39,8 +38,8 @@ angular.module('obiba.mica.graphics')
           },
           studiesDesigns: {
             options: {
+              legend: {position: 'none'},
               backgroundColor: {fill: 'transparent'},
-              title: 'Distribution of studies by study design',
               colors: ['#006600',
                 '#009900',
                 '#009966',
@@ -53,7 +52,6 @@ angular.module('obiba.mica.graphics')
           biologicalSamples: {
             options: {
               backgroundColor: {fill: 'transparent'},
-              title: 'Distribution of studies by Biological Samples',
               colors: ['#006600',
                 '#009900',
                 '#009966',
@@ -85,30 +83,19 @@ angular.module('obiba.mica.graphics')
 
   })
   .service('GraphicChartsUtils', [
-    'CountriesIsoUtils',
-    function (CountriesIsoUtils) {
-      this.getArrayByAggregation = function (aggregationName, entityDto, fieldTransformer, lang) {
+    function () {
+      this.getArrayByAggregation = function (aggregationName, entityDto) {
         var arrayData = [];
         if (!entityDto) {
           return arrayData;
         }
 
         angular.forEach(entityDto.aggs, function (aggregation) {
-          var itemName = [];
           if (aggregation.aggregation === aggregationName) {
             var i = 0;
             angular.forEach(aggregation['obiba.mica.TermsAggregationResultDto.terms'], function (term) {
-              switch (fieldTransformer) {
-                // TODO countries are already translated on server side (term title)
-                case 'country':
-                  itemName.name = CountriesIsoUtils.findByCode(term.key.toUpperCase(), lang);
-                  break;
-                default :
-                  itemName.name = term.title;
-                  break;
-              }
               if (term.count) {
-                arrayData[i] = [itemName.name, term.count];
+                arrayData[i] = [term.title, term.count];
                 i++;
               }
             });

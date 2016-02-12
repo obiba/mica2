@@ -72,13 +72,13 @@
   <div class="voffset3">
     <div class="row">
       <div class="col-xs-12">
-        <div criteria-root item="search.criteria" on-remove="removeCriteriaItem" on-select="updateTerm" on-refresh="refreshQuery"></div>
+        <div criteria-root item="search.criteria" query="search.query" on-remove="removeCriteriaItem" on-refresh="refreshQuery"></div>
       </div>
     </div>
   </div>
 
   <!-- Results region -->
-  <div class="voffset3">
-    <result-panel display="search.display" type="search.type" result="search.result" loading="search.loading" on-type-changed="onTypeChanged"></result-panel>
+  <div class="voffset3" ng-if="search.query">
+    <result-panel display="search.display" type="search.type" result="search.result" loading="search.loading" on-type-changed="onTypeChanged" lang="lang"></result-panel>
   </div>
 </div>
