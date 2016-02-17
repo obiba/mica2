@@ -21,12 +21,18 @@ function GraphicChartsDataProvider() {
     };
   }
 
-  this.$get = function (GraphicChartsDataResource, GraphicChartsConfig, GraphicChartsQuery) {
-    var queryDto = GraphicChartsQuery.queryDtoBuilder(GraphicChartsConfig.getOptions().entityIds);
-    return new DataProvider(GraphicChartsDataResource.get({
-      type: GraphicChartsConfig.getOptions().entityType,
-      id: GraphicChartsConfig.getOptions().entityIds
-    }, queryDto));
+  this.$get = function ($log, JoinQuerySearchResource, ServerErrorUtils, AlertService, GraphicChartsConfig, GraphicChartsQuery) {
+    var queryDto = GraphicChartsQuery.queryDtoBuilder(GraphicChartsConfig.getOptions().entityIds, GraphicChartsConfig.getOptions().entityType);
+
+    return new DataProvider(JoinQuerySearchResource.studies({
+        query: queryDto
+      },
+      function onSuccess (response) {
+          return response;
+      },
+      function (response) {
+        $log.error('Server error', response);
+      }));
   };
 }
 
@@ -37,4 +43,8 @@ angular.module('obiba.mica.graphics', [
   ])
   .config(['$provide', function ($provide) {
     $provide.provider('GraphicChartsData', GraphicChartsDataProvider);
+  }])
+  .run(['GraphicChartsConfigurations',
+  function (GraphicChartsConfigurations) {
+    GraphicChartsConfigurations.setClientConfig();
   }]);

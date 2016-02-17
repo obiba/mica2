@@ -23,7 +23,8 @@ angular.module('obiba.mica.graphics')
         chartEntityDto: '@',
         chartOptionsName: '@',
         chartOptions: '=',
-        chartHeader: '='
+        chartHeader: '=',
+        chartTitle: '='
       },
       templateUrl: 'graphics/views/charts-directive.html',
       controller: 'GraphicChartsController'

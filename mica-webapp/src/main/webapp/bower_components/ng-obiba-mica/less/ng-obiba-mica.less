@@ -96,14 +96,36 @@
   margin-left: 20px;
 }
 
-.query-dropdown-menu {
-  min-width: 400px !important;
-}
-
 .list-no-style {
   list-style: none;
   padding: 0;
   margin: 0;
+}
+
+.height1 {
+  max-height: 100px;
+  overflow: auto;
+}
+
+.height2 {
+  max-height: 200px;
+  overflow: auto;
+}
+
+.height3 {
+  max-height: 300px;
+  overflow: auto;
+}
+
+.height4 {
+  max-height: 400px;
+  overflow: auto;
+}
+
+// TODO try to express these domain specific styles as standard bootstrap ones
+
+.query-dropdown-menu {
+  min-width: 400px !important;
 }
 
 .criteria-list-item {
@@ -111,6 +133,7 @@
   padding: 3px 20px !important;
   label {
     color: #7b8a8b;
+    font-weight: normal;
   }
 }
 

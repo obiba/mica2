@@ -1,16 +1,25 @@
-<span id="{{criterion.vocabulary.name}}-dropdown" class='btn-group btn-info' ng-class='{open: state.open}'>
+<span id="{{criterion.id.replace('.','-')}}-dropdown" class='btn-group btn-info' ng-class='{open: state.open}'>
+
   <button class="btn btn-info btn-xs dropdown"
-          id="{{criterion.vocabulary.name}}-button"
-          ng-click="openDropdown()"
-          title="{{localize(criterion.vocabulary.title)}}">
-    {{truncate(localize(criterion.vocabulary.title))}}
+    ng-click="openDropdown()"
+    uib-popover="{{localize(criterion.vocabulary.description ? criterion.vocabulary.description : criterion.vocabulary.title)}}"
+    popover-title="{{criterion.vocabulary.description ? localize(criterion.vocabulary.title) : null}}"
+    popover-placement="bottom"
+    popover-trigger="mouseenter"
+    title="{{localizeCriterion()}}">
+    <span title="{{criterion.target + '-classifications' | translate}}">
+    <i class="{{'i-obiba-' + criterion.target}}"> </i>
+  </span>
+    <span>
+    {{truncate(localizeCriterion())}}
+    </span>
     <span class='fa fa-caret-down'></span>
   </button>
   <button class='btn btn-xs btn-default' ng-click='remove(criterion.id)'>
     <span class='fa fa-times'></span>
   </button>
-
-  <string-criterion-terms criterion="criterion" query="query" state="state"></string-criterion-terms>
-
+  <string-criterion-terms ng-if="vocabularyType(criterion.vocabulary) === 'string'" criterion="criterion" query="query"
+    state="state"></string-criterion-terms>
+  <numeric-criterion ng-if="vocabularyType(criterion.vocabulary) === 'integer'" criterion="criterion" query="query"
+    state="state"></numeric-criterion>
 </span>
-
