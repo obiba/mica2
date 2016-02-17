@@ -25,4 +25,8 @@ angular.module('obiba.mica.search', [
         form: {header: null, footer: null}
       }
     ));
+  }])
+  .run(['GraphicChartsConfigurations',
+  function (GraphicChartsConfigurations) {
+    GraphicChartsConfigurations.setClientConfig();
   }]);

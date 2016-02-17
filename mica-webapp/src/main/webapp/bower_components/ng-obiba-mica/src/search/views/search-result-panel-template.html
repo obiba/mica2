@@ -2,7 +2,7 @@
 
   <uib-tabset class="voffset2" type="tabs">
 
-    <uib-tab heading="{{'list' | translate}}" active="activeDisplay.list" ng-click="selectDisplay(DISPLAY_TYPES.LIST)">
+    <uib-tab heading="{{'search.list' | translate}}" active="activeDisplay.list" ng-click="selectDisplay(DISPLAY_TYPES.LIST)">
 
       <uib-tabset class="voffset2" type="pills">
 
@@ -37,13 +37,13 @@
 
     </uib-tab>
 
-    <uib-tab heading="{{'coverage' | translate}}" active="activeDisplay.coverage"
+    <uib-tab heading="{{'search.coverage' | translate}}" active="activeDisplay.coverage"
       ng-click="selectDisplay(DISPLAY_TYPES.COVERAGE)">
       <coverage-result-table result="result.coverage" loading="loading" class="voffset2"></coverage-result-table>
 
     </uib-tab>
 
-    <uib-tab heading="{{'graphics' | translate}}" active="activeDisplay.graphics"
+    <uib-tab heading="{{'search.graphics' | translate}}" active="activeDisplay.graphics"
       ng-click="selectDisplay(DISPLAY_TYPES.GRAPHICS)">
       <graphics-result result="result.graphics" loading="loading" class="voffset2"></graphics-result>
     </uib-tab>

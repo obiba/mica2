@@ -36,7 +36,7 @@ angular.module('obiba.mica.graphics')
             $scope.chartObject.data = $scope.ItemDataJSon;
             $scope.chartObject.options = {backgroundColor: {fill: 'transparent'}};
             angular.extend($scope.chartObject.options, $scope.chartOptions);
-            $scope.chartObject.options.title = $scope.chartOptions.title + ' (N=' + StudiesData.studyResultDto.totalHits + ')';
+            $scope.chartObject.options.title = $filter('translate')($scope.chartTitle) + ' (N=' + StudiesData.studyResultDto.totalHits + ')';
           }
         }
       });

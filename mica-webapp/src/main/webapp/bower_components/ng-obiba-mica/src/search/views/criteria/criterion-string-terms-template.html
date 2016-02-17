@@ -21,11 +21,27 @@
       </li>
     </ul>
   </li>
-  <li ng-show="isInFilter()" class='divider'>
+  <li ng-show="isInFilter()" class='divider'></li>
+  <li class="criteria-list-item" ng-show="state.loading">
+    <p class="voffset2 loading">
+    </p>
   </li>
-  <li>
-    <ul class="no-padding criteria-list-terms">
-      <li class="criteria-list-item" ng-show="isInFilter()" ng-repeat='term in terms' title='{{term.title}}'>
+  <li ng-show="isInFilter()">
+    <ul ng-show="!state.loading" class="no-padding criteria-list-terms">
+      <li class="criteria-list-item" ng-show="terms && terms.length>10">
+        <span class="input-group input-group-sm no-padding-top">
+          <input ng-model="searchText" type="text" class="form-control" aria-describedby="term-search">
+          <span class="input-group-addon" id="term-search"><i class="glyphicon glyphicon-search"></i></span>
+        </span>
+      </li>
+      <li ng-show="terms && terms.length>10"></li>
+      <li class="criteria-list-item"
+          ng-show="isInFilter()"
+          ng-repeat="term in terms | orderBySelection:checkboxTerms | regex:searchText:['key','title','description']"
+          uib-popover="{{term.description ? term.description : term.title}}"
+          popover-title="{{term.description ? term.title : null}}"
+          popover-placement="left"
+          popover-trigger="mouseenter">
           <span>
             <label class="control-label">
               <input ng-model="checkboxTerms[term.key]"

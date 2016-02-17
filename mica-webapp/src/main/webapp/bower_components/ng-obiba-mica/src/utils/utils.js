@@ -43,5 +43,13 @@ angular.module('obiba.mica.utils', [])
     };
 
     return this;
-  }]);
+  }])
+  .service('GraphicChartsConfigurations', function(){
+  this.getClientConfig = function(){
+    return true;
+  };
+    this.setClientConfig = function(){
+      return true;
+    };
+});
 
