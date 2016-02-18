@@ -52,6 +52,9 @@ public class PublishedDatasetVariablesSearchResource {
   @Inject
   private RQLQueryFactory rqlQueryFactory;
 
+  @Inject
+  private CoverageByBucketFactory coverageByBucketFactory;
+
   @GET
   @Timed
   public MicaSearch.JoinQueryResultDto query(@QueryParam("from") @DefaultValue("0") int from,
@@ -80,8 +83,8 @@ public class PublishedDatasetVariablesSearchResource {
   @GET
   @Path("/_coverage")
   @Timed
-  public MicaSearch.TaxonomiesCoverageDto rqlCoverage(@QueryParam("query") String query) throws IOException {
-    return coverageQueryExecutor.coverageQuery(rqlQueryFactory.makeJoinQuery(query));
+  public MicaSearch.BucketsCoverageDto rqlCoverage(@QueryParam("query") String query) throws IOException {
+    return coverageByBucketFactory.asBucketsCoverageDto(getTaxonomiesCoverageDto(query));
   }
 
   @GET
@@ -89,11 +92,9 @@ public class PublishedDatasetVariablesSearchResource {
   @Path("/_coverage")
   @Produces("text/csv")
   public Response rqlCoverageCsv(@QueryParam("query") String query) throws IOException {
-    MicaSearch.TaxonomiesCoverageDto coverage = rqlCoverage(query);
-    CsvTaxonomyCoverageWriter writer = new CsvTaxonomyCoverageWriter();
-    ByteArrayOutputStream values = writer.write(coverage);
-
-    return Response.ok(values.toByteArray(), "text/csv")
+    CsvCoverageWriter writer = new CsvCoverageWriter();
+    return Response
+      .ok(writer.write(coverageByBucketFactory.makeCoverageByBucket(getTaxonomiesCoverageDto(query))).toByteArray(), "text/csv")
       .header("Content-Disposition", "attachment; filename=\"coverage.csv\"").build();
   }
 
@@ -138,6 +139,14 @@ public class PublishedDatasetVariablesSearchResource {
   public MicaSearch.TaxonomiesCoverageDto coverage(@QueryParam("strict") @DefaultValue("true") boolean strict,
     MicaSearch.JoinQueryDto joinQueryDto) throws IOException {
     return coverageQueryExecutor.coverageQuery(joinQueryDto, strict);
+  }
+
+  //
+  // Private methods
+  //
+
+  private MicaSearch.TaxonomiesCoverageDto getTaxonomiesCoverageDto(String query) throws IOException {
+    return coverageQueryExecutor.coverageQuery(rqlQueryFactory.makeJoinQuery(query));
   }
 
 }

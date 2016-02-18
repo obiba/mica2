@@ -271,4 +271,23 @@ message TaxonomiesCoverageDto {
   optional JoinQueryResultDto queryResult = 5;
 }
 
+message BucketsCoverageDto {
+  message HeaderDto {
+    required obiba.mica.TaxonomyEntityDto entity = 1;
+    required int32 hits = 2;
+    required int32 termsCount = 3;
+  }
+  message RowDto {
+    required string field = 1;
+    required string value = 2;
+    optional string title = 3;
+    optional string description = 4;
+    repeated int32 hits = 5;
+    repeated int32 counts = 6;
+  }
+  repeated HeaderDto taxonomyHeaders = 1;
+  repeated HeaderDto vocabularyHeaders = 2;
+  repeated HeaderDto termHeaders = 3;
+  repeated RowDto rows = 4;
+}
 
