@@ -92,6 +92,18 @@ angular.module('obiba.mica.search')
       });
     }])
 
+  .service('SearchContext', function() {
+    var selectedLocale = null;
+
+    this.setLocale = function(locale) {
+      selectedLocale = locale;
+    };
+
+    this.currentLocale = function() {
+      return selectedLocale;
+    };
+  })
+
   .service('ObibaSearchConfig', function () {
     var options = {
       networks: {
@@ -122,3 +134,4 @@ angular.module('obiba.mica.search')
       return angular.copy(options);
     };
   });
+

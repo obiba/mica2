@@ -1,9 +1,9 @@
 <div>
   <div ng-if="loading" class="loading"></div>
 <div class="row">
-  <div ng-repeat="chart in chartObjects ">
+  <div class="col-md-6" ng-repeat="chart in chartObjects ">
     <div ng-if="chart.chartObject.geoTitle" style="font-family:Arial; font-weight:bold">{{chart.chartObject.geoTitle}}</div>
-    <div class="col-md-6" google-chart chart="chart.chartObject">
+    <div google-chart chart="chart.chartObject" style="min-height:350px; width:100%;">
     </div>
   </div>
 </div>

@@ -37,9 +37,7 @@ angular.module('obiba.mica.graphics')
                 '#409400',
                 '#317000',
                 '#235200'
-              ],
-              width: 500,
-              height: 300
+              ]
             }
           },
           studiesDesigns: {
@@ -52,9 +50,7 @@ angular.module('obiba.mica.graphics')
                 '#009900',
                 '#009966',
                 '#009933',
-                '#66CC33'],
-              width: 500,
-              height: 300
+                '#66CC33']
             }
           },
           biologicalSamples: {
@@ -66,9 +62,7 @@ angular.module('obiba.mica.graphics')
                 '#009900',
                 '#009966',
                 '#009933',
-                '#66CC33'],
-              width: 500,
-              height: 300
+                '#66CC33']
             }
           }
 

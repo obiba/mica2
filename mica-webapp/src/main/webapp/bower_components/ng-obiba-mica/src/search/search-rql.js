@@ -61,6 +61,38 @@ var RQL_NODE = {
   MISSING: 'missing'
 };
 
+/* exported targetToType */
+function targetToType(target) {
+  switch (target.toLocaleString()) {
+    case QUERY_TARGETS.NETWORK:
+      return QUERY_TYPES.NETWORKS;
+    case QUERY_TARGETS.STUDY:
+      return QUERY_TYPES.STUDIES;
+    case QUERY_TARGETS.DATASET:
+      return QUERY_TYPES.DATASETS;
+    case QUERY_TARGETS.VARIABLE:
+      return QUERY_TYPES.VARIABLES;
+  }
+
+  throw new Error('Invalid target: ' + target);
+}
+
+/* exported targetToType */
+function typeToTarget(type) {
+  switch (type.toLocaleString()) {
+    case QUERY_TYPES.NETWORKS:
+      return QUERY_TARGETS.NETWORK;
+    case QUERY_TYPES.STUDIES:
+      return QUERY_TARGETS.STUDY;
+    case QUERY_TYPES.DATASETS:
+      return QUERY_TARGETS.DATASET;
+    case QUERY_TYPES.VARIABLES:
+      return QUERY_TARGETS.VARIABLE;
+  }
+
+  throw new Error('Invalid type: ' + type);
+}
+
 /* exported VOCABULARY_TYPES */
 var VOCABULARY_TYPES = {
   STRING: 'string',
@@ -658,6 +690,18 @@ angular.module('obiba.mica.search')
       }
     };
 
+    this.addLimit = function (targetQuery, limitQuery) {
+      var found = targetQuery.args.filter(function (arg) {
+        return arg.name === RQL_NODE.LIMIT;
+      }).pop();
+
+      if (found) {
+        found.args = limitQuery.args;
+      } else {
+        targetQuery.args.push(limitQuery);
+      }
+    };
+
     /**
      * Helper finding the vocabulary field, return name if none was found
      *
@@ -699,6 +743,12 @@ angular.module('obiba.mica.search')
         study: null,
         network: null
       };
+
+      function findTargetQuery(target, query) {
+        return query.args.filter(function(arg){
+          return arg.name === target;
+        }).pop();
+      }
 
       function isLeafCriteria(item) {
         switch (item.type) {
@@ -930,7 +980,7 @@ angular.module('obiba.mica.search')
        * @para
        * @returns the new query
        */
-      this.prepareCriteriaTermsQuery = function (query, item) {
+      this.prepareCriteriaTermsQuery = function (query, item, lang) {
         var parsedQuery = new RqlParser().parse(query);
         var targetQuery = parsedQuery.args.filter(function (node) {
           return node.name === item.target;
@@ -940,9 +990,31 @@ angular.module('obiba.mica.search')
           targetQuery.args.push(RqlQueryUtils.aggregate([RqlQueryUtils.criteriaId(item.taxonomy, item.vocabulary)]));
           targetQuery.args.push(RqlQueryUtils.limit(0, 0));
         }
+
         parsedQuery.args.push(new RqlQuery(RQL_NODE.FACET));
 
+        if (lang) {
+          RqlQueryUtils.addLocaleQuery(parsedQuery, lang);
+        }
+
         return parsedQuery.serializeArgs(parsedQuery.args);
+      };
+
+      this.prepareSearchQuery = function(type, query, pagination, lang) {
+        var rqlQuery = angular.copy(query);
+        var target = typeToTarget(type);
+        RqlQueryUtils.addLocaleQuery(rqlQuery, lang);
+        var targetQuery = findTargetQuery(target, rqlQuery);
+
+        if (!targetQuery) {
+          targetQuery = new RqlQuery(target);
+          rqlQuery.args.push(targetQuery);
+        }
+
+        var limit = pagination[target] || {from: 0, size: 10};
+        RqlQueryUtils.addLimit(targetQuery, RqlQueryUtils.limit(limit.from, limit.size));
+
+        return new RqlQuery().serializeArgs(rqlQuery.args);
       };
 
       /**

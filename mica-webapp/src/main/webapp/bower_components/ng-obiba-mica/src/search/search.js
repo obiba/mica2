@@ -26,6 +26,25 @@ angular.module('obiba.mica.search', [
       }
     ));
   }])
+  .config(['$provide', '$injector', function ($provide) {
+    $provide.provider('ngObibaMicaSearch', function () {
+      var localeResolver = ['LocalizedValues', function(LocalizedValues) {
+        return LocalizedValues.getLocal();
+      }];
+
+      this.setLocaleResolver = function(resolver) {
+        localeResolver = resolver;
+      };
+
+      this.$get = ['$q', '$injector', function ngObibaMicaSearchFactory($q, $injector) {
+        return {
+          getLocale: function(success, error) {
+            return $q.when($injector.invoke(localeResolver), success, error);
+          }
+        };
+      }];
+    });
+  }])
   .run(['GraphicChartsConfigurations',
   function (GraphicChartsConfigurations) {
     GraphicChartsConfigurations.setClientConfig();
