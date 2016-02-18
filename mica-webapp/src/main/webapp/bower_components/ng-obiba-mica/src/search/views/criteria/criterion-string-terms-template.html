@@ -40,7 +40,7 @@
           ng-repeat="term in terms | orderBySelection:checkboxTerms | regex:searchText:['key','title','description']"
           uib-popover="{{term.description ? term.description : term.title}}"
           popover-title="{{term.description ? term.title : null}}"
-          popover-placement="left"
+          popover-placement="bottom"
           popover-trigger="mouseenter">
           <span>
             <label class="control-label">
