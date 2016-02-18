@@ -52,6 +52,9 @@ public class PublishedDatasetVariablesSearchResource {
   @Inject
   private RQLQueryFactory rqlQueryFactory;
 
+  @Inject
+  private CoverageByBucketFactory coverageByBucketFactory;
+
   @GET
   @Timed
   public MicaSearch.JoinQueryResultDto query(@QueryParam("from") @DefaultValue("0") int from,
@@ -89,11 +92,9 @@ public class PublishedDatasetVariablesSearchResource {
   @Path("/_coverage")
   @Produces("text/csv")
   public Response rqlCoverageCsv(@QueryParam("query") String query) throws IOException {
-    MicaSearch.TaxonomiesCoverageDto coverage = rqlCoverage(query);
-    CsvTaxonomyCoverageWriter writer = new CsvTaxonomyCoverageWriter();
-    ByteArrayOutputStream values = writer.write(coverage);
-
-    return Response.ok(values.toByteArray(), "text/csv")
+    CsvCoverageWriter writer = new CsvCoverageWriter();
+    return Response
+      .ok(writer.write(coverageByBucketFactory.makeCoverageByBucket(rqlCoverage(query))).toByteArray(), "text/csv")
       .header("Content-Disposition", "attachment; filename=\"coverage.csv\"").build();
   }
 
