@@ -2435,21 +2435,34 @@ angular.module('obiba.mica.search')
         function addMissingTerms(aggs, vocabulary) {
           var terms = vocabulary.terms;
           if (terms && terms.length > 0) {
-            var keys = aggs.map(function(agg){
+            var keys = aggs && aggs.map(function(agg){
               return agg.key;
-            });
+            }) || [];
 
             var missingTerms = [];
-            terms.forEach(function(term) {
-              if (keys.indexOf(term.name) === -1) {
-                missingTerms.push({count: 0,
+
+            if (aggs) {
+              terms.forEach(function(term) {
+                if (keys.length === 0 || keys.indexOf(term.name) === -1) {
+                  missingTerms.push({count: 0,
+                    default: 0,
+                    description: LocalizedValues.forLocale(term.description, 'en'), // TODO use locale provider
+                    key: term.name,
+                    title: LocalizedValues.forLocale(term.title,'en')
+                  });
+                }
+              });
+            } else {
+              missingTerms = terms.map(function(term) {
+                return {
+                  count: 0,
                   default: 0,
                   description: LocalizedValues.forLocale(term.description, 'en'), // TODO use locale provider
                   key: term.name,
                   title: LocalizedValues.forLocale(term.title,'en')
-                });
-              }
-            });
+                };
+              });
+            }
 
             return aggs.concat(missingTerms);
           }
@@ -5156,7 +5169,7 @@ angular.module("search/views/classifications/vocabulary-panel-template.html", []
 angular.module("search/views/coverage/coverage-search-result-table-template.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("search/views/coverage/coverage-search-result-table-template.html",
     "<div>\n" +
-    "  <p class=\"help-block\" ng-if=\"!loading && result.taxonomyHeaders.length === 0\" translate>search.no-coverage</p>\n" +
+    "  <p class=\"help-block\" ng-if=\"!loading && !result.taxonomyHeaders\" translate>search.no-coverage</p>\n" +
     "\n" +
     "  <div ng-if=\"loading\" class=\"loading\"></div>\n" +
     "\n" +
