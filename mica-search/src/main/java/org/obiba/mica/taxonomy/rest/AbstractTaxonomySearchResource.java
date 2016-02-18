@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
@@ -29,6 +28,7 @@ import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.web.model.Opal;
 import org.obiba.opal.web.taxonomy.Dtos;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 import sun.util.locale.LanguageTag;
@@ -69,11 +69,11 @@ public class AbstractTaxonomySearchResource {
       });
   }
 
-  protected List<String> filterVocabularies(TaxonomyTarget target, String query) {
+  protected List<String> filterVocabularies(TaxonomyTarget target, String query, String locale) {
     try {
       return esTaxonomyVocabularyService
         .find(0, MAX_SIZE, DEFAULT_SORT, "asc", null, getTargettedQuery(target, query),
-          getFields(VOCABULARY_FIELDS)).getList();
+          getFields(locale, VOCABULARY_FIELDS)).getList();
     } catch(IndexNotFoundException e) {
       initTaxonomies();
       // for a 404 response
@@ -81,10 +81,10 @@ public class AbstractTaxonomySearchResource {
     }
   }
 
-  protected List<String> filterTerms(TaxonomyTarget target, String query) {
+  protected List<String> filterTerms(TaxonomyTarget target, String query, String locale) {
     try {
       return esTaxonomyTermService
-        .find(0, MAX_SIZE, DEFAULT_SORT, "asc", null, getTargettedQuery(target, query), getFields(TERM_FIELDS))
+        .find(0, MAX_SIZE, DEFAULT_SORT, "asc", null, getTargettedQuery(target, query), getFields(locale, TERM_FIELDS))
         .getList();
     } catch(IndexNotFoundException e) {
       initTaxonomies();
@@ -135,14 +135,19 @@ public class AbstractTaxonomySearchResource {
     return String.format("target:%s AND (%s)", target.name(), query);
   }
 
-  private List<String> getFields(String... fieldNames) {
+  private List<String> getFields(String locale, String... fieldNames) {
     List<String> fields = Lists.newArrayList("name.analyzed");
-    Stream.concat(micaConfigService.getConfig().getLocalesAsString().stream(), Stream.of(LanguageTag.UNDETERMINED))
-      .forEach(locale -> {
-        Arrays.stream(fieldNames).forEach(f -> {
-          fields.add(f + "." + locale + ".analyzed");
-        });
-      });
+    List<String> locales = Lists.newArrayList();
+
+    if(Strings.isNullOrEmpty(locale)) {
+      locales.addAll(micaConfigService.getConfig().getLocalesAsString());
+      locales.add(LanguageTag.UNDETERMINED);
+    } else {
+      locales.add(locale);
+    }
+
+    locales.forEach(local -> Arrays.stream(fieldNames).forEach(f -> fields.add(f + "." + local + ".analyzed")));
+
     return fields;
   }
 
