@@ -28,4 +28,42 @@ public class CoverageByBucketFactory {
     return coverageByBucket;
   }
 
+  public MicaSearch.BucketsCoverageDto asBucketsCoverageDto(MicaSearch.TaxonomiesCoverageDto coverage) {
+    CoverageByBucket coverageByBucket = applicationContext.getBean(CoverageByBucket.class);
+    coverageByBucket.initialize(coverage);
+    MicaSearch.BucketsCoverageDto.Builder builder = MicaSearch.BucketsCoverageDto.newBuilder();
+    coverageByBucket.getTaxonomyHeaders().forEach(taxonomyHeader -> {
+      MicaSearch.BucketsCoverageDto.HeaderDto.Builder header = MicaSearch.BucketsCoverageDto.HeaderDto.newBuilder();
+      header.setEntity(taxonomyHeader.taxonomy) //
+        .setHits(taxonomyHeader.hits) //
+        .setTermsCount(taxonomyHeader.termsCount);
+      builder.addTaxonomyHeaders(header);
+    });
+    coverageByBucket.getVocabularyHeaders().forEach(vocabularyHeader -> {
+      MicaSearch.BucketsCoverageDto.HeaderDto.Builder header = MicaSearch.BucketsCoverageDto.HeaderDto.newBuilder();
+      header.setEntity(vocabularyHeader.vocabulary) //
+        .setHits(vocabularyHeader.hits) //
+        .setTermsCount(vocabularyHeader.termsCount);
+      builder.addVocabularyHeaders(header);
+    });
+    coverageByBucket.getTermHeaders().forEach(termHeader -> {
+      MicaSearch.BucketsCoverageDto.HeaderDto.Builder header = MicaSearch.BucketsCoverageDto.HeaderDto.newBuilder();
+      header.setEntity(termHeader.term) //
+        .setHits(termHeader.hits) //
+        .setTermsCount(1);
+      builder.addTermHeaders(header);
+    });
+    coverageByBucket.getBucketRows().forEach(bucketRow -> {
+      MicaSearch.BucketsCoverageDto.RowDto.Builder row = MicaSearch.BucketsCoverageDto.RowDto.newBuilder();
+      row.setField(bucketRow.field) //
+        .setValue(bucketRow.value) //
+        .setTitle(bucketRow.title) //
+        .setDescription(bucketRow.description) //
+        .addAllHits(bucketRow.hits) //
+        .addAllCounts(bucketRow.counts);
+      builder.addRows(row);
+    });
+    return builder.build();
+  }
+
 }

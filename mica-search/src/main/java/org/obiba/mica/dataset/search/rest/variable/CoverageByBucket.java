@@ -114,10 +114,13 @@ class CoverageByBucket {
 
     final Mica.TaxonomyEntityDto taxonomy;
 
+    final int hits;
+
     final int termsCount;
 
     TaxonomyHeader(MicaSearch.TaxonomyCoverageDto taxonomyCoverage, int termsCount) {
       taxonomy = taxonomyCoverage.getTaxonomy();
+      hits = taxonomyCoverage.getHits();
       this.termsCount = termsCount;
     }
   }
@@ -128,6 +131,8 @@ class CoverageByBucket {
 
     final Mica.TaxonomyEntityDto vocabulary;
 
+    final int hits;
+
     final int termsCount;
 
     VocabularyHeader(MicaSearch.TaxonomyCoverageDto taxonomyCoverage,
@@ -135,6 +140,7 @@ class CoverageByBucket {
       taxonomy = taxonomyCoverage.getTaxonomy();
       vocabulary = vocabularyCoverage.getVocabulary();
       termsCount = vocabularyCoverage.getTermsCount();
+      hits = vocabularyCoverage.getHits();
     }
   }
 
@@ -171,6 +177,8 @@ class CoverageByBucket {
 
     final List<Integer> hits = Lists.newArrayList();
 
+    final List<Integer> counts = Lists.newArrayList();
+
     BucketRow(MicaSearch.BucketCoverageDto bucketCoverage) {
       field = bucketCoverage.getField();
       if (variableTaxonomy.hasVocabulary(field) && variableTaxonomy.getVocabulary(field).getTitle().containsKey(locale)) {
@@ -187,8 +195,10 @@ class CoverageByBucket {
       // ensure empty hits are filled-in
       for(int i = hits.size(); i < termPosition; i++) {
         hits.add(0);
+        counts.add(0);
       }
       hits.add(bucketCoverage.getHits());
+      counts.add(bucketCoverage.getCount());
     }
 
     @Override
