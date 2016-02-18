@@ -13,7 +13,16 @@
 mica.search = angular.module('mica.search', [
     'obiba.mica.search'
   ])
-  .config(['ngObibaMicaSearchTemplateUrlProvider',
-    function (ngObibaMicaSearchTemplateUrlProvider) {
+  .config(['ngObibaMicaSearchProvider', 'ngObibaMicaSearchTemplateUrlProvider',
+    function (ngObibaMicaSearchProvider, ngObibaMicaSearchTemplateUrlProvider) {
+      ngObibaMicaSearchProvider.setLocaleResolver(['$q', '$translate', 'MicaConfigResource', function ($q, $translate, MicaConfigResource) {
+        var res = $q.defer();
+
+        MicaConfigResource.get(function (micaConfig) {
+          res.resolve(micaConfig.languages || $translate.use());
+        });
+
+        return res.promise;
+      }]);
       ngObibaMicaSearchTemplateUrlProvider.setHeaderUrl('view', 'app/search/views/search-view-header.html');
     }]);

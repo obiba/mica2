@@ -42,13 +42,14 @@ public class TaxonomySearchResource extends AbstractTaxonomySearchResource {
   @Path("/_filter")
   @Timed
   public Opal.TaxonomyDto filterTaxonomy(@PathParam("name") String name,
-    @QueryParam("target") @DefaultValue("variable") String target, @QueryParam("query") String query) {
+    @QueryParam("target") @DefaultValue("variable") String target, @QueryParam("query") String query,
+    @QueryParam("locale") String locale) {
     TaxonomyTarget taxonomyTarget = getTaxonomyTarget(target);
     if(Strings.isNullOrEmpty(query)) return Dtos.asDto(getTaxonomy(taxonomyTarget, name));
 
     String filteredQuery = String.format("taxonomyName:%s AND (%s)", name, query);
     Map<String, Map<String, List<String>>> taxoNamesMap = TaxonomyResolver
-      .asMap(filterVocabularies(taxonomyTarget, filteredQuery), filterTerms(taxonomyTarget, filteredQuery));
+      .asMap(filterVocabularies(taxonomyTarget, filteredQuery, locale), filterTerms(taxonomyTarget, filteredQuery, locale));
 
     Taxonomy taxonomy = getTaxonomy(taxonomyTarget, name);
     Opal.TaxonomyDto.Builder tBuilder = Dtos.asDto(taxonomy, false).toBuilder();
@@ -63,13 +64,12 @@ public class TaxonomySearchResource extends AbstractTaxonomySearchResource {
   @Timed
   public Opal.VocabularyDto filterVocabulary(@PathParam("name") String name,
     @PathParam("vocabulary") String vocabularyName, @QueryParam("target") @DefaultValue("variable") String target,
-    @QueryParam("query") String query) {
+    @QueryParam("query") String query, @QueryParam("locale") String locale) {
     TaxonomyTarget taxonomyTarget = getTaxonomyTarget(target);
     if(Strings.isNullOrEmpty(query)) return Dtos.asDto(getTaxonomy(taxonomyTarget, name).getVocabulary(vocabularyName));
 
     String filteredQuery = String.format("taxonomyName:%s AND vocabularyName:%s AND (%s)", name, vocabularyName, query);
-
-    Map<String, Map<String, List<String>>> taxoNamesMap = TaxonomyResolver.asMap(filterTerms(taxonomyTarget, filteredQuery));
+    Map<String, Map<String, List<String>>> taxoNamesMap = TaxonomyResolver.asMap(filterTerms(taxonomyTarget, filteredQuery, locale));
 
     Taxonomy taxonomy = getTaxonomy(taxonomyTarget, name);
     Vocabulary vocabulary = taxonomy.getVocabulary(vocabularyName);
