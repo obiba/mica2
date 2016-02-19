@@ -34,6 +34,7 @@ angular.module('obiba.mica.localized')
       this.forLang = function (values, lang) {
         return this.for(values, lang, 'lang', 'value');
       };
+
       this.getLocal = function () {
         return 'en';
       };

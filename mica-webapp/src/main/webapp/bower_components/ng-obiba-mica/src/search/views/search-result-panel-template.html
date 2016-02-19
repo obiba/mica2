@@ -1,5 +1,4 @@
 <div>
-
   <uib-tabset class="voffset2" type="tabs">
 
     <uib-tab heading="{{'search.list' | translate}}" active="activeDisplay.list" ng-click="selectDisplay(DISPLAY_TYPES.LIST)">
@@ -9,6 +8,13 @@
         <!-- Variables -->
         <uib-tab ng-show="settingsDisplay.variables.showSearchTab" active="activeTarget.variables" ng-click="selectTarget(QUERY_TYPES.VARIABLES)"
           heading="{{'variables' | translate}} ({{result.list.variableResultDto.totalHits}})">
+          <span search-result-pagination
+                class="pull-right"
+                target="QUERY_TARGETS.VARIABLE"
+                total-hits="result.list.variableResultDto.totalHits"
+                on-change="onPaginate"></span>
+
+          <span class="clearfix"></span>
           <variables-result-table  loading="loading"
             summaries="result.list.variableResultDto['obiba.mica.DatasetVariableResultDto.result'].summaries"></variables-result-table>
         </uib-tab>
@@ -16,6 +22,13 @@
         <!-- Datasets -->
         <uib-tab ng-show="settingsDisplay.datasets.showSearchTab" active="activeTarget.datasets" ng-click="selectTarget(QUERY_TYPES.DATASETS)"
           heading="{{'datasets' | translate}} ({{result.list.datasetResultDto.totalHits}})">
+          <span search-result-pagination
+                class="pull-right"
+                target="QUERY_TARGETS.DATASET"
+                total-hits="result.list.datasetResultDto.totalHits"
+                on-change="onPaginate"></span>
+
+          <span class="clearfix"></span>
           <datasets-result-table  loading="loading"
             summaries="result.list.datasetResultDto['obiba.mica.DatasetResultDto.result'].datasets"></datasets-result-table>
         </uib-tab>
@@ -23,6 +36,13 @@
         <!-- Studies -->
         <uib-tab ng-show="settingsDisplay.studies.showSearchTab" active="activeTarget.studies" ng-click="selectTarget(QUERY_TYPES.STUDIES)"
           heading="{{'studies' | translate}} ({{result.list.studyResultDto.totalHits}})">
+          <span search-result-pagination
+                class="pull-right"
+                target="QUERY_TARGETS.STUDY"
+                total-hits="result.list.studyResultDto.totalHits"
+                on-change="onPaginate"></span>
+
+          <span class="clearfix"></span>
           <studies-result-table  loading="loading"
             summaries="result.list.studyResultDto['obiba.mica.StudyResultDto.result'].summaries"></studies-result-table>
         </uib-tab>
@@ -30,6 +50,13 @@
         <!-- Networks -->
         <uib-tab ng-show="settingsDisplay.networks.showSearchTab" active="activeTarget.networks" ng-click="selectTarget(QUERY_TYPES.NETWORKS)"
           heading="{{'networks' | translate}} ({{result.list.networkResultDto.totalHits}})">
+          <span search-result-pagination
+                class="pull-right"
+                target="QUERY_TARGETS.NETWORK"
+                total-hits="result.list.networkResultDto.totalHits"
+                on-change="onPaginate"></span>
+
+          <span class="clearfix"></span>
           <networks-result-table  loading="loading"
             summaries="result.list.networkResultDto['obiba.mica.NetworkResultDto.result'].networks"></networks-result-table>
         </uib-tab>

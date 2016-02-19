@@ -1,0 +1,24 @@
+<span ng-show="totalHits > 10" class="form-inline">
+  <span class="input-group">
+    <select class="form-control form-select"
+            ng-model="pagination.selected"
+            ng-options="size.label for size in pageSizes"
+            ng-change="pageSizeChanged()"></select>
+  </span>
+
+  <span ng-show="maxSize > 1"
+        uib-pagination
+        total-items="totalHits"
+        max-size="maxSize"
+        ng-model="pagination.currentPage"
+        boundary-links="true"
+        force-ellipses="true"
+        items-per-page="pagination.selected.value"
+        previous-text="&lsaquo;"
+        next-text="&rsaquo;"
+        first-text="&laquo;"
+        last-text="&raquo;"
+        template-url="search/views/list/pagination-template.html"
+        ng-change="pageChanged()">
+  </span>
+</span>

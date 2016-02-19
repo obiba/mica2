@@ -26,18 +26,31 @@ angular.module('obiba.mica.graphics')
               GraphicChartsUtils,
               GraphicChartsData) {
 
-      GraphicChartsData.getData(function (StudiesData) {
-        if (StudiesData) {
-          $scope.ItemDataJSon = GraphicChartsUtils.getArrayByAggregation($scope.chartAggregationName, StudiesData[$scope.chartEntityDto]);
-          $scope.ItemDataJSon.unshift($scope.chartHeader);
-          if ($scope.ItemDataJSon) {
-            $scope.chartObject = {};
-            $scope.chartObject.type = $scope.chartType;
-            $scope.chartObject.data = $scope.ItemDataJSon;
-            $scope.chartObject.options = {backgroundColor: {fill: 'transparent'}};
-            angular.extend($scope.chartObject.options, $scope.chartOptions);
-            $scope.chartObject.options.title = $filter('translate')($scope.chartTitle) + ' (N=' + StudiesData.studyResultDto.totalHits + ')';
-          }
+
+      $scope.$watch('chartSelectGraphic', function (newValue) {
+        if (newValue) {
+          GraphicChartsData.getData(function (StudiesData) {
+            if (StudiesData) {
+              $scope.ItemDataJSon = GraphicChartsUtils.getArrayByAggregation($scope.chartAggregationName, StudiesData[$scope.chartEntityDto]);
+              if ($scope.ItemDataJSon) {
+                if ($scope.chartType === 'Table') {
+                  $scope.chartObject = {};
+                  $scope.chartObject.header = [$filter('translate')($scope.chartHeader[0]), $filter('translate')($scope.chartHeader[1])];
+                  $scope.chartObject.type = $scope.chartType;
+                  $scope.chartObject.data = $scope.ItemDataJSon;
+                }
+                else {
+                  $scope.ItemDataJSon.unshift([$filter('translate')($scope.chartHeader[0]), $filter('translate')($scope.chartHeader[1])]);
+                  $scope.chartObject = {};
+                  $scope.chartObject.type = $scope.chartType;
+                  $scope.chartObject.data = $scope.ItemDataJSon;
+                  $scope.chartObject.options = {backgroundColor: {fill: 'transparent'}};
+                  angular.extend($scope.chartObject.options, $scope.chartOptions);
+                  $scope.chartObject.options.title = $filter('translate')($scope.chartTitle) + ' (N=' + StudiesData.studyResultDto.totalHits + ')';
+                }
+              }
+            }
+          });
         }
       });
 

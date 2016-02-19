@@ -24,9 +24,31 @@ angular.module('obiba.mica.graphics')
         chartOptionsName: '@',
         chartOptions: '=',
         chartHeader: '=',
-        chartTitle: '='
+        chartTitle: '=',
+        chartTableOptions: '=',
+        chartSelectGraphic: '='
       },
       templateUrl: 'graphics/views/charts-directive.html',
       controller: 'GraphicChartsController'
     };
-  }]);
+  }])
+  .directive('obibaTable', [function () {
+  return {
+    restrict: 'EA',
+    replace: true,
+    scope: {
+      fieldTransformer: '@',
+      chartType: '@',
+      chartAggregationName: '@',
+      chartEntityDto: '@',
+      chartOptionsName: '@',
+      chartOptions: '=',
+      chartHeader: '=',
+      chartTitle: '=',
+      chartTableOptions: '=',
+      chartSelectGraphic: '='
+    },
+    templateUrl: 'graphics/views/tables-directive.html',
+    controller: 'GraphicChartsController'
+  };
+}]);
