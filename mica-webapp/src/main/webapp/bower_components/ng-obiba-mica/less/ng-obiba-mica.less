@@ -122,6 +122,23 @@
   overflow: auto;
 }
 
+.setPaginationTotal() {
+  font-weight: normal;
+  font-size: 12px;
+  background-color: transparent;
+  color: black;
+  text-decoration: none !important;
+  cursor: default !important;
+}
+
+li>a.pagination-total  {
+  .setPaginationTotal();
+  &:hover,
+  &:focus {
+    .setPaginationTotal();
+  }
+}
+
 // TODO try to express these domain specific styles as standard bootstrap ones
 
 .query-dropdown-menu {

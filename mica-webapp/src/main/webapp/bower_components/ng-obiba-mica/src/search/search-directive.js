@@ -20,7 +20,6 @@ var CRITERIA_ITEM_EVENT = {
 
 angular.module('obiba.mica.search')
 
-
   .directive('taxonomyPanel', [function () {
     return {
       restrict: 'EA',
@@ -150,7 +149,8 @@ angular.module('obiba.mica.search')
         result: '=',
         lang: '=',
         loading: '=',
-        onTypeChanged: '='
+        onTypeChanged: '=',
+        onPaginate: '='
       },
       controller: 'SearchResultController',
       templateUrl: 'search/views/search-result-panel-template.html'
@@ -296,5 +296,19 @@ angular.module('obiba.mica.search')
       },
       controller: 'StringCriterionTermsController',
       templateUrl: 'search/views/criteria/criterion-string-terms-template.html'
+    };
+  }])
+
+  .directive('searchResultPagination', [function() {
+    return {
+      restrict: 'EA',
+      replace: true,
+      scope: {
+        target: '=',
+        totalHits: '=',
+        onChange: '='
+      },
+      controller: 'SearchResultPaginationController',
+      templateUrl: 'search/views/list/search-result-pagination-template.html'
     };
   }]);

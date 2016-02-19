@@ -4,8 +4,13 @@
 
   <obiba-alert id="SearchController"></obiba-alert>
 
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li ng-repeat="tab in tabs" role="presentation" ng-class="{ active: tab === lang }"><a href role="tab" ng-click="setLocale(tab)">{{'language.' + tab | translate}}</a></li>
+  </ul>
+
   <!-- Classifications region -->
-  <div>
+  <div class="tab-content">
     <!--<div>-->
     <div class="row">
       <div class="col-md-3"></div>
@@ -85,6 +90,12 @@
 
   <!-- Results region -->
   <div class="voffset3" ng-if="search.query">
-    <result-panel display="search.display" type="search.type" result="search.result" loading="search.loading" on-type-changed="onTypeChanged" lang="lang"></result-panel>
+    <result-panel display="search.display"
+                  type="search.type"
+                  result="search.result"
+                  loading="search.loading"
+                  on-type-changed="onTypeChanged"
+                  on-paginate="onPaginate"
+                  lang="lang"></result-panel>
   </div>
 </div>

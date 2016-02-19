@@ -15,21 +15,7 @@
 /* global QUERY_TYPES */
 /* global RQL_NODE */
 /* global CriteriaIdGenerator */
-
-function targetToType(target) {
-  switch (target.toLocaleString()) {
-    case QUERY_TARGETS.NETWORK:
-      return QUERY_TYPES.NETWORKS;
-    case QUERY_TARGETS.STUDY:
-      return QUERY_TYPES.STUDIES;
-    case QUERY_TARGETS.DATASET:
-      return QUERY_TYPES.DATASETS;
-    case QUERY_TARGETS.VARIABLE:
-      return QUERY_TYPES.VARIABLES;
-  }
-
-  throw new Error('Invalid target: ' + target);
-}
+/* global targetToType */
 
 /**
  * State shared between Criterion DropDown and its content directives
@@ -83,6 +69,7 @@ angular.module('obiba.mica.search')
     'TaxonomyResource',
     'VocabularyResource',
     'ngObibaMicaSearchTemplateUrl',
+    'ngObibaMicaSearch',
     'JoinQuerySearchResource',
     'JoinQueryCoverageResource',
     'AlertService',
@@ -91,6 +78,7 @@ angular.module('obiba.mica.search')
     'ObibaSearchConfig',
     'RqlQueryService',
     'RqlQueryUtils',
+    'SearchContext',
     function ($scope,
               $timeout,
               $routeParams,
@@ -100,6 +88,7 @@ angular.module('obiba.mica.search')
               TaxonomyResource,
               VocabularyResource,
               ngObibaMicaSearchTemplateUrl,
+              ngObibaMicaSearch,
               JoinQuerySearchResource,
               JoinQueryCoverageResource,
               AlertService,
@@ -107,7 +96,24 @@ angular.module('obiba.mica.search')
               LocalizedValues,
               ObibaSearchConfig,
               RqlQueryService,
-              RqlQueryUtils) {
+              RqlQueryUtils,
+              SearchContext) {
+      $scope.lang = LocalizedValues.getLocal();
+
+      ngObibaMicaSearch.getLocale(function(locales) {
+        if (angular.isArray(locales)) {
+          $scope.tabs = locales;
+          $scope.setLocale(locales[0]);
+        } else {
+          $scope.setLocale(locales || $scope.lang);
+        }
+      });
+
+      $scope.setLocale = function(locale) {
+        $scope.lang = locale;
+        SearchContext.setLocale($scope.lang);
+        executeSearchQuery();
+      };
 
       $scope.settingsDisplay = ObibaSearchConfig.getOptions();
 
@@ -140,6 +146,7 @@ angular.module('obiba.mica.search')
           var result = Object.keys($scope.settingsDisplay).filter(function (key) {
             return $scope.settingsDisplay[key].showSearchTab === 1;
           });
+
           return result[result.length - 1];
         }
       }
@@ -176,7 +183,6 @@ angular.module('obiba.mica.search')
           // build the criteria UI
           RqlQueryService.createCriteria($scope.search.rqlQuery, $scope.lang).then(function (result) {
             // criteria UI is updated here
-            console.log(result.root);
             $scope.search.criteria = result.root;
             if($scope.search.criteria && $scope.search.criteria.children) {
               $scope.search.criteria.children.sort(function(a,b){
@@ -199,9 +205,12 @@ angular.module('obiba.mica.search')
             $scope.search.criteriaItemMap = result.map;
           });
 
-          var localizedRqlQuery = angular.copy($scope.search.rqlQuery);
-          RqlQueryUtils.addLocaleQuery(localizedRqlQuery, $scope.lang);
-          var localizedQuery = new RqlQuery().serializeArgs(localizedRqlQuery.args);
+          var localizedQuery =
+            RqlQueryService.prepareSearchQuery(
+              $scope.search.type,
+              $scope.search.rqlQuery,
+              $scope.search.pagination,
+              $scope.lang);
 
           $scope.search.loading = true;
           switch ($scope.search.display) {
@@ -342,7 +351,7 @@ angular.module('obiba.mica.search')
         // search for taxonomy terms
         // search for matching variables/studies/... count
         return TaxonomiesSearchResource.get({
-          query: query
+          query: query, locale: $scope.lang
         }).$promise.then(function (response) {
           if (response) {
             var results = [];
@@ -461,6 +470,11 @@ angular.module('obiba.mica.search')
         }
       };
 
+      var onPaginate = function(target, from, size){
+        $scope.search.pagination[target] = {from: from, size: size};
+        executeSearchQuery();
+      };
+
       var onDisplayChanged = function (display) {
         if (display) {
           validateDisplay(display);
@@ -480,9 +494,11 @@ angular.module('obiba.mica.search')
       };
 
       $scope.QUERY_TYPES = QUERY_TYPES;
-      $scope.lang = LocalizedValues.getLocal();
 
       $scope.search = {
+        pagination: {
+
+        },
         query: null,
         rqlQuery: null,
         type: null,
@@ -528,6 +544,7 @@ angular.module('obiba.mica.search')
       $scope.closeTaxonomies = closeTaxonomies;
       $scope.onTypeChanged = onTypeChanged;
       $scope.onDisplayChanged = onDisplayChanged;
+      $scope.onPaginate = onPaginate;
       $scope.taxonomiesShown = false;
 
       angular.element('#taxonomies').on('show.bs.collapse', function () {
@@ -565,6 +582,7 @@ angular.module('obiba.mica.search')
         $scope.type = type;
         $scope.$parent.onTypeChanged(type);
       };
+      $scope.QUERY_TARGETS = QUERY_TARGETS;
       $scope.QUERY_TYPES = QUERY_TYPES;
       $scope.DISPLAY_TYPES = DISPLAY_TYPES;
 
@@ -686,8 +704,11 @@ angular.module('obiba.mica.search')
     'LocalizedValues',
     'JoinQuerySearchResource',
     'RqlQueryUtils',
-    function ($scope, RqlQueryService, LocalizedValues, JoinQuerySearchResource, RqlQueryUtils) {
+    'SearchContext',
+    function ($scope, RqlQueryService, LocalizedValues, JoinQuerySearchResource, RqlQueryUtils, SearchContext) {
+      $scope.lang = SearchContext.currentLocale();
       var range = $scope.criterion.rqlQuery.args[1];
+
       if (angular.isArray(range)) {
         $scope.from = $scope.criterion.rqlQuery.args[1][0];
         $scope.to = $scope.criterion.rqlQuery.args[1][1];
@@ -733,7 +754,9 @@ angular.module('obiba.mica.search')
     'StringUtils',
     'JoinQuerySearchResource',
     'RqlQueryUtils',
-    function ($scope, RqlQueryService, StringUtils, JoinQuerySearchResource, RqlQueryUtils) {
+    'SearchContext',
+    function ($scope, RqlQueryService, StringUtils, JoinQuerySearchResource, RqlQueryUtils, SearchContext) {
+      $scope.lang = SearchContext.currentLocale();
 
       var isSelected = function (name) {
         return $scope.checkboxTerms.indexOf(name) !== -1;
@@ -762,7 +785,8 @@ angular.module('obiba.mica.search')
       var onOpen = function () {
         $scope.state.loading = true;
         var target = $scope.criterion.target;
-        var joinQuery = RqlQueryService.prepareCriteriaTermsQuery($scope.query, $scope.criterion);
+        var joinQuery = RqlQueryService.prepareCriteriaTermsQuery($scope.query, $scope.criterion, $scope.lang);
+
         JoinQuerySearchResource[targetToType(target)]({query: joinQuery}).$promise.then(function (joinQueryResponse) {
           $scope.state.loading = false;
           $scope.terms = RqlQueryService.getTargetAggregations(joinQueryResponse, $scope.criterion);
@@ -792,102 +816,10 @@ angular.module('obiba.mica.search')
   .controller('CoverageResultTableController', [
     '$scope',
     function ($scope) {
-
-      function processCoverageResponse() {
-        var response = $scope.result;
-        var taxonomyHeaders = [];
-        var vocabularyHeaders = [];
-        var termHeaders = [];
-        var rows = {};
-        var footers = {
-          total: []
-        };
-        if (response.taxonomies) {
-          var termsCount = 0;
-          response.taxonomies.forEach(function (taxo) {
-            var taxonomyTermsCount = 0;
-            if (taxo.vocabularies) {
-              taxo.vocabularies.forEach(function (voc) {
-                if (voc.terms) {
-                  voc.terms.forEach(function (trm) {
-                    termsCount++;
-                    taxonomyTermsCount++;
-                    termHeaders.push({
-                      taxonomy: taxo.taxonomy,
-                      vocabulary: voc.vocabulary,
-                      term: trm.term
-                    });
-                    footers.total.push(trm.hits);
-                    if (trm.buckets) {
-                      trm.buckets.forEach(function (bucket) {
-                        if (!(bucket.field in rows)) {
-                          rows[bucket.field] = {};
-                        }
-                        if (!(bucket.value in rows[bucket.field])) {
-                          rows[bucket.field][bucket.value] = {
-                            field: bucket.field,
-                            title: bucket.title,
-                            description: bucket.description,
-                            hits: {}
-                          };
-                        }
-                        // store the hits per field, per value at the position of the term
-                        rows[bucket.field][bucket.value].hits[termsCount] = bucket.hits;
-                      });
-                    }
-                  });
-                  vocabularyHeaders.push({
-                    taxonomy: taxo.taxonomy,
-                    vocabulary: voc.vocabulary,
-                    termsCount: voc.terms.length
-                  });
-                }
-              });
-              taxonomyHeaders.push({
-                taxonomy: taxo.taxonomy,
-                termsCount: taxonomyTermsCount
-              });
-            }
-          });
-        }
-
-        // compute totalHits for each row
-        Object.keys(rows).forEach(function (field) {
-          Object.keys(rows[field]).forEach(function (value) {
-            var hits = rows[field][value].hits;
-            rows[field][value].totalHits = Object.keys(hits).map(function (idx) {
-              return hits[idx];
-            }).reduce(function (a, b) {
-              return a + b;
-            });
-          });
-        });
-
-        $scope.table = {
-          taxonomyHeaders: taxonomyHeaders,
-          vocabularyHeaders: vocabularyHeaders,
-          termHeaders: termHeaders,
-          rows: rows,
-          footers: footers,
-          totalHits: response.totalHits,
-          totalCount: response.totalCount
-        };
-      }
-
-      $scope.$watch('result', function () {
-        if ($scope.result) {
-          processCoverageResponse();
-        } else {
-          $scope.table = null;
-        }
-      });
-
       $scope.showMissing = true;
       $scope.toggleMissing = function (value) {
         $scope.showMissing = value;
       };
-      $scope.keys = Object.keys;
-
     }])
 
   .controller('GraphicsResultController', [
@@ -973,4 +905,57 @@ angular.module('obiba.mica.search')
         }
       });
 
-    }]);
+    }])
+
+  .controller('SearchResultPaginationController', ['$scope', function($scope){
+
+    function updateMaxSize() {
+      $scope.maxSize = Math.min(3, Math.ceil($scope.totalHits/$scope.pagination.selected.value));
+    }
+
+    function calculateRange() {
+      var pageSize = $scope.pagination.selected.value;
+      var current = $scope.pagination.currentPage;
+      $scope.pagination.from = pageSize * (current - 1) + 1;
+      $scope.pagination.to = Math.min($scope.totalHits, pageSize * current);
+    }
+
+    var pageChanged = function() {
+      calculateRange();
+      if ($scope.onChange) {
+        $scope.onChange(
+          $scope.target,
+          ($scope.pagination.currentPage - 1) * $scope.pagination.selected.value,
+          $scope.pagination.selected.value
+        );
+      }
+    };
+
+    var pageSizeChanged = function() {
+      updateMaxSize();
+      $scope.pagination.currentPage = 1;
+      pageChanged();
+    };
+
+    $scope.pageChanged = pageChanged;
+    $scope.pageSizeChanged = pageSizeChanged;
+    $scope.pageSizes = [
+      {label: '10', value:10},
+      {label: '20', value:20},
+      {label: '50', value:50},
+      {label: '100', value:100}
+    ];
+
+    $scope.pagination = {
+      selected: $scope.pageSizes[0],
+      currentPage: 1
+    };
+
+    $scope.$watch('totalHits', function() {
+      updateMaxSize();
+      calculateRange();
+    });
+
+
+  }]);
+
