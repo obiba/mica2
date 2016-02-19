@@ -34,7 +34,7 @@
 
         <tr ng-repeat="summary in summaries">
           <td>
-            <a href>
+            <a ng-href="{{PageUrlService.networkPage(summary.id)}}">
               <localized value="summary.acronym" lang="lang"></localized>
             </a>
           </td>

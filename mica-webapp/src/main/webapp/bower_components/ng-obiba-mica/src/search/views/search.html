@@ -10,7 +10,7 @@
   </ul>
 
   <!-- Classifications region -->
-  <div class="tab-content">
+  <div class="tab-content voffset4">
     <!--<div>-->
     <div class="row">
       <div class="col-md-3"></div>
@@ -92,9 +92,11 @@
   <div class="voffset3" ng-if="search.query">
     <result-panel display="search.display"
                   type="search.type"
+                  bucket="search.bucket"
                   result="search.result"
                   loading="search.loading"
                   on-type-changed="onTypeChanged"
+                  on-bucket-changed="onBucketChanged"
                   on-paginate="onPaginate"
                   lang="lang"></result-panel>
   </div>

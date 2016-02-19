@@ -37,7 +37,7 @@
         <tbody>
         <tr ng-repeat="summary in summaries" ng-init="lang = $parent.$parent.lang">
           <td>
-            <a href>
+            <a ng-href="{{PageUrlService.studyPage(summary.id)}}">
               <localized value="summary.acronym" lang="lang"></localized>
             </a>
           </td>

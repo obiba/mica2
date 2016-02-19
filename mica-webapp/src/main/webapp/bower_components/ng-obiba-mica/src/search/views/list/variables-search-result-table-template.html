@@ -17,17 +17,19 @@
         <tr ng-repeat="summary in summaries">
           <td>
             <a href>
-              {{summary.name}}
+                {{summary.name}}
             </a>
           </td>
           <td>
             <localized value="summary.variableLabel" lang="lang"></localized>
           </td>
           <td>
-            <localized value="summary.studyAcronym" lang="lang"></localized>
+            <a ng-href="{{PageUrlService.studyPage(summary.studyId)}}">
+              <localized value="summary.studyAcronym" lang="lang"></localized>
+            </a>
           </td>
           <td>
-            <a href>
+            <a ng-href="{{PageUrlService.datasetPage(summary.datasetId, summary.variableType)}}">
               <localized value="summary.datasetAcronym" lang="lang"></localized>
             </a>
           </td>

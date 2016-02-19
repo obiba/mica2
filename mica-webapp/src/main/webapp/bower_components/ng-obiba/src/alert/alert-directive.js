@@ -14,7 +14,7 @@ angular.module('obiba.alert')
 
       return {
         restrict: 'E',
-        template: '<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="close($index)"><span ng-bind-html="alert.message"></span></alert>',
+        template: '<uib-alert ng-repeat="alert in alerts" type="{{alert.type}}" close="close($index)"><span ng-bind-html="alert.message"></span></uib-alert>',
         compile: function(element) {
           var id = element.attr('id');
           if (!id) {
