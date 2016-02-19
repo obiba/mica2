@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 OBiBa. All rights reserved.
+ * Copyright (c) 2015 OBiBa. All rights reserved.
  *
  * This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0.
@@ -12,35 +12,25 @@ package org.obiba.mica.search.aggregations;
 
 import javax.inject.Inject;
 
-import org.obiba.mica.search.aggregations.helper.DatasetIdAggregationMetaDataHelper;
-import org.obiba.mica.search.aggregations.helper.DceIdAggregationMetaDataHelper;
 import org.obiba.mica.search.aggregations.helper.NetworkIdAggregationMetaDataHelper;
 import org.obiba.mica.search.aggregations.helper.StudyIdAggregationMetaDataHelper;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.springframework.stereotype.Component;
 
 @Component
-public class VariableTaxonomyMetaDataProvider extends ConfigurationTaxonomyMetaDataProvider {
+public class NetworkTaxonomyMetaDataProvider extends ConfigurationTaxonomyMetaDataProvider {
 
   @Inject
-  StudyIdAggregationMetaDataHelper studyHelper;
+  private NetworkIdAggregationMetaDataHelper networkHelper;
 
   @Inject
-  DatasetIdAggregationMetaDataHelper datasetHelper;
-
-  @Inject
-  NetworkIdAggregationMetaDataHelper networkHelper;
-
-  @Inject
-  DceIdAggregationMetaDataHelper dceHelper;
+  private StudyIdAggregationMetaDataHelper studyHelper;
 
   @Override
   protected Taxonomy getTaxonomy() {
-    Taxonomy taxonomy = micaConfigService.getVariableTaxonomy();
+    Taxonomy taxonomy = micaConfigService.getNetworkTaxonomy();
+    networkHelper.addIdTerms(taxonomy, "id");
     studyHelper.addIdTerms(taxonomy, "studyIds");
-    datasetHelper.addIdTerms(taxonomy, "datasetId");
-    networkHelper.addIdTerms(taxonomy, "networkId");
-    dceHelper.addIdTerms(taxonomy, "dceIds");
     return taxonomy;
   }
 }

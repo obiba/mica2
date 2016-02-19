@@ -12,6 +12,7 @@ package org.obiba.mica.search.aggregations;
 
 import javax.inject.Inject;
 
+import org.obiba.mica.search.aggregations.helper.StudyIdAggregationMetaDataHelper;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.springframework.stereotype.Component;
 
@@ -19,12 +20,12 @@ import org.springframework.stereotype.Component;
 public class StudyTaxonomyMetaDataProvider extends ConfigurationTaxonomyMetaDataProvider {
 
   @Inject
-  AggregationMetaDataHelper helper;
+  StudyIdAggregationMetaDataHelper helper;
 
   @Override
   protected Taxonomy getTaxonomy() {
     Taxonomy taxonomy = micaConfigService.getStudyTaxonomy();
-    helper.addTermsToIdVocabulary(taxonomy, null);
+    helper.addIdTerms(taxonomy, "id");
     return taxonomy;
   }
 }

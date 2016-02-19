@@ -1075,7 +1075,7 @@ angular.module('obiba.mica.search')
         return parsedQuery.serializeArgs(parsedQuery.args);
       };
 
-      this.getTargetAggregations = function (joinQueryResponse, criterion) {
+      this.getTargetAggregations = function (joinQueryResponse, criterion, lang) {
 
         /**
          * Helper to merge the terms that are not in the aggregation list
@@ -1087,23 +1087,39 @@ angular.module('obiba.mica.search')
         function addMissingTerms(aggs, vocabulary) {
           var terms = vocabulary.terms;
           if (terms && terms.length > 0) {
-            var keys = aggs.map(function(agg){
+            var keys = aggs && aggs.map(function(agg){
               return agg.key;
+            }) || [];
+
+            if (aggs) {
+              // Add the missing terms not present in the aggs list
+              var missingTerms = [];
+
+              terms.forEach(function(term) {
+                if (keys.length === 0 || keys.indexOf(term.name) === -1) {
+                  missingTerms.push({count: 0,
+                    default: 0,
+                    description: LocalizedValues.forLocale(term.description, lang),
+                    key: term.name,
+                    title: LocalizedValues.forLocale(term.title, lang)
+                  });
+                }
+              });
+
+              return aggs.concat(missingTerms);
+            }
+
+            // The query didn't have any match, return default empty aggs based on the vocabulary terms
+            return terms.map(function(term) {
+              return {
+                count: 0,
+                default: 0,
+                description: LocalizedValues.forLocale(term.description, lang),
+                key: term.name,
+                title: LocalizedValues.forLocale(term.title, lang)
+              };
             });
 
-            var missingTerms = [];
-            terms.forEach(function(term) {
-              if (keys.indexOf(term.name) === -1) {
-                missingTerms.push({count: 0,
-                  default: 0,
-                  description: LocalizedValues.forLocale(term.description, 'en'), // TODO use locale provider
-                  key: term.name,
-                  title: LocalizedValues.forLocale(term.title,'en')
-                });
-              }
-            });
-
-            return aggs.concat(missingTerms);
           }
 
           return aggs;

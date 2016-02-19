@@ -721,7 +721,7 @@ angular.module('obiba.mica.search')
         var target = $scope.criterion.target,
           joinQuery = RqlQueryService.prepareCriteriaTermsQuery($scope.query, $scope.criterion);
         JoinQuerySearchResource[targetToType(target)]({query: joinQuery}).$promise.then(function (joinQueryResponse) {
-          var stats = RqlQueryService.getTargetAggregations(joinQueryResponse, $scope.criterion);
+          var stats = RqlQueryService.getTargetAggregations(joinQueryResponse, $scope.criterion, $scope.lang);
 
           if (stats && stats.default) {
             $scope.min = stats.default.min;
@@ -789,7 +789,7 @@ angular.module('obiba.mica.search')
 
         JoinQuerySearchResource[targetToType(target)]({query: joinQuery}).$promise.then(function (joinQueryResponse) {
           $scope.state.loading = false;
-          $scope.terms = RqlQueryService.getTargetAggregations(joinQueryResponse, $scope.criterion);
+          $scope.terms = RqlQueryService.getTargetAggregations(joinQueryResponse, $scope.criterion, $scope.lang);
           if ($scope.terms) {
             $scope.terms.forEach(function (term) {
               $scope.checkboxTerms[term.key] =

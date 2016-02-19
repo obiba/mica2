@@ -38,6 +38,7 @@ import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.aggregations.AggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.NetworkAggregationMetaDataProvider;
+import org.obiba.mica.search.aggregations.NetworkTaxonomyMetaDataProvider;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
@@ -69,6 +70,9 @@ public class NetworkQuery extends AbstractDocumentQuery {
 
   @Inject
   private NetworkAggregationMetaDataProvider networkAggregationMetaDataProvider;
+
+  @Inject
+  private NetworkTaxonomyMetaDataProvider networkTaxonomyMetaDataProvider;
 
   @Override
   public String getSearchIndex() {
@@ -142,7 +146,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
 
   @Override
   protected List<AggregationMetaDataProvider> getAggregationMetaDataProviders() {
-    return Arrays.asList(networkAggregationMetaDataProvider);
+    return Arrays.asList(networkAggregationMetaDataProvider, networkTaxonomyMetaDataProvider);
   }
 
   public Map<String, List<String>> getStudyCountsByNetwork() {
