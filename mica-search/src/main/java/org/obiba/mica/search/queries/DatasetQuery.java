@@ -42,7 +42,9 @@ import org.obiba.mica.dataset.service.PublishedDatasetService;
 import org.obiba.mica.dataset.service.StudyDatasetService;
 import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.DatasetIdProvider;
+import org.obiba.mica.search.aggregations.AggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.AggregationYamlParser;
+import org.obiba.mica.search.aggregations.DatasetTaxonomyMetaDataProvider;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
@@ -82,6 +84,9 @@ public class DatasetQuery extends AbstractDocumentQuery {
 
   @Inject
   private StudyDatasetService studyDatasetService;
+
+  @Inject
+  private DatasetTaxonomyMetaDataProvider datasetTaxonomyMetaDataProvider;
 
   @Inject
   private HarmonizationDatasetService harmonizationDatasetService;
@@ -148,6 +153,11 @@ public class DatasetQuery extends AbstractDocumentQuery {
       .findByIds(Stream.of(hits.hits()).map(h -> h.getId()).collect(Collectors.toList()));
     datasets.forEach(addDto::accept);
     builder.setExtension(DatasetResultDto.result, resBuilder.build());
+  }
+
+  @Override
+  protected List<AggregationMetaDataProvider> getAggregationMetaDataProviders() {
+    return Arrays.asList(datasetTaxonomyMetaDataProvider);
   }
 
   private List<String> getDatasetIds() {

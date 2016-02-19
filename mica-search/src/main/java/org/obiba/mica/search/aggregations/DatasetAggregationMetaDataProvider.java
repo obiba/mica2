@@ -10,17 +10,13 @@
 
 package org.obiba.mica.search.aggregations;
 
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.obiba.mica.dataset.domain.Dataset;
-import org.obiba.mica.dataset.service.PublishedDatasetService;
+import org.obiba.mica.search.aggregations.helper.DatasetIdAggregationMetaDataHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -30,7 +26,7 @@ public class DatasetAggregationMetaDataProvider implements AggregationMetaDataPr
   private static final String AGGREGATION_NAME = "datasetId";
 
   @Inject
-  AggregationMetaDataHelper helper;
+  DatasetIdAggregationMetaDataHelper helper;
 
   @Override
   public void refresh() {
@@ -52,17 +48,4 @@ public class DatasetAggregationMetaDataProvider implements AggregationMetaDataPr
     return AGGREGATION_NAME.equals(aggregation);
   }
 
-  @Component
-  public static class AggregationMetaDataHelper {
-
-    @Inject
-    PublishedDatasetService publishedDatasetService;
-
-    @Cacheable(value="aggregations-metadata", key = "'dataset'")
-    public Map<String, LocalizedMetaData> getDatasets() {
-      List<Dataset> datasets= publishedDatasetService.findAll();
-      return datasets.stream()
-        .collect(Collectors.toMap(Dataset::getId, d -> new LocalizedMetaData(d.getAcronym(), d.getName())));
-    }
-  }
 }

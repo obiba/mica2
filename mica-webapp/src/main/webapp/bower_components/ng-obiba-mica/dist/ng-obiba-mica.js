@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-02-18
+ * Date: 2016-02-19
  */
 'use strict';
 
@@ -2423,7 +2423,7 @@ angular.module('obiba.mica.search')
         return parsedQuery.serializeArgs(parsedQuery.args);
       };
 
-      this.getTargetAggregations = function (joinQueryResponse, criterion) {
+      this.getTargetAggregations = function (joinQueryResponse, criterion, lang) {
 
         /**
          * Helper to merge the terms that are not in the aggregation list
@@ -2435,23 +2435,39 @@ angular.module('obiba.mica.search')
         function addMissingTerms(aggs, vocabulary) {
           var terms = vocabulary.terms;
           if (terms && terms.length > 0) {
-            var keys = aggs.map(function(agg){
+            var keys = aggs && aggs.map(function(agg){
               return agg.key;
+            }) || [];
+
+            if (aggs) {
+              // Add the missing terms not present in the aggs list
+              var missingTerms = [];
+
+              terms.forEach(function(term) {
+                if (keys.length === 0 || keys.indexOf(term.name) === -1) {
+                  missingTerms.push({count: 0,
+                    default: 0,
+                    description: LocalizedValues.forLocale(term.description, lang),
+                    key: term.name,
+                    title: LocalizedValues.forLocale(term.title, lang)
+                  });
+                }
+              });
+
+              return aggs.concat(missingTerms);
+            }
+
+            // The query didn't have any match, return default empty aggs based on the vocabulary terms
+            return terms.map(function(term) {
+              return {
+                count: 0,
+                default: 0,
+                description: LocalizedValues.forLocale(term.description, lang),
+                key: term.name,
+                title: LocalizedValues.forLocale(term.title, lang)
+              };
             });
 
-            var missingTerms = [];
-            terms.forEach(function(term) {
-              if (keys.indexOf(term.name) === -1) {
-                missingTerms.push({count: 0,
-                  default: 0,
-                  description: LocalizedValues.forLocale(term.description, 'en'), // TODO use locale provider
-                  key: term.name,
-                  title: LocalizedValues.forLocale(term.title,'en')
-                });
-              }
-            });
-
-            return aggs.concat(missingTerms);
           }
 
           return aggs;
@@ -3350,7 +3366,7 @@ angular.module('obiba.mica.search')
         var target = $scope.criterion.target,
           joinQuery = RqlQueryService.prepareCriteriaTermsQuery($scope.query, $scope.criterion);
         JoinQuerySearchResource[targetToType(target)]({query: joinQuery}).$promise.then(function (joinQueryResponse) {
-          var stats = RqlQueryService.getTargetAggregations(joinQueryResponse, $scope.criterion);
+          var stats = RqlQueryService.getTargetAggregations(joinQueryResponse, $scope.criterion, $scope.lang);
 
           if (stats && stats.default) {
             $scope.min = stats.default.min;
@@ -3418,7 +3434,7 @@ angular.module('obiba.mica.search')
 
         JoinQuerySearchResource[targetToType(target)]({query: joinQuery}).$promise.then(function (joinQueryResponse) {
           $scope.state.loading = false;
-          $scope.terms = RqlQueryService.getTargetAggregations(joinQueryResponse, $scope.criterion);
+          $scope.terms = RqlQueryService.getTargetAggregations(joinQueryResponse, $scope.criterion, $scope.lang);
           if ($scope.terms) {
             $scope.terms.forEach(function (term) {
               $scope.checkboxTerms[term.key] =

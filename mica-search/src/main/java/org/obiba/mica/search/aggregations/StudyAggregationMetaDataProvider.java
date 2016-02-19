@@ -1,14 +1,10 @@
 package org.obiba.mica.search.aggregations;
 
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.service.PublishedStudyService;
-import org.springframework.cache.annotation.Cacheable;
+import org.obiba.mica.search.aggregations.helper.StudyIdAggregationMetaDataHelper;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,7 +13,7 @@ public class StudyAggregationMetaDataProvider implements AggregationMetaDataProv
   private static final String AGGREGATION_NAME = "studyIds";
 
   @Inject
-  AggregationMetaDataHelper helper;
+  StudyIdAggregationMetaDataHelper helper;
 
   @Override
   public MetaData getMetadata(String aggregation, String termKey, String locale) {
@@ -37,17 +33,4 @@ public class StudyAggregationMetaDataProvider implements AggregationMetaDataProv
   public void refresh() {
   }
 
-  @Component
-  public static class AggregationMetaDataHelper {
-
-    @Inject
-    PublishedStudyService publishedStudyService;
-
-    @Cacheable(value="aggregations-metadata", key = "'study'")
-    public Map<String, LocalizedMetaData> getStudies() {
-      List<Study> studies = publishedStudyService.findAll();
-      return studies.stream().collect(Collectors
-        .toMap(s -> s.getId(), m -> new LocalizedMetaData(m.getAcronym(), m.getName())));
-    }
-  }
 }
