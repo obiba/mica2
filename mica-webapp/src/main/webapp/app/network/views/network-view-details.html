@@ -25,6 +25,12 @@
                 <localized value="network.acronym" lang="tab.lang"></localized>
               </td>
             </tr>
+            <tr ng-show="network.website">
+              <th translate>website</th>
+              <td>
+                <a href="{{network.website}}" target="_blank">{{network.website}}</a>
+              </td>
+            </tr>
             <tr ng-repeat="role in roles">
               <th>{{'network.member-list' | translate: {type: role} }}</th>
               <td>

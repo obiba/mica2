@@ -448,7 +448,6 @@
     "objectives": "Objectives",
     "description": "Description",
     "objectives-help": "What are the principal objectives of the study?",
-    "website": "Website",
     "add-data-collection-event": "Add Data Collection Event",
     "add-member": "Add {{type}}",
     "member-list": "List of {{type}}",
@@ -777,6 +776,7 @@
   "author": "Author",
   "user": "User",
   "users": "Users",
+  "website": "Website",
   "search": {
     "title": "Search",
     "placeholder": "Examples: alcohol pregnancy cancer cohort ...",
