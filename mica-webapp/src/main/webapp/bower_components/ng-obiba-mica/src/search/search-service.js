@@ -104,6 +104,25 @@ angular.module('obiba.mica.search')
     };
   })
 
+  .service('PageUrlService', ['ngObibaMicaUrl', 'StringUtils', function(ngObibaMicaUrl, StringUtils) {
+
+    this.studyPage = function(id) {
+      return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('StudyPage'), {':study': id}) : '';
+    };
+
+    this.networkPage = function(id) {
+      return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('NetworkPage'), {':network': id}) : '';
+    };
+
+    this.datasetPage = function(id, type) {
+      var dsType = (type === 'Study' ? 'study' : 'harmonization') + '-dataset';
+      var result = id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('DatasetPage'), {':type': dsType, ':dataset': id}) : '';
+      return result;
+    };
+
+    return this;
+  }])
+
   .service('ObibaSearchConfig', function () {
     var options = {
       networks: {

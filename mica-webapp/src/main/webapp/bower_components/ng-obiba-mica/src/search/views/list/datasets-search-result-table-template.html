@@ -26,7 +26,7 @@
 
         <tr ng-repeat="summary in summaries">
           <td>
-            <a href>
+            <a ng-href="{{PageUrlService.datasetPage(summary.id, summary.variableType)}}">
               <localized value="summary.acronym" lang="lang"></localized>
             </a>
           </td>

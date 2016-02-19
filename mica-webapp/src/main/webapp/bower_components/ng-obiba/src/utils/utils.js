@@ -553,6 +553,19 @@ angular.module('obiba.utils', [])
     this.capitaliseFirstLetter = function (string) {
       return string ? string.charAt(0).toUpperCase() + string.slice(1) : null;
     };
+
+    this.replaceAll = function(str, mapObj) {
+      var re = new RegExp(Object.keys(mapObj).join('|'),'gi');
+
+      return str.replace(re, function(matched){
+        return mapObj[matched.toLowerCase()];
+      });
+    };
+
+    this.truncate = function (text, size) {
+      var max = size || 30;
+      return text.length > max ? text.substring(0, max) + '...' : text;
+    };
   })
 
   .service('LocaleStringUtils', ['$filter', function ($filter) {

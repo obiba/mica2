@@ -65,7 +65,7 @@ angular.module('obiba.mica.search')
     };
   }])
 
-  .directive('networksResultTable', [function () {
+  .directive('networksResultTable', ['PageUrlService', function (PageUrlService) {
     return {
       restrict: 'EA',
       replace: true,
@@ -73,11 +73,14 @@ angular.module('obiba.mica.search')
         summaries: '=',
         loading: '='
       },
-      templateUrl: 'search/views/list/networks-search-result-table-template.html'
+      templateUrl: 'search/views/list/networks-search-result-table-template.html',
+      link: function(scope) {
+        scope.PageUrlService = PageUrlService;
+      }
     };
   }])
 
-  .directive('datasetsResultTable', [function () {
+  .directive('datasetsResultTable', ['PageUrlService', function (PageUrlService) {
     return {
       restrict: 'EA',
       replace: true,
@@ -85,11 +88,14 @@ angular.module('obiba.mica.search')
         summaries: '=',
         loading: '='
       },
-      templateUrl: 'search/views/list/datasets-search-result-table-template.html'
+      templateUrl: 'search/views/list/datasets-search-result-table-template.html',
+      link: function(scope) {
+        scope.PageUrlService = PageUrlService;
+      }
     };
   }])
 
-  .directive('studiesResultTable', [function () {
+  .directive('studiesResultTable', ['PageUrlService', function (PageUrlService) {
     return {
       restrict: 'EA',
       replace: true,
@@ -97,11 +103,14 @@ angular.module('obiba.mica.search')
         summaries: '=',
         loading: '='
       },
-      templateUrl: 'search/views/list/studies-search-result-table-template.html'
+      templateUrl: 'search/views/list/studies-search-result-table-template.html',
+      link: function(scope) {
+        scope.PageUrlService = PageUrlService;
+      }
     };
   }])
 
-  .directive('variablesResultTable', [function () {
+  .directive('variablesResultTable', ['PageUrlService', function (PageUrlService) {
     return {
       restrict: 'EA',
       replace: true,
@@ -109,7 +118,10 @@ angular.module('obiba.mica.search')
         summaries: '=',
         loading: '='
       },
-      templateUrl: 'search/views/list/variables-search-result-table-template.html'
+      templateUrl: 'search/views/list/variables-search-result-table-template.html',
+      link: function(scope) {
+        scope.PageUrlService = PageUrlService;
+      }
     };
   }])
 
@@ -119,7 +131,8 @@ angular.module('obiba.mica.search')
       replace: true,
       scope: {
         result: '=',
-        loading: '='
+        loading: '=',
+        bucket: '='
       },
       controller: 'CoverageResultTableController',
       templateUrl: 'search/views/coverage/coverage-search-result-table-template.html'
@@ -145,11 +158,13 @@ angular.module('obiba.mica.search')
       replace: true,
       scope: {
         type: '=',
+        bucket: '=',
         display: '=',
         result: '=',
         lang: '=',
         loading: '=',
         onTypeChanged: '=',
+        onBucketChanged: '=',
         onPaginate: '='
       },
       controller: 'SearchResultController',

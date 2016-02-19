@@ -17,8 +17,13 @@ function NgObibaMicaUrlProvider() {
     'TaxonomyResource': 'ws/taxonomy/:taxonomy/_filter',
     'VocabularyResource': 'ws/taxonomy/:taxonomy/vocabulary/:vocabulary/_filter',
     'JoinQuerySearchResource': 'ws/:type/_rql?query=:query',
-    'JoinQueryCoverageResource': 'ws/variables/_coverage?query=:query'
+    'JoinQueryCoverageResource': 'ws/variables/_coverage?query=:query',
+    'VariablePage': '',
+    'NetworkPage': '#/network/:network',
+    'StudyPage': '#/study/:study',
+    'DatasetPage': '#/:type/:dataset'
   };
+
   function UrlProvider(registry) {
     var urlRegistry = registry;
 
