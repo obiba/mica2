@@ -10,14 +10,21 @@
 
 package org.obiba.mica.search.aggregations;
 
+import javax.inject.Inject;
+
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.springframework.stereotype.Component;
 
 @Component
 public class StudyTaxonomyMetaDataProvider extends ConfigurationTaxonomyMetaDataProvider {
 
+  @Inject
+  AggregationMetaDataHelper helper;
+
   @Override
   protected Taxonomy getTaxonomy() {
-    return micaConfigService.getStudyTaxonomy();
+    Taxonomy taxonomy = micaConfigService.getStudyTaxonomy();
+    helper.addTermsToIdVocabulary(taxonomy, null);
+    return taxonomy;
   }
 }

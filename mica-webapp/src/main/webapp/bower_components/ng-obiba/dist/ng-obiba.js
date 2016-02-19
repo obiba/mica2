@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba
 
  * License: GNU Public License version 3
- * Date: 2016-01-07
+ * Date: 2016-02-18
  */
 'use strict';
 
@@ -629,7 +629,16 @@ angular.module('obiba.utils', [])
           return true;
         }
       };
-  });
+  })
+
+  .service('RandomColorUtils',
+    function () {
+      return {
+        random : function(options) {
+          return randomColor(options);
+        }
+      };
+    });
 ;'use strict';
 
 angular.module('obiba.notification', [
@@ -1005,7 +1014,7 @@ angular.module('obiba.alert')
 
       return {
         restrict: 'E',
-        template: '<alert ng-repeat="alert in alerts" type="{{alert.type}}" close="close($index)"><span ng-bind-html="alert.message"></span></alert>',
+        template: '<uib-alert ng-repeat="alert in alerts" type="{{alert.type}}" close="close($index)"><span ng-bind-html="alert.message"></span></uib-alert>',
         compile: function(element) {
           var id = element.attr('id');
           if (!id) {
