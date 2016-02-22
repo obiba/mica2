@@ -11,5 +11,5 @@
 package org.obiba.mica.taxonomy;
 
 public enum TaxonomyTarget {
-  VARIABLE, STUDY, NETWORK, DATASET
+  VARIABLE, STUDY, NETWORK, DATASET, TAXONOMY
 }

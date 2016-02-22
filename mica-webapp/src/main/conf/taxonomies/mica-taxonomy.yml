@@ -1,0 +1,28 @@
+"name": "Mica_metataxonomy"
+"title":
+  "en": "Taxonomy properties"
+  "fr": "Propriétés des taxonomies"
+"description":
+  "en": "Taxonomy properties."
+  "fr": "Propriétés des taxonomies."
+"keywords": {}
+"license": "CC BY-NC 4.0"
+"vocabularies":
+- "name": "variable"
+  "terms":
+  - "name": "Mlstr_additional"
+  - "name": "Mlstr_area"
+  - "name": "Mlstr_cogscale"
+  - "name": "Mlstr_genhealth"
+  - "name": "Mlstr_habits"
+  - "name": "Mlstr_harmo"
+  - "name": "Mlstr_social"
+- "name": "study"
+  "terms":
+  - "name": "Mica_study"
+- "name": "dataset"
+  "terms":
+  - "name": "Mica_dataset"
+- "name": "network"
+  "terms":
+  - "name": "Mica_network"

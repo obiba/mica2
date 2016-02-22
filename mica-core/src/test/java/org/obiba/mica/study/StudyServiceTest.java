@@ -25,6 +25,7 @@ import org.obiba.mica.config.taxonomies.DatasetTaxonomy;
 import org.obiba.mica.config.taxonomies.NetworkTaxonomy;
 import org.obiba.mica.config.taxonomies.StudyTaxonomy;
 import org.obiba.mica.config.taxonomies.VariableTaxonomy;
+import org.obiba.mica.config.taxonomies.TaxonomyTaxonomy;
 import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.core.notification.EntityPublicationFlowMailNotification;
@@ -427,6 +428,11 @@ public class StudyServiceTest {
     @Bean
     public VariableTaxonomy variablesConfiguration() {
       return mock(VariableTaxonomy.class);
+    }
+
+    @Bean
+    public TaxonomyTaxonomy taxonomyConfiguration() {
+      return mock(TaxonomyTaxonomy.class);
     }
 
     @Bean

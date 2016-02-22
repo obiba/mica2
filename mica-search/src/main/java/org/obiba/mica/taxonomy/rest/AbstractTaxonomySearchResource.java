@@ -101,6 +101,8 @@ public class AbstractTaxonomySearchResource {
         return Lists.newArrayList(micaConfigService.getStudyTaxonomy());
       case DATASET:
         return Lists.newArrayList(micaConfigService.getDatasetTaxonomy());
+      case TAXONOMY:
+        return Lists.newArrayList(micaConfigService.getTaxonomyTaxonomy());
       default:
         List<Taxonomy> taxonomies = opalService.getTaxonomies();
         taxonomies.add(micaConfigService.getVariableTaxonomy());
@@ -116,6 +118,8 @@ public class AbstractTaxonomySearchResource {
         return micaConfigService.getStudyTaxonomy();
       case DATASET:
         return micaConfigService.getDatasetTaxonomy();
+      case TAXONOMY:
+        return micaConfigService.getTaxonomyTaxonomy();
       default:
         Taxonomy varTaxonomy = micaConfigService.getVariableTaxonomy();
         if (varTaxonomy.getName().equals(name)) return varTaxonomy;
