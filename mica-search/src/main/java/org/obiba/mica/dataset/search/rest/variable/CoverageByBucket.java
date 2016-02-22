@@ -88,6 +88,9 @@ class CoverageByBucket {
       taxonomyHeaders.add(new TaxonomyHeader(taxonomyCoverage, taxonomyTermsCount));
     }
 
+    bucketRows.forEach(bucketRow -> {
+      bucketRow.fillHits(termsCount);
+    });
     bucketRows = bucketRows.stream().sorted().collect(Collectors.toList());
   }
 
@@ -193,12 +196,16 @@ class CoverageByBucket {
 
     public void setHits(int termPosition, MicaSearch.BucketCoverageDto bucketCoverage) {
       // ensure empty hits are filled-in
-      for(int i = hits.size(); i < termPosition; i++) {
+      fillHits(termPosition);
+      hits.add(bucketCoverage.getHits());
+      counts.add(bucketCoverage.getCount());
+    }
+
+    public void fillHits(int count) {
+      for(int i = hits.size(); i < count; i++) {
         hits.add(0);
         counts.add(0);
       }
-      hits.add(bucketCoverage.getHits());
-      counts.add(bucketCoverage.getCount());
     }
 
     @Override

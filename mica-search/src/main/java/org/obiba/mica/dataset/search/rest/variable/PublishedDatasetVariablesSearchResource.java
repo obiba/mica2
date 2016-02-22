@@ -98,6 +98,14 @@ public class PublishedDatasetVariablesSearchResource {
       .header("Content-Disposition", "attachment; filename=\"coverage.csv\"").build();
   }
 
+  @GET
+  @Timed
+  @Path("/_coverage_download")
+  @Produces("text/csv")
+  public Response rqlCoverageDownload(@QueryParam("query") String query) throws IOException {
+    return rqlCoverageCsv(query);
+  }
+
   /**
    * Get the frequency of each taxonomy terms, based on variables aggregation results after search query was applied.
    *
