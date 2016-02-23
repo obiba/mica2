@@ -28,9 +28,9 @@ public class DatasetTaxonomyMetaDataProvider extends ConfigurationTaxonomyMetaDa
 
   @Override
   protected Taxonomy getTaxonomy() {
-    Taxonomy taxonomy = micaConfigService.getDatasetTaxonomy();
-    datasetHelper.addIdTerms(taxonomy, "id");
-    networkHelper.addIdTerms(taxonomy, "networkId");
+    Taxonomy taxonomy = taxonomyService.getDatasetTaxonomy();
+    datasetHelper.applyIdTerms(taxonomy, "id");
+    networkHelper.applyIdTerms(taxonomy, "networkId");
     return taxonomy;
   }
 }

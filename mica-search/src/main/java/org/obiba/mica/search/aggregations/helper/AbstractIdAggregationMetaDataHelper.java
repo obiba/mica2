@@ -23,20 +23,21 @@ import org.obiba.opal.core.domain.taxonomy.Vocabulary;
  */
 public abstract class AbstractIdAggregationMetaDataHelper {
 
-  public void addIdTerms(Taxonomy taxonomy, String idVocabularyName) {
+  public void applyIdTerms(Taxonomy taxonomy, String idVocabularyName) {
     Optional<Vocabulary> idVocabulary = taxonomy.getVocabularies().stream()
-      .filter(v -> v.getName().equals(idVocabularyName) && !v.hasTerms()).findFirst();
+      .filter(v -> v.getName().equals(idVocabularyName)).findFirst();
 
     if (idVocabulary.isPresent()) {
-      addTerms(idVocabulary.get());
+      applyTerms(idVocabulary.get());
     }
   }
 
   protected abstract Map<String, AggregationMetaDataProvider.LocalizedMetaData> getIdAggregationMap();
 
-  private void addTerms(Vocabulary idVocabulary) {
+  private void applyTerms(Vocabulary idVocabulary) {
     Map<String, AggregationMetaDataProvider.LocalizedMetaData> map = getIdAggregationMap();
-    map.keySet().forEach(key ->
+    if(idVocabulary.getTerms() != null) idVocabulary.getTerms().clear();
+    map.keySet().stream().sorted().forEach(key ->
       idVocabulary.addTerm(createTermFromMetaData(key, map.get(key)))
     );
   }

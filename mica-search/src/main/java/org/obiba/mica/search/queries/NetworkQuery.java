@@ -102,7 +102,7 @@ public class NetworkQuery extends AbstractDocumentQuery {
   @Nullable
   @Override
   protected Properties getAggregationsProperties(List<String> filter) {
-    Properties properties = getAggregationsProperties(filter, micaConfigService.getNetworkTaxonomy());
+    Properties properties = getAggregationsProperties(filter, taxonomyService.getNetworkTaxonomy());
     if(!properties.containsKey(JOIN_FIELD)) properties.put(JOIN_FIELD,"");
     return properties;
   }

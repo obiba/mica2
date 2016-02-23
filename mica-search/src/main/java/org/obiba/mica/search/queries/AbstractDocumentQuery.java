@@ -40,6 +40,7 @@ import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.aggregations.AggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.AggregationMetaDataResolver;
@@ -77,6 +78,9 @@ public abstract class AbstractDocumentQuery {
 
   @Inject
   protected MicaConfigService micaConfigService;
+
+  @Inject
+  protected TaxonomyService taxonomyService;
 
   @Inject
   protected SubjectAclService subjectAclService;

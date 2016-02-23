@@ -20,7 +20,7 @@ import javax.inject.Inject;
 
 import org.elasticsearch.index.IndexNotFoundException;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
-import org.obiba.mica.micaConfig.service.OpalService;
+import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.taxonomy.EsTaxonomyTermService;
 import org.obiba.mica.taxonomy.EsTaxonomyVocabularyService;
 import org.obiba.mica.taxonomy.TaxonomyTarget;
@@ -50,10 +50,10 @@ public class AbstractTaxonomySearchResource {
   private EsTaxonomyVocabularyService esTaxonomyVocabularyService;
 
   @Inject
-  private MicaConfigService micaConfigService;
+  private TaxonomyService taxonomyService;
 
   @Inject
-  private OpalService opalService;
+  private MicaConfigService micaConfigService;
 
   protected void populate(Opal.TaxonomyDto.Builder tBuilder, Taxonomy taxonomy,
     Map<String, Map<String, List<String>>> taxoNamesMap) {
@@ -61,9 +61,11 @@ public class AbstractTaxonomySearchResource {
       .forEach(voc -> {
         Opal.VocabularyDto.Builder vBuilder = Dtos.asDto(voc, false).toBuilder();
         List<String> termNames = taxoNamesMap.get(taxonomy.getName()).get(voc.getName());
-        if (voc.hasTerms()) {
-          if(termNames.isEmpty()) vBuilder.addAllTerms(voc.getTerms().stream().map(Dtos::asDto).collect(Collectors.toList()));
-          else voc.getTerms().stream().filter(t -> termNames.contains(t.getName())).forEach(term -> vBuilder.addTerms(Dtos.asDto(term)));
+        if(voc.hasTerms()) {
+          if(termNames.isEmpty())
+            vBuilder.addAllTerms(voc.getTerms().stream().map(Dtos::asDto).collect(Collectors.toList()));
+          else voc.getTerms().stream().filter(t -> termNames.contains(t.getName()))
+            .forEach(term -> vBuilder.addTerms(Dtos.asDto(term)));
         }
         tBuilder.addVocabularies(vBuilder);
       });
@@ -71,9 +73,8 @@ public class AbstractTaxonomySearchResource {
 
   protected List<String> filterVocabularies(TaxonomyTarget target, String query, String locale) {
     try {
-      return esTaxonomyVocabularyService
-        .find(0, MAX_SIZE, DEFAULT_SORT, "asc", null, getTargettedQuery(target, query),
-          getFields(locale, VOCABULARY_FIELDS)).getList();
+      return esTaxonomyVocabularyService.find(0, MAX_SIZE, DEFAULT_SORT, "asc", null, getTargettedQuery(target, query),
+        getFields(locale, VOCABULARY_FIELDS)).getList();
     } catch(IndexNotFoundException e) {
       initTaxonomies();
       // for a 404 response
@@ -96,34 +97,31 @@ public class AbstractTaxonomySearchResource {
   protected List<Taxonomy> getTaxonomies(TaxonomyTarget target) {
     switch(target) {
       case NETWORK:
-        return Lists.newArrayList(micaConfigService.getNetworkTaxonomy());
+        return Lists.newArrayList(taxonomyService.getNetworkTaxonomy());
       case STUDY:
-        return Lists.newArrayList(micaConfigService.getStudyTaxonomy());
+        return Lists.newArrayList(taxonomyService.getStudyTaxonomy());
       case DATASET:
-        return Lists.newArrayList(micaConfigService.getDatasetTaxonomy());
+        return Lists.newArrayList(taxonomyService.getDatasetTaxonomy());
       case TAXONOMY:
-        return Lists.newArrayList(micaConfigService.getTaxonomyTaxonomy());
+        return Lists.newArrayList(taxonomyService.getTaxonomyTaxonomy());
       default:
-        List<Taxonomy> taxonomies = opalService.getTaxonomies();
-        taxonomies.add(micaConfigService.getVariableTaxonomy());
-        return taxonomies;
+        return taxonomyService.getVariableTaxonomies();
     }
   }
 
   protected Taxonomy getTaxonomy(TaxonomyTarget target, String name) {
     switch(target) {
       case NETWORK:
-        return micaConfigService.getNetworkTaxonomy();
+        return taxonomyService.getNetworkTaxonomy();
       case STUDY:
-        return micaConfigService.getStudyTaxonomy();
+        return taxonomyService.getStudyTaxonomy();
       case DATASET:
-        return micaConfigService.getDatasetTaxonomy();
+        return taxonomyService.getDatasetTaxonomy();
       case TAXONOMY:
-        return micaConfigService.getTaxonomyTaxonomy();
+        return taxonomyService.getTaxonomyTaxonomy();
       default:
-        Taxonomy varTaxonomy = micaConfigService.getVariableTaxonomy();
-        if (varTaxonomy.getName().equals(name)) return varTaxonomy;
-        return opalService.getTaxonomy(name);
+        return taxonomyService.getVariableTaxonomies().stream().filter(taxonomy -> taxonomy.getName().equals(name))
+          .findFirst().orElse(null);
     }
   }
 
@@ -159,6 +157,6 @@ public class AbstractTaxonomySearchResource {
    * Populate taxonomies cache and trigger taxonomies indexing.
    */
   private void initTaxonomies() {
-    opalService.getTaxonomies();
+    taxonomyService.getOpalTaxonomies();
   }
 }

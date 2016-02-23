@@ -64,27 +64,27 @@ public class MicaConfigService {
   private final AesCipherService cipherService = new AesCipherService();
 
   @NotNull
-  public Taxonomy getNetworkTaxonomy() {
+  Taxonomy getNetworkTaxonomy() {
     return networkTaxonomy;
   }
 
   @NotNull
-  public Taxonomy getStudyTaxonomy() {
+  Taxonomy getStudyTaxonomy() {
     return studyTaxonomy;
   }
 
   @NotNull
-  public Taxonomy getDatasetTaxonomy() {
+  Taxonomy getDatasetTaxonomy() {
     return datasetTaxonomy;
   }
 
   @NotNull
-  public Taxonomy getVariableTaxonomy() {
+  Taxonomy getVariableTaxonomy() {
     return variableTaxonomy;
   }
 
   @NotNull
-  public Taxonomy getTaxonomyTaxonomy() {
+  Taxonomy getTaxonomyTaxonomy() {
     return taxonomyTaxonomy;
   }
 

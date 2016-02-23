@@ -16,6 +16,7 @@ import javax.inject.Inject;
 
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.slf4j.Logger;
@@ -29,6 +30,9 @@ public abstract class ConfigurationTaxonomyMetaDataProvider implements Aggregati
 
   @Inject
   protected MicaConfigService micaConfigService;
+
+  @Inject
+  protected TaxonomyService taxonomyService;
 
   Map<String, Map<String, LocalizedMetaData>> cache;
 
