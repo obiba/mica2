@@ -19,6 +19,7 @@ import org.obiba.mica.config.taxonomies.DatasetTaxonomy;
 import org.obiba.mica.config.taxonomies.NetworkTaxonomy;
 import org.obiba.mica.config.taxonomies.StudyTaxonomy;
 import org.obiba.mica.config.taxonomies.VariableTaxonomy;
+import org.obiba.mica.config.taxonomies.TaxonomyTaxonomy;
 import org.obiba.mica.core.domain.Address;
 import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.Authorization;
@@ -370,6 +371,11 @@ public class StudyDtosTest {
     @Bean
     public VariableTaxonomy variablesConfiguration() {
       return mock(VariableTaxonomy.class);
+    }
+
+    @Bean
+    public TaxonomyTaxonomy taxonomyConfiguration() {
+      return mock(TaxonomyTaxonomy.class);
     }
 
     @Bean
