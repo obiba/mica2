@@ -5,6 +5,7 @@ script:
 node.local: true
 discovery.zen.ping.multicast.enabled: false
 index:
+    max_result_window: 1000000
     analysis:
         analyzer:
             mica_index_analyzer:
