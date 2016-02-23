@@ -230,6 +230,7 @@ angular.module('obiba.mica.search')
           $scope.search.loading = true;
           switch ($scope.search.display) {
             case DISPLAY_TYPES.LIST:
+              $scope.search.executedQuery = localizedQuery;
               JoinQuerySearchResource[$scope.search.type]({query: localizedQuery},
                 function onSuccess(response) {
                   $scope.search.result.list = response;
@@ -238,7 +239,8 @@ angular.module('obiba.mica.search')
                 onError);
               break;
             case DISPLAY_TYPES.COVERAGE:
-              JoinQueryCoverageResource.get({query: RqlQueryService.prepareCoverageQuery(localizedQuery, [$scope.search.bucket])},
+              $scope.search.executedQuery = RqlQueryService.prepareCoverageQuery(localizedQuery, $scope.search.bucket);
+              JoinQueryCoverageResource.get({query: $scope.search.executedQuery},
                 function onSuccess(response) {
                   $scope.search.result.coverage = response;
                   $scope.search.loading = false;
@@ -246,10 +248,9 @@ angular.module('obiba.mica.search')
                 onError);
               break;
             case DISPLAY_TYPES.GRAPHICS:
-              JoinQuerySearchResource.studies({
-                  query: RqlQueryService.prepareGraphicsQuery(localizedQuery,
-                    ['methods.designs', 'populations.selectionCriteria.countriesIso', 'populations.dataCollectionEvents.bioSamples', 'numberOfParticipants.participant.number'])
-                },
+              $scope.search.executedQuery = RqlQueryService.prepareGraphicsQuery(localizedQuery,
+                ['methods.designs', 'populations.selectionCriteria.countriesIso', 'populations.dataCollectionEvents.bioSamples', 'numberOfParticipants.participant.number']);
+                JoinQuerySearchResource.studies({query: $scope.search.executedQuery},
                 function onSuccess(response) {
                   $scope.search.result.graphics = response;
                   $scope.search.loading = false;
@@ -524,6 +525,7 @@ angular.module('obiba.mica.search')
         pagination: {},
         query: null,
         rqlQuery: null,
+        executedQuery: null,
         type: null,
         bucket: null,
         result: {
@@ -852,7 +854,8 @@ angular.module('obiba.mica.search')
 
   .controller('CoverageResultTableController', [
     '$scope',
-    function ($scope) {
+    'PageUrlService',
+    function ($scope,PageUrlService) {
       $scope.showMissing = true;
       $scope.toggleMissing = function (value) {
         $scope.showMissing = value;
@@ -890,6 +893,18 @@ angular.module('obiba.mica.search')
         }
       };
 
+      function getBucketUrl(bucket, id) {
+        switch (bucket) {
+          case BUCKET_TYPES.STUDYIDS:
+          case BUCKET_TYPES.DCEIDS:
+            return PageUrlService.studyPage(id);
+          case BUCKET_TYPES.NETWORKID:
+            return PageUrlService.networkPage(id);
+        }
+
+        return '';
+      }
+
       function splitIds() {
         var cols = {
           colSpan: $scope.bucket === BUCKET_TYPES.DCEIDS ? 3 : 1,
@@ -923,6 +938,7 @@ angular.module('obiba.mica.search')
             rowSpan = appendRowSpan(id);
             cols.ids[row.value].push({
               id: id,
+              url: PageUrlService.studyPage(id),
               title: titles[0],
               description: descriptions[0],
               rowSpan: rowSpan
@@ -933,6 +949,7 @@ angular.module('obiba.mica.search')
             rowSpan = appendRowSpan(id);
             cols.ids[row.value].push({
               id: id,
+              url: PageUrlService.studyPage(ids[0]),
               title: titles[1],
               description: descriptions[1],
               rowSpan: rowSpan
@@ -942,12 +959,14 @@ angular.module('obiba.mica.search')
             cols.ids[row.value].push({
               id: row.value,
               title: titles[2],
+              url: PageUrlService.studyPage(ids[0]),
               description: descriptions[2],
               rowSpan: 1
             });
           } else {
             cols.ids[row.value].push({
               id: row.value,
+              url: getBucketUrl($scope.bucket, row.value),
               title: row.title,
               description: row.description,
               rowSpan: 1
@@ -973,10 +992,14 @@ angular.module('obiba.mica.search')
 
       $scope.BUCKET_TYPES = BUCKET_TYPES;
 
+      $scope.downloadUrl = function() {
+        return PageUrlService.downloadCoverage($scope.query);
+      };
+
       $scope.$watch('result', function () {
         $scope.table = {};
         $scope.table.cols = [];
-        if ($scope.result) {
+        if ($scope.result && $scope.result.rows) {
           $scope.table = $scope.result;
           $scope.table.cols = splitIds();
         }
