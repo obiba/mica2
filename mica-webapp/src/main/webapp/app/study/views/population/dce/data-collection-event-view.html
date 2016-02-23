@@ -29,7 +29,7 @@
         <tr ng-show="dce.dataSources">
           <th translate>data-collection-event.data-sources</th>
           <td>
-            <span>{{dce.dataSources.join(', ')}}</span>
+            <span>{{getTermLabels('populations-dataCollectionEvents-dataSources', dce.dataSources)}}</span>
           </td>
         </tr>
 
@@ -43,14 +43,14 @@
         <tr ng-show="dce.administrativeDatabases && dce.dataSources.indexOf('administratives_databases') > -1">
           <th translate>data-collection-event.admin-databases</th>
           <td>
-            <span>{{dce.administrativeDatabases.join(', ')}}</span>
+            <span>{{getTermLabels('populations-dataCollectionEvents-administrativeDatabases',dce.administrativeDatabases)}}</span>
           </td>
         </tr>
 
         <tr ng-show="dce.bioSamples && dce.dataSources.indexOf('biological_samples') > -1">
           <th translate>data-collection-event.bio-samples</th>
           <td>
-            <span>{{dce.bioSamples.join(', ')}}</span>
+            <span>{{getTermLabels('populations-dataCollectionEvents-bioSamples', dce.bioSamples)}}</span>
           </td>
         </tr>
         <tr ng-show="dce.tissueTypes && dce.dataSources.indexOf('biological_samples') > -1">

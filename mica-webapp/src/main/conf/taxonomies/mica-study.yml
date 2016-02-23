@@ -1941,3 +1941,37 @@
       "fr": "Cellules buccales"
     "description": {}
     "keywords": {}
+- "name": "populations-dataCollectionEvents-administrativeDatabases"
+  "title":
+    "en": "Administrative databases"
+    "fr": "Bases de données administratives"
+  "description": {}
+  "keywords": {}
+  "attributes":
+    "field": "populations.dataCollectionEvents.administrativeDatabases"
+    "alias": "populations-dataCollectionEvents-administrativeDatabases"
+  "terms":
+  - "name": "health_databases"
+    "title":
+      "en": "Health databases"
+      "fr": "Bases de données de santé"
+    "description": {}
+    "keywords": {}
+  - "name": "vital_statistics_databases"
+    "title":
+      "en": "Vital Statistics Databases"
+      "fr": "Bases de données de l'état civil"
+    "description": {}
+    "keywords": {}
+  - "name": "socioeconomic_databases"
+    "title":
+      "en": "Socioeconomic Databases"
+      "fr": "Bases de données socio-économiques"
+    "description": {}
+    "keywords": {}
+  - "name": "environmental_databases"
+    "title":
+      "en": "Environmental Databases"
+      "fr": "Bases de données environnementales"
+    "description": {}
+    "keywords": {}
