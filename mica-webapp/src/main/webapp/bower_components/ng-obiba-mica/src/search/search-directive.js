@@ -132,7 +132,8 @@ angular.module('obiba.mica.search')
       scope: {
         result: '=',
         loading: '=',
-        bucket: '='
+        bucket: '=',
+        query: '='
       },
       controller: 'CoverageResultTableController',
       templateUrl: 'search/views/coverage/coverage-search-result-table-template.html'
@@ -159,6 +160,7 @@ angular.module('obiba.mica.search')
       scope: {
         type: '=',
         bucket: '=',
+        query: '=',
         display: '=',
         result: '=',
         lang: '=',

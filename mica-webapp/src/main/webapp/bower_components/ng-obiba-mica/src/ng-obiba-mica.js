@@ -18,6 +18,7 @@ function NgObibaMicaUrlProvider() {
     'VocabularyResource': 'ws/taxonomy/:taxonomy/vocabulary/:vocabulary/_filter',
     'JoinQuerySearchResource': 'ws/:type/_rql?query=:query',
     'JoinQueryCoverageResource': 'ws/variables/_coverage?query=:query',
+    'JoinQueryCoverageDownloadResource': 'ws/variables/_coverage_download?query=:query',
     'VariablePage': '',
     'NetworkPage': '#/network/:network',
     'StudyPage': '#/study/:study',
