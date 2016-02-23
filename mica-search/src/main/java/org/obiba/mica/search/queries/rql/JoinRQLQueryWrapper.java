@@ -12,8 +12,6 @@ package org.obiba.mica.search.queries.rql;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
@@ -21,8 +19,7 @@ import net.jazdw.rql.parser.ASTNode;
 import net.jazdw.rql.parser.RQLParser;
 
 import org.elasticsearch.common.Strings;
-import org.obiba.mica.micaConfig.service.MicaConfigService;
-import org.obiba.mica.micaConfig.service.OpalService;
+import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.search.queries.JoinQueryWrapper;
 import org.obiba.mica.search.queries.QueryWrapper;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
@@ -33,11 +30,14 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class JoinRQLQueryWrapper implements JoinQueryWrapper {
 
-  @Inject
-  private MicaConfigService micaConfigService;
+  //@Inject
+  //private MicaConfigService micaConfigService;
+
+//  @Inject
+//  private OpalService opalService;
 
   @Inject
-  private OpalService opalService;
+  private TaxonomyService taxonomyService;
 
   private ASTNode node;
 
@@ -137,20 +137,19 @@ public class JoinRQLQueryWrapper implements JoinQueryWrapper {
   //
 
   private List<Taxonomy> getVariableTaxonomies() {
-    return Stream.concat(opalService.getTaxonomies().stream(), Stream.of(micaConfigService.getVariableTaxonomy()))
-      .collect(Collectors.toList());
+    return taxonomyService.getVariableTaxonomies();
   }
 
   private List<Taxonomy> getDatasetTaxonomies() {
-    return Collections.singletonList(micaConfigService.getDatasetTaxonomy());
+    return Collections.singletonList(taxonomyService.getDatasetTaxonomy());
   }
 
   private List<Taxonomy> getStudyTaxonomies() {
-    return Collections.singletonList(micaConfigService.getStudyTaxonomy());
+    return Collections.singletonList(taxonomyService.getStudyTaxonomy());
   }
 
   private List<Taxonomy> getNetworkTaxonomies() {
-    return Collections.singletonList(micaConfigService.getNetworkTaxonomy());
+    return Collections.singletonList(taxonomyService.getNetworkTaxonomy());
   }
 
 }

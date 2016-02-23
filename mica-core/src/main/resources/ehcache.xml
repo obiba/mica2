@@ -58,13 +58,11 @@
   <cache name="opal-taxonomies"
     timeToLiveSeconds="3600"
     timeToIdleSeconds="0">
-    <pinning store="localMemory"/>
   </cache>
 
   <cache name="aggregations-metadata"
     timeToLiveSeconds="3600"
     timeToIdleSeconds="0">
-    <pinning store="localMemory"/>
   </cache>
 
   <cache name="dataset-variables"
@@ -76,7 +74,6 @@
   <cache name="agate-subjects"
     timeToLiveSeconds="3600"
     timeToIdleSeconds="0">
-    <pinning store="localMemory"/>
   </cache>
 
 </ehcache>

@@ -15,8 +15,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
-import org.obiba.mica.micaConfig.service.MicaConfigService;
-import org.obiba.mica.micaConfig.service.OpalService;
+import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.search.ElasticSearchIndexer;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.slf4j.Logger;
@@ -44,10 +43,7 @@ public class TaxonomyIndexer {
   public static final String[] LOCALIZED_ANALYZED_FIELDS = { "title", "description", "keywords" };
 
   @Inject
-  private OpalService opalService;
-
-  @Inject
-  private MicaConfigService micaConfigService;
+  private TaxonomyService taxonomyService;
 
   @Inject
   private ElasticSearchIndexer elasticSearchIndexer;
@@ -58,11 +54,11 @@ public class TaxonomyIndexer {
     log.info("Taxonomies were updated");
     if(elasticSearchIndexer.hasIndex(TAXONOMY_INDEX)) elasticSearchIndexer.dropIndex(TAXONOMY_INDEX);
     index(TaxonomyTarget.VARIABLE,
-      ImmutableList.<Taxonomy>builder().addAll(opalService.getTaxonomies()).add(micaConfigService.getVariableTaxonomy())
+      ImmutableList.<Taxonomy>builder().addAll(taxonomyService.getOpalTaxonomies()).add(taxonomyService.getVariableTaxonomy())
         .build());
-    index(TaxonomyTarget.STUDY, Lists.newArrayList(micaConfigService.getStudyTaxonomy()));
-    index(TaxonomyTarget.DATASET, Lists.newArrayList(micaConfigService.getDatasetTaxonomy()));
-    index(TaxonomyTarget.NETWORK, Lists.newArrayList(micaConfigService.getNetworkTaxonomy()));
+    index(TaxonomyTarget.STUDY, Lists.newArrayList(taxonomyService.getStudyTaxonomy()));
+    index(TaxonomyTarget.DATASET, Lists.newArrayList(taxonomyService.getDatasetTaxonomy()));
+    index(TaxonomyTarget.NETWORK, Lists.newArrayList(taxonomyService.getNetworkTaxonomy()));
   }
 
   private void index(TaxonomyTarget target, List<Taxonomy> taxonomies) {

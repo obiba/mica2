@@ -25,8 +25,7 @@ import javax.inject.Inject;
 
 import org.elasticsearch.common.Strings;
 import org.obiba.mica.core.domain.LocalizedString;
-import org.obiba.mica.micaConfig.service.MicaConfigService;
-import org.obiba.mica.micaConfig.service.OpalService;
+import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.search.queries.AbstractDocumentQuery;
 import org.obiba.mica.search.queries.AbstractDocumentQuery.Mode;
 import org.obiba.mica.search.queries.DatasetQuery;
@@ -68,7 +67,7 @@ public class JoinQueryExecutor {
   }
 
   @Inject
-  private MicaConfigService micaConfigService;
+  private TaxonomyService taxonomyService;
 
   @Inject
   private VariableQuery variableQuery;
@@ -84,9 +83,6 @@ public class JoinQueryExecutor {
 
   @Inject
   private Dtos dtos;
-
-  @Inject
-  private OpalService opalService;
 
   @Timed
   public JoinQueryResultDto query(QueryType type, JoinQueryWrapper joinQueryWrapper) throws IOException {
@@ -209,21 +205,21 @@ public class JoinQueryExecutor {
     JoinQueryResultDto.Builder builder = JoinQueryResultDto.newBuilder();
 
     builder.setVariableResultDto(joinQueryDto.isWithFacets() ? addAggregationTitles(variableQuery.getResultQuery(),
-      ImmutableList.<Taxonomy>builder().add(micaConfigService.getVariableTaxonomy()).addAll(opalService.getTaxonomies())
+      ImmutableList.<Taxonomy>builder().add(taxonomyService.getVariableTaxonomy()).addAll(taxonomyService.getOpalTaxonomies())
         .build(), aggregationPostProcessor()) : removeAggregations(variableQuery.getResultQuery()));
 
     builder.setDatasetResultDto(joinQueryDto.isWithFacets()
-      ? addAggregationTitles(datasetQuery.getResultQuery(), Lists.newArrayList(micaConfigService.getDatasetTaxonomy()),
+      ? addAggregationTitles(datasetQuery.getResultQuery(), Lists.newArrayList(taxonomyService.getDatasetTaxonomy()),
       null)
       : removeAggregations(datasetQuery.getResultQuery()));
 
     builder.setStudyResultDto(joinQueryDto.isWithFacets()
-      ? addAggregationTitles(studyQuery.getResultQuery(), Lists.newArrayList(micaConfigService.getStudyTaxonomy()),
+      ? addAggregationTitles(studyQuery.getResultQuery(), Lists.newArrayList(taxonomyService.getStudyTaxonomy()),
       null)
       : removeAggregations(studyQuery.getResultQuery()));
 
     builder.setNetworkResultDto(joinQueryDto.isWithFacets()
-      ? addAggregationTitles(networkQuery.getResultQuery(), Lists.newArrayList(micaConfigService.getNetworkTaxonomy()),
+      ? addAggregationTitles(networkQuery.getResultQuery(), Lists.newArrayList(taxonomyService.getNetworkTaxonomy()),
       null)
       : removeAggregations(networkQuery.getResultQuery()));
 
@@ -286,7 +282,7 @@ public class JoinQueryExecutor {
 
   protected Function<List<MicaSearch.AggregationResultDto>, List<MicaSearch.AggregationResultDto>> aggregationPostProcessor() {
     return (aggregationResultDtos) -> {
-      Map<String, MicaSearch.AggregationResultDto.Builder> buildres = opalService.getTaxonomies().stream()
+      Map<String, MicaSearch.AggregationResultDto.Builder> buildres = taxonomyService.getOpalTaxonomies().stream()
         .collect(Collectors.toMap(Taxonomy::getName, t -> {
           MicaSearch.AggregationResultDto.Builder builder = MicaSearch.AggregationResultDto.newBuilder()
             .setAggregation(t.getName());

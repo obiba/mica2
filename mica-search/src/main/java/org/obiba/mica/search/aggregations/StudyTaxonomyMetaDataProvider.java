@@ -24,8 +24,8 @@ public class StudyTaxonomyMetaDataProvider extends ConfigurationTaxonomyMetaData
 
   @Override
   protected Taxonomy getTaxonomy() {
-    Taxonomy taxonomy = micaConfigService.getStudyTaxonomy();
-    helper.addIdTerms(taxonomy, "id");
+    Taxonomy taxonomy = taxonomyService.getStudyTaxonomy();
+    helper.applyIdTerms(taxonomy, "id");
     return taxonomy;
   }
 }

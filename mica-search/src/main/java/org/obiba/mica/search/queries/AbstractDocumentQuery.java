@@ -79,6 +79,9 @@ public abstract class AbstractDocumentQuery {
   protected MicaConfigService micaConfigService;
 
   @Inject
+  protected MicaConfigService taxonomyService;
+
+  @Inject
   protected SubjectAclService subjectAclService;
 
   @Inject
