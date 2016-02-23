@@ -287,7 +287,7 @@ public class VariableQuery extends AbstractDocumentQuery {
             properties.put(field, "");
         }));
 
-      micaConfigService.getVariableTaxonomy().getVocabularies().forEach(vocabulary -> {
+      taxonomyService.getVariableTaxonomy().getVocabularies().forEach(vocabulary -> {
         String field = vocabulary.getAttributes().containsKey("field")
           ? vocabulary.getAttributeValue("field")
           : vocabulary.getName().replace('-', '.');

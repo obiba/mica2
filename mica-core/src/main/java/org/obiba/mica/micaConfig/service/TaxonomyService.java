@@ -27,11 +27,11 @@ import org.obiba.mica.study.event.StudyPublishedEvent;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.google.common.eventbus.Subscribe;
 
-@Component
+@Service
 public class TaxonomyService {
 
   @Inject
@@ -134,6 +134,7 @@ public class TaxonomyService {
     studyTaxonomy = null; // id
     networkTaxonomy = null; // studyIds
     variableTaxonomy = null; // studyIds, dceIds
+    datasetTaxonomy = null; // studyId
   }
 
   @Async
@@ -142,6 +143,7 @@ public class TaxonomyService {
     studyTaxonomy = null; // id
     networkTaxonomy = null; // studyIds
     variableTaxonomy = null; // studyIds, dceIds
+    datasetTaxonomy = null; // studyId
   }
 
   @Async

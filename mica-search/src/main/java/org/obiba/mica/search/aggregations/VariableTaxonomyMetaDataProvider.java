@@ -36,7 +36,7 @@ public class VariableTaxonomyMetaDataProvider extends ConfigurationTaxonomyMetaD
 
   @Override
   protected Taxonomy getTaxonomy() {
-    Taxonomy taxonomy = micaConfigService.getVariableTaxonomy();
+    Taxonomy taxonomy = taxonomyService.getVariableTaxonomy();
     studyHelper.applyIdTerms(taxonomy, "studyIds");
     datasetHelper.applyIdTerms(taxonomy, "datasetId");
     networkHelper.applyIdTerms(taxonomy, "networkId");

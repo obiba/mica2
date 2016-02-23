@@ -47,6 +47,11 @@ public class StudyIndexConfiguration extends AbstractIndexConfiguration implemen
     // don't analyze YearMonth fields, preserve values as yyyy-mm
     mapping.startObject("populations")
       .startObject("properties")
+        .startObject("selectionCriteria")
+          .startObject("properties")
+            .startObject("countriesIso").field("type", "string").field("index", "not_analyzed").endObject()
+          .endObject()
+        .endObject()
         .startObject("dataCollectionEvents")
           .startObject("properties")
             .startObject("start")
