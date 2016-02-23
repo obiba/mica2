@@ -47,8 +47,7 @@ public class DceIdAggregationMetaDataHelper extends AbstractIdAggregationMetaDat
         if(dces == null) return;
 
         dces.forEach(dce -> {
-          MonikerData md = new MonikerData(population.getId(), dce.getId(), study.getAcronym(), population.getName(),
-            dce.getName());
+          MonikerData md = new MonikerData(study.getAcronym(), population, dce);
 
           LocalizedString title = new LocalizedString();
           study.getAcronym().entrySet().forEach(e -> title.put(e.getKey(), md.getTitle(e.getKey())));
@@ -74,24 +73,24 @@ public class DceIdAggregationMetaDataHelper extends AbstractIdAggregationMetaDat
     LocalizedString studyAcronym;
     LocalizedString populationName;
     LocalizedString dceName;
-    String populationId;
-    String dceId;
+    LocalizedString populationDescription;
+    LocalizedString dceDescription;
 
-    public MonikerData(String populationId, String dceId, LocalizedString studyAcronym, LocalizedString populationName, LocalizedString dceName) {
+    MonikerData(LocalizedString studyAcronym, Population population, DataCollectionEvent dce) {
       this.studyAcronym = studyAcronym;
-      this.populationName = populationName;
-      this.dceName = dceName;
-      this.populationId = populationId;
-      this.dceId = dceId;
+      populationName = population.getName();
+      dceName = dce.getName();
+      populationDescription = population.getDescription();
+      dceDescription = dce.getDescription();
     }
 
     public String getTitle(String locale) {
-      return String.format("%s:%s:%s", studyAcronym.get(locale), populationId, dceId);
+      return String.format("%s:%s:%s", studyAcronym.get(locale), populationName.get(locale), dceName.get(locale));
     }
 
     public String getDescription(String locale) {
-      return String.format("%s:%s:%s", studyAcronym.get(locale), populationName.get(locale),
-        dceName.get(locale));
+      return String.format("%s:%s:%s", studyAcronym.get(locale), populationDescription != null ? populationDescription.get(locale) : "",
+        dceDescription != null ? dceDescription.get(locale) : "");
     }
   }
 
