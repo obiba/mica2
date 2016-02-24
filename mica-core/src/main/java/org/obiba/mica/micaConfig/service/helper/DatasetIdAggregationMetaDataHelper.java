@@ -18,10 +18,10 @@ import javax.inject.Inject;
 
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
-import org.obiba.mica.micaConfig.service.helper.AbstractIdAggregationMetaDataHelper;
-import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
+
+import static org.obiba.mica.security.SubjectUtils.sudo;
 
 @Component
 public class DatasetIdAggregationMetaDataHelper extends AbstractIdAggregationMetaDataHelper {
@@ -31,7 +31,7 @@ public class DatasetIdAggregationMetaDataHelper extends AbstractIdAggregationMet
 
   @Cacheable(value="aggregations-metadata", key = "'dataset'")
   public Map<String, AggregationMetaDataProvider.LocalizedMetaData> getDatasets() {
-    List<Dataset> datasets= publishedDatasetService.findAll();
+    List<Dataset> datasets = sudo(() -> publishedDatasetService.findAll());
     return datasets.stream()
       .collect(
         Collectors.toMap(Dataset::getId, d -> new AggregationMetaDataProvider.LocalizedMetaData(d.getAcronym(), d.getName())));

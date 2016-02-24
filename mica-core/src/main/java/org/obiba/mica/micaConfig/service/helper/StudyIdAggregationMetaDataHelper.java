@@ -22,6 +22,8 @@ import org.obiba.mica.study.service.PublishedStudyService;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
+import static org.obiba.mica.security.SubjectUtils.sudo;
+
 @Component
 public class StudyIdAggregationMetaDataHelper extends AbstractIdAggregationMetaDataHelper {
 
@@ -30,7 +32,8 @@ public class StudyIdAggregationMetaDataHelper extends AbstractIdAggregationMetaD
 
   @Cacheable(value = "aggregations-metadata", key = "'study'")
   public Map<String, AggregationMetaDataProvider.LocalizedMetaData> getStudies() {
-    List<Study> studies = publishedStudyService.findAll();
+    List<Study> studies = sudo(() -> publishedStudyService.findAll());
+
     return studies.stream().collect(Collectors.toMap(AbstractGitPersistable::getId,
       m -> new AggregationMetaDataProvider.LocalizedMetaData(m.getAcronym(), m.getName())));
   }

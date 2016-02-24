@@ -27,6 +27,8 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Maps;
 
+import static org.obiba.mica.security.SubjectUtils.sudo;
+
 @Component
 public class DceIdAggregationMetaDataHelper extends AbstractIdAggregationMetaDataHelper {
 
@@ -35,7 +37,7 @@ public class DceIdAggregationMetaDataHelper extends AbstractIdAggregationMetaDat
 
   @Cacheable(value = "aggregations-metadata", key = "'dce'")
   public Map<String, AggregationMetaDataProvider.LocalizedMetaData> getDces() {
-    List<Study> studies = publishedStudyService.findAll();
+    List<Study> studies = sudo(() -> publishedStudyService.findAll());
     Map<String, AggregationMetaDataProvider.LocalizedMetaData> res = Maps.newHashMap();
 
     studies.forEach(study -> {
