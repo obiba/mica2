@@ -24,7 +24,7 @@ public abstract class AbstractIdAggregationMetaDataHelper {
 
   public void applyIdTerms(Taxonomy taxonomy, String idVocabularyName) {
     Optional<Vocabulary> idVocabulary = taxonomy.getVocabularies().stream()
-      .filter(v -> v.getName().equals(idVocabularyName)).findFirst();
+      .filter(v -> v.getName().equals(idVocabularyName) && !v.hasTerms()).findFirst();
 
     if (idVocabulary.isPresent()) {
       applyTerms(idVocabulary.get());

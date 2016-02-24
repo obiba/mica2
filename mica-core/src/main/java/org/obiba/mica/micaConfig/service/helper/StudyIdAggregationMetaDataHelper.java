@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.springframework.cache.annotation.Cacheable;
@@ -27,11 +28,11 @@ public class StudyIdAggregationMetaDataHelper extends AbstractIdAggregationMetaD
   @Inject
   PublishedStudyService publishedStudyService;
 
-  @Cacheable(value="aggregations-metadata", key = "'study'")
+  @Cacheable(value = "aggregations-metadata", key = "'study'")
   public Map<String, AggregationMetaDataProvider.LocalizedMetaData> getStudies() {
     List<Study> studies = publishedStudyService.findAll();
-    return studies.stream().collect(Collectors
-      .toMap(s -> s.getId(), m -> new AggregationMetaDataProvider.LocalizedMetaData(m.getAcronym(), m.getName())));
+    return studies.stream().collect(Collectors.toMap(AbstractGitPersistable::getId,
+      m -> new AggregationMetaDataProvider.LocalizedMetaData(m.getAcronym(), m.getName())));
   }
 
   @Override
