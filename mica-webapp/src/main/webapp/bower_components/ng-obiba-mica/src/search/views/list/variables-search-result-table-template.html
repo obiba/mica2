@@ -16,7 +16,7 @@
 
         <tr ng-repeat="summary in summaries">
           <td>
-            <a href>
+            <a href="{{PageUrlService.VariablePage(summary.id)}}">
                 {{summary.name}}
             </a>
           </td>

@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-02-22
+ * Date: 2016-02-23
  */
 'use strict';
 
@@ -2644,6 +2644,10 @@ angular.module('obiba.mica.search')
       var dsType = (type === 'Study' ? 'study' : 'harmonization') + '-dataset';
       var result = id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('DatasetPage'), {':type': dsType, ':dataset': id}) : '';
       return result;
+    };
+
+    this.VariablePage = function(id) {
+      return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('VariablePage'), {':variable': id}) : '';
     };
 
     this.downloadCoverage = function(query) {
@@ -5958,10 +5962,9 @@ angular.module("search/views/list/variables-search-result-table-template.html", 
     "        </tr>\n" +
     "        </thead>\n" +
     "        <tbody>\n" +
-    "\n" +
     "        <tr ng-repeat=\"summary in summaries\">\n" +
     "          <td>\n" +
-    "            <a href>\n" +
+    "            <a href=\"{{PageUrlService.VariablePage(summary.id)}}\">\n" +
     "                {{summary.name}}\n" +
     "            </a>\n" +
     "          </td>\n" +
