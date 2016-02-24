@@ -120,6 +120,10 @@ angular.module('obiba.mica.search')
       return result;
     };
 
+    this.VariablePage = function(id) {
+      return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('VariablePage'), {':variable': id}) : '';
+    };
+
     this.downloadCoverage = function(query) {
       return StringUtils.replaceAll(ngObibaMicaUrl.getUrl('JoinQueryCoverageDownloadResource'), {':query': query});
     };
