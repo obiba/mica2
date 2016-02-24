@@ -5,12 +5,13 @@
   <obiba-alert id="SearchController"></obiba-alert>
 
   <!-- Nav tabs -->
-  <ul class="nav nav-tabs" role="tablist">
-    <li ng-repeat="tab in tabs" role="presentation" ng-class="{ active: tab === lang }"><a href role="tab" ng-click="setLocale(tab)">{{'language.' + tab | translate}}</a></li>
+  <ul class="nav nav-tabs" role="tablist" ng-if="tabs && tabs.length>1">
+    <li ng-repeat="tab in tabs" role="presentation" ng-class="{ active: tab === lang }"><a href role="tab"
+      ng-click="setLocale(tab)">{{'language.' + tab | translate}}</a></li>
   </ul>
 
   <!-- Classifications region -->
-  <div class="tab-content voffset4">
+  <div class="{{tabs && tabs.length>1 ? 'tab-content voffset4' : ''}}">
     <!--<div>-->
     <div class="row">
       <div class="col-md-3"></div>
@@ -55,19 +56,23 @@
       <div class="col-md-3"></div>
       <div class="col-md-6">
         <ul class="nav nav-pills">
-          <li ng-show="settingsDisplay.variables.showSearchTab" ng-class="{'active': taxonomies.target === 'variable' && taxonomiesShown}"
+          <li ng-show="settingsDisplay.variables.showSearchTab"
+            ng-class="{'active': taxonomies.target === 'variable' && taxonomiesShown}"
             title="{{'variable-classifications' | translate}}">
             <a ng-click="selectTaxonomyTarget('variable')" translate>variables</a>
           </li>
-          <li ng-show="settingsDisplay.datasets.showSearchTab" ng-class="{'active': taxonomies.target === 'dataset' && taxonomiesShown}"
+          <li ng-show="settingsDisplay.datasets.showSearchTab"
+            ng-class="{'active': taxonomies.target === 'dataset' && taxonomiesShown}"
             title="{{'dataset-classifications' | translate}}">
             <a ng-click="selectTaxonomyTarget('dataset')" translate>datasets</a>
           </li>
-          <li ng-show="settingsDisplay.studies.showSearchTab" ng-class="{'active': taxonomies.target === 'study' && taxonomiesShown}"
+          <li ng-show="settingsDisplay.studies.showSearchTab"
+            ng-class="{'active': taxonomies.target === 'study' && taxonomiesShown}"
             title="{{'study-classifications' | translate}}">
             <a ng-click="selectTaxonomyTarget('study')" translate>studies</a>
           </li>
-          <li ng-show="settingsDisplay.networks.showSearchTab" ng-class="{'active': taxonomies.target === 'network' && taxonomiesShown}"
+          <li ng-show="settingsDisplay.networks.showSearchTab"
+            ng-class="{'active': taxonomies.target === 'network' && taxonomiesShown}"
             title="{{'network-classifications' | translate}}">
             <a ng-click="selectTaxonomyTarget('network')" translate>networks</a>
           </li>
@@ -75,30 +80,30 @@
       </div>
     </div>
     <div id="taxonomies" class="collapse">
-      <div ng-include="'search/views/classifications/taxonomies-view.html'"></div>
+      <div ng-include="'search/views/classifications/taxonomies-view.html'" class="voffset2"></div>
     </div>
   </div>
 
   <!-- Search criteria region -->
-  <div class="voffset3">
-    <div class="row">
-      <div class="col-md-12">
-        <div criteria-root item="search.criteria" query="search.query" on-remove="removeCriteriaItem" on-refresh="refreshQuery"></div>
-      </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div criteria-root item="search.criteria" query="search.query" on-remove="removeCriteriaItem"
+        on-refresh="refreshQuery"></div>
     </div>
   </div>
+
 
   <!-- Results region -->
   <div class="voffset3" ng-if="search.query">
     <result-panel display="search.display"
-                  type="search.type"
-                  bucket="search.bucket"
-                  query="search.executedQuery"
-                  result="search.result"
-                  loading="search.loading"
-                  on-type-changed="onTypeChanged"
-                  on-bucket-changed="onBucketChanged"
-                  on-paginate="onPaginate"
-                  lang="lang"></result-panel>
+      type="search.type"
+      bucket="search.bucket"
+      query="search.executedQuery"
+      result="search.result"
+      loading="search.loading"
+      on-type-changed="onTypeChanged"
+      on-bucket-changed="onBucketChanged"
+      on-paginate="onPaginate"
+      lang="lang"></result-panel>
   </div>
 </div>
