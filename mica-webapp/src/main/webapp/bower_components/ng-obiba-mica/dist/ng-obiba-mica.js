@@ -4517,10 +4517,11 @@ angular.module('obiba.mica.graphics')
             options: {
               backgroundColor: {fill: 'transparent'},
               colors: [
-                '#4db300',
-                '#409400',
-                '#317000',
-                '#235200'
+                '#b8cbed',
+                '#e5edfb',
+                '#cfddf5',
+                '#a0b8e2',
+                '#88a4d4'
               ]
             }
           },
@@ -4530,11 +4531,11 @@ angular.module('obiba.mica.graphics')
             options: {
               legend: {position: 'none'},
               backgroundColor: {fill: 'transparent'},
-              colors: ['#006600',
-                '#009900',
-                '#009966',
-                '#009933',
-                '#66CC33']
+              colors: ['#b8cbed',
+                '#e5edfb',
+                '#cfddf5',
+                '#a0b8e2',
+                '#88a4d4']
             }
           },
           biologicalSamples: {
@@ -4542,11 +4543,11 @@ angular.module('obiba.mica.graphics')
             title : 'graphics.bio-samples-chart-title',
             options: {
               backgroundColor: {fill: 'transparent'},
-              colors: ['#006600',
-                '#009900',
-                '#009966',
-                '#009933',
-                '#66CC33']
+              colors: ['#b8cbed',
+                '#e5edfb',
+                '#cfddf5',
+                '#a0b8e2',
+                '#88a4d4']
             }
           }
 
