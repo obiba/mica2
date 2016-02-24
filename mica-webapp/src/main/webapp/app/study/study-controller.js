@@ -414,6 +414,9 @@ mica.study
           templateUrl: 'app/study/views/population/dce/data-collection-event-view.html',
           controller: 'StudyPopulationDceModalController',
           resolve: {
+            lang: function() {
+              return ActiveTabService.getActiveTab($scope.tabs).lang;
+            },
             dce: function () {
               return dce;
             },
@@ -492,9 +495,27 @@ mica.study
     };
   }])
 
-  .controller('StudyPopulationDceModalController', ['$scope', '$uibModalInstance', '$locale', '$location', 'dce', 'study', 'path',
-    function ($scope, $uibModalInstance, $locale, $location, dce, study, path) {
+  .controller('StudyPopulationDceModalController', [
+    '$scope',
+    '$uibModalInstance',
+    '$locale',
+    '$location',
+    'lang',
+    'dce',
+    'study',
+    'path',
+    'StudyTaxonomyService',
+    function ($scope,
+              $uibModalInstance,
+              $locale,
+              $location,
+              lang,
+              dce,
+              study,
+              path,
+              StudyTaxonomyService) {
       $scope.months = $locale.DATETIME_FORMATS.MONTH;
+      $scope.lang = lang;
       $scope.dce = dce;
       $scope.study = study;
       $scope.path = path;
@@ -507,6 +528,13 @@ mica.study
         $uibModalInstance.close();
         $location.path(path.root).search({p: path.entity});
       };
+
+      $scope.getTermLabels = function(vocabularyName, terms) {
+        var result = terms.map(function(term){
+          return StudyTaxonomyService.getLabel(vocabularyName, term, $scope.lang);
+        });
+        return result.join(', ');
+      };
     }])
 
   .controller('StudyPopulationController', ['$rootScope',
@@ -517,7 +545,6 @@ mica.study
     'DraftStudyResource',
     'MicaConfigResource',
     'FormServerValidation',
-    'MicaStudiesConfigResource',
     'StudyTaxonomyService',
     'MicaUtil',
     'ActiveTabService',
@@ -530,7 +557,6 @@ mica.study
               DraftStudyResource,
               MicaConfigResource,
               FormServerValidation,
-              MicaStudiesConfigResource,
               StudyTaxonomyService,
               MicaUtil,
               ActiveTabService,
@@ -752,10 +778,30 @@ mica.study
       };
     }])
 
-  .controller('StudyPopulationDceController', ['$rootScope', '$scope', '$routeParams', '$location', '$log',
-    'DraftStudyResource', 'MicaConfigResource', 'FormServerValidation', 'MicaUtil',
-    function ($rootScope, $scope, $routeParams, $location, $log, DraftStudyResource, MicaConfigResource,
-              FormServerValidation, MicaUtil) {
+  .controller('StudyPopulationDceController', [
+    '$rootScope',
+    '$scope',
+    '$routeParams',
+    '$location',
+    '$log',
+    'DraftStudyResource',
+    'MicaConfigResource',
+    'FormServerValidation',
+    'MicaUtil',
+    'StudyTaxonomyService',
+    'ActiveTabService',
+    function ($rootScope,
+              $scope,
+              $routeParams,
+              $location,
+              $log,
+              DraftStudyResource,
+              MicaConfigResource,
+              FormServerValidation,
+              MicaUtil,
+              StudyTaxonomyService,
+              ActiveTabService
+    ) {
       $scope.dce = {};
       $scope.fileTypes = '.doc, .docx, .odm, .odt, .gdoc, .pdf, .txt  .xml  .xls, .xlsx, .ppt';
       $scope.defaultMinYear = 1900;
@@ -805,12 +851,13 @@ mica.study
           $scope.attachments =
             $scope.dce.attachments && $scope.dce.attachments.length > 0 ? $scope.dce.attachments : [];
 
-          $scope.dataSources =
-            ['questionnaires', 'physical_measures', 'administratives_databases', 'biological_samples', 'others'];
-          $scope.bioSamples =
-            ['blood', 'cord_blood', 'buccal_cells', 'tissues', 'saliva', 'urine', 'hair', 'nail', 'others'];
-          $scope.administrativeDatabases =
-            ['health_databases', 'vital_statistics_databases', 'socioeconomic_databases', 'environmental_databases'];
+
+          StudyTaxonomyService.get(function() {
+            var lang = ActiveTabService.getActiveTab($scope.tabs).lang;
+            $scope.dataSources = StudyTaxonomyService.getTerms('populations-dataCollectionEvents-dataSources', lang);
+            $scope.bioSamples = StudyTaxonomyService.getTerms('populations-dataCollectionEvents-bioSamples', lang);
+            $scope.administrativeDatabases = StudyTaxonomyService.getTerms('populations-dataCollectionEvents-administrativeDatabases', lang);
+          });
 
         } else {
           // TODO add error popup
@@ -952,7 +999,17 @@ mica.study
               ActiveTabService,
               FormServerValidation) {
 
-      $scope.getActiveTab = ActiveTabService.getActiveTab;
+
+      MicaConfigResource.get(function (micaConfig) {
+        $scope.tabs = [];
+        $scope.languages = [];
+        micaConfig.languages.forEach(function (lang) {
+          $scope.tabs.push({lang: lang});
+          $scope.languages.push(lang);
+        });
+
+      });
+
       $scope.getActiveTab = ActiveTabService.getActiveTab;
       $scope.revision = {comment: null};
       $scope.today = new Date();
@@ -979,13 +1036,6 @@ mica.study
       $scope.accessTypes = [];
       $scope.methodDesignTypes = [];
       $scope.methodRecruitmentTypes = [];
-      StudyTaxonomyService.get(function() {
-        var lang = ActiveTabService.getActiveTab($scope.tabs).lang;
-        $scope.methodDesignTypes = StudyTaxonomyService.getTerms('methods-designs', lang);
-        $scope.accessTypes = StudyTaxonomyService.getTerms('access', lang);
-        $scope.methodRecruitmentTypes = StudyTaxonomyService.getTerms('methods-recruitments', lang);
-      });
-
       $scope.defaultMinYear = 1900;
       $scope.defaultMaxYear = 9999;
       $scope.fileTypes = '.doc, .docx, .odm, .odt, .gdoc, .pdf, .txt  .xml  .xls, .xlsx, .ppt';
@@ -1008,15 +1058,11 @@ mica.study
         }
       }) : {attachments: [], maelstromAuthorization: {date: null}, specificAuthorization: {date: null}};
 
-      $log.debug('Edit study', $scope.study);
-
-      MicaConfigResource.get(function (micaConfig) {
-        $scope.tabs = [];
-        $scope.languages = [];
-        micaConfig.languages.forEach(function (lang) {
-          $scope.tabs.push({lang: lang});
-          $scope.languages.push(lang);
-        });
+      StudyTaxonomyService.get(function() {
+        var lang = ActiveTabService.getActiveTab($scope.tabs).lang;
+        $scope.methodDesignTypes = StudyTaxonomyService.getTerms('methods-designs', lang);
+        $scope.accessTypes = StudyTaxonomyService.getTerms('access', lang);
+        $scope.methodRecruitmentTypes = StudyTaxonomyService.getTerms('methods-recruitments', lang);
       });
 
       $scope.save = function () {

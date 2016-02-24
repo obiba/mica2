@@ -110,7 +110,7 @@ mica.study
 
   .service('StudyTaxonomyService', ['MicaStudiesConfigResource',
     function(MicaStudiesConfigResource) {
-      var studiesConfig = null;
+      var studyTaxonomy = null;
 
       function getLocalizedLabel(localizedString, lang) {
         var result = localizedString.filter(function (t) {
@@ -120,37 +120,31 @@ mica.study
         return (result || [{text: null}])[0].text;
       }
 
-
       this.get = function(userSuccessCallback, userErrorCallback) {
+
         MicaStudiesConfigResource.get().$promise.then(
-          function onSuccess(taxonomies) {
-            if (taxonomies) {
-              var result = taxonomies.filter(function(taxonomy) {
-                return 'Mlstr_study' === taxonomy.name;
-              });
+          function onSuccess(response) {
+            studyTaxonomy = response.pop();
 
-              studiesConfig = result && result.length > 0 ? result[0] : null;
-
-              if (studiesConfig){
-                if (userSuccessCallback) {
-                  userSuccessCallback();
-                }
-              } else if (userErrorCallback) {
-                userErrorCallback();
+            if (studyTaxonomy){
+              if (userSuccessCallback) {
+                userSuccessCallback();
               }
-
+            } else if (userErrorCallback) {
+              userErrorCallback();
             }
+
           },
           userErrorCallback
         );
       };
 
       this.getLabel = function (vocabulary, term, lang) {
-        if (!studiesConfig || !vocabulary || !term) {
+        if (!studyTaxonomy || !vocabulary || !term) {
           return;
         }
 
-        var result = studiesConfig.vocabularies.filter(function (v) {
+        var result = studyTaxonomy.vocabularies.filter(function (v) {
           return v.name === vocabulary;
         });
 
@@ -173,7 +167,7 @@ mica.study
       };
 
       this.getTerms = function(vocabulary, lang) {
-        var opts = studiesConfig.vocabularies.map(function (v) {
+        var opts = studyTaxonomy.vocabularies.map(function (v) {
           if (v.name === vocabulary) {
             return v.terms.map(function (t) {
               return {name: t.name, label: getLocalizedLabel(t.title, lang) || t.name};
