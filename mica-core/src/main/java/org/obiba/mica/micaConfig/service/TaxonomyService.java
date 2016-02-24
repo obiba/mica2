@@ -30,18 +30,16 @@ import org.obiba.mica.network.event.NetworkUnpublishedEvent;
 import org.obiba.mica.study.event.StudyPublishedEvent;
 import org.obiba.mica.study.event.StudyUnpublishedEvent;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
+import org.obiba.opal.core.domain.taxonomy.Term;
+import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 @Service
 public class TaxonomyService {
-
-  @Inject
-  private EventBus eventBus;
 
   @Inject
   private OpalService opalService;
@@ -129,8 +127,6 @@ public class TaxonomyService {
     datasetTaxonomy = null;
     variableTaxonomy = null;
     txLock.unlock();
-    initialize();
-    //eventBus.post(new TaxonomiesUpdatedEvent());
   }
 
   private void initialize() {
@@ -147,35 +143,52 @@ public class TaxonomyService {
 
   private void initializeNetworkTaxonomy() {
     if(networkTaxonomy != null) return;
-    networkTaxonomy = new Taxonomy();
-    BeanUtils.copyProperties(micaConfigService.getNetworkTaxonomy(), networkTaxonomy);
+    networkTaxonomy = copy(micaConfigService.getNetworkTaxonomy());
     networkHelper.applyIdTerms(networkTaxonomy, "id");
     studyHelper.applyIdTerms(networkTaxonomy, "studyIds");
   }
 
   private void initializeStudyTaxonomy() {
     if(studyTaxonomy != null) return;
-    studyTaxonomy = new Taxonomy();
-    BeanUtils.copyProperties(micaConfigService.getStudyTaxonomy(), studyTaxonomy);
+    studyTaxonomy = copy(micaConfigService.getStudyTaxonomy());
     studyHelper.applyIdTerms(studyTaxonomy, "id");
   }
 
   private void initializeDatasetTaxonomy() {
     if(datasetTaxonomy != null) return;
-    datasetTaxonomy = new Taxonomy();
-    BeanUtils.copyProperties(micaConfigService.getDatasetTaxonomy(), datasetTaxonomy);
+    datasetTaxonomy = copy(micaConfigService.getDatasetTaxonomy());
     datasetHelper.applyIdTerms(datasetTaxonomy, "id");
     networkHelper.applyIdTerms(datasetTaxonomy, "networkId");
   }
 
   private void initializeVariableTaxonomy() {
     if(variableTaxonomy != null) return;
-    variableTaxonomy = new Taxonomy();
-    BeanUtils.copyProperties(micaConfigService.getVariableTaxonomy(), variableTaxonomy);
+    variableTaxonomy = copy(micaConfigService.getVariableTaxonomy());
     studyHelper.applyIdTerms(variableTaxonomy, "studyIds");
     datasetHelper.applyIdTerms(variableTaxonomy, "datasetId");
     networkHelper.applyIdTerms(variableTaxonomy, "networkId");
     dceHelper.applyIdTerms(variableTaxonomy, "dceIds");
+  }
+
+  private Taxonomy copy(Taxonomy source) {
+    Taxonomy target = new Taxonomy();
+    BeanUtils.copyProperties(source, target, "vocabularies");
+    if(source.hasVocabularies()) {
+      source.getVocabularies().forEach(sourceVoc -> {
+        Vocabulary targetVoc = new Vocabulary();
+        BeanUtils.copyProperties(sourceVoc, targetVoc, "terms");
+        if(sourceVoc.hasTerms()) {
+          sourceVoc.getTerms().forEach(sourceTerm -> {
+            Term targetTerm = new Term();
+            BeanUtils.copyProperties(sourceTerm, targetTerm);
+            targetVoc.addTerm(targetTerm);
+          });
+        }
+        target.addVocabulary(targetVoc);
+      });
+    }
+
+    return target;
   }
 
   //
