@@ -8,12 +8,11 @@
         <tr>
           <th translate>name</th>
           <th translate>label</th>
-          <th translate>study</th>
-          <th translate>dataset</th>
+          <th translate ng-if="options.showVariablesStudiesColumn">study</th>
+          <th translate ng-if="options.showVariablesDatasetsColumn">dataset</th>
         </tr>
         </thead>
         <tbody>
-
         <tr ng-repeat="summary in summaries">
           <td>
             <a href="{{PageUrlService.VariablePage(summary.id)}}">
@@ -23,12 +22,12 @@
           <td>
             <localized value="summary.variableLabel" lang="lang"></localized>
           </td>
-          <td>
+          <td ng-if="options.showVariablesStudiesColumn">
             <a ng-href="{{PageUrlService.studyPage(summary.studyId)}}">
               <localized value="summary.studyAcronym" lang="lang"></localized>
             </a>
           </td>
-          <td>
+          <td  ng-if="options.showVariablesDatasetsColumn">
             <a ng-href="{{PageUrlService.datasetPage(summary.datasetId, summary.variableType)}}">
               <localized value="summary.datasetAcronym" lang="lang"></localized>
             </a>

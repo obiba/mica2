@@ -1,0 +1,13 @@
+<uib-tab ng-show="options.variables.showSearchTab" active="activeTarget.variables"
+    ng-click="selectTarget(QUERY_TYPES.VARIABLES)"
+    heading="{{'variables' | translate}} ({{result.list.variableResultDto.totalHits}})">
+          <span search-result-pagination
+              class="pull-right"
+              target="QUERY_TARGETS.VARIABLE"
+              total-hits="result.list.variableResultDto.totalHits"
+              on-change="onPaginate"></span>
+
+  <span class="clearfix"></span>
+  <variables-result-table loading="loading"
+      summaries="result.list.variableResultDto['obiba.mica.DatasetVariableResultDto.result'].summaries"></variables-result-table>
+</uib-tab>

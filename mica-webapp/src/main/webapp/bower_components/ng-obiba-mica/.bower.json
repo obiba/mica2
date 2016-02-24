@@ -30,11 +30,11 @@
     "angular-scenario": "1.4.8"
   },
   "homepage": "https://github.com/obiba/ng-obiba-mica",
-  "_release": "75646648a9",
+  "_release": "dda93b81b6",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "75646648a9a382ae941a54e658f1636b200fe30a"
+    "commit": "dda93b81b603f438d9c7c3d8b9ecebc3087fca92"
   },
   "_source": "https://github.com/obiba/ng-obiba-mica.git",
   "_target": "*",

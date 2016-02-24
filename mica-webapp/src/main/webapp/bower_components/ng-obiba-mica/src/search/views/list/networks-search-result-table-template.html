@@ -2,32 +2,23 @@
   <div ng-if="loading" class="loading"></div>
 
   <div ng-show="summaries.length > 0">
-
-    <div class="row voffset2">
-      <div class="col-xs-4">
-      </div>
-      <div class="col-xs-8">
-        <dir-pagination-controls class="pull-right"></dir-pagination-controls>
-      </div>
-    </div>
-
     <div class="table-responsive">
       <table class="table table-bordered table-striped">
         <thead>
         <tr>
           <th translate>acronym</th>
           <th translate>name</th>
-          <th translate>studies</th>
-          <th translate colspan="2">datasets</th>
-          <th translate>variables</th>
+          <th translate ng-if="options.showNetworksStudiesColumn">studies</th>
+          <th translate ng-attr-colspan="{{options.showNetworksStudyDatasetColumn + options.showNetworksHarmonizedDatasetColumn}}">datasets</th>
+          <th translate ng-if="options.showNetworksVariablesColumn">variables</th>
         </tr>
         <tr>
           <th></th>
           <th></th>
-          <th></th>
-          <th translate>study</th>
-          <th translate>harmonization</th>
-          <th></th>
+          <th ng-if="options.showNetworksStudiesColumn"></th>
+          <th translate ng-if="options.showNetworksStudyDatasetColumn">study</th>
+          <th translate ng-if="options.showNetworksHarmonizedDatasetColumn">harmonization</th>
+          <th ng-if="options.showNetworksVariablesColumn"></th>
         </tr>
         </thead>
         <tbody>
@@ -41,16 +32,16 @@
           <td>
             <localized value="summary.name" lang="lang"></localized>
           </td>
-          <td>
+          <td ng-if="options.showNetworksStudiesColumn">
             {{summary['obiba.mica.CountStatsDto.networkCountStats'].studies}}
           </td>
-          <td>
+          <td ng-if="options.showNetworksStudyDatasetColumn">
             {{summary['obiba.mica.CountStatsDto.networkCountStats'].studyDatasets}}
           </td>
-          <td>
+          <td ng-if="options.showNetworksHarmonizedDatasetColumn">
             {{summary['obiba.mica.CountStatsDto.networkCountStats'].harmonizationDatasets}}
           </td>
-          <td>
+          <td ng-if="options.showNetworksVariablesColumn">
             {{summary['obiba.mica.CountStatsDto.networkCountStats'].variables}}
           </td>
         </tr>

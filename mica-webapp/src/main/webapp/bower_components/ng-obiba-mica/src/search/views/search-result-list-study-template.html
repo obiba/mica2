@@ -1,0 +1,12 @@
+<uib-tab ng-show="options.studies.showSearchTab" active="activeTarget.studies"
+    ng-click="selectTarget(QUERY_TYPES.STUDIES)"
+    heading="{{'studies' | translate}} ({{result.list.studyResultDto.totalHits}})">
+          <span search-result-pagination
+              class="pull-right"
+              target="QUERY_TARGETS.STUDY"
+              total-hits="result.list.studyResultDto.totalHits"
+              on-change="onPaginate"></span>
+  <span class="clearfix"></span>
+  <studies-result-table loading="loading"
+      summaries="result.list.studyResultDto['obiba.mica.StudyResultDto.result'].summaries"></studies-result-table>
+</uib-tab>

@@ -15,6 +15,7 @@
 /* global QUERY_TYPES */
 /* global BUCKET_TYPES */
 /* global RQL_NODE */
+/* global DISPLAY_TYPES */
 /* global CriteriaIdGenerator */
 /* global targetToType */
 
@@ -52,12 +53,6 @@ function CriterionState() {
   };
 }
 
-var DISPLAY_TYPES = {
-  LIST: 'list',
-  COVERAGE: 'coverage',
-  GRAPHICS: 'graphics'
-};
-
 angular.module('obiba.mica.search')
 
   .controller('SearchController', [
@@ -76,7 +71,6 @@ angular.module('obiba.mica.search')
     'AlertService',
     'ServerErrorUtils',
     'LocalizedValues',
-    'ObibaSearchConfig',
     'RqlQueryService',
     'RqlQueryUtils',
     'SearchContext',
@@ -95,28 +89,34 @@ angular.module('obiba.mica.search')
               AlertService,
               ServerErrorUtils,
               LocalizedValues,
-              ObibaSearchConfig,
               RqlQueryService,
               RqlQueryUtils,
               SearchContext) {
-      $scope.lang = LocalizedValues.getLocal();
-
-      ngObibaMicaSearch.getLocale(function (locales) {
-        if (angular.isArray(locales)) {
-          $scope.tabs = locales;
-          $scope.setLocale(locales[0]);
-        } else {
-          $scope.setLocale(locales || $scope.lang);
-        }
-      });
-
-      $scope.setLocale = function (locale) {
-        $scope.lang = locale;
-        SearchContext.setLocale($scope.lang);
-        executeSearchQuery();
+      $scope.options = ngObibaMicaSearch.getOptions();
+      var searchTaxonomyDisplay = {
+        variable: $scope.options.variables.showSearchTab,
+        dataset: $scope.options.datasets.showSearchTab,
+        study: $scope.options.studies.showSearchTab,
+        network: $scope.options.networks.showSearchTab
       };
-
-      $scope.settingsDisplay = ObibaSearchConfig.getOptions();
+      $scope.taxonomyTabsOrder = $scope.options.taxonomyTabsOrder.filter(function (t) {
+        return searchTaxonomyDisplay[t];
+      });
+      $scope.searchTabsOrder = $scope.options.searchTabsOrder;
+      $scope.resultTabsOrder = $scope.options.resultTabsOrder.filter(function (t) {
+        return searchTaxonomyDisplay[t];
+      });
+      $scope.lang = LocalizedValues.getLocal();
+      $scope.metaTaxonomy = TaxonomyResource.get({
+        target: 'taxonomy',
+        taxonomy: 'Mica_metataxonomy'
+      });
+      $scope.taxonomyTypeMap = { //backwards compatibility for pluralized naming in configs.
+        variable: 'variables',
+        study: 'studies',
+        network: 'networks',
+        dataset: 'datasets'
+      };
 
       function onError(response) {
         AlertService.alert({
@@ -146,16 +146,7 @@ angular.module('obiba.mica.search')
       }
 
       function getDefaultQueryType() {
-        if ($scope.settingsDisplay.variables.showSearchTab) {
-          return QUERY_TYPES.VARIABLES;
-        }
-        else {
-          var result = Object.keys($scope.settingsDisplay).filter(function (key) {
-            return $scope.settingsDisplay[key].showSearchTab === 1;
-          });
-
-          return result[result.length - 1];
-        }
+        return $scope.taxonomyTypeMap[$scope.resultTabsOrder[0]];
       }
 
       function getDefaultBucketType() {
@@ -163,24 +154,27 @@ angular.module('obiba.mica.search')
         return BUCKET_TYPES.STUDYIDS;
       }
 
+      function getDefaultDisplayType() {
+        return $scope.searchTabsOrder[0] || DISPLAY_TYPES.LIST;
+      }
+
       function validateQueryData() {
         try {
           var search = $location.search();
           var type = search.type || getDefaultQueryType();
           var bucket = search.bucket || getDefaultBucketType();
-          var display = search.display || DISPLAY_TYPES.LIST;
+          var display = search.display || getDefaultDisplayType();
           var query = search.query || '';
           validateType(type);
           validateBucket(bucket);
           validateDisplay(display);
-
           $scope.search.type = type;
           $scope.search.bucket = bucket;
           $scope.search.display = display;
           $scope.search.query = query;
           $scope.search.rqlQuery = new RqlParser().parse(query);
-          return true;
 
+          return true;
         } catch (e) {
           AlertService.alert({
             id: 'SearchController',
@@ -250,7 +244,7 @@ angular.module('obiba.mica.search')
             case DISPLAY_TYPES.GRAPHICS:
               $scope.search.executedQuery = RqlQueryService.prepareGraphicsQuery(localizedQuery,
                 ['methods.designs', 'populations.selectionCriteria.countriesIso', 'populations.dataCollectionEvents.bioSamples', 'numberOfParticipants.participant.number']);
-                JoinQuerySearchResource.studies({query: $scope.search.executedQuery},
+              JoinQuerySearchResource.studies({query: $scope.search.executedQuery},
                 function onSuccess(response) {
                   $scope.search.result.graphics = response;
                   $scope.search.loading = false;
@@ -261,8 +255,74 @@ angular.module('obiba.mica.search')
         }
       }
 
+      ngObibaMicaSearch.getLocale(function (locales) {
+        if (angular.isArray(locales)) {
+          $scope.tabs = locales;
+          $scope.setLocale(locales[0]);
+        } else {
+          $scope.setLocale(locales || $scope.lang);
+        }
+      });
+
+      $scope.setLocale = function (locale) {
+        $scope.lang = locale;
+        SearchContext.setLocale($scope.lang);
+        executeSearchQuery();
+      };
+
       var closeTaxonomies = function () {
         angular.element('#taxonomies').collapse('hide');
+      };
+
+      var groupTaxonomies = function (taxonomies, target) {
+        var res = taxonomies.reduce(function (res, t) {
+          res[t.name] = t;
+          return res;
+        }, {});
+
+        return $scope.metaTaxonomy.$promise.then(function (metaTaxonomy) {
+          var targetVocabulary = metaTaxonomy.vocabularies.filter(function (v) {
+            return v.name === target;
+          })[0];
+
+          $scope.taxonomyGroups = targetVocabulary.terms.map(function (v) {
+            if (!v.terms) {
+              var taxonomy = res[v.name];
+
+              if (!taxonomy) {
+                return null;
+              }
+
+              taxonomy.title = v.title;
+              taxonomy.description = v.description;
+              return {title: null, taxonomies: [taxonomy]};
+            }
+
+            var taxonomies = v.terms.map(function (t) {
+                var taxonomy = res[t.name];
+
+                if (!taxonomy) {
+                  return null;
+                }
+
+                taxonomy.title = t.title;
+                taxonomy.description = t.description;
+                return taxonomy;
+              }).filter(function (t) {
+                return t;
+              }),
+              title = v.title.filter(function (t) { return t.locale === $scope.lang; })[0];
+            var description = v.description ? v.description.filter(function (t) { return t.locale === $scope.lang; })[0] : undefined;
+
+            return {
+              title: title ? title.text : null,
+              description: description ? description.text : null,
+              taxonomies: taxonomies
+            };
+          }).filter(function (t) {
+            return t;
+          });
+        });
       };
 
       var filterTaxonomies = function (query) {
@@ -297,8 +357,9 @@ angular.module('obiba.mica.search')
           TaxonomiesResource.get({
             target: $scope.taxonomies.target,
             query: query
-          }, function onSuccess(response) {
-            $scope.taxonomies.all = response;
+          }, function onSuccess(taxonomies) {
+            $scope.taxonomies.all = taxonomies;
+            groupTaxonomies(taxonomies, $scope.taxonomies.target);
             $scope.taxonomies.search.active = false;
           });
         }
@@ -546,7 +607,7 @@ angular.module('obiba.mica.search')
       };
 
       $scope.taxonomies = {
-        all: TaxonomiesResource.get({target: 'variable'}),
+        all: [],
         search: {
           text: null,
           active: false
@@ -556,6 +617,10 @@ angular.module('obiba.mica.search')
         vocabulary: null
       };
 
+      TaxonomiesResource.get({target: 'variable'}, function (taxonomies) {
+        $scope.taxonomies.all = taxonomies;
+        groupTaxonomies(taxonomies, 'variable');
+      });
       $scope.headerTemplateUrl = ngObibaMicaSearchTemplateUrl.getHeaderUrl('view');
       $scope.clearFilterTaxonomies = clearFilterTaxonomies;
       $scope.searchCriteria = searchCriteria;
@@ -577,6 +642,7 @@ angular.module('obiba.mica.search')
       angular.element('#taxonomies').on('show.bs.collapse', function () {
         $scope.taxonomiesShown = true;
       });
+
       angular.element('#taxonomies').on('hide.bs.collapse', function () {
         $scope.taxonomiesShown = false;
       });
@@ -590,46 +656,39 @@ angular.module('obiba.mica.search')
           executeSearchQuery();
         }
       });
-
     }])
 
   .controller('SearchResultController', [
     '$scope',
-    'ObibaSearchConfig',
+    'ngObibaMicaSearch',
     function ($scope,
-              ObibaSearchConfig) {
-
-      $scope.settingsDisplay = ObibaSearchConfig.getOptions();
+              ngObibaMicaSearch) {
+      $scope.QUERY_TARGETS = QUERY_TARGETS;
+      $scope.QUERY_TYPES = QUERY_TYPES;
+      $scope.options = ngObibaMicaSearch.getOptions();
+      var resultTypeDisplay = {
+        variable: $scope.options.variables.showSearchTab,
+        dataset: $scope.options.datasets.showSearchTab,
+        study: $scope.options.studies.showSearchTab,
+        network: $scope.options.networks.showSearchTab
+      };
 
       $scope.selectDisplay = function (display) {
         $scope.display = display;
         $scope.$parent.onDisplayChanged(display);
       };
+
       $scope.selectTarget = function (type) {
         $scope.type = type;
         $scope.$parent.onTypeChanged(type);
       };
-      $scope.QUERY_TARGETS = QUERY_TARGETS;
-      $scope.QUERY_TYPES = QUERY_TYPES;
+
+      $scope.searchTabsOrder = $scope.options.searchTabsOrder;
+      $scope.resultTabsOrder = $scope.options.resultTabsOrder.filter(function (t) {
+        return resultTypeDisplay[t];
+      });
+
       $scope.DISPLAY_TYPES = DISPLAY_TYPES;
-
-      $scope.$watch('type', function () {
-        $scope.activeTarget = {
-          networks: ($scope.type === QUERY_TYPES.NETWORKS && $scope.settingsDisplay.networks.showSearchTab) || false,
-          studies: ($scope.type === QUERY_TYPES.STUDIES && $scope.settingsDisplay.studies.showSearchTab) || false,
-          datasets: ($scope.type === QUERY_TYPES.DATASETS && $scope.settingsDisplay.datasets.showSearchTab) || false,
-          variables: ($scope.type === QUERY_TYPES.VARIABLES && $scope.settingsDisplay.variables.showSearchTab) || false
-        };
-      });
-
-      $scope.$watch('display', function () {
-        $scope.activeDisplay = {
-          list: $scope.display === DISPLAY_TYPES.LIST || false,
-          coverage: $scope.display === DISPLAY_TYPES.COVERAGE || false,
-          graphics: $scope.display === DISPLAY_TYPES.GRAPHICS || false
-        };
-      });
-
     }])
 
   .controller('CriterionLogicalController', [
@@ -855,7 +914,7 @@ angular.module('obiba.mica.search')
   .controller('CoverageResultTableController', [
     '$scope',
     'PageUrlService',
-    function ($scope,PageUrlService) {
+    function ($scope, PageUrlService) {
       $scope.showMissing = true;
       $scope.toggleMissing = function (value) {
         $scope.showMissing = value;
@@ -912,6 +971,7 @@ angular.module('obiba.mica.search')
         };
 
         var rowSpans = {};
+
         function appendRowSpan(id) {
           var rowSpan;
           if (!rowSpans[id]) {
@@ -949,7 +1009,7 @@ angular.module('obiba.mica.search')
             rowSpan = appendRowSpan(id);
             cols.ids[row.value].push({
               id: id,
-              url: PageUrlService.studyPage(ids[0]),
+              url: PageUrlService.studyPopulationPage(ids[0], ids[1]),
               title: titles[1],
               description: descriptions[1],
               rowSpan: rowSpan
@@ -959,7 +1019,7 @@ angular.module('obiba.mica.search')
             cols.ids[row.value].push({
               id: row.value,
               title: titles[2],
-              url: PageUrlService.studyPage(ids[0]),
+              url: PageUrlService.studyPopulationPage(ids[0], ids[1]),
               description: descriptions[2],
               rowSpan: 1
             });
@@ -978,10 +1038,10 @@ angular.module('obiba.mica.search')
         // adjust the rowspans
         if ($scope.bucket === BUCKET_TYPES.DCEIDS) {
           $scope.result.rows.forEach(function (row) {
-            if(cols.ids[row.value][0].rowSpan > 0) {
+            if (cols.ids[row.value][0].rowSpan > 0) {
               cols.ids[row.value][0].rowSpan = rowSpans[cols.ids[row.value][0].id];
             }
-            if(cols.ids[row.value][1].rowSpan > 0) {
+            if (cols.ids[row.value][1].rowSpan > 0) {
               cols.ids[row.value][1].rowSpan = rowSpans[cols.ids[row.value][1].id];
             }
           });
@@ -992,7 +1052,7 @@ angular.module('obiba.mica.search')
 
       $scope.BUCKET_TYPES = BUCKET_TYPES;
 
-      $scope.downloadUrl = function() {
+      $scope.downloadUrl = function () {
         return PageUrlService.downloadCoverage($scope.query);
       };
 
@@ -1085,10 +1145,8 @@ angular.module('obiba.mica.search')
               }
             });
           }
-
         }
       });
-
     }])
 
   .controller('SearchResultPaginationController', ['$scope', function ($scope) {

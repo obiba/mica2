@@ -17,7 +17,7 @@ angular.module('obiba.mica.search')
       var out = [];
 
       try {
-        var pattern = new RegExp(regex);
+        var pattern = new RegExp(regex, 'i');
         out = elements.filter(function(element) {
           return fields.some(function(field){
             return pattern.test(element[field]);

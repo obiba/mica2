@@ -22,6 +22,7 @@ function NgObibaMicaUrlProvider() {
     'VariablePage': '',
     'NetworkPage': '#/network/:network',
     'StudyPage': '#/study/:study',
+    'StudyPopulationsPage': '#/study/:study',
     'DatasetPage': '#/:type/:dataset'
   };
 
