@@ -16,12 +16,12 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.obiba.mica.micaConfig.service.helper.AbstractIdAggregationMetaDataHelper;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.service.PublishedNetworkService;
-import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
+
+import static org.obiba.mica.security.SubjectUtils.sudo;
 
 @Component
 public class NetworkIdAggregationMetaDataHelper extends AbstractIdAggregationMetaDataHelper {
@@ -31,7 +31,7 @@ public class NetworkIdAggregationMetaDataHelper extends AbstractIdAggregationMet
 
   @Cacheable(value="aggregations-metadata", key = "'network'")
   public Map<String, AggregationMetaDataProvider.LocalizedMetaData> getNetworks() {
-    List<Network> networks = publishedNetworkService.findAll();
+    List<Network> networks = sudo(() -> publishedNetworkService.findAll());
     return networks.stream()
       .collect(Collectors
         .toMap(Network::getId, d -> new AggregationMetaDataProvider.LocalizedMetaData(d.getAcronym(), d.getName())));
