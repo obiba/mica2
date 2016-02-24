@@ -1,4 +1,4 @@
-package org.obiba.mica.micaConfig.service;
+package org.obiba.mica.micaConfig.service.helper;
 
 import java.net.URI;
 import java.util.List;

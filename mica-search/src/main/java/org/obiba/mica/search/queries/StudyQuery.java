@@ -25,7 +25,7 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHits;
 import org.obiba.mica.search.CountStatsData;
-import org.obiba.mica.search.aggregations.AggregationMetaDataProvider;
+import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.StudyTaxonomyMetaDataProvider;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;

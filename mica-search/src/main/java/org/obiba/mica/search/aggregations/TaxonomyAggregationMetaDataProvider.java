@@ -21,6 +21,7 @@ import javax.inject.Inject;
 import org.obiba.mica.core.domain.AttributeKey;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.micaConfig.service.OpalService;
+import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Term;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;

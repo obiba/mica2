@@ -27,7 +27,7 @@ import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.global.Global;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.metrics.stats.Stats;
-import org.obiba.mica.search.aggregations.AggregationMetaDataProvider;
+import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.AggregationMetaDataResolver;
 import org.obiba.mica.web.model.MicaSearch;
 import org.slf4j.Logger;

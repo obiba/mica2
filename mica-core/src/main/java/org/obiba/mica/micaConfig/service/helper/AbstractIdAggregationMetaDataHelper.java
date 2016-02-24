@@ -8,12 +8,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.search.aggregations.helper;
+package org.obiba.mica.micaConfig.service.helper;
 
 import java.util.Map;
 import java.util.Optional;
 
-import org.obiba.mica.search.aggregations.AggregationMetaDataProvider;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Term;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;

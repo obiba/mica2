@@ -4,7 +4,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.obiba.mica.search.aggregations.helper.StudyIdAggregationMetaDataHelper;
+import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
+import org.obiba.mica.micaConfig.service.helper.StudyIdAggregationMetaDataHelper;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -28,6 +28,7 @@ import org.obiba.magma.support.Initialisables;
 import org.obiba.mica.dataset.service.KeyStoreService;
 import org.obiba.mica.micaConfig.AuthType;
 import org.obiba.mica.micaConfig.domain.OpalCredential;
+import org.obiba.mica.micaConfig.service.helper.OpalServiceHelper;
 import org.obiba.opal.core.cfg.NoSuchTaxonomyException;
 import org.obiba.opal.core.cfg.NoSuchVocabularyException;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;

@@ -42,7 +42,7 @@ import org.obiba.mica.dataset.service.PublishedDatasetService;
 import org.obiba.mica.dataset.service.StudyDatasetService;
 import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.DatasetIdProvider;
-import org.obiba.mica.search.aggregations.AggregationMetaDataProvider;
+import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.AggregationYamlParser;
 import org.obiba.mica.search.aggregations.DatasetTaxonomyMetaDataProvider;
 import org.obiba.mica.web.model.Dtos;

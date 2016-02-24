@@ -10,6 +10,7 @@
 
 package org.obiba.mica.search.aggregations;
 
+import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

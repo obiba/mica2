@@ -12,33 +12,56 @@ package org.obiba.mica.micaConfig.service;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.dataset.event.DatasetDeletedEvent;
 import org.obiba.mica.dataset.event.DatasetPublishedEvent;
-import org.obiba.mica.network.event.NetworkDeletedEvent;
+import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
+import org.obiba.mica.micaConfig.service.helper.DatasetIdAggregationMetaDataHelper;
+import org.obiba.mica.micaConfig.service.helper.DceIdAggregationMetaDataHelper;
+import org.obiba.mica.micaConfig.service.helper.NetworkIdAggregationMetaDataHelper;
+import org.obiba.mica.micaConfig.service.helper.StudyIdAggregationMetaDataHelper;
 import org.obiba.mica.network.event.NetworkPublishedEvent;
-import org.obiba.mica.study.event.StudyDeletedEvent;
+import org.obiba.mica.network.event.NetworkUnpublishedEvent;
 import org.obiba.mica.study.event.StudyPublishedEvent;
+import org.obiba.mica.study.event.StudyUnpublishedEvent;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 @Service
 public class TaxonomyService {
 
   @Inject
+  private EventBus eventBus;
+
+  @Inject
   private OpalService opalService;
 
   @Inject
   private MicaConfigService micaConfigService;
+
+  @Inject
+  StudyIdAggregationMetaDataHelper studyHelper;
+
+  @Inject
+  DatasetIdAggregationMetaDataHelper datasetHelper;
+
+  @Inject
+  NetworkIdAggregationMetaDataHelper networkHelper;
+
+  @Inject
+  DceIdAggregationMetaDataHelper dceHelper;
+
+  private ReentrantLock txLock = new ReentrantLock();
 
   private Taxonomy variableTaxonomy;
 
@@ -55,48 +78,35 @@ public class TaxonomyService {
 
   @NotNull
   public Taxonomy getNetworkTaxonomy() {
-    if(networkTaxonomy == null) {
-      networkTaxonomy = new Taxonomy();
-      BeanUtils.copyProperties(micaConfigService.getNetworkTaxonomy(), networkTaxonomy);
-    }
+    initialize();
     return networkTaxonomy;
   }
 
   @NotNull
   public Taxonomy getStudyTaxonomy() {
-    if(studyTaxonomy == null) {
-      studyTaxonomy = new Taxonomy();
-      BeanUtils.copyProperties(micaConfigService.getStudyTaxonomy(), studyTaxonomy);
-    }
+    initialize();
     return studyTaxonomy;
   }
 
   @NotNull
   public Taxonomy getDatasetTaxonomy() {
-    if(datasetTaxonomy == null) {
-      datasetTaxonomy = new Taxonomy();
-      BeanUtils.copyProperties(micaConfigService.getDatasetTaxonomy(), datasetTaxonomy);
-    }
+    initialize();
     return datasetTaxonomy;
   }
 
   @NotNull
   public Taxonomy getVariableTaxonomy() {
-    if(variableTaxonomy == null) {
-      variableTaxonomy = new Taxonomy();
-      BeanUtils.copyProperties(micaConfigService.getVariableTaxonomy(), variableTaxonomy);
-    }
+    initialize();
     return variableTaxonomy;
   }
 
   @NotNull
   public List<Taxonomy> getVariableTaxonomies() {
-    return Stream.concat(getOpalTaxonomies().stream(), Stream.of(getVariableTaxonomy()))
-      .collect(Collectors.toList());
+    return Stream.concat(getOpalTaxonomies().stream(), Stream.of(getVariableTaxonomy())).collect(Collectors.toList());
   }
 
   @NotNull
-  public List<Taxonomy> getOpalTaxonomies() {
+  public synchronized List<Taxonomy> getOpalTaxonomies() {
     List<Taxonomy> taxonomies = null;
 
     try {
@@ -109,56 +119,103 @@ public class TaxonomyService {
   }
 
   //
+  // Private methods
+  //
+
+  private void refresh() {
+    txLock.lock();
+    networkTaxonomy = null;
+    studyTaxonomy = null;
+    datasetTaxonomy = null;
+    variableTaxonomy = null;
+    txLock.unlock();
+    initialize();
+    //eventBus.post(new TaxonomiesUpdatedEvent());
+  }
+
+  private void initialize() {
+    txLock.lock();
+    try {
+      initializeNetworkTaxonomy();
+      initializeStudyTaxonomy();
+      initializeDatasetTaxonomy();
+      initializeVariableTaxonomy();
+    } finally {
+      txLock.unlock();
+    }
+  }
+
+  private void initializeNetworkTaxonomy() {
+    if(networkTaxonomy != null) return;
+    networkTaxonomy = new Taxonomy();
+    BeanUtils.copyProperties(micaConfigService.getNetworkTaxonomy(), networkTaxonomy);
+    networkHelper.applyIdTerms(networkTaxonomy, "id");
+    studyHelper.applyIdTerms(networkTaxonomy, "studyIds");
+  }
+
+  private void initializeStudyTaxonomy() {
+    if(studyTaxonomy != null) return;
+    studyTaxonomy = new Taxonomy();
+    BeanUtils.copyProperties(micaConfigService.getStudyTaxonomy(), studyTaxonomy);
+    studyHelper.applyIdTerms(studyTaxonomy, "id");
+  }
+
+  private void initializeDatasetTaxonomy() {
+    if(datasetTaxonomy != null) return;
+    datasetTaxonomy = new Taxonomy();
+    BeanUtils.copyProperties(micaConfigService.getDatasetTaxonomy(), datasetTaxonomy);
+    datasetHelper.applyIdTerms(datasetTaxonomy, "id");
+    networkHelper.applyIdTerms(datasetTaxonomy, "networkId");
+  }
+
+  private void initializeVariableTaxonomy() {
+    if(variableTaxonomy != null) return;
+    variableTaxonomy = new Taxonomy();
+    BeanUtils.copyProperties(micaConfigService.getVariableTaxonomy(), variableTaxonomy);
+    studyHelper.applyIdTerms(variableTaxonomy, "studyIds");
+    datasetHelper.applyIdTerms(variableTaxonomy, "datasetId");
+    networkHelper.applyIdTerms(variableTaxonomy, "networkId");
+    dceHelper.applyIdTerms(variableTaxonomy, "dceIds");
+  }
+
+  //
   // Event handling
   //
 
   @Async
   @Subscribe
   public void networkPublished(NetworkPublishedEvent event) {
-    networkTaxonomy = null; // id
-    variableTaxonomy = null; // networkId
-    datasetTaxonomy = null; // networkId
+    refresh();
   }
 
   @Async
   @Subscribe
-  public void networkDeleted(NetworkDeletedEvent event) {
-    networkTaxonomy = null; // id
-    variableTaxonomy = null; // networkId
-    datasetTaxonomy = null; // networkId
+  public void networkUnpublished(NetworkUnpublishedEvent event) {
+    refresh();
   }
 
   @Async
   @Subscribe
   public void studyPublished(StudyPublishedEvent event) {
-    studyTaxonomy = null; // id
-    networkTaxonomy = null; // studyIds
-    variableTaxonomy = null; // studyIds, dceIds
-    datasetTaxonomy = null; // studyId
+    refresh();
   }
 
   @Async
   @Subscribe
-  public void studyDeleted(StudyDeletedEvent event) {
-    studyTaxonomy = null; // id
-    networkTaxonomy = null; // studyIds
-    variableTaxonomy = null; // studyIds, dceIds
-    datasetTaxonomy = null; // studyId
+  public void studyUnpublished(StudyUnpublishedEvent event) {
+    refresh();
   }
 
   @Async
   @Subscribe
   public void datasetPublished(DatasetPublishedEvent event) {
-    datasetTaxonomy = null; // id
-    variableTaxonomy = null; // datasetId
+    refresh();
   }
 
   @Async
   @Subscribe
-  public void datasetDeleted(DatasetDeletedEvent event) {
-    datasetTaxonomy = null; // id
-    variableTaxonomy = null; // datasetId
+  public void datasetUnpublished(DatasetUnpublishedEvent event) {
+    refresh();
   }
-
 
 }

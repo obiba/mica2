@@ -15,8 +15,8 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.obiba.mica.core.domain.LocalizedString;
-import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
+import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.slf4j.Logger;
@@ -27,9 +27,6 @@ import com.google.common.collect.Maps;
 public abstract class ConfigurationTaxonomyMetaDataProvider implements AggregationMetaDataProvider {
 
   private static final Logger log = LoggerFactory.getLogger(ConfigurationTaxonomyMetaDataProvider.class);
-
-  @Inject
-  protected MicaConfigService micaConfigService;
 
   @Inject
   protected TaxonomyService taxonomyService;

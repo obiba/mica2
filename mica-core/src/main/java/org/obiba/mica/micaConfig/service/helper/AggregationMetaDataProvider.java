@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.search.aggregations;
+package org.obiba.mica.micaConfig.service.helper;
 
 import org.obiba.mica.core.domain.LocalizedString;
 
@@ -77,7 +77,7 @@ public interface AggregationMetaDataProvider {
       return new Builder();
     }
 
-    static class Builder {
+    public static class Builder {
 
       private MetaData metaData = new MetaData();
 

@@ -10,27 +10,14 @@
 
 package org.obiba.mica.search.aggregations;
 
-import javax.inject.Inject;
-
-import org.obiba.mica.search.aggregations.helper.NetworkIdAggregationMetaDataHelper;
-import org.obiba.mica.search.aggregations.helper.StudyIdAggregationMetaDataHelper;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.springframework.stereotype.Component;
 
 @Component
 public class NetworkTaxonomyMetaDataProvider extends ConfigurationTaxonomyMetaDataProvider {
 
-  @Inject
-  private NetworkIdAggregationMetaDataHelper networkHelper;
-
-  @Inject
-  private StudyIdAggregationMetaDataHelper studyHelper;
-
   @Override
   protected Taxonomy getTaxonomy() {
-    Taxonomy taxonomy = taxonomyService.getNetworkTaxonomy();
-    networkHelper.applyIdTerms(taxonomy, "id");
-    studyHelper.applyIdTerms(taxonomy, "studyIds");
-    return taxonomy;
+    return taxonomyService.getNetworkTaxonomy();
   }
 }

@@ -14,7 +14,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.obiba.mica.search.aggregations.helper.DatasetIdAggregationMetaDataHelper;
+import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
+import org.obiba.mica.micaConfig.service.helper.DatasetIdAggregationMetaDataHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

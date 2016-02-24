@@ -42,7 +42,7 @@ import org.obiba.mica.dataset.service.StudyDatasetService;
 import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.DatasetIdProvider;
-import org.obiba.mica.search.aggregations.AggregationMetaDataProvider;
+import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.DataCollectionEventAggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.DatasetAggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.StudyAggregationMetaDataProvider;

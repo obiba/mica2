@@ -36,7 +36,7 @@ import org.obiba.mica.network.domain.NetworkState;
 import org.obiba.mica.network.search.NetworkIndexer;
 import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.search.CountStatsData;
-import org.obiba.mica.search.aggregations.AggregationMetaDataProvider;
+import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.NetworkAggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.NetworkTaxonomyMetaDataProvider;
 import org.obiba.mica.web.model.Dtos;

@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.search.aggregations.helper;
+package org.obiba.mica.micaConfig.service.helper;
 
 import java.util.List;
 import java.util.Map;
@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.obiba.mica.search.aggregations.AggregationMetaDataProvider;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.springframework.cache.annotation.Cacheable;

@@ -49,7 +49,7 @@ import org.obiba.mica.micaConfig.repository.OpalCredentialRepository;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.OpalCredentialService;
 import org.obiba.mica.micaConfig.service.OpalService;
-import org.obiba.mica.micaConfig.service.OpalServiceHelper;
+import org.obiba.mica.micaConfig.service.helper.OpalServiceHelper;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.network.NetworkStateRepository;
 import org.obiba.mica.network.service.NetworkService;
