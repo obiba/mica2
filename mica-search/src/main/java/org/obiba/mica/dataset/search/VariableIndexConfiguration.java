@@ -13,26 +13,21 @@ package org.obiba.mica.dataset.search;
 import java.io.IOException;
 import java.util.stream.Stream;
 
-import javax.inject.Inject;
-
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
-import org.obiba.mica.micaConfig.service.OpalService;
 import org.obiba.mica.search.AbstractIndexConfiguration;
 import org.obiba.mica.search.ElasticSearchIndexer;
 import org.springframework.stereotype.Component;
 
 @Component
-public class VariableIndexConfiguration extends AbstractIndexConfiguration implements ElasticSearchIndexer.IndexConfigurationListener {
-
-  @Inject
-  private OpalService opalService;
+public class VariableIndexConfiguration extends AbstractIndexConfiguration
+  implements ElasticSearchIndexer.IndexConfigurationListener {
 
   @Override
   public void onIndexCreated(Client client, String indexName) {
     if(VariableIndexer.DRAFT_VARIABLE_INDEX.equals(indexName) ||
-        VariableIndexer.PUBLISHED_VARIABLE_INDEX.equals(indexName)) {
+      VariableIndexer.PUBLISHED_VARIABLE_INDEX.equals(indexName)) {
       setMappingProperties(client, indexName);
     }
   }
@@ -42,7 +37,7 @@ public class VariableIndexConfiguration extends AbstractIndexConfiguration imple
       client.admin().indices().preparePutMapping(indexName).setType(VariableIndexer.HARMONIZED_VARIABLE_TYPE)
         .setSource(createMappingProperties(VariableIndexer.HARMONIZED_VARIABLE_TYPE)).execute().actionGet();
       client.admin().indices().preparePutMapping(indexName).setType(VariableIndexer.VARIABLE_TYPE)
-          .setSource(createMappingProperties(VariableIndexer.VARIABLE_TYPE)).execute().actionGet();
+        .setSource(createMappingProperties(VariableIndexer.VARIABLE_TYPE)).execute().actionGet();
     } catch(IOException e) {
       throw new RuntimeException(e);
     }
@@ -56,12 +51,16 @@ public class VariableIndexConfiguration extends AbstractIndexConfiguration imple
 
     // properties
     mapping.startObject("properties");
-    mapping.startObject("id").field("type", "string").field("index", "not_analyzed").endObject();
-    mapping.startObject("studyIds").field("type", "string").field("index", "not_analyzed").endObject();
-    mapping.startObject("dceIds").field("type", "string").field("index", "not_analyzed").endObject();
-    mapping.startObject("datasetId").field("type", "string").field("index", "not_analyzed").endObject();
-    mapping.startObject("networkId").field("type", "string").field("index", "not_analyzed").endObject();
+    createMappingWithoutAnalyzer(mapping, "id");
+    createMappingWithoutAnalyzer(mapping, "studyIds");
+    createMappingWithoutAnalyzer(mapping, "dceIds");
+    createMappingWithoutAnalyzer(mapping, "datasetId");
+    createMappingWithoutAnalyzer(mapping, "networkId");
     createMappingWithAndWithoutAnalyzer(mapping, "name");
+    createMappingWithoutAnalyzer(mapping, "entityType");
+    createMappingWithoutAnalyzer(mapping, "variableType");
+    createMappingWithoutAnalyzer(mapping, "valueType");
+    createMappingWithoutAnalyzer(mapping, "nature");
 
     // attributes from taxonomies
     try {

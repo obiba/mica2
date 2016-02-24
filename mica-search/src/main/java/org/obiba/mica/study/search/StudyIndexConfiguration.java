@@ -21,16 +21,16 @@ import org.obiba.mica.search.ElasticSearchIndexer;
 import org.springframework.stereotype.Component;
 
 @Component
-public class StudyIndexConfiguration extends AbstractIndexConfiguration implements ElasticSearchIndexer.IndexConfigurationListener {
+public class StudyIndexConfiguration extends AbstractIndexConfiguration
+  implements ElasticSearchIndexer.IndexConfigurationListener {
 
   @Override
   public void onIndexCreated(Client client, String indexName) {
-    if(StudyIndexer.DRAFT_STUDY_INDEX.equals(indexName) ||
-        StudyIndexer.PUBLISHED_STUDY_INDEX.equals(indexName)) {
+    if(StudyIndexer.DRAFT_STUDY_INDEX.equals(indexName) || StudyIndexer.PUBLISHED_STUDY_INDEX.equals(indexName)) {
 
       try {
         client.admin().indices().preparePutMapping(indexName).setType(StudyIndexer.STUDY_TYPE)
-            .setSource(createMappingProperties()).execute().actionGet();
+          .setSource(createMappingProperties()).execute().actionGet();
       } catch(IOException e) {
         throw new RuntimeException(e);
       }
@@ -42,39 +42,52 @@ public class StudyIndexConfiguration extends AbstractIndexConfiguration implemen
 
     // properties
     mapping.startObject("properties");
-    mapping.startObject("id").field("type", "string").field("index","not_analyzed").endObject();
+    appendStudyProperties(mapping);
 
     // don't analyze YearMonth fields, preserve values as yyyy-mm
-    mapping.startObject("populations")
-      .startObject("properties")
-        .startObject("selectionCriteria")
-          .startObject("properties")
-            .startObject("countriesIso").field("type", "string").field("index", "not_analyzed").endObject()
-          .endObject()
-        .endObject()
-        .startObject("dataCollectionEvents")
-          .startObject("properties")
-            .startObject("start")
-              .startObject("properties")
-                .startObject("yearMonth").field("type", "string").field("index", "not_analyzed").endObject()
-              .endObject()
-            .endObject()
-            .startObject("end")
-              .startObject("properties")
-                .startObject("yearMonth").field("type", "string").field("index","not_analyzed").endObject()
-              .endObject()
-            .endObject()
-          .endObject()
-        .endObject()
-      .endObject()
-    .endObject();
+    mapping.startObject("populations").startObject("properties") //
 
-    Stream.of(StudyIndexer.LOCALIZED_ANALYZED_FIELDS).forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
+      .startObject("recruitment").startObject("properties") //
+      .startObject("dataSources").field("type", "string").field("index", "not_analyzed").endObject() //
+      .startObject("generalPopulationSources").field("type", "string").field("index", "not_analyzed").endObject() //
+      .startObject("specificPopulationSources").field("type", "string").field("index", "not_analyzed").endObject() //
+      .endObject().endObject() // recruitment
+
+      .startObject("selectionCriteria").startObject("properties") //
+      .startObject("countriesIso").field("type", "string").field("index", "not_analyzed").endObject() //
+      .startObject("criteria").field("type", "string").field("index", "not_analyzed").endObject() //
+      .startObject("gender").field("type", "string").field("index", "not_analyzed").endObject() //
+      .endObject().endObject() // selectionCriteria
+
+      .startObject("dataCollectionEvents").startObject("properties") //
+      .startObject("dataSources").field("type", "string").field("index", "not_analyzed").endObject() //
+      .startObject("bioSamples").field("type", "string").field("index", "not_analyzed").endObject() //
+      .startObject("administrativeDatabases").field("type", "string").field("index", "not_analyzed").endObject() //
+      .startObject("start").startObject("properties") //
+      .startObject("yearMonth").field("type", "string").field("index", "not_analyzed").endObject() //
+      .endObject().endObject() // start
+      .startObject("end").startObject("properties") //
+      .startObject("yearMonth").field("type", "string").field("index", "not_analyzed").endObject() //
+      .endObject().endObject() // end
+      .endObject().endObject() // dataCollectionEvents
+
+      .endObject().endObject(); // populations
+
+    Stream.of(StudyIndexer.LOCALIZED_ANALYZED_FIELDS)
+      .forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
     mapping.endObject();
     mapping.endObject();
 
     return mapping;
   }
 
+  private void appendStudyProperties(XContentBuilder mapping) throws IOException {
+    createMappingWithoutAnalyzer(mapping, "id");
+    mapping.startObject("methods").startObject("properties") //
+      .startObject("designs").field("type", "string").field("index", "not_analyzed").endObject() //
+      .startObject("recruitments").field("type", "string").field("index", "not_analyzed").endObject() //
+      .endObject().endObject(); // methods
+    createMappingWithoutAnalyzer(mapping, "access");
+  }
 
 }

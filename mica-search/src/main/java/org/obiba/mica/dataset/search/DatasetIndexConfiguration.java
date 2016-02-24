@@ -21,16 +21,17 @@ import org.obiba.mica.search.ElasticSearchIndexer;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DatasetIndexConfiguration extends AbstractIndexConfiguration implements ElasticSearchIndexer.IndexConfigurationListener {
+public class DatasetIndexConfiguration extends AbstractIndexConfiguration
+  implements ElasticSearchIndexer.IndexConfigurationListener {
 
   @Override
   public void onIndexCreated(Client client, String indexName) {
     if(DatasetIndexer.DRAFT_DATASET_INDEX.equals(indexName) ||
-        DatasetIndexer.PUBLISHED_DATASET_INDEX.equals(indexName)) {
+      DatasetIndexer.PUBLISHED_DATASET_INDEX.equals(indexName)) {
 
       try {
         client.admin().indices().preparePutMapping(indexName).setType(DatasetIndexer.DATASET_TYPE)
-            .setSource(createMappingProperties()).execute().actionGet();
+          .setSource(createMappingProperties()).execute().actionGet();
       } catch(IOException e) {
         throw new RuntimeException(e);
       }
@@ -42,22 +43,23 @@ public class DatasetIndexConfiguration extends AbstractIndexConfiguration implem
 
     // properties
     mapping.startObject("properties");
-    mapping.startObject("id").field("type", "string").field("index","not_analyzed").endObject();
+    mapping.startObject("id").field("type", "string").field("index", "not_analyzed").endObject();
     mapping.startObject("networkId").field("type", "string").field("index", "not_analyzed").endObject();
     mapping.startObject("className").field("type", "string").field("index", "not_analyzed").endObject();
-    Stream.of(DatasetIndexer.LOCALIZED_ANALYZED_FIELDS).forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
+    Stream.of(DatasetIndexer.LOCALIZED_ANALYZED_FIELDS)
+      .forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
 
     mapping.startObject("studyTables") //
-        .startObject("properties");
+      .startObject("properties");
     appendStudyIdProperty(mapping);
     mapping.endObject() //
-        .endObject();
+      .endObject();
 
     mapping.startObject("studyTable") //
-        .startObject("properties");
+      .startObject("properties");
     appendStudyIdProperty(mapping);
     mapping.endObject() //
-        .endObject();
+      .endObject();
 
     mapping.endObject();
 
