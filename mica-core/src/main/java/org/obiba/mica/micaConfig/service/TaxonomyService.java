@@ -36,14 +36,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 @Service
 public class TaxonomyService {
-
-  @Inject
-  private EventBus eventBus;
 
   @Inject
   private OpalService opalService;
@@ -131,8 +127,6 @@ public class TaxonomyService {
     datasetTaxonomy = null;
     variableTaxonomy = null;
     txLock.unlock();
-    //initialize();
-    //eventBus.post(new TaxonomiesUpdatedEvent());
   }
 
   private void initialize() {
@@ -178,8 +172,8 @@ public class TaxonomyService {
 
   private Taxonomy copy(Taxonomy source) {
     Taxonomy target = new Taxonomy();
-    BeanUtils.copyProperties(source, target,"vocabularies");
-    if (source.hasVocabularies()) {
+    BeanUtils.copyProperties(source, target, "vocabularies");
+    if(source.hasVocabularies()) {
       source.getVocabularies().forEach(sourceVoc -> {
         Vocabulary targetVoc = new Vocabulary();
         BeanUtils.copyProperties(sourceVoc, targetVoc, "terms");
