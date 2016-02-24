@@ -23,18 +23,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class NetworkIndexConfiguration extends AbstractIndexConfiguration implements ElasticSearchIndexer.IndexConfigurationListener {
+public class NetworkIndexConfiguration extends AbstractIndexConfiguration
+  implements ElasticSearchIndexer.IndexConfigurationListener {
   private static final Logger log = LoggerFactory.getLogger(NetworkIndexConfiguration.class);
 
   @Override
   public void onIndexCreated(Client client, String indexName) {
     if(NetworkIndexer.DRAFT_NETWORK_INDEX.equals(indexName) ||
-        NetworkIndexer.PUBLISHED_NETWORK_INDEX.equals(indexName)) {
+      NetworkIndexer.PUBLISHED_NETWORK_INDEX.equals(indexName)) {
 
       try {
         client.admin().indices().preparePutMapping(indexName).setType(NetworkIndexer.NETWORK_TYPE)
-            .setSource(createMappingProperties()).execute().actionGet();
-      } catch (IOException e) {
+          .setSource(createMappingProperties()).execute().actionGet();
+      } catch(IOException e) {
         throw new RuntimeException(e);
       }
     }
@@ -45,9 +46,10 @@ public class NetworkIndexConfiguration extends AbstractIndexConfiguration implem
 
     // properties
     mapping.startObject("properties");
-      mapping.startObject("id").field("type", "string").field("index","not_analyzed").endObject();
-      mapping.startObject("studyIds").field("type", "string").field("index","not_analyzed").endObject();
-      Stream.of(NetworkIndexer.LOCALIZED_ANALYZED_FIELDS).forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
+    mapping.startObject("id").field("type", "string").field("index", "not_analyzed").endObject();
+    mapping.startObject("studyIds").field("type", "string").field("index", "not_analyzed").endObject();
+    Stream.of(NetworkIndexer.LOCALIZED_ANALYZED_FIELDS)
+      .forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
     mapping.endObject();
 
     mapping.endObject().endObject();

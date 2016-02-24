@@ -51,14 +51,14 @@
   "description": {}
   "keywords": {}
   "terms":
-  - "name": "study"
+  - "name": "Study"
     "title":
       "en": "Study"
       "fr": "Étude"
     "description": {}
     "keywords": {}
     "terms": []
-  - "name": "dataschema"
+  - "name": "Dataschema"
     "title":
       "en": "Dataschema"
       "fr": "Dataschema"
@@ -192,42 +192,42 @@
     "fr": "La nature de la variable affecte le type de sommaire des données pouvant être extrait."
   "keywords": {}
   "terms":
-  - "name": "categorical"
+  - "name": "CATEGORICAL"
     "title":
       "en": "Categorical"
       "fr": "Catégorielle"
     "description": {}
     "keywords": {}
     "terms": []
-  - "name": "continuous"
+  - "name": "CONTINUOUS"
     "title":
       "en": "Continuous"
       "fr": "Continue"
     "description": {}
     "keywords": {}
     "terms": []
-  - "name": "temporal"
+  - "name": "TEMPORAL"
     "title":
       "en": "Temporal"
       "fr": "Temporelle"
     "description": {}
     "keywords": {}
     "terms": []
-  - "name": "geo"
+  - "name": "GEO"
     "title":
       "en": "Geographical"
       "fr": "Géographique"
     "description": {}
     "keywords": {}
     "terms": []
-  - "name": "binary"
+  - "name": "BINARY"
     "title":
       "en": "Binary"
       "fr": "Binaire"
     "description": {}
     "keywords": {}
     "terms": []
-  - "name": "undetermined"
+  - "name": "UNDETERMINED"
     "title":
       "en": "Other"
       "fr": "Autre"

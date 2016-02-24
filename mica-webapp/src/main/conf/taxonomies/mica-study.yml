@@ -1768,6 +1768,9 @@
     "fr": "Genre"
   "description": {}
   "keywords": {}
+  "attributes":
+    "field": "populations.selectionCriteria.gender"
+    "alias": "populations-selectionCriteria-gender"
   "terms":
   - "name": "men"
     "title":
@@ -1788,7 +1791,6 @@
   "description": {}
   "keywords": {}
   "attributes":
-    "type": "integer"
     "field": "populations.selectionCriteria.criteria"
     "alias": "populations-selectionCriteria-criteria"
   "terms":
@@ -1845,6 +1847,9 @@
     "fr": "Source des données collectées"
   "description": {}
   "keywords": {}
+  "attributes":
+    "field": "populations.dataCollectionEvents.dataSources"
+    "alias": "populations-dataCollectionEvents-dataSources"
   "terms":
   - "name": "questionnaires"
     "title":
@@ -1883,7 +1888,6 @@
   "description": {}
   "keywords": {}
   "attributes":
-    "type": "integer"
     "field": "populations.dataCollectionEvents.bioSamples"
     "alias": "populations-dataCollectionEvents-bioSamples"
   "terms":
