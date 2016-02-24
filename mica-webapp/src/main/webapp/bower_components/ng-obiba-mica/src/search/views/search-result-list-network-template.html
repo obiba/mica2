@@ -1,0 +1,13 @@
+<uib-tab ng-show="options.networks.showSearchTab" active="activeTarget.networks"
+    ng-click="selectTarget(QUERY_TYPES.NETWORKS)"
+    heading="{{'networks' | translate}} ({{result.list.networkResultDto.totalHits}})">
+          <span search-result-pagination
+              class="pull-right"
+              target="QUERY_TARGETS.NETWORK"
+              total-hits="result.list.networkResultDto.totalHits"
+              on-change="onPaginate"></span>
+
+  <span class="clearfix"></span>
+  <networks-result-table loading="loading"
+      summaries="result.list.networkResultDto['obiba.mica.NetworkResultDto.result'].networks"></networks-result-table>
+</uib-tab>

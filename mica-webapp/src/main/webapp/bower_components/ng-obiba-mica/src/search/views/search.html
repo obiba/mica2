@@ -56,25 +56,9 @@
       <div class="col-md-3"></div>
       <div class="col-md-6">
         <ul class="nav nav-pills">
-          <li ng-show="settingsDisplay.variables.showSearchTab"
-            ng-class="{'active': taxonomies.target === 'variable' && taxonomiesShown}"
-            title="{{'variable-classifications' | translate}}">
-            <a ng-click="selectTaxonomyTarget('variable')" translate>variables</a>
-          </li>
-          <li ng-show="settingsDisplay.datasets.showSearchTab"
-            ng-class="{'active': taxonomies.target === 'dataset' && taxonomiesShown}"
-            title="{{'dataset-classifications' | translate}}">
-            <a ng-click="selectTaxonomyTarget('dataset')" translate>datasets</a>
-          </li>
-          <li ng-show="settingsDisplay.studies.showSearchTab"
-            ng-class="{'active': taxonomies.target === 'study' && taxonomiesShown}"
-            title="{{'study-classifications' | translate}}">
-            <a ng-click="selectTaxonomyTarget('study')" translate>studies</a>
-          </li>
-          <li ng-show="settingsDisplay.networks.showSearchTab"
-            ng-class="{'active': taxonomies.target === 'network' && taxonomiesShown}"
-            title="{{'network-classifications' | translate}}">
-            <a ng-click="selectTaxonomyTarget('network')" translate>networks</a>
+          <li ng-repeat="t in taxonomyTabsOrder" ng-class="{'active': taxonomies.target === t && taxonomiesShown}"
+              title="{{t + '-classifications' | translate}}">
+            <a ng-click="selectTaxonomyTarget(t)">{{taxonomyTypeMap[t] | translate}}</a>
           </li>
         </ul>
       </div>

@@ -65,7 +65,7 @@ angular.module('obiba.mica.search')
     };
   }])
 
-  .directive('networksResultTable', ['PageUrlService', function (PageUrlService) {
+  .directive('networksResultTable', ['PageUrlService', 'ngObibaMicaSearch', function (PageUrlService, ngObibaMicaSearch) {
     return {
       restrict: 'EA',
       replace: true,
@@ -75,12 +75,13 @@ angular.module('obiba.mica.search')
       },
       templateUrl: 'search/views/list/networks-search-result-table-template.html',
       link: function(scope) {
+        scope.options = ngObibaMicaSearch.getOptions().networks.networksColumn;
         scope.PageUrlService = PageUrlService;
       }
     };
   }])
 
-  .directive('datasetsResultTable', ['PageUrlService', function (PageUrlService) {
+  .directive('datasetsResultTable', ['PageUrlService', 'ngObibaMicaSearch', function (PageUrlService, ngObibaMicaSearch) {
     return {
       restrict: 'EA',
       replace: true,
@@ -90,12 +91,13 @@ angular.module('obiba.mica.search')
       },
       templateUrl: 'search/views/list/datasets-search-result-table-template.html',
       link: function(scope) {
+        scope.options = ngObibaMicaSearch.getOptions().datasets.datasetsColumn;
         scope.PageUrlService = PageUrlService;
       }
     };
   }])
 
-  .directive('studiesResultTable', ['PageUrlService', function (PageUrlService) {
+  .directive('studiesResultTable', ['PageUrlService', 'ngObibaMicaSearch', function (PageUrlService, ngObibaMicaSearch) {
     return {
       restrict: 'EA',
       replace: true,
@@ -105,12 +107,13 @@ angular.module('obiba.mica.search')
       },
       templateUrl: 'search/views/list/studies-search-result-table-template.html',
       link: function(scope) {
+        scope.options = ngObibaMicaSearch.getOptions().studies.studiesColumn;
         scope.PageUrlService = PageUrlService;
       }
     };
   }])
 
-  .directive('variablesResultTable', ['PageUrlService', function (PageUrlService) {
+  .directive('variablesResultTable', ['PageUrlService', 'ngObibaMicaSearch', function (PageUrlService, ngObibaMicaSearch) {
     return {
       restrict: 'EA',
       replace: true,
@@ -120,6 +123,7 @@ angular.module('obiba.mica.search')
       },
       templateUrl: 'search/views/list/variables-search-result-table-template.html',
       link: function(scope) {
+        scope.options = ngObibaMicaSearch.getOptions().variables.variablesColumn;
         scope.PageUrlService = PageUrlService;
       }
     };
@@ -152,6 +156,15 @@ angular.module('obiba.mica.search')
       templateUrl: 'search/views/graphics/graphics-search-result-template.html'
     };
   }])
+
+  .directive('includeReplace', function () {
+    return {
+      require: 'ngInclude',
+      link: function (scope, el) {
+        el.replaceWith(el.children());
+      }
+    };
+  })
 
   .directive('resultPanel', [function () {
     return {
@@ -273,7 +286,7 @@ angular.module('obiba.mica.search')
    * This directive serves as the container for each time of criterion based on a vocabulary type.
    * Specialize contents types as directives and share the state with this container.
    */
-  .directive('criterionDropdown', ['$document', function ($document) {
+  .directive('criterionDropdown', ['$document', '$timeout', function ($document, $timeout) {
     return {
       restrict: 'EA',
       replace: true,
@@ -287,7 +300,9 @@ angular.module('obiba.mica.search')
         var onDocumentClick = function (event) {
           var isChild = document.querySelector('#'+$scope.criterion.id.replace('.','-')+'-dropdown').contains(event.target);
           if (!isChild) {
-            $scope.$apply('closeDropdown()');
+            $timeout(function() {
+              $scope.$apply('closeDropdown()');
+            });
           }
         };
 

@@ -1055,9 +1055,9 @@ angular.module('obiba.mica.search')
           var variableType = new RqlQuery('in');
           variableType.args.push('Mica_variable.variableType');
           if(bucketArg === 'networkId') {
-            variableType.args.push('dataschema');
+            variableType.args.push('Dataschema');
           } else {
-            variableType.args.push('study');
+            variableType.args.push('Study');
           }
           var andVariableType = new RqlQuery('and');
           andVariableType.args.push(variableType);

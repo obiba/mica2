@@ -1,0 +1,6 @@
+<uib-tab heading="{{'search.' + DISPLAY_TYPES.LIST | translate}}" select="selectDisplay(DISPLAY_TYPES.LIST)">
+  <uib-tabset class="voffset2" type="pills">
+    <ng-include include-replace ng-repeat="res in resultTabsOrder"
+        src="'search/views/search-result-list-' + res + '-template.html'"></ng-include>
+  </uib-tabset>
+</uib-tab>

@@ -110,6 +110,10 @@ angular.module('obiba.mica.search')
       return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('StudyPage'), {':study': id}) : '';
     };
 
+    this.studyPopulationPage = function(id, populationId) {
+      return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('StudyPopulationsPage'), {':study': id, ':population': populationId}) : '';
+    };
+
     this.networkPage = function(id) {
       return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('NetworkPage'), {':network': id}) : '';
     };

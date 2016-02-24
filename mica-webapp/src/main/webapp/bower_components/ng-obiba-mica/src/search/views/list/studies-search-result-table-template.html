@@ -2,15 +2,6 @@
   <div ng-if="loading" class="loading"></div>
 
   <div ng-show="summaries.length > 0">
-
-    <div class="row voffset2">
-      <div class="col-xs-4">
-      </div>
-      <div class="col-xs-8">
-        <dir-pagination-controls class="pull-right"></dir-pagination-controls>
-      </div>
-    </div>
-
     <div class="table-responsive">
       <table class="table table-bordered table-striped">
         <thead>
@@ -19,19 +10,19 @@
           <th translate>name</th>
           <th translate>design</th>
           <th translate>participants</th>
-          <th translate>networks</th>
-          <th translate colspan="2">datasets</th>
-          <th translate>variables</th>
+          <th translate ng-if="options.showStudiesNetworksColumn">networks</th>
+          <th translate ng-attr-colspan="{{options.showStudiesDatasetsColumn + options.showStudiesHarmonizedDatasetsColumn}}">datasets</th>
+          <th translate ng-if="options.showStudiesVariablesColumn">variables</th>
         </tr>
         <tr>
           <th></th>
           <th></th>
           <th></th>
           <th></th>
-          <th></th>
-          <th translate>study</th>
-          <th translate>harmonization</th>
-          <th></th>
+          <th ng-if="options.showStudiesNetworksColumn"></th>
+          <th translate ng-if="options.showStudiesDatasetsColumn">study</th>
+          <th translate ng-if="options.showStudiesHarmonizedDatasetsColumn">harmonization</th>
+          <th ng-if="options.showStudiesVariablesColumn"></th>
         </tr>
         </thead>
         <tbody>
@@ -50,16 +41,16 @@
           <td>
             {{summary.targetNumber.number}}
           </td>
-          <td>
+          <td ng-if="options.showStudiesNetworksColumn">
             {{summary['obiba.mica.CountStatsDto.studyCountStats'].networks}}
           </td>
-          <td>
+          <td ng-if="options.showStudiesDatasetsColumn">
             {{summary['obiba.mica.CountStatsDto.studyCountStats'].studyDatasets}}
           </td>
-          <td>
+          <td ng-if="options.showStudiesHarmonizedDatasetsColumn">
             {{summary['obiba.mica.CountStatsDto.studyCountStats'].harmonizationDatasets}}
           </td>
-          <td>
+          <td ng-if="options.showStudiesVariablesColumn">
             {{summary['obiba.mica.CountStatsDto.studyCountStats'].variables}}
           </td>
         </tr>
