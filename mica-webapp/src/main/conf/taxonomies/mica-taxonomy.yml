@@ -1,4 +1,4 @@
-"name": "Mica_metataxonomy"
+"name": "Mica_taxonomy"
 "title":
   "en": "Classifications"
   "fr": "Classifications"
@@ -65,8 +65,8 @@
     "terms":
     - "name": "Mica_variable"
       "title":
-        "en": "Variable properties"
-        "fr": "Propriétés des variables"
+        "en": "Variable"
+        "fr": "Variables"
       "description":
         "en": "Variable properties as defined in the catalog."
         "fr": "Propriétés des variables telles que définies dans le catalogue."
@@ -87,8 +87,8 @@
   "terms":
   - "name": "Mica_study"
     "title":
-      "en": "Study properties"
-      "fr": "Propriétés des étude"
+      "en": "Study"
+      "fr": "Études"
     "description":
       "en": "Study properties as defined in the catalog."
       "fr": "Propriétés des études telles que définies dans le catalogue."
@@ -102,8 +102,8 @@
   "terms":
   - "name": "Mica_dataset"
     "title":
-      "en": "Dataset properties"
-      "fr": "Propriétés des jeux de données"
+      "en": "Dataset"
+      "fr": "Jeux de données"
     "description":
       "en": "Datasets properties as defined in the catalog."
       "fr": "Propriétés des jeux de données telles que définies dans le catalogue."
@@ -117,8 +117,8 @@
   "terms":
   - "name": "Mica_network"
     "title":
-      "en": "Network properties"
-      "fr": "Propriétés des réseaux"
+      "en": "Network"
+      "fr": "Réseaux"
     "description":
       "en": "Network properties as defined in the catalog."
       "fr": "Propriétés des réseaux telles que définies dans le catalogue."
