@@ -1,30 +1,39 @@
 <div>
   <div ng-if="loading" class="loading"></div>
-
-  <div ng-show="summaries.length > 0">
+  <div ng-show="!loading">
     <div class="table-responsive">
       <table class="table table-bordered table-striped">
         <thead>
         <tr>
           <th rowspan="2" translate>acronym</th>
           <th rowspan="2" translate>name</th>
-          <th rowspan="2" translate>search.study.design</th>
-          <th translate colspan="4">search.study.dataSources</th>
+          <th rowspan="2" translate ng-if="optionsCols.showStudiesDesignColumn">search.study.design</th>
+          <th translate
+              ng-attr-colspan="{{optionsCols.showStudiesQuestionnaireColumn + optionsCols.showStudiesPmColumn + optionsCols.showStudiesBioColumn + optionsCols.showStudiesOtherColumn}}"
+              ng-if="optionsCols.showStudiesQuestionnaireColumn || optionsCols.showStudiesPmColumn || optionsCols.showStudiesBioColumn || optionsCols.showStudiesOtherColumn">
+            search.study.dataSources
+          </th>
           <th rowspan="2" translate>search.study.participants</th>
-          <th rowspan="2" translate ng-if="options.showStudiesNetworksColumn">networks</th>
-          <th translate ng-attr-colspan="{{options.showStudiesDatasetsColumn + options.showStudiesHarmonizedDatasetsColumn}}">datasets</th>
-          <th rowspan="2" translate ng-if="options.showStudiesVariablesColumn">variables</th>
+          <th rowspan="2" translate ng-if="optionsCols.showStudiesNetworksColumn">networks</th>
+          <th translate
+              ng-attr-colspan="{{optionsCols.showStudiesDatasetsColumn + optionsCols.showStudiesHarmonizedDatasetsColumn}}"
+              ng-if="optionsCols.showStudiesDatasetsColumn || optionsCols.showStudiesHarmonizedDatasetsColumn">datasets
+          </th>
+          <th rowspan="2" translate ng-if="optionsCols.showStudiesVariablesColumn">variables</th>
         </tr>
         <tr>
-          <th translate>search.study.quest</th>
-          <th translate>search.study.pm</th>
-          <th translate>search.study.bio</th>
-          <th translate>search.study.others</th>
-          <th translate ng-if="options.showStudiesDatasetsColumn">search.study.label</th>
-          <th translate ng-if="options.showStudiesHarmonizedDatasetsColumn">search.harmonization</th>
+          <th translate ng-if="optionsCols.showStudiesQuestionnaireColumn">search.study.quest</th>
+          <th translate ng-if="optionsCols.showStudiesPmColumn">search.study.pm</th>
+          <th translate ng-if="optionsCols.showStudiesBioColumn">search.study.bio</th>
+          <th translate ng-if="optionsCols.showStudiesOtherColumn">search.study.others</th>
+          <th translate ng-if="optionsCols.showStudiesDatasetsColumn">search.study.label</th>
+          <th translate ng-if="optionsCols.showStudiesHarmonizedDatasetsColumn">search.harmonization</th>
         </tr>
         </thead>
         <tbody>
+        <tr ng-if="!summaries || !summaries.length">
+          <td colspan="12">{{options.noResultsLabel | translate}}</td>
+        </tr>
         <tr ng-repeat="summary in summaries" ng-init="lang = $parent.$parent.lang">
           <td>
             <a ng-href="{{PageUrlService.studyPage(summary.id)}}">
@@ -38,30 +47,34 @@
             <localized ng-repeat="d in summary.designs" value="designs[d]" lang="lang"></localized>
           </td>
           <td>
-            <i class="fa fa-check" ng-if="hasDatasource(summary.dataSources, 'questionnaires')"></i><span ng-if="!hasDatasource(summary.dataSources, 'questionnaires')">-</span>
+            <i class="fa fa-check" ng-if="hasDatasource(summary.dataSources, 'questionnaires')"></i><span
+              ng-if="!hasDatasource(summary.dataSources, 'questionnaires')">-</span>
           </td>
           <td>
-            <i class="fa fa-check" ng-if="hasDatasource(summary.dataSources, 'physical_measures')"></i><span ng-if="!hasDatasource(summary.dataSources, 'physical_measures')">-</span>
+            <i class="fa fa-check" ng-if="hasDatasource(summary.dataSources, 'physical_measures')"></i><span
+              ng-if="!hasDatasource(summary.dataSources, 'physical_measures')">-</span>
           </td>
           <td>
-            <i class="fa fa-check" ng-if="hasDatasource(summary.dataSources, 'biological_samples')"></i><span ng-if="!hasDatasource(summary.dataSources, 'biological_samples')">-</span>
+            <i class="fa fa-check" ng-if="hasDatasource(summary.dataSources, 'biological_samples')"></i><span
+              ng-if="!hasDatasource(summary.dataSources, 'biological_samples')">-</span>
           </td>
           <td>
-            <i class="fa fa-check" ng-if="hasDatasource(summary.dataSources, 'others')"></i><span ng-if="!hasDatasource(summary.dataSources, 'others')">-</span>
+            <i class="fa fa-check" ng-if="hasDatasource(summary.dataSources, 'others')"></i><span
+              ng-if="!hasDatasource(summary.dataSources, 'others')">-</span>
           </td>
           <td>
             {{summary.targetNumber.number}}
           </td>
-          <td ng-if="options.showStudiesNetworksColumn">
+          <td ng-if="optionsCols.showStudiesNetworksColumn">
             {{summary['obiba.mica.CountStatsDto.studyCountStats'].networks || '-'}}
           </td>
-          <td ng-if="options.showStudiesDatasetsColumn">
+          <td ng-if="optionsCols.showStudiesDatasetsColumn">
             {{summary['obiba.mica.CountStatsDto.studyCountStats'].studyDatasets || '-'}}
           </td>
-          <td ng-if="options.showStudiesHarmonizedDatasetsColumn">
+          <td ng-if="optionsCols.showStudiesHarmonizedDatasetsColumn">
             {{summary['obiba.mica.CountStatsDto.studyCountStats'].harmonizationDatasets || '-'}}
           </td>
-          <td ng-if="options.showStudiesVariablesColumn">
+          <td ng-if="optionsCols.showStudiesVariablesColumn">
             {{summary['obiba.mica.CountStatsDto.studyCountStats'].variables}}
           </td>
         </tr>

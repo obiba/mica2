@@ -75,7 +75,8 @@ angular.module('obiba.mica.search')
       },
       templateUrl: 'search/views/list/networks-search-result-table-template.html',
       link: function(scope) {
-        scope.options = ngObibaMicaSearch.getOptions().networks.networksColumn;
+        scope.options = ngObibaMicaSearch.getOptions().networks;
+        scope.optionsCols = scope.options.networksColumn;
         scope.PageUrlService = PageUrlService;
       }
     };
@@ -104,11 +105,10 @@ angular.module('obiba.mica.search')
                 });
                 return prev;
               }, {});
-
-            console.log('>>>', scope.classNames);
           });
 
-        scope.options = ngObibaMicaSearch.getOptions().datasets.datasetsColumn;
+        scope.options = ngObibaMicaSearch.getOptions().datasets;
+        scope.optionsCols = scope.options.datasetsColumn;
         scope.PageUrlService = PageUrlService;
       }
     };
@@ -140,10 +140,11 @@ angular.module('obiba.mica.search')
           });
 
         scope.hasDatasource = function (datasources, id) {
-          return datasources.indexOf(id) > -1;
+          return datasources && datasources.indexOf(id) > -1;
         };
 
-        scope.options = ngObibaMicaSearch.getOptions().studies.studiesColumn;
+        scope.options = ngObibaMicaSearch.getOptions().studies;
+        scope.optionsCols = scope.options.studiesColumn;
         scope.PageUrlService = PageUrlService;
       }
     };
@@ -159,7 +160,8 @@ angular.module('obiba.mica.search')
       },
       templateUrl: 'search/views/list/variables-search-result-table-template.html',
       link: function(scope) {
-        scope.options = ngObibaMicaSearch.getOptions().variables.variablesColumn;
+        scope.options = ngObibaMicaSearch.getOptions().variables;
+        scope.optionsCols = scope.options.variablesColumn;
         scope.PageUrlService = PageUrlService;
       }
     };

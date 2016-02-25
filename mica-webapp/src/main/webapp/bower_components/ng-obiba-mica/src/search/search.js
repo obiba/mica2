@@ -44,7 +44,10 @@ angular.module('obiba.mica.search', [
         searchTabsOrder: [DISPLAY_TYPES.LIST, DISPLAY_TYPES.COVERAGE, DISPLAY_TYPES.GRAPHICS],
         resultTabsOrder: [QUERY_TARGETS.VARIABLE, QUERY_TARGETS.DATASET, QUERY_TARGETS.STUDY, QUERY_TARGETS.NETWORK],
         variables: {
-          showSearchTab: true, variablesColumn: {
+          showSearchTab: true,
+          searchLabel: 'search.variable.searchLabel',
+          noResultsLabel: 'search.variable.noResults',
+          variablesColumn: {
             showVariablesStudiesColumn: true,
             showVariablesDatasetsColumn: true,
             showDatasetsStudiesColumn: true,
@@ -52,7 +55,11 @@ angular.module('obiba.mica.search', [
           }
         },
         datasets: {
-          showSearchTab: true, showDatasetsSearchFilter: true, datasetsColumn: {
+          showSearchTab: true,
+          showDatasetsSearchFilter: true,
+          searchLabel: 'search.variable.searchLabel',
+          noResultsLabel: 'search.dataset.noResults',
+          datasetsColumn: {
             showDatasetsTypeColumn: true,
             showDatasetsNetworkColumn: true,
             showDatasetsStudiesColumn: true,
@@ -60,7 +67,10 @@ angular.module('obiba.mica.search', [
           }
         },
         studies: {
-          showSearchTab: true, showStudiesSearchFilter: true, studiesColumn: {
+          showSearchTab: true,
+          searchLabel: 'search.variable.searchLabel',
+          noResultsLabel: 'search.study.noResults',
+          showStudiesSearchFilter: true, studiesColumn: {
             showStudiesDesignColumn: true,
             showStudiesQuestionnaireColumn: true,
             showStudiesPmColumn: true,
@@ -74,7 +84,10 @@ angular.module('obiba.mica.search', [
           }
         },
         networks: {
-          showSearchTab: true, networksColumn: {
+          showSearchTab: true,
+          searchLabel: 'search.variable.searchLabel',
+          noResultsLabel: 'search.network.noResults',
+          networksColumn: {
             showNetworksStudiesColumn: true,
             showNetworksStudyDatasetColumn: true,
             showNetworksHarmonizedDatasetColumn: true,
@@ -89,6 +102,10 @@ angular.module('obiba.mica.search', [
 
       this.setOptions = function (value) {
         options = angular.merge(options, value);
+        //NOTICE: angular.merge merges arrays by position. Overwriting manually.
+        options.taxonomyTabsOrder = value.taxonomyTabsOrder || options.taxonomyTabsOrder;
+        options.searchTabsOrder = value.searchTabsOrder || options.searchTabsOrder;
+        options.resultTabsOrder = value.resultTabsOrder || options.resultTabsOrder;
       };
 
       this.$get = ['$q', '$injector', function ngObibaMicaSearchFactory($q, $injector) {
