@@ -167,7 +167,7 @@ public class PublishedHarmonizationDatasetResource extends AbstractPublishedData
     @QueryParam("sort") String sort, @QueryParam("order") String order) {
     checkAccess(id);
     QueryBuilder query = FilteredQueryBuilder.newBuilder().must("datasetId", id).must("studyIds", studyId)
-      .must("variableType", DatasetVariable.Type.Dataschema.toString().toLowerCase())
+      .must("variableType", DatasetVariable.Type.Dataschema.toString())
       .build(QueryBuilders.matchAllQuery());
 
     return getDatasetVariableDtosInternal(query, from, limit, sort, order);
