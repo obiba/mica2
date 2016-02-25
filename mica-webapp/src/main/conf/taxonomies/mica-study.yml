@@ -1827,7 +1827,56 @@
     "type": "integer"
     "field": "numberOfParticipants.participant.number"
     "alias": "numberOfParticipants-participant-number"
-  "terms": []
+  "terms":
+    - "name": "*:999"
+      "title":
+        "en": "0-999"
+        "fr": "0-999"
+      "description": {}
+      "keywords": {}
+      "terms":
+    - "name": "1000:4999"
+      "title":
+        "en": "1000-4999"
+        "fr": "1000-4999"
+      "description": {}
+      "keywords": {}
+      "terms":
+    - "name": "5000:9999"
+      "title":
+        "en": "5000-9999"
+        "fr": "5000-9999"
+      "description": {}
+      "keywords": {}
+      "terms":
+    - "name": "10000:49999"
+      "title":
+        "en": "10000-49999"
+        "fr": "10000-49999"
+      "description": {}
+      "keywords": {}
+      "terms":
+    - "name": "50000:99999"
+      "title":
+        "en": "50000-99999"
+        "fr": "50000-99999"
+      "description": {}
+      "keywords": {}
+      "terms":
+    - "name": "100000:499999"
+      "title":
+        "en": "100000-499999"
+        "fr": "100000-499999"
+      "description": {}
+      "keywords": {}
+      "terms":
+    - "name": "500000:*"
+      "title":
+        "en": "500000+"
+        "fr": "500000+"
+      "description": {}
+      "keywords": {}
+      "terms":
 - "name": "numberOfParticipants-sample-number"
   "title":
     "en": "Target number of participants with samples"
