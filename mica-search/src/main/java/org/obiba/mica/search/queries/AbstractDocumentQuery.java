@@ -41,8 +41,8 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
-import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
+import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.aggregations.AggregationMetaDataResolver;
 import org.obiba.mica.search.aggregations.AggregationYamlParser;
 import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
@@ -50,6 +50,7 @@ import org.obiba.mica.search.queries.protobuf.QueryDtoWrapper;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.MicaSearch;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
+import org.obiba.opal.core.domain.taxonomy.TaxonomyEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -190,7 +191,9 @@ public abstract class AbstractDocumentQuery {
           String type = vocabulary.getAttributeValue("type");
           if("integer".equals(type) || "decimal".equals(type)) {
             if(vocabulary.hasTerms()) {
-              // TODO: use the terms for a range query
+              properties.put(field + AggregationYamlParser.TYPE, AggregationYamlParser.AGG_RANGE);
+              properties.put(field + AggregationYamlParser.RANGES, vocabulary.getTerms().stream().map(
+                TaxonomyEntity::getName).collect(Collectors.joining(",")));
             } else {
               properties.put(field + AggregationYamlParser.TYPE, AggregationYamlParser.AGG_STATS);
             }
