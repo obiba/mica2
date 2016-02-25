@@ -149,7 +149,7 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
       Iterable<DatasetVariable> variables = wrappedGetDatasetVariables(dataset);
       publishState(id);
       eventBus.post(new DatasetPublishedEvent(dataset, variables, getCurrentUsername(), cascadingScope));
-      helper.asyncBuildDatasetVariablesCache(dataset, variables);
+      //helper.asyncBuildDatasetVariablesCache(dataset, variables);
     } else {
       unPublishState(id);
       eventBus.post(new DatasetUnpublishedEvent(dataset));

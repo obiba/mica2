@@ -202,7 +202,7 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
       Map<String, List<DatasetVariable>> harmonizationVariables = populateHarmonizedVariablesMap(dataset);
       eventBus.post(new DatasetPublishedEvent(dataset, wrappedGetDatasetVariables(dataset), harmonizationVariables,
         getCurrentUsername(), cascadingScope));
-      helper.asyncBuildDatasetVariablesCache(dataset, harmonizationVariables);
+      //helper.asyncBuildDatasetVariablesCache(dataset, harmonizationVariables);
     } else {
       unPublishState(id);
       eventBus.post(new DatasetUnpublishedEvent(dataset));
