@@ -233,6 +233,18 @@ message StatsAggregationResultDto {
   }
 }
 
+message RangeAggregationResultDataDto {
+  required string key = 1;
+  required int64 default = 2;
+  required int64 count = 3;
+  optional double from = 4;
+  optional double to = 5;
+
+  extend AggregationResultDto {
+    repeated RangeAggregationResultDataDto ranges = 1002;
+  }
+}
+
 message BucketCoverageDto {
   required string field = 1;
   required string value = 2;
