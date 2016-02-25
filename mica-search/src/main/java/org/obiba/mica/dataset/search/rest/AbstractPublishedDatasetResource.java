@@ -105,7 +105,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   protected Mica.DatasetVariablesDto getDatasetVariableDtos(@NotNull String queryString, @NotNull String datasetId,
     DatasetVariable.Type type, int from, int limit, @Nullable String sort, @Nullable String order) {
     QueryBuilder query = FilteredQueryBuilder.newBuilder().must("datasetId", datasetId)
-      .must("variableType", type.toString().toLowerCase()).build(QueryStringBuilder.newBuilder(queryString).build());
+      .must("variableType", type.toString()).build(QueryStringBuilder.newBuilder(queryString).build());
 
     return getDatasetVariableDtosInternal(query, from, limit, sort, order);
   }
@@ -113,7 +113,7 @@ public abstract class AbstractPublishedDatasetResource<T extends Dataset> {
   protected Mica.DatasetVariablesDto getDatasetVariableDtos(@NotNull String datasetId, DatasetVariable.Type type, int from,
     int limit, @Nullable String sort, @Nullable String order) {
     QueryBuilder query = FilteredQueryBuilder.newBuilder().must("datasetId", datasetId)
-      .must("variableType", type.toString().toLowerCase()).build(QueryBuilders.matchAllQuery());
+      .must("variableType", type.toString()).build(QueryBuilders.matchAllQuery());
 
     return getDatasetVariableDtosInternal(query, from, limit, sort, order);
   }
