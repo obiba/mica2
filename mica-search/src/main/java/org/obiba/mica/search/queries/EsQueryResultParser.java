@@ -25,11 +25,13 @@ import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.InternalAggregation;
 import org.elasticsearch.search.aggregations.bucket.MultiBucketsAggregation;
 import org.elasticsearch.search.aggregations.bucket.global.Global;
+import org.elasticsearch.search.aggregations.bucket.range.Range;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.metrics.stats.Stats;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.AggregationMetaDataResolver;
 import org.obiba.mica.web.model.MicaSearch;
+import org.obiba.mica.web.model.MicaSearch.RangeAggregationResultDataDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,6 +133,33 @@ public class EsQueryResultParser {
           });
 
           break;
+
+        case "range":
+          List<? extends Range.Bucket> defaultRangeBuckets = ((Range) defaultAgg).getBuckets();
+          List<? extends Range.Bucket> queriedRangeBuckets = ((Range) queriedAgg).getBuckets();
+          IntStream.range(0, defaultRangeBuckets.size()).forEach(j -> {
+            Range.Bucket defaultBucket = defaultRangeBuckets.get(j);
+            Range.Bucket queriedBucket = queriedRangeBuckets.get(j);
+
+            RangeAggregationResultDataDto.Builder rangeBuilder = RangeAggregationResultDataDto.newBuilder();
+            rangeBuilder.setDefault(defaultBucket.getDocCount());
+            rangeBuilder.setCount(queriedBucket.getDocCount());
+            rangeBuilder.setKey(queriedBucket.getKeyAsString());
+
+            Double from = (Double)queriedBucket.getFrom();
+            Double to = (Double)queriedBucket.getTo();
+            if (Double.NEGATIVE_INFINITY != from) {
+              rangeBuilder.setFrom(from);
+            }
+            if (Double.POSITIVE_INFINITY != to) {
+              rangeBuilder.setTo(to);
+            }
+
+            aggResultBuilder.addExtension(RangeAggregationResultDataDto.ranges, rangeBuilder.build());
+          });
+
+          break;
+
         case "global":
           totalCount = ((Global) defaultAgg).getDocCount();
           // do not include in the list of aggregations
@@ -193,6 +222,29 @@ public class EsQueryResultParser {
               termsBuilder.setKey(bucket.getKeyAsString()).setDefault(-1).setCount((int) bucket.getDocCount()).build());
           });
           break;
+
+        case "range":
+          ((Range) aggregation).getBuckets().stream().forEach(bucket -> {
+            RangeAggregationResultDataDto.Builder rangeBuilder =
+              RangeAggregationResultDataDto.newBuilder()
+                .setDefault(-1)
+                .setCount(bucket.getDocCount())
+                .setKey(bucket.getKeyAsString());
+
+              Double from = (Double)bucket.getFrom();
+              Double to = (Double)bucket.getTo();
+              if (Double.NEGATIVE_INFINITY != from ) {
+                rangeBuilder.setFrom(from);
+              }
+              if (Double.POSITIVE_INFINITY != to) {
+                rangeBuilder.setTo(to);
+              }
+
+            aggResultBuilder.addExtension(RangeAggregationResultDataDto.ranges, rangeBuilder.build());
+          });
+
+          break;
+
         case "global":
           totalCount = ((Global) aggregation).getDocCount();
           // do not include in the list of aggregations
