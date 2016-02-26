@@ -6194,7 +6194,7 @@ angular.module("search/views/list/variables-search-result-table-template.html", 
     "        <tr>\n" +
     "          <th translate>name</th>\n" +
     "          <th translate>search.variable.label</th>\n" +
-    "          <th translate ng-if=\"options.showVariablesStudiesColumn\">study.label</th>\n" +
+    "          <th translate ng-if=\"options.showVariablesStudiesColumn\">search.study.label</th>\n" +
     "          <th translate ng-if=\"options.showVariablesDatasetsColumn\">search.dataset.label</th>\n" +
     "        </tr>\n" +
     "        </thead>\n" +
