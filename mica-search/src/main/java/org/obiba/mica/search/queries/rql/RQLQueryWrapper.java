@@ -374,12 +374,12 @@ public class RQLQueryWrapper implements QueryWrapper {
       // if there is only one argument, the fields to be matched are the default ones
       // otherwise, the first argument can be the field name or a list of filed names
       if(node.getArgumentsSize() == 1) return QueryBuilders.queryStringQuery(node.getArgument(0).toString());
-      QueryStringQueryBuilder builder = QueryBuilders.queryStringQuery(node.getArgument(1).toString());
+      QueryStringQueryBuilder builder = QueryBuilders.queryStringQuery(node.getArgument(0).toString());
       if(node.getArgument(1) instanceof ArrayList) {
         ArrayList<Object> fields = (ArrayList<Object>) node.getArgument(1);
-        fields.stream().map(Object::toString).forEach(builder::field);
+        fields.stream().map(Object::toString).forEach(f -> builder.field(resolveField(f)));
       } else {
-        builder.field(node.getArgument(0).toString());
+        builder.field(resolveField(node.getArgument(1).toString()));
       }
       return builder;
     }
