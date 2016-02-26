@@ -402,6 +402,8 @@ angular.module('obiba.mica.search')
           angular.element('#taxonomies').collapse('show');
         }
         $scope.taxonomies.target = target;
+        $scope.taxonomies.search.active = false;
+        $scope.taxonomies.all = null;
         $scope.taxonomies.taxonomy = null;
         $scope.taxonomies.vocabulary = null;
         $scope.taxonomies.term = null;
@@ -824,6 +826,7 @@ angular.module('obiba.mica.search')
       $scope.remove = remove;
       $scope.openDropdown = openDropdown;
       $scope.closeDropdown = closeDropdown;
+      $scope.RqlQueryUtils = RqlQueryUtils;
     }])
 
   .controller('NumericCriterionController', [
@@ -1126,9 +1129,13 @@ angular.module('obiba.mica.search')
         return false;
       };
       var charOptions = GraphicChartsConfig.getOptions().ChartsOptions;
+
       $scope.$watch('result', function (result) {
         $scope.chartObjects = {};
-        if (result) {
+        $scope.noResults = true;
+
+        if (result && result.studyResultDto.totalHits) {
+          $scope.noResults = false;
           var geoStudies = setChartObject('populations-selectionCriteria-countriesIso',
             result.studyResultDto,
             [$filter('translate')(charOptions.geoChartOptions.header[0]), $filter('translate')(charOptions.geoChartOptions.header[1])],

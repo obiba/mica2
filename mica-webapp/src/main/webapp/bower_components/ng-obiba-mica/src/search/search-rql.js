@@ -748,6 +748,10 @@ angular.module('obiba.mica.search')
     this.isNumericVocabulary = function(vocabulary) {
       return !vocabulary.terms && (self.vocabularyType(vocabulary) === VOCABULARY_TYPES.INTEGER || self.vocabularyType(vocabulary) === VOCABULARY_TYPES.DECIMAL);
     };
+
+    this.isRangeVocabulary = function(vocabulary) {
+      return vocabulary.terms && (self.vocabularyType(vocabulary) === VOCABULARY_TYPES.INTEGER || self.vocabularyType(vocabulary) === VOCABULARY_TYPES.DECIMAL);
+    };
   }])
 
 
@@ -1179,7 +1183,9 @@ angular.module('obiba.mica.search')
               if (RqlQueryUtils.isNumericVocabulary(criterion.vocabulary)) {
                 return filteredAgg['obiba.mica.StatsAggregationResultDto.stats'];
               } else {
-                return addMissingTerms(filteredAgg['obiba.mica.TermsAggregationResultDto.terms'],criterion.vocabulary);
+                return RqlQueryUtils.isRangeVocabulary(criterion.vocabulary) ?
+                  addMissingTerms(filteredAgg['obiba.mica.RangeAggregationResultDto.ranges'],criterion.vocabulary) :
+                  addMissingTerms(filteredAgg['obiba.mica.TermsAggregationResultDto.terms'],criterion.vocabulary);
               }
             } else {
               var vocabularyAgg = filteredAgg.children.filter(function (agg) {
@@ -1187,7 +1193,9 @@ angular.module('obiba.mica.search')
               }).pop();
 
               if (vocabularyAgg) {
-                return addMissingTerms(vocabularyAgg['obiba.mica.TermsAggregationResultDto.terms'], criterion.vocabulary);
+                return RqlQueryUtils.isRangeVocabulary(criterion.vocabulary) ?
+                  addMissingTerms(filteredAgg['obiba.mica.RangeAggregationResultDto.ranges'],criterion.vocabulary) :
+                  addMissingTerms(filteredAgg['obiba.mica.TermsAggregationResultDto.terms'],criterion.vocabulary);
               }
             }
           }

@@ -1,20 +1,22 @@
 <div>
   <div ng-if="loading" class="loading"></div>
-
-  <div ng-show="summaries.length > 0">
+  <div ng-show="!loading">
     <div class="table-responsive">
       <table class="table table-bordered table-striped">
         <thead>
         <tr>
           <th translate>acronym</th>
           <th translate>name</th>
-          <th translate ng-if="options.showDatasetsTypeColumn">type</th>
-          <th translate ng-if="options.showDatasetsNetworkColumn">networks</th>
-          <th translate ng-if="options.showDatasetsStudiesColumn">studies</th>
-          <th translate ng-if="options.showDatasetsVariablesColumn">variables</th>
+          <th translate ng-if="optionsCols.showDatasetsTypeColumn">type</th>
+          <th translate ng-if="optionsCols.showDatasetsNetworkColumn">networks</th>
+          <th translate ng-if="optionsCols.showDatasetsStudiesColumn">studies</th>
+          <th translate ng-if="optionsCols.showDatasetsVariablesColumn">variables</th>
         </tr>
         </thead>
         <tbody>
+        <tr ng-if="!summaries || !summaries.length">
+          <td colspan="6">{{options.noResultsLabel | translate}}</td>
+        </tr>
         <tr ng-repeat="summary in summaries" ng-init="lang = $parent.$parent.lang">
           <td>
             <a ng-href="{{PageUrlService.datasetPage(summary.id, summary.variableType)}}">
@@ -24,16 +26,16 @@
           <td>
             <localized value="summary.name" lang="lang"></localized>
           </td>
-          <td ng-if="options.showDatasetsTypeColumn">
+          <td ng-if="optionsCols.showDatasetsTypeColumn">
             <localized value="classNames[summary.variableType + 'Dataset']" lang="lang"></localized>
           </td>
-          <td ng-if="options.showDatasetsNetworkColumn">
+          <td ng-if="optionsCols.showDatasetsNetworkColumn">
             {{summary['obiba.mica.CountStatsDto.datasetCountStats'].networks}}
           </td>
-          <td ng-if="options.showDatasetsStudiesColumn">
+          <td ng-if="optionsCols.showDatasetsStudiesColumn">
             {{summary['obiba.mica.CountStatsDto.datasetCountStats'].studies}}
           </td>
-          <td ng-if="options.showDatasetsVariablesColumn">
+          <td ng-if="optionsCols.showDatasetsVariablesColumn">
             {{summary['obiba.mica.CountStatsDto.datasetCountStats'].variables}}
           </td>
         </tr>

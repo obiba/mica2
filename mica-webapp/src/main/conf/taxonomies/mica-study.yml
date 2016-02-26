@@ -1828,6 +1828,68 @@
     "field": "numberOfParticipants.participant.number"
     "alias": "numberOfParticipants-participant-number"
   "terms": []
+- "name": "numberOfParticipants-participant-range"
+  "title":
+    "en": "Target number of participants (pre-defined ranges)"
+    "fr": "Nombre de participants ciblé (plages prédéfinies)"
+  "description":
+    "en": "The target number of participants can be lower than the actual number."
+    "fr": "Le nombre de participants ciblé peut être inférieur au nombre effectivement atteint."
+  "keywords": {}
+  "attributes":
+    "type": "integer"
+    "field": "numberOfParticipants.participant.number"
+    "alias": "numberOfParticipants-participant-range"
+  "terms":
+    - "name": "*:1000"
+      "title":
+        "en": "0-1000"
+        "fr": "0-1000"
+      "description": {}
+      "keywords": {}
+      "terms":
+    - "name": "1000:5000"
+      "title":
+        "en": "1000-5000"
+        "fr": "1000-5000"
+      "description": {}
+      "keywords": {}
+      "terms":
+    - "name": "5000:10000"
+      "title":
+        "en": "5000-10000"
+        "fr": "5000-10000"
+      "description": {}
+      "keywords": {}
+      "terms":
+    - "name": "10000:50000"
+      "title":
+        "en": "10000-50000"
+        "fr": "10000-50000"
+      "description": {}
+      "keywords": {}
+      "terms":
+    - "name": "50000:100000"
+      "title":
+        "en": "50000-100000"
+        "fr": "50000-100000"
+      "description": {}
+      "keywords": {}
+      "terms":
+    - "name": "100000:500000"
+      "title":
+        "en": "100000-500000"
+        "fr": "100000-500000"
+      "description": {}
+      "keywords": {}
+      "terms":
+    - "name": "500000:*"
+      "title":
+        "en": "500000+"
+        "fr": "500000+"
+      "description": {}
+      "keywords": {}
+      "terms":
 - "name": "numberOfParticipants-sample-number"
   "title":
     "en": "Target number of participants with samples"

@@ -41,8 +41,8 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
-import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
+import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.aggregations.AggregationMetaDataResolver;
 import org.obiba.mica.search.aggregations.AggregationYamlParser;
 import org.obiba.mica.search.queries.protobuf.QueryDtoHelper;
@@ -50,6 +50,7 @@ import org.obiba.mica.search.queries.protobuf.QueryDtoWrapper;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.MicaSearch;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
+import org.obiba.opal.core.domain.taxonomy.TaxonomyEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -186,23 +187,35 @@ public abstract class AbstractDocumentQuery {
           : vocabulary.getName().replace('-', '.');
 
         if(patterns.isEmpty() || patterns.stream().filter(p -> p.matcher(field).matches()).findFirst().isPresent()) {
+          boolean multipleTypes = null != properties.get(field);
           properties.put(field, "");
           String type = vocabulary.getAttributeValue("type");
           if("integer".equals(type) || "decimal".equals(type)) {
             if(vocabulary.hasTerms()) {
-              // TODO: use the terms for a range query
+              addProperty(properties, field + AggregationYamlParser.TYPE, AggregationYamlParser.AGG_RANGE, multipleTypes);
+              properties.put(field + AggregationYamlParser.RANGES, vocabulary.getTerms().stream().map(
+                TaxonomyEntity::getName).collect(Collectors.joining(",")));
             } else {
-              properties.put(field + AggregationYamlParser.TYPE, AggregationYamlParser.AGG_STATS);
+              addProperty(properties, field + AggregationYamlParser.TYPE, AggregationYamlParser.AGG_STATS, multipleTypes);
             }
           }
           String alias = vocabulary.getAttributeValue("alias");
           if(!Strings.isNullOrEmpty(alias)) {
-            properties.put(field + AggregationYamlParser.ALIAS, alias);
+            addProperty(properties, field + AggregationYamlParser.ALIAS, alias, multipleTypes);
           }
         }
       });
     }
     return properties;
+  }
+
+  private void addProperty(Properties properties, String property, String value, boolean multipleTypes) {
+    if (multipleTypes) {
+      String currentTypes = properties.get(property).toString();
+      properties.put(property, currentTypes + "," + value);
+    } else {
+      properties.put(property, value);
+    }
   }
 
   private Properties getFilteredAggregationsProperties() {

@@ -1,33 +1,35 @@
 <div>
   <div ng-if="loading" class="loading"></div>
-
-  <div ng-show="summaries.length > 0">
+  <div ng-show="!loading">
     <div class="table-responsive">
       <table class="table table-bordered table-striped" ng-init="lang = $parent.$parent.lang">
         <thead>
         <tr>
           <th translate>name</th>
           <th translate>search.variable.label</th>
-          <th translate ng-if="options.showVariablesStudiesColumn">search.study.label</th>
-          <th translate ng-if="options.showVariablesDatasetsColumn">search.dataset.label</th>
+          <th translate ng-if="optionsCols.showVariablesStudiesColumn">search.study.label</th>
+          <th translate ng-if="optionsCols.showVariablesDatasetsColumn">search.dataset.label</th>
         </tr>
         </thead>
         <tbody>
+        <tr ng-if="!summaries || !summaries.length">
+          <td colspan="4">{{options.noResultsLabel | translate}}</td>
+        </tr>
         <tr ng-repeat="summary in summaries">
           <td>
             <a href="{{PageUrlService.VariablePage(summary.id)}}">
-                {{summary.name}}
+              {{summary.name}}
             </a>
           </td>
           <td>
             <localized value="summary.variableLabel" lang="lang"></localized>
           </td>
-          <td ng-if="options.showVariablesStudiesColumn">
+          <td ng-if="optionsCols.showVariablesStudiesColumn">
             <a ng-href="{{PageUrlService.studyPage(summary.studyId)}}">
               <localized value="summary.studyAcronym" lang="lang"></localized>
             </a>
           </td>
-          <td  ng-if="options.showVariablesDatasetsColumn">
+          <td ng-if="optionsCols.showVariablesDatasetsColumn">
             <a ng-href="{{PageUrlService.datasetPage(summary.datasetId, summary.variableType)}}">
               <localized value="summary.datasetAcronym" lang="lang"></localized>
             </a>

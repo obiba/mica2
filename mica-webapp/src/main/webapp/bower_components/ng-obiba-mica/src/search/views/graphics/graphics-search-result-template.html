@@ -1,6 +1,10 @@
 <div>
   <div ng-if="loading" class="loading"></div>
-
+  <div class="row voffset2" ng-if="!loading && noResults">
+    <div class="col-md-12">
+      <p translate>search.noResults</p>
+    </div>
+  </div>
   <div ng-repeat="chart in chartObjects" class="panel panel-default">
     <div class="panel-heading">
       {{chart.chartObject.options.title}}
@@ -30,10 +34,5 @@
         </div>
       </div>
     </div>
-
-    <!--<pre>-->
-    <!--{{chart | json}}-->
-    <!--</pre>-->
   </div>
-
 </div>

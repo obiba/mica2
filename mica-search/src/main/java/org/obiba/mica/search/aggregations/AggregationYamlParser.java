@@ -2,6 +2,7 @@ package org.obiba.mica.search.aggregations;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,11 +13,14 @@ import java.util.Properties;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.range.RangeBuilder;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsBuilder;
 import org.slf4j.Logger;
@@ -24,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
@@ -53,6 +58,8 @@ public class AggregationYamlParser {
 
   public static final String TYPE = PROPERTIES + FIELD_SEPARATOR + "type";
 
+  public static final String RANGES = PROPERTIES + FIELD_SEPARATOR + "ranges";
+
   public static final String ALIAS = PROPERTIES + FIELD_SEPARATOR + "alias";
 
   public static final String LOCALIZED = PROPERTIES + FIELD_SEPARATOR + "localized";
@@ -60,6 +67,8 @@ public class AggregationYamlParser {
   public static final String AGG_TERMS = "terms";
 
   public static final String AGG_STATS = "stats";
+
+  public static final String AGG_RANGE = "range";
 
   private List<Locale> locales;
 
@@ -132,31 +141,48 @@ public class AggregationYamlParser {
   private void parseAggregation(Collection<AbstractAggregationBuilder> termsBuilders, Properties properties,
     String key, Map<String, Iterable<AbstractAggregationBuilder>> subAggregations) {
     Boolean localized = Boolean.valueOf(properties.getProperty(key + LOCALIZED));
-    String alias = properties.getProperty(key + ALIAS);
-    String type = getAggregationType(properties.getProperty(key + TYPE), localized);
-    createAggregation(termsBuilders, getFields(key, alias, localized), type, subAggregations);
-  }
+    String aliasProperty = properties.getProperty(key + ALIAS);
+    String typeProperty = properties.getProperty(key + TYPE);
+    List<String> types = null == typeProperty ? Arrays.asList(AGG_TERMS) : Arrays.asList(typeProperty.split(","));
+    List<String> aliases = null == aliasProperty ? Arrays.asList("") : Arrays.asList(aliasProperty.split(","));
 
-  private void createAggregation(Collection<AbstractAggregationBuilder> termsBuilders, Map<String, String> fields,
-    String type, Map<String, Iterable<AbstractAggregationBuilder>> subAggregations) {
-    fields.entrySet().forEach(entry -> {
-      log.debug("Building aggregation '{}' of type '{}'", entry.getKey(), type);
+    IntStream.range(0, types.size()).forEach(i -> {
+      String aggType = getAggregationType(types.get(i), localized);
+      getFields(key, aliases.get(i), localized).entrySet().forEach(entry -> {
+        log.debug("Building aggregation '{}' of type '{}'", entry.getKey(), aggType);
 
-      switch(type) {
-        case AGG_TERMS:
-          TermsBuilder termBuilder = AggregationBuilders.terms(entry.getKey()).field(entry.getValue());
-          if (minDocCount > -1) termBuilder.minDocCount(minDocCount);
-          if (subAggregations != null && subAggregations.containsKey(entry.getKey())) {
-            subAggregations.get(entry.getKey()).forEach(termBuilder::subAggregation);
-          }
-          termsBuilders.add(termBuilder.order(Terms.Order.term(true)).size(0));
-          break;
-        case AGG_STATS:
-          termsBuilders.add(AggregationBuilders.stats(entry.getKey()).field(entry.getValue()));
-          break;
-        default:
-          throw new IllegalArgumentException("Invalid aggregation type detected: " + type);
-      }
+        switch(aggType) {
+          case AGG_TERMS:
+            TermsBuilder termBuilder = AggregationBuilders.terms(entry.getKey()).field(entry.getValue());
+            if (minDocCount > -1) termBuilder.minDocCount(minDocCount);
+            if (subAggregations != null && subAggregations.containsKey(entry.getKey())) {
+              subAggregations.get(entry.getKey()).forEach(termBuilder::subAggregation);
+            }
+            termsBuilders.add(termBuilder.order(Terms.Order.term(true)).size(0));
+            break;
+          case AGG_STATS:
+            termsBuilders.add(AggregationBuilders.stats(entry.getKey()).field(entry.getValue()));
+            break;
+          case AGG_RANGE:
+            RangeBuilder builder = AggregationBuilders.range(entry.getKey()).field(entry.getValue());
+            Stream.of(properties.getProperty(key + RANGES).split(",")).forEach(range -> {
+              String[] values = range.split(":");
+              Assert.isTrue(values.length == 2, "Range From and To are not defined");
+
+              if ("*".equals(values[0])) {
+                builder.addUnboundedTo(range, Double.valueOf(values[1]));
+              } else if ("*".equals(values[1])) {
+                builder.addUnboundedFrom(range, Double.valueOf(values[0]));
+              } else {
+                builder.addRange(range,Double.valueOf(values[0]), Double.valueOf(values[1]));
+              }
+            });
+            termsBuilders.add(builder);
+            break;
+          default:
+            throw new IllegalArgumentException("Invalid aggregation type detected: " + aggType);
+        }
+      });
     });
   }
 
@@ -187,7 +213,7 @@ public class AggregationYamlParser {
    * @return
    */
   private String getAggregationType(String type, Boolean localized) {
-    return !localized && !Strings.isNullOrEmpty(type) && type.matches(String.format("^(%s|%s)$", AGG_STATS, AGG_TERMS))
+    return !localized && !Strings.isNullOrEmpty(type) && type.matches(String.format("^(%s|%s|%s)$", AGG_STATS, AGG_TERMS, AGG_RANGE))
       ? type
       : AGG_TERMS;
   }
