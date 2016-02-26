@@ -56,9 +56,20 @@
       <div class="col-md-3"></div>
       <div class="col-md-6">
         <ul class="nav nav-pills">
-          <li ng-repeat="t in taxonomyTabsOrder" ng-class="{'active': taxonomies.target === t && taxonomiesShown}"
-              title="{{t + '-classifications' | translate}}">
-            <a ng-click="selectTaxonomyTarget(t)">{{taxonomyTypeMap[t] | translate}}</a>
+          <li ng-repeat="t in taxonomyNav" title="{{t.locale.description.text}}">
+            <a href ng-click="showTaxonomy(t.target, t.name)" ng-if="!t.terms">{{t.locale.title.text}}</a>
+            <span uib-dropdown ng-if="t.terms">
+              <ul class="nav nav-pills">
+                <li>
+                  <a href uib-dropdown-toggle>{{t.locale.title.text}} <span class="caret"></span></a>
+                </li>
+              </ul>
+              <ul uib-dropdown-menu>
+                <li ng-repeat="st in t.terms">
+                  <a href ng-click="showTaxonomy(t.target, st.name)" title="{{st.locale.description.text}}">{{st.locale.title.text}}</a>
+                </li>
+              </ul>
+            </span>
           </li>
         </ul>
       </div>

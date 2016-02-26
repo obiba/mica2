@@ -81,7 +81,7 @@ angular.module('obiba.mica.search')
     };
   }])
 
-  .directive('datasetsResultTable', ['PageUrlService', 'ngObibaMicaSearch', function (PageUrlService, ngObibaMicaSearch) {
+  .directive('datasetsResultTable', ['PageUrlService', 'ngObibaMicaSearch', 'TaxonomyResource', function (PageUrlService, ngObibaMicaSearch, TaxonomyResource) {
     return {
       restrict: 'EA',
       replace: true,
@@ -91,13 +91,30 @@ angular.module('obiba.mica.search')
       },
       templateUrl: 'search/views/list/datasets-search-result-table-template.html',
       link: function(scope) {
+        scope.classNames = {};
+        TaxonomyResource.get({
+          target: 'dataset',
+          taxonomy: 'Mica_dataset'
+        }).$promise.then(function (taxonomy) {
+            scope.classNames = taxonomy.vocabularies.filter(function (v) {
+              return v.name === 'className';
+            })[0].terms.reduce(function (prev, t) {
+                prev[t.name] = t.title.map(function (t) {
+                  return {lang: t.locale, value: t.text};
+                });
+                return prev;
+              }, {});
+
+            console.log('>>>', scope.classNames);
+          });
+
         scope.options = ngObibaMicaSearch.getOptions().datasets.datasetsColumn;
         scope.PageUrlService = PageUrlService;
       }
     };
   }])
 
-  .directive('studiesResultTable', ['PageUrlService', 'ngObibaMicaSearch', function (PageUrlService, ngObibaMicaSearch) {
+  .directive('studiesResultTable', ['PageUrlService', 'ngObibaMicaSearch', 'TaxonomyResource', function (PageUrlService, ngObibaMicaSearch, TaxonomyResource) {
     return {
       restrict: 'EA',
       replace: true,
@@ -107,6 +124,25 @@ angular.module('obiba.mica.search')
       },
       templateUrl: 'search/views/list/studies-search-result-table-template.html',
       link: function(scope) {
+        scope.designs = {};
+        TaxonomyResource.get({
+          target: 'study',
+          taxonomy: 'Mica_study'
+        }).$promise.then(function (taxonomy) {
+            scope.designs = taxonomy.vocabularies.filter(function (v) {
+              return v.name === 'methods-designs';
+            })[0].terms.reduce(function (prev, t) {
+                prev[t.name] = t.title.map(function (t) {
+                  return {lang: t.locale, value: t.text};
+                });
+                return prev;
+              }, {});
+          });
+
+        scope.hasDatasource = function (datasources, id) {
+          return datasources.indexOf(id) > -1;
+        };
+
         scope.options = ngObibaMicaSearch.getOptions().studies.studiesColumn;
         scope.PageUrlService = PageUrlService;
       }

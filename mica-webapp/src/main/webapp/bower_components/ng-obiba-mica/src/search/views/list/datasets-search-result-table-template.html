@@ -15,7 +15,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr ng-repeat="summary in summaries">
+        <tr ng-repeat="summary in summaries" ng-init="lang = $parent.$parent.lang">
           <td>
             <a ng-href="{{PageUrlService.datasetPage(summary.id, summary.variableType)}}">
               <localized value="summary.acronym" lang="lang"></localized>
@@ -25,7 +25,7 @@
             <localized value="summary.name" lang="lang"></localized>
           </td>
           <td ng-if="options.showDatasetsTypeColumn">
-            <localized value="summary.type" lang="lang"></localized>
+            <localized value="classNames[summary.variableType + 'Dataset']" lang="lang"></localized>
           </td>
           <td ng-if="options.showDatasetsNetworkColumn">
             {{summary['obiba.mica.CountStatsDto.datasetCountStats'].networks}}

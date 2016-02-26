@@ -1,10 +1,39 @@
 <div>
   <div ng-if="loading" class="loading"></div>
-<div class="row">
-  <div class="col-md-6" ng-repeat="chart in chartObjects ">
-    <div ng-if="chart.chartObject.geoTitle" style="font-family:Arial; font-weight:bold">{{chart.chartObject.geoTitle}}</div>
-    <div google-chart chart="chart.chartObject" style="min-height:350px; width:100%;">
+
+  <div ng-repeat="chart in chartObjects" class="panel panel-default">
+    <div class="panel-heading">
+      {{chart.chartObject.options.title}}
     </div>
+    <div class="panel-body">
+      <div class="row">
+        <div class="col-md-6">
+          <div google-chart chart="chart.chartObject" style="min-height:350px; width:100%;"></div>
+        </div>
+        <div class="col-md-6">
+          <div class="table-responsive" ng-if="chart.chartObject.data && chart.chartObject.data.length>1">
+            <table class="table table-bordered table-striped">
+              <thead>
+              <tr>
+                <th>{{chart.chartObject.data[0][0]}}</th>
+                <th>{{chart.chartObject.data[0][1]}}</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr ng-repeat="row in chart.chartObject.data.slice(1)">
+                <td>{{row[0]}}</td>
+                <td>{{row[1]}}</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--<pre>-->
+    <!--{{chart | json}}-->
+    <!--</pre>-->
   </div>
-</div>
+
 </div>

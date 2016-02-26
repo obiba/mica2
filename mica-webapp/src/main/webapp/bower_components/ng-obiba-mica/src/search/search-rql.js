@@ -710,6 +710,18 @@ angular.module('obiba.mica.search')
       }
     };
 
+    this.addSort = function (targetQuery, sort) {
+      var found = targetQuery.args.filter(function (arg) {
+        return arg.name === RQL_NODE.SORT;
+      }).pop();
+
+      if (!found) {
+        var sortQuery = new RqlQuery('sort');
+        sortQuery.args.push(sort);
+        targetQuery.args.push(sortQuery);
+      }
+    };
+
     /**
      * Helper finding the vocabulary field, return name if none was found
      *
@@ -1008,7 +1020,7 @@ angular.module('obiba.mica.search')
         return parsedQuery.serializeArgs(parsedQuery.args);
       };
 
-      this.prepareSearchQuery = function(type, query, pagination, lang) {
+      this.prepareSearchQuery = function(type, query, pagination, lang, sort) {
         var rqlQuery = angular.copy(query);
         var target = typeToTarget(type);
         RqlQueryUtils.addLocaleQuery(rqlQuery, lang);
@@ -1021,6 +1033,10 @@ angular.module('obiba.mica.search')
 
         var limit = pagination[target] || {from: 0, size: 10};
         RqlQueryUtils.addLimit(targetQuery, RqlQueryUtils.limit(limit.from, limit.size));
+
+        if(sort) {
+          RqlQueryUtils.addSort(targetQuery, sort);
+        }
 
         return new RqlQuery().serializeArgs(rqlQuery.args);
       };

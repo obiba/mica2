@@ -1,8 +1,8 @@
 <div class="panel panel-default">
   <div class="panel-heading">
     <div class="row">
-      <div class="col-md-8 voffset1">
-        <ol class="breadcrumb no-margin no-padding">
+      <div class="col-md-8">
+        <ol class="breadcrumb no-margin no-padding pull-left">
           <li ng-if="!taxonomies.taxonomy">
             {{'all-' + taxonomies.target + '-classifications' | translate}}
           </li>
@@ -17,22 +17,12 @@
         </ol>
       </div>
       <div class="col-md-4">
-        <div class="form-inline pull-right">
-          <div class="form-group">
-            <span class="input-group input-group-sm no-padding-top">
-              <span class="input-group-addon"><i class="glyphicon glyphicon-filter"></i></span>
-              <input ng-keyup="filterTaxonomiesKeyUp($event)" ng-model="taxonomies.search.text" type="text"
-                class="form-control ng-pristine ng-untouched ng-valid" aria-describedby="study-search">
-            </span>
-          </div>
-        </div>
+        <span ng-click="closeTaxonomies()" title="{{'close' | translate}}" class="pull-right"><i
+          class="fa fa-close"></i></span>
       </div>
     </div>
   </div>
   <div class="panel-body">
-    <div ng-if="!taxonomies.search.active && taxonomies.all.length === 0" translate>
-      no-classifications
-    </div>
     <div ng-if="taxonomies.search.active" class="loading"></div>
 
     <div ng-if="!taxonomies.taxonomy">
@@ -46,11 +36,11 @@
             </div>
             <div class="col-md-4">
               <div taxonomy-panel taxonomy="group.taxonomies[$index + 1]" lang="lang"
-                  on-navigate="navigateTaxonomy"></div>
+                on-navigate="navigateTaxonomy"></div>
             </div>
             <div class="col-md-4">
               <div taxonomy-panel taxonomy="group.taxonomies[$index + 2]" lang="lang"
-                  on-navigate="navigateTaxonomy"></div>
+                on-navigate="navigateTaxonomy"></div>
             </div>
           </div>
         </div>
@@ -67,7 +57,8 @@
             {{label.text}}
           </p>
           <ul class="nav nav-pills nav-stacked" ng-if="taxonomies.taxonomy.vocabularies">
-            <li ng-repeat="vocabulary in taxonomies.taxonomy.vocabularies" class="{{taxonomies.vocabulary.name === vocabulary.name ? 'active' : ''}}">
+            <li ng-repeat="vocabulary in taxonomies.taxonomy.vocabularies"
+              class="{{taxonomies.vocabulary.name === vocabulary.name ? 'active' : ''}}">
               <a href ng-click="navigateTaxonomy(taxonomies.taxonomy, vocabulary)">
                 <span ng-repeat="label in vocabulary.title" ng-if="label.locale === lang">
                   {{label.text}}
@@ -88,13 +79,15 @@
               {{label.text}}
             </p>
             <div>
-              <a href class="btn btn-default btn-xs" ng-click="selectTerm(taxonomies.target, taxonomies.taxonomy, taxonomies.vocabulary)">
+              <a href class="btn btn-default btn-xs"
+                ng-click="selectTerm(taxonomies.target, taxonomies.taxonomy, taxonomies.vocabulary)">
                 <i class="fa fa-plus-circle"></i>
                 <span translate>add-query</span>
               </a>
             </div>
             <ul class="nav nav-pills nav-stacked" ng-if="taxonomies.vocabulary.terms">
-              <li ng-repeat="term in taxonomies.vocabulary.terms" class="{{taxonomies.term.name === term.name ? 'active' : ''}}">
+              <li ng-repeat="term in taxonomies.vocabulary.terms"
+                class="{{taxonomies.term.name === term.name ? 'active' : ''}}">
                 <a href ng-click="navigateTaxonomy(taxonomies.taxonomy, taxonomies.vocabulary, term)">
                 <span ng-repeat="label in term.title" ng-if="label.locale === lang">
                   {{label.text}}
@@ -116,7 +109,8 @@
               <span class="help-block">{{label.text}}</span>
             </p>
             <div>
-              <a href class="btn btn-default btn-xs" ng-click="selectTerm(taxonomies.target, taxonomies.taxonomy, taxonomies.vocabulary, taxonomies.term)">
+              <a href class="btn btn-default btn-xs"
+                ng-click="selectTerm(taxonomies.target, taxonomies.taxonomy, taxonomies.vocabulary, taxonomies.term)">
                 <i class="fa fa-plus-circle"></i>
                 <span translate>add-query</span>
               </a>

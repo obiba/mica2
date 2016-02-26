@@ -3,13 +3,13 @@
 
   <div ng-show="summaries.length > 0">
     <div class="table-responsive">
-      <table class="table table-bordered table-striped">
+      <table class="table table-bordered table-striped" ng-init="lang = $parent.$parent.lang">
         <thead>
         <tr>
           <th translate>name</th>
-          <th translate>label</th>
-          <th translate ng-if="options.showVariablesStudiesColumn">study</th>
-          <th translate ng-if="options.showVariablesDatasetsColumn">dataset</th>
+          <th translate>search.variable.label</th>
+          <th translate ng-if="options.showVariablesStudiesColumn">study.label</th>
+          <th translate ng-if="options.showVariablesDatasetsColumn">search.dataset.label</th>
         </tr>
         </thead>
         <tbody>

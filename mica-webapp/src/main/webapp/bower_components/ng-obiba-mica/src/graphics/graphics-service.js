@@ -63,7 +63,8 @@ angular.module('obiba.mica.graphics')
                 '#e5edfb',
                 '#cfddf5',
                 '#a0b8e2',
-                '#88a4d4']
+                '#88a4d4'],
+              pieSliceTextStyle: {color: '#000000'}
             }
           }
 

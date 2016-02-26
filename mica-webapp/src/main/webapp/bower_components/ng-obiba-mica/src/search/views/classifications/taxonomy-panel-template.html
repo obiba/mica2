@@ -1,7 +1,7 @@
 <div>
-  <h4 ng-repeat="label in taxonomy.title" ng-if="label.locale === lang">
+  <h5 ng-repeat="label in taxonomy.title" ng-if="label.locale === lang">
     <a href ng-click="onNavigate(taxonomy)">{{label.text}}</a>
-  </h4>
+  </h5>
   <p class="help-block" ng-repeat="label in taxonomy.description" ng-if="label.locale === lang">
     {{label.text}}
   </p>
