@@ -239,7 +239,7 @@ public class RQLQueryWrapperTest {
   @Test
   public void test_rql_query_match_with_field() throws IOException {
     String rql
-      = "variable(match(name,tutu))";
+      = "variable(match(tutu,name))";
     RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
     assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
     String expected = "{\n" +
@@ -254,13 +254,13 @@ public class RQLQueryWrapperTest {
   @Test
   public void test_rql_query_match_with_fields() throws IOException {
     String rql
-      = "variable(match((name,description),tutu))";
+      = "variable(match(tutu,(name,description)))";
     RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
     assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
     String expected = "{\n" +
       "  \"query_string\" : {\n" +
       "    \"query\" : \"tutu\",\n" +
-      "    \"fields\" : [ \"[name, description]\" ]\n" +
+      "    \"fields\" : [ \"name\", \"description\" ]\n" +
       "  }\n" +
       "}";
     assertThat(rqlQueryWrapper.getQueryBuilder().toString()).isEqualTo(expected);
