@@ -790,9 +790,11 @@
     "coverage-show-missing": "Show missing",
     "coverage-group-by": "Group by",
     "coverage-buckets": {
-      "studyIds" : "Study",
-      "dceIds" : "Data Collection Event",
-      "networkId" : "Network"
+      "study" : "Study",
+      "dce" : "Data Collection Event",
+      "network" : "Network",
+      "dataschema": "Harmonization Dataset",
+      "dataset": "Study Dataset"
     },
     "study": {
       "label": "Study",
