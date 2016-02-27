@@ -17,10 +17,15 @@
   <button class='btn btn-xs btn-default' ng-click='remove(criterion.id)'>
     <span class='fa fa-times'></span>
   </button>
+
+  <match-criterion ng-if="RqlQueryUtils.isMatchVocabulary(criterion.vocabulary)" criterion="criterion" query="query"
+                  state="state"></match-criterion>
+
   <string-criterion-terms
-    ng-if="vocabularyType(criterion.vocabulary) === 'string' || RqlQueryUtils.isRangeVocabulary(criterion.vocabulary)"
+    ng-if="RqlQueryUtils.isTermsVocabulary(criterion.vocabulary) || RqlQueryUtils.isRangeVocabulary(criterion.vocabulary)"
     criterion="criterion" query="query" state="state"></string-criterion-terms>
 
   <numeric-criterion ng-if="RqlQueryUtils.isNumericVocabulary(criterion.vocabulary)" criterion="criterion" query="query"
     state="state"></numeric-criterion>
+
 </div>
