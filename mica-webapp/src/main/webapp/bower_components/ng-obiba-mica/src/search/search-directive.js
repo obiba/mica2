@@ -216,6 +216,8 @@ angular.module('obiba.mica.search')
         result: '=',
         lang: '=',
         loading: '=',
+        searchTabsOrder: '=',
+        resultTabsOrder: '=',
         onTypeChanged: '=',
         onBucketChanged: '=',
         onPaginate: '='
@@ -366,6 +368,23 @@ angular.module('obiba.mica.search')
       },
       controller: 'StringCriterionTermsController',
       templateUrl: 'search/views/criteria/criterion-string-terms-template.html'
+    };
+  }])
+
+  /**
+   * Directive specialized for vocabulary of type String
+   */
+  .directive('matchCriterion', [function () {
+    return {
+      restrict: 'EA',
+      replace: true,
+      scope: {
+        criterion: '=',
+        query: '=',
+        state: '='
+      },
+      controller: 'MatchCriterionTermsController',
+      templateUrl: 'search/views/criteria/criterion-match-template.html'
     };
   }])
 

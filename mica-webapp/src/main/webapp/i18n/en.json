@@ -822,7 +822,10 @@
     "network-where": "Networks where...",
     "study-where": "Studies where...",
     "dataset-where": "Datasets where...",
-    "variable-where": "Variables where..."
+    "variable-where": "Variables where...",
+    "match":{
+      "placeholder": "Enter text to search..."
+    }
   },
   "variables": "Variables",
   "classifications": "Classifications",
