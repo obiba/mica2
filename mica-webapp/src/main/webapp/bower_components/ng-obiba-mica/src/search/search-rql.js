@@ -28,9 +28,11 @@ var QUERY_TARGETS = {
 
 /* exported BUCKET_TYPES */
 var BUCKET_TYPES = {
-  NETWORKID: 'networkId',
-  STUDYIDS: 'studyIds',
-  DCEIDS: 'dceIds'
+  NETWORK: 'network',
+  STUDY: 'study',
+  DCE: 'dce',
+  DATASCHEMA: 'dataschema',
+  DATASET: 'dataset'
 };
 
 /* exported RQL_NODE */
@@ -1055,9 +1057,26 @@ angular.module('obiba.mica.search')
       this.prepareCoverageQuery = function (query, bucketArg) {
         var parsedQuery = new RqlParser().parse(query);
         var aggregate = new RqlQuery('aggregate');
+        var bucketField;
+
+        switch (bucketArg) {
+          case BUCKET_TYPES.NETWORK:
+            bucketField = 'networkId';
+            break;
+          case BUCKET_TYPES.STUDY:
+            bucketField = 'studyIds';
+            break;
+          case BUCKET_TYPES.DCE:
+            bucketField = 'dceIds';
+            break;
+          case BUCKET_TYPES.DATASCHEMA:
+          case BUCKET_TYPES.DATASET:
+            bucketField = 'datasetId';
+            break;
+        }
 
         var bucket = new RqlQuery('bucket');
-        bucket.args.push(bucketArg);
+        bucket.args.push(bucketField);
         aggregate.args.push(bucket);
 
         var variable;
@@ -1074,7 +1093,7 @@ angular.module('obiba.mica.search')
         if(variable.args.length>0 && variable.args[0].name !== 'limit') {
           var variableType = new RqlQuery('in');
           variableType.args.push('Mica_variable.variableType');
-          if(bucketArg === 'networkId') {
+          if(bucketArg === BUCKET_TYPES.NETWORK || bucketArg === BUCKET_TYPES.DATASCHEMA) {
             variableType.args.push('Dataschema');
           } else {
             variableType.args.push('Study');

@@ -181,7 +181,7 @@ angular.module('obiba.mica.search')
 
       function getDefaultBucketType() {
         // TODO settings
-        return BUCKET_TYPES.STUDYIDS;
+        return BUCKET_TYPES.STUDY;
       }
 
       function getDefaultDisplayType() {
@@ -994,11 +994,15 @@ angular.module('obiba.mica.search')
 
       function getBucketUrl(bucket, id) {
         switch (bucket) {
-          case BUCKET_TYPES.STUDYIDS:
-          case BUCKET_TYPES.DCEIDS:
+          case BUCKET_TYPES.STUDY:
+          case BUCKET_TYPES.DCE:
             return PageUrlService.studyPage(id);
-          case BUCKET_TYPES.NETWORKID:
+          case BUCKET_TYPES.NETWORK:
             return PageUrlService.networkPage(id);
+          case BUCKET_TYPES.DATASCHEMA:
+            return PageUrlService.datasetPage(id,'harmonization');
+          case BUCKET_TYPES.DATASET:
+            return PageUrlService.datasetPage(id,'study');
         }
 
         return '';
@@ -1006,7 +1010,7 @@ angular.module('obiba.mica.search')
 
       function splitIds() {
         var cols = {
-          colSpan: $scope.bucket === BUCKET_TYPES.DCEIDS ? 3 : 1,
+          colSpan: $scope.bucket === BUCKET_TYPES.DCE ? 3 : 1,
           ids: {}
         };
 
@@ -1026,7 +1030,7 @@ angular.module('obiba.mica.search')
 
         $scope.result.rows.forEach(function (row) {
           cols.ids[row.value] = [];
-          if ($scope.bucket === BUCKET_TYPES.DCEIDS) {
+          if ($scope.bucket === BUCKET_TYPES.DCE) {
             var ids = row.value.split(':');
             var titles = row.title.split(':');
             var descriptions = row.description.split(':');
@@ -1076,7 +1080,7 @@ angular.module('obiba.mica.search')
         });
 
         // adjust the rowspans
-        if ($scope.bucket === BUCKET_TYPES.DCEIDS) {
+        if ($scope.bucket === BUCKET_TYPES.DCE) {
           $scope.result.rows.forEach(function (row) {
             if (cols.ids[row.value][0].rowSpan > 0) {
               cols.ids[row.value][0].rowSpan = rowSpans[cols.ids[row.value][0].id];

@@ -1447,9 +1447,11 @@ var QUERY_TARGETS = {
 
 /* exported BUCKET_TYPES */
 var BUCKET_TYPES = {
-  NETWORKID: 'networkId',
-  STUDYIDS: 'studyIds',
-  DCEIDS: 'dceIds'
+  NETWORK: 'network',
+  STUDY: 'study',
+  DCE: 'dce',
+  DATASCHEMA: 'dataschema',
+  DATASET: 'dataset'
 };
 
 /* exported RQL_NODE */
@@ -2474,9 +2476,26 @@ angular.module('obiba.mica.search')
       this.prepareCoverageQuery = function (query, bucketArg) {
         var parsedQuery = new RqlParser().parse(query);
         var aggregate = new RqlQuery('aggregate');
+        var bucketField;
+
+        switch (bucketArg) {
+          case BUCKET_TYPES.NETWORK:
+            bucketField = 'networkId';
+            break;
+          case BUCKET_TYPES.STUDY:
+            bucketField = 'studyIds';
+            break;
+          case BUCKET_TYPES.DCE:
+            bucketField = 'dceIds';
+            break;
+          case BUCKET_TYPES.DATASCHEMA:
+          case BUCKET_TYPES.DATASET:
+            bucketField = 'datasetId';
+            break;
+        }
 
         var bucket = new RqlQuery('bucket');
-        bucket.args.push(bucketArg);
+        bucket.args.push(bucketField);
         aggregate.args.push(bucket);
 
         var variable;
@@ -2493,7 +2512,7 @@ angular.module('obiba.mica.search')
         if(variable.args.length>0 && variable.args[0].name !== 'limit') {
           var variableType = new RqlQuery('in');
           variableType.args.push('Mica_variable.variableType');
-          if(bucketArg === 'networkId') {
+          if(bucketArg === BUCKET_TYPES.NETWORK || bucketArg === BUCKET_TYPES.DATASCHEMA) {
             variableType.args.push('Dataschema');
           } else {
             variableType.args.push('Study');
@@ -2745,7 +2764,7 @@ angular.module('obiba.mica.search')
     };
 
     this.datasetPage = function(id, type) {
-      var dsType = (type === 'Study' ? 'study' : 'harmonization') + '-dataset';
+      var dsType = (type.toLowerCase() === 'study' ? 'study' : 'harmonization') + '-dataset';
       var result = id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('DatasetPage'), {':type': dsType, ':dataset': id}) : '';
       return result;
     };
@@ -2975,7 +2994,7 @@ angular.module('obiba.mica.search')
 
       function getDefaultBucketType() {
         // TODO settings
-        return BUCKET_TYPES.STUDYIDS;
+        return BUCKET_TYPES.STUDY;
       }
 
       function getDefaultDisplayType() {
@@ -3788,11 +3807,15 @@ angular.module('obiba.mica.search')
 
       function getBucketUrl(bucket, id) {
         switch (bucket) {
-          case BUCKET_TYPES.STUDYIDS:
-          case BUCKET_TYPES.DCEIDS:
+          case BUCKET_TYPES.STUDY:
+          case BUCKET_TYPES.DCE:
             return PageUrlService.studyPage(id);
-          case BUCKET_TYPES.NETWORKID:
+          case BUCKET_TYPES.NETWORK:
             return PageUrlService.networkPage(id);
+          case BUCKET_TYPES.DATASCHEMA:
+            return PageUrlService.datasetPage(id,'harmonization');
+          case BUCKET_TYPES.DATASET:
+            return PageUrlService.datasetPage(id,'study');
         }
 
         return '';
@@ -3800,7 +3823,7 @@ angular.module('obiba.mica.search')
 
       function splitIds() {
         var cols = {
-          colSpan: $scope.bucket === BUCKET_TYPES.DCEIDS ? 3 : 1,
+          colSpan: $scope.bucket === BUCKET_TYPES.DCE ? 3 : 1,
           ids: {}
         };
 
@@ -3820,7 +3843,7 @@ angular.module('obiba.mica.search')
 
         $scope.result.rows.forEach(function (row) {
           cols.ids[row.value] = [];
-          if ($scope.bucket === BUCKET_TYPES.DCEIDS) {
+          if ($scope.bucket === BUCKET_TYPES.DCE) {
             var ids = row.value.split(':');
             var titles = row.title.split(':');
             var descriptions = row.description.split(':');
@@ -3870,7 +3893,7 @@ angular.module('obiba.mica.search')
         });
 
         // adjust the rowspans
-        if ($scope.bucket === BUCKET_TYPES.DCEIDS) {
+        if ($scope.bucket === BUCKET_TYPES.DCE) {
           $scope.result.rows.forEach(function (row) {
             if (cols.ids[row.value][0].rowSpan > 0) {
               cols.ids[row.value][0].rowSpan = rowSpans[cols.ids[row.value][0].id];
@@ -5687,14 +5710,20 @@ angular.module("search/views/coverage/coverage-search-result-table-template.html
     "        {{'search.coverage-buckets.' + bucket | translate}} <span class=\"caret\"></span>\n" +
     "      </button>\n" +
     "      <ul uib-dropdown-menu role=\"menu\">\n" +
-    "        <li role=\"menuitem\" ng-if=\"bucket !== BUCKET_TYPES.STUDYIDS\">\n" +
-    "          <a href ng-click=\"selectBucket(BUCKET_TYPES.STUDYIDS)\" translate>search.coverage-buckets.studyIds</a>\n" +
+    "        <li role=\"menuitem\" ng-if=\"bucket !== BUCKET_TYPES.STUDY\">\n" +
+    "          <a href ng-click=\"selectBucket(BUCKET_TYPES.STUDY)\" translate>search.coverage-buckets.study</a>\n" +
     "        </li>\n" +
-    "        <li role=\"menuitem\" ng-if=\"bucket !== BUCKET_TYPES.DCEIDS\">\n" +
-    "          <a href ng-click=\"selectBucket(BUCKET_TYPES.DCEIDS)\" translate>search.coverage-buckets.dceIds</a>\n" +
+    "        <li role=\"menuitem\" ng-if=\"bucket !== BUCKET_TYPES.DCE\">\n" +
+    "          <a href ng-click=\"selectBucket(BUCKET_TYPES.DCE)\" translate>search.coverage-buckets.dce</a>\n" +
     "        </li>\n" +
-    "        <li role=\"menuitem\" ng-if=\"bucket !== BUCKET_TYPES.NETWORKID\">\n" +
-    "          <a href ng-click=\"selectBucket(BUCKET_TYPES.NETWORKID)\" translate>search.coverage-buckets.networkId</a>\n" +
+    "        <li role=\"menuitem\" ng-if=\"bucket !== BUCKET_TYPES.DATASET\">\n" +
+    "          <a href ng-click=\"selectBucket(BUCKET_TYPES.DATASET)\" translate>search.coverage-buckets.dataset</a>\n" +
+    "        </li>\n" +
+    "        <li role=\"menuitem\" ng-if=\"bucket !== BUCKET_TYPES.NETWORK\">\n" +
+    "          <a href ng-click=\"selectBucket(BUCKET_TYPES.NETWORK)\" translate>search.coverage-buckets.network</a>\n" +
+    "        </li>\n" +
+    "        <li role=\"menuitem\" ng-if=\"bucket !== BUCKET_TYPES.DATASCHEMA\">\n" +
+    "          <a href ng-click=\"selectBucket(BUCKET_TYPES.DATASCHEMA)\" translate>search.coverage-buckets.dataschema</a>\n" +
     "        </li>\n" +
     "      </ul>\n" +
     "    </div>\n" +
