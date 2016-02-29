@@ -602,6 +602,9 @@ mica.study
       $scope.newPopulation = !$routeParams.pid;
       $scope.$watch('population.recruitment.dataSources', function (newVal, oldVal) {
         if (oldVal === undefined || newVal === undefined) {
+          if(!$scope.population.recruitment) {
+            $scope.population.recruitment = {};
+          }
           $scope.population.recruitment.dataSources = [];
           return;
         }
