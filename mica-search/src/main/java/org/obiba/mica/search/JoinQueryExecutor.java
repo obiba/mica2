@@ -146,7 +146,7 @@ public class JoinQueryExecutor {
     CountStatsData.Builder countBuilder, AbstractDocumentQuery.Scope scope) throws IOException {
     boolean queriesHaveFilters =
       Stream.of(variableQuery, datasetQuery, studyQuery, networkQuery).filter(AbstractDocumentQuery::hasQueryBuilder)
-        .collect(Collectors.toList()).size() > 0;
+        .findFirst().isPresent();
 
     if(queriesHaveFilters) {
       DatasetIdProvider datasetIdProvider = new DatasetIdProvider();

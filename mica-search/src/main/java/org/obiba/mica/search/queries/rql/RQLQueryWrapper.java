@@ -80,7 +80,6 @@ public class RQLQueryWrapper implements QueryWrapper {
     defaultTaxonomyName = taxonomies.stream().filter(t -> t.getName().startsWith(DEFAULT_TAXO_PREFIX))
       .map(TaxonomyEntity::getName).findFirst().orElse("");
     parseNode(node);
-    if(queryBuilder == null) queryBuilder = QueryBuilders.matchAllQuery();
   }
 
   public Map<String, Map<String, List<String>>> getTaxonomyTermsMap() {
