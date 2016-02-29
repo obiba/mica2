@@ -178,6 +178,10 @@ class CoverageByBucket {
 
     final String description;
 
+    final String start;
+
+    final String end;
+
     final List<Integer> hits = Lists.newArrayList();
 
     final List<Integer> counts = Lists.newArrayList();
@@ -192,6 +196,8 @@ class CoverageByBucket {
       value = bucketCoverage.getValue();
       title = bucketCoverage.hasTitle() ? bucketCoverage.getTitle() : value;
       description = bucketCoverage.hasDescription() ? bucketCoverage.getDescription() : "";
+      start = bucketCoverage.hasStart() ? bucketCoverage.getStart() : "";
+      end = bucketCoverage.hasEnd() ? bucketCoverage.getEnd() : "";
     }
 
     public void setHits(int termPosition, MicaSearch.BucketCoverageDto bucketCoverage) {

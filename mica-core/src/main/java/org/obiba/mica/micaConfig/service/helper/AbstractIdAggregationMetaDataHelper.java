@@ -45,6 +45,8 @@ public abstract class AbstractIdAggregationMetaDataHelper {
     Term term = new Term(id);
     term.setTitle(metaData.getTitle());
     term.setDescription(metaData.getDescription());
+    if(metaData.getStart() != null) term.addAttribute("start", metaData.getStart());
+    if(metaData.getEnd() != null) term.addAttribute("end", metaData.getEnd());
 
     return term;
   }

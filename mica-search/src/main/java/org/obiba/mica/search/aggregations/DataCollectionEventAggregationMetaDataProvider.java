@@ -20,11 +20,12 @@ public class DataCollectionEventAggregationMetaDataProvider implements Aggregati
   public MetaData getMetadata(String aggregation, String termKey, String locale) {
     Map<String, AggregationMetaDataProvider.LocalizedMetaData> dceDictionary = helper.getDces();
 
-    return AGGREGATION_NAME.equals(aggregation) && dceDictionary.containsKey(termKey)
-      ? MetaData.newBuilder()
-          .title(dceDictionary.get(termKey).getTitle().get(locale))
-          .description(dceDictionary.get(termKey).getDescription().get(locale)).build()
-      : null;
+    return AGGREGATION_NAME.equals(aggregation) && dceDictionary.containsKey(termKey) ? MetaData.newBuilder() //
+      .title(dceDictionary.get(termKey).getTitle().get(locale)) //
+      .description(dceDictionary.get(termKey).getDescription().get(locale)) //
+      .start(dceDictionary.get(termKey).getStart()) //
+      .end(dceDictionary.get(termKey).getEnd()) //
+      .build() : null;
   }
 
   @Override
