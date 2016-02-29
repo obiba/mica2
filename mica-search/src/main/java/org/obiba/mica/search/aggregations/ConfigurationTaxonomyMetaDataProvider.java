@@ -45,7 +45,8 @@ public abstract class ConfigurationTaxonomyMetaDataProvider implements Aggregati
     LocalizedMetaData md = aggs.get(termKey);
     if(md == null) return null;
 
-    return MetaData.newBuilder().title(md.getTitle().get(locale)).description(md.getDescription().get(locale)).build();
+    return MetaData.newBuilder().title(md.getTitle().get(locale)).description(md.getDescription().get(locale))
+      .start(md.getStart()).end(md.getEnd()).build();
   }
 
   @Override
@@ -75,7 +76,8 @@ public abstract class ConfigurationTaxonomyMetaDataProvider implements Aggregati
           title.putAll(t.getTitle());
           LocalizedString description = new LocalizedString();
           description.putAll(t.getDescription());
-          LocalizedMetaData md = new LocalizedMetaData(title, description);
+          LocalizedMetaData md = new LocalizedMetaData(title, description, t.getAttributeValue("start"),
+            t.getAttributeValue("end"));
           r.put(t.getName(), md);
           r.put(t.getName().toLowerCase(), md);
         });

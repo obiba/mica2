@@ -19,10 +19,12 @@ public class StudyAggregationMetaDataProvider implements AggregationMetaDataProv
   @Override
   public MetaData getMetadata(String aggregation, String termKey, String locale) {
     Map<String, LocalizedMetaData> studiesDictionary = helper.getStudies();
-    return AGGREGATION_NAME.equals(aggregation) && studiesDictionary.containsKey(termKey)
-      ? MetaData.newBuilder().title(studiesDictionary.get(termKey).getTitle().get(locale))
-        .description(studiesDictionary.get(termKey).getDescription().get(locale)).build()
-      : null;
+    return AGGREGATION_NAME.equals(aggregation) && studiesDictionary.containsKey(termKey) ? MetaData.newBuilder() //
+      .title(studiesDictionary.get(termKey).getTitle().get(locale)) //
+      .description(studiesDictionary.get(termKey).getDescription().get(locale)) //
+      .start(studiesDictionary.get(termKey).getStart()) //
+      .end(studiesDictionary.get(termKey).getEnd()) //
+      .build() : null;
   }
 
   @Override

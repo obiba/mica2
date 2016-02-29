@@ -56,8 +56,11 @@ public class DceIdAggregationMetaDataHelper extends AbstractIdAggregationMetaDat
           LocalizedString description = new LocalizedString();
           study.getAcronym().entrySet().forEach(e -> description.put(e.getKey(), md.getDescription(e.getKey())));
 
+          String start = dce.getStart().getYearMonth();
+          String end = dce.getEnd().getYearMonth();
+
           res.put(StudyTable.getDataCollectionEventUId(study.getId(), population.getId(), dce.getId()),
-            new AggregationMetaDataProvider.LocalizedMetaData(title, description));
+            new AggregationMetaDataProvider.LocalizedMetaData(title, description, start, end));
         });
       });
     });
@@ -68,6 +71,10 @@ public class DceIdAggregationMetaDataHelper extends AbstractIdAggregationMetaDat
   @Override
   protected Map<String, AggregationMetaDataProvider.LocalizedMetaData> getIdAggregationMap() {
     return getDces();
+  }
+
+  private String yearToString(Integer year) {
+    return year == null ? null : year.toString();
   }
 
   static class MonikerData {

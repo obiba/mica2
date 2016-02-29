@@ -35,7 +35,12 @@ public class StudyIdAggregationMetaDataHelper extends AbstractIdAggregationMetaD
     List<Study> studies = sudo(() -> publishedStudyService.findAll());
 
     return studies.stream().collect(Collectors.toMap(AbstractGitPersistable::getId,
-      m -> new AggregationMetaDataProvider.LocalizedMetaData(m.getAcronym(), m.getName())));
+      m -> new AggregationMetaDataProvider.LocalizedMetaData(m.getAcronym(), m.getName(), yearToString(m.getStart()),
+        yearToString(m.getEnd()))));
+  }
+
+  private String yearToString(Integer year) {
+    return year == null ? null : year.toString();
   }
 
   @Override

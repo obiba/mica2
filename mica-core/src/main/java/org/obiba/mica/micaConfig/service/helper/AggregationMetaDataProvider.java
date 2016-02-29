@@ -31,10 +31,19 @@ public interface AggregationMetaDataProvider {
   class LocalizedMetaData {
     private LocalizedString title;
     private LocalizedString description;
+    private String start;
+    private String end;
 
     public LocalizedMetaData(LocalizedString title, LocalizedString description) {
       this.title = title;
       this.description = description;
+    }
+
+    public LocalizedMetaData(LocalizedString title, LocalizedString description, String start, String end) {
+      this.title = title;
+      this.description = description;
+      this.start = start;
+      this.end = end;
     }
 
     public LocalizedString getTitle() {
@@ -44,11 +53,21 @@ public interface AggregationMetaDataProvider {
     public LocalizedString getDescription() {
       return description;
     }
+
+    public String getStart() {
+      return start;
+    }
+
+    public String getEnd() {
+      return end;
+    }
   }
 
   class MetaData {
     private String title;
     private String description;
+    private String start;
+    private String end;
 
     private MetaData() {}
 
@@ -73,6 +92,22 @@ public interface AggregationMetaDataProvider {
       return description;
     }
 
+    public boolean hasStart() {
+      return !Strings.isNullOrEmpty(start);
+    }
+
+    public String getStart() {
+      return start;
+    }
+
+    public boolean hasEnd() {
+      return !Strings.isNullOrEmpty(end);
+    }
+
+    public String getEnd() {
+      return end;
+    }
+
     public static Builder newBuilder() {
       return new Builder();
     }
@@ -90,6 +125,16 @@ public interface AggregationMetaDataProvider {
 
       public Builder description(String value) {
         metaData.description = value;
+        return this;
+      }
+
+      public Builder start(String value) {
+        metaData.start = value;
+        return this;
+      }
+
+      public Builder end(String value) {
+        metaData.end = value;
         return this;
       }
 

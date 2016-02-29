@@ -125,6 +125,8 @@ public class EsQueryResultParser {
               .getTitle(defaultAgg.getName(), key, locale);
             if(metaData.hasTitle()) termsBuilder.setTitle(metaData.getTitle());
             if(metaData.hasDescription()) termsBuilder.setDescription(metaData.getDescription());
+            if(metaData.hasStart()) termsBuilder.setStart(metaData.getStart());
+            if(metaData.hasEnd()) termsBuilder.setEnd(metaData.getEnd());
 
             aggResultBuilder.addExtension(TermsAggregationResultDto.terms, //
               termsBuilder.setKey(key) //
@@ -222,6 +224,8 @@ public class EsQueryResultParser {
               .getTitle(aggregation.getName(), bucket.getKeyAsString(), locale);
             if(metaData.hasTitle()) termsBuilder.setTitle(metaData.getTitle());
             if(metaData.hasDescription()) termsBuilder.setDescription(metaData.getDescription());
+            if(metaData.hasStart()) termsBuilder.setStart(metaData.getStart());
+            if(metaData.hasEnd()) termsBuilder.setEnd(metaData.getEnd());
 
             aggResultBuilder.addExtension(TermsAggregationResultDto.terms,
               termsBuilder.setKey(bucket.getKeyAsString()).setDefault(-1).setCount((int) bucket.getDocCount()).build());

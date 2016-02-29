@@ -347,6 +347,8 @@ public class CoverageQueryExecutor {
 
     if(term.hasTitle()) builder.setTitle(term.getTitle());
     if(term.hasDescription()) builder.setDescription(term.getDescription());
+    if(term.hasStart()) builder.setStart(term.getStart());
+    if(term.hasEnd()) builder.setEnd(term.getEnd());
 
     return builder;
   }
