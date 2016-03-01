@@ -32,8 +32,6 @@ import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.AggregationMetaDataResolver;
 import org.obiba.mica.web.model.MicaSearch;
 import org.obiba.mica.web.model.MicaSearch.RangeAggregationResultDto;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 
@@ -42,8 +40,6 @@ import static org.obiba.mica.web.model.MicaSearch.StatsAggregationResultDto;
 import static org.obiba.mica.web.model.MicaSearch.TermsAggregationResultDto;
 
 public class EsQueryResultParser {
-
-  private static final Logger log = LoggerFactory.getLogger(EsQueryResultParser.class);
 
   private final String locale;
 
@@ -187,7 +183,7 @@ public class EsQueryResultParser {
 
     aggregations.forEach(aggregation -> {
 
-      AggregationResultDto.Builder aggResultBuilder = MicaSearch.AggregationResultDto.newBuilder();
+      AggregationResultDto.Builder aggResultBuilder = AggregationResultDto.newBuilder();
       aggResultBuilder.setAggregation(aggregation.getName());
       String aggType = ((InternalAggregation) aggregation).type().name();
 

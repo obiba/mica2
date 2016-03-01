@@ -18,13 +18,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
-
 import net.jazdw.rql.parser.ASTNode;
 import net.jazdw.rql.parser.RQLParser;
 import net.jazdw.rql.parser.SimpleASTVisitor;
 
-import org.elasticsearch.common.Strings;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -35,6 +32,7 @@ import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.obiba.mica.core.domain.AttributeKey;
 import org.obiba.mica.search.queries.QueryWrapper;
+import org.obiba.mica.search.queries.rql.RqlFieldResolver.FieldData;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.TaxonomyEntity;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
@@ -47,18 +45,15 @@ import com.google.common.collect.Maps;
  *
  */
 public class RQLQueryWrapper implements QueryWrapper {
-
   private static final String DEFAULT_TAXO_PREFIX = "Mica_";
+
+  private final RqlFieldResolver rqlFieldResolver;
 
   private int from = DEFAULT_FROM;
 
   private int size = DEFAULT_SIZE;
 
   private ASTNode node;
-
-  private final List<Taxonomy> taxonomies;
-
-  private final String defaultTaxonomyName;
 
   private QueryBuilder queryBuilder;
 
@@ -72,13 +67,12 @@ public class RQLQueryWrapper implements QueryWrapper {
 
   @VisibleForTesting
   RQLQueryWrapper(String rql) {
-    this(new RQLParser().parse(rql), Collections.emptyList());
+    this(new RQLParser().parse(rql),
+      new RqlFieldResolver(Collections.emptyList(), "en"));
   }
 
-  public RQLQueryWrapper(ASTNode node, List<Taxonomy> taxonomies) {
-    this.taxonomies = taxonomies;
-    defaultTaxonomyName = taxonomies.stream().filter(t -> t.getName().startsWith(DEFAULT_TAXO_PREFIX))
-      .map(TaxonomyEntity::getName).findFirst().orElse("");
+  public RQLQueryWrapper(ASTNode node, RqlFieldResolver rqlFieldResolver) {
+    this.rqlFieldResolver = rqlFieldResolver;
     parseNode(node);
   }
 
@@ -111,7 +105,7 @@ public class RQLQueryWrapper implements QueryWrapper {
 
   private void parseQuery(ASTNode node) {
     this.node = node;
-    RQLQueryBuilder builder = new RQLQueryBuilder();
+    RQLQueryBuilder builder = new RQLQueryBuilder(rqlFieldResolver);
     queryBuilder = node.accept(builder);
   }
 
@@ -127,13 +121,13 @@ public class RQLQueryWrapper implements QueryWrapper {
 
   private void parseSort(ASTNode node) {
     this.node = node;
-    RQLSortBuilder sort = new RQLSortBuilder();
+    RQLSortBuilder sort = new RQLSortBuilder(rqlFieldResolver);
     sortBuilder = node.accept(sort);
   }
 
   private void parseAggregate(ASTNode node) {
     this.node = node;
-    RQLAggregateBuilder aggregate = new RQLAggregateBuilder();
+    RQLAggregateBuilder aggregate = new RQLAggregateBuilder(rqlFieldResolver);
     if(node.accept(aggregate)) {
       aggregations = aggregate.getAggregations();
       aggregationBuckets = aggregate.getAggregationBuckets();
@@ -181,119 +175,21 @@ public class RQLQueryWrapper implements QueryWrapper {
     return aggregations;
   }
 
-  //
-  // Private classes
-  //
-
-  static class FieldData {
-    public static final String TYPE_STRING = "string";
-    public static final String TYPE_INTEGER = "integer";
-    public static final String TYPE_DECIMAL = "decimal";
-
-    private Taxonomy taxonomy;
-    private Vocabulary vocabulary;
-    private String field;
-
-    static Builder newBuilder() {
-      return new Builder();
-    }
-
-    public Taxonomy getTaxonomy() {
-      return taxonomy;
-    }
-
-    public Vocabulary getVocabulary() {
-      return vocabulary;
-    }
-
-    public String getField() {
-      return field;
-    }
-
-    public boolean isNumeric() {
-      String type = getType();
-      return TYPE_INTEGER.equals(type) || TYPE_DECIMAL.equals(type);
-    }
-
-    public boolean isRange() {
-      return vocabulary != null && vocabulary.hasTerms() && isNumeric();
-    }
-
-    public String getType() {
-      if (vocabulary == null) return TYPE_STRING;
-      String type = vocabulary.getAttributeValue("type");
-      return Strings.isNullOrEmpty(type)? TYPE_STRING : type.toLowerCase();
-    }
-
-    static class Builder {
-      FieldData data = new FieldData();
-
-      Builder taxonomy(Taxonomy value) {
-        data.taxonomy = value;
-        return this;
-      }
-
-      Builder vocabulary(Vocabulary value) {
-        data.vocabulary = value;
-        return this;
-      }
-
-      Builder field(String value) {
-        data.field = value;
-        return this;
-      }
-
-      FieldData build() {
-        return data;
-      }
-
-    }
-  }
-
   private abstract class RQLBuilder<T> implements SimpleASTVisitor<T> {
 
-    private static final String TAXO_SEPARATOR = ".";
+    protected final RqlFieldResolver rqlFieldResolver;
 
-
-    protected FieldData resolveField(String rqlField) {
-      String field = rqlField;
-
-      // normalize field name
-      if(!field.contains(TAXO_SEPARATOR)) {
-        field = defaultTaxonomyName + TAXO_SEPARATOR + field;
-      }
-
-      int idx = field.indexOf(TAXO_SEPARATOR);
-      if(idx < 1) return FieldData.newBuilder().field(rqlField).build();
-
-      FieldData data = resolveField(field.substring(0, idx), field.substring(idx + 1, field.length()));
-
-      return data == null ? FieldData.newBuilder().field(rqlField).build() : data;
+    RQLBuilder(RqlFieldResolver rqlFieldResolver) {
+      this.rqlFieldResolver =  rqlFieldResolver;
     }
 
-    @Nullable
-    protected FieldData resolveField(String taxonomyName, String vocabularyName) {
-      String field = null;
-      FieldData.Builder builder = FieldData.newBuilder();
-      Optional<Taxonomy> taxonomy = taxonomies.stream().filter(t -> t.getName().equals(taxonomyName)).findFirst();
-      if(taxonomy.isPresent() && taxonomy.get().hasVocabularies()) {
-        builder.taxonomy(taxonomy.get());
-        Optional<Vocabulary> vocabulary = taxonomy.get().getVocabularies().stream()
-          .filter(v -> v.getName().equals(vocabularyName)).findFirst();
-        if(vocabulary.isPresent()) {
-          builder.vocabulary(vocabulary.get());
-          String f = vocabulary.get().getAttributeValue("field");
-          if(!Strings.isNullOrEmpty(f)) field = f;
-          else field = vocabulary.get().getName();
-        } else {
-          field = vocabularyName;
-        }
-      }
-      return field == null ? null : builder.field(field).build();
+    protected FieldData resolveField(String rqlField) {
+      return rqlFieldResolver.resolveField(rqlField);
     }
 
     protected Vocabulary getVocabulary(String taxonomyName, String vocabularyName) {
-      Optional<Taxonomy> taxonomy = taxonomies.stream().filter(t -> t.getName().equals(taxonomyName)).findFirst();
+      Optional<Taxonomy> taxonomy = rqlFieldResolver.getTaxonomies().stream()
+        .filter(t -> t.getName().equals(taxonomyName)).findFirst();
       if(taxonomy.isPresent() && taxonomy.get().hasVocabularies()) {
         Optional<Vocabulary> vocabulary = taxonomy.get().getVocabularies().stream()
           .filter(v -> v.getName().equals(vocabularyName)).findFirst();
@@ -307,6 +203,9 @@ public class RQLQueryWrapper implements QueryWrapper {
   }
 
   private class RQLQueryBuilder extends RQLBuilder<QueryBuilder> {
+    RQLQueryBuilder(RqlFieldResolver rqlFieldResolver) {
+      super(rqlFieldResolver);
+    }
 
     @Override
     public QueryBuilder visit(ASTNode node) {
@@ -564,6 +463,9 @@ public class RQLQueryWrapper implements QueryWrapper {
   }
 
   private class RQLSortBuilder extends RQLBuilder<SortBuilder> {
+    RQLSortBuilder(RqlFieldResolver rqlFieldResolver) {
+      super(rqlFieldResolver);
+    }
 
     @Override
     public SortBuilder visit(ASTNode node) {
@@ -585,6 +487,9 @@ public class RQLQueryWrapper implements QueryWrapper {
   }
 
   private class RQLAggregateBuilder extends RQLBuilder<Boolean> {
+    RQLAggregateBuilder(RqlFieldResolver rqlFieldResolver) {
+      super(rqlFieldResolver);
+    }
 
     private List<String> aggregations = Lists.newArrayList();
 

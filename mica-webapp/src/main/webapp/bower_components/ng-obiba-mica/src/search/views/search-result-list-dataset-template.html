@@ -1,13 +1,11 @@
-<uib-tab ng-show="options.datasets.showSearchTab" active="activeTarget.datasets"
-    ng-click="selectTarget(QUERY_TYPES.DATASETS)"
-    heading="{{'datasets' | translate}} ({{result.list.datasetResultDto.totalHits}})">
-          <span search-result-pagination
-              class="pull-right"
-              target="QUERY_TARGETS.DATASET"
-              total-hits="result.list.datasetResultDto.totalHits"
-              on-change="onPaginate"></span>
-
+<div class="tab-pane" ng-show="options.datasets.showSearchTab" ng-class="{active: activeTarget.datasets}">
+  <span ng-if="resultTabsOrder.length === 1">{{'datasets' | translate}} ({{result.list.datasetResultDto.totalHits}})</span>
+  <span search-result-pagination
+      class="pull-right"
+      target="QUERY_TARGETS.DATASET"
+      total-hits="result.list.datasetResultDto.totalHits"
+      on-change="onPaginate"></span>
   <span class="clearfix"></span>
   <datasets-result-table loading="loading"
       summaries="result.list.datasetResultDto['obiba.mica.DatasetResultDto.result'].datasets"></datasets-result-table>
-</uib-tab>
+</div>

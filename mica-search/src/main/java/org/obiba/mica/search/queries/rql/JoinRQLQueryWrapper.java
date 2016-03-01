@@ -12,6 +12,7 @@ package org.obiba.mica.search.queries.rql;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -59,6 +60,8 @@ public class JoinRQLQueryWrapper implements JoinQueryWrapper {
     String rqlStr = rql == null ? "" : rql;
     RQLParser parser = new RQLParser();
     node = parser.parse(rqlStr);
+    initializeLocale(node);
+
     if(Strings.isNullOrEmpty(node.getName()))
       node.getArguments().stream().filter(a -> a instanceof ASTNode).map(a -> (ASTNode) a).forEach(this::initialize);
     else initialize(node);
@@ -82,16 +85,16 @@ public class JoinRQLQueryWrapper implements JoinQueryWrapper {
 
     switch(RQLNode.valueOf(node.getName().toUpperCase())) {
       case VARIABLE:
-        variableQueryWrapper = new RQLQueryWrapper(node, getVariableTaxonomies());
+        variableQueryWrapper = new RQLQueryWrapper(node, new RqlFieldResolver(getVariableTaxonomies(), locale));
         break;
       case DATASET:
-        datasetQueryWrapper = new RQLQueryWrapper(node, getDatasetTaxonomies());
+        datasetQueryWrapper = new RQLQueryWrapper(node, new RqlFieldResolver(getDatasetTaxonomies(), locale));
         break;
       case STUDY:
-        studyQueryWrapper = new RQLQueryWrapper(node, getStudyTaxonomies());
+        studyQueryWrapper = new RQLQueryWrapper(node, new RqlFieldResolver(getStudyTaxonomies(), locale));
         break;
       case NETWORK:
-        networkQueryWrapper = new RQLQueryWrapper(node, getNetworkTaxonomies());
+        networkQueryWrapper = new RQLQueryWrapper(node, new RqlFieldResolver(getNetworkTaxonomies(), locale));
         break;
       case LOCALE:
         if(node.getArgumentsSize() > 0) locale = node.getArgument(0).toString();
@@ -99,6 +102,19 @@ public class JoinRQLQueryWrapper implements JoinQueryWrapper {
       case FACET:
         withFacets = true;
         break;
+    }
+  }
+
+  private void initializeLocale(ASTNode node) {
+    if(Strings.isNullOrEmpty(node.getName())) {
+      Optional<Object> localeNode = node.getArguments().stream()
+        .filter(a -> a instanceof ASTNode && RQLNode.LOCALE == RQLNode.getType(((ASTNode) a).getName())).findFirst();
+
+      if (localeNode.isPresent()) {
+        initialize((ASTNode)localeNode.get());
+      }
+    } else if (RQLNode.LOCALE == RQLNode.getType(node.getName())){
+      initialize(node);
     }
   }
 
