@@ -43,6 +43,9 @@ angular.module('obiba.mica.search', [
         taxonomyTabsOrder: [QUERY_TARGETS.VARIABLE, QUERY_TARGETS.DATASET, QUERY_TARGETS.STUDY, QUERY_TARGETS.NETWORK],
         searchTabsOrder: [DISPLAY_TYPES.LIST, DISPLAY_TYPES.COVERAGE, DISPLAY_TYPES.GRAPHICS],
         resultTabsOrder: [QUERY_TARGETS.VARIABLE, QUERY_TARGETS.DATASET, QUERY_TARGETS.STUDY, QUERY_TARGETS.NETWORK],
+        listLabel: 'search.list',
+        coverageLabel: 'search.coverage',
+        graphicsLabel: 'search.graphics',
         variables: {
           showSearchTab: true,
           searchLabel: 'search.variable.searchLabel',

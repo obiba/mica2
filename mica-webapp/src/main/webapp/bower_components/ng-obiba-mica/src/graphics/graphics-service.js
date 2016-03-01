@@ -33,9 +33,9 @@ angular.module('obiba.mica.graphics')
             options: {
               backgroundColor: {fill: 'transparent'},
               colors: [
-                '#b8cbed',
                 '#e5edfb',
                 '#cfddf5',
+                '#b8cbed',
                 '#a0b8e2',
                 '#88a4d4'
               ]

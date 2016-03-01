@@ -15,6 +15,16 @@
   "description": {}
   "keywords": {}
   "terms": []
+- "name": "objectives"
+  "title":
+    "en": "Objectives"
+    "fr": "Objectifs"
+  "description": {}
+  "keywords": {}
+  "terms": []
+  "attributes":
+    "field": "objectives.und"
+    "alias": "objectives"
 - "name": "methods-designs"
   "title":
     "en": "Study designs"
