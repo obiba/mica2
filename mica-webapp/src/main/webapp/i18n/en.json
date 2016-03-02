@@ -786,12 +786,17 @@
     "coverage": "Coverage",
     "graphics": "Graphics",
     "no-coverage": "Select some variable search criteria to see their corresponding coverage.",
+    "coverage-dce-cols": {
+      "study": "Study",
+      "population": "Population",
+      "dce": "DCE"
+    },
     "coverage-hide-missing": "Hide missing",
     "coverage-show-missing": "Show missing",
     "coverage-group-by": "Group by",
     "coverage-buckets": {
       "study" : "Study",
-      "dce" : "Data Collection Event",
+      "dce" : "Data Collection Event (DCE)",
       "network" : "Network",
       "dataschema": "Harmonization Dataset",
       "dataset": "Study Dataset"
