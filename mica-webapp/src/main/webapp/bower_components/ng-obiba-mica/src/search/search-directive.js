@@ -65,30 +65,38 @@ angular.module('obiba.mica.search')
     };
   }])
 
-  .directive('networksResultTable', ['PageUrlService', 'ngObibaMicaSearch', function (PageUrlService, ngObibaMicaSearch) {
+  .directive('networksResultTable', ['PageUrlService', 'ngObibaMicaSearch', 'RqlQueryService', function (PageUrlService, ngObibaMicaSearch, RqlQueryService) {
     return {
       restrict: 'EA',
       replace: true,
       scope: {
         summaries: '=',
-        loading: '='
+        loading: '=',
+        onUpdateCriteria: '='
       },
       templateUrl: 'search/views/list/networks-search-result-table-template.html',
       link: function(scope) {
         scope.options = ngObibaMicaSearch.getOptions().networks;
         scope.optionsCols = scope.options.networksColumn;
         scope.PageUrlService = PageUrlService;
+
+        scope.updateCriteria = function (id, type) {
+          RqlQueryService.createCriteriaItem('network', 'Mica_network', 'id', id).then(function (item) {
+            scope.onUpdateCriteria(item, type);
+          });
+        };
       }
     };
   }])
 
-  .directive('datasetsResultTable', ['PageUrlService', 'ngObibaMicaSearch', 'TaxonomyResource', function (PageUrlService, ngObibaMicaSearch, TaxonomyResource) {
+  .directive('datasetsResultTable', ['PageUrlService', 'ngObibaMicaSearch', 'TaxonomyResource', 'RqlQueryService', function (PageUrlService, ngObibaMicaSearch, TaxonomyResource, RqlQueryService) {
     return {
       restrict: 'EA',
       replace: true,
       scope: {
         summaries: '=',
-        loading: '='
+        loading: '=',
+        onUpdateCriteria: '='
       },
       templateUrl: 'search/views/list/datasets-search-result-table-template.html',
       link: function(scope) {
@@ -107,6 +115,12 @@ angular.module('obiba.mica.search')
               }, {});
           });
 
+        scope.updateCriteria = function (id, type) {
+          RqlQueryService.createCriteriaItem('dataset', 'Mica_dataset', 'id', id).then(function(item) {
+            scope.onUpdateCriteria(item, type);
+          });
+        };
+
         scope.options = ngObibaMicaSearch.getOptions().datasets;
         scope.optionsCols = scope.options.datasetsColumn;
         scope.PageUrlService = PageUrlService;
@@ -114,21 +128,25 @@ angular.module('obiba.mica.search')
     };
   }])
 
-  .directive('studiesResultTable', ['PageUrlService', 'ngObibaMicaSearch', 'TaxonomyResource', function (PageUrlService, ngObibaMicaSearch, TaxonomyResource) {
+  .directive('studiesResultTable', ['PageUrlService', 'ngObibaMicaSearch', 'TaxonomyResource', 'RqlQueryService', function (PageUrlService, ngObibaMicaSearch, TaxonomyResource, RqlQueryService) {
     return {
       restrict: 'EA',
       replace: true,
       scope: {
         summaries: '=',
-        loading: '='
+        loading: '=',
+        onUpdateCriteria: '='
       },
       templateUrl: 'search/views/list/studies-search-result-table-template.html',
       link: function(scope) {
+        scope.taxonomy = {};
         scope.designs = {};
+
         TaxonomyResource.get({
           target: 'study',
           taxonomy: 'Mica_study'
         }).$promise.then(function (taxonomy) {
+            scope.taxonomy = taxonomy;
             scope.designs = taxonomy.vocabularies.filter(function (v) {
               return v.name === 'methods-designs';
             })[0].terms.reduce(function (prev, t) {
@@ -146,6 +164,12 @@ angular.module('obiba.mica.search')
         scope.options = ngObibaMicaSearch.getOptions().studies;
         scope.optionsCols = scope.options.studiesColumn;
         scope.PageUrlService = PageUrlService;
+
+        scope.updateCriteria = function (id, type) {
+          RqlQueryService.createCriteriaItem('study', 'Mica_study', 'id', id).then(function(item) {
+            scope.onUpdateCriteria(item, type);
+          });
+        };
       }
     };
   }])
@@ -220,7 +244,8 @@ angular.module('obiba.mica.search')
         resultTabsOrder: '=',
         onTypeChanged: '=',
         onBucketChanged: '=',
-        onPaginate: '='
+        onPaginate: '=',
+        onUpdateCriteria: '='
       },
       controller: 'SearchResultController',
       templateUrl: 'search/views/search-result-panel-template.html'

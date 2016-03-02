@@ -36,7 +36,7 @@
             {{summary['obiba.mica.CountStatsDto.datasetCountStats'].studies}}
           </td>
           <td ng-if="optionsCols.showDatasetsVariablesColumn">
-            {{summary['obiba.mica.CountStatsDto.datasetCountStats'].variables}}
+            <a href ng-click="updateCriteria(summary.id, 'variables')">{{summary['obiba.mica.CountStatsDto.datasetCountStats'].variables}}</a>
           </td>
         </tr>
         </tbody>

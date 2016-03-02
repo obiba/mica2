@@ -6,6 +6,6 @@
       total-hits="result.list.studyResultDto.totalHits"
       on-change="onPaginate"></span>
   <span class="clearfix"></span>
-  <studies-result-table loading="loading"
+  <studies-result-table loading="loading" on-update-criteria="onUpdateCriteria"
       summaries="result.list.studyResultDto['obiba.mica.StudyResultDto.result'].summaries"></studies-result-table>
 </div>

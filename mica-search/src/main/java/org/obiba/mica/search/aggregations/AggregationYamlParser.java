@@ -155,8 +155,8 @@ public class AggregationYamlParser {
           case AGG_TERMS:
             TermsBuilder termBuilder = AggregationBuilders.terms(entry.getKey()).field(entry.getValue());
             if (minDocCount > -1) termBuilder.minDocCount(minDocCount);
-            if (subAggregations != null && subAggregations.containsKey(entry.getKey())) {
-              subAggregations.get(entry.getKey()).forEach(termBuilder::subAggregation);
+            if (subAggregations != null && subAggregations.containsKey(entry.getValue())) {
+              subAggregations.get(entry.getValue()).forEach(termBuilder::subAggregation);
             }
             termsBuilders.add(termBuilder.order(Terms.Order.term(true)).size(0));
             break;

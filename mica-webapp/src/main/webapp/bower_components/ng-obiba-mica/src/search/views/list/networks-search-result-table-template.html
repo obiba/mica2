@@ -43,7 +43,7 @@
             {{summary['obiba.mica.CountStatsDto.networkCountStats'].harmonizationDatasets || '-'}}
           </td>
           <td ng-if="optionsCols.showNetworksVariablesColumn">
-            {{summary['obiba.mica.CountStatsDto.networkCountStats'].variables}}
+            <a href ng-click="updateCriteria(summary.id, 'variables')">{{summary['obiba.mica.CountStatsDto.networkCountStats'].variables}}</a>
           </td>
         </tr>
         </tbody>
