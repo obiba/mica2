@@ -17,6 +17,8 @@ mongodb:
   databaseName: mica
   username:
   password:
+  authSource:
+  options:
 
 # Opal: data dictionaries, summaries and taxonomies
 opal:
