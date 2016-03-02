@@ -1,6 +1,10 @@
 package org.obiba.mica.config;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.function.Function;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -106,9 +110,20 @@ public class MongoDbConfiguration extends AbstractMongoConfiguration implements 
   }
 
 
-  private MongoClientURI buildUri() {
+  private MongoClientURI buildUri() throws UnsupportedEncodingException {
+    String utf8 = StandardCharsets.UTF_8.toString();
+    Function<String, String> encode = (String s) -> {
+      try {
+        return URLEncoder.encode(s, utf8);
+      } catch(UnsupportedEncodingException e) {
+        log.error("Failed to encode " + e);
+      }
+
+      return null;
+    };
+
     String url = propertyResolver.getProperty("url");
-    String databaseName = propertyResolver.getProperty("databaseName");
+    String databaseName = encode.apply(propertyResolver.getProperty("databaseName"));
 
     if(isNullOrEmpty(url) || isNullOrEmpty(databaseName)) {
       log.error("Your MongoDB configuration is incorrect! The application cannot start. " +
@@ -124,7 +139,8 @@ public class MongoDbConfiguration extends AbstractMongoConfiguration implements 
     String options = getOptions();
 
     if (userCredentials != null && userCredentials.hasUsername() && userCredentials.hasPassword()) {
-      builder.append(userCredentials.getUsername()).append(':').append(userCredentials.getPassword()).append('@');
+      builder.append(encode.apply(userCredentials.getUsername())).append(':')
+        .append(encode.apply(userCredentials.getPassword())).append('@');
     }
 
     builder.append(url).append('/').append(databaseName);
