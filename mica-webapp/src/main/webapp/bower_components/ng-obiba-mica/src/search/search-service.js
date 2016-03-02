@@ -36,12 +36,13 @@ angular.module('obiba.mica.search')
       });
     }])
 
-  .factory('TaxonomyResource', ['$resource', 'ngObibaMicaUrl',
-    function ($resource, ngObibaMicaUrl) {
+  .factory('TaxonomyResource', ['$resource', 'ngObibaMicaUrl', '$cacheFactory',
+    function ($resource, ngObibaMicaUrl, $cacheFactory) {
       return $resource(ngObibaMicaUrl.getUrl('TaxonomyResource'), {}, {
         'get': {
           method: 'GET',
-          errorHandler: true
+          errorHandler: true,
+          cache: $cacheFactory('taxonomyResource')
         }
       });
     }])

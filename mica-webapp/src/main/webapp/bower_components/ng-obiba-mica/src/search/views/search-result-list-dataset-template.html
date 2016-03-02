@@ -6,6 +6,6 @@
       total-hits="result.list.datasetResultDto.totalHits"
       on-change="onPaginate"></span>
   <span class="clearfix"></span>
-  <datasets-result-table loading="loading"
+  <datasets-result-table loading="loading" on-update-criteria="onUpdateCriteria"
       summaries="result.list.datasetResultDto['obiba.mica.DatasetResultDto.result'].datasets"></datasets-result-table>
 </div>

@@ -6,6 +6,6 @@
       total-hits="result.list.networkResultDto.totalHits"
       on-change="onPaginate"></span>
   <span class="clearfix"></span>
-  <networks-result-table loading="loading"
+  <networks-result-table loading="loading" on-update-criteria="onUpdateCriteria"
       summaries="result.list.networkResultDto['obiba.mica.NetworkResultDto.result'].networks"></networks-result-table>
 </div>

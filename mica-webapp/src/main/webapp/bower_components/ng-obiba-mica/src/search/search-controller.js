@@ -539,7 +539,7 @@ angular.module('obiba.mica.search')
        * Propagates a Scope change that results in criteria panel update
        * @param item
        */
-      var selectCriteria = function (item) {
+      var selectCriteria = function (item, logicalOp) {
         if (item.id) {
           var id = CriteriaIdGenerator.generate(item.taxonomy, item.vocabulary);
           var existingItem = $scope.search.criteriaItemMap[id];
@@ -547,7 +547,7 @@ angular.module('obiba.mica.search')
             RqlQueryService.updateCriteriaItem(existingItem, item);
 
           } else {
-            RqlQueryService.addCriteriaItem($scope.search.rqlQuery, item);
+            RqlQueryService.addCriteriaItem($scope.search.rqlQuery, item, logicalOp);
           }
 
           refreshQuery();
@@ -633,6 +633,14 @@ angular.module('obiba.mica.search')
         }
       };
 
+      var onUpdateCriteria = function (item, type) {
+        if (type) {
+          onTypeChanged(type);
+        }
+
+        selectCriteria(item, RQL_NODE.AND);
+      };
+
       /**
        * Removes the item from the criteria tree
        * @param item
@@ -695,6 +703,7 @@ angular.module('obiba.mica.search')
       $scope.onTypeChanged = onTypeChanged;
       $scope.onBucketChanged = onBucketChanged;
       $scope.onDisplayChanged = onDisplayChanged;
+      $scope.onUpdateCriteria = onUpdateCriteria;
       $scope.onPaginate = onPaginate;
       $scope.taxonomiesShown = false;
 
