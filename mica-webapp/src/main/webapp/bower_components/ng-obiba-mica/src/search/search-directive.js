@@ -199,7 +199,8 @@ angular.module('obiba.mica.search')
         result: '=',
         loading: '=',
         bucket: '=',
-        query: '='
+        query: '=',
+        onUpdateCriteria: '='
       },
       controller: 'CoverageResultTableController',
       templateUrl: 'search/views/coverage/coverage-search-result-table-template.html'
@@ -212,7 +213,8 @@ angular.module('obiba.mica.search')
       replace: true,
       scope: {
         result: '=',
-        loading: '='
+        loading: '=',
+        onUpdateCriteria: '='
       },
       controller: 'GraphicsResultController',
       templateUrl: 'search/views/graphics/graphics-search-result-template.html'
@@ -224,6 +226,20 @@ angular.module('obiba.mica.search')
       require: 'ngInclude',
       link: function (scope, el) {
         el.replaceWith(el.children());
+      }
+    };
+  })
+
+  .directive('scrollToTop', function(){
+    return {
+      restrict: 'A',
+      scope: {
+        trigger: '=scrollToTop'
+      },
+      link: function postLink(scope, elem) {
+        scope.$watch('trigger', function() {
+          elem[0].scrollTop = 0;
+        });
       }
     };
   })

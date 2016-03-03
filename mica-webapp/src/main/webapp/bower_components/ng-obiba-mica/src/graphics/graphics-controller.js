@@ -31,7 +31,10 @@ angular.module('obiba.mica.graphics')
         if (newValue) {
           GraphicChartsData.getData(function (StudiesData) {
             if (StudiesData) {
-              $scope.ItemDataJSon = GraphicChartsUtils.getArrayByAggregation($scope.chartAggregationName, StudiesData[$scope.chartEntityDto]);
+              $scope.ItemDataJSon = GraphicChartsUtils.getArrayByAggregation($scope.chartAggregationName, StudiesData[$scope.chartEntityDto])
+                .map(function(t) {
+                  return [t.title, t.value];
+                });
               if ($scope.ItemDataJSon) {
                 if ($scope.chartType === 'Table') {
                   $scope.chartObject = {};

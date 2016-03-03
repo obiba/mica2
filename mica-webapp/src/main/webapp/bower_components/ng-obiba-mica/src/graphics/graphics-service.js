@@ -92,6 +92,7 @@ angular.module('obiba.mica.graphics')
     function () {
       this.getArrayByAggregation = function (aggregationName, entityDto) {
         var arrayData = [];
+
         if (!entityDto) {
           return arrayData;
         }
@@ -101,7 +102,7 @@ angular.module('obiba.mica.graphics')
             var i = 0;
             angular.forEach(aggregation['obiba.mica.TermsAggregationResultDto.terms'], function (term) {
               if (term.count) {
-                arrayData[i] = [term.title, term.count];
+                arrayData[i] = {title: term.title, value: term.count, key: term.key};
                 i++;
               }
             });
