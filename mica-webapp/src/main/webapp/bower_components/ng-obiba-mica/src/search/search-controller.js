@@ -638,6 +638,8 @@ angular.module('obiba.mica.search')
           onTypeChanged(type);
         }
 
+        onDisplayChanged(DISPLAY_TYPES.LIST);
+
         selectCriteria(item, RQL_NODE.AND);
       };
 
@@ -1021,8 +1023,10 @@ angular.module('obiba.mica.search')
 
   .controller('CoverageResultTableController', [
     '$scope',
+    '$location',
     'PageUrlService',
-    function ($scope, PageUrlService) {
+    'RqlQueryService',
+    function ($scope, $location, PageUrlService, RqlQueryService) {
       $scope.showMissing = true;
       $scope.toggleMissing = function (value) {
         $scope.showMissing = value;
@@ -1176,31 +1180,64 @@ angular.module('obiba.mica.search')
           $scope.table.cols = splitIds();
         }
       });
+
+      $scope.updateDisplay = function() {
+        $location.search('display', DISPLAY_TYPES.LIST);
+      };
+
+      $scope.updateCriteria = function (id, type) {
+        var targetMap = {};
+        targetMap[BUCKET_TYPES.NETWORK] = QUERY_TARGETS.NETWORK;
+        targetMap[BUCKET_TYPES.STUDY] = QUERY_TARGETS.STUDY;
+        targetMap[BUCKET_TYPES.DCE] = QUERY_TARGETS.VARIABLE;
+        targetMap[BUCKET_TYPES.DATASCHEMA] = QUERY_TARGETS.DATASET;
+        targetMap[BUCKET_TYPES.DATASET] = QUERY_TARGETS.DATASET;
+        var vocabulary = $scope.bucket === BUCKET_TYPES.DCE ? 'dceIds' : 'id';
+
+        RqlQueryService.createCriteriaItem(targetMap[$scope.bucket], 'Mica_' + targetMap[$scope.bucket], vocabulary, id).then(function (item) {
+          $scope.onUpdateCriteria(item, type);
+        });
+      };
     }])
 
   .controller('GraphicsResultController', [
     'GraphicChartsConfig',
     'GraphicChartsUtils',
+    'RqlQueryService',
     '$filter',
     '$scope',
     function (GraphicChartsConfig,
               GraphicChartsUtils,
+              RqlQueryService,
               $filter,
               $scope) {
 
-      var setChartObject = function (tem, dtoObject, header, title, options) {
-        var ChartObject = GraphicChartsUtils.getArrayByAggregation(tem, dtoObject);
-        if (ChartObject.length > 0) {
-          ChartObject.unshift(header);
+      var setChartObject = function (vocabulary, dtoObject, header, title, options) {
+        var entries = GraphicChartsUtils.getArrayByAggregation(vocabulary, dtoObject),
+          data = entries.map(function(e) {return [e.title, e.value]; });
+
+        if (data.length > 0) {
+          data.unshift(header);
           angular.extend(options, {title: title});
+
           return {
-            data: ChartObject,
-            options: options
+            data: data,
+            entries: entries,
+            options: options,
+            vocabulary: vocabulary
           };
         }
+
         return false;
       };
+
       var charOptions = GraphicChartsConfig.getOptions().ChartsOptions;
+
+      $scope.updateCriteria = function(key, vocabulary) {
+        RqlQueryService.createCriteriaItem('study', 'Mica_study', vocabulary, key).then(function (item) {
+          $scope.onUpdateCriteria(item, 'studies');
+        });
+      };
 
       $scope.$watch('result', function (result) {
         $scope.chartObjects = {};
@@ -1234,7 +1271,9 @@ angular.module('obiba.mica.search')
                     geoTitle: geoStudies.options.title,
                     options: geoStudies.options,
                     type: 'GeoChart',
-                    data: geoStudies.data
+                    vocabulary: geoStudies.vocabulary,
+                    data: geoStudies.data,
+                    entries: geoStudies.entries
                   }
                 }
               });
@@ -1245,7 +1284,9 @@ angular.module('obiba.mica.search')
                 chartObject: {
                   options: methodDesignStudies.options,
                   type: 'BarChart',
-                  data: methodDesignStudies.data
+                  data: methodDesignStudies.data,
+                  vocabulary: methodDesignStudies.vocabulary,
+                  entries: methodDesignStudies.entries
                 }
               }
             });
@@ -1256,7 +1297,9 @@ angular.module('obiba.mica.search')
                 chartObject: {
                   options: bioSamplesStudies.options,
                   type: 'PieChart',
-                  data: bioSamplesStudies.data
+                  data: bioSamplesStudies.data,
+                  vocabulary: bioSamplesStudies.vocabulary,
+                  entries: bioSamplesStudies.entries
                 }
               }
             });

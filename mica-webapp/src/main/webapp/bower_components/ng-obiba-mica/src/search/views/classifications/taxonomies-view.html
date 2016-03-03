@@ -49,7 +49,7 @@
 
     <div ng-if="taxonomies.taxonomy">
       <div class="row">
-        <div class="col-md-4 height3">
+        <div class="col-md-4 height3" scroll-to-top="taxonomies.taxonomy">
           <h5 ng-repeat="label in taxonomies.taxonomy.title" ng-if="label.locale === lang">
             {{label.text}}
           </h5>
@@ -70,7 +70,7 @@
             </li>
           </ul>
         </div>
-        <div class="col-md-4 height3">
+        <div class="col-md-4 height3" scroll-to-top="taxonomies.vocabulary">
           <div ng-if="taxonomies.vocabulary">
             <h5 ng-repeat="label in taxonomies.vocabulary.title" ng-if="label.locale === lang">
               {{label.text}}
@@ -100,7 +100,7 @@
             </ul>
           </div>
         </div>
-        <div class="col-md-4 height3">
+        <div class="col-md-4 height3" scroll-to-top="taxonomies.term">
           <div ng-if="taxonomies.term">
             <h5 ng-repeat="label in taxonomies.term.title" ng-if="label.locale === lang">
               {{label.text}}
@@ -119,7 +119,5 @@
         </div>
       </div>
     </div>
-
-
   </div>
 </div>

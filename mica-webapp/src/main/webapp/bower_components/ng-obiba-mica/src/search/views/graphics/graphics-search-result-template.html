@@ -24,9 +24,9 @@
               </tr>
               </thead>
               <tbody>
-              <tr ng-repeat="row in chart.chartObject.data.slice(1)">
-                <td>{{row[0]}}</td>
-                <td>{{row[1]}}</td>
+              <tr ng-repeat="row in chart.chartObject.entries">
+                <td>{{row.title}}</td>
+                <td><a href ng-click="updateCriteria(row.key, chart.chartObject.vocabulary)">{{row.value}}</a></td>
               </tr>
               </tbody>
             </table>

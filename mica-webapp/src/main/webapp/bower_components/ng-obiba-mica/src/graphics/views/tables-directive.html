@@ -1,15 +1,14 @@
 <div>
-  <div  style="margin:25px;">
+  <div style="margin:25px;">
     <table class="table table-striped table-bordered">
- <thead>
+      <thead>
       <th ng-repeat="header in chartObject.header">{{header}}</th>
- </thead>
+      </thead>
       <tbody>
       <tr ng-repeat="data in chartObject.data | orderBy:'-this[1]'">
         <td ng-repeat="row in data">{{row}}</td>
       </tr>
       </tbody>
-
     </table>
   </div>
 </div>
