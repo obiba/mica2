@@ -30,10 +30,12 @@
             <localized value="classNames[summary.variableType + 'Dataset']" lang="lang"></localized>
           </td>
           <td ng-if="optionsCols.showDatasetsNetworkColumn">
-            {{summary['obiba.mica.CountStatsDto.datasetCountStats'].networks}}
+            <a href ng-click="updateCriteria(summary.id, 'networks')" ng-if="summary['obiba.mica.CountStatsDto.datasetCountStats'].networks">{{summary['obiba.mica.CountStatsDto.datasetCountStats'].networks}}</a>
+            <span ng-if="!summary['obiba.mica.CountStatsDto.datasetCountStats'].networks">-</span>
           </td>
           <td ng-if="optionsCols.showDatasetsStudiesColumn">
-            {{summary['obiba.mica.CountStatsDto.datasetCountStats'].studies}}
+            <a href ng-click="updateCriteria(summary.id, 'studies')" ng-if="summary['obiba.mica.CountStatsDto.datasetCountStats'].studies">{{summary['obiba.mica.CountStatsDto.datasetCountStats'].studies}}</a>
+            <span ng-if="!summary['obiba.mica.CountStatsDto.datasetCountStats'].studies">-</span>
           </td>
           <td ng-if="optionsCols.showDatasetsVariablesColumn">
             <a href ng-click="updateCriteria(summary.id, 'variables')">{{summary['obiba.mica.CountStatsDto.datasetCountStats'].variables}}</a>

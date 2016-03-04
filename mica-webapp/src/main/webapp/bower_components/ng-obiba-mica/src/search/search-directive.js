@@ -65,28 +65,43 @@ angular.module('obiba.mica.search')
     };
   }])
 
-  .directive('networksResultTable', ['PageUrlService', 'ngObibaMicaSearch', 'RqlQueryService', function (PageUrlService, ngObibaMicaSearch, RqlQueryService) {
-    return {
-      restrict: 'EA',
-      replace: true,
-      scope: {
-        summaries: '=',
-        loading: '=',
-        onUpdateCriteria: '='
-      },
-      templateUrl: 'search/views/list/networks-search-result-table-template.html',
-      link: function(scope) {
-        scope.options = ngObibaMicaSearch.getOptions().networks;
-        scope.optionsCols = scope.options.networksColumn;
-        scope.PageUrlService = PageUrlService;
+  .directive('networksResultTable', ['PageUrlService', 'ngObibaMicaSearch', 'RqlQueryService',
+    function (PageUrlService, ngObibaMicaSearch, RqlQueryService) {
+      return {
+        restrict: 'EA',
+        replace: true,
+        scope: {
+          summaries: '=',
+          loading: '=',
+          onUpdateCriteria: '='
+        },
+        templateUrl: 'search/views/list/networks-search-result-table-template.html',
+        link: function(scope) {
+          scope.options = ngObibaMicaSearch.getOptions().networks;
+          scope.optionsCols = scope.options.networksColumn;
+          scope.PageUrlService = PageUrlService;
 
-        scope.updateCriteria = function (id, type) {
-          RqlQueryService.createCriteriaItem('network', 'Mica_network', 'id', id).then(function (item) {
-            scope.onUpdateCriteria(item, type);
-          });
-        };
-      }
-    };
+          scope.updateCriteria = function (id, type) {
+            var datasetClassName;
+
+            if (type === 'HarmonizationDataset' || type === 'StudyDataset') {
+              datasetClassName = type;
+              type = 'datasets';
+            }
+
+            RqlQueryService.createCriteriaItem('network', 'Mica_network', 'id', id).then(function (item) {
+              if(datasetClassName) {
+                RqlQueryService.createCriteriaItem('dataset', 'Mica_dataset', 'className', datasetClassName).then(function(datasetItem) {
+                  scope.onUpdateCriteria(item, type);
+                  scope.onUpdateCriteria(datasetItem, type);
+                });
+              } else {
+                scope.onUpdateCriteria(item, type);
+              }
+            });
+          };
+        }
+      };
   }])
 
   .directive('datasetsResultTable', ['PageUrlService', 'ngObibaMicaSearch', 'TaxonomyResource', 'RqlQueryService', function (PageUrlService, ngObibaMicaSearch, TaxonomyResource, RqlQueryService) {
@@ -166,8 +181,22 @@ angular.module('obiba.mica.search')
         scope.PageUrlService = PageUrlService;
 
         scope.updateCriteria = function (id, type) {
+          var datasetClassName;
+
+          if (type === 'HarmonizationDataset' || type === 'StudyDataset') {
+            datasetClassName = type;
+            type = 'datasets';
+          }
+
           RqlQueryService.createCriteriaItem('study', 'Mica_study', 'id', id).then(function(item) {
-            scope.onUpdateCriteria(item, type);
+            if(datasetClassName) {
+              RqlQueryService.createCriteriaItem('dataset', 'Mica_dataset', 'className', datasetClassName).then(function(datasetItem) {
+                scope.onUpdateCriteria(item, type);
+                scope.onUpdateCriteria(datasetItem, type);
+              });
+            } else {
+              scope.onUpdateCriteria(item, type);
+            }
           });
         };
       }
@@ -440,5 +469,37 @@ angular.module('obiba.mica.search')
       },
       controller: 'SearchResultPaginationController',
       templateUrl: 'search/views/list/search-result-pagination-template.html'
+    };
+  }])
+
+  .directive('taxonomiesPanel',[function() {
+    return {
+    restrict: 'EA',
+    replace: true,
+    scope: {
+      taxonomyName: '=',
+      target: '=',
+      onSelectTerm: '=',
+      lang: '='
+    },
+    controller: 'TaxonomiesPanelController',
+    templateUrl: 'search/views/classifications/taxonomies-view.html',
+    link: function(scope, element) {
+       scope.closeTaxonomies = function () {
+        element.collapse('hide');
+       };
+
+       scope.showTaxonomies = function() {
+        element.collapse('show');
+       };
+
+       element.on('show.bs.collapse', function () {
+         scope.taxonomiesShown = true;
+       });
+
+       element.on('hide.bs.collapse', function () {
+         scope.taxonomiesShown = false;
+       });
+      }
     };
   }]);
