@@ -1,11 +1,5 @@
-<div class="tab-pane" ng-show="options.networks.showSearchTab" ng-class="{active: activeTarget.networks}">
+<div class="tab-pane" ng-show="options.networks.showSearchTab" ng-class="{active: activeTarget.networks.active}">
   <span ng-if="resultTabsOrder.length === 1">{{'networks' | translate}} ({{result.list.networkResultDto.totalHits}})</span>
-  <span search-result-pagination
-      class="pull-right"
-      target="QUERY_TARGETS.NETWORK"
-      total-hits="result.list.networkResultDto.totalHits"
-      on-change="onPaginate"></span>
-  <span class="clearfix"></span>
   <networks-result-table loading="loading" on-update-criteria="onUpdateCriteria"
       summaries="result.list.networkResultDto['obiba.mica.NetworkResultDto.result'].networks"></networks-result-table>
 </div>

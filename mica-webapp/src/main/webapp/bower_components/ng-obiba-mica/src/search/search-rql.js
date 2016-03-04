@@ -492,14 +492,14 @@ angular.module('obiba.mica.search')
       }) : [];
     };
 
-    this.hasTargetQuery = function(rootRql) {
+    this.hasTargetQuery = function(rootRql, target) {
       return rootRql.args.filter(function(query) {
           switch (query.name) {
             case RQL_NODE.VARIABLE:
             case RQL_NODE.DATASET:
             case RQL_NODE.STUDY:
             case RQL_NODE.NETWORK:
-              return true;
+              return target ? target === query.name : true;
             default:
               return false;
           }
@@ -576,13 +576,14 @@ angular.module('obiba.mica.search')
       return query;
     };
 
-    this.mergeInQueryArgValues = function (query, terms) {
+    this.mergeInQueryArgValues = function (query, terms, replace) {
       var hasValues = terms && terms.length > 0;
       query.name = hasValues ? RQL_NODE.IN : RQL_NODE.EXISTS;
 
       if (hasValues) {
         var current = query.args[1];
-        if (!current) {
+
+        if (!current || replace) {
           query.args[1] = terms;
         } else {
           if (!(current instanceof Array)) {
@@ -666,11 +667,11 @@ angular.module('obiba.mica.search')
       return parentQuery;
     };
 
-    this.updateQueryArgValues = function(query, terms) {
+    this.updateQueryArgValues = function(query, terms, replace) {
       switch (query.name) {
         case RQL_NODE.IN:
         case RQL_NODE.EXISTS:
-          this.mergeInQueryArgValues(query, terms);
+          this.mergeInQueryArgValues(query, terms, replace);
           break;
       }
 
@@ -951,7 +952,7 @@ angular.module('obiba.mica.search')
           rootRql.args.push(target);
         }
 
-        var rqlQuery = RqlQueryUtils.buildRqlQuery(newItem);
+        var rqlQuery = newItem.rqlQuery ? newItem.rqlQuery : RqlQueryUtils.buildRqlQuery(newItem);
         return RqlQueryUtils.addQuery(target, rqlQuery, logicalOp);
       };
 
@@ -961,10 +962,16 @@ angular.module('obiba.mica.search')
        * @param rootItem
        * @param item
        */
-      this.updateCriteriaItem = function (existingItem, newItem) {
-        RqlQueryUtils.updateQueryArgValues(
-          existingItem.rqlQuery,
-          newItem.term ? [newItem.term.name] : RqlQueryUtils.vocabularyTermNames(newItem.vocabulary));
+      this.updateCriteriaItem = function (existingItem, newItem, replace) {
+        var newTerms;
+
+        if (newItem.rqlQuery) {
+          newTerms = newItem.rqlQuery.args[1];
+        } else {
+          newTerms = newItem.term ? [newItem.term.name] : RqlQueryUtils.vocabularyTermNames(newItem.vocabulary);
+        }
+
+        RqlQueryUtils.updateQueryArgValues(existingItem.rqlQuery, newTerms, replace);
       };
 
       /**

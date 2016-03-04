@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-03-03
+ * Date: 2016-03-04
  */
 'use strict';
 
@@ -1914,14 +1914,14 @@ angular.module('obiba.mica.search')
       }) : [];
     };
 
-    this.hasTargetQuery = function(rootRql) {
+    this.hasTargetQuery = function(rootRql, target) {
       return rootRql.args.filter(function(query) {
           switch (query.name) {
             case RQL_NODE.VARIABLE:
             case RQL_NODE.DATASET:
             case RQL_NODE.STUDY:
             case RQL_NODE.NETWORK:
-              return true;
+              return target ? target === query.name : true;
             default:
               return false;
           }
@@ -1998,13 +1998,14 @@ angular.module('obiba.mica.search')
       return query;
     };
 
-    this.mergeInQueryArgValues = function (query, terms) {
+    this.mergeInQueryArgValues = function (query, terms, replace) {
       var hasValues = terms && terms.length > 0;
       query.name = hasValues ? RQL_NODE.IN : RQL_NODE.EXISTS;
 
       if (hasValues) {
         var current = query.args[1];
-        if (!current) {
+
+        if (!current || replace) {
           query.args[1] = terms;
         } else {
           if (!(current instanceof Array)) {
@@ -2088,11 +2089,11 @@ angular.module('obiba.mica.search')
       return parentQuery;
     };
 
-    this.updateQueryArgValues = function(query, terms) {
+    this.updateQueryArgValues = function(query, terms, replace) {
       switch (query.name) {
         case RQL_NODE.IN:
         case RQL_NODE.EXISTS:
-          this.mergeInQueryArgValues(query, terms);
+          this.mergeInQueryArgValues(query, terms, replace);
           break;
       }
 
@@ -2373,7 +2374,7 @@ angular.module('obiba.mica.search')
           rootRql.args.push(target);
         }
 
-        var rqlQuery = RqlQueryUtils.buildRqlQuery(newItem);
+        var rqlQuery = newItem.rqlQuery ? newItem.rqlQuery : RqlQueryUtils.buildRqlQuery(newItem);
         return RqlQueryUtils.addQuery(target, rqlQuery, logicalOp);
       };
 
@@ -2383,10 +2384,16 @@ angular.module('obiba.mica.search')
        * @param rootItem
        * @param item
        */
-      this.updateCriteriaItem = function (existingItem, newItem) {
-        RqlQueryUtils.updateQueryArgValues(
-          existingItem.rqlQuery,
-          newItem.term ? [newItem.term.name] : RqlQueryUtils.vocabularyTermNames(newItem.vocabulary));
+      this.updateCriteriaItem = function (existingItem, newItem, replace) {
+        var newTerms;
+
+        if (newItem.rqlQuery) {
+          newTerms = newItem.rqlQuery.args[1];
+        } else {
+          newTerms = newItem.term ? [newItem.term.name] : RqlQueryUtils.vocabularyTermNames(newItem.vocabulary);
+        }
+
+        RqlQueryUtils.updateQueryArgValues(existingItem.rqlQuery, newTerms, replace);
       };
 
       /**
@@ -3408,13 +3415,13 @@ angular.module('obiba.mica.search')
        * Propagates a Scope change that results in criteria panel update
        * @param item
        */
-      var selectCriteria = function (item, logicalOp) {
+      var selectCriteria = function (item, logicalOp, replace) {
         if (item.id) {
           var id = CriteriaIdGenerator.generate(item.taxonomy, item.vocabulary);
           var existingItem = $scope.search.criteriaItemMap[id];
-          if (existingItem) {
-            RqlQueryService.updateCriteriaItem(existingItem, item);
 
+          if (existingItem) {
+            RqlQueryService.updateCriteriaItem(existingItem, item, replace);
           } else {
             RqlQueryService.addCriteriaItem($scope.search.rqlQuery, item, logicalOp);
           }
@@ -3508,8 +3515,7 @@ angular.module('obiba.mica.search')
         }
 
         onDisplayChanged(DISPLAY_TYPES.LIST);
-
-        selectCriteria(item, RQL_NODE.AND);
+        selectCriteria(item, RQL_NODE.AND, true);
       };
 
       /**
@@ -3604,6 +3610,12 @@ angular.module('obiba.mica.search')
     function ($scope,
               ngObibaMicaSearch) {
 
+      function updateTarget(type) {
+        Object.keys($scope.activeTarget).forEach(function(key){
+          $scope.activeTarget[key].active = type === key;
+        });
+      }
+
       $scope.targetTypeMap = $scope.$parent.taxonomyTypeMap;
       $scope.QUERY_TARGETS = QUERY_TARGETS;
       $scope.QUERY_TYPES = QUERY_TYPES;
@@ -3611,7 +3623,10 @@ angular.module('obiba.mica.search')
       $scope.activeDisplay = {};
       $scope.activeDisplay[$scope.display] = true;
       $scope.activeTarget = {};
-      $scope.activeTarget[$scope.type] = true;
+      $scope.activeTarget[QUERY_TYPES.VARIABLES] = {active: false, name: QUERY_TARGETS.VARIABLE, totalHits: 0};
+      $scope.activeTarget[QUERY_TYPES.DATASETS] = {active: false, name: QUERY_TARGETS.DATASET, totalHits: 0};
+      $scope.activeTarget[QUERY_TYPES.STUDIES] = {active: false, name: QUERY_TARGETS.STUDY, totalHits: 0};
+      $scope.activeTarget[QUERY_TYPES.NETWORKS] = {active: false, name: QUERY_TARGETS.NETWORK, totalHits: 0};
 
       $scope.selectDisplay = function (display) {
         $scope.activeDisplay = {};
@@ -3621,15 +3636,24 @@ angular.module('obiba.mica.search')
       };
 
       $scope.selectTarget = function (type) {
-        $scope.activeTarget = {};
-        $scope.activeTarget[type] = true;
+        updateTarget(type);
         $scope.type = type;
         $scope.$parent.onTypeChanged(type);
       };
 
-      $scope.$watch('type', function (target) {
-        $scope.activeTarget = {};
-        $scope.activeTarget[target] = true;
+      $scope.$watch('result', function () {
+        if ($scope.result.list) {
+          $scope.activeTarget[QUERY_TYPES.VARIABLES].totalHits = $scope.result.list.variableResultDto.totalHits;
+          $scope.activeTarget[QUERY_TYPES.DATASETS].totalHits = $scope.result.list.datasetResultDto.totalHits;
+          $scope.activeTarget[QUERY_TYPES.STUDIES].totalHits = $scope.result.list.studyResultDto.totalHits;
+          $scope.activeTarget[QUERY_TYPES.NETWORKS].totalHits = $scope.result.list.networkResultDto.totalHits;
+          //unregister();
+        }
+      });
+
+
+      $scope.$watch('type', function (type) {
+        updateTarget(type);
       });
 
       $scope.$watch('display', function (display) {
@@ -3893,9 +3917,11 @@ angular.module('obiba.mica.search')
   .controller('CoverageResultTableController', [
     '$scope',
     '$location',
+    '$q',
     'PageUrlService',
+    'RqlQueryUtils',
     'RqlQueryService',
-    function ($scope, $location, PageUrlService, RqlQueryService) {
+    function ($scope, $location, $q, PageUrlService, RqlQueryUtils, RqlQueryService) {
       $scope.showMissing = true;
       $scope.toggleMissing = function (value) {
         $scope.showMissing = value;
@@ -3931,6 +3957,15 @@ angular.module('obiba.mica.search')
         } else {
           return $scope.rowspans[study] > 0;
         }
+      };
+
+      $scope.hasVariableTarget = function() {
+        var query = $location.search().query;
+        return query && RqlQueryUtils.hasTargetQuery(new RqlParser().parse(query), RQL_NODE.VARIABLE);
+      };
+
+      $scope.hasSelected = function () {
+        return $scope.table && $scope.table.rows.filter(function(r) { return r.selected; }).length;
       };
 
       function getBucketUrl(bucket, id) {
@@ -4017,7 +4052,6 @@ angular.module('obiba.mica.search')
               rowSpan: 1
             });
           }
-
         });
 
         // adjust the rowspans
@@ -4050,21 +4084,48 @@ angular.module('obiba.mica.search')
         }
       });
 
+      var targetMap = {};
+      targetMap[BUCKET_TYPES.NETWORK] = QUERY_TARGETS.NETWORK;
+      targetMap[BUCKET_TYPES.STUDY] = QUERY_TARGETS.STUDY;
+      targetMap[BUCKET_TYPES.DCE] = QUERY_TARGETS.VARIABLE;
+      targetMap[BUCKET_TYPES.DATASCHEMA] = QUERY_TARGETS.DATASET;
+      targetMap[BUCKET_TYPES.DATASET] = QUERY_TARGETS.DATASET;
+
       $scope.updateDisplay = function() {
         $location.search('display', DISPLAY_TYPES.LIST);
       };
 
       $scope.updateCriteria = function (id, type) {
-        var targetMap = {};
-        targetMap[BUCKET_TYPES.NETWORK] = QUERY_TARGETS.NETWORK;
-        targetMap[BUCKET_TYPES.STUDY] = QUERY_TARGETS.STUDY;
-        targetMap[BUCKET_TYPES.DCE] = QUERY_TARGETS.VARIABLE;
-        targetMap[BUCKET_TYPES.DATASCHEMA] = QUERY_TARGETS.DATASET;
-        targetMap[BUCKET_TYPES.DATASET] = QUERY_TARGETS.DATASET;
         var vocabulary = $scope.bucket === BUCKET_TYPES.DCE ? 'dceIds' : 'id';
 
         RqlQueryService.createCriteriaItem(targetMap[$scope.bucket], 'Mica_' + targetMap[$scope.bucket], vocabulary, id).then(function (item) {
           $scope.onUpdateCriteria(item, type);
+        });
+      };
+
+      $scope.updateFilterCriteria = function() {
+        var vocabulary = $scope.bucket === BUCKET_TYPES.DCE ? 'dceIds' : 'id',
+          selected = $scope.table.rows.filter(function(r) { return r.selected; });
+
+        $q.all(selected.map(function(r) {
+          return RqlQueryService.createCriteriaItem(targetMap[$scope.bucket], 'Mica_' + targetMap[$scope.bucket], vocabulary, r.value);
+        })).then(function (items) {
+          if(!items.length) {
+            return;
+          }
+
+          var selectionItem = items.reduce(function(prev, item) {
+            if(prev) {
+              RqlQueryService.updateCriteriaItem(prev, item);
+
+              return prev;
+            }
+
+            item.rqlQuery = RqlQueryUtils.buildRqlQuery(item);
+            return item;
+          }, null);
+
+          $scope.onUpdateCriteria(selectionItem, 'variables');
         });
       };
     }])
@@ -4225,8 +4286,6 @@ angular.module('obiba.mica.search')
       updateMaxSize();
       calculateRange();
     });
-
-
   }]);
 
 ;/*
@@ -5931,7 +5990,7 @@ angular.module("search/views/classifications/vocabulary-panel-template.html", []
 angular.module("search/views/coverage/coverage-search-result-table-template.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("search/views/coverage/coverage-search-result-table-template.html",
     "<div>\n" +
-    "  <div class=\"pull-left\" ng-if=\"!loading && table.taxonomyHeaders.length\">\n" +
+    "  <div class=\"pull-left\" ng-if=\"hasVariableTarget()\">\n" +
     "    <span translate>search.coverage-group-by</span>\n" +
     "    <div class=\"btn-group\" uib-dropdown is-open=\"status.isopen\">\n" +
     "      <button type=\"button\" class=\"btn btn-primary btn-sm\" uib-dropdown-toggle ng-disabled=\"disabled\">\n" +
@@ -5958,6 +6017,7 @@ angular.module("search/views/coverage/coverage-search-result-table-template.html
     "  </div>\n" +
     "\n" +
     "  <div class=\"pull-right\" ng-if=\"table.taxonomyHeaders.length > 0\">\n" +
+    "    <a href class=\"btn btn-info\" translate ng-if=\"hasSelected()\" ng-click=\"updateFilterCriteria()\">search.filter</a>\n" +
     "    <a target=\"_self\" class=\"btn btn-info btn-responsive\" ng-href=\"{{downloadUrl()}}\">\n" +
     "      <i class=\"fa fa-download\"></i> {{'download' | translate}}\n" +
     "    </a>\n" +
@@ -5985,6 +6045,7 @@ angular.module("search/views/coverage/coverage-search-result-table-template.html
     "          {{header.entity.titles[0].value}}\n" +
     "            </span>\n" +
     "        </th>\n" +
+    "        <th rowspan=\"2\"></th>\n" +
     "      </tr>\n" +
     "      <tr>\n" +
     "        <th ng-if=\"bucket === BUCKET_TYPES.DCE\" translate>search.coverage-dce-cols.study</th>\n" +
@@ -6014,6 +6075,7 @@ angular.module("search/views/coverage/coverage-search-result-table-template.html
     "          <a href ng-click=\"updateCriteria(row.value, 'variables')\"><span class=\"label label-info\" ng-if=\"row.hits[$index]\">{{row.hits[$index]}}</span></a>\n" +
     "          <span ng-if=\"!row.hits[$index]\">0</span>\n" +
     "        </td>\n" +
+    "        <td><input type=\"checkbox\" ng-model=\"row.selected\"></td>\n" +
     "      </tr>\n" +
     "      </tbody>\n" +
     "      <tfoot>\n" +
@@ -6593,14 +6655,8 @@ angular.module("search/views/search-result-graphics-template.html", []).run(["$t
 
 angular.module("search/views/search-result-list-dataset-template.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("search/views/search-result-list-dataset-template.html",
-    "<div class=\"tab-pane\" ng-show=\"options.datasets.showSearchTab\" ng-class=\"{active: activeTarget.datasets}\">\n" +
+    "<div class=\"tab-pane\" ng-show=\"options.datasets.showSearchTab\" ng-class=\"{active: activeTarget.datasets.active}\">\n" +
     "  <span ng-if=\"resultTabsOrder.length === 1\">{{'datasets' | translate}} ({{result.list.datasetResultDto.totalHits}})</span>\n" +
-    "  <span search-result-pagination\n" +
-    "      class=\"pull-right\"\n" +
-    "      target=\"QUERY_TARGETS.DATASET\"\n" +
-    "      total-hits=\"result.list.datasetResultDto.totalHits\"\n" +
-    "      on-change=\"onPaginate\"></span>\n" +
-    "  <span class=\"clearfix\"></span>\n" +
     "  <datasets-result-table loading=\"loading\" on-update-criteria=\"onUpdateCriteria\"\n" +
     "      summaries=\"result.list.datasetResultDto['obiba.mica.DatasetResultDto.result'].datasets\"></datasets-result-table>\n" +
     "</div>\n" +
@@ -6609,14 +6665,8 @@ angular.module("search/views/search-result-list-dataset-template.html", []).run(
 
 angular.module("search/views/search-result-list-network-template.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("search/views/search-result-list-network-template.html",
-    "<div class=\"tab-pane\" ng-show=\"options.networks.showSearchTab\" ng-class=\"{active: activeTarget.networks}\">\n" +
+    "<div class=\"tab-pane\" ng-show=\"options.networks.showSearchTab\" ng-class=\"{active: activeTarget.networks.active}\">\n" +
     "  <span ng-if=\"resultTabsOrder.length === 1\">{{'networks' | translate}} ({{result.list.networkResultDto.totalHits}})</span>\n" +
-    "  <span search-result-pagination\n" +
-    "      class=\"pull-right\"\n" +
-    "      target=\"QUERY_TARGETS.NETWORK\"\n" +
-    "      total-hits=\"result.list.networkResultDto.totalHits\"\n" +
-    "      on-change=\"onPaginate\"></span>\n" +
-    "  <span class=\"clearfix\"></span>\n" +
     "  <networks-result-table loading=\"loading\" on-update-criteria=\"onUpdateCriteria\"\n" +
     "      summaries=\"result.list.networkResultDto['obiba.mica.NetworkResultDto.result'].networks\"></networks-result-table>\n" +
     "</div>\n" +
@@ -6625,14 +6675,8 @@ angular.module("search/views/search-result-list-network-template.html", []).run(
 
 angular.module("search/views/search-result-list-study-template.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("search/views/search-result-list-study-template.html",
-    "<div class=\"tab-pane\" ng-show=\"options.studies.showSearchTab\" ng-class=\"{'active': activeTarget.studies}\">\n" +
+    "<div class=\"tab-pane\" ng-show=\"options.studies.showSearchTab\" ng-class=\"{'active': activeTarget.studies.active}\">\n" +
     "  <span ng-if=\"resultTabsOrder.length === 1\">{{'studies' | translate}} ({{result.list.studyResultDto.totalHits}})</span>\n" +
-    "  <span search-result-pagination\n" +
-    "      class=\"pull-right\"\n" +
-    "      target=\"QUERY_TARGETS.STUDY\"\n" +
-    "      total-hits=\"result.list.studyResultDto.totalHits\"\n" +
-    "      on-change=\"onPaginate\"></span>\n" +
-    "  <span class=\"clearfix\"></span>\n" +
     "  <studies-result-table loading=\"loading\" on-update-criteria=\"onUpdateCriteria\"\n" +
     "      summaries=\"result.list.studyResultDto['obiba.mica.StudyResultDto.result'].summaries\"></studies-result-table>\n" +
     "</div>");
@@ -6643,10 +6687,16 @@ angular.module("search/views/search-result-list-template.html", []).run(["$templ
     "<div class=\"tab-pane\" ng-class=\"{active: activeDisplay.list}\">\n" +
     "  <ul class=\"nav nav-pills voffset2\" ng-if=\"resultTabsOrder.length > 1\">\n" +
     "    <li role=\"presentation\" ng-repeat=\"res in resultTabsOrder\"\n" +
-    "        ng-class=\"{active: activeTarget[targetTypeMap[res]]}\"\n" +
+    "        ng-class=\"{active: activeTarget[targetTypeMap[res]].active}\"\n" +
     "        ng-if=\"options[targetTypeMap[res]].showSearchTab\"><a href\n" +
     "        ng-click=\"selectTarget(targetTypeMap[res])\">{{targetTypeMap[res] | translate}} ({{result.list[res +\n" +
     "      'ResultDto'].totalHits}})</a></li>\n" +
+    "    <li ng-repeat=\"res in resultTabsOrder\" ng-show=\"activeTarget[targetTypeMap[res]].active\" class=\"pull-right\">\n" +
+    "      <span search-result-pagination\n" +
+    "            target=\"activeTarget[targetTypeMap[res]].name\"\n" +
+    "            total-hits=\"activeTarget[targetTypeMap[res]].totalHits\"\n" +
+    "            on-change=\"onPaginate\"></span>\n" +
+    "    </li>\n" +
     "  </ul>\n" +
     "  <div class=\"tab-content\">\n" +
     "    <ng-include include-replace ng-repeat=\"res in resultTabsOrder\"\n" +
@@ -6658,14 +6708,8 @@ angular.module("search/views/search-result-list-template.html", []).run(["$templ
 
 angular.module("search/views/search-result-list-variable-template.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("search/views/search-result-list-variable-template.html",
-    "<div class=\"tab-pane\" ng-show=\"options.variables.showSearchTab\" ng-class=\"{active: activeTarget.variables}\">\n" +
+    "<div class=\"tab-pane\" ng-show=\"options.variables.showSearchTab\" ng-class=\"{active: activeTarget.variables.active}\">\n" +
     "  <span ng-if=\"resultTabsOrder.length === 1\">{{'variables' | translate}} ({{result.list.variableResultDto.totalHits}})</span>\n" +
-    "  <span search-result-pagination\n" +
-    "      class=\"pull-right\"\n" +
-    "      target=\"QUERY_TARGETS.VARIABLE\"\n" +
-    "      total-hits=\"result.list.variableResultDto.totalHits\"\n" +
-    "      on-change=\"onPaginate\"></span>\n" +
-    "  <span class=\"clearfix\"></span>\n" +
     "  <variables-result-table loading=\"loading\"\n" +
     "      summaries=\"result.list.variableResultDto['obiba.mica.DatasetVariableResultDto.result'].summaries\"></variables-result-table>\n" +
     "</div>\n" +
