@@ -1,11 +1,5 @@
-<div class="tab-pane" ng-show="options.datasets.showSearchTab" ng-class="{active: activeTarget.datasets}">
+<div class="tab-pane" ng-show="options.datasets.showSearchTab" ng-class="{active: activeTarget.datasets.active}">
   <span ng-if="resultTabsOrder.length === 1">{{'datasets' | translate}} ({{result.list.datasetResultDto.totalHits}})</span>
-  <span search-result-pagination
-      class="pull-right"
-      target="QUERY_TARGETS.DATASET"
-      total-hits="result.list.datasetResultDto.totalHits"
-      on-change="onPaginate"></span>
-  <span class="clearfix"></span>
   <datasets-result-table loading="loading" on-update-criteria="onUpdateCriteria"
       summaries="result.list.datasetResultDto['obiba.mica.DatasetResultDto.result'].datasets"></datasets-result-table>
 </div>

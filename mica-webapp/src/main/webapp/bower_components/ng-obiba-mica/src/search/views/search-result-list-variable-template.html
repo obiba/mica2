@@ -1,11 +1,5 @@
-<div class="tab-pane" ng-show="options.variables.showSearchTab" ng-class="{active: activeTarget.variables}">
+<div class="tab-pane" ng-show="options.variables.showSearchTab" ng-class="{active: activeTarget.variables.active}">
   <span ng-if="resultTabsOrder.length === 1">{{'variables' | translate}} ({{result.list.variableResultDto.totalHits}})</span>
-  <span search-result-pagination
-      class="pull-right"
-      target="QUERY_TARGETS.VARIABLE"
-      total-hits="result.list.variableResultDto.totalHits"
-      on-change="onPaginate"></span>
-  <span class="clearfix"></span>
   <variables-result-table loading="loading"
       summaries="result.list.variableResultDto['obiba.mica.DatasetVariableResultDto.result'].summaries"></variables-result-table>
 </div>

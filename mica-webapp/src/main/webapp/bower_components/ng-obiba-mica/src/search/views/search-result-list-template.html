@@ -1,10 +1,16 @@
 <div class="tab-pane" ng-class="{active: activeDisplay.list}">
   <ul class="nav nav-pills voffset2" ng-if="resultTabsOrder.length > 1">
     <li role="presentation" ng-repeat="res in resultTabsOrder"
-        ng-class="{active: activeTarget[targetTypeMap[res]]}"
+        ng-class="{active: activeTarget[targetTypeMap[res]].active}"
         ng-if="options[targetTypeMap[res]].showSearchTab"><a href
         ng-click="selectTarget(targetTypeMap[res])">{{targetTypeMap[res] | translate}} ({{result.list[res +
       'ResultDto'].totalHits}})</a></li>
+    <li ng-repeat="res in resultTabsOrder" ng-show="activeTarget[targetTypeMap[res]].active" class="pull-right">
+      <span search-result-pagination
+            target="activeTarget[targetTypeMap[res]].name"
+            total-hits="activeTarget[targetTypeMap[res]].totalHits"
+            on-change="onPaginate"></span>
+    </li>
   </ul>
   <div class="tab-content">
     <ng-include include-replace ng-repeat="res in resultTabsOrder"
