@@ -91,6 +91,69 @@ angular.module('obiba.form')
     };
   }])
 
+  .directive('formRadio', [function () {
+    return {
+      restrict: 'AE',
+      require: '^form',
+      scope: {
+        name: '@',
+        model: '=',
+        value: '=',
+        label: '@',
+        help: '@',
+        onSelect: '='
+      },
+      templateUrl: 'form/form-radio-template.tpl.html',
+      link: function ($scope, elem, attr, ctrl) {
+        $scope.form = ctrl;
+
+        $scope.$watch('model', function() {
+          console.log('MODEL', $scope.model, $scope.value);
+        });
+      }
+    };
+  }])
+
+  .directive('formRadioGroup', [function() {
+    return {
+      restrict: 'A',
+      scope: {
+        options: '=',
+        model: '='
+      },
+      template: '<div form-radio ng-repeat="item in items" name="{{item.name}}" on-select="onSelect" model="model" value="item.value" label="{{item.label}}"></div>',
+      link: function ($scope, elem, attrs) {
+
+        function updateOptions(options) {
+          if (!options) {
+            return;
+          }
+
+          $scope.items = options.map(function(option) {
+            return {
+              name: attrs.model + '.' + (option.name || option),
+              label: option.label || option,
+              value: option.name
+            };
+          });
+        }
+
+        $scope.onSelect = function(value) {
+          $scope.model = value;
+        };
+
+        $scope.$watch('model', function(selected) {
+          if (selected) {
+            updateOptions($scope.options);
+          }
+
+        });
+
+        $scope.$watch('options', updateOptions);
+      }
+    };
+  }])
+
   .directive('formCheckbox', [function () {
     return {
       restrict: 'AE',
