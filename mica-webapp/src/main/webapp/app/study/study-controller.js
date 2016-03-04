@@ -1058,6 +1058,8 @@ mica.study
             $scope.authorization.specific.date =
               new Date(response.specificAuthorization.date.split('-').map(function (x) { return parseInt(x, 10);}));
           }
+          // TODO remove the property below once the Study.methods.designs is replaced by Study.methods.design
+          $scope.methods = {design: angular.isArray($scope.study.methods.designs) ? $scope.study.methods.designs.pop() : $scope.study.methods.designs};
         }
       }) : {attachments: [], maelstromAuthorization: {date: null}, specificAuthorization: {date: null}};
 
@@ -1069,6 +1071,10 @@ mica.study
       });
 
       $scope.save = function () {
+        if ($scope.methods && $scope.methods.design) {
+          $scope.study.methods.designs = [$scope.methods.design];
+        }
+
         $scope.study.logo = $scope.files.length > 0 ? $scope.files[0] : null;
 
         if (!$scope.study.logo) { //protobuf doesnt like null values

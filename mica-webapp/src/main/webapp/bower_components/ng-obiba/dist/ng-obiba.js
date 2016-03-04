@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba
 
  * License: GNU Public License version 3
- * Date: 2016-02-19
+ * Date: 2016-03-04
  */
 'use strict';
 
@@ -901,6 +901,69 @@ angular.module('obiba.form')
     };
   }])
 
+  .directive('formRadio', [function () {
+    return {
+      restrict: 'AE',
+      require: '^form',
+      scope: {
+        name: '@',
+        model: '=',
+        value: '=',
+        label: '@',
+        help: '@',
+        onSelect: '='
+      },
+      templateUrl: 'form/form-radio-template.tpl.html',
+      link: function ($scope, elem, attr, ctrl) {
+        $scope.form = ctrl;
+
+        $scope.$watch('model', function() {
+          console.log('MODEL', $scope.model, $scope.value);
+        });
+      }
+    };
+  }])
+
+  .directive('formRadioGroup', [function() {
+    return {
+      restrict: 'A',
+      scope: {
+        options: '=',
+        model: '='
+      },
+      template: '<div form-radio ng-repeat="item in items" name="{{item.name}}" on-select="onSelect" model="model" value="item.value" label="{{item.label}}"></div>',
+      link: function ($scope, elem, attrs) {
+
+        function updateOptions(options) {
+          if (!options) {
+            return;
+          }
+
+          $scope.items = options.map(function(option) {
+            return {
+              name: attrs.model + '.' + (option.name || option),
+              label: option.label || option,
+              value: option.name
+            };
+          });
+        }
+
+        $scope.onSelect = function(value) {
+          $scope.model = value;
+        };
+
+        $scope.$watch('model', function(selected) {
+          if (selected) {
+            updateOptions($scope.options);
+          }
+
+        });
+
+        $scope.$watch('options', updateOptions);
+      }
+    };
+  }])
+
   .directive('formCheckbox', [function () {
     return {
       restrict: 'AE',
@@ -1198,7 +1261,7 @@ angular.module('ngObiba', [
   'obiba.alert',
   'obiba.comments'
 ]);
-;angular.module('templates-main', ['comments/comment-editor-template.tpl.html', 'comments/comments-template.tpl.html', 'form/form-checkbox-template.tpl.html', 'form/form-input-template.tpl.html', 'form/form-localized-input-template.tpl.html', 'form/form-textarea-template.tpl.html', 'notification/notification-confirm-modal.tpl.html', 'notification/notification-modal.tpl.html']);
+;angular.module('templates-main', ['comments/comment-editor-template.tpl.html', 'comments/comments-template.tpl.html', 'form/form-checkbox-template.tpl.html', 'form/form-input-template.tpl.html', 'form/form-localized-input-template.tpl.html', 'form/form-radio-template.tpl.html', 'form/form-textarea-template.tpl.html', 'notification/notification-confirm-modal.tpl.html', 'notification/notification-modal.tpl.html']);
 
 angular.module("comments/comment-editor-template.tpl.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("comments/comment-editor-template.tpl.html",
@@ -1353,6 +1416,35 @@ angular.module("form/form-localized-input-template.tpl.html", []).run(["$templat
     "    <p ng-show=\"help\" class=\"help-block\">{{help | translate}}</p>\n" +
     "\n" +
     "</div>");
+}]);
+
+angular.module("form/form-radio-template.tpl.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("form/form-radio-template.tpl.html",
+    "<div class=\"radio\" ng-class=\"{'has-error': (form[fieldName].$dirty || form.saveAttempted) && form[name].$invalid}\">\n" +
+    "\n" +
+    "  <label for=\"{{name}}\" class=\"control-label\">\n" +
+    "    <span ng-show=\"required\">*</span>\n" +
+    "    <input ng-click=\"onSelect(value)\"\n" +
+    "          ng-model=\"model\"\n" +
+    "          ng-value=\"value\"\n" +
+    "          type=\"radio\"\n" +
+    "          id=\"{{name}}\"\n" +
+    "          name=\"{{name}}\"\n" +
+    "          form-server-error\n" +
+    "          ng-required=\"required\">\n" +
+    "      {{label | translate}}\n" +
+    "  </label>\n" +
+    "\n" +
+    "  <ul class=\"input-error list-unstyled\" ng-show=\"form[name].$dirty && form[name].$invalid\">\n" +
+    "    <li ng-show=\"form[name].$error.required\" translate>required</li>\n" +
+    "    <li ng-repeat=\"error in form[name].errors\">{{error}}</li>\n" +
+    "  </ul>\n" +
+    "\n" +
+    "  <p ng-show=\"help\" class=\"help-block\">{{help | translate}}</p>\n" +
+    "\n" +
+    "</div>\n" +
+    "\n" +
+    "");
 }]);
 
 angular.module("form/form-textarea-template.tpl.html", []).run(["$templateCache", function($templateCache) {
