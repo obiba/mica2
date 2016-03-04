@@ -74,9 +74,7 @@
         </ul>
       </div>
     </div>
-    <div id="taxonomies" class="collapse">
-      <div ng-include="'search/views/classifications/taxonomies-view.html'" class="voffset2"></div>
-    </div>
+    <taxonomies-panel taxonomy-name="taxonomyName" target="target" on-select-term="onSelectTerm" lang="lang"></taxonomies-panel>
   </div>
 
   <!-- Search criteria region -->
@@ -86,7 +84,6 @@
         on-refresh="refreshQuery"></div>
     </div>
   </div>
-
 
   <!-- Results region -->
   <div class="voffset3" ng-if="search.query">
