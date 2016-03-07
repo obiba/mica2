@@ -106,10 +106,6 @@ angular.module('obiba.form')
       templateUrl: 'form/form-radio-template.tpl.html',
       link: function ($scope, elem, attr, ctrl) {
         $scope.form = ctrl;
-
-        $scope.$watch('model', function() {
-          console.log('MODEL', $scope.model, $scope.value);
-        });
       }
     };
   }])
