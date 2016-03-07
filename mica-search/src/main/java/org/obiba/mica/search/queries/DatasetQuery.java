@@ -66,6 +66,8 @@ public class DatasetQuery extends AbstractDocumentQuery {
 
   private static final Logger log = LoggerFactory.getLogger(DatasetQuery.class);
 
+  public static final String ID  = "id";
+
   public static final String STUDY_JOIN_FIELD = "studyTable.studyId";
 
   public static final String HARMONIZATION_JOIN_FIELD = "studyTables.studyId";
@@ -138,6 +140,7 @@ public class DatasetQuery extends AbstractDocumentQuery {
     Properties properties = getAggregationsProperties(filter, taxonomyService.getDatasetTaxonomy());
     if(!properties.containsKey(STUDY_JOIN_FIELD)) properties.put(STUDY_JOIN_FIELD,"");
     if(!properties.containsKey(HARMONIZATION_JOIN_FIELD)) properties.put(HARMONIZATION_JOIN_FIELD,"");
+    if(!properties.containsKey(ID)) properties.put(ID,"");
     return properties;
   }
 
