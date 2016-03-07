@@ -830,7 +830,8 @@
     "variable-where": "Variables where...",
     "match":{
       "placeholder": "Enter text to search..."
-    }
+    },
+    "filter": "Filter"
   },
   "variables": "Variables",
   "classifications": "Classifications",
