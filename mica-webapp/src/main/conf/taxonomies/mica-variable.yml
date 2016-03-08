@@ -20,10 +20,10 @@
 - "name": "label"
   "title":
     "en": "Label"
-    "fr": "Libelle"
+    "fr": "Libellé"
   "description":
     "en": "Variable label."
-    "fr": "Libelle de la variable."
+    "fr": "Libellé de la variable."
   "attributes":
     "field": "attributes.label.und"
     "alias": "attributes-label-und"
