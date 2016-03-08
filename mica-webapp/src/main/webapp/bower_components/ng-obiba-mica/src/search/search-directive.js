@@ -504,4 +504,18 @@ angular.module('obiba.mica.search')
       });
       }
     };
+  }])
+
+  .directive('classificationsPanel',[function() {
+    return {
+      restrict: 'EA',
+      replace: true,
+      scope: {
+        target: '=',
+        onSelectTerm: '=',
+        lang: '='
+      },
+      controller: 'TaxonomiesPanelController',
+      templateUrl: 'search/views/classifications/classifications-view.html'
+    };
   }]);
