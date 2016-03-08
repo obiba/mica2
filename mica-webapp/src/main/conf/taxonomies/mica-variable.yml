@@ -8,6 +8,27 @@
 "keywords": {}
 "license": "CC BY-NC 4.0"
 "vocabularies":
+- "name": "name"
+  "title":
+    "en": "Variable"
+    "fr": "Variable"
+  "description":
+    "en": "Variable name."
+    "fr": "Nom de la variable."
+  "keywords": {}
+  "terms": []
+- "name": "label"
+  "title":
+    "en": "Label"
+    "fr": "Libelle"
+  "description":
+    "en": "Variable label."
+    "fr": "Libelle de la variable."
+  "attributes":
+    "field": "attributes.label.und"
+    "alias": "attributes-label-und"
+  "keywords": {}
+  "terms": []
 - "name": "studyIds"
   "title":
     "en": "Study"
