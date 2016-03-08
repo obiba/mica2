@@ -46,7 +46,9 @@ angular.module('obiba.mica.graphics')
       chartHeader: '=',
       chartTitle: '=',
       chartTableOptions: '=',
-      chartSelectGraphic: '='
+      chartSelectGraphic: '=',
+      chartOrdered: '=',
+      chartNotOrdered: '='
     },
     templateUrl: 'graphics/views/tables-directive.html',
     controller: 'GraphicChartsController'
