@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.obiba.mica</groupId>
   <artifactId>mica</artifactId>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.1.2</version>
   <packaging>pom</packaging>
 
   <parent>
@@ -116,7 +116,7 @@
     <connection>scm:git:git://github.com/obiba/mica2.git</connection>
     <developerConnection>scm:git:https://github.com/obiba/mica2.git</developerConnection>
     <url>https://github.com/obiba/mica2</url>
-    <tag>mica-1.1.x</tag>
+    <tag>1.1.2</tag>
   </scm>
 
   <issueManagement>
