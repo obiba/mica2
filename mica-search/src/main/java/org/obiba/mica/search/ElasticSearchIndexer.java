@@ -189,11 +189,14 @@ public class ElasticSearchIndexer {
     IndicesAdminClient indicesAdmin = client.admin().indices();
     if(!hasIndex(indexName)) {
       log.info("Creating index {}", indexName);
+
       Settings settings = Settings.builder() //
+        .put(elasticSearchConfiguration.getIndexSettings())
         .put("number_of_shards", elasticSearchConfiguration.getNbShards()) //
         .put("number_of_replicas", elasticSearchConfiguration.getNbReplicas()).build();
 
       indicesAdmin.prepareCreate(indexName).setSettings(settings).execute().actionGet();
+
       if(indexConfigurationListeners != null) {
         indexConfigurationListeners.forEach(listener -> listener.onIndexCreated(client, indexName));
       }
@@ -203,5 +206,4 @@ public class ElasticSearchIndexer {
   public interface IndexConfigurationListener {
     void onIndexCreated(Client client, String indexName);
   }
-
 }
