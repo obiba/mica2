@@ -780,8 +780,8 @@
   "website": "Website",
   "search": {
     "title": "Search",
-    "noResults": "No result found",
-    "placeholder": "Examples: alcohol pregnancy cancer cohort ...",
+    "no-results": "No result found.",
+    "placeholder": "alcohol pregnancy cancer cohort ...",
     "list": "List",
     "coverage": "Coverage",
     "graphics": "Graphics",
@@ -1129,12 +1129,14 @@
   "nor": "NOR",
   "graphics": {
     "nbr-studies": "Nbr of Studies",
+    "number-participants": "Nbr of Participants",
     "country": "Country",
     "geo-charts": "Geographical Distribution",
     "study-design": "Study Designs",
     "bio-samples": "Collected biological samples",
     "geo-chart-title": "Distribution of studies by country of residence",
     "study-design-chart-title": "Distribution of studies by study design",
-    "bio-samples-chart-title": "Distribution of studies by biological samples"
+    "bio-samples-chart-title": "Distribution of studies by biological samples",
+    "number-participants-chart-title": "Distribution of studies by number of participants"
   }
 }
