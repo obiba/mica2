@@ -1,10 +1,8 @@
 <div>
   <div ng-if="loading" class="loading"></div>
-  <div class="row voffset2" ng-if="!loading && noResults">
-    <div class="col-md-12">
-      <p translate>search.noResults</p>
-    </div>
-  </div>
+
+  <p class="help-block" ng-if="!loading && noResults" translate>search.no-results</p>
+
   <div ng-repeat="chart in chartObjects" class="panel panel-default">
     <div class="panel-heading">
       {{chart.chartObject.options.title}}
@@ -21,12 +19,14 @@
               <tr>
                 <th>{{chart.chartObject.data[0][0]}}</th>
                 <th>{{chart.chartObject.data[0][1]}}</th>
+                <th ng-if="chart.chartObject.data[0][2]">{{chart.chartObject.data[0][2]}}</th>
               </tr>
               </thead>
               <tbody>
               <tr ng-repeat="row in chart.chartObject.entries">
                 <td>{{row.title}}</td>
                 <td><a href ng-click="updateCriteria(row.key, chart.chartObject.vocabulary)">{{row.value}}</a></td>
+                <td ng-if="row.participantsNbr">{{row.participantsNbr}}</td>
               </tr>
               </tbody>
             </table>

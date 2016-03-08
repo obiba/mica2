@@ -42,8 +42,31 @@ angular.module('obiba.mica.graphics')
             }
           },
           studiesDesigns: {
-            header : ['graphics.study-design', 'graphics.nbr-studies'],
+            header: ['graphics.study-design', 'graphics.nbr-studies', 'graphics.number-participants'],
             title : 'graphics.study-design-chart-title',
+            options: {
+              bars: 'horizontal',
+              series: {
+                0: { axis: 'nbrStudies' }, // Bind series 1 to an axis named 'brightness'.
+                1: { axis: 'nbrParticipants' } // Bind series 0 to an axis named 'distance'.
+              },
+              axes: {
+                x: {
+                  nbrStudies: {side: 'top', label: 'Number of Studies'}, // Top x-axis.
+                  nbrParticipants: {label: 'Number of Participants'} // Bottom x-axis.
+                }
+              },
+              backgroundColor: {fill: 'transparent'},
+              colors: ['#b8cbed',
+                '#e5edfb',
+                '#cfddf5',
+                '#a0b8e2',
+                '#88a4d4']
+            }
+          },
+          numberParticipants: {
+            header: ['graphics.number-participants', 'graphics.nbr-studies'],
+            title: 'graphics.number-participants-chart-title',
             options: {
               legend: {position: 'none'},
               backgroundColor: {fill: 'transparent'},
@@ -51,7 +74,8 @@ angular.module('obiba.mica.graphics')
                 '#e5edfb',
                 '#cfddf5',
                 '#a0b8e2',
-                '#88a4d4']
+                '#88a4d4'],
+              pieSliceTextStyle: {color: '#000000'}
             }
           },
           biologicalSamples: {
@@ -100,15 +124,40 @@ angular.module('obiba.mica.graphics')
         angular.forEach(entityDto.aggs, function (aggregation) {
           if (aggregation.aggregation === aggregationName) {
             var i = 0;
-            angular.forEach(aggregation['obiba.mica.TermsAggregationResultDto.terms'], function (term) {
-              if (term.count) {
-                arrayData[i] = {title: term.title, value: term.count, key: term.key};
-                i++;
+            if (aggregation['obiba.mica.RangeAggregationResultDto.ranges']) {
+              angular.forEach(aggregation['obiba.mica.RangeAggregationResultDto.ranges'], function (term) {
+                if (term.count) {
+                  arrayData[i] = {title: term.title, value: term.count, key: term.key};
+                  i++;
+                }
+              });
+            }
+            else {
+              if (aggregation.aggregation === 'methods-designs') {
+                var numberOfParticipant = 0;
+                angular.forEach(aggregation['obiba.mica.TermsAggregationResultDto.terms'], function (term) {
+                  angular.forEach(term.aggs, function (aggBucket) {
+                    if (aggBucket.aggregation === 'numberOfParticipants-participant-number') {
+                      numberOfParticipant = aggBucket['obiba.mica.StatsAggregationResultDto.stats'].data.sum;
+                    }
+                  });
+                  if (term.count) {
+                    arrayData[i] = {title: term.title, value: term.count, participantsNbr: numberOfParticipant, key: term.key};
+                    i++;
+                  }
+                });
               }
-            });
+              else {
+                angular.forEach(aggregation['obiba.mica.TermsAggregationResultDto.terms'], function (term) {
+                  if (term.count) {
+                    arrayData[i] = {title: term.title, value: term.count, key: term.key};
+                    i++;
+                  }
+                });
+              }
+            }
           }
         });
-
         return arrayData;
       };
     }])
@@ -125,6 +174,8 @@ angular.module('obiba.mica.graphics')
       RqlQueryUtils.addLocaleQuery(localizedRqlQuery, LocalizedValues.getLocal());
       var localizedQuery = new RqlQuery().serializeArgs(localizedRqlQuery.args);
       return RqlQueryService.prepareGraphicsQuery(localizedQuery,
-        ['methods.designs', 'populations.selectionCriteria.countriesIso', 'populations.dataCollectionEvents.bioSamples', 'numberOfParticipants.participant.number']);
+        ['Mica_study.populations-selectionCriteria-countriesIso', 'Mica_study.populations-dataCollectionEvents-bioSamples', 'Mica_study.numberOfParticipants-participant-number'],
+        ['Mica_study.methods-designs']
+      );
     };
   }]);

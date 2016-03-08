@@ -23,7 +23,8 @@ function NgObibaMicaUrlProvider() {
     'NetworkPage': '#/network/:network',
     'StudyPage': '#/study/:study',
     'StudyPopulationsPage': '#/study/:study',
-    'DatasetPage': '#/:type/:dataset'
+    'DatasetPage': '#/:type/:dataset',
+    'BaseUrl': '/'
   };
 
   function UrlProvider(registry) {

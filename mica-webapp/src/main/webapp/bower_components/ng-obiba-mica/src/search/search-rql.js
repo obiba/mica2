@@ -1153,13 +1153,22 @@ angular.module('obiba.mica.search')
         return parsedQuery.serializeArgs(parsedQuery.args);
       };
 
-      this.prepareGraphicsQuery = function (query, aggregateArgs) {
+      this.prepareGraphicsQuery = function (query, aggregateArgs, bucketArgs) {
         var parsedQuery = new RqlParser().parse(query);
         // aggregate
-        var aggregate = new RqlQuery('aggregate');
+        var aggregate = new RqlQuery(RQL_NODE.AGGREGATE);
         aggregateArgs.forEach(function (a) {
           aggregate.args.push(a);
         });
+        //bucket
+        if(bucketArgs && bucketArgs.length>0){
+          var bucket = new RqlQuery(RQL_NODE.BUCKET);
+          bucketArgs.forEach(function (b) {
+            bucket.args.push(b);
+          });
+          aggregate.args.push(bucket);
+        }
+
         // limit
         var limit = new RqlQuery('limit');
         limit.args.push(0);
@@ -1173,6 +1182,7 @@ angular.module('obiba.mica.search')
         });
         if (!study) {
           study = new RqlQuery('study');
+          study.args.push(new RqlQuery(RQL_NODE.MATCH));
           parsedQuery.args.push(study);
         }
         study.args.push(aggregate);

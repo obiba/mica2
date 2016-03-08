@@ -479,27 +479,29 @@ angular.module('obiba.mica.search')
     scope: {
       taxonomyName: '=',
       target: '=',
+      onClose: '=',
       onSelectTerm: '=',
       lang: '='
     },
     controller: 'TaxonomiesPanelController',
     templateUrl: 'search/views/classifications/taxonomies-view.html',
     link: function(scope, element) {
-       scope.closeTaxonomies = function () {
+      scope.closeTaxonomies = function () {
         element.collapse('hide');
-       };
+        scope.onClose();
+      };
 
-       scope.showTaxonomies = function() {
+      scope.showTaxonomies = function() {
         element.collapse('show');
-       };
+      };
 
-       element.on('show.bs.collapse', function () {
-         scope.taxonomiesShown = true;
-       });
+      element.on('show.bs.collapse', function () {
+        scope.taxonomiesShown = true;
+      });
 
-       element.on('hide.bs.collapse', function () {
-         scope.taxonomiesShown = false;
-       });
+      element.on('hide.bs.collapse', function () {
+        scope.taxonomiesShown = false;
+      });
       }
     };
   }]);
