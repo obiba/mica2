@@ -18,5 +18,10 @@ angular.module('obiba.mica.search')
           templateUrl: 'search/views/search.html',
           controller: 'SearchController',
           reloadOnSearch: false
+        })
+        .when('/classifications', {
+          templateUrl: 'search/views/classifications.html',
+          controller: 'SearchController',
+          reloadOnSearch: false
         });
     }]);

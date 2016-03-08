@@ -592,25 +592,6 @@ angular.module('obiba.mica.search')
         vocabulary: null
       };
 
-      $scope.$watchGroup(['taxonomyName', 'target'], function(newVal) {
-        if(newVal[0] && newVal[1]) {
-          $scope.showTaxonomies();
-          $scope.taxonomies.target = newVal[1];
-          $scope.taxonomies.search.active = false;
-          $scope.taxonomies.all = null;
-          $scope.taxonomies.taxonomy = null;
-          $scope.taxonomies.vocabulary = null;
-          $scope.taxonomies.term = null;
-          TaxonomyResource.get({
-            target: newVal[1],
-            taxonomy: newVal[0]
-          }, function onSuccess(response) {
-            $scope.taxonomies.taxonomy = response;
-            $scope.taxonomies.search.active = false;
-          });
-        }
-      });
-
       var groupTaxonomies = function (taxonomies, target) {
         var res = taxonomies.reduce(function (res, t) {
           res[t.name] = t;
@@ -716,6 +697,41 @@ angular.module('obiba.mica.search')
       var selectTerm = function (target, taxonomy, vocabulary, term) {
          $scope.onSelectTerm(target, taxonomy, vocabulary, term);
       };
+
+      $scope.$watchGroup(['taxonomyName', 'target'], function(newVal) {
+        if(newVal[0] && newVal[1]) {
+          if($scope.showTaxonomies) {
+            $scope.showTaxonomies();
+          }
+          $scope.taxonomies.target = newVal[1];
+          $scope.taxonomies.search.active = false;
+          $scope.taxonomies.all = null;
+          $scope.taxonomies.taxonomy = null;
+          $scope.taxonomies.vocabulary = null;
+          $scope.taxonomies.term = null;
+          TaxonomyResource.get({
+            target: newVal[1],
+            taxonomy: newVal[0]
+          }, function onSuccess(response) {
+            $scope.taxonomies.taxonomy = response;
+            $scope.taxonomies.search.active = false;
+          });
+        } else if (newVal[1]) {
+          $scope.taxonomies.target = newVal[1];
+          $scope.taxonomies.search.active = false;
+          $scope.taxonomies.all = null;
+          $scope.taxonomies.taxonomy = null;
+          $scope.taxonomies.vocabulary = null;
+          $scope.taxonomies.term = null;
+          TaxonomiesResource.get({
+            target: $scope.taxonomies.target
+          }, function onSuccess(taxonomies) {
+            $scope.taxonomies.all = taxonomies;
+            groupTaxonomies(taxonomies, $scope.taxonomies.target);
+            $scope.taxonomies.search.active = false;
+          });
+        }
+      });
 
       $scope.navigateTaxonomy = navigateTaxonomy;
       $scope.selectTerm = selectTerm;
@@ -1080,7 +1096,7 @@ angular.module('obiba.mica.search')
       };
 
       $scope.hasSelected = function () {
-        return $scope.table && $scope.table.rows.filter(function(r) { return r.selected; }).length;
+        return $scope.table && $scope.table.rows && $scope.table.rows.filter(function(r) { return r.selected; }).length;
       };
 
       function getBucketUrl(bucket, id) {
