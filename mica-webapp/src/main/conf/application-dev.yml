@@ -11,6 +11,8 @@ mongodb:
   databaseName: mica
   username:
   password:
+  authSource:
+  options:
 
 opal:
   url: https://localhost:8443
