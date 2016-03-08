@@ -10,10 +10,14 @@
 
 package org.obiba.mica.taxonomy.rest;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -62,10 +66,16 @@ public class TaxonomiesSearchResource extends AbstractTaxonomySearchResource {
   @GET
   @Path("/_search")
   @Timed
-  public List<Opal.TaxonomyBundleDto> search(@QueryParam("query") String query, @QueryParam("locale") String locale) {
+  public List<Opal.TaxonomyBundleDto> search(@QueryParam("query") String query, @QueryParam("locale") String locale,
+    @Nullable @QueryParam("target") String target) {
     List<Opal.TaxonomyBundleDto> results = Lists.newArrayList();
-    Lists.newArrayList(TaxonomyTarget.values()).forEach(target -> filter(target.name(), query, locale).stream()
-      .map(taxo -> Opal.TaxonomyBundleDto.newBuilder().setTarget(target.name().toLowerCase()).setTaxonomy(taxo).build())
+
+    ArrayList<TaxonomyTarget> targets = target == null
+      ? Lists.newArrayList(TaxonomyTarget.values())
+      : Lists.newArrayList(TaxonomyTarget.valueOf(target.toUpperCase()));
+
+    targets.forEach(t -> filter(t.name(), query, locale).stream()
+      .map(taxo -> Opal.TaxonomyBundleDto.newBuilder().setTarget(t.name().toLowerCase()).setTaxonomy(taxo).build())
       .forEach(results::add));
     return results;
   }

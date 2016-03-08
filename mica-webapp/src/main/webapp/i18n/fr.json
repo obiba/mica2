@@ -586,9 +586,9 @@
       "info": "Reference to the Opal table from which variables and data summaries will be extracted from."
     },
     "options": "Options",
-    "network": {   
-      "title": "Network",    
-      "info": "A network linked to this dataset."    
+    "network": {
+      "title": "Network",
+      "info": "A network linked to this dataset."
     },
     "study-table": {
       "title": "Study Table",
@@ -707,6 +707,7 @@
   },
   "all": "All",
   "name": "Name",
+  "acronym": "Acronym",
   "id": "ID",
   "size": "Size",
   "value": "Value",
@@ -777,15 +778,74 @@
   "author": "Author",
   "user": "User",
   "users": "Users",
-  "search": "Search",
+  "website": "Website",
+  "search": {
+    "title": "Search",
+    "no-results": "No result found.",
+    "placeholder": "alcohol pregnancy cancer cohort ...",
+    "list": "List",
+    "coverage": "Coverage",
+    "graphics": "Graphics",
+    "no-coverage": "Select some variable search criteria to see their corresponding coverage.",
+    "coverage-dce-cols": {
+      "study": "Study",
+      "population": "Population",
+      "dce": "DCE"
+    },
+    "coverage-hide-missing": "Hide missing",
+    "coverage-show-missing": "Show missing",
+    "coverage-group-by": "Group by",
+    "coverage-buckets": {
+      "study" : "Study",
+      "dce" : "Data Collection Event (DCE)",
+      "network" : "Network",
+      "dataschema": "Harmonization Dataset",
+      "dataset": "Study Dataset"
+    },
+    "study": {
+      "label": "Study",
+      "noResults": "No study found",
+      "dataSources": "Data Sources Available",
+      "quest": "Quest",
+      "pm": "PM",
+      "bio": "Bio",
+      "others": "Others",
+      "design": "Design",
+      "participants": "Participants"
+    },
+    "dataset": {
+      "label": "Dataset",
+      "noResults": "No dataset found"
+    },
+    "variable": {
+      "label": "Label",
+      "noResults": "No variable found"
+    },
+    "network": {
+      "noResults": "No network found"
+    },
+    "harmonization": "Harmonization",
+    "network-where": "Networks where...",
+    "study-where": "Studies where...",
+    "dataset-where": "Datasets where...",
+    "variable-where": "Variables where...",
+    "match":{
+      "placeholder": "Enter text to search..."
+    },
+    "filter": "Filter"
+  },
   "variables": "Variables",
   "classifications": "Classifications",
   "all-null-classifications": "",
   "all-variable-classifications": "All variable classifications",
+  "all-dataset-classifications": "All dataset classifications",
   "all-study-classifications": "All study classifications",
+  "all-network-classifications": "All network classifications",
   "no-classifications": "No classifications found",
   "variable-classifications": "Variable classifications",
+  "dataset-classifications": "Dataset classifications",
   "study-classifications": "Study classifications",
+  "network-classifications": "Network classifications",
   "add-query": "Add to search query",
   "permissions": "Permissions",
   "permission": {
@@ -1061,17 +1121,25 @@
   "taxonomy": {
     "target": {
       "variable": "Variable",
-      "study": "Study"
+      "dataset": "Dataset",
+      "study": "Study",
+      "network": "Network"
     }
   },
-    "graphics": {
+  "and": "AND",
+  "nand": "NAND",
+  "or": "OR",
+  "nor": "NOR",
+  "graphics": {
     "nbr-studies": "Nbr of Studies",
+    "number-participants": "Nbr of Participants",
+    "country": "Country",
     "geo-charts": "Geographical Distribution",
     "study-design": "Study Designs",
     "bio-samples": "Collected biological samples",
-    "geo-chart-title": "Distribution of studies by participants countries of residence",
+    "geo-chart-title": "Distribution of studies by country of residence",
     "study-design-chart-title": "Distribution of studies by study design",
-    "bio-samples-chart-title": "Distribution of studies by Biological Samples",
-    "country": "Country"
+    "bio-samples-chart-title": "Distribution of studies by biological samples",
+    "number-participants-chart-title": "Distribution of studies by number of participants"
   }
 }

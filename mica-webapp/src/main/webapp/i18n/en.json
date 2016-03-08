@@ -781,7 +781,12 @@
   "search": {
     "title": "Search",
     "no-results": "No result found.",
-    "placeholder": "alcohol pregnancy cancer cohort ...",
+    "placeholder": {
+      "variable": "alcohol pregnancy cancer ...",
+      "dataset": "search by dataset or network ...",
+      "study": "cohort gender twin ...",
+      "network": "search by network or study ..."
+    },
     "list": "List",
     "coverage": "Coverage",
     "graphics": "Graphics",
@@ -1120,7 +1125,9 @@
   "taxonomy": {
     "target": {
       "variable": "Variable",
-      "study": "Study"
+      "dataset": "Dataset",
+      "study": "Study",
+      "network": "Network"
     }
   },
   "and": "AND",
