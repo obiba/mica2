@@ -1,0 +1,22 @@
+<div>
+  <!--<h2 translate>search</h2>-->
+  <div ng-if="headerTemplateUrl" ng-include="headerTemplateUrl"></div>
+
+  <obiba-alert id="SearchController"></obiba-alert>
+
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist" ng-if="tabs && tabs.length>1">
+    <li ng-repeat="tab in tabs" role="presentation" ng-class="{ active: tab === lang }"><a href role="tab"
+      ng-click="setLocale(tab)">{{'language.' + tab | translate}}</a></li>
+  </ul>
+
+  <!-- Classifications region -->
+  <div class="{{tabs && tabs.length>1 ? 'tab-content voffset4' : ''}}">
+    <uib-tabset type="pills">
+      <uib-tab ng-repeat="target in metaTaxonomy.vocabularies" heading="{{'taxonomy.target.' + target.name | translate}}">
+        <classifications-panel target="target.name" on-select-term="onSelectTerm" lang="lang"></classifications-panel>
+      </uib-tab>
+    </uib-tabset>
+  </div>
+
+</div>
