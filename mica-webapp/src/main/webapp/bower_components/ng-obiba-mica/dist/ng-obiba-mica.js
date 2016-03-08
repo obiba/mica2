@@ -6983,11 +6983,11 @@ angular.module("search/views/search.html", []).run(["$templateCache", function($
     "        </script>\n" +
     "\n" +
     "        <span class=\"input-group input-group-sm no-padding-top\">\n" +
-    "          <span class=\"input-group-btn\" uib-dropdown is-open=\"status.isopen\">\n" +
-    "          <button id=\"single-button\" type=\"button\" class=\"btn btn-primary\" uib-dropdown-toggle ng-disabled=\"disabled\">\n" +
+    "          <span class=\"input-group-btn\" uib-dropdown>\n" +
+    "          <button type=\"button\" class=\"btn btn-primary\" uib-dropdown-toggle>\n" +
     "            {{'taxonomy.target.' + documents.search.target | translate}} <span class=\"caret\"></span>\n" +
     "          </button>\n" +
-    "          <ul uib-dropdown-menu role=\"menu\" aria-labelledby=\"single-button\">\n" +
+    "          <ul uib-dropdown-menu role=\"menu\">\n" +
     "            <li ng-repeat=\"target in QUERY_TARGETS\" role=\"menuitem\"><a href ng-click=\"selectSearchTarget(target)\">{{'taxonomy.target.' + target | translate}}</a></li>\n" +
     "          </ul>\n" +
     "        </span>\n" +
