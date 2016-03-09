@@ -12,14 +12,18 @@
   "title":
     "en": "Study"
     "fr": "Étude"
-  "description": {}
+  "description":
+    "en": "Study name."
+    "fr": "Nom de l'étude."
   "keywords": {}
   "terms": []
 - "name": "objectives"
   "title":
     "en": "Objectives"
     "fr": "Objectifs"
-  "description": {}
+  "description":
+    "en": "Study objectives."
+    "fr": "Objectifs de l'étude."
   "keywords": {}
   "terms": []
   "attributes":
