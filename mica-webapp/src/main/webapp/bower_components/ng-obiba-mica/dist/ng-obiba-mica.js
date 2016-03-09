@@ -3009,10 +3009,13 @@ angular.module('obiba.mica.search')
         return prev;
       }, {});
 
+      $scope.targets = [];
       $scope.lang = LocalizedValues.getLocal();
       $scope.metaTaxonomy = TaxonomyResource.get({
         target: 'taxonomy',
         taxonomy: 'Mica_taxonomy'
+      }, function(t) {
+        $scope.targets = t.vocabularies.map(function(v) { return v.name; });
       });
 
       var searchTaxonomyDisplay = {
@@ -3289,7 +3292,12 @@ angular.module('obiba.mica.search')
               var target = bundle.target;
               var taxonomy = bundle.taxonomy;
               if (taxonomy.vocabularies) {
-                taxonomy.vocabularies.forEach(function (vocabulary) {
+                taxonomy.vocabularies.filter(function(vocabulary) {
+                  // exclude results which are ids used for relations
+                  return !(['dceIds', 'studyId', 'studyIds', 'networkId', 'datasetId'].filter(function(val) {
+                    return vocabulary.name === val;
+                  }).pop());
+                }).forEach(function (vocabulary) {
                   if (vocabulary.terms) {
                     vocabulary.terms.forEach(function (term) {
                       if (results.length < size) {
@@ -7225,7 +7233,7 @@ angular.module("search/views/search.html", []).run(["$templateCache", function($
     "            {{'taxonomy.target.' + documents.search.target | translate}} <span class=\"caret\"></span>\n" +
     "          </button>\n" +
     "          <ul uib-dropdown-menu role=\"menu\">\n" +
-    "            <li ng-repeat=\"target in QUERY_TARGETS\" role=\"menuitem\"><a href ng-click=\"selectSearchTarget(target)\">{{'taxonomy.target.'\n" +
+    "            <li ng-repeat=\"target in targets\" role=\"menuitem\"><a href ng-click=\"selectSearchTarget(target)\">{{'taxonomy.target.'\n" +
     "              + target | translate}}</a></li>\n" +
     "          </ul>\n" +
     "        </span>\n" +
