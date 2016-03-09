@@ -1958,7 +1958,6 @@
       "fr": "Jumeaux"
     "description": {}
     "keywords": {}
-    "terms": []
 - "name": "numberOfParticipants-participant-number"
   "title":
     "en": "Target number of participants"
@@ -1991,49 +1990,42 @@
         "fr": "moins de 1000"
       "description": {}
       "keywords": {}
-      "terms":
     - "name": "1000:5000"
       "title":
         "en": "1000 to 5000"
         "fr": "1000 à 5000"
       "description": {}
       "keywords": {}
-      "terms":
     - "name": "5000:10000"
       "title":
         "en": "5000 to 10000"
         "fr": "5000 à 10000"
       "description": {}
       "keywords": {}
-      "terms":
     - "name": "10000:50000"
       "title":
         "en": "10000 to 50000"
         "fr": "10000 à 50000"
       "description": {}
       "keywords": {}
-      "terms":
     - "name": "50000:100000"
       "title":
         "en": "50000 to 100000"
         "fr": "50000 à 100000"
       "description": {}
       "keywords": {}
-      "terms":
     - "name": "100000:500000"
       "title":
         "en": "100000 to 500000"
         "fr": "100000 à 500000"
       "description": {}
       "keywords": {}
-      "terms":
     - "name": "500000:*"
       "title":
         "en": "500000 and more"
         "fr": "500000 et plus"
       "description": {}
       "keywords": {}
-      "terms":
 - "name": "numberOfParticipants-sample-number"
   "title":
     "en": "Target number of participants with samples"
@@ -2066,49 +2058,42 @@
         "fr": "moins de 1000"
       "description": {}
       "keywords": {}
-      "terms":
     - "name": "1000:5000"
       "title":
         "en": "1000 to 5000"
         "fr": "1000 à 5000"
       "description": {}
       "keywords": {}
-      "terms":
     - "name": "5000:10000"
       "title":
         "en": "5000 to 10000"
         "fr": "5000 à 10000"
       "description": {}
       "keywords": {}
-      "terms":
     - "name": "10000:50000"
       "title":
         "en": "10000 to 50000"
         "fr": "10000 à 50000"
       "description": {}
       "keywords": {}
-      "terms":
     - "name": "50000:100000"
       "title":
         "en": "50000 to 100000"
         "fr": "50000 à 100000"
       "description": {}
       "keywords": {}
-      "terms":
     - "name": "100000:500000"
       "title":
         "en": "100000 to 500000"
         "fr": "100000 à 500000"
       "description": {}
       "keywords": {}
-      "terms":
     - "name": "500000:*"
       "title":
         "en": "500000 and more"
         "fr": "500000 et plus"
       "description": {}
       "keywords": {}
-      "terms":
 - "name": "populations-dataCollectionEvents-dataSources"
   "title":
     "en": "Data collection sources"

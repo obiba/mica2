@@ -16,7 +16,6 @@
     "en": "Variable name."
     "fr": "Nom de la variable."
   "keywords": {}
-  "terms": []
 - "name": "label"
   "title":
     "en": "Label"
@@ -28,7 +27,6 @@
     "field": "attributes.label.und"
     "alias": "attributes-label-und"
   "keywords": {}
-  "terms": []
 - "name": "studyIds"
   "title":
     "en": "Study"
@@ -37,7 +35,6 @@
     "en": "Study in which the variable appears."
     "fr": "Étude dans laquelle est définie la variable."
   "keywords": {}
-  "terms": []
 - "name": "dceIds"
   "title":
     "en": "Data Collection Event"
@@ -46,7 +43,6 @@
     "en": "Event during which variable's data were collected."
     "fr": "Événement durant lequel des données ont été collectées."
   "keywords": {}
-  "terms": []
 - "name": "datasetId"
   "title":
     "en": "Dataset"
@@ -55,7 +51,6 @@
     "en": "Dataset in which the variable appears."
     "fr": "Jeux de données dans lequel est définie la variable."
   "keywords": {}
-  "terms": []
 - "name": "networkId"
   "title":
     "en": "Network"
@@ -64,7 +59,6 @@
     "en": "Network associated to the harmonised dataset."
     "fr": "Réseau associé à ce jeux de données harmonisé."
   "keywords": {}
-  "terms": []
 - "name": "variableType"
   "title":
     "en": "Type of variable"
@@ -78,14 +72,12 @@
       "fr": "Étude"
     "description": {}
     "keywords": {}
-    "terms": []
   - "name": "Dataschema"
     "title":
       "en": "Dataschema"
       "fr": "Dataschema"
     "description": {}
     "keywords": {}
-    "terms": []
 - "name": "entityType"
   "title":
     "en": "Type of entity"
@@ -101,14 +93,12 @@
       "fr": "Participant"
     "description": {}
     "keywords": {}
-    "terms": []
   - "name": "sample"
     "title":
       "en": "Sample"
       "fr": "Échantillon"
     "description": {}
     "keywords": {}
-    "terms": []
 - "name": "mimeType"
   "title":
     "en": "Media type"
@@ -117,7 +107,6 @@
     "en": "Data format."
     "fr": "Format des données."
   "keywords": {}
-  "terms": []
 - "name": "valueType"
   "title":
     "en": "Type of value"
@@ -133,77 +122,66 @@
       "fr": "Logique"
     "description": {}
     "keywords": {}
-    "terms": []
   - "name": "integer"
     "title":
       "en": "Integer"
       "fr": "Entier"
     "description": {}
     "keywords": {}
-    "terms": []
   - "name": "decimal"
     "title":
       "en": "Decimal"
       "fr": "Décimal"
     "description": {}
     "keywords": {}
-    "terms": []
   - "name": "text"
     "title":
       "en": "Textual"
       "fr": "Textuel"
     "description": {}
     "keywords": {}
-    "terms": []
   - "name": "locale"
     "title":
       "en": "Locale"
       "fr": "Locale"
     "description": {}
     "keywords": {}
-    "terms": []
   - "name": "binary"
     "title":
       "en": "Binary"
       "fr": "Binaire"
     "description": {}
     "keywords": {}
-    "terms": []
   - "name": "datetime"
     "title":
       "en": "Datetime"
       "fr": "Date et temps"
     "description": {}
     "keywords": {}
-    "terms": []
   - "name": "date"
     "title":
       "en": "Date"
       "fr": "Date"
     "description": {}
     "keywords": {}
-    "terms": []
   - "name": "point"
     "title":
       "en": "Point"
       "fr": "Point"
     "description": {}
     "keywords": {}
-    "terms": []
   - "name": "linestring"
     "title":
       "en": "Linestring"
       "fr": "Ligne"
     "description": {}
     "keywords": {}
-    "terms": []
   - "name": "polygon"
     "title":
       "en": "Polygon"
       "fr": "Polygone"
     "description": {}
     "keywords": {}
-    "terms": []
 - "name": "nature"
   "title":
     "en": "Nature"
@@ -219,39 +197,33 @@
       "fr": "Catégorielle"
     "description": {}
     "keywords": {}
-    "terms": []
   - "name": "CONTINUOUS"
     "title":
       "en": "Continuous"
       "fr": "Continue"
     "description": {}
     "keywords": {}
-    "terms": []
   - "name": "TEMPORAL"
     "title":
       "en": "Temporal"
       "fr": "Temporelle"
     "description": {}
     "keywords": {}
-    "terms": []
   - "name": "GEO"
     "title":
       "en": "Geographical"
       "fr": "Géographique"
     "description": {}
     "keywords": {}
-    "terms": []
   - "name": "BINARY"
     "title":
       "en": "Binary"
       "fr": "Binaire"
     "description": {}
     "keywords": {}
-    "terms": []
   - "name": "UNDETERMINED"
     "title":
       "en": "Other"
       "fr": "Autre"
     "description": {}
     "keywords": {}
-    "terms": []

@@ -14,7 +14,6 @@
     "fr": "Jeux de données"
   "description": {}
   "keywords": {}
-  "terms": []
 - "name": "className"
   "title":
     "en": "Dataset type"
@@ -44,4 +43,3 @@
     "en": "Network associated to the harmonised dataset."
     "fr": "Réseau associé à ce jeux de données harmonisé."
   "keywords": {}
-  "terms": []
