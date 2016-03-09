@@ -307,9 +307,7 @@ angular.module('obiba.mica.search')
         onRemove: '=',
         onRefresh: '='
       },
-      template: '<div ng-repeat="child in item.children">' +
-      '<criteria-target item="child" query="$parent.query"></criteria-target>' +
-      '</div>',
+      templateUrl: 'search/views/criteria/criteria-root-template.html',
       link: function(scope) {
         scope.$on(CRITERIA_ITEM_EVENT.deleted, function(event, item){
           scope.onRemove(item);

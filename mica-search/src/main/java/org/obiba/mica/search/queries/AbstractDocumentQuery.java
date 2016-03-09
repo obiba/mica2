@@ -67,10 +67,6 @@ public abstract class AbstractDocumentQuery {
 
   private static final String AGG_TOTAL_COUNT = "totalCount";
 
-  public static final int DEFAULT_FROM = 0;
-
-  public static final int DEFAULT_SIZE = 10;
-
   @Inject
   protected Client client;
 
@@ -128,11 +124,11 @@ public abstract class AbstractDocumentQuery {
   }
 
   private int getFrom() {
-    return hasQueryBuilder() ? queryWrapper.getFrom() : DEFAULT_FROM;
+    return queryWrapper.getFrom();
   }
 
   private int getSize() {
-    return hasQueryBuilder() ? queryWrapper.getSize() : DEFAULT_SIZE;
+    return queryWrapper.getSize();
   }
 
   private SortBuilder getSortBuilder() {

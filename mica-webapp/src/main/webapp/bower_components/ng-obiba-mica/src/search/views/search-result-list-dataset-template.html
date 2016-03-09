@@ -1,4 +1,4 @@
-<div class="tab-pane" ng-show="options.datasets.showSearchTab" ng-class="{active: activeTarget.datasets.active}">
+<div class="tab-pane" ng-show="options.datasets.showSearchTab" ng-class="{'active': activeTarget.datasets.active}">
   <span ng-if="resultTabsOrder.length === 1">{{'datasets' | translate}} ({{result.list.datasetResultDto.totalHits}})</span>
   <datasets-result-table loading="loading" on-update-criteria="onUpdateCriteria"
       summaries="result.list.datasetResultDto['obiba.mica.DatasetResultDto.result'].datasets"></datasets-result-table>

@@ -45,10 +45,12 @@
             {{'taxonomy.target.' + documents.search.target | translate}} <span class="caret"></span>
           </button>
           <ul uib-dropdown-menu role="menu">
-            <li ng-repeat="target in QUERY_TARGETS" role="menuitem"><a href ng-click="selectSearchTarget(target)">{{'taxonomy.target.' + target | translate}}</a></li>
+            <li ng-repeat="target in QUERY_TARGETS" role="menuitem"><a href ng-click="selectSearchTarget(target)">{{'taxonomy.target.'
+              + target | translate}}</a></li>
           </ul>
         </span>
-          <input type="text" ng-model="selectedCriteria" placeholder="{{'search.placeholder.' + documents.search.target | translate}}"
+          <input type="text" ng-model="selectedCriteria"
+            placeholder="{{'search.placeholder.' + documents.search.target | translate}}"
             uib-typeahead="criteria for criteria in searchCriteria($viewValue)"
             typeahead-min-length="2"
             typeahead-loading="documents.search.active"
@@ -81,14 +83,26 @@
         </ul>
       </div>
     </div>
-    <taxonomies-panel taxonomy-name="taxonomyName" target="target" on-select-term="onSelectTerm" on-close="clearTaxonomy" lang="lang"></taxonomies-panel>
+    <taxonomies-panel taxonomy-name="taxonomyName" target="target" on-select-term="onSelectTerm"
+      on-close="clearTaxonomy" lang="lang"></taxonomies-panel>
   </div>
 
   <!-- Search criteria region -->
-  <div class="row">
-    <div class="col-md-12">
-      <div criteria-root item="search.criteria" query="search.query" on-remove="removeCriteriaItem"
-        on-refresh="refreshQuery"></div>
+  <div class="panel panel-default" ng-if="search.criteria.children && search.criteria.children.length>0">
+    <div class="panel-body">
+      <table style="border:none;">
+        <tbody>
+        <tr>
+          <td>
+            <a href class="btn btn-sm btn-default" ng-click="clearSearchQuery()" translate>clear</a>
+          </td>
+          <td>
+            <div criteria-root item="search.criteria" query="search.query" on-remove="removeCriteriaItem"
+              on-refresh="refreshQuery"></div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
