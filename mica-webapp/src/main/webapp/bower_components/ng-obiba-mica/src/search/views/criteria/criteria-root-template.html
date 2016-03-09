@@ -1,0 +1,6 @@
+<div class="form-inline hoffset2">
+  <div ng-repeat="child in item.children" class="inline">
+    <div class="inline hoffset2" ng-if="$index>0">+</div>
+    <criteria-target item="child" query="$parent.query" class="inline"></criteria-target>
+  </div>
+</div>

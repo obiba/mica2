@@ -243,6 +243,12 @@ angular.module('obiba.mica.search')
         return false;
       }
 
+      var clearSearchQuery = function() {
+        var search = $location.search();
+        delete search.query;
+        $location.search(search).replace();
+      };
+
       function executeSearchQuery() {
         if (validateQueryData()) {
           // build the criteria UI
@@ -482,12 +488,21 @@ angular.module('obiba.mica.search')
         }
       };
 
-      var onUpdateCriteria = function (item, type) {
+      var onUpdateCriteria = function (item, type, useCurrentDisplay, replaceTarget) {
         if (type) {
           onTypeChanged(type);
         }
 
-        onDisplayChanged(DISPLAY_TYPES.LIST);
+        if(replaceTarget) {
+          Object.keys($scope.search.criteriaItemMap).forEach(function(k) {
+            if($scope.search.criteriaItemMap[k].target === item.target) {
+              RqlQueryService.removeCriteriaItem($scope.search.criteriaItemMap[k]);
+              delete $scope.search.criteriaItemMap[k];
+            }
+          });
+        }
+
+        onDisplayChanged(useCurrentDisplay && $scope.search.display ? $scope.search.display : DISPLAY_TYPES.LIST);
         selectCriteria(item, RQL_NODE.AND, true);
       };
 
@@ -552,6 +567,7 @@ angular.module('obiba.mica.search')
 
       $scope.removeCriteriaItem = removeCriteriaItem;
       $scope.refreshQuery = refreshQuery;
+      $scope.clearSearchQuery = clearSearchQuery;
 
       $scope.onTypeChanged = onTypeChanged;
       $scope.onBucketChanged = onBucketChanged;
@@ -842,6 +858,12 @@ angular.module('obiba.mica.search')
         $scope.$emit(CRITERIA_ITEM_EVENT.deleted, $scope.criterion);
       };
 
+      var onKeyup = function(event) {
+        if (event.keyCode === 13) {
+          closeDropdown();
+        }
+      };
+
       $scope.state = new CriterionState();
       $scope.localize = function (values) {
         return LocalizedValues.forLocale(values, $scope.criterion.lang);
@@ -891,6 +913,7 @@ angular.module('obiba.mica.search')
       $scope.vocabularyType = function (vocabulary) {
         return RqlQueryUtils.vocabularyType(vocabulary);
       };
+      $scope.onKeyup = onKeyup;
       $scope.truncate = StringUtils.truncate;
       $scope.remove = remove;
       $scope.openDropdown = openDropdown;
@@ -1226,11 +1249,24 @@ angular.module('obiba.mica.search')
         $location.search('display', DISPLAY_TYPES.LIST);
       };
 
-      $scope.updateCriteria = function (id, type) {
-        var vocabulary = $scope.bucket === BUCKET_TYPES.DCE ? 'dceIds' : 'id';
+      $scope.updateCriteria = function (id, term, idx, type) {
+        var vocabulary = $scope.bucket === BUCKET_TYPES.DCE ? 'dceIds' : 'id',
+            taxonomyHeader = $scope.table.taxonomyHeaders[0].entity,
+            vocabularyHeader, countTerms = 0;
 
-        RqlQueryService.createCriteriaItem(targetMap[$scope.bucket], 'Mica_' + targetMap[$scope.bucket], vocabulary, id).then(function (item) {
-          $scope.onUpdateCriteria(item, type);
+        for(var i = 0; i < $scope.table.vocabularyHeaders.length; i++) {
+          countTerms += $scope.table.vocabularyHeaders[i].termsCount;
+          if(idx < countTerms) {
+            vocabularyHeader = $scope.table.vocabularyHeaders[i].entity;
+            break;
+          }
+        }
+
+        RqlQueryService.createCriteriaItem(QUERY_TARGETS.VARIABLE, taxonomyHeader.name, vocabularyHeader.name, term.entity.name).then(function(varItem) {
+          RqlQueryService.createCriteriaItem(targetMap[$scope.bucket], 'Mica_' + targetMap[$scope.bucket], vocabulary, id).then(function (item) {
+            $scope.onUpdateCriteria(varItem, type, false, true);
+            $scope.onUpdateCriteria(item, type);
+          });
         });
       };
 
@@ -1256,7 +1292,7 @@ angular.module('obiba.mica.search')
             return item;
           }, null);
 
-          $scope.onUpdateCriteria(selectionItem, 'variables');
+          $scope.onUpdateCriteria(selectionItem, 'variables', true);
         });
       };
     }])

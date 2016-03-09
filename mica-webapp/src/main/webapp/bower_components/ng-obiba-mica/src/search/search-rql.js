@@ -822,20 +822,28 @@ angular.module('obiba.mica.search')
       function deleteNode(item) {
         var parent = item.parent;
         var query = item.rqlQuery;
-        var children = query.args;
+        var queryArgs = query.args;
         var parentQuery = item.parent.rqlQuery;
         var index = parentQuery.args.indexOf(query);
-        if (index === -1) {
+        var indexChild = parent.children.indexOf(item);
+
+        if (index === -1 || indexChild === -1) {
           throw new Error('Criteria node not found: ' + item);
         }
 
+        parent.children.splice(indexChild, 1);
+        item.children.forEach(function(c) {
+          c.parent = parent;
+        });
+        parent.children.splice.apply(parent.children, [indexChild, 0].concat(item.children));
+
         parentQuery.args.splice(index, 1);
 
-        if (children) {
-          if (children instanceof Array) {
-            parentQuery.args.splice.apply(parentQuery.args, [index, 0].concat(children));
+        if (queryArgs) {
+          if (queryArgs instanceof Array) {
+            parentQuery.args.splice.apply(parentQuery.args, [index, 0].concat(queryArgs));
           } else {
-            parentQuery.args.splice(index, 0, children);
+            parentQuery.args.splice(index, 0, queryArgs);
           }
         }
 
@@ -846,22 +854,29 @@ angular.module('obiba.mica.search')
 
       function deleteNodeCriteriaWithOrphans(item) {
         var parent = item.parent;
-
         var query = item.rqlQuery;
-        var children = query.args;
+        var queryArgs = query.args;
         var parentQuery = item.parent.rqlQuery;
         var index = parentQuery.args.indexOf(query);
-        if (index === -1) {
+        var indexChild = parent.children.indexOf(item);
+
+        if (index === -1 || indexChild === -1) {
           throw new Error('Criteria node not found: ' + item);
         }
 
+        parent.children.splice(indexChild, 1);
+        item.children.forEach(function(c) {
+          c.parent = parent;
+        });
+        parent.children.splice.apply(parent.children, [indexChild, 0].concat(item.children));
+
         parentQuery.args.splice(index, 1);
 
-        if (children) {
-          if (children instanceof Array) {
-            parentQuery.args.splice.apply(parentQuery.args, [index, 0].concat(children));
+        if (queryArgs) {
+          if (queryArgs instanceof Array) {
+            parentQuery.args.splice.apply(parentQuery.args, [index, 0].concat(queryArgs));
           } else {
-            parentQuery.args.splice(index, 0, children);
+            parentQuery.args.splice(index, 0, queryArgs);
           }
         }
 
@@ -879,6 +894,7 @@ angular.module('obiba.mica.search')
         var query = item.rqlQuery;
         var parentQuery = item.parent.rqlQuery;
         var index = parentQuery.args.indexOf(query);
+
         if (index === -1) {
           throw new Error('Criteria node not found: ' + item);
         }
@@ -900,6 +916,8 @@ angular.module('obiba.mica.search')
       this.removeCriteriaItem = function (item) {
         if (isLeafCriteria(item)) {
           deleteLeafCriteria(item);
+        } else {
+          deleteNode(item);
         }
       };
 

@@ -1,4 +1,5 @@
-<div id="{{criterion.id.replace('.','-')}}-dropdown" class='btn-group btn-info voffset1' ng-class='{open: state.open}'>
+<div id="{{criterion.id.replace('.','-')}}-dropdown" class='btn-group btn-info voffset1' ng-class='{open: state.open}'
+     ng-keyup="onKeyup($event)">
 
   <button class="btn btn-info btn-xs dropdown"
     ng-click="openDropdown()"
