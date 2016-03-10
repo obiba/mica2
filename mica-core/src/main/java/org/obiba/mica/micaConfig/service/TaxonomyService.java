@@ -152,6 +152,7 @@ public class TaxonomyService {
     if(studyTaxonomy != null) return;
     studyTaxonomy = copy(micaConfigService.getStudyTaxonomy());
     studyHelper.applyIdTerms(studyTaxonomy, "id");
+    dceHelper.applyIdTerms(studyTaxonomy, "dceIds");
   }
 
   private void initializeDatasetTaxonomy() {

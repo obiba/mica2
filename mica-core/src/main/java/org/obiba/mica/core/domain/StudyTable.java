@@ -11,8 +11,11 @@
 package org.obiba.mica.core.domain;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 import javax.validation.constraints.NotNull;
+
+import org.obiba.mica.core.support.UidGenerator;
 
 import com.google.common.base.MoreObjects;
 
@@ -50,8 +53,7 @@ public class StudyTable implements Serializable {
   }
 
   public static String getDataCollectionEventUId(String studyId, String populationId, String dataCollectionEventId) {
-    return new StringBuilder(studyId).append(":").append(populationId).append(":").append(dataCollectionEventId)
-      .toString();
+    return UidGenerator.getUId(Arrays.asList(studyId, populationId, dataCollectionEventId));
   }
 
   public void setDataCollectionEventUId(String ignored) {
