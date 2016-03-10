@@ -1,4 +1,13 @@
 <ul class="dropdown-menu query-dropdown-menu" aria-labelledby="{{criterion.vocabulary.name}}-button">
+  <li class="criteria-list-item">
+    <label uib-popover="{{localize(criterion.vocabulary.description)}}"
+      popover-title="{{localize(criterion.vocabulary.title)}}"
+      popover-placement="bottom"
+      popover-trigger="mouseenter">
+      {{localize(criterion.vocabulary.title)}}
+    </label>
+  </li>
+  <li class='divider'></li>
   <li class="btn-group">
     <ul class="criteria-list-item">
       <li>
@@ -36,17 +45,17 @@
       </li>
       <li ng-show="terms && terms.length>10"></li>
       <li class="criteria-list-item"
-          ng-show="isInFilter()"
-          ng-repeat="term in terms | regex:searchText:['key','title','description']"
-          uib-popover="{{term.description ? term.description : term.title}}"
-          popover-title="{{term.description ? term.title : null}}"
-          popover-placement="bottom"
-          popover-trigger="mouseenter">
+        ng-show="isInFilter()"
+        ng-repeat="term in terms | regex:searchText:['key','title','description']"
+        uib-popover="{{term.description}}"
+        popover-title="{{term.title}}"
+        popover-placement="bottom"
+        popover-trigger="mouseenter">
           <span>
             <label class="control-label">
               <input ng-model="checkboxTerms[term.key]"
-                     type="checkbox"
-                     ng-click="updateSelection()">
+                type="checkbox"
+                ng-click="updateSelection()">
               <span>{{truncate(term.title)}}</span>
             </label>
           </span>
