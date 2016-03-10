@@ -24,5 +24,6 @@ mica.search = angular.module('mica.search', [
 
         return res.promise;
       }]);
-      ngObibaMicaSearchTemplateUrlProvider.setHeaderUrl('view', 'app/search/views/search-view-header.html');
+      ngObibaMicaSearchTemplateUrlProvider.setHeaderUrl('search', 'app/search/views/search-view-header.html');
+      ngObibaMicaSearchTemplateUrlProvider.setHeaderUrl('classifications', 'app/search/views/classifications-view-header.html');
     }]);
