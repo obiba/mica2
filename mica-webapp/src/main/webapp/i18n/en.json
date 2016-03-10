@@ -781,6 +781,7 @@
   "search": {
     "title": "Search",
     "help": "Search in the published repository.",
+    "back": "Back to Search",
     "no-results": "No result found.",
     "placeholder": {
       "variable": "alcohol pregnancy cancer ...",
