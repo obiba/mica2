@@ -29,9 +29,8 @@ angular.module('obiba.mica.search', [
   .config(['$provide', function ($provide) {
     $provide.provider('ngObibaMicaSearchTemplateUrl', new NgObibaMicaTemplateUrlFactory().create(
       {
-        list: {header: null, footer: null},
-        view: {header: null, footer: null},
-        form: {header: null, footer: null}
+        search: {header: null, footer: null},
+        classifications: {header: null, footer: null}
       }
     ));
   }])

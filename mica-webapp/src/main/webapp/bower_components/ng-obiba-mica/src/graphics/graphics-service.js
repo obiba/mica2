@@ -68,7 +68,6 @@ angular.module('obiba.mica.graphics')
             header: ['graphics.number-participants', 'graphics.nbr-studies'],
             title: 'graphics.number-participants-chart-title',
             options: {
-              legend: {position: 'none'},
               backgroundColor: {fill: 'transparent'},
               colors: ['#b8cbed',
                 '#e5edfb',
