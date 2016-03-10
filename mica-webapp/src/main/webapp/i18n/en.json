@@ -800,6 +800,7 @@
     "coverage-show-missing": "Show missing",
     "coverage-group-by": "Group by",
     "coverage-buckets": {
+      "datasetNav": "Dataset",
       "study" : "Study",
       "dce" : "Data Collection Event (DCE)",
       "network" : "Network",
