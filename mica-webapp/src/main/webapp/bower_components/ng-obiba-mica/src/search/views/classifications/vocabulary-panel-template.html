@@ -2,10 +2,10 @@
   <h5 ng-repeat="label in vocabulary.title" ng-if="label.locale === lang">
     <a href ng-click="onNavigate(taxonomy, vocabulary)" ng-if="vocabulary.terms">{{label.text}}</a>
     <span ng-if="!vocabulary.terms">{{label.text}}</span>
-    <!--<a href ng-click="onSelect(target, taxonomy, vocabulary)">-->
-      <!--<small ng-if="vocabulary.terms"><i class="fa fa-plus-circle" title="{{'add-query' | translate}}"></i></small>-->
-      <!--<i ng-if="!vocabulary.terms" class="fa fa-plus-circle" title="{{'add-query' | translate}}"></i>-->
-    <!--</a>-->
+    <a href ng-click="onSelect(target, taxonomy, vocabulary)">
+      <small ng-if="vocabulary.terms"><i class="fa fa-plus-circle" title="{{'add-query' | translate}}"></i></small>
+      <small ng-if="!vocabulary.terms"><i class="fa fa-plus-circle" title="{{'add-query' | translate}}"></i></small>
+    </a>
   </h5>
   <p class="help-block" ng-repeat="label in vocabulary.description" ng-if="label.locale === lang">
     {{label.text}}

@@ -1192,16 +1192,29 @@ angular.module('obiba.mica.search')
         limit.args.push(0);
         // study
         var study;
+        var hasQuery = false;
         parsedQuery.args.forEach(function (arg) {
           if (arg.name === 'study') {
+            arg.args.forEach(function(requestArg, key){
+              if (requestArg.name === 'limit') {
+                arg.args.splice(key,1);
+              }
+              else{
+                // Have a study query.
+                if(['in', 'out', 'eq', 'gt', 'ge', 'lt', 'le'].indexOf(requestArg.name)>-1){
+                  hasQuery = true;
+                }
+              }
+            });
             study = arg;
           }
         });
-
-        study = new RqlQuery('study');
-        study.args.push(new RqlQuery(RQL_NODE.MATCH));
-        parsedQuery.args.push(study);
-
+        // Study match all if no study query.
+        if (!hasQuery) {
+          study = new RqlQuery('study');
+          study.args.push(new RqlQuery(RQL_NODE.MATCH));
+          parsedQuery.args.push(study);
+        }
         study.args.push(aggregate);
         study.args.push(limit);
         // facet

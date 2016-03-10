@@ -1,6 +1,5 @@
 <div>
-  <!--<h2 translate>search</h2>-->
-  <div ng-if="headerTemplateUrl" ng-include="headerTemplateUrl"></div>
+  <div ng-if="searchHeaderTemplateUrl" ng-include="searchHeaderTemplateUrl"></div>
 
   <obiba-alert id="SearchController"></obiba-alert>
 
@@ -69,6 +68,7 @@
     <div class="row">
       <div class="col-md-3"></div>
       <div class="col-md-6">
+        <small>
         <ul class="nav nav-pills">
           <li ng-repeat="t in taxonomyNav" title="{{t.locale.description.text}}">
             <a href ng-click="showTaxonomy(t.target, t.name)" ng-if="!t.terms">{{t.locale.title.text}}</a>
@@ -85,7 +85,13 @@
               </ul>
             </span>
           </li>
+          <li>
+            <a href ng-click="goToClassifications()">
+              <i class="glyphicon glyphicon-option-horizontal"></i>
+            </a>
+          </li>
         </ul>
+        </small>
       </div>
     </div>
     <taxonomies-panel taxonomy-name="taxonomyName" target="target" on-select-term="onSelectTerm"

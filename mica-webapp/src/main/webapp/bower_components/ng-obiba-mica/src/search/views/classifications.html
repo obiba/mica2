@@ -1,8 +1,12 @@
 <div>
-  <!--<h2 translate>search</h2>-->
-  <div ng-if="headerTemplateUrl" ng-include="headerTemplateUrl"></div>
+  <div ng-if="classificationsHeaderTemplateUrl" ng-include="classificationsHeaderTemplateUrl"></div>
 
   <obiba-alert id="SearchController"></obiba-alert>
+
+  <a href class="btn btn-sm btn-success" ng-click="goToSearch()">
+    <i class="fa fa-chevron-left"></i>
+    <span translate>search.back</span>
+  </a>
 
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" role="tablist" ng-if="tabs && tabs.length>1">
@@ -12,11 +16,12 @@
 
   <!-- Classifications region -->
   <div class="{{tabs && tabs.length>1 ? 'tab-content voffset4' : ''}}">
-    <uib-tabset type="pills">
-      <uib-tab ng-repeat="target in metaTaxonomy.vocabularies" heading="{{'taxonomy.target.' + target.name | translate}}">
-        <classifications-panel target="target.name" on-select-term="onSelectTerm" lang="lang"></classifications-panel>
+    <uib-tabset type="pills" ng-if="taxonomyTabsOrder.length>1" class="voffset2">
+      <uib-tab ng-repeat="target in taxonomyTabsOrder" heading="{{'taxonomy.target.' + target | translate}}">
+        <classifications-panel target="target" on-select-term="onSelectTerm" lang="lang"></classifications-panel>
       </uib-tab>
     </uib-tabset>
+    <classifications-panel  ng-if="taxonomyTabsOrder.length === 1" target="taxonomyTabsOrder[0]" on-select-term="onSelectTerm" lang="lang"></classifications-panel>
   </div>
 
 </div>
