@@ -150,6 +150,15 @@
   "attributes":
     "type": "integer"
   "terms": []
+- "name": "dceIds"
+  "title":
+    "en": "Data Collection Event"
+    "fr": "Événement de collecte"
+  "description":
+    "en": "Event during which variable's data were collected."
+    "fr": "Événement durant lequel des données ont été collectées."
+  "keywords": {}
+  "terms": []
 - "name": "populations-recruitment-dataSources"
   "title":
     "en": "Sources of recruitment"

@@ -2,17 +2,20 @@ package org.obiba.mica.study.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.URL;
+import org.jvnet.hk2.internal.Collector;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.AttributeAware;
@@ -22,6 +25,8 @@ import org.obiba.mica.core.domain.PersonAware;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.domain.Person;
+import org.obiba.mica.core.domain.StudyTable;
+import org.obiba.mica.core.support.UidGenerator;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.study.date.PersitableYear;
 import org.springframework.data.annotation.Transient;
@@ -150,6 +155,18 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
       investigators.stream().map(p -> new Membership(p, Membership.INVESTIGATOR)).collect(toList()));
   }
 
+  @JsonProperty("dceIds")
+  public List<String> getDataColelctionEventIds() {
+    List<String> dceIds = Lists.newArrayList();
+
+    if (populations != null) {
+      populations.forEach(p -> p.getDataCollectionEvents()
+        .forEach(d -> dceIds.add(UidGenerator.getUId(Arrays.asList(getId(), p.getId(), d.getId())))));
+    }
+
+    return dceIds;
+  }
+
   @JsonIgnore
   public List<Person> getContacts() {
     if(!contacts.isEmpty()) {
@@ -182,8 +199,8 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
 
     replaceExisting(contacts);
 
-    memberships.put(Membership.CONTACT,
-      contacts.stream().map(p -> new Membership(p, Membership.CONTACT)).collect(toList()));
+    memberships
+      .put(Membership.CONTACT, contacts.stream().map(p -> new Membership(p, Membership.CONTACT)).collect(toList()));
   }
 
   public LocalizedString getObjectives() {

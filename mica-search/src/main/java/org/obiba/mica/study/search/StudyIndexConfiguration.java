@@ -83,6 +83,7 @@ public class StudyIndexConfiguration extends AbstractIndexConfiguration
 
   private void appendStudyProperties(XContentBuilder mapping) throws IOException {
     createMappingWithoutAnalyzer(mapping, "id");
+    createMappingWithoutAnalyzer(mapping, "dceIds");
     mapping.startObject("methods").startObject("properties") //
       .startObject("designs").field("type", "string").field("index", "not_analyzed").endObject() //
       .startObject("recruitments").field("type", "string").field("index", "not_analyzed").endObject() //
