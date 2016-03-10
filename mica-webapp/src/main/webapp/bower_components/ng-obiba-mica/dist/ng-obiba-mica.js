@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-03-09
+ * Date: 2016-03-10
  */
 'use strict';
 
@@ -3471,6 +3471,7 @@ angular.module('obiba.mica.search')
 
       $scope.headerTemplateUrl = ngObibaMicaSearchTemplateUrl.getHeaderUrl('view');
       $scope.selectSearchTarget = selectSearchTarget;
+      $scope.selectDisplay = onDisplayChanged;
       $scope.searchCriteria = searchCriteria;
       $scope.selectCriteria = selectCriteria;
       $scope.searchKeyUp = searchKeyUp;
@@ -3682,20 +3683,11 @@ angular.module('obiba.mica.search')
       $scope.QUERY_TARGETS = QUERY_TARGETS;
       $scope.QUERY_TYPES = QUERY_TYPES;
       $scope.options = ngObibaMicaSearch.getOptions();
-      $scope.activeDisplay = {};
-      $scope.activeDisplay[$scope.display] = true;
       $scope.activeTarget = {};
       $scope.activeTarget[QUERY_TYPES.VARIABLES] = {active: false, name: QUERY_TARGETS.VARIABLE, totalHits: 0};
       $scope.activeTarget[QUERY_TYPES.DATASETS] = {active: false, name: QUERY_TARGETS.DATASET, totalHits: 0};
       $scope.activeTarget[QUERY_TYPES.STUDIES] = {active: false, name: QUERY_TARGETS.STUDY, totalHits: 0};
       $scope.activeTarget[QUERY_TYPES.NETWORKS] = {active: false, name: QUERY_TARGETS.NETWORK, totalHits: 0};
-
-      $scope.selectDisplay = function (display) {
-        $scope.activeDisplay = {};
-        $scope.activeDisplay[display] = true;
-        $scope.display = display;
-        $scope.$parent.onDisplayChanged(display);
-      };
 
       $scope.selectTarget = function (type) {
         updateTarget(type);
@@ -3715,11 +3707,6 @@ angular.module('obiba.mica.search')
 
       $scope.$watch('type', function (type) {
         updateTarget(type);
-      });
-
-      $scope.$watch('display', function (display) {
-        $scope.activeDisplay = {};
-        $scope.activeDisplay[display] = true;
       });
 
       $scope.DISPLAY_TYPES = DISPLAY_TYPES;
@@ -7092,7 +7079,7 @@ angular.module("search/views/list/variables-search-result-table-template.html", 
 
 angular.module("search/views/search-result-coverage-template.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("search/views/search-result-coverage-template.html",
-    "<div class=\"tab-pane\" ng-class=\"{active: activeDisplay.coverage}\">\n" +
+    "<div ng-show=\"display === 'coverage'\">\n" +
     "  <coverage-result-table result=\"result.coverage\" loading=\"loading\" bucket=\"bucket\" query=\"query\"\n" +
     "      class=\"voffset2\" on-update-criteria=\"onUpdateCriteria\"></coverage-result-table>\n" +
     "</div>\n" +
@@ -7101,7 +7088,7 @@ angular.module("search/views/search-result-coverage-template.html", []).run(["$t
 
 angular.module("search/views/search-result-graphics-template.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("search/views/search-result-graphics-template.html",
-    "<div class=\"tab-pane\" ng-class=\"{active: activeDisplay.graphics}\">\n" +
+    "<div ng-show=\"display === 'graphics'\">\n" +
     "  <graphics-result on-update-criteria=\"onUpdateCriteria\" result=\"result.graphics\" loading=\"loading\" class=\"voffset2\"></graphics-result>\n" +
     "</div>");
 }]);
@@ -7137,7 +7124,7 @@ angular.module("search/views/search-result-list-study-template.html", []).run(["
 
 angular.module("search/views/search-result-list-template.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("search/views/search-result-list-template.html",
-    "<div class=\"tab-pane\" ng-class=\"{active: activeDisplay.list}\">\n" +
+    "<div ng-show=\"display === 'list'\">\n" +
     "  <ul class=\"nav nav-pills voffset2\" ng-if=\"resultTabsOrder.length > 1\">\n" +
     "    <li role=\"presentation\" ng-repeat=\"res in resultTabsOrder\"\n" +
     "        ng-class=\"{active: activeTarget[targetTypeMap[res]].active}\"\n" +
@@ -7172,14 +7159,8 @@ angular.module("search/views/search-result-list-variable-template.html", []).run
 angular.module("search/views/search-result-panel-template.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("search/views/search-result-panel-template.html",
     "<div>\n" +
-    "  <ul class=\"nav nav-tabs voffset2\" ng-if=\"searchTabsOrder.length > 1\">\n" +
-    "    <li role=\"presentation\" ng-repeat=\"tab in searchTabsOrder\" ng-class=\"{active: activeDisplay[tab]}\"><a href\n" +
-    "        ng-click=\"selectDisplay(tab)\">{{ options[ tab + 'Label'] | translate}}</a></li>\n" +
-    "  </ul>\n" +
-    "  <div class=\"tab-content\">\n" +
-    "    <ng-include include-replace ng-repeat=\"tab in searchTabsOrder\"\n" +
-    "        src=\"'search/views/search-result-' + tab + '-template.html'\"></ng-include>\n" +
-    "  </div>\n" +
+    "  <ng-include include-replace ng-repeat=\"tab in searchTabsOrder\"\n" +
+    "    src=\"'search/views/search-result-' + tab + '-template.html'\"></ng-include>\n" +
     "</div>\n" +
     "");
 }]);
@@ -7226,27 +7207,32 @@ angular.module("search/views/search.html", []).run(["$templateCache", function($
     "            </small>\n" +
     "          </a>\n" +
     "        </script>\n" +
-    "\n" +
-    "        <span class=\"input-group input-group-sm no-padding-top\">\n" +
-    "          <span class=\"input-group-btn\" uib-dropdown>\n" +
-    "          <button type=\"button\" class=\"btn btn-primary\" uib-dropdown-toggle>\n" +
-    "            {{'taxonomy.target.' + documents.search.target | translate}} <span class=\"caret\"></span>\n" +
-    "          </button>\n" +
-    "          <ul uib-dropdown-menu role=\"menu\">\n" +
-    "            <li ng-repeat=\"target in targets\" role=\"menuitem\"><a href ng-click=\"selectSearchTarget(target)\">{{'taxonomy.target.'\n" +
-    "              + target | translate}}</a></li>\n" +
-    "          </ul>\n" +
-    "        </span>\n" +
-    "          <input type=\"text\" ng-model=\"selectedCriteria\"\n" +
-    "            placeholder=\"{{'search.placeholder.' + documents.search.target | translate}}\"\n" +
-    "            uib-typeahead=\"criteria for criteria in searchCriteria($viewValue)\"\n" +
-    "            typeahead-min-length=\"2\"\n" +
-    "            typeahead-loading=\"documents.search.active\"\n" +
-    "            typeahead-template-url=\"customTemplate.html\"\n" +
-    "            typeahead-on-select=\"selectCriteria($item)\"\n" +
-    "            class=\"form-control\">\n" +
-    "          <span class=\"input-group-addon\"><i class=\"glyphicon glyphicon-search\"></i></span>\n" +
-    "        </span>\n" +
+    "        <ul class=\"nav nav-tabs voffset2\" ng-if=\"searchTabsOrder.length > 1\">\n" +
+    "          <li role=\"presentation\" ng-repeat=\"tab in searchTabsOrder\" ng-class=\"{active: search.display === tab}\"><a href\n" +
+    "            ng-click=\"selectDisplay(tab)\">{{ options[ tab + 'Label'] | translate}}</a></li>\n" +
+    "        </ul>\n" +
+    "        <div class=\"tab-panel\">\n" +
+    "          <span class=\"input-group input-group-sm\">\n" +
+    "            <span class=\"input-group-btn\" uib-dropdown>\n" +
+    "              <button type=\"button\" class=\"btn btn-primary\" uib-dropdown-toggle>\n" +
+    "                {{'taxonomy.target.' + documents.search.target | translate}} <span class=\"caret\"></span>\n" +
+    "              </button>\n" +
+    "              <ul uib-dropdown-menu role=\"menu\">\n" +
+    "                <li ng-repeat=\"target in targets\" role=\"menuitem\"><a href ng-click=\"selectSearchTarget(target)\">{{'taxonomy.target.'\n" +
+    "                  + target | translate}}</a></li>\n" +
+    "              </ul>\n" +
+    "            </span>\n" +
+    "            <input type=\"text\" ng-model=\"selectedCriteria\"\n" +
+    "              placeholder=\"{{'search.placeholder.' + documents.search.target | translate}}\"\n" +
+    "              uib-typeahead=\"criteria for criteria in searchCriteria($viewValue)\"\n" +
+    "              typeahead-min-length=\"2\"\n" +
+    "              typeahead-loading=\"documents.search.active\"\n" +
+    "              typeahead-template-url=\"customTemplate.html\"\n" +
+    "              typeahead-on-select=\"selectCriteria($item)\"\n" +
+    "              class=\"form-control\">\n" +
+    "            <span class=\"input-group-addon\"><i class=\"glyphicon glyphicon-search\"></i></span>\n" +
+    "          </span>\n" +
+    "        </div>\n" +
     "      </div>\n" +
     "    </div>\n" +
     "    <div class=\"row\">\n" +
@@ -7276,7 +7262,7 @@ angular.module("search/views/search.html", []).run(["$templateCache", function($
     "  </div>\n" +
     "\n" +
     "  <!-- Search criteria region -->\n" +
-    "  <div class=\"panel panel-default\" ng-if=\"search.criteria.children && search.criteria.children.length>0\">\n" +
+    "  <div class=\"panel panel-default voffset2\" ng-if=\"search.criteria.children && search.criteria.children.length>0\">\n" +
     "    <div class=\"panel-body\">\n" +
     "      <table style=\"border:none;\">\n" +
     "        <tbody>\n" +
