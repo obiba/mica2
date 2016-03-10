@@ -1,4 +1,4 @@
-<div class="tab-pane" ng-class="{active: activeDisplay.list}">
+<div ng-show="display === 'list'">
   <ul class="nav nav-pills voffset2" ng-if="resultTabsOrder.length > 1">
     <li role="presentation" ng-repeat="res in resultTabsOrder"
         ng-class="{active: activeTarget[targetTypeMap[res]].active}"

@@ -566,6 +566,7 @@ angular.module('obiba.mica.search')
 
       $scope.headerTemplateUrl = ngObibaMicaSearchTemplateUrl.getHeaderUrl('view');
       $scope.selectSearchTarget = selectSearchTarget;
+      $scope.selectDisplay = onDisplayChanged;
       $scope.searchCriteria = searchCriteria;
       $scope.selectCriteria = selectCriteria;
       $scope.searchKeyUp = searchKeyUp;
@@ -777,20 +778,11 @@ angular.module('obiba.mica.search')
       $scope.QUERY_TARGETS = QUERY_TARGETS;
       $scope.QUERY_TYPES = QUERY_TYPES;
       $scope.options = ngObibaMicaSearch.getOptions();
-      $scope.activeDisplay = {};
-      $scope.activeDisplay[$scope.display] = true;
       $scope.activeTarget = {};
       $scope.activeTarget[QUERY_TYPES.VARIABLES] = {active: false, name: QUERY_TARGETS.VARIABLE, totalHits: 0};
       $scope.activeTarget[QUERY_TYPES.DATASETS] = {active: false, name: QUERY_TARGETS.DATASET, totalHits: 0};
       $scope.activeTarget[QUERY_TYPES.STUDIES] = {active: false, name: QUERY_TARGETS.STUDY, totalHits: 0};
       $scope.activeTarget[QUERY_TYPES.NETWORKS] = {active: false, name: QUERY_TARGETS.NETWORK, totalHits: 0};
-
-      $scope.selectDisplay = function (display) {
-        $scope.activeDisplay = {};
-        $scope.activeDisplay[display] = true;
-        $scope.display = display;
-        $scope.$parent.onDisplayChanged(display);
-      };
 
       $scope.selectTarget = function (type) {
         updateTarget(type);
@@ -810,11 +802,6 @@ angular.module('obiba.mica.search')
 
       $scope.$watch('type', function (type) {
         updateTarget(type);
-      });
-
-      $scope.$watch('display', function (display) {
-        $scope.activeDisplay = {};
-        $scope.activeDisplay[display] = true;
       });
 
       $scope.DISPLAY_TYPES = DISPLAY_TYPES;

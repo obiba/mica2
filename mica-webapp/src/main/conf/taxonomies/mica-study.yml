@@ -12,14 +12,18 @@
   "title":
     "en": "Study"
     "fr": "Étude"
-  "description": {}
+  "description":
+    "en": "Study name."
+    "fr": "Nom de l'étude."
   "keywords": {}
   "terms": []
 - "name": "objectives"
   "title":
     "en": "Objectives"
     "fr": "Objectifs"
-  "description": {}
+  "description":
+    "en": "Study objectives."
+    "fr": "Objectifs de l'étude."
   "keywords": {}
   "terms": []
   "attributes":
@@ -1759,6 +1763,73 @@
     "field": "populations.selectionCriteria.ageMin"
     "alias": "populations-selectionCriteria-ageMin"
   "terms": []
+- "name": "populations-selectionCriteria-ageMin-range"
+  "title":
+    "en": "Minimum age (ranges)"
+    "fr": "Age minimum (intervalles)"
+  "description":
+    "en": "Participant's minimum age."
+    "fr": "Age minimum du participant."
+  "keywords": {}
+  "attributes":
+    "type": "integer"
+    "field": "populations.selectionCriteria.ageMin"
+    "alias": "populations-selectionCriteria-ageMin-range"
+  "terms":
+  - "name": "*:10"
+    "title":
+      "en": "less than 10"
+      "fr": "moins de 10"
+    "description": {}
+    "keywords": {}
+  - "name": "10:20"
+    "title":
+      "en": "10 to 20"
+      "fr": "10 à 20"
+    "description": {}
+    "keywords": {}
+  - "name": "20:30"
+    "title":
+      "en": "20 to 30"
+      "fr": "20 à 30"
+    "description": {}
+    "keywords": {}
+  - "name": "30:40"
+    "title":
+      "en": "30 to 40"
+      "fr": "30 à 40"
+    "description": {}
+    "keywords": {}
+  - "name": "40:50"
+    "title":
+      "en": "40 to 50"
+      "fr": "40 à 50"
+    "description": {}
+    "keywords": {}
+  - "name": "50:60"
+    "title":
+      "en": "50 to 60"
+      "fr": "50 à 60"
+    "description": {}
+    "keywords": {}
+  - "name": "60:70"
+    "title":
+      "en": "60 to 70"
+      "fr": "60 à 70"
+    "description": {}
+    "keywords": {}
+  - "name": "70:80"
+    "title":
+      "en": "70 to 80"
+      "fr": "70 à 80"
+    "description": {}
+    "keywords": {}
+  - "name": "80:*"
+    "title":
+      "en": "80 and more"
+      "fr": "80 et plus"
+    "description": {}
+    "keywords": {}
 - "name": "populations-selectionCriteria-ageMax"
   "title":
     "en": "Maximum age"
@@ -1772,6 +1843,73 @@
     "field": "populations.selectionCriteria.ageMax"
     "alias": "populations-selectionCriteria-ageMax"
   "terms": []
+- "name": "populations-selectionCriteria-ageMax-range"
+  "title":
+    "en": "Maximum age (ranges)"
+    "fr": "Age maximum (intervalles)"
+  "description":
+    "en": "Participant's maximum age."
+    "fr": "Age maximum du participant."
+  "keywords": {}
+  "attributes":
+    "type": "integer"
+    "field": "populations.selectionCriteria.ageMax"
+    "alias": "populations-selectionCriteria-ageMax-range"
+  "terms":
+  - "name": "*:10"
+    "title":
+      "en": "less than 10"
+      "fr": "moins de 10"
+    "description": {}
+    "keywords": {}
+  - "name": "10:20"
+    "title":
+      "en": "10 to 20"
+      "fr": "10 à 20"
+    "description": {}
+    "keywords": {}
+  - "name": "20:30"
+    "title":
+      "en": "20 to 30"
+      "fr": "20 à 30"
+    "description": {}
+    "keywords": {}
+  - "name": "30:40"
+    "title":
+      "en": "30 to 40"
+      "fr": "30 à 40"
+    "description": {}
+    "keywords": {}
+  - "name": "40:50"
+    "title":
+      "en": "40 to 50"
+      "fr": "40 à 50"
+    "description": {}
+    "keywords": {}
+  - "name": "50:60"
+    "title":
+      "en": "50 to 60"
+      "fr": "50 à 60"
+    "description": {}
+    "keywords": {}
+  - "name": "60:70"
+    "title":
+      "en": "60 to 70"
+      "fr": "60 à 70"
+    "description": {}
+    "keywords": {}
+  - "name": "70:80"
+    "title":
+      "en": "70 to 80"
+      "fr": "70 à 80"
+    "description": {}
+    "keywords": {}
+  - "name": "80:*"
+    "title":
+      "en": "80 and more"
+      "fr": "80 et plus"
+    "description": {}
+    "keywords": {}
 - "name": "populations-selectionCriteria-gender"
   "title":
     "en": "Gender"
@@ -1824,7 +1962,6 @@
       "fr": "Jumeaux"
     "description": {}
     "keywords": {}
-    "terms": []
 - "name": "numberOfParticipants-participant-number"
   "title":
     "en": "Target number of participants"
@@ -1840,8 +1977,8 @@
   "terms": []
 - "name": "numberOfParticipants-participant-range"
   "title":
-    "en": "Target number of participants (pre-defined ranges)"
-    "fr": "Nombre de participants ciblé (plages prédéfinies)"
+    "en": "Target number of participants (ranges)"
+    "fr": "Nombre de participants ciblé (intervalles)"
   "description":
     "en": "The target number of participants can be lower than the actual number."
     "fr": "Le nombre de participants ciblé peut être inférieur au nombre effectivement atteint."
@@ -1853,53 +1990,46 @@
   "terms":
     - "name": "*:1000"
       "title":
-        "en": "0-1000"
-        "fr": "0-1000"
+        "en": "less than 1000"
+        "fr": "moins de 1000"
       "description": {}
       "keywords": {}
-      "terms":
     - "name": "1000:5000"
       "title":
-        "en": "1000-5000"
-        "fr": "1000-5000"
+        "en": "1000 to 5000"
+        "fr": "1000 à 5000"
       "description": {}
       "keywords": {}
-      "terms":
     - "name": "5000:10000"
       "title":
-        "en": "5000-10000"
-        "fr": "5000-10000"
+        "en": "5000 to 10000"
+        "fr": "5000 à 10000"
       "description": {}
       "keywords": {}
-      "terms":
     - "name": "10000:50000"
       "title":
-        "en": "10000-50000"
-        "fr": "10000-50000"
+        "en": "10000 to 50000"
+        "fr": "10000 à 50000"
       "description": {}
       "keywords": {}
-      "terms":
     - "name": "50000:100000"
       "title":
-        "en": "50000-100000"
-        "fr": "50000-100000"
+        "en": "50000 to 100000"
+        "fr": "50000 à 100000"
       "description": {}
       "keywords": {}
-      "terms":
     - "name": "100000:500000"
       "title":
-        "en": "100000-500000"
-        "fr": "100000-500000"
+        "en": "100000 to 500000"
+        "fr": "100000 à 500000"
       "description": {}
       "keywords": {}
-      "terms":
     - "name": "500000:*"
       "title":
-        "en": "500000+"
-        "fr": "500000+"
+        "en": "500000 and more"
+        "fr": "500000 et plus"
       "description": {}
       "keywords": {}
-      "terms":
 - "name": "numberOfParticipants-sample-number"
   "title":
     "en": "Target number of participants with samples"
@@ -1913,6 +2043,61 @@
     "field": "numberOfParticipants.sample.number"
     "alias": "numberOfParticipants-sample-number"
   "terms": []
+- "name": "numberOfParticipants-sample-range"
+  "title":
+    "en": "Target number of participants with samples (ranges)"
+    "fr": "Nombre de participants avec échantillon ciblé (intervalles)"
+  "description":
+    "en": "The target number of participants with samples can be lower than the actual number."
+    "fr": "Le nombre de participants avec échantillon ciblé peut être inférieur au nombre effectivement atteint."
+  "keywords": {}
+  "attributes":
+    "type": "integer"
+    "field": "numberOfParticipants.sample.number"
+    "alias": "numberOfParticipants-sample-range"
+  "terms":
+    - "name": "*:1000"
+      "title":
+        "en": "less than 1000"
+        "fr": "moins de 1000"
+      "description": {}
+      "keywords": {}
+    - "name": "1000:5000"
+      "title":
+        "en": "1000 to 5000"
+        "fr": "1000 à 5000"
+      "description": {}
+      "keywords": {}
+    - "name": "5000:10000"
+      "title":
+        "en": "5000 to 10000"
+        "fr": "5000 à 10000"
+      "description": {}
+      "keywords": {}
+    - "name": "10000:50000"
+      "title":
+        "en": "10000 to 50000"
+        "fr": "10000 à 50000"
+      "description": {}
+      "keywords": {}
+    - "name": "50000:100000"
+      "title":
+        "en": "50000 to 100000"
+        "fr": "50000 à 100000"
+      "description": {}
+      "keywords": {}
+    - "name": "100000:500000"
+      "title":
+        "en": "100000 to 500000"
+        "fr": "100000 à 500000"
+      "description": {}
+      "keywords": {}
+    - "name": "500000:*"
+      "title":
+        "en": "500000 and more"
+        "fr": "500000 et plus"
+      "description": {}
+      "keywords": {}
 - "name": "populations-dataCollectionEvents-dataSources"
   "title":
     "en": "Data collection sources"
