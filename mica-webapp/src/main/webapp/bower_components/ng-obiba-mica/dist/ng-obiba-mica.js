@@ -3839,6 +3839,9 @@ angular.module('obiba.mica.search')
       var queryString = $scope.criterion.rqlQuery.args[0];
       $scope.match = queryString === '*' ? '' : queryString;
       $scope.update = update;
+      $scope.localize = function (values) {
+        return LocalizedValues.forLocale(values, $scope.criterion.lang);
+      };
 
     }])
 
@@ -3890,6 +3893,9 @@ angular.module('obiba.mica.search')
       $scope.selectMissing = $scope.criterion.rqlQuery.name === RQL_NODE.MISSING;
       $scope.state.addOnClose(onClose);
       $scope.state.addOnOpen(onOpen);
+      $scope.localize = function (values) {
+        return LocalizedValues.forLocale(values, $scope.criterion.lang);
+      };
     }])
 
   .controller('StringCriterionTermsController', [
@@ -3981,10 +3987,44 @@ angular.module('obiba.mica.search')
         $scope.showMissing = value;
       };
 
+      $scope.bucketSelection = {
+        dceBucketSelected: $scope.bucket === BUCKET_TYPES.DCE,
+        datasetBucketSelected: $scope.bucket !== BUCKET_TYPES.DATASCHEMA
+      };
+
+      $scope.$watch('bucketSelection.dceBucketSelected', function(val, old) {
+        if (val === old) { return; }
+
+        if (val) {
+          $scope.selectBucket(BUCKET_TYPES.DCE);
+        } else if ($scope.bucket === BUCKET_TYPES.DCE) {
+          $scope.selectBucket(BUCKET_TYPES.STUDY);
+        }
+      });
+
+      $scope.$watch('bucketSelection.datasetBucketSelected', function(val, old) {
+        if (val === old) { return; }
+
+        if (val) {
+          $scope.selectBucket(BUCKET_TYPES.DATASET);
+        } else if ($scope.bucket === BUCKET_TYPES.DATASET) {
+          $scope.selectBucket(BUCKET_TYPES.DATASCHEMA);
+        }
+      });
+
       $scope.selectBucket = function (bucket) {
+        if(bucket === BUCKET_TYPES.STUDY && $scope.bucketSelection.dceBucketSelected) {
+          bucket = BUCKET_TYPES.DCE;
+        }
+
+        if(bucket === BUCKET_TYPES.DATASET && !$scope.bucketSelection.datasetBucketSelected) {
+          bucket = BUCKET_TYPES.DATASCHEMA;
+        }
+
         $scope.bucket = bucket;
         $scope.$parent.onBucketChanged(bucket);
       };
+
       $scope.rowspans = {};
 
       $scope.getSpan = function (study, population) {
@@ -4022,7 +4062,7 @@ angular.module('obiba.mica.search')
         return $scope.table && $scope.table.rows && $scope.table.rows.filter(function(r) { return r.selected; }).length;
       };
 
-      function getBucketUrl(bucket, id) {
+     function getBucketUrl(bucket, id) {
         switch (bucket) {
           case BUCKET_TYPES.STUDY:
           case BUCKET_TYPES.DCE:
@@ -6412,37 +6452,44 @@ angular.module("search/views/classifications/vocabulary-panel-template.html", []
 angular.module("search/views/coverage/coverage-search-result-table-template.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("search/views/coverage/coverage-search-result-table-template.html",
     "<div>\n" +
-    "  <div class=\"pull-left\" ng-if=\"hasVariableTarget()\">\n" +
-    "    <div class=\"btn-group\" uib-dropdown is-open=\"status.isopen\">\n" +
-    "      <button type=\"button\" class=\"btn btn-primary btn-sm\" uib-dropdown-toggle ng-disabled=\"disabled\">\n" +
-    "        {{'search.coverage-buckets.' + bucket | translate}} <span class=\"caret\"></span>\n" +
-    "      </button>\n" +
-    "      <ul uib-dropdown-menu role=\"menu\">\n" +
-    "        <li role=\"menuitem\" ng-if=\"bucket !== BUCKET_TYPES.STUDY\">\n" +
-    "          <a href ng-click=\"selectBucket(BUCKET_TYPES.STUDY)\" translate>search.coverage-buckets.study</a>\n" +
-    "        </li>\n" +
-    "        <li role=\"menuitem\" ng-if=\"bucket !== BUCKET_TYPES.DCE\">\n" +
-    "          <a href ng-click=\"selectBucket(BUCKET_TYPES.DCE)\" translate>search.coverage-buckets.dce</a>\n" +
-    "        </li>\n" +
-    "        <li role=\"menuitem\" ng-if=\"bucket !== BUCKET_TYPES.DATASET\">\n" +
-    "          <a href ng-click=\"selectBucket(BUCKET_TYPES.DATASET)\" translate>search.coverage-buckets.dataset</a>\n" +
-    "        </li>\n" +
-    "        <li role=\"menuitem\" ng-if=\"bucket !== BUCKET_TYPES.NETWORK\">\n" +
-    "          <a href ng-click=\"selectBucket(BUCKET_TYPES.NETWORK)\" translate>search.coverage-buckets.network</a>\n" +
-    "        </li>\n" +
-    "        <li role=\"menuitem\" ng-if=\"bucket !== BUCKET_TYPES.DATASCHEMA\">\n" +
-    "          <a href ng-click=\"selectBucket(BUCKET_TYPES.DATASCHEMA)\" translate>search.coverage-buckets.dataschema</a>\n" +
-    "        </li>\n" +
-    "      </ul>\n" +
+    "  <div ng-if=\"hasVariableTarget()\">\n" +
+    "    <ul class=\"nav nav-pills voffset2\">\n" +
+    "      <li ng-class=\"{active: bucket === BUCKET_TYPES.STUDY || bucket === BUCKET_TYPES.DCE}\">\n" +
+    "        <a href ng-click=\"selectBucket(BUCKET_TYPES.STUDY)\" translate>search.coverage-buckets.study</a>\n" +
+    "      </li>\n" +
+    "      <li ng-class=\"{active: bucket === BUCKET_TYPES.DATASET || bucket === BUCKET_TYPES.DATASCHEMA}\">\n" +
+    "        <a href ng-click=\"selectBucket(BUCKET_TYPES.DATASET)\" translate>search.coverage-buckets.datasetNav</a>\n" +
+    "      </li>\n" +
+    "      <li ng-class=\"{active: bucket === BUCKET_TYPES.NETWORK}\">\n" +
+    "        <a href ng-click=\"selectBucket(BUCKET_TYPES.NETWORK)\" translate>search.coverage-buckets.network</a>\n" +
+    "      </li>\n" +
+    "      <li class=\"pull-right\" ng-if=\"table.taxonomyHeaders.length > 0\">\n" +
+    "        <a target=\"_self\" class=\"btn btn-info btn-responsive\" ng-href=\"{{downloadUrl()}}\">\n" +
+    "          <i class=\"fa fa-download\"></i> {{'download' | translate}}\n" +
+    "        </a>\n" +
+    "      </li>\n" +
+    "    </ul>\n" +
+    "    <div class=\"voffset2\" ng-if=\"bucket === BUCKET_TYPES.STUDY || bucket === BUCKET_TYPES.DCE\">\n" +
+    "      <label class=\"checkbox-inline\">\n" +
+    "        <input type=\"checkbox\" ng-model=\"bucketSelection.dceBucketSelected\">\n" +
+    "        <span translate>search.coverage-buckets.dce</span>\n" +
+    "      </label>\n" +
     "    </div>\n" +
-    "    <a href class=\"btn btn-default\" ng-if=\"hasSelected()\" ng-click=\"updateFilterCriteria()\">\n" +
-    "      <i class=\"fa fa-filter\"></i> {{'search.filter' | translate}}\n" +
-    "    </a>\n" +
+    "    <div class=\"voffset2\" ng-if=\"bucket === BUCKET_TYPES.DATASET || bucket === BUCKET_TYPES.DATASCHEMA\">\n" +
+    "      <label class=\"radio-inline\">\n" +
+    "        <input type=\"radio\" ng-model=\"bucketSelection.datasetBucketSelected\" ng-value=\"true\">\n" +
+    "        <span translate>search.coverage-buckets.dataset</span>\n" +
+    "      </label>\n" +
+    "      <label class=\"radio-inline\">\n" +
+    "        <input type=\"radio\" ng-model=\"bucketSelection.datasetBucketSelected\" ng-value=\"false\">\n" +
+    "        <span translate>search.coverage-buckets.dataschema</span>\n" +
+    "      </label>\n" +
+    "    </div>\n" +
     "  </div>\n" +
     "\n" +
-    "  <div class=\"pull-right\" ng-if=\"table.taxonomyHeaders.length > 0\">\n" +
-    "    <a target=\"_self\" class=\"btn btn-info btn-responsive\" ng-href=\"{{downloadUrl()}}\">\n" +
-    "      <i class=\"fa fa-download\"></i> {{'download' | translate}}\n" +
+    "  <div class=\"voffset2\">\n" +
+    "    <a href class=\"btn btn-default\" ng-if=\"hasSelected()\" ng-click=\"updateFilterCriteria()\">\n" +
+    "      <i class=\"fa fa-filter\"></i> {{'search.filter' | translate}}\n" +
     "    </a>\n" +
     "  </div>\n" +
     "\n" +
@@ -6608,6 +6655,15 @@ angular.module("search/views/criteria/criterion-match-template.html", []).run(["
   $templateCache.put("search/views/criteria/criterion-match-template.html",
     "<ul class=\"dropdown-menu query-dropdown-menu\" aria-labelledby=\"{{criterion.vocabulary.name}}-button\">\n" +
     "  <li class=\"criteria-list-item\">\n" +
+    "    <label uib-popover=\"{{localize(criterion.vocabulary.description)}}\"\n" +
+    "      popover-title=\"{{localize(criterion.vocabulary.title)}}\"\n" +
+    "      popover-placement=\"bottom\"\n" +
+    "      popover-trigger=\"mouseenter\">\n" +
+    "      {{localize(criterion.vocabulary.title)}}\n" +
+    "    </label>\n" +
+    "  </li>\n" +
+    "  <li class='divider'></li>\n" +
+    "  <li class=\"criteria-list-item\">\n" +
     "    <form novalidate>\n" +
     "      <div  >\n" +
     "        <input class=\"form-control\" id=\"{{criterion.vocabulary.name}}-match\"\n" +
@@ -6623,6 +6679,15 @@ angular.module("search/views/criteria/criterion-match-template.html", []).run(["
 angular.module("search/views/criteria/criterion-numeric-template.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("search/views/criteria/criterion-numeric-template.html",
     "<ul class=\"dropdown-menu query-dropdown-menu\" aria-labelledby=\"{{criterion.vocabulary.name}}-button\">\n" +
+    "  <li class=\"criteria-list-item\">\n" +
+    "    <label uib-popover=\"{{localize(criterion.vocabulary.description)}}\"\n" +
+    "      popover-title=\"{{localize(criterion.vocabulary.title)}}\"\n" +
+    "      popover-placement=\"bottom\"\n" +
+    "      popover-trigger=\"mouseenter\">\n" +
+    "      {{localize(criterion.vocabulary.title)}}\n" +
+    "    </label>\n" +
+    "  </li>\n" +
+    "  <li class='divider'></li>\n" +
     "  <li class=\"btn-group\">\n" +
     "    <ul class=\"criteria-list-item\">\n" +
     "      <li>\n" +
@@ -6658,6 +6723,15 @@ angular.module("search/views/criteria/criterion-numeric-template.html", []).run(
 angular.module("search/views/criteria/criterion-string-terms-template.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("search/views/criteria/criterion-string-terms-template.html",
     "<ul class=\"dropdown-menu query-dropdown-menu\" aria-labelledby=\"{{criterion.vocabulary.name}}-button\">\n" +
+    "  <li class=\"criteria-list-item\">\n" +
+    "    <label uib-popover=\"{{localize(criterion.vocabulary.description)}}\"\n" +
+    "      popover-title=\"{{localize(criterion.vocabulary.title)}}\"\n" +
+    "      popover-placement=\"bottom\"\n" +
+    "      popover-trigger=\"mouseenter\">\n" +
+    "      {{localize(criterion.vocabulary.title)}}\n" +
+    "    </label>\n" +
+    "  </li>\n" +
+    "  <li class='divider'></li>\n" +
     "  <li class=\"btn-group\">\n" +
     "    <ul class=\"criteria-list-item\">\n" +
     "      <li>\n" +
@@ -6695,17 +6769,17 @@ angular.module("search/views/criteria/criterion-string-terms-template.html", [])
     "      </li>\n" +
     "      <li ng-show=\"terms && terms.length>10\"></li>\n" +
     "      <li class=\"criteria-list-item\"\n" +
-    "          ng-show=\"isInFilter()\"\n" +
-    "          ng-repeat=\"term in terms | regex:searchText:['key','title','description']\"\n" +
-    "          uib-popover=\"{{term.description ? term.description : term.title}}\"\n" +
-    "          popover-title=\"{{term.description ? term.title : null}}\"\n" +
-    "          popover-placement=\"bottom\"\n" +
-    "          popover-trigger=\"mouseenter\">\n" +
+    "        ng-show=\"isInFilter()\"\n" +
+    "        ng-repeat=\"term in terms | regex:searchText:['key','title','description']\"\n" +
+    "        uib-popover=\"{{term.description}}\"\n" +
+    "        popover-title=\"{{term.title}}\"\n" +
+    "        popover-placement=\"bottom\"\n" +
+    "        popover-trigger=\"mouseenter\">\n" +
     "          <span>\n" +
     "            <label class=\"control-label\">\n" +
     "              <input ng-model=\"checkboxTerms[term.key]\"\n" +
-    "                     type=\"checkbox\"\n" +
-    "                     ng-click=\"updateSelection()\">\n" +
+    "                type=\"checkbox\"\n" +
+    "                ng-click=\"updateSelection()\">\n" +
     "              <span>{{truncate(term.title)}}</span>\n" +
     "            </label>\n" +
     "          </span>\n" +
