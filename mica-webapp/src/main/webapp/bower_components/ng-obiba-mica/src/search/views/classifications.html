@@ -8,11 +8,30 @@
     <span translate>search.back</span>
   </a>
 
-  <!-- Nav tabs -->
+  <!-- Lang tabs -->
   <ul class="nav nav-tabs" role="tablist" ng-if="tabs && tabs.length>1">
     <li ng-repeat="tab in tabs" role="presentation" ng-class="{ active: tab === lang }"><a href role="tab"
       ng-click="setLocale(tab)">{{'language.' + tab | translate}}</a></li>
   </ul>
+
+  <!-- Search criteria region -->
+  <div class="panel panel-default voffset2" ng-if="search.criteria.children && search.criteria.children.length>0">
+    <div class="panel-body">
+      <table style="border:none;">
+        <tbody>
+        <tr>
+          <td>
+            <a href class="btn btn-sm btn-default" ng-click="clearSearchQuery()" translate>clear</a>
+          </td>
+          <td>
+            <div criteria-root item="search.criteria" query="search.query" on-remove="removeCriteriaItem"
+              on-refresh="refreshQuery"></div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
   <!-- Classifications region -->
   <div class="{{tabs && tabs.length>1 ? 'tab-content voffset4' : ''}}">

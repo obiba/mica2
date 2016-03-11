@@ -58,15 +58,15 @@
     </p>
 
     <div ng-repeat="vocabulary in taxonomies.taxonomy.vocabularies" ng-if="$index % 3 == 0" class="row">
-      <div class="col-xs-4">
+      <div class="col-md-4">
         <div vocabulary-panel target="taxonomies.target" taxonomy="taxonomies.taxonomy" vocabulary="taxonomies.taxonomy.vocabularies[$index]"
           lang="lang" on-navigate="navigateTaxonomy" on-select="selectTerm"></div>
       </div>
-      <div class="col-xs-4">
+      <div class="col-md-4">
         <div vocabulary-panel target="taxonomies.target" taxonomy="taxonomies.taxonomy" vocabulary="taxonomies.taxonomy.vocabularies[$index + 1]"
           lang="lang" on-navigate="navigateTaxonomy" on-select="selectTerm"></div>
       </div>
-      <div class="col-xs-4">
+      <div class="col-md-4">
         <div vocabulary-panel target="taxonomies.target" taxonomy="taxonomies.taxonomy" vocabulary="taxonomies.taxonomy.vocabularies[$index + 2]"
           lang="lang" on-navigate="navigateTaxonomy" on-select="selectTerm"></div>
       </div>
@@ -81,15 +81,15 @@
     </p>
 
     <div ng-repeat="term in taxonomies.vocabulary.terms" ng-if="$index % 3 == 0" class="row">
-      <div class="col-xs-4">
+      <div class="col-md-4">
         <div term-panel target="taxonomies.target" taxonomy="taxonomies.taxonomy" vocabulary="taxonomies.vocabulary" term="taxonomies.vocabulary.terms[$index]"
           lang="lang" on-navigate="navigateTaxonomy" on-select="selectTerm"></div>
       </div>
-      <div class="col-xs-4">
+      <div class="col-md-4">
         <div term-panel target="taxonomies.target" taxonomy="taxonomies.taxonomy" vocabulary="taxonomies.vocabulary" term="taxonomies.vocabulary.terms[$index + 1]"
           lang="lang" on-navigate="navigateTaxonomy" on-select="selectTerm"></div>
       </div>
-      <div class="col-xs-4">
+      <div class="col-md-4">
         <div term-panel target="taxonomies.target" taxonomy="taxonomies.taxonomy" vocabulary="taxonomies.vocabulary" term="taxonomies.vocabulary.terms[$index + 2]"
           lang="lang" on-navigate="navigateTaxonomy" on-select="selectTerm"></div>
       </div>
