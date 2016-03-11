@@ -781,8 +781,15 @@
   "website": "Website",
   "search": {
     "title": "Search",
+    "help": "Search in the published repository.",
+    "back": "Back to Search",
     "no-results": "No result found.",
-    "placeholder": "alcohol pregnancy cancer cohort ...",
+    "placeholder": {
+      "variable": "e.g. alcohol, pregnancy, cancer",
+      "dataset": "Search by dataset name or type",
+      "study": "e.g. cohort, gender, twin",
+      "network": "Search by network name"
+    },
     "list": "List",
     "coverage": "Coverage",
     "graphics": "Graphics",
@@ -796,6 +803,7 @@
     "coverage-show-missing": "Show missing",
     "coverage-group-by": "Group by",
     "coverage-buckets": {
+      "datasetNav": "Dataset",
       "study" : "Study",
       "dce" : "Data Collection Event (DCE)",
       "network" : "Network",

@@ -784,10 +784,10 @@
     "back": "Back to Search",
     "no-results": "No result found.",
     "placeholder": {
-      "variable": "alcohol pregnancy cancer ...",
-      "dataset": "search by dataset or network ...",
-      "study": "cohort gender twin ...",
-      "network": "search by network or study ..."
+      "variable": "e.g. alcohol, pregnancy, cancer",
+      "dataset": "Search by dataset name or type",
+      "study": "e.g. cohort, gender, twin",
+      "network": "Search by network name"
     },
     "list": "List",
     "coverage": "Coverage",
