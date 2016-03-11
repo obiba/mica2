@@ -93,12 +93,12 @@ public class DceIdAggregationMetaDataHelper extends AbstractIdAggregationMetaDat
     }
 
     public String getTitle(String locale) {
-      return String.format("%s:%s:%s", studyAcronym.get(locale), populationName.get(locale), dceName.get(locale));
+      return String.format("%s:%s:%s", studyAcronym.getOrDefault(locale, ""), populationName.getOrDefault(locale, ""), dceName.getOrDefault(locale, ""));
     }
 
     public String getDescription(String locale) {
-      return String.format("%s:%s:%s", studyAcronym.get(locale), populationDescription != null ? populationDescription.get(locale) : "",
-        dceDescription != null ? dceDescription.get(locale) : "");
+      return String.format("%s:%s:%s", studyAcronym.getOrDefault(locale, ""), populationDescription != null ? populationDescription.getOrDefault(locale, "") : "",
+        dceDescription != null ? dceDescription.getOrDefault(locale, "") : "");
     }
   }
 
