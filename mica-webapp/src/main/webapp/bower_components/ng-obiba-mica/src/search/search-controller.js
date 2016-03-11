@@ -94,6 +94,7 @@ angular.module('obiba.mica.search')
               RqlQueryUtils,
               SearchContext,
               CoverageGroupByService) {
+
       $scope.options = ngObibaMicaSearch.getOptions();
       $scope.taxonomyTypeMap = { //backwards compatibility for pluralized naming in configs.
         variable: 'variables',
@@ -257,7 +258,7 @@ angular.module('obiba.mica.search')
       var clearSearchQuery = function () {
         var search = $location.search();
         delete search.query;
-        $location.search(search).replace();
+        $location.search(search);
       };
 
       function sortCriteriaItems(items) {
@@ -378,7 +379,7 @@ angular.module('obiba.mica.search')
         } else {
           search.query = query;
         }
-        $location.search(search).replace();
+        $location.search(search);
       };
 
       var clearSearch = function () {
@@ -488,7 +489,7 @@ angular.module('obiba.mica.search')
           validateType(type);
           var search = $location.search();
           search.type = type;
-          $location.search(search).replace();
+          $location.search(search);
         }
       };
 
@@ -497,7 +498,7 @@ angular.module('obiba.mica.search')
           validateBucket(bucket);
           var search = $location.search();
           search.bucket = bucket;
-          $location.search(search).replace();
+          $location.search(search);
         }
       };
 
@@ -511,7 +512,7 @@ angular.module('obiba.mica.search')
           validateDisplay(display);
           var search = $location.search();
           search.display = display;
-          $location.search(search).replace();
+          $location.search(search);
         }
       };
 
@@ -556,11 +557,11 @@ angular.module('obiba.mica.search')
       };
 
       $scope.goToSearch = function() {
-        $location.path('/search').replace();
+        $location.path('/search');
       };
 
       $scope.goToClassifications = function() {
-        $location.path('/classifications').replace();
+        $location.path('/classifications');
       };
 
       $scope.QUERY_TYPES = QUERY_TYPES;
