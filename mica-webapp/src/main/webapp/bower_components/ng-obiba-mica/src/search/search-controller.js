@@ -1335,10 +1335,6 @@ angular.module('obiba.mica.search')
       targetMap[BUCKET_TYPES.DATASCHEMA] = QUERY_TARGETS.DATASET;
       targetMap[BUCKET_TYPES.DATASET] = QUERY_TARGETS.DATASET;
 
-      $scope.updateDisplay = function () {
-        $location.search('display', DISPLAY_TYPES.LIST);
-      };
-
       $scope.updateCriteria = function (id, term, idx, type) {
         var vocabulary = $scope.bucket === BUCKET_TYPES.DCE ? 'dceIds' : 'id',
           taxonomyHeader = $scope.table.taxonomyHeaders[0].entity,
@@ -1352,11 +1348,18 @@ angular.module('obiba.mica.search')
           }
         }
 
-        RqlQueryService.createCriteriaItem(QUERY_TARGETS.VARIABLE, taxonomyHeader.name, vocabularyHeader.name, term.entity.name).then(function (varItem) {
-          RqlQueryService.createCriteriaItem(targetMap[$scope.bucket], 'Mica_' + targetMap[$scope.bucket], vocabulary, id).then(function (item) {
-            $scope.onUpdateCriteria(varItem, type, false, true);
-            $scope.onUpdateCriteria(item, type);
-          });
+        var criteria = {varItem: RqlQueryService.createCriteriaItem(QUERY_TARGETS.VARIABLE, taxonomyHeader.name, vocabularyHeader.name, term.entity.name)};
+
+        if(id) {
+          criteria.item = RqlQueryService.createCriteriaItem(targetMap[$scope.bucket], 'Mica_' + targetMap[$scope.bucket], vocabulary, id);
+        }
+
+        $q.all(criteria).then(function(criteria) {
+          $scope.onUpdateCriteria(criteria.varItem, type, false, true);
+
+          if(criteria.item) {
+            $scope.onUpdateCriteria(criteria.item, type);
+          }
         });
       };
 

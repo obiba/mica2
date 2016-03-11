@@ -3,15 +3,14 @@
 
   <obiba-alert id="SearchController"></obiba-alert>
 
-  <!-- Nav tabs -->
+  <!-- Lang tabs -->
   <ul class="nav nav-tabs" role="tablist" ng-if="tabs && tabs.length>1">
     <li ng-repeat="tab in tabs" role="presentation" ng-class="{ active: tab === lang }"><a href role="tab"
       ng-click="setLocale(tab)">{{'language.' + tab | translate}}</a></li>
   </ul>
 
-  <!-- Classifications region -->
+  <!-- Search box region -->
   <div class="{{tabs && tabs.length>1 ? 'tab-content voffset4' : ''}}">
-    <!--<div>-->
     <div class="row">
       <div class="col-md-3"></div>
       <div class="col-md-6">
@@ -37,11 +36,6 @@
             </small>
           </a>
         </script>
-        <ul class="nav nav-tabs voffset2" ng-if="searchTabsOrder.length > 1">
-          <li role="presentation" ng-repeat="tab in searchTabsOrder" ng-class="{active: search.display === tab}"><a href
-            ng-click="selectDisplay(tab)">{{ options[ tab + 'Label'] | translate}}</a></li>
-        </ul>
-        <div class="tab-panel">
           <span class="input-group input-group-sm">
             <span class="input-group-btn" uib-dropdown>
               <button type="button" class="btn btn-primary" uib-dropdown-toggle>
@@ -62,7 +56,6 @@
               class="form-control">
             <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
           </span>
-        </div>
       </div>
     </div>
     <div class="row">
@@ -119,6 +112,12 @@
 
   <!-- Results region -->
   <div class="voffset3" ng-if="search.query">
+
+    <ul class="nav nav-tabs voffset2" ng-if="searchTabsOrder.length > 1">
+      <li role="presentation" ng-repeat="tab in searchTabsOrder" ng-class="{active: search.display === tab}"><a href
+        ng-click="selectDisplay(tab)">{{ options[ tab + 'Label'] | translate}}</a></li>
+    </ul>
+    <div class="tab-panel">
     <result-panel display="search.display"
       type="search.type"
       bucket="search.bucket"
@@ -132,5 +131,6 @@
       search-tabs-order="searchTabsOrder"
       result-tabs-order="resultTabsOrder"
       lang="lang"></result-panel>
+      </div>
   </div>
 </div>
