@@ -74,6 +74,7 @@ angular.module('obiba.mica.search')
     'RqlQueryService',
     'RqlQueryUtils',
     'SearchContext',
+    'CoverageGroupByService',
     function ($scope,
               $timeout,
               $routeParams,
@@ -91,7 +92,8 @@ angular.module('obiba.mica.search')
               LocalizedValues,
               RqlQueryService,
               RqlQueryUtils,
-              SearchContext) {
+              SearchContext,
+              CoverageGroupByService) {
       $scope.options = ngObibaMicaSearch.getOptions();
       $scope.taxonomyTypeMap = { //backwards compatibility for pluralized naming in configs.
         variable: 'variables',
@@ -204,7 +206,7 @@ angular.module('obiba.mica.search')
       }
 
       function validateBucket(bucket) {
-        if (!bucket || !BUCKET_TYPES[bucket.toUpperCase()]) {
+        if (bucket && !BUCKET_TYPES[bucket.toUpperCase()]) {
           throw new Error('Invalid bucket: ' + bucket);
         }
       }
@@ -219,11 +221,6 @@ angular.module('obiba.mica.search')
         return $scope.taxonomyTypeMap[$scope.resultTabsOrder[0]];
       }
 
-      function getDefaultBucketType() {
-        // TODO settings
-        return BUCKET_TYPES.STUDY;
-      }
-
       function getDefaultDisplayType() {
         return $scope.searchTabsOrder[0] || DISPLAY_TYPES.LIST;
       }
@@ -232,7 +229,7 @@ angular.module('obiba.mica.search')
         try {
           var search = $location.search();
           var type = $scope.resultTabsOrder.indexOf(taxonomyTypeInverseMap[search.type]) > -1 ? search.type : getDefaultQueryType();
-          var bucket = search.bucket || getDefaultBucketType();
+          var bucket = search.bucket && CoverageGroupByService.canGroupBy(search.bucket) ? search.bucket : CoverageGroupByService.defaultBucket();
           var display = $scope.searchTabsOrder.indexOf(search.display) > -1 ? search.display : getDefaultDisplayType();
           var query = search.query || '';
           validateType(type);
@@ -1125,12 +1122,14 @@ angular.module('obiba.mica.search')
     'PageUrlService',
     'RqlQueryUtils',
     'RqlQueryService',
-    function ($scope, $location, $q, PageUrlService, RqlQueryUtils, RqlQueryService) {
+    'CoverageGroupByService',
+    function ($scope, $location, $q, PageUrlService, RqlQueryUtils, RqlQueryService, CoverageGroupByService) {
       $scope.showMissing = true;
       $scope.toggleMissing = function (value) {
         $scope.showMissing = value;
       };
 
+      $scope.groupByOptions = CoverageGroupByService;
       $scope.bucketSelection = {
         dceBucketSelected: $scope.bucket === BUCKET_TYPES.DCE,
         datasetBucketSelected: $scope.bucket !== BUCKET_TYPES.DATASCHEMA

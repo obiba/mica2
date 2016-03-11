@@ -10,6 +10,8 @@
 
 'use strict';
 
+/* global BUCKET_TYPES */
+
 /**
  * Module services and factories
  */
@@ -165,5 +167,65 @@ angular.module('obiba.mica.search')
     this.getOptions = function () {
       return angular.copy(options);
     };
-  });
+  })
+
+  .service('CoverageGroupByService', ['ngObibaMicaSearch', function(ngObibaMicaSearch) {
+    var groupByOptions = ngObibaMicaSearch.getOptions().coverage.groupBy;
+    return {
+      canShowStudy: function() {
+        return groupByOptions.study || groupByOptions.dce;
+      },
+
+      canShowDce: function(bucket) {
+        return (bucket === BUCKET_TYPES.STUDY || bucket === BUCKET_TYPES.DCE) &&
+          groupByOptions.study && groupByOptions.dce;
+      },
+
+      canShowDataset: function() {
+        return groupByOptions.dataset || groupByOptions.dataschema;
+      },
+
+      canShowDatasetStudyDataschema: function(bucket) {
+        return (bucket=== BUCKET_TYPES.DATASET || bucket === BUCKET_TYPES.DATASCHEMA) &&
+          groupByOptions.dataset && groupByOptions.dataschema;
+      },
+
+      canShowNetwork: function() {
+        return groupByOptions.network;
+      },
+
+      studyTitle: function() {
+        return groupByOptions.study ? 'search.coverage-buckets.study' : (groupByOptions.dce ? 'search.coverage-buckets.dce' : '');
+      },
+
+      studyBucket: function() {
+        return groupByOptions.study ? BUCKET_TYPES.STUDY : BUCKET_TYPES.DCE;
+      },
+
+      datasetTitle: function() {
+        return groupByOptions.dataset && groupByOptions.dataschema ?
+          'search.coverage-buckets.datasetNav' :
+          (groupByOptions.dataset ?
+            'search.coverage-buckets.dataset' :
+            (groupByOptions.dataschema ? 'search.coverage-buckets.dataschema' : ''));
+      },
+
+      datasetBucket: function() {
+        return groupByOptions.dataset ? BUCKET_TYPES.DATASET : BUCKET_TYPES.DATASCHEMA;
+      },
+
+      canGroupBy: function(bucket) {
+        return groupByOptions.hasOwnProperty(bucket) && groupByOptions[bucket];
+      },
+
+      defaultBucket: function() {
+        return groupByOptions.study ? BUCKET_TYPES.STUDY :
+          (groupByOptions.dce ? BUCKET_TYPES.DCE : groupByOptions.dataset ? BUCKET_TYPES.DATASET :
+            (groupByOptions.dataschema ? BUCKET_TYPES.DATASCHEMA :
+              (groupByOptions.network ? BUCKET_TYPES.NETWORK : '')));
+      }
+
+    };
+
+  }]);
 
