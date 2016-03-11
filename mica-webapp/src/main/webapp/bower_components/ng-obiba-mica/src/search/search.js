@@ -95,6 +95,15 @@ angular.module('obiba.mica.search', [
             showNetworksHarmonizedDatasetColumn: true,
             showNetworksVariablesColumn: true
           }
+        },
+        coverage: {
+          groupBy: {
+            study: true,
+            dce: true,
+            dataset: true,
+            dataschema: true,
+            network: true
+          }
         }
       };
 
@@ -111,6 +120,21 @@ angular.module('obiba.mica.search', [
       };
 
       this.$get = ['$q', '$injector', function ngObibaMicaSearchFactory($q, $injector) {
+        function normalizeOptions() {
+          var canShowCoverage = Object.keys(options.coverage.groupBy).filter(function(canShow) {
+              return options.coverage.groupBy[canShow];
+            }).length > 0;
+
+          if (!canShowCoverage) {
+            var index = options.searchTabsOrder.indexOf(DISPLAY_TYPES.COVERAGE);
+            if (index > -1) {
+              options.searchTabsOrder.splice(index, 1);
+            }
+          }
+        }
+
+        normalizeOptions();
+
         return {
           getLocale: function(success, error) {
             return $q.when($injector.invoke(localeResolver), success, error);
