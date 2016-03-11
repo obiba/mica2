@@ -795,7 +795,7 @@ angular.module('obiba.mica.search')
       };
 
       function findTargetQuery(target, query) {
-        return query.args.filter(function(arg){
+        return query.args.filter(function (arg) {
           return arg.name === target;
         }).pop();
       }
@@ -1187,36 +1187,35 @@ angular.module('obiba.mica.search')
           aggregate.args.push(bucket);
         }
 
-        // limit
-        var limit = new RqlQuery('limit');
-        limit.args.push(0);
         // study
         var study;
         var hasQuery = false;
+        var hasStudyTarget = false;
         parsedQuery.args.forEach(function (arg) {
           if (arg.name === 'study') {
-            arg.args.forEach(function(requestArg, key){
+            hasStudyTarget = true;
+            var limitIndex = null;
+            hasQuery = arg.args.filter(function (requestArg, index) {
               if (requestArg.name === 'limit') {
-                arg.args.splice(key,1);
+                limitIndex = index;
               }
-              else{
-                // Have a study query.
-                if(['in', 'out', 'eq', 'gt', 'ge', 'lt', 'le'].indexOf(requestArg.name)>-1){
-                  hasQuery = true;
-                }
-              }
-            });
+              return ['limit', 'sort', 'aggregate'].indexOf(requestArg.name) < 0;
+            }).length;
+            if (limitIndex !== null) {
+              arg.args.splice(limitIndex, 1);
+            }
             study = arg;
           }
         });
         // Study match all if no study query.
-        if (!hasQuery) {
+        if (!hasStudyTarget) {
           study = new RqlQuery('study');
-          study.args.push(new RqlQuery(RQL_NODE.MATCH));
           parsedQuery.args.push(study);
         }
+        if (!hasQuery) {
+          study.args.push(new RqlQuery(RQL_NODE.MATCH));
+        }
         study.args.push(aggregate);
-        study.args.push(limit);
         // facet
         parsedQuery.args.push(new RqlQuery('facet'));
         return parsedQuery.serializeArgs(parsedQuery.args);
