@@ -841,7 +841,8 @@
     "match":{
       "placeholder": "Enter text to search..."
     },
-    "filter": "Filter"
+    "filter": "Filter",
+    "close-and-search": "Close and search"
   },
   "variables": "Variables",
   "classifications": "Classifications",
