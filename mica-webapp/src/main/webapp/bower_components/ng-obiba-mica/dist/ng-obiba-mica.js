@@ -3633,7 +3633,7 @@ angular.module('obiba.mica.search')
         search: {
           text: null,
           active: false,
-          target: QUERY_TARGETS.VARIABLE
+          target: null
         }
       };
 
@@ -6767,8 +6767,8 @@ angular.module("search/views/coverage/coverage-search-result-table-template.html
     "      <tbody>\n" +
     "      <tr ng-repeat=\"row in table.rows\" ng-if=\"showMissing || table.termHeaders.length == keys(row.hits).length\">\n" +
     "        <td><input type=\"checkbox\" ng-model=\"row.selected\"></td>\n" +
-    "        <td ng-repeat=\"col in table.cols.ids[row.value]\" rowspan=\"{{col.rowSpan}}\" ng-if=\"col.rowSpan > 0\">\n" +
-    "          <a href=\"{{col.url ? col.url : ''}}\"\n" +
+    "        <td ng-repeat=\"col in table.cols.ids[row.value]\">\n" +
+    "          <a ng-if=\"col.rowSpan > 0\" href=\"{{col.url ? col.url : ''}}\"\n" +
     "            uib-popover-html=\"col.description === col.title ? null : col.description\"\n" +
     "            popover-title=\"{{col.title}}\"\n" +
     "            popover-placement=\"bottom\"\n" +
@@ -6839,8 +6839,8 @@ angular.module("search/views/criteria/criteria-root-template.html", []).run(["$t
 angular.module("search/views/criteria/criteria-target-template.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("search/views/criteria/criteria-target-template.html",
     "<div>\n" +
-    "  <div  class=\"form-group voffset1\" title=\"{{'search.' + item.target + '-where' | translate}}\">\n" +
-    "    <i class=\"{{'i-obiba-' + item.target}}\">&nbsp;</i>\n" +
+    "  <div class=\"form-group\" title=\"{{'search.' + item.target + '-where' | translate}}\">\n" +
+    "    <i class=\"{{'i-obiba-x-large i-obiba-' + item.target + ' color-' + item.target}}\">&nbsp;</i>\n" +
     "  </div>\n" +
     "  <criteria-node item=\"child\" query=\"$parent.query\" ng-repeat=\"child in item.children\"></criteria-node>\n" +
     "</div>");
@@ -6848,10 +6848,10 @@ angular.module("search/views/criteria/criteria-target-template.html", []).run(["
 
 angular.module("search/views/criteria/criterion-dropdown-template.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("search/views/criteria/criterion-dropdown-template.html",
-    "<div id=\"{{criterion.id.replace('.','-')}}-dropdown\" class='btn-group btn-info voffset1' ng-class='{open: state.open}'\n" +
+    "<div id=\"{{criterion.id.replace('.','-')}}-dropdown\" class=\"{{'btn-group voffset1 btn-' + criterion.target}}\" ng-class='{open: state.open}'\n" +
     "     ng-keyup=\"onKeyup($event)\">\n" +
     "\n" +
-    "  <button class=\"btn btn-info btn-xs dropdown\"\n" +
+    "  <button class=\"{{'btn btn-xs dropdown btn-' + criterion.target}}\"\n" +
     "    ng-click=\"openDropdown()\"\n" +
     "    title=\"{{localizeCriterion()}}\">\n" +
     "    <span uib-popover=\"{{localize(criterion.vocabulary.description ? criterion.vocabulary.description : criterion.vocabulary.title)}}\"\n" +
@@ -7514,15 +7514,18 @@ angular.module("search/views/search.html", []).run(["$templateCache", function($
     "          <span class=\"input-group input-group-sm\">\n" +
     "            <span class=\"input-group-btn\" uib-dropdown>\n" +
     "              <button type=\"button\" class=\"btn btn-primary\" uib-dropdown-toggle>\n" +
-    "                {{'taxonomy.target.' + documents.search.target | translate}} <span class=\"caret\"></span>\n" +
+    "                {{'taxonomy.target.' + (documents.search.target ? documents.search.target : 'all')| translate}} <span class=\"caret\"></span>\n" +
     "              </button>\n" +
     "              <ul uib-dropdown-menu role=\"menu\">\n" +
+    "                <li>\n" +
+    "                  <a href ng-click=\"selectSearchTarget()\" translate>taxonomy.target.all</a>\n" +
+    "                </li>\n" +
     "                <li ng-repeat=\"target in targets\" role=\"menuitem\"><a href ng-click=\"selectSearchTarget(target)\">{{'taxonomy.target.'\n" +
     "                  + target | translate}}</a></li>\n" +
     "              </ul>\n" +
     "            </span>\n" +
     "            <input type=\"text\" ng-model=\"selectedCriteria\"\n" +
-    "              placeholder=\"{{'search.placeholder.' + documents.search.target | translate}}\"\n" +
+    "              placeholder=\"{{'search.placeholder.' + (documents.search.target ? documents.search.target : 'all') | translate}}\"\n" +
     "              uib-typeahead=\"criteria for criteria in searchCriteria($viewValue)\"\n" +
     "              typeahead-min-length=\"2\"\n" +
     "              typeahead-loading=\"documents.search.active\"\n" +
