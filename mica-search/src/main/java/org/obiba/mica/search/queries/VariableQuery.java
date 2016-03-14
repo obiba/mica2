@@ -232,7 +232,7 @@ public class VariableQuery extends AbstractDocumentQuery {
   public List<String> query(List<String> studyIds, CountStatsData counts, Scope scope) throws IOException {
     updateDatasetQuery();
     List<String> ids = super.query(studyIds, null, scope == DETAIL ? DETAIL : NONE);
-    if(datasetIdProvider != null & hasQueryBuilder()) datasetIdProvider.setDatasetIds(getDatasetIds());
+    if(datasetIdProvider != null) datasetIdProvider.setDatasetIds(getDatasetIds());
     return ids;
   }
 

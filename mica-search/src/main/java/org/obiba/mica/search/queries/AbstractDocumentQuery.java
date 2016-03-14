@@ -531,7 +531,7 @@ public abstract class AbstractDocumentQuery {
     if(joinFields.size() == 1) return QueryBuilders.termsQuery(joinFields.get(0), studyIds);
     else {
       BoolQueryBuilder builder = QueryBuilders.boolQuery();
-      getJoinFields().stream().map(field -> builder.should(QueryBuilders.termsQuery(field, studyIds)));
+      getJoinFields().forEach(field -> builder.should(QueryBuilders.termsQuery(field, studyIds)));
       return builder;
     }
   }
