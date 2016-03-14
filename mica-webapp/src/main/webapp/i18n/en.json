@@ -789,6 +789,7 @@
       "study": "e.g. cohort, gender, twin",
       "network": "Search by network name"
     },
+    "classifications-show": "Show detailed classifications",
     "list": "List",
     "coverage": "Coverage",
     "graphics": "Graphics",
