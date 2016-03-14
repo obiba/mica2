@@ -785,6 +785,7 @@
     "back": "Back to Search",
     "no-results": "No result found.",
     "placeholder": {
+      "all": "e.g. alcohol, cancer, gender, cohort, twin",
       "variable": "e.g. alcohol, pregnancy, cancer",
       "dataset": "Search by dataset name or type",
       "study": "e.g. cohort, gender, twin",
@@ -1129,6 +1130,7 @@
   },
   "taxonomy": {
     "target": {
+      "all": "All",
       "variable": "Variable",
       "dataset": "Dataset",
       "study": "Study",
