@@ -22,6 +22,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import com.google.common.collect.Sets;
 import org.joda.time.DateTime;
 import org.obiba.magma.MagmaRuntimeException;
 import org.obiba.magma.NoSuchValueTableException;
@@ -71,7 +72,6 @@ import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
 
 @Service
 @Validated
@@ -151,10 +151,12 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
    * @return
    */
   public List<HarmonizationDataset> findAllPublishedDatasets() {
-    Set<String> publishedIds = harmonizationDatasetStateRepository.findByPublishedTagNotNull().stream()
-      .map(HarmonizationDatasetState::getId).collect(toSet());
-
-    return Lists.newArrayList(harmonizationDatasetRepository.findAll(publishedIds));
+    return harmonizationDatasetStateRepository.findByPublishedTagNotNull().stream()
+      .filter(state -> { //
+        return gitService.hasGitRepository(state) && !Strings.isNullOrEmpty(state.getPublishedTag()); //
+      }) //
+      .map(state -> gitService.readFromTag(state, state.getPublishedTag(), HarmonizationDataset.class)) //
+      .collect(toList());
   }
 
   /**
@@ -171,10 +173,16 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
    * Index or re-index all datasets with their variables.
    */
   public void indexAll() {
+    Set<HarmonizationDataset> publishedDatasets = Sets.newHashSet(findAllPublishedDatasets());
+
     findAllDatasets().forEach(dataset -> {
       try {
-        eventBus.post(new DatasetUpdatedEvent(dataset, wrappedGetDatasetVariables(dataset),
-          populateHarmonizedVariablesMap(dataset)));
+        Map<String, List<DatasetVariable>> harmonizationVariables = populateHarmonizedVariablesMap(dataset);
+        eventBus.post(new DatasetUpdatedEvent(dataset, wrappedGetDatasetVariables(dataset), harmonizationVariables));
+
+        if(publishedDatasets.contains(dataset))
+          eventBus.post(new DatasetPublishedEvent(dataset, wrappedGetDatasetVariables(dataset), harmonizationVariables, getCurrentUsername()));
+
       } catch(Exception e) {
         log.error("Error indexing dataset {}", dataset, e);
       }

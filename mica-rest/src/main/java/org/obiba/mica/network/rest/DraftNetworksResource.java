@@ -24,8 +24,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import com.google.common.eventbus.EventBus;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.network.domain.Network;
+import org.obiba.mica.network.event.IndexNetworksEvent;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
@@ -53,6 +55,9 @@ public class DraftNetworksResource {
   @Inject
   private ApplicationContext applicationContext;
 
+  @Inject
+  private EventBus eventBus;
+
   @GET
   @Path("/networks")
   @Timed
@@ -78,7 +83,7 @@ public class DraftNetworksResource {
   @Timed
   @RequiresPermissions("/draft/network:PUBLISH")
   public Response reIndex() {
-    networkService.indexAll();
+    eventBus.post(new IndexNetworksEvent());
     return Response.noContent().build();
   }
 

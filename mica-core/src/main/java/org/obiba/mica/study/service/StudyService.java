@@ -151,6 +151,13 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
     eventBus.post(new DraftStudyUpdatedEvent(study));
   }
 
+  /**
+   * Index all {@link Study}s.
+   */
+  public void indexAll() {
+    eventBus.post(new IndexStudiesEvent());
+  }
+
   @NotNull
   @Cacheable(value = "studies-draft", key = "#id")
   public Study findDraft(@NotNull String id) throws NoSuchEntityException {
@@ -172,6 +179,15 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
     return getEntityState(id).isPublished();
   }
 
+  public List<Study> findAllPublishedStudies() {
+    return findPublishedStates().stream() //
+      .filter(studyState -> { //
+        return gitService.hasGitRepository(studyState) && !Strings.isNullOrEmpty(studyState.getPublishedTag()); //
+      }) //
+      .map(studyState -> gitService.readFromTag(studyState, studyState.getPublishedTag(), Study.class)) //
+      .collect(toList());
+  }
+
   public List<Study> findAllDraftStudies() {
     return studyRepository.findAll();
   }
@@ -183,14 +199,7 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
   @Override
   public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
     log.info("Gather published and draft studies to be indexed");
-    List<Study> publishedStudies = findPublishedStates().stream() //
-      .filter(studyState -> { //
-        return gitService.hasGitRepository(studyState) && !Strings.isNullOrEmpty(studyState.getPublishedTag()); //
-      }) //
-      .map(studyState -> gitService.readFromTag(studyState, studyState.getPublishedTag(), Study.class)) //
-      .collect(toList()); //
-
-    eventBus.post(new IndexStudiesEvent(publishedStudies, findAllDraftStudies()));
+    indexAll();
   }
 
   @Caching(evict = {@CacheEvict(value = "aggregations-metadata", allEntries = true),
