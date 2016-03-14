@@ -624,7 +624,7 @@ angular.module('obiba.mica.search')
         search: {
           text: null,
           active: false,
-          target: QUERY_TARGETS.VARIABLE
+          target: null
         }
       };
 
