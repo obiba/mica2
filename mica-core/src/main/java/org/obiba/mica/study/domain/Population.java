@@ -114,7 +114,7 @@ public class Population extends AbstractAttributeAware implements Serializable, 
   public void addDataCollectionEvent(@NotNull DataCollectionEvent dataCollectionEvent) {
     if(dataCollectionEvents == null) dataCollectionEvents = new TreeSet<>();
     if(dataCollectionEvent.isNew()) {
-      String newId = dataCollectionEvent.getName().asAcronym().asString().toLowerCase();
+      String newId = dataCollectionEvent.getName().asAcronym().asUrlSafeString().toLowerCase();
       if(hasDataCollectionEvent(newId)) {
         for(int i = 1; i < 1000; i++) {
           if(!hasDataCollectionEvent(newId + "_" + i)) {

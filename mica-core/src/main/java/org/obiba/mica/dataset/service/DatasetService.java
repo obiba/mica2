@@ -97,7 +97,7 @@ public abstract class DatasetService<T extends Dataset, T1 extends EntityState> 
   @Nullable
   protected String getNextId(@Nullable LocalizedString suggested) {
     if(suggested == null) return null;
-    String prefix = suggested.asString().toLowerCase();
+    String prefix = suggested.asUrlSafeString().toLowerCase();
     if(Strings.isNullOrEmpty(prefix)) return null;
     String next = prefix;
     try {

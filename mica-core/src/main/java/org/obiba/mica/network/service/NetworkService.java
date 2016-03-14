@@ -13,7 +13,6 @@ package org.obiba.mica.network.service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -309,7 +308,7 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
 
   private String getNextId(LocalizedString suggested) {
     if (suggested == null) return null;
-    String prefix = suggested.asString().toLowerCase();
+    String prefix = suggested.asUrlSafeString().toLowerCase();
     if (Strings.isNullOrEmpty(prefix)) return null;
     String next = prefix;
     try {

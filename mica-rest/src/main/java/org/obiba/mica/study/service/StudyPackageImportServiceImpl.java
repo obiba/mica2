@@ -280,12 +280,12 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
 
     private void makeIdMapping() {
       study.setAcronym(ensureAcronym(study.getAcronym(), study.getName()));
-      String sId = study.getAcronym().asString().replace("(", "").replace(")", "").toLowerCase();
+      String sId = study.getAcronym().asUrlSafeString().replace("(", "").replace(")", "").toLowerCase();
       study.setId(sId);
       study.setOpal(null);
       for(Network network : networks) {
         network.setAcronym(ensureAcronym(network.getAcronym(), network.getName()));
-        String nId = network.getAcronym().asString().toLowerCase();
+        String nId = network.getAcronym().asUrlSafeString().toLowerCase();
         network.setId(nId);
         network.setStudyIds(Lists.newArrayList(study.getId()));
       }
