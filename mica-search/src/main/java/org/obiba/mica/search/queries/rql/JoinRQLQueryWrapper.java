@@ -58,7 +58,7 @@ public class JoinRQLQueryWrapper implements JoinQueryWrapper {
 
   public void initialize(String rql) {
     String rqlStr = rql == null ? "" : rql;
-    RQLParser parser = new RQLParser();
+    RQLParser parser = new RQLParser(new RQLConverter());
     node = parser.parse(rqlStr);
     initializeLocale(node);
 
