@@ -281,6 +281,10 @@ angular.module('obiba.mica.search')
       }
 
       function loadResults() {
+        // execute search only when results are to be shown
+        if($location.$$path !== '/search') {
+          return;
+        }
         var localizedQuery =
           RqlQueryService.prepareSearchQuery(
             $scope.search.type,
@@ -304,7 +308,7 @@ angular.module('obiba.mica.search')
             var hasVariableCriteria = Object.keys($scope.search.criteriaItemMap).map(function (k) {
                 return $scope.search.criteriaItemMap[k];
               }).filter(function (i) {
-                return i.target === QUERY_TARGETS.VARIABLE;
+                return i.target === QUERY_TARGETS.VARIABLE && i.taxonomy.name !== 'Mica_variable';
               }).length > 0;
 
             if (hasVariableCriteria) {
@@ -396,6 +400,24 @@ angular.module('obiba.mica.search')
       var searchCriteria = function (query) {
         // search for taxonomy terms
         // search for matching variables/studies/... count
+
+        function score(item) {
+          var result = 0;
+          var regExp = new RegExp(query,'ig');
+
+          if (item.itemTitle.match(regExp)) {
+            result = 10;
+          } else if (item.itemDescription && item.itemDescription.match(regExp)) {
+            result = 8;
+          } else if (item.itemParentTitle.match(regExp)) {
+            result = 6;
+          } else if (item.itemParentDescription && item.itemParentDescription.match(regExp)) {
+            result = 4;
+          }
+
+          return result;
+        }
+
         return TaxonomiesSearchResource.get({
           query: query, locale: $scope.lang, target: $scope.documents.search.target
         }).$promise.then(function (response) {
@@ -416,13 +438,20 @@ angular.module('obiba.mica.search')
                   if (vocabulary.terms) {
                     vocabulary.terms.forEach(function (term) {
                       if (results.length < size) {
-                        results.push(RqlQueryService.createCriteriaItem(target, taxonomy, vocabulary, term, $scope.lang));
+                        var item = RqlQueryService.createCriteriaItem(target, taxonomy, vocabulary, term, $scope.lang);
+                        results.push({
+                          score: score(item),
+                          item: item
+                        });
                       }
                       total++;
                     });
                   } else {
                     if (results.length < size) {
-                      results.push(RqlQueryService.createCriteriaItem(target, taxonomy, vocabulary, null, $scope.lang));
+                      var item = RqlQueryService.createCriteriaItem(target, taxonomy, vocabulary, null, $scope.lang);
+                      results.push({score: score(item),
+                        item: item
+                      });
                     }
                     total++;
                   }
@@ -437,9 +466,16 @@ angular.module('obiba.mica.search')
                 message: 'Showing ' + size + ' / ' + total,
                 status: 'has-warning'
               };
-              results.push(note);
+              results.push({score: -1, item: note});
             }
-            return results;
+
+            results.sort(function(a, b) {
+              return b.score - a.score;
+            });
+
+            return results.map(function(result) {
+              return result.item;
+            });
           } else {
             return [];
           }
