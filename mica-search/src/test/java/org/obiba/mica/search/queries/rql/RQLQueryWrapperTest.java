@@ -349,4 +349,12 @@ public class RQLQueryWrapperTest {
     assertThat(rqlQueryWrapper.getAggregationBuckets().get(0)).isEqualTo("studyId");
     assertThat(rqlQueryWrapper.getAggregationBuckets().get(1)).isEqualTo("datasetId");
   }
+
+  @Test
+  public void test_query_argument_type() throws IOException {
+    String rql = "study(in(Mica_study.id,3d)";
+    RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
+    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    assertThat(rqlQueryWrapper.getNode().getArgument(1)).isEqualTo("3d");
+  }
 }

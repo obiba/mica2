@@ -67,7 +67,7 @@ public class RQLQueryWrapper implements QueryWrapper {
 
   @VisibleForTesting
   RQLQueryWrapper(String rql) {
-    this(new RQLParser().parse(rql),
+    this(new RQLParser(new RQLConverter()).parse(rql),
       new RqlFieldResolver(Collections.emptyList(), "en"));
   }
 
@@ -132,6 +132,11 @@ public class RQLQueryWrapper implements QueryWrapper {
       aggregations = aggregate.getAggregations();
       aggregationBuckets = aggregate.getAggregationBuckets();
     }
+  }
+
+  @VisibleForTesting
+  ASTNode getNode() {
+    return node;
   }
 
   @Override
