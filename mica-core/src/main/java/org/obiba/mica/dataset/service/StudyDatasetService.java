@@ -11,11 +11,13 @@
 package org.obiba.mica.dataset.service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.StreamSupport;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import com.google.common.collect.Sets;
 import org.joda.time.DateTime;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
@@ -120,6 +122,20 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
   }
 
   /**
+   * Get all published {@link StudyDataset}s.
+   *
+   * @return
+   */
+  public List<StudyDataset> findAllPublishedDatasets() {
+    return studyDatasetStateRepository.findByPublishedTagNotNull().stream()
+      .filter(state -> { //
+        return gitService.hasGitRepository(state) && !Strings.isNullOrEmpty(state.getPublishedTag()); //
+      }) //
+      .map(state -> gitService.readFromTag(state, state.getPublishedTag(), StudyDataset.class)) //
+      .collect(toList());
+  }
+
+  /**
    * Get all {@link StudyDataset}s of a study.
    *
    * @param studyId
@@ -181,10 +197,16 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
    * Index or re-index all datasets with their variables.
    */
   public void indexAll() {
+    Set<StudyDataset> publishedDatasets = Sets.newHashSet(findAllPublishedDatasets());
+
     findAllDatasets()
       .forEach(dataset -> {
         try {
-          eventBus.post(new DatasetUpdatedEvent(dataset, wrappedGetDatasetVariables(dataset)));
+          Iterable<DatasetVariable> variables = wrappedGetDatasetVariables(dataset);
+          eventBus.post(new DatasetUpdatedEvent(dataset, variables));
+
+          if(publishedDatasets.contains(dataset))
+            eventBus.post(new DatasetPublishedEvent(dataset, variables, getCurrentUsername()));
         } catch(Exception e) {
           log.error("Error indexing dataset {}", dataset, e);
         }

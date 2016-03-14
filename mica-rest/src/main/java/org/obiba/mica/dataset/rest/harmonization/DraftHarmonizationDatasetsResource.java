@@ -11,6 +11,7 @@
 package org.obiba.mica.dataset.rest.harmonization;
 
 import java.util.List;
+
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -24,9 +25,11 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import com.google.common.eventbus.EventBus;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
+import org.obiba.mica.dataset.event.IndexDatasetsEvent;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
@@ -53,6 +56,9 @@ public class DraftHarmonizationDatasetsResource {
 
   @Inject
   private ApplicationContext applicationContext;
+
+  @Inject
+  private EventBus eventBus;
 
   /**
    * Get all {@link HarmonizationDataset}, optionally filtered by study.
@@ -88,7 +94,7 @@ public class DraftHarmonizationDatasetsResource {
   @Timed
   @RequiresPermissions({ "/draft/harmonization-dataset:PUBLISH" })
   public Response reIndex() {
-    datasetService.indexAll();
+    eventBus.post(new IndexDatasetsEvent());
     return Response.noContent().build();
   }
 

@@ -24,9 +24,11 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import com.google.common.eventbus.EventBus;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
+import org.obiba.mica.dataset.event.IndexDatasetsEvent;
 import org.obiba.mica.dataset.service.StudyDatasetService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
@@ -53,6 +55,9 @@ public class DraftStudyDatasetsResource {
 
   @Inject
   private ApplicationContext applicationContext;
+
+  @Inject
+  private EventBus eventBus;
 
   /**
    * Get all {@link org.obiba.mica.dataset.domain.StudyDataset}, optionally filtered by study.
@@ -87,7 +92,8 @@ public class DraftStudyDatasetsResource {
   @Timed
   @RequiresPermissions({ "/draft/study-dataset:PUBLISH" })
   public Response reIndex() {
-    datasetService.indexAll();
+    eventBus.post(new IndexDatasetsEvent());
+
     return Response.noContent().build();
   }
 
