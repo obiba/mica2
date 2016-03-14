@@ -10,9 +10,11 @@
 "vocabularies":
 - "name": "id"
   "title":
-    "en": "Network"
-    "fr": "Réseau"
-  "description": {}
+    "en": "Name"
+    "fr": "Nom"
+  "description":
+    "en": "Network name."
+    "fr": "Nom du réseau"
   "keywords": {}
   "attributes":
     "alias": "networkId"
@@ -20,5 +22,7 @@
   "title":
     "en": "Study"
     "fr": "Étude"
-  "description": {}
+  "description":
+    "en": "Studies that are members of a network."
+    "fr": "Études qui sont membres d'un réseau."
   "keywords": {}

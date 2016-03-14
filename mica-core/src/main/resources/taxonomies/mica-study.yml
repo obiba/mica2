@@ -10,8 +10,8 @@
 "vocabularies":
 - "name": "id"
   "title":
-    "en": "Study"
-    "fr": "Étude"
+    "en": "Name"
+    "fr": "Nom"
   "description":
     "en": "Study name."
     "fr": "Nom de l'étude."

@@ -10,8 +10,8 @@
 "vocabularies":
 - "name": "name"
   "title":
-    "en": "Variable"
-    "fr": "Variable"
+    "en": "Name"
+    "fr": "Nom"
   "description":
     "en": "Variable name."
     "fr": "Nom de la variable."

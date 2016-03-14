@@ -10,9 +10,11 @@
 "vocabularies":
 - "name": "id"
   "title":
-    "en": "Dataset"
-    "fr": "Jeux de données"
-  "description": {}
+    "en": "Name"
+    "fr": "Nom"
+  "description":
+    "en": "Dataset name."
+    "fr": "Nom du jeux de données"
   "keywords": {}
 - "name": "className"
   "title":
@@ -40,6 +42,6 @@
     "en": "Network"
     "fr": "Réseau"
   "description":
-    "en": "Network associated to the harmonised dataset."
+    "en": "Network associated to the harmonized dataset."
     "fr": "Réseau associé à ce jeux de données harmonisé."
   "keywords": {}
