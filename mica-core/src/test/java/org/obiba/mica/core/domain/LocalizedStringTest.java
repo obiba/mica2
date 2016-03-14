@@ -58,8 +58,15 @@ public class LocalizedStringTest {
   @Test
   public void test_localized_string_as_string() throws Exception {
     LocalizedString string = en("CLSA").forFr("ÉLCV");
-    log.debug(string.asString());
-    assertThat(string.asString()).isEqualTo("CLSA-ELCV");
+    log.debug(string.asUrlSafeString());
+    assertThat(string.asUrlSafeString()).isEqualTo("CLSA-ELCV");
+  }
+
+  @Test
+  public void test_localized_string_as_safe_url() throws Exception {
+    LocalizedString string = en("10/66 test").forFr("10/66 test");
+    log.debug(string.asUrlSafeString());
+    assertThat(string.asUrlSafeString()).isEqualTo("10_66-test");
   }
 
   @Test
@@ -67,7 +74,6 @@ public class LocalizedStringTest {
     LocalizedString string = en("Canadian Longitudinal Study on Aging")
         .forFr("Étude longitudinale canadienne sur le vieillissement");
     log.debug(string.asAcronym().toString());
-    assertThat(string.asAcronym().asString()).isEqualTo("CLSA-E");
+    assertThat(string.asAcronym().asUrlSafeString()).isEqualTo("CLSA-E");
   }
-
 }

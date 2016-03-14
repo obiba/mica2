@@ -81,10 +81,11 @@ public class LocalizedString extends TreeMap<String, String> {
     return this;
   }
 
-  public String asString() {
+  public String asUrlSafeString() {
     List<String> values = Lists.newArrayList();
     values().forEach(value -> {
-      String normalized = decompose(value.replace(' ', '-'));
+      String normalized = decompose(value.replace(' ', '-')) //
+        .replaceAll("[^A-Za-z0-9_\\.\\-~]", "_"); //NOTICE: permitted chars RFC 3986
       if(!values.contains(normalized)) values.add(normalized);
     });
     return StringUtil.collectionToString(values, "-");

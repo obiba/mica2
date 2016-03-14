@@ -329,7 +329,7 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
   public void addPopulation(@NotNull Population population) {
     if(populations == null) populations = new TreeSet<>();
     if(population.isNew()) {
-      String newId = population.getName().asAcronym().asString().toLowerCase();
+      String newId = population.getName().asAcronym().asUrlSafeString().toLowerCase();
       if(hasPopulation(newId)) {
         for(int i = 1; i < 1000; i++) {
           if(!hasPopulation(newId + "_" + i)) {

@@ -315,7 +315,7 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
   @Nullable
   private String getNextId(LocalizedString suggested) {
     if (suggested == null) return null;
-    String prefix = suggested.asString().toLowerCase();
+    String prefix = suggested.asUrlSafeString().toLowerCase();
     if (Strings.isNullOrEmpty(prefix)) return null;
     String next = prefix;
     try {
