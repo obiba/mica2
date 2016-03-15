@@ -1,14 +1,21 @@
 <div>
-  <h5 ng-repeat="label in term.title" ng-if="label.locale === lang">
-    {{label.text}}
-    <small>
-    <a href ng-click="onSelect(target, taxonomy, vocabulary, term)">
-      <i class="fa fa-plus-circle" title="{{'add-query' | translate}}"></i>
-    </a>
-    </small>
-  </h5>
-  <p ng-repeat="label in term.description" ng-if="label.locale === lang">
-    <span class="help-block" ng-bind-html="label.text | dceDescription" ng-if="vocabulary.name === 'dceIds'"></span>
-    <span class="help-block" ng-bind-html="label.text" ng-if="vocabulary.name !== 'dceIds'"></span>
-  </p>
+  <div class="panel panel-default" ng-if="term">
+    <div class="panel-heading">
+      <div ng-repeat="label in term.title" ng-if="label.locale === lang">
+        {{label.text}}
+        <small>
+          <a href ng-click="onSelect(target, taxonomy, vocabulary, term)">
+            <i class="fa fa-plus-circle" title="{{'add-query' | translate}}"></i>
+          </a>
+        </small>
+      </div>
+    </div>
+    <div class="panel-body">
+      <div ng-repeat="label in term.description" ng-if="label.locale === lang">
+        <span ng-bind-html="label.text | dceDescription" ng-if="vocabulary.name === 'dceIds'"></span>
+        <span ng-bind-html="label.text" ng-if="vocabulary.name !== 'dceIds'"></span>
+      </div>
+      <div ng-if="!term.description" class="help-block" translate>search.no-description</div>
+    </div>
+  </div>
 </div>

@@ -1,8 +1,14 @@
 <div>
-  <h5 ng-repeat="label in taxonomy.title" ng-if="label.locale === lang">
-    <a href ng-click="onNavigate(taxonomy)">{{label.text}}</a>
-  </h5>
-  <p class="help-block" ng-repeat="label in taxonomy.description" ng-if="label.locale === lang">
-    {{label.text}}
-  </p>
+  <div class="panel panel-default" ng-if="taxonomy">
+    <div class="panel-heading">
+      <div ng-repeat="label in taxonomy.title" ng-if="label.locale === lang">
+        <a href ng-click="onNavigate(taxonomy)">{{label.text}}</a>
+      </div>
+    </div>
+    <div class="panel-body">
+      <div ng-repeat="label in taxonomy.description" ng-if="label.locale === lang">
+        {{label.text}}
+      </div>
+    </div>
+  </div>
 </div>

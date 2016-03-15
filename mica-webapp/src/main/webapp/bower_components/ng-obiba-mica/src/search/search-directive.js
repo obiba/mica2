@@ -479,6 +479,7 @@ angular.module('obiba.mica.search')
       target: '=',
       onClose: '=',
       onSelectTerm: '=',
+      taxonomiesShown: '=',
       lang: '='
     },
     controller: 'TaxonomiesPanelController',
@@ -500,6 +501,15 @@ angular.module('obiba.mica.search')
       element.on('hide.bs.collapse', function () {
         scope.taxonomiesShown = false;
       });
+
+      scope.$watch('taxonomiesShown', function(value) {
+        if(value) {
+          element.collapse('show');
+        } else {
+          element.collapse('hide');
+        }
+      });
+
       }
     };
   }])

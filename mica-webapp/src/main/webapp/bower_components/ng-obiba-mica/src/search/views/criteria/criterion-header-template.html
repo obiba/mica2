@@ -1,0 +1,10 @@
+<li class="criteria-list-item">
+  <label uib-popover="{{localize(criterion.vocabulary.description)}}"
+         popover-title="{{localize(criterion.vocabulary.title)}}"
+         popover-placement="bottom"
+         popover-trigger="mouseenter">
+    {{localize(criterion.vocabulary.title)}}
+  </label>
+  <span class="pull-right" title="{{'search.close-and-search' | translate}}"><a href ng-click="$parent.$parent.closeDropdown()"><i class="fa fa-play-circle-o"></i></a></span>
+</li>
+<li class='divider'></li>
