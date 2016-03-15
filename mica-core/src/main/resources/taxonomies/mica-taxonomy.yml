@@ -11,16 +11,36 @@
     "en": "Variables"
     "fr": "Variables"
   "description":
-    "en": "Variables classifications."
+    "en": "Variable classifications."
     "fr": "Classifications des variables."
   "terms":
-  - "name": "Mlstr_area"
+  - "name": "Variable_chars"
     "title":
-      "en": "Areas of Information"
-      "fr": "Aires d'information"
-    "description":
-      "en": "Information classification developed by Maelstrom."
-      "fr": "Classification des informations développée par Maelstrom."
+      "en": "Variable characteristics"
+      "fr": "Caractéristiques des variables"
+    "description": {}
+    "terms":
+    - "name": "Mlstr_area"
+      "title":
+        "en": "Areas of Information"
+        "fr": "Aires d'information"
+      "description":
+        "en": "Information classification developed by Maelstrom."
+        "fr": "Classification des informations développée par Maelstrom."
+    - "name": "Mica_variable"
+      "title":
+        "en": "Variable"
+        "fr": "Variables"
+      "description":
+        "en": "Variable properties as defined in the catalog."
+        "fr": "Propriétés des variables telles que définies dans le catalogue."
+    - "name": "Mlstr_additional"
+      "title":
+        "en": "Additional information"
+        "fr": "Informations additionnelles"
+      "description":
+        "en": "Additional information about the collected variable"
+        "fr": "Informations additionnelles au sujet des variables collectées"
   - "name": "Scales"
     "title":
       "en": "Scales"
@@ -57,47 +77,12 @@
       "description":
         "en": "Refers to constructs used in the social domain"
         "fr": "Information au sujet de mesures composites (échelles) utilisées dans le domaine social"
-  - "name": "Others"
-    "title":
-      "en": "Others"
-      "fr": "Autres"
-    "description": {}
-    "terms":
-    - "name": "Mica_variable"
-      "title":
-        "en": "Variable"
-        "fr": "Variables"
-      "description":
-        "en": "Variable properties as defined in the catalog."
-        "fr": "Propriétés des variables telles que définies dans le catalogue."
-    - "name": "Mlstr_additional"
-      "title":
-        "en": "Additional information"
-        "fr": "Informations additionnelles"
-      "description":
-        "en": "Additional information about the collected variable"
-        "fr": "Informations additionnelles au sujet des variables collectées"
-- "name": "study"
-  "title":
-    "en": "Studies"
-    "fr": "Études"
-  "description":
-    "en": "Studies classifications."
-    "fr": "Classifications des études."
-  "terms":
-  - "name": "Mica_study"
-    "title":
-      "en": "Study"
-      "fr": "Études"
-    "description":
-      "en": "Study properties as defined in the catalog."
-      "fr": "Propriétés des études telles que définies dans le catalogue."
 - "name": "dataset"
   "title":
     "en": "Datasets"
     "fr": "Jeux de données"
   "description":
-    "en": "Datasets classifications."
+    "en": "Dataset classifications."
     "fr": "Classifications des jeux de données."
   "terms":
   - "name": "Mica_dataset"
@@ -107,12 +92,27 @@
     "description":
       "en": "Datasets properties as defined in the catalog."
       "fr": "Propriétés des jeux de données telles que définies dans le catalogue."
+- "name": "study"
+  "title":
+    "en": "Studies"
+    "fr": "Études"
+  "description":
+    "en": "Study classifications."
+    "fr": "Classifications des études."
+  "terms":
+  - "name": "Mica_study"
+    "title":
+      "en": "Study"
+      "fr": "Études"
+    "description":
+      "en": "Study properties as defined in the catalog."
+      "fr": "Propriétés des études telles que définies dans le catalogue."
 - "name": "network"
   "title":
     "en": "Networks"
     "fr": "Réseaux"
   "description":
-    "en": "Networks classifications."
+    "en": "Network classifications."
     "fr": "Classifications des réseaux."
   "terms":
   - "name": "Mica_network"
