@@ -1,13 +1,5 @@
 <ul class="dropdown-menu query-dropdown-menu" aria-labelledby="{{criterion.vocabulary.name}}-button">
-  <li class="criteria-list-item">
-    <label uib-popover="{{localize(criterion.vocabulary.description)}}"
-      popover-title="{{localize(criterion.vocabulary.title)}}"
-      popover-placement="bottom"
-      popover-trigger="mouseenter">
-      {{localize(criterion.vocabulary.title)}}
-    </label>
-  </li>
-  <li class='divider'></li>
+  <ng-include src="'search/views/criteria/criterion-header-template.html'"></ng-include>
   <li class="btn-group">
     <ul class="criteria-list-item">
       <li>
@@ -60,8 +52,8 @@
             </label>
           </span>
           <span class="pull-right">
-            <span class="agg-term-count" ng-show="term.count !== 0">{{term.count}}</span>
-            <span class="agg-term-count-default" ng-show="term.count === 0">{{term.default}}</span>
+            <span class="agg-term-count" ng-show="isSelectedTerm(term)">{{term.count}}</span>
+            <span class="agg-term-count-default" ng-show="!isSelectedTerm(term)">{{term.count}}</span>
           </span>
       </li>
     </ul>

@@ -17,7 +17,8 @@
         </tr>
         <tr ng-repeat="summary in summaries">
           <td>
-            <a href="{{PageUrlService.VariablePage(summary.id)}}">
+            <a
+              href="{{PageUrlService.VariablePage(summary.id) ? PageUrlService.VariablePage(summary.id) : PageUrlService.datasetPage(summary.datasetId, summary.variableType)}}">
               {{summary.name}}
             </a>
           </td>
