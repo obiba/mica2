@@ -363,6 +363,12 @@ angular.module('obiba.mica.search')
       };
 
       var showTaxonomy = function (target, name) {
+        if($scope.target === target && $scope.taxonomyName === name && $scope.taxonomiesShown) {
+          $scope.taxonomiesShown = false;
+          return;
+        }
+
+        $scope.taxonomiesShown = true;
         $scope.target = target;
         $scope.taxonomyName = name;
       };
@@ -1129,13 +1135,16 @@ angular.module('obiba.mica.search')
           $scope.terms = RqlQueryService.getTargetAggregations(joinQueryResponse, $scope.criterion, $scope.lang);
           if ($scope.terms) {
             $scope.terms.forEach(function (term) {
-              $scope.checkboxTerms[term.key] =
-                $scope.criterion.selectedTerms && $scope.criterion.selectedTerms.indexOf(term.key) !== -1;
+              $scope.checkboxTerms[term.key] = $scope.isSelectedTerm(term);
             });
 
             $scope.terms = $filter('orderBySelection')($scope.terms, $scope.checkboxTerms);
           }
         });
+      };
+
+      $scope.isSelectedTerm = function(term) {
+        return $scope.criterion.selectedTerms && $scope.criterion.selectedTerms.indexOf(term.key) !== -1;
       };
 
       $scope.state.addOnOpen(onOpen);

@@ -30,7 +30,7 @@
 
   <div ng-if="!taxonomies.taxonomy">
     <div ng-repeat="group in taxonomyGroups">
-      <h4 ng-if="group.title">{{group.title}}</h4>
+      <h3 ng-if="group.title">{{group.title}}</h3>
       <p class="help-block" ng-if="group.description">{{group.description}}</p>
       <div ng-if="!taxonomies.taxonomy">
         <div ng-repeat="taxonomy in group.taxonomies" ng-if="$index % 3 == 0" class="row">
@@ -52,6 +52,10 @@
   </div>
 
   <div ng-if="taxonomies.taxonomy && !taxonomies.vocabulary">
+    <h3 ng-repeat="label in taxonomies.taxonomy.title"
+      ng-if="label.locale === lang">
+      {{label.text}}
+    </h3>
 
     <p class="help-block" ng-repeat="label in taxonomies.taxonomy.description" ng-if="label.locale === lang">
       {{label.text}}
@@ -74,6 +78,10 @@
   </div>
 
   <div ng-if="taxonomies.taxonomy && taxonomies.vocabulary && !taxonomies.term">
+    <h3 ng-repeat="label in taxonomies.vocabulary.title"
+      ng-if="label.locale === lang">
+      {{label.text}}
+    </h3>
 
     <p class="help-block" ng-repeat="label in taxonomies.vocabulary.description"
       ng-if="label.locale === lang">

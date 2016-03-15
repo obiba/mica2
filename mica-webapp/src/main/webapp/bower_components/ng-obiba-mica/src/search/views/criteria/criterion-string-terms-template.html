@@ -52,8 +52,8 @@
             </label>
           </span>
           <span class="pull-right">
-            <span class="agg-term-count" ng-show="term.count !== 0">{{term.count}}</span>
-            <span class="agg-term-count-default" ng-show="term.count === 0">{{term.default}}</span>
+            <span class="agg-term-count" ng-show="isSelectedTerm(term)">{{term.count}}</span>
+            <span class="agg-term-count-default" ng-show="!isSelectedTerm(term)">{{term.count}}</span>
           </span>
       </li>
     </ul>
