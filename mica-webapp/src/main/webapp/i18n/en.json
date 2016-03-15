@@ -783,6 +783,7 @@
     "help": "Search in the published repository.",
     "back": "Back to Search",
     "no-results": "No result found.",
+    "no-description": "No description.",
     "placeholder": {
       "all": "e.g. alcohol, cancer, gender, cohort, twin",
       "variable": "e.g. alcohol, pregnancy, cancer",
