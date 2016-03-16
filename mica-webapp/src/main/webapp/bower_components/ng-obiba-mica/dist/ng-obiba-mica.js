@@ -2560,10 +2560,6 @@ angular.module('obiba.mica.search')
           var anyQuery = new RqlQuery(RQL_NODE.EXISTS),
               criteriaId = RqlQueryUtils.criteriaId(item.taxonomy, item.vocabulary);
 
-          //targetQuery.args = targetQuery.args.filter(function(arg){
-          //  return arg.name !== RQL_NODE.MISSING;
-          //});
-
           anyQuery.args.push(criteriaId);
           iterReplaceQuery(targetQuery, criteriaId, anyQuery);
           targetQuery.args.push(RqlQueryUtils.aggregate([criteriaId]));
