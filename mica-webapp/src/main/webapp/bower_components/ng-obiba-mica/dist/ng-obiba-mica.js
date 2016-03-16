@@ -3334,7 +3334,7 @@ angular.module('obiba.mica.search')
 
       function loadResults() {
         // execute search only when results are to be shown
-        if($location.$$path !== '/search') {
+        if ($location.$$path !== '/search') {
           return;
         }
         var localizedQuery =
@@ -3415,7 +3415,7 @@ angular.module('obiba.mica.search')
       };
 
       var showTaxonomy = function (target, name) {
-        if($scope.target === target && $scope.taxonomyName === name && $scope.taxonomiesShown) {
+        if ($scope.target === target && $scope.taxonomyName === name && $scope.taxonomiesShown) {
           $scope.taxonomiesShown = false;
           return;
         }
@@ -3461,7 +3461,7 @@ angular.module('obiba.mica.search')
 
         function score(item) {
           var result = 0;
-          var regExp = new RegExp(query,'ig');
+          var regExp = new RegExp(query, 'ig');
 
           if (item.itemTitle.match(regExp)) {
             result = 10;
@@ -3507,7 +3507,8 @@ angular.module('obiba.mica.search')
                   } else {
                     if (results.length < size) {
                       var item = RqlQueryService.createCriteriaItem(target, taxonomy, vocabulary, null, $scope.lang);
-                      results.push({score: score(item),
+                      results.push({
+                        score: score(item),
                         item: item
                       });
                     }
@@ -3527,11 +3528,11 @@ angular.module('obiba.mica.search')
               results.push({score: -1, item: note});
             }
 
-            results.sort(function(a, b) {
+            results.sort(function (a, b) {
               return b.score - a.score;
             });
 
-            return results.map(function(result) {
+            return results.map(function (result) {
               return result.item;
             });
           } else {
@@ -3650,11 +3651,11 @@ angular.module('obiba.mica.search')
         refreshQuery();
       };
 
-      $scope.goToSearch = function() {
+      $scope.goToSearch = function () {
         $location.path('/search');
       };
 
-      $scope.goToClassifications = function() {
+      $scope.goToClassifications = function () {
         $location.path('/classifications');
       };
 
@@ -4150,7 +4151,7 @@ angular.module('obiba.mica.search')
         });
       };
 
-      $scope.isSelectedTerm = function(term) {
+      $scope.isSelectedTerm = function (term) {
         return $scope.criterion.selectedTerms && $scope.criterion.selectedTerms.indexOf(term.key) !== -1;
       };
 
@@ -4300,6 +4301,59 @@ angular.module('obiba.mica.search')
           return rowSpan;
         }
 
+        var minMax = {};
+
+        function appendMinMax(id, start, end) {
+          if (minMax[id]) {
+            if (start < minMax[id][0]) {
+              minMax[id][0] = start;
+            }
+            if (end > minMax[id][1]) {
+              minMax[id][1] = end;
+            }
+          } else {
+            minMax[id] = [start, end];
+          }
+        }
+
+        function toTime(yearMonth, start) {
+          var res;
+          if (yearMonth) {
+            if (yearMonth.indexOf('-')>0) {
+              var ym = yearMonth.split('-');
+              if (!start) {
+                var m = parseInt(ym[1]);
+                if(m<12) {
+                  ym[1] = m + 1;
+                } else {
+                  ym[0] = parseInt(ym[0]) + 1;
+                  ym[1] = 1;
+                }
+              }
+              var ymStr = ym[0] + '-'  + ym[1] + '-01';
+              res = Date.parse(ymStr);
+            } else {
+              res = start ? Date.parse(yearMonth + '-01-01') : Date.parse(yearMonth + '-12-31');
+            }
+          }
+          return res;
+        }
+
+        var currentYear = new Date().getFullYear();
+        var currentMonth = new Date().getMonth() + 1;
+        var currentDate = toTime(currentYear + '-' + currentMonth, true);
+
+        function getProgress(startYearMonth, endYearMonth) {
+          var start = toTime(startYearMonth, true);
+          var end = endYearMonth ? toTime(endYearMonth, false) : currentDate;
+          var current = end < currentDate ? end : currentDate;
+          if(end === start) {
+            return 100;
+          } else {
+            return Math.round(startYearMonth ? 100 * (current - start) / (end - start) : 0);
+          }
+        }
+
         $scope.result.rows.forEach(function (row) {
           cols.ids[row.value] = [];
           if ($scope.bucket === BUCKET_TYPES.DCE) {
@@ -4312,6 +4366,7 @@ angular.module('obiba.mica.search')
             // study
             id = ids[0];
             rowSpan = appendRowSpan(id);
+            appendMinMax(id,row.start, row.end);
             cols.ids[row.value].push({
               id: id,
               url: PageUrlService.studyPage(id),
@@ -4335,8 +4390,11 @@ angular.module('obiba.mica.search')
             cols.ids[row.value].push({
               id: row.value,
               title: titles[2],
-              url: PageUrlService.studyPopulationPage(ids[0], ids[1]),
               description: descriptions[2],
+              start: row.start,
+              current: currentYear + '-' + currentMonth,
+              end: row.end,
+              url: PageUrlService.studyPopulationPage(ids[0], ids[1]),
               rowSpan: 1
             });
           } else {
@@ -4345,12 +4403,19 @@ angular.module('obiba.mica.search')
               url: getBucketUrl($scope.bucket, row.value),
               title: row.title,
               description: row.description,
+              min: row.start,
+              start: row.start,
+              current: currentYear,
+              end: row.end,
+              max: row.end,
+              progressStart: 0,
+              progress: getProgress(row.start ? row.start + '-01' : undefined, row.end ? row.end + '-12' : undefined),
               rowSpan: 1
             });
           }
         });
 
-        // adjust the rowspans
+        // adjust the rowspans and the progress
         if ($scope.bucket === BUCKET_TYPES.DCE) {
           $scope.result.rows.forEach(function (row) {
             if (cols.ids[row.value][0].rowSpan > 0) {
@@ -4358,6 +4423,20 @@ angular.module('obiba.mica.search')
             }
             if (cols.ids[row.value][1].rowSpan > 0) {
               cols.ids[row.value][1].rowSpan = rowSpans[cols.ids[row.value][1].id];
+            }
+            var ids = row.value.split(':');
+            if (minMax[ids[0]]) {
+              var min = minMax[ids[0]][0];
+              var max = minMax[ids[0]][1];
+              var start = cols.ids[row.value][2].start;
+              var end = cols.ids[row.value][2].end;
+              var diff = toTime(max, false) - toTime(min, true);
+              // set the DCE min and max dates of the study
+              cols.ids[row.value][2].min = min;
+              cols.ids[row.value][2].max = max;
+              // compute the progress
+              cols.ids[row.value][2].progressStart = 100 * (toTime(start, true) - toTime(min, true))/diff;
+              cols.ids[row.value][2].progress = 100 * (toTime(end, false) - toTime(start, true))/diff;
             }
           });
         }
@@ -4402,14 +4481,14 @@ angular.module('obiba.mica.search')
 
         var criteria = {varItem: RqlQueryService.createCriteriaItem(QUERY_TARGETS.VARIABLE, taxonomyHeader.name, vocabularyHeader.name, term.entity.name)};
 
-        if(id) {
+        if (id) {
           criteria.item = RqlQueryService.createCriteriaItem(targetMap[$scope.bucket], 'Mica_' + targetMap[$scope.bucket], vocabulary, id);
         }
 
-        $q.all(criteria).then(function(criteria) {
+        $q.all(criteria).then(function (criteria) {
           $scope.onUpdateCriteria(criteria.varItem, type, false, true);
 
-          if(criteria.item) {
+          if (criteria.item) {
             $scope.onUpdateCriteria(criteria.item, type);
           }
         });
@@ -6712,10 +6791,12 @@ angular.module("search/views/coverage/coverage-search-result-table-template.html
     "\n" +
     "  <div ng-if=\"hasVariableTarget()\">\n" +
     "    <ul class=\"nav nav-pills pull-left\">\n" +
-    "      <li ng-if=\"groupByOptions.canShowStudy()\" ng-class=\"{'active': bucket === BUCKET_TYPES.STUDY || bucket === BUCKET_TYPES.DCE}\">\n" +
+    "      <li ng-if=\"groupByOptions.canShowStudy()\"\n" +
+    "        ng-class=\"{'active': bucket === BUCKET_TYPES.STUDY || bucket === BUCKET_TYPES.DCE}\">\n" +
     "        <a href ng-click=\"selectBucket(groupByOptions.studyBucket())\" translate>{{groupByOptions.studyTitle()}}</a>\n" +
     "      </li>\n" +
-    "      <li ng-if=\"groupByOptions.canShowDataset()\" ng-class=\"{'active': bucket === BUCKET_TYPES.DATASET || bucket === BUCKET_TYPES.DATASCHEMA}\">\n" +
+    "      <li ng-if=\"groupByOptions.canShowDataset()\"\n" +
+    "        ng-class=\"{'active': bucket === BUCKET_TYPES.DATASET || bucket === BUCKET_TYPES.DATASCHEMA}\">\n" +
     "        <a href ng-click=\"selectBucket(groupByOptions.datasetBucket())\" translate>{{groupByOptions.datasetTitle()}}</a>\n" +
     "      </li>\n" +
     "      <li ng-if=\"groupByOptions.canShowNetwork()\" ng-class=\"{'active': bucket === BUCKET_TYPES.NETWORK}\">\n" +
@@ -6803,6 +6884,37 @@ angular.module("search/views/coverage/coverage-search-result-table-template.html
     "            popover-title=\"{{col.title}}\"\n" +
     "            popover-placement=\"bottom\"\n" +
     "            popover-trigger=\"mouseenter\">{{col.title}}</a>\n" +
+    "          <table style=\"border:none; width: 100%\" ng-if=\"col.start\">\n" +
+    "            <tbody>\n" +
+    "            <tr>\n" +
+    "              <td>\n" +
+    "                <small class=\"help-block no-margin\">\n" +
+    "                  {{col.start}}\n" +
+    "                </small>\n" +
+    "              </td>\n" +
+    "              <td>&nbsp;</td>\n" +
+    "              <td align=\"right\">\n" +
+    "                <small class=\"help-block no-margin\">\n" +
+    "                  {{col.end ? col.end : '...'}}\n" +
+    "                </small>\n" +
+    "              </td>\n" +
+    "            </tr>\n" +
+    "            <tr>\n" +
+    "              <td colspan=\"3\">\n" +
+    "                <div class=\"progress no-margin\">\n" +
+    "                  <div class=\"progress-bar progress-bar-transparent\" role=\"progressbar\"\n" +
+    "                    aria-valuenow=\"{{col.start}}\" aria-valuemin=\"{{col.min}}\"\n" +
+    "                    aria-valuemax=\"{{col.start}}\" style=\"{{'width: ' + col.progressStart + '%'}}\">\n" +
+    "                  </div>\n" +
+    "                  <div class=\"progress-bar progress-bar-info\" role=\"progressbar\"\n" +
+    "                    aria-valuenow=\"{{col.current}}\" aria-valuemin=\"{{col.start}}\"\n" +
+    "                    aria-valuemax=\"{{col.end ? col.end : col.current}}\" style=\"{{'width: ' + col.progress + '%'}}\">\n" +
+    "                  </div>\n" +
+    "                </div>\n" +
+    "              </td>\n" +
+    "            </tr>\n" +
+    "            </tbody>\n" +
+    "          </table>\n" +
     "        </td>\n" +
     "        <td ng-repeat=\"h in table.termHeaders\">\n" +
     "          <a href ng-click=\"updateCriteria(row.value, h, $index, 'variables')\"><span class=\"label label-info\"\n" +
