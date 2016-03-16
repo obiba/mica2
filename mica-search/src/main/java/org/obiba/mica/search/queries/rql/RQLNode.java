@@ -25,6 +25,7 @@ enum RQLNode {
   OR, //
   NOR, //
   NOT, //
+  CONTAINS, //
   IN, //
   OUT, //
   EQ, //

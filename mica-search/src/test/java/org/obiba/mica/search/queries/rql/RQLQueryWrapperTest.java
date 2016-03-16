@@ -22,6 +22,28 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class RQLQueryWrapperTest {
 
   @Test
+  public void test_rql_query_terms_contains() throws IOException {
+    String rql
+      = "study(contains(Mica_study.populations-selectionCriteria-countriesIso,(CAN,USA)))";
+    RQLQueryWrapper rqlQueryWrapper = new RQLQueryWrapper(rql);
+    assertThat(rqlQueryWrapper.hasQueryBuilder()).isTrue();
+    String expected = "{\n" +
+      "  \"bool\" : {\n" +
+      "    \"must\" : [ {\n" +
+      "      \"term\" : {\n" +
+      "        \"Mica_study.populations-selectionCriteria-countriesIso\" : \"CAN\"\n" +
+      "      }\n" +
+      "    }, {\n" +
+      "      \"term\" : {\n" +
+      "        \"Mica_study.populations-selectionCriteria-countriesIso\" : \"USA\"\n" +
+      "      }\n" +
+      "    } ]\n" +
+      "  }\n" +
+      "}";
+    assertThat(rqlQueryWrapper.getQueryBuilder().toString()).isEqualTo(expected);
+  }
+
+  @Test
   public void test_rql_query_terms_in() throws IOException {
     String rql
       = "variable(or(in(attributes.Mlstr_area__Lifestyle_behaviours.und,(Phys_act,Tobacco)),in(attributes.Mlstr_area__Diseases.und,Neoplasms)))";

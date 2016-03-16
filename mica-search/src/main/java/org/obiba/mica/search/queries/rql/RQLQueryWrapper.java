@@ -67,8 +67,7 @@ public class RQLQueryWrapper implements QueryWrapper {
 
   @VisibleForTesting
   RQLQueryWrapper(String rql) {
-    this(new RQLParser(new RQLConverter()).parse(rql),
-      new RqlFieldResolver(Collections.emptyList(), "en"));
+    this(new RQLParser(new RQLConverter()).parse(rql), new RqlFieldResolver(Collections.emptyList(), "en"));
   }
 
   public RQLQueryWrapper(ASTNode node, RqlFieldResolver rqlFieldResolver) {
@@ -185,7 +184,7 @@ public class RQLQueryWrapper implements QueryWrapper {
     protected final RqlFieldResolver rqlFieldResolver;
 
     RQLBuilder(RqlFieldResolver rqlFieldResolver) {
-      this.rqlFieldResolver =  rqlFieldResolver;
+      this.rqlFieldResolver = rqlFieldResolver;
     }
 
     protected FieldData resolveField(String rqlField) {
@@ -225,6 +224,8 @@ public class RQLQueryWrapper implements QueryWrapper {
             return visitOr(node);
           case NOR:
             return visitNor(node);
+          case CONTAINS:
+            return visitContains(node);
           case IN:
             return visitIn(node);
           case OUT:
@@ -281,10 +282,23 @@ public class RQLQueryWrapper implements QueryWrapper {
       return QueryBuilders.boolQuery().mustNot(QueryBuilders.boolQuery().should(left).should(right));
     }
 
+    private QueryBuilder visitContains(ASTNode node) {
+      FieldData data = resolveField(node.getArgument(0).toString());
+      String field = data.getField();
+      Object args = node.getArgument(1);
+      Collection<String> terms;
+      terms = args instanceof Collection ? ((Collection<Object>) args).stream().map(Object::toString)
+        .collect(Collectors.toList()) : Collections.singleton(args.toString());
+      visitField(field, terms);
+      BoolQueryBuilder builder = QueryBuilders.boolQuery();
+      terms.forEach(t -> builder.must(QueryBuilders.termQuery(field, t)));
+      return builder;
+    }
+
     private QueryBuilder visitIn(ASTNode node) {
       FieldData data = resolveField(node.getArgument(0).toString());
       String field = data.getField();
-      if (data.isRange()) {
+      if(data.isRange()) {
         return visitInRangeInternal(data, node.getArgument(1));
       }
 
@@ -295,20 +309,20 @@ public class RQLQueryWrapper implements QueryWrapper {
     }
 
     private QueryBuilder visitInRangeInternal(FieldData data, Object rangesArgument) {
-      Collection<String> ranges = rangesArgument instanceof Collection ? ((Collection<Object>) rangesArgument).stream().map(Object::toString)
-        .collect(Collectors.toList()) : Collections.singleton(rangesArgument.toString());
+      Collection<String> ranges = rangesArgument instanceof Collection ? ((Collection<Object>) rangesArgument).stream()
+        .map(Object::toString).collect(Collectors.toList()) : Collections.singleton(rangesArgument.toString());
 
       BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
       ranges.stream().forEach(range -> {
         RangeQueryBuilder builder = QueryBuilders.rangeQuery(data.getField());
         String[] values = range.split(":");
-        if (values.length < 2 || "*:*".equals(range)) {
+        if(values.length < 2 || "*:*".equals(range)) {
           throw new IllegalArgumentException("Invalid range format: " + range);
         }
 
-        if ("*".equals(values[0])) {
+        if("*".equals(values[0])) {
           builder.lt(Double.valueOf(values[1]));
-        } else if ("*".equals(values[1])) {
+        } else if("*".equals(values[1])) {
           builder.gte(Double.valueOf(values[0]));
         } else {
           builder.gte(Double.valueOf(values[0]));
@@ -479,7 +493,8 @@ public class RQLQueryWrapper implements QueryWrapper {
         switch(type) {
           case SORT:
             String arg = node.getArgument(0).toString();
-            if(arg.startsWith("-")) return SortBuilders.fieldSort(resolveField(arg.substring(1)).getField()).order(SortOrder.DESC);
+            if(arg.startsWith("-"))
+              return SortBuilders.fieldSort(resolveField(arg.substring(1)).getField()).order(SortOrder.DESC);
             else if(arg.startsWith("+"))
               return SortBuilders.fieldSort(resolveField(arg.substring(1)).getField()).order(SortOrder.ASC);
             else return SortBuilders.fieldSort(resolveField(arg).getField()).order(SortOrder.ASC);

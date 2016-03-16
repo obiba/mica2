@@ -255,6 +255,7 @@
   "attributes":
     "field": "populations.selectionCriteria.countriesIso"
     "alias": "populations-selectionCriteria-countriesIso"
+  "repeatable": "true"
   "terms":
   - "name": "AND"
     "title":
