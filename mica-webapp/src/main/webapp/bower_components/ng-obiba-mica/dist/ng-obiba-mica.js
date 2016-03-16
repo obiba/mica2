@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-03-15
+ * Date: 2016-03-16
  */
 'use strict';
 
@@ -3037,14 +3037,13 @@ angular.module('obiba.mica.search')
       compile: function(scope, element) {
         var template = '';
         if (scope.item.type === RQL_NODE.OR || scope.item.type === RQL_NODE.AND || scope.item.type === RQL_NODE.NAND || scope.item.type === RQL_NODE.NOR) {
-          template = $templateCache.get('search/views/criteria/criteria-node-template.html');
+          template = angular.element($templateCache.get('search/views/criteria/criteria-node-template.html'));
         } else {
           template = angular.element('<criterion-dropdown criterion="item" query="query"></criterion-dropdown>');
         }
 
-        template = angular.element(template);
         $compile(template)(scope, function(cloned){
-          element.append(cloned);
+          element.replaceWith(cloned);
         });
       }
     };
@@ -4961,7 +4960,7 @@ angular.module('obiba.mica.search')
     };
   }])
 
-  .directive('criteriaNode', ['CriteriaNodeCompileService', function(CriteriaNodeCompileService){
+  .directive('criteriaNode', [function(){
     return {
       restrict: 'EA',
       replace: true,
@@ -4970,9 +4969,7 @@ angular.module('obiba.mica.search')
         query: '='
       },
       controller: 'CriterionLogicalController',
-      link: function(scope, element) {
-        CriteriaNodeCompileService.compile(scope, element);
-      }
+      templateUrl: 'search/views/criteria/criteria-node-template.html'
     };
   }])
 
@@ -4987,6 +4984,7 @@ angular.module('obiba.mica.search')
           item: '=',
           query: '='
         },
+        controller: 'CriterionLogicalController',
         link: function(scope, element) {
           CriteriaNodeCompileService.compile(scope, element);
         }

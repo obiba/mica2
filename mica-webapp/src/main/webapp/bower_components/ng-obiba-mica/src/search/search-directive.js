@@ -330,7 +330,7 @@ angular.module('obiba.mica.search')
     };
   }])
 
-  .directive('criteriaNode', ['CriteriaNodeCompileService', function(CriteriaNodeCompileService){
+  .directive('criteriaNode', [function(){
     return {
       restrict: 'EA',
       replace: true,
@@ -339,9 +339,7 @@ angular.module('obiba.mica.search')
         query: '='
       },
       controller: 'CriterionLogicalController',
-      link: function(scope, element) {
-        CriteriaNodeCompileService.compile(scope, element);
-      }
+      templateUrl: 'search/views/criteria/criteria-node-template.html'
     };
   }])
 
@@ -356,6 +354,7 @@ angular.module('obiba.mica.search')
           item: '=',
           query: '='
         },
+        controller: 'CriterionLogicalController',
         link: function(scope, element) {
           CriteriaNodeCompileService.compile(scope, element);
         }
