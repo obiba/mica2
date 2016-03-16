@@ -910,7 +910,8 @@ angular.module('obiba.mica.search')
       };
       $scope.localizeCriterion = function () {
         var rqlQuery = $scope.criterion.rqlQuery;
-        if (rqlQuery.name === RQL_NODE.IN && $scope.criterion.selectedTerms && $scope.criterion.selectedTerms.length > 0) {
+        if ((rqlQuery.name === RQL_NODE.IN || rqlQuery.name === RQL_NODE.CONTAINS) && $scope.criterion.selectedTerms && $scope.criterion.selectedTerms.length > 0) {
+          var sep = rqlQuery.name === RQL_NODE.IN ? ' | ' : ' + ';
           return $scope.criterion.selectedTerms.map(function (t) {
             if (!$scope.criterion.vocabulary.terms) {
               return t;
@@ -919,7 +920,7 @@ angular.module('obiba.mica.search')
               return arg.name === t;
             }).pop();
             return found ? LocalizedValues.forLocale(found.title, $scope.criterion.lang) : t;
-          }).join(' | ');
+          }).join(sep);
         }
         var operation = rqlQuery.name;
         switch (rqlQuery.name) {
@@ -942,6 +943,7 @@ angular.module('obiba.mica.search')
             operation = ':[' + rqlQuery.args[1] + ')';
             break;
           case RQL_NODE.IN:
+          case RQL_NODE.CONTAINS:
             operation = '';
             break;
           case RQL_NODE.MATCH:
@@ -1063,22 +1065,31 @@ angular.module('obiba.mica.search')
 
       var updateSelection = function () {
         $scope.state.dirty = true;
+        $scope.criterion.rqlQuery.name = $scope.selectedFilter;
         var selected = [];
-        Object.keys($scope.checkboxTerms).forEach(function (key) {
-          if ($scope.checkboxTerms[key]) {
-            selected.push(key);
-          }
-        });
+        if($scope.selectedFilter !== RQL_NODE.MISSING && $scope.selectedFilter !== RQL_NODE.EXISTS) {
+          Object.keys($scope.checkboxTerms).forEach(function (key) {
+            if ($scope.checkboxTerms[key]) {
+              selected.push(key);
+            }
+          });
+        }
+        if (selected.length === 0 && $scope.selectedFilter !== RQL_NODE.MISSING) {
+          $scope.criterion.rqlQuery.name = RQL_NODE.EXISTS;
+        }
         RqlQueryUtils.updateQuery($scope.criterion.rqlQuery, selected);
       };
 
       var updateFilter = function () {
-        RqlQueryUtils.updateQuery($scope.criterion.rqlQuery, [], RQL_NODE.MISSING === $scope.selectedFilter);
-        $scope.state.dirty = true;
+        updateSelection();
       };
 
       var isInFilter = function () {
         return $scope.selectedFilter === RQL_NODE.IN;
+      };
+
+      var isContainsFilter = function () {
+        return $scope.selectedFilter === RQL_NODE.CONTAINS;
       };
 
       var onOpen = function () {
@@ -1114,6 +1125,7 @@ angular.module('obiba.mica.search')
       };
       $scope.truncate = StringUtils.truncate;
       $scope.isInFilter = isInFilter;
+      $scope.isContainsFilter = isContainsFilter;
       $scope.updateSelection = updateSelection;
     }])
 

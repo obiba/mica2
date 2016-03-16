@@ -57,6 +57,7 @@ var RQL_NODE = {
   BUCKET: 'bucket',
 
   /* leaf criteria nodes */
+  CONTAINS: 'contains',
   IN: 'in',
   OUT: 'out',
   EQ: 'eq',
@@ -413,6 +414,7 @@ CriteriaBuilder.prototype.visit = function (node, parentItem) {
       this.visitCondition(node, parentItem);
       break;
 
+    case RQL_NODE.CONTAINS:
     case RQL_NODE.IN:
     case RQL_NODE.OUT:
     case RQL_NODE.EQ:
@@ -460,6 +462,7 @@ angular.module('obiba.mica.search')
           case RQL_NODE.OR:
           case RQL_NODE.NOR:
           case RQL_NODE.NOT:
+          case RQL_NODE.CONTAINS:
           case RQL_NODE.IN:
           case RQL_NODE.OUT:
           case RQL_NODE.EQ:
@@ -563,9 +566,8 @@ angular.module('obiba.mica.search')
       return query;
     };
 
-    this.updateInQuery = function (query, terms, missing) {
+    this.updateQueryInternal = function (query, terms) {
       var hasValues = terms && terms.length > 0;
-      query.name = hasValues ? RQL_NODE.IN : (missing ? RQL_NODE.MISSING : RQL_NODE.EXISTS);
 
       if (hasValues) {
         query.args[1] = terms;
@@ -578,7 +580,11 @@ angular.module('obiba.mica.search')
 
     this.mergeInQueryArgValues = function (query, terms, replace) {
       var hasValues = terms && terms.length > 0;
-      query.name = hasValues ? RQL_NODE.IN : RQL_NODE.EXISTS;
+      //if (!hasValues) {
+      //  query.name = RQL_NODE.EXISTS;
+      //} else if (query.name !== RQL_NODE.IN && query.name !== RQL_NODE.CONTAINS) {
+      //  query.name = RQL_NODE.IN;
+      //}
 
       if (hasValues) {
         var current = query.args[1];
@@ -669,6 +675,7 @@ angular.module('obiba.mica.search')
 
     this.updateQueryArgValues = function(query, terms, replace) {
       switch (query.name) {
+        case RQL_NODE.CONTAINS:
         case RQL_NODE.IN:
         case RQL_NODE.EXISTS:
           this.mergeInQueryArgValues(query, terms, replace);
@@ -677,12 +684,13 @@ angular.module('obiba.mica.search')
 
     };
 
-    this.updateQuery = function (query, values, missing) {
+    this.updateQuery = function (query, values) {
       switch (query.name) {
+        case RQL_NODE.CONTAINS:
         case RQL_NODE.IN:
         case RQL_NODE.EXISTS:
         case RQL_NODE.MISSING:
-          this.updateInQuery(query, values, missing);
+          this.updateQueryInternal(query, values);
           break;
       }
     };
@@ -802,6 +810,7 @@ angular.module('obiba.mica.search')
 
       function isLeafCriteria(item) {
         switch (item.type) {
+          case RQL_NODE.CONTAINS:
           case RQL_NODE.IN:
           case RQL_NODE.OUT:
           case RQL_NODE.EQ:
@@ -1075,7 +1084,7 @@ angular.module('obiba.mica.search')
             return null;
           }
 
-          if(query.name === RQL_NODE.IN && query.args[0] === criteriaId) {
+          if((query.name === RQL_NODE.IN || query.name === RQL_NODE.CONTAINS) && query.args[0] === criteriaId) {
             return query;
           }
 

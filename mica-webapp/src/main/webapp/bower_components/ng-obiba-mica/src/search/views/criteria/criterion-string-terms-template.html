@@ -20,14 +20,20 @@
           {{'in' | translate}}
         </label>
       </li>
+      <li ng-show="criterion.vocabulary.repeatable">
+        <label>
+          <input ng-click="updateFilter()" type="radio" ng-model="selectedFilter" value="{{RQL_NODE.CONTAINS}}">
+          {{'contains' | translate}}
+        </label>
+      </li>
     </ul>
   </li>
-  <li ng-show="isInFilter()" class='divider'></li>
+  <li ng-show="isInFilter() || isContainsFilter()" class='divider'></li>
   <li class="criteria-list-item" ng-show="state.loading">
     <p class="voffset2 loading">
     </p>
   </li>
-  <li ng-show="isInFilter()">
+  <li ng-show="isInFilter() || isContainsFilter()">
     <ul ng-show="!state.loading" class="no-padding criteria-list-terms">
       <li class="criteria-list-item" ng-show="terms && terms.length>10">
         <span class="input-group input-group-sm no-padding-top">
@@ -37,7 +43,7 @@
       </li>
       <li ng-show="terms && terms.length>10"></li>
       <li class="criteria-list-item"
-        ng-show="isInFilter()"
+        ng-show="isInFilter() || isContainsFilter()"
         ng-repeat="term in terms | regex:searchText:['key','title','description']"
         uib-popover="{{term.description}}"
         popover-title="{{term.title}}"

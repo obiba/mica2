@@ -1511,6 +1511,7 @@ var RQL_NODE = {
   BUCKET: 'bucket',
 
   /* leaf criteria nodes */
+  CONTAINS: 'contains',
   IN: 'in',
   OUT: 'out',
   EQ: 'eq',
@@ -1867,6 +1868,7 @@ CriteriaBuilder.prototype.visit = function (node, parentItem) {
       this.visitCondition(node, parentItem);
       break;
 
+    case RQL_NODE.CONTAINS:
     case RQL_NODE.IN:
     case RQL_NODE.OUT:
     case RQL_NODE.EQ:
@@ -1914,6 +1916,7 @@ angular.module('obiba.mica.search')
           case RQL_NODE.OR:
           case RQL_NODE.NOR:
           case RQL_NODE.NOT:
+          case RQL_NODE.CONTAINS:
           case RQL_NODE.IN:
           case RQL_NODE.OUT:
           case RQL_NODE.EQ:
@@ -2017,9 +2020,8 @@ angular.module('obiba.mica.search')
       return query;
     };
 
-    this.updateInQuery = function (query, terms, missing) {
+    this.updateQueryInternal = function (query, terms) {
       var hasValues = terms && terms.length > 0;
-      query.name = hasValues ? RQL_NODE.IN : (missing ? RQL_NODE.MISSING : RQL_NODE.EXISTS);
 
       if (hasValues) {
         query.args[1] = terms;
@@ -2032,7 +2034,11 @@ angular.module('obiba.mica.search')
 
     this.mergeInQueryArgValues = function (query, terms, replace) {
       var hasValues = terms && terms.length > 0;
-      query.name = hasValues ? RQL_NODE.IN : RQL_NODE.EXISTS;
+      //if (!hasValues) {
+      //  query.name = RQL_NODE.EXISTS;
+      //} else if (query.name !== RQL_NODE.IN && query.name !== RQL_NODE.CONTAINS) {
+      //  query.name = RQL_NODE.IN;
+      //}
 
       if (hasValues) {
         var current = query.args[1];
@@ -2123,6 +2129,7 @@ angular.module('obiba.mica.search')
 
     this.updateQueryArgValues = function(query, terms, replace) {
       switch (query.name) {
+        case RQL_NODE.CONTAINS:
         case RQL_NODE.IN:
         case RQL_NODE.EXISTS:
           this.mergeInQueryArgValues(query, terms, replace);
@@ -2131,12 +2138,13 @@ angular.module('obiba.mica.search')
 
     };
 
-    this.updateQuery = function (query, values, missing) {
+    this.updateQuery = function (query, values) {
       switch (query.name) {
+        case RQL_NODE.CONTAINS:
         case RQL_NODE.IN:
         case RQL_NODE.EXISTS:
         case RQL_NODE.MISSING:
-          this.updateInQuery(query, values, missing);
+          this.updateQueryInternal(query, values);
           break;
       }
     };
@@ -2256,6 +2264,7 @@ angular.module('obiba.mica.search')
 
       function isLeafCriteria(item) {
         switch (item.type) {
+          case RQL_NODE.CONTAINS:
           case RQL_NODE.IN:
           case RQL_NODE.OUT:
           case RQL_NODE.EQ:
@@ -2529,7 +2538,7 @@ angular.module('obiba.mica.search')
             return null;
           }
 
-          if(query.name === RQL_NODE.IN && query.args[0] === criteriaId) {
+          if((query.name === RQL_NODE.IN || query.name === RQL_NODE.CONTAINS) && query.args[0] === criteriaId) {
             return query;
           }
 
@@ -3962,7 +3971,8 @@ angular.module('obiba.mica.search')
       };
       $scope.localizeCriterion = function () {
         var rqlQuery = $scope.criterion.rqlQuery;
-        if (rqlQuery.name === RQL_NODE.IN && $scope.criterion.selectedTerms && $scope.criterion.selectedTerms.length > 0) {
+        if ((rqlQuery.name === RQL_NODE.IN || rqlQuery.name === RQL_NODE.CONTAINS) && $scope.criterion.selectedTerms && $scope.criterion.selectedTerms.length > 0) {
+          var sep = rqlQuery.name === RQL_NODE.IN ? ' | ' : ' + ';
           return $scope.criterion.selectedTerms.map(function (t) {
             if (!$scope.criterion.vocabulary.terms) {
               return t;
@@ -3971,7 +3981,7 @@ angular.module('obiba.mica.search')
               return arg.name === t;
             }).pop();
             return found ? LocalizedValues.forLocale(found.title, $scope.criterion.lang) : t;
-          }).join(' | ');
+          }).join(sep);
         }
         var operation = rqlQuery.name;
         switch (rqlQuery.name) {
@@ -3994,6 +4004,7 @@ angular.module('obiba.mica.search')
             operation = ':[' + rqlQuery.args[1] + ')';
             break;
           case RQL_NODE.IN:
+          case RQL_NODE.CONTAINS:
             operation = '';
             break;
           case RQL_NODE.MATCH:
@@ -4115,22 +4126,31 @@ angular.module('obiba.mica.search')
 
       var updateSelection = function () {
         $scope.state.dirty = true;
+        $scope.criterion.rqlQuery.name = $scope.selectedFilter;
         var selected = [];
-        Object.keys($scope.checkboxTerms).forEach(function (key) {
-          if ($scope.checkboxTerms[key]) {
-            selected.push(key);
-          }
-        });
+        if($scope.selectedFilter !== RQL_NODE.MISSING && $scope.selectedFilter !== RQL_NODE.EXISTS) {
+          Object.keys($scope.checkboxTerms).forEach(function (key) {
+            if ($scope.checkboxTerms[key]) {
+              selected.push(key);
+            }
+          });
+        }
+        if (selected.length === 0 && $scope.selectedFilter !== RQL_NODE.MISSING) {
+          $scope.criterion.rqlQuery.name = RQL_NODE.EXISTS;
+        }
         RqlQueryUtils.updateQuery($scope.criterion.rqlQuery, selected);
       };
 
       var updateFilter = function () {
-        RqlQueryUtils.updateQuery($scope.criterion.rqlQuery, [], RQL_NODE.MISSING === $scope.selectedFilter);
-        $scope.state.dirty = true;
+        updateSelection();
       };
 
       var isInFilter = function () {
         return $scope.selectedFilter === RQL_NODE.IN;
+      };
+
+      var isContainsFilter = function () {
+        return $scope.selectedFilter === RQL_NODE.CONTAINS;
       };
 
       var onOpen = function () {
@@ -4166,6 +4186,7 @@ angular.module('obiba.mica.search')
       };
       $scope.truncate = StringUtils.truncate;
       $scope.isInFilter = isInFilter;
+      $scope.isContainsFilter = isContainsFilter;
       $scope.updateSelection = updateSelection;
     }])
 
@@ -7117,14 +7138,20 @@ angular.module("search/views/criteria/criterion-string-terms-template.html", [])
     "          {{'in' | translate}}\n" +
     "        </label>\n" +
     "      </li>\n" +
+    "      <li ng-show=\"criterion.vocabulary.repeatable\">\n" +
+    "        <label>\n" +
+    "          <input ng-click=\"updateFilter()\" type=\"radio\" ng-model=\"selectedFilter\" value=\"{{RQL_NODE.CONTAINS}}\">\n" +
+    "          {{'contains' | translate}}\n" +
+    "        </label>\n" +
+    "      </li>\n" +
     "    </ul>\n" +
     "  </li>\n" +
-    "  <li ng-show=\"isInFilter()\" class='divider'></li>\n" +
+    "  <li ng-show=\"isInFilter() || isContainsFilter()\" class='divider'></li>\n" +
     "  <li class=\"criteria-list-item\" ng-show=\"state.loading\">\n" +
     "    <p class=\"voffset2 loading\">\n" +
     "    </p>\n" +
     "  </li>\n" +
-    "  <li ng-show=\"isInFilter()\">\n" +
+    "  <li ng-show=\"isInFilter() || isContainsFilter()\">\n" +
     "    <ul ng-show=\"!state.loading\" class=\"no-padding criteria-list-terms\">\n" +
     "      <li class=\"criteria-list-item\" ng-show=\"terms && terms.length>10\">\n" +
     "        <span class=\"input-group input-group-sm no-padding-top\">\n" +
@@ -7134,7 +7161,7 @@ angular.module("search/views/criteria/criterion-string-terms-template.html", [])
     "      </li>\n" +
     "      <li ng-show=\"terms && terms.length>10\"></li>\n" +
     "      <li class=\"criteria-list-item\"\n" +
-    "        ng-show=\"isInFilter()\"\n" +
+    "        ng-show=\"isInFilter() || isContainsFilter()\"\n" +
     "        ng-repeat=\"term in terms | regex:searchText:['key','title','description']\"\n" +
     "        uib-popover=\"{{term.description}}\"\n" +
     "        popover-title=\"{{term.title}}\"\n" +
