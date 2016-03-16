@@ -1084,7 +1084,7 @@ angular.module('obiba.mica.search')
             return null;
           }
 
-          if((query.name === RQL_NODE.IN || query.name === RQL_NODE.CONTAINS) && query.args[0] === criteriaId) {
+          if((query.name === RQL_NODE.IN || query.name === RQL_NODE.MISSING || query.name === RQL_NODE.CONTAINS) && query.args[0] === criteriaId) {
             return query;
           }
 
@@ -1105,6 +1105,10 @@ angular.module('obiba.mica.search')
         if (targetQuery) {
           var anyQuery = new RqlQuery(RQL_NODE.EXISTS),
               criteriaId = RqlQueryUtils.criteriaId(item.taxonomy, item.vocabulary);
+
+          //targetQuery.args = targetQuery.args.filter(function(arg){
+          //  return arg.name !== RQL_NODE.MISSING;
+          //});
 
           anyQuery.args.push(criteriaId);
           iterReplaceQuery(targetQuery, criteriaId, anyQuery);
