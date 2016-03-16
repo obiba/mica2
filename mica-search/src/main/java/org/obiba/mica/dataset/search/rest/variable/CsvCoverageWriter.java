@@ -38,9 +38,14 @@ public class CsvCoverageWriter {
 
   private CoverageByBucket coverageByBucket;
 
+  private List<String> distinctFields;
+
   public ByteArrayOutputStream write(CoverageByBucket coverageByBucket) throws IOException {
 
     this.coverageByBucket = coverageByBucket;
+
+    distinctFields = coverageByBucket.getBucketRows().stream().map(b -> b.field).distinct()
+      .collect(Collectors.toList());
 
     ByteArrayOutputStream values = new ByteArrayOutputStream();
     CSVWriter writer = null;
@@ -55,6 +60,18 @@ public class CsvCoverageWriter {
     return values;
   }
 
+  private boolean hasStartEndHeaders() {
+    return distinctFields.contains("dceIds") || distinctFields.contains("studyIds");
+  }
+
+  private boolean hasSingletonField() {
+    return distinctFields.size() == 1;
+  }
+
+  private boolean isDCEField() {
+    return distinctFields.contains("dceIds");
+  }
+
   private void writeHeaders(CSVWriter writer) {
     writeTaxonomyHeaders(writer);
     writeVocabularyHeaders(writer);
@@ -62,7 +79,7 @@ public class CsvCoverageWriter {
   }
 
   private void writeTaxonomyHeaders(CSVWriter writer) {
-    List<String> headers = Lists.newArrayList("", "");
+    List<String> headers = getPreliminaryHeaders();
     coverageByBucket.getTaxonomyHeaders().forEach(taxonomyHeader -> {
       headers.add(taxonomyHeader.taxonomy.getTitles(0).getValue());
       for(int i = 1; i < taxonomyHeader.termsCount; i++) {
@@ -73,7 +90,7 @@ public class CsvCoverageWriter {
   }
 
   private void writeVocabularyHeaders(CSVWriter writer) {
-    List<String> headers = Lists.newArrayList("", "");
+    List<String> headers = getPreliminaryHeaders();
     coverageByBucket.getVocabularyHeaders().forEach(vocabularyHeader -> {
       headers.add(vocabularyHeader.vocabulary.getTitles(0).getValue());
       for(int i = 1; i < vocabularyHeader.termsCount; i++) {
@@ -83,8 +100,37 @@ public class CsvCoverageWriter {
     writer.writeNext(headers.toArray(new String[headers.size()]));
   }
 
+  private List<String> getPreliminaryHeaders() {
+    List<String> headers = Lists.newArrayList("");
+    if(!hasSingletonField()) {
+      headers.add("");
+    } else if (isDCEField()) {
+      headers.add("");
+      headers.add("");
+    }
+    if(hasStartEndHeaders()) {
+      headers.add("");
+      headers.add("");
+    }
+    return headers;
+  }
+
   private void writeTermHeaders(CSVWriter writer) {
-    List<String> headers = Lists.newArrayList("ID", "Type");
+    List<String> headers = Lists.newArrayList();
+    if(hasSingletonField()) {
+      if (isDCEField()) {
+        headers.add("Study");
+        headers.add("Population");
+      }
+      headers.add(coverageByBucket.getBucketRows().get(0).fieldTitle);
+    } else {
+      headers.add("ID");
+      headers.add("Type");
+    }
+    if(hasStartEndHeaders()) {
+      headers.add("Start");
+      headers.add("End");
+    }
     coverageByBucket.getTermHeaders().forEach(termHeader -> headers.add(termHeader.term.getTitles(0).getValue()));
     writer.writeNext(headers.toArray(new String[headers.size()]));
   }
@@ -92,8 +138,23 @@ public class CsvCoverageWriter {
   private void writeBucketRows(CSVWriter writer) {
     coverageByBucket.getBucketRows().forEach(bucketRow -> {
       List<String> row = Lists.newArrayList();
-      row.add(bucketRow.title);
-      row.add(bucketRow.fieldTitle);
+
+      if(hasSingletonField() && isDCEField()) {
+        String[] title = bucketRow.title.split(":");
+        row.add(title[0]);
+        row.add(title[1]);
+        row.add(title[2]);
+      } else {
+        row.add(bucketRow.title);
+      }
+
+      if (!hasSingletonField()) {
+        row.add(bucketRow.fieldTitle);
+      }
+      if(hasStartEndHeaders()) {
+        row.add(bucketRow.start);
+        row.add(bucketRow.end);
+      }
       row.addAll(bucketRow.hits.stream().map(Object::toString).collect(Collectors.toList()));
       writer.writeNext(row.toArray(new String[row.size()]));
     });
