@@ -757,55 +757,10 @@ angular.module('obiba.mica.search')
         });
       };
 
-      var filterTaxonomies = function (query) {
-        $scope.taxonomies.search.active = true;
-        if (query && query.length === 1) {
-          $scope.taxonomies.search.active = false;
-          return;
-        }
-        // taxonomy filter
-        if ($scope.taxonomies.taxonomy) {
-          if ($scope.taxonomies.vocabulary) {
-            VocabularyResource.get({
-              target: $scope.taxonomies.target,
-              taxonomy: $scope.taxonomies.taxonomy.name,
-              vocabulary: $scope.taxonomies.vocabulary.name,
-              query: query
-            }, function onSuccess(response) {
-              $scope.taxonomies.vocabulary.terms = response.terms;
-              $scope.taxonomies.search.active = false;
-            });
-          } else {
-            TaxonomyResource.get({
-              target: $scope.taxonomies.target,
-              taxonomy: $scope.taxonomies.taxonomy.name,
-              query: query
-            }, function onSuccess(response) {
-              $scope.taxonomies.taxonomy.vocabularies = response.vocabularies;
-              $scope.taxonomies.search.active = false;
-            });
-          }
-        } else {
-          TaxonomiesResource.get({
-            target: $scope.taxonomies.target,
-            query: query
-          }, function onSuccess(taxonomies) {
-            $scope.taxonomies.all = taxonomies;
-            groupTaxonomies(taxonomies, $scope.taxonomies.target);
-            $scope.taxonomies.search.active = false;
-          });
-        }
-      };
-
       var navigateTaxonomy = function (taxonomy, vocabulary, term) {
-        var toFilter = ($scope.taxonomies.taxonomy && !taxonomy) || ($scope.taxonomies.vocabulary && !vocabulary);
         $scope.taxonomies.taxonomy = taxonomy;
         $scope.taxonomies.vocabulary = vocabulary;
         $scope.taxonomies.term = term;
-
-        if (toFilter) {
-          filterTaxonomies($scope.taxonomies.search.text);
-        }
       };
 
       var selectTerm = function (target, taxonomy, vocabulary, term) {

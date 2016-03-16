@@ -1070,13 +1070,36 @@ angular.module('obiba.mica.search')
        * @returns the new query
        */
       this.prepareCriteriaTermsQuery = function (query, item, lang) {
+        function iterReplaceQuery(query, criteriaId, newQuery) {
+          if (!query || !query.args) {
+            return null;
+          }
+
+          if(query.name === RQL_NODE.IN && query.args[0] === criteriaId) {
+            return query;
+          }
+
+          for(var i = query.args.length; i--;) {
+            var res = iterReplaceQuery(query.args[i], criteriaId, newQuery);
+
+            if (res) {
+              query.args[i] = newQuery;
+            }
+          }
+        }
+
         var parsedQuery = new RqlParser().parse(query);
         var targetQuery = parsedQuery.args.filter(function (node) {
           return node.name === item.target;
         }).pop();
 
         if (targetQuery) {
-          targetQuery.args.push(RqlQueryUtils.aggregate([RqlQueryUtils.criteriaId(item.taxonomy, item.vocabulary)]));
+          var anyQuery = new RqlQuery(RQL_NODE.EXISTS),
+              criteriaId = RqlQueryUtils.criteriaId(item.taxonomy, item.vocabulary);
+
+          anyQuery.args.push(criteriaId);
+          iterReplaceQuery(targetQuery, criteriaId, anyQuery);
+          targetQuery.args.push(RqlQueryUtils.aggregate([criteriaId]));
           targetQuery.args.push(RqlQueryUtils.limit(0, 0));
         }
 

@@ -11,6 +11,7 @@
 'use strict';
 
 /* global BUCKET_TYPES */
+/* global RQL_NODE */
 
 /**
  * Module services and factories
@@ -225,6 +226,26 @@ angular.module('obiba.mica.search')
               (groupByOptions.network ? BUCKET_TYPES.NETWORK : '')));
       }
 
+    };
+
+  }])
+
+  .factory('CriteriaNodeCompileService', ['$templateCache', '$compile', function($templateCache, $compile){
+
+    return {
+      compile: function(scope, element) {
+        var template = '';
+        if (scope.item.type === RQL_NODE.OR || scope.item.type === RQL_NODE.AND || scope.item.type === RQL_NODE.NAND || scope.item.type === RQL_NODE.NOR) {
+          template = $templateCache.get('search/views/criteria/criteria-node-template.html');
+        } else {
+          template = angular.element('<criterion-dropdown criterion="item" query="query"></criterion-dropdown>');
+        }
+
+        template = angular.element(template);
+        $compile(template)(scope, function(cloned){
+          element.append(cloned);
+        });
+      }
     };
 
   }]);

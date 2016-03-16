@@ -10,8 +10,6 @@
 
 'use strict';
 
-/* global RQL_NODE */
-
 /* exported CRITERIA_ITEM_EVENT */
 var CRITERIA_ITEM_EVENT = {
   deleted: 'event:delete-criteria-item',
@@ -332,7 +330,7 @@ angular.module('obiba.mica.search')
     };
   }])
 
-  .directive('criteriaNode', [function(){
+  .directive('criteriaNode', ['CriteriaNodeCompileService', function(CriteriaNodeCompileService){
     return {
       restrict: 'EA',
       replace: true,
@@ -341,37 +339,25 @@ angular.module('obiba.mica.search')
         query: '='
       },
       controller: 'CriterionLogicalController',
-      templateUrl: 'search/views/criteria/criteria-node-template.html'
+      link: function(scope, element) {
+        CriteriaNodeCompileService.compile(scope, element);
+      }
     };
   }])
 
   /**
    * This directive creates a hierarchical structure matching that of a RqlQuery tree.
    */
-  .directive('criteriaLeaf', ['$compile',
-    function($compile){
+  .directive('criteriaLeaf', ['CriteriaNodeCompileService', function(CriteriaNodeCompileService){
       return {
         restrict: 'EA',
         replace: true,
         scope: {
           item: '=',
-          query: '=',
-          parentType: '='
+          query: '='
         },
-        template: '<span></span>',
         link: function(scope, element) {
-          var template = '';
-          if (scope.item.type === RQL_NODE.OR || scope.item.type === RQL_NODE.AND || scope.item.type === RQL_NODE.NAND || scope.item.type === RQL_NODE.NOR) {
-            template = '<criteria-node item="item" query="query"></criteria-node>';
-            $compile(template)(scope, function(cloned){
-              element.append(cloned);
-            });
-          } else {
-            template = '<criterion-dropdown criterion="item" query="query"></criterion-dropdown>';
-            $compile(template)(scope, function(cloned){
-              element.append(cloned);
-            });
-          }
+          CriteriaNodeCompileService.compile(scope, element);
         }
       };
     }])
