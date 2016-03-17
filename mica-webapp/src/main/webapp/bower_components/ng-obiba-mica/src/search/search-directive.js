@@ -506,6 +506,7 @@ angular.module('obiba.mica.search')
       scope: {
         target: '=',
         onSelectTerm: '=',
+        isHistoryEnabled: '=',
         lang: '='
       },
       controller: 'TaxonomiesPanelController',

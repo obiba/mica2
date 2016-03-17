@@ -94,7 +94,8 @@
             </li>
             <li>
               <a href ng-click="goToClassifications()" title="{{'search.classifications-show' | translate}}">
-                <i class="glyphicon glyphicon-option-horizontal"></i>
+                <span ng-if="options.classificationsLinkLabel">{{options.classificationsLinkLabel}}</span>
+                <i class="glyphicon glyphicon-option-horizontal" ng-if="!options.classificationsLinkLabel"></i>
               </a>
             </li>
           </ul>
@@ -132,6 +133,8 @@
         ng-click="selectDisplay(tab)">{{ options[ tab + 'Label'] | translate}}</a></li>
     </ul>
     <div class="tab-panel">
+      <div ng-bind-html="options[search.display + 'Help']" ng-if="options[search.display + 'Help']">
+      </div>
       <result-panel display="search.display"
         type="search.type"
         bucket="search.bucket"

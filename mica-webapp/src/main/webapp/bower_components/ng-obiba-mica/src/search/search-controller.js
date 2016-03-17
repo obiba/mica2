@@ -152,6 +152,10 @@ angular.module('obiba.mica.search')
           return searchTaxonomyDisplay[t];
         });
 
+        if($location.search().target) {
+          $scope.target = $location.search().target;
+        }
+
         $scope.metaTaxonomy.$promise.then(function (metaTaxonomy) {
           $scope.taxonomyTabsOrder.forEach(function (target) {
             var targetVocabulary = metaTaxonomy.vocabularies.filter(function (vocabulary) {
@@ -189,6 +193,7 @@ angular.module('obiba.mica.search')
             }
           });
         });
+
       }
 
       function onError(response) {
@@ -610,11 +615,22 @@ angular.module('obiba.mica.search')
       };
 
       $scope.goToSearch = function () {
+        $location.search('taxonomy', null);
+        $location.search('vocabulary', null);
+        $location.search('target', null);
         $location.path('/search');
       };
 
       $scope.goToClassifications = function () {
         $location.path('/classifications');
+        $location.search('target', $scope.taxonomyTabsOrder[0]);
+      };
+
+      $scope.navigateToTarget = function(target) {
+        $location.search('target', target);
+        $location.search('taxonomy', null);
+        $location.search('vocabulary', null);
+        $scope.target = target;
       };
 
       $scope.QUERY_TYPES = QUERY_TYPES;
@@ -695,8 +711,8 @@ angular.module('obiba.mica.search')
       init();
     }])
 
-  .controller('TaxonomiesPanelController', ['$scope', 'VocabularyResource', 'TaxonomyResource', 'TaxonomiesResource',
-    function ($scope, VocabularyResource, TaxonomyResource, TaxonomiesResource) {
+  .controller('TaxonomiesPanelController', ['$scope', '$location', 'VocabularyResource', 'TaxonomyResource', 'TaxonomiesResource',
+    function ($scope, $location, VocabularyResource, TaxonomyResource, TaxonomiesResource) {
       $scope.metaTaxonomy = TaxonomyResource.get({
         target: 'taxonomy',
         taxonomy: 'Mica_taxonomy'
@@ -708,7 +724,7 @@ angular.module('obiba.mica.search')
           text: null,
           active: false
         },
-        target: 'variable',
+        target: $scope.target || 'variable',
         taxonomy: null,
         vocabulary: null
       };
@@ -769,10 +785,47 @@ angular.module('obiba.mica.search')
       };
 
       var navigateTaxonomy = function (taxonomy, vocabulary, term) {
-        $scope.taxonomies.taxonomy = taxonomy;
-        $scope.taxonomies.vocabulary = vocabulary;
         $scope.taxonomies.term = term;
+
+        if ($scope.isHistoryEnabled) {
+          $location.search('taxonomy', taxonomy ? taxonomy.name : null);
+          $location.search('vocabulary', vocabulary ? vocabulary.name : null);
+        } else {
+          $scope.taxonomies.taxonomy = taxonomy;
+          $scope.taxonomies.vocabulary = vocabulary;
+        }
       };
+
+      var updateStateFromLocation = function() {
+        var taxonomyName = $location.search().taxonomy,
+            vocabularyName = $location.search().vocabulary, taxonomy = null, vocabulary = null;
+
+        if(!$scope.taxonomies.all) { //page loading
+          return;
+        }
+
+        $scope.taxonomies.all.forEach(function(t) {
+          if (t.name === taxonomyName) {
+            taxonomy = t;
+            t.vocabularies.forEach(function(v) {
+              if (v.name === vocabularyName) {
+                vocabulary = v;
+              }
+            });
+          }
+        });
+
+        if(!angular.equals($scope.taxonomies.taxonomy, taxonomy) || !angular.equals($scope.taxonomies.vocabulary, vocabulary)) {
+          $scope.taxonomies.taxonomy = taxonomy;
+          $scope.taxonomies.vocabulary = vocabulary;
+        }
+      };
+
+      $scope.$on('$locationChangeSuccess', function () {
+        if($scope.isHistoryEnabled) {
+          updateStateFromLocation();
+        }
+      });
 
       var selectTerm = function (target, taxonomy, vocabulary, term) {
         $scope.onSelectTerm(target, taxonomy, vocabulary, term);

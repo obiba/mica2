@@ -43,8 +43,12 @@ angular.module('obiba.mica.search', [
         searchTabsOrder: [DISPLAY_TYPES.LIST, DISPLAY_TYPES.COVERAGE, DISPLAY_TYPES.GRAPHICS],
         resultTabsOrder: [QUERY_TARGETS.VARIABLE, QUERY_TARGETS.DATASET, QUERY_TARGETS.STUDY, QUERY_TARGETS.NETWORK],
         listLabel: 'search.list',
+        listHelp: null,
         coverageLabel: 'search.coverage',
+        coverageHelp: null,
         graphicsLabel: 'search.graphics',
+        graphicsHelp: null,
+        classificationsLinkLabel: null,
         variables: {
           showSearchTab: true,
           searchLabel: 'search.variable.searchLabel',
@@ -113,7 +117,7 @@ angular.module('obiba.mica.search', [
 
       this.setOptions = function (value) {
         options = angular.merge(options, value);
-        //NOTICE: angular.merge merges arrays by position. Overwriting manually.
+        //NOTICE: angular.merge merges arrays by position. Overriding manually.
         options.taxonomyTabsOrder = value.taxonomyTabsOrder || options.taxonomyTabsOrder;
         options.searchTabsOrder = value.searchTabsOrder || options.searchTabsOrder;
         options.resultTabsOrder = value.resultTabsOrder || options.resultTabsOrder;
