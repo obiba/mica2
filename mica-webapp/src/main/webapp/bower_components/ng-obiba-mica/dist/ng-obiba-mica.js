@@ -3316,6 +3316,16 @@ angular.module('obiba.mica.search')
         return false;
       }
 
+      function quoteQuery(query) {
+        query = query.trim();
+
+        if (query.match(/\s+/)) {
+          return '"'+query.replace(/^"|"$/g, '').replace(/"/, '\"')+'"';
+        }
+
+        return query;
+      }
+
       var clearSearchQuery = function () {
         var search = $location.search();
         delete search.query;
@@ -3486,7 +3496,7 @@ angular.module('obiba.mica.search')
         }
 
         return TaxonomiesSearchResource.get({
-          query: query, locale: $scope.lang, target: $scope.documents.search.target
+          query: quoteQuery(query), locale: $scope.lang, target: $scope.documents.search.target
         }).$promise.then(function (response) {
           if (response) {
             var results = [];
