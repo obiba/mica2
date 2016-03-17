@@ -56,13 +56,13 @@
       timeToIdleSeconds="0"/>
 
   <cache name="opal-taxonomies"
-    timeToLiveSeconds="3600"
-    timeToIdleSeconds="0">
+    overflowToDisk="true"
+    eternal="true">
   </cache>
 
   <cache name="aggregations-metadata"
-    timeToLiveSeconds="3600"
-    timeToIdleSeconds="0">
+    overflowToDisk="true"
+    eternal="true">
   </cache>
 
   <cache name="dataset-variables"
