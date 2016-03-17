@@ -10,6 +10,8 @@
 
 package org.obiba.mica.micaConfig.service.helper;
 
+import java.io.Serializable;
+
 import org.obiba.mica.core.domain.LocalizedString;
 
 import com.google.common.base.Strings;
@@ -28,7 +30,10 @@ public interface AggregationMetaDataProvider {
 
   void refresh();
 
-  class LocalizedMetaData {
+  class LocalizedMetaData implements Serializable {
+
+    private static final long serialVersionUID = 6749141844859799977L;
+
     private LocalizedString title;
     private LocalizedString description;
     private String start;
