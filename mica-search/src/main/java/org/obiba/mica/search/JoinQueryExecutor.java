@@ -164,22 +164,6 @@ public class JoinQueryExecutor {
         } else if(type == QueryType.DATASET) {
           variableQuery.query(joinedIds, null, DIGEST);
         }
-      } else if(!studyQuery.hasQueryBuilder()) {
-        variableQuery.query(joinedIds, null, DIGEST); //to set datasetprovider datasets if any
-
-        if(!datasetIdProvider.getDatasetIds().isEmpty()) {
-          if(type != QueryType.DATASET) {
-            datasetQuery.query(joinedIds, null, DIGEST);
-          }
-
-          if(type == QueryType.VARIABLE || type == QueryType.DATASET) {
-            getDocumentQuery(type).query(joinedIds, countStats, scope);
-          }
-        }
-
-        List<String> tmp = new ArrayList<>();
-        tmp.add(""); //fake study id to get only aggregations summary
-        studyQuery.query(tmp, null, DIGEST);
       }
     } else {
       execute(type, scope, countBuilder);
