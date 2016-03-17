@@ -6908,6 +6908,7 @@ angular.module("search/views/coverage/coverage-search-result-table-template.html
     "          <table style=\"border:none; width: 100%\" ng-if=\"col.start\">\n" +
     "            <tbody>\n" +
     "            <tr>\n" +
+    "              <td ng-if=\"col.min !== col.start\" width=\"30\"></td>\n" +
     "              <td>\n" +
     "                <small class=\"help-block no-margin\">\n" +
     "                  {{col.start}}\n" +
@@ -6919,9 +6920,10 @@ angular.module("search/views/coverage/coverage-search-result-table-template.html
     "                  {{col.end ? col.end : '...'}}\n" +
     "                </small>\n" +
     "              </td>\n" +
+    "              <td ng-if=\"col.max !== col.end\" width=\"30\"></td>\n" +
     "            </tr>\n" +
     "            <tr>\n" +
-    "              <td colspan=\"3\">\n" +
+    "              <td colspan=\"5\">\n" +
     "                <div class=\"progress no-margin\">\n" +
     "                  <div class=\"progress-bar progress-bar-transparent\" role=\"progressbar\"\n" +
     "                    aria-valuenow=\"{{col.start}}\" aria-valuemin=\"{{col.min}}\"\n" +
