@@ -33,7 +33,7 @@
   "title":
     "en": "Study designs"
     "fr": "Définitions d'étude"
-  "description": 
+  "description":
     "en": "The design of a study defines the study type (e.g. observational, experimental) and sub-type (e.g.  cohort study, case control, randomized control trial)."
   "keywords": {}
   "attributes":
@@ -1809,44 +1809,44 @@
     "keywords": {}
   - "name": "10:20"
     "title":
-      "en": "10 to 20"
-      "fr": "10 à 20"
+      "en": "10 to 20 excl."
+      "fr": "10 à 20 excl."
     "description": {}
     "keywords": {}
   - "name": "20:30"
     "title":
-      "en": "20 to 30"
-      "fr": "20 à 30"
+      "en": "20 to 30 excl."
+      "fr": "20 à 30 excl."
     "description": {}
     "keywords": {}
   - "name": "30:40"
     "title":
-      "en": "30 to 40"
-      "fr": "30 à 40"
+      "en": "30 to 40 excl."
+      "fr": "30 à 40 excl."
     "description": {}
     "keywords": {}
   - "name": "40:50"
     "title":
-      "en": "40 to 50"
-      "fr": "40 à 50"
+      "en": "40 to 50 excl."
+      "fr": "40 à 50 excl."
     "description": {}
     "keywords": {}
   - "name": "50:60"
     "title":
-      "en": "50 to 60"
-      "fr": "50 à 60"
+      "en": "50 to 60 excl."
+      "fr": "50 à 60 excl."
     "description": {}
     "keywords": {}
   - "name": "60:70"
     "title":
-      "en": "60 to 70"
-      "fr": "60 à 70"
+      "en": "60 to 70 excl."
+      "fr": "60 à 70 excl."
     "description": {}
     "keywords": {}
   - "name": "70:80"
     "title":
-      "en": "70 to 80"
-      "fr": "70 à 80"
+      "en": "70 to 80 excl."
+      "fr": "70 à 80 excl."
     "description": {}
     "keywords": {}
   - "name": "80:*"
@@ -1889,44 +1889,44 @@
     "keywords": {}
   - "name": "10:20"
     "title":
-      "en": "10 to 20"
-      "fr": "10 à 20"
+      "en": "10 to 20 excl."
+      "fr": "10 à 20 excl."
     "description": {}
     "keywords": {}
   - "name": "20:30"
     "title":
-      "en": "20 to 30"
-      "fr": "20 à 30"
+      "en": "20 to 30 excl."
+      "fr": "20 à 30 excl."
     "description": {}
     "keywords": {}
   - "name": "30:40"
     "title":
-      "en": "30 to 40"
-      "fr": "30 à 40"
+      "en": "30 to 40 excl."
+      "fr": "30 à 40 excl."
     "description": {}
     "keywords": {}
   - "name": "40:50"
     "title":
-      "en": "40 to 50"
-      "fr": "40 à 50"
+      "en": "40 to 50 excl."
+      "fr": "40 à 50 excl."
     "description": {}
     "keywords": {}
   - "name": "50:60"
     "title":
-      "en": "50 to 60"
-      "fr": "50 à 60"
+      "en": "50 to 60 excl."
+      "fr": "50 à 60 excl."
     "description": {}
     "keywords": {}
   - "name": "60:70"
     "title":
-      "en": "60 to 70"
-      "fr": "60 à 70"
+      "en": "60 to 70 excl."
+      "fr": "60 à 70 excl."
     "description": {}
     "keywords": {}
   - "name": "70:80"
     "title":
-      "en": "70 to 80"
-      "fr": "70 à 80"
+      "en": "70 to 80 excl."
+      "fr": "70 à 80 excl."
     "description": {}
     "keywords": {}
   - "name": "80:*"
@@ -2026,32 +2026,32 @@
       "keywords": {}
     - "name": "1000:5000"
       "title":
-        "en": "1000 to 5000"
-        "fr": "1000 à 5000"
+        "en": "1000 to 5000 excl."
+        "fr": "1000 à 5000 excl."
       "description": {}
       "keywords": {}
     - "name": "5000:10000"
       "title":
-        "en": "5000 to 10000"
-        "fr": "5000 à 10000"
+        "en": "5000 to 10000 excl."
+        "fr": "5000 à 10000 excl."
       "description": {}
       "keywords": {}
     - "name": "10000:50000"
       "title":
-        "en": "10000 to 50000"
-        "fr": "10000 à 50000"
+        "en": "10000 to 50000 excl."
+        "fr": "10000 à 50000 excl."
       "description": {}
       "keywords": {}
     - "name": "50000:100000"
       "title":
-        "en": "50000 to 100000"
-        "fr": "50000 à 100000"
+        "en": "50000 to 100000 excl."
+        "fr": "50000 à 100000 excl."
       "description": {}
       "keywords": {}
     - "name": "100000:500000"
       "title":
-        "en": "100000 to 500000"
-        "fr": "100000 à 500000"
+        "en": "100000 to 500000 excl."
+        "fr": "100000 à 500000 excl."
       "description": {}
       "keywords": {}
     - "name": "500000:*"
@@ -2094,32 +2094,32 @@
       "keywords": {}
     - "name": "1000:5000"
       "title":
-        "en": "1000 to 5000"
-        "fr": "1000 à 5000"
+        "en": "1000 to 5000 excl."
+        "fr": "1000 à 5000 excl."
       "description": {}
       "keywords": {}
     - "name": "5000:10000"
       "title":
-        "en": "5000 to 10000"
-        "fr": "5000 à 10000"
+        "en": "5000 to 10000 excl."
+        "fr": "5000 à 10000 excl."
       "description": {}
       "keywords": {}
     - "name": "10000:50000"
       "title":
-        "en": "10000 to 50000"
-        "fr": "10000 à 50000"
+        "en": "10000 to 50000 excl."
+        "fr": "10000 à 50000 excl."
       "description": {}
       "keywords": {}
     - "name": "50000:100000"
       "title":
-        "en": "50000 to 100000"
-        "fr": "50000 à 100000"
+        "en": "50000 to 100000 excl."
+        "fr": "50000 à 100000 excl."
       "description": {}
       "keywords": {}
     - "name": "100000:500000"
       "title":
-        "en": "100000 to 500000"
-        "fr": "100000 à 500000"
+        "en": "100000 to 500000 excl."
+        "fr": "100000 à 500000 excl."
       "description": {}
       "keywords": {}
     - "name": "500000:*"
