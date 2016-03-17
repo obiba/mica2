@@ -1225,6 +1225,37 @@ angular.module('obiba.mica.search')
           }).length;
       };
 
+      $scope.selectAll = function() {
+        if ($scope.table && $scope.table.rows) {
+          $scope.table.rows.forEach(function(r){
+            r.selected = true;
+          });
+        }
+      };
+
+      $scope.selectNone = function() {
+        if ($scope.table && $scope.table.rows) {
+          $scope.table.rows.forEach(function(r){
+            r.selected = false;
+          });
+        }
+      };
+
+      $scope.selectFull = function() {
+        if ($scope.table && $scope.table.rows) {
+          $scope.table.rows.forEach(function(r){
+            if (r.hits) {
+              r.selected = r.hits.filter(function(h){
+                return h === 0;
+              }).length === 0;
+            } else {
+              r.selected = false;
+            }
+
+          });
+        }
+      };
+
       function getBucketUrl(bucket, id) {
         switch (bucket) {
           case BUCKET_TYPES.STUDY:
