@@ -4416,6 +4416,8 @@ angular.module('obiba.mica.search')
           }
         }
 
+        var odd = true;
+        var groupId;
         $scope.result.rows.forEach(function (row) {
           cols.ids[row.value] = [];
           if ($scope.bucket === BUCKET_TYPES.DCE) {
@@ -4427,6 +4429,12 @@ angular.module('obiba.mica.search')
 
             // study
             id = ids[0];
+            if (!groupId) {
+              groupId = id;
+            } else if(id !== groupId) {
+              odd = !odd;
+              groupId = id;
+            }
             rowSpan = appendRowSpan(id);
             appendMinMax(id,row.start, row.end);
             cols.ids[row.value].push({
@@ -4456,6 +4464,7 @@ angular.module('obiba.mica.search')
               start: row.start,
               current: currentYear + '-' + currentMonth,
               end: row.end,
+              progressClass: odd ? 'info' : 'warning',
               url: PageUrlService.studyPopulationPage(ids[0], ids[1]),
               rowSpan: 1
             });
@@ -4472,8 +4481,10 @@ angular.module('obiba.mica.search')
               max: row.end,
               progressStart: 0,
               progress: getProgress(row.start ? row.start + '-01' : undefined, row.end ? row.end + '-12' : undefined),
+              progressClass: odd ? 'info' : 'warning',
               rowSpan: 1
             });
+            odd = !odd;
           }
         });
 
@@ -6960,24 +6971,21 @@ angular.module("search/views/coverage/coverage-search-result-table-template.html
     "            popover-placement=\"bottom\"\n" +
     "            popover-trigger=\"mouseenter\">{{col.title}}</a>\n" +
     "          <div style=\"text-align: center\" ng-if=\"col.start && bucket === BUCKET_TYPES.DCE\">\n" +
-    "\n" +
-    "              <div>\n" +
-    "                <small class=\"help-block no-margin\">\n" +
-    "                  {{col.start}} {{'to' | translate}} {{col.end ? col.end : '...'}}\n" +
-    "                </small>\n" +
+    "            <div>\n" +
+    "              <small class=\"help-block no-margin\">\n" +
+    "                {{col.start}} {{'to' | translate}} {{col.end ? col.end : '...'}}\n" +
+    "              </small>\n" +
+    "            </div>\n" +
+    "            <div class=\"progress no-margin\">\n" +
+    "              <div class=\"progress-bar progress-bar-transparent\" role=\"progressbar\"\n" +
+    "                aria-valuenow=\"{{col.start}}\" aria-valuemin=\"{{col.min}}\"\n" +
+    "                aria-valuemax=\"{{col.start}}\" style=\"{{'width: ' + col.progressStart + '%'}}\">\n" +
     "              </div>\n" +
-    "\n" +
-    "                <div class=\"progress no-margin\">\n" +
-    "                  <div class=\"progress-bar progress-bar-transparent\" role=\"progressbar\"\n" +
-    "                    aria-valuenow=\"{{col.start}}\" aria-valuemin=\"{{col.min}}\"\n" +
-    "                    aria-valuemax=\"{{col.start}}\" style=\"{{'width: ' + col.progressStart + '%'}}\">\n" +
-    "                  </div>\n" +
-    "                  <div class=\"progress-bar progress-bar-info\" role=\"progressbar\"\n" +
-    "                    aria-valuenow=\"{{col.current}}\" aria-valuemin=\"{{col.start}}\"\n" +
-    "                    aria-valuemax=\"{{col.end ? col.end : col.current}}\" style=\"{{'width: ' + col.progress + '%'}}\">\n" +
-    "                  </div>\n" +
-    "                </div>\n" +
-    "\n" +
+    "              <div class=\"{{'progress-bar progress-bar-' + col.progressClass}}\" role=\"progressbar\"\n" +
+    "                aria-valuenow=\"{{col.current}}\" aria-valuemin=\"{{col.start}}\"\n" +
+    "                aria-valuemax=\"{{col.end ? col.end : col.current}}\" style=\"{{'width: ' + col.progress + '%'}}\">\n" +
+    "              </div>\n" +
+    "            </div>\n" +
     "          </div>\n" +
     "        </td>\n" +
     "        <td ng-repeat=\"h in table.termHeaders\">\n" +

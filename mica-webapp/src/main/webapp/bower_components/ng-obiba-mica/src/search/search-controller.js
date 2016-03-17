@@ -1355,6 +1355,8 @@ angular.module('obiba.mica.search')
           }
         }
 
+        var odd = true;
+        var groupId;
         $scope.result.rows.forEach(function (row) {
           cols.ids[row.value] = [];
           if ($scope.bucket === BUCKET_TYPES.DCE) {
@@ -1366,6 +1368,12 @@ angular.module('obiba.mica.search')
 
             // study
             id = ids[0];
+            if (!groupId) {
+              groupId = id;
+            } else if(id !== groupId) {
+              odd = !odd;
+              groupId = id;
+            }
             rowSpan = appendRowSpan(id);
             appendMinMax(id,row.start, row.end);
             cols.ids[row.value].push({
@@ -1395,6 +1403,7 @@ angular.module('obiba.mica.search')
               start: row.start,
               current: currentYear + '-' + currentMonth,
               end: row.end,
+              progressClass: odd ? 'info' : 'warning',
               url: PageUrlService.studyPopulationPage(ids[0], ids[1]),
               rowSpan: 1
             });
@@ -1411,8 +1420,10 @@ angular.module('obiba.mica.search')
               max: row.end,
               progressStart: 0,
               progress: getProgress(row.start ? row.start + '-01' : undefined, row.end ? row.end + '-12' : undefined),
+              progressClass: odd ? 'info' : 'warning',
               rowSpan: 1
             });
+            odd = !odd;
           }
         });
 
