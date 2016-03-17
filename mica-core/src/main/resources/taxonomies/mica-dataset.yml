@@ -20,22 +20,24 @@
   "title":
     "en": "Dataset type"
     "fr": "Type de jeux de données"
-  "description": {}
+  "description":
+    "en": "Type of dataset (e.g. study-specific or harmonization)"
   "keywords": {}
   "terms":
   - "name": "StudyDataset"
     "title":
-      "en": "Study"
+      "en": "Study-specific"
       "fr": "Étude"
     "description":
-      "en": "Study specific dataset."
+      "en": "A study-specific dataset holds metadata about the variables collected within a data collection event."
       "fr": "Jeux de données spécifique à une étude."
     "keywords": {}
   - "name": "HarmonizationDataset"
     "title":
       "en": "Harmonization"
       "fr": "Harmonisation"
-    "description": {}
+    "description":
+      "en": "A harmonization dataset holds metadata about core variables constructed from multiple study-specific datasets."
     "keywords": {}
 - "name": "networkId"
   "title":

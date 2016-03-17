@@ -33,7 +33,8 @@
   "title":
     "en": "Study designs"
     "fr": "Définitions d'étude"
-  "description": {}
+  "description": 
+    "en": "The design of a study defines the study type (e.g. observational, experimental) and sub-type (e.g.  cohort study, case control, randomized control trial)."
   "keywords": {}
   "attributes":
     "field": "methods.designs"
@@ -43,68 +44,79 @@
     "title":
       "en": "Cohort study"
       "fr": "Étude de cohorte"
-    "description": {}
+    "description":
+      "en": "A study design where one or more samples are followed prospectively to determine the incidence of a disease or outcome in individuals who are exposed to certain risk factors as compared to those who are not exposed."
     "keywords": {}
   - "name": "case_control"
     "title":
       "en": "Case control"
       "fr": "Cas-témoins"
-    "description": {}
+    "description":
+      "en": "A study that compares participants who have a disease or outcome of interest (cases) with participants who do not have the disease or outcome (controls) to retrospectively assess whether there were any differences in their past exposure to certain risk factors."
     "keywords": {}
   - "name": "case_only"
     "title":
       "en": "Case only"
       "fr": "Cas"
-    "description": {}
+    "description":
+      "en": "A study that describes and interprets an individual case."
     "keywords": {}
   - "name": "clinical_trial"
     "title":
       "en": "Clinical trial"
       "fr": "Essai clinique"
-    "description": {}
+    "description":
+      "en": "A study design that randomly assigns participants into an experimental group or a control group to evaluate the effect of a certain intervention on the outcome being studied."
     "keywords": {}
   - "name": "cross_sectional"
     "title":
       "en": "Cross sectional"
       "fr": "Analyse transversale"
-    "description": {}
+    "description":
+      "en": "A study design that involves the analysis of data collected from a population, or a representative subset, at a single point in time."
     "keywords": {}
   - "name": "other"
     "title":
       "en": "Other"
       "fr": "Autre"
-    "description": {}
+    "description":
+      "en": "Other study design."
     "keywords": {}
 - "name": "access"
   "title":
     "en": "Access permitted"
     "fr": "Accès permis"
-  "description": {}
+  "description":
+    "en": "Specification if access to study data, biological samples or other study material by external researchers or third parties is provided or foreseen."
   "keywords": {}
   "terms":
   - "name": "data"
     "title":
       "en": "Data"
       "fr": "Données"
-    "description": {}
+    "description":
+      "en": "Individual fact, statistic or item of information."
     "keywords": {}
   - "name": "bio_samples"
     "title":
       "en": "Biosamples"
       "fr": "Échantillons biologiques"
-    "description": {}
+    "description":
+      "en": "Sample of biological material."
     "keywords": {}
   - "name": "other"
     "title":
       "en": "Other"
       "fr": "Autre"
-    "description": {}
+    "description":
+      "en": "Other study material."
     "keywords": {}
 - "name": "methods-recruitments"
   "title":
     "en": "Recruitment target"
     "fr": "Cible de recrutement"
-  "description": {}
+  "description":
+    "en": "Type of participant units targeted by the study."
   "keywords": {}
   "attributes":
     "field": "methods.recruitments"
@@ -154,7 +166,8 @@
   "title":
     "en": "Sources of recruitment"
     "fr": "Sources de recrutement"
-  "description": {}
+  "description":
+    "en": "Origin of the selected participants."
   "keywords": {}
   "attributes":
     "field": "populations.recruitment.dataSources"
@@ -164,25 +177,29 @@
     "title":
       "en": "General population"
       "fr": "Population générale"
-    "description": {}
+    "description":
+      "en": "Source of recruitment which refers to all individuals without reference to any specific characteristic. It includes volunteer enrolment, population databases and random digit dialing."
     "keywords": {}
   - "name": "specific_population"
     "title":
       "en": "Specific population"
       "fr": "Population spécifique"
-    "description": {}
+    "description":
+      "en": "Source of recruitment which refers to individuals being part of a particular institution or organization. It includes clinic patients and members of specific associations."
     "keywords": {}
   - "name": "exist_studies"
     "title":
       "en": "Participants from existing studies"
       "fr": "Participants provenant d'études existantes"
-    "description": {}
+    "description":
+      "en": "Source of recruitment which refers to individuals already participating in the selected study."
     "keywords": {}
   - "name": "other"
     "title":
       "en": "Other"
       "fr": "Autre"
-    "description": {}
+    "description":
+      "en": "Other source of recruitment."
     "keywords": {}
 - "name": "populations-recruitment-generalPopulationSources"
   "title":
@@ -198,21 +215,24 @@
     "title":
       "en": "Volunteer enrolment"
       "fr": "Enrôlement volontaire"
-    "description": {}
+    "description":
+      "en": "Individuals who offer their participation without being directly contacted."
     "keywords": {}
     "terms": []
   - "name": "selected_samples"
     "title":
       "en": "Selected sample"
       "fr": "Sous-échantillons"
-    "description": {}
+    "description":
+      "en": "Individuals selected from population databases."
     "keywords": {}
     "terms": []
   - "name": "random"
     "title":
       "en": "Random digit dialing"
       "fr": "Génération aléatoire de numéros"
-    "description": {}
+    "description":
+      "en": "Individuals selected by generating telephone numbers at random."
     "keywords": {}
     "terms": []
 - "name": "populations-recruitment-specificPopulationSources"
@@ -229,28 +249,32 @@
     "title":
       "en": "Clinic patients"
       "fr": "Patients d'une clinique"
-    "description": {}
+    "description":
+      "en": "Individuals selected from the healthcare facility where they receive medical help."
     "keywords": {}
     "terms": []
   - "name": "specific_association"
     "title":
       "en": "Members of specific association"
       "fr": "Membres d'une association spécifique"
-    "description": {}
+    "description":
+      "en": "Individuals selected from associations they participate in (e.g. professional association, patient network, etc)."
     "keywords": {}
     "terms": []
   - "name": "other"
     "title":
       "en": "Other specific population"
       "fr": "Autre population spécifique"
-    "description": {}
+    "description":
+      "en": "Other specific population."
     "keywords": {}
     "terms": []
 - "name": "populations-selectionCriteria-countriesIso"
   "title":
     "en": "Country of residence"
     "fr": "Pays de résidence"
-  "description": {}
+  "description":
+    "en": "Participant’s country of residence."
   "keywords": {}
   "attributes":
     "field": "populations.selectionCriteria.countriesIso"
@@ -1915,7 +1939,8 @@
   "title":
     "en": "Gender"
     "fr": "Genre"
-  "description": {}
+  "description":
+    "en": "Participant’s gender"
   "keywords": {}
   "attributes":
     "field": "populations.selectionCriteria.gender"
@@ -1937,7 +1962,8 @@
   "title":
     "en": "Selection criteria"
     "fr": "Critères de sélection"
-  "description": {}
+  "description":
+    "en": "Characteristics of the individuals chosen to participate in the study."
   "keywords": {}
   "attributes":
     "field": "populations.selectionCriteria.criteria"
@@ -1947,21 +1973,24 @@
     "title":
       "en": "Gravidity"
       "fr": "Femmes enceintes"
-    "description": {}
+    "description":
+      "en": "Selection of pregnant individuals."
     "keywords": {}
     "terms": []
   - "name": "newborn"
     "title":
       "en": "Newborn"
       "fr": "Nouveaux-nés"
-    "description": {}
+    "description":
+      "en": "Selection of recently born individuals."
     "keywords": {}
     "terms": []
   - "name": "twin"
     "title":
       "en": "Twin"
       "fr": "Jumeaux"
-    "description": {}
+    "description":
+      "en": "Selection of individuals born at the same time to the same mother."
     "keywords": {}
 - "name": "numberOfParticipants-participant-number"
   "title":
@@ -2103,7 +2132,8 @@
   "title":
     "en": "Data collection sources"
     "fr": "Source des données collectées"
-  "description": {}
+  "description":
+    "en": "Sources from which the information is obtained."
   "keywords": {}
   "attributes":
     "field": "populations.dataCollectionEvents.dataSources"
@@ -2113,31 +2143,36 @@
     "title":
       "en": "Questionnaires"
       "fr": "Questionnaires"
-    "description": {}
+    "description":
+      "en": "Set of questions used to collect facts or opinions about something."
     "keywords": {}
   - "name": "physical_measures"
     "title":
       "en": "Physical Measures"
       "fr": "Mesures physiques"
-    "description": {}
+    "description":
+      "en": "Measure of a physical condition or property."
     "keywords": {}
   - "name": "biological_samples"
     "title":
       "en": "Biosamples"
       "fr": "Échantillons biologiques"
-    "description": {}
+    "description":
+      "en": "Sample of biological material."
     "keywords": {}
   - "name": "administratives_databases"
     "title":
       "en": "Administrative Databases"
       "fr": "Bases de données administratives"
-    "description": {}
+    "description":
+      "en": "External database linked with participant data. It includes health, vital statistics, socioeconomic and environmental databases."
     "keywords": {}
   - "name": "others"
     "title":
       "en": "Others"
       "fr": "Autres"
-    "description": {}
+    "description":
+      "en": "Other sources of data."
     "keywords": {}
 - "name": "populations-dataCollectionEvents-bioSamples"
   "title":
@@ -2217,23 +2252,27 @@
     "title":
       "en": "Health databases"
       "fr": "Bases de données de santé"
-    "description": {}
+    "description":
+      "en": "Database containing information concerning health and use of healthcare services (e.g. hospitalization, physician billing, drug utilization)."
     "keywords": {}
   - "name": "vital_statistics_databases"
     "title":
       "en": "Vital Statistics Databases"
       "fr": "Bases de données de l'état civil"
-    "description": {}
+    "description":
+      "en": "Database containing information concerning the important events in human life, such as births, deaths, marriages and migrations (e.g. death registries)."
     "keywords": {}
   - "name": "socioeconomic_databases"
     "title":
       "en": "Socioeconomic Databases"
       "fr": "Bases de données socio-économiques"
-    "description": {}
+    "description":
+      "en": "Database containing socioeconomic information (e.g. census)."
     "keywords": {}
   - "name": "environmental_databases"
     "title":
       "en": "Environmental Databases"
       "fr": "Bases de données environnementales"
-    "description": {}
+    "description":
+      "en": "Database containing information concerning natural and man-made environmental characteristics (e.g. air pollutant geocoded data)."
     "keywords": {}
