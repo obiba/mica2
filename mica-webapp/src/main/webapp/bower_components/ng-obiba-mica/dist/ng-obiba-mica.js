@@ -6650,13 +6650,6 @@ angular.module("search/views/classifications/taxonomies-view.html", []).run(["$t
     "        <div class=\"row\">\n" +
     "          <div class=\"col-md-8\">\n" +
     "            <ol class=\"breadcrumb no-margin no-padding pull-left\">\n" +
-    "              <li ng-if=\"!taxonomies.taxonomy\">\n" +
-    "                {{'all-' + taxonomies.target + '-classifications' | translate}}\n" +
-    "              </li>\n" +
-    "              <li ng-if=\"taxonomies.taxonomy\">\n" +
-    "                <a href ng-click=\"navigateTaxonomy()\">{{'all-' + taxonomies.target + '-classifications' |\n" +
-    "                  translate}}</a>\n" +
-    "              </li>\n" +
     "              <li ng-if=\"taxonomies.taxonomy\">\n" +
     "            <span ng-repeat=\"label in taxonomies.taxonomy.title\" ng-if=\"label.locale === lang\">\n" +
     "              {{label.text}}\n" +
@@ -6699,9 +6692,6 @@ angular.module("search/views/classifications/taxonomies-view.html", []).run(["$t
     "        <div ng-if=\"taxonomies.taxonomy\">\n" +
     "          <div class=\"row\">\n" +
     "            <div class=\"col-md-4 height3\" scroll-to-top=\"taxonomies.taxonomy\">\n" +
-    "              <h5 ng-repeat=\"label in taxonomies.taxonomy.title\" ng-if=\"label.locale === lang\">\n" +
-    "                {{label.text}}\n" +
-    "              </h5>\n" +
     "              <p class=\"help-block\" ng-repeat=\"label in taxonomies.taxonomy.description\" ng-if=\"label.locale === lang\">\n" +
     "                {{label.text}}\n" +
     "              </p>\n" +

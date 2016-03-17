@@ -5,13 +5,6 @@
         <div class="row">
           <div class="col-md-8">
             <ol class="breadcrumb no-margin no-padding pull-left">
-              <li ng-if="!taxonomies.taxonomy">
-                {{'all-' + taxonomies.target + '-classifications' | translate}}
-              </li>
-              <li ng-if="taxonomies.taxonomy">
-                <a href ng-click="navigateTaxonomy()">{{'all-' + taxonomies.target + '-classifications' |
-                  translate}}</a>
-              </li>
               <li ng-if="taxonomies.taxonomy">
             <span ng-repeat="label in taxonomies.taxonomy.title" ng-if="label.locale === lang">
               {{label.text}}
@@ -54,9 +47,6 @@
         <div ng-if="taxonomies.taxonomy">
           <div class="row">
             <div class="col-md-4 height3" scroll-to-top="taxonomies.taxonomy">
-              <h5 ng-repeat="label in taxonomies.taxonomy.title" ng-if="label.locale === lang">
-                {{label.text}}
-              </h5>
               <p class="help-block" ng-repeat="label in taxonomies.taxonomy.description" ng-if="label.locale === lang">
                 {{label.text}}
               </p>
