@@ -813,6 +813,11 @@
       "dataschema": "Harmonization Dataset",
       "dataset": "Study Dataset"
     },
+    "coverage-select": {
+      "all": "All",
+      "none": "None",
+      "full": "Full coverage"
+    },
     "study": {
       "label": "Study",
       "noResults": "No study found",
@@ -1143,6 +1148,7 @@
   "nand": "NAND",
   "or": "OR",
   "nor": "NOR",
+  "to": "to",
   "graphics": {
     "nbr-studies": "Nbr of Studies",
     "number-participants": "Nbr of Participants",
