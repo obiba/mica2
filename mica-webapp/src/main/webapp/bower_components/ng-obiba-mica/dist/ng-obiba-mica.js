@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-03-17
+ * Date: 2016-03-18
  */
 'use strict';
 
@@ -167,7 +167,77 @@ angular.module('obiba.mica.utils', [])
     this.setClientConfig = function(){
       return true;
     };
-});
+})
+  .directive('fixedHeader', ['$timeout','$window', function ($timeout, $window) {
+    return {
+      restrict: 'A',
+      scope: {
+        tableMaxHeight: '@'
+      },
+      link: function ($scope, $elem) {
+        var elem = $elem[0];
+        function isVisible(el) {
+          var style = $window.getComputedStyle(el);
+          return (style.display !== 'none' && el.offsetWidth !==0 );
+        }
+        function isTableReady() {
+          return isVisible(elem.querySelector('tbody')) && elem.querySelector('tbody tr:first-child') !== null;
+        }
+        // wait for content to load into table and to have at least one row, tdElems could be empty at the time of execution if td are created asynchronously (eg ng-repeat with promise)
+        var unbindWatch = $scope.$watch(isTableReady,
+          function (newValue) {
+            if (newValue === true) {
+              // reset display styles so column widths are correct when measured below
+              angular.element(elem.querySelectorAll('thead, tbody, tfoot')).css('display', '');
+
+              // wrap in $timeout to give table a chance to finish rendering
+              $timeout(function () {
+                // set widths of columns
+                angular.forEach(elem.querySelectorAll('tr:first-child th'), function (thElem, i) {
+
+                  var tdElems = elem.querySelector('tbody tr:first-child td:nth-child(' + (i + 1) + ')');
+                  var tfElems = elem.querySelector('tfoot tr:first-child td:nth-child(' + (i + 1) + ')');
+
+
+                  var columnWidth = tdElems ? tdElems.offsetWidth : thElem.offsetWidth;
+                  if(tdElems) {
+                    tdElems.style.width = columnWidth + 'px';
+                  }
+                  if(thElem) {
+                    thElem.style.width = columnWidth + 'px';
+                  }
+                  if (tfElems) {
+                    tfElems.style.width = columnWidth + 'px';
+                  }
+                });
+                // set css styles on thead and tbody
+                angular.element(elem.querySelectorAll('thead, tfoot')).css('display', 'block');
+
+                angular.element(elem.querySelectorAll('tbody')).css({
+                  'display': 'block',
+                  'max-height': $scope.tableMaxHeight || 'inherit',
+                  'overflow': 'auto'
+                });
+
+
+                // reduce width of last column by width of scrollbar
+                var tbody = elem.querySelector('tbody');
+                var scrollBarWidth = tbody.offsetWidth - tbody.clientWidth;
+                if (scrollBarWidth > 0) {
+                  // for some reason trimming the width by 2px lines everything up better
+                  scrollBarWidth -= 2;
+                  var lastColumn = elem.querySelector('tbody tr:first-child td:last-child');
+                  lastColumn.style.width = (lastColumn.offsetWidth - scrollBarWidth) + 'px';
+                }
+              });
+
+              //we only need to watch once
+              unbindWatch();
+            }
+          });
+      }
+    };
+  }]);
 
 ;'use strict';
 
@@ -6970,6 +7040,7 @@ angular.module("search/views/coverage/coverage-search-result-table-template.html
     "          <div class=\"btn-group voffset1\" uib-dropdown>\n" +
     "            <div uib-dropdown-toggle>\n" +
     "              <small><i class=\"glyphicon glyphicon-unchecked\"></i></small>\n" +
+    "              <span class='fa fa-caret-down'></span>\n" +
     "            </div>\n" +
     "            <ul uib-dropdown-menu role=\"menu\">\n" +
     "              <li role=\"menuitem\"><a href ng-click=\"selectAll()\" translate>search.coverage-select.all</a></li>\n" +
@@ -7304,7 +7375,7 @@ angular.module("search/views/graphics/graphics-search-result-template.html", [])
     "        </div>\n" +
     "        <div class=\"col-md-6\">\n" +
     "          <div class=\"table-responsive\" ng-if=\"chart.chartObject.data && chart.chartObject.data.length>1\">\n" +
-    "            <table class=\"table table-bordered table-striped\">\n" +
+    "            <table style=\"max-height: 400px;\" class=\"table table-bordered table-striped\" fixed-header>\n" +
     "              <thead>\n" +
     "              <tr>\n" +
     "                <th>{{chart.chartObject.data[0][0]}}</th>\n" +
