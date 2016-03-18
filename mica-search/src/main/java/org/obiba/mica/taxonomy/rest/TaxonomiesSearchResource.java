@@ -10,20 +10,19 @@
 
 package org.obiba.mica.taxonomy.rest;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
+import javax.inject.Inject;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.taxonomy.TaxonomyResolver;
 import org.obiba.mica.taxonomy.TaxonomyTarget;
 import org.obiba.opal.web.model.Opal;
@@ -40,6 +39,9 @@ import com.google.common.collect.Lists;
 @Path("/taxonomies")
 @RequiresAuthentication
 public class TaxonomiesSearchResource extends AbstractTaxonomySearchResource {
+
+  @Inject
+  private TaxonomyService taxonomyService;
 
   @GET
   @Path("/_filter")
@@ -70,8 +72,9 @@ public class TaxonomiesSearchResource extends AbstractTaxonomySearchResource {
     @Nullable @QueryParam("target") String target) {
     List<Opal.TaxonomyBundleDto> results = Lists.newArrayList();
 
-    ArrayList<TaxonomyTarget> targets = target == null
-      ? Lists.newArrayList(TaxonomyTarget.values())
+    List<TaxonomyTarget> targets = target == null
+      ? taxonomyService.getTaxonomyTaxonomy().getVocabularies().stream()
+      .map(t -> TaxonomyTarget.valueOf(t.getName().toUpperCase())).collect(Collectors.toList())
       : Lists.newArrayList(TaxonomyTarget.valueOf(target.toUpperCase()));
 
     targets.forEach(t -> filter(t.name(), query, locale).stream()
