@@ -302,6 +302,7 @@ public class CoverageQueryExecutor {
         sumOfHits = 0;
       }
     }
+
     return sumOfHits;
   }
 
@@ -334,9 +335,7 @@ public class CoverageQueryExecutor {
 
     if(hits != null && hits.containsKey(term.getName())) termBuilder.setHits(hits.get(term.getName()));
 
-    if(termBuilder.getHits() > 0) {
-      vocBuilder.addTerms(termBuilder);
-    }
+    vocBuilder.addTerms(termBuilder);
   }
 
   @NotNull
