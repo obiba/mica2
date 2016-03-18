@@ -49,6 +49,8 @@ angular.module('obiba.mica.search', [
         graphicsLabel: 'search.graphics',
         graphicsHelp: null,
         classificationsLinkLabel: null,
+        taxonomyNavHelp: null,
+        vocabularyNavHelp: null,
         variables: {
           showSearchTab: true,
           searchLabel: 'search.variable.searchLabel',

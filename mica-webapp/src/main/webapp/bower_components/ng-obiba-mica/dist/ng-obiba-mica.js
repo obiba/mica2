@@ -1361,6 +1361,8 @@ angular.module('obiba.mica.search', [
         graphicsLabel: 'search.graphics',
         graphicsHelp: null,
         classificationsLinkLabel: null,
+        taxonomyNavHelp: null,
+        vocabularyNavHelp: null,
         variables: {
           showSearchTab: true,
           searchLabel: 'search.variable.searchLabel',
@@ -3593,28 +3595,31 @@ angular.module('obiba.mica.search')
                 }).forEach(function (vocabulary) {
                   if (vocabulary.terms) {
                     vocabulary.terms.forEach(function (term) {
-                      if (results.length < size) {
-                        var item = RqlQueryService.createCriteriaItem(target, taxonomy, vocabulary, term, $scope.lang);
-                        results.push({
-                          score: score(item),
-                          item: item
-                        });
-                      }
-                      total++;
-                    });
-                  } else {
-                    if (results.length < size) {
-                      var item = RqlQueryService.createCriteriaItem(target, taxonomy, vocabulary, null, $scope.lang);
+                      var item = RqlQueryService.createCriteriaItem(target, taxonomy, vocabulary, term, $scope.lang);
                       results.push({
                         score: score(item),
                         item: item
                       });
-                    }
+                      total++;
+                    });
+                  } else {
+                    var item = RqlQueryService.createCriteriaItem(target, taxonomy, vocabulary, null, $scope.lang);
+                    results.push({
+                      score: score(item),
+                      item: item
+                    });
                     total++;
                   }
                 });
               }
             });
+
+            results.sort(function (a, b) {
+              return b.score - a.score;
+            });
+
+            results = results.splice(0, size);
+
             if (total > results.length) {
               var note = {
                 query: query,
@@ -3626,9 +3631,6 @@ angular.module('obiba.mica.search')
               results.push({score: -1, item: note});
             }
 
-            results.sort(function (a, b) {
-              return b.score - a.score;
-            });
 
             return results.map(function (result) {
               return result.item;
@@ -3846,8 +3848,10 @@ angular.module('obiba.mica.search')
       init();
     }])
 
-  .controller('TaxonomiesPanelController', ['$scope', '$location', 'VocabularyResource', 'TaxonomyResource', 'TaxonomiesResource',
-    function ($scope, $location, VocabularyResource, TaxonomyResource, TaxonomiesResource) {
+  .controller('TaxonomiesPanelController', ['$scope', '$location', 'VocabularyResource', 'TaxonomyResource',
+    'TaxonomiesResource', 'ngObibaMicaSearch',
+    function ($scope, $location, VocabularyResource, TaxonomyResource, TaxonomiesResource, ngObibaMicaSearch) {
+      $scope.options = ngObibaMicaSearch.getOptions();
       $scope.metaTaxonomy = TaxonomyResource.get({
         target: 'taxonomy',
         taxonomy: 'Mica_taxonomy'
@@ -6866,6 +6870,7 @@ angular.module("search/views/classifications/taxonomies-view.html", []).run(["$t
     "                  </li>\n" +
     "                </ul>\n" +
     "              </div>\n" +
+    "              <div ng-if=\"!taxonomies.vocabulary && options.taxonomyNavHelp\" ng-bind-html=\"options.taxonomyNavHelp\"></div>\n" +
     "            </div>\n" +
     "            <div class=\"col-md-4 height3\" scroll-to-top=\"taxonomies.term\">\n" +
     "              <div ng-if=\"taxonomies.term\">\n" +
@@ -6884,6 +6889,7 @@ angular.module("search/views/classifications/taxonomies-view.html", []).run(["$t
     "                  </a>\n" +
     "                </div>\n" +
     "              </div>\n" +
+    "              <div ng-if=\"!taxonomies.term && taxonomies.vocabulary && options.vocabularyNavHelp\" ng-bind-html=\"options.vocabularyNavHelp\"></div>\n" +
     "            </div>\n" +
     "          </div>\n" +
     "        </div>\n" +
@@ -7106,7 +7112,7 @@ angular.module("search/views/coverage/coverage-search-result-table-template.html
     "            </div>\n" +
     "          </div>\n" +
     "        </td>\n" +
-    "        <td ng-repeat=\"h in table.termHeaders\">\n" +
+    "        <td ng-repeat=\"h in table.termHeaders\" title=\"{{h.entity.titles[0].value}}\">\n" +
     "          <a href ng-click=\"updateCriteria(row.value, h, $index, 'variables')\"><span class=\"label label-info\"\n" +
     "            ng-if=\"row.hits[$index]\">{{row.hits[$index]}}</span></a>\n" +
     "          <span ng-if=\"!row.hits[$index]\">0</span>\n" +
