@@ -848,7 +848,10 @@
       "placeholder": "Enter text to search..."
     },
     "filter": "Filter",
-    "close-and-search": "Close and search"
+    "close-and-search": "Close and search",
+    "criterion": {
+      "updated": "Term <strong>{{arg0}}</strong> was added to criteria <strong>{{arg1}}</storng>."
+    }
   },
   "variables": "Variables",
   "classifications": "Classifications",

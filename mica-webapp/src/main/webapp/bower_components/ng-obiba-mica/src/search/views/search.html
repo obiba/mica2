@@ -1,7 +1,11 @@
 <div>
-  <div ng-if="searchHeaderTemplateUrl" ng-include="searchHeaderTemplateUrl"></div>
-
   <obiba-alert id="SearchController"></obiba-alert>
+
+  <div class="alert-growl-container">
+    <obiba-alert id="SearchControllerGrowl"></obiba-alert>
+  </div>
+
+  <div ng-if="searchHeaderTemplateUrl" ng-include="searchHeaderTemplateUrl"></div>
 
   <!-- Lang tabs -->
   <ul class="nav nav-tabs" role="tablist" ng-if="tabs && tabs.length>1">
@@ -126,8 +130,10 @@
   </div>
 
   <!-- Results region -->
-  <div class="voffset3" ng-if="search.query">
-
+  <div class="voffset3 can-full-screen" ng-if="search.query" fullscreen="isFullscreen">
+    <a href class="btn btn-default pull-right" ng-click="toggleFullscreen()">
+      <i class="glyphicon" ng-class="{'glyphicon-resize-full': !isFullscreen, 'glyphicon-resize-small': isFullscreen}"></i>
+    </a>
     <ul class="nav nav-tabs voffset2" ng-if="searchTabsOrder.length > 1">
       <li role="presentation" ng-repeat="tab in searchTabsOrder" ng-class="{active: search.display === tab}"><a href
         ng-click="selectDisplay(tab)">{{ options[ tab + 'Label'] | translate}}</a></li>

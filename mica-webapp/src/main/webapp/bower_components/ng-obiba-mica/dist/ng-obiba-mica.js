@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-03-18
+ * Date: 2016-03-19
  */
 'use strict';
 
@@ -3194,6 +3194,7 @@ angular.module('obiba.mica.search')
 
   .controller('SearchController', [
     '$scope',
+    '$rootScope',
     '$timeout',
     '$routeParams',
     '$location',
@@ -3213,6 +3214,7 @@ angular.module('obiba.mica.search')
     'SearchContext',
     'CoverageGroupByService',
     function ($scope,
+              $rootScope,
               $timeout,
               $routeParams,
               $location,
@@ -3651,6 +3653,15 @@ angular.module('obiba.mica.search')
           var existingItem = $scope.search.criteriaItemMap[id];
 
           if (existingItem) {
+            AlertService.growl({
+              id: 'SearchControllerGrowl',
+              type: 'info',
+              msgKey: 'search.criterion.updated',
+              msgArgs: [LocalizedValues.forLocale(item.term.title, $scope.lang),
+                LocalizedValues.forLocale(item.vocabulary.title, $scope.lang)],
+              delay: 5000
+            });
+
             RqlQueryService.updateCriteriaItem(existingItem, item, replace);
           } else {
             RqlQueryService.addCriteriaItem($scope.search.rqlQuery, item, logicalOp);
@@ -3819,8 +3830,10 @@ angular.module('obiba.mica.search')
       $scope.onUpdateCriteria = onUpdateCriteria;
       $scope.onSelectTerm = onSelectTerm;
       $scope.QUERY_TARGETS = QUERY_TARGETS;
-
       $scope.onPaginate = onPaginate;
+      $scope.toggleFullscreen = function() {
+        $scope.isFullscreen = !$scope.isFullscreen;
+      };
 
       $scope.$on('$locationChangeSuccess', function (newLocation, oldLocation) {
         initSearchTabs();
@@ -3828,6 +3841,10 @@ angular.module('obiba.mica.search')
         if (newLocation !== oldLocation) {
           executeSearchQuery();
         }
+      });
+
+      $rootScope.$on('ngObibaMicaSearch.fullscreenChange', function(obj, isEnabled) {
+        $scope.isFullscreen = isEnabled;
       });
 
       function init() {
@@ -5424,6 +5441,73 @@ angular.module('obiba.mica.search')
       },
       controller: 'TaxonomiesPanelController',
       templateUrl: 'search/views/classifications/classifications-view.html'
+    };
+  }])
+
+  .factory('Fullscreen', ['$document', '$window', '$rootScope', function ($document, $window, $rootScope) {
+    // based on: https://github.com/fabiobiondi/angular-fullscreen
+    var document = $document[0];
+    var isKeyboardAvailbleOnFullScreen = (typeof $window.Element !== 'undefined' && 'ALLOW_KEYBOARD_INPUT' in $window.Element) && $window.Element.ALLOW_KEYBOARD_INPUT;
+    var emitter = $rootScope.$new();
+
+    $document.on('fullscreenchange webkitfullscreenchange mozfullscreenchange MSFullscreenChange', function(){
+      emitter.$emit('ngObibaMicaSearch.fullscreenChange', serviceInstance.isEnabled());
+    });
+
+    var serviceInstance = {
+      $on: angular.bind(emitter, emitter.$on),
+      enable: function(element) {
+        if(element.requestFullScreen) {
+          element.requestFullScreen();
+        } else if(element.mozRequestFullScreen) {
+          element.mozRequestFullScreen();
+        } else if(element.webkitRequestFullscreen) {
+          // Safari temporary fix
+          if (/Version\/[\d]{1,2}(\.[\d]{1,2}){1}(\.(\d){1,2}){0,1} Safari/.test($window.navigator.userAgent)) {
+            element.webkitRequestFullscreen();
+          } else {
+            element.webkitRequestFullscreen(isKeyboardAvailbleOnFullScreen);
+          }
+        } else if (element.msRequestFullscreen) {
+          element.msRequestFullscreen();
+        }
+      },
+      cancel: function() {
+        if(document.cancelFullScreen) {
+          document.cancelFullScreen();
+        } else if(document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+        } else if(document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        }
+      },
+      isEnabled: function(){
+        var fullscreenElement = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+        return fullscreenElement ? true : false;
+      }
+    };
+
+    return serviceInstance;
+  }])
+
+  .directive('fullscreen', ['Fullscreen', function(Fullscreen) {
+    return {
+      link : function ($scope, $element, $attrs) {
+        if ($attrs.fullscreen) {
+          $scope.$watch($attrs.fullscreen, function(value) {
+            var isEnabled = Fullscreen.isEnabled();
+            if (value && !isEnabled) {
+              Fullscreen.enable($element[0]);
+              $element.addClass('isInFullScreen');
+            } else if (!value && isEnabled) {
+              Fullscreen.cancel();
+              $element.removeClass('isInFullScreen');
+            }
+          });
+        }
+      }
     };
   }]);
 ;/*
@@ -7808,9 +7892,13 @@ angular.module("search/views/search-result-panel-template.html", []).run(["$temp
 angular.module("search/views/search.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("search/views/search.html",
     "<div>\n" +
-    "  <div ng-if=\"searchHeaderTemplateUrl\" ng-include=\"searchHeaderTemplateUrl\"></div>\n" +
-    "\n" +
     "  <obiba-alert id=\"SearchController\"></obiba-alert>\n" +
+    "\n" +
+    "  <div class=\"alert-growl-container\">\n" +
+    "    <obiba-alert id=\"SearchControllerGrowl\"></obiba-alert>\n" +
+    "  </div>\n" +
+    "\n" +
+    "  <div ng-if=\"searchHeaderTemplateUrl\" ng-include=\"searchHeaderTemplateUrl\"></div>\n" +
     "\n" +
     "  <!-- Lang tabs -->\n" +
     "  <ul class=\"nav nav-tabs\" role=\"tablist\" ng-if=\"tabs && tabs.length>1\">\n" +
@@ -7935,8 +8023,10 @@ angular.module("search/views/search.html", []).run(["$templateCache", function($
     "  </div>\n" +
     "\n" +
     "  <!-- Results region -->\n" +
-    "  <div class=\"voffset3\" ng-if=\"search.query\">\n" +
-    "\n" +
+    "  <div class=\"voffset3 can-full-screen\" ng-if=\"search.query\" fullscreen=\"isFullscreen\">\n" +
+    "    <a href class=\"btn btn-default pull-right\" ng-click=\"toggleFullscreen()\">\n" +
+    "      <i class=\"glyphicon\" ng-class=\"{'glyphicon-resize-full': !isFullscreen, 'glyphicon-resize-small': isFullscreen}\"></i>\n" +
+    "    </a>\n" +
     "    <ul class=\"nav nav-tabs voffset2\" ng-if=\"searchTabsOrder.length > 1\">\n" +
     "      <li role=\"presentation\" ng-repeat=\"tab in searchTabsOrder\" ng-class=\"{active: search.display === tab}\"><a href\n" +
     "        ng-click=\"selectDisplay(tab)\">{{ options[ tab + 'Label'] | translate}}</a></li>\n" +

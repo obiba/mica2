@@ -512,4 +512,71 @@ angular.module('obiba.mica.search')
       controller: 'TaxonomiesPanelController',
       templateUrl: 'search/views/classifications/classifications-view.html'
     };
+  }])
+
+  .factory('Fullscreen', ['$document', '$window', '$rootScope', function ($document, $window, $rootScope) {
+    // based on: https://github.com/fabiobiondi/angular-fullscreen
+    var document = $document[0];
+    var isKeyboardAvailbleOnFullScreen = (typeof $window.Element !== 'undefined' && 'ALLOW_KEYBOARD_INPUT' in $window.Element) && $window.Element.ALLOW_KEYBOARD_INPUT;
+    var emitter = $rootScope.$new();
+
+    $document.on('fullscreenchange webkitfullscreenchange mozfullscreenchange MSFullscreenChange', function(){
+      emitter.$emit('ngObibaMicaSearch.fullscreenChange', serviceInstance.isEnabled());
+    });
+
+    var serviceInstance = {
+      $on: angular.bind(emitter, emitter.$on),
+      enable: function(element) {
+        if(element.requestFullScreen) {
+          element.requestFullScreen();
+        } else if(element.mozRequestFullScreen) {
+          element.mozRequestFullScreen();
+        } else if(element.webkitRequestFullscreen) {
+          // Safari temporary fix
+          if (/Version\/[\d]{1,2}(\.[\d]{1,2}){1}(\.(\d){1,2}){0,1} Safari/.test($window.navigator.userAgent)) {
+            element.webkitRequestFullscreen();
+          } else {
+            element.webkitRequestFullscreen(isKeyboardAvailbleOnFullScreen);
+          }
+        } else if (element.msRequestFullscreen) {
+          element.msRequestFullscreen();
+        }
+      },
+      cancel: function() {
+        if(document.cancelFullScreen) {
+          document.cancelFullScreen();
+        } else if(document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+        } else if(document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        }
+      },
+      isEnabled: function(){
+        var fullscreenElement = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+        return fullscreenElement ? true : false;
+      }
+    };
+
+    return serviceInstance;
+  }])
+
+  .directive('fullscreen', ['Fullscreen', function(Fullscreen) {
+    return {
+      link : function ($scope, $element, $attrs) {
+        if ($attrs.fullscreen) {
+          $scope.$watch($attrs.fullscreen, function(value) {
+            var isEnabled = Fullscreen.isEnabled();
+            if (value && !isEnabled) {
+              Fullscreen.enable($element[0]);
+              $element.addClass('isInFullScreen');
+            } else if (!value && isEnabled) {
+              Fullscreen.cancel();
+              $element.removeClass('isInFullScreen');
+            }
+          });
+        }
+      }
+    };
   }]);
