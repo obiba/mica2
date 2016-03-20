@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-03-19
+ * Date: 2016-03-20
  */
 'use strict';
 
@@ -6684,6 +6684,10 @@ angular.module("search/views/classifications.html", []).run(["$templateCache", f
     "  <div ng-if=\"classificationsHeaderTemplateUrl\" ng-include=\"classificationsHeaderTemplateUrl\"></div>\n" +
     "\n" +
     "  <obiba-alert id=\"SearchController\"></obiba-alert>\n" +
+    "\n" +
+    "  <div class=\"alert-growl-container\">\n" +
+    "    <obiba-alert id=\"SearchControllerGrowl\"></obiba-alert>\n" +
+    "  </div>\n" +
     "\n" +
     "  <a href class=\"btn btn-sm btn-success\" ng-click=\"goToSearch()\">\n" +
     "    <i class=\"fa fa-chevron-left\"></i>\n" +
