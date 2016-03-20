@@ -238,3 +238,26 @@ li>a.pagination-total  {
   font-weight: normal;
   color: rgba(123, 138, 139, 0.5);
 }
+
+.fullscreen() {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: #fff !important;
+}
+
+.can-full-screen:-webkit-full-screen {
+  .fullscreen;
+}
+
+.can-full-screen:-moz-full-screen {
+  .fullscreen;
+}
+
+.can-full-screen:-ms-fullscreen {
+  .fullscreen;
+}
+
+.can-full-screen:fullscreen {
+  .fullscreen;
+}

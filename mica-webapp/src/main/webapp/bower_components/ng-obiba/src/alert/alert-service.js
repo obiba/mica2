@@ -23,12 +23,21 @@ angular.module('obiba.alert')
         return value;
       }
 
-      this.alert = function (options) {
+      function broadcast(options, growl) {
         $rootScope.$broadcast(ALERT_EVENTS.showAlert, {
           uid: new Date().getTime(), // useful for delay closing and cleanup
           message: getValidMessage(options),
           type: options.type ? options.type : 'info',
+          growl: growl,
           timeoutDelay: options.delay ? Math.max(0, options.delay) : 0
         }, options.id);
+      }
+
+      this.alert = function (options) {
+        broadcast(options);
+      };
+
+      this.growl = function(options) {
+        broadcast(options, true);
       };
     }]);

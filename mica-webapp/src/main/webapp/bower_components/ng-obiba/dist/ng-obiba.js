@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba
 
  * License: GNU Public License version 3
- * Date: 2016-03-04
+ * Date: 2016-03-19
  */
 'use strict';
 
@@ -916,10 +916,6 @@ angular.module('obiba.form')
       templateUrl: 'form/form-radio-template.tpl.html',
       link: function ($scope, elem, attr, ctrl) {
         $scope.form = ctrl;
-
-        $scope.$watch('model', function() {
-          console.log('MODEL', $scope.model, $scope.value);
-        });
       }
     };
   }])
@@ -1056,13 +1052,22 @@ angular.module('obiba.alert')
         return value;
       }
 
-      this.alert = function (options) {
+      function broadcast(options, growl) {
         $rootScope.$broadcast(ALERT_EVENTS.showAlert, {
           uid: new Date().getTime(), // useful for delay closing and cleanup
           message: getValidMessage(options),
           type: options.type ? options.type : 'info',
+          growl: growl,
           timeoutDelay: options.delay ? Math.max(0, options.delay) : 0
         }, options.id);
+      }
+
+      this.alert = function (options) {
+        broadcast(options);
+      };
+
+      this.growl = function(options) {
+        broadcast(options, true);
       };
     }]);
 ;'use strict';
@@ -1071,69 +1076,45 @@ angular.module('obiba.alert')
 
   .directive('obibaAlert', ['$rootScope', '$timeout', '$log', 'ALERT_EVENTS',
     function ($rootScope, $timeout, $log, ALERT_EVENTS) {
-      var alertsMap = {};
-
-      $rootScope.$on(ALERT_EVENTS.showAlert, function (event, alert, id) {
-        if (alertsMap[id]) {
-          alertsMap[id].push(alert);
-        }
-      });
 
       return {
-        restrict: 'E',
-        template: '<uib-alert ng-repeat="alert in alerts" type="{{alert.type}}" close="close($index)"><span ng-bind-html="alert.message"></span></uib-alert>',
-        compile: function(element) {
-          var id = element.attr('id');
-          if (!id) {
-            $log.error('ObibaAlert directive must have a DOM id attribute.');
-          } else {
-            alertsMap[id] = [];
+        restrict: 'AE',
+        scope: {
+          id: '@'
+        },
+        templateUrl: 'alert/alert-template.tpl.html',
+        link: function(scope) {
+          scope.alerts = [];
+          if (!scope.id) {
+            throw new Error('ObibaAlert directive must have a DOM id attribute.');
           }
 
-          return {
-            post: function (scope) {
-              if (!id) {
-                return;
-              }
+          scope.close = function(index) {
+            scope.alerts.splice(index, 1);
+          };
 
-              scope.alerts = alertsMap[id];
+          /**
+           * Called when timeout has expired
+           * @param uid
+           */
+          scope.closeByUid = function(uid) {
+            var index = scope.alerts.map(function(alert) {
+              return alert.uid === uid;
+            }).indexOf(true);
 
-              /**
-               * Called when user manually closes or the timeout has expired
-               * @param index
-               */
-              scope.close = function(index) {
-                scope.alerts.splice(index, 1);
-              };
-
-              /**
-               * Called when timeout has expired
-               * @param uid
-               */
-              scope.closeByUid = function(uid) {
-                var index = scope.alerts.map(function(alert) {
-                  return alert.uid === uid;
-                }).indexOf(true);
-
-                if (index !== -1) {
-                  scope.close(index);
-                }
-              };
-
-              /**
-               * when all alerts have been added, proceed with setting the timeout for those that have timeoutDelay > 0
-               */
-              scope.$watch('alerts', function(newAlerts, oldAlerts) {
-                if (newAlerts.length - oldAlerts.length > 0) {
-                  newAlerts.filter(function(alert) {
-                    return alert.timeoutDelay > 0;
-                  }).forEach(function(alert) {
-                    $timeout(scope.closeByUid.bind(null, alert.uid), alert.timeoutDelay);
-                  });
-                }
-              }, true);
+            if (index !== -1) {
+              scope.close(index);
             }
           };
+
+          scope.$on(ALERT_EVENTS.showAlert, function (event, alert, id) {
+            if (scope.id === id) {
+              scope.alerts.push(alert);
+              if (alert.timeoutDelay > 0) {
+                $timeout(scope.closeByUid.bind(null, alert.uid), alert.timeoutDelay);
+              }
+            }
+          });
         }
     };
   }]);
@@ -1261,7 +1242,17 @@ angular.module('ngObiba', [
   'obiba.alert',
   'obiba.comments'
 ]);
-;angular.module('templates-main', ['comments/comment-editor-template.tpl.html', 'comments/comments-template.tpl.html', 'form/form-checkbox-template.tpl.html', 'form/form-input-template.tpl.html', 'form/form-localized-input-template.tpl.html', 'form/form-radio-template.tpl.html', 'form/form-textarea-template.tpl.html', 'notification/notification-confirm-modal.tpl.html', 'notification/notification-modal.tpl.html']);
+;angular.module('templates-main', ['alert/alert-template.tpl.html', 'comments/comment-editor-template.tpl.html', 'comments/comments-template.tpl.html', 'form/form-checkbox-template.tpl.html', 'form/form-input-template.tpl.html', 'form/form-localized-input-template.tpl.html', 'form/form-radio-template.tpl.html', 'form/form-textarea-template.tpl.html', 'notification/notification-confirm-modal.tpl.html', 'notification/notification-modal.tpl.html']);
+
+angular.module("alert/alert-template.tpl.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("alert/alert-template.tpl.html",
+    "<uib-alert ng-repeat=\"alert in alerts\"\n" +
+    "           class=\"{{alert.growl ? 'alert-growl' : ''}}\"\n" +
+    "           type=\"{{alert.type}}\"\n" +
+    "           close=\"close($index)\">\n" +
+    "  <span ng-bind-html=\"alert.message\"></span>\n" +
+    "</uib-alert>");
+}]);
 
 angular.module("comments/comment-editor-template.tpl.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("comments/comment-editor-template.tpl.html",
