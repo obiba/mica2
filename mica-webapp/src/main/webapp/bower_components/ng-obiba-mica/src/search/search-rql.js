@@ -580,11 +580,6 @@ angular.module('obiba.mica.search')
 
     this.mergeInQueryArgValues = function (query, terms, replace) {
       var hasValues = terms && terms.length > 0;
-      //if (!hasValues) {
-      //  query.name = RQL_NODE.EXISTS;
-      //} else if (query.name !== RQL_NODE.IN && query.name !== RQL_NODE.CONTAINS) {
-      //  query.name = RQL_NODE.IN;
-      //}
 
       if (hasValues) {
         var current = query.args[1];

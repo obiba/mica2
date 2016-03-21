@@ -851,7 +851,8 @@
     "filter": "Filter",
     "close-and-search": "Close and search",
     "criterion": {
-      "updated": "Term <strong>{{arg0}}</strong> was added to criteria <strong>{{arg1}}</storng>."
+      "created": "Criteria <strong>{{arg0}}</strong> was added.",
+      "updated": "Criteria <strong>{{arg0}}</strong> was updated."
     }
   },
   "variables": "Variables",

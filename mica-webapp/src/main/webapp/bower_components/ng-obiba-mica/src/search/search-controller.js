@@ -514,21 +514,23 @@ angular.module('obiba.mica.search')
         if (item.id) {
           var id = CriteriaIdGenerator.generate(item.taxonomy, item.vocabulary);
           var existingItem = $scope.search.criteriaItemMap[id];
+          var growlMsgKey;
 
           if (existingItem) {
-            AlertService.growl({
-              id: 'SearchControllerGrowl',
-              type: 'info',
-              msgKey: 'search.criterion.updated',
-              msgArgs: [LocalizedValues.forLocale(item.term.title, $scope.lang),
-                LocalizedValues.forLocale(item.vocabulary.title, $scope.lang)],
-              delay: 5000
-            });
-
+            growlMsgKey = 'search.criterion.updated';
             RqlQueryService.updateCriteriaItem(existingItem, item, replace);
           } else {
+            growlMsgKey = 'search.criterion.created';
             RqlQueryService.addCriteriaItem($scope.search.rqlQuery, item, logicalOp);
           }
+
+          AlertService.growl({
+            id: 'SearchControllerGrowl',
+            type: 'info',
+            msgKey: growlMsgKey,
+            msgArgs: [LocalizedValues.forLocale(item.vocabulary.title, $scope.lang)],
+            delay: 3000
+          });
 
           refreshQuery();
           $scope.selectedCriteria = null;

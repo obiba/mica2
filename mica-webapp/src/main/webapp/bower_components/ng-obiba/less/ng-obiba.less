@@ -57,9 +57,13 @@ div#obiba-comments {
   }
 }
 
-.alert-growl-container {
+.alert-fixed-position {
   position: fixed;
   z-index: 9999;
+}
+
+.alert-growl-container {
+  .alert-fixed-position;
   right: 10px;
 }
 
