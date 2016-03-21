@@ -47,7 +47,7 @@ public class RqlFieldResolver {
       .map(TaxonomyEntity::getName).findFirst().orElse("");
   }
 
-  public FieldData resolveField(String rqlField) {
+  public FieldData resolveField(String rqlField, boolean analyzed) {
     String field = rqlField;
 
     // normalize field name
@@ -58,13 +58,13 @@ public class RqlFieldResolver {
     int idx = field.indexOf(TAXO_SEPARATOR);
     if(idx < 1) return FieldData.newBuilder().field(rqlField).build();
 
-    FieldData data = resolveField(field.substring(0, idx), field.substring(idx + 1, field.length()));
+    FieldData data = resolveField(field.substring(0, idx), field.substring(idx + 1, field.length()), analyzed);
 
     return data == null ? FieldData.newBuilder().field(rqlField).build() : data;
   }
 
   @Nullable
-  public FieldData resolveField(String taxonomyName, String vocabularyName) {
+  public FieldData resolveField(String taxonomyName, String vocabularyName, boolean analyzed) {
     String field = null;
     FieldData.Builder builder = FieldData.newBuilder();
     Optional<Taxonomy> taxonomy = taxonomies.stream().filter(t -> t.getName().equals(taxonomyName)).findFirst();
@@ -75,10 +75,10 @@ public class RqlFieldResolver {
       if(vocabulary.isPresent()) {
         builder.vocabulary(vocabulary.get());
         String f = vocabulary.get().getAttributeValue("field");
-        if(!Strings.isNullOrEmpty(f)) field = localize(vocabulary.get(), f, locale);
-        else field = localize(vocabulary.get(), vocabulary.get().getName(), locale);
+        if(!Strings.isNullOrEmpty(f)) field = localize(vocabulary.get(), f, locale, analyzed);
+        else field = localize(vocabulary.get(), vocabulary.get().getName(), locale, analyzed);
       } else {
-        field = localize(null, vocabularyName, locale);
+        field = localize(null, vocabularyName, locale, analyzed);
       }
     }
     return field == null ? null : builder.field(field).build();
@@ -88,7 +88,7 @@ public class RqlFieldResolver {
     return taxonomies;
   }
 
-  private String localize(Vocabulary vocabulary, String field, String locale) {
+  private String localize(Vocabulary vocabulary, String field, String locale, boolean analyzed) {
     boolean process = vocabulary == null || (!vocabulary.hasTerms() && new VocabularyWrapper(vocabulary).isString());
 
     if (process) {
@@ -99,7 +99,7 @@ public class RqlFieldResolver {
         field = field.replace(LanguageTag.UNDETERMINED, locale);
       }
 
-      return field + ".analyzed";
+      return analyzed ? field + ".analyzed" : field;
     }
 
     return field;

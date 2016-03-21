@@ -47,3 +47,15 @@
     "en": "Network associated to the harmonized dataset."
     "fr": "Réseau associé à ce jeux de données harmonisé."
   "keywords": {}
+- "name": "acronym"
+  "title":
+    "en": "Acronym"
+    "fr": "Acronyme"
+  "description":
+    "en": "Dataset acronym."
+    "fr": "Acronyme du jeux de données."
+  "keywords": {}
+  "terms": []
+  "attributes":
+    "field": "acronym.und"
+    "alias": "acronym"

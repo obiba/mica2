@@ -71,6 +71,12 @@ var RQL_NODE = {
   MISSING: 'missing'
 };
 
+/* exported SORT_FIELDS */
+var SORT_FIELDS = {
+  ACRONYM: 'acronym',
+  NAME: 'name'
+};
+
 /* exported targetToType */
 function targetToType(target) {
   switch (target.toLocaleString()) {

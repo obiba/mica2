@@ -1601,6 +1601,12 @@ var RQL_NODE = {
   MISSING: 'missing'
 };
 
+/* exported SORT_FIELDS */
+var SORT_FIELDS = {
+  ACRONYM: 'acronym',
+  NAME: 'name'
+};
+
 /* exported targetToType */
 function targetToType(target) {
   switch (target.toLocaleString()) {
@@ -3150,6 +3156,7 @@ angular.module('obiba.mica.search')
 /* global DISPLAY_TYPES */
 /* global CriteriaIdGenerator */
 /* global targetToType */
+/* global SORT_FIELDS */
 
 /**
  * State shared between Criterion DropDown and its content directives
@@ -3440,7 +3447,7 @@ angular.module('obiba.mica.search')
             $scope.search.rqlQuery,
             $scope.search.pagination,
             $scope.lang,
-            $scope.search.type === 'variables' ? 'name' : 'acronym.' + $scope.lang
+            $scope.search.type === QUERY_TYPES.VARIABLES ? SORT_FIELDS.NAME : SORT_FIELDS.ACRONYM
           );
         switch ($scope.search.display) {
           case DISPLAY_TYPES.LIST:
