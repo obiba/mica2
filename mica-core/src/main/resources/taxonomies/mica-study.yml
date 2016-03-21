@@ -29,6 +29,18 @@
   "attributes":
     "field": "objectives.und"
     "alias": "objectives"
+- "name": "acronym"
+  "title":
+    "en": "Acronym"
+    "fr": "Acronyme"
+  "description":
+    "en": "Study acronym."
+    "fr": "Acronyme de l'étude."
+  "keywords": {}
+  "terms": []
+  "attributes":
+    "field": "acronym.und"
+    "alias": "acronym"
 - "name": "methods-designs"
   "title":
     "en": "Study designs"

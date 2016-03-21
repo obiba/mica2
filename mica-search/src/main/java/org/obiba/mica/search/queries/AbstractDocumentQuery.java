@@ -132,7 +132,7 @@ public abstract class AbstractDocumentQuery {
   }
 
   private SortBuilder getSortBuilder() {
-    return hasQueryBuilder() ? queryWrapper.getSortBuilder() : null;
+    return queryWrapper.getSortBuilder();
   }
 
   public void initialize(QueryDto query, String locale, Mode mode) {

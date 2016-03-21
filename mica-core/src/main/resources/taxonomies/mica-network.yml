@@ -26,3 +26,15 @@
     "en": "Studies that are members of a network."
     "fr": "Études qui sont membres d'un réseau."
   "keywords": {}
+- "name": "acronym"
+  "title":
+    "en": "Acronym"
+    "fr": "Acronyme"
+  "description":
+    "en": "Network acronym."
+    "fr": "Acronyme du réseau."
+  "keywords": {}
+  "terms": []
+  "attributes":
+    "field": "acronym.und"
+    "alias": "acronym"
