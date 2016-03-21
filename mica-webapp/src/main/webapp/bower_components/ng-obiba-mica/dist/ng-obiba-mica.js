@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-03-20
+ * Date: 2016-03-21
  */
 'use strict';
 
@@ -2110,11 +2110,6 @@ angular.module('obiba.mica.search')
 
     this.mergeInQueryArgValues = function (query, terms, replace) {
       var hasValues = terms && terms.length > 0;
-      //if (!hasValues) {
-      //  query.name = RQL_NODE.EXISTS;
-      //} else if (query.name !== RQL_NODE.IN && query.name !== RQL_NODE.CONTAINS) {
-      //  query.name = RQL_NODE.IN;
-      //}
 
       if (hasValues) {
         var current = query.args[1];
@@ -3651,21 +3646,23 @@ angular.module('obiba.mica.search')
         if (item.id) {
           var id = CriteriaIdGenerator.generate(item.taxonomy, item.vocabulary);
           var existingItem = $scope.search.criteriaItemMap[id];
+          var growlMsgKey;
 
           if (existingItem) {
-            AlertService.growl({
-              id: 'SearchControllerGrowl',
-              type: 'info',
-              msgKey: 'search.criterion.updated',
-              msgArgs: [LocalizedValues.forLocale(item.term.title, $scope.lang),
-                LocalizedValues.forLocale(item.vocabulary.title, $scope.lang)],
-              delay: 5000
-            });
-
+            growlMsgKey = 'search.criterion.updated';
             RqlQueryService.updateCriteriaItem(existingItem, item, replace);
           } else {
+            growlMsgKey = 'search.criterion.created';
             RqlQueryService.addCriteriaItem($scope.search.rqlQuery, item, logicalOp);
           }
+
+          AlertService.growl({
+            id: 'SearchControllerGrowl',
+            type: 'info',
+            msgKey: growlMsgKey,
+            msgArgs: [LocalizedValues.forLocale(item.vocabulary.title, $scope.lang)],
+            delay: 3000
+          });
 
           refreshQuery();
           $scope.selectedCriteria = null;
@@ -6683,7 +6680,9 @@ angular.module("search/views/classifications.html", []).run(["$templateCache", f
     "<div>\n" +
     "  <div ng-if=\"classificationsHeaderTemplateUrl\" ng-include=\"classificationsHeaderTemplateUrl\"></div>\n" +
     "\n" +
-    "  <obiba-alert id=\"SearchController\"></obiba-alert>\n" +
+    "  <div class=\"alert-container\">\n" +
+    "    <obiba-alert id=\"SearchController\"></obiba-alert>\n" +
+    "  </div>\n" +
     "\n" +
     "  <div class=\"alert-growl-container\">\n" +
     "    <obiba-alert id=\"SearchControllerGrowl\"></obiba-alert>\n" +
@@ -7896,7 +7895,9 @@ angular.module("search/views/search-result-panel-template.html", []).run(["$temp
 angular.module("search/views/search.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("search/views/search.html",
     "<div>\n" +
-    "  <obiba-alert id=\"SearchController\"></obiba-alert>\n" +
+    "  <div class=\"alert-container\">\n" +
+    "    <obiba-alert id=\"SearchController\"></obiba-alert>\n" +
+    "  </div>\n" +
     "\n" +
     "  <div class=\"alert-growl-container\">\n" +
     "    <obiba-alert id=\"SearchControllerGrowl\"></obiba-alert>\n" +
