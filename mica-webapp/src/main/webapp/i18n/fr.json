@@ -977,7 +977,11 @@
       "button": "Choose file",
       "message": "No file chosen"
     },
-    "invalid-paste": "You can not paste in the same path."
+    "invalid-paste": "You can not paste in the same path.",
+    "search-results": {
+      "current": "Search results in current folder",
+      "current-sub": "Search results in current folder and sub-folders"
+    }
   },
   "data-access-requests": "Data Access Requests",
   "data-access-request": {

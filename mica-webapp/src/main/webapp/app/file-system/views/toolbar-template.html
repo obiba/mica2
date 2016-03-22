@@ -4,7 +4,10 @@
 <h5 class="pull-left" ng-if="data.search.active">
   <a ng-click="clearSearch()">
     <i class="fa fa-chevron-left"> </i>
-  </a> {{'search-results' | translate}} ({{data.document.children.length}})
+  </a>
+  <span ng-if="data.search.recursively" translate>file.search-results.current-sub</span>
+  <span ng-if="!data.search.recursively" translate>file.search-results.current</span>
+  ({{data.document.children.length}})
 </h5>
 <div class="clearfix">
   <div class="pull-right">
