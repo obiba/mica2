@@ -957,7 +957,9 @@
       "logs": "Configure server logs.",
       "caching": "Manage server caches.",
       "data-access-config": "Configure Data Access Request form.",
-      "file-system": "Manage file system."
+      "file-system": "Manage file system.",
+      "search": "Search in the published repository.",
+      "classifications": "Browse taxonomies."
     }
   },
   "server": {
