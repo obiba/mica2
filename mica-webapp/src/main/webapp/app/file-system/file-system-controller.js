@@ -305,6 +305,8 @@ mica.fileSystem
         $scope.data.search.recursively = !$scope.data.search.recursively;
         if ($scope.data.search.text) {
           searchDocuments($scope.data.search.text);
+        } else if ($scope.data.search.query) {
+          searchDocuments($scope.data.search.query);
         }
       };
 
@@ -359,6 +361,7 @@ mica.fileSystem
         var orderBy = null;
         var sortBy = null;
         var limit = 999;
+        $scope.data.search.query = query;
 
         switch (query) {
           case 'DELETED':
