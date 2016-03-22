@@ -109,6 +109,24 @@
       "fr": "Autre"
     "description":
       "en": "Access to other study material is provided."
+- "name": "start"
+  "title":
+    "en": "Start Year"
+    "fr": "Année de début"
+  "description":
+    "en": "Year in which the study has started."
+    "fr": "Année à laquelle l'étude a commencé."
+  "attributes":
+    "type": "integer"
+- "name": "end"
+  "title":
+    "en": "End Year"
+    "fr": "Année de fin"
+  "description":
+    "en": "Year in which the study has ended or will end."
+    "fr": "Année à laquelle l'étude a fini ou finira."
+  "attributes":
+    "type": "integer"
 - "name": "methods-recruitments"
   "title":
     "en": "Recruitment target"
@@ -134,26 +152,6 @@
       "en": "Other"
       "fr": "Autre"
     "description": {}
-- "name": "start"
-  "title":
-    "en": "Start Year"
-    "fr": "Année de début"
-  "description":
-    "en": "Year in which the study has started."
-    "fr": "Année à laquelle l'étude a commencé."
-  "attributes":
-    "type": "integer"
-  "terms": []
-- "name": "end"
-  "title":
-    "en": "End Year"
-    "fr": "Année de fin"
-  "description":
-    "en": "Year in which the study has ended or will end."
-    "fr": "Année à laquelle l'étude a fini ou finira."
-  "attributes":
-    "type": "integer"
-  "terms": []
 - "name": "populations-recruitment-dataSources"
   "title":
     "en": "Recruitment source"
@@ -244,10 +242,60 @@
       "fr": "Autre population spécifique"
     "description":
       "en": "Other specific population."
+- "name": "populations-selectionCriteria-criteria"
+  "title":
+    "en": "Selection criteria"
+    "fr": "Critères de sélection"
+  "description":
+    "en": "The characteristics of an invidual that must be fulfilled when recruiting participants to the study."
+  "attributes":
+    "field": "populations.selectionCriteria.criteria"
+    "alias": "populations-selectionCriteria-criteria"
+  "terms":
+  - "name": "gravidity"
+    "title":
+      "en": "Gravidity"
+      "fr": "Femmes enceintes"
+    "description":
+      "en": "Study recruits pregnant women."
+  - "name": "newborn"
+    "title":
+      "en": "Newborn"
+      "fr": "Nouveaux-nés"
+    "description":
+      "en": "Study recruits recently born children."
+  - "name": "twin"
+    "title":
+      "en": "Twin"
+      "fr": "Jumeaux"
+    "description":
+      "en": "Study recruits individuals born at the same birth to the same mother."
+- "name": "populations-selectionCriteria-gender"
+  "title":
+    "en": "Selection criteria - Gender"
+    "fr": "Critères de sélection - Genre"
+  "description":
+    "en": "Participant’s gender"
+  "attributes":
+    "field": "populations.selectionCriteria.gender"
+    "alias": "populations-selectionCriteria-gender"
+  "terms":
+  - "name": "men"
+    "title":
+      "en": "Men only"
+      "fr": "Hommes seulement"
+    "description":
+      "en": "Study recruits men only."
+  - "name": "women"
+    "title":
+      "en": "Women only"
+      "fr": "Femmes seulement"
+    "description":
+      "en": "Study recruits women only."
 - "name": "populations-selectionCriteria-countriesIso"
   "title":
-    "en": "Country of residence"
-    "fr": "Pays de résidence"
+    "en": "Selection criteria - Country of residence"
+    "fr": "Critères de sélection - Pays de résidence"
   "description":
     "en": "Participant’s country of residence."
   "attributes":
@@ -1502,8 +1550,8 @@
     "description": {}
 - "name": "populations-selectionCriteria-ageMin"
   "title":
-    "en": "Minimum age"
-    "fr": "Age minimum"
+    "en": "Selection criteria - Minimum age"
+    "fr": "Critères de sélection - Age minimum"
   "description":
     "en": "Participant's minimum age."
     "fr": "Age minimum du participant."
@@ -1514,8 +1562,8 @@
   "terms": []
 - "name": "populations-selectionCriteria-ageMin-range"
   "title":
-    "en": "Minimum age (ranges)"
-    "fr": "Age minimum (intervalles)"
+    "en": "Selection criteria - Minimum age (ranges)"
+    "fr": "Critères de sélection - Age minimum (intervalles)"
   "description":
     "en": "Participant's minimum age."
     "fr": "Age minimum du participant."
@@ -1571,8 +1619,8 @@
     "description": {}
 - "name": "populations-selectionCriteria-ageMax"
   "title":
-    "en": "Maximum age"
-    "fr": "Age maximum"
+    "en": "Selection criteria - Maximum age"
+    "fr": "Critères de sélection - Age maximum"
   "description":
     "en": "Participant's maximum age."
     "fr": "Age maximum du participant."
@@ -1583,8 +1631,8 @@
   "terms": []
 - "name": "populations-selectionCriteria-ageMax-range"
   "title":
-    "en": "Maximum age (ranges)"
-    "fr": "Age maximum (intervalles)"
+    "en": "Selection criteria - Maximum age (ranges)"
+    "fr": "Critères de sélection - Age maximum (intervalles)"
   "description":
     "en": "Participant's maximum age."
     "fr": "Age maximum du participant."
@@ -1638,56 +1686,6 @@
       "en": "80 and more"
       "fr": "80 et plus"
     "description": {}
-- "name": "populations-selectionCriteria-criteria"
-  "title":
-    "en": "Selection criteria"
-    "fr": "Critères de sélection"
-  "description":
-    "en": "The characteristics of an invidual that must be fulfilled when recruiting participants to the study."
-  "attributes":
-    "field": "populations.selectionCriteria.criteria"
-    "alias": "populations-selectionCriteria-criteria"
-  "terms":
-  - "name": "gravidity"
-    "title":
-      "en": "Gravidity"
-      "fr": "Femmes enceintes"
-    "description":
-      "en": "Study recruits pregnant women."
-  - "name": "newborn"
-    "title":
-      "en": "Newborn"
-      "fr": "Nouveaux-nés"
-    "description":
-      "en": "Study recruits recently born children."
-  - "name": "twin"
-    "title":
-      "en": "Twin"
-      "fr": "Jumeaux"
-    "description":
-      "en": "Study recruits individuals born at the same birth to the same mother."
-- "name": "populations-selectionCriteria-gender"
-  "title":
-    "en": "Selection criteria - Gender"
-    "fr": "Critères de sélection - Genre"
-  "description":
-    "en": "Participant’s gender"
-  "attributes":
-    "field": "populations.selectionCriteria.gender"
-    "alias": "populations-selectionCriteria-gender"
-  "terms":
-  - "name": "men"
-    "title":
-      "en": "Men only"
-      "fr": "Hommes seulement"
-    "description":
-      "en": "Study recruits men only."
-  - "name": "women"
-    "title":
-      "en": "Women only"
-      "fr": "Femmes seulement"
-    "description":
-      "en": "Study recruits women only."
 - "name": "numberOfParticipants-participant-number"
   "title":
     "en": "Target number of participants"
