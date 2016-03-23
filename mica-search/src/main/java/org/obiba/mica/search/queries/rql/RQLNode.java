@@ -40,7 +40,8 @@ enum RQLNode {
   FACET, //
   LOCALE, //
   AGGREGATE, //
-  BUCKET;
+  BUCKET, //
+  RE;
 
   public static RQLNode getType(String name) {
     return valueOf(name.trim().toUpperCase());

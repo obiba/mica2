@@ -49,6 +49,10 @@ public class RqlFieldResolver {
 
   public FieldData resolveField(String rqlField, boolean analyzed) {
     String field = rqlField;
+    if (isRegExp(field)) {
+      // do not alter the regexp
+      return FieldData.newBuilder().field(field).build();
+    }
 
     // normalize field name
     if(!field.contains(TAXO_SEPARATOR)) {
@@ -103,6 +107,12 @@ public class RqlFieldResolver {
     }
 
     return field;
+  }
+
+  private boolean isRegExp(String field) {
+    Pattern pattern = Pattern.compile("\\^|\\$|\\*|\\\\|\\|");
+    Matcher matcher = pattern.matcher(field);
+    return matcher.find();
   }
 
   static class VocabularyWrapper {

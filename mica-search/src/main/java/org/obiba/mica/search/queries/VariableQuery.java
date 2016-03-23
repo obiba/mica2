@@ -283,7 +283,7 @@ public class VariableQuery extends AbstractDocumentQuery {
             ? vocabulary.getAttributeValue("field")
             : "attributes." + AttributeKey.getMapKey(vocabulary.getName(), taxonomy.getName()) + "." +
               LanguageTag.UNDETERMINED;
-          if(patterns.isEmpty() || patterns.stream().filter(p -> p.matcher(field).matches()).findFirst().isPresent())
+          if(patterns.isEmpty() || patterns.stream().filter(p -> p.matcher(field).find()).findFirst().isPresent())
             properties.put(field, "");
         }));
 
