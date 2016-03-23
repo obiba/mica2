@@ -161,6 +161,7 @@
   "attributes":
     "field": "populations.recruitment.dataSources"
     "alias": "populations-recruitment-dataSources"
+  "repeatable": "true"
   "terms":
   - "name": "general_population"
     "title":
@@ -195,6 +196,7 @@
   "attributes":
     "field": "populations.recruitment.generalPopulationSources"
     "alias": "populations-recruitment-generalPopulationSources"
+  "repeatable": "true"
   "terms":
   - "name": "volunteer"
     "title":
@@ -223,6 +225,7 @@
   "attributes":
     "field": "populations.recruitment.specificPopulationSources"
     "alias": "populations-recruitment-specificPopulationSources"
+  "repeatable": "true"
   "terms":
   - "name": "clinic_patients"
     "title":
@@ -685,7 +688,7 @@
     "description": {}
   - "name": "GBR"
     "title":
-      "en": "United Kingdom of Great Britain and Northern Irland"
+      "en": "United Kingdom of Great Britain and Northern Ireland"
       "fr": "Royaume-Uni"
     "description": {}
   - "name": "GRD"
@@ -1827,6 +1830,7 @@
   "attributes":
     "field": "populations.dataCollectionEvents.dataSources"
     "alias": "populations-dataCollectionEvents-dataSources"
+  "repeatable": "true"
   "terms":
   - "name": "questionnaires"
     "title":
@@ -1867,6 +1871,7 @@
   "attributes":
     "field": "populations.dataCollectionEvents.bioSamples"
     "alias": "populations-dataCollectionEvents-bioSamples"
+  "repeatable": "true"
   "terms":
   - "name": "blood"
     "title":
@@ -1922,6 +1927,7 @@
   "attributes":
     "field": "populations.dataCollectionEvents.administrativeDatabases"
     "alias": "populations-dataCollectionEvents-administrativeDatabases"
+  "repeatable": "true"
   "terms":
   - "name": "health_databases"
     "title":
