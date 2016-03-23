@@ -3295,7 +3295,7 @@ angular.module('obiba.mica.search')
 
         if($location.search().target) {
           $scope.target = $location.search().target;
-        } else {
+        } else if (!$scope.target) {
           $scope.target = $scope.taxonomyTabsOrder[0];
         }
 
@@ -3340,6 +3340,7 @@ angular.module('obiba.mica.search')
       }
 
       function onError(response) {
+        $scope.search.result = {};
         AlertService.alert({
           id: 'SearchController',
           type: 'danger',
@@ -3444,7 +3445,7 @@ angular.module('obiba.mica.search')
 
       function loadResults() {
         // execute search only when results are to be shown
-        if ($location.$$path !== '/search') {
+        if ($location.path() !== '/search') {
           return;
         }
         var localizedQuery =
@@ -3510,7 +3511,6 @@ angular.module('obiba.mica.search')
               sortCriteriaItems($scope.search.criteria.children);
             }
             $scope.search.criteriaItemMap = result.map;
-            $scope.search.result = {};
             if ($scope.search.query) {
               loadResults();
             }
@@ -7262,7 +7262,7 @@ angular.module("search/views/coverage/coverage-search-result-table-template.html
 angular.module("search/views/criteria/criteria-node-template.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("search/views/criteria/criteria-node-template.html",
     "<span>\n" +
-    "  <span ng-show=\"item.children.length > 0\">\n" +
+    "  <span ng-if=\"item.children.length > 0\">\n" +
     "    <criteria-leaf item=\"item.children[0]\" parent-type=\"$parent.item.type\" query=\"query\" advanced=\"advanced\"></criteria-leaf>\n" +
     "\n" +
     "    <div class=\"btn-group voffset1\" ng-show=\"$parent.advanced\" uib-dropdown>\n" +

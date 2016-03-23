@@ -1,5 +1,5 @@
 <span>
-  <span ng-show="item.children.length > 0">
+  <span ng-if="item.children.length > 0">
     <criteria-leaf item="item.children[0]" parent-type="$parent.item.type" query="query" advanced="advanced"></criteria-leaf>
 
     <div class="btn-group voffset1" ng-show="$parent.advanced" uib-dropdown>
