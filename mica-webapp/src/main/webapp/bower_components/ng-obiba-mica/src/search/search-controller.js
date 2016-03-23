@@ -157,6 +157,8 @@ angular.module('obiba.mica.search')
 
         if($location.search().target) {
           $scope.target = $location.search().target;
+        } else {
+          $scope.target = $scope.taxonomyTabsOrder[0];
         }
 
         $scope.metaTaxonomy.$promise.then(function (metaTaxonomy) {
@@ -277,6 +279,10 @@ angular.module('obiba.mica.search')
         var search = $location.search();
         delete search.query;
         $location.search(search);
+      };
+
+      var toggleSearchQuery = function () {
+        $scope.search.advanced = !$scope.search.advanced;
       };
 
       function sortCriteriaItems(items) {
@@ -653,6 +659,7 @@ angular.module('obiba.mica.search')
       $scope.search = {
         pagination: {},
         query: null,
+        advanced: false,
         rqlQuery: new RqlQuery(),
         executedQuery: null,
         type: null,
@@ -689,6 +696,7 @@ angular.module('obiba.mica.search')
       $scope.removeCriteriaItem = removeCriteriaItem;
       $scope.refreshQuery = refreshQuery;
       $scope.clearSearchQuery = clearSearchQuery;
+      $scope.toggleSearchQuery = toggleSearchQuery;
 
       $scope.onTypeChanged = onTypeChanged;
       $scope.onBucketChanged = onBucketChanged;

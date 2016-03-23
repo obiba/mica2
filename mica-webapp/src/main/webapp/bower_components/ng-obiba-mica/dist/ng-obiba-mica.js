@@ -3295,6 +3295,8 @@ angular.module('obiba.mica.search')
 
         if($location.search().target) {
           $scope.target = $location.search().target;
+        } else {
+          $scope.target = $scope.taxonomyTabsOrder[0];
         }
 
         $scope.metaTaxonomy.$promise.then(function (metaTaxonomy) {
@@ -3415,6 +3417,10 @@ angular.module('obiba.mica.search')
         var search = $location.search();
         delete search.query;
         $location.search(search);
+      };
+
+      var toggleSearchQuery = function () {
+        $scope.search.advanced = !$scope.search.advanced;
       };
 
       function sortCriteriaItems(items) {
@@ -3791,6 +3797,7 @@ angular.module('obiba.mica.search')
       $scope.search = {
         pagination: {},
         query: null,
+        advanced: false,
         rqlQuery: new RqlQuery(),
         executedQuery: null,
         type: null,
@@ -3827,6 +3834,7 @@ angular.module('obiba.mica.search')
       $scope.removeCriteriaItem = removeCriteriaItem;
       $scope.refreshQuery = refreshQuery;
       $scope.clearSearchQuery = clearSearchQuery;
+      $scope.toggleSearchQuery = toggleSearchQuery;
 
       $scope.onTypeChanged = onTypeChanged;
       $scope.onBucketChanged = onBucketChanged;
@@ -5236,6 +5244,7 @@ angular.module('obiba.mica.search')
       scope: {
         item: '=',
         query: '=',
+        advanced: '=',
         onRemove: '=',
         onRefresh: '='
       },
@@ -5258,7 +5267,8 @@ angular.module('obiba.mica.search')
       replace: true,
       scope: {
         item: '=',
-        query: '='
+        query: '=',
+        advanced: '='
       },
       templateUrl: 'search/views/criteria/criteria-target-template.html'
     };
@@ -5270,7 +5280,8 @@ angular.module('obiba.mica.search')
       replace: true,
       scope: {
         item: '=',
-        query: '='
+        query: '=',
+        advanced: '='
       },
       controller: 'CriterionLogicalController',
       templateUrl: 'search/views/criteria/criteria-node-template.html'
@@ -5286,7 +5297,8 @@ angular.module('obiba.mica.search')
         replace: true,
         scope: {
           item: '=',
-          query: '='
+          query: '=',
+          advanced: '='
         },
         controller: 'CriterionLogicalController',
         link: function(scope, element) {
@@ -6718,15 +6730,22 @@ angular.module("search/views/classifications.html", []).run(["$templateCache", f
     "  <!-- Search criteria region -->\n" +
     "  <div class=\"panel panel-default voffset2\" ng-if=\"search.criteria.children && search.criteria.children.length>0\">\n" +
     "    <div class=\"panel-body\">\n" +
-    "      <table style=\"border:none;\">\n" +
+    "      <table style=\"border:none\">\n" +
     "        <tbody>\n" +
     "        <tr>\n" +
     "          <td>\n" +
     "            <a href class=\"btn btn-sm btn-default\" ng-click=\"clearSearchQuery()\" translate>clear</a>\n" +
     "          </td>\n" +
-    "          <td>\n" +
-    "            <div criteria-root item=\"search.criteria\" query=\"search.query\" on-remove=\"removeCriteriaItem\"\n" +
-    "              on-refresh=\"refreshQuery\"></div>\n" +
+    "          <td style=\"padding-left: 10px\">\n" +
+    "            <div criteria-root item=\"search.criteria\" query=\"search.query\" advanced=\"search.advanced\" on-remove=\"removeCriteriaItem\"\n" +
+    "              on-refresh=\"refreshQuery\" class=\"inline\"></div>\n" +
+    "\n" +
+    "            <small class=\"hoffset2\">\n" +
+    "              <a href ng-click=\"toggleSearchQuery()\"\n" +
+    "                title=\"{{search.advanced ? 'search.basic-help' : 'search.advanced-help' | translate}}\" translate>\n" +
+    "                {{search.advanced ? 'search.basic' : 'search.advanced' | translate}}\n" +
+    "              </a>\n" +
+    "            </small>\n" +
     "          </td>\n" +
     "        </tr>\n" +
     "        </tbody>\n" +
@@ -7243,10 +7262,10 @@ angular.module("search/views/coverage/coverage-search-result-table-template.html
 angular.module("search/views/criteria/criteria-node-template.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("search/views/criteria/criteria-node-template.html",
     "<span>\n" +
-    "  <span ng-if=\"item.children.length > 0\">\n" +
-    "    <criteria-leaf item=\"item.children[0]\" parent-type=\"$parent.item.type\" query=\"query\"></criteria-leaf>\n" +
+    "  <span ng-show=\"item.children.length > 0\">\n" +
+    "    <criteria-leaf item=\"item.children[0]\" parent-type=\"$parent.item.type\" query=\"query\" advanced=\"advanced\"></criteria-leaf>\n" +
     "\n" +
-    "    <div class=\"btn-group voffset1\" uib-dropdown>\n" +
+    "    <div class=\"btn-group voffset1\" ng-show=\"$parent.advanced\" uib-dropdown>\n" +
     "      <button type=\"button\" class=\"btn btn-default btn-xs\" uib-dropdown-toggle>\n" +
     "        {{item.type | translate}} <span class=\"caret\"></span>\n" +
     "      </button>\n" +
@@ -7255,21 +7274,21 @@ angular.module("search/views/criteria/criteria-node-template.html", []).run(["$t
     "        <li role=\"menuitem\"><a href ng-click=\"updateLogical('and')\" translate>and</a></li>\n" +
     "      </ul>\n" +
     "    </div>\n" +
-    "    <criteria-leaf item=\"item.children[1]\" parent-type=\"$parent.item.type\" query=\"query\"></criteria-leaf>\n" +
+    "    <criteria-leaf item=\"item.children[1]\" parent-type=\"$parent.item.type\" query=\"query\" advanced=\"advanced\"></criteria-leaf>\n" +
     "\n" +
     "  </span>\n" +
     "  <span ng-if=\"item.children.length === 0\">\n" +
-    "    <criteria-leaf item=\"item\" parent-type=\"item.parent.type\" query=\"query\"></criteria-leaf>\n" +
+    "    <criteria-leaf item=\"item\" parent-type=\"item.parent.type\" query=\"query\" advanced=\"advanced\"></criteria-leaf>\n" +
     "  </span>\n" +
     "</span>");
 }]);
 
 angular.module("search/views/criteria/criteria-root-template.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("search/views/criteria/criteria-root-template.html",
-    "<div class=\"form-inline hoffset2\">\n" +
+    "<div class=\"form-inline\">\n" +
     "  <div ng-repeat=\"child in item.children\" class=\"inline\">\n" +
     "    <div class=\"inline hoffset2\" ng-if=\"$index>0\">+</div>\n" +
-    "    <criteria-target item=\"child\" query=\"$parent.query\" class=\"inline\"></criteria-target>\n" +
+    "    <criteria-target item=\"child\" query=\"$parent.query\" advanced=\"$parent.advanced\" class=\"inline\"></criteria-target>\n" +
     "  </div>\n" +
     "</div>\n" +
     "");
@@ -7281,7 +7300,7 @@ angular.module("search/views/criteria/criteria-target-template.html", []).run(["
     "  <div class=\"form-group\" title=\"{{'search.' + item.target + '-where' | translate}}\">\n" +
     "    <i class=\"{{'i-obiba-x-large i-obiba-' + item.target + ' color-' + item.target}}\">&nbsp;</i>\n" +
     "  </div>\n" +
-    "  <criteria-node item=\"child\" query=\"$parent.query\" ng-repeat=\"child in item.children\"></criteria-node>\n" +
+    "  <criteria-node ng-repeat=\"child in item.children\" item=\"child\" query=\"$parent.query\" advanced=\"$parent.advanced\"></criteria-node>\n" +
     "</div>");
 }]);
 
@@ -7291,15 +7310,14 @@ angular.module("search/views/criteria/criterion-dropdown-template.html", []).run
     "     ng-keyup=\"onKeyup($event)\">\n" +
     "\n" +
     "  <button class=\"{{'btn btn-xs dropdown btn-' + criterion.target}}\"\n" +
-    "    ng-click=\"openDropdown()\"\n" +
-    "    title=\"{{localizeCriterion()}}\">\n" +
+    "    ng-click=\"openDropdown()\">\n" +
     "    <span uib-popover=\"{{localize(criterion.vocabulary.description ? criterion.vocabulary.description : criterion.vocabulary.title)}}\"\n" +
     "          popover-title=\"{{criterion.vocabulary.description ? localize(criterion.vocabulary.title) : null}}\"\n" +
     "          popover-placement=\"bottom\"\n" +
     "          popover-trigger=\"mouseenter\">\n" +
     "    <i class=\"fa fa-info-circle\"> </i>\n" +
     "  </span>\n" +
-    "    <span>\n" +
+    "    <span title=\"{{localizeCriterion()}}\">\n" +
     "    {{truncate(localizeCriterion())}}\n" +
     "    </span>\n" +
     "    <span class='fa fa-caret-down'></span>\n" +
@@ -7331,7 +7349,7 @@ angular.module("search/views/criteria/criterion-header-template.html", []).run([
     "         popover-trigger=\"mouseenter\">\n" +
     "    {{localize(criterion.vocabulary.title)}}\n" +
     "  </label>\n" +
-    "  <span class=\"pull-right\" title=\"{{'search.close-and-search' | translate}}\"><a href ng-click=\"$parent.$parent.closeDropdown()\"><i class=\"fa fa-play-circle-o\"></i></a></span>\n" +
+    "  <span class=\"pull-right\" title=\"{{'search.close-and-search' | translate}}\" ng-click=\"$parent.$parent.closeDropdown()\"><i class=\"fa fa-close\"></i></span>\n" +
     "</li>\n" +
     "<li class='divider'></li>\n" +
     "");
@@ -7343,7 +7361,7 @@ angular.module("search/views/criteria/criterion-match-template.html", []).run(["
     "  <ng-include src=\"'search/views/criteria/criterion-header-template.html'\"></ng-include>\n" +
     "  <li class=\"criteria-list-item\">\n" +
     "    <form novalidate>\n" +
-    "      <div  >\n" +
+    "      <div>\n" +
     "        <input class=\"form-control\" id=\"{{criterion.vocabulary.name}}-match\"\n" +
     "               ng-model=\"match\"\n" +
     "               ng-change=\"update()\"\n" +
@@ -7361,15 +7379,15 @@ angular.module("search/views/criteria/criterion-numeric-template.html", []).run(
     "  <li class=\"btn-group\">\n" +
     "    <ul class=\"criteria-list-item\">\n" +
     "      <li>\n" +
-    "        <label>\n" +
+    "        <label title=\"{{'search.any-help' | translate}}\">\n" +
     "          <input ng-click=\"updateSelection()\" type=\"radio\" ng-model=\"selectMissing\" ng-value=\"false\">\n" +
-    "          {{'any' | translate}}\n" +
+    "          {{'search.any' | translate}}\n" +
     "        </label>\n" +
     "      </li>\n" +
     "      <li>\n" +
-    "        <label>\n" +
+    "        <label title=\"{{'search.none-help' | translate}}\">\n" +
     "          <input ng-click=\"updateSelection()\" type=\"radio\" ng-model=\"selectMissing\" ng-value=\"true\">\n" +
-    "          {{'none' | translate}}\n" +
+    "          {{'search.none' | translate}}\n" +
     "        </label>\n" +
     "      </li>\n" +
     "    </ul>\n" +
@@ -7397,27 +7415,27 @@ angular.module("search/views/criteria/criterion-string-terms-template.html", [])
     "  <li class=\"btn-group\">\n" +
     "    <ul class=\"criteria-list-item\">\n" +
     "      <li>\n" +
-    "        <label>\n" +
+    "        <label title=\"{{'search.any-help' | translate}}\">\n" +
     "          <input ng-click=\"updateFilter()\" type=\"radio\" ng-model=\"selectedFilter\" value=\"{{RQL_NODE.EXISTS}}\">\n" +
-    "          {{'any' | translate}}\n" +
+    "          {{'search.any' | translate}}\n" +
     "        </label>\n" +
     "      </li>\n" +
     "      <li>\n" +
-    "        <label>\n" +
+    "        <label title=\"{{'search.none-help' | translate}}\">\n" +
     "          <input ng-click=\"updateFilter()\" type=\"radio\" ng-model=\"selectedFilter\" value=\"{{RQL_NODE.MISSING}}\">\n" +
-    "          {{'none' | translate}}\n" +
+    "          {{'search.none' | translate}}\n" +
     "        </label>\n" +
     "      </li>\n" +
     "      <li>\n" +
-    "        <label>\n" +
+    "        <label title=\"{{'search.in-help' | translate}}\">\n" +
     "          <input ng-click=\"updateFilter()\" type=\"radio\" ng-model=\"selectedFilter\" value=\"{{RQL_NODE.IN}}\">\n" +
-    "          {{'in' | translate}}\n" +
+    "          {{'search.in' | translate}}\n" +
     "        </label>\n" +
     "      </li>\n" +
     "      <li ng-show=\"criterion.vocabulary.repeatable\">\n" +
-    "        <label>\n" +
+    "        <label title=\"{{'search.contains-help' | translate}}\">\n" +
     "          <input ng-click=\"updateFilter()\" type=\"radio\" ng-model=\"selectedFilter\" value=\"{{RQL_NODE.CONTAINS}}\">\n" +
-    "          {{'contains' | translate}}\n" +
+    "          {{'search.contains' | translate}}\n" +
     "        </label>\n" +
     "      </li>\n" +
     "    </ul>\n" +
@@ -8027,15 +8045,22 @@ angular.module("search/views/search.html", []).run(["$templateCache", function($
     "  <!-- Search criteria region -->\n" +
     "  <div class=\"panel panel-default voffset2\" ng-if=\"search.criteria.children && search.criteria.children.length>0\">\n" +
     "    <div class=\"panel-body\">\n" +
-    "      <table style=\"border:none;\">\n" +
+    "      <table style=\"border:none\">\n" +
     "        <tbody>\n" +
     "        <tr>\n" +
     "          <td>\n" +
     "            <a href class=\"btn btn-sm btn-default\" ng-click=\"clearSearchQuery()\" translate>clear</a>\n" +
     "          </td>\n" +
-    "          <td>\n" +
-    "            <div criteria-root item=\"search.criteria\" query=\"search.query\" on-remove=\"removeCriteriaItem\"\n" +
-    "              on-refresh=\"refreshQuery\"></div>\n" +
+    "          <td style=\"padding-left: 10px\">\n" +
+    "            <div criteria-root item=\"search.criteria\" query=\"search.query\" advanced=\"search.advanced\" on-remove=\"removeCriteriaItem\"\n" +
+    "              on-refresh=\"refreshQuery\" class=\"inline\"></div>\n" +
+    "\n" +
+    "            <small class=\"hoffset2\">\n" +
+    "              <a href ng-click=\"toggleSearchQuery()\"\n" +
+    "                title=\"{{search.advanced ? 'search.basic-help' : 'search.advanced-help' | translate}}\" translate>\n" +
+    "                {{search.advanced ? 'search.basic' : 'search.advanced' | translate}}\n" +
+    "              </a>\n" +
+    "            </small>\n" +
     "          </td>\n" +
     "        </tr>\n" +
     "        </tbody>\n" +

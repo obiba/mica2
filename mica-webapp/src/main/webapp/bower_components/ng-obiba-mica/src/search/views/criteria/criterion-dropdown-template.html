@@ -2,15 +2,14 @@
      ng-keyup="onKeyup($event)">
 
   <button class="{{'btn btn-xs dropdown btn-' + criterion.target}}"
-    ng-click="openDropdown()"
-    title="{{localizeCriterion()}}">
+    ng-click="openDropdown()">
     <span uib-popover="{{localize(criterion.vocabulary.description ? criterion.vocabulary.description : criterion.vocabulary.title)}}"
           popover-title="{{criterion.vocabulary.description ? localize(criterion.vocabulary.title) : null}}"
           popover-placement="bottom"
           popover-trigger="mouseenter">
     <i class="fa fa-info-circle"> </i>
   </span>
-    <span>
+    <span title="{{localizeCriterion()}}">
     {{truncate(localizeCriterion())}}
     </span>
     <span class='fa fa-caret-down'></span>

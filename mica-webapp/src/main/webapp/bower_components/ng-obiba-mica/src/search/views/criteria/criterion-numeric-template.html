@@ -3,15 +3,15 @@
   <li class="btn-group">
     <ul class="criteria-list-item">
       <li>
-        <label>
+        <label title="{{'search.any-help' | translate}}">
           <input ng-click="updateSelection()" type="radio" ng-model="selectMissing" ng-value="false">
-          {{'any' | translate}}
+          {{'search.any' | translate}}
         </label>
       </li>
       <li>
-        <label>
+        <label title="{{'search.none-help' | translate}}">
           <input ng-click="updateSelection()" type="radio" ng-model="selectMissing" ng-value="true">
-          {{'none' | translate}}
+          {{'search.none' | translate}}
         </label>
       </li>
     </ul>
