@@ -1,8 +1,8 @@
 <span>
-  <span ng-if="item.children.length > 0">
-    <criteria-leaf item="item.children[0]" parent-type="$parent.item.type" query="query"></criteria-leaf>
+  <span ng-show="item.children.length > 0">
+    <criteria-leaf item="item.children[0]" parent-type="$parent.item.type" query="query" advanced="advanced"></criteria-leaf>
 
-    <div class="btn-group voffset1" uib-dropdown>
+    <div class="btn-group voffset1" ng-show="$parent.advanced" uib-dropdown>
       <button type="button" class="btn btn-default btn-xs" uib-dropdown-toggle>
         {{item.type | translate}} <span class="caret"></span>
       </button>
@@ -11,10 +11,10 @@
         <li role="menuitem"><a href ng-click="updateLogical('and')" translate>and</a></li>
       </ul>
     </div>
-    <criteria-leaf item="item.children[1]" parent-type="$parent.item.type" query="query"></criteria-leaf>
+    <criteria-leaf item="item.children[1]" parent-type="$parent.item.type" query="query" advanced="advanced"></criteria-leaf>
 
   </span>
   <span ng-if="item.children.length === 0">
-    <criteria-leaf item="item" parent-type="item.parent.type" query="query"></criteria-leaf>
+    <criteria-leaf item="item" parent-type="item.parent.type" query="query" advanced="advanced"></criteria-leaf>
   </span>
 </span>

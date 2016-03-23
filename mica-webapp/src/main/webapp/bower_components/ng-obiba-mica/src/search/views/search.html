@@ -115,15 +115,22 @@
   <!-- Search criteria region -->
   <div class="panel panel-default voffset2" ng-if="search.criteria.children && search.criteria.children.length>0">
     <div class="panel-body">
-      <table style="border:none;">
+      <table style="border:none">
         <tbody>
         <tr>
           <td>
             <a href class="btn btn-sm btn-default" ng-click="clearSearchQuery()" translate>clear</a>
           </td>
-          <td>
-            <div criteria-root item="search.criteria" query="search.query" on-remove="removeCriteriaItem"
-              on-refresh="refreshQuery"></div>
+          <td style="padding-left: 10px">
+            <div criteria-root item="search.criteria" query="search.query" advanced="search.advanced" on-remove="removeCriteriaItem"
+              on-refresh="refreshQuery" class="inline"></div>
+
+            <small class="hoffset2">
+              <a href ng-click="toggleSearchQuery()"
+                title="{{search.advanced ? 'search.basic-help' : 'search.advanced-help' | translate}}" translate>
+                {{search.advanced ? 'search.basic' : 'search.advanced' | translate}}
+              </a>
+            </small>
           </td>
         </tr>
         </tbody>

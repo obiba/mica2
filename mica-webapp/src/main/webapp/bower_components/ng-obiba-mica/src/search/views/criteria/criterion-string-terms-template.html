@@ -3,27 +3,27 @@
   <li class="btn-group">
     <ul class="criteria-list-item">
       <li>
-        <label>
+        <label title="{{'search.any-help' | translate}}">
           <input ng-click="updateFilter()" type="radio" ng-model="selectedFilter" value="{{RQL_NODE.EXISTS}}">
-          {{'any' | translate}}
+          {{'search.any' | translate}}
         </label>
       </li>
       <li>
-        <label>
+        <label title="{{'search.none-help' | translate}}">
           <input ng-click="updateFilter()" type="radio" ng-model="selectedFilter" value="{{RQL_NODE.MISSING}}">
-          {{'none' | translate}}
+          {{'search.none' | translate}}
         </label>
       </li>
       <li>
-        <label>
+        <label title="{{'search.in-help' | translate}}">
           <input ng-click="updateFilter()" type="radio" ng-model="selectedFilter" value="{{RQL_NODE.IN}}">
-          {{'in' | translate}}
+          {{'search.in' | translate}}
         </label>
       </li>
       <li ng-show="criterion.vocabulary.repeatable">
-        <label>
+        <label title="{{'search.contains-help' | translate}}">
           <input ng-click="updateFilter()" type="radio" ng-model="selectedFilter" value="{{RQL_NODE.CONTAINS}}">
-          {{'contains' | translate}}
+          {{'search.contains' | translate}}
         </label>
       </li>
     </ul>

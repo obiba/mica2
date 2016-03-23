@@ -302,6 +302,7 @@ angular.module('obiba.mica.search')
       scope: {
         item: '=',
         query: '=',
+        advanced: '=',
         onRemove: '=',
         onRefresh: '='
       },
@@ -324,7 +325,8 @@ angular.module('obiba.mica.search')
       replace: true,
       scope: {
         item: '=',
-        query: '='
+        query: '=',
+        advanced: '='
       },
       templateUrl: 'search/views/criteria/criteria-target-template.html'
     };
@@ -336,7 +338,8 @@ angular.module('obiba.mica.search')
       replace: true,
       scope: {
         item: '=',
-        query: '='
+        query: '=',
+        advanced: '='
       },
       controller: 'CriterionLogicalController',
       templateUrl: 'search/views/criteria/criteria-node-template.html'
@@ -352,7 +355,8 @@ angular.module('obiba.mica.search')
         replace: true,
         scope: {
           item: '=',
-          query: '='
+          query: '=',
+          advanced: '='
         },
         controller: 'CriterionLogicalController',
         link: function(scope, element) {
