@@ -83,8 +83,16 @@ public class PublishedDatasetVariablesSearchResource {
   @GET
   @Path("/_coverage")
   @Timed
-  public MicaSearch.BucketsCoverageDto rqlCoverage(@QueryParam("query") String query) throws IOException {
-    return coverageByBucketFactory.asBucketsCoverageDto(getTaxonomiesCoverageDto(query));
+  public MicaSearch.BucketsCoverageDto rqlCoverageAsBucket(@QueryParam("query") String query) throws IOException {
+    return coverageByBucketFactory.asBucketsCoverageDto(getTaxonomiesCoverageDto(query, true));
+  }
+
+  @GET
+  @Path("/legacy/_coverage")
+  @Timed
+  public MicaSearch.TaxonomiesCoverageDto rqlCoverageAsDto(@QueryParam("query") String query,
+    @QueryParam("strict") @DefaultValue("true") boolean strict) throws IOException {
+    return getTaxonomiesCoverageDto(query, strict);
   }
 
   @GET
@@ -94,7 +102,7 @@ public class PublishedDatasetVariablesSearchResource {
   public Response rqlCoverageCsv(@QueryParam("query") String query) throws IOException {
     CsvCoverageWriter writer = new CsvCoverageWriter();
     return Response
-      .ok(writer.write(coverageByBucketFactory.makeCoverageByBucket(getTaxonomiesCoverageDto(query))).toByteArray(), "text/csv")
+      .ok(writer.write(coverageByBucketFactory.makeCoverageByBucket(getTaxonomiesCoverageDto(query, true))).toByteArray(), "text/csv")
       .header("Content-Disposition", "attachment; filename=\"coverage.csv\"").build();
   }
 
@@ -153,8 +161,8 @@ public class PublishedDatasetVariablesSearchResource {
   // Private methods
   //
 
-  private MicaSearch.TaxonomiesCoverageDto getTaxonomiesCoverageDto(String query) throws IOException {
-    return coverageQueryExecutor.coverageQuery(rqlQueryFactory.makeJoinQuery(query));
+  private MicaSearch.TaxonomiesCoverageDto getTaxonomiesCoverageDto(String query, boolean strict) throws IOException {
+    return coverageQueryExecutor.coverageQuery(rqlQueryFactory.makeJoinQuery(query), strict);
   }
 
 }

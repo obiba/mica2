@@ -538,8 +538,16 @@ public class RQLQueryWrapper implements QueryWrapper {
             node.getArguments().stream().filter(a -> a instanceof String).map(Object::toString)
               .forEach(aggregations::add);
             node.getArguments().stream().filter(a -> a instanceof ASTNode).map(a -> (ASTNode) a)
-              .filter(a -> RQLNode.BUCKET.name().equalsIgnoreCase(a.getName()))
-              .forEach(a -> a.getArguments().stream().map(Object::toString).forEach(aggregationBuckets::add));
+              .forEach(a -> {
+                switch (RQLNode.getType(a.getName())) {
+                  case BUCKET:
+                    a.getArguments().stream().map(Object::toString).forEach(aggregationBuckets::add);
+                    break;
+                  case RE:
+                    a.getArguments().stream().map(Object::toString).forEach(aggregations::add);
+                    break;
+                }
+              });
             return Boolean.TRUE;
           default:
         }
