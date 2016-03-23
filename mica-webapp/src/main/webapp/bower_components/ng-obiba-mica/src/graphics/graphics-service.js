@@ -47,8 +47,8 @@ angular.module('obiba.mica.graphics')
             options: {
               bars: 'horizontal',
               series: {
-                0: { axis: 'nbrStudies' }, // Bind series 1 to an axis named 'brightness'.
-                1: { axis: 'nbrParticipants' } // Bind series 0 to an axis named 'distance'.
+                0: { axis: 'nbrStudies' }, // Bind series 1 to an axis
+                1: { axis: 'nbrParticipants' } // Bind series 0 to an axis
               },
               axes: {
                 x: {
@@ -81,13 +81,21 @@ angular.module('obiba.mica.graphics')
             header : ['graphics.bio-samples', 'graphics.nbr-studies'],
             title : 'graphics.bio-samples-chart-title',
             options: {
+              bars: 'horizontal',
+              series: {
+                0: { axis: 'nbrStudies' } // Bind series 1 to an axis
+              },
+              axes: {
+                x: {
+                  nbrStudies: {side: 'top', label: 'Number of Studies'} // Top x-axis.
+                }
+              },
               backgroundColor: {fill: 'transparent'},
               colors: ['#b8cbed',
                 '#e5edfb',
                 '#cfddf5',
                 '#a0b8e2',
-                '#88a4d4'],
-              pieSliceTextStyle: {color: '#000000'}
+                '#88a4d4']
             }
           }
 

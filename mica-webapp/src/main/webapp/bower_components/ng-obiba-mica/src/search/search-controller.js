@@ -1732,7 +1732,7 @@ angular.module('obiba.mica.search')
               biologicalSamples: {
                 chartObject: {
                   options: bioSamplesStudies.options,
-                  type: 'PieChart',
+                  type: 'BarChart',
                   data: bioSamplesStudies.data,
                   vocabulary: bioSamplesStudies.vocabulary,
                   entries: bioSamplesStudies.entries
