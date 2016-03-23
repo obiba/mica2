@@ -520,9 +520,6 @@ angular.module('obiba.mica.search')
     var isKeyboardAvailbleOnFullScreen = (typeof $window.Element !== 'undefined' && 'ALLOW_KEYBOARD_INPUT' in $window.Element) && $window.Element.ALLOW_KEYBOARD_INPUT;
     var emitter = $rootScope.$new();
 
-    $document.on('fullscreenchange webkitfullscreenchange mozfullscreenchange MSFullscreenChange', function(){
-      emitter.$emit('ngObibaMicaSearch.fullscreenChange', serviceInstance.isEnabled());
-    });
 
     var serviceInstance = {
       $on: angular.bind(emitter, emitter.$on),
@@ -558,6 +555,10 @@ angular.module('obiba.mica.search')
         return fullscreenElement ? true : false;
       }
     };
+
+    $document.on('fullscreenchange webkitfullscreenchange mozfullscreenchange MSFullscreenChange', function(){
+      emitter.$emit('ngObibaMicaSearch.fullscreenChange', serviceInstance.isEnabled());
+    });
 
     return serviceInstance;
   }])

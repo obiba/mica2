@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-03-21
+ * Date: 2016-03-22
  */
 'use strict';
 
@@ -5454,9 +5454,6 @@ angular.module('obiba.mica.search')
     var isKeyboardAvailbleOnFullScreen = (typeof $window.Element !== 'undefined' && 'ALLOW_KEYBOARD_INPUT' in $window.Element) && $window.Element.ALLOW_KEYBOARD_INPUT;
     var emitter = $rootScope.$new();
 
-    $document.on('fullscreenchange webkitfullscreenchange mozfullscreenchange MSFullscreenChange', function(){
-      emitter.$emit('ngObibaMicaSearch.fullscreenChange', serviceInstance.isEnabled());
-    });
 
     var serviceInstance = {
       $on: angular.bind(emitter, emitter.$on),
@@ -5492,6 +5489,10 @@ angular.module('obiba.mica.search')
         return fullscreenElement ? true : false;
       }
     };
+
+    $document.on('fullscreenchange webkitfullscreenchange mozfullscreenchange MSFullscreenChange', function(){
+      emitter.$emit('ngObibaMicaSearch.fullscreenChange', serviceInstance.isEnabled());
+    });
 
     return serviceInstance;
   }])
@@ -6687,7 +6688,7 @@ angular.module("search/views/classifications.html", []).run(["$templateCache", f
     "<div>\n" +
     "  <div ng-if=\"classificationsHeaderTemplateUrl\" ng-include=\"classificationsHeaderTemplateUrl\"></div>\n" +
     "\n" +
-    "  <div class=\"alert-container\">\n" +
+    "  <div class=\"container alert-fixed-position\">\n" +
     "    <obiba-alert id=\"SearchController\"></obiba-alert>\n" +
     "  </div>\n" +
     "\n" +
@@ -7902,7 +7903,7 @@ angular.module("search/views/search-result-panel-template.html", []).run(["$temp
 angular.module("search/views/search.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("search/views/search.html",
     "<div>\n" +
-    "  <div class=\"alert-container\">\n" +
+    "  <div class=\"container alert-fixed-position\">\n" +
     "    <obiba-alert id=\"SearchController\"></obiba-alert>\n" +
     "  </div>\n" +
     "\n" +
@@ -8036,7 +8037,7 @@ angular.module("search/views/search.html", []).run(["$templateCache", function($
     "\n" +
     "  <!-- Results region -->\n" +
     "  <div class=\"voffset3 can-full-screen\" ng-if=\"search.query\" fullscreen=\"isFullscreen\">\n" +
-    "    <a href class=\"btn btn-default pull-right\" ng-click=\"toggleFullscreen()\">\n" +
+    "    <a href class=\"btn btn-sm btn-default pull-right\" ng-click=\"toggleFullscreen()\">\n" +
     "      <i class=\"glyphicon\" ng-class=\"{'glyphicon-resize-full': !isFullscreen, 'glyphicon-resize-small': isFullscreen}\"></i>\n" +
     "    </a>\n" +
     "    <ul class=\"nav nav-tabs voffset2\" ng-if=\"searchTabsOrder.length > 1\">\n" +
