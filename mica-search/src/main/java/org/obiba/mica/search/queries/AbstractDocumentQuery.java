@@ -434,13 +434,11 @@ public abstract class AbstractDocumentQuery {
     log.debug("Request /{}/{}: {}", getSearchIndex(), getSearchType(), requestBuilder.toString());
 
     try {
-      List<SearchResponse> responses = Stream
-        .of(client.prepareMultiSearch().add(defaultRequestBuilder).add(requestBuilder).execute().actionGet())
-        .map(MultiSearchResponse::getResponses).flatMap(Stream::of).map(MultiSearchResponse.Item::getResponse)
-        .collect(Collectors.toList());
+      MultiSearchResponse.Item[] responses = client.prepareMultiSearch().add(defaultRequestBuilder).add(requestBuilder)
+        .execute().actionGet().getResponses();
 
-      SearchResponse defaultResponse = responses.get(0);
-      SearchResponse response = responses.get(1);
+      SearchResponse defaultResponse = responses[0].getResponse();
+      SearchResponse response = responses[1].getResponse();
 
       List<String> rval = null;
       if(response != null) {
