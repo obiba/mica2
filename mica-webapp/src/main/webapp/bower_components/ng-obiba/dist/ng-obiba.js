@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba
 
  * License: GNU Public License version 3
- * Date: 2016-03-21
+ * Date: 2016-03-29
  */
 'use strict';
 
@@ -808,7 +808,21 @@ angular.module('obiba.form')
         }
 
       };
-    }]);;'use strict';
+    }])
+
+  .service('RadioGroupOptionBuilder', function() {
+    this.build = function(prefix, items) {
+      return items.map(function(item) {
+        return {
+          name: prefix,
+          label: item.label || item,
+          value: item.name
+        };
+      });
+    };
+
+    return this;
+  });;'use strict';
 
 angular.module('obiba.form')
 
@@ -907,6 +921,7 @@ angular.module('obiba.form')
       require: '^form',
       scope: {
         name: '@',
+        gid: '@',
         model: '=',
         value: '=',
         label: '@',
@@ -927,35 +942,9 @@ angular.module('obiba.form')
         options: '=',
         model: '='
       },
-      template: '<div form-radio ng-repeat="item in items" name="{{item.name}}" on-select="onSelect" model="model" value="item.value" label="{{item.label}}"></div>',
-      link: function ($scope, elem, attrs) {
-
-        function updateOptions(options) {
-          if (!options) {
-            return;
-          }
-
-          $scope.items = options.map(function(option) {
-            return {
-              name: attrs.model + '.' + (option.name || option),
-              label: option.label || option,
-              value: option.name
-            };
-          });
-        }
-
-        $scope.onSelect = function(value) {
-          $scope.model = value;
-        };
-
-        $scope.$watch('model', function(selected) {
-          if (selected) {
-            updateOptions($scope.options);
-          }
-
-        });
-
-        $scope.$watch('options', updateOptions);
+      templateUrl: 'form/form-radio-group-template.tpl.html',
+      link: function ($scope) {
+        $scope.gid = $scope.$id;
       }
     };
   }])
@@ -966,6 +955,7 @@ angular.module('obiba.form')
       require: '^form',
       scope: {
         name: '@',
+        gid: '@',
         model: '=',
         label: '@',
         help: '@'
@@ -984,8 +974,9 @@ angular.module('obiba.form')
         options: '=',
         model: '='
       },
-      template: '<div form-checkbox ng-repeat="item in items" name="{{item.name}}" model="item.value" label="{{item.label}}">',
+      template: '<div form-checkbox ng-repeat="item in items" name="{{item.name}}" model="item.value" gid="${{gid}}" label="{{item.label}}">',
       link: function ($scope, elem, attrs) {
+        $scope.gid = $scope.$id;
         $scope.$watch('model', function(selected) {
           $scope.items = $scope.options.map(function(n) {
             var value = angular.isArray(selected) && (selected.indexOf(n) > -1 ||
@@ -1242,7 +1233,7 @@ angular.module('ngObiba', [
   'obiba.alert',
   'obiba.comments'
 ]);
-;angular.module('templates-main', ['alert/alert-template.tpl.html', 'comments/comment-editor-template.tpl.html', 'comments/comments-template.tpl.html', 'form/form-checkbox-template.tpl.html', 'form/form-input-template.tpl.html', 'form/form-localized-input-template.tpl.html', 'form/form-radio-template.tpl.html', 'form/form-textarea-template.tpl.html', 'notification/notification-confirm-modal.tpl.html', 'notification/notification-modal.tpl.html']);
+;angular.module('templates-main', ['alert/alert-template.tpl.html', 'comments/comment-editor-template.tpl.html', 'comments/comments-template.tpl.html', 'form/form-checkbox-template.tpl.html', 'form/form-input-template.tpl.html', 'form/form-localized-input-template.tpl.html', 'form/form-radio-group-template.tpl.html', 'form/form-radio-template.tpl.html', 'form/form-textarea-template.tpl.html', 'notification/notification-confirm-modal.tpl.html', 'notification/notification-modal.tpl.html']);
 
 angular.module("alert/alert-template.tpl.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("alert/alert-template.tpl.html",
@@ -1324,7 +1315,7 @@ angular.module("form/form-checkbox-template.tpl.html", []).run(["$templateCache"
     "          ng-model=\"model\"\n" +
     "          type=\"checkbox\"\n" +
     "          id=\"{{name}}\"\n" +
-    "          name=\"{{name}}\"\n" +
+    "          name=\"{{name}}{{gid}}\"\n" +
     "          form-server-error\n" +
     "          ng-required=\"required\">\n" +
     "      {{label | translate}}\n" +
@@ -1409,6 +1400,12 @@ angular.module("form/form-localized-input-template.tpl.html", []).run(["$templat
     "</div>");
 }]);
 
+angular.module("form/form-radio-group-template.tpl.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("form/form-radio-group-template.tpl.html",
+    "<div form-radio ng-repeat=\"option in options\" name=\"{{option.name}}\" on-select=\"onSelect\" model=\"model.design\"\n" +
+    "     value=\"option.value\" label=\"{{option.label}}\" gid=\"{{gid}}\"></div>");
+}]);
+
 angular.module("form/form-radio-template.tpl.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("form/form-radio-template.tpl.html",
     "<div class=\"radio\" ng-class=\"{'has-error': (form[fieldName].$dirty || form.saveAttempted) && form[name].$invalid}\">\n" +
@@ -1420,7 +1417,7 @@ angular.module("form/form-radio-template.tpl.html", []).run(["$templateCache", f
     "          ng-value=\"value\"\n" +
     "          type=\"radio\"\n" +
     "          id=\"{{name}}\"\n" +
-    "          name=\"{{name}}\"\n" +
+    "          name=\"{{name}}{{gid}}\"\n" +
     "          form-server-error\n" +
     "          ng-required=\"required\">\n" +
     "      {{label | translate}}\n" +

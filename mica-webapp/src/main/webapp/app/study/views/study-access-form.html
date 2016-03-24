@@ -3,6 +3,6 @@
 <p class="help-block" translate>study.access.for</p>
 
 <div class="form-group">
-  <div form-checkbox-group options="accessTypes" model="study.access"></div>
+  <div form-checkbox-group options="accessTypes[tab.lang]" model="study.access"></div>
   <div localized-textarea ng-disabled="study.access" name="study.otherAccess" model="study.otherAccess" lang="tab.lang" help="other"></div>
 </div>

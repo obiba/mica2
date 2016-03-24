@@ -36,4 +36,18 @@ angular.module('obiba.form')
         }
 
       };
-    }]);
+    }])
+
+  .service('RadioGroupOptionBuilder', function() {
+    this.build = function(prefix, items) {
+      return items.map(function(item) {
+        return {
+          name: prefix,
+          label: item.label || item,
+          value: item.name
+        };
+      });
+    };
+
+    return this;
+  });
