@@ -46,8 +46,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -66,7 +64,7 @@ import static java.util.stream.Collectors.toList;
 
 @Service
 @Validated
-public class StudyService extends AbstractGitPersistableService<StudyState, Study> implements ApplicationListener<ContextRefreshedEvent> {
+public class StudyService extends AbstractGitPersistableService<StudyState, Study> {
 
   private static final Logger log = LoggerFactory.getLogger(StudyService.class);
 
@@ -194,12 +192,6 @@ public class StudyService extends AbstractGitPersistableService<StudyState, Stud
 
   public List<Study> findAllDraftStudies(Iterable<String> ids) {
     return Lists.newArrayList(studyRepository.findAll(ids));
-  }
-
-  @Override
-  public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-    log.info("Gather published and draft studies to be indexed");
-    indexAll();
   }
 
   @Caching(evict = {@CacheEvict(value = "aggregations-metadata", allEntries = true),

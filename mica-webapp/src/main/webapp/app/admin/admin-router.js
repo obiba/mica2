@@ -36,6 +36,13 @@ mica.admin
             authorizedRoles: ['mica-administrator']
           }
         })
+        .when('/admin/indexing', {
+          templateUrl: 'app/admin/views/indexing.html',
+          controller: 'IndexingController',
+          access: {
+            authorizedRoles: ['mica-administrator']
+          }
+        })
         .when('/admin/logs', {
           templateUrl: 'app/admin/views/logs.html',
           controller: 'LogsController',

@@ -23,12 +23,18 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.obiba.mica.contact.event.IndexContactsEvent;
+import org.obiba.mica.dataset.event.IndexDatasetsEvent;
+import org.obiba.mica.file.event.IndexFilesEvent;
+import org.obiba.mica.micaConfig.service.CacheService;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
+import org.obiba.mica.network.event.IndexNetworksEvent;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.dataset.service.KeyStoreService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.OpalCredentialService;
 import org.obiba.mica.micaConfig.service.OpalService;
+import org.obiba.mica.study.event.IndexStudiesEvent;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Opal;
@@ -36,6 +42,7 @@ import org.springframework.stereotype.Component;
 
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
 
 import static java.util.stream.Collectors.toList;
 
@@ -60,6 +67,12 @@ public class MicaConfigResource {
 
   @Inject
   private Dtos dtos;
+
+  @Inject
+  private CacheService cacheService;
+
+  @Inject
+  private EventBus eventBus;
 
   @GET
   @Timed
@@ -165,6 +178,20 @@ public class MicaConfigResource {
     opalCredentialService.deleteOpalCredential(id);
 
     return Response.ok().build();
+  }
+
+  @PUT
+  @Path("/_index")
+  @Timed
+  @RequiresRoles(Roles.MICA_ADMIN)
+  public Response updateIndices() {
+    cacheService.clearOpalTaxonomiesCache();
+    eventBus.post(new IndexStudiesEvent());
+    eventBus.post(new IndexFilesEvent());
+    eventBus.post(new IndexContactsEvent());
+    eventBus.post(new IndexNetworksEvent());
+    eventBus.post(new IndexDatasetsEvent());
+    return Response.noContent().build();
   }
 
   private void createOrUpdateCredential(Mica.OpalCredentialDto opalCredentialDto) {

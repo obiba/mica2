@@ -221,6 +221,30 @@ mica.factory('CacheService', ['$resource',
     };
   }]);
 
+mica.factory('IndexService', ['$resource',
+  function ($resource) {
+    return {
+      all: $resource('ws/config/_index', {}, {
+        'build': {method: 'PUT'}
+      }),
+      networks: $resource('ws/draft/networks/_index', {}, {
+        'build': {method: 'PUT'}
+      }),
+      studies: $resource('ws/draft/studies/_index', {}, {
+        'build': {method: 'PUT'}
+      }),
+      datasets: $resource('ws/draft/datasets/_index', {}, {
+        'build': {method: 'PUT'}
+      }),
+      studyDatasets: $resource('ws/draft/study-datasets/_index', {}, {
+        'build': {method: 'PUT'}
+      }),
+      harmonizationDatasets: $resource('ws/draft/harmonization-datasets/_index', {}, {
+        'build': {method: 'PUT'}
+      })
+    };
+  }]);
+
 mica.factory('AuditsService', ['$http',
   function ($http) {
     return {

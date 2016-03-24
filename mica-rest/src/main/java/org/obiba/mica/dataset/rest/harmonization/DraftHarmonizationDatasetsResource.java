@@ -11,7 +11,6 @@
 package org.obiba.mica.dataset.rest.harmonization;
 
 import java.util.List;
-
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -25,20 +24,20 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import com.google.common.eventbus.EventBus;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
-import org.obiba.mica.dataset.event.IndexDatasetsEvent;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.codahale.metrics.annotation.Timed;
+import com.google.common.eventbus.EventBus;
 
 @Component
 @Scope("request")
@@ -59,6 +58,9 @@ public class DraftHarmonizationDatasetsResource {
 
   @Inject
   private EventBus eventBus;
+
+  @Inject
+  private Helper helper;
 
   /**
    * Get all {@link HarmonizationDataset}, optionally filtered by study.
@@ -94,7 +96,7 @@ public class DraftHarmonizationDatasetsResource {
   @Timed
   @RequiresPermissions({ "/draft/harmonization-dataset:PUBLISH" })
   public Response reIndex() {
-    eventBus.post(new IndexDatasetsEvent());
+    helper.indexAll();
     return Response.noContent().build();
   }
 
@@ -105,4 +107,15 @@ public class DraftHarmonizationDatasetsResource {
     return resource;
   }
 
+  @Component
+  public static class Helper {
+
+    @Inject
+    private HarmonizationDatasetService harmonizationDatasetService;
+
+    @Async
+    public void indexAll() {
+      harmonizationDatasetService.indexAll();
+    }
+  }
 }
