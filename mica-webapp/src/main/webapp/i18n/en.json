@@ -258,7 +258,7 @@
     "help": "The search engine is based on indexed documents. Each index can be rebuilt.",
     "build-index": "Build index",
     "all": "All",
-    "all-help": "All indices.",
+    "all-help": "Indices about any type of document: network, study, dataset (and associated variables), file, person.",
     "clear": "Clear",
     "run": "Run",
     "networks": "Networks",

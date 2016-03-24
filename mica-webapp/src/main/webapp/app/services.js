@@ -224,6 +224,9 @@ mica.factory('CacheService', ['$resource',
 mica.factory('IndexService', ['$resource',
   function ($resource) {
     return {
+      all: $resource('ws/config/_index', {}, {
+        'build': {method: 'PUT'}
+      }),
       networks: $resource('ws/draft/networks/_index', {}, {
         'build': {method: 'PUT'}
       }),

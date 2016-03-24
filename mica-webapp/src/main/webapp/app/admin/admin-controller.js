@@ -204,9 +204,7 @@ mica.admin
 
       $scope.indexAll = function () {
         withConfirm(function () {
-          IndexService.networks.build();
-          IndexService.studies.build();
-          IndexService.datasets.build();
+          IndexService.all.build();
         }, {message: 'Do you want to rebuild all the indices?'});
       };
 

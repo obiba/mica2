@@ -7,6 +7,7 @@ import org.obiba.mica.dataset.event.IndexDatasetsEvent;
 import org.obiba.mica.file.event.IndexFilesEvent;
 import org.obiba.mica.micaConfig.service.CacheService;
 import org.obiba.mica.network.event.IndexNetworksEvent;
+import org.obiba.mica.study.event.IndexStudiesEvent;
 import org.obiba.runtime.Version;
 import org.obiba.runtime.upgrade.UpgradeStep;
 import org.slf4j.Logger;
@@ -38,8 +39,8 @@ public class ElasticsearchUpgrade implements UpgradeStep {
   @Override
   public void execute(Version version) {
     log.info("Rebuild elasticsearch indices.");
-    //NOTE: studies index already rebuild on every app restart.
     cacheService.clearOpalTaxonomiesCache();
+    eventBus.post(new IndexStudiesEvent());
     eventBus.post(new IndexFilesEvent());
     eventBus.post(new IndexContactsEvent());
     eventBus.post(new IndexNetworksEvent());
