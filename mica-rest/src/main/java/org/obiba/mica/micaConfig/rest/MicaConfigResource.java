@@ -225,6 +225,10 @@ public class MicaConfigResource {
       .collect(Collectors.toMap(lang -> lang, lang -> new Locale(lang).getDisplayLanguage(locale)));
   }
 
+  /**
+   * @deprecated kept for backward compatibility.
+   * @return
+     */
   @GET
   @Path("/taxonomies")
   @RequiresAuthentication
@@ -233,6 +237,10 @@ public class MicaConfigResource {
     return opalService.getTaxonomyDtos();
   }
 
+  /**
+   * @deprecated kept for backward compatibility.
+   * @return
+     */
   @GET
   @Path("/taxonomies/summaries")
   @RequiresAuthentication
@@ -241,6 +249,10 @@ public class MicaConfigResource {
     return opalService.getTaxonomySummaryDtos();
   }
 
+  /**
+   * @deprecated kept for backward compatibility.
+   * @return
+     */
   @GET
   @Path("/taxonomies/vocabularies/summaries")
   @RequiresAuthentication
@@ -249,6 +261,10 @@ public class MicaConfigResource {
     return opalService.getTaxonomyVocabularySummaryDtos();
   }
 
+  /**
+   * @deprecated kept for backward compatibility.
+   * @return
+     */
   @GET
   @Path("/studies")
   @RequiresAuthentication

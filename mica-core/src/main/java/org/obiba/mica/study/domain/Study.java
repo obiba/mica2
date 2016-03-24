@@ -302,12 +302,20 @@ public class Study extends AbstractGitPersistable implements AttributeAware, Per
     this.pubmedId = pubmedId;
   }
 
+  /**
+   * @deprecated kept for backward compatibility.
+   * @return
+     */
   @Deprecated
   @JsonIgnore
   public List<Attachment> getAttachments() {
     return attachments;
   }
 
+  /**
+   * @deprecated kept for backward compatibility.
+   * @param attachments
+     */
   @Deprecated
   @JsonProperty
   public void setAttachments(List<Attachment> attachments) {

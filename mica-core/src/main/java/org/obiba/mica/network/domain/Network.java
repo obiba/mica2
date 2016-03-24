@@ -95,12 +95,20 @@ public class Network extends AbstractGitPersistable implements AttributeAware, P
     this.acronym = acronym;
   }
 
+  /**
+   * @deprecated kept for backward compatibility.
+   * @return
+     */
   @Deprecated
   @JsonIgnore
   public boolean isPublished() {
     return published;
   }
 
+  /**
+   * @deprecated kept for backward compatibility.
+   * @param published
+     */
   @Deprecated
   @JsonProperty
   public void setPublished(boolean published) {

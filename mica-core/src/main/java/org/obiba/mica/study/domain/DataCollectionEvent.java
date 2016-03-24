@@ -172,12 +172,20 @@ public class DataCollectionEvent extends AbstractAttributeAware
     this.otherBioSamples = otherBioSamples;
   }
 
+  /**
+   * @deprecated kept for backward compatibility.
+   * @return
+     */
   @Deprecated
   @JsonIgnore
   public List<Attachment> getAttachments() {
     return attachments;
   }
 
+  /**
+   * @deprecated kept for backward compatibility.
+   * @param attachments
+     */
   @Deprecated
   @JsonProperty
   public void setAttachments(@NotNull List<Attachment> attachments) {

@@ -80,6 +80,10 @@ public abstract class Dataset extends AbstractGitPersistable implements Attribut
     this.entityType = entityType == null ? DEFAULT_ENTITY_TYPE : entityType;
   }
 
+  /**
+   * @deprecated kept for backward compatibility.
+   * @return
+     */
   @JsonIgnore
   @Deprecated
   public boolean isPublished() {
