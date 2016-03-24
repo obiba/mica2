@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-03-23
+ * Date: 2016-03-24
  */
 'use strict';
 
@@ -1648,9 +1648,9 @@ var VOCABULARY_TYPES = {
 
 /* exported CriteriaIdGenerator */
 var CriteriaIdGenerator = {
-  generate: function(taxonomy, vocabulary, term) {
+  generate: function (taxonomy, vocabulary, term) {
     return taxonomy && vocabulary ?
-      taxonomy.name + '.' + vocabulary.name + (term ? '.' + term.name : '') :
+    taxonomy.name + '.' + vocabulary.name + (term ? '.' + term.name : '') :
       undefined;
   }
 };
@@ -2025,14 +2025,14 @@ angular.module('obiba.mica.search')
       return -1;
     }
 
-    this.vocabularyTermNames = function(vocabulary) {
-      return vocabulary && vocabulary.terms ? vocabulary.terms.map(function(term) {
+    this.vocabularyTermNames = function (vocabulary) {
+      return vocabulary && vocabulary.terms ? vocabulary.terms.map(function (term) {
         return term.name;
       }) : [];
     };
 
-    this.hasTargetQuery = function(rootRql, target) {
-      return rootRql.args.filter(function(query) {
+    this.hasTargetQuery = function (rootRql, target) {
+      return rootRql.args.filter(function (query) {
           switch (query.name) {
             case RQL_NODE.VARIABLE:
             case RQL_NODE.DATASET:
@@ -2083,14 +2083,14 @@ angular.module('obiba.mica.search')
       return query;
     };
 
-    this.matchQuery = function(field, queryString) {
+    this.matchQuery = function (field, queryString) {
       var query = new RqlQuery(RQL_NODE.MATCH);
       query.args.push(queryString || '*');
       query.args.push(field);
       return query;
     };
 
-    this.updateMatchQuery = function(query, queryString) {
+    this.updateMatchQuery = function (query, queryString) {
       query.args[0] = queryString || '*';
       return query;
     };
@@ -2195,7 +2195,13 @@ angular.module('obiba.mica.search')
           parentQuery.args.push(query);
         } else {
           var oldArg = parentQuery.args.splice(parentIndex, 1).pop();
-          var orQuery = new RqlQuery(logicalOp || RQL_NODE.OR);
+          // check if the field is from the target's taxonomy, in which case the criteria is
+          // added with a AND operator otherwise it is a OR
+          if (!logicalOp && query.args && query.args.length > 0) {
+            var targetTaxo = 'Mica_' + parentQuery.name;
+            logicalOp = query.args[0].startsWith(targetTaxo + '.') ? RQL_NODE.AND : RQL_NODE.OR;
+          }
+          var orQuery = new RqlQuery(logicalOp || RQL_NODE.AND);
           orQuery.args.push(oldArg, query);
           parentQuery.args.push(orQuery);
         }
@@ -2204,7 +2210,7 @@ angular.module('obiba.mica.search')
       return parentQuery;
     };
 
-    this.updateQueryArgValues = function(query, terms, replace) {
+    this.updateQueryArgValues = function (query, terms, replace) {
       switch (query.name) {
         case RQL_NODE.CONTAINS:
         case RQL_NODE.IN:
@@ -2301,19 +2307,19 @@ angular.module('obiba.mica.search')
       return vocabularyAttributeValue(vocabulary, 'alias', vocabulary.name);
     };
 
-    this.isTermsVocabulary = function(vocabulary) {
+    this.isTermsVocabulary = function (vocabulary) {
       return self.vocabularyType(vocabulary) === VOCABULARY_TYPES.STRING && vocabulary.terms;
     };
 
-    this.isMatchVocabulary = function(vocabulary) {
+    this.isMatchVocabulary = function (vocabulary) {
       return self.vocabularyType(vocabulary) === VOCABULARY_TYPES.STRING && !vocabulary.terms;
     };
 
-    this.isNumericVocabulary = function(vocabulary) {
+    this.isNumericVocabulary = function (vocabulary) {
       return !vocabulary.terms && (self.vocabularyType(vocabulary) === VOCABULARY_TYPES.INTEGER || self.vocabularyType(vocabulary) === VOCABULARY_TYPES.DECIMAL);
     };
 
-    this.isRangeVocabulary = function(vocabulary) {
+    this.isRangeVocabulary = function (vocabulary) {
       return vocabulary.terms && (self.vocabularyType(vocabulary) === VOCABULARY_TYPES.INTEGER || self.vocabularyType(vocabulary) === VOCABULARY_TYPES.DECIMAL);
     };
   }])
@@ -2372,7 +2378,7 @@ angular.module('obiba.mica.search')
         }
 
         parent.children.splice(indexChild, 1);
-        item.children.forEach(function(c) {
+        item.children.forEach(function (c) {
           c.parent = parent;
         });
         parent.children.splice.apply(parent.children, [indexChild, 0].concat(item.children));
@@ -2405,7 +2411,7 @@ angular.module('obiba.mica.search')
         }
 
         parent.children.splice(indexChild, 1);
-        item.children.forEach(function(c) {
+        item.children.forEach(function (c) {
           c.parent = parent;
         });
         parent.children.splice.apply(parent.children, [indexChild, 0].concat(item.children));
@@ -2483,7 +2489,7 @@ angular.module('obiba.mica.search')
           return TaxonomyResource.get({
             target: target,
             taxonomy: taxonomy
-          }).$promise.then(function(taxonomy) {
+          }).$promise.then(function (taxonomy) {
             vocabulary = taxonomy.vocabularies.filter(function (v) {return v.name === vocabulary; })[0];
             term = vocabulary.terms.filter(function (t) {return t.name === term; })[0];
 
@@ -2615,11 +2621,11 @@ angular.module('obiba.mica.search')
             return null;
           }
 
-          if((query.name === RQL_NODE.IN || query.name === RQL_NODE.MISSING || query.name === RQL_NODE.CONTAINS) && query.args[0] === criteriaId) {
+          if ((query.name === RQL_NODE.IN || query.name === RQL_NODE.MISSING || query.name === RQL_NODE.CONTAINS) && query.args[0] === criteriaId) {
             return query;
           }
 
-          for(var i = query.args.length; i--;) {
+          for (var i = query.args.length; i--;) {
             var res = iterReplaceQuery(query.args[i], criteriaId, newQuery);
 
             if (res) {
@@ -2635,7 +2641,7 @@ angular.module('obiba.mica.search')
 
         if (targetQuery) {
           var anyQuery = new RqlQuery(RQL_NODE.EXISTS),
-              criteriaId = RqlQueryUtils.criteriaId(item.taxonomy, item.vocabulary);
+            criteriaId = RqlQueryUtils.criteriaId(item.taxonomy, item.vocabulary);
 
           anyQuery.args.push(criteriaId);
           iterReplaceQuery(targetQuery, criteriaId, anyQuery);
@@ -2652,7 +2658,7 @@ angular.module('obiba.mica.search')
         return parsedQuery.serializeArgs(parsedQuery.args);
       };
 
-      this.prepareSearchQuery = function(type, query, pagination, lang, sort) {
+      this.prepareSearchQuery = function (type, query, pagination, lang, sort) {
         var rqlQuery = angular.copy(query);
         var target = typeToTarget(type);
         RqlQueryUtils.addLocaleQuery(rqlQuery, lang);
@@ -2666,7 +2672,7 @@ angular.module('obiba.mica.search')
         var limit = pagination[target] || {from: 0, size: 10};
         RqlQueryUtils.addLimit(targetQuery, RqlQueryUtils.limit(limit.from, limit.size));
 
-        if(sort) {
+        if (sort) {
           RqlQueryUtils.addSort(targetQuery, sort);
         }
 
@@ -2716,10 +2722,10 @@ angular.module('obiba.mica.search')
           parsedQuery.args.push(variable);
         }
 
-        if(variable.args.length>0 && variable.args[0].name !== 'limit') {
+        if (variable.args.length > 0 && variable.args[0].name !== 'limit') {
           var variableType = new RqlQuery('in');
           variableType.args.push('Mica_variable.variableType');
-          if(bucketArg === BUCKET_TYPES.NETWORK || bucketArg === BUCKET_TYPES.DATASCHEMA) {
+          if (bucketArg === BUCKET_TYPES.NETWORK || bucketArg === BUCKET_TYPES.DATASCHEMA) {
             variableType.args.push('Dataschema');
           } else {
             variableType.args.push('Study');
@@ -2742,7 +2748,7 @@ angular.module('obiba.mica.search')
           aggregate.args.push(a);
         });
         //bucket
-        if(bucketArgs && bucketArgs.length>0){
+        if (bucketArgs && bucketArgs.length > 0) {
           var bucket = new RqlQuery(RQL_NODE.BUCKET);
           bucketArgs.forEach(function (b) {
             bucket.args.push(b);
@@ -2796,17 +2802,18 @@ angular.module('obiba.mica.search')
         function addMissingTerms(aggs, vocabulary) {
           var terms = vocabulary.terms;
           if (terms && terms.length > 0) {
-            var keys = aggs && aggs.map(function(agg){
-              return agg.key;
-            }) || [];
+            var keys = aggs && aggs.map(function (agg) {
+                return agg.key;
+              }) || [];
 
             if (aggs) {
               // Add the missing terms not present in the aggs list
               var missingTerms = [];
 
-              terms.forEach(function(term) {
+              terms.forEach(function (term) {
                 if (keys.length === 0 || keys.indexOf(term.name) === -1) {
-                  missingTerms.push({count: 0,
+                  missingTerms.push({
+                    count: 0,
                     default: 0,
                     description: LocalizedValues.forLocale(term.description, lang),
                     key: term.name,
@@ -2819,7 +2826,7 @@ angular.module('obiba.mica.search')
             }
 
             // The query didn't have any match, return default empty aggs based on the vocabulary terms
-            return terms.map(function(term) {
+            return terms.map(function (term) {
               return {
                 count: 0,
                 default: 0,
@@ -2836,7 +2843,7 @@ angular.module('obiba.mica.search')
 
         function getChildAggragations(parentAgg, aggKey) {
           if (parentAgg.children) {
-            var child = parentAgg.children.filter(function(child){
+            var child = parentAgg.children.filter(function (child) {
               return child.hasOwnProperty(aggKey);
             }).pop();
 
@@ -2864,8 +2871,8 @@ angular.module('obiba.mica.search')
                 return filteredAgg['obiba.mica.StatsAggregationResultDto.stats'];
               } else {
                 return RqlQueryUtils.isRangeVocabulary(criterion.vocabulary) ?
-                  addMissingTerms(filteredAgg['obiba.mica.RangeAggregationResultDto.ranges'],criterion.vocabulary) :
-                  addMissingTerms(filteredAgg['obiba.mica.TermsAggregationResultDto.terms'],criterion.vocabulary);
+                  addMissingTerms(filteredAgg['obiba.mica.RangeAggregationResultDto.ranges'], criterion.vocabulary) :
+                  addMissingTerms(filteredAgg['obiba.mica.TermsAggregationResultDto.terms'], criterion.vocabulary);
               }
             } else {
               var vocabularyAgg = filteredAgg.children.filter(function (agg) {
@@ -2874,8 +2881,8 @@ angular.module('obiba.mica.search')
 
               if (vocabularyAgg) {
                 return RqlQueryUtils.isRangeVocabulary(criterion.vocabulary) ?
-                  addMissingTerms(getChildAggragations(filteredAgg, 'obiba.mica.RangeAggregationResultDto.ranges'),criterion.vocabulary):
-                  addMissingTerms(getChildAggragations(filteredAgg, 'obiba.mica.TermsAggregationResultDto.terms'),criterion.vocabulary);
+                  addMissingTerms(getChildAggragations(filteredAgg, 'obiba.mica.RangeAggregationResultDto.ranges'), criterion.vocabulary) :
+                  addMissingTerms(getChildAggragations(filteredAgg, 'obiba.mica.TermsAggregationResultDto.terms'), criterion.vocabulary);
               }
             }
           }
@@ -7457,8 +7464,8 @@ angular.module("search/views/criteria/criterion-string-terms-template.html", [])
     "      <li class=\"criteria-list-item\"\n" +
     "        ng-show=\"isInFilter() || isContainsFilter()\"\n" +
     "        ng-repeat=\"term in terms | regex:searchText:['key','title','description']\"\n" +
-    "        uib-popover=\"{{term.description}}\"\n" +
-    "        popover-title=\"{{term.title}}\"\n" +
+    "        uib-popover=\"{{term.description ? term.description : (truncate(term.title) === term.title ? null : term.title)}}\"\n" +
+    "        popover-title=\"{{term.description ? term.title : null}}\"\n" +
     "        popover-placement=\"bottom\"\n" +
     "        popover-trigger=\"mouseenter\">\n" +
     "          <span>\n" +

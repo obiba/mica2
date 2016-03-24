@@ -45,8 +45,8 @@
       <li class="criteria-list-item"
         ng-show="isInFilter() || isContainsFilter()"
         ng-repeat="term in terms | regex:searchText:['key','title','description']"
-        uib-popover="{{term.description}}"
-        popover-title="{{term.title}}"
+        uib-popover="{{term.description ? term.description : (truncate(term.title) === term.title ? null : term.title)}}"
+        popover-title="{{term.description ? term.title : null}}"
         popover-placement="bottom"
         popover-trigger="mouseenter">
           <span>
