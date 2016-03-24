@@ -185,4 +185,59 @@ mica.admin
           CacheService.cache.build({id: 'datasetVariables'});
         }, {message: 'Are you sure you want to build this cache?'});
       };
+    }])
+
+  .controller('IndexingController', ['$scope', '$rootScope', 'IndexService', 'NOTIFICATION_EVENTS',
+    function ($scope, $rootScope, IndexService, NOTIFICATION_EVENTS) {
+
+      $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (ev, callback) {
+        callback();
+      });
+
+      function withConfirm(onConfirm, opts) {
+        var defaults = {message : 'Do you want to rebuild this index?'};
+        var args = angular.extend({}, defaults, opts);
+
+        $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
+          {title: 'Rebuild index', message: args.message}, onConfirm);
+      }
+
+      $scope.indexAll = function () {
+        withConfirm(function () {
+          IndexService.networks.build();
+          IndexService.studies.build();
+          IndexService.datasets.build();
+        }, {message: 'Do you want to rebuild all the indices?'});
+      };
+
+      $scope.indexNetworks = function () {
+        withConfirm(function () {
+          IndexService.networks.build();
+        });
+      };
+
+      $scope.indexStudies = function () {
+        withConfirm(function () {
+          IndexService.studies.build();
+        });
+      };
+
+      $scope.indexDatasets = function () {
+        withConfirm(function () {
+          IndexService.datasets.build();
+        });
+      };
+
+      $scope.indexStudyDatasets = function () {
+        withConfirm(function () {
+          IndexService.studyDatasets.build();
+        });
+      };
+
+      $scope.indexHarmonizationDatasets = function () {
+        withConfirm(function () {
+          IndexService.harmonizationDatasets.build();
+        });
+      };
+
     }]);

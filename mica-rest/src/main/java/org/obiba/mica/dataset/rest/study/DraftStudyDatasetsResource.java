@@ -24,20 +24,20 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import com.google.common.eventbus.EventBus;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
-import org.obiba.mica.dataset.event.IndexDatasetsEvent;
 import org.obiba.mica.dataset.service.StudyDatasetService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.codahale.metrics.annotation.Timed;
+import com.google.common.eventbus.EventBus;
 
 @Component
 @Scope("request")
@@ -58,6 +58,9 @@ public class DraftStudyDatasetsResource {
 
   @Inject
   private EventBus eventBus;
+
+  @Inject
+  private Helper helper;
 
   /**
    * Get all {@link org.obiba.mica.dataset.domain.StudyDataset}, optionally filtered by study.
@@ -92,8 +95,7 @@ public class DraftStudyDatasetsResource {
   @Timed
   @RequiresPermissions({ "/draft/study-dataset:PUBLISH" })
   public Response reIndex() {
-    eventBus.post(new IndexDatasetsEvent());
-
+    helper.indexAll();
     return Response.noContent().build();
   }
 
@@ -102,6 +104,18 @@ public class DraftStudyDatasetsResource {
     DraftStudyDatasetResource resource = applicationContext.getBean(DraftStudyDatasetResource.class);
     resource.setId(id);
     return resource;
+  }
+
+  @Component
+  public static class Helper {
+
+    @Inject
+    private StudyDatasetService studyDatasetService;
+
+    @Async
+    public void indexAll() {
+      studyDatasetService.indexAll();
+    }
   }
 
 }

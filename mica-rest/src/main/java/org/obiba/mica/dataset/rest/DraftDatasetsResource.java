@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope("request")
-@Path("/datasets")
-public class DatasetsResource {
+@Path("/draft/datasets")
+public class DraftDatasetsResource {
 
   @Inject
   Helper helper;
@@ -25,8 +25,7 @@ public class DatasetsResource {
   @RequiresPermissions({ "/draft/study-dataset:EDIT", "/draft/harmonization-dataset:EDIT" })
   public Response indexAll() {
     helper.indexAll();
-
-    return Response.ok().build();
+    return Response.noContent().build();
   }
 
   @Component
