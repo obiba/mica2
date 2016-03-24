@@ -255,10 +255,10 @@
   },
   "indexing": {
     "title": "Indexing",
-    "help": "The search engine is based on indexed documents. Each index can be rebuilt.",
+    "help": "The search engine is based on indexed documents. Each index can be rebuilt without affecting the history of changes and the publication status of each document.",
     "build-index": "Build index",
     "all": "All",
-    "all-help": "All indices.",
+    "all-help": "Indices about any type of document: network, study, dataset (and associated variables), file, person.",
     "clear": "Clear",
     "run": "Run",
     "networks": "Networks",
