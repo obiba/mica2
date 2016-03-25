@@ -17,6 +17,9 @@ import static java.util.stream.Collectors.toSet;
 
 public class ContingencyUtils {
 
+  private ContingencyUtils() {
+  }
+
   public static List<String> getTermsHeaders(DatasetVariable variable, Mica.DatasetVariableContingenciesDto dto) {
     List<String> dtoTerms = Lists.newArrayList(
       dto.getContingenciesList().stream().flatMap(c -> c.getAggregationsList().stream()).map(a -> a.getTerm())

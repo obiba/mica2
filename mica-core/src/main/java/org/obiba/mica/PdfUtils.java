@@ -16,6 +16,9 @@ import com.itextpdf.text.pdf.PdfStamper;
 
 public class PdfUtils {
 
+  private PdfUtils() {
+  }
+
   public static void addImage(byte[] input, OutputStream output, Image image, String placeholder)
     throws IOException, DocumentException {
     try (PdfReaderAutoclosable pdfReader = new PdfReaderAutoclosable(input);
