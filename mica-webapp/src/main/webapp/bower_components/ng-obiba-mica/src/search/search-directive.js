@@ -513,7 +513,7 @@ angular.module('obiba.mica.search')
         isHistoryEnabled: '=',
         lang: '='
       },
-      controller: 'TaxonomiesPanelController',
+      controller: 'ClassificationPanelController',
       templateUrl: 'search/views/classifications/classifications-view.html'
     };
   }])
