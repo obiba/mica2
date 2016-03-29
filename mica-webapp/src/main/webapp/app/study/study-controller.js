@@ -987,7 +987,7 @@ mica.study
     'StringUtils',
     'ActiveTabService',
     'FormServerValidation',
-
+    'RadioGroupOptionBuilder',
     function ($rootScope,
               $scope,
               $routeParams,
@@ -1000,7 +1000,8 @@ mica.study
               StudyTaxonomyService,
               StringUtils,
               ActiveTabService,
-              FormServerValidation) {
+              FormServerValidation,
+              RadioGroupOptionBuilder) {
 
 
       MicaConfigResource.get(function (micaConfig) {
@@ -1036,9 +1037,10 @@ mica.study
 
       // TODO ng-obiba's formCheckboxGroup directive must check for empty options array, once that's implemented we no
       // longer need to initialize these variables to empty arrays
-      $scope.accessTypes = [];
-      $scope.methodDesignTypes = [];
-      $scope.methodRecruitmentTypes = [];
+      $scope.accessTypes = {};
+      $scope.methodDesignTypes = {};
+      $scope.methods= {};
+      $scope.methodRecruitmentTypes = {};
       $scope.defaultMinYear = 1900;
       $scope.defaultMaxYear = 9999;
       $scope.fileTypes = '.doc, .docx, .odm, .odt, .gdoc, .pdf, .txt  .xml  .xls, .xlsx, .ppt';
@@ -1058,17 +1060,19 @@ mica.study
             $scope.authorization.specific.date =
               new Date(response.specificAuthorization.date.split('-').map(function (x) { return parseInt(x, 10);}));
           }
-          // TODO remove the property below once the Study.methods.designs is replaced by Study.methods.design
-          $scope.methods = {design: angular.isArray($scope.study.methods.designs) ? $scope.study.methods.designs.pop() : $scope.study.methods.designs};
+
+          StudyTaxonomyService.get(function() {
+            // TODO remove the property below once the Study.methods.designs is replaced by Study.methods.design
+            $scope.methods = {design: angular.isArray($scope.study.methods.designs) ? $scope.study.methods.designs.pop() : $scope.study.methods.designs};
+            $scope.tabs.forEach(function(tab) {
+              $scope.methodDesignTypes[tab.lang] = RadioGroupOptionBuilder.build('methods', StudyTaxonomyService.getTerms('methods-designs', tab.lang));
+              $scope.accessTypes[tab.lang] = StudyTaxonomyService.getTerms('access', tab.lang);
+              $scope.methodRecruitmentTypes[tab.lang] = StudyTaxonomyService.getTerms('methods-recruitments', tab.lang);
+            });
+          });
+
         }
       }) : {attachments: [], maelstromAuthorization: {date: null}, specificAuthorization: {date: null}};
-
-      StudyTaxonomyService.get(function() {
-        var lang = ActiveTabService.getActiveTab($scope.tabs).lang;
-        $scope.methodDesignTypes = StudyTaxonomyService.getTerms('methods-designs', lang);
-        $scope.accessTypes = StudyTaxonomyService.getTerms('access', lang);
-        $scope.methodRecruitmentTypes = StudyTaxonomyService.getTerms('methods-recruitments', lang);
-      });
 
       $scope.save = function () {
         if ($scope.methods && $scope.methods.design) {

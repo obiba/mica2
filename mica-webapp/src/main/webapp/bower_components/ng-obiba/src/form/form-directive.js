@@ -97,6 +97,7 @@ angular.module('obiba.form')
       require: '^form',
       scope: {
         name: '@',
+        gid: '@',
         model: '=',
         value: '=',
         label: '@',
@@ -117,35 +118,9 @@ angular.module('obiba.form')
         options: '=',
         model: '='
       },
-      template: '<div form-radio ng-repeat="item in items" name="{{item.name}}" on-select="onSelect" model="model" value="item.value" label="{{item.label}}"></div>',
-      link: function ($scope, elem, attrs) {
-
-        function updateOptions(options) {
-          if (!options) {
-            return;
-          }
-
-          $scope.items = options.map(function(option) {
-            return {
-              name: attrs.model + '.' + (option.name || option),
-              label: option.label || option,
-              value: option.name
-            };
-          });
-        }
-
-        $scope.onSelect = function(value) {
-          $scope.model = value;
-        };
-
-        $scope.$watch('model', function(selected) {
-          if (selected) {
-            updateOptions($scope.options);
-          }
-
-        });
-
-        $scope.$watch('options', updateOptions);
+      templateUrl: 'form/form-radio-group-template.tpl.html',
+      link: function ($scope) {
+        $scope.gid = $scope.$id;
       }
     };
   }])
@@ -156,6 +131,7 @@ angular.module('obiba.form')
       require: '^form',
       scope: {
         name: '@',
+        gid: '@',
         model: '=',
         label: '@',
         help: '@'
@@ -174,8 +150,9 @@ angular.module('obiba.form')
         options: '=',
         model: '='
       },
-      template: '<div form-checkbox ng-repeat="item in items" name="{{item.name}}" model="item.value" label="{{item.label}}">',
+      template: '<div form-checkbox ng-repeat="item in items" name="{{item.name}}" model="item.value" gid="${{gid}}" label="{{item.label}}">',
       link: function ($scope, elem, attrs) {
+        $scope.gid = $scope.$id;
         $scope.$watch('model', function(selected) {
           $scope.items = $scope.options.map(function(n) {
             var value = angular.isArray(selected) && (selected.indexOf(n) > -1 ||
