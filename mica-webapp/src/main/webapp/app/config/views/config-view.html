@@ -72,12 +72,32 @@
         </tr>
         <tr>
           <td>
+            <span translate>config.single-study-enabled</span>
+            <span class="help-block" translate>config.single-study-enabled-help</span>
+          </td>
+          <td>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isSingleStudyEnabled"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.isSingleStudyEnabled"></i>
+          </td>
+        </tr>
+        <tr>
+          <td>
             <span translate>config.network-enabled</span>
             <span class="help-block" translate>config.network-enabled-help</span>
           </td>
           <td>
             <i class="fa fa-check-square-o" ng-hide="!micaConfig.isNetworkEnabled"></i>
             <i class="fa fa-square-o" ng-hide="micaConfig.isNetworkEnabled"></i>
+          </td>
+        </tr>
+        <tr ng-class="{'text-muted': !micaConfig.isNetworkEnabled}">
+          <td>
+            <span translate>config.single-network-enabled</span>
+            <span class="help-block" translate>config.single-network-enabled-help</span>
+          </td>
+          <td>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isSingleNetworkEnabled"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.isSingleNetworkEnabled"></i>
           </td>
         </tr>
         <tr>
@@ -98,26 +118,6 @@
           <td>
             <i class="fa fa-check-square-o" ng-hide="!micaConfig.isHarmonizationDatasetEnabled"></i>
             <i class="fa fa-square-o" ng-hide="micaConfig.isHarmonizationDatasetEnabled"></i>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <span translate>config.single-network-enabled</span>
-            <span class="help-block" translate>config.single-network-enabled-help</span>
-          </td>
-          <td>
-            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isSingleNetworkEnabled"></i>
-            <i class="fa fa-square-o" ng-hide="micaConfig.isSingleNetworkEnabled"></i>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <span translate>config.single-study-enabled</span>
-            <span class="help-block" translate>config.single-study-enabled-help</span>
-          </td>
-          <td>
-            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isSingleStudyEnabled"></i>
-            <i class="fa fa-square-o" ng-hide="micaConfig.isSingleStudyEnabled"></i>
           </td>
         </tr>
         </tbody>
