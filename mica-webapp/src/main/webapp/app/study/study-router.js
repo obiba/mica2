@@ -5,8 +5,8 @@ mica.study
     function ($routeProvider) {
       $routeProvider
         .when('/study', {
-          templateUrl: 'app/study/views/study-list.html',
-          controller: 'StudyListController'
+          templateUrl: 'app/study/views/study-main.html',
+          controller: 'StudyMainController'
         })
         .when('/study/new', {
           templateUrl: 'app/study/views/study-form.html',

@@ -307,13 +307,22 @@ mica.config
       };
     }])
 
-  .controller('MicaConfigEditController', ['$scope', '$resource', '$location', '$log',
+  .controller('MicaConfigEditController', ['$scope', '$resource', '$window', '$location', '$log',
     'MicaConfigResource', 'FormServerValidation',
 
-    function ($scope, $resource, $location, $log, MicaConfigResource, FormServerValidation) {
-
+    function ($scope, $resource, $window, $location, $log, MicaConfigResource, FormServerValidation) {
+      var reload = false;
       $scope.micaConfig = MicaConfigResource.get();
       $scope.availableLanguages = $resource('ws/config/languages').get();
+
+      $scope.micaConfig.$promise.then(function() {
+        $scope.$watchGroup(['isNetworkEnabled', 'isSingleNetworkEnabled',
+          'isSingleStudyEnabled', 'isStudyDatasetEnabled', 'isHarmonizationDatasetEnabled'].map(function(p) { return 'micaConfig.' + p; }), function(value, oldValue) {
+          if(!angular.equals(value,oldValue)) {
+            reload = true;
+          }
+        });
+      });
 
       $scope.save = function () {
 
@@ -324,7 +333,10 @@ mica.config
 
         $scope.micaConfig.$save(
           function () {
-            $location.path('/admin/general').replace();
+            $location.path('/admin/general');
+            if(reload) {
+              $window.location.reload();
+            }
           },
           function (response) {
             FormServerValidation.error(response, $scope.form);

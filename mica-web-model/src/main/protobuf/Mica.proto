@@ -410,6 +410,11 @@ message MicaConfigDto {
   optional string studyDatasetNotificationsSubject = 19;
   optional bool isHarmonizationDatasetNotificationsEnabled = 20;
   optional string harmonizationDatasetNotificationsSubject = 21;
+  optional bool isSingleStudyEnabled = 22;
+  optional bool isNetworkEnabled = 23;
+  optional bool isSingleNetworkEnabled = 24;
+  optional bool isStudyDatasetEnabled = 25;
+  optional bool isHarmonizationDatasetEnabled = 26;
 }
 
 message AggregationsConfigDto {

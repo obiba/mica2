@@ -1,0 +1,13 @@
+<div ng-if="micaConfig.isSingleNetworkEnabled && !networks.length">
+  <p class="help-block">
+    <span translate>network.none</span>
+  </p>
+  <a ng-href="#/network/new" class="btn btn-info" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+    <i class="fa fa-plus"></i> <span translate>network.add</span>
+  </a>
+</div>
+<div ng-if="!micaConfig.isSingleNetworkEnabled">
+  <div ng-controller="NetworkListController">
+    <ng-include src="'app/network/views/network-list.html'"></ng-include>
+  </div>
+</div>

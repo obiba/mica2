@@ -15,6 +15,18 @@ mica.network
   .constant('NETWORK_EVENTS', {
     networkUpdated: 'event:network-updated'
   })
+  
+  .controller('NetworkMainController', ['$scope', '$location', 'NetworksResource',
+    function($scope, $location, NetworksResource) {
+      if($scope.micaConfig.isSingleNetworkEnabled) {
+        $scope.networks = NetworksResource.query({}, function(res) {
+          if(res.length) {
+            $location.path('/network/' + res[0].id);
+            $location.replace();
+          }
+        });
+      }
+    }])
 
   .controller('NetworkListController', ['$rootScope',
     '$scope',

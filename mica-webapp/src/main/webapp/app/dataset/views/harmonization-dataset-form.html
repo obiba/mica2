@@ -47,16 +47,18 @@
 
               <div form-input name="dataset.table" model="dataset['obiba.mica.HarmonizationDatasetDto.type'].table" label="dataset.table" help="dataset.table-dataschema-help" required="true"></div>
 
-              <h3 translate>dataset.network.title</h3>
+              <div ng-if="micaConfig.isNetworkEnabled">
+                <h3 translate>dataset.network.title</h3>
 
-              <p class="help-block" translate>dataset.network.info</p>
+                <p class="help-block" translate>dataset.network.info</p>
 
-              <ui-select theme="bootstrap" ng-model="selected.network" reset-search-input="true">
-                <ui-select-match allow-clear="true">{{$select.selected.id}}</ui-select-match>
-                <ui-select-choices repeat="network in networks| filter: {id: $select.search}">
-                  <span ng-bind-html="network.id | highlight: $select.search"></span>
-                </ui-select-choices>
-              </ui-select>
+                <ui-select theme="bootstrap" ng-model="selected.network" reset-search-input="true">
+                  <ui-select-match allow-clear="true">{{$select.selected.id}}</ui-select-match>
+                  <ui-select-choices repeat="network in networks| filter: {id: $select.search}">
+                    <span ng-bind-html="network.id | highlight: $select.search"></span>
+                  </ui-select-choices>
+                </ui-select>
+              </div>
             </div>
           </div>
         </div>

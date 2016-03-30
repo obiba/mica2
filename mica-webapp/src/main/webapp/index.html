@@ -52,26 +52,26 @@
     </div>
     <div class="navbar-collapse collapse" id="navbar-main" ng-switch="authenticated">
       <ul class="nav navbar-nav">
-        <li ng-if="authenticated">
+        <li ng-if="authenticated && micaConfig.isNetworkEnabled">
           <a href="#/network">
-            <span translate>networks</span>
+            <span>{{micaConfig.isSingleNetworkEnabled ? 'network.label' : 'networks' | translate}}</span>
           </a>
         </li>
         <li ng-if="authenticated">
           <a href="#/study">
-            <span translate>studies</span>
+            <span>{{micaConfig.isSingleStudyEnabled ? 'study.label' : 'studies' | translate}}</span>
           </a>
         </li>
-        <li class="dropdown clearfix" ng-if="authenticated">
+        <li class="dropdown clearfix" ng-if="authenticated && (micaConfig.isStudyDatasetEnabled || micaConfig.isHarmonizationDatasetEnabled)">
           <a href="" class="dropdown-toggle" data-toggle="dropdown">
             <span translate>datasets</span>
             <i class="fa fa-caret-down"></i></a>
           <ul class="dropdown-menu pull-left">
-            <li><a href="#/study-dataset"><span translate>study-datasets</span></a></li>
-            <li><a href="#/harmonization-dataset"><span translate>harmonization-datasets</span></a></li>
+            <li ng-if="micaConfig.isStudyDatasetEnabled"><a href="#/study-dataset"><span translate>study-datasets</span></a></li>
+            <li ng-if="micaConfig.isHarmonizationDatasetEnabled"><a href="#/harmonization-dataset"><span translate>harmonization-datasets</span></a></li>
           </ul>
         </li>
-        <li ng-if="hasRole(['mica-administrator', 'mica-user', 'mica-data-access-officer'])">
+        <li ng-if="hasRole(['mica-administrator', 'mica-user', 'mica-data-access-officer']) && micaConfig.isHarmonizationDatasetEnabled">
           <a href="#/data-access-requests">
             <span translate>data-access-requests</span>
           </a>
