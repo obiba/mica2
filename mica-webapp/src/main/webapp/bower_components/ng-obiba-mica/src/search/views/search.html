@@ -125,7 +125,7 @@
             <div criteria-root item="search.criteria" query="search.query" advanced="search.advanced" on-remove="removeCriteriaItem"
               on-refresh="refreshQuery" class="inline"></div>
 
-            <small class="hoffset2">
+            <small class="hoffset2" ng-if="showAdvanced()">
               <a href ng-click="toggleSearchQuery()"
                 title="{{search.advanced ? 'search.basic-help' : 'search.advanced-help' | translate}}" translate>
                 {{search.advanced ? 'search.basic' : 'search.advanced' | translate}}
