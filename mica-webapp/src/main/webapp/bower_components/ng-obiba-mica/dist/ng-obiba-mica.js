@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-03-29
+ * Date: 2016-03-30
  */
 'use strict';
 
@@ -3639,6 +3639,18 @@ angular.module('obiba.mica.search')
         $scope.search.advanced = !$scope.search.advanced;
       };
 
+      var showAdvanced = function() {
+        var children = $scope.search.criteria.children || [];
+        for(var i = children.length; i--;) {
+          var vocabularyChildren = children[i].children || [];
+          for (var j = vocabularyChildren.length; j--;) {
+            if (vocabularyChildren[j].type === RQL_NODE.OR || vocabularyChildren[j].type === RQL_NODE.AND) {
+              return true;
+            }
+          }
+        }
+      };
+      
       function sortCriteriaItems(items) {
         items.sort(function (a, b) {
           if (a.target === 'network' || b.target === 'variable') {
@@ -4058,6 +4070,7 @@ angular.module('obiba.mica.search')
       $scope.refreshQuery = refreshQuery;
       $scope.clearSearchQuery = clearSearchQuery;
       $scope.toggleSearchQuery = toggleSearchQuery;
+      $scope.showAdvanced = showAdvanced;
 
       $scope.onTypeChanged = onTypeChanged;
       $scope.onBucketChanged = onBucketChanged;
@@ -6811,7 +6824,7 @@ angular.module("search/views/classifications.html", []).run(["$templateCache", f
     "            <div criteria-root item=\"search.criteria\" query=\"search.query\" advanced=\"search.advanced\" on-remove=\"removeCriteriaItem\"\n" +
     "              on-refresh=\"refreshQuery\" class=\"inline\"></div>\n" +
     "\n" +
-    "            <small class=\"hoffset2\">\n" +
+    "            <small ng-if=\"showAdvanced()\" class=\"hoffset2\">\n" +
     "              <a href ng-click=\"toggleSearchQuery()\"\n" +
     "                title=\"{{search.advanced ? 'search.basic-help' : 'search.advanced-help' | translate}}\" translate>\n" +
     "                {{search.advanced ? 'search.basic' : 'search.advanced' | translate}}\n" +
@@ -8126,7 +8139,7 @@ angular.module("search/views/search.html", []).run(["$templateCache", function($
     "            <div criteria-root item=\"search.criteria\" query=\"search.query\" advanced=\"search.advanced\" on-remove=\"removeCriteriaItem\"\n" +
     "              on-refresh=\"refreshQuery\" class=\"inline\"></div>\n" +
     "\n" +
-    "            <small class=\"hoffset2\">\n" +
+    "            <small class=\"hoffset2\" ng-if=\"showAdvanced()\">\n" +
     "              <a href ng-click=\"toggleSearchQuery()\"\n" +
     "                title=\"{{search.advanced ? 'search.basic-help' : 'search.advanced-help' | translate}}\" translate>\n" +
     "                {{search.advanced ? 'search.basic' : 'search.advanced' | translate}}\n" +

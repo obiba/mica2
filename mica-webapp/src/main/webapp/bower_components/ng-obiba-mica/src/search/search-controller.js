@@ -494,6 +494,18 @@ angular.module('obiba.mica.search')
         $scope.search.advanced = !$scope.search.advanced;
       };
 
+      var showAdvanced = function() {
+        var children = $scope.search.criteria.children || [];
+        for(var i = children.length; i--;) {
+          var vocabularyChildren = children[i].children || [];
+          for (var j = vocabularyChildren.length; j--;) {
+            if (vocabularyChildren[j].type === RQL_NODE.OR || vocabularyChildren[j].type === RQL_NODE.AND) {
+              return true;
+            }
+          }
+        }
+      };
+      
       function sortCriteriaItems(items) {
         items.sort(function (a, b) {
           if (a.target === 'network' || b.target === 'variable') {
@@ -913,6 +925,7 @@ angular.module('obiba.mica.search')
       $scope.refreshQuery = refreshQuery;
       $scope.clearSearchQuery = clearSearchQuery;
       $scope.toggleSearchQuery = toggleSearchQuery;
+      $scope.showAdvanced = showAdvanced;
 
       $scope.onTypeChanged = onTypeChanged;
       $scope.onBucketChanged = onBucketChanged;
