@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba
 
  * License: GNU Public License version 3
- * Date: 2016-03-29
+ * Date: 2016-03-30
  */
 'use strict';
 
@@ -957,6 +957,8 @@ angular.module('obiba.form')
         name: '@',
         gid: '@',
         model: '=',
+        required: '=',
+        disabled: '=',
         label: '@',
         help: '@'
       },
@@ -1317,7 +1319,8 @@ angular.module("form/form-checkbox-template.tpl.html", []).run(["$templateCache"
     "          id=\"{{name}}\"\n" +
     "          name=\"{{name}}{{gid}}\"\n" +
     "          form-server-error\n" +
-    "          ng-required=\"required\">\n" +
+    "          ng-required=\"required\"\n" +
+    "          ng-disabled=\"disabled\">\n" +
     "      {{label | translate}}\n" +
     "  </label>\n" +
     "\n" +
