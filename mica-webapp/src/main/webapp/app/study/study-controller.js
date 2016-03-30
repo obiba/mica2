@@ -6,6 +6,18 @@ mica.study
     studyUpdated: 'event:study-updated'
   })
 
+  .controller('StudyMainController', ['$scope', '$location', 'StudyStatesResource',
+    function($scope, $location, StudyStatesResource) {
+      if($scope.micaConfig.isSingleStudyEnabled) {
+        $scope.studies = StudyStatesResource.query({}, function(res) {
+          if(res.length) {
+            $location.path('/study/' + res[0].id);
+            $location.replace();
+          }
+        });
+      }
+  }])
+
   .controller('StudyListController', [
     '$rootScope',
     '$scope',
@@ -970,7 +982,7 @@ mica.study
   .controller('StudyFileSystemController', ['$scope', '$log', '$routeParams',
     function ($scope, $log, $routeParams) {
       $scope.documentInfo = {type: 'study', id: $routeParams.id};
-      $log.info('>>>', $scope.documentInfo);
+      $log.debug($scope.documentInfo);
     }
   ])
 

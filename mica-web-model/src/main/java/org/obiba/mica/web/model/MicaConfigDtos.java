@@ -72,6 +72,12 @@ class MicaConfigDtos {
 
     if(config.getHarmonizationDatasetNotificationSubject() != null) builder.setHarmonizationDatasetNotificationsSubject(config.getHarmonizationDatasetNotificationSubject());
 
+    builder.setIsSingleNetworkEnabled(config.isSingleNetworkEnabled());
+    builder.setIsSingleStudyEnabled(config.isSingleStudyEnabled());
+    builder.setIsNetworkEnabled(config.isNetworkEnabled());
+    builder.setIsStudyDatasetEnabled(config.isStudyDatasetEnabled());
+    builder.setIsHarmonizationDatasetEnabled(config.isHarmonizationDatasetEnabled());
+
     return builder.build();
   }
 
@@ -101,6 +107,12 @@ class MicaConfigDtos {
     if(dto.hasStudyDatasetNotificationsSubject()) config.setStudyDatasetNotificationSubject(dto.getStudyDatasetNotificationsSubject());
     config.setHarmonizationDatasetNotificationsEnabled(dto.getIsHarmonizationDatasetNotificationsEnabled());
     if(dto.hasHarmonizationDatasetNotificationsSubject()) config.setHarmonizationDatasetNotificationSubject(dto.getHarmonizationDatasetNotificationsSubject());
+
+    config.setSingleNetworkEnabled(dto.getIsSingleNetworkEnabled());
+    config.setSingleStudyEnabled(dto.getIsSingleStudyEnabled());
+    config.setNetworkEnabled(dto.getIsNetworkEnabled());
+    config.setStudyDatasetEnabled(dto.getIsStudyDatasetEnabled());
+    config.setHarmonizationDatasetEnabled(dto.getIsHarmonizationDatasetEnabled());
 
     return config;
   }

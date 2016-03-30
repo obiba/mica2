@@ -80,6 +80,16 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   private String commentNotiticationsSubject;
 
+  private boolean isSingleStudyEnabled = false;
+
+  private boolean isSingleNetworkEnabled = false;
+
+  private boolean isNetworkEnabled = true;
+
+  private boolean isStudyDatasetEnabled = true;
+
+  private boolean isHarmonizationDatasetEnabled = true;
+
   public String getName() {
     return name;
   }
@@ -272,5 +282,45 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public void setCommentNotiticationsSubject(String commentNotiticationsSubject) {
     this.commentNotiticationsSubject = commentNotiticationsSubject;
+  }
+
+  public boolean isSingleStudyEnabled() {
+    return isSingleStudyEnabled;
+  }
+
+  public void setSingleStudyEnabled(boolean addStudyEnabled) {
+    isSingleStudyEnabled = addStudyEnabled;
+  }
+
+  public boolean isSingleNetworkEnabled() {
+    return isSingleNetworkEnabled;
+  }
+
+  public void setSingleNetworkEnabled(boolean addNetworkEnabled) {
+    isSingleNetworkEnabled = addNetworkEnabled;
+  }
+
+  public boolean isNetworkEnabled() {
+    return isNetworkEnabled;
+  }
+
+  public void setNetworkEnabled(boolean networkEnabled) {
+    isNetworkEnabled = networkEnabled;
+  }
+
+  public boolean isStudyDatasetEnabled() {
+    return isStudyDatasetEnabled;
+  }
+
+  public void setStudyDatasetEnabled(boolean studyDatasetEnabled) {
+    isStudyDatasetEnabled = studyDatasetEnabled;
+  }
+
+  public boolean isHarmonizationDatasetEnabled() {
+    return isHarmonizationDatasetEnabled;
+  }
+
+  public void setHarmonizationDatasetEnabled(boolean harmonizationDatasetEnabled) {
+    isHarmonizationDatasetEnabled = harmonizationDatasetEnabled;
   }
 }

@@ -1,0 +1,13 @@
+<div ng-if="micaConfig.isSingleStudyEnabled && !studies.length">
+  <p class="help-block">
+    <span translate>study.none</span>
+  </p>
+  <a ng-href="#/study/new" class="btn btn-info" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
+    <i class="fa fa-plus"></i> <span translate>study.add</span>
+  </a>
+</div>
+<div ng-if="!micaConfig.isSingleStudyEnabled">
+  <div ng-controller="StudyListController">
+    <ng-include src="'app/study/views/study-list.html'"></ng-include>
+  </div>
+</div>
