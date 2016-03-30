@@ -133,6 +133,8 @@ angular.module('obiba.form')
         name: '@',
         gid: '@',
         model: '=',
+        required: '=',
+        disabled: '=',
         label: '@',
         help: '@'
       },
