@@ -238,6 +238,24 @@ function CriteriaItemBuilder(LocalizedValues, useLang) {
 }
 
 /**
+ * Wrapper class for items that contain repeatable vocabularies
+ * @param current
+ * @param item
+ * @constructor
+ */
+function ItemWrapper(current, item) {
+  var items = current ? [].concat(current.items(), item) : [item];
+
+  this.first = function() {
+    return items[0];
+  };
+  
+  this.items = function() {
+    return items;
+  };
+}
+
+/**
  * Class for all criteria builders
  * @param rootRql
  * @param rootItem
@@ -355,7 +373,7 @@ CriteriaBuilder.prototype.visitLeaf = function (node, parentItem) {
       node,
       parentItem);
 
-  this.leafItemMap[item.id] = item;
+  this.leafItemMap[item.id] = new ItemWrapper(this.leafItemMap[item.id], item);
 
   parentItem.children.push(item);
 };
@@ -525,6 +543,12 @@ angular.module('obiba.mica.search')
       return query;
     };
 
+    this.orQuery = function (left, right) {
+      var query = new RqlQuery(RQL_NODE.OR);
+      query.args = [left, right];
+      return query;
+    };
+
     this.aggregate = function (fields) {
       var query = new RqlQuery(RQL_NODE.AGGREGATE);
       fields.forEach(function (field) {
@@ -540,17 +564,21 @@ angular.module('obiba.mica.search')
       return query;
     };
 
-    this.inQuery = function (field, terms) {
-      var hasValues = terms && terms.length > 0;
-      var name = hasValues ? RQL_NODE.IN : RQL_NODE.EXISTS;
+    this.fieldQuery = function (name, field, terms) {
       var query = new RqlQuery(name);
       query.args.push(field);
 
-      if (hasValues) {
+      if (terms && terms.length > 0) {
         query.args.push(terms);
       }
 
       return query;
+    };
+
+    this.inQuery = function (field, terms) {
+      var hasValues = terms && terms.length > 0;
+      var name = hasValues ? RQL_NODE.IN : RQL_NODE.EXISTS;
+      return this.fieldQuery(name, field, terms);
     };
 
     this.matchQuery = function (field, queryString) {
@@ -678,6 +706,67 @@ angular.module('obiba.mica.search')
       }
 
       return parentQuery;
+    };
+
+    /**
+     * Update repeatable vocabularies as follows:
+     *
+     * IN(q, [a,b]) OR [c] => CONTAINS(q, [a,c]) OR CONTAINS(q, [b,c])
+     * CONTAINS(q, [a,b]) OR [c] => CONTAINS(q, [a,b,c])
+     * EXISTS(q) OR [c] => CONTAINS(q, [c])
+     *
+     * @param existingItemWrapper
+     * @param terms
+     */
+    this.updateRepeatableQueryArgValues = function (existingItemWrapper, terms) {
+      var existingItemItems = existingItemWrapper.items();
+      var self = this;
+      existingItemItems.forEach(function(existingItemItem) {
+        var query = existingItemItem.rqlQuery;
+        switch (query.name) {
+          case RQL_NODE.EXISTS:
+            query.name = RQL_NODE.CONTAINS;
+            self.mergeInQueryArgValues(query, terms, false);
+            break;
+
+          case RQL_NODE.CONTAINS:
+            self.mergeInQueryArgValues(query, terms, false);
+            break;
+
+          case RQL_NODE.IN:
+            var values = query.args[1] ?  [].concat(query.args[1]) : [];
+            if (values.length === 1) {
+              query.name = RQL_NODE.CONTAINS;
+              self.mergeInQueryArgValues(query, terms, false);
+              break;
+            }
+
+            var field = query.args[0];
+            var contains = values.filter(function(value){
+              // remove duplicates (e.g. CONTAINS(q, [a,a])
+              return terms.indexOf(value) < 0;
+            }).map(function(value){
+              return self.fieldQuery(RQL_NODE.CONTAINS, field, [].concat(value, terms));
+            });
+
+            var orRql;
+            if (contains.length > 1) {
+              var firstTwo = contains.splice(0, 2);
+              orRql = self.orQuery(firstTwo[0], firstTwo[1]);
+
+              contains.forEach(function(value){
+                orRql = self.orQuery(value, orRql);
+              });
+              
+              query.name = orRql.name;
+              query.args = orRql.args;
+            } else {
+              query.name = RQL_NODE.CONTAINS;
+              query.args = contains[0].args;
+            }
+        }
+      });
+
     };
 
     this.updateQueryArgValues = function (query, terms, replace) {
@@ -991,21 +1080,31 @@ angular.module('obiba.mica.search')
       };
 
       /**
-       * Update an exising item to the item tree
+       * Update an existing item to the item tree
        *
        * @param rootItem
        * @param item
        */
-      this.updateCriteriaItem = function (existingItem, newItem, replace) {
+      this.updateCriteriaItem = function (existingItemWrapper, newItem, replace) {
         var newTerms;
+        var existingItem = existingItemWrapper.first();
 
         if (newItem.rqlQuery) {
           newTerms = newItem.rqlQuery.args[1];
+        } else if (newItem.term) {
+          newTerms = [newItem.term.name];
         } else {
-          newTerms = newItem.term ? [newItem.term.name] : RqlQueryUtils.vocabularyTermNames(newItem.vocabulary);
+          existingItem.rqlQuery.name = RQL_NODE.EXISTS;
+          existingItem.rqlQuery.args.splice(1, 1);
         }
 
-        RqlQueryUtils.updateQueryArgValues(existingItem.rqlQuery, newTerms, replace);
+        if (newTerms) {
+          if (existingItem.vocabulary.repeatable) {
+            RqlQueryUtils.updateRepeatableQueryArgValues(existingItemWrapper, newTerms);
+          } else {
+            RqlQueryUtils.updateQueryArgValues(existingItem.rqlQuery, newTerms, replace);
+          }
+        }
       };
 
       /**

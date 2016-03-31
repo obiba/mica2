@@ -553,7 +553,8 @@ angular.module('obiba.mica.search')
             var hasVariableCriteria = Object.keys($scope.search.criteriaItemMap).map(function (k) {
                 return $scope.search.criteriaItemMap[k];
               }).filter(function (i) {
-                return i.target === QUERY_TARGETS.VARIABLE && i.taxonomy.name !== 'Mica_variable';
+                var item = i.first();
+                return item.target === QUERY_TARGETS.VARIABLE && item.taxonomy.name !== 'Mica_variable';
               }).length > 0;
 
             if (hasVariableCriteria) {
@@ -740,12 +741,12 @@ angular.module('obiba.mica.search')
       var selectCriteria = function (item, logicalOp, replace) {
         if (item.id) {
           var id = CriteriaIdGenerator.generate(item.taxonomy, item.vocabulary);
-          var existingItem = $scope.search.criteriaItemMap[id];
+          var existingItemWrapper = $scope.search.criteriaItemMap[id];
           var growlMsgKey;
 
-          if (existingItem) {
+          if (existingItemWrapper) {
             growlMsgKey = 'search.criterion.updated';
-            RqlQueryService.updateCriteriaItem(existingItem, item, replace);
+            RqlQueryService.updateCriteriaItem(existingItemWrapper, item, replace);
           } else {
             growlMsgKey = 'search.criterion.created';
             RqlQueryService.addCriteriaItem($scope.search.rqlQuery, item, logicalOp);
@@ -821,8 +822,11 @@ angular.module('obiba.mica.search')
 
         if (replaceTarget) {
           Object.keys($scope.search.criteriaItemMap).forEach(function (k) {
-            if ($scope.search.criteriaItemMap[k].target === item.target) {
-              RqlQueryService.removeCriteriaItem($scope.search.criteriaItemMap[k]);
+            if ($scope.search.criteriaItemMap[k].first().target === item.target) {
+              $scope.search.criteriaItemMap[k].items().forEach(function(item) {
+                RqlQueryService.removeCriteriaItem(item);
+              });
+
               delete $scope.search.criteriaItemMap[k];
             }
           });
@@ -1075,6 +1079,7 @@ angular.module('obiba.mica.search')
       };
 
       $scope.state = new CriterionState();
+      $scope.timestamp = new Date().getTime();
       $scope.localize = function (values) {
         return LocalizedValues.forLocale(values, $scope.criterion.lang);
       };
@@ -1682,7 +1687,6 @@ angular.module('obiba.mica.search')
           var selectionItem = items.reduce(function (prev, item) {
             if (prev) {
               RqlQueryService.updateCriteriaItem(prev, item);
-
               return prev;
             }
 

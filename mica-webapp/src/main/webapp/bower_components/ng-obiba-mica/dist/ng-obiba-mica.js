@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-03-30
+ * Date: 2016-03-31
  */
 'use strict';
 
@@ -1768,6 +1768,24 @@ function CriteriaItemBuilder(LocalizedValues, useLang) {
 }
 
 /**
+ * Wrapper class for items that contain repeatable vocabularies
+ * @param current
+ * @param item
+ * @constructor
+ */
+function ItemWrapper(current, item) {
+  var items = current ? [].concat(current.items(), item) : [item];
+
+  this.first = function() {
+    return items[0];
+  };
+  
+  this.items = function() {
+    return items;
+  };
+}
+
+/**
  * Class for all criteria builders
  * @param rootRql
  * @param rootItem
@@ -1885,7 +1903,7 @@ CriteriaBuilder.prototype.visitLeaf = function (node, parentItem) {
       node,
       parentItem);
 
-  this.leafItemMap[item.id] = item;
+  this.leafItemMap[item.id] = new ItemWrapper(this.leafItemMap[item.id], item);
 
   parentItem.children.push(item);
 };
@@ -2055,6 +2073,12 @@ angular.module('obiba.mica.search')
       return query;
     };
 
+    this.orQuery = function (left, right) {
+      var query = new RqlQuery(RQL_NODE.OR);
+      query.args = [left, right];
+      return query;
+    };
+
     this.aggregate = function (fields) {
       var query = new RqlQuery(RQL_NODE.AGGREGATE);
       fields.forEach(function (field) {
@@ -2070,17 +2094,21 @@ angular.module('obiba.mica.search')
       return query;
     };
 
-    this.inQuery = function (field, terms) {
-      var hasValues = terms && terms.length > 0;
-      var name = hasValues ? RQL_NODE.IN : RQL_NODE.EXISTS;
+    this.fieldQuery = function (name, field, terms) {
       var query = new RqlQuery(name);
       query.args.push(field);
 
-      if (hasValues) {
+      if (terms && terms.length > 0) {
         query.args.push(terms);
       }
 
       return query;
+    };
+
+    this.inQuery = function (field, terms) {
+      var hasValues = terms && terms.length > 0;
+      var name = hasValues ? RQL_NODE.IN : RQL_NODE.EXISTS;
+      return this.fieldQuery(name, field, terms);
     };
 
     this.matchQuery = function (field, queryString) {
@@ -2208,6 +2236,67 @@ angular.module('obiba.mica.search')
       }
 
       return parentQuery;
+    };
+
+    /**
+     * Update repeatable vocabularies as follows:
+     *
+     * IN(q, [a,b]) OR [c] => CONTAINS(q, [a,c]) OR CONTAINS(q, [b,c])
+     * CONTAINS(q, [a,b]) OR [c] => CONTAINS(q, [a,b,c])
+     * EXISTS(q) OR [c] => CONTAINS(q, [c])
+     *
+     * @param existingItemWrapper
+     * @param terms
+     */
+    this.updateRepeatableQueryArgValues = function (existingItemWrapper, terms) {
+      var existingItemItems = existingItemWrapper.items();
+      var self = this;
+      existingItemItems.forEach(function(existingItemItem) {
+        var query = existingItemItem.rqlQuery;
+        switch (query.name) {
+          case RQL_NODE.EXISTS:
+            query.name = RQL_NODE.CONTAINS;
+            self.mergeInQueryArgValues(query, terms, false);
+            break;
+
+          case RQL_NODE.CONTAINS:
+            self.mergeInQueryArgValues(query, terms, false);
+            break;
+
+          case RQL_NODE.IN:
+            var values = query.args[1] ?  [].concat(query.args[1]) : [];
+            if (values.length === 1) {
+              query.name = RQL_NODE.CONTAINS;
+              self.mergeInQueryArgValues(query, terms, false);
+              break;
+            }
+
+            var field = query.args[0];
+            var contains = values.filter(function(value){
+              // remove duplicates (e.g. CONTAINS(q, [a,a])
+              return terms.indexOf(value) < 0;
+            }).map(function(value){
+              return self.fieldQuery(RQL_NODE.CONTAINS, field, [].concat(value, terms));
+            });
+
+            var orRql;
+            if (contains.length > 1) {
+              var firstTwo = contains.splice(0, 2);
+              orRql = self.orQuery(firstTwo[0], firstTwo[1]);
+
+              contains.forEach(function(value){
+                orRql = self.orQuery(value, orRql);
+              });
+              
+              query.name = orRql.name;
+              query.args = orRql.args;
+            } else {
+              query.name = RQL_NODE.CONTAINS;
+              query.args = contains[0].args;
+            }
+        }
+      });
+
     };
 
     this.updateQueryArgValues = function (query, terms, replace) {
@@ -2521,21 +2610,31 @@ angular.module('obiba.mica.search')
       };
 
       /**
-       * Update an exising item to the item tree
+       * Update an existing item to the item tree
        *
        * @param rootItem
        * @param item
        */
-      this.updateCriteriaItem = function (existingItem, newItem, replace) {
+      this.updateCriteriaItem = function (existingItemWrapper, newItem, replace) {
         var newTerms;
+        var existingItem = existingItemWrapper.first();
 
         if (newItem.rqlQuery) {
           newTerms = newItem.rqlQuery.args[1];
+        } else if (newItem.term) {
+          newTerms = [newItem.term.name];
         } else {
-          newTerms = newItem.term ? [newItem.term.name] : RqlQueryUtils.vocabularyTermNames(newItem.vocabulary);
+          existingItem.rqlQuery.name = RQL_NODE.EXISTS;
+          existingItem.rqlQuery.args.splice(1, 1);
         }
 
-        RqlQueryUtils.updateQueryArgValues(existingItem.rqlQuery, newTerms, replace);
+        if (newTerms) {
+          if (existingItem.vocabulary.repeatable) {
+            RqlQueryUtils.updateRepeatableQueryArgValues(existingItemWrapper, newTerms);
+          } else {
+            RqlQueryUtils.updateQueryArgValues(existingItem.rqlQuery, newTerms, replace);
+          }
+        }
       };
 
       /**
@@ -3698,7 +3797,8 @@ angular.module('obiba.mica.search')
             var hasVariableCriteria = Object.keys($scope.search.criteriaItemMap).map(function (k) {
                 return $scope.search.criteriaItemMap[k];
               }).filter(function (i) {
-                return i.target === QUERY_TARGETS.VARIABLE && i.taxonomy.name !== 'Mica_variable';
+                var item = i.first();
+                return item.target === QUERY_TARGETS.VARIABLE && item.taxonomy.name !== 'Mica_variable';
               }).length > 0;
 
             if (hasVariableCriteria) {
@@ -3885,12 +3985,12 @@ angular.module('obiba.mica.search')
       var selectCriteria = function (item, logicalOp, replace) {
         if (item.id) {
           var id = CriteriaIdGenerator.generate(item.taxonomy, item.vocabulary);
-          var existingItem = $scope.search.criteriaItemMap[id];
+          var existingItemWrapper = $scope.search.criteriaItemMap[id];
           var growlMsgKey;
 
-          if (existingItem) {
+          if (existingItemWrapper) {
             growlMsgKey = 'search.criterion.updated';
-            RqlQueryService.updateCriteriaItem(existingItem, item, replace);
+            RqlQueryService.updateCriteriaItem(existingItemWrapper, item, replace);
           } else {
             growlMsgKey = 'search.criterion.created';
             RqlQueryService.addCriteriaItem($scope.search.rqlQuery, item, logicalOp);
@@ -3966,8 +4066,11 @@ angular.module('obiba.mica.search')
 
         if (replaceTarget) {
           Object.keys($scope.search.criteriaItemMap).forEach(function (k) {
-            if ($scope.search.criteriaItemMap[k].target === item.target) {
-              RqlQueryService.removeCriteriaItem($scope.search.criteriaItemMap[k]);
+            if ($scope.search.criteriaItemMap[k].first().target === item.target) {
+              $scope.search.criteriaItemMap[k].items().forEach(function(item) {
+                RqlQueryService.removeCriteriaItem(item);
+              });
+
               delete $scope.search.criteriaItemMap[k];
             }
           });
@@ -4220,6 +4323,7 @@ angular.module('obiba.mica.search')
       };
 
       $scope.state = new CriterionState();
+      $scope.timestamp = new Date().getTime();
       $scope.localize = function (values) {
         return LocalizedValues.forLocale(values, $scope.criterion.lang);
       };
@@ -4827,7 +4931,6 @@ angular.module('obiba.mica.search')
           var selectionItem = items.reduce(function (prev, item) {
             if (prev) {
               RqlQueryService.updateCriteriaItem(prev, item);
-
               return prev;
             }
 
@@ -5421,7 +5524,9 @@ angular.module('obiba.mica.search')
       templateUrl: 'search/views/criteria/criterion-dropdown-template.html',//
       link: function( $scope, $element){
         var onDocumentClick = function (event) {
-          var isChild = document.querySelector('#'+$scope.criterion.id.replace('.','-')+'-dropdown').contains(event.target);
+          var isChild = document.querySelector('#'+$scope.criterion.id.replace('.','-')+'-dropdown-'+$scope.timestamp)
+            .contains(event.target);
+          
           if (!isChild) {
             $timeout(function() {
               $scope.$apply('closeDropdown()');
@@ -7390,7 +7495,7 @@ angular.module("search/views/criteria/criteria-target-template.html", []).run(["
 
 angular.module("search/views/criteria/criterion-dropdown-template.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("search/views/criteria/criterion-dropdown-template.html",
-    "<div id=\"{{criterion.id.replace('.','-')}}-dropdown\" class=\"{{'btn-group voffset1 btn-' + criterion.target}}\" ng-class='{open: state.open}'\n" +
+    "<div id=\"{{criterion.id.replace('.','-')}}-dropdown-{{timestamp}}\" class=\"{{'btn-group voffset1 btn-' + criterion.target}}\" ng-class='{open: state.open}'\n" +
     "     ng-keyup=\"onKeyup($event)\">\n" +
     "\n" +
     "  <button class=\"{{'btn btn-xs dropdown btn-' + criterion.target}}\"\n" +
