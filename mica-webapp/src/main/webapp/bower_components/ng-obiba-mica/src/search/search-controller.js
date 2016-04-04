@@ -19,6 +19,7 @@
 /* global CriteriaIdGenerator */
 /* global targetToType */
 /* global SORT_FIELDS */
+/* global RepeatableCriteriaItem */
 
 /**
  * State shared between Criterion DropDown and its content directives
@@ -552,9 +553,8 @@ angular.module('obiba.mica.search')
           case DISPLAY_TYPES.COVERAGE:
             var hasVariableCriteria = Object.keys($scope.search.criteriaItemMap).map(function (k) {
                 return $scope.search.criteriaItemMap[k];
-              }).filter(function (i) {
-                var item = i.first();
-                return item.target === QUERY_TARGETS.VARIABLE && item.taxonomy.name !== 'Mica_variable';
+              }).filter(function (item) {
+                return QUERY_TARGETS.VARIABLE  === item.getTarget() && item.taxonomy.name !== 'Mica_variable';
               }).length > 0;
 
             if (hasVariableCriteria) {
@@ -741,12 +741,12 @@ angular.module('obiba.mica.search')
       var selectCriteria = function (item, logicalOp, replace) {
         if (item.id) {
           var id = CriteriaIdGenerator.generate(item.taxonomy, item.vocabulary);
-          var existingItemWrapper = $scope.search.criteriaItemMap[id];
+          var existingItem = $scope.search.criteriaItemMap[id];
           var growlMsgKey;
 
-          if (existingItemWrapper) {
+          if (existingItem) {
             growlMsgKey = 'search.criterion.updated';
-            RqlQueryService.updateCriteriaItem(existingItemWrapper, item, replace);
+            RqlQueryService.updateCriteriaItem(existingItem, item, replace);
           } else {
             growlMsgKey = 'search.criterion.created';
             RqlQueryService.addCriteriaItem($scope.search.rqlQuery, item, logicalOp);
@@ -822,10 +822,15 @@ angular.module('obiba.mica.search')
 
         if (replaceTarget) {
           Object.keys($scope.search.criteriaItemMap).forEach(function (k) {
-            if ($scope.search.criteriaItemMap[k].first().target === item.target) {
-              $scope.search.criteriaItemMap[k].items().forEach(function(item) {
+            var item = $scope.search.criteriaItemMap[k];
+            if (item.getTarget() === item.target) {
+              if (item instanceof RepeatableCriteriaItem) {
+                item.items().forEach(function(item) {
+                  RqlQueryService.removeCriteriaItem(item);
+                });
+              } else {
                 RqlQueryService.removeCriteriaItem(item);
-              });
+              }
 
               delete $scope.search.criteriaItemMap[k];
             }

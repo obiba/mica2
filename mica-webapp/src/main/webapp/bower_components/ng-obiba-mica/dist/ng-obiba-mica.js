@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-03-31
+ * Date: 2016-04-04
  */
 'use strict';
 
@@ -1655,6 +1655,43 @@ var CriteriaIdGenerator = {
   }
 };
 
+/* exported CriteriaItem */
+function CriteriaItem(model) {
+  var self = this;
+  Object.keys(model).forEach(function(k) {
+    self[k] = model[k];
+  });
+}
+
+CriteriaItem.prototype.getTarget = function() {
+  return this.target || null;
+};
+
+/* exported RepeatableCriteriaItem */
+function RepeatableCriteriaItem() {
+  CriteriaItem.call(this, {});
+  this.list = [];
+}
+
+RepeatableCriteriaItem.prototype = Object.create(CriteriaItem.prototype);
+
+RepeatableCriteriaItem.prototype.addItem = function(item) {
+  this.list.push(item);
+  return this;
+};
+
+RepeatableCriteriaItem.prototype.items = function() {
+  return this.list;
+};
+
+RepeatableCriteriaItem.prototype.first = function() {
+  return this.list[0];
+};
+
+RepeatableCriteriaItem.prototype.getTarget = function() {
+  return this.list.length > 0 ? this.list[0].getTarget() : null;
+};
+
 /**
  * Criteria Item builder
  */
@@ -1762,27 +1799,9 @@ function CriteriaItemBuilder(LocalizedValues, useLang) {
     if (criteria.taxonomy && criteria.vocabulary) {
       prepareForLeaf();
     }
-    return criteria;
+    return new CriteriaItem(criteria);
   };
 
-}
-
-/**
- * Wrapper class for items that contain repeatable vocabularies
- * @param current
- * @param item
- * @constructor
- */
-function ItemWrapper(current, item) {
-  var items = current ? [].concat(current.items(), item) : [item];
-
-  this.first = function() {
-    return items[0];
-  };
-  
-  this.items = function() {
-    return items;
-  };
 }
 
 /**
@@ -1903,7 +1922,20 @@ CriteriaBuilder.prototype.visitLeaf = function (node, parentItem) {
       node,
       parentItem);
 
-  this.leafItemMap[item.id] = new ItemWrapper(this.leafItemMap[item.id], item);
+  var current = this.leafItemMap[item.id];
+
+  if (current) {
+    if (current instanceof RepeatableCriteriaItem) {
+      current.addItem(item);
+    } else {
+      console.error('Non-repeatable criteria items must be unique,', current.id, 'will be overwritten.');
+      current = item;
+    }
+  } else {
+    current = item.vocabulary.repeatable ? new RepeatableCriteriaItem().addItem(item) : item;
+  }
+
+  this.leafItemMap[item.id] = current;
 
   parentItem.children.push(item);
 };
@@ -2248,11 +2280,10 @@ angular.module('obiba.mica.search')
      * @param existingItemWrapper
      * @param terms
      */
-    this.updateRepeatableQueryArgValues = function (existingItemWrapper, terms) {
-      var existingItemItems = existingItemWrapper.items();
+    this.updateRepeatableQueryArgValues = function (existingItem, terms) {
       var self = this;
-      existingItemItems.forEach(function(existingItemItem) {
-        var query = existingItemItem.rqlQuery;
+      existingItem.items().forEach(function(item) {
+        var query = item.rqlQuery;
         switch (query.name) {
           case RQL_NODE.EXISTS:
             query.name = RQL_NODE.CONTAINS;
@@ -2615,22 +2646,22 @@ angular.module('obiba.mica.search')
        * @param rootItem
        * @param item
        */
-      this.updateCriteriaItem = function (existingItemWrapper, newItem, replace) {
+      this.updateCriteriaItem = function (existingItem, newItem, replace) {
         var newTerms;
-        var existingItem = existingItemWrapper.first();
 
         if (newItem.rqlQuery) {
           newTerms = newItem.rqlQuery.args[1];
         } else if (newItem.term) {
           newTerms = [newItem.term.name];
         } else {
+          existingItem = existingItem instanceof RepeatableCriteriaItem ? existingItem.first() : existingItem;
           existingItem.rqlQuery.name = RQL_NODE.EXISTS;
           existingItem.rqlQuery.args.splice(1, 1);
         }
 
         if (newTerms) {
-          if (existingItem.vocabulary.repeatable) {
-            RqlQueryUtils.updateRepeatableQueryArgValues(existingItemWrapper, newTerms);
+          if (existingItem instanceof RepeatableCriteriaItem) {
+            RqlQueryUtils.updateRepeatableQueryArgValues(existingItem, newTerms);
           } else {
             RqlQueryUtils.updateQueryArgValues(existingItem.rqlQuery, newTerms, replace);
           }
@@ -3263,6 +3294,7 @@ angular.module('obiba.mica.search')
 /* global CriteriaIdGenerator */
 /* global targetToType */
 /* global SORT_FIELDS */
+/* global RepeatableCriteriaItem */
 
 /**
  * State shared between Criterion DropDown and its content directives
@@ -3796,9 +3828,8 @@ angular.module('obiba.mica.search')
           case DISPLAY_TYPES.COVERAGE:
             var hasVariableCriteria = Object.keys($scope.search.criteriaItemMap).map(function (k) {
                 return $scope.search.criteriaItemMap[k];
-              }).filter(function (i) {
-                var item = i.first();
-                return item.target === QUERY_TARGETS.VARIABLE && item.taxonomy.name !== 'Mica_variable';
+              }).filter(function (item) {
+                return QUERY_TARGETS.VARIABLE  === item.getTarget() && item.taxonomy.name !== 'Mica_variable';
               }).length > 0;
 
             if (hasVariableCriteria) {
@@ -3985,12 +4016,12 @@ angular.module('obiba.mica.search')
       var selectCriteria = function (item, logicalOp, replace) {
         if (item.id) {
           var id = CriteriaIdGenerator.generate(item.taxonomy, item.vocabulary);
-          var existingItemWrapper = $scope.search.criteriaItemMap[id];
+          var existingItem = $scope.search.criteriaItemMap[id];
           var growlMsgKey;
 
-          if (existingItemWrapper) {
+          if (existingItem) {
             growlMsgKey = 'search.criterion.updated';
-            RqlQueryService.updateCriteriaItem(existingItemWrapper, item, replace);
+            RqlQueryService.updateCriteriaItem(existingItem, item, replace);
           } else {
             growlMsgKey = 'search.criterion.created';
             RqlQueryService.addCriteriaItem($scope.search.rqlQuery, item, logicalOp);
@@ -4066,10 +4097,15 @@ angular.module('obiba.mica.search')
 
         if (replaceTarget) {
           Object.keys($scope.search.criteriaItemMap).forEach(function (k) {
-            if ($scope.search.criteriaItemMap[k].first().target === item.target) {
-              $scope.search.criteriaItemMap[k].items().forEach(function(item) {
+            var item = $scope.search.criteriaItemMap[k];
+            if (item.getTarget() === item.target) {
+              if (item instanceof RepeatableCriteriaItem) {
+                item.items().forEach(function(item) {
+                  RqlQueryService.removeCriteriaItem(item);
+                });
+              } else {
                 RqlQueryService.removeCriteriaItem(item);
-              });
+              }
 
               delete $scope.search.criteriaItemMap[k];
             }
