@@ -109,7 +109,7 @@ class DatasetDtos {
   @NotNull
   Mica.DatasetDto.Builder asDtoBuilder(@NotNull HarmonizationDataset dataset, boolean asDraft) {
     Mica.DatasetDto.Builder builder = asBuilder(dataset);
-    builder.setVariableType(DatasetVariable.Type.Harmonized.name());
+    builder.setVariableType(DatasetVariable.Type.Dataschema.name());
 
     Mica.HarmonizationDatasetDto.Builder hbuilder = Mica.HarmonizationDatasetDto.newBuilder();
     hbuilder.setProject(dataset.getProject());
