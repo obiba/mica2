@@ -3432,7 +3432,7 @@ function TaxonomiesPanelController($scope, $location, TaxonomyResource, Taxonomi
         $scope.showTaxonomies();
       }
       $scope.taxonomies.target = newVal[1];
-      $scope.taxonomies.search.active = false;
+      $scope.taxonomies.search.active = true;
       $scope.taxonomies.all = null;
       $scope.taxonomies.taxonomy = null;
       $scope.taxonomies.vocabulary = null;
@@ -3520,7 +3520,7 @@ function ClassificationPanelController($scope, $location, TaxonomyResource, Taxo
   $scope.$watch('target', function (newVal) {
     if (newVal) {
       $scope.taxonomies.target = newVal;
-      $scope.taxonomies.search.active = false;
+      $scope.taxonomies.search.active = true;
       $scope.taxonomies.all = null;
       $scope.taxonomies.taxonomy = null;
       $scope.taxonomies.vocabulary = null;
@@ -3841,6 +3841,8 @@ angular.module('obiba.mica.search')
                   $scope.search.loading = false;
                 },
                 onError);
+            } else {
+              $scope.search.result = {};
             }
 
             break;
@@ -7023,98 +7025,101 @@ angular.module("search/views/classifications/classifications-view.html", []).run
     "\n" +
     "  <div ng-if=\"taxonomies.search.active\" class=\"loading\"></div>\n" +
     "\n" +
-    "  <div ng-if=\"!taxonomies.taxonomy\">\n" +
-    "    <div ng-repeat=\"group in taxonomyGroups\">\n" +
-    "      <h3 ng-if=\"group.title\">{{group.title}}</h3>\n" +
-    "      <p class=\"help-block\" ng-if=\"group.description\">{{group.description}}</p>\n" +
-    "      <div ng-if=\"!taxonomies.taxonomy\">\n" +
-    "        <div ng-repeat=\"taxonomy in group.taxonomies\" ng-if=\"$index % 3 == 0\" class=\"row\">\n" +
-    "          <div class=\"col-md-4\">\n" +
-    "            <div taxonomy-panel taxonomy=\"group.taxonomies[$index]\" lang=\"lang\"\n" +
-    "              on-navigate=\"navigateTaxonomy\"></div>\n" +
-    "          </div>\n" +
-    "          <div class=\"col-md-4\">\n" +
-    "            <div taxonomy-panel taxonomy=\"group.taxonomies[$index + 1]\" lang=\"lang\"\n" +
-    "              on-navigate=\"navigateTaxonomy\"></div>\n" +
-    "          </div>\n" +
-    "          <div class=\"col-md-4\">\n" +
-    "            <div taxonomy-panel taxonomy=\"group.taxonomies[$index + 2]\" lang=\"lang\"\n" +
-    "              on-navigate=\"navigateTaxonomy\"></div>\n" +
+    "  <div ng-if=\"!taxonomies.search.active\">\n" +
+    "    <div ng-if=\"!taxonomies.taxonomy\">\n" +
+    "      <div ng-repeat=\"group in taxonomyGroups\">\n" +
+    "        <h3 ng-if=\"group.title\">{{group.title}}</h3>\n" +
+    "        <p class=\"help-block\" ng-if=\"group.description\">{{group.description}}</p>\n" +
+    "        <div ng-if=\"!taxonomies.taxonomy\">\n" +
+    "          <div ng-repeat=\"taxonomy in group.taxonomies\" ng-if=\"$index % 3 == 0\" class=\"row\">\n" +
+    "            <div class=\"col-md-4\">\n" +
+    "              <div taxonomy-panel taxonomy=\"group.taxonomies[$index]\" lang=\"lang\"\n" +
+    "                   on-navigate=\"navigateTaxonomy\"></div>\n" +
+    "            </div>\n" +
+    "            <div class=\"col-md-4\">\n" +
+    "              <div taxonomy-panel taxonomy=\"group.taxonomies[$index + 1]\" lang=\"lang\"\n" +
+    "                   on-navigate=\"navigateTaxonomy\"></div>\n" +
+    "            </div>\n" +
+    "            <div class=\"col-md-4\">\n" +
+    "              <div taxonomy-panel taxonomy=\"group.taxonomies[$index + 2]\" lang=\"lang\"\n" +
+    "                   on-navigate=\"navigateTaxonomy\"></div>\n" +
+    "            </div>\n" +
     "          </div>\n" +
     "        </div>\n" +
     "      </div>\n" +
     "    </div>\n" +
-    "  </div>\n" +
     "\n" +
-    "  <div ng-if=\"taxonomies.taxonomy && !taxonomies.vocabulary\">\n" +
-    "    <h3 ng-repeat=\"label in taxonomies.taxonomy.title\"\n" +
-    "      ng-if=\"label.locale === lang\">\n" +
-    "      {{label.text}}\n" +
-    "    </h3>\n" +
+    "    <div ng-if=\"taxonomies.taxonomy && !taxonomies.vocabulary\">\n" +
+    "      <h3 ng-repeat=\"label in taxonomies.taxonomy.title\"\n" +
+    "          ng-if=\"label.locale === lang\">\n" +
+    "        {{label.text}}\n" +
+    "      </h3>\n" +
     "\n" +
-    "    <p class=\"help-block\" ng-repeat=\"label in taxonomies.taxonomy.description\" ng-if=\"label.locale === lang\">\n" +
-    "      {{label.text}}\n" +
-    "    </p>\n" +
+    "      <p class=\"help-block\" ng-repeat=\"label in taxonomies.taxonomy.description\" ng-if=\"label.locale === lang\">\n" +
+    "        {{label.text}}\n" +
+    "      </p>\n" +
     "\n" +
-    "    <div ng-repeat=\"vocabulary in taxonomies.taxonomy.vocabularies\" ng-if=\"$index % 3 == 0\" class=\"row\">\n" +
-    "      <div class=\"col-md-4\">\n" +
-    "        <div vocabulary-panel target=\"taxonomies.target\" taxonomy=\"taxonomies.taxonomy\" vocabulary=\"taxonomies.taxonomy.vocabularies[$index]\"\n" +
-    "          lang=\"lang\" on-navigate=\"navigateTaxonomy\" on-select=\"selectTerm\"></div>\n" +
+    "      <div ng-repeat=\"vocabulary in taxonomies.taxonomy.vocabularies\" ng-if=\"$index % 3 == 0\" class=\"row\">\n" +
+    "        <div class=\"col-md-4\">\n" +
+    "          <div vocabulary-panel target=\"taxonomies.target\" taxonomy=\"taxonomies.taxonomy\" vocabulary=\"taxonomies.taxonomy.vocabularies[$index]\"\n" +
+    "               lang=\"lang\" on-navigate=\"navigateTaxonomy\" on-select=\"selectTerm\"></div>\n" +
+    "        </div>\n" +
+    "        <div class=\"col-md-4\">\n" +
+    "          <div vocabulary-panel target=\"taxonomies.target\" taxonomy=\"taxonomies.taxonomy\" vocabulary=\"taxonomies.taxonomy.vocabularies[$index + 1]\"\n" +
+    "               lang=\"lang\" on-navigate=\"navigateTaxonomy\" on-select=\"selectTerm\"></div>\n" +
+    "        </div>\n" +
+    "        <div class=\"col-md-4\">\n" +
+    "          <div vocabulary-panel target=\"taxonomies.target\" taxonomy=\"taxonomies.taxonomy\" vocabulary=\"taxonomies.taxonomy.vocabularies[$index + 2]\"\n" +
+    "               lang=\"lang\" on-navigate=\"navigateTaxonomy\" on-select=\"selectTerm\"></div>\n" +
+    "        </div>\n" +
     "      </div>\n" +
-    "      <div class=\"col-md-4\">\n" +
-    "        <div vocabulary-panel target=\"taxonomies.target\" taxonomy=\"taxonomies.taxonomy\" vocabulary=\"taxonomies.taxonomy.vocabularies[$index + 1]\"\n" +
-    "          lang=\"lang\" on-navigate=\"navigateTaxonomy\" on-select=\"selectTerm\"></div>\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div ng-if=\"taxonomies.taxonomy && taxonomies.vocabulary && !taxonomies.term\">\n" +
+    "      <h3 ng-repeat=\"label in taxonomies.vocabulary.title\"\n" +
+    "          ng-if=\"label.locale === lang\">\n" +
+    "        {{label.text}}\n" +
+    "      </h3>\n" +
+    "\n" +
+    "      <p class=\"help-block\" ng-repeat=\"label in taxonomies.vocabulary.description\"\n" +
+    "         ng-if=\"label.locale === lang\">\n" +
+    "        {{label.text}}\n" +
+    "      </p>\n" +
+    "\n" +
+    "      <div ng-repeat=\"term in taxonomies.vocabulary.terms\" ng-if=\"$index % 3 == 0\" class=\"row\">\n" +
+    "        <div class=\"col-md-4\">\n" +
+    "          <div term-panel target=\"taxonomies.target\" taxonomy=\"taxonomies.taxonomy\" vocabulary=\"taxonomies.vocabulary\" term=\"taxonomies.vocabulary.terms[$index]\"\n" +
+    "               lang=\"lang\" on-navigate=\"navigateTaxonomy\" on-select=\"selectTerm\"></div>\n" +
+    "        </div>\n" +
+    "        <div class=\"col-md-4\">\n" +
+    "          <div term-panel target=\"taxonomies.target\" taxonomy=\"taxonomies.taxonomy\" vocabulary=\"taxonomies.vocabulary\" term=\"taxonomies.vocabulary.terms[$index + 1]\"\n" +
+    "               lang=\"lang\" on-navigate=\"navigateTaxonomy\" on-select=\"selectTerm\"></div>\n" +
+    "        </div>\n" +
+    "        <div class=\"col-md-4\">\n" +
+    "          <div term-panel target=\"taxonomies.target\" taxonomy=\"taxonomies.taxonomy\" vocabulary=\"taxonomies.vocabulary\" term=\"taxonomies.vocabulary.terms[$index + 2]\"\n" +
+    "               lang=\"lang\" on-navigate=\"navigateTaxonomy\" on-select=\"selectTerm\"></div>\n" +
+    "        </div>\n" +
     "      </div>\n" +
-    "      <div class=\"col-md-4\">\n" +
-    "        <div vocabulary-panel target=\"taxonomies.target\" taxonomy=\"taxonomies.taxonomy\" vocabulary=\"taxonomies.taxonomy.vocabularies[$index + 2]\"\n" +
-    "          lang=\"lang\" on-navigate=\"navigateTaxonomy\" on-select=\"selectTerm\"></div>\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div ng-if=\"taxonomies.taxonomy && taxonomies.vocabulary && taxonomies.term\">\n" +
+    "      <h5 ng-repeat=\"label in taxonomies.term.title\" ng-if=\"label.locale === lang\">\n" +
+    "        {{label.text}}\n" +
+    "      </h5>\n" +
+    "      <p ng-repeat=\"label in taxonomies.term.description\" ng-if=\"label.locale === lang\">\n" +
+    "        <span class=\"help-block\" ng-bind-html=\"label.text | dceDescription\" ng-if=\"taxonomies.vocabulary.name === 'dceIds'\"></span>\n" +
+    "        <span class=\"help-block\" ng-bind-html=\"label.text\" ng-if=\"taxonomies.vocabulary.name !== 'dceIds'\"></span>\n" +
+    "      </p>\n" +
+    "      <div>\n" +
+    "        <a href class=\"btn btn-default btn-xs\"\n" +
+    "           ng-click=\"selectTerm(taxonomies.target, taxonomies.taxonomy, taxonomies.vocabulary, taxonomies.term)\">\n" +
+    "          <i class=\"fa fa-plus-circle\"></i>\n" +
+    "          <span translate>add-query</span>\n" +
+    "        </a>\n" +
     "      </div>\n" +
     "    </div>\n" +
     "  </div>\n" +
     "\n" +
-    "  <div ng-if=\"taxonomies.taxonomy && taxonomies.vocabulary && !taxonomies.term\">\n" +
-    "    <h3 ng-repeat=\"label in taxonomies.vocabulary.title\"\n" +
-    "      ng-if=\"label.locale === lang\">\n" +
-    "      {{label.text}}\n" +
-    "    </h3>\n" +
-    "\n" +
-    "    <p class=\"help-block\" ng-repeat=\"label in taxonomies.vocabulary.description\"\n" +
-    "      ng-if=\"label.locale === lang\">\n" +
-    "      {{label.text}}\n" +
-    "    </p>\n" +
-    "\n" +
-    "    <div ng-repeat=\"term in taxonomies.vocabulary.terms\" ng-if=\"$index % 3 == 0\" class=\"row\">\n" +
-    "      <div class=\"col-md-4\">\n" +
-    "        <div term-panel target=\"taxonomies.target\" taxonomy=\"taxonomies.taxonomy\" vocabulary=\"taxonomies.vocabulary\" term=\"taxonomies.vocabulary.terms[$index]\"\n" +
-    "          lang=\"lang\" on-navigate=\"navigateTaxonomy\" on-select=\"selectTerm\"></div>\n" +
-    "      </div>\n" +
-    "      <div class=\"col-md-4\">\n" +
-    "        <div term-panel target=\"taxonomies.target\" taxonomy=\"taxonomies.taxonomy\" vocabulary=\"taxonomies.vocabulary\" term=\"taxonomies.vocabulary.terms[$index + 1]\"\n" +
-    "          lang=\"lang\" on-navigate=\"navigateTaxonomy\" on-select=\"selectTerm\"></div>\n" +
-    "      </div>\n" +
-    "      <div class=\"col-md-4\">\n" +
-    "        <div term-panel target=\"taxonomies.target\" taxonomy=\"taxonomies.taxonomy\" vocabulary=\"taxonomies.vocabulary\" term=\"taxonomies.vocabulary.terms[$index + 2]\"\n" +
-    "          lang=\"lang\" on-navigate=\"navigateTaxonomy\" on-select=\"selectTerm\"></div>\n" +
-    "      </div>\n" +
-    "    </div>\n" +
-    "  </div>\n" +
-    "\n" +
-    "  <div ng-if=\"taxonomies.taxonomy && taxonomies.vocabulary && taxonomies.term\">\n" +
-    "    <h5 ng-repeat=\"label in taxonomies.term.title\" ng-if=\"label.locale === lang\">\n" +
-    "      {{label.text}}\n" +
-    "    </h5>\n" +
-    "    <p ng-repeat=\"label in taxonomies.term.description\" ng-if=\"label.locale === lang\">\n" +
-    "      <span class=\"help-block\" ng-bind-html=\"label.text | dceDescription\" ng-if=\"taxonomies.vocabulary.name === 'dceIds'\"></span>\n" +
-    "      <span class=\"help-block\" ng-bind-html=\"label.text\" ng-if=\"taxonomies.vocabulary.name !== 'dceIds'\"></span>\n" +
-    "    </p>\n" +
-    "    <div>\n" +
-    "      <a href class=\"btn btn-default btn-xs\"\n" +
-    "        ng-click=\"selectTerm(taxonomies.target, taxonomies.taxonomy, taxonomies.vocabulary, taxonomies.term)\">\n" +
-    "        <i class=\"fa fa-plus-circle\"></i>\n" +
-    "        <span translate>add-query</span>\n" +
-    "      </a>\n" +
-    "    </div>\n" +
-    "  </div>\n" +
     "</div>\n" +
     "");
 }]);
@@ -7144,102 +7149,105 @@ angular.module("search/views/classifications/taxonomies-view.html", []).run(["$t
     "      <div class=\"panel-body\">\n" +
     "        <div ng-if=\"taxonomies.search.active\" class=\"loading\"></div>\n" +
     "\n" +
-    "        <div ng-if=\"!taxonomies.taxonomy\">\n" +
-    "          <div ng-repeat=\"group in taxonomyGroups\">\n" +
-    "            <h4 ng-if=\"group.title\">{{group.title}}</h4>\n" +
-    "            <p class=\"help-block\" ng-if=\"group.description\">{{group.description}}</p>\n" +
-    "            <div ng-if=\"!taxonomies.taxonomy\">\n" +
-    "              <div ng-repeat=\"taxonomy in group.taxonomies\" ng-if=\"$index % 3 == 0\" class=\"row\">\n" +
-    "                <div class=\"col-md-4\">\n" +
-    "                  <div taxonomy-panel taxonomy=\"group.taxonomies[$index]\" lang=\"lang\"\n" +
-    "                      on-navigate=\"navigateTaxonomy\"></div>\n" +
-    "                </div>\n" +
-    "                <div class=\"col-md-4\">\n" +
-    "                  <div taxonomy-panel taxonomy=\"group.taxonomies[$index + 1]\" lang=\"lang\"\n" +
-    "                      on-navigate=\"navigateTaxonomy\"></div>\n" +
-    "                </div>\n" +
-    "                <div class=\"col-md-4\">\n" +
-    "                  <div taxonomy-panel taxonomy=\"group.taxonomies[$index + 2]\" lang=\"lang\"\n" +
-    "                      on-navigate=\"navigateTaxonomy\"></div>\n" +
+    "        <div ng-if=\"!taxonomies.search.active\">\n" +
+    "          <div ng-if=\"!taxonomies.taxonomy\">\n" +
+    "            <div ng-repeat=\"group in taxonomyGroups\">\n" +
+    "              <h4 ng-if=\"group.title\">{{group.title}}</h4>\n" +
+    "              <p class=\"help-block\" ng-if=\"group.description\">{{group.description}}</p>\n" +
+    "              <div ng-if=\"!taxonomies.taxonomy\">\n" +
+    "                <div ng-repeat=\"taxonomy in group.taxonomies\" ng-if=\"$index % 3 == 0\" class=\"row\">\n" +
+    "                  <div class=\"col-md-4\">\n" +
+    "                    <div taxonomy-panel taxonomy=\"group.taxonomies[$index]\" lang=\"lang\"\n" +
+    "                         on-navigate=\"navigateTaxonomy\"></div>\n" +
+    "                  </div>\n" +
+    "                  <div class=\"col-md-4\">\n" +
+    "                    <div taxonomy-panel taxonomy=\"group.taxonomies[$index + 1]\" lang=\"lang\"\n" +
+    "                         on-navigate=\"navigateTaxonomy\"></div>\n" +
+    "                  </div>\n" +
+    "                  <div class=\"col-md-4\">\n" +
+    "                    <div taxonomy-panel taxonomy=\"group.taxonomies[$index + 2]\" lang=\"lang\"\n" +
+    "                         on-navigate=\"navigateTaxonomy\"></div>\n" +
+    "                  </div>\n" +
     "                </div>\n" +
     "              </div>\n" +
     "            </div>\n" +
     "          </div>\n" +
-    "        </div>\n" +
     "\n" +
-    "        <div ng-if=\"taxonomies.taxonomy\">\n" +
-    "          <div class=\"row\">\n" +
-    "            <div class=\"col-md-4 height3\" scroll-to-top=\"taxonomies.taxonomy\">\n" +
-    "              <p class=\"help-block\" ng-repeat=\"label in taxonomies.taxonomy.description\" ng-if=\"label.locale === lang\">\n" +
-    "                {{label.text}}\n" +
-    "              </p>\n" +
-    "              <ul class=\"nav nav-pills nav-stacked\" ng-if=\"taxonomies.taxonomy.vocabularies\">\n" +
-    "                <li ng-repeat=\"vocabulary in taxonomies.taxonomy.vocabularies\"\n" +
-    "                    class=\"{{taxonomies.vocabulary.name === vocabulary.name ? 'active' : ''}}\">\n" +
-    "                  <a href ng-click=\"navigateTaxonomy(taxonomies.taxonomy, vocabulary)\">\n" +
+    "          <div ng-if=\"taxonomies.taxonomy\">\n" +
+    "            <div class=\"row\">\n" +
+    "              <div class=\"col-md-4 height3\" scroll-to-top=\"taxonomies.taxonomy\">\n" +
+    "                <p class=\"help-block\" ng-repeat=\"label in taxonomies.taxonomy.description\" ng-if=\"label.locale === lang\">\n" +
+    "                  {{label.text}}\n" +
+    "                </p>\n" +
+    "                <ul class=\"nav nav-pills nav-stacked\" ng-if=\"taxonomies.taxonomy.vocabularies\">\n" +
+    "                  <li ng-repeat=\"vocabulary in taxonomies.taxonomy.vocabularies\"\n" +
+    "                      class=\"{{taxonomies.vocabulary.name === vocabulary.name ? 'active' : ''}}\">\n" +
+    "                    <a href ng-click=\"navigateTaxonomy(taxonomies.taxonomy, vocabulary)\">\n" +
     "                <span ng-repeat=\"label in vocabulary.title\" ng-if=\"label.locale === lang\">\n" +
     "                  {{label.text}}\n" +
     "                </span>\n" +
     "                <span ng-if=\"!vocabulary.title\">\n" +
     "                  {{vocabulary.name}}\n" +
     "                </span>\n" +
-    "                  </a>\n" +
-    "                </li>\n" +
-    "              </ul>\n" +
-    "            </div>\n" +
-    "            <div class=\"col-md-4 height3\" scroll-to-top=\"taxonomies.vocabulary\">\n" +
-    "              <div ng-if=\"taxonomies.vocabulary\">\n" +
-    "                <h5 ng-repeat=\"label in taxonomies.vocabulary.title\" ng-if=\"label.locale === lang\">\n" +
-    "                  {{label.text}}\n" +
-    "                </h5>\n" +
-    "                <p class=\"help-block\" ng-repeat=\"label in taxonomies.vocabulary.description\"\n" +
-    "                    ng-if=\"label.locale === lang\">\n" +
-    "                  {{label.text}}\n" +
-    "                </p>\n" +
-    "                <div>\n" +
-    "                  <a href class=\"btn btn-default btn-xs\"\n" +
-    "                      ng-click=\"selectTerm(taxonomies.target, taxonomies.taxonomy, taxonomies.vocabulary)\">\n" +
-    "                    <i class=\"fa fa-plus-circle\"></i>\n" +
-    "                    <span translate>add-query</span>\n" +
-    "                  </a>\n" +
-    "                </div>\n" +
-    "                <ul class=\"nav nav-pills nav-stacked\" ng-if=\"taxonomies.vocabulary.terms\">\n" +
-    "                  <li ng-repeat=\"term in taxonomies.vocabulary.terms\"\n" +
-    "                      class=\"{{taxonomies.term.name === term.name ? 'active' : ''}}\">\n" +
-    "                    <a href ng-click=\"navigateTaxonomy(taxonomies.taxonomy, taxonomies.vocabulary, term)\">\n" +
+    "                    </a>\n" +
+    "                  </li>\n" +
+    "                </ul>\n" +
+    "              </div>\n" +
+    "              <div class=\"col-md-4 height3\" scroll-to-top=\"taxonomies.vocabulary\">\n" +
+    "                <div ng-if=\"taxonomies.vocabulary\">\n" +
+    "                  <h5 ng-repeat=\"label in taxonomies.vocabulary.title\" ng-if=\"label.locale === lang\">\n" +
+    "                    {{label.text}}\n" +
+    "                  </h5>\n" +
+    "                  <p class=\"help-block\" ng-repeat=\"label in taxonomies.vocabulary.description\"\n" +
+    "                     ng-if=\"label.locale === lang\">\n" +
+    "                    {{label.text}}\n" +
+    "                  </p>\n" +
+    "                  <div>\n" +
+    "                    <a href class=\"btn btn-default btn-xs\"\n" +
+    "                       ng-click=\"selectTerm(taxonomies.target, taxonomies.taxonomy, taxonomies.vocabulary)\">\n" +
+    "                      <i class=\"fa fa-plus-circle\"></i>\n" +
+    "                      <span translate>add-query</span>\n" +
+    "                    </a>\n" +
+    "                  </div>\n" +
+    "                  <ul class=\"nav nav-pills nav-stacked\" ng-if=\"taxonomies.vocabulary.terms\">\n" +
+    "                    <li ng-repeat=\"term in taxonomies.vocabulary.terms\"\n" +
+    "                        class=\"{{taxonomies.term.name === term.name ? 'active' : ''}}\">\n" +
+    "                      <a href ng-click=\"navigateTaxonomy(taxonomies.taxonomy, taxonomies.vocabulary, term)\">\n" +
     "                <span ng-repeat=\"label in term.title\" ng-if=\"label.locale === lang\">\n" +
     "                  {{label.text}}\n" +
     "                </span>\n" +
     "                <span ng-if=\"!term.title\">\n" +
     "                  {{term.name}}\n" +
     "                </span>\n" +
-    "                    </a>\n" +
-    "                  </li>\n" +
-    "                </ul>\n" +
-    "              </div>\n" +
-    "              <div ng-if=\"!taxonomies.vocabulary && options.taxonomyNavHelp\" ng-bind-html=\"options.taxonomyNavHelp\"></div>\n" +
-    "            </div>\n" +
-    "            <div class=\"col-md-4 height3\" scroll-to-top=\"taxonomies.term\">\n" +
-    "              <div ng-if=\"taxonomies.term\">\n" +
-    "                <h5 ng-repeat=\"label in taxonomies.term.title\" ng-if=\"label.locale === lang\">\n" +
-    "                  {{label.text}}\n" +
-    "                </h5>\n" +
-    "                <p ng-repeat=\"label in taxonomies.term.description\" ng-if=\"label.locale === lang\">\n" +
-    "                  <span class=\"help-block\" ng-bind-html=\"label.text | dceDescription\" ng-if=\"taxonomies.vocabulary.name === 'dceIds'\"></span>\n" +
-    "                  <span class=\"help-block\" ng-bind-html=\"label.text\" ng-if=\"taxonomies.vocabulary.name !== 'dceIds'\"></span>\n" +
-    "                </p>\n" +
-    "                <div>\n" +
-    "                  <a href class=\"btn btn-default btn-xs\"\n" +
-    "                      ng-click=\"selectTerm(taxonomies.target, taxonomies.taxonomy, taxonomies.vocabulary, taxonomies.term)\">\n" +
-    "                    <i class=\"fa fa-plus-circle\"></i>\n" +
-    "                    <span translate>add-query</span>\n" +
-    "                  </a>\n" +
+    "                      </a>\n" +
+    "                    </li>\n" +
+    "                  </ul>\n" +
     "                </div>\n" +
+    "                <div ng-if=\"!taxonomies.vocabulary && options.taxonomyNavHelp\" ng-bind-html=\"options.taxonomyNavHelp\"></div>\n" +
     "              </div>\n" +
-    "              <div ng-if=\"!taxonomies.term && taxonomies.vocabulary && options.vocabularyNavHelp\" ng-bind-html=\"options.vocabularyNavHelp\"></div>\n" +
+    "              <div class=\"col-md-4 height3\" scroll-to-top=\"taxonomies.term\">\n" +
+    "                <div ng-if=\"taxonomies.term\">\n" +
+    "                  <h5 ng-repeat=\"label in taxonomies.term.title\" ng-if=\"label.locale === lang\">\n" +
+    "                    {{label.text}}\n" +
+    "                  </h5>\n" +
+    "                  <p ng-repeat=\"label in taxonomies.term.description\" ng-if=\"label.locale === lang\">\n" +
+    "                    <span class=\"help-block\" ng-bind-html=\"label.text | dceDescription\" ng-if=\"taxonomies.vocabulary.name === 'dceIds'\"></span>\n" +
+    "                    <span class=\"help-block\" ng-bind-html=\"label.text\" ng-if=\"taxonomies.vocabulary.name !== 'dceIds'\"></span>\n" +
+    "                  </p>\n" +
+    "                  <div>\n" +
+    "                    <a href class=\"btn btn-default btn-xs\"\n" +
+    "                       ng-click=\"selectTerm(taxonomies.target, taxonomies.taxonomy, taxonomies.vocabulary, taxonomies.term)\">\n" +
+    "                      <i class=\"fa fa-plus-circle\"></i>\n" +
+    "                      <span translate>add-query</span>\n" +
+    "                    </a>\n" +
+    "                  </div>\n" +
+    "                </div>\n" +
+    "                <div ng-if=\"!taxonomies.term && taxonomies.vocabulary && options.vocabularyNavHelp\" ng-bind-html=\"options.vocabularyNavHelp\"></div>\n" +
+    "              </div>\n" +
     "            </div>\n" +
     "          </div>\n" +
     "        </div>\n" +
+    "        \n" +
     "      </div>\n" +
     "    </div>\n" +
     "  </div>\n" +
@@ -7782,7 +7790,7 @@ angular.module("search/views/list/datasets-search-result-table-template.html", [
     "            <localized value=\"summary.name\" lang=\"lang\"></localized>\n" +
     "          </td>\n" +
     "          <td ng-if=\"optionsCols.showDatasetsTypeColumn\">\n" +
-    "            <localized value=\"classNames[summary.variableType + 'Dataset']\" lang=\"lang\"></localized>\n" +
+    "            <localized value=\"classNames[(summary.variableType === 'Study' ? 'Study' : 'Harmonization') + 'Dataset']\" lang=\"lang\"></localized>\n" +
     "          </td>\n" +
     "          <td ng-if=\"optionsCols.showDatasetsNetworkColumn\">\n" +
     "            <a href ng-click=\"updateCriteria(summary.id, 'networks')\" ng-if=\"summary['obiba.mica.CountStatsDto.datasetCountStats'].networks\">{{summary['obiba.mica.CountStatsDto.datasetCountStats'].networks}}</a>\n" +

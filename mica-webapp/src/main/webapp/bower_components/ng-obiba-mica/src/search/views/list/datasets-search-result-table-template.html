@@ -27,7 +27,7 @@
             <localized value="summary.name" lang="lang"></localized>
           </td>
           <td ng-if="optionsCols.showDatasetsTypeColumn">
-            <localized value="classNames[summary.variableType + 'Dataset']" lang="lang"></localized>
+            <localized value="classNames[(summary.variableType === 'Study' ? 'Study' : 'Harmonization') + 'Dataset']" lang="lang"></localized>
           </td>
           <td ng-if="optionsCols.showDatasetsNetworkColumn">
             <a href ng-click="updateCriteria(summary.id, 'networks')" ng-if="summary['obiba.mica.CountStatsDto.datasetCountStats'].networks">{{summary['obiba.mica.CountStatsDto.datasetCountStats'].networks}}</a>

@@ -157,7 +157,7 @@ function TaxonomiesPanelController($scope, $location, TaxonomyResource, Taxonomi
         $scope.showTaxonomies();
       }
       $scope.taxonomies.target = newVal[1];
-      $scope.taxonomies.search.active = false;
+      $scope.taxonomies.search.active = true;
       $scope.taxonomies.all = null;
       $scope.taxonomies.taxonomy = null;
       $scope.taxonomies.vocabulary = null;
@@ -245,7 +245,7 @@ function ClassificationPanelController($scope, $location, TaxonomyResource, Taxo
   $scope.$watch('target', function (newVal) {
     if (newVal) {
       $scope.taxonomies.target = newVal;
-      $scope.taxonomies.search.active = false;
+      $scope.taxonomies.search.active = true;
       $scope.taxonomies.all = null;
       $scope.taxonomies.taxonomy = null;
       $scope.taxonomies.vocabulary = null;
@@ -566,6 +566,8 @@ angular.module('obiba.mica.search')
                   $scope.search.loading = false;
                 },
                 onError);
+            } else {
+              $scope.search.result = {};
             }
 
             break;
