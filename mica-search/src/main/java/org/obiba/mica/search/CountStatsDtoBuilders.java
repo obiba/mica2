@@ -122,11 +122,11 @@ public class CountStatsDtoBuilders {
 
         if(datasets.containsKey(DatasetQuery.HARMONIZATION_JOIN_FIELD)) {
           harmonizationDatasets.addAll(datasets.get(DatasetQuery.HARMONIZATION_JOIN_FIELD));
-          harmonizationDatasets = harmonizationDatasets.stream().distinct().collect(Collectors.toList());
         }
 
         studies += countStatsData.getStudies(id);
       }
+      harmonizationDatasets = harmonizationDatasets.stream().distinct().collect(Collectors.toList());
 
       int variables = Sets.union(ImmutableSet.copyOf(studyDatasets), ImmutableSet.copyOf(harmonizationDatasets))
           .stream().mapToInt(d -> countStatsData.getVariables(d)).sum();
