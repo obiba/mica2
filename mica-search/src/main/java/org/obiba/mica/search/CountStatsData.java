@@ -19,6 +19,8 @@ import com.google.common.collect.Maps;
 
 public class CountStatsData {
   private Map<String, Integer> variables;
+  private Map<String, Integer> dataschemaVariables;
+  private Map<String, Integer> studyVariables;
   private Map<String, Integer> studyDatasets;
   private Map<String, Integer> harmonizationDatasets;
   private Map<String, Integer> studies;
@@ -32,6 +34,14 @@ public class CountStatsData {
 
   public int getVariables(String studyId) {
     return getCount(variables, studyId);
+  }
+
+  public int getStudyVariables(String studyId) {
+    return getCount(studyVariables, studyId);
+  }
+
+  public int getDataschemaVariables(String studyId) {
+    return getCount(dataschemaVariables, studyId);
   }
 
   public int getStudyDatasets(String studyId) {
@@ -88,6 +98,16 @@ public class CountStatsData {
 
     public Builder variables(Map<String, Integer> value) {
       data.variables = value;
+      return this;
+    }
+
+    public Builder studyVariables(Map<String, Integer> value) {
+      data.studyVariables = value;
+      return this;
+    }
+
+    public Builder dataschemaVariables(Map<String, Integer> value) {
+      data.dataschemaVariables = value;
       return this;
     }
 

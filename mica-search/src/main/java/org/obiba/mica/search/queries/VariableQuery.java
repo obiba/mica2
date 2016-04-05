@@ -76,6 +76,8 @@ public class VariableQuery extends AbstractDocumentQuery {
 
   private static final String DATASET_ID = "datasetId";
 
+  private static final String VARIABLE_TYPE = "variableType";
+
   @Inject
   private OpalService opalService;
 
@@ -251,6 +253,14 @@ public class VariableQuery extends AbstractDocumentQuery {
     return getDocumentCounts(DATASET_ID);
   }
 
+  public Map<String, Integer> getStudyVariableByDatasetCounts() {
+    return getDocumentBucketCounts(DATASET_ID, VARIABLE_TYPE, "Study");
+  }
+
+  public Map<String, Integer> getDataschemaVariableByDatasetCounts() {
+    return getDocumentBucketCounts(DATASET_ID, VARIABLE_TYPE, "Dataschema");
+  }
+
   private List<String> getDatasetIds() {
     if(resultDto != null) {
       return getResponseDocumentIds(Arrays.asList(DATASET_ID), resultDto.getAggsList());
@@ -263,6 +273,14 @@ public class VariableQuery extends AbstractDocumentQuery {
   @Override
   public Map<String, Integer> getStudyCounts() {
     return getDocumentCounts(JOIN_FIELD);
+  }
+
+  public Map<String, Integer> getStudyVariableByStudyCounts() {
+    return getDocumentBucketCounts(JOIN_FIELD, VARIABLE_TYPE, "Study");
+  }
+
+  public Map<String, Integer> getDataschemaVariableByStudyCounts() {
+    return getDocumentBucketCounts(JOIN_FIELD, VARIABLE_TYPE, "Dataschema");
   }
 
   @Override
@@ -301,6 +319,16 @@ public class VariableQuery extends AbstractDocumentQuery {
     if(!properties.containsKey(DATASET_ID)) properties.put(DATASET_ID, "");
 
     return properties;
+  }
+
+  @Override
+  protected List<String> getAggregationGroupBy() {
+    List<String> buckets = super.getAggregationGroupBy();
+    // always group by variable type
+    if (!buckets.contains(VARIABLE_TYPE)) {
+      buckets.add(VARIABLE_TYPE);
+    }
+    return buckets;
   }
 
   @NotNull
