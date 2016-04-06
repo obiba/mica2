@@ -45,7 +45,6 @@ import com.google.common.collect.Maps;
  *
  */
 public class RQLQueryWrapper implements QueryWrapper {
-  private static final String DEFAULT_TAXO_PREFIX = "Mica_";
 
   private final RqlFieldResolver rqlFieldResolver;
 

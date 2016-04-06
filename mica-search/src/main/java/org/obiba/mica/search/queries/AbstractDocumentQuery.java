@@ -119,7 +119,7 @@ public abstract class AbstractDocumentQuery {
     return queryWrapper.hasQueryBuilder();
   }
 
-  private List<String> getAggregationGroupBy() {
+  protected List<String> getAggregationGroupBy() {
     return hasQueryBuilder() ? queryWrapper.getAggregationBuckets() : Lists.newArrayList();
   }
 
@@ -219,7 +219,7 @@ public abstract class AbstractDocumentQuery {
 
     // make sure the buckets are part of the aggregations
     if(properties != null) {
-      queryWrapper.getAggregationBuckets().stream().filter(b -> !properties.containsKey(b))
+      getAggregationGroupBy().stream().filter(b -> !properties.containsKey(b))
         .forEach(b -> properties.put(b, ""));
     }
 
@@ -554,6 +554,22 @@ public abstract class AbstractDocumentQuery {
       .flatMap(Collection::stream) //
       .filter(s -> s.getCount() > 0) //
       .collect(Collectors.toMap(MicaSearch.TermsAggregationResultDto::getKey, term -> term.getCount()));
+  }
+
+  protected Map<String, Integer> getDocumentBucketCounts(String joinField, String bucketField, String bucketValue) {
+    if(resultDto == null) return Maps.newHashMap();
+    return resultDto.getAggsList().stream() //
+        .filter(agg -> bucketField.equals(AggregationYamlParser.unformatName(agg.getAggregation()))) //
+        .map(d -> d.getExtension(MicaSearch.TermsAggregationResultDto.terms)) //
+        .flatMap(Collection::stream) //
+        .filter(t -> bucketValue.equals(t.getKey())) //
+        .map(t -> t.getAggsList())
+        .flatMap(Collection::stream)
+        .filter(agg -> joinField.equals(AggregationYamlParser.unformatName(agg.getAggregation()))) //
+        .map(d -> d.getExtension(MicaSearch.TermsAggregationResultDto.terms)) //
+        .flatMap(Collection::stream) //
+        .filter(s -> s.getCount() > 0) //
+        .collect(Collectors.toMap(MicaSearch.TermsAggregationResultDto::getKey, term -> term.getCount()));
   }
 
   protected List<String> getResponseDocumentIds(List<String> fields, List<MicaSearch.AggregationResultDto> aggDtos) {
