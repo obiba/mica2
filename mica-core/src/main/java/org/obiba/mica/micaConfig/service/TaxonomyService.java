@@ -151,7 +151,7 @@ public class TaxonomyService {
     if(taxonomyTaxonomy != null) return;
     taxonomyTaxonomy = copy(micaConfigService.getTaxonomyTaxonomy());
     MicaConfig config = micaConfigService.getConfig();
-    if(!config.isNetworkEnabled() || config.isNetworkEnabled()) {
+    if(!config.isNetworkEnabled() || config.isSingleNetworkEnabled()) {
       taxonomyTaxonomy.removeVocabulary("network");
     }
     if(!config.isStudyDatasetEnabled() && !config.isHarmonizationDatasetEnabled()) {
