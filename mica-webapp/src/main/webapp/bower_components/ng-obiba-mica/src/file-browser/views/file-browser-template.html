@@ -1,0 +1,40 @@
+<div ng-cloak>
+  <obiba-alert id="FileSystemController"></obiba-alert>
+
+  <div>
+    <!--## {{data.breadcrumbs}}-->
+    <!-- second level breadcrumb -->
+    <ol ng-show="data.document.path !== data.rootPath && " class="mica-breadcrumb no-margin no-padding">
+      <li ng-repeat="part in data.breadcrumbs" ng-class="{'active': $first === $last && $last}">
+        <span ng-show="!$last && part.name === '/'">
+          <span><i class="{{data.docRootIcon}}"></i></span>
+        </span>
+        <a ng-show="!$last && part.name !== '/'" href ng-click="navigateToPath(part.path)">
+          <span ng-show="part.name !== '/'">{{part.name}}</span>
+        </a>
+        <!-- Top level root -->
+        <span ng-if="$last && part.name === '/'">
+          <i class="{{data.docRootIcon}}"></i>
+        </span>
+        <span ng-if="part.name !== '/' && $last">
+          <i class="fa {{getDocumentIcon(data.document)}}"></i> {{data.document.name || 'empty'}}
+        </span>
+      </li>
+    </ol>
+
+    <!-- Document details -->
+    <div class="row voffset2">
+      <div class="col-md-2">
+        <div ng-include="'file-browser/views/shortcuts-template.html'"></div>
+      </div>
+      <div class="col-md-7">
+        <div>
+          <div ng-if="!data.isFile" ng-include="'file-browser/views/documents-table-template.html'"></div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div ng-include="'file-browser/views/document-detail-template.html'"></div>
+      </div>
+    </div>
+  </div>
+</div>

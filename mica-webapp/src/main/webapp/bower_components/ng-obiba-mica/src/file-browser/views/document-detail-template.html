@@ -1,0 +1,111 @@
+<!--
+  ~ Copyright (c) 2016 OBiBa. All rights reserved.
+  ~
+  ~ This program and the accompanying materials
+  ~ are made available under the terms of the GNU Public License v3.0.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <div class="row">
+      <div class="col-md-1 no-padding-right">
+        <i class="fa {{getDocumentIcon(data.document)}}"></i>
+      </div>
+      <div class="col-md-10">
+        {{data.document.name}}
+      </div>
+    </div>
+  </div>
+  <div class="panel-body">
+    <div>
+      <label class="text-muted no-margin">
+        <small>{{'size' | translate}}</small>
+      </label>
+      <div>
+        <span ng-if="!data.isFile">{{data.document.size}} {{'files' | translate}}</span>
+        <span ng-if="data.isFile">{{data.document.size | bytes}}</span>
+      </div>
+    </div>
+
+    <div class="voffset">
+      <label class="text-muted no-margin">
+        <small>{{'created-on' | translate}}</small>
+      </label>
+      <div>
+        <span>{{data.document.timestamps.created | amDateFormat : 'lll'}}</span>
+      </div>
+    </div>
+    <div class="voffset">
+      <label class="text-muted no-margin">
+        <small>{{'last-modified' | translate}}</small>
+      </label>
+      <div>
+        <span>{{data.document.timestamps.lastUpdate | amDateFormat : 'lll'}}</span>
+      </div>
+    </div>
+    <div class="voffset">
+      <label class="text-muted no-margin">
+        <small>{{'publish.publication' | translate}}</small>
+      </label>
+      <div>
+        <span translate translate-values="{ publicationDate: data.document.state.publicationDate, publishedBy: data.document.state.publishedBy }" ng-if="data.document.state.publicationDate !== undefined">
+          publish.published-ago-by
+        </span>
+        <span translate ng-if="data.document.state.publicationDate === undefined">
+          publish.not-published
+        </span>
+      </div>
+    </div>
+
+    <div ng-if="data.isFile" class="voffset">
+      <label class="text-muted no-margin">
+        <small>{{'type' | translate}}</small>
+      </label>
+      <div editable-text="data.document.state.attachment.type" e-form="buttonChangeType" onbeforesave="updateDocumentType(data.document, $data)">
+        {{data.document.state.attachment.type || 'empty'}}
+        <span class="hoffset1" ng-if="data.document.permissions.edit && data.document.revisionStatus === 'DRAFT'"><a href ng-click="buttonChangeType.$show()" ng-hide="buttonChangeType.$visible">
+          <i class="fa fa-pencil"></i></a>
+        </span>
+      </div>
+
+      <!-- TODO create a directive (see MK-568) -->
+      <uib-tabset class="voffset2">
+        <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active" disable="tab.disable">
+
+          <div class="voffset">
+            <label class="text-muted no-margin">
+              <small>{{'description' | translate}}</small>
+            </label>
+
+            <div ng-if="!data.editDescField">
+              <label ng-if="!getLocalizedValue(data.document.state.attachment.description, tab.lang)">
+                <span class="text-danger"><em>empty</em></span>
+              </label>
+              <localized ng-if="getLocalizedValue(data.document.state.attachment.description, tab.lang)" value="data.document.state.attachment.description" lang="tab.lang"></localized>
+              <a ng-if="data.document.permissions.edit && data.document.revisionStatus === 'DRAFT'" ng-click="data.editDescField = true" ng-hide="buttonChangeType.$visible && data.document.revisionStatus !== DRAFT">
+                <i class="fa fa-pencil"></i>
+              </a>
+            </div>
+
+            <div ng-if="data.editDescField">
+              <form name="form" role="form" novalidate>
+                <div localized-textarea name="description" model="data.document.state.attachment.description" lang="tab.lang"></div>
+                <span class="editable-buttons">
+                  <button ng-click="updateDocumentDescription(data.document)" class="btn btn-primary">
+                    <span class="glyphicon glyphicon-ok"></span>
+                  </button>
+                  <button type="button" class="btn btn-default" ng-click="data.editDescField = false">
+                    <span class="glyphicon glyphicon-remove"></span>
+                  </button>
+                </span>
+              </form>
+            </div>
+          </div>
+        </uib-tab>
+      </uib-tabset>
+    </div>
+  </div>
+</div>

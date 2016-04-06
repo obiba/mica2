@@ -1,0 +1,36 @@
+<div class="panel panel-default">
+  <div class="panel-body">
+    <ul class="nav nav-list">
+      <li ng-if="!data.isFile" class="nav-header">
+        <span>
+          <span translate>search</span>
+          <span ng-if="data.document" class="pull-right">
+            <span>
+              <a href ng-click="clearSearch()" class="btn btn-info btn-xs" title="{{'search-tooltip.clear' | translate}}">
+                <i class="fa fa-eraser"></i>
+              </a>
+            </span>
+            <span>
+              <a href ng-model="data.search.recursively" class="btn btn-xs" ng-class="{'btn-info': data.search.recursively, 'btn-default': !data.search.recursively}" data-toggle="button" ng-click="toggleRecursively()" title="{{'search-tooltip.recursively' | translate}}">
+                <i class="fa i-obiba-hierarchy"></i>
+              </a>
+            </span>
+          </span>
+        </span>
+      </li>
+      <li ng-if="!data.isFile && data.document" class="voffset">
+        <a href>
+          <span class="input-group input-group-sm no-padding-top">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+            <input ng-keyup="searchKeyUp($event)" ng-model="data.search.text" type="text" class="form-control ng-pristine ng-untouched ng-valid" aria-describedby="study-search">
+          </span>
+        </a>
+      </li>
+      <li ng-if="!data.isFile">
+        <a href ng-click="searchDocuments('RECENT')" title="{{'search-tooltip.most-recent' | translate}}">
+          <span><i class="fa fa-clock-o"></i> {{'most-recent' | translate}}</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
