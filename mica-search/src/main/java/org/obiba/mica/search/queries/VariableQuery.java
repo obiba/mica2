@@ -60,6 +60,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -254,11 +255,11 @@ public class VariableQuery extends AbstractDocumentQuery {
   }
 
   public Map<String, Integer> getStudyVariableByDatasetCounts() {
-    return getDocumentBucketCounts(DATASET_ID, VARIABLE_TYPE, "Study");
+    return getDocumentBucketCounts(DATASET_ID, VARIABLE_TYPE, DatasetVariable.Type.Study.name());
   }
 
   public Map<String, Integer> getDataschemaVariableByDatasetCounts() {
-    return getDocumentBucketCounts(DATASET_ID, VARIABLE_TYPE, "Dataschema");
+    return getDocumentBucketCounts(DATASET_ID, VARIABLE_TYPE, DatasetVariable.Type.Dataschema.name());
   }
 
   private List<String> getDatasetIds() {
@@ -326,7 +327,7 @@ public class VariableQuery extends AbstractDocumentQuery {
     List<String> buckets = super.getAggregationGroupBy();
     // always group by variable type
     if (!buckets.contains(VARIABLE_TYPE)) {
-      buckets.add(VARIABLE_TYPE);
+      return ImmutableList.<String>builder().addAll(buckets).add(VARIABLE_TYPE).build();
     }
     return buckets;
   }
