@@ -23,17 +23,24 @@ angular.module('obiba.mica.localized')
           if (result && result.length > 0) {
             return result[0][keyValue];
           }
-          return result[0][keyValue];
         }
         return '';
       };
 
       this.forLocale = function (values, lang) {
-        return this.for(values, lang, 'locale', 'text');
+        var rval = this.for(values, lang, 'locale', 'text');
+        if (rval === '') {
+          rval = this.for(values, 'und', 'locale', 'text');
+        }
+        return rval;
       };
 
       this.forLang = function (values, lang) {
-        return this.for(values, lang, 'lang', 'value');
+        var rval = this.for(values, lang, 'lang', 'value');
+        if (rval === '') {
+          rval = this.for(values, 'und', 'lang', 'value');
+        }
+        return rval;
       };
 
       this.getLocal = function () {

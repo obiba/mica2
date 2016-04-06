@@ -7,6 +7,7 @@
         <tr>
           <th translate>name</th>
           <th translate>search.variable.label</th>
+          <th translate ng-if="optionsCols.showVariablesTypeColumn">type</th>
           <th translate ng-if="optionsCols.showVariablesStudiesColumn">search.study.label</th>
           <th translate ng-if="optionsCols.showVariablesDatasetsColumn">search.dataset.label</th>
         </tr>
@@ -24,6 +25,9 @@
           </td>
           <td>
             <localized value="summary.variableLabel" lang="lang"></localized>
+          </td>
+          <td ng-if="optionsCols.showVariablesTypeColumn">
+            {{'search.variable.' + summary.variableType.toLowerCase() | translate}}
           </td>
           <td ng-if="optionsCols.showVariablesStudiesColumn">
             <a ng-href="{{PageUrlService.studyPage(summary.studyId)}}">

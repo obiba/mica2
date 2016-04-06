@@ -81,10 +81,15 @@ angular.module('obiba.mica.search')
 
           scope.updateCriteria = function (id, type) {
             var datasetClassName;
-
             if (type === 'HarmonizationDataset' || type === 'StudyDataset') {
               datasetClassName = type;
               type = 'datasets';
+            }
+
+            var variableType;
+            if (type === 'DataschemaVariable' || type === 'StudyVariable') {
+              variableType = type.replace('Variable', '');
+              type = 'variables';
             }
 
             RqlQueryService.createCriteriaItem('network', 'Mica_network', 'id', id).then(function (item) {
@@ -92,6 +97,11 @@ angular.module('obiba.mica.search')
                 RqlQueryService.createCriteriaItem('dataset', 'Mica_dataset', 'className', datasetClassName).then(function(datasetItem) {
                   scope.onUpdateCriteria(item, type);
                   scope.onUpdateCriteria(datasetItem, type);
+                });
+              } else if (variableType) {
+                RqlQueryService.createCriteriaItem('variable', 'Mica_variable', 'variableType', variableType).then(function (variableItem) {
+                  scope.onUpdateCriteria(item, type);
+                  scope.onUpdateCriteria(variableItem, type);
                 });
               } else {
                 scope.onUpdateCriteria(item, type);
@@ -180,17 +190,27 @@ angular.module('obiba.mica.search')
 
         scope.updateCriteria = function (id, type) {
           var datasetClassName;
-
           if (type === 'HarmonizationDataset' || type === 'StudyDataset') {
             datasetClassName = type;
             type = 'datasets';
           }
 
+          var variableType;
+          if (type === 'DataschemaVariable' || type === 'StudyVariable') {
+            variableType = type.replace('Variable', '');
+            type = 'variables';
+          }
+
           RqlQueryService.createCriteriaItem('study', 'Mica_study', 'id', id).then(function(item) {
             if(datasetClassName) {
-              RqlQueryService.createCriteriaItem('dataset', 'Mica_dataset', 'className', datasetClassName).then(function(datasetItem) {
+              RqlQueryService.createCriteriaItem('dataset', 'Mica_dataset', 'className', datasetClassName).then(function (datasetItem) {
                 scope.onUpdateCriteria(item, type);
                 scope.onUpdateCriteria(datasetItem, type);
+              });
+            } else if (variableType) {
+              RqlQueryService.createCriteriaItem('variable', 'Mica_variable', 'variableType', variableType).then(function (variableItem) {
+                scope.onUpdateCriteria(item, type);
+                scope.onUpdateCriteria(variableItem, type);
               });
             } else {
               scope.onUpdateCriteria(item, type);

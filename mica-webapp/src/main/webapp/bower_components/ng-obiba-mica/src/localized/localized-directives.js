@@ -2,14 +2,17 @@
 
 angular.module('obiba.mica.localized')
 
-  .directive('localized', [function () {
+  .directive('localized', ['LocalizedValues', function (LocalizedValues) {
     return {
       restrict: 'AE',
       scope: {
         value: '=',
         lang: '='
       },
-      template: '<span ng-repeat="localizedValue in value | filter:{lang:lang}">{{localizedValue.value}}</span>'
+      templateUrl: 'localized/localized-template.html',
+      link: function(scope) {
+        scope.LocalizedValues = LocalizedValues;
+      }
     };
   }])
 

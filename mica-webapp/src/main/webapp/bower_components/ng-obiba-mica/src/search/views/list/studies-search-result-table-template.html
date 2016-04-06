@@ -16,18 +16,23 @@
           <th rowspan="2" translate>search.study.participants</th>
           <th rowspan="2" translate ng-if="optionsCols.showStudiesNetworksColumn">networks</th>
           <th translate
-              ng-attr-colspan="{{optionsCols.showStudiesDatasetsColumn + optionsCols.showStudiesHarmonizedDatasetsColumn}}"
-              ng-if="optionsCols.showStudiesDatasetsColumn || optionsCols.showStudiesHarmonizedDatasetsColumn">datasets
+              ng-attr-colspan="{{optionsCols.showStudiesStudyDatasetsColumn + optionsCols.showStudiesHarmonizationDatasetsColumn}}"
+              ng-if="optionsCols.showStudiesStudyDatasetsColumn || optionsCols.showStudiesHarmonizationDatasetsColumn">datasets
           </th>
           <th rowspan="2" translate ng-if="optionsCols.showStudiesVariablesColumn">variables</th>
+          <th translate
+              ng-attr-colspan="{{optionsCols.showStudiesStudyVariablesColumn + optionsCols.showStudiesDataschemaVariablesColumn}}"
+              ng-if="optionsCols.showStudiesStudyVariablesColumn || optionsCols.showStudiesDataschemaVariablesColumn">variables</th>
         </tr>
         <tr>
           <th translate ng-if="optionsCols.showStudiesQuestionnaireColumn">search.study.quest</th>
           <th translate ng-if="optionsCols.showStudiesPmColumn">search.study.pm</th>
           <th translate ng-if="optionsCols.showStudiesBioColumn">search.study.bio</th>
           <th translate ng-if="optionsCols.showStudiesOtherColumn">search.study.others</th>
-          <th translate ng-if="optionsCols.showStudiesDatasetsColumn">search.study.label</th>
-          <th translate ng-if="optionsCols.showStudiesHarmonizedDatasetsColumn">search.harmonization</th>
+          <th translate ng-if="optionsCols.showStudiesStudyDatasetsColumn">search.study.label</th>
+          <th translate ng-if="optionsCols.showStudiesHarmonizationDatasetsColumn">search.harmonization</th>
+          <th translate ng-if="optionsCols.showStudiesStudyVariablesColumn">search.variable.study</th>
+          <th translate ng-if="optionsCols.showStudiesDataschemaVariablesColumn">search.variable.dataschema</th>
         </tr>
         </thead>
         <tbody>
@@ -70,18 +75,26 @@
                 ng-if="summary['obiba.mica.CountStatsDto.studyCountStats'].networks">{{summary['obiba.mica.CountStatsDto.studyCountStats'].networks}}</a>
             <span ng-if="!summary['obiba.mica.CountStatsDto.studyCountStats'].networks">-</span>
           </td>
-          <td ng-if="optionsCols.showStudiesDatasetsColumn">
+          <td ng-if="optionsCols.showStudiesStudyDatasetsColumn">
             <a href ng-click="updateCriteria(summary.id, 'StudyDataset')"
                 ng-if="summary['obiba.mica.CountStatsDto.studyCountStats'].studyDatasets">{{summary['obiba.mica.CountStatsDto.studyCountStats'].studyDatasets}}</a>
             <span ng-if="!summary['obiba.mica.CountStatsDto.studyCountStats'].studyDatasets">-</span>
           </td>
-          <td ng-if="optionsCols.showStudiesHarmonizedDatasetsColumn">
+          <td ng-if="optionsCols.showStudiesHarmonizationDatasetsColumn">
             <a href ng-click="updateCriteria(summary.id, 'HarmonizationDataset')"
                 ng-if="summary['obiba.mica.CountStatsDto.studyCountStats'].harmonizationDatasets">{{summary['obiba.mica.CountStatsDto.studyCountStats'].harmonizationDatasets}}</a>
             <span ng-if="!summary['obiba.mica.CountStatsDto.studyCountStats'].harmonizationDatasets">-</span>
           </td>
           <td ng-if="optionsCols.showStudiesVariablesColumn">
             <a href ng-click="updateCriteria(summary.id, 'variables')">{{summary['obiba.mica.CountStatsDto.studyCountStats'].variables}}</a>
+          </td>
+          <td ng-if="optionsCols.showStudiesStudyVariablesColumn">
+            <a href ng-click="updateCriteria(summary.id, 'StudyVariable')" ng-if="summary['obiba.mica.CountStatsDto.studyCountStats'].studyDatasets">{{summary['obiba.mica.CountStatsDto.studyCountStats'].studyVariables}}</a>
+            <span ng-if="!summary['obiba.mica.CountStatsDto.studyCountStats'].studyDatasets">-</span>
+          </td>
+          <td ng-if="optionsCols.showStudiesDataschemaVariablesColumn">
+            <a href ng-click="updateCriteria(summary.id, 'DataschemaVariable')" ng-if="summary['obiba.mica.CountStatsDto.studyCountStats'].harmonizationDatasets">{{summary['obiba.mica.CountStatsDto.studyCountStats'].dataschemaVariables}}</a>
+            <span ng-if="!summary['obiba.mica.CountStatsDto.studyCountStats'].harmonizationDatasets">-</span>
           </td>
         </tr>
         </tbody>

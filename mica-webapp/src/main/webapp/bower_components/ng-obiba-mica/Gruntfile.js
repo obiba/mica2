@@ -33,7 +33,11 @@ module.exports = function (grunt) {
           'src/graphics/graphics-service.js',
           'src/localized/localized.js',
           'src/localized/localized-directives.js',
-          'src/localized/localized-service.js'
+          'src/localized/localized-service.js',
+          'src/file-browser/file-browser.js',
+          'src/file-browser/file-browser-directive.js',
+          'src/file-browser/file-browser-controller.js',
+          'src/file-browser/file-browser-service.js'
         ]
       }
     },

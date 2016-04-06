@@ -56,6 +56,7 @@ angular.module('obiba.mica.search', [
           searchLabel: 'search.variable.searchLabel',
           noResultsLabel: 'search.variable.noResults',
           variablesColumn: {
+            showVariablesTypeColumn: true,
             showVariablesStudiesColumn: true,
             showVariablesDatasetsColumn: true,
             showDatasetsStudiesColumn: true,
@@ -86,9 +87,11 @@ angular.module('obiba.mica.search', [
             showStudiesOtherColumn: true,
             showStudiesParticipantsColumn: true,
             showStudiesNetworksColumn: true,
-            showStudiesDatasetsColumn: true,
-            showStudiesHarmonizedDatasetsColumn: true,
-            showStudiesVariablesColumn: true
+            showStudiesStudyDatasetsColumn: true,
+            showStudiesHarmonizationDatasetsColumn: true,
+            showStudiesVariablesColumn: false,
+            showStudiesStudyVariablesColumn: true,
+            showStudiesDataschemaVariablesColumn: true
           }
         },
         networks: {
@@ -98,8 +101,10 @@ angular.module('obiba.mica.search', [
           networksColumn: {
             showNetworksStudiesColumn: true,
             showNetworksStudyDatasetColumn: true,
-            showNetworksHarmonizedDatasetColumn: true,
-            showNetworksVariablesColumn: true
+            showNetworksHarmonizationDatasetColumn: true,
+            showNetworksVariablesColumn: false,
+            showNetworksStudyVariablesColumn: true,
+            showNetworksDataschemaVariablesColumn: true
           }
         },
         coverage: {
