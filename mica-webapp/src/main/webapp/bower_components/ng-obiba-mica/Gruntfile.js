@@ -115,11 +115,19 @@ module.exports = function (grunt) {
 
     copy: {
       dist: {
-        expand: true,
-        dot: true,
-        cwd: 'images/',
-        dest: 'dist/images/',
-        src: ['**']
+        files: [{
+          expand: true,
+          dot: true,
+          cwd: 'images/',
+          dest: 'dist/images/',
+          src: ['**']
+        }, {
+          expand: true,
+          dot: true,
+          cwd: 'fonts/',
+          dest: 'dist/fonts/',
+          src: ['**']
+        }]
       }
     },
     watch: {

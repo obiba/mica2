@@ -316,6 +316,15 @@ module.exports = function (grunt) {
           },
           {
             expand: true,
+            dot: true,
+            cwd: 'src/main/webapp/bower_components/ng-obiba-mica/dist',
+            dest: '<%= yeoman.dist %>',
+            src: [
+              'fonts/obiba*'
+            ]
+          },
+          {
+            expand: true,
             cwd: '.tmp/images',
             dest: '<%= yeoman.dist %>/images',
             src: [

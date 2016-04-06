@@ -12,25 +12,31 @@
 
 angular.module('obiba.mica.fileBrowser')
 
-  .factory('FileBrowserFileResource', ['$resource',
-    function ($resource) {
-      return $resource('ws/file/:path/', {path: '@path'}, {
+  .factory('FileBrowserFileResource', ['$resource', 'ngObibaMicaUrl',
+    function ($resource, ngObibaMicaUrl) {
+      var url = ngObibaMicaUrl.getUrl('FileBrowserFileResource');
+      console.log('PATH>', url);
+      return $resource(url, {path: '@path'}, {
         'get': {method: 'GET', errorHandler: true}
       });
     }])
 
-  .factory('FileSystemSearchResource', ['$resource',
-    function ($resource) {
-      return $resource('ws/files-search/:path', {path: '@path'}, {
-        'search': { method: 'GET', isArray: true, errorHandler: true},
-        'searchUnderReview': {
-          method: 'GET',
-          isArray: true,
-          params: {recursively: true, query: 'revisionStatus:UNDER_REVIEW'},
-          errorHandler: true
-        }
+  .factory('FileBrowserSearchResource', ['$resource', 'ngObibaMicaUrl',
+    function ($resource, ngObibaMicaUrl) {
+      return $resource(ngObibaMicaUrl.getUrl('FileBrowserSearchResource'), {path: '@path'}, {
+        'search': { method: 'GET', isArray: true, errorHandler: true}
       });
     }])
+
+  .service('FileBrowserDownloadService', ['ngObibaMicaUrl',
+    function (ngObibaMicaUrl) {
+      this.getUrl = function(path) {
+        return ngObibaMicaUrl.getUrl('FileBrowserDownloadUrl').replace(/:path/, path);
+      };
+
+      return this;
+    }])
+
 
   .service('FileBrowserService', [function () {
 
@@ -93,7 +99,7 @@ angular.module('obiba.mica.fileBrowser')
 
     }])
 
-  .service('BreadcrumbHelper', [function () {
+  .service('BrowserBreadcrumbHelper', [function () {
     this.toArray = function (path, exclude) {
       if (path) {
         path = path.replace(exclude, '');
@@ -101,7 +107,7 @@ angular.module('obiba.mica.fileBrowser')
         var parts = [{name: '/', path: '/'}];
         var prev = null;
         a.forEach(function (part) {
-          prev = (prev === null ? '' : prev) + '/' + part;
+          prev = (prev === null ? exclude : prev) + '/' + part;
           parts.push({name: part, path: prev});
         });
 
@@ -113,14 +119,15 @@ angular.module('obiba.mica.fileBrowser')
     };
 
     this.rootIcon = function(docPath) {
-      switch (docPath) {
-        case '/study':
+      var matched = /^\/([^\/]*)/.exec(docPath);
+      switch (matched ? matched[1] : '') {
+        case 'study':
           return 'i-obiba-study';
-        case '/network':
+        case 'network':
           return 'i-obiba-network';
-        case '/study-dataset':
+        case 'study-dataset':
           return 'i-obiba-study-dataset';
-        case '/harmonization-dataset':
+        case 'harmonization-dataset':
           return 'i-obiba-harmo-dataset';
         default:
           return 'fa fa-hdd-o';

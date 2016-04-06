@@ -40,7 +40,8 @@ angular.module('obiba.mica.utils', [])
     this.setClientConfig = function(){
       return true;
     };
-})
+  })
+  
   .directive('fixedHeader', ['$timeout','$window', function ($timeout, $window) {
     return {
       restrict: 'A',

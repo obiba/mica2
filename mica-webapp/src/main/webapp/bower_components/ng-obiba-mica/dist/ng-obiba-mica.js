@@ -31,7 +31,10 @@ function NgObibaMicaUrlProvider() {
     'StudyPage': '#/study/:study',
     'StudyPopulationsPage': '#/study/:study',
     'DatasetPage': '#/:type/:dataset',
-    'BaseUrl': '/'
+    'BaseUrl': '/',
+    'FileBrowserFileResource': 'ws/file/:path/',
+    'FileBrowserSearchResource': 'ws/files-search/:path',
+    'FileBrowserDownloadUrl': 'ws/draft/file-dl/:path'
   };
 
   function UrlProvider(registry) {
@@ -168,7 +171,8 @@ angular.module('obiba.mica.utils', [])
     this.setClientConfig = function(){
       return true;
     };
-})
+  })
+  
   .directive('fixedHeader', ['$timeout','$window', function ($timeout, $window) {
     return {
       restrict: 'A',
@@ -6402,11 +6406,25 @@ angular.module('obiba.mica.localized')
     });
 ;'use strict';
 
+function NgObibaMicaFileBrowserOptionsProvider() {
+  var options = {
+    folders: {
+      excludes: ['population']
+    }
+  };
+
+  this.$get = function () {
+    return options;
+  };
+}
+
 angular.module('obiba.mica.fileBrowser', [
   'pascalprecht.translate',
   'ui.bootstrap',
   'templates-ngObibaMica'
-]);
+]).config(['$provide', function ($provide) {
+  $provide.provider('ngObibaMicaFileBrowserOptions', new NgObibaMicaFileBrowserOptionsProvider());
+}]);
 ;/*
  * Copyright (c) 2016 OBiBa. All rights reserved.
  *
@@ -6455,11 +6473,13 @@ angular.module('obiba.mica.fileBrowser')
     '$filter',
     'StringUtils',
     'FileBrowserService',
-    'BreadcrumbHelper',
+    'BrowserBreadcrumbHelper',
     'AlertService',
     'ServerErrorUtils',
     'FileBrowserFileResource',
-    'FileSystemSearchResource',
+    'FileBrowserSearchResource',
+    'ngObibaMicaFileBrowserOptions',
+    'FileBrowserDownloadService',
 
     function ($rootScope,
               $scope,
@@ -6467,11 +6487,13 @@ angular.module('obiba.mica.fileBrowser')
               $filter,
               StringUtils,
               FileBrowserService,
-              BreadcrumbHelper,
+              BrowserBreadcrumbHelper,
               AlertService,
               ServerErrorUtils,
               FileBrowserFileResource,
-              FileSystemSearchResource) {
+              FileBrowserSearchResource,
+              ngObibaMicaFileBrowserOptions,
+              FileBrowserDownloadService) {
 
       var onError = function (response) {
         AlertService.alert({
@@ -6495,9 +6517,13 @@ angular.module('obiba.mica.fileBrowser')
 
             if (!$scope.data.document.children) {
               $scope.data.document.children = [];
+            } else {
+              $scope.data.document.children = $scope.data.document.children.filter(function(child){
+                return ngObibaMicaFileBrowserOptions.folders.excludes.indexOf(child.name) < 0;
+              });
             }
 
-            $scope.data.breadcrumbs = BreadcrumbHelper.toArray(path, $scope.data.rootPath);
+            $scope.data.breadcrumbs = BrowserBreadcrumbHelper.toArray(path, $scope.data.rootPath);
             $scope.data.isFile = FileBrowserService.isFile(response);
             $scope.data.isRoot = FileBrowserService.isRoot(response);
           },
@@ -6574,7 +6600,7 @@ angular.module('obiba.mica.fileBrowser')
 
       function searchDocumentsInternal(path, searchParams) {
         var urlParams = angular.extend({}, {path: path}, searchParams);
-        FileSystemSearchResource.search(urlParams,
+        FileBrowserSearchResource.search(urlParams,
           function onSuccess(response) {
             $log.info('Search result', response);
             var clone = $scope.data.document ? angular.copy($scope.data.document) : {};
@@ -6608,6 +6634,7 @@ angular.module('obiba.mica.fileBrowser')
         searchDocumentsInternal($scope.data.document.path, searchParams);
       };
 
+      $scope.getDownloadUrl = FileBrowserDownloadService.getUrl;
       $scope.screen = $rootScope.screen;
       $scope.truncate = StringUtils.truncate;
       $scope.getDocumentIcon = FileBrowserService.getDocumentIcon;
@@ -6646,7 +6673,7 @@ angular.module('obiba.mica.fileBrowser')
 
       $scope.$watchGroup(['docPath', 'docId'], function () {
         if ($scope.docPath && $scope.docId) {
-          $scope.data.docRootIcon = BreadcrumbHelper.rootIcon($scope.docPath);
+          $scope.data.docRootIcon = BrowserBreadcrumbHelper.rootIcon($scope.docPath);
           $scope.data.rootPath = $scope.docPath + ($scope.docId !== 'null' ? '/' + $scope.docId : '');
           getDocument($scope.data.rootPath, null);
         }
@@ -6668,25 +6695,31 @@ angular.module('obiba.mica.fileBrowser')
 
 angular.module('obiba.mica.fileBrowser')
 
-  .factory('FileBrowserFileResource', ['$resource',
-    function ($resource) {
-      return $resource('ws/file/:path/', {path: '@path'}, {
+  .factory('FileBrowserFileResource', ['$resource', 'ngObibaMicaUrl',
+    function ($resource, ngObibaMicaUrl) {
+      var url = ngObibaMicaUrl.getUrl('FileBrowserFileResource');
+      console.log('PATH>', url);
+      return $resource(url, {path: '@path'}, {
         'get': {method: 'GET', errorHandler: true}
       });
     }])
 
-  .factory('FileSystemSearchResource', ['$resource',
-    function ($resource) {
-      return $resource('ws/files-search/:path', {path: '@path'}, {
-        'search': { method: 'GET', isArray: true, errorHandler: true},
-        'searchUnderReview': {
-          method: 'GET',
-          isArray: true,
-          params: {recursively: true, query: 'revisionStatus:UNDER_REVIEW'},
-          errorHandler: true
-        }
+  .factory('FileBrowserSearchResource', ['$resource', 'ngObibaMicaUrl',
+    function ($resource, ngObibaMicaUrl) {
+      return $resource(ngObibaMicaUrl.getUrl('FileBrowserSearchResource'), {path: '@path'}, {
+        'search': { method: 'GET', isArray: true, errorHandler: true}
       });
     }])
+
+  .service('FileBrowserDownloadService', ['ngObibaMicaUrl',
+    function (ngObibaMicaUrl) {
+      this.getUrl = function(path) {
+        return ngObibaMicaUrl.getUrl('FileBrowserDownloadUrl').replace(/:path/, path);
+      };
+
+      return this;
+    }])
+
 
   .service('FileBrowserService', [function () {
 
@@ -6749,7 +6782,7 @@ angular.module('obiba.mica.fileBrowser')
 
     }])
 
-  .service('BreadcrumbHelper', [function () {
+  .service('BrowserBreadcrumbHelper', [function () {
     this.toArray = function (path, exclude) {
       if (path) {
         path = path.replace(exclude, '');
@@ -6757,7 +6790,7 @@ angular.module('obiba.mica.fileBrowser')
         var parts = [{name: '/', path: '/'}];
         var prev = null;
         a.forEach(function (part) {
-          prev = (prev === null ? '' : prev) + '/' + part;
+          prev = (prev === null ? exclude : prev) + '/' + part;
           parts.push({name: part, path: prev});
         });
 
@@ -6769,14 +6802,15 @@ angular.module('obiba.mica.fileBrowser')
     };
 
     this.rootIcon = function(docPath) {
-      switch (docPath) {
-        case '/study':
+      var matched = /^\/([^\/]*)/.exec(docPath);
+      switch (matched ? matched[1] : '') {
+        case 'study':
           return 'i-obiba-study';
-        case '/network':
+        case 'network':
           return 'i-obiba-network';
-        case '/study-dataset':
+        case 'study-dataset':
           return 'i-obiba-study-dataset';
-        case '/harmonization-dataset':
+        case 'harmonization-dataset':
           return 'i-obiba-harmo-dataset';
         default:
           return 'fa fa-hdd-o';
@@ -7409,7 +7443,7 @@ angular.module("file-browser/views/documents-table-template.html", []).run(["$te
     "          <i class=\"fa {{getDocumentIcon(document)}}\"></i>\n" +
     "\n" +
     "          <a ng-if=\"fileDocument\" target=\"_self\"\n" +
-    "             style=\"text-decoration: none\" ng-href=\"ws/draft/file-dl/{{document.path}}\"\n" +
+    "             style=\"text-decoration: none\" ng-href=\"{{getDownloadUrl(document.path)}}\"\n" +
     "              title=\"{{document.name}}\">\n" +
     "            {{truncate(document.name, 50)}}\n" +
     "          </a>\n" +
@@ -7455,44 +7489,49 @@ angular.module("file-browser/views/documents-table-template.html", []).run(["$te
 angular.module("file-browser/views/file-browser-template.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("file-browser/views/file-browser-template.html",
     "<div ng-cloak>\n" +
-    "  <obiba-alert id=\"FileSystemController\"></obiba-alert>\n" +
+    "  <div ng-if=\"!data.document\" class=\"loading\"></div>\n" +
     "\n" +
-    "  <div>\n" +
-    "    <!--## {{data.breadcrumbs}}-->\n" +
-    "    <!-- second level breadcrumb -->\n" +
-    "    <ol ng-show=\"data.document.path !== data.rootPath && \" class=\"mica-breadcrumb no-margin no-padding\">\n" +
-    "      <li ng-repeat=\"part in data.breadcrumbs\" ng-class=\"{'active': $first === $last && $last}\">\n" +
-    "        <span ng-show=\"!$last && part.name === '/'\">\n" +
-    "          <span><i class=\"{{data.docRootIcon}}\"></i></span>\n" +
-    "        </span>\n" +
-    "        <a ng-show=\"!$last && part.name !== '/'\" href ng-click=\"navigateToPath(part.path)\">\n" +
-    "          <span ng-show=\"part.name !== '/'\">{{part.name}}</span>\n" +
-    "        </a>\n" +
-    "        <!-- Top level root -->\n" +
-    "        <span ng-if=\"$last && part.name === '/'\">\n" +
-    "          <i class=\"{{data.docRootIcon}}\"></i>\n" +
-    "        </span>\n" +
-    "        <span ng-if=\"part.name !== '/' && $last\">\n" +
-    "          <i class=\"fa {{getDocumentIcon(data.document)}}\"></i> {{data.document.name || 'empty'}}\n" +
-    "        </span>\n" +
-    "      </li>\n" +
-    "    </ol>\n" +
+    "  <div ng-if=\"data.document\">\n" +
+    "    <obiba-alert id=\"FileSystemController\"></obiba-alert>\n" +
     "\n" +
-    "    <!-- Document details -->\n" +
-    "    <div class=\"row voffset2\">\n" +
-    "      <div class=\"col-md-2\">\n" +
-    "        <div ng-include=\"'file-browser/views/shortcuts-template.html'\"></div>\n" +
-    "      </div>\n" +
-    "      <div class=\"col-md-7\">\n" +
-    "        <div>\n" +
-    "          <div ng-if=\"!data.isFile\" ng-include=\"'file-browser/views/documents-table-template.html'\"></div>\n" +
+    "    <div>\n" +
+    "      <!--## {{data.breadcrumbs}}-->\n" +
+    "      <!-- second level breadcrumb -->\n" +
+    "      <ol ng-show=\"data.document.path !== data.rootPath\" class=\"breadcrumb mica-breadcrumb no-margin no-padding\">\n" +
+    "        <li ng-repeat=\"part in data.breadcrumbs\" ng-class=\"{'active': $first === $last && $last}\">\n" +
+    "          <span ng-show=\"!$last && part.name === '/'\">\n" +
+    "            <span><i class=\"{{data.docRootIcon}}\"></i></span>\n" +
+    "          </span>\n" +
+    "          <a ng-show=\"!$last && part.name !== '/'\" href ng-click=\"navigateToPath(part.path)\">\n" +
+    "            <span ng-show=\"part.name !== '/'\">{{part.name}}</span>\n" +
+    "          </a>\n" +
+    "          <!-- Top level root -->\n" +
+    "          <span ng-if=\"$last && part.name === '/'\">\n" +
+    "            <i class=\"{{data.docRootIcon}}\"></i>\n" +
+    "          </span>\n" +
+    "          <span ng-if=\"part.name !== '/' && $last\">\n" +
+    "            <i class=\"fa {{getDocumentIcon(data.document)}}\"></i> {{data.document.name || 'empty'}}\n" +
+    "          </span>\n" +
+    "        </li>\n" +
+    "      </ol>\n" +
+    "\n" +
+    "      <!-- Document details -->\n" +
+    "      <div class=\"row voffset2\">\n" +
+    "        <div class=\"col-md-2\">\n" +
+    "          <div ng-include=\"'file-browser/views/shortcuts-template.html'\"></div>\n" +
     "        </div>\n" +
-    "      </div>\n" +
-    "      <div class=\"col-md-3\">\n" +
-    "        <div ng-include=\"'file-browser/views/document-detail-template.html'\"></div>\n" +
+    "        <div class=\"col-md-7\">\n" +
+    "          <div>\n" +
+    "            <div ng-if=\"!data.isFile\" ng-include=\"'file-browser/views/documents-table-template.html'\"></div>\n" +
+    "          </div>\n" +
+    "        </div>\n" +
+    "        <div class=\"col-md-3\">\n" +
+    "          <div ng-include=\"'file-browser/views/document-detail-template.html'\"></div>\n" +
+    "        </div>\n" +
     "      </div>\n" +
     "    </div>\n" +
     "  </div>\n" +
+    "\n" +
     "</div>");
 }]);
 
