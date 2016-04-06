@@ -33,6 +33,9 @@ public class CacheService {
   @Inject
   private EventBus eventBus;
 
+  @Inject
+  private TaxonomyService taxonomyService;
+
   @CacheEvict(value = "agate-subjects", allEntries = true)
   public void clearAgateSubjectsCache() {
     log.info("Clearing agate subjects cache");
@@ -46,6 +49,7 @@ public class CacheService {
   @CacheEvict(value = "micaConfig", allEntries = true)
   public void clearMicaConfigCache() {
     log.info("Clearing mica config cache");
+    taxonomyService.refresh();
   }
 
   @CacheEvict(value = "aggregations-metadata", allEntries = true)

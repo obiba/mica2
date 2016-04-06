@@ -21,6 +21,7 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
+import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.helper.DatasetIdAggregationMetaDataHelper;
 import org.obiba.mica.micaConfig.service.helper.DceIdAggregationMetaDataHelper;
 import org.obiba.mica.micaConfig.service.helper.NetworkIdAggregationMetaDataHelper;
@@ -61,6 +62,8 @@ public class TaxonomyService {
 
   private ReentrantLock txLock = new ReentrantLock();
 
+  private Taxonomy taxonomyTaxonomy;
+
   private Taxonomy variableTaxonomy;
 
   private Taxonomy datasetTaxonomy;
@@ -71,7 +74,8 @@ public class TaxonomyService {
 
   @NotNull
   public Taxonomy getTaxonomyTaxonomy() {
-    return micaConfigService.getTaxonomyTaxonomy();
+    initialize();
+    return taxonomyTaxonomy;
   }
 
   @NotNull
@@ -116,12 +120,9 @@ public class TaxonomyService {
     return taxonomies == null ? Collections.emptyList() : taxonomies;
   }
 
-  //
-  // Private methods
-  //
-
-  private void refresh() {
+  public void refresh() {
     txLock.lock();
+    taxonomyTaxonomy = null;
     networkTaxonomy = null;
     studyTaxonomy = null;
     datasetTaxonomy = null;
@@ -129,15 +130,36 @@ public class TaxonomyService {
     txLock.unlock();
   }
 
+  //
+  // Private methods
+  //
+
   private void initialize() {
     txLock.lock();
     try {
+      initializeTaxonomyTaxonomy();
       initializeNetworkTaxonomy();
       initializeStudyTaxonomy();
       initializeDatasetTaxonomy();
       initializeVariableTaxonomy();
     } finally {
       txLock.unlock();
+    }
+  }
+
+  private void initializeTaxonomyTaxonomy() {
+    if(taxonomyTaxonomy != null) return;
+    taxonomyTaxonomy = copy(micaConfigService.getTaxonomyTaxonomy());
+    MicaConfig config = micaConfigService.getConfig();
+    if(!config.isNetworkEnabled() || config.isNetworkEnabled()) {
+      taxonomyTaxonomy.removeVocabulary("network");
+    }
+    if(!config.isStudyDatasetEnabled() && !config.isHarmonizationDatasetEnabled()) {
+      taxonomyTaxonomy.removeVocabulary("dataset");
+      taxonomyTaxonomy.removeVocabulary("variable");
+    }
+    if(config.isSingleStudyEnabled()) {
+      taxonomyTaxonomy.removeVocabulary("study");
     }
   }
 
