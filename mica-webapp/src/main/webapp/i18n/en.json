@@ -877,7 +877,9 @@
     },
     "variable": {
       "label": "Label",
-      "noResults": "No variable found"
+      "noResults": "No variable found",
+      "study": "Study",
+      "dataschema": "Dataschema"
     },
     "network": {
       "noResults": "No network found"
