@@ -1,0 +1,27 @@
+<!--
+  ~ Copyright (c) 2016 OBiBa. All rights reserved.
+  ~
+  ~ This program and the accompanying materials
+  ~ are made available under the terms of the GNU Public License v3.0.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<h5 ng-if="data.document.state.revisions" translate>
+  revisions
+</h5>
+<h5 ng-if="data.search.active">
+  <a class="no-text-decoration" ng-click="clearSearch()">
+    <i class="fa fa-chevron-left"> </i>
+  </a>
+  <span ng-if="data.search.recursively">{{'file.search-results.current-sub' | translate}}</span>
+  <span ng-if="!data.search.recursively">{{'file.search-results.current' | translate}}</span>
+  ({{data.document.children.length}})
+</h5>
+<div class="clearfix">
+  <div class="pull-right">
+    <dir-pagination-controls></dir-pagination-controls>
+  </div>
+</div>
+<div class="clearfix" ng-if="data.search.active"></div>

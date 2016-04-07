@@ -104,7 +104,7 @@ angular.module('obiba.mica.fileBrowser')
       if (path) {
         path = path.replace(exclude, '');
         var a = path.replace(/\/$/, '').split('/').slice(1);
-        var parts = [{name: '/', path: '/'}];
+        var parts = [];
         var prev = null;
         a.forEach(function (part) {
           prev = (prev === null ? exclude : prev) + '/' + part;
