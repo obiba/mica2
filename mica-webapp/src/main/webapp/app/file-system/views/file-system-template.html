@@ -3,7 +3,7 @@
 
   <div>
     <!-- second level breadcrumb -->
-    <ol class="mica-breadcrumb no-margin no-padding">
+    <ol class="breadcrumb mica-breadcrumb no-margin no-padding">
       <li ng-repeat="part in data.breadcrumbs" ng-class="{'active': $first === $last && $last}">
         <a ng-show="!$last" href ng-click="navigateToPath(part.path)">
           <span ng-show="part.name === '/'"><i class="fa fa-hdd-o"></i></span>

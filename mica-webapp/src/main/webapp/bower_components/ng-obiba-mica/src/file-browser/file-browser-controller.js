@@ -19,11 +19,13 @@ angular.module('obiba.mica.fileBrowser')
     '$filter',
     'StringUtils',
     'FileBrowserService',
-    'BreadcrumbHelper',
+    'BrowserBreadcrumbHelper',
     'AlertService',
     'ServerErrorUtils',
     'FileBrowserFileResource',
-    'FileSystemSearchResource',
+    'FileBrowserSearchResource',
+    'ngObibaMicaFileBrowserOptions',
+    'FileBrowserDownloadService',
 
     function ($rootScope,
               $scope,
@@ -31,11 +33,13 @@ angular.module('obiba.mica.fileBrowser')
               $filter,
               StringUtils,
               FileBrowserService,
-              BreadcrumbHelper,
+              BrowserBreadcrumbHelper,
               AlertService,
               ServerErrorUtils,
               FileBrowserFileResource,
-              FileSystemSearchResource) {
+              FileBrowserSearchResource,
+              ngObibaMicaFileBrowserOptions,
+              FileBrowserDownloadService) {
 
       var onError = function (response) {
         AlertService.alert({
@@ -59,9 +63,13 @@ angular.module('obiba.mica.fileBrowser')
 
             if (!$scope.data.document.children) {
               $scope.data.document.children = [];
+            } else {
+              $scope.data.document.children = $scope.data.document.children.filter(function(child){
+                return ngObibaMicaFileBrowserOptions.folders.excludes.indexOf(child.name) < 0;
+              });
             }
 
-            $scope.data.breadcrumbs = BreadcrumbHelper.toArray(path, $scope.data.rootPath);
+            $scope.data.breadcrumbs = BrowserBreadcrumbHelper.toArray(path, $scope.data.rootPath);
             $scope.data.isFile = FileBrowserService.isFile(response);
             $scope.data.isRoot = FileBrowserService.isRoot(response);
           },
@@ -138,7 +146,7 @@ angular.module('obiba.mica.fileBrowser')
 
       function searchDocumentsInternal(path, searchParams) {
         var urlParams = angular.extend({}, {path: path}, searchParams);
-        FileSystemSearchResource.search(urlParams,
+        FileBrowserSearchResource.search(urlParams,
           function onSuccess(response) {
             $log.info('Search result', response);
             var clone = $scope.data.document ? angular.copy($scope.data.document) : {};
@@ -172,6 +180,7 @@ angular.module('obiba.mica.fileBrowser')
         searchDocumentsInternal($scope.data.document.path, searchParams);
       };
 
+      $scope.getDownloadUrl = FileBrowserDownloadService.getUrl;
       $scope.screen = $rootScope.screen;
       $scope.truncate = StringUtils.truncate;
       $scope.getDocumentIcon = FileBrowserService.getDocumentIcon;
@@ -210,7 +219,7 @@ angular.module('obiba.mica.fileBrowser')
 
       $scope.$watchGroup(['docPath', 'docId'], function () {
         if ($scope.docPath && $scope.docId) {
-          $scope.data.docRootIcon = BreadcrumbHelper.rootIcon($scope.docPath);
+          $scope.data.docRootIcon = BrowserBreadcrumbHelper.rootIcon($scope.docPath);
           $scope.data.rootPath = $scope.docPath + ($scope.docId !== 'null' ? '/' + $scope.docId : '');
           getDocument($scope.data.rootPath, null);
         }

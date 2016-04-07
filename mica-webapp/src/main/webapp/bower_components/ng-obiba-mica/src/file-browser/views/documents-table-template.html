@@ -33,7 +33,7 @@
           <i class="fa {{getDocumentIcon(document)}}"></i>
 
           <a ng-if="fileDocument" target="_self"
-             style="text-decoration: none" ng-href="ws/draft/file-dl/{{document.path}}"
+             style="text-decoration: none" ng-href="{{getDownloadUrl(document.path)}}"
               title="{{document.name}}">
             {{truncate(document.name, 50)}}
           </a>

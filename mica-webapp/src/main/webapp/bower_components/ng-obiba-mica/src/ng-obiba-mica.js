@@ -24,7 +24,10 @@ function NgObibaMicaUrlProvider() {
     'StudyPage': '#/study/:study',
     'StudyPopulationsPage': '#/study/:study',
     'DatasetPage': '#/:type/:dataset',
-    'BaseUrl': '/'
+    'BaseUrl': '/',
+    'FileBrowserFileResource': 'ws/file/:path/',
+    'FileBrowserSearchResource': 'ws/files-search/:path',
+    'FileBrowserDownloadUrl': 'ws/draft/file-dl/:path'
   };
 
   function UrlProvider(registry) {
