@@ -11,5 +11,9 @@ mica.config
         .when('/admin/general/edit', {
           templateUrl: 'app/config/views/config-form.html',
           controller: 'MicaConfigEditController'
+        })
+        .when('/admin/style/edit', {
+          templateUrl: 'app/config/views/config-style-form.html',
+          controller: 'MicaConfigStyleEditController'
         });
     }]);

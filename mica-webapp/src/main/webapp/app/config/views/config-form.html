@@ -70,22 +70,26 @@
 
       <h3 translate>config.sections</h3>
       <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-3">
           <div form-checkbox name="isSingleStudyEnabled" model="micaConfig.isSingleStudyEnabled" label="config.single-study-enabled" help="config.single-study-enabled-help"></div>
           <div form-checkbox name="isNetworkEnabled" model="micaConfig.isNetworkEnabled" label="config.network-enabled" help="config.network-enabled-help"></div>
           <div form-checkbox name="isSingleNetworkEnabled" model="micaConfig.isSingleNetworkEnabled" label="config.single-network-enabled" help="config.single-network-enabled-help" disabled="!micaConfig.isNetworkEnabled"></div>
+        </div>
+        <div class="col-md-3">
           <div form-checkbox name="isStudyDatasetEnabled" model="micaConfig.isStudyDatasetEnabled" label="config.study-dataset-enabled" help="config.study-dataset-enabled-help"></div>
           <div form-checkbox name="isHarmonizationDatasetEnabled" model="micaConfig.isHarmonizationDatasetEnabled" label="config.harmonization-dataset-enabled" help="config.harmonization-dataset-enabled-help"></div>
         </div>
       </div>
 
-      <a href="#/admin/general" class="btn btn-default">
-        <span translate>cancel</span>
-      </a>
+      <div class="voffset2">
+        <a href="#/admin/general" class="btn btn-default">
+          <span translate>cancel</span>
+        </a>
 
-      <button type="submit" class="btn btn-primary">
-        <span translate>save</span>
-      </button>
+        <button type="submit" class="btn btn-primary">
+          <span translate>save</span>
+        </button>
+      </div>
     </form>
   </div>
 
@@ -156,15 +160,15 @@
 
       </div>
 
-      <a href="#/admin/general" class="btn btn-default">
-        <span translate>cancel</span>
-      </a>
+      <div class="voffset2">
+        <a href="#/admin/general" class="btn btn-default">
+          <span translate>cancel</span>
+        </a>
 
-      <button type="submit" class="btn btn-primary">
-        <span translate>save</span>
-      </button>
+        <button type="submit" class="btn btn-primary">
+          <span translate>save</span>
+        </button>
+      </div>
     </form>
   </div>
-
-
 </div>

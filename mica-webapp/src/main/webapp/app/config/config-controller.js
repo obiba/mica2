@@ -5,7 +5,8 @@ mica.config
     'OpalCredentialsResource', 'OpalCredentialResource', 'KeyStoreResource', 'FormServerValidation', 'NOTIFICATION_EVENTS',
 
     function ($rootScope, $scope, $resource, $route, $window, $log, MicaConfigResource, $uibModal, $translate,
-              OpalCredentialsResource, OpalCredentialResource, KeyStoreResource, FormServerValidation, NOTIFICATION_EVENTS) {
+              OpalCredentialsResource, OpalCredentialResource, KeyStoreResource, FormServerValidation,
+              NOTIFICATION_EVENTS) {
       $scope.micaConfig = MicaConfigResource.get();
       $scope.availableLanguages = $resource('ws/config/languages').get();
       $scope.opalCredentials = OpalCredentialsResource.query();
@@ -334,6 +335,43 @@ mica.config
         $scope.micaConfig.$save(
           function () {
             $location.path('/admin/general');
+            if(reload) {
+              $window.location.reload();
+            }
+          },
+          function (response) {
+            FormServerValidation.error(response, $scope.form);
+          });
+      };
+
+    }])
+
+  .controller('MicaConfigStyleEditController', ['$scope', '$resource', '$window', '$location', '$log',
+    'MicaConfigResource', 'FormServerValidation', 'StyleEditorService',
+
+    function ($scope, $resource, $window, $location, $log, MicaConfigResource, FormServerValidation, StyleEditorService) {
+      var reload = false;
+      $scope.micaConfig = MicaConfigResource.get();
+
+      $scope.micaConfig.$promise.then(function() {
+        $scope.$watch('micaConfig.style', function(value, oldValue) {
+          if(!angular.equals(value,oldValue)) {
+            reload = true;
+          }
+        });
+      });
+
+      var aceEditorOnLoadCallback = function(editor) {
+
+      };
+      $scope.ace = StyleEditorService.getEditorOptions(aceEditorOnLoadCallback);
+      $scope.fullscreen = StyleEditorService.gotoFullScreen;
+
+      $scope.save = function () {
+
+        $scope.micaConfig.$save(
+          function () {
+            $location.path('/admin');
             if(reload) {
               $window.location.reload();
             }

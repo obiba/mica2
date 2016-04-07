@@ -415,6 +415,7 @@ message MicaConfigDto {
   optional bool isSingleNetworkEnabled = 24;
   optional bool isStudyDatasetEnabled = 25;
   optional bool isHarmonizationDatasetEnabled = 26;
+  optional string style = 27;
 }
 
 message AggregationsConfigDto {

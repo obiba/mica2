@@ -430,6 +430,10 @@
       "comment-help": "Send email notifications when a comment is added or updated.",
       "comment-subject-help": "Email subject for comment notifications.",
       "comment-subject-help-long": "Email subject can contain the following placeholders: ${organization}, ${documentType}, ${documentId} and ${status} where document refers to the study (or network etc.) that was commented."
+    },
+    "style": {
+      "title": "Style",
+      "info": "Override the default style with your own stylesheet."
     }
   },
   "publish": {
@@ -998,6 +1002,7 @@
   "admin-page": {
     "help": {
       "general": "Configure Opal server, locale and server properties.",
+      "style": "Override the default style with your own stylesheet.",
       "security": "Configure encryption and Opal server credentials.",
       "metrics": "View JVM and HTTP metrics.",
       "logs": "Configure server logs.",
