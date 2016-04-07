@@ -10,6 +10,12 @@ mica.config
         'get': {method: 'GET'}
       });
     }])
+  .factory('PublicMicaConfigResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/config/_public', {}, {
+        'get': {method: 'GET'}
+      });
+    }])
   .factory('KeyStoreResource', ['$resource',
     function ($resource) {
       return $resource('ws/config/keystore/system/https', {}, {

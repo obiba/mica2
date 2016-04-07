@@ -418,6 +418,10 @@ message MicaConfigDto {
   optional string style = 27;
 }
 
+message PublicMicaConfigDto {
+  required string name = 1;
+}
+
 message AggregationsConfigDto {
   repeated AggregationInfoDto study = 1;
   repeated AggregationInfoDto variable = 2;

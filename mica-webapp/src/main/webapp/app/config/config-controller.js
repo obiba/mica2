@@ -317,7 +317,7 @@ mica.config
       $scope.availableLanguages = $resource('ws/config/languages').get();
 
       $scope.micaConfig.$promise.then(function() {
-        $scope.$watchGroup(['isNetworkEnabled', 'isSingleNetworkEnabled',
+        $scope.$watchGroup(['name', 'isNetworkEnabled', 'isSingleNetworkEnabled',
           'isSingleStudyEnabled', 'isStudyDatasetEnabled', 'isHarmonizationDatasetEnabled'].map(function(p) { return 'micaConfig.' + p; }), function(value, oldValue) {
           if(!angular.equals(value,oldValue)) {
             reload = true;

@@ -82,6 +82,12 @@ public class MicaConfigResource {
     return dtos.asDto(micaConfigService.getConfig());
   }
 
+  @GET
+  @Path("/_public")
+  public Mica.PublicMicaConfigDto getPublic() {
+    return Mica.PublicMicaConfigDto.newBuilder().setName(micaConfigService.getConfig().getName()).build();
+  }
+
   @PUT
   @Timed
   @RequiresRoles(Roles.MICA_ADMIN)

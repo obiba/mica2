@@ -6,11 +6,14 @@ mica.controller('MainController', [
   '$rootScope',
   '$scope',
   'MicaConfigResource',
+  'PublicMicaConfigResource',
   'screenSize',
   'AuthenticationSharedService',
-  function ($rootScope, $scope, MicaConfigResource, screenSize, AuthenticationSharedService) {
+  function ($rootScope, $scope, MicaConfigResource, PublicMicaConfigResource, screenSize, AuthenticationSharedService) {
     if (AuthenticationSharedService.isAuthenticated()) {
       $scope.micaConfig = MicaConfigResource.get();
+    } else {
+      $scope.micaConfig = PublicMicaConfigResource.get();
     }
 
     $rootScope.screen = $scope.screen = {size: null, device: null};
