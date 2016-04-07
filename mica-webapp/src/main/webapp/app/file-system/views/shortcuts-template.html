@@ -77,7 +77,7 @@
       <li class="nav-header">
         <span translate>places</span>
       </li>
-      <li>
+      <li ng-if="isNetworkEnabled">
         <a href ng-click="navigateToPath('/network')">
           <span><i class="i-obiba-network"></i> {{'networks' | translate}}</span>
         </a>
@@ -87,12 +87,12 @@
           <span><i class="i-obiba-study"></i> {{'studies' | translate}}</span>
         </a>
       </li>
-      <li>
+      <li ng-if="isStudyDatasetEnabled">
         <a href ng-click="navigateToPath('/study-dataset')">
           <span><i class="i-obiba-dataset"></i> {{'study-datasets' | translate}}</span>
         </a>
       </li>
-      <li>
+      <li ng-if="isHarmonizationDatasetEnabled">
         <a href ng-click="navigateToPath('/harmonization-dataset')">
           <span><i class="i-obiba-harmo-dataset"></i> {{'harmonization-datasets' | translate}}</span>
         </a>
