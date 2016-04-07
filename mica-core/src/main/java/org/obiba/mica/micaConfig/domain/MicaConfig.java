@@ -90,6 +90,8 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   private boolean isHarmonizationDatasetEnabled = true;
 
+  private String style;
+
   public String getName() {
     return name;
   }
@@ -322,5 +324,17 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public void setHarmonizationDatasetEnabled(boolean harmonizationDatasetEnabled) {
     isHarmonizationDatasetEnabled = harmonizationDatasetEnabled;
+  }
+
+  public boolean hasStyle() {
+    return !Strings.isNullOrEmpty(style);
+  }
+
+  public void setStyle(String style) {
+    this.style = style;
+  }
+
+  public String getStyle() {
+    return style;
   }
 }

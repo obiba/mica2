@@ -78,6 +78,8 @@ class MicaConfigDtos {
     builder.setIsStudyDatasetEnabled(config.isStudyDatasetEnabled());
     builder.setIsHarmonizationDatasetEnabled(config.isHarmonizationDatasetEnabled());
 
+    if(config.hasStyle()) builder.setStyle(config.getStyle());
+
     return builder.build();
   }
 
@@ -113,6 +115,8 @@ class MicaConfigDtos {
     config.setNetworkEnabled(dto.getIsNetworkEnabled());
     config.setStudyDatasetEnabled(dto.getIsStudyDatasetEnabled());
     config.setHarmonizationDatasetEnabled(dto.getIsHarmonizationDatasetEnabled());
+
+    if(dto.hasStyle()) config.setStyle(dto.getStyle());
 
     return config;
   }

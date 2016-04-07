@@ -15,6 +15,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -87,6 +88,15 @@ public class MicaConfigResource {
   public Response create(@SuppressWarnings("TypeMayBeWeakened") Mica.MicaConfigDto dto) {
     micaConfigService.save(dtos.fromDto(dto));
     return Response.noContent().build();
+  }
+
+  @GET
+  @Path("/style.css")
+  @Produces("text/css")
+  public Response getStyle() {
+    return Response
+      .ok(micaConfigService.getConfig().getStyle(), "text/css")
+      .header("Content-Disposition", "attachment; filename=\"style.css\"").build();
   }
 
   @PUT
