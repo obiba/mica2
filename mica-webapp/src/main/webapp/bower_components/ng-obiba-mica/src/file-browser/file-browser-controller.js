@@ -180,6 +180,16 @@ angular.module('obiba.mica.fileBrowser')
         searchDocumentsInternal($scope.data.document.path, searchParams);
       };
 
+      var getTypeParts = function(document) {
+        return FileBrowserService.isFile(document) && document.attachment.type ?
+          document.attachment.type.split(/,|\s+/) :
+          [];
+      };
+
+      var getLocalizedValue = function(values) {
+        return FileBrowserService.getLocalizedValue(values, ngObibaMicaFileBrowserOptions.locale);
+      };
+
       $scope.getDownloadUrl = FileBrowserDownloadService.getUrl;
       $scope.screen = $rootScope.screen;
       $scope.truncate = StringUtils.truncate;
@@ -194,7 +204,13 @@ angular.module('obiba.mica.fileBrowser')
       $scope.searchKeyUp = searchKeyUp;
       $scope.isFile = FileBrowserService.isFile;
       $scope.isRoot = FileBrowserService.isRoot;
-      $scope.getLocalizedValue = FileBrowserService.getLocalizedValue;
+      $scope.getLocalizedValue = getLocalizedValue;
+      $scope.hideDetails = function() { $scope.data.details.show = false; };
+      $scope.getTypeParts = getTypeParts;
+      $scope.showDetails = function(document) {
+        $scope.data.details.document = document;
+        $scope.data.details.show = true;
+      };
 
       $scope.pagination = {
         currentPage: 1,
@@ -202,6 +218,10 @@ angular.module('obiba.mica.fileBrowser')
       };
 
       $scope.data = {
+        details: {
+          document: null,
+          show: false
+        },
         docRootIcon: null,
         rootPath: null,
         document: null,
