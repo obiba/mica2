@@ -164,6 +164,7 @@ mica.study
         }
 
         study.populations = study.populations || [];
+        study.memberships = study.memberships || [];
 
         $scope.memberships = study.memberships.map(function (m) {
           if (!m.members) {

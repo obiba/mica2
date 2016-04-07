@@ -310,6 +310,7 @@ mica.network
         }
 
         $scope.network.networkIds = $scope.network.networkIds || [];
+        network.memberships = network.memberships || [];
 
         $scope.memberships = network.memberships.map(function (m) {
           if (!m.members) {
