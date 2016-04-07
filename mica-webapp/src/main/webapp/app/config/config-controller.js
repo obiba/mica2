@@ -361,6 +361,7 @@ mica.config
         });
       });
 
+      StyleEditorService.configureAcePaths();
       $scope.ace = StyleEditorService.getEditorOptions();
 
       $scope.save = function () {
