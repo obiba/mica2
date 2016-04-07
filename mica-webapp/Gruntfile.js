@@ -330,6 +330,8 @@ module.exports = function (grunt) {
             src: [
               'mode-json.js',
               'worker-json.js',
+              'mode-css.js',
+              'worker-css.js',
               'theme-monokai.js',
               'ext-searchbox.js'
             ]
