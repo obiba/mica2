@@ -361,11 +361,7 @@ mica.config
         });
       });
 
-      var aceEditorOnLoadCallback = function(editor) {
-
-      };
-      $scope.ace = StyleEditorService.getEditorOptions(aceEditorOnLoadCallback);
-      $scope.fullscreen = StyleEditorService.gotoFullScreen;
+      $scope.ace = StyleEditorService.getEditorOptions();
 
       $scope.save = function () {
 

@@ -24,8 +24,8 @@ mica.config
     function ($resource) {
       return $resource('ws/config/opal-credential/:id', {id: '@id'}, {});
     }])
-  .factory('StyleEditorService', ['BrowserDetector',
-    function (BrowserDetector) {
+  .factory('StyleEditorService', [
+    function () {
       return {
         /**
          * HACK until angular-ui-ce can config path settings
@@ -42,35 +42,15 @@ mica.config
           }
         },
 
-        getEditorOptions: function (onLoadCallback) {
+        getEditorOptions: function () {
           return {
             options: {
               theme: 'monokai',
               mode: 'css',
               displayIndentGuides: true,
-              useElasticTabstops: true,
-              onLoad: onLoadCallback
+              useElasticTabstops: true
             }
           };
-        },
-
-        gotoFullScreen: function (id) {
-          {
-            var view = document.getElementById(id);
-
-            switch (BrowserDetector.detect()) {
-              case 'ie':
-                view.msRequestFullscreen();
-                break;
-              case 'firefox':
-                view.mozRequestFullScreen();
-                break;
-              case 'chrome':
-              case 'safari':
-                view.webkitRequestFullScreen();
-                break;
-            }
-          }
         }
       };
     }]);
