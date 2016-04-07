@@ -29,7 +29,7 @@
         ng-init="fileDocument = isFile(document)"
         current-page="pagination.currentPage">
 
-      <td ng-click="showDetails(document)">
+      <td>
         <span>
           <span ng-if="fileDocument">
             <i class="fa {{getDocumentIcon(document)}}"></i>
@@ -46,6 +46,7 @@
               {{document.name}}
             </a>
           </span>
+          <span class="spring-click-area" ng-click="showDetails(document)">&nbsp;</span>
           <span class="btn-group pull-right" uib-dropdown is-open="status.isopen">
             <a title="{{'show-details' | translate}}" id="single-button" class="dropdown-anchor" uib-dropdown-toggle ng-disabled="disabled">
               <i class="glyphicon glyphicon-option-horizontal btn-large"></i>

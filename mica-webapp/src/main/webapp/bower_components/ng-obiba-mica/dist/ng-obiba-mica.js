@@ -7423,7 +7423,7 @@ angular.module("file-browser/views/documents-table-template.html", []).run(["$te
     "        ng-init=\"fileDocument = isFile(document)\"\n" +
     "        current-page=\"pagination.currentPage\">\n" +
     "\n" +
-    "      <td ng-click=\"showDetails(document)\">\n" +
+    "      <td>\n" +
     "        <span>\n" +
     "          <span ng-if=\"fileDocument\">\n" +
     "            <i class=\"fa {{getDocumentIcon(document)}}\"></i>\n" +
@@ -7440,6 +7440,7 @@ angular.module("file-browser/views/documents-table-template.html", []).run(["$te
     "              {{document.name}}\n" +
     "            </a>\n" +
     "          </span>\n" +
+    "          <span class=\"spring-click-area\" ng-click=\"showDetails(document)\">&nbsp;</span>\n" +
     "          <span class=\"btn-group pull-right\" uib-dropdown is-open=\"status.isopen\">\n" +
     "            <a title=\"{{'show-details' | translate}}\" id=\"single-button\" class=\"dropdown-anchor\" uib-dropdown-toggle ng-disabled=\"disabled\">\n" +
     "              <i class=\"glyphicon glyphicon-option-horizontal btn-large\"></i>\n" +
