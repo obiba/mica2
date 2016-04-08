@@ -2665,7 +2665,7 @@ angular.module('obiba.mica.search')
       this.updateCriteriaItem = function (existingItem, newItem, replace) {
         var newTerms;
 
-        if(replace) {
+        if(replace && newItem.rqlQuery) {
           existingItem.rqlQuery.name = newItem.rqlQuery.name; 
         }
         
@@ -6643,7 +6643,7 @@ angular.module('obiba.mica.fileBrowser')
             $scope.data.document = clone;
           },
           function onError(response) {
-            $log.debug(response);
+            $log.debug('ERROR:',response);
           }
         );
       }
