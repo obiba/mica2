@@ -27,6 +27,7 @@ import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.contact.event.IndexContactsEvent;
 import org.obiba.mica.dataset.event.IndexDatasetsEvent;
 import org.obiba.mica.file.event.IndexFilesEvent;
+import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.CacheService;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.network.event.IndexNetworksEvent;
@@ -85,7 +86,11 @@ public class MicaConfigResource {
   @GET
   @Path("/_public")
   public Mica.PublicMicaConfigDto getPublic() {
-    return Mica.PublicMicaConfigDto.newBuilder().setName(micaConfigService.getConfig().getName()).build();
+    MicaConfig config = micaConfigService.getConfig();
+    return Mica.PublicMicaConfigDto.newBuilder() //
+        .setName(config.getName()) //
+        .setOpenAccess(config.isOpenAccess()) //
+        .build();
   }
 
   @PUT

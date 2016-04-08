@@ -420,6 +420,7 @@ message MicaConfigDto {
 
 message PublicMicaConfigDto {
   required string name = 1;
+  required bool openAccess = 2 [default = true];
 }
 
 message AggregationsConfigDto {
