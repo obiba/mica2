@@ -5,15 +5,19 @@
 mica.controller('MainController', [
   '$rootScope',
   '$scope',
+  '$window',
   'MicaConfigResource',
   'PublicMicaConfigResource',
   'screenSize',
   'AuthenticationSharedService',
-  function ($rootScope, $scope, MicaConfigResource, PublicMicaConfigResource, screenSize, AuthenticationSharedService) {
+  function ($rootScope, $scope, $window, MicaConfigResource, PublicMicaConfigResource, screenSize, AuthenticationSharedService) {
+    var applyTitle = function(config) {
+      $window.document.title = config.name;
+    };
     if (AuthenticationSharedService.isAuthenticated()) {
-      $scope.micaConfig = MicaConfigResource.get();
+      $scope.micaConfig = MicaConfigResource.get(applyTitle);
     } else {
-      $scope.micaConfig = PublicMicaConfigResource.get();
+      $scope.micaConfig = PublicMicaConfigResource.get(applyTitle);
     }
 
     $rootScope.screen = $scope.screen = {size: null, device: null};
