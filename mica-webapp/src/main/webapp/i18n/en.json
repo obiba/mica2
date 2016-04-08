@@ -990,6 +990,7 @@
   "not-published": "Not Published",
   "path": "Path",
   "view-files": "View files",
+  "empty-folder": "Empty folder",
   "search-tooltip": {
     "recursively": "Search recursively",
     "clear": "Clear search",

@@ -7,7 +7,7 @@
       <span ng-if="!data.search.recursively">{{'file.search-results.current' | translate}}</span>
       ({{data.document.children.length}})
   </div>
-  <div ng-if="data.document.children.length>0">
+  <div ng-if="data.document.size > 0">
     <table class="table table-bordered table-striped no-padding no-margin">
       <thead>
       <tr>

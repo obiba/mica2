@@ -7444,7 +7444,7 @@ angular.module("file-browser/views/documents-table-template.html", []).run(["$te
     "      <span ng-if=\"!data.search.recursively\">{{'file.search-results.current' | translate}}</span>\n" +
     "      ({{data.document.children.length}})\n" +
     "  </div>\n" +
-    "  <div ng-if=\"data.document.children.length>0\">\n" +
+    "  <div ng-if=\"data.document.size > 0\">\n" +
     "    <table class=\"table table-bordered table-striped no-padding no-margin\">\n" +
     "      <thead>\n" +
     "      <tr>\n" +
@@ -7555,7 +7555,8 @@ angular.module("file-browser/views/file-browser-template.html", []).run(["$templ
     "\n" +
     "      <div class=\"row voffset2\">\n" +
     "        <div ng-class=\"{'col-md-8': data.details.show, 'col-md-12': !data.details.show}\">\n" +
-    "          <div ng-if=\"!data.isFile\" ng-include=\"'file-browser/views/documents-table-template.html'\"></div>\n" +
+    "          <div ng-if=\"!data.isFile && data.document.size > 0\" ng-include=\"'file-browser/views/documents-table-template.html'\"></div>\n" +
+    "          <div ng-if=\"!data.isFile && data.document.size < 1\" class=\"text-muted\"><em>{{'empty-folder' | translate}}</em></div>\n" +
     "          <div class=\"pull-right no-margin\">\n" +
     "            <dir-pagination-controls></dir-pagination-controls>\n" +
     "          </div>\n" +
