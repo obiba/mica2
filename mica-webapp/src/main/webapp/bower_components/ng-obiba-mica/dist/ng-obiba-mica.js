@@ -2349,8 +2349,12 @@ angular.module('obiba.mica.search')
         case RQL_NODE.EXISTS:
           this.mergeInQueryArgValues(query, terms, replace);
           break;
+        case RQL_NODE.BETWEEN:
+        case RQL_NODE.GE:
+        case RQL_NODE.LE:
+          query.args[1] = terms;
+          break;
       }
-
     };
 
     this.updateQuery = function (query, values) {
@@ -2661,6 +2665,10 @@ angular.module('obiba.mica.search')
       this.updateCriteriaItem = function (existingItem, newItem, replace) {
         var newTerms;
 
+        if(replace) {
+          existingItem.rqlQuery.name = newItem.rqlQuery.name; 
+        }
+        
         if (newItem.rqlQuery) {
           newTerms = newItem.rqlQuery.args[1];
         } else if (newItem.term) {
@@ -3352,7 +3360,7 @@ function CriterionState() {
  * @param ngObibaMicaSearch
  * @constructor
  */
-function BaseTaxonomiesController($scope, $location, TaxonomyResource, TaxonomiesResource, ngObibaMicaSearch) {
+function BaseTaxonomiesController($scope, $location, TaxonomyResource, TaxonomiesResource, ngObibaMicaSearch, RqlQueryUtils) {
   $scope.options = ngObibaMicaSearch.getOptions();
   $scope.metaTaxonomy = TaxonomyResource.get({
     target: 'taxonomy',
@@ -3410,8 +3418,8 @@ function BaseTaxonomiesController($scope, $location, TaxonomyResource, Taxonomie
     }
   };
 
-  this.selectTerm = function (target, taxonomy, vocabulary, term) {
-    $scope.onSelectTerm(target, taxonomy, vocabulary, term);
+  this.selectTerm = function (target, taxonomy, vocabulary, term, from, to) {
+    $scope.onSelectTerm(target, taxonomy, vocabulary, term, from, to);
   };
 
   var self = this;
@@ -3419,6 +3427,14 @@ function BaseTaxonomiesController($scope, $location, TaxonomyResource, Taxonomie
   $scope.$on('$locationChangeSuccess', function () {
     if ($scope.isHistoryEnabled) {
       self.updateStateFromLocation();
+    }
+  });
+  
+  $scope.$watch('taxonomies.vocabulary', function(value) {
+    if(RqlQueryUtils && value) {
+      $scope.taxonomies.isNumericVocabulary = RqlQueryUtils.isNumericVocabulary($scope.taxonomies.vocabulary);
+    } else {
+      $scope.taxonomies.isNumericVocabulary = null;
     }
   });
 
@@ -3435,9 +3451,8 @@ function BaseTaxonomiesController($scope, $location, TaxonomyResource, Taxonomie
  * @param ngObibaMicaSearch
  * @constructor
  */
-function TaxonomiesPanelController($scope, $location, TaxonomyResource, TaxonomiesResource, ngObibaMicaSearch) {
-  BaseTaxonomiesController.call(this, $scope, $location, TaxonomyResource, TaxonomiesResource, ngObibaMicaSearch);
-
+function TaxonomiesPanelController($scope, $location, TaxonomyResource, TaxonomiesResource, ngObibaMicaSearch, RqlQueryUtils) {
+  BaseTaxonomiesController.call(this, $scope, $location, TaxonomyResource, TaxonomiesResource, ngObibaMicaSearch, RqlQueryUtils);
   $scope.$watchGroup(['taxonomyName', 'target'], function (newVal) {
     if (newVal[0] && newVal[1]) {
       if ($scope.showTaxonomies) {
@@ -3458,6 +3473,7 @@ function TaxonomiesPanelController($scope, $location, TaxonomyResource, Taxonomi
       });
     }
   });
+
 }
 /**
  * ClassificationPanelController
@@ -3471,8 +3487,6 @@ function TaxonomiesPanelController($scope, $location, TaxonomyResource, Taxonomi
  */
 function ClassificationPanelController($scope, $location, TaxonomyResource, TaxonomiesResource, ngObibaMicaSearch) {
   BaseTaxonomiesController.call(this, $scope, $location, TaxonomyResource, TaxonomiesResource, ngObibaMicaSearch);
-
-
   var groupTaxonomies = function (taxonomies, target) {
     var res = taxonomies.reduce(function (res, t) {
       res[t.name] = t;
@@ -4130,9 +4144,13 @@ angular.module('obiba.mica.search')
         selectCriteria(item, RQL_NODE.AND, true);
       };
 
-      var onSelectTerm = function (target, taxonomy, vocabulary, term) {
+      var onSelectTerm = function (target, taxonomy, vocabulary, term, from, to) {
         if (vocabulary && RqlQueryUtils.isNumericVocabulary(vocabulary)) {
-          selectCriteria(RqlQueryService.createCriteriaItem(target, taxonomy, vocabulary, null, $scope.lang));
+          var item = RqlQueryService.createCriteriaItem(target, taxonomy, vocabulary, null, $scope.lang);
+          item.rqlQuery = RqlQueryUtils.buildRqlQuery(item);
+          RqlQueryUtils.updateRangeQuery(item.rqlQuery, from, to);
+          selectCriteria(item, null, true);
+          
           return;
         }
 
@@ -4269,8 +4287,15 @@ angular.module('obiba.mica.search')
       init();
     }])
 
+  .controller('NumericVocabularyPanelController', ['$scope', function($scope) {
+    $scope.$watch('taxonomies', function() {
+      $scope.from = null;
+      $scope.to = null;
+    }, true);
+  }])
+  
   .controller('TaxonomiesPanelController', ['$scope', '$location', 'TaxonomyResource',
-    'TaxonomiesResource', 'ngObibaMicaSearch', TaxonomiesPanelController])
+    'TaxonomiesResource', 'ngObibaMicaSearch', 'RqlQueryUtils', TaxonomiesPanelController])
 
   .controller('ClassificationPanelController', ['$scope', '$location', 'TaxonomyResource',
     'TaxonomiesResource', 'ngObibaMicaSearch', ClassificationPanelController])
@@ -6551,7 +6576,8 @@ angular.module('obiba.mica.fileBrowser')
         getDocument(path);
       };
 
-      var navigateTo = function (document) {
+      var navigateTo = function (event, document) {
+        event.stopPropagation();
         if (document) {
           navigateToPath(document.path);
         }
@@ -7409,7 +7435,7 @@ angular.module("file-browser/views/document-detail-template.html", []).run(["$te
 
 angular.module("file-browser/views/documents-table-template.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("file-browser/views/documents-table-template.html",
-    "<div class=\"panel panel-default table-responsive table-responsive-dropdown\" ng-if=\"!data.search.active || data.document.children.length>0\">\n" +
+    "<div class=\"panel panel-default table-responsive table-responsive-dropdown\">\n" +
     "  <div class=\"panel-heading\" ng-if=\"data.search.active\">\n" +
     "      <a class=\"no-text-decoration\" ng-click=\"clearSearch()\">\n" +
     "        <i class=\"fa fa-chevron-left\"> </i>\n" +
@@ -7418,47 +7444,52 @@ angular.module("file-browser/views/documents-table-template.html", []).run(["$te
     "      <span ng-if=\"!data.search.recursively\">{{'file.search-results.current' | translate}}</span>\n" +
     "      ({{data.document.children.length}})\n" +
     "  </div>\n" +
-    "  <table class=\"table table-bordered table-striped no-padding no-margin\">\n" +
-    "    <thead>\n" +
-    "    <tr>\n" +
-    "      <th translate>name</th>\n" +
-    "      <th style=\"width: 100px\" translate>type</th>\n" +
-    "      <th style=\"width: 100px\" translate>size</th>\n" +
-    "      <th style=\"width: 150px\" translate>modified</th>\n" +
-    "      <th ng-if=\"data.search.active\" translate>folder</th>\n" +
-    "    </tr>\n" +
-    "    </thead>\n" +
-    "    <tbody>\n" +
-    "    <tr ng-show=\"!data.isRoot && data.document.path !== data.rootPath && !data.search.active\">\n" +
-    "      <td colspan=\"5\">\n" +
-    "        <i class=\"fa fa-folder\"></i>\n" +
-    "        <span><a href class=\"no-text-decoration\" ng-click=\"navigateBack()\"> ..</a></span>\n" +
-    "      </td>\n" +
-    "    </tr>\n" +
-    "    <tr ng-class=\"{'selected-row': $index === pagination.selected}\"\n" +
-    "        dir-paginate=\"document in data.document.children | itemsPerPage: pagination.itemsPerPage\"\n" +
-    "        ng-init=\"fileDocument = isFile(document)\"\n" +
-    "        current-page=\"pagination.currentPage\">\n" +
+    "  <div ng-if=\"data.document.children.length>0\">\n" +
+    "    <table class=\"table table-bordered table-striped no-padding no-margin\">\n" +
+    "      <thead>\n" +
+    "      <tr>\n" +
+    "        <th colspan=\"2\" translate>name</th>\n" +
+    "        <th style=\"width: 100px\" translate>type</th>\n" +
+    "        <th style=\"width: 100px\" translate>size</th>\n" +
+    "        <th style=\"width: 150px\" translate>modified</th>\n" +
+    "        <th ng-if=\"data.search.active\" translate>folder</th>\n" +
+    "      </tr>\n" +
+    "      </thead>\n" +
+    "      <tbody>\n" +
+    "      <tr ng-show=\"!data.isRoot && data.document.path !== data.rootPath && !data.search.active\">\n" +
+    "        <td colspan=\"5\">\n" +
+    "          <i class=\"fa fa-folder\"></i>\n" +
+    "          <span><a href class=\"no-text-decoration\" ng-click=\"navigateBack()\"> ..</a></span>\n" +
+    "        </td>\n" +
+    "      </tr>\n" +
+    "      <tr ng-class=\"{'selected-row': $index === pagination.selected}\"\n" +
+    "          dir-paginate=\"document in data.document.children | itemsPerPage: pagination.itemsPerPage\"\n" +
+    "          ng-init=\"fileDocument = isFile(document)\"\n" +
+    "          current-page=\"pagination.currentPage\">\n" +
     "\n" +
-    "      <td>\n" +
-    "        <span>\n" +
-    "          <span ng-if=\"fileDocument\">\n" +
-    "            <i class=\"fa {{getDocumentIcon(document)}}\"></i>\n" +
-    "            <a ng-if=\"fileDocument\" target=\"_self\"\n" +
-    "               style=\"text-decoration: none\" ng-href=\"{{getDownloadUrl(document.path)}}\"\n" +
-    "                title=\"{{document.name}}\">\n" +
-    "              {{document.name}}\n" +
-    "            </a>\n" +
+    "        <td ng-click=\"showDetails(document, $index);\">\n" +
+    "          <span>\n" +
+    "            <span ng-if=\"fileDocument\">\n" +
+    "              <i class=\"fa {{getDocumentIcon(document)}}\"></i>\n" +
+    "              <a ng-if=\"fileDocument\" target=\"_self\"\n" +
+    "                 style=\"text-decoration: none\" ng-click=\"$event.stopPropagation();\" ng-href=\"{{getDownloadUrl(document.path)}}\"\n" +
+    "                  title=\"{{document.name}}\">\n" +
+    "                {{document.name}}\n" +
+    "              </a>\n" +
+    "            </span>\n" +
+    "            <span ng-if=\"!fileDocument\">\n" +
+    "              <i class=\"fa {{getDocumentIcon(document)}}\"></i>\n" +
+    "              <a href style=\"text-decoration: none\" ng-click=\"navigateTo($event, document)\">\n" +
+    "                {{document.name}}\n" +
+    "              </a>\n" +
+    "            </span>\n" +
     "          </span>\n" +
-    "          <span ng-if=\"!fileDocument\">\n" +
-    "            <i class=\"fa {{getDocumentIcon(document)}}\"></i>\n" +
-    "            <a href style=\"text-decoration: none\" ng-click=\"navigateTo(document)\">\n" +
-    "              {{document.name}}\n" +
-    "            </a>\n" +
-    "          </span>\n" +
-    "          <span class=\"spring-click-area\" ng-click=\"showDetails(document, $index)\">&nbsp;</span>\n" +
+    "        </td>\n" +
+    "\n" +
+    "        <td class=\"fit-content\">\n" +
     "          <span class=\"btn-group pull-right\" uib-dropdown is-open=\"status.isopen\">\n" +
-    "            <a title=\"{{'show-details' | translate}}\" id=\"single-button\" class=\"dropdown-anchor\" uib-dropdown-toggle ng-disabled=\"disabled\">\n" +
+    "            <a title=\"{{'show-details' | translate}}\" id=\"single-button\" class=\"dropdown-anchor\" uib-dropdown-toggle\n" +
+    "               ng-disabled=\"disabled\">\n" +
     "              <i class=\"glyphicon glyphicon-option-horizontal btn-large\"></i>\n" +
     "            </a>\n" +
     "            <ul class=\"dropdown-menu\" uib-dropdown-menu role=\"menu\" aria-labelledby=\"single-button\">\n" +
@@ -7474,30 +7505,31 @@ angular.module("file-browser/views/documents-table-template.html", []).run(["$te
     "              </li>\n" +
     "            </ul>\n" +
     "          </span>\n" +
-    "        </span>\n" +
-    "      </td>\n" +
-    "      <td>\n" +
-    "        <span ng-repeat=\"t in getTypeParts(document) track by $index\"\n" +
-    "          class=\"label label-info\"\n" +
-    "          ng-class=\"{'hoffset1' : !$first}\">{{t}}</span>\n" +
-    "      </td>\n" +
-    "      <td class=\"no-wrap\" ng-if=\"fileDocument\">\n" +
-    "        {{document.size | bytes}}\n" +
-    "      </td>\n" +
-    "      <td class=\"no-wrap\" ng-if=\"!fileDocument\">\n" +
-    "        {{document.size}}\n" +
-    "      </td>\n" +
-    "      <td>\n" +
-    "        {{document.timestamps.lastUpdate | amTimeAgo}}\n" +
-    "      </td>\n" +
-    "      <td ng-if=\"data.search.active\">\n" +
-    "        <a href class=\"no-text-decoration\" ng-click=\"navigateToParent($event, document)\">\n" +
-    "          {{document.attachment.path.replace(data.rootPath, '')}}\n" +
-    "        </a>\n" +
-    "      </td>\n" +
-    "    </tr>\n" +
-    "    </tbody>\n" +
-    "  </table>\n" +
+    "        </td>\n" +
+    "\n" +
+    "        <td>\n" +
+    "          <span ng-repeat=\"t in getTypeParts(document) track by $index\"\n" +
+    "            class=\"label label-info\"\n" +
+    "            ng-class=\"{'hoffset1' : !$first}\">{{t}}</span>\n" +
+    "        </td>\n" +
+    "        <td class=\"no-wrap\" ng-if=\"fileDocument\">\n" +
+    "          {{document.size | bytes}}\n" +
+    "        </td>\n" +
+    "        <td class=\"no-wrap\" ng-if=\"!fileDocument\">\n" +
+    "          {{document.size}}\n" +
+    "        </td>\n" +
+    "        <td>\n" +
+    "          {{document.timestamps.lastUpdate | amTimeAgo}}\n" +
+    "        </td>\n" +
+    "        <td ng-if=\"data.search.active\">\n" +
+    "          <a href class=\"no-text-decoration\" ng-click=\"navigateToParent($event, document)\">\n" +
+    "            {{document.attachment.path.replace(data.rootPath, '')}}\n" +
+    "          </a>\n" +
+    "        </td>\n" +
+    "      </tr>\n" +
+    "      </tbody>\n" +
+    "    </table>\n" +
+    "  </div>\n" +
     "</div>");
 }]);
 
@@ -7977,7 +8009,26 @@ angular.module("search/views/classifications/taxonomies-view.html", []).run(["$t
     "                     ng-if=\"label.locale === lang\">\n" +
     "                    {{label.text}}\n" +
     "                  </p>\n" +
-    "                  <div>\n" +
+    "                  <div ng-if=\"taxonomies.isNumericVocabulary\" ng-controller=\"NumericVocabularyPanelController\">\n" +
+    "                    <div class=\"form-group\">\n" +
+    "                      <a href class=\"btn btn-default btn-xs\"\n" +
+    "                         ng-click=\"selectTerm(taxonomies.target, taxonomies.taxonomy, taxonomies.vocabulary, null, from, to)\">\n" +
+    "                        <i class=\"fa fa-plus-circle\"></i>\n" +
+    "                        <span translate>add-query</span>\n" +
+    "                      </a>\n" +
+    "                    </div>\n" +
+    "                    <form novalidate class=\"form-inline\" ui-keypress=\"{13:'selectTerm(taxonomies.target, taxonomies.taxonomy, taxonomies.vocabulary, null, from, to)'}\">\n" +
+    "                      <div class=\"form-group\">\n" +
+    "                        <label for=\"nav-{{taxonomies.vocabulary.name}}-from\" translate>from</label>\n" +
+    "                        <input type=\"number\" class=\"form-control\" id=\"nav-{{taxonomies.vocabulary.name}}-from\" ng-model=\"from\" style=\"width:150px\">\n" +
+    "                      </div>\n" +
+    "                      <div class=\"form-group\">\n" +
+    "                        <label for=\"nav-{{taxonomies.vocabulary.name}}-to\" translate>to</label>\n" +
+    "                        <input type=\"number\" class=\"form-control\" id=\"nav-{{taxonomies.vocabulary.name}}-to\" ng-model=\"to\" style=\"width:150px\">\n" +
+    "                      </div>\n" +
+    "                    </form>\n" +
+    "                  </div>\n" +
+    "                  <div ng-if=\"!taxonomies.isNumericVocabulary\">\n" +
     "                    <a href class=\"btn btn-default btn-xs\"\n" +
     "                       ng-click=\"selectTerm(taxonomies.target, taxonomies.taxonomy, taxonomies.vocabulary)\">\n" +
     "                      <i class=\"fa fa-plus-circle\"></i>\n" +
@@ -8022,7 +8073,6 @@ angular.module("search/views/classifications/taxonomies-view.html", []).run(["$t
     "            </div>\n" +
     "          </div>\n" +
     "        </div>\n" +
-    "        \n" +
     "      </div>\n" +
     "    </div>\n" +
     "  </div>\n" +
