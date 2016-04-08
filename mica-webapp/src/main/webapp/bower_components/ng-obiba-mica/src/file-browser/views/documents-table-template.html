@@ -1,4 +1,4 @@
-<div class="panel panel-default table-responsive table-responsive-dropdown" ng-if="!data.search.active || data.document.children.length>0">
+<div class="panel panel-default table-responsive table-responsive-dropdown">
   <div class="panel-heading" ng-if="data.search.active">
       <a class="no-text-decoration" ng-click="clearSearch()">
         <i class="fa fa-chevron-left"> </i>
@@ -7,47 +7,52 @@
       <span ng-if="!data.search.recursively">{{'file.search-results.current' | translate}}</span>
       ({{data.document.children.length}})
   </div>
-  <table class="table table-bordered table-striped no-padding no-margin">
-    <thead>
-    <tr>
-      <th translate>name</th>
-      <th style="width: 100px" translate>type</th>
-      <th style="width: 100px" translate>size</th>
-      <th style="width: 150px" translate>modified</th>
-      <th ng-if="data.search.active" translate>folder</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr ng-show="!data.isRoot && data.document.path !== data.rootPath && !data.search.active">
-      <td colspan="5">
-        <i class="fa fa-folder"></i>
-        <span><a href class="no-text-decoration" ng-click="navigateBack()"> ..</a></span>
-      </td>
-    </tr>
-    <tr ng-class="{'selected-row': $index === pagination.selected}"
-        dir-paginate="document in data.document.children | itemsPerPage: pagination.itemsPerPage"
-        ng-init="fileDocument = isFile(document)"
-        current-page="pagination.currentPage">
+  <div ng-if="data.document.children.length>0">
+    <table class="table table-bordered table-striped no-padding no-margin">
+      <thead>
+      <tr>
+        <th colspan="2" translate>name</th>
+        <th style="width: 100px" translate>type</th>
+        <th style="width: 100px" translate>size</th>
+        <th style="width: 150px" translate>modified</th>
+        <th ng-if="data.search.active" translate>folder</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr ng-show="!data.isRoot && data.document.path !== data.rootPath && !data.search.active">
+        <td colspan="5">
+          <i class="fa fa-folder"></i>
+          <span><a href class="no-text-decoration" ng-click="navigateBack()"> ..</a></span>
+        </td>
+      </tr>
+      <tr ng-class="{'selected-row': $index === pagination.selected}"
+          dir-paginate="document in data.document.children | itemsPerPage: pagination.itemsPerPage"
+          ng-init="fileDocument = isFile(document)"
+          current-page="pagination.currentPage">
 
-      <td>
-        <span>
-          <span ng-if="fileDocument">
-            <i class="fa {{getDocumentIcon(document)}}"></i>
-            <a ng-if="fileDocument" target="_self"
-               style="text-decoration: none" ng-href="{{getDownloadUrl(document.path)}}"
-                title="{{document.name}}">
-              {{document.name}}
-            </a>
+        <td ng-click="showDetails(document, $index);">
+          <span>
+            <span ng-if="fileDocument">
+              <i class="fa {{getDocumentIcon(document)}}"></i>
+              <a ng-if="fileDocument" target="_self"
+                 style="text-decoration: none" ng-click="$event.stopPropagation();" ng-href="{{getDownloadUrl(document.path)}}"
+                  title="{{document.name}}">
+                {{document.name}}
+              </a>
+            </span>
+            <span ng-if="!fileDocument">
+              <i class="fa {{getDocumentIcon(document)}}"></i>
+              <a href style="text-decoration: none" ng-click="navigateTo($event, document)">
+                {{document.name}}
+              </a>
+            </span>
           </span>
-          <span ng-if="!fileDocument">
-            <i class="fa {{getDocumentIcon(document)}}"></i>
-            <a href style="text-decoration: none" ng-click="navigateTo(document)">
-              {{document.name}}
-            </a>
-          </span>
-          <span class="spring-click-area" ng-click="showDetails(document, $index)">&nbsp;</span>
+        </td>
+
+        <td class="fit-content">
           <span class="btn-group pull-right" uib-dropdown is-open="status.isopen">
-            <a title="{{'show-details' | translate}}" id="single-button" class="dropdown-anchor" uib-dropdown-toggle ng-disabled="disabled">
+            <a title="{{'show-details' | translate}}" id="single-button" class="dropdown-anchor" uib-dropdown-toggle
+               ng-disabled="disabled">
               <i class="glyphicon glyphicon-option-horizontal btn-large"></i>
             </a>
             <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
@@ -63,28 +68,29 @@
               </li>
             </ul>
           </span>
-        </span>
-      </td>
-      <td>
-        <span ng-repeat="t in getTypeParts(document) track by $index"
-          class="label label-info"
-          ng-class="{'hoffset1' : !$first}">{{t}}</span>
-      </td>
-      <td class="no-wrap" ng-if="fileDocument">
-        {{document.size | bytes}}
-      </td>
-      <td class="no-wrap" ng-if="!fileDocument">
-        {{document.size}}
-      </td>
-      <td>
-        {{document.timestamps.lastUpdate | amTimeAgo}}
-      </td>
-      <td ng-if="data.search.active">
-        <a href class="no-text-decoration" ng-click="navigateToParent($event, document)">
-          {{document.attachment.path.replace(data.rootPath, '')}}
-        </a>
-      </td>
-    </tr>
-    </tbody>
-  </table>
+        </td>
+
+        <td>
+          <span ng-repeat="t in getTypeParts(document) track by $index"
+            class="label label-info"
+            ng-class="{'hoffset1' : !$first}">{{t}}</span>
+        </td>
+        <td class="no-wrap" ng-if="fileDocument">
+          {{document.size | bytes}}
+        </td>
+        <td class="no-wrap" ng-if="!fileDocument">
+          {{document.size}}
+        </td>
+        <td>
+          {{document.timestamps.lastUpdate | amTimeAgo}}
+        </td>
+        <td ng-if="data.search.active">
+          <a href class="no-text-decoration" ng-click="navigateToParent($event, document)">
+            {{document.attachment.path.replace(data.rootPath, '')}}
+          </a>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

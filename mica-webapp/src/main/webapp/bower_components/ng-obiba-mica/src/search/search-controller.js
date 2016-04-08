@@ -65,7 +65,7 @@ function CriterionState() {
  * @param ngObibaMicaSearch
  * @constructor
  */
-function BaseTaxonomiesController($scope, $location, TaxonomyResource, TaxonomiesResource, ngObibaMicaSearch) {
+function BaseTaxonomiesController($scope, $location, TaxonomyResource, TaxonomiesResource, ngObibaMicaSearch, RqlQueryUtils) {
   $scope.options = ngObibaMicaSearch.getOptions();
   $scope.metaTaxonomy = TaxonomyResource.get({
     target: 'taxonomy',
@@ -123,8 +123,8 @@ function BaseTaxonomiesController($scope, $location, TaxonomyResource, Taxonomie
     }
   };
 
-  this.selectTerm = function (target, taxonomy, vocabulary, term) {
-    $scope.onSelectTerm(target, taxonomy, vocabulary, term);
+  this.selectTerm = function (target, taxonomy, vocabulary, term, from, to) {
+    $scope.onSelectTerm(target, taxonomy, vocabulary, term, from, to);
   };
 
   var self = this;
@@ -132,6 +132,14 @@ function BaseTaxonomiesController($scope, $location, TaxonomyResource, Taxonomie
   $scope.$on('$locationChangeSuccess', function () {
     if ($scope.isHistoryEnabled) {
       self.updateStateFromLocation();
+    }
+  });
+  
+  $scope.$watch('taxonomies.vocabulary', function(value) {
+    if(RqlQueryUtils && value) {
+      $scope.taxonomies.isNumericVocabulary = RqlQueryUtils.isNumericVocabulary($scope.taxonomies.vocabulary);
+    } else {
+      $scope.taxonomies.isNumericVocabulary = null;
     }
   });
 
@@ -148,9 +156,8 @@ function BaseTaxonomiesController($scope, $location, TaxonomyResource, Taxonomie
  * @param ngObibaMicaSearch
  * @constructor
  */
-function TaxonomiesPanelController($scope, $location, TaxonomyResource, TaxonomiesResource, ngObibaMicaSearch) {
-  BaseTaxonomiesController.call(this, $scope, $location, TaxonomyResource, TaxonomiesResource, ngObibaMicaSearch);
-
+function TaxonomiesPanelController($scope, $location, TaxonomyResource, TaxonomiesResource, ngObibaMicaSearch, RqlQueryUtils) {
+  BaseTaxonomiesController.call(this, $scope, $location, TaxonomyResource, TaxonomiesResource, ngObibaMicaSearch, RqlQueryUtils);
   $scope.$watchGroup(['taxonomyName', 'target'], function (newVal) {
     if (newVal[0] && newVal[1]) {
       if ($scope.showTaxonomies) {
@@ -171,6 +178,7 @@ function TaxonomiesPanelController($scope, $location, TaxonomyResource, Taxonomi
       });
     }
   });
+
 }
 /**
  * ClassificationPanelController
@@ -184,8 +192,6 @@ function TaxonomiesPanelController($scope, $location, TaxonomyResource, Taxonomi
  */
 function ClassificationPanelController($scope, $location, TaxonomyResource, TaxonomiesResource, ngObibaMicaSearch) {
   BaseTaxonomiesController.call(this, $scope, $location, TaxonomyResource, TaxonomiesResource, ngObibaMicaSearch);
-
-
   var groupTaxonomies = function (taxonomies, target) {
     var res = taxonomies.reduce(function (res, t) {
       res[t.name] = t;
@@ -843,9 +849,13 @@ angular.module('obiba.mica.search')
         selectCriteria(item, RQL_NODE.AND, true);
       };
 
-      var onSelectTerm = function (target, taxonomy, vocabulary, term) {
+      var onSelectTerm = function (target, taxonomy, vocabulary, term, from, to) {
         if (vocabulary && RqlQueryUtils.isNumericVocabulary(vocabulary)) {
-          selectCriteria(RqlQueryService.createCriteriaItem(target, taxonomy, vocabulary, null, $scope.lang));
+          var item = RqlQueryService.createCriteriaItem(target, taxonomy, vocabulary, null, $scope.lang);
+          item.rqlQuery = RqlQueryUtils.buildRqlQuery(item);
+          RqlQueryUtils.updateRangeQuery(item.rqlQuery, from, to);
+          selectCriteria(item, null, true);
+          
           return;
         }
 
@@ -982,8 +992,15 @@ angular.module('obiba.mica.search')
       init();
     }])
 
+  .controller('NumericVocabularyPanelController', ['$scope', function($scope) {
+    $scope.$watch('taxonomies', function() {
+      $scope.from = null;
+      $scope.to = null;
+    }, true);
+  }])
+  
   .controller('TaxonomiesPanelController', ['$scope', '$location', 'TaxonomyResource',
-    'TaxonomiesResource', 'ngObibaMicaSearch', TaxonomiesPanelController])
+    'TaxonomiesResource', 'ngObibaMicaSearch', 'RqlQueryUtils', TaxonomiesPanelController])
 
   .controller('ClassificationPanelController', ['$scope', '$location', 'TaxonomyResource',
     'TaxonomiesResource', 'ngObibaMicaSearch', ClassificationPanelController])

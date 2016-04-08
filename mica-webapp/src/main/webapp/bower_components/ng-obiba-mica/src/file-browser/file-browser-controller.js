@@ -90,7 +90,8 @@ angular.module('obiba.mica.fileBrowser')
         getDocument(path);
       };
 
-      var navigateTo = function (document) {
+      var navigateTo = function (event, document) {
+        event.stopPropagation();
         if (document) {
           navigateToPath(document.path);
         }

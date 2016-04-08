@@ -807,8 +807,12 @@ angular.module('obiba.mica.search')
         case RQL_NODE.EXISTS:
           this.mergeInQueryArgValues(query, terms, replace);
           break;
+        case RQL_NODE.BETWEEN:
+        case RQL_NODE.GE:
+        case RQL_NODE.LE:
+          query.args[1] = terms;
+          break;
       }
-
     };
 
     this.updateQuery = function (query, values) {
@@ -1119,6 +1123,10 @@ angular.module('obiba.mica.search')
       this.updateCriteriaItem = function (existingItem, newItem, replace) {
         var newTerms;
 
+        if(replace && newItem.rqlQuery) {
+          existingItem.rqlQuery.name = newItem.rqlQuery.name; 
+        }
+        
         if (newItem.rqlQuery) {
           newTerms = newItem.rqlQuery.args[1];
         } else if (newItem.term) {
