@@ -157,7 +157,7 @@ angular.module('obiba.mica.fileBrowser')
             $scope.data.document = clone;
           },
           function onError(response) {
-            $log.debug(response);
+            $log.debug('ERROR:',response);
           }
         );
       }
