@@ -7,25 +7,21 @@
     <div>
       <!--## {{data.breadcrumbs}}-->
       <!-- second level breadcrumb -->
-      <ol ng-show="data.document.path !== data.rootPath" class="breadcrumb mica-breadcrumb no-margin no-padding">
-        <li>
-          <span><i class="fa {{getDocumentIcon(data.document)}}"></i></span>
-        </li>
-        <li ng-repeat="part in data.breadcrumbs" ng-class="{'active': $first === $last && $last}">
-          <a ng-show="!$last && part.name !== '/'" href ng-click="navigateToPath(part.path)">
-            <span ng-show="part.name !== '/'">{{part.name}}</span>
-          </a>
-          <span class="no-padding" ng-if="part.name !== '/' && $last">{{data.document.name || 'empty'}}</span>
-        </li>
-      </ol>
 
-      <div ng-include="'file-browser/views/shortcuts-template.html'"></div>
 
       <!-- Document details -->
+      <div class="row">
+        <div class="col-md-12">
+          <div ng-include="'file-browser/views/toolbar-template.html'"></div>
+        </div>
+      </div>
+
       <div class="row voffset2">
         <div ng-class="{'col-md-8': data.details.show, 'col-md-12': !data.details.show}">
-          <div ng-include="'file-browser/views/toolbar-template.html'"></div>
           <div ng-if="!data.isFile" ng-include="'file-browser/views/documents-table-template.html'"></div>
+          <div class="pull-right no-margin">
+            <dir-pagination-controls></dir-pagination-controls>
+          </div>
         </div>
         <div ng-if="data.details.show" class="col-md-4">
           <div ng-include="'file-browser/views/document-detail-template.html'"></div>

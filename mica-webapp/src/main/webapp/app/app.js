@@ -21,7 +21,6 @@ var mica = angular.module('mica', [
   'ngRoute',
   'pascalprecht.translate',
   'tmh.dynamicLocale',
-  'angularUtils.directives.dirPagination',
   'xeditable',
   'matchMedia',
   'ngObibaMica',
@@ -62,13 +61,11 @@ mica
     '$translateProvider',
     'tmhDynamicLocaleProvider',
     'USER_ROLES',
-    'paginationTemplateProvider',
     function ($routeProvider,
               $httpProvider,
               $translateProvider,
               tmhDynamicLocaleProvider,
-              USER_ROLES,
-              paginationTemplateProvider) {
+              USER_ROLES) {
 
 
       $routeProvider
@@ -151,7 +148,6 @@ mica
         .useCookieStorage()
         .useSanitizeValueStrategy('escaped');
 
-      paginationTemplateProvider.setPath('app/views/pagination-template.html');
       tmhDynamicLocaleProvider.localeLocationPattern('bower_components/angular-i18n/angular-locale_{{locale}}.js');
       tmhDynamicLocaleProvider.useCookieStorage('NG_TRANSLATE_LANG_KEY');
     }])
