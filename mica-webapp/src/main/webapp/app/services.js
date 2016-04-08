@@ -66,7 +66,6 @@ mica.factory('Session', ['SessionProxy','$cookieStore',
       this.profile = null;
       $cookieStore.remove('mica_subject');
       $cookieStore.remove('micasid');
-      $cookieStore.remove('obibaid');
       SessionProxy.update(this);
     };
 

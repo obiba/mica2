@@ -16,11 +16,13 @@ import javax.annotation.Priority;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.NewCookie;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
+import org.obiba.shiro.realm.ObibaRealm;
 
 @Priority(Integer.MIN_VALUE)
 public class AuthenticationInterceptor implements ContainerResponseFilter {
@@ -42,8 +44,13 @@ public class AuthenticationInterceptor implements ContainerResponseFilter {
         responseContext.getHeaders().add(HttpHeaders.SET_COOKIE, NewCookie.valueOf(cookieValue.toString()));
       }
     } else {
+      if(requestContext.getCookies().containsKey(ObibaRealm.TICKET_COOKIE_NAME)) {
+        Cookie cookie = requestContext.getCookies().get(ObibaRealm.TICKET_COOKIE_NAME);
+        responseContext.getHeaders().add(HttpHeaders.SET_COOKIE,
+            new NewCookie(ObibaRealm.TICKET_COOKIE_NAME, null, "/", cookie.getDomain(), "Obiba session deleted", 0, false));
+      }
       if(responseContext.getHeaders().get(HttpHeaders.SET_COOKIE) == null) {
-        responseContext.getHeaders().putSingle(HttpHeaders.SET_COOKIE,
+        responseContext.getHeaders().add(HttpHeaders.SET_COOKIE,
             new NewCookie(MICA_SESSION_ID_COOKIE_NAME, null, "/", null, "Mica session deleted", 0, false));
       }
     }
