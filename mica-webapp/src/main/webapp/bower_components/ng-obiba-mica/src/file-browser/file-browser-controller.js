@@ -59,7 +59,8 @@ angular.module('obiba.mica.fileBrowser')
         FileBrowserFileResource.get({path: path},
           function onSuccess(response) {
             $log.info(response);
-            $scope.data.document = response;
+            $scope.pagination.selected = -1;
+            $scope.data.document = $scope.data.details.document = response;
 
             if (!$scope.data.document.children) {
               $scope.data.document.children = [];
@@ -95,7 +96,8 @@ angular.module('obiba.mica.fileBrowser')
         }
       };
 
-      var navigateToParent = function (document) {
+      var navigateToParent = function (event, document) {
+        event.stopPropagation();
         var path = document.path;
 
         if (path.lastIndexOf('/') === 0) {
@@ -159,8 +161,20 @@ angular.module('obiba.mica.fileBrowser')
         );
       }
 
+      var hideDetails = function() {
+        $scope.pagination.selected = -1;
+        $scope.data.details.show = false;
+      };
+
+      var showDetails = function(document, index) {
+        $scope.pagination.selected = index;
+        $scope.data.details.document = document;
+        $scope.data.details.show = true;
+      };
+
       var searchDocuments = function (query) {
         $scope.data.search.active = true;
+        hideDetails();
         var recursively = $scope.data.search.recursively;
         var orderBy = null;
         var sortBy = null;
@@ -205,14 +219,12 @@ angular.module('obiba.mica.fileBrowser')
       $scope.isFile = FileBrowserService.isFile;
       $scope.isRoot = FileBrowserService.isRoot;
       $scope.getLocalizedValue = getLocalizedValue;
-      $scope.hideDetails = function() { $scope.data.details.show = false; };
+      $scope.hideDetails = hideDetails;
+      $scope.showDetails = showDetails;
       $scope.getTypeParts = getTypeParts;
-      $scope.showDetails = function(document) {
-        $scope.data.details.document = document;
-        $scope.data.details.show = true;
-      };
 
       $scope.pagination = {
+        selected: -1,
         currentPage: 1,
         itemsPerPage: 20
       };

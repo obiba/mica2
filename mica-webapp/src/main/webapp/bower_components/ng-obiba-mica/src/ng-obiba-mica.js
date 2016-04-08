@@ -108,7 +108,8 @@ angular.module('ngObibaMica', [
     'obiba.mica.search',
     'obiba.mica.graphics',
     'obiba.mica.localized',
-    'obiba.mica.fileBrowser'
+    'obiba.mica.fileBrowser',
+    'angularUtils.directives.dirPagination',
   ])
   .constant('USER_ROLES', {
     all: '*',
@@ -118,7 +119,8 @@ angular.module('ngObibaMica', [
     user: 'mica-user',
     dao: 'mica-data-access-officer'
   })
-  .config(['$provide', function ($provide) {
+  .config(['$provide', 'paginationTemplateProvider', function ($provide, paginationTemplateProvider) {
     $provide.provider('ngObibaMicaUrl', NgObibaMicaUrlProvider);
+    paginationTemplateProvider.setPath('views/pagination-template.html');
   }]);
 

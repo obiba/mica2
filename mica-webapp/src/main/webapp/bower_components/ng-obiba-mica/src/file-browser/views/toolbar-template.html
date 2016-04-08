@@ -1,27 +1,65 @@
 <!--
-  ~ Copyright (c) 2016 OBiBa. All rights reserved.
-  ~
-  ~ This program and the accompanying materials
-  ~ are made available under the terms of the GNU Public License v3.0.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  -->
-
-<h5 ng-if="data.document.state.revisions" translate>
-  revisions
-</h5>
-<h5 ng-if="data.search.active">
-  <a class="no-text-decoration" ng-click="clearSearch()">
-    <i class="fa fa-chevron-left"> </i>
-  </a>
-  <span ng-if="data.search.recursively">{{'file.search-results.current-sub' | translate}}</span>
-  <span ng-if="!data.search.recursively">{{'file.search-results.current' | translate}}</span>
-  ({{data.document.children.length}})
-</h5>
-<div class="clearfix">
-  <div class="pull-right">
-    <dir-pagination-controls></dir-pagination-controls>
-  </div>
+ ~ Copyright (c) 2016 OBiBa. All rights reserved.
+ ~
+ ~ This program and the accompanying materials
+ ~ are made available under the terms of the GNU Public License v3.0.
+ ~
+ ~ You should have received a copy of the GNU General Public License
+ ~ along with this program. If not, see <http://www.gnu.org/licenses/>.
+ -->
+<div>
+    <div class="pull-left voffset3">
+        <ol ng-show="data.document.path !== data.rootPath" class="breadcrumb mica-breadcrumb no-margin no-padding">
+            <li>
+                <a href ng-click="navigateToPath(data.rootPath)">
+                    <span><i class="fa {{getDocumentIcon(data.document)}}"></i></span>
+                </a>
+            </li>
+            <li ng-repeat="part in data.breadcrumbs" ng-class="{'active': $first === $last && $last}">
+                <a ng-show="!$last && part.name !== '/'" href ng-click="navigateToPath(part.path)">
+                    <span ng-show="part.name !== '/'">{{part.name}}</span>
+                </a>
+                <span class="no-padding" ng-if="part.name !== '/' && $last">{{data.document.name || 'empty'}}</span>
+            </li>
+        </ol>
+    </div>
+    <div class="pull-right">
+      <table style="border:none">
+        <tbody>
+        <tr>
+          <td>
+            <a href>
+              <span class="input-group input-group-sm no-padding-top no-padding-right">
+               <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+               <input ng-keyup="searchKeyUp($event)"
+                   ng-model="data.search.text"
+                   type="text"
+                   class="form-control ng-pristine ng-untouched ng-valid"
+                   aria-describedby="study-search"
+                   style="max-width: 100px;">
+               <span ng-show="data.search.text" title="{{'search-tooltip.clear' | translate}}" ng-click="clearSearch()"
+                  class="input-group-addon">
+                <i class="fa fa-times"></i>
+               </span>
+              </span>
+            </a>
+          </td>
+          <td>
+            <a href ng-model="data.search.recursively"
+              class="btn btn-sm hoffset1"
+              ng-class="{'btn-info': data.search.recursively, 'btn-default': !data.search.recursively}"
+              data-toggle="button" ng-click="toggleRecursively()"
+              title="{{'search-tooltip.recursively' | translate}}">
+              <i class="fa i-obiba-hierarchy"></i>
+            </a>
+            <a href ng-click="searchDocuments('RECENT')"
+              class="btn btn-info btn-sm"
+              title="{{'search-tooltip.most-recent' | translate}}">
+              <span><i class="fa fa-clock-o fa-lg"></i></span>
+            </a>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
 </div>
-<div class="clearfix" ng-if="data.search.active"></div>
