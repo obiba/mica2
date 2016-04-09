@@ -38,6 +38,7 @@ import org.obiba.mica.file.notification.FilePublicationFlowMailNotification;
 import org.obiba.mica.network.event.NetworkPublishedEvent;
 import org.obiba.mica.network.event.NetworkUnpublishedEvent;
 import org.obiba.mica.network.event.NetworkUpdatedEvent;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
 import org.obiba.mica.study.event.StudyPublishedEvent;
@@ -75,6 +76,9 @@ public class FileSystemService {
 
   @Inject
   private FilePublicationFlowMailNotification filePublicationFlowNotification;
+
+  @Inject
+  protected SubjectAclService subjectAclService;
 
   private ReentrantLock fsLock = new ReentrantLock();
 
@@ -382,8 +386,8 @@ public class FileSystemService {
   }
 
   /**
-   * Make a copy of the latest {@link org.obiba.mica.file.Attachment} (and associated raw file) and optionally delete
-   * the {@link org.obiba.mica.file.AttachmentState} source.
+   * Make a copy of the latest {@link Attachment} (and associated raw file) and optionally delete
+   * the {@link AttachmentState} source.
    *
    * @param state
    * @param newPath
@@ -483,14 +487,20 @@ public class FileSystemService {
    * @return
    */
   public long countAttachmentStates(String path, boolean publishedFS) {
-    long count = publishedFS
-      ? attachmentStateRepository.countByPathAndPublishedAttachmentNotNull(path)
-      : attachmentStateRepository.countByPath(path);
+    long count = publishedFS ? (subjectAclService.isOpenAccess() ? attachmentStateRepository
+      .countByPathAndPublishedAttachmentNotNull(path) : countAccessiblePublishedAttachmentStates(
+      path)) : attachmentStateRepository.countByPath(path);
     return count == 0 ? 0 : count - 1;
   }
 
+  private long countAccessiblePublishedAttachmentStates(String path) {
+    return findPublishedAttachmentStates(path + "$").stream()
+      .filter(s -> subjectAclService.isAccessible("/file", s.getFullPath())) //
+      .count();
+  }
+
   /**
-   * Get the {@link org.obiba.mica.file.AttachmentState}, with publication status filter.
+   * Get the {@link AttachmentState}, with publication status filter.
    *
    * @param path
    * @param name

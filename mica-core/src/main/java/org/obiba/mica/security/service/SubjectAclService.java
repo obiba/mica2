@@ -122,6 +122,14 @@ public class SubjectAclService {
   }
 
   /**
+   * Check if published documents access is to be checked.
+   * @return
+   */
+  public boolean isOpenAccess() {
+    return micaConfigService.getConfig().isOpenAccess();
+  }
+
+  /**
    * Verify the {@link org.obiba.mica.micaConfig.domain.MicaConfig} open access property before evaluating the
    * "VIEW" permission for the current user.
    *
