@@ -493,12 +493,6 @@ public class FileSystemService {
     return count == 0 ? 0 : count - 1;
   }
 
-  private long countAccessiblePublishedAttachmentStates(String path) {
-    return findPublishedAttachmentStates(path + "$").stream()
-      .filter(s -> subjectAclService.isAccessible("/file", s.getFullPath())) //
-      .count();
-  }
-
   /**
    * Get the {@link AttachmentState}, with publication status filter.
    *
@@ -733,6 +727,18 @@ public class FileSystemService {
   private List<Attachment> findPublishedAttachments(String pathRegEx) {
     return findPublishedAttachmentStates(pathRegEx).stream().map(AttachmentState::getPublishedAttachment)
       .collect(toList());
+  }
+
+  /**
+   * Get the count of accessible files at path.
+   * 
+   * @param path
+   * @return
+   */
+  private long countAccessiblePublishedAttachmentStates(String path) {
+    return findPublishedAttachmentStates(path + "$").stream()
+      .filter(s -> subjectAclService.isAccessible("/file", s.getFullPath())) //
+      .count();
   }
 
   private static String extractDirName(String pathWithName, @Nullable String prefix) {
