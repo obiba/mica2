@@ -256,7 +256,7 @@ public abstract class AbstractFileSystemResource {
     String pathRegEx = isRoot(basePath) ? "^/[^/]+$" : String.format("^%s/[^/]+$", basePath);
     fileSystemService.findAttachmentStates(pathRegEx, isPublishedFileSystem()).stream() //
       .filter(FileUtils::isDirectory) //
-      .filter(f -> isPublishedFileSystem() ? subjectAclService.isAccessible("/file", f.getFullPath()) : true) //
+      .filter(s -> isPublishedFileSystem() ? subjectAclService.isAccessible("/file", s.getFullPath()) : true) //
       .sorted((o1, o2) -> o1.getPath().compareTo(o2.getPath())) //
       .forEach(s -> folders.add(dtos.asFileDto(s, isPublishedFileSystem(), false)));
     return folders;
@@ -266,13 +266,15 @@ public abstract class AbstractFileSystemResource {
     List<AttachmentState> states = fileSystemService
       .findAttachmentStates(String.format("^%s$", basePath), isPublishedFileSystem()).stream()
       .filter(s -> !FileUtils.isDirectory(s)) //
-      .filter(f -> isPublishedFileSystem() ? subjectAclService.isAccessible("/file", f.getFullPath()) : true) //
+      .filter(s -> isPublishedFileSystem() ? subjectAclService.isAccessible("/file", s.getFullPath()) : true) //
       .collect(Collectors.toList());
 
     if(recursively) {
       states.addAll(
         fileSystemService.findAttachmentStates(String.format("^%s/", basePath), isPublishedFileSystem()).stream()
-          .filter(s -> !FileUtils.isDirectory(s)).collect(Collectors.toList()));
+          .filter(s -> !FileUtils.isDirectory(s)) //
+          .filter(s -> isPublishedFileSystem() ? subjectAclService.isAccessible("/file", s.getFullPath()) : true) //
+          .collect(Collectors.toList()));
     }
 
     return states.stream() //
