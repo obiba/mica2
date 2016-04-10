@@ -1,5 +1,9 @@
 package org.obiba.mica.file;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+
 import org.obiba.mica.file.service.FileSystemService;
 import org.springframework.data.domain.Persistable;
 
@@ -35,5 +39,29 @@ public class FileUtils {
       CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, persistable.getClass().getSimpleName()),
       persistable.getId()
     );
+  }
+
+  /**
+   * Encode file path to be Shiro-safe.
+   *
+   * @param path
+   * @return
+   */
+  public static String encode(String path) {
+    if(path == null) return null;
+    try {
+      return URLEncoder.encode(path, "UTF-8").replaceAll("%2F", "/");
+    } catch(UnsupportedEncodingException e) {
+      return path;
+    }
+  }
+
+  public static String decode(String path) {
+    if(path == null) return null;
+    try {
+      return URLDecoder.decode(path, "UTF-8");
+    } catch(UnsupportedEncodingException e) {
+      return path;
+    }
   }
 }

@@ -23,6 +23,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.security.PermissionsUtils;
 import org.obiba.mica.security.domain.SubjectAcl;
 import org.obiba.mica.security.service.SubjectAclService;
@@ -51,12 +52,14 @@ public class DraftFileAccessResource {
 
     return subjectAclService.findByResourceInstance(resource, basePath).stream().map(
       a -> AclDto.newBuilder().setType(a.getType().name()).setPrincipal(a.getPrincipal()).setResource(resource)
-        .setRole(PermissionsUtils.asRole(a.getActions())).setInstance(basePath).build()).collect(Collectors.toList());
+        .setRole(PermissionsUtils.asRole(a.getActions())).setInstance(FileUtils.decode(basePath)).build())
+      .collect(Collectors.toList());
   }
 
   @DELETE
   @Path("/{path:.*}")
-  public Response delete(@PathParam("path") String path, @QueryParam("principal") String principal, @QueryParam("type") String typeStr) {
+  public Response delete(@PathParam("path") String path, @QueryParam("principal") String principal,
+    @QueryParam("type") String typeStr) {
     String basePath = normalizePath(path);
     subjectAclService.checkPermission("/draft/file", "DELETE", basePath);
 

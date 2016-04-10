@@ -11,6 +11,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
+import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.security.PermissionsUtils;
 import org.obiba.mica.security.domain.SubjectAcl;
 import org.obiba.mica.security.service.SubjectAclService;
@@ -53,7 +54,8 @@ public class SubjectAclResource {
 
     return subjectAclService.findByResourceInstance(resource, instance).stream().map(
       a -> AclDto.newBuilder().setType(a.getType().name()).setPrincipal(a.getPrincipal()).setResource(resource)
-        .setRole(PermissionsUtils.asRole(a.getActions())).setInstance(instance).build()).collect(Collectors.toList());
+        .setRole(PermissionsUtils.asRole(a.getActions())).setInstance(FileUtils.decode(instance)).build())
+      .collect(Collectors.toList());
   }
 
   @DELETE
@@ -76,7 +78,7 @@ public class SubjectAclResource {
     SubjectAcl.Type type = SubjectAcl.Type.valueOf(typeStr.toUpperCase());
     String actions = PermissionsUtils.asActions(isDraft() ? role.toUpperCase() : "READER");
     subjectAclService.addSubjectPermission(type, principal, resource, actions, instance);
-    if (file) {
+    if(file) {
       subjectAclService.addSubjectPermission(type, principal, fileResource, actions, fileInstance);
     }
     return Response.noContent().build();
