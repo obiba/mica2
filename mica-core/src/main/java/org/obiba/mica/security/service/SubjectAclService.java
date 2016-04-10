@@ -307,7 +307,7 @@ public class SubjectAclService {
   @Async
   @Subscribe
   public void studyDeleted(StudyDeletedEvent event) {
-    removeInstance("/study", event.getPersistable().getId()));
+    removeInstance("/study", event.getPersistable().getId());
   }
 
   @Async
