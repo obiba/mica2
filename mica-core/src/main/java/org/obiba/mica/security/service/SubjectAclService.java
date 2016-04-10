@@ -297,16 +297,17 @@ public class SubjectAclService {
   public void onResourceDeleted(ResourceDeletedEvent event) {
     // delete specific acls
     subjectAclRepository
-      .delete(subjectAclRepository.findByResourceAndInstance(event.getResource(), event.getInstance()));
+      .delete(subjectAclRepository.findByResourceAndInstance(event.getResource(), encode(event.getInstance())));
     // delete children acls, i.e. acls which resource name starts with regex "<resource>/<instance>/.+"
     subjectAclRepository
-      .delete(subjectAclRepository.findByResourceStartingWith(event.getResource() + "/" + event.getInstance() + "/.+"));
+      .delete(subjectAclRepository.findByResourceStartingWith(event.getResource() + "/" + encode(event.getInstance()) +
+        "/.+"));
   }
 
   @Async
   @Subscribe
   public void studyDeleted(StudyDeletedEvent event) {
-    removeInstance("/study", event.getPersistable().getId());
+    removeInstance("/study", event.getPersistable().getId()));
   }
 
   @Async
@@ -326,13 +327,14 @@ public class SubjectAclService {
   @Subscribe
   public void fileDeleted(FileDeletedEvent event) {
     subjectAclRepository
-      .delete(subjectAclRepository.findByResourceAndInstance("/file", event.getPersistable().getFullPath()));
+      .delete(subjectAclRepository.findByResourceAndInstance("/file", encode(event.getPersistable().getFullPath())));
     subjectAclRepository.delete(
-      subjectAclRepository.findByResourceAndInstanceRegex("/file", "^" + event.getPersistable().getFullPath() + "/"));
-    subjectAclRepository
-      .delete(subjectAclRepository.findByResourceAndInstance("/draft/file", event.getPersistable().getFullPath()));
+      subjectAclRepository.findByResourceAndInstanceRegex("/file", "^" + encode(event.getPersistable().getFullPath()) +
+        "/"));
+    subjectAclRepository.delete(
+      subjectAclRepository.findByResourceAndInstance("/draft/file", encode(event.getPersistable().getFullPath())));
     subjectAclRepository.delete(subjectAclRepository
-      .findByResourceAndInstanceRegex("/draft/file", "^" + event.getPersistable().getFullPath() + "/"));
+      .findByResourceAndInstanceRegex("/draft/file", "^" + encode(event.getPersistable().getFullPath()) + "/"));
   }
 
   //
