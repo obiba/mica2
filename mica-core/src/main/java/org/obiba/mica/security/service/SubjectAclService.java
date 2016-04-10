@@ -9,6 +9,7 @@ import javax.validation.constraints.NotNull;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
 import org.obiba.mica.dataset.event.DatasetDeletedEvent;
+import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.event.FileDeletedEvent;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.event.NetworkDeletedEvent;
@@ -64,7 +65,7 @@ public class SubjectAclService {
    * @return
    */
   public List<SubjectAcl> findByResourceInstance(String resource, String instance) {
-    return subjectAclRepository.findByResourceAndInstance(resource, instance,
+    return subjectAclRepository.findByResourceAndInstance(resource, encode(instance),
       new Sort(new Sort.Order(Sort.Direction.DESC, "type"), new Sort.Order(Sort.Direction.ASC, "principal")));
   }
 
@@ -91,7 +92,7 @@ public class SubjectAclService {
   @Timed
   public boolean isPermitted(@NotNull String resource, @NotNull String action, @Nullable String instance) {
     return SecurityUtils.getSubject()
-      .isPermitted(resource + ":" + action + (Strings.isNullOrEmpty(instance) ? "" : ":" + instance));
+      .isPermitted(resource + ":" + action + (Strings.isNullOrEmpty(instance) ? "" : ":" + encode(instance)));
   }
 
   /**
@@ -115,14 +116,15 @@ public class SubjectAclService {
    * @throws AuthorizationException
    */
   @Timed
-  public void checkPermission(@NotNull String resource, @NotNull String action, @Nullable String instance)
-    throws AuthorizationException {
+  public void checkPermission(@NotNull String resource, @NotNull String action,
+    @Nullable String instance) throws AuthorizationException {
     SecurityUtils.getSubject()
-      .checkPermission(resource + ":" + action + (Strings.isNullOrEmpty(instance) ? "" : ":" + instance));
+      .checkPermission(resource + ":" + action + (Strings.isNullOrEmpty(instance) ? "" : ":" + encode(instance)));
   }
 
   /**
    * Check if published documents access is to be checked.
+   *
    * @return
    */
   public boolean isOpenAccess() {
@@ -212,13 +214,13 @@ public class SubjectAclService {
    * @param action
    * @param instance
    */
-  synchronized public void addSubjectPermission(@NotNull SubjectAcl.Type type, @NotNull String principal, @NotNull String resource,
-    @Nullable String action, @Nullable String instance) {
+  synchronized public void addSubjectPermission(@NotNull SubjectAcl.Type type, @NotNull String principal,
+    @NotNull String resource, @Nullable String action, @Nullable String instance) {
     List<SubjectAcl> acls = subjectAclRepository
-      .findByPrincipalAndTypeAndResourceAndInstance(principal, type, resource, instance);
+      .findByPrincipalAndTypeAndResourceAndInstance(principal, type, resource, encode(instance));
     SubjectAcl acl;
     if(acls == null || acls.isEmpty()) {
-      acl = SubjectAcl.newBuilder(principal, type).resource(resource).action(action).instance(instance).build();
+      acl = SubjectAcl.newBuilder(principal, type).resource(resource).action(action).instance(encode(instance)).build();
     } else {
       acl = acls.get(0);
       acl.removeActions();
@@ -276,7 +278,7 @@ public class SubjectAclService {
    */
   public void removeSubjectPermissions(@NotNull SubjectAcl.Type type, @NotNull String principal,
     @NotNull String resource, @Nullable String instance) {
-    subjectAclRepository.findByPrincipalAndTypeAndResourceAndInstance(principal, type, resource, instance)
+    subjectAclRepository.findByPrincipalAndTypeAndResourceAndInstance(principal, type, resource, encode(instance))
       .forEach(subjectAclRepository::delete);
     // inform acls update (for caching)
     eventBus.post(new SubjectAclUpdatedEvent(type.subjectFor(principal)));
@@ -316,7 +318,8 @@ public class SubjectAclService {
   @Async
   @Subscribe
   public void datasetDeleted(DatasetDeletedEvent event) {
-    removeInstance(event.isStudyDataset() ? "/study-dataset" : "/harmonization-dataset", event.getPersistable().getId());
+    removeInstance(event.isStudyDataset() ? "/study-dataset" : "/harmonization-dataset",
+      event.getPersistable().getId());
   }
 
   @Async
@@ -324,12 +327,12 @@ public class SubjectAclService {
   public void fileDeleted(FileDeletedEvent event) {
     subjectAclRepository
       .delete(subjectAclRepository.findByResourceAndInstance("/file", event.getPersistable().getFullPath()));
-    subjectAclRepository
-      .delete(subjectAclRepository.findByResourceAndInstanceRegex("/file", "^" + event.getPersistable().getFullPath() + "/"));
+    subjectAclRepository.delete(
+      subjectAclRepository.findByResourceAndInstanceRegex("/file", "^" + event.getPersistable().getFullPath() + "/"));
     subjectAclRepository
       .delete(subjectAclRepository.findByResourceAndInstance("/draft/file", event.getPersistable().getFullPath()));
-    subjectAclRepository
-      .delete(subjectAclRepository.findByResourceAndInstanceRegex("/draft/file", "^" + event.getPersistable().getFullPath() + "/"));
+    subjectAclRepository.delete(subjectAclRepository
+      .findByResourceAndInstanceRegex("/draft/file", "^" + event.getPersistable().getFullPath() + "/"));
   }
 
   //
@@ -344,25 +347,23 @@ public class SubjectAclService {
    */
   private void removeInstance(String resource, String instance) {
     // entity, published and draft
-    subjectAclRepository
-      .delete(subjectAclRepository.findByResourceAndInstance(resource, instance));
-    subjectAclRepository
-      .delete(subjectAclRepository.findByResourceAndInstance("/draft" + resource, instance));
+    subjectAclRepository.delete(subjectAclRepository.findByResourceAndInstance(resource, encode(instance)));
+    subjectAclRepository.delete(subjectAclRepository.findByResourceAndInstance("/draft" + resource, encode(instance)));
 
     // file and descendants, published and draft
     subjectAclRepository
-      .delete(subjectAclRepository.findByResourceAndInstance("/file", resource + "/" + instance));
+      .delete(subjectAclRepository.findByResourceAndInstance("/file", resource + "/" + encode(instance)));
+    subjectAclRepository.delete(
+      subjectAclRepository.findByResourceAndInstanceRegex("/file", "^" + resource + "/" + encode(instance) + "/"));
     subjectAclRepository
-      .delete(subjectAclRepository.findByResourceAndInstanceRegex("/file", "^" + resource + "/" + instance + "/"));
-    subjectAclRepository
-      .delete(subjectAclRepository.findByResourceAndInstance("/draft/file", resource + "/" + instance));
-    subjectAclRepository
-      .delete(subjectAclRepository.findByResourceAndInstanceRegex("/draft/file", "^" + resource + "/" + instance + "/"));
+      .delete(subjectAclRepository.findByResourceAndInstance("/draft/file", resource + "/" + encode(instance)));
+    subjectAclRepository.delete(subjectAclRepository
+      .findByResourceAndInstanceRegex("/draft/file", "^" + resource + "/" + encode(instance) + "/"));
   }
 
   private void removeSubjectPermission(@NotNull SubjectAcl.Type type, @NotNull String principal,
     @NotNull String resource, @NotNull String action, @NotNull String instance) {
-    subjectAclRepository.findByPrincipalAndTypeAndResourceAndInstance(principal, type, resource, instance)
+    subjectAclRepository.findByPrincipalAndTypeAndResourceAndInstance(principal, type, resource, encode(instance))
       .forEach(acl -> {
         if(acl.hasAction(action)) {
           acl.removeAction(action);
@@ -375,5 +376,9 @@ public class SubjectAclService {
       });
     // inform acls update (for caching)
     eventBus.post(new SubjectAclUpdatedEvent(type.subjectFor(principal)));
+  }
+
+  private String encode(String instance) {
+    return FileUtils.encode(instance);
   }
 }
