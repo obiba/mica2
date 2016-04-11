@@ -42,7 +42,7 @@ public class PublishedFilesSearchResource extends AbstractFileSearchResource {
   @Override
   protected List<Mica.FileDto> searchFiles(int from, int limit, String sort, String order, String queryString) {
     List<Mica.FileDto> files = Lists.newArrayList();
-    
+
     PublishedDocumentService.Documents<AttachmentState> states = esAttachmentService
       .find(from, limit, sort, order, getBasePath(), queryString);
 
@@ -50,9 +50,10 @@ public class PublishedFilesSearchResource extends AbstractFileSearchResource {
       states.getList().stream().filter(this::isAccessible).map(state -> dtos.asFileDto(state, true, false)) //
           .forEach(f -> files.add(f));
 
-      from = from + limit;
-      states = esAttachmentService
-          .find(from, limit, sort, order, getBasePath(), queryString);
+      if(files.size() < limit) {
+        from = from + limit;
+        states = esAttachmentService.find(from, limit, sort, order, getBasePath(), queryString);
+      }
     }
 
     return files;
