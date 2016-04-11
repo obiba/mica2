@@ -11,7 +11,6 @@
 package org.obiba.mica.file.search.rest;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.ws.rs.Path;
@@ -23,6 +22,8 @@ import org.obiba.mica.file.search.EsPublishedFileService;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Lists;
 
 @Path("/files-search")
 @RequiresAuthentication
@@ -40,11 +41,21 @@ public class PublishedFilesSearchResource extends AbstractFileSearchResource {
 
   @Override
   protected List<Mica.FileDto> searchFiles(int from, int limit, String sort, String order, String queryString) {
+    List<Mica.FileDto> files = Lists.newArrayList();
+    
     PublishedDocumentService.Documents<AttachmentState> states = esAttachmentService
       .find(from, limit, sort, order, getBasePath(), queryString);
 
-    return states.getList().stream().filter(this::isAccessible).map(state -> dtos.asFileDto(state, true, false))
-      .collect(Collectors.toList());
+    while (files.size()<limit && !states.getList().isEmpty()) {
+      states.getList().stream().filter(this::isAccessible).map(state -> dtos.asFileDto(state, true, false)) //
+          .forEach(f -> files.add(f));
+
+      from = from + limit;
+      states = esAttachmentService
+          .find(from, limit, sort, order, getBasePath(), queryString);
+    }
+
+    return files;
   }
 
   private boolean isAccessible(AttachmentState state) {
