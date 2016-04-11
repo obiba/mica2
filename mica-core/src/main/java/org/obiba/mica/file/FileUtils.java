@@ -41,6 +41,11 @@ public class FileUtils {
     );
   }
 
+  public static String normalizeRegex(String path) {
+    if(path == null) return null;
+    return path.replaceAll("\\(","\\\\(").replaceAll("\\)","\\\\)");
+  }
+
   /**
    * Encode file path to be Shiro-safe.
    *

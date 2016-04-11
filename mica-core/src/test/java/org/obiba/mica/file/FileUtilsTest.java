@@ -23,6 +23,13 @@ public class FileUtilsTest {
   }
 
   @Test
+  public void testNormalizeRegex() {
+    assertThat(FileUtils.normalizeRegex("/toto/tutu/Case Report (CRF)")).isEqualTo
+        ("/toto/tutu/Case Report \\(CRF\\)");
+    assertThat(FileUtils.decode(null)).isNull();
+  }
+
+  @Test
   public void testDecode() {
     assertThat(FileUtils.decode("/toto/tutu/some+silly%2C+file%3A+path.pdf")).isEqualTo
       ("/toto/tutu/some silly, file: path.pdf");
