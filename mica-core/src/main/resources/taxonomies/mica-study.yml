@@ -1605,32 +1605,32 @@
       "keywords": {}
     - "name": "1000:5000"
       "title":
-        "en": "1,000 to 5,000 excl."
-        "fr": "1 000 à 5 000 excl."
+        "en": "1,000 to 4,999."
+        "fr": "1 000 à 4 999."
       "description": {}
       "keywords": {}
     - "name": "5000:10000"
       "title":
-        "en": "5,000 to 10,000 excl."
-        "fr": "5 000 à 10 000 excl."
+        "en": "5,000 to 9,999."
+        "fr": "5 000 à 9 999."
       "description": {}
       "keywords": {}
     - "name": "10000:50000"
       "title":
-        "en": "10,000 to 50,000 excl."
-        "fr": "10 000 à 50 000 excl."
+        "en": "10,000 to 49,999."
+        "fr": "10 000 à 49 999."
       "description": {}
       "keywords": {}
     - "name": "50000:100000"
       "title":
-        "en": "50,000 to 100,000 excl."
-        "fr": "50 000 à 100 000 excl."
+        "en": "50,000 to 99,999."
+        "fr": "50 000 à 99 999."
       "description": {}
       "keywords": {}
     - "name": "100000:500000"
       "title":
-        "en": "100,000 to 500,000 excl."
-        "fr": "100 000 à 500 000 excl."
+        "en": "100,000 to 499,999."
+        "fr": "100 000 à 499 999."
       "description": {}
       "keywords": {}
     - "name": "500000:*"
@@ -1671,32 +1671,32 @@
       "keywords": {}
     - "name": "1000:5000"
       "title":
-        "en": "1,000 to 5,000 excl."
-        "fr": "1 000 à 5 000 excl."
+        "en": "1,000 to 4,999."
+        "fr": "1 000 à 4 999."
       "description": {}
       "keywords": {}
     - "name": "5000:10000"
       "title":
-        "en": "5,000 to 10,000 excl."
-        "fr": "5 000 à 10 000 excl."
+        "en": "5,000 to 9,999."
+        "fr": "5 000 à 9 999."
       "description": {}
       "keywords": {}
     - "name": "10000:50000"
       "title":
-        "en": "10,000 to 50,000 excl."
-        "fr": "10 000 à 50 000 excl."
+        "en": "10,000 to 49,999."
+        "fr": "10 000 à 49 999."
       "description": {}
       "keywords": {}
     - "name": "50000:100000"
       "title":
-        "en": "50,000 to 100,000 excl."
-        "fr": "50 000 à 100 000 excl."
+        "en": "50,000 to 99,999."
+        "fr": "50 000 à 99 999."
       "description": {}
       "keywords": {}
     - "name": "100000:500000"
       "title":
-        "en": "100,000 to 500,000 excl."
-        "fr": "100 000 à 500 000 excl."
+        "en": "100,000 to 499,999."
+        "fr": "100 000 à 499 999."
       "description": {}
       "keywords": {}
     - "name": "500000:*"
