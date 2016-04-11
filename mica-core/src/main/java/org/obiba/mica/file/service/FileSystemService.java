@@ -695,7 +695,7 @@ public class FileSystemService {
    * @return
    */
   private List<AttachmentState> findDraftAttachmentStates(String pathRegEx) {
-    return attachmentStateRepository.findByPath(pathRegEx).stream().collect(toList());
+    return attachmentStateRepository.findByPath(normalizeRegex(pathRegEx)).stream().collect(toList());
   }
 
   /**
@@ -705,7 +705,7 @@ public class FileSystemService {
    * @return
    */
   private List<AttachmentState> findPublishedAttachmentStates(String pathRegEx) {
-    return attachmentStateRepository.findByPathAndPublishedAttachmentNotNull(pathRegEx).stream().collect(toList());
+    return attachmentStateRepository.findByPathAndPublishedAttachmentNotNull(normalizeRegex(pathRegEx)).stream().collect(toList());
   }
 
   /**
@@ -765,5 +765,9 @@ public class FileSystemService {
     if(matcher.find()) {
       throw new InvalidFileNameException(name);
     }
+  }
+
+  private String normalizeRegex(String path) {
+    return FileUtils.normalizeRegex(path);
   }
 }
