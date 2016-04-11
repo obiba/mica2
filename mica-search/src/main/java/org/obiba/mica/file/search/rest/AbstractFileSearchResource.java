@@ -51,7 +51,7 @@ public abstract class AbstractFileSearchResource {
 
   protected String getQueryString(String path, String query, boolean recursively) {
     String basePath = normalizePath(Strings.isNullOrEmpty(path) ? "/" : path);
-    String pathPart = String.format("path:%s", QueryParser.escape(basePath));
+    String pathPart = String.format("path:%s", escapeQuery(basePath));
     if(recursively) {
       pathPart = String.format("(%s OR %s\\/*)", pathPart, isRoot(basePath) ? "path:" : pathPart);
     }
@@ -61,6 +61,11 @@ public abstract class AbstractFileSearchResource {
         .iterator());
 
     return queryString;
+  }
+
+  private String escapeQuery(String query) {
+    // escape spaces as well
+    return QueryParser.escape(query).replaceAll("\\s+", "\\\\ ");
   }
 
   @GET
