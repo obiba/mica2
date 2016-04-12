@@ -1002,6 +1002,7 @@
   "admin-page": {
     "help": {
       "general": "Configure Opal server, locale and server properties.",
+      "notifications": "Notification emails can be sent to relevant users and groups.",
       "style": "Override the default style with your own stylesheet.",
       "security": "Configure encryption and Opal server credentials.",
       "metrics": "View JVM and HTTP metrics.",

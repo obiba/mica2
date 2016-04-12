@@ -1,0 +1,90 @@
+<div>
+
+  <h2>
+    <ol class="breadcrumb mica-breadcrumb">
+      <li><a href="/#/admin" translate>global.menu.admin</a></li>
+      <li class="active" translate>config.notifications.title</li>
+    </ol>
+  </h2>
+
+  <p class="help-block" translate>config.notifications.info</p>
+  <div class="row">
+    <div class="col-md-6">
+      <table class="table table-bordered table-striped">
+        <tbody>
+        <tr>
+          <td>
+            <span translate>config.notifications.network</span>
+            <span class="help-block" translate>config.notifications.network-help</span>
+          </td>
+          <td>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isNetworkNotificationsEnabled"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.isNetworkNotificationsEnabled"></i>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <span translate>config.notifications.study</span>
+            <span class="help-block" translate>config.notifications.study-help</span>
+          </td>
+          <td>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isStudyNotificationsEnabled"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.isStudyNotificationsEnabled"></i>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <span translate>config.notifications.file</span>
+            <span class="help-block" translate>config.notifications.file-help</span>
+          </td>
+          <td>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isFsNotificationsEnabled"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.isFsNotificationsEnabled"></i>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-md-6">
+      <table class="table table-bordered table-striped">
+        <tbody>
+        <tr>
+          <td>
+            <span translate>config.notifications.study-dataset</span>
+            <span class="help-block" translate>config.notifications.study-dataset-help</span>
+          </td>
+          <td>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isStudyDatasetNotificationsEnabled"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.isStudyDatasetNotificationsEnabled"></i>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <span translate>config.notifications.harmonization-dataset</span>
+            <span class="help-block" translate>config.notifications.harmonization-dataset-help</span>
+          </td>
+          <td>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isHarmonizationDatasetNotificationsEnabled"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.isHarmonizationDatasetNotificationsEnabled"></i>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <span translate>config.notifications.comment</span>
+            <span class="help-block" translate>config.notifications.comment-help</span>
+          </td>
+          <td>
+            <i class="fa fa-check-square-o" ng-hide="!micaConfig.isCommentNotificationsEnabled"></i>
+            <i class="fa fa-square-o" ng-hide="micaConfig.isCommentNotificationsEnabled"></i>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <a href="#/admin/notifications/edit" class="btn btn-primary">
+    <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
+  </a>
+
+</div>
