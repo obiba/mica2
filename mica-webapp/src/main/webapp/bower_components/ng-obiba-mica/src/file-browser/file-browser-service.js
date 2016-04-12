@@ -28,10 +28,12 @@ angular.module('obiba.mica.fileBrowser')
       });
     }])
 
-  .service('FileBrowserDownloadService', ['ngObibaMicaUrl',
-    function (ngObibaMicaUrl) {
+  .service('FileBrowserDownloadService', ['ngObibaMicaUrl', 'ngObibaMicaFileBrowserOptions',
+    function (ngObibaMicaUrl, ngObibaMicaFileBrowserOptions) {
       this.getUrl = function(path) {
-        return ngObibaMicaUrl.getUrl('FileBrowserDownloadUrl').replace(/:path/, path);
+        return ngObibaMicaUrl.getUrl('FileBrowserDownloadUrl')
+          .replace(/:path/, path)
+          .replace(/:inline/, ngObibaMicaFileBrowserOptions.downloadInline);
       };
 
       return this;

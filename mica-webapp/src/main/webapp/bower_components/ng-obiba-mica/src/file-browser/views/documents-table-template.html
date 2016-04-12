@@ -34,7 +34,7 @@
           <span>
             <span ng-if="fileDocument">
               <i class="fa {{getDocumentIcon(document)}}"></i>
-              <a ng-if="fileDocument" target="_self"
+              <a ng-if="fileDocument" target="{{downloadTarget}}"
                  style="text-decoration: none" ng-click="$event.stopPropagation();" ng-href="{{getDownloadUrl(document.path)}}"
                   title="{{document.name}}">
                 {{document.name}}
@@ -62,7 +62,7 @@
                 </a>
               </li>
               <li role="menuitem" ng-if="fileDocument">
-                <a ng-href="{{getDownloadUrl(document.path)}}">
+                <a target="{{downloadTarget}}" ng-href="{{getDownloadUrl(document.path)}}">
                   <span><i class="fa fa-download"></i><span class="hoffset2">{{'download' | translate}}</span></span>
                 </a>
               </li>
@@ -79,7 +79,7 @@
           {{document.size | bytes}}
         </td>
         <td class="no-wrap" ng-if="!fileDocument">
-          {{document.size}}
+          {{document.size}} {{document.size > 1 ? 'items' : 'item' | translate}}
         </td>
         <td>
           {{document.timestamps.lastUpdate | amTimeAgo}}

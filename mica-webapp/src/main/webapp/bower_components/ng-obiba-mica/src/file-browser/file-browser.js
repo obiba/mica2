@@ -3,13 +3,10 @@
 function NgObibaMicaFileBrowserOptionsProvider() {
   var options = {
     locale: 'en',
+    downloadInline: true,
     folders: {
       excludes: ['population']
     }
-  };
-
-  this.setLocale = function(locale) {
-    options.locale = locale;
   };
 
   this.$get = function () {

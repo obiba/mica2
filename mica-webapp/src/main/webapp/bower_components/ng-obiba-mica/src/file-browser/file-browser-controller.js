@@ -205,6 +205,7 @@ angular.module('obiba.mica.fileBrowser')
         return FileBrowserService.getLocalizedValue(values, ngObibaMicaFileBrowserOptions.locale);
       };
 
+      $scope.downloadTarget = ngObibaMicaFileBrowserOptions.downloadInline ? '_blank' : '_self';
       $scope.getDownloadUrl = FileBrowserDownloadService.getUrl;
       $scope.screen = $rootScope.screen;
       $scope.truncate = StringUtils.truncate;
