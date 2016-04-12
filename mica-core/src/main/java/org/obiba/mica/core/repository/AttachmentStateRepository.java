@@ -29,18 +29,20 @@ public interface AttachmentStateRepository extends MongoRepository<AttachmentSta
   /**
    * Count the number of {@link AttachmentState}s matching the path.
    *
-   * @param path
+   * @param pathRegEx
    * @return
    */
-  Long countByPath(String path);
+  @Query(value = "{'path': {$regex: ?0}}", count = true)
+  Long countByPath(String pathRegEx);
 
   /**
    * Count the number of published {@link AttachmentState}s matching the path.
    *
-   * @param path
+   * @param pathRegEx
    * @return
    */
-  Long countByPathAndPublishedAttachmentNotNull(String path);
+  @Query(value = "{'path': {$regex: ?0}, 'publishedAttachment': { $exists: true }}", count = true)
+  Long countByPathAndPublishedAttachmentNotNull(String pathRegEx);
 
   /**
    * Get the {@link AttachmentState}s with given path and name (supposed to be a maximum of one).
@@ -63,18 +65,20 @@ public interface AttachmentStateRepository extends MongoRepository<AttachmentSta
   /**
    * Count the number of {@link AttachmentState}s with given path and name (supposed to be a maximum of one).
    *
-   * @param path
+   * @param pathRegEx
    * @param name
    * @return
    */
-  Long countByPathAndName(String path, String name);
+  @Query(value = "{'path': {$regex: ?0}, 'name': ?1}", count = true)
+  Long countByPathAndName(String pathRegEx, String name);
 
   /**
    * Count the number of published {@link AttachmentState}s with given path and name (supposed to be a maximum of one).
    *
-   * @param path
+   * @param pathRegEx
    * @param name
    * @return
    */
-  Long countByPathAndNameAndPublishedAttachmentNotNull(String path, String name);
+  @Query(value = "{'path': {$regex: ?0}, 'name': ?1, 'publishedAttachment': { $exists: true }}", count = true)
+  Long countByPathAndNameAndPublishedAttachmentNotNull(String pathRegEx, String name);
 }

@@ -106,7 +106,7 @@ public class FileSystemService {
         saved = attachment;
       } else {
         BeanUtils.copyProperties(attachment, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
-          "lastModifiedDate", "fileReference");
+            "lastModifiedDate", "fileReference");
       }
 
       saved.setLastModifiedDate(DateTime.now());
@@ -180,7 +180,7 @@ public class FileSystemService {
   public synchronized void mkdirs(String path) {
     if(Strings.isNullOrEmpty(path)) return;
 
-    if(attachmentStateRepository.countByPathAndName(path, DIR_NAME) == 0) {
+    if(attachmentStateRepository.countByPathAndName(String.format("^%s$", normalizeRegex(path)), DIR_NAME) == 0) {
       // make sure parent exists
       if(path.lastIndexOf('/') > 0) mkdirs(path.substring(0, path.lastIndexOf('/')));
       else if(path.lastIndexOf('/') == 0 && !"/".equals(path)) mkdirs("/");
@@ -228,7 +228,7 @@ public class FileSystemService {
       // publish the parent directories (if any)
       if(!FileUtils.isRoot(state.getPath())) {
         publishDirs(FileUtils.isDirectory(state) ? FileUtils.getParentPath(state.getPath()) : state.getPath(),
-          publisher);
+            publisher);
       }
       state.publish(publisher);
       state.setRevisionStatus(RevisionStatus.DRAFT);
@@ -269,7 +269,7 @@ public class FileSystemService {
   }
 
   private void publishWithCascading(String path, boolean publish, String publisher,
-    PublishCascadingScope cascadingScope) {
+      PublishCascadingScope cascadingScope) {
     fsLock.lock();
     try {
       if(PublishCascadingScope.ALL == cascadingScope) {
@@ -278,7 +278,7 @@ public class FileSystemService {
         List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
         states.addAll(findAttachmentStates(String.format("^%s/", path), false));
         states.stream().filter(s -> !publish || s.getRevisionStatus() == RevisionStatus.UNDER_REVIEW)
-          .forEach(s -> publish(s, publish, publisher));
+            .forEach(s -> publish(s, publish, publisher));
       }
     } finally {
       fsLock.unlock();
@@ -318,7 +318,7 @@ public class FileSystemService {
     states.stream().filter(FileUtils::isDirectory).forEach(s -> mkdirs(s.getPath().replaceFirst(path, newPath)));
     // then copy the files
     states.stream().filter(s -> !FileUtils.isDirectory(s))
-      .forEach(s -> copy(s, s.getPath().replaceFirst(path, newPath), s.getName(), true));
+        .forEach(s -> copy(s, s.getPath().replaceFirst(path, newPath), s.getName(), true));
     // mark source as being deleted
     states.stream().filter(FileUtils::isDirectory).forEach(s -> updateStatus(s, RevisionStatus.DELETED));
   }
@@ -370,7 +370,7 @@ public class FileSystemService {
     states.addAll(findAttachmentStates(String.format("^%s/", path), false));
     states.stream().filter(FileUtils::isDirectory).forEach(s -> mkdirs(s.getPath().replaceFirst(path, newPath)));
     states.stream().filter(s -> !FileUtils.isDirectory(s))
-      .forEach(s -> copy(s, s.getPath().replaceFirst(path, newPath), s.getName(), false));
+        .forEach(s -> copy(s, s.getPath().replaceFirst(path, newPath), s.getName(), false));
   }
 
   /**
@@ -402,7 +402,7 @@ public class FileSystemService {
     Attachment attachment = state.getAttachment();
     Attachment newAttachment = new Attachment();
     BeanUtils.copyProperties(attachment, newAttachment, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
-      "lastModifiedDate");
+        "lastModifiedDate");
     newAttachment.setPath(newPath);
     newAttachment.setName(newName);
     save(newAttachment);
@@ -418,7 +418,7 @@ public class FileSystemService {
   public void reinstate(Attachment attachment) {
     Attachment newAttachment = new Attachment();
     BeanUtils.copyProperties(attachment, newAttachment, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
-      "lastModifiedDate");
+        "lastModifiedDate");
     newAttachment.setLastModifiedDate(DateTime.now());
     newAttachment.setLastModifiedBy(getCurrentUsername());
     save(newAttachment);
@@ -433,7 +433,7 @@ public class FileSystemService {
   public void updateStatus(String path, RevisionStatus status) {
     List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
     AttachmentState state = states.stream().filter(s -> DIR_NAME.equals(s.getName())).findFirst()
-      .orElseThrow(() -> NoSuchEntityException.withPath(AttachmentState.class, path));
+        .orElseThrow(() -> NoSuchEntityException.withPath(AttachmentState.class, path));
     RevisionStatus currentStatus = state.getRevisionStatus();
     states.addAll(findAttachmentStates(String.format("^%s/", path), false));
     states.stream().forEach(s -> updateStatus(s, status));
@@ -479,7 +479,7 @@ public class FileSystemService {
   }
 
   /**
-   * Count the number of {@link AttachmentState}s located at the given path. Result excludes the
+   * Count the number of {@link AttachmentState}s located at the given path (including the sub-folders). Result excludes the
    * {@link AttachmentState} representing the folder itself.
    *
    * @param path
@@ -487,10 +487,23 @@ public class FileSystemService {
    * @return
    */
   public long countAttachmentStates(String path, boolean publishedFS) {
-    long count = publishedFS ? (subjectAclService.isOpenAccess() ? attachmentStateRepository
-      .countByPathAndPublishedAttachmentNotNull(path) : countAccessiblePublishedAttachmentStates(
-      path)) : attachmentStateRepository.countByPath(path);
-    return count == 0 ? 0 : count - 1;
+    // count the regular files in the folder
+    String pathRegEx = String.format("^%s$", normalizeRegex(path));
+    long count = publishedFS
+        ? (subjectAclService.isOpenAccess() ? attachmentStateRepository
+        .countByPathAndPublishedAttachmentNotNull(pathRegEx) : countAccessiblePublishedAttachmentStates(pathRegEx))
+        : attachmentStateRepository.countByPath(pathRegEx);
+    count = count == 0 ? 0 : count - 1;
+
+    // count the sub-folders in the folder
+    pathRegEx = String.format("^%s/[^/]+$", normalizeRegex(path));
+    long dirs = publishedFS
+        ? (subjectAclService.isOpenAccess()
+        ? attachmentStateRepository.countByPathAndNameAndPublishedAttachmentNotNull(pathRegEx, DIR_NAME)
+        : countAccessiblePublishedAttachmentStates(pathRegEx, DIR_NAME))
+        : attachmentStateRepository.countByPathAndName(pathRegEx, DIR_NAME);
+
+    return count + dirs;
   }
 
   /**
@@ -504,16 +517,17 @@ public class FileSystemService {
   @NotNull
   public AttachmentState getAttachmentState(String path, String name, boolean publishedFS) {
     List<AttachmentState> state = publishedFS
-      ? attachmentStateRepository.findByPathAndNameAndPublishedAttachmentNotNull(path, name)
-      : attachmentStateRepository.findByPathAndName(path, name);
+        ? attachmentStateRepository.findByPathAndNameAndPublishedAttachmentNotNull(path, name)
+        : attachmentStateRepository.findByPathAndName(path, name);
     if(state.isEmpty()) throw NoSuchEntityException.withPath(Attachment.class, path + "/" + name);
     return state.get(0);
   }
 
   public boolean hasAttachmentState(String path, String name, boolean publishedFS) {
+    String pathRegEx = String.format("^%s$", path);
     return publishedFS
-      ? attachmentStateRepository.countByPathAndNameAndPublishedAttachmentNotNull(path, name) > 0
-      : attachmentStateRepository.countByPathAndName(path, name) > 0;
+        ? attachmentStateRepository.countByPathAndNameAndPublishedAttachmentNotNull(pathRegEx, name) > 0
+        : attachmentStateRepository.countByPathAndName(pathRegEx, name) > 0;
   }
 
   public List<Attachment> getAttachmentRevisions(AttachmentState state) {
@@ -552,10 +566,10 @@ public class FileSystemService {
     PublishCascadingScope cascadingScope = event.getCascadingScope();
     if(cascadingScope != PublishCascadingScope.NONE) {
       publishWithCascading( //
-        String.format("/study/%s", event.getPersistable().getId()), //
-        true, //
-        event.getPublisher(), //
-        cascadingScope); //
+          String.format("/study/%s", event.getPersistable().getId()), //
+          true, //
+          event.getPublisher(), //
+          cascadingScope); //
     }
   }
 
@@ -576,9 +590,9 @@ public class FileSystemService {
 
       if(event.getPersistable().hasPopulations()) {
         event.getPersistable().getPopulations().stream().filter(Population::hasDataCollectionEvents).forEach(
-          p -> p.getDataCollectionEvents().forEach(dce -> mkdirs(String
-            .format("/study/%s/population/%s/data-collection-event/%s", event.getPersistable().getId(), p.getId(),
-              dce.getId()))));
+            p -> p.getDataCollectionEvents().forEach(dce -> mkdirs(String
+                .format("/study/%s/population/%s/data-collection-event/%s", event.getPersistable().getId(), p.getId(),
+                    dce.getId()))));
       }
     } finally {
       fsLock.unlock();
@@ -604,10 +618,10 @@ public class FileSystemService {
     PublishCascadingScope cascadingScope = event.getCascadingScope();
     if(cascadingScope != PublishCascadingScope.NONE) {
       publishWithCascading( //
-        String.format("/network/%s", event.getPersistable().getId()), //
-        true, //
-        event.getPublisher(), //
-        cascadingScope); //
+          String.format("/network/%s", event.getPersistable().getId()), //
+          true, //
+          event.getPublisher(), //
+          cascadingScope); //
     }
   }
 
@@ -637,10 +651,10 @@ public class FileSystemService {
     PublishCascadingScope cascadingScope = event.getCascadingScope();
     if(cascadingScope != PublishCascadingScope.NONE) {
       publishWithCascading( //
-        String.format("/%s/%s", getDatasetTypeFolder(event.getPersistable()), event.getPersistable().getId()), //
-        true, //
-        event.getPublisher(), //
-        cascadingScope); //
+          String.format("/%s/%s", getDatasetTypeFolder(event.getPersistable()), event.getPersistable().getId()), //
+          true, //
+          event.getPublisher(), //
+          cascadingScope); //
     }
   }
 
@@ -649,7 +663,7 @@ public class FileSystemService {
   public void datasetUnpublished(DatasetUnpublishedEvent event) {
     log.debug("{} {} was unpublished", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
     publish(String.format("/%s/%s", getDatasetTypeFolder(event.getPersistable()), event.getPersistable().getId()),
-      false);
+        false);
   }
 
   private String getDatasetTypeFolder(Dataset dataset) {
@@ -705,7 +719,8 @@ public class FileSystemService {
    * @return
    */
   private List<AttachmentState> findPublishedAttachmentStates(String pathRegEx) {
-    return attachmentStateRepository.findByPathAndPublishedAttachmentNotNull(normalizeRegex(pathRegEx)).stream().collect(toList());
+    return attachmentStateRepository.findByPathAndPublishedAttachmentNotNull(normalizeRegex(pathRegEx)).stream()
+        .collect(toList());
   }
 
   /**
@@ -726,26 +741,39 @@ public class FileSystemService {
    */
   private List<Attachment> findPublishedAttachments(String pathRegEx) {
     return findPublishedAttachmentStates(pathRegEx).stream().map(AttachmentState::getPublishedAttachment)
-      .collect(toList());
+        .collect(toList());
   }
 
   /**
    * Get the count of accessible files at path.
-   * 
+   *
    * @param path
    * @return
    */
-  private long countAccessiblePublishedAttachmentStates(String path) {
-    return findPublishedAttachmentStates(path + "$").stream()
-      .filter(s -> subjectAclService.isAccessible("/file", s.getFullPath())) //
-      .count();
+  private long countAccessiblePublishedAttachmentStates(String pathRegEx) {
+    return attachmentStateRepository.findByPathAndPublishedAttachmentNotNull(pathRegEx).stream()
+        .filter(s -> subjectAclService.isAccessible("/file", s.getFullPath())) //
+        .count();
+  }
+
+  /**
+   * Get the count of named accessible files at path.
+   *
+   * @param pathRegEx
+   * @param name
+   * @return
+   */
+  private long countAccessiblePublishedAttachmentStates(String pathRegEx, String name) {
+    return attachmentStateRepository.findByPathAndPublishedAttachmentNotNull(pathRegEx).stream()
+        .filter(s -> s.getName().equals(name) && subjectAclService.isAccessible("/file", s.getFullPath())) //
+        .count();
   }
 
   private static String extractDirName(String pathWithName, @Nullable String prefix) {
     String dir = pathWithName.contains("/") ? pathWithName.substring(0, pathWithName.lastIndexOf('/')) : "";
     return Strings.isNullOrEmpty(prefix)
-      ? dir
-      : Strings.isNullOrEmpty(dir) ? prefix : String.format("%s/%s", prefix, dir);
+        ? dir
+        : Strings.isNullOrEmpty(dir) ? prefix : String.format("%s/%s", prefix, dir);
   }
 
   private static String extractBaseName(String pathWithName) {
@@ -755,8 +783,8 @@ public class FileSystemService {
   private String getCurrentUsername() {
     Subject subject = SecurityUtils.getSubject();
     return subject == null || subject.getPrincipal() == null
-      ? AbstractGitWriteCommand.DEFAULT_AUTHOR_NAME
-      : subject.getPrincipal().toString();
+        ? AbstractGitWriteCommand.DEFAULT_AUTHOR_NAME
+        : subject.getPrincipal().toString();
   }
 
   private void validateFileName(String name) {
