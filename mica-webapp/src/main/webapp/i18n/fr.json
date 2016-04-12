@@ -957,6 +957,8 @@
   "published": "Published",
   "role": "Role",
   "files": "Files",
+  "items": "items",
+  "item": "item",
   "select-all": "Select all",
   "clear-selection": "Clear",
   "items-selected": "items selected",
