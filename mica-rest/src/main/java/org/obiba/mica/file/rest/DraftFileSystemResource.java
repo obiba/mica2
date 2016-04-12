@@ -3,6 +3,7 @@ package org.obiba.mica.file.rest;
 
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -16,10 +17,12 @@ import javax.ws.rs.core.UriInfo;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileStoreService;
+import org.obiba.mica.file.support.FileMediaType;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
+import com.google.common.io.Files;
 
 @Component
 @Path("/draft")
@@ -35,8 +38,18 @@ public class DraftFileSystemResource extends AbstractFileSystemResource {
 
   @GET
   @Path("/file-dl/{path:.*}")
-  public Response downloadFile(@PathParam("path") String path, @QueryParam("version") String version) {
+  public Response downloadFile(@PathParam("path") String path, @QueryParam("version") String version,
+    @QueryParam("inline") @DefaultValue("false") boolean inline) {
     Attachment attachment = doGetAttachment(path, version);
+
+    if (inline) {
+      String filename = attachment.getName();
+      return Response.ok(fileStoreService.getFile(attachment.getFileReference()))
+        .header("Content-Disposition", "inline; filename=\"" + filename + "\"")
+        .type(FileMediaType.type(Files.getFileExtension(filename)))
+        .build();
+    }
+
     return Response.ok(fileStoreService.getFile(attachment.getFileReference()))
       .header("Content-Disposition", "attachment; filename=\"" + attachment.getName() + "\"").build();
   }
