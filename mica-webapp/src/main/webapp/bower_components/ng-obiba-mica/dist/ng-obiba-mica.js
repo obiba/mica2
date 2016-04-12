@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-04-08
+ * Date: 2016-04-11
  */
 'use strict';
 
@@ -174,26 +174,30 @@ angular.module('obiba.mica.utils', [])
       return true;
     };
   })
-  
+
   .directive('fixedHeader', ['$timeout','$window', function ($timeout, $window) {
     return {
       restrict: 'A',
       scope: {
-        tableMaxHeight: '@'
+        tableMaxHeight: '@',
+        trigger: '=fixedHeader'
       },
       link: function ($scope, $elem) {
         var elem = $elem[0];
+
         function isVisible(el) {
           var style = $window.getComputedStyle(el);
           return (style.display !== 'none' && el.offsetWidth !==0 );
         }
+
         function isTableReady() {
           return isVisible(elem.querySelector('tbody')) && elem.querySelector('tbody tr:first-child') !== null;
         }
+
         // wait for content to load into table and to have at least one row, tdElems could be empty at the time of execution if td are created asynchronously (eg ng-repeat with promise)
-        var unbindWatch = $scope.$watch(isTableReady,
+        $scope.$watchGroup(['trigger', isTableReady],
           function (newValue) {
-            if (newValue === true) {
+            if (newValue[1] === true) {
               // reset display styles so column widths are correct when measured below
               angular.element(elem.querySelectorAll('thead, tbody, tfoot')).css('display', '');
 
@@ -204,9 +208,8 @@ angular.module('obiba.mica.utils', [])
 
                   var tdElems = elem.querySelector('tbody tr:first-child td:nth-child(' + (i + 1) + ')');
                   var tfElems = elem.querySelector('tfoot tr:first-child td:nth-child(' + (i + 1) + ')');
-
-
                   var columnWidth = tdElems ? tdElems.offsetWidth : thElem.offsetWidth;
+
                   if(tdElems) {
                     tdElems.style.width = columnWidth + 'px';
                   }
@@ -217,6 +220,7 @@ angular.module('obiba.mica.utils', [])
                     tfElems.style.width = columnWidth + 'px';
                   }
                 });
+
                 // set css styles on thead and tbody
                 angular.element(elem.querySelectorAll('thead, tfoot')).css('display', 'block');
 
@@ -237,9 +241,6 @@ angular.module('obiba.mica.utils', [])
                   lastColumn.style.width = (lastColumn.offsetWidth - scrollBarWidth) + 'px';
                 }
               });
-
-              //we only need to watch once
-              unbindWatch();
             }
           });
       }
@@ -1367,6 +1368,7 @@ angular.module('obiba.mica.search', [
         coverageHelp: null,
         graphicsLabel: 'search.graphics',
         graphicsHelp: null,
+        classificationsTitle: null,
         classificationsLinkLabel: null,
         taxonomyNavHelp: null,
         vocabularyNavHelp: null,
@@ -5355,11 +5357,13 @@ angular.module('obiba.mica.search')
     };
   }])
 
-  .directive('studiesResultTable', ['PageUrlService', 'ngObibaMicaSearch', 'TaxonomyResource', 'RqlQueryService', function (PageUrlService, ngObibaMicaSearch, TaxonomyResource, RqlQueryService) {
+  .directive('studiesResultTable', ['PageUrlService', 'ngObibaMicaSearch', 'TaxonomyResource', 'RqlQueryService', 'LocalizedValues',
+    function (PageUrlService, ngObibaMicaSearch, TaxonomyResource, RqlQueryService, LocalizedValues) {
     return {
       restrict: 'EA',
       replace: true,
       scope: {
+        lang: '=',
         summaries: '=',
         loading: '=',
         onUpdateCriteria: '='
@@ -5368,21 +5372,41 @@ angular.module('obiba.mica.search')
       link: function(scope) {
         scope.taxonomy = {};
         scope.designs = {};
+        scope.datasourceTitles = {};
+
+        function getDatasourceTitles() {
+          if (Object.keys(scope.taxonomy) < 1 || Object.keys(scope.datasourceTitles) > 0) {
+            return;
+          }
+
+          scope.taxonomy.vocabularies.some(function(vocabulary) {
+            if (vocabulary.name === 'populations-dataCollectionEvents-dataSources') {
+              vocabulary.terms.forEach(function(term) {
+                scope.datasourceTitles[term.name] = {title: LocalizedValues.forLocale(term.title, scope.lang)};
+              });
+              return true;
+            }
+            return false;
+          });
+        }
+
+        scope.$watch('lang', getDatasourceTitles);
 
         TaxonomyResource.get({
           target: 'study',
           taxonomy: 'Mica_study'
         }).$promise.then(function (taxonomy) {
-            scope.taxonomy = taxonomy;
-            scope.designs = taxonomy.vocabularies.filter(function (v) {
-              return v.name === 'methods-designs';
-            })[0].terms.reduce(function (prev, t) {
-                prev[t.name] = t.title.map(function (t) {
-                  return {lang: t.locale, value: t.text};
-                });
-                return prev;
-              }, {});
-          });
+          scope.taxonomy = taxonomy;
+          getDatasourceTitles();
+          scope.designs = taxonomy.vocabularies.filter(function (v) {
+            return v.name === 'methods-designs';
+          })[0].terms.reduce(function (prev, t) {
+              prev[t.name] = t.title.map(function (t) {
+                return {lang: t.locale, value: t.text};
+              });
+              return prev;
+            }, {});
+        });
 
         scope.hasDatasource = function (datasources, id) {
           return datasources && datasources.indexOf(id) > -1;
@@ -7444,7 +7468,7 @@ angular.module("file-browser/views/documents-table-template.html", []).run(["$te
     "      <span ng-if=\"!data.search.recursively\">{{'file.search-results.current' | translate}}</span>\n" +
     "      ({{data.document.children.length}})\n" +
     "  </div>\n" +
-    "  <div ng-if=\"data.document.size > 0\">\n" +
+    "  <div ng-if=\"data.document.children.length > 0\">\n" +
     "    <table class=\"table table-bordered table-striped no-padding no-margin\">\n" +
     "      <thead>\n" +
     "      <tr>\n" +
@@ -7555,8 +7579,10 @@ angular.module("file-browser/views/file-browser-template.html", []).run(["$templ
     "\n" +
     "      <div class=\"row voffset2\">\n" +
     "        <div ng-class=\"{'col-md-8': data.details.show, 'col-md-12': !data.details.show}\">\n" +
-    "          <div ng-if=\"!data.isFile && data.document.size > 0\" ng-include=\"'file-browser/views/documents-table-template.html'\"></div>\n" +
-    "          <div ng-if=\"!data.isFile && data.document.size < 1\" class=\"text-muted\"><em>{{'empty-folder' | translate}}</em></div>\n" +
+    "          <div ng-include=\"'file-browser/views/documents-table-template.html'\"></div>\n" +
+    "          <div ng-if=\"!data.isFile && data.document.children.length < 1 && !data.search.active\" class=\"text-muted\">\n" +
+    "            <em>{{'empty-folder' | translate}}</em>\n" +
+    "          </div>\n" +
     "          <div class=\"pull-right no-margin\">\n" +
     "            <dir-pagination-controls></dir-pagination-controls>\n" +
     "          </div>\n" +
@@ -7611,7 +7637,7 @@ angular.module("file-browser/views/toolbar-template.html", []).run(["$templateCa
     "                   type=\"text\"\n" +
     "                   class=\"form-control ng-pristine ng-untouched ng-valid\"\n" +
     "                   aria-describedby=\"study-search\"\n" +
-    "                   style=\"max-width: 100px;\">\n" +
+    "                   style=\"max-width: 200px;\">\n" +
     "               <span ng-show=\"data.search.text\" title=\"{{'search-tooltip.clear' | translate}}\" ng-click=\"clearSearch()\"\n" +
     "                  class=\"input-group-addon\">\n" +
     "                <i class=\"fa fa-times\"></i>\n" +
@@ -8561,7 +8587,7 @@ angular.module("search/views/graphics/graphics-search-result-template.html", [])
     "        </div>\n" +
     "        <div class=\"col-md-6\">\n" +
     "          <div class=\"table-responsive\" ng-if=\"chart.chartObject.data && chart.chartObject.data.length>1\">\n" +
-    "            <table style=\"max-height: 400px;\" class=\"table table-bordered table-striped\" fixed-header>\n" +
+    "            <table style=\"max-height: 400px;\" class=\"table table-bordered table-striped\" fixed-header=\"chart.chartObject.data\">\n" +
     "              <thead>\n" +
     "              <tr>\n" +
     "                <th>{{chart.chartObject.data[0][0]}}</th>\n" +
@@ -8797,10 +8823,10 @@ angular.module("search/views/list/studies-search-result-table-template.html", []
     "              ng-if=\"optionsCols.showStudiesStudyVariablesColumn || optionsCols.showStudiesDataschemaVariablesColumn\">variables</th>\n" +
     "        </tr>\n" +
     "        <tr>\n" +
-    "          <th translate ng-if=\"optionsCols.showStudiesQuestionnaireColumn\">search.study.quest</th>\n" +
-    "          <th translate ng-if=\"optionsCols.showStudiesPmColumn\">search.study.pm</th>\n" +
-    "          <th translate ng-if=\"optionsCols.showStudiesBioColumn\">search.study.bio</th>\n" +
-    "          <th translate ng-if=\"optionsCols.showStudiesOtherColumn\">search.study.others</th>\n" +
+    "          <th title=\"{{datasourceTitles.questionnaires.title}}\" translate ng-if=\"optionsCols.showStudiesQuestionnaireColumn\">search.study.quest</th>\n" +
+    "          <th title=\"{{datasourceTitles.physical_measures.title}}\" translate ng-if=\"optionsCols.showStudiesPmColumn\">search.study.pm</th>\n" +
+    "          <th title=\"{{datasourceTitles.biological_samples.title}}\" translate ng-if=\"optionsCols.showStudiesBioColumn\">search.study.bio</th>\n" +
+    "          <th title=\"{{datasourceTitles.others.title}}\" translate ng-if=\"optionsCols.showStudiesOtherColumn\">search.study.others</th>\n" +
     "          <th translate ng-if=\"optionsCols.showStudiesStudyDatasetsColumn\">search.study.label</th>\n" +
     "          <th translate ng-if=\"optionsCols.showStudiesHarmonizationDatasetsColumn\">search.harmonization</th>\n" +
     "          <th translate ng-if=\"optionsCols.showStudiesStudyVariablesColumn\">search.variable.study</th>\n" +
@@ -8968,7 +8994,7 @@ angular.module("search/views/search-result-list-study-template.html", []).run(["
   $templateCache.put("search/views/search-result-list-study-template.html",
     "<div class=\"tab-pane\" ng-show=\"options.studies.showSearchTab\" ng-class=\"{'active': activeTarget.studies.active}\">\n" +
     "  <span ng-if=\"resultTabsOrder.length === 1\">{{'studies' | translate}} ({{result.list.studyResultDto.totalHits}})</span>\n" +
-    "  <studies-result-table loading=\"loading\" on-update-criteria=\"onUpdateCriteria\"\n" +
+    "  <studies-result-table lang=\"lang\" loading=\"loading\" on-update-criteria=\"onUpdateCriteria\"\n" +
     "      summaries=\"result.list.studyResultDto['obiba.mica.StudyResultDto.result'].summaries\"></studies-result-table>\n" +
     "</div>");
 }]);
@@ -9103,6 +9129,9 @@ angular.module("search/views/search.html", []).run(["$templateCache", function($
     "      <div class=\"col-md-6\">\n" +
     "        <small>\n" +
     "          <ul class=\"nav nav-pills\">\n" +
+    "            <li ng-if=\"options.classificationsTitle\">\n" +
+    "              <label class=\"nav-label\">{{options.classificationsTitle}}</label>\n" +
+    "            </li>\n" +
     "            <li ng-repeat=\"t in taxonomyNav track by $index\" title=\"{{t.locale.description.text}}\">\n" +
     "              <a href ng-click=\"showTaxonomy(t.target, t.name)\" ng-if=\"!t.terms\">{{t.locale.title.text}}</a>\n" +
     "            <span uib-dropdown ng-if=\"t.terms\">\n" +

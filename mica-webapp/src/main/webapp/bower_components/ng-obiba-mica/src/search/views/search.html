@@ -83,6 +83,9 @@
       <div class="col-md-6">
         <small>
           <ul class="nav nav-pills">
+            <li ng-if="options.classificationsTitle">
+              <label class="nav-label">{{options.classificationsTitle}}</label>
+            </li>
             <li ng-repeat="t in taxonomyNav track by $index" title="{{t.locale.description.text}}">
               <a href ng-click="showTaxonomy(t.target, t.name)" ng-if="!t.terms">{{t.locale.title.text}}</a>
             <span uib-dropdown ng-if="t.terms">

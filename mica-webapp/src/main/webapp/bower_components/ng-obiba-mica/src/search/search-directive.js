@@ -151,11 +151,13 @@ angular.module('obiba.mica.search')
     };
   }])
 
-  .directive('studiesResultTable', ['PageUrlService', 'ngObibaMicaSearch', 'TaxonomyResource', 'RqlQueryService', function (PageUrlService, ngObibaMicaSearch, TaxonomyResource, RqlQueryService) {
+  .directive('studiesResultTable', ['PageUrlService', 'ngObibaMicaSearch', 'TaxonomyResource', 'RqlQueryService', 'LocalizedValues',
+    function (PageUrlService, ngObibaMicaSearch, TaxonomyResource, RqlQueryService, LocalizedValues) {
     return {
       restrict: 'EA',
       replace: true,
       scope: {
+        lang: '=',
         summaries: '=',
         loading: '=',
         onUpdateCriteria: '='
@@ -164,21 +166,41 @@ angular.module('obiba.mica.search')
       link: function(scope) {
         scope.taxonomy = {};
         scope.designs = {};
+        scope.datasourceTitles = {};
+
+        function getDatasourceTitles() {
+          if (Object.keys(scope.taxonomy) < 1 || Object.keys(scope.datasourceTitles) > 0) {
+            return;
+          }
+
+          scope.taxonomy.vocabularies.some(function(vocabulary) {
+            if (vocabulary.name === 'populations-dataCollectionEvents-dataSources') {
+              vocabulary.terms.forEach(function(term) {
+                scope.datasourceTitles[term.name] = {title: LocalizedValues.forLocale(term.title, scope.lang)};
+              });
+              return true;
+            }
+            return false;
+          });
+        }
+
+        scope.$watch('lang', getDatasourceTitles);
 
         TaxonomyResource.get({
           target: 'study',
           taxonomy: 'Mica_study'
         }).$promise.then(function (taxonomy) {
-            scope.taxonomy = taxonomy;
-            scope.designs = taxonomy.vocabularies.filter(function (v) {
-              return v.name === 'methods-designs';
-            })[0].terms.reduce(function (prev, t) {
-                prev[t.name] = t.title.map(function (t) {
-                  return {lang: t.locale, value: t.text};
-                });
-                return prev;
-              }, {});
-          });
+          scope.taxonomy = taxonomy;
+          getDatasourceTitles();
+          scope.designs = taxonomy.vocabularies.filter(function (v) {
+            return v.name === 'methods-designs';
+          })[0].terms.reduce(function (prev, t) {
+              prev[t.name] = t.title.map(function (t) {
+                return {lang: t.locale, value: t.text};
+              });
+              return prev;
+            }, {});
+        });
 
         scope.hasDatasource = function (datasources, id) {
           return datasources && datasources.indexOf(id) > -1;

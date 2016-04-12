@@ -14,7 +14,7 @@
         </div>
         <div class="col-md-6">
           <div class="table-responsive" ng-if="chart.chartObject.data && chart.chartObject.data.length>1">
-            <table style="max-height: 400px;" class="table table-bordered table-striped" fixed-header>
+            <table style="max-height: 400px;" class="table table-bordered table-striped" fixed-header="chart.chartObject.data">
               <thead>
               <tr>
                 <th>{{chart.chartObject.data[0][0]}}</th>

@@ -18,8 +18,10 @@
 
       <div class="row voffset2">
         <div ng-class="{'col-md-8': data.details.show, 'col-md-12': !data.details.show}">
-          <div ng-if="!data.isFile && data.document.size > 0" ng-include="'file-browser/views/documents-table-template.html'"></div>
-          <div ng-if="!data.isFile && data.document.size < 1" class="text-muted"><em>{{'empty-folder' | translate}}</em></div>
+          <div ng-include="'file-browser/views/documents-table-template.html'"></div>
+          <div ng-if="!data.isFile && data.document.children.length < 1 && !data.search.active" class="text-muted">
+            <em>{{'empty-folder' | translate}}</em>
+          </div>
           <div class="pull-right no-margin">
             <dir-pagination-controls></dir-pagination-controls>
           </div>
