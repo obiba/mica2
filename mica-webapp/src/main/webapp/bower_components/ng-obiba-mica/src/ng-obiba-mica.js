@@ -27,7 +27,7 @@ function NgObibaMicaUrlProvider() {
     'BaseUrl': '/',
     'FileBrowserFileResource': 'ws/file/:path/',
     'FileBrowserSearchResource': 'ws/files-search/:path',
-    'FileBrowserDownloadUrl': 'ws/draft/file-dl/:path'
+    'FileBrowserDownloadUrl': 'ws/draft/file-dl/:path?inline=:inline'
   };
 
   function UrlProvider(registry) {

@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-04-11
+ * Date: 2016-04-12
  */
 'use strict';
 
@@ -34,7 +34,7 @@ function NgObibaMicaUrlProvider() {
     'BaseUrl': '/',
     'FileBrowserFileResource': 'ws/file/:path/',
     'FileBrowserSearchResource': 'ws/files-search/:path',
-    'FileBrowserDownloadUrl': 'ws/draft/file-dl/:path'
+    'FileBrowserDownloadUrl': 'ws/draft/file-dl/:path?inline=:inline'
   };
 
   function UrlProvider(registry) {
@@ -6460,13 +6460,10 @@ angular.module('obiba.mica.localized')
 function NgObibaMicaFileBrowserOptionsProvider() {
   var options = {
     locale: 'en',
+    downloadInline: true,
     folders: {
       excludes: ['population']
     }
-  };
-
-  this.setLocale = function(locale) {
-    options.locale = locale;
   };
 
   this.$get = function () {
@@ -6715,6 +6712,7 @@ angular.module('obiba.mica.fileBrowser')
         return FileBrowserService.getLocalizedValue(values, ngObibaMicaFileBrowserOptions.locale);
       };
 
+      $scope.downloadTarget = ngObibaMicaFileBrowserOptions.downloadInline ? '_blank' : '_self';
       $scope.getDownloadUrl = FileBrowserDownloadService.getUrl;
       $scope.screen = $rootScope.screen;
       $scope.truncate = StringUtils.truncate;
@@ -6800,10 +6798,12 @@ angular.module('obiba.mica.fileBrowser')
       });
     }])
 
-  .service('FileBrowserDownloadService', ['ngObibaMicaUrl',
-    function (ngObibaMicaUrl) {
+  .service('FileBrowserDownloadService', ['ngObibaMicaUrl', 'ngObibaMicaFileBrowserOptions',
+    function (ngObibaMicaUrl, ngObibaMicaFileBrowserOptions) {
       this.getUrl = function(path) {
-        return ngObibaMicaUrl.getUrl('FileBrowserDownloadUrl').replace(/:path/, path);
+        return ngObibaMicaUrl.getUrl('FileBrowserDownloadUrl')
+          .replace(/:path/, path)
+          .replace(/:inline/, ngObibaMicaFileBrowserOptions.downloadInline);
       };
 
       return this;
@@ -7406,9 +7406,9 @@ angular.module("file-browser/views/document-detail-template.html", []).run(["$te
     "        <small>{{'size' | translate}}</small>\n" +
     "      </label>\n" +
     "      <div>\n" +
-    "        <span ng-if=\"!isFile(data.details.document)\">{{data.details.document.size}} {{'files' | translate}}</span>\n" +
+    "        <span ng-if=\"!isFile(data.details.document)\">{{data.details.document.size}} {{data.details.document.size > 1 ? 'items' : 'item' | translate}}</span>\n" +
     "        <span ng-if=\"isFile(data.details.document)\">{{data.details.document.size | bytes}}</span>\n" +
-    "        <a ng-if=\"isFile(data.details.document)\" target=\"_self\" ng-href=\"{{getDownloadUrl(data.details.document.path)}}\" class=\"hoffset2\" title=\"{{'download' | translate}}\">\n" +
+    "        <a ng-if=\"isFile(data.details.document)\" target=\"{{downloadTarget}}\" ng-href=\"{{getDownloadUrl(data.details.document.path)}}\" class=\"hoffset2\" title=\"{{'download' | translate}}\">\n" +
     "          <span><i class=\"fa fa-download\"></i><span class=\"hoffset2\"></span></span>\n" +
     "        </a>\n" +
     "      </div>\n" +
@@ -7495,7 +7495,7 @@ angular.module("file-browser/views/documents-table-template.html", []).run(["$te
     "          <span>\n" +
     "            <span ng-if=\"fileDocument\">\n" +
     "              <i class=\"fa {{getDocumentIcon(document)}}\"></i>\n" +
-    "              <a ng-if=\"fileDocument\" target=\"_self\"\n" +
+    "              <a ng-if=\"fileDocument\" target=\"{{downloadTarget}}\"\n" +
     "                 style=\"text-decoration: none\" ng-click=\"$event.stopPropagation();\" ng-href=\"{{getDownloadUrl(document.path)}}\"\n" +
     "                  title=\"{{document.name}}\">\n" +
     "                {{document.name}}\n" +
@@ -7523,7 +7523,7 @@ angular.module("file-browser/views/documents-table-template.html", []).run(["$te
     "                </a>\n" +
     "              </li>\n" +
     "              <li role=\"menuitem\" ng-if=\"fileDocument\">\n" +
-    "                <a ng-href=\"{{getDownloadUrl(document.path)}}\">\n" +
+    "                <a target=\"{{downloadTarget}}\" ng-href=\"{{getDownloadUrl(document.path)}}\">\n" +
     "                  <span><i class=\"fa fa-download\"></i><span class=\"hoffset2\">{{'download' | translate}}</span></span>\n" +
     "                </a>\n" +
     "              </li>\n" +
@@ -7540,7 +7540,7 @@ angular.module("file-browser/views/documents-table-template.html", []).run(["$te
     "          {{document.size | bytes}}\n" +
     "        </td>\n" +
     "        <td class=\"no-wrap\" ng-if=\"!fileDocument\">\n" +
-    "          {{document.size}}\n" +
+    "          {{document.size}} {{document.size > 1 ? 'items' : 'item' | translate}}\n" +
     "        </td>\n" +
     "        <td>\n" +
     "          {{document.timestamps.lastUpdate | amTimeAgo}}\n" +
