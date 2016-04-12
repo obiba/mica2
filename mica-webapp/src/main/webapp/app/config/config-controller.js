@@ -346,6 +346,24 @@ mica.config
 
     }])
 
+  .controller('MicaConfigNotificationsEditController', ['$scope', '$resource', '$window', '$location', '$log',
+    'MicaConfigResource', 'FormServerValidation',
+
+    function ($scope, $resource, $window, $location, $log, MicaConfigResource, FormServerValidation) {
+      $scope.micaConfig = MicaConfigResource.get();
+
+      $scope.save = function () {
+        $scope.micaConfig.$save(
+          function () {
+            $location.path('/admin/notifications');
+          },
+          function (response) {
+            FormServerValidation.error(response, $scope.form);
+          });
+      };
+
+    }])
+
   .controller('MicaConfigStyleEditController', ['$scope', '$resource', '$window', '$location', '$log',
     'MicaConfigResource', 'FormServerValidation', 'StyleEditorService',
 
