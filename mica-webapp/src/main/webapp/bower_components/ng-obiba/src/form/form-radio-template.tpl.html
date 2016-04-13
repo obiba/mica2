@@ -1,9 +1,8 @@
 <div class="radio" ng-class="{'has-error': (form[fieldName].$dirty || form.saveAttempted) && form[name].$invalid}">
 
-  <label for="{{name}}" class="control-label">
+  <label class="control-label">
     <span ng-show="required">*</span>
-    <input ng-click="onSelect(value)"
-          ng-model="model"
+    <input ng-model="model"
           ng-value="value"
           type="radio"
           id="{{name}}"

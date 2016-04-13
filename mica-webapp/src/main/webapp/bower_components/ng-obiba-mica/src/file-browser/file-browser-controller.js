@@ -64,10 +64,13 @@ angular.module('obiba.mica.fileBrowser')
 
             if (!$scope.data.document.children) {
               $scope.data.document.children = [];
-            } else {
+            }
+
+            if ($scope.data.document.path === $scope.data.rootPath) {
               $scope.data.document.children = $scope.data.document.children.filter(function(child){
                 return ngObibaMicaFileBrowserOptions.folders.excludes.indexOf(child.name) < 0;
               });
+              $scope.data.document.size = $scope.data.document.children.length;
             }
 
             $scope.data.breadcrumbs = BrowserBreadcrumbHelper.toArray(path, $scope.data.rootPath);
