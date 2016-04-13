@@ -8846,10 +8846,18 @@ angular.module("search/views/list/studies-search-result-table-template.html", []
     "              ng-if=\"optionsCols.showStudiesStudyVariablesColumn || optionsCols.showStudiesDataschemaVariablesColumn\">variables</th>\n" +
     "        </tr>\n" +
     "        <tr>\n" +
-    "          <th title=\"{{datasourceTitles.questionnaires.title}}\" translate ng-if=\"optionsCols.showStudiesQuestionnaireColumn\">search.study.quest</th>\n" +
-    "          <th title=\"{{datasourceTitles.physical_measures.title}}\" translate ng-if=\"optionsCols.showStudiesPmColumn\">search.study.pm</th>\n" +
-    "          <th title=\"{{datasourceTitles.biological_samples.title}}\" translate ng-if=\"optionsCols.showStudiesBioColumn\">search.study.bio</th>\n" +
-    "          <th title=\"{{datasourceTitles.others.title}}\" translate ng-if=\"optionsCols.showStudiesOtherColumn\">search.study.others</th>\n" +
+    "          <th class=\"text-nowrap\" title=\"{{datasourceTitles.questionnaires.title}}\" ng-if=\"optionsCols.showStudiesQuestionnaireColumn\">\n" +
+    "            <i class=\"fa fa-file-text-o\"></i>\n" +
+    "          </th>\n" +
+    "          <th class=\"text-nowrap\" title=\"{{datasourceTitles.physical_measures.title}}\" ng-if=\"optionsCols.showStudiesPmColumn\">\n" +
+    "            <i class=\"fa fa-stethoscope\"></i>\n" +
+    "          </th>\n" +
+    "          <th class=\"text-nowrap\"  title=\"{{datasourceTitles.biological_samples.title}}\" ng-if=\"optionsCols.showStudiesBioColumn\">\n" +
+    "            <i class=\"fa fa-flask\"></i>\n" +
+    "          </th>\n" +
+    "          <th class=\"text-nowrap\"  title=\"{{datasourceTitles.others.title}}\" ng-if=\"optionsCols.showStudiesOtherColumn\">\n" +
+    "            <i class=\"fa fa-plus-square-o\"></i>\n" +
+    "          </th>\n" +
     "          <th translate ng-if=\"optionsCols.showStudiesStudyDatasetsColumn\">search.study.label</th>\n" +
     "          <th translate ng-if=\"optionsCols.showStudiesHarmonizationDatasetsColumn\">search.harmonization</th>\n" +
     "          <th translate ng-if=\"optionsCols.showStudiesStudyVariablesColumn\">search.variable.study</th>\n" +
