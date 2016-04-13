@@ -15,7 +15,7 @@
         <small>{{'size' | translate}}</small>
       </label>
       <div>
-        <span ng-if="!data.isFile">{{data.document.size}} {{'files' | translate}}</span>
+        <span ng-if="!data.isFile">{{data.document.size}} {{data.document.size === 1 ? 'item' : 'items' | translate}}</span>
         <span ng-if="data.isFile">{{data.document.size | bytes}}</span>
       </div>
     </div>

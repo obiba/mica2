@@ -48,7 +48,7 @@
         {{document.size | bytes}}
       </td>
       <td class="no-wrap" ng-if="!fileDocument">
-        {{document.size}}
+        {{document.size}} {{document.size === 1 ? 'item' : 'items' | translate}}
       </td>
       <td ng-if="data.search.active">
         <a href class="no-text-decoration" ng-click="navigateToParent(document)">
