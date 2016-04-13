@@ -79,7 +79,7 @@
           {{document.size | bytes}}
         </td>
         <td class="no-wrap" ng-if="!fileDocument">
-          {{document.size}} {{document.size > 1 ? 'items' : 'item' | translate}}
+          {{document.size}} {{document.size === 1 ? 'item' : 'items' | translate}}
         </td>
         <td>
           {{document.timestamps.lastUpdate | amTimeAgo}}

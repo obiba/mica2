@@ -1027,6 +1027,21 @@ mica.study
 
       });
 
+      function initializeTaxonomies() {
+        StudyTaxonomyService.get(function() {
+          $scope.tabs.forEach(function(tab) {
+            $scope.methodDesignTypes[tab.lang] = RadioGroupOptionBuilder.build('methods', StudyTaxonomyService.getTerms('methods-designs', tab.lang));
+            $scope.accessTypes[tab.lang] = StudyTaxonomyService.getTerms('access', tab.lang);
+            $scope.methodRecruitmentTypes[tab.lang] = StudyTaxonomyService.getTerms('methods-recruitments', tab.lang);
+          });
+        });
+      }
+
+      function createNewStudy() {
+        initializeTaxonomies();
+        return {attachments: [], maelstromAuthorization: {date: null}, specificAuthorization: {date: null}};
+      }
+
       $scope.getActiveTab = ActiveTabService.getActiveTab;
       $scope.revision = {comment: null};
       $scope.today = new Date();
@@ -1074,18 +1089,12 @@ mica.study
               new Date(response.specificAuthorization.date.split('-').map(function (x) { return parseInt(x, 10);}));
           }
 
-          StudyTaxonomyService.get(function() {
-            // TODO remove the property below once the Study.methods.designs is replaced by Study.methods.design
-            $scope.methods = {design: angular.isArray($scope.study.methods.designs) ? $scope.study.methods.designs.pop() : $scope.study.methods.designs};
-            $scope.tabs.forEach(function(tab) {
-              $scope.methodDesignTypes[tab.lang] = RadioGroupOptionBuilder.build('methods', StudyTaxonomyService.getTerms('methods-designs', tab.lang));
-              $scope.accessTypes[tab.lang] = StudyTaxonomyService.getTerms('access', tab.lang);
-              $scope.methodRecruitmentTypes[tab.lang] = StudyTaxonomyService.getTerms('methods-recruitments', tab.lang);
-            });
-          });
-
+          // TODO remove the property below once the Study.methods.designs is replaced by Study.methods.design
+          $scope.methods = {design: angular.isArray($scope.study.methods.designs) ? $scope.study.methods.designs.pop() : $scope.study.methods.designs};
+          initializeTaxonomies();
         }
-      }) : {attachments: [], maelstromAuthorization: {date: null}, specificAuthorization: {date: null}};
+      }) : createNewStudy();
+
 
       $scope.save = function () {
         if ($scope.methods && $scope.methods.design) {

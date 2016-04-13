@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba
 
  * License: GNU Public License version 3
- * Date: 2016-03-30
+ * Date: 2016-04-13
  */
 'use strict';
 
@@ -925,8 +925,7 @@ angular.module('obiba.form')
         model: '=',
         value: '=',
         label: '@',
-        help: '@',
-        onSelect: '='
+        help: '@'
       },
       templateUrl: 'form/form-radio-template.tpl.html',
       link: function ($scope, elem, attr, ctrl) {
@@ -937,7 +936,7 @@ angular.module('obiba.form')
 
   .directive('formRadioGroup', [function() {
     return {
-      restrict: 'A',
+      restrict: 'AE',
       scope: {
         options: '=',
         model: '='
@@ -980,6 +979,10 @@ angular.module('obiba.form')
       link: function ($scope, elem, attrs) {
         $scope.gid = $scope.$id;
         $scope.$watch('model', function(selected) {
+          if (!selected || !$scope.options) {
+            return;
+          }
+
           $scope.items = $scope.options.map(function(n) {
             var value = angular.isArray(selected) && (selected.indexOf(n) > -1 ||
               selected.indexOf(n.name) > -1);
@@ -992,13 +995,17 @@ angular.module('obiba.form')
         }, true);
 
         $scope.$watch('items', function(items) {
-          if (angular.isArray(items)) {
+          if (items && angular.isArray(items)) {
             $scope.model = items.filter(function(e) { return e.value; })
               .map(function(e) { return e.name.replace(attrs.model + '.', ''); });
           }
         }, true);
 
         $scope.$watch('options', function(opts) {
+          if (!opts) {
+            return;
+          }
+
           $scope.items = opts.map(function(n) {
             var value = angular.isArray($scope.model) && ($scope.model.indexOf(n) > -1 ||
               $scope.model.indexOf(n.name) > -1);
@@ -1405,18 +1412,17 @@ angular.module("form/form-localized-input-template.tpl.html", []).run(["$templat
 
 angular.module("form/form-radio-group-template.tpl.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("form/form-radio-group-template.tpl.html",
-    "<div form-radio ng-repeat=\"option in options\" name=\"{{option.name}}\" on-select=\"onSelect\" model=\"model.design\"\n" +
-    "     value=\"option.value\" label=\"{{option.label}}\" gid=\"{{gid}}\"></div>");
+    "<div form-radio ng-repeat=\"option in options\" name=\"{{option.name}}\" model=\"model.design\" value=\"option.value\"\n" +
+    "     label=\"{{option.label}}\" gid=\"{{gid}}\"></div>");
 }]);
 
 angular.module("form/form-radio-template.tpl.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("form/form-radio-template.tpl.html",
     "<div class=\"radio\" ng-class=\"{'has-error': (form[fieldName].$dirty || form.saveAttempted) && form[name].$invalid}\">\n" +
     "\n" +
-    "  <label for=\"{{name}}\" class=\"control-label\">\n" +
+    "  <label class=\"control-label\">\n" +
     "    <span ng-show=\"required\">*</span>\n" +
-    "    <input ng-click=\"onSelect(value)\"\n" +
-    "          ng-model=\"model\"\n" +
+    "    <input ng-model=\"model\"\n" +
     "          ng-value=\"value\"\n" +
     "          type=\"radio\"\n" +
     "          id=\"{{name}}\"\n" +

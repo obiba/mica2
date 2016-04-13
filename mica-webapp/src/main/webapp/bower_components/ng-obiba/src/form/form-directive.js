@@ -101,8 +101,7 @@ angular.module('obiba.form')
         model: '=',
         value: '=',
         label: '@',
-        help: '@',
-        onSelect: '='
+        help: '@'
       },
       templateUrl: 'form/form-radio-template.tpl.html',
       link: function ($scope, elem, attr, ctrl) {
@@ -113,7 +112,7 @@ angular.module('obiba.form')
 
   .directive('formRadioGroup', [function() {
     return {
-      restrict: 'A',
+      restrict: 'AE',
       scope: {
         options: '=',
         model: '='
@@ -156,6 +155,10 @@ angular.module('obiba.form')
       link: function ($scope, elem, attrs) {
         $scope.gid = $scope.$id;
         $scope.$watch('model', function(selected) {
+          if (!selected || !$scope.options) {
+            return;
+          }
+
           $scope.items = $scope.options.map(function(n) {
             var value = angular.isArray(selected) && (selected.indexOf(n) > -1 ||
               selected.indexOf(n.name) > -1);
@@ -168,13 +171,17 @@ angular.module('obiba.form')
         }, true);
 
         $scope.$watch('items', function(items) {
-          if (angular.isArray(items)) {
+          if (items && angular.isArray(items)) {
             $scope.model = items.filter(function(e) { return e.value; })
               .map(function(e) { return e.name.replace(attrs.model + '.', ''); });
           }
         }, true);
 
         $scope.$watch('options', function(opts) {
+          if (!opts) {
+            return;
+          }
+
           $scope.items = opts.map(function(n) {
             var value = angular.isArray($scope.model) && ($scope.model.indexOf(n) > -1 ||
               $scope.model.indexOf(n.name) > -1);
