@@ -25,10 +25,18 @@
               ng-if="optionsCols.showStudiesStudyVariablesColumn || optionsCols.showStudiesDataschemaVariablesColumn">variables</th>
         </tr>
         <tr>
-          <th title="{{datasourceTitles.questionnaires.title}}" translate ng-if="optionsCols.showStudiesQuestionnaireColumn">search.study.quest</th>
-          <th title="{{datasourceTitles.physical_measures.title}}" translate ng-if="optionsCols.showStudiesPmColumn">search.study.pm</th>
-          <th title="{{datasourceTitles.biological_samples.title}}" translate ng-if="optionsCols.showStudiesBioColumn">search.study.bio</th>
-          <th title="{{datasourceTitles.others.title}}" translate ng-if="optionsCols.showStudiesOtherColumn">search.study.others</th>
+          <th class="text-nowrap" title="{{datasourceTitles.questionnaires.title}}" ng-if="optionsCols.showStudiesQuestionnaireColumn">
+            <i class="fa fa-file-text-o"></i>
+          </th>
+          <th class="text-nowrap" title="{{datasourceTitles.physical_measures.title}}" ng-if="optionsCols.showStudiesPmColumn">
+            <i class="fa fa-stethoscope"></i>
+          </th>
+          <th class="text-nowrap"  title="{{datasourceTitles.biological_samples.title}}" ng-if="optionsCols.showStudiesBioColumn">
+            <i class="fa fa-flask"></i>
+          </th>
+          <th class="text-nowrap"  title="{{datasourceTitles.others.title}}" ng-if="optionsCols.showStudiesOtherColumn">
+            <i class="fa fa-plus-square-o"></i>
+          </th>
           <th translate ng-if="optionsCols.showStudiesStudyDatasetsColumn">search.study.label</th>
           <th translate ng-if="optionsCols.showStudiesHarmonizationDatasetsColumn">search.harmonization</th>
           <th translate ng-if="optionsCols.showStudiesStudyVariablesColumn">search.variable.study</th>
