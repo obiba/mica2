@@ -151,7 +151,28 @@ angular.module('obiba.mica.fileBrowser')
       };
 
       function searchDocumentsInternal(path, searchParams) {
+        function excludeFolders(query) {
+          var excludeQuery = '';
+          try {
+            var excludes = [];
+            ngObibaMicaFileBrowserOptions.folders.excludes.forEach(function (exclude) {
+              var q = path.replace(/\//g, '\\/') + '\\/' + exclude.replace(/\s/, '\\ ');
+              excludes.push(q);
+              excludes.push(q + '\\/*');
+            });
+
+            excludeQuery = excludes.length > 0 ? ' AND NOT path:(' + excludes.join(' OR ') + ')' : '';
+          } catch (error) {
+            // just return the input query
+          }
+
+          return query + excludeQuery;
+        }
+
+        searchParams.query = excludeFolders(searchParams.query);
+
         var urlParams = angular.extend({}, {path: path}, searchParams);
+
         FileBrowserSearchResource.search(urlParams,
           function onSuccess(response) {
             $log.info('Search result', response);
