@@ -86,7 +86,7 @@
         </td>
         <td ng-if="data.search.active">
           <a href class="no-text-decoration" ng-click="navigateToParent($event, document)">
-            {{document.attachment.path.replace(data.rootPath, '')}}
+            {{document.attachment.path === data.rootPath ? '/' : document.attachment.path.replace(data.rootPath, '')}}
           </a>
         </td>
       </tr>

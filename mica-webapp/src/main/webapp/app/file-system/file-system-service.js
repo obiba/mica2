@@ -131,6 +131,10 @@ mica.fileSystem
       };
 
       this.onFileSelect = function (files, document, successCallback) {
+        if (!files) {
+          return;
+        }
+        
         files.forEach(function (file) {
           Upload
             .upload({
