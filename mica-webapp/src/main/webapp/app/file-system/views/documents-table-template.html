@@ -29,7 +29,7 @@
     <tr dir-paginate="document in data.document.children | itemsPerPage: pagination.itemsPerPage" ng-init="fileDocument = isFile(document)" current-page="pagination.currentPage">
 
       <td><input type="checkbox" ng-model="document.selected"></td>
-      <td>
+      <td class="text-nowrap">
         <span ng-if="document.permissions.view">
           <i class="fa {{getDocumentIcon(document)}}"></i>
           <a href style="text-decoration: none" ng-click="navigateTo(document)">
