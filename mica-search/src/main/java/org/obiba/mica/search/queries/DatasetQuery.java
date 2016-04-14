@@ -22,6 +22,8 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.IndexNotFoundException;
@@ -40,9 +42,9 @@ import org.obiba.mica.dataset.search.DatasetIndexer;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.dataset.service.PublishedDatasetService;
 import org.obiba.mica.dataset.service.StudyDatasetService;
+import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.DatasetIdProvider;
-import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
 import org.obiba.mica.search.aggregations.AggregationYamlParser;
 import org.obiba.mica.search.aggregations.DatasetTaxonomyMetaDataProvider;
 import org.obiba.mica.web.model.Dtos;
@@ -52,9 +54,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 import static org.obiba.mica.search.CountStatsDtoBuilders.DatasetCountStatsBuilder;
 import static org.obiba.mica.web.model.MicaSearch.DatasetResultDto;
@@ -71,6 +70,8 @@ public class DatasetQuery extends AbstractDocumentQuery {
   public static final String STUDY_JOIN_FIELD = "studyTable.studyId";
 
   public static final String HARMONIZATION_JOIN_FIELD = "studyTables.studyId";
+
+  public static final String NETWORK_JOIN_FIELD = "networkId";
 
   private enum DatasetType {
     STUDY,
@@ -138,8 +139,9 @@ public class DatasetQuery extends AbstractDocumentQuery {
   @Override
   protected Properties getAggregationsProperties(List<String> filter) {
     Properties properties = getAggregationsProperties(filter, taxonomyService.getDatasetTaxonomy());
-    if(!properties.containsKey(STUDY_JOIN_FIELD)) properties.put(STUDY_JOIN_FIELD,"");
-    if(!properties.containsKey(HARMONIZATION_JOIN_FIELD)) properties.put(HARMONIZATION_JOIN_FIELD,"");
+    if(!properties.containsKey(STUDY_JOIN_FIELD)) properties.put(STUDY_JOIN_FIELD, "");
+    if(!properties.containsKey(HARMONIZATION_JOIN_FIELD)) properties.put(HARMONIZATION_JOIN_FIELD, "");
+    if(!properties.containsKey(NETWORK_JOIN_FIELD)) properties.put(NETWORK_JOIN_FIELD, "");
     if(!properties.containsKey(ID)) properties.put(ID,"");
     return properties;
   }
@@ -243,6 +245,10 @@ public class DatasetQuery extends AbstractDocumentQuery {
         .map(MultiBucketsAggregation.Bucket::getKeyAsString).collect(Collectors.toList())));
 
     return map;
+  }
+
+  public Map<String, Integer> getNetworkCounts() {
+    return getDocumentCounts(NETWORK_JOIN_FIELD);
   }
 
   public Map<String, Integer> getStudyCounts() {
