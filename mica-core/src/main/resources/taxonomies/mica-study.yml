@@ -90,6 +90,7 @@
     "fr": "Accès"
   "description":
     "en": "Whether access to study data, biological samples or other study material by external researchers or third parties is provided."
+  "repeatable": "true"
   "terms":
   - "name": "data"
     "title":
@@ -133,6 +134,7 @@
     "fr": "Cible de recrutement"
   "description":
     "en": "Whether individuals or families are targeted for recruitment by the study."
+  "repeatable": "true"
   "attributes":
     "field": "methods.recruitments"
     "alias": "methods-recruitments"
