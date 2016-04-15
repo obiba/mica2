@@ -13,6 +13,7 @@ package org.obiba.mica.search;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -63,14 +64,13 @@ public class CountStatsData {
     return getCount(studies, studyId);
   }
 
-  public int getNetworks(String studyId) {
+  public int getNetworkCount(String studyId) {
     return getCount(networks, studyId);
   }
 
-  public String getNetwork(String studyId) {
-    Optional<Map.Entry<String, List<String>>> result = networksMap.entrySet().stream()
-      .filter(entry -> entry.getValue().contains(studyId)).findFirst();
-    return result.isPresent() ? result.get().getKey() : null;
+  public List<String> getNetworks(String studyId) {
+    return networksMap.entrySet().stream()
+      .filter(entry -> entry.getValue().contains(studyId)).map(e -> e.getKey()).collect(Collectors.toList());
   }
 
   private static int getCount(Map<String, Integer> map, String id) {
