@@ -5,7 +5,6 @@
 "description":
   "en": "Datasets properties as defined in the catalog."
   "fr": "Propriétés des jeux de données telles que définies dans le catalogue."
-"keywords": {}
 "license": "CC BY-NC 4.0"
 "vocabularies":
 - "name": "id"
@@ -15,14 +14,12 @@
   "description":
     "en": "Dataset name."
     "fr": "Nom du jeux de données"
-  "keywords": {}
 - "name": "className"
   "title":
     "en": "Dataset type"
     "fr": "Type de jeux de données"
   "description":
     "en": "Type of dataset (e.g. study-specific or harmonization)"
-  "keywords": {}
   "terms":
   - "name": "StudyDataset"
     "title":
@@ -31,14 +28,12 @@
     "description":
       "en": "A study-specific dataset holds metadata about the variables collected within a data collection event."
       "fr": "Jeux de données spécifique à une étude."
-    "keywords": {}
   - "name": "HarmonizationDataset"
     "title":
       "en": "Harmonization"
       "fr": "Harmonisation"
     "description":
       "en": "A harmonization dataset holds metadata about core variables constructed from multiple study-specific datasets."
-    "keywords": {}
 - "name": "networkId"
   "title":
     "en": "Network"
@@ -46,16 +41,3 @@
   "description":
     "en": "Network associated to the harmonized dataset."
     "fr": "Réseau associé à ce jeux de données harmonisé."
-  "keywords": {}
-- "name": "acronym"
-  "title":
-    "en": "Acronym"
-    "fr": "Acronyme"
-  "description":
-    "en": "Dataset acronym."
-    "fr": "Acronyme du jeux de données."
-  "keywords": {}
-  "terms": []
-  "attributes":
-    "field": "acronym.und"
-    "alias": "acronym"
