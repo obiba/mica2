@@ -557,6 +557,9 @@ message DatasetVariableResolverDto {
   repeated LocalizedStringDto variableLabel = 10;
   repeated LocalizedStringDto studyName = 11;
   repeated LocalizedStringDto studyAcronym = 12;
+  optional string networkId = 13;
+  repeated LocalizedStringDto networkName = 14;
+  repeated LocalizedStringDto networkAcronym = 15;
 }
 
 message DatasetVariableSummaryDto {
