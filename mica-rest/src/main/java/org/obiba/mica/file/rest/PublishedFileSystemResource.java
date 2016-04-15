@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
+import java.nio.file.Paths;
 
 @Component
 @Path("/")
@@ -36,9 +37,9 @@ public class PublishedFileSystemResource extends AbstractFileSystemResource {
   public Response downloadFile(@PathParam("path") String path,
     @QueryParam("inline") @DefaultValue("false") boolean inline) {
 
-    if (fileDtoIsDirectory(doGetFile(path).getState())) {
+    if (isDirectoryPath(doGetState(path))) {
       doZipDirectory(path);
-
+      
       String name = doGetFile(path).getName() + ".zip";
 
       tempFileService.getInputStreamFromFile(name);
