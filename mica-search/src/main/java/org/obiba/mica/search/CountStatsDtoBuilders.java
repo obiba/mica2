@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -64,8 +63,7 @@ public class CountStatsDtoBuilders {
       List<String> networks = Lists.newArrayList();
       for(String id : ids) {
         studies += countStatsData.getStudies(id);
-        String network = countStatsData.getNetwork(id);
-        if(!Strings.isNullOrEmpty(network)) networks.add(network);
+        networks.addAll(countStatsData.getNetworks(id));
       }
 
       CountStatsDto.Builder builder = CountStatsDto.newBuilder().setVariables(variables) //
@@ -163,7 +161,7 @@ public class CountStatsDtoBuilders {
           .setDataschemaVariables(countStatsData.getDataschemaVariables(id))
           .setStudyDatasets(countStatsData.getStudyDatasets(id))
           .setHarmonizationDatasets(countStatsData.getHarmonizationDatasets(id))
-          .setNetworks(countStatsData.getNetworks(id)).build();
+          .setNetworks(countStatsData.getNetworkCount(id)).build();
     }
   }
 }
