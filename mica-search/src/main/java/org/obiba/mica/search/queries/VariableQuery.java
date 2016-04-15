@@ -40,6 +40,8 @@ import org.obiba.mica.dataset.search.VariableIndexer;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.dataset.service.StudyDatasetService;
 import org.obiba.mica.micaConfig.service.OpalService;
+import org.obiba.mica.network.domain.Network;
+import org.obiba.mica.network.service.PublishedNetworkService;
 import org.obiba.mica.search.CountStatsData;
 import org.obiba.mica.search.DatasetIdProvider;
 import org.obiba.mica.micaConfig.service.helper.AggregationMetaDataProvider;
@@ -86,6 +88,9 @@ public class VariableQuery extends AbstractDocumentQuery {
 
   @Inject
   private PublishedStudyService publishedStudyService;
+
+  @Inject
+  private PublishedNetworkService publishedNetworkService;
 
   @Inject
   private Dtos dtos;
@@ -161,12 +166,13 @@ public class VariableQuery extends AbstractDocumentQuery {
     CountStatsData counts) throws IOException {
     MicaSearch.DatasetVariableResultDto.Builder resBuilder = MicaSearch.DatasetVariableResultDto.newBuilder();
     Map<String, Study> studyMap = Maps.newHashMap();
+    Map<String, Network> networkMap = Maps.newHashMap();
 
     for(SearchHit hit : hits) {
       DatasetVariable.IdResolver resolver = DatasetVariable.IdResolver.from(hit.getId());
       InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
       DatasetVariable variable = objectMapper.readValue(inputStream, DatasetVariable.class);
-      resBuilder.addSummaries(processHit(resolver, variable, studyMap));
+      resBuilder.addSummaries(processHit(resolver, variable, studyMap, networkMap));
     }
 
     builder.setExtension(MicaSearch.DatasetVariableResultDto.result, resBuilder.build());
@@ -194,13 +200,31 @@ public class VariableQuery extends AbstractDocumentQuery {
    * @return
    */
   private Mica.DatasetVariableResolverDto processHit(DatasetVariable.IdResolver resolver, DatasetVariable variable,
-    Map<String, Study> studyMap) {
+    Map<String, Study> studyMap, Map<String, Network> networkMap) {
     Mica.DatasetVariableResolverDto.Builder builder = dtos.asDto(resolver);
 
     String studyId = resolver.hasStudyId() ? resolver.getStudyId() : null;
 
     if(resolver.getType() == DatasetVariable.Type.Study || resolver.getType() == DatasetVariable.Type.Harmonized) {
       studyId = variable.getStudyIds().get(0);
+    }
+
+    String networkId = variable.getNetworkId();
+
+    if (networkId != null) { // harmonized
+      Network network;
+
+      if(networkMap.containsKey(networkId)) network = networkMap.get(networkId);
+      else {
+        network = publishedNetworkService.findById(networkId);
+        networkMap.put(networkId, network);
+      }
+
+      if(network != null) {
+        builder.setNetworkId(networkId);
+        builder.addAllNetworkName(dtos.asDto(network.getName()));
+        builder.addAllNetworkAcronym(dtos.asDto(network.getAcronym()));
+      }
     }
 
     if(studyId != null) {
