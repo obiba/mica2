@@ -66,6 +66,9 @@
           <li ng-if="document.permissions.view && fileDocument">
             <a target="_self" ng-href="ws/draft/file-dl/{{document.path}}"><i class="fa fa-download"></i></a>
           </li>
+          <li ng-if="document.permissions.view && !fileDocument">
+            <a target="_self" ng-href="ws/draft/file-dl/{{document.path}}&isDirectory"><i class="fa fa-download"></i></a>
+          </li>
           <li ng-if="document.permissions.delete && document.revisionStatus === 'DELETED'">
             <a href ng-click="deleteDocument(document)"><i class="fa fa-trash"></i></a>
           </li>

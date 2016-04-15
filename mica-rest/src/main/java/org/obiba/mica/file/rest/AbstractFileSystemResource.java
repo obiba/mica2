@@ -1,26 +1,34 @@
 package org.obiba.mica.file.rest;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import org.apache.commons.math3.util.Pair;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
+import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Paths;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static org.obiba.mica.file.FileUtils.isRoot;
 import static org.obiba.mica.file.FileUtils.normalizePath;
@@ -32,6 +40,9 @@ public abstract class AbstractFileSystemResource {
 
   @Inject
   protected FileSystemService fileSystemService;
+
+  @Inject
+  protected FileStoreService fileStoreService;
 
   @Inject
   private Dtos dtos;
@@ -171,6 +182,74 @@ public abstract class AbstractFileSystemResource {
       updateFileStatus(basePath, status);
     } catch(NoSuchEntityException ex) {
       updateFolderStatus(basePath, status);
+    }
+  }
+
+  protected void doZipDirectory(String path) {
+    String basePath = normalizePath(path);
+
+    Set<String> fileTree = new LinkedHashSet<>();
+
+    Mica.FileDto source = doGetFile(path);
+    populateFileTree(source, basePath, fileTree);
+
+    final String TMP_ROOT = "${MICA_HOME}/work/tmp";
+
+    try {
+
+      byte[] buffer = new byte[1024];
+
+      FileOutputStream fos = new FileOutputStream((TMP_ROOT + File.separator + source.getName() + "zip")
+        .replace("${MICA_HOME}", System.getProperty("MICA_HOME")));
+
+      ZipOutputStream zos = new ZipOutputStream(fos);
+
+      for (String file : fileTree) {
+
+        Mica.FileDto fileDto = doGetFile(file);
+
+        if (!fileDtoIsDirectory(fileDto.getState())) {
+          zos.putNextEntry(new ZipEntry(relativize(basePath, file)));
+
+          InputStream in = fileStoreService.getFile(doGetAttachment(file).getFileReference());
+
+          int len;
+          while ((len = in.read(buffer)) > 0) {
+            zos.write(buffer, 0, len);
+          }
+
+          in.close();
+        } else {
+          zos.putNextEntry(new ZipEntry(relativize(basePath, file) + File.separator));
+        }
+
+        zos.closeEntry();
+
+      }
+
+      zos.close();
+      fos.close();
+    } catch (IOException ioe) {
+
+      ioe.printStackTrace();
+    }
+  }
+
+  private boolean fileDtoIsDirectory(Mica.AttachmentStateDto attachmentState) {
+    return ".".equals(attachmentState.getName());
+  }
+
+  private String relativize(String baseDirectoryPath, String childPath) {
+    return Paths.get(baseDirectoryPath).getParent().relativize(Paths.get(childPath)).toString();
+  }
+
+  private void populateFileTree(Mica.FileDto node, final String basePath, final Set<String> fileTree) {
+    fileTree.add(node.getPath());
+
+    if (fileDtoIsDirectory(node.getState())) {
+      getChildrenFolders(node.getPath()).forEach(d -> populateFileTree(d, basePath, fileTree));
+
+      getChildrenFiles(node.getPath(), false).stream().forEach(f -> fileTree.add(f.getPath()));
     }
   }
 
