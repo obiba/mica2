@@ -235,7 +235,7 @@ public abstract class AbstractFileSystemResource {
     }
   }
 
-  private boolean fileDtoIsDirectory(Mica.AttachmentStateDto attachmentState) {
+  public boolean fileDtoIsDirectory(Mica.AttachmentStateDto attachmentState) {
     return ".".equals(attachmentState.getName());
   }
 

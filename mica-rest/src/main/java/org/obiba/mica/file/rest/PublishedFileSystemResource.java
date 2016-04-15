@@ -34,18 +34,20 @@ public class PublishedFileSystemResource extends AbstractFileSystemResource {
   @Path("/file-dl/{path:.*}")
   @Timed
   public Response downloadFile(@PathParam("path") String path,
-    @QueryParam("inline") @DefaultValue("false") boolean inline,
-    @QueryParam("isDirectory") @DefaultValue("false") boolean isDirectory) {
-    if (isDirectory) {
+    @QueryParam("inline") @DefaultValue("false") boolean inline) {
+
+    if (fileDtoIsDirectory(doGetFile(path).getState())) {
       doZipDirectory(path);
 
-      String name = doGetFile(path).getName() + "zip";
+      String name = doGetFile(path).getName() + ".zip";
 
       tempFileService.getInputStreamFromFile(name);
 
       return Response.ok(tempFileService.getInputStreamFromFile(name))
         .header("Content-Disposition", "attachment; filename=\"" + name + "\"")
+        .type(FileMediaType.type(Files.getFileExtension(name)))
         .build();
+
     } else {
       Attachment attachment = doGetAttachment(path);
 
