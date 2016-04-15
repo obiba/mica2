@@ -5,7 +5,6 @@
 "description":
   "en": "Network properties as defined in the catalog."
   "fr": "Propriétés des réseaux telles que définies dans le catalogue."
-"keywords": {}
 "license": "CC BY-NC 4.0"
 "vocabularies":
 - "name": "id"
@@ -14,8 +13,7 @@
     "fr": "Nom"
   "description":
     "en": "Network name."
-    "fr": "Nom du réseau"
-  "keywords": {}
+    "fr": "Nom du réseau."
   "attributes":
     "alias": "networkId"
 - "name": "studyIds"
@@ -25,16 +23,3 @@
   "description":
     "en": "Studies that are members of a network."
     "fr": "Études qui sont membres d'un réseau."
-  "keywords": {}
-- "name": "acronym"
-  "title":
-    "en": "Acronym"
-    "fr": "Acronyme"
-  "description":
-    "en": "Network acronym."
-    "fr": "Acronyme du réseau."
-  "keywords": {}
-  "terms": []
-  "attributes":
-    "field": "acronym.und"
-    "alias": "acronym"
