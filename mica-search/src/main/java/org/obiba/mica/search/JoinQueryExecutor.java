@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -22,7 +21,11 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
-import org.elasticsearch.common.Strings;
+import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Function;
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.search.queries.AbstractDocumentQuery;
@@ -36,6 +39,9 @@ import org.obiba.mica.search.queries.protobuf.JoinQueryDtoWrapper;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.mica.web.model.MicaSearch;
+import org.obiba.mica.web.model.MicaSearch.AggregationResultDto;
+import org.obiba.mica.web.model.MicaSearch.JoinQueryDto;
+import org.obiba.mica.web.model.MicaSearch.JoinQueryResultDto;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.slf4j.Logger;
@@ -43,14 +49,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.codahale.metrics.annotation.Timed;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-
 import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.DETAIL;
 import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.DIGEST;
-import static org.obiba.mica.web.model.MicaSearch.JoinQueryDto;
-import static org.obiba.mica.web.model.MicaSearch.JoinQueryResultDto;
+
 
 @Component
 @Scope("request")
@@ -224,11 +225,11 @@ public class JoinQueryExecutor {
 
   private MicaSearch.QueryResultDto addAggregationTitles(MicaSearch.QueryResultDto queryResultDto,
       List<Taxonomy> taxonomies,
-      Function<List<MicaSearch.AggregationResultDto>, List<MicaSearch.AggregationResultDto>> postProcessor) {
+      Function<List<AggregationResultDto>, List<AggregationResultDto>> postProcessor) {
 
     if(queryResultDto != null) {
       MicaSearch.QueryResultDto.Builder builder = MicaSearch.QueryResultDto.newBuilder().mergeFrom(queryResultDto);
-      List<MicaSearch.AggregationResultDto.Builder> builders = ImmutableList.copyOf(builder.getAggsBuilderList());
+      List<AggregationResultDto.Builder> builders = ImmutableList.copyOf(builder.getAggsBuilderList());
       List<MicaSearch.AggregationResultDto> aggregationResultDtos = Lists.newArrayList();
       builder.clearAggs();
 
@@ -266,7 +267,7 @@ public class JoinQueryExecutor {
 
   protected Function<List<MicaSearch.AggregationResultDto>, List<MicaSearch.AggregationResultDto>> aggregationPostProcessor() {
     return (aggregationResultDtos) -> {
-      Map<String, MicaSearch.AggregationResultDto.Builder> buildres = taxonomyService.getOpalTaxonomies().stream()
+      Map<String, AggregationResultDto.Builder> buildres = taxonomyService.getOpalTaxonomies().stream()
           .collect(Collectors.toMap(Taxonomy::getName, t -> {
             MicaSearch.AggregationResultDto.Builder builder = MicaSearch.AggregationResultDto.newBuilder()
                 .setAggregation(t.getName());
@@ -385,8 +386,11 @@ public class JoinQueryExecutor {
             .build();
         break;
       case NETWORK:
-        countStats = CountStatsData.newBuilder().variables(variableQuery.getDatasetCounts())
-            .datasetsMap(datasetQuery.getStudyCountsByDataset()).studies(studyQuery.getStudyCounts()).build();
+        countStats = CountStatsData.newBuilder().variables(variableQuery.getDatasetCounts()) //
+            .datasetsMap(datasetQuery.getStudyCountsByDataset()) //
+            .networkHarmonizationDatasets(datasetQuery.getNetworkCounts()) //
+            .networkDataschemaVariables(variableQuery.getNetworkCounts()) //
+            .studies(studyQuery.getStudyCounts()).build();
         break;
     }
 

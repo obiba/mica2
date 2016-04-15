@@ -77,6 +77,8 @@ public class VariableQuery extends AbstractDocumentQuery {
 
   private static final String DATASET_ID = "datasetId";
 
+  private static final String NETWORK_ID = "networkId";
+
   private static final String VARIABLE_TYPE = "variableType";
 
   @Inject
@@ -276,6 +278,10 @@ public class VariableQuery extends AbstractDocumentQuery {
     return getDocumentCounts(JOIN_FIELD);
   }
 
+  public Map<String, Integer> getNetworkCounts() {
+    return getDocumentCounts(NETWORK_ID);
+  }
+
   public Map<String, Integer> getStudyVariableByStudyCounts() {
     return getDocumentBucketCounts(JOIN_FIELD, VARIABLE_TYPE, "Study");
   }
@@ -318,6 +324,7 @@ public class VariableQuery extends AbstractDocumentQuery {
     // required for the counts to work
     if(!properties.containsKey(JOIN_FIELD)) properties.put(JOIN_FIELD, "");
     if(!properties.containsKey(DATASET_ID)) properties.put(DATASET_ID, "");
+    if(!properties.containsKey(NETWORK_ID)) properties.put(NETWORK_ID, "");
 
     return properties;
   }

@@ -15,6 +15,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
@@ -23,12 +27,8 @@ import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.search.queries.DatasetQuery;
 import org.obiba.mica.study.domain.Study;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-
 import static org.obiba.mica.web.model.MicaSearch.CountStatsDto;
+
 
 public class CountStatsDtoBuilders {
 
@@ -41,7 +41,6 @@ public class CountStatsDtoBuilders {
     private AbstractCountStatsBuilder(CountStatsData data) {
       countStatsData = data;
     }
-
   }
 
   public static class DatasetCountStatsBuilder extends AbstractCountStatsBuilder {
@@ -55,12 +54,12 @@ public class CountStatsDtoBuilders {
     }
 
     public CountStatsDto build(Dataset dataset) {
-      return calculateCounts(dataset.getId(), getStudyIds(dataset));
+      return calculateCounts(dataset, getStudyIds(dataset));
     }
 
-    private CountStatsDto calculateCounts(String datasetId, List<String> ids) {
+    private CountStatsDto calculateCounts(Dataset dataset, List<String> ids) {
       int studies = 0;
-      int variables = countStatsData.getVariables(datasetId);
+      int variables = countStatsData.getVariables(dataset.getId());
 
       List<String> networks = Lists.newArrayList();
       for(String id : ids) {
@@ -69,9 +68,13 @@ public class CountStatsDtoBuilders {
         if(!Strings.isNullOrEmpty(network)) networks.add(network);
       }
 
-      return CountStatsDto.newBuilder().setVariables(variables) //
-          .setStudies(studies) //
-          .setNetworks((int) networks.stream().distinct().count()).build();
+      CountStatsDto.Builder builder = CountStatsDto.newBuilder().setVariables(variables) //
+        .setStudies(studies);
+      int networksCount = dataset instanceof StudyDataset ? (int) networks.stream().distinct().count() :
+        ((HarmonizationDataset) dataset).getNetworkId() != null ? 1 : 0;
+      builder.setNetworks(networksCount);
+
+      return builder.build();
     }
 
     private List<String> getStudyIds(Dataset dataset) {
@@ -104,10 +107,10 @@ public class CountStatsDtoBuilders {
     }
 
     public CountStatsDto build(Network network) {
-      return calculateCounts(network.getStudyIds());
+      return calculateCounts(network.getId(), network.getStudyIds());
     }
 
-    private CountStatsDto calculateCounts(List<String> ids) {
+    private CountStatsDto calculateCounts(String networkId, List<String> ids) {
       List<String> studyDatasets = Lists.newArrayList();
       List<String> harmonizationDatasets = Lists.newArrayList();
 
@@ -126,20 +129,19 @@ public class CountStatsDtoBuilders {
 
         studies += countStatsData.getStudies(id);
       }
+
       harmonizationDatasets = harmonizationDatasets.stream().distinct().collect(Collectors.toList());
-
-      int variables = Sets.union(ImmutableSet.copyOf(studyDatasets), ImmutableSet.copyOf(harmonizationDatasets))
-          .stream().mapToInt(d -> countStatsData.getVariables(d)).sum();
-
+      int variables = Sets.union(ImmutableSet.copyOf(studyDatasets), ImmutableSet.copyOf(harmonizationDatasets)) //
+        .stream().mapToInt(d -> countStatsData.getVariables(d)).sum();
       int studyVariables = studyDatasets.stream().mapToInt(d -> countStatsData.getVariables(d)).sum();
-
-      int dataschemaVariables = harmonizationDatasets.stream().mapToInt(d -> countStatsData.getVariables(d)).sum();
+      int dataschemaVariables = countStatsData.getNetworkDataschemaVariables(networkId);
 
       return CountStatsDto.newBuilder().setVariables(variables) //
           .setStudyVariables(studyVariables) //
           .setDataschemaVariables(dataschemaVariables) //
-          .setStudyDatasets((int) studyDatasets.stream().distinct().count())
-          .setHarmonizationDatasets((int) harmonizationDatasets.stream().distinct().count()).setStudies(studies)
+          .setStudyDatasets((int) studyDatasets.stream().distinct().count()) //
+          .setHarmonizationDatasets(countStatsData.getNetworkHarmonizationDatasets(networkId))
+          .setStudies(studies) //
           .build();
     }
   }
@@ -163,7 +165,5 @@ public class CountStatsDtoBuilders {
           .setHarmonizationDatasets(countStatsData.getHarmonizationDatasets(id))
           .setNetworks(countStatsData.getNetworks(id)).build();
     }
-
   }
-
 }

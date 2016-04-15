@@ -17,6 +17,7 @@ import java.util.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+
 public class CountStatsData {
   private Map<String, Integer> variables;
   private Map<String, Integer> dataschemaVariables;
@@ -25,6 +26,8 @@ public class CountStatsData {
   private Map<String, Integer> harmonizationDatasets;
   private Map<String, Integer> studies;
   private Map<String, Integer> networks;
+  private Map<String, Integer> networkDatasets;
+  private Map<String, Integer> networkDataschemaVariables;
   private Map<String, List<String>> networksMap;
   private Map<String, Map<String, List<String>>> datasetsMap;
 
@@ -52,6 +55,10 @@ public class CountStatsData {
     return getCount(harmonizationDatasets, studyId);
   }
 
+  public int getNetworkHarmonizationDatasets(String networkId) {
+    return getCount(networkDatasets, networkId);
+  }
+
   public int getStudies(String studyId) {
     return getCount(studies, studyId);
   }
@@ -66,12 +73,12 @@ public class CountStatsData {
     return result.isPresent() ? result.get().getKey() : null;
   }
 
-  private static int getCount(Map<String, Integer> map, String studyId) {
-    if(map == null || !map.containsKey(studyId)) {
+  private static int getCount(Map<String, Integer> map, String id) {
+    if(map == null || !map.containsKey(id)) {
       return 0;
     }
 
-    return map.get(studyId);
+    return map.get(id);
   }
 
   public Map<String, List<String>> getDataset(String studyId) {
@@ -91,6 +98,10 @@ public class CountStatsData {
     );
 
     return map;
+  }
+
+  public int getNetworkDataschemaVariables(String networkId) {
+    return getCount(networkDataschemaVariables, networkId);
   }
 
   public static class Builder {
@@ -143,6 +154,16 @@ public class CountStatsData {
 
     public CountStatsData build() {
       return data;
+    }
+
+    public Builder networkHarmonizationDatasets(Map<String, Integer> networkCounts) {
+      data.networkDatasets = networkCounts;
+      return this;
+    }
+
+    public Builder networkDataschemaVariables(Map<String, Integer> networkCounts) {
+      data.networkDataschemaVariables = networkCounts;
+      return this;
     }
   }
 }
