@@ -82,19 +82,19 @@ public class JoinRQLQueryWrapper implements JoinQueryWrapper {
   }
 
   private void initialize(ASTNode node) {
-
-    switch(RQLNode.valueOf(node.getName().toUpperCase())) {
+    RQLNode rqlNode = RQLNode.valueOf(node.getName().toUpperCase());
+    switch(rqlNode) {
       case VARIABLE:
-        variableQueryWrapper = new RQLQueryWrapper(node, new RqlFieldResolver(getVariableTaxonomies(), locale));
+        variableQueryWrapper = new RQLQueryWrapper(node, new RqlFieldResolver(rqlNode, getVariableTaxonomies(), locale));
         break;
       case DATASET:
-        datasetQueryWrapper = new RQLQueryWrapper(node, new RqlFieldResolver(getDatasetTaxonomies(), locale));
+        datasetQueryWrapper = new RQLQueryWrapper(node, new RqlFieldResolver(rqlNode, getDatasetTaxonomies(), locale));
         break;
       case STUDY:
-        studyQueryWrapper = new RQLQueryWrapper(node, new RqlFieldResolver(getStudyTaxonomies(), locale));
+        studyQueryWrapper = new RQLQueryWrapper(node, new RqlFieldResolver(rqlNode, getStudyTaxonomies(), locale));
         break;
       case NETWORK:
-        networkQueryWrapper = new RQLQueryWrapper(node, new RqlFieldResolver(getNetworkTaxonomies(), locale));
+        networkQueryWrapper = new RQLQueryWrapper(node, new RqlFieldResolver(rqlNode, getNetworkTaxonomies(), locale));
         break;
       case LOCALE:
         if(node.getArgumentsSize() > 0) locale = node.getArgument(0).toString();

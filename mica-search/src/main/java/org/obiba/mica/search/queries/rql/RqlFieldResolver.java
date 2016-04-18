@@ -10,18 +10,24 @@
 
 package org.obiba.mica.search.queries.rql;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
+import com.google.common.collect.Lists;
 import org.elasticsearch.common.Strings;
+import org.obiba.mica.dataset.search.DatasetIndexer;
+import org.obiba.mica.dataset.search.VariableIndexer;
+import org.obiba.mica.network.search.NetworkIndexer;
+import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.TaxonomyEntity;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
-
 import sun.util.locale.LanguageTag;
 
 public class RqlFieldResolver {
@@ -40,7 +46,19 @@ public class RqlFieldResolver {
 
   private final String locale;
 
-  public RqlFieldResolver(List<Taxonomy> taxonomies, String locale) {
+  private final RQLNode node;
+
+  private final Map<RQLNode, List<String>> nodeLocalizedFields = new HashMap<RQLNode, List<String>>() {
+    {
+      put(RQLNode.DATASET, Lists.newArrayList(DatasetIndexer.LOCALIZED_ANALYZED_FIELDS));
+      put(RQLNode.STUDY, Lists.newArrayList(StudyIndexer.LOCALIZED_ANALYZED_FIELDS));
+      put(RQLNode.NETWORK, Lists.newArrayList(NetworkIndexer.LOCALIZED_ANALYZED_FIELDS));
+      put(RQLNode.VARIABLE, Lists.newArrayList(VariableIndexer.LOCALIZED_ANALYZED_FIELDS));
+    }
+  };
+
+  public RqlFieldResolver(RQLNode node, List<Taxonomy> taxonomies, String locale) {
+    this.node = node;
     this.taxonomies = taxonomies;
     this.locale = locale;
     defaultTaxonomyName = taxonomies.stream().filter(t -> t.getName().startsWith(DEFAULT_TAXO_PREFIX))
@@ -101,12 +119,18 @@ public class RqlFieldResolver {
 
       if (matcher.find()) {
         field = field.replace(LanguageTag.UNDETERMINED, locale);
+      } else {
+        field = getSafeLocalizedField(field);
       }
 
       return analyzed ? field + ".analyzed" : field;
     }
 
     return field;
+  }
+
+  private String getSafeLocalizedField(String field) {
+    return nodeLocalizedFields.getOrDefault(node, Lists.newArrayList()).contains(field) ? String.format("%s.%s", field, locale) : field;
   }
 
   private boolean isRegExp(String field) {
