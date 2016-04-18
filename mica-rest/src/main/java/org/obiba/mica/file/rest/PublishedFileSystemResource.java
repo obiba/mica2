@@ -3,6 +3,7 @@ package org.obiba.mica.file.rest;
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.io.Files;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.service.TempFileService;
@@ -36,13 +37,7 @@ public class PublishedFileSystemResource extends AbstractFileSystemResource {
   public Response downloadFile(@PathParam("path") String path,
     @QueryParam("inline") @DefaultValue("false") boolean inline) {
 
-    if (isDirectoryPath(doGetAttachmentState(path))) {
-      String name = doZipDirectory(path);
-
-      return Response.ok(tempFileService.getInputStreamFromFile(name))
-        .header("Content-Disposition", "attachment; filename=\"" + name + "\"").build();
-
-    } else {
+    try {
       Attachment attachment = doGetAttachment(path);
 
       if (inline) {
@@ -55,6 +50,11 @@ public class PublishedFileSystemResource extends AbstractFileSystemResource {
 
       return Response.ok(fileStoreService.getFile(attachment.getFileReference()))
         .header("Content-Disposition", "attachment; filename=\"" + attachment.getName() + "\"").build();
+    } catch (NoSuchEntityException e) {
+      String name = doZip(path);
+
+      return Response.ok(tempFileService.getInputStreamFromFile(name))
+        .header("Content-Disposition", "attachment; filename=\"" + name + "\"").build();
     }
   }
 

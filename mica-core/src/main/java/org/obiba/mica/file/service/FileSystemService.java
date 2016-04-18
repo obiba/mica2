@@ -1,16 +1,10 @@
 package org.obiba.mica.file.service;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.math3.util.Pair;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -27,11 +21,7 @@ import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
-import org.obiba.mica.file.Attachment;
-import org.obiba.mica.file.AttachmentState;
-import org.obiba.mica.file.FileStoreService;
-import org.obiba.mica.file.FileUtils;
-import org.obiba.mica.file.InvalidFileNameException;
+import org.obiba.mica.file.*;
 import org.obiba.mica.file.event.FileDeletedEvent;
 import org.obiba.mica.file.event.FilePublishedEvent;
 import org.obiba.mica.file.event.FileUnPublishedEvent;
@@ -51,10 +41,21 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -572,6 +573,58 @@ public class FileSystemService {
    */
   public static Pair<String, String> extractPathName(String pathWithName) {
     return extractPathName(pathWithName, null);
+  }
+
+  public String relativizePaths(String path1, String path2) {
+    return Paths.get(path1).getParent().relativize(Paths.get(path2)).toString();
+  }
+
+  public String zipDirectory(String path, boolean publishedFS) {
+    List<AttachmentState> attachmentStates = findAttachmentStates(String.format("^%s$", path), publishedFS);
+    attachmentStates.addAll(findAttachmentStates(String.format("^%s/", path), publishedFS));
+
+    FileOutputStream fos = null;
+
+    final String TMP_ROOT = "${MICA_HOME}/work/tmp";
+    String zipName = Paths.get(path).getFileName().toString() + ".zip";
+
+    try {
+      byte[] buffer = new byte[1024];
+      fos = new FileOutputStream((TMP_ROOT + File.separator + zipName)
+        .replace("${MICA_HOME}", System.getProperty("MICA_HOME")));
+
+      ZipOutputStream zos = new ZipOutputStream(fos);
+
+      for (AttachmentState state: attachmentStates) {
+        if (".".equals(state.getName())) {
+          zos.putNextEntry(new ZipEntry(relativizePaths(path, state.getFullPath()) + File.separator));
+        } else {
+          zos.putNextEntry(new ZipEntry(relativizePaths(path, state.getFullPath())));
+
+          InputStream in = fileStoreService.getFile(publishedFS ?
+            state.getPublishedAttachment().getFileReference() :
+            state.getAttachment().getFileReference());
+
+          int len;
+          while ((len = in.read(buffer)) > 0) {
+            zos.write(buffer, 0, len);
+          }
+
+          in.close();
+
+        }
+
+        zos.closeEntry();
+      }
+
+      zos.finish();
+    } catch (IOException ioe) {
+
+    } finally {
+      IOUtils.closeQuietly(fos);
+    }
+
+    return zipName;
   }
 
   //

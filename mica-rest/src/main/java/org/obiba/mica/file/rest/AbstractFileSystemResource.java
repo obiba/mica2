@@ -2,13 +2,11 @@ package org.obiba.mica.file.rest;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.math3.util.Pair;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
-import org.obiba.mica.file.FileStoreService;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.security.service.SubjectAclService;
@@ -18,18 +16,9 @@ import org.obiba.mica.web.model.Mica;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Paths;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import static org.obiba.mica.file.FileUtils.isRoot;
 import static org.obiba.mica.file.FileUtils.normalizePath;
@@ -41,9 +30,6 @@ public abstract class AbstractFileSystemResource {
 
   @Inject
   protected FileSystemService fileSystemService;
-
-  @Inject
-  protected FileStoreService fileStoreService;
 
   @Inject
   private Dtos dtos;
@@ -186,71 +172,8 @@ public abstract class AbstractFileSystemResource {
     }
   }
 
-  protected String doZipDirectory(String path) {
-    String basePath = normalizePath(path);
-
-    Set<String> fileTree = new LinkedHashSet<>();
-
-    Mica.FileDto source = doGetFile(path);
-    populateFileTree(source, basePath, fileTree);
-
-    final String TMP_ROOT = "${MICA_HOME}/work/tmp";
-
-    FileOutputStream fos = null;
-
-    try {
-      byte[] buffer = new byte[1024];
-
-      fos = new FileOutputStream((TMP_ROOT + File.separator + source.getName() + "zip")
-        .replace("${MICA_HOME}", System.getProperty("MICA_HOME")));
-
-      ZipOutputStream zos = new ZipOutputStream(fos);
-
-      for (String file : fileTree) {
-        if (!isDirectoryPath(doGetAttachmentState(file))) {
-          zos.putNextEntry(new ZipEntry(relativize(basePath, file)));
-          InputStream in = fileStoreService.getFile(doGetAttachment(file).getFileReference());
-
-          int len;
-          while ((len = in.read(buffer)) > 0) {
-            zos.write(buffer, 0, len);
-          }
-
-          in.close();
-        } else {
-          zos.putNextEntry(new ZipEntry(relativize(basePath, file) + File.separator));
-        }
-
-        zos.closeEntry();
-      }
-
-      zos.close();
-
-    } catch (IOException ioe) {
-      ioe.printStackTrace();
-      return null;
-    } finally {
-      IOUtils.closeQuietly(fos);
-    }
-
-    return source.getName() + ".zip";
-  }
-
-  protected AttachmentState doGetAttachmentState(String path) {
-    String basePath = normalizePath(path);
-    if(isPublishedFileSystem()) subjectAclService.checkAccess("/file", basePath);
-    else subjectAclService.checkPermission("/draft/file", "VIEW", basePath);
-
-    Pair<String, String> pathName = FileSystemService.extractPathName(basePath);
-    AttachmentState state = fileSystemService
-      .getAttachmentState(pathName.getKey(), pathName.getValue(), isPublishedFileSystem());
-    if(isPublishedFileSystem()) return state;
-
-    return null;
-  }
-
-  protected boolean isDirectoryPath(AttachmentState attachmentState) {
-    return ".".equals(attachmentState.getName());
+  protected String doZip(String path) {
+    return fileSystemService.zipDirectory(normalizePath(path), isPublishedFileSystem());
   }
 
   //
@@ -363,18 +286,6 @@ public abstract class AbstractFileSystemResource {
         if(isPublishedFileSystem()) f = f.toBuilder().clearRevisionStatus().build();
         return f;
       }).collect(Collectors.toList());
-  }
-
-  private String relativize(String baseDirectoryPath, String childPath) {
-    return Paths.get(baseDirectoryPath).getParent().relativize(Paths.get(childPath)).toString();
-  }
-
-  private void populateFileTree(Mica.FileDto node, final String basePath, final Set<String> fileTree) {
-    if (isDirectoryPath(doGetAttachmentState(node.getPath()))) {
-      getChildrenFolders(node.getPath()).forEach(d -> populateFileTree(d, basePath, fileTree));
-
-      getChildrenFiles(node.getPath(), false).stream().forEach(f -> fileTree.add(f.getPath()));
-    }
   }
 
 }

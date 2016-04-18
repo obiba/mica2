@@ -14,9 +14,12 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.file.Attachment;
+import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.FileStoreService;
+import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.TempFileService;
 import org.obiba.mica.file.support.FileMediaType;
 import org.obiba.mica.web.model.Mica;
@@ -24,6 +27,9 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
 import com.google.common.io.Files;
+
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @Component
 @Path("/draft")
@@ -44,14 +50,8 @@ public class DraftFileSystemResource extends AbstractFileSystemResource {
   @Path("/file-dl/{path:.*}")
   public Response downloadFile(@PathParam("path") String path, @QueryParam("version") String version,
     @QueryParam("inline") @DefaultValue("false") boolean inline) {
-    
-    if (isDirectoryPath(doGetAttachmentState(path))) {
-      String name = doZipDirectory(path);
 
-      return Response.ok(tempFileService.getInputStreamFromFile(name))
-        .header("Content-Disposition", "attachment; filename=\"" + name + "\"").build();
-
-    } else {
+    try {
       Attachment attachment = doGetAttachment(path, version);
 
       if (inline) {
@@ -64,6 +64,11 @@ public class DraftFileSystemResource extends AbstractFileSystemResource {
 
       return Response.ok(fileStoreService.getFile(attachment.getFileReference()))
         .header("Content-Disposition", "attachment; filename=\"" + attachment.getName() + "\"").build();
+    } catch (NoSuchEntityException e) {
+      String name = doZip(path);
+
+      return Response.ok(tempFileService.getInputStreamFromFile(name))
+        .header("Content-Disposition", "attachment; filename=\"" + name + "\"").build();
     }
   }
 

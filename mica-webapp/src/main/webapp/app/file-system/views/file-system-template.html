@@ -39,7 +39,10 @@
         class="btn btn-info btn-responsive" ngf-multiple="true" ngf-select ngf-change="onFileSelect($files)">
       <i class="fa fa-upload"></i> {{'upload' | translate}}
       </a>
-      <a ng-if="data.document.permissions.view" target="_self" class="btn btn-info btn-responsive" ng-href="ws/draft/file-dl/{{data.document.path}} ">
+      <a ng-if="data.document.permissions.view && data.isFile" target="_self" class="btn btn-info btn-responsive" ng-href="ws/draft/file-dl/{{data.document.path}} ">
+        <i class="fa fa-download"></i> {{'download' | translate}}
+      </a>
+      <a ng-if="data.document.permissions.view && !data.isFile" target="_self" class="btn btn-info btn-responsive" ng-href="ws/draft/file-dl/{{data.document.path}} ">
         <i class="fa fa-download"></i> {{'download' | translate}}
       </a>
 
