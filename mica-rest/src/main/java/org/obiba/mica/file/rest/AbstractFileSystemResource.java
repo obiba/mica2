@@ -186,7 +186,7 @@ public abstract class AbstractFileSystemResource {
     }
   }
 
-  protected void doZipDirectory(String path) {
+  protected String doZipDirectory(String path) {
     String basePath = normalizePath(path);
 
     Set<String> fileTree = new LinkedHashSet<>();
@@ -207,7 +207,7 @@ public abstract class AbstractFileSystemResource {
       ZipOutputStream zos = new ZipOutputStream(fos);
 
       for (String file : fileTree) {
-        if (!isDirectoryPath(doGetState(file))) {
+        if (!isDirectoryPath(doGetAttachmentState(file))) {
           zos.putNextEntry(new ZipEntry(relativize(basePath, file)));
           InputStream in = fileStoreService.getFile(doGetAttachment(file).getFileReference());
 
@@ -225,19 +225,21 @@ public abstract class AbstractFileSystemResource {
       }
 
       zos.close();
+
     } catch (IOException ioe) {
       ioe.printStackTrace();
+      return null;
     } finally {
       IOUtils.closeQuietly(fos);
     }
+
+    return source.getName() + ".zip";
   }
 
-  protected AttachmentState doGetState(String path) {
+  protected AttachmentState doGetAttachmentState(String path) {
     String basePath = normalizePath(path);
     if(isPublishedFileSystem()) subjectAclService.checkAccess("/file", basePath);
     else subjectAclService.checkPermission("/draft/file", "VIEW", basePath);
-
-    if(path.endsWith("/")) throw new IllegalArgumentException("Folder download is not supported");
 
     Pair<String, String> pathName = FileSystemService.extractPathName(basePath);
     AttachmentState state = fileSystemService
@@ -368,7 +370,7 @@ public abstract class AbstractFileSystemResource {
   }
 
   private void populateFileTree(Mica.FileDto node, final String basePath, final Set<String> fileTree) {
-    if (isDirectoryPath(doGetState(node.getPath()))) {
+    if (isDirectoryPath(doGetAttachmentState(node.getPath()))) {
       getChildrenFolders(node.getPath()).forEach(d -> populateFileTree(d, basePath, fileTree));
 
       getChildrenFiles(node.getPath(), false).stream().forEach(f -> fileTree.add(f.getPath()));

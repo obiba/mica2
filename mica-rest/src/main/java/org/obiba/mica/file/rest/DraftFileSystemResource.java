@@ -17,6 +17,7 @@ import javax.ws.rs.core.UriInfo;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileStoreService;
+import org.obiba.mica.file.service.TempFileService;
 import org.obiba.mica.file.support.FileMediaType;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.stereotype.Component;
@@ -31,6 +32,9 @@ public class DraftFileSystemResource extends AbstractFileSystemResource {
   @Inject
   private FileStoreService fileStoreService;
 
+  @Inject
+  private TempFileService tempFileService;
+
   @Override
   protected boolean isPublishedFileSystem() {
     return false;
@@ -40,18 +44,27 @@ public class DraftFileSystemResource extends AbstractFileSystemResource {
   @Path("/file-dl/{path:.*}")
   public Response downloadFile(@PathParam("path") String path, @QueryParam("version") String version,
     @QueryParam("inline") @DefaultValue("false") boolean inline) {
-    Attachment attachment = doGetAttachment(path, version);
+    
+    if (isDirectoryPath(doGetAttachmentState(path))) {
+      String name = doZipDirectory(path);
 
-    if (inline) {
-      String filename = attachment.getName();
+      return Response.ok(tempFileService.getInputStreamFromFile(name))
+        .header("Content-Disposition", "attachment; filename=\"" + name + "\"").build();
+
+    } else {
+      Attachment attachment = doGetAttachment(path, version);
+
+      if (inline) {
+        String filename = attachment.getName();
+        return Response.ok(fileStoreService.getFile(attachment.getFileReference()))
+          .header("Content-Disposition", "inline; filename=\"" + filename + "\"")
+          .type(FileMediaType.type(Files.getFileExtension(filename)))
+          .build();
+      }
+
       return Response.ok(fileStoreService.getFile(attachment.getFileReference()))
-        .header("Content-Disposition", "inline; filename=\"" + filename + "\"")
-        .type(FileMediaType.type(Files.getFileExtension(filename)))
-        .build();
+        .header("Content-Disposition", "attachment; filename=\"" + attachment.getName() + "\"").build();
     }
-
-    return Response.ok(fileStoreService.getFile(attachment.getFileReference()))
-      .header("Content-Disposition", "attachment; filename=\"" + attachment.getName() + "\"").build();
   }
 
   @GET

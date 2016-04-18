@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
-import java.nio.file.Paths;
 
 @Component
 @Path("/")
@@ -37,17 +36,11 @@ public class PublishedFileSystemResource extends AbstractFileSystemResource {
   public Response downloadFile(@PathParam("path") String path,
     @QueryParam("inline") @DefaultValue("false") boolean inline) {
 
-    if (isDirectoryPath(doGetState(path))) {
-      doZipDirectory(path);
-      
-      String name = doGetFile(path).getName() + ".zip";
-
-      tempFileService.getInputStreamFromFile(name);
+    if (isDirectoryPath(doGetAttachmentState(path))) {
+      String name = doZipDirectory(path);
 
       return Response.ok(tempFileService.getInputStreamFromFile(name))
-        .header("Content-Disposition", "attachment; filename=\"" + name + "\"")
-        .type(FileMediaType.type(Files.getFileExtension(name)))
-        .build();
+        .header("Content-Disposition", "attachment; filename=\"" + name + "\"").build();
 
     } else {
       Attachment attachment = doGetAttachment(path);
