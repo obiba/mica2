@@ -1,6 +1,8 @@
 package org.obiba.mica.file.service;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,6 +52,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
@@ -213,7 +216,9 @@ public class FileSystemService {
    * @param publish do the publication or the non publication
    */
   public void publish(AttachmentState state, boolean publish) {
-    publish(state, publish, getCurrentUsername());
+    Map<String, AttachmentState> statesToProcess = Maps.newHashMap();
+    publish(state, publish, statesToProcess);
+    batchPublish(statesToProcess.values(), getCurrentUsername(), publish);
   }
 
   /**
@@ -223,21 +228,15 @@ public class FileSystemService {
    * @param publish
    * @param publisher
    */
-  public void publish(AttachmentState state, boolean publish, String publisher) {
+  public void publish(AttachmentState state, boolean publish, Map<String, AttachmentState> statesToProcess) {
     if(publish) {
       // publish the parent directories (if any)
       if(!FileUtils.isRoot(state.getPath())) {
         publishDirs(FileUtils.isDirectory(state) ? FileUtils.getParentPath(state.getPath()) : state.getPath(),
-            publisher);
+          statesToProcess);
       }
-      state.publish(publisher);
-      state.setRevisionStatus(RevisionStatus.DRAFT);
-    } else state.unPublish();
-    state.setLastModifiedDate(DateTime.now());
-    state.setLastModifiedBy(publisher);
-    attachmentStateRepository.save(state);
-    if(publish) eventBus.post(new FilePublishedEvent(state));
-    else eventBus.post(new FileUnPublishedEvent(state));
+    }
+    statesToProcess.put(state.getFullPath(), state);
   }
 
   /**
@@ -262,10 +261,28 @@ public class FileSystemService {
     try {
       List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
       states.addAll(findAttachmentStates(String.format("^%s/", path), false));
-      states.stream().forEach(s -> publish(s, publish, publisher));
+      Map<String, AttachmentState> statesToProcess = Maps.newHashMap();
+      states.stream().forEach(s -> publish(s, publish, statesToProcess));
+      batchPublish(statesToProcess.values(), publisher, publish);
     } finally {
       fsLock.unlock();
     }
+  }
+
+  private void batchPublish(Collection<AttachmentState> states, String publisher, boolean publish) {
+    states.stream().forEach(state -> {
+      if (publish) {
+        state.publish(publisher);
+        state.setRevisionStatus(RevisionStatus.DRAFT);
+      } else {
+        state.unPublish();
+      }
+
+      state.setLastModifiedDate(DateTime.now());
+      state.setLastModifiedBy(publisher);
+      attachmentStateRepository.save(state);
+      eventBus.post(publish ? new FilePublishedEvent(state): new FileUnPublishedEvent(state));
+    });
   }
 
   private void publishWithCascading(String path, boolean publish, String publisher,
@@ -277,8 +294,10 @@ public class FileSystemService {
       } else if(PublishCascadingScope.UNDER_REVIEW == cascadingScope) {
         List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), false);
         states.addAll(findAttachmentStates(String.format("^%s/", path), false));
+        Map<String, AttachmentState> statesToProcess = Maps.newHashMap();
         states.stream().filter(s -> !publish || s.getRevisionStatus() == RevisionStatus.UNDER_REVIEW)
-            .forEach(s -> publish(s, publish, publisher));
+            .forEach(s -> publish(s, publish, statesToProcess));
+        batchPublish(statesToProcess.values(), publisher, publish);
       }
     } finally {
       fsLock.unlock();
@@ -684,22 +703,17 @@ public class FileSystemService {
    *
    * @param path
    */
-  private synchronized void publishDirs(String path, String publisher) {
+  private synchronized void publishDirs(String path, Map<String, AttachmentState> statesToProcess) {
     if(Strings.isNullOrEmpty(path)) return;
     List<AttachmentState> states = attachmentStateRepository.findByPathAndName(path, DIR_NAME);
     if(states.isEmpty()) return;
 
-    if(path.lastIndexOf('/') > 0) publishDirs(path.substring(0, path.lastIndexOf('/')), publisher);
-    else if(path.lastIndexOf('/') == 0 && !"/".equals(path)) publishDirs("/", publisher);
+    if(path.lastIndexOf('/') > 0) publishDirs(path.substring(0, path.lastIndexOf('/')), statesToProcess);
+    else if(path.lastIndexOf('/') == 0 && !"/".equals(path)) publishDirs("/", statesToProcess);
 
     AttachmentState state = states.get(0);
     if(state.isPublished()) return;
-    state.publish(publisher);
-    state.setLastModifiedDate(DateTime.now());
-    state.setLastModifiedBy(publisher);
-    state.setRevisionStatus(RevisionStatus.DRAFT);
-    attachmentStateRepository.save(state);
-    eventBus.post(new FilePublishedEvent(state));
+    statesToProcess.put(state.getFullPath(), state);
   }
 
   /**
