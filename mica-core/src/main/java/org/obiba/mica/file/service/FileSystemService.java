@@ -1,7 +1,6 @@
 package org.obiba.mica.file.service;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.apache.commons.io.IOUtils;
@@ -50,7 +49,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -575,22 +573,28 @@ public class FileSystemService {
     return extractPathName(pathWithName, null);
   }
 
+  public List<AttachmentState> listDirectoryAttachmentStates(String path, boolean publishedFS) {
+    List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), publishedFS);
+    states.addAll(findAttachmentStates(String.format("^%s/", path), publishedFS));
+
+    return states;
+  }
+
   public String relativizePaths(String path1, String path2) {
     return Paths.get(path1).getParent().relativize(Paths.get(path2)).toString();
   }
 
   public String zipDirectory(String path, boolean publishedFS) {
-    List<AttachmentState> attachmentStates = findAttachmentStates(String.format("^%s$", path), publishedFS);
-    attachmentStates.addAll(findAttachmentStates(String.format("^%s/", path), publishedFS));
+    List<AttachmentState> attachmentStates = listDirectoryAttachmentStates(path, publishedFS);
+    String zipName = Paths.get(path).getFileName().toString() + ".zip";
 
     FileOutputStream fos = null;
 
-    final String TMP_ROOT = "${MICA_HOME}/work/tmp";
-    String zipName = Paths.get(path).getFileName().toString() + ".zip";
+    final String tmpRoot = "${MICA_HOME}/work/tmp";
 
     try {
       byte[] buffer = new byte[1024];
-      fos = new FileOutputStream((TMP_ROOT + File.separator + zipName)
+      fos = new FileOutputStream((tmpRoot + File.separator + zipName)
         .replace("${MICA_HOME}", System.getProperty("MICA_HOME")));
 
       ZipOutputStream zos = new ZipOutputStream(fos);
@@ -611,7 +615,6 @@ public class FileSystemService {
           }
 
           in.close();
-
         }
 
         zos.closeEntry();
