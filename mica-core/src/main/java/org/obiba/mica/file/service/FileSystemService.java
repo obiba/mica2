@@ -1,6 +1,7 @@
 package org.obiba.mica.file.service;
 
 import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -231,7 +232,7 @@ public class FileSystemService {
    *
    * @param state
    * @param publish
-   * @param publisher
+   * @param statesToProcess
    */
   public void publish(AttachmentState state, boolean publish, Map<String, AttachmentState> statesToProcess) {
     if(publish) {
@@ -626,7 +627,7 @@ public class FileSystemService {
 
       zos.finish();
     } catch (IOException ioe) {
-
+      Throwables.propagate(ioe);
     } finally {
       IOUtils.closeQuietly(fos);
     }
@@ -821,7 +822,7 @@ public class FileSystemService {
   /**
    * Get the count of accessible files at path.
    *
-   * @param path
+   * @param pathRegEx
    * @return
    */
   private long countAccessiblePublishedAttachmentStates(String pathRegEx) {
