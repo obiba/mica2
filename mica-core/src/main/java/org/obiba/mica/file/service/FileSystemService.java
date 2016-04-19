@@ -580,17 +580,24 @@ public class FileSystemService {
     return extractPathName(pathWithName, null);
   }
 
-  public List<AttachmentState> listDirectoryAttachmentStates(String path, boolean publishedFS) {
-    List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), publishedFS);
-    states.addAll(findAttachmentStates(String.format("^%s/", path), publishedFS));
-
-    return states;
+  /**
+   * Create and return a relative path to the source's parent
+   *
+   * @param source
+   * @param path
+   * @return
+     */
+  public String relativizePaths(String source, String path) {
+    return Paths.get(source).getParent().relativize(Paths.get(path)).toString();
   }
 
-  public String relativizePaths(String path1, String path2) {
-    return Paths.get(path1).getParent().relativize(Paths.get(path2)).toString();
-  }
-
+  /**
+   * Creates a zipped file of the path and it's subdirectories/files
+   * 
+   * @param path
+   * @param publishedFS
+   * @return
+     */
   public String zipDirectory(String path, boolean publishedFS) {
     List<AttachmentState> attachmentStates = listDirectoryAttachmentStates(path, publishedFS);
     String zipName = Paths.get(path).getFileName().toString() + ".zip";
@@ -600,12 +607,12 @@ public class FileSystemService {
     try {
       byte[] buffer = new byte[1024];
 
-      fos = tempFileService.getFileOutPutStreamFromFile(zipName);
+      fos = tempFileService.getFileOutputStreamFromFile(zipName);
 
       ZipOutputStream zos = new ZipOutputStream(fos);
 
       for (AttachmentState state: attachmentStates) {
-        if (".".equals(state.getName())) {
+        if (DIR_NAME.equals(state.getName())) {
           zos.putNextEntry(new ZipEntry(relativizePaths(path, state.getFullPath()) + File.separator));
         } else {
           zos.putNextEntry(new ZipEntry(relativizePaths(path, state.getFullPath())));
@@ -872,5 +879,19 @@ public class FileSystemService {
 
   private String normalizeRegex(String path) {
     return FileUtils.normalizeRegex(path);
+  }
+
+  /**
+   * Creates a list of AttachmentStates in and under the path's directory tree
+   *
+   * @param path
+   * @param publishedFS
+   * @return
+   */
+  private List<AttachmentState> listDirectoryAttachmentStates(String path, boolean publishedFS) {
+    List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), publishedFS);
+    states.addAll(findAttachmentStates(String.format("^%s/", path), publishedFS));
+
+    return states;
   }
 }

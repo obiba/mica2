@@ -115,7 +115,7 @@ public class TempFileService {
     }
   }
 
-  public FileOutputStream getFileOutPutStreamFromFile(@NotNull String id) {
+  public FileOutputStream getFileOutputStreamFromFile(@NotNull String id) {
     try {
       return new FileOutputStream(getFile(id));
     } catch (FileNotFoundException e) {
