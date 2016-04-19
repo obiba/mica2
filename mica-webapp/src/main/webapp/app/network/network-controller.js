@@ -15,7 +15,7 @@ mica.network
   .constant('NETWORK_EVENTS', {
     networkUpdated: 'event:network-updated'
   })
-  
+
   .controller('NetworkMainController', ['$scope', '$location', 'NetworksResource',
     function($scope, $location, NetworksResource) {
       if($scope.micaConfig.isSingleNetworkEnabled) {
@@ -74,7 +74,6 @@ mica.network
     'DraftNetworkPublicationResource',
     'MicaConfigResource',
     'FormServerValidation',
-    'ActiveTabService',
     function ($rootScope,
               $scope,
               $routeParams,
@@ -85,10 +84,9 @@ mica.network
               DraftNetworksResource,
               DraftNetworkPublicationResource,
               MicaConfigResource,
-              FormServerValidation,
-              ActiveTabService) {
+              FormServerValidation) {
 
-      $scope.getActiveTab = ActiveTabService.getActiveTab;
+      $scope.activeTab = 0;
       $scope.files = [];
       $scope.newNetwork= !$routeParams.id;
       $scope.network = $routeParams.id ?
@@ -259,7 +257,6 @@ mica.network
     'StudyStatesResource',
     '$uibModal',
     'LocalizedValues',
-    'ActiveTabService',
     '$filter',
     'NetworkService',
     'DocumentPermissionsService',
@@ -288,11 +285,12 @@ mica.network
               StudyStatesResource,
               $uibModal,
               LocalizedValues,
-              ActiveTabService,
               $filter,
               NetworkService,
               DocumentPermissionsService) {
       var initializeNetwork = function(network){
+        $scope.activeTab = 0;
+
         if (network.logo) {
           $scope.logoUrl = 'ws/draft/network/'+network.id+'/file/'+network.logo.id+'/_download';
         }
@@ -342,7 +340,7 @@ mica.network
 
       $scope.Mode = {View: 0, Revision: 1, File: 2, Permission: 3, Comment: 4};
 
-      $scope.getActiveTab = ActiveTabService.getActiveTab;
+      $scope.activeTab = 0;
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
@@ -574,7 +572,7 @@ mica.network
               return $scope.network.studyIds;
             },
             lang: function() {
-              return ActiveTabService.getActiveTab($scope.tabs).lang;
+              return $scope.tabs[$scope.activeTab].lang;
             }
           }
         }).result.then(function(selectedIds) {
@@ -608,7 +606,7 @@ mica.network
               return ($scope.network.networkIds || []).concat($scope.network.id);
             },
             lang: function() {
-              return ActiveTabService.getActiveTab($scope.tabs).lang;
+              return $scope.tabs[$scope.activeTab].lang;
             }
           }
         }).result.then(function(selectedIds) {
@@ -636,7 +634,7 @@ mica.network
               return $scope.network;
             },
             lang: function() {
-              return ActiveTabService.getActiveTab($scope.tabs).lang;
+              return $scope.tabs[$scope.activeTab].lang;
             }
           }
         });

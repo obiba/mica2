@@ -100,8 +100,8 @@
       </div>
 
       <!-- TODO create a directive (see MK-568) -->
-      <uib-tabset class="voffset2">
-        <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active" disable="tab.disable">
+      <uib-tabset active="activeTab" class="voffset2">
+        <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" disable="tab.disable">
 
           <div class="voffset">
             <label class="text-muted no-margin">

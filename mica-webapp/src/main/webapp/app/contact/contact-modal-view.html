@@ -7,8 +7,8 @@
 
   <div class="modal-body">
 
-    <uib-tabset>
-      <uib-tab ng-repeat="tab in tabs" heading="{{tab.labelKey | translate}}" active="tab.active" disable="tab.disable">
+    <uib-tabset active="activeTab">
+      <uib-tab ng-repeat="tab in tabs" heading="{{tab.labelKey | translate}}" disable="tab.disable">
 
       <table class="table table-bordered table-striped">
           <tbody>

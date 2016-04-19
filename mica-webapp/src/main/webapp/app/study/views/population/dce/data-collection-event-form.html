@@ -21,8 +21,8 @@
 
   <form name="form" role="form" novalidate ng-submit="save(form)">
     <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
-    <uib-tabset>
-      <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active" disable="tab.disabled">
+    <uib-tabset active="activeTab">
+      <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" disable="tab.disabled">
         <div ng-if="population">
 
           <h3 translate>study.general-info</h3>

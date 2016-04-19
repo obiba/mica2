@@ -29,8 +29,8 @@
           </ui-select-choices>
         </ui-select>
       </div>
-      <uib-tabset class="voffset4">
-        <uib-tab ng-repeat="tab in tabs" heading="{{tab.labelKey | translate}}" active="tab.active" disable="tab.disable">
+      <uib-tabset active="activeTab" class="voffset4">
+        <uib-tab ng-repeat="tab in tabs" heading="{{tab.labelKey | translate}}" disable="tab.disable">
           <div form-input name="contact.title" model="selected.contact.title" label="contact.title"></div>
 
           <div form-input name="contact.firstName" model="selected.contact.firstName" label="contact.firstName"></div>
