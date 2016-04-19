@@ -11,20 +11,6 @@
 'use strict';
 
 mica.commons
-  .service('ActiveTabService', function() {
-
-    this.getActiveTab = function(tabs) {
-      if (tabs) {
-        return tabs.filter(function (tab) {
-          return tab.active;
-        })[0];
-      }
-
-      return null;
-    };
-
-    return this;
-  })
 
   .factory('CommentsResource', ['$resource',
     function ($resource) {

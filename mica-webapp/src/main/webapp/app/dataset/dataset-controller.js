@@ -37,7 +37,6 @@ mica.dataset
     'FormServerValidation',
     'StudyStatesResource',
     'StudyStateProjectsResource',
-    'ActiveTabService',
 
     function ($rootScope,
               $scope,
@@ -51,8 +50,7 @@ mica.dataset
               MicaConfigResource,
               FormServerValidation,
               StudyStatesResource,
-              StudyStateProjectsResource,
-              ActiveTabService) {
+              StudyStateProjectsResource) {
       $scope.studies = [];
       $scope.projects = [];
       $scope.selected = {};
@@ -99,7 +97,7 @@ mica.dataset
       };
 
       $scope.type = getTypeFromUrl();
-      $scope.getActiveTab = ActiveTabService.getActiveTab;
+      $scope.activeTab = 0;
       $scope.newDataset = !$routeParams.id;
       if ($routeParams.id) {
         $scope.dataset = StudyDatasetResource.get({id: $routeParams.id}, function (dataset) {
@@ -200,7 +198,6 @@ mica.dataset
     'HarmonizationDatasetPublicationResource',
     'MicaConfigResource',
     'FormServerValidation',
-    'ActiveTabService',
     'DraftNetworksResource',
 
     function ($rootScope,
@@ -215,7 +212,6 @@ mica.dataset
               HarmonizationDatasetPublicationResource,
               MicaConfigResource,
               FormServerValidation,
-              ActiveTabService,
               DraftNetworksResource) {
 
       var getTypeFromUrl = function() {
@@ -226,7 +222,7 @@ mica.dataset
       $scope.selected = {network: {}};
       $scope.networks = DraftNetworksResource.query();
       $scope.type = getTypeFromUrl();
-      $scope.getActiveTab = ActiveTabService.getActiveTab;
+      $scope.activeTab = 0;
       $scope.newDataset = !$routeParams.id;
       if ($routeParams.id) {
         $scope.dataset = HarmonizationDatasetResource.get({id: $routeParams.id});
@@ -355,7 +351,6 @@ mica.dataset
     'DraftDatasetRestoreRevisionResource',
     'DraftFileSystemSearchResource',
     'MicaConfigResource',
-    'ActiveTabService',
     'NOTIFICATION_EVENTS',
     '$filter',
     'DatasetService',
@@ -376,7 +371,6 @@ mica.dataset
               DraftDatasetRestoreRevisionResource,
               DraftFileSystemSearchResource,
               MicaConfigResource,
-              ActiveTabService,
               NOTIFICATION_EVENTS,
               $filter,
               DatasetService,
@@ -412,7 +406,7 @@ mica.dataset
       $scope.Mode = {View: 0, Revision: 1, File: 2, Permission: 3, Comment: 4};
       $scope.type = getTypeFromUrl();
       $scope.datasetId = $routeParams.id;
-      $scope.getActiveTab = ActiveTabService.getActiveTab;
+      $scope.activeTab = 0;
       $scope.dataset = DatasetResource.get({id: $routeParams.id, type: $scope.type}, initializeDataset);
 
       $scope.publish = function (publish) {
@@ -589,7 +583,6 @@ mica.dataset
     'HarmonizationDatasetResource',
     'HarmonizationDatasetPublicationResource',
     'MicaConfigResource',
-    'ActiveTabService',
 
     function ($rootScope,
               $scope,
@@ -599,8 +592,7 @@ mica.dataset
               $location,
               HarmonizationDatasetResource,
               HarmonizationDatasetPublicationResource,
-              MicaConfigResource,
-              ActiveTabService) {
+              MicaConfigResource) {
       MicaConfigResource.get(function (micaConfig) {
         $scope.opal = micaConfig.opal;
         $scope.tabs = [];
@@ -614,7 +606,7 @@ mica.dataset
         $scope.datasetTable = dataset['obiba.mica.HarmonizationDatasetDto.type'].table;
       });
 
-      $scope.getActiveTab = ActiveTabService.getActiveTab;
+      $scope.activeTab = 0;
 
       $scope.isPublished = function () {
         return $scope.dataset.published;

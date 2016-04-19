@@ -1,6 +1,6 @@
 <div>
-  <uib-tabset>
-    <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active" disable="tab.disabled">
+  <uib-tabset active="activeTab">
+    <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" disable="tab.disabled">
 
       <div class="voffset4">
         <img class="img-responsive desaturate" ng-show="study.logo" ng-src="{{logoUrl}}">

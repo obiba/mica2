@@ -79,7 +79,6 @@ mica.study
     'NOTIFICATION_EVENTS',
     'CONTACT_EVENTS',
     'StudyTaxonomyService',
-    'ActiveTabService',
     '$uibModal',
     'DraftStudyDeleteService',
     'EntityPathBuilder',
@@ -107,7 +106,6 @@ mica.study
               NOTIFICATION_EVENTS,
               CONTACT_EVENTS,
               StudyTaxonomyService,
-              ActiveTabService,
               $uibModal,
               DraftStudyDeleteService,
               EntityPathBuilder,
@@ -140,7 +138,7 @@ mica.study
         return $scope.viewMode === $scope.Mode.View;
       };
 
-      $scope.getActiveTab = ActiveTabService.getActiveTab;
+      $scope.activeTab = 0;
 
       var updateTimeline = function (study) {
         if (!$scope.timeline) {
@@ -284,7 +282,7 @@ mica.study
       $scope.delete = function (study) {
         DraftStudyDeleteService.delete(study, function() {
           $location.path('/study').replace();
-        }, ActiveTabService.getActiveTab($scope.tabs).lang);
+        }, $scope.tabs[$scope.activeTab].lang);
       };
 
       $scope.publish = function (doPublish) {
@@ -428,7 +426,7 @@ mica.study
           controller: 'StudyPopulationDceModalController',
           resolve: {
             lang: function() {
-              return ActiveTabService.getActiveTab($scope.tabs).lang;
+              return $scope.tabs[$scope.activeTab].lang;
             },
             dce: function () {
               return dce;
@@ -543,6 +541,10 @@ mica.study
       };
 
       $scope.getTermLabels = function(vocabularyName, terms) {
+        if (!terms) {
+          return [];
+        }
+        
         var result = terms.map(function(term){
           return StudyTaxonomyService.getLabel(vocabularyName, term, $scope.lang);
         });
@@ -560,7 +562,6 @@ mica.study
     'FormServerValidation',
     'StudyTaxonomyService',
     'MicaUtil',
-    'ActiveTabService',
     'ObibaCountriesIsoCodes',
     function ($rootScope,
               $scope,
@@ -572,7 +573,6 @@ mica.study
               FormServerValidation,
               StudyTaxonomyService,
               MicaUtil,
-              ActiveTabService,
               ObibaCountriesIsoCodes) {
 
 
@@ -611,7 +611,7 @@ mica.study
         }
       }) : {};
 
-      $scope.getActiveTab = ActiveTabService.getActiveTab;
+      $scope.activeTab = 0;
       $scope.newPopulation = !$routeParams.pid;
       $scope.$watch('population.recruitment.dataSources', function (newVal, oldVal) {
         if (oldVal === undefined || newVal === undefined) {
@@ -664,7 +664,7 @@ mica.study
       });
 
       StudyTaxonomyService.get(function() {
-        var lang = ActiveTabService.getActiveTab($scope.tabs).lang;
+        var lang = $scope.tabs[$scope.activeTab].lang;
         $scope.selectionCriteriaGenders = StudyTaxonomyService.getTerms('populations-selectionCriteria-gender', lang).map(function (obj) {
           return {id: obj.name, label: obj.label};
         });
@@ -805,7 +805,6 @@ mica.study
     'FormServerValidation',
     'MicaUtil',
     'StudyTaxonomyService',
-    'ActiveTabService',
     function ($rootScope,
               $scope,
               $routeParams,
@@ -815,8 +814,7 @@ mica.study
               MicaConfigResource,
               FormServerValidation,
               MicaUtil,
-              StudyTaxonomyService,
-              ActiveTabService
+              StudyTaxonomyService
     ) {
       $scope.dce = {};
       $scope.fileTypes = '.doc, .docx, .odm, .odt, .gdoc, .pdf, .txt  .xml  .xls, .xlsx, .ppt';
@@ -869,7 +867,7 @@ mica.study
 
 
           StudyTaxonomyService.get(function() {
-            var lang = ActiveTabService.getActiveTab($scope.tabs).lang;
+            var lang = $scope.tabs[$scope.activeTab].lang;
             $scope.dataSources = StudyTaxonomyService.getTerms('populations-dataCollectionEvents-dataSources', lang);
             $scope.bioSamples = StudyTaxonomyService.getTerms('populations-dataCollectionEvents-bioSamples', lang);
             $scope.administrativeDatabases = StudyTaxonomyService.getTerms('populations-dataCollectionEvents-administrativeDatabases', lang);
@@ -998,7 +996,6 @@ mica.study
     'MicaConfigResource',
     'StudyTaxonomyService',
     'StringUtils',
-    'ActiveTabService',
     'FormServerValidation',
     'RadioGroupOptionBuilder',
     function ($rootScope,
@@ -1012,7 +1009,6 @@ mica.study
               MicaConfigResource,
               StudyTaxonomyService,
               StringUtils,
-              ActiveTabService,
               FormServerValidation,
               RadioGroupOptionBuilder) {
 
@@ -1042,7 +1038,7 @@ mica.study
         return {attachments: [], maelstromAuthorization: {date: null}, specificAuthorization: {date: null}};
       }
 
-      $scope.getActiveTab = ActiveTabService.getActiveTab;
+      $scope.activeTab = 0;
       $scope.revision = {comment: null};
       $scope.today = new Date();
       $scope.$watch('authorization.maelstrom.date', function (newVal) {

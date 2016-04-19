@@ -30,8 +30,8 @@
 
     <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
 
-    <uib-tabset>
-      <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" active="tab.active" disable="tab.disable">
+    <uib-tabset active="activeTab">
+      <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" disable="tab.disable">
 
         <div class="row">
           <div class="col-md-6">
