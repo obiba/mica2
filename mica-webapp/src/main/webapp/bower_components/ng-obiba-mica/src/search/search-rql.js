@@ -812,6 +812,9 @@ angular.module('obiba.mica.search')
         case RQL_NODE.LE:
           query.args[1] = terms;
           break;
+        case RQL_NODE.MATCH:
+          query.args[0] = terms;
+          break;
       }
     };
 
@@ -1122,13 +1125,14 @@ angular.module('obiba.mica.search')
        */
       this.updateCriteriaItem = function (existingItem, newItem, replace) {
         var newTerms;
+        var isMatchNode = existingItem.rqlQuery.name === RQL_NODE.MATCH;
 
         if(replace && newItem.rqlQuery) {
-          existingItem.rqlQuery.name = newItem.rqlQuery.name; 
+          existingItem.rqlQuery.name = newItem.rqlQuery.name;
         }
         
         if (newItem.rqlQuery) {
-          newTerms = newItem.rqlQuery.args[1];
+          newTerms = newItem.rqlQuery.args[isMatchNode ? 0 : 1];
         } else if (newItem.term) {
           newTerms = [newItem.term.name];
         } else {

@@ -68,6 +68,12 @@
                 // Now that we have access to the `scope` we can interpolate any expression given in the paginationId attribute and
                 // potentially register a new ID if it evaluates to a different value than the rawId.
                 var paginationId = $parse(attrs.paginationId)(scope) || attrs.paginationId || DEFAULT_ID;
+                
+                // (TODO: this seems sound, but I'm reverting as many bug reports followed it's introduction in 0.11.0.
+                // Needs more investigation.)
+                // In case rawId != paginationId we deregister using rawId for the sake of general cleanliness
+                // before registering using paginationId
+                // paginationService.deregisterInstance(rawId);
                 paginationService.registerInstance(paginationId);
 
                 var repeatExpression = getRepeatExpression(expression, paginationId);
@@ -89,17 +95,27 @@
                         }
                     });
                 } else {
+                    paginationService.setAsyncModeFalse(paginationId);
                     scope.$watchCollection(function() {
                         return collectionGetter(scope);
                     }, function(collection) {
                         if (collection) {
-                            paginationService.setCollectionLength(paginationId, collection.length);
+                            var collectionLength = (collection instanceof Array) ? collection.length : Object.keys(collection).length;
+                            paginationService.setCollectionLength(paginationId, collectionLength);
                         }
                     });
                 }
 
                 // Delegate to the link function returned by the new compilation of the ng-repeat
                 compiled(scope);
+                 
+                // (TODO: Reverting this due to many bug reports in v 0.11.0. Needs investigation as the
+                // principle is sound)
+                // When the scope is destroyed, we make sure to remove the reference to it in paginationService
+                // so that it can be properly garbage collected
+                // scope.$on('$destroy', function destroyDirPagination() {
+                //     paginationService.deregisterInstance(paginationId);
+                // });
             };
         }
 
@@ -213,11 +229,8 @@
 
         var numberRegex = /^\d+$/;
 
-        return {
+        var DDO = {
             restrict: 'AE',
-            templateUrl: function(elem, attrs) {
-                return attrs.templateUrl || paginationTemplate.getPath();
-            },
             scope: {
                 maxSize: '=?',
                 onPageChange: '&?',
@@ -226,6 +239,23 @@
             },
             link: dirPaginationControlsLinkFn
         };
+
+        // We need to check the paginationTemplate service to see whether a template path or
+        // string has been specified, and add the `template` or `templateUrl` property to
+        // the DDO as appropriate. The order of priority to decide which template to use is
+        // (highest priority first):
+        // 1. paginationTemplate.getString()
+        // 2. attrs.templateUrl
+        // 3. paginationTemplate.getPath()
+        var templateString = paginationTemplate.getString();
+        if (templateString !== undefined) {
+            DDO.template = templateString;
+        } else {
+            DDO.templateUrl = function(elem, attrs) {
+                return attrs.templateUrl || paginationTemplate.getPath();
+            };
+        }
+        return DDO;
 
         function dirPaginationControlsLinkFn(scope, element, attrs) {
 
@@ -237,7 +267,9 @@
 
             if (!paginationService.isRegistered(paginationId) && !paginationService.isRegistered(rawId)) {
                 var idMessage = (paginationId !== DEFAULT_ID) ? ' (id: ' + paginationId + ') ' : ' ';
-                console.warn('Pagination directive: the pagination controls' + idMessage + 'cannot be used without the corresponding pagination directive, which was not found at link time.');
+                if (window.console) {
+                    console.warn('Pagination directive: the pagination controls' + idMessage + 'cannot be used without the corresponding pagination directive, which was not found at link time.');
+                }
             }
 
             if (!scope.maxSize) { scope.maxSize = 9; }
@@ -256,6 +288,13 @@
                 upper: 1,
                 total: 1
             };
+
+            scope.$watch('maxSize', function(val) {
+                if (val) {
+                    paginationRange = Math.max(scope.maxSize, 5);
+                    generatePagination();
+                }
+            });
 
             scope.$watch(function() {
                 if (paginationService.isRegistered(paginationId)) {
@@ -308,13 +347,19 @@
 
             function goToPage(num) {
                 if (paginationService.isRegistered(paginationId) && isValidPageNumber(num)) {
+                    var oldPageNumber = scope.pagination.current;
+
                     scope.pages = generatePagesArray(num, paginationService.getCollectionLength(paginationId), paginationService.getItemsPerPage(paginationId), paginationRange);
                     scope.pagination.current = num;
                     updateRangeValues();
 
-                    // if a callback has been set, then call it with the page number as an argument
+                    // if a callback has been set, then call it with the page number as the first argument
+                    // and the previous page number as a second argument
                     if (scope.onPageChange) {
-                        scope.onPageChange({ newPageNumber : num });
+                        scope.onPageChange({
+                            newPageNumber : num,
+                            oldPageNumber : oldPageNumber
+                        });
                     }
                 }
             }
@@ -503,6 +548,10 @@
             }
         };
 
+        this.deregisterInstance = function(instanceId) {
+            delete instances[instanceId];
+        };
+        
         this.isRegistered = function(instanceId) {
             return (typeof instances[instanceId] !== 'undefined');
         };
@@ -541,6 +590,10 @@
             instances[instanceId].asyncMode = true;
         };
 
+        this.setAsyncModeFalse = function(instanceId) {
+            instances[instanceId].asyncMode = false;
+        };
+
         this.isAsyncMode = function(instanceId) {
             return instances[instanceId].asyncMode;
         };
@@ -552,15 +605,33 @@
     function paginationTemplateProvider() {
 
         var templatePath = 'angularUtils.directives.dirPagination.template';
+        var templateString;
 
+        /**
+         * Set a templateUrl to be used by all instances of <dir-pagination-controls>
+         * @param {String} path
+         */
         this.setPath = function(path) {
             templatePath = path;
+        };
+
+        /**
+         * Set a string of HTML to be used as a template by all instances
+         * of <dir-pagination-controls>. If both a path *and* a string have been set,
+         * the string takes precedence.
+         * @param {String} str
+         */
+        this.setString = function(str) {
+            templateString = str;
         };
 
         this.$get = function() {
             return {
                 getPath: function() {
                     return templatePath;
+                },
+                getString: function() {
+                    return templateString;
                 }
             };
         };

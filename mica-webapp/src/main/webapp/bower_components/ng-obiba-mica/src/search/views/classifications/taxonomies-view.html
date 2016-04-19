@@ -54,7 +54,7 @@
                 <ul class="nav nav-pills nav-stacked" ng-if="taxonomies.taxonomy.vocabularies">
                   <li ng-repeat="vocabulary in taxonomies.taxonomy.vocabularies"
                       class="{{taxonomies.vocabulary.name === vocabulary.name ? 'active' : ''}}">
-                    <a href ng-click="navigateTaxonomy(taxonomies.taxonomy, vocabulary)">
+                    <a id="search-navigate-taxonomy" href ng-click="navigateTaxonomy(taxonomies.taxonomy, vocabulary)">
                 <span ng-repeat="label in vocabulary.title" ng-if="label.locale === lang">
                   {{label.text}}
                 </span>
@@ -74,15 +74,29 @@
                      ng-if="label.locale === lang">
                     {{label.text}}
                   </p>
-                  <div ng-if="taxonomies.isNumericVocabulary" ng-controller="NumericVocabularyPanelController">
+                  <div ng-if="taxonomies.isMatchVocabulary" ng-controller="MatchVocabularyPanelController">
                     <div class="form-group">
                       <a href class="btn btn-default btn-xs"
-                         ng-click="selectTerm(taxonomies.target, taxonomies.taxonomy, taxonomies.vocabulary, null, from, to)">
+                         ng-click="selectTerm(taxonomies.target, taxonomies.taxonomy, taxonomies.vocabulary, {text: text})">
                         <i class="fa fa-plus-circle"></i>
                         <span translate>add-query</span>
                       </a>
                     </div>
-                    <form novalidate class="form-inline" ui-keypress="{13:'selectTerm(taxonomies.target, taxonomies.taxonomy, taxonomies.vocabulary, null, from, to)'}">
+                    <form novalidate class="form-inline" ui-keypress="{13: 'selectTerm(taxonomies.target, taxonomies.taxonomy, taxonomies.vocabulary, {text: text})'}">
+                      <div class="form-group">
+                        <input type="text" class="form-control" ng-model="text" placeholder="{{'search.match.placeholder' | translate}}">
+                      </div>
+                    </form>
+                  </div>
+                  <div ng-if="taxonomies.isNumericVocabulary" ng-controller="NumericVocabularyPanelController">
+                    <div class="form-group">
+                      <a href class="btn btn-default btn-xs"
+                         ng-click="selectTerm(taxonomies.target, taxonomies.taxonomy, taxonomies.vocabulary, {from: from, to: to})">
+                        <i class="fa fa-plus-circle"></i>
+                        <span translate>add-query</span>
+                      </a>
+                    </div>
+                    <form novalidate class="form-inline" ui-keypress="{13:'selectTerm(taxonomies.target, taxonomies.taxonomy, taxonomies.vocabulary, {from: from, to: to})'}">
                       <div class="form-group">
                         <label for="nav-{{taxonomies.vocabulary.name}}-from" translate>from</label>
                         <input type="number" class="form-control" id="nav-{{taxonomies.vocabulary.name}}-from" ng-model="from" style="width:150px">
@@ -93,7 +107,7 @@
                       </div>
                     </form>
                   </div>
-                  <div ng-if="!taxonomies.isNumericVocabulary">
+                  <div ng-if="!taxonomies.isNumericVocabulary && !taxonomies.isMatchVocabulary">
                     <a href class="btn btn-default btn-xs"
                        ng-click="selectTerm(taxonomies.target, taxonomies.taxonomy, taxonomies.vocabulary)">
                       <i class="fa fa-plus-circle"></i>
@@ -103,7 +117,7 @@
                   <ul class="nav nav-pills nav-stacked" ng-if="taxonomies.vocabulary.terms">
                     <li ng-repeat="term in taxonomies.vocabulary.terms"
                         class="{{taxonomies.term.name === term.name ? 'active' : ''}}">
-                      <a href ng-click="navigateTaxonomy(taxonomies.taxonomy, taxonomies.vocabulary, term)">
+                      <a id="search-navigate-vocabulary" href ng-click="navigateTaxonomy(taxonomies.taxonomy, taxonomies.vocabulary, term)">
                 <span ng-repeat="label in term.title" ng-if="label.locale === lang">
                   {{label.text}}
                 </span>
@@ -127,7 +141,7 @@
                   </p>
                   <div>
                     <a href class="btn btn-default btn-xs"
-                       ng-click="selectTerm(taxonomies.target, taxonomies.taxonomy, taxonomies.vocabulary, taxonomies.term)">
+                       ng-click="selectTerm(taxonomies.target, taxonomies.taxonomy, taxonomies.vocabulary, {term: taxonomies.term})">
                       <i class="fa fa-plus-circle"></i>
                       <span translate>add-query</span>
                     </a>

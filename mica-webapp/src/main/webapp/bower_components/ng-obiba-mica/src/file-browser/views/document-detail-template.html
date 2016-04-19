@@ -25,7 +25,7 @@
       <div>
         <span ng-if="!isFile(data.details.document)">{{data.details.document.size}} {{data.details.document.size === 1 ? 'item' : 'items' | translate}}</span>
         <span ng-if="isFile(data.details.document)">{{data.details.document.size | bytes}}</span>
-        <a ng-if="isFile(data.details.document)" target="{{downloadTarget}}" ng-href="{{getDownloadUrl(data.details.document.path)}}" class="hoffset2" title="{{'download' | translate}}">
+        <a target="{{downloadTarget}}" ng-href="{{getDownloadUrl(data.details.document.path)}}" class="hoffset2" title="{{'download' | translate}}">
           <span><i class="fa fa-download"></i><span class="hoffset2"></span></span>
         </a>
       </div>

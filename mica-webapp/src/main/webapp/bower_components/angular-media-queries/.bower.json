@@ -34,7 +34,7 @@
     "tag": "0.6.0",
     "commit": "141d8aa8dbe5f7eeed4380f97c31e75244368260"
   },
-  "_source": "git://github.com/jacopotarantino/angular-match-media.git",
+  "_source": "https://github.com/jacopotarantino/angular-match-media.git",
   "_target": "0.6.0",
   "_originalSource": "angular-media-queries"
 }
