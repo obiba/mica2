@@ -80,6 +80,9 @@ public class FileSystemService {
   private FilePublicationFlowMailNotification filePublicationFlowNotification;
 
   @Inject
+  private TempFileService tempFileService;
+
+  @Inject
   protected SubjectAclService subjectAclService;
 
   private ReentrantLock fsLock = new ReentrantLock();
@@ -590,12 +593,10 @@ public class FileSystemService {
 
     FileOutputStream fos = null;
 
-    final String tmpRoot = "${MICA_HOME}/work/tmp";
-
     try {
       byte[] buffer = new byte[1024];
-      fos = new FileOutputStream((tmpRoot + File.separator + zipName)
-        .replace("${MICA_HOME}", System.getProperty("MICA_HOME")));
+
+      fos = tempFileService.getFileOutPutStreamFromFile(zipName);
 
       ZipOutputStream zos = new ZipOutputStream(fos);
 
