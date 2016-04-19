@@ -612,7 +612,7 @@ public class FileSystemService {
       ZipOutputStream zos = new ZipOutputStream(fos);
 
       for (AttachmentState state: attachmentStates) {
-        if (DIR_NAME.equals(state.getName())) {
+        if (FileUtils.isDirectory(state)) {
           zos.putNextEntry(new ZipEntry(relativizePaths(path, state.getFullPath()) + File.separator));
         } else {
           zos.putNextEntry(new ZipEntry(relativizePaths(path, state.getFullPath())));
