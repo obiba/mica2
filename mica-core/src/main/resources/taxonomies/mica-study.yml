@@ -439,7 +439,7 @@
     "description": {}
   - "name": "BOL"
     "title":
-      "en": "Bolivia, Plurinational State of"
+      "en": "Bolivia"
       "fr": "Bolivie"
     "description": {}
   - "name": "BES"
@@ -570,7 +570,7 @@
   - "name": "CYP"
     "title":
       "en": "Cyprus"
-      "fr": "Chypre (pays)"
+      "fr": "Chypre"
     "description": {}
   - "name": "CZE"
     "title":
@@ -610,7 +610,7 @@
   - "name": "ECU"
     "title":
       "en": "Ecuador"
-      "fr": "Équateur (pays)"
+      "fr": "Équateur"
     "description": {}
   - "name": "EST"
     "title":
@@ -654,13 +654,13 @@
     "description": {}
   - "name": "FLK"
     "title":
-      "en": "Falkland Islands (Malvinas)"
+      "en": "Falkland Islands"
       "fr": "Malouines"
     "description": {}
   - "name": "FSM"
     "title":
-      "en": "Micronesia, Federated States of"
-      "fr": "Micronésie (pays)"
+      "en": "Micronesia"
+      "fr": "Micronésie"
     "description": {}
   - "name": "FRO"
     "title":
@@ -679,18 +679,18 @@
     "description": {}
   - "name": "GBR"
     "title":
-      "en": "United Kingdom of Great Britain and Northern Ireland"
+      "en": "United Kingdom"
       "fr": "Royaume-Uni"
     "description": {}
   - "name": "GRD"
     "title":
       "en": "Grenada"
-      "fr": "Grenade (pays)"
+      "fr": "Grenade"
     "description": {}
   - "name": "GEO"
     "title":
       "en": "Georgia"
-      "fr": "Géorgie (pays)"
+      "fr": "Géorgie"
     "description": {}
   - "name": "GUF"
     "title":
@@ -805,7 +805,7 @@
   - "name": "IRL"
     "title":
       "en": "Ireland"
-      "fr": "Irlande (pays)"
+      "fr": "Irlande"
     "description": {}
   - "name": "ISR"
     "title":
@@ -834,7 +834,7 @@
     "description": {}
   - "name": "IRN"
     "title":
-      "en": "Iran, Islamic Republic of"
+      "en": "Iran"
       "fr": "Iran"
     "description": {}
   - "name": "ISL"
@@ -890,7 +890,7 @@
   - "name": "COM"
     "title":
       "en": "Comoros"
-      "fr": "Comores (pays)"
+      "fr": "Comores"
     "description": {}
   - "name": "KNA"
     "title":
@@ -899,12 +899,12 @@
     "description": {}
   - "name": "PRK"
     "title":
-      "en": "Korea, Democratic People's Republic of"
+      "en": "North Korea"
       "fr": "Corée du Nord"
     "description": {}
   - "name": "KOR"
     "title":
-      "en": "Korea, Republic of"
+      "en": "South Korea"
       "fr": "Corée du Sud"
     "description": {}
   - "name": "KWT"
@@ -924,7 +924,7 @@
     "description": {}
   - "name": "LAO"
     "title":
-      "en": "Lao People's Democratic Republic"
+      "en": "Laos"
       "fr": "Laos"
     "description": {}
   - "name": "LBN"
@@ -965,7 +965,7 @@
   - "name": "LUX"
     "title":
       "en": "Luxembourg"
-      "fr": "Luxembourg (pays)"
+      "fr": "Luxembourg"
     "description": {}
   - "name": "LVA"
     "title":
@@ -989,7 +989,7 @@
     "description": {}
   - "name": "MDA"
     "title":
-      "en": "Moldova, Republic of"
+      "en": "Moldova"
       "fr": "Moldavie"
     "description": {}
   - "name": "MNE"
@@ -999,7 +999,7 @@
     "description": {}
   - "name": "MAF"
     "title":
-      "en": "Saint Martin (French part)"
+      "en": "Saint Martin"
       "fr": "Saint-Martin"
     "description": {}
   - "name": "MDG"
@@ -1010,12 +1010,12 @@
   - "name": "MHL"
     "title":
       "en": "Marshall Islands"
-      "fr": "Îles Marshall (pays)"
+      "fr": "Îles Marshall"
     "description": {}
   - "name": "MKD"
     "title":
-      "en": "Macedonia, the former Yugoslav Republic of"
-      "fr": "Macédoine (pays)"
+      "en": "Macedonia"
+      "fr": "Macédoine"
     "description": {}
   - "name": "MLI"
     "title":
@@ -1065,7 +1065,7 @@
   - "name": "MUS"
     "title":
       "en": "Mauritius"
-      "fr": "Maurice (pays)"
+      "fr": "Maurice"
     "description": {}
   - "name": "MDV"
     "title":
@@ -1209,7 +1209,7 @@
     "description": {}
   - "name": "PSE"
     "title":
-      "en": "Palestine, State of"
+      "en": "Palestine"
       "fr": "Palestine"
     "description": {}
   - "name": "PRT"
@@ -1249,7 +1249,7 @@
     "description": {}
   - "name": "RUS"
     "title":
-      "en": "Russian Federation"
+      "en": "Russian"
       "fr": "Russie"
     "description": {}
   - "name": "RWA"
@@ -1349,7 +1349,7 @@
     "description": {}
   - "name": "SXM"
     "title":
-      "en": "Sint Maarten (Dutch part)"
+      "en": "Sint Maarten"
       "fr": "Sint Maarten"
     "description": {}
   - "name": "SYR"
@@ -1434,12 +1434,12 @@
     "description": {}
   - "name": "TWN"
     "title":
-      "en": "Taiwan, Province of China"
-      "fr": "Taïwan / (République de Chine (Taïwan))"
+      "en": "Taiwan"
+      "fr": "Taïwan"
     "description": {}
   - "name": "TZA"
     "title":
-      "en": "Tanzania, United Republic of"
+      "en": "Tanzania"
       "fr": "Tanzanie"
     "description": {}
   - "name": "UKR"
@@ -1475,7 +1475,7 @@
   - "name": "VAT"
     "title":
       "en": "Holy See"
-      "fr": "Saint-Siège (État de la Cité du Vatican)"
+      "fr": "Saint-Siège"
     "description": {}
   - "name": "VCT"
     "title":
@@ -1484,7 +1484,7 @@
     "description": {}
   - "name": "VEN"
     "title":
-      "en": "Venezuela, Bolivarian Republic of"
+      "en": "Venezuela"
       "fr": "Venezuela"
     "description": {}
   - "name": "VGB"
