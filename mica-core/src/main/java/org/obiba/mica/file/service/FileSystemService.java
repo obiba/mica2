@@ -593,7 +593,7 @@ public class FileSystemService {
 
   /**
    * Creates a zipped file of the path and it's subdirectories/files
-   * 
+   *
    * @param path
    * @param publishedFS
    * @return
@@ -882,7 +882,7 @@ public class FileSystemService {
   }
 
   /**
-   * Creates a list of AttachmentStates in and under the path's directory tree
+   * Creates a list of {@link AttachmentState}s in and under the path's directory tree
    *
    * @param path
    * @param publishedFS
