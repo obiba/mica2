@@ -115,6 +115,14 @@ public class TempFileService {
     }
   }
 
+  public FileOutputStream getFileOutputStreamFromFile(@NotNull String id) {
+    try {
+      return new FileOutputStream(getFile(id));
+    } catch (FileNotFoundException e) {
+      throw Throwables.propagate(e);
+    }
+  }
+
   private File getFile(@NotNull String id) {
     return new File(tmpRoot, id);
   }

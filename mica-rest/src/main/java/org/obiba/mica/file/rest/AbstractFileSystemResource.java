@@ -1,13 +1,7 @@
 package org.obiba.mica.file.rest;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
-
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import org.apache.commons.math3.util.Pair;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.RevisionStatus;
@@ -19,8 +13,12 @@ import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import static org.obiba.mica.file.FileUtils.isRoot;
 import static org.obiba.mica.file.FileUtils.normalizePath;
@@ -172,6 +170,10 @@ public abstract class AbstractFileSystemResource {
     } catch(NoSuchEntityException ex) {
       updateFolderStatus(basePath, status);
     }
+  }
+
+  protected String doZip(String path) {
+    return fileSystemService.zipDirectory(normalizePath(path), isPublishedFileSystem());
   }
 
   //

@@ -1,22 +1,19 @@
 package org.obiba.mica.file.rest;
 
-import javax.inject.Inject;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Response;
-
+import com.codahale.metrics.annotation.Timed;
+import com.google.common.io.Files;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
+import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileStoreService;
+import org.obiba.mica.file.service.TempFileService;
 import org.obiba.mica.file.support.FileMediaType;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.stereotype.Component;
 
-import com.codahale.metrics.annotation.Timed;
-import com.google.common.io.Files;
+import javax.inject.Inject;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Response;
 
 @Component
 @Path("/")
@@ -25,6 +22,9 @@ public class PublishedFileSystemResource extends AbstractFileSystemResource {
 
   @Inject
   private FileStoreService fileStoreService;
+
+  @Inject
+  private TempFileService tempFileService;
 
   @Override
   protected boolean isPublishedFileSystem() {
@@ -36,18 +36,26 @@ public class PublishedFileSystemResource extends AbstractFileSystemResource {
   @Timed
   public Response downloadFile(@PathParam("path") String path,
     @QueryParam("inline") @DefaultValue("false") boolean inline) {
-    Attachment attachment = doGetAttachment(path);
 
-    if (inline) {
-      String filename = attachment.getName();
+    try {
+      Attachment attachment = doGetAttachment(path);
+
+      if (inline) {
+        String filename = attachment.getName();
+        return Response.ok(fileStoreService.getFile(attachment.getFileReference()))
+          .header("Content-Disposition", "inline; filename=\"" + filename + "\"")
+          .type(FileMediaType.type(Files.getFileExtension(filename)))
+          .build();
+      }
+
       return Response.ok(fileStoreService.getFile(attachment.getFileReference()))
-        .header("Content-Disposition", "inline; filename=\"" + filename + "\"")
-        .type(FileMediaType.type(Files.getFileExtension(filename)))
-        .build();
-    }
+        .header("Content-Disposition", "attachment; filename=\"" + attachment.getName() + "\"").build();
+    } catch (NoSuchEntityException e) {
+      String name = doZip(path);
 
-    return Response.ok(fileStoreService.getFile(attachment.getFileReference()))
-      .header("Content-Disposition", "attachment; filename=\"" + attachment.getName() + "\"").build();
+      return Response.ok(tempFileService.getInputStreamFromFile(name))
+        .header("Content-Disposition", "attachment; filename=\"" + name + "\"").build();
+    }
   }
 
   @GET
