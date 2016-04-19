@@ -41,7 +41,7 @@
     "tag": "0.1.0",
     "commit": "587617c341d02f52334e6c82e483a5f2b4b247e1"
   },
-  "_source": "git://github.com/angular-google-chart/angular-google-chart.git",
+  "_source": "https://github.com/angular-google-chart/angular-google-chart.git",
   "_target": "0.1.0",
   "_originalSource": "angular-google-chart"
 }

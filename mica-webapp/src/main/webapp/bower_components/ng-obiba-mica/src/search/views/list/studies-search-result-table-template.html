@@ -1,7 +1,8 @@
 <div>
   <div ng-if="loading" class="loading"></div>
   <div ng-show="!loading">
-    <div class="table-responsive">
+    <p class="help-block" ng-if="!summaries || !summaries.length">{{options.noResultsLabel | translate}}</p>
+    <div class="table-responsive" ng-if="summaries && summaries.length">
       <table class="table table-bordered table-striped">
         <thead>
         <tr>
@@ -44,9 +45,6 @@
         </tr>
         </thead>
         <tbody>
-        <tr ng-if="!summaries || !summaries.length">
-          <td colspan="12">{{options.noResultsLabel | translate}}</td>
-        </tr>
         <tr ng-repeat="summary in summaries" ng-init="lang = $parent.$parent.lang">
           <td>
             <a ng-href="{{PageUrlService.studyPage(summary.id)}}">

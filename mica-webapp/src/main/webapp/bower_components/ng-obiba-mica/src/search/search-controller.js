@@ -123,8 +123,8 @@ function BaseTaxonomiesController($scope, $location, TaxonomyResource, Taxonomie
     }
   };
 
-  this.selectTerm = function (target, taxonomy, vocabulary, term, from, to) {
-    $scope.onSelectTerm(target, taxonomy, vocabulary, term, from, to);
+  this.selectTerm = function (target, taxonomy, vocabulary, args) {
+    $scope.onSelectTerm(target, taxonomy, vocabulary, args);
   };
 
   var self = this;
@@ -138,8 +138,10 @@ function BaseTaxonomiesController($scope, $location, TaxonomyResource, Taxonomie
   $scope.$watch('taxonomies.vocabulary', function(value) {
     if(RqlQueryUtils && value) {
       $scope.taxonomies.isNumericVocabulary = RqlQueryUtils.isNumericVocabulary($scope.taxonomies.vocabulary);
+      $scope.taxonomies.isMatchVocabulary = RqlQueryUtils.isMatchVocabulary($scope.taxonomies.vocabulary);
     } else {
       $scope.taxonomies.isNumericVocabulary = null;
+      $scope.taxonomies.isMatchVocabulary = null;
     }
   });
 
@@ -849,17 +851,27 @@ angular.module('obiba.mica.search')
         selectCriteria(item, RQL_NODE.AND, true);
       };
 
-      var onSelectTerm = function (target, taxonomy, vocabulary, term, from, to) {
-        if (vocabulary && RqlQueryUtils.isNumericVocabulary(vocabulary)) {
-          var item = RqlQueryService.createCriteriaItem(target, taxonomy, vocabulary, null, $scope.lang);
-          item.rqlQuery = RqlQueryUtils.buildRqlQuery(item);
-          RqlQueryUtils.updateRangeQuery(item.rqlQuery, from, to);
-          selectCriteria(item, null, true);
-          
-          return;
+      var onSelectTerm = function (target, taxonomy, vocabulary, args) {
+        if (vocabulary) {
+          var item;
+          if (RqlQueryUtils.isNumericVocabulary(vocabulary)) {
+            item = RqlQueryService.createCriteriaItem(target, taxonomy, vocabulary, null, $scope.lang);
+            item.rqlQuery = RqlQueryUtils.buildRqlQuery(item);
+            RqlQueryUtils.updateRangeQuery(item.rqlQuery, args.from, args.to);
+            selectCriteria(item, null, true);
+
+            return;
+          } else if(RqlQueryUtils.isMatchVocabulary(vocabulary)) {
+            item = RqlQueryService.createCriteriaItem(target, taxonomy, vocabulary, null, $scope.lang);
+            item.rqlQuery = RqlQueryUtils.buildRqlQuery(item);
+            RqlQueryUtils.updateMatchQuery(item.rqlQuery, args.text);
+            selectCriteria(item, null, true);
+
+            return;
+          }
         }
 
-        selectCriteria(RqlQueryService.createCriteriaItem(target, taxonomy, vocabulary, term, $scope.lang));
+        selectCriteria(RqlQueryService.createCriteriaItem(target, taxonomy, vocabulary, args && args.term, $scope.lang));
       };
 
       var selectSearchTarget = function (target) {
@@ -996,6 +1008,12 @@ angular.module('obiba.mica.search')
     $scope.$watch('taxonomies', function() {
       $scope.from = null;
       $scope.to = null;
+    }, true);
+  }])
+  
+  .controller('MatchVocabularyPanelController', ['$scope', function($scope) {
+    $scope.$watch('taxonomies', function() {
+      $scope.text = null;
     }, true);
   }])
   
@@ -1337,6 +1355,13 @@ angular.module('obiba.mica.search')
     'RqlQueryService',
     'CoverageGroupByService',
     function ($scope, $location, $q, PageUrlService, RqlQueryUtils, RqlQueryService, CoverageGroupByService) {
+      var targetMap = {};
+      targetMap[BUCKET_TYPES.NETWORK] = QUERY_TARGETS.NETWORK;
+      targetMap[BUCKET_TYPES.STUDY] = QUERY_TARGETS.STUDY;
+      targetMap[BUCKET_TYPES.DCE] = QUERY_TARGETS.VARIABLE;
+      targetMap[BUCKET_TYPES.DATASCHEMA] = QUERY_TARGETS.DATASET;
+      targetMap[BUCKET_TYPES.DATASET] = QUERY_TARGETS.DATASET;
+
       $scope.showMissing = true;
       $scope.toggleMissing = function (value) {
         $scope.showMissing = value;
@@ -1452,7 +1477,7 @@ angular.module('obiba.mica.search')
             }
           });
         }
-      };
+      };      
 
       function getBucketUrl(bucket, id) {
         switch (bucket) {
@@ -1680,13 +1705,6 @@ angular.module('obiba.mica.search')
           $scope.table.cols = splitIds();
         }
       });
-
-      var targetMap = {};
-      targetMap[BUCKET_TYPES.NETWORK] = QUERY_TARGETS.NETWORK;
-      targetMap[BUCKET_TYPES.STUDY] = QUERY_TARGETS.STUDY;
-      targetMap[BUCKET_TYPES.DCE] = QUERY_TARGETS.VARIABLE;
-      targetMap[BUCKET_TYPES.DATASCHEMA] = QUERY_TARGETS.DATASET;
-      targetMap[BUCKET_TYPES.DATASET] = QUERY_TARGETS.DATASET;
 
       $scope.updateCriteria = function (id, term, idx, type) {
         var vocabulary = $scope.bucket === BUCKET_TYPES.DCE ? 'dceIds' : 'id',

@@ -1,21 +1,18 @@
 <div>
   <div ng-if="loading" class="loading"></div>
   <div ng-show="!loading">
-    <div class="table-responsive">
+    <p class="help-block" ng-if="!summaries || !summaries.length">{{options.noResultsLabel | translate}}</p>
+    <div class="table-responsive" ng-if="summaries && summaries.length">
       <table class="table table-bordered table-striped" ng-init="lang = $parent.$parent.lang">
         <thead>
         <tr>
           <th translate>name</th>
           <th translate>search.variable.label</th>
           <th translate ng-if="optionsCols.showVariablesTypeColumn">type</th>
-          <th translate ng-if="optionsCols.showVariablesStudiesColumn">search.study.label</th>
+          <th translate ng-if="optionsCols.showVariablesStudiesColumn">search.variable.studyNetwork</th>
           <th translate ng-if="optionsCols.showVariablesDatasetsColumn">search.dataset.label</th>
         </tr>
         </thead>
-        <tbody>
-        <tr ng-if="!summaries || !summaries.length">
-          <td colspan="4">{{options.noResultsLabel | translate}}</td>
-        </tr>
         <tr ng-repeat="summary in summaries">
           <td>
             <a
@@ -30,8 +27,11 @@
             {{'search.variable.' + summary.variableType.toLowerCase() | translate}}
           </td>
           <td ng-if="optionsCols.showVariablesStudiesColumn">
-            <a ng-href="{{PageUrlService.studyPage(summary.studyId)}}">
+            <a ng-if="summary.studyId" ng-href="{{PageUrlService.studyPage(summary.studyId)}}">
               <localized value="summary.studyAcronym" lang="lang"></localized>
+            </a>
+            <a ng-if="summary.networkId" ng-href="{{PageUrlService.networkPage(summary.networkId)}}">
+              <localized value="summary.networkAcronym" lang="lang"></localized>
             </a>
           </td>
           <td ng-if="optionsCols.showVariablesDatasetsColumn">

@@ -20,7 +20,7 @@ angular.module('mgcrea.ngStrap.button', [])
     return {
       restrict: 'A',
       require: 'ngModel',
-      compile: function postLink(element, attr) {
+      compile: function postLink (element, attr) {
         element.attr('data-toggle', 'buttons');
         element.removeAttr('ng-model');
         var children = element[0].querySelectorAll('input[type="checkbox"]');
@@ -43,7 +43,7 @@ angular.module('mgcrea.ngStrap.button', [])
     return {
       restrict: 'A',
       require: 'ngModel',
-      link: function postLink(scope, element, attr, controller) {
+      link: function postLink (scope, element, attr, controller) {
 
         var options = defaults;
 
@@ -112,7 +112,7 @@ angular.module('mgcrea.ngStrap.button', [])
     return {
       restrict: 'A',
       require: 'ngModel',
-      compile: function postLink(element, attr) {
+      compile: function postLink (element, attr) {
         element.attr('data-toggle', 'buttons');
         element.removeAttr('ng-model');
         var children = element[0].querySelectorAll('input[type="radio"]');
@@ -134,7 +134,7 @@ angular.module('mgcrea.ngStrap.button', [])
     return {
       restrict: 'A',
       require: 'ngModel',
-      link: function postLink(scope, element, attr, controller) {
+      link: function postLink (scope, element, attr, controller) {
 
         var options = defaults;
 
@@ -144,7 +144,11 @@ angular.module('mgcrea.ngStrap.button', [])
 
         var value;
         attr.$observe('value', function (v) {
-          value = constantValueRegExp.test(v) ? scope.$eval(v) : v;
+          if (typeof v !== 'boolean' && constantValueRegExp.test(v)) {
+            value = scope.$eval(v);
+          } else {
+            value = v;
+          }
           controller.$render();
         });
 

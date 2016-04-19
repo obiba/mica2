@@ -575,9 +575,9 @@
     });
 
     describe('loading locales using <script>', function () {
-      function countLocales($document, localeId) {
+      function countLocales(node, localeId) {
         var count = 0,
-          scripts = $document[0].getElementsByTagName('script');
+          scripts = node.getElementsByTagName('script');
 
         for (var i = 0; i < scripts.length; ++i) {
           count += (scripts[i].src === 'http://localhost:9876/base/node_modules/angular-i18n/angular-locale_' + localeId + '.js' ? 1 : 0);
@@ -591,17 +591,33 @@
           job
             .runs(function() {
               tmhDynamicLocale.set('fr');
-              expect(countLocales($document, 'fr')).toBe(1);
+              expect(countLocales($document[0].body, 'fr')).toBe(1);
             })
             .waitsFor(function() {
               $timeout.flush(50);
               return $locale.id === 'fr';
             }, 'locale not updated', 2000)
             .runs(function() {
-              expect(countLocales($document, 'fr')).toBe(0);
+              expect(countLocales($document[0].body, 'fr')).toBe(0);
             })
             .done();
         job.start();
+        });
+      });
+
+      it('should load the locales in the custom tag (head) using a <script> tag', function(done) {
+        module(function(tmhDynamicLocaleProvider) {
+          tmhDynamicLocaleProvider.appendScriptTo(document.head);
+        });
+
+        inject(function ($timeout, tmhDynamicLocale, $document, $locale) {
+          var job = createAsync(done);
+          job
+          .runs(function() {
+            tmhDynamicLocale.set('fr');
+            expect(countLocales($document[0].head, 'fr')).toBe(1);
+          }).done();
+          job.start();
         });
       });
 
@@ -613,16 +629,16 @@
             .runs(function() {
               tmhDynamicLocale.set('ja');
               tmhDynamicLocale.set('ja');
-              expect(countLocales($document, 'ja')).toBe(1);
+              expect(countLocales($document[0].body, 'ja')).toBe(1);
             })
             .waitsFor(function() {
               $timeout.flush(50);
               return $locale.id === 'ja';
             }, 'locale not updated', 2000)
             .runs(function() {
-              expect(countLocales($document, 'ja')).toBe(0);
+              expect(countLocales($document[0].body, 'ja')).toBe(0);
               tmhDynamicLocale.set('ja');
-              expect(countLocales($document, 'ja')).toBe(0);
+              expect(countLocales($document[0].body, 'ja')).toBe(0);
               tmhDynamicLocale.set('et');
             })
             .waitsFor(function() {
@@ -632,9 +648,9 @@
             .runs(function() {
               $rootScope.$apply(function () {
                 tmhDynamicLocale.set('ja');
-                expect(countLocales($document, 'ja')).toBe(0);
+                expect(countLocales($document[0].body, 'ja')).toBe(0);
               });
-              expect(countLocales($document, 'ja')).toBe(0);
+              expect(countLocales($document[0].body, 'ja')).toBe(0);
             })
             .done();
           job.start();
@@ -662,6 +678,30 @@
             .done();
           job.start();
         });
+      });
+    });
+
+    it('should be possible to add local properties to the locale location pattern', function(done) {
+      module(function(tmhDynamicLocaleProvider) {
+        tmhDynamicLocaleProvider.localeLocationPattern('/{{base}}/angular-locale_{{locale}}.js');
+        tmhDynamicLocaleProvider.addLocalePatternValue('base', 'base/node_modules/angular-i18n');
+      });
+      inject(function($locale, $timeout, tmhDynamicLocale) {
+        var job = createAsync(done);
+        job
+          .runs(function() {
+            tmhDynamicLocale.set('es');
+          })
+          .waitsFor(function() {
+            $timeout.flush(50);
+            return $locale.id === 'es';
+          }, 'locale not updated', 2000)
+          .runs(function() {
+            expect($locale.id).toBe('es');
+            expect($locale.DATETIME_FORMATS.DAY["0"]).toBe("domingo");
+          })
+          .done();
+        job.start();
       });
     });
   });

@@ -8,9 +8,8 @@
  */
 function filesize (arg, descriptor = {}) {
 	let result = [],
-		skip = false,
 		val = 0,
-		e, base, bits, ceil, neg, num, output, round, unix, spacer, suffixes;
+		e, base, bits, ceil, neg, num, output, round, unix, spacer, symbols;
 
 	if (isNaN(arg)) {
 		throw new Error("Invalid arguments");
@@ -18,11 +17,11 @@ function filesize (arg, descriptor = {}) {
 
 	bits = descriptor.bits === true;
 	unix = descriptor.unix === true;
-	base = descriptor.base !== undefined ? descriptor.base : 2;
+	base = descriptor.base || 2;
 	round = descriptor.round !== undefined ? descriptor.round : unix ? 1 : 2;
 	spacer = descriptor.spacer !== undefined ? descriptor.spacer : unix ? "" : " ";
-	suffixes = descriptor.suffixes !== undefined ? descriptor.suffixes : {};
-	output = descriptor.output !== undefined ? descriptor.output : "string";
+	symbols = descriptor.symbols || descriptor.suffixes || {};
+	output = descriptor.output || "string";
 	e = descriptor.exponent !== undefined ? descriptor.exponent : -1;
 	num = Number(arg);
 	neg = num < 0;
@@ -41,6 +40,10 @@ function filesize (arg, descriptor = {}) {
 		// Determining the exponent
 		if (e === -1 || isNaN(e)) {
 			e = Math.floor(Math.log(num) / Math.log(ceil));
+
+			if (e < 0) {
+				e = 0;
+			}
 		}
 
 		// Exceeding supported length, time to reduce & multiply
@@ -53,23 +56,21 @@ function filesize (arg, descriptor = {}) {
 		if (bits) {
 			val = val * 8;
 
-			if (val > ceil) {
+			if (val > ceil && e < 8) {
 				val = val / ceil;
 				e++;
 			}
 		}
 
 		result[0] = Number(val.toFixed(e > 0 ? round : 0));
-		result[1] = si[bits ? "bits" : "bytes"][e];
+		result[1] = base === 10 && e === 1 ? bits ? "kb" : "kB" : symbol[bits ? "bits" : "bytes"][e];
 
-		if (!skip && unix) {
+		if (unix) {
 			result[1] = result[1].charAt(0);
 
 			if (b.test(result[1])) {
 				result[0] = Math.floor(result[0]);
 				result[1] = "";
-			} else if (!bits && result[1] === "k") {
-				result[1] = "K";
 			}
 		}
 	}
@@ -80,7 +81,7 @@ function filesize (arg, descriptor = {}) {
 	}
 
 	// Applying custom suffix
-	result[1] = suffixes[result[1]] || result[1];
+	result[1] = symbols[result[1]] || result[1];
 
 	// Returning Array, Object, or String (default)
 	if (output === "array") {
@@ -92,7 +93,7 @@ function filesize (arg, descriptor = {}) {
 	}
 
 	if (output === "object") {
-		return {value: result[0], suffix: result[1]};
+		return {value: result[0], suffix: result[1], symbol: result[1]};
 	}
 
 	return result.join(spacer);

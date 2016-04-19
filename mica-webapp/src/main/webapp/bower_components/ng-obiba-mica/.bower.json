@@ -16,25 +16,25 @@
     "coverage"
   ],
   "dependencies": {
-    "angular": "1.4.8",
-    "angular-bootstrap": "0.14.3",
-    "angular-translate": "2.8.1",
-    "angular-sanitize": "1.4.8",
+    "angular": "1.5.5",
+    "angular-bootstrap": "1.3.2",
+    "angular-translate": "2.11.0",
+    "angular-sanitize": "1.5.5",
     "ng-obiba": "https://github.com/obiba/ng-obiba.git",
-    "filesize": "3.1.5",
+    "filesize": "3.2.1",
     "angular-google-chart": "0.1.0",
     "rql-nodojo": "https://github.com/RAMP-PCAR/rql-nodojo.git#1.0.0"
   },
   "devDependencies": {
-    "angular-mocks": "1.4.8",
-    "angular-scenario": "1.4.8"
+    "angular-mocks": "1.5.5",
+    "angular-scenario": "1.5.5"
   },
   "homepage": "https://github.com/obiba/ng-obiba-mica",
-  "_release": "1020baf60d",
+  "_release": "07d296ee77",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "1020baf60d530973f7470eba3f262b1f2adda587"
+    "commit": "07d296ee77bcbf9f090f4a75d0ca4bdf3ec5b076"
   },
   "_source": "https://github.com/obiba/ng-obiba-mica.git",
   "_target": "*",

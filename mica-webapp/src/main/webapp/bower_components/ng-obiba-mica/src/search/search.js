@@ -70,6 +70,7 @@ angular.module('obiba.mica.search', [
           searchLabel: 'search.variable.searchLabel',
           noResultsLabel: 'search.dataset.noResults',
           datasetsColumn: {
+            showDatasetsAcronymColumn: true,
             showDatasetsTypeColumn: true,
             showDatasetsNetworkColumn: true,
             showDatasetsStudiesColumn: true,

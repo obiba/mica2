@@ -1,11 +1,12 @@
 <div>
   <div ng-if="loading" class="loading"></div>
   <div ng-show="!loading">
-    <div class="table-responsive">
-      <table class="table table-bordered table-striped">
+    <p class="help-block" ng-if="!summaries || !summaries.length">{{options.noResultsLabel | translate}}</p>
+    <div class="table-responsive" ng-if="summaries && summaries.length">
+      <table class="table table-bordered table-striped" ng-init="lang = $parent.$parent.lang">
         <thead>
         <tr>
-          <th translate>acronym</th>
+          <th translate ng-if="optionsCols.showDatasetsAcronymColumn">acronym</th>
           <th translate>name</th>
           <th translate ng-if="optionsCols.showDatasetsTypeColumn">type</th>
           <th translate ng-if="optionsCols.showDatasetsNetworkColumn">networks</th>
@@ -17,14 +18,17 @@
         <tr ng-if="!summaries || !summaries.length">
           <td colspan="6">{{options.noResultsLabel | translate}}</td>
         </tr>
-        <tr ng-repeat="summary in summaries" ng-init="lang = $parent.$parent.lang">
-          <td>
+        <tr ng-repeat="summary in summaries">
+          <td ng-if="optionsCols.showDatasetsAcronymColumn">
             <a ng-href="{{PageUrlService.datasetPage(summary.id, summary.variableType)}}">
               <localized value="summary.acronym" lang="lang"></localized>
             </a>
           </td>
           <td>
-            <localized value="summary.name" lang="lang"></localized>
+            <a ng-if="!optionsCols.showDatasetsAcronymColumn" ng-href="{{PageUrlService.datasetPage(summary.id, summary.variableType)}}">
+              <localized value="summary.name" lang="lang"></localized>
+            </a>
+            <localized ng-if="optionsCols.showDatasetsAcronymColumn" value="summary.name" lang="lang"></localized>
           </td>
           <td ng-if="optionsCols.showDatasetsTypeColumn">
             <localized value="classNames[(summary.variableType === 'Study' ? 'Study' : 'Harmonization') + 'Dataset']" lang="lang"></localized>

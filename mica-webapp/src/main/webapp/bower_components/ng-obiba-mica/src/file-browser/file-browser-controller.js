@@ -41,6 +41,18 @@ angular.module('obiba.mica.fileBrowser')
               ngObibaMicaFileBrowserOptions,
               FileBrowserDownloadService) {
 
+      var navigateToPath = function (path) {
+        clearSearchInternal();
+        getDocument(path);
+      };
+
+      var navigateTo = function (event, document) {
+        event.stopPropagation();
+        if (document) {
+          navigateToPath(document.path);
+        }
+      };
+
       var onError = function (response) {
         AlertService.alert({
           id: 'FileSystemController',
@@ -53,7 +65,12 @@ angular.module('obiba.mica.fileBrowser')
         }
       };
 
-      var getDocument = function (path) {
+      function clearSearchInternal() {
+        $scope.data.search.text = null;
+        $scope.data.search.active = false;
+      }
+
+      function getDocument(path) {
         $scope.data.search.active = false;
 
         FileBrowserFileResource.get({path: path},
@@ -79,28 +96,9 @@ angular.module('obiba.mica.fileBrowser')
           },
           onError
         );
-      };
+      }
 
-      var navigateBack = function () {
-        if (!$scope.data.isRoot && $scope.data.document) {
-          var parentPath = $scope.data.document.path.replace(/\\/g, '/').replace(/\/[^\/]*$/, '');
-          getDocument(parentPath ? parentPath : '/');
-        }
-      };
-
-      var navigateToPath = function (path) {
-        clearSearchInternal();
-        getDocument(path);
-      };
-
-      var navigateTo = function (event, document) {
-        event.stopPropagation();
-        if (document) {
-          navigateToPath(document.path);
-        }
-      };
-
-      var navigateToParent = function (event, document) {
+      function navigateToParent(event, document) {
         event.stopPropagation();
         var path = document.path;
 
@@ -111,44 +109,19 @@ angular.module('obiba.mica.fileBrowser')
         }
 
         navigateToPath(path);
-      };
-
-      var toggleRecursively = function () {
-        $scope.data.search.recursively = !$scope.data.search.recursively;
-        if ($scope.data.search.text) {
-          searchDocuments($scope.data.search.text);
-        } else if ($scope.data.search.query) {
-          searchDocuments($scope.data.search.query);
-        }
-      };
-
-      function clearSearchInternal() {
-        $scope.data.search.text = null;
-        $scope.data.search.active = false;
       }
 
-      var clearSearch = function () {
-        clearSearchInternal();
-        getDocument($scope.data.document.path);
-      };
-
-      var searchKeyUp = function (event) {
-        switch (event.keyCode) {
-          case 13: // ENTER
-            if ($scope.data.search.text) {
-              searchDocuments($scope.data.search.text);
-            } else {
-              clearSearch();
-            }
-            break;
-
-          case 27: // ESC
-            if ($scope.data.search.active) {
-              clearSearch();
-            }
-            break;
+      function navigateBack() {
+        if (!$scope.data.isRoot && $scope.data.document) {
+          var parentPath = $scope.data.document.path.replace(/\\/g, '/').replace(/\/[^\/]*$/, '');
+          getDocument(parentPath ? parentPath : '/');
         }
-      };
+      }
+
+      function hideDetails() {
+        $scope.pagination.selected = -1;
+        $scope.data.details.show = false;
+      }
 
       function searchDocumentsInternal(path, searchParams) {
         function excludeFolders(query) {
@@ -174,28 +147,17 @@ angular.module('obiba.mica.fileBrowser')
         var urlParams = angular.extend({}, {path: path}, searchParams);
 
         FileBrowserSearchResource.search(urlParams,
-          function onSuccess(response) {
-            $log.info('Search result', response);
-            var clone = $scope.data.document ? angular.copy($scope.data.document) : {};
-            clone.children = response;
-            $scope.data.document = clone;
-          },
-          function onError(response) {
-            $log.debug('ERROR:',response);
-          }
+            function onSuccess(response) {
+              $log.info('Search result', response);
+              var clone = $scope.data.document ? angular.copy($scope.data.document) : {};
+              clone.children = response;
+              $scope.data.document = clone;
+            },
+            function onError(response) {
+              $log.debug('ERROR:',response);
+            }
         );
       }
-
-      var hideDetails = function() {
-        $scope.pagination.selected = -1;
-        $scope.data.details.show = false;
-      };
-
-      var showDetails = function(document, index) {
-        $scope.pagination.selected = index;
-        $scope.data.details.document = document;
-        $scope.data.details.show = true;
-      };
 
       var searchDocuments = function (query) {
         $scope.data.search.active = true;
@@ -217,6 +179,44 @@ angular.module('obiba.mica.fileBrowser')
 
         var searchParams = {query: query, recursively: recursively, sort: sortBy, order: orderBy, limit: limit};
         searchDocumentsInternal($scope.data.document.path, searchParams);
+      };
+
+      var toggleRecursively = function () {
+        $scope.data.search.recursively = !$scope.data.search.recursively;
+        if ($scope.data.search.text) {
+          searchDocuments($scope.data.search.text);
+        } else if ($scope.data.search.query) {
+          searchDocuments($scope.data.search.query);
+        }
+      };
+
+      var clearSearch = function () {
+        clearSearchInternal();
+        getDocument($scope.data.document.path);
+      };
+
+      var searchKeyUp = function (event) {
+        switch (event.keyCode) {
+          case 13: // ENTER
+            if ($scope.data.search.text) {
+              searchDocuments($scope.data.search.text);
+            } else {
+              clearSearch();
+            }
+            break;
+
+          case 27: // ESC
+            if ($scope.data.search.active) {
+              clearSearch();
+            }
+            break;
+        }
+      };
+
+      var showDetails = function(document, index) {
+        $scope.pagination.selected = index;
+        $scope.data.details.document = document;
+        $scope.data.details.show = true;
       };
 
       var getTypeParts = function(document) {

@@ -1,6 +1,6 @@
 {
   "name": "ui-select",
-  "version": "0.13.1",
+  "version": "0.16.1",
   "homepage": "https://github.com/angular-ui/ui-select",
   "authors": [
     "AngularUI"
@@ -29,13 +29,13 @@
     "angular-sanitize": ">=1.2.18",
     "angular-mocks": ">=1.2.18"
   },
-  "_release": "0.13.1",
+  "_release": "0.16.1",
   "_resolution": {
     "type": "version",
-    "tag": "v0.13.1",
-    "commit": "f5260eaa2e9ded276943ba45e39d1cc9c670ed86"
+    "tag": "v0.16.1",
+    "commit": "573add47bccb28e052fbc39b471f13c74b534ac0"
   },
-  "_source": "git://github.com/angular-ui/ui-select.git",
-  "_target": "0.13.1",
+  "_source": "https://github.com/angular-ui/ui-select.git",
+  "_target": "0.16.1",
   "_originalSource": "angular-ui-select"
 }

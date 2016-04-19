@@ -1,7 +1,7 @@
 {
   "name": "angular-strap",
   "description": "AngularStrap - AngularJS directives for Bootstrap",
-  "version": "2.3.7",
+  "version": "2.3.8",
   "keywords": [
     "angular",
     "bootstrap"
@@ -37,27 +37,27 @@
     "angular": "^1.2.21"
   },
   "devDependencies": {
-    "angular-animate": "~1.4",
-    "angular-i18n": "~1.4",
-    "angular-mocks": "~1.4",
-    "angular-motion": "^0.3.3",
-    "angular-route": "~1.4",
-    "angular-sanitize": "~1.4",
-    "angular-scenario": "~1.4",
-    "bootstrap": "^3.2.0",
-    "bootstrap-additions": "^0.2.3",
-    "fastclick": "^1.0.3",
-    "font-awesome": "^4.1.0",
-    "highlightjs": "^8.0.0",
-    "jquery": "^2.1.1"
+    "angular-animate": "~1.5",
+    "angular-i18n": "~1.5",
+    "angular-mocks": "~1.5",
+    "angular-motion": "^0.4.3",
+    "angular-route": "~1.5",
+    "angular-sanitize": "~1.5",
+    "angular-scenario": "~1.5",
+    "bootstrap": "^3.3.6",
+    "bootstrap-additions": "^0.3.1",
+    "fastclick": "^1.0.6",
+    "font-awesome": "^4.5.0",
+    "highlightjs": "^9.1.0",
+    "jquery": "^2.2.0"
   },
-  "_release": "2.3.7",
+  "_release": "2.3.8",
   "_resolution": {
     "type": "version",
-    "tag": "v2.3.7",
-    "commit": "9a29385e7e39941120b3fcb5dcefb85b0d7ef37b"
+    "tag": "v2.3.8",
+    "commit": "281e1aad671ab2afe849c1ee58b5f30a3b3386af"
   },
-  "_source": "git://github.com/mgcrea/angular-strap.git",
+  "_source": "https://github.com/mgcrea/angular-strap.git",
   "_target": ">= 2.1.0",
   "_originalSource": "angular-strap"
 }

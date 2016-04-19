@@ -1,4 +1,4 @@
-angular-chosen
+Angular Chosen Localytics [![Bower](https://img.shields.io/bower/v/angular-chosen-localytics.svg)](https://github.com/leocaseiro/angular-chosen) [![npm](https://img.shields.io/npm/v/angular-chosen-localytics.svg)](https://www.npmjs.com/package/angular-chosen-localytics)
 ==============
 
 AngularJS Chosen directive
@@ -7,11 +7,29 @@ This directive brings the [Chosen](http://harvesthq.github.com/chosen/) jQuery p
 into AngularJS with ngModel and ngOptions integration.
 
 To use, include "localytics.directives" as a dependency in your Angular module.  You can now
-use the "chosen" directive as an attribute on any select element.  Angular version 1.2+ is required.
+use the "chosen" directive as an attribute on any select element.  Angular version 1.3+ is required, but recomended 1.4.9+.
 
-# Installation
+# [Full Documentation with Examples](http://leocaseiro.github.io/angular-chosen/)
+
+
+
+## Installation (npm or bower)
+
+Via bower
 
     $ bower install angular-chosen-localytics --save
+
+Via npm
+
+    $ npm install angular-chosen-localytics --save
+
+
+
+Or download zip file
+[Download v1.4.0](https://github.com/leocaseiro/angular-chosen/archive/1.4.0.zip)
+
+
+
 
 ## Yeoman or Bower install
 If you use Yeoman or Bower install, you need to rename the `chosen.jquery.js` or the `chosen.proto.js` to `chosen.js`. Otherwise Chosen won't be included in your `index.html`.
@@ -40,7 +58,7 @@ Similar to `$("#states").chosen()`
 
 ```html
 <select chosen
-        data-placeholder="Pick one of these"
+        data-placeholder-text-single="'Pick one of these'"
         disable-search="true"
         allow-single-deselect="true">
   <option value=""></option>
@@ -93,7 +111,7 @@ Include chosen-spinner.css and spinner.gif to show an Ajax spinner icon while yo
 ##### app.js
 ```js
 angular.module('App', ['ngResource', 'localytics.directives'])
-.controller('BeerCtrl', function($scope) {
+.controller('BeerCtrl', function($scope,$resource) {
   $scope.beers = $resource('api/beers').query()
 });
 ```
@@ -102,7 +120,7 @@ angular.module('App', ['ngResource', 'localytics.directives'])
 ```html
 <div ng-controller="BeerCtrl">
   <select chosen
-          data-placeholder="Choose a beer"
+          data-placeholder-text-single="'Choose a beer'"
           no-results-text="'Could not find any beers :('"
           ng-model="beer"
           ng-options="b for b in beers">
@@ -116,4 +134,4 @@ Note: Assigning promises directly to scope is now deprecated in Angular 1.2+.  A
 once the promise returns.  The loader animation will still work as long as the collection expression
 evaluates to `undefined` while your data is loading!
 
-See the example directory for more detailed usage.
+See the [example directory](http://htmlpreview.github.io/?https://github.com/leocaseiro/angular-chosen/blob/master/example/index.html) for more detailed usage.
