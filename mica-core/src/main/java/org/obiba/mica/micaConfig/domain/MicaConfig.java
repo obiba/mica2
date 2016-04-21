@@ -5,19 +5,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.constraints.NotEmpty;
-import org.obiba.mica.core.domain.AbstractAuditableDocument;
-import org.obiba.mica.core.domain.Membership;
-import org.obiba.runtime.Version;
-import org.springframework.data.mongodb.core.mapping.Document;
-
 import com.google.common.base.Charsets;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.NotEmpty;
+import org.obiba.mica.core.domain.AbstractAuditableDocument;
+import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.core.domain.Membership;
+import org.obiba.runtime.Version;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
 public class MicaConfig extends AbstractAuditableDocument {
@@ -91,6 +91,8 @@ public class MicaConfig extends AbstractAuditableDocument {
   private boolean isHarmonizationDatasetEnabled = true;
 
   private String style;
+
+  private LocalizedString translations;
 
   public String getName() {
     return name;
@@ -336,5 +338,17 @@ public class MicaConfig extends AbstractAuditableDocument {
 
   public String getStyle() {
     return style;
+  }
+
+  public LocalizedString getTranslations() {
+    return translations;
+  }
+
+  public void setTranslations(LocalizedString translations) {
+    this.translations = translations;
+  }
+
+  public boolean hasTranslations() {
+    return translations != null && !translations.isEmpty();
   }
 }

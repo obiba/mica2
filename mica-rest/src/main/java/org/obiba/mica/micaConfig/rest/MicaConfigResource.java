@@ -16,6 +16,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -108,6 +109,14 @@ public class MicaConfigResource {
     return Response
       .ok(micaConfigService.getConfig().getStyle(), "text/css")
       .header("Content-Disposition", "attachment; filename=\"style.css\"").build();
+  }
+
+  @GET
+  @Path("/i18n/{locale}.json")
+  @Produces("application/json")
+  public Response getTranslation(@PathParam("locale") String locale, @QueryParam("default") boolean _default) throws IOException {
+    return Response.ok(
+      micaConfigService.getTranslations(locale, _default), "application/json").build();
   }
 
   @PUT

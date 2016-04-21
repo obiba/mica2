@@ -416,6 +416,7 @@ message MicaConfigDto {
   optional bool isStudyDatasetEnabled = 25;
   optional bool isHarmonizationDatasetEnabled = 26;
   optional string style = 27;
+  repeated LocalizedStringDto translations = 28;
 }
 
 message PublicMicaConfigDto {

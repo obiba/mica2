@@ -1,12 +1,22 @@
 package org.obiba.mica.micaConfig.service;
 
+import java.io.File;
+import java.io.IOException;
 import java.security.Key;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
+import org.apache.commons.io.FileUtils;
 import org.apache.shiro.codec.CodecSupport;
 import org.apache.shiro.codec.Hex;
 import org.apache.shiro.crypto.AesCipherService;
@@ -24,18 +34,19 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.common.eventbus.EventBus;
 
 @Service
 @Validated
 @EnableConfigurationProperties({ NetworkTaxonomy.class, StudyTaxonomy.class, DatasetTaxonomy.class, VariableTaxonomy.class, TaxonomyTaxonomy.class })
 public class MicaConfigService {
+
+  @Inject
+  private ApplicationContext applicationContext;
 
   @Inject
   private NetworkTaxonomy networkTaxonomy;
@@ -57,6 +68,9 @@ public class MicaConfigService {
 
   @Inject
   private EventBus eventBus;
+
+  @Inject
+  private ObjectMapper objectMapper;
 
   @Inject
   private Environment env;
@@ -135,6 +149,54 @@ public class MicaConfigService {
       String port = env.getProperty("https.port");
       return "https://" + host + ":" + port;
     }
+  }
+
+  public String getTranslations(@NotNull String locale, boolean _default) throws IOException {
+    File translations;
+
+    try {
+      translations = getTranslationsResource(locale).getFile();
+    } catch (IOException e) {
+      locale = "en";
+      translations = getTranslationsResource(locale).getFile();
+    }
+
+    if(_default) {
+      return FileUtils.readFileToString(translations, "utf-8");
+    }
+
+    MicaConfig config = getOrCreateMicaConfig();
+    JsonNode original = objectMapper.readTree(translations);
+
+    if (config.hasTranslations()) {
+      JsonNode custom = objectMapper.readTree(config.getTranslations().get(locale));
+      return mergeJson(original, custom).toString();
+    }
+
+    return original.toString();
+  }
+
+  private Resource getTranslationsResource(String locale) {
+    return applicationContext.getResource(String.format("classpath:/i18n/%s.json", locale));
+  }
+
+  private JsonNode mergeJson(JsonNode mainNode, JsonNode updateNode) {
+    Iterator<String> fieldNames = updateNode.fieldNames();
+    while (fieldNames.hasNext()) {
+      String fieldName = fieldNames.next();
+      JsonNode jsonNode = mainNode.get(fieldName);
+      if (jsonNode != null && jsonNode.isObject()) {
+        mergeJson(jsonNode, updateNode.get(fieldName));
+      }
+      else {
+        if (mainNode instanceof ObjectNode) {
+          JsonNode value = updateNode.get(fieldName);
+          ((ObjectNode) mainNode).replace(fieldName, value);
+        }
+      }
+    }
+
+    return mainNode;
   }
 
   public String encrypt(String plain) {

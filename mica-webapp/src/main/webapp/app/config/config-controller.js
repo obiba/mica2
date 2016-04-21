@@ -396,4 +396,131 @@ mica.config
           });
       };
 
+    }])
+  .controller('MicaConfigTranslationsEditController', ['$scope', '$q', '$resource', '$window', '$location', '$log',
+    'MicaConfigResource', 'FormServerValidation', 'TranslationsResource',
+    function ($scope, $q, $resource, $window, $location, $log, MicaConfigResource, FormServerValidation, TranslationsResource) {
+      var updates = {}, oldTranslations = {};
+      $scope.micaConfig = MicaConfigResource.get();
+      $scope.micaConfig.$promise.then(function() {
+        var defaults = {};
+        $scope.translations = {};
+        $scope.tabs = $scope.micaConfig.languages.map(function (lang) {
+          updates[lang] = jsonToPaths(
+            JSON.parse(($scope.micaConfig.translations.filter(function(t) { return t.lang === lang; })[0] || {value: '{}'}).value)
+          );
+          defaults[lang] = TranslationsResource.get({id: lang, default: true}).$promise;
+          return {lang: lang};
+        });
+
+        $q.all(defaults).then(function(res) {
+          Object.keys(res).forEach(function(lang) {
+            var defaultPaths = jsonToPaths(extractObjFromResouce(res[lang]));
+            oldTranslations[lang] = angular.copy(defaultPaths);
+            var newPaths = updates[lang].map(function(e) {
+              if(!defaultPaths.some(function(u) {
+                  return e.path === u.path ? (u.value = e.value , u.overwritten = true) : false;
+                })) {
+                e.overwritten = true;
+                return e;
+              }
+
+              return null;
+            }).filter(notNull);
+            $scope.translations[lang] = defaultPaths.concat(newPaths);
+          });
+        });
+      });
+      
+      function notNull (x) {
+        return x;
+      }
+
+      function jsonToPaths (obj) {
+        function inner(o, name, acc) {
+          for(var k in o) {
+            var tmp = [name, k].filter(function(x) {return x;}).join('.');
+            if (angular.isObject(o[k])) {
+              inner(o[k], tmp, acc);
+            } else {
+              acc.push({path: tmp, value: o[k]});
+            }
+          }
+
+          return acc;
+        }
+
+        return inner(obj, null, []);
+      }
+
+      function pathsToJson(paths) {
+        function inner(target, path, value) {
+          if(path.length === 1) {
+            target[path[0]] = value;
+            return;
+          }
+
+          if(!target[path[0]]) { target[path[0]] = {}; }
+
+          inner(target[path[0]], path.splice(1), value);
+        }
+
+        return paths.reduce(function(res, e) {
+          inner(res, e.path.split('.'), e.value);
+          return res;
+        }, {});
+      }
+
+      function extractObjFromResouce(res) {
+        return angular.fromJson(angular.toJson(res));
+      }
+      
+      $scope.setDirty = function(entry) {
+        if(!entry.overwritten) { entry.overwritten = true; }
+      };
+      
+      $scope.resetEntry = function(entry, lang) {
+        entry.overwritten = false;
+        
+        var original = oldTranslations[lang].filter(function(e) {
+          return e.path === entry.path;
+        })[0];
+        
+        entry.value = original.value;
+      };
+
+      $scope.save = function () {
+        $scope.micaConfig.translations = $scope.micaConfig.languages.map(function(lang){
+          var changes = $scope.translations[lang].filter(function (e) {
+            var result = null;
+            
+            if (!oldTranslations[lang].some(function(o) {
+                if (o.path === e.path) {
+                  if (o.value !== e.value) {
+                    result = e;
+                  }
+
+                  return true;
+                }
+              })) {
+              result = e;
+            }
+
+            return result;
+          }).filter(notNull);
+          
+          return {lang: lang, value: JSON.stringify(pathsToJson(changes))};
+        });
+
+        console.log($scope.micaConfig.translations);
+
+        $scope.micaConfig.$save(
+          function () {
+            $location.path('/admin');
+            $window.location.reload();
+          },
+          function (response) {
+            FormServerValidation.error(response, $scope.form);
+          });
+      };
     }]);

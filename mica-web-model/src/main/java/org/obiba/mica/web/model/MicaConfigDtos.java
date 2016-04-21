@@ -7,14 +7,13 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import com.google.common.base.Strings;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.micaConfig.AuthType;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.domain.OpalCredential;
 import org.springframework.stereotype.Component;
-
-import com.google.common.base.Strings;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -80,6 +79,8 @@ class MicaConfigDtos {
 
     if(config.hasStyle()) builder.setStyle(config.getStyle());
 
+    if(config.hasTranslations()) builder.addAllTranslations(localizedStringDtos.asDto(config.getTranslations()));
+
     return builder.build();
   }
 
@@ -117,6 +118,8 @@ class MicaConfigDtos {
     config.setHarmonizationDatasetEnabled(dto.getIsHarmonizationDatasetEnabled());
 
     if(dto.hasStyle()) config.setStyle(dto.getStyle());
+
+    if(dto.getTranslationsCount() > 0) config.setTranslations(localizedStringDtos.fromDto(dto.getTranslationsList()));
 
     return config;
   }
