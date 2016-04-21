@@ -30,6 +30,10 @@ mica.config
     function ($resource) {
       return $resource('ws/config/opal-credential/:id', {id: '@id'}, {});
     }])
+  .factory('TranslationsResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/config/i18n/:id.json');
+    }])
   .factory('StyleEditorService', [
     function () {
       return {

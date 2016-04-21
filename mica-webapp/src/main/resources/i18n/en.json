@@ -434,6 +434,12 @@
     "style": {
       "title": "Style",
       "info": "Override the default style with your own stylesheet. The CSS classes are the ones of <a target='_blank' href='http://getbootstrap.com/'>Bootstrap</a> (<a target='_blank' href='http://bootswatch.com/flatly/'>Bootswatch Flatly</a> theme)."
+    },
+    "translations": {
+      "title": "Translations",
+      "path": "Name",
+      "value": "Value",
+      "info": "Override the default translations."
     }
   },
   "publish": {

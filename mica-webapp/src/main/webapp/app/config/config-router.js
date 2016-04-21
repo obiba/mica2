@@ -20,7 +20,10 @@ mica.config
           templateUrl: 'app/config/views/config-notifications-form.html',
           controller: 'MicaConfigNotificationsEditController'
         })
-        .when('/admin/style/edit', {
+        .when('/admin/translations/edit', {
+          templateUrl: 'app/config/views/config-translations-form.html',
+          controller: 'MicaConfigTranslationsEditController'
+        }).when('/admin/style/edit', {
           templateUrl: 'app/config/views/config-style-form.html',
           controller: 'MicaConfigStyleEditController'
         });
