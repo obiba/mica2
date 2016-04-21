@@ -820,11 +820,11 @@
     "no-results": "No result found.",
     "no-description": "No description.",
     "placeholder": {
-      "all": "e.g. alcohol, cancer, gender, cohort, twin",
-      "variable": "e.g. alcohol, pregnancy, cancer",
-      "dataset": "Search by dataset name or type",
-      "study": "e.g. cohort, gender, twin",
-      "network": "Search by network name"
+      "all": "e.g. study name, anxiety, alcohol, cancer, cohort",
+      "variable": "e.g. depression, alcohol, smoking, cancer",
+      "dataset": "e.g. dataset name",
+      "study": "e.g. study name, cohort",
+      "network": "e.g. network name"
     },
     "classifications-show": "Show detailed classifications",
     "list": "List",
