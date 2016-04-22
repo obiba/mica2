@@ -68,8 +68,8 @@
       "fr": "Variables d'un jeux de données spécifique à une étude."
   - "name": "Dataschema"
     "title":
-      "en": "Dataschema"
-      "fr": "Dataschema"
+      "en": "DataSchema"
+      "fr": "Schéma de données"
     "description":
       "en": "A dataschema variable is part of a harmonization dataset and is a construct from multiple study-specific variables."
 - "name": "entityType"
