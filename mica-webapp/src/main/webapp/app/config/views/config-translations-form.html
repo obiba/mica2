@@ -36,11 +36,11 @@
           <th translate>config.translations.value</th>
           </thead>
           <tr ng-repeat="entry in translations[tab.lang] | filter:filter | orderBy:'path'">
-            <td>
+            <td class="col-md-4">
               <strong ng-if="entry.overwritten">{{entry.path}}</strong>
               <span ng-if="!entry.overwritten">{{entry.path}}</span>
             </td>
-            <td>
+            <td class="col-md-8">
               <div ng-class="{'input-group': entry.overwritten}">
                 <input type="text" class="form-control" ng-model="entry.value" ng-keypress="setDirty(entry)">
                 <span ng-if="entry.overwritten" class="input-group-btn">
