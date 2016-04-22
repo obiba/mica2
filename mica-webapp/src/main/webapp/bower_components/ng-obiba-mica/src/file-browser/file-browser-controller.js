@@ -134,12 +134,12 @@ angular.module('obiba.mica.fileBrowser')
               excludes.push(q + '\\/*');
             });
 
-            excludeQuery = excludes.length > 0 ? ' AND NOT path:(' + excludes.join(' OR ') + ')' : '';
+            excludeQuery = excludes.length > 0 ? 'NOT path:(' + excludes.join(' OR ') + ')' : '';
           } catch (error) {
             // just return the input query
           }
 
-          return query + excludeQuery;
+          return query ? query + ' AND ' + excludeQuery : excludeQuery;
         }
 
         searchParams.query = excludeFolders(searchParams.query);

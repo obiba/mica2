@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-04-19
+ * Date: 2016-04-21
  */
 'use strict';
 
@@ -1498,17 +1498,26 @@ angular.module('obiba.mica.search', [
 angular.module('obiba.mica.search')
 
   .filter('regex', function() {
-    return function(elements, regex, fields) {
+    return function(elements, regex, fields, lang) {
       var out = [];
 
       try {
         var pattern = new RegExp(regex, 'i');
         out = elements.filter(function(element) {
-          return fields.some(function(field){
-            return pattern.test(element[field]);
+          return fields.some(function(field) {
+            var value = element[field];
+            
+            if(angular.isArray(value) && lang) {
+              return value.filter(function(item) {
+                return item.locale === lang;
+              }).some(function(item) {
+                return pattern.test(item.text);
+              });
+            }
+
+            return pattern.test(value);
           });
         });
-
       } catch(e) {
       }
 
@@ -5003,8 +5012,9 @@ angular.module('obiba.mica.search')
       $scope.$watch('result', function () {
         $scope.table = {cols: []};
         if ($scope.result && $scope.result.rows) {
-          $scope.table = $scope.result;
-          $scope.table.cols = splitIds();
+          var tableTmp = $scope.result;
+          tableTmp.cols = splitIds();
+          $scope.table = tableTmp;
         }
       });
 
@@ -6224,19 +6234,19 @@ angular.module('obiba.mica.graphics')
     return factory;
 
   })
-  .service('GraphicChartsUtils', [
-    function () {
+  .service('GraphicChartsUtils', ['LocalizedValues',
+    function (LocalizedValues) {
       this.getArrayByAggregation = function (aggregationName, entityDto) {
         var arrayData = [];
 
         if (!entityDto) {
           return arrayData;
         }
-
+        var i = 0;
         angular.forEach(entityDto.aggs, function (aggregation) {
           if (aggregation.aggregation === aggregationName) {
-            var i = 0;
             if (aggregation['obiba.mica.RangeAggregationResultDto.ranges']) {
+              i = 0;
               angular.forEach(aggregation['obiba.mica.RangeAggregationResultDto.ranges'], function (term) {
                 if (term.count) {
                   arrayData[i] = {title: term.title, value: term.count, key: term.key};
@@ -6247,10 +6257,11 @@ angular.module('obiba.mica.graphics')
             else {
               if (aggregation.aggregation === 'methods-designs') {
                 var numberOfParticipant = 0;
+                i = 0;
                 angular.forEach(aggregation['obiba.mica.TermsAggregationResultDto.terms'], function (term) {
                   angular.forEach(term.aggs, function (aggBucket) {
                     if (aggBucket.aggregation === 'numberOfParticipants-participant-number') {
-                      numberOfParticipant = aggBucket['obiba.mica.StatsAggregationResultDto.stats'].data.sum;
+                      numberOfParticipant = LocalizedValues.formatNumber(aggBucket['obiba.mica.StatsAggregationResultDto.stats'].data.sum);
                     }
                   });
                   if (term.count) {
@@ -6260,6 +6271,7 @@ angular.module('obiba.mica.graphics')
                 });
               }
               else {
+                i = 0;
                 angular.forEach(aggregation['obiba.mica.TermsAggregationResultDto.terms'], function (term) {
                   if (term.count) {
                     arrayData[i] = {title: term.title, value: term.count, key: term.key};
@@ -6494,6 +6506,11 @@ angular.module('obiba.mica.localized')
       this.getLocal = function () {
         return 'en';
       };
+
+      this.formatNumber = function (number){
+        return number.toLocaleString(this.getLocal());
+      };
+
     });
 ;'use strict';
 
@@ -6681,12 +6698,12 @@ angular.module('obiba.mica.fileBrowser')
               excludes.push(q + '\\/*');
             });
 
-            excludeQuery = excludes.length > 0 ? ' AND NOT path:(' + excludes.join(' OR ') + ')' : '';
+            excludeQuery = excludes.length > 0 ? 'NOT path:(' + excludes.join(' OR ') + ')' : '';
           } catch (error) {
             // just return the input query
           }
 
-          return query + excludeQuery;
+          return query ? query + ' AND ' + excludeQuery : excludeQuery;
         }
 
         searchParams.query = excludeFolders(searchParams.query);
@@ -8085,6 +8102,7 @@ angular.module("search/views/classifications/taxonomies-view.html", []).run(["$t
     "                <span ng-if=\"!vocabulary.title\">\n" +
     "                  {{vocabulary.name}}\n" +
     "                </span>\n" +
+    "                      <i class=\"pull-right {{taxonomies.vocabulary.name !== vocabulary.name ? 'invisible' : ''}} hidden-sm hidden-xs fa fa-chevron-circle-right\"></i>\n" +
     "                    </a>\n" +
     "                  </li>\n" +
     "                </ul>\n" +
@@ -8131,7 +8149,7 @@ angular.module("search/views/classifications/taxonomies-view.html", []).run(["$t
     "                      </div>\n" +
     "                    </form>\n" +
     "                  </div>\n" +
-    "                  <div ng-if=\"!taxonomies.isNumericVocabulary && !taxonomies.isMatchVocabulary\">\n" +
+    "                  <div class=\"form-group\" ng-if=\"!taxonomies.isNumericVocabulary && !taxonomies.isMatchVocabulary\">\n" +
     "                    <a href class=\"btn btn-default btn-xs\"\n" +
     "                       ng-click=\"selectTerm(taxonomies.target, taxonomies.taxonomy, taxonomies.vocabulary)\">\n" +
     "                      <i class=\"fa fa-plus-circle\"></i>\n" +
@@ -8139,7 +8157,15 @@ angular.module("search/views/classifications/taxonomies-view.html", []).run(["$t
     "                    </a>\n" +
     "                  </div>\n" +
     "                  <ul class=\"nav nav-pills nav-stacked\" ng-if=\"taxonomies.vocabulary.terms\">\n" +
-    "                    <li ng-repeat=\"term in taxonomies.vocabulary.terms\"\n" +
+    "                    <li class=\"criteria-list-item\" ng-show=\"taxonomies.vocabulary.terms.length>10\">\n" +
+    "                      <div class=\"form-group\">\n" +
+    "                        <div class=\"input-group input-group-sm no-padding-top\">\n" +
+    "                          <input ng-model=\"searchText\" type=\"text\" class=\"form-control\">\n" +
+    "                          <span class=\"input-group-addon\"><i class=\"glyphicon glyphicon-search\"></i></span>\n" +
+    "                        </div>\n" +
+    "                      </div>\n" +
+    "                    </li>\n" +
+    "                    <li ng-repeat=\"term in taxonomies.vocabulary.terms | regex:searchText:['name', 'title', 'description']:lang\"\n" +
     "                        class=\"{{taxonomies.term.name === term.name ? 'active' : ''}}\">\n" +
     "                      <a id=\"search-navigate-vocabulary\" href ng-click=\"navigateTaxonomy(taxonomies.taxonomy, taxonomies.vocabulary, term)\">\n" +
     "                <span ng-repeat=\"label in term.title\" ng-if=\"label.locale === lang\">\n" +
@@ -8324,7 +8350,7 @@ angular.module("search/views/coverage/coverage-search-result-table-template.html
     "\n" +
     "  <div ng-if=\"loading\" class=\"loading\"></div>\n" +
     "\n" +
-    "  <div class=\"table-responsive\" ng-if=\"table.taxonomyHeaders.length > 0\">\n" +
+    "  <div class=\"table-responsive\" ng-if=\"!loading && table.taxonomyHeaders.length > 0\">\n" +
     "    <table class=\"table table-bordered table-striped\">\n" +
     "      <thead>\n" +
     "      <tr>\n" +
