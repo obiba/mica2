@@ -1215,11 +1215,11 @@
   "nor": "NOR",
   "to": "to",
   "graphics": {
-    "nbr-studies": "Nbr of Studies",
+    "nbr-studies": "Studies",
     "number-participants": "Nbr of Participants",
     "country": "Country",
     "geo-charts": "Geographical Distribution",
-    "study-design": "Study Designs",
+    "study-design": "Study Design",
     "bio-samples": "Collected biological samples",
     "geo-chart-title": "Distribution of studies by country of residence",
     "study-design-chart-title": "Distribution of studies by study design",
