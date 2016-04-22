@@ -61,6 +61,7 @@
                 <span ng-if="!vocabulary.title">
                   {{vocabulary.name}}
                 </span>
+                      <i class="pull-right {{taxonomies.vocabulary.name !== vocabulary.name ? 'invisible' : ''}} hidden-sm hidden-xs fa fa-chevron-circle-right"></i>
                     </a>
                   </li>
                 </ul>
@@ -107,7 +108,7 @@
                       </div>
                     </form>
                   </div>
-                  <div ng-if="!taxonomies.isNumericVocabulary && !taxonomies.isMatchVocabulary">
+                  <div class="form-group" ng-if="!taxonomies.isNumericVocabulary && !taxonomies.isMatchVocabulary">
                     <a href class="btn btn-default btn-xs"
                        ng-click="selectTerm(taxonomies.target, taxonomies.taxonomy, taxonomies.vocabulary)">
                       <i class="fa fa-plus-circle"></i>
@@ -115,7 +116,15 @@
                     </a>
                   </div>
                   <ul class="nav nav-pills nav-stacked" ng-if="taxonomies.vocabulary.terms">
-                    <li ng-repeat="term in taxonomies.vocabulary.terms"
+                    <li class="criteria-list-item" ng-show="taxonomies.vocabulary.terms.length>10">
+                      <div class="form-group">
+                        <div class="input-group input-group-sm no-padding-top">
+                          <input ng-model="searchText" type="text" class="form-control">
+                          <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+                        </div>
+                      </div>
+                    </li>
+                    <li ng-repeat="term in taxonomies.vocabulary.terms | regex:searchText:['name', 'title', 'description']:lang"
                         class="{{taxonomies.term.name === term.name ? 'active' : ''}}">
                       <a id="search-navigate-vocabulary" href ng-click="navigateTaxonomy(taxonomies.taxonomy, taxonomies.vocabulary, term)">
                 <span ng-repeat="label in term.title" ng-if="label.locale === lang">

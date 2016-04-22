@@ -1701,8 +1701,9 @@ angular.module('obiba.mica.search')
       $scope.$watch('result', function () {
         $scope.table = {cols: []};
         if ($scope.result && $scope.result.rows) {
-          $scope.table = $scope.result;
-          $scope.table.cols = splitIds();
+          var tableTmp = $scope.result;
+          tableTmp.cols = splitIds();
+          $scope.table = tableTmp;
         }
       });
 
