@@ -407,7 +407,7 @@ mica.config
         $scope.translations = {};
         $scope.tabs = $scope.micaConfig.languages.map(function (lang) {
           updates[lang] = jsonToPaths(
-            JSON.parse(($scope.micaConfig.translations.filter(function(t) { return t.lang === lang; })[0] || {value: '{}'}).value)
+            JSON.parse((($scope.micaConfig.translations || []).filter(function(t) { return t.lang === lang; })[0] || {value: '{}'}).value)
           );
           defaults[lang] = TranslationsResource.get({id: lang, default: true}).$promise;
           return {lang: lang};
@@ -511,8 +511,6 @@ mica.config
           
           return {lang: lang, value: JSON.stringify(pathsToJson(changes))};
         });
-
-        console.log($scope.micaConfig.translations);
 
         $scope.micaConfig.$save(
           function () {
