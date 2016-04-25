@@ -834,8 +834,11 @@
     },
     "classifications-show": "Show detailed classifications",
     "list": "List",
+    "list-help": "",
     "coverage": "Coverage",
+    "coverage-help": "",
     "graphics": "Graphics",
+    "graphics-help": "",
     "any": "any",
     "any-help": "Any value",
     "none": "none",
@@ -908,7 +911,11 @@
     "criterion": {
       "created": "Criteria <strong>{{arg0}}</strong> was added.",
       "updated": "Criteria <strong>{{arg0}}</strong> was updated."
-    }
+    },
+    "taxonomy-nav-help": "",
+    "vocabulary-nav-help": "",
+    "classifications-link": "",
+    "classifications-title": ""
   },
   "variables": "Variables",
   "classifications": "Classifications",
@@ -1021,7 +1028,8 @@
       "data-access-config": "Configure Data Access Request form.",
       "file-system": "Manage file system.",
       "search": "Search in the published repository.",
-      "classifications": "Browse taxonomies."
+      "classifications": "Browse taxonomies.",
+      "translations": "Manage labels translations."
     }
   },
   "server": {
