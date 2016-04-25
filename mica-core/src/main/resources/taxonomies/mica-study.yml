@@ -29,7 +29,7 @@
     "alias": "objectives"
 - "name": "methods-designs"
   "title":
-    "en": "Study designs"
+    "en": "Study design"
     "fr": "Définitions d'étude"
   "description":
     "en": "The study type (e.g. observational, experimental) and sub-type (e.g.  cohort study, case control, randomized control trial)."
@@ -39,7 +39,7 @@
   "terms":
   - "name": "cohort_study"
     "title":
-      "en": "Cohort study"
+      "en": "Cohort"
       "fr": "Étude de cohorte"
     "description":
       "en": "An observational study design where one or more defined population samples are followed prospectively to determine the incidence of a disease or health outcome in individuals who are exposed to certain risk factors as compared to those who are not exposed."
@@ -73,219 +73,6 @@
       "fr": "Autre"
     "description":
       "en": "Other study design."
-- "name": "access"
-  "title":
-    "en": "Access"
-    "fr": "Accès"
-  "description":
-    "en": "Whether access to study data, biological samples or other study material by external researchers or third parties is provided."
-  "repeatable": "true"
-  "terms":
-  - "name": "data"
-    "title":
-      "en": "Data"
-      "fr": "Données"
-    "description":
-      "en": "Access to general items of information about study participants is provided."
-  - "name": "bio_samples"
-    "title":
-      "en": "Biosamples"
-      "fr": "Échantillons biologiques"
-    "description":
-      "en": "Access to biological specimens from which substances, structures, or processes can be measured is provided."
-  - "name": "other"
-    "title":
-      "en": "Other"
-      "fr": "Autre"
-    "description":
-      "en": "Access to other study material is provided."
-- "name": "start"
-  "title":
-    "en": "Start Year"
-    "fr": "Année de début"
-  "description":
-    "en": "Year in which the study has started."
-    "fr": "Année à laquelle l'étude a commencé."
-  "attributes":
-    "type": "integer"
-- "name": "end"
-  "title":
-    "en": "End Year"
-    "fr": "Année de fin"
-  "description":
-    "en": "Year in which the study has ended or will end."
-    "fr": "Année à laquelle l'étude a fini ou finira."
-  "attributes":
-    "type": "integer"
-- "name": "methods-recruitments"
-  "title":
-    "en": "Recruitment target"
-    "fr": "Cible de recrutement"
-  "description":
-    "en": "Whether individuals or families are targeted for recruitment by the study."
-  "repeatable": "true"
-  "attributes":
-    "field": "methods.recruitments"
-    "alias": "methods-recruitments"
-  "terms":
-  - "name": "individuals"
-    "title":
-      "en": "Individuals"
-      "fr": "Individus"
-    "description": {}
-  - "name": "families"
-    "title":
-      "en": "Families"
-      "fr": "Familles"
-    "description": {}
-  - "name": "other"
-    "title":
-      "en": "Other"
-      "fr": "Autre"
-    "description": {}
-- "name": "populations-recruitment-dataSources"
-  "title":
-    "en": "Recruitment source"
-    "fr": "Sources de recrutement"
-  "description":
-    "en": "The group from which individuals are recruited to participate in the study."
-  "attributes":
-    "field": "populations.recruitment.dataSources"
-    "alias": "populations-recruitment-dataSources"
-  "repeatable": "true"
-  "terms":
-  - "name": "general_population"
-    "title":
-      "en": "General population"
-      "fr": "Population générale"
-    "description":
-      "en": "Individuals are recruited to participate in the study from the general population."
-  - "name": "specific_population"
-    "title":
-      "en": "Specific population"
-      "fr": "Population spécifique"
-    "description":
-      "en": "Individuals are recruited to participate in the study from a particular institution or organization."
-  - "name": "exist_studies"
-    "title":
-      "en": "Participants from existing studies"
-      "fr": "Participants provenant d'études existantes"
-    "description":
-      "en": "Individuals are recruited from an existing study."
-  - "name": "other"
-    "title":
-      "en": "Other"
-      "fr": "Autre"
-    "description":
-      "en": "Other source of recruitment."
-- "name": "populations-recruitment-generalPopulationSources"
-  "title":
-    "en": "Recruitment source - General population"
-    "fr": "Sources de recrutement - Population générale"
-  "description":
-    "en": "Individuals are recruited to participate in the study from the general population."
-  "attributes":
-    "field": "populations.recruitment.generalPopulationSources"
-    "alias": "populations-recruitment-generalPopulationSources"
-  "repeatable": "true"
-  "terms":
-  - "name": "volunteer"
-    "title":
-      "en": "Volunteer enrolment"
-      "fr": "Enrôlement volontaire"
-    "description":
-      "en": "Individuals offer their participation without being directly contacted."
-  - "name": "selected_samples"
-    "title":
-      "en": "Selected sample"
-      "fr": "Sous-échantillons"
-    "description":
-      "en": "Individuals are selected from population databases."
-  - "name": "random"
-    "title":
-      "en": "Random digit dialing"
-      "fr": "Génération aléatoire de numéros"
-    "description":
-      "en": "Individuals are selected by generating telephone numbers at random."
-- "name": "populations-recruitment-specificPopulationSources"
-  "title":
-    "en": "Recruitment source - Specific population"
-    "fr": "Sources de recrutement - Population spécifique"
-  "description":
-    "en": "Individuals are recruited to participate in the study from a particular institution or organization."
-  "attributes":
-    "field": "populations.recruitment.specificPopulationSources"
-    "alias": "populations-recruitment-specificPopulationSources"
-  "repeatable": "true"
-  "terms":
-  - "name": "clinic_patients"
-    "title":
-      "en": "Clinic patients"
-      "fr": "Patients d'une clinique"
-    "description":
-      "en": "Individuals are recruited from the healthcare facility where they receive medical care."
-  - "name": "specific_association"
-    "title":
-      "en": "Members of an association"
-      "fr": "Membres d'une association"
-    "description":
-      "en": "Individuals are recruited from an associations in which they participate (e.g. professional association, patient network, etc)."
-  - "name": "other"
-    "title":
-      "en": "Other specific population"
-      "fr": "Autre population spécifique"
-    "description":
-      "en": "Other specific population."
-- "name": "populations-selectionCriteria-criteria"
-  "title":
-    "en": "Selection criteria"
-    "fr": "Critères de sélection"
-  "description":
-    "en": "The characteristics of an invidual that must be fulfilled when recruiting participants to the study."
-  "attributes":
-    "field": "populations.selectionCriteria.criteria"
-    "alias": "populations-selectionCriteria-criteria"
-  "terms":
-  - "name": "gravidity"
-    "title":
-      "en": "Gravidity"
-      "fr": "Femmes enceintes"
-    "description":
-      "en": "Study recruits pregnant women."
-  - "name": "newborn"
-    "title":
-      "en": "Newborn"
-      "fr": "Nouveaux-nés"
-    "description":
-      "en": "Study recruits recently born children."
-  - "name": "twin"
-    "title":
-      "en": "Twin"
-      "fr": "Jumeaux"
-    "description":
-      "en": "Study recruits individuals born at the same birth to the same mother."
-- "name": "populations-selectionCriteria-gender"
-  "title":
-    "en": "Selection criteria - Gender"
-    "fr": "Critères de sélection - Genre"
-  "description":
-    "en": "Participant’s gender"
-  "attributes":
-    "field": "populations.selectionCriteria.gender"
-    "alias": "populations-selectionCriteria-gender"
-  "terms":
-  - "name": "men"
-    "title":
-      "en": "Men only"
-      "fr": "Hommes seulement"
-    "description":
-      "en": "Study recruits men only."
-  - "name": "women"
-    "title":
-      "en": "Women only"
-      "fr": "Femmes seulement"
-    "description":
-      "en": "Study recruits women only."
 - "name": "populations-selectionCriteria-countriesIso"
   "title":
     "en": "Selection criteria - Country of residence"
@@ -1564,6 +1351,56 @@
     "type": "integer"
     "field": "populations.selectionCriteria.ageMax"
     "alias": "populations-selectionCriteria-ageMax"
+- "name": "populations-selectionCriteria-gender"
+  "title":
+    "en": "Selection criteria - Gender"
+    "fr": "Critères de sélection - Genre"
+  "description":
+    "en": "Participant’s gender"
+  "attributes":
+    "field": "populations.selectionCriteria.gender"
+    "alias": "populations-selectionCriteria-gender"
+  "terms":
+  - "name": "men"
+    "title":
+      "en": "Men only"
+      "fr": "Hommes seulement"
+    "description":
+      "en": "Study recruits men only."
+  - "name": "women"
+    "title":
+      "en": "Women only"
+      "fr": "Femmes seulement"
+    "description":
+      "en": "Study recruits women only."
+- "name": "populations-selectionCriteria-criteria"
+  "title":
+    "en": "Selection criteria - gravidity/newborns"
+    "fr": "Critères de sélection - Femmes enceintes/Nouveaux-nés"
+  "description":
+    "en": "The characteristics of an invidual that must be fulfilled when recruiting participants to the study."
+  "attributes":
+    "field": "populations.selectionCriteria.criteria"
+    "alias": "populations-selectionCriteria-criteria"
+  "terms":
+  - "name": "gravidity"
+    "title":
+      "en": "Gravidity"
+      "fr": "Femmes enceintes"
+    "description":
+      "en": "Study recruits pregnant women."
+  - "name": "newborn"
+    "title":
+      "en": "Newborn"
+      "fr": "Nouveaux-nés"
+    "description":
+      "en": "Study recruits recently born children."
+  - "name": "twin"
+    "title":
+      "en": "Twin"
+      "fr": "Jumeaux"
+    "description":
+      "en": "Study recruits individuals born at the same birth to the same mother."
 - "name": "numberOfParticipants-participant-number"
   "title":
     "en": "Target number of participants"
@@ -1696,10 +1533,71 @@
         "fr": "500 000 et plus"
       "description": {}
       "keywords": {}
+- "name": "methods-recruitments"
+  "title":
+    "en": "Recruitment target"
+    "fr": "Cible de recrutement"
+  "description":
+    "en": "Whether individuals or families are targeted for recruitment by the study."
+  "repeatable": "true"
+  "attributes":
+    "field": "methods.recruitments"
+    "alias": "methods-recruitments"
+  "terms":
+  - "name": "individuals"
+    "title":
+      "en": "Individuals"
+      "fr": "Individus"
+    "description": {}
+  - "name": "families"
+    "title":
+      "en": "Families"
+      "fr": "Familles"
+    "description": {}
+  - "name": "other"
+    "title":
+      "en": "Other"
+      "fr": "Autre"
+    "description": {}
+- "name": "populations-recruitment-dataSources"
+  "title":
+    "en": "Sources of recruitment"
+    "fr": "Sources de recrutement"
+  "description":
+    "en": "The group from which individuals are recruited to participate in the study."
+  "attributes":
+    "field": "populations.recruitment.dataSources"
+    "alias": "populations-recruitment-dataSources"
+  "repeatable": "true"
+  "terms":
+  - "name": "general_population"
+    "title":
+      "en": "General population"
+      "fr": "Population générale"
+    "description":
+      "en": "Individuals are recruited to participate in the study from the general population."
+  - "name": "specific_population"
+    "title":
+      "en": "Specific population"
+      "fr": "Population spécifique"
+    "description":
+      "en": "Individuals are recruited to participate in the study from a particular institution or organization."
+  - "name": "exist_studies"
+    "title":
+      "en": "Participants from existing studies"
+      "fr": "Participants provenant d'études existantes"
+    "description":
+      "en": "Individuals are recruited from an existing study."
+  - "name": "other"
+    "title":
+      "en": "Other"
+      "fr": "Autre"
+    "description":
+      "en": "
 - "name": "populations-dataCollectionEvents-dataSources"
   "title":
-    "en": "Data collection methods"
-    "fr": "Méthodes de collecte des données"
+    "en": "Data sources"
+    "fr": "Source des données"
   "description":
     "en": "Methods and instruments used to collect information about the participant"
   "attributes":
@@ -1737,10 +1635,94 @@
       "fr": "Autres"
     "description":
       "en": "Other sources of data."
+- "name": "populations-recruitment-generalPopulationSources"
+  "title":
+    "en": "Recruitment source - General population"
+    "fr": "Sources de recrutement - Population générale"
+  "description":
+    "en": "Individuals are recruited to participate in the study from the general population."
+  "attributes":
+    "field": "populations.recruitment.generalPopulationSources"
+    "alias": "populations-recruitment-generalPopulationSources"
+  "repeatable": "true"
+  "terms":
+  - "name": "volunteer"
+    "title":
+      "en": "Volunteer enrolment"
+      "fr": "Enrôlement volontaire"
+    "description":
+      "en": "Individuals offer their participation without being directly contacted."
+  - "name": "selected_samples"
+    "title":
+      "en": "Selected sample"
+      "fr": "Sous-échantillons"
+    "description":
+      "en": "Individuals are selected from population databases."
+  - "name": "random"
+    "title":
+      "en": "Random digit dialing"
+      "fr": "Génération aléatoire de numéros"
+    "description":
+      "en": "Individuals are selected by generating telephone numbers at random."
+- "name": "populations-recruitment-specificPopulationSources"
+  "title":
+    "en": "Recruitment source - Specific population"
+    "fr": "Sources de recrutement - Population spécifique"
+  "description":
+    "en": "Individuals are recruited to participate in the study from a particular institution or organization."
+  "attributes":
+    "field": "populations.recruitment.specificPopulationSources"
+    "alias": "populations-recruitment-specificPopulationSources"
+  "repeatable": "true"
+  "terms":
+  - "name": "clinic_patients"
+    "title":
+      "en": "Clinic patients"
+      "fr": "Patients d'une clinique"
+    "description":
+      "en": "Individuals are recruited from the healthcare facility where they receive medical care."
+  - "name": "specific_association"
+    "title":
+      "en": "Members of an association"
+      "fr": "Membres d'une association"
+    "description":
+      "en": "Individuals are recruited from an associations in which they participate (e.g. professional association, patient network, etc)."
+  - "name": "other"
+    "title":
+      "en": "Other specific population"
+      "fr": "Autre population spécifique"
+    "description":
+      "en": "Other specific population."
+- "name": "access"
+  "title":
+    "en": "Access"
+    "fr": "Accès"
+  "description":
+    "en": "Whether access to study data, biological samples or other study material by external researchers or third parties is provided."
+  "repeatable": "true"
+  "terms":
+  - "name": "data"
+    "title":
+      "en": "Data"
+      "fr": "Données"
+    "description":
+      "en": "Access to general items of information about study participants is provided."
+  - "name": "bio_samples"
+    "title":
+      "en": "Biosamples"
+      "fr": "Échantillons biologiques"
+    "description":
+      "en": "Access to biological specimens from which substances, structures, or processes can be measured is provided."
+  - "name": "other"
+    "title":
+      "en": "Other"
+      "fr": "Autre"
+    "description":
+      "en": "Access to other study material is provided."
 - "name": "populations-dataCollectionEvents-bioSamples"
   "title":
-    "en": "Data collection methods - Biosamples"
-    "fr": "Méthodes de collecte des données - Échantillons biologiques"
+    "en": "Data sources - Biosamples"
+    "fr": "Source des données - Échantillons biologiques"
   "description":
     "en": "Biospecimens or biological material."
   "attributes":
@@ -1795,8 +1777,8 @@
     "description": {}
 - "name": "populations-dataCollectionEvents-administrativeDatabases"
   "title":
-    "en": "Data collection methods - Administrative databases"
-    "fr": "Méthodes de collecte des données - Bases de données administratives"
+    "en": "Data sources - Administrative databases"
+    "fr": "Source des données - Bases de données administratives"
   "description":
     "en": "Databases containing information collected by governments for administrative purposes that are linked to the study."
   "attributes":
@@ -1828,3 +1810,21 @@
       "fr": "Bases de données environnementales"
     "description":
       "en": "Administrative database containing information concerning natural or man-made environmental characteristics (e.g. air pollutants, weather, built environment)."
+- "name": "start"
+  "title":
+    "en": "Start Year"
+    "fr": "Année de début"
+  "description":
+    "en": "Year in which the study has started."
+    "fr": "Année à laquelle l'étude a commencé."
+  "attributes":
+    "type": "integer"
+- "name": "end"
+  "title":
+    "en": "End Year"
+    "fr": "Année de fin"
+  "description":
+    "en": "Year in which the study has ended or will end."
+    "fr": "Année à laquelle l'étude a fini ou finira."
+  "attributes":
+    "type": "integer"
