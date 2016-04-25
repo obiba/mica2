@@ -893,7 +893,7 @@
       "studyNetwork": "Study/Network",
       "noResults": "No variable found",
       "study": "Study",
-      "dataschema": "Dataschema"
+      "dataschema": "DataSchema"
     },
     "network": {
       "noResults": "No network found"
