@@ -279,6 +279,7 @@ angular.module('obiba.mica.search')
     '$timeout',
     '$routeParams',
     '$location',
+    '$translate',
     'TaxonomiesSearchResource',
     'TaxonomiesResource',
     'TaxonomyResource',
@@ -299,6 +300,7 @@ angular.module('obiba.mica.search')
               $timeout,
               $routeParams,
               $location,
+              $translate,
               TaxonomiesSearchResource,
               TaxonomiesResource,
               TaxonomyResource,
@@ -322,6 +324,13 @@ angular.module('obiba.mica.search')
         network: 'networks',
         dataset: 'datasets'
       };
+
+      $translate(['search.classifications-title', 'search.classifications-link'])
+        .then(function (translation) {
+          $scope.hasClassificationsTitle = translation['search.classifications-title'];
+          $scope.hasClassificationsLinkLabel = translation['search.classifications-link'];
+        });
+      
       var taxonomyTypeInverseMap = Object.keys($scope.taxonomyTypeMap).reduce(function (prev, k) {
         prev[$scope.taxonomyTypeMap[k]] = k;
         return prev;
@@ -745,6 +754,15 @@ angular.module('obiba.mica.search')
       };
 
       /**
+       * Removes the item from the criteria tree
+       * @param item
+       */
+      var removeCriteriaItem = function (item) {
+        RqlQueryService.removeCriteriaItem(item);
+        refreshQuery();
+      };
+
+      /**
        * Propagates a Scope change that results in criteria panel update
        * @param item
        */
@@ -754,7 +772,11 @@ angular.module('obiba.mica.search')
           var existingItem = $scope.search.criteriaItemMap[id];
           var growlMsgKey;
 
-          if (existingItem) {
+          if (existingItem && id.indexOf('dceIds') !== -1) {
+            removeCriteriaItem(existingItem);
+            growlMsgKey = 'search.criterion.updated';
+            RqlQueryService.addCriteriaItem($scope.search.rqlQuery, item, logicalOp);
+          } else if (existingItem) {
             growlMsgKey = 'search.criterion.updated';
             RqlQueryService.updateCriteriaItem(existingItem, item, replace);
           } else {
@@ -876,15 +898,6 @@ angular.module('obiba.mica.search')
 
       var selectSearchTarget = function (target) {
         $scope.documents.search.target = target;
-      };
-
-      /**
-       * Removes the item from the criteria tree
-       * @param item
-       */
-      var removeCriteriaItem = function (item) {
-        RqlQueryService.removeCriteriaItem(item);
-        refreshQuery();
       };
 
       var VIEW_MODES = {

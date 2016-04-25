@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-04-21
+ * Date: 2016-04-25
  */
 'use strict';
 
@@ -1362,20 +1362,8 @@ angular.module('obiba.mica.search', [
         taxonomyTabsOrder: [QUERY_TARGETS.VARIABLE, QUERY_TARGETS.DATASET, QUERY_TARGETS.STUDY, QUERY_TARGETS.NETWORK],
         searchTabsOrder: [DISPLAY_TYPES.LIST, DISPLAY_TYPES.COVERAGE, DISPLAY_TYPES.GRAPHICS],
         resultTabsOrder: [QUERY_TARGETS.VARIABLE, QUERY_TARGETS.DATASET, QUERY_TARGETS.STUDY, QUERY_TARGETS.NETWORK],
-        listLabel: 'search.list',
-        listHelp: null,
-        coverageLabel: 'search.coverage',
-        coverageHelp: null,
-        graphicsLabel: 'search.graphics',
-        graphicsHelp: null,
-        classificationsTitle: null,
-        classificationsLinkLabel: null,
-        taxonomyNavHelp: null,
-        vocabularyNavHelp: null,
         variables: {
           showSearchTab: true,
-          searchLabel: 'search.variable.searchLabel',
-          noResultsLabel: 'search.variable.noResults',
           variablesColumn: {
             showVariablesTypeColumn: true,
             showVariablesStudiesColumn: true,
@@ -1387,8 +1375,6 @@ angular.module('obiba.mica.search', [
         datasets: {
           showSearchTab: true,
           showDatasetsSearchFilter: true,
-          searchLabel: 'search.variable.searchLabel',
-          noResultsLabel: 'search.dataset.noResults',
           datasetsColumn: {
             showDatasetsAcronymColumn: true,
             showDatasetsTypeColumn: true,
@@ -1399,9 +1385,8 @@ angular.module('obiba.mica.search', [
         },
         studies: {
           showSearchTab: true,
-          searchLabel: 'search.variable.searchLabel',
-          noResultsLabel: 'search.study.noResults',
-          showStudiesSearchFilter: true, studiesColumn: {
+          showStudiesSearchFilter: true,
+          studiesColumn: {
             showStudiesDesignColumn: true,
             showStudiesQuestionnaireColumn: true,
             showStudiesPmColumn: true,
@@ -1418,8 +1403,6 @@ angular.module('obiba.mica.search', [
         },
         networks: {
           showSearchTab: true,
-          searchLabel: 'search.variable.searchLabel',
-          noResultsLabel: 'search.network.noResults',
           networksColumn: {
             showNetworksStudiesColumn: true,
             showNetworksStudyDatasetColumn: true,
@@ -3590,6 +3573,7 @@ angular.module('obiba.mica.search')
     '$timeout',
     '$routeParams',
     '$location',
+    '$translate',
     'TaxonomiesSearchResource',
     'TaxonomiesResource',
     'TaxonomyResource',
@@ -3610,6 +3594,7 @@ angular.module('obiba.mica.search')
               $timeout,
               $routeParams,
               $location,
+              $translate,
               TaxonomiesSearchResource,
               TaxonomiesResource,
               TaxonomyResource,
@@ -3633,6 +3618,13 @@ angular.module('obiba.mica.search')
         network: 'networks',
         dataset: 'datasets'
       };
+
+      $translate(['search.classifications-title', 'search.classifications-link'])
+        .then(function (translation) {
+          $scope.hasClassificationsTitle = translation['search.classifications-title'];
+          $scope.hasClassificationsLinkLabel = translation['search.classifications-link'];
+        });
+      
       var taxonomyTypeInverseMap = Object.keys($scope.taxonomyTypeMap).reduce(function (prev, k) {
         prev[$scope.taxonomyTypeMap[k]] = k;
         return prev;
@@ -4056,6 +4048,15 @@ angular.module('obiba.mica.search')
       };
 
       /**
+       * Removes the item from the criteria tree
+       * @param item
+       */
+      var removeCriteriaItem = function (item) {
+        RqlQueryService.removeCriteriaItem(item);
+        refreshQuery();
+      };
+
+      /**
        * Propagates a Scope change that results in criteria panel update
        * @param item
        */
@@ -4065,7 +4066,11 @@ angular.module('obiba.mica.search')
           var existingItem = $scope.search.criteriaItemMap[id];
           var growlMsgKey;
 
-          if (existingItem) {
+          if (existingItem && id.indexOf('dceIds') !== -1) {
+            removeCriteriaItem(existingItem);
+            growlMsgKey = 'search.criterion.updated';
+            RqlQueryService.addCriteriaItem($scope.search.rqlQuery, item, logicalOp);
+          } else if (existingItem) {
             growlMsgKey = 'search.criterion.updated';
             RqlQueryService.updateCriteriaItem(existingItem, item, replace);
           } else {
@@ -4187,15 +4192,6 @@ angular.module('obiba.mica.search')
 
       var selectSearchTarget = function (target) {
         $scope.documents.search.target = target;
-      };
-
-      /**
-       * Removes the item from the criteria tree
-       * @param item
-       */
-      var removeCriteriaItem = function (item) {
-        RqlQueryService.removeCriteriaItem(item);
-        refreshQuery();
       };
 
       var VIEW_MODES = {
@@ -5989,7 +5985,6 @@ angular.module('obiba.mica.graphics')
         chartOptions: '=',
         chartHeader: '=',
         chartTitle: '=',
-        chartTableOptions: '=',
         chartSelectGraphic: '='
       },
       templateUrl: 'graphics/views/charts-directive.html',
@@ -6009,7 +6004,6 @@ angular.module('obiba.mica.graphics')
       chartOptions: '=',
       chartHeader: '=',
       chartTitle: '=',
-      chartTableOptions: '=',
       chartSelectGraphic: '=',
       chartOrdered: '=',
       chartNotOrdered: '='
@@ -7762,7 +7756,7 @@ angular.module("graphics/views/tables-directive.html", []).run(["$templateCache"
     "            <thead>\n" +
     "            <th ng-repeat=\"header in chartObject.header\">{{header}}</th>\n" +
     "            </thead>\n" +
-    "            <tr ng-show=\"chartObject.ordered\" ng-repeat=\"row in chartObject.entries | orderBy:'-this[1]'\">\n" +
+    "            <tr ng-show=\"chartObject.ordered\" ng-repeat=\"row in chartObject.entries\">\n" +
     "                <td>{{row.title}}</td>\n" +
     "                <td><a href ng-click=\"updateCriteria(row.key, chartObject.vocabulary)\">{{row.value}}</a></td>\n" +
     "                <td ng-if=\"row.participantsNbr\">{{row.participantsNbr}}</td>\n" +
@@ -8095,14 +8089,14 @@ angular.module("search/views/classifications/taxonomies-view.html", []).run(["$t
     "                <ul class=\"nav nav-pills nav-stacked\" ng-if=\"taxonomies.taxonomy.vocabularies\">\n" +
     "                  <li ng-repeat=\"vocabulary in taxonomies.taxonomy.vocabularies\"\n" +
     "                      class=\"{{taxonomies.vocabulary.name === vocabulary.name ? 'active' : ''}}\">\n" +
-    "                    <a id=\"search-navigate-taxonomy\" href ng-click=\"navigateTaxonomy(taxonomies.taxonomy, vocabulary)\">\n" +
+    "                    <a class=\"clearfix\" id=\"search-navigate-taxonomy\" href ng-click=\"navigateTaxonomy(taxonomies.taxonomy, vocabulary)\">\n" +
     "                <span ng-repeat=\"label in vocabulary.title\" ng-if=\"label.locale === lang\">\n" +
     "                  {{label.text}}\n" +
     "                </span>\n" +
     "                <span ng-if=\"!vocabulary.title\">\n" +
     "                  {{vocabulary.name}}\n" +
     "                </span>\n" +
-    "                      <i class=\"pull-right {{taxonomies.vocabulary.name !== vocabulary.name ? 'invisible' : ''}} hidden-sm hidden-xs fa fa-chevron-circle-right\"></i>\n" +
+    "                      <i class=\"pull-right {{taxonomies.vocabulary.name !== vocabulary.name ? 'hidden' : ''}} hidden-sm hidden-xs fa fa-chevron-circle-right\"></i>\n" +
     "                    </a>\n" +
     "                  </li>\n" +
     "                </ul>\n" +
@@ -8157,28 +8151,20 @@ angular.module("search/views/classifications/taxonomies-view.html", []).run(["$t
     "                    </a>\n" +
     "                  </div>\n" +
     "                  <ul class=\"nav nav-pills nav-stacked\" ng-if=\"taxonomies.vocabulary.terms\">\n" +
-    "                    <li class=\"criteria-list-item\" ng-show=\"taxonomies.vocabulary.terms.length>10\">\n" +
-    "                      <div class=\"form-group\">\n" +
-    "                        <div class=\"input-group input-group-sm no-padding-top\">\n" +
-    "                          <input ng-model=\"searchText\" type=\"text\" class=\"form-control\">\n" +
-    "                          <span class=\"input-group-addon\"><i class=\"glyphicon glyphicon-search\"></i></span>\n" +
-    "                        </div>\n" +
-    "                      </div>\n" +
-    "                    </li>\n" +
-    "                    <li ng-repeat=\"term in taxonomies.vocabulary.terms | regex:searchText:['name', 'title', 'description']:lang\"\n" +
+    "                    <li ng-repeat=\"term in taxonomies.vocabulary.terms\"\n" +
     "                        class=\"{{taxonomies.term.name === term.name ? 'active' : ''}}\">\n" +
     "                      <a id=\"search-navigate-vocabulary\" href ng-click=\"navigateTaxonomy(taxonomies.taxonomy, taxonomies.vocabulary, term)\">\n" +
-    "                <span ng-repeat=\"label in term.title\" ng-if=\"label.locale === lang\">\n" +
-    "                  {{label.text}}\n" +
-    "                </span>\n" +
-    "                <span ng-if=\"!term.title\">\n" +
-    "                  {{term.name}}\n" +
-    "                </span>\n" +
+    "                        <span ng-repeat=\"label in term.title\" ng-if=\"label.locale === lang\">\n" +
+    "                          {{label.text}}\n" +
+    "                        </span>\n" +
+    "                        <span ng-if=\"!term.title\">\n" +
+    "                          {{term.name}}\n" +
+    "                        </span>\n" +
     "                      </a>\n" +
     "                    </li>\n" +
     "                  </ul>\n" +
     "                </div>\n" +
-    "                <div ng-if=\"!taxonomies.vocabulary && options.taxonomyNavHelp\" ng-bind-html=\"options.taxonomyNavHelp\"></div>\n" +
+    "                <div ng-if=\"!taxonomies.vocabulary\" translate>search.taxonomy-nav-help</div>\n" +
     "              </div>\n" +
     "              <div class=\"col-md-4 height3\" scroll-to-top=\"taxonomies.term\">\n" +
     "                <div ng-if=\"taxonomies.term\">\n" +
@@ -8197,7 +8183,7 @@ angular.module("search/views/classifications/taxonomies-view.html", []).run(["$t
     "                    </a>\n" +
     "                  </div>\n" +
     "                </div>\n" +
-    "                <div ng-if=\"!taxonomies.term && taxonomies.vocabulary && options.vocabularyNavHelp\" ng-bind-html=\"options.vocabularyNavHelp\"></div>\n" +
+    "                <div ng-if=\"!taxonomies.term && taxonomies.vocabulary\" translate>search.vocabulary-nav-help</div>\n" +
     "              </div>\n" +
     "            </div>\n" +
     "          </div>\n" +
@@ -8721,7 +8707,7 @@ angular.module("search/views/list/datasets-search-result-table-template.html", [
     "<div>\n" +
     "  <div ng-if=\"loading\" class=\"loading\"></div>\n" +
     "  <div ng-show=\"!loading\">\n" +
-    "    <p class=\"help-block\" ng-if=\"!summaries || !summaries.length\">{{options.noResultsLabel | translate}}</p>\n" +
+    "    <p class=\"help-block\" ng-if=\"!summaries || !summaries.length\" translate>search.dataset.noResults</p>\n" +
     "    <div class=\"table-responsive\" ng-if=\"summaries && summaries.length\">\n" +
     "      <table class=\"table table-bordered table-striped\" ng-init=\"lang = $parent.$parent.lang\">\n" +
     "        <thead>\n" +
@@ -8736,7 +8722,7 @@ angular.module("search/views/list/datasets-search-result-table-template.html", [
     "        </thead>\n" +
     "        <tbody>\n" +
     "        <tr ng-if=\"!summaries || !summaries.length\">\n" +
-    "          <td colspan=\"6\">{{options.noResultsLabel | translate}}</td>\n" +
+    "          <td colspan=\"6\" translate>search.dataset.noResults</td>\n" +
     "        </tr>\n" +
     "        <tr ng-repeat=\"summary in summaries\">\n" +
     "          <td ng-if=\"optionsCols.showDatasetsAcronymColumn\">\n" +
@@ -8777,7 +8763,7 @@ angular.module("search/views/list/networks-search-result-table-template.html", [
     "<div>\n" +
     "  <div ng-if=\"loading\" class=\"loading\"></div>\n" +
     "  <div ng-show=\"!loading\">\n" +
-    "    <p class=\"help-block\" ng-if=\"!summaries || !summaries.length\">{{options.noResultsLabel | translate}}</p>\n" +
+    "    <p class=\"help-block\" ng-if=\"!summaries || !summaries.length\" translate>searh.network.noResults</p>\n" +
     "    <div class=\"table-responsive\" ng-if=\"summaries && summaries.length\">\n" +
     "      <table class=\"table table-bordered table-striped\" ng-init=\"lang = $parent.$parent.lang\">\n" +
     "        <thead>\n" +
@@ -8805,7 +8791,7 @@ angular.module("search/views/list/networks-search-result-table-template.html", [
     "        </thead>\n" +
     "        <tbody>\n" +
     "        <tr ng-if=\"!summaries || !summaries.length\">\n" +
-    "          <td colspan=\"6\">{{options.noResultsLabel | translate}}</td>\n" +
+    "          <td colspan=\"6\" translate>search.network.noResults</td>\n" +
     "        </tr>\n" +
     "        <tr ng-repeat=\"summary in summaries\">\n" +
     "          <td>\n" +
@@ -8909,7 +8895,7 @@ angular.module("search/views/list/studies-search-result-table-template.html", []
     "<div>\n" +
     "  <div ng-if=\"loading\" class=\"loading\"></div>\n" +
     "  <div ng-show=\"!loading\">\n" +
-    "    <p class=\"help-block\" ng-if=\"!summaries || !summaries.length\">{{options.noResultsLabel | translate}}</p>\n" +
+    "    <p class=\"help-block\" ng-if=\"!summaries || !summaries.length\" translate>search.study.noResults</p>\n" +
     "    <div class=\"table-responsive\" ng-if=\"summaries && summaries.length\">\n" +
     "      <table class=\"table table-bordered table-striped\">\n" +
     "        <thead>\n" +
@@ -9024,7 +9010,7 @@ angular.module("search/views/list/variables-search-result-table-template.html", 
     "<div>\n" +
     "  <div ng-if=\"loading\" class=\"loading\"></div>\n" +
     "  <div ng-show=\"!loading\">\n" +
-    "    <p class=\"help-block\" ng-if=\"!summaries || !summaries.length\">{{options.noResultsLabel | translate}}</p>\n" +
+    "    <p class=\"help-block\" ng-if=\"!summaries || !summaries.length\" translate>search.variable.noResults</p>\n" +
     "    <div class=\"table-responsive\" ng-if=\"summaries && summaries.length\">\n" +
     "      <table class=\"table table-bordered table-striped\" ng-init=\"lang = $parent.$parent.lang\">\n" +
     "        <thead>\n" +
@@ -9245,8 +9231,8 @@ angular.module("search/views/search.html", []).run(["$templateCache", function($
     "      <div class=\"col-md-6\">\n" +
     "        <small>\n" +
     "          <ul class=\"nav nav-pills\">\n" +
-    "            <li ng-if=\"options.classificationsTitle\">\n" +
-    "              <label class=\"nav-label\">{{options.classificationsTitle}}</label>\n" +
+    "            <li ng-if=\"hasClassificationsTitle\">\n" +
+    "              <label class=\"nav-label\" translate>search.classifications-title</label>\n" +
     "            </li>\n" +
     "            <li ng-repeat=\"t in taxonomyNav track by $index\" title=\"{{t.locale.description.text}}\">\n" +
     "              <a href ng-click=\"showTaxonomy(t.target, t.name)\" ng-if=\"!t.terms\">{{t.locale.title.text}}</a>\n" +
@@ -9265,8 +9251,8 @@ angular.module("search/views/search.html", []).run(["$templateCache", function($
     "            </li>\n" +
     "            <li>\n" +
     "              <a href ng-click=\"goToClassifications()\" title=\"{{'search.classifications-show' | translate}}\">\n" +
-    "                <span ng-if=\"options.classificationsLinkLabel\">{{options.classificationsLinkLabel}}</span>\n" +
-    "                <i class=\"glyphicon glyphicon-option-horizontal\" ng-if=\"!options.classificationsLinkLabel\"></i>\n" +
+    "                <span ng-if=\"hasClassificationsLinkLabel\" translate>search.classifications-link</span>\n" +
+    "                <i class=\"glyphicon glyphicon-option-horizontal\" ng-if=\"!hasClassificationsLinkLabel\"></i>\n" +
     "              </a>\n" +
     "            </li>\n" +
     "          </ul>\n" +
@@ -9310,11 +9296,10 @@ angular.module("search/views/search.html", []).run(["$templateCache", function($
     "    </a>\n" +
     "    <ul class=\"nav nav-tabs voffset2\" ng-if=\"searchTabsOrder.length > 1\">\n" +
     "      <li role=\"presentation\" ng-repeat=\"tab in searchTabsOrder\" ng-class=\"{active: search.display === tab}\"><a href\n" +
-    "        ng-click=\"selectDisplay(tab)\">{{ options[ tab + 'Label'] | translate}}</a></li>\n" +
+    "        ng-click=\"selectDisplay(tab)\">{{ 'search.' + tab | translate}}</a></li>\n" +
     "    </ul>\n" +
     "    <div class=\"tab-panel\">\n" +
-    "      <div ng-bind-html=\"options[search.display + 'Help']\" ng-if=\"options[search.display + 'Help']\">\n" +
-    "      </div>\n" +
+    "      <div translate>{{'search.' + search.display + '-help'}}</div>\n" +
     "      <result-panel display=\"search.display\"\n" +
     "        type=\"search.type\"\n" +
     "        bucket=\"search.bucket\"\n" +
