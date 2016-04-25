@@ -4,7 +4,7 @@
             <thead>
             <th ng-repeat="header in chartObject.header">{{header}}</th>
             </thead>
-            <tr ng-show="chartObject.ordered" ng-repeat="row in chartObject.entries | orderBy:'-this[1]'">
+            <tr ng-show="chartObject.ordered" ng-repeat="row in chartObject.entries">
                 <td>{{row.title}}</td>
                 <td><a href ng-click="updateCriteria(row.key, chartObject.vocabulary)">{{row.value}}</a></td>
                 <td ng-if="row.participantsNbr">{{row.participantsNbr}}</td>

@@ -1,7 +1,7 @@
 <div>
   <div ng-if="loading" class="loading"></div>
   <div ng-show="!loading">
-    <p class="help-block" ng-if="!summaries || !summaries.length">{{options.noResultsLabel | translate}}</p>
+    <p class="help-block" ng-if="!summaries || !summaries.length" translate>search.variable.noResults</p>
     <div class="table-responsive" ng-if="summaries && summaries.length">
       <table class="table table-bordered table-striped" ng-init="lang = $parent.$parent.lang">
         <thead>
