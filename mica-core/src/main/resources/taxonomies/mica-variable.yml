@@ -64,14 +64,14 @@
       "en": "Study"
       "fr": "Étude"
     "description":
-      "en": "A study-specific variable holds metadata about data collected within a data collection event."
+      "en": "A study variable holds metadata about data collected within a data collection event."
       "fr": "Variables d'un jeux de données spécifique à une étude."
   - "name": "Dataschema"
     "title":
       "en": "DataSchema"
       "fr": "Schéma de données"
     "description":
-      "en": "A dataschema variable is part of a harmonization dataset and is a construct from multiple study-specific variables."
+      "en": "A dataschema variable is part of a harmonization dataset and is a construct from multiple study variables."
 - "name": "entityType"
   "title":
     "en": "Type of entity"
