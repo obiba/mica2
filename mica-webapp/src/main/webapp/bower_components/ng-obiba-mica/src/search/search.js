@@ -42,20 +42,8 @@ angular.module('obiba.mica.search', [
         taxonomyTabsOrder: [QUERY_TARGETS.VARIABLE, QUERY_TARGETS.DATASET, QUERY_TARGETS.STUDY, QUERY_TARGETS.NETWORK],
         searchTabsOrder: [DISPLAY_TYPES.LIST, DISPLAY_TYPES.COVERAGE, DISPLAY_TYPES.GRAPHICS],
         resultTabsOrder: [QUERY_TARGETS.VARIABLE, QUERY_TARGETS.DATASET, QUERY_TARGETS.STUDY, QUERY_TARGETS.NETWORK],
-        listLabel: 'search.list',
-        listHelp: null,
-        coverageLabel: 'search.coverage',
-        coverageHelp: null,
-        graphicsLabel: 'search.graphics',
-        graphicsHelp: null,
-        classificationsTitle: null,
-        classificationsLinkLabel: null,
-        taxonomyNavHelp: null,
-        vocabularyNavHelp: null,
         variables: {
           showSearchTab: true,
-          searchLabel: 'search.variable.searchLabel',
-          noResultsLabel: 'search.variable.noResults',
           variablesColumn: {
             showVariablesTypeColumn: true,
             showVariablesStudiesColumn: true,
@@ -67,8 +55,6 @@ angular.module('obiba.mica.search', [
         datasets: {
           showSearchTab: true,
           showDatasetsSearchFilter: true,
-          searchLabel: 'search.variable.searchLabel',
-          noResultsLabel: 'search.dataset.noResults',
           datasetsColumn: {
             showDatasetsAcronymColumn: true,
             showDatasetsTypeColumn: true,
@@ -79,9 +65,8 @@ angular.module('obiba.mica.search', [
         },
         studies: {
           showSearchTab: true,
-          searchLabel: 'search.variable.searchLabel',
-          noResultsLabel: 'search.study.noResults',
-          showStudiesSearchFilter: true, studiesColumn: {
+          showStudiesSearchFilter: true,
+          studiesColumn: {
             showStudiesDesignColumn: true,
             showStudiesQuestionnaireColumn: true,
             showStudiesPmColumn: true,
@@ -98,8 +83,6 @@ angular.module('obiba.mica.search', [
         },
         networks: {
           showSearchTab: true,
-          searchLabel: 'search.variable.searchLabel',
-          noResultsLabel: 'search.network.noResults',
           networksColumn: {
             showNetworksStudiesColumn: true,
             showNetworksStudyDatasetColumn: true,
