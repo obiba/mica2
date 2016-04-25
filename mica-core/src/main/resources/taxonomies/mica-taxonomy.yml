@@ -16,8 +16,8 @@
   "terms":
   - "name": "Variable_chars"
     "title":
-      "en": "Variable characteristics"
-      "fr": "Caractéristiques des variables"
+      "en": "Variables"
+      "fr": "Variables"
     "description": {}
     "terms":
     - "name": "Mlstr_area"
@@ -29,22 +29,22 @@
         "fr": "Classification des informations développée par Maelstrom."
     - "name": "Mica_variable"
       "title":
-        "en": "Variable"
-        "fr": "Variables"
+        "en": "Variable properties"
+        "fr": "Propriétés de variable"
       "description":
         "en": "Variable properties as defined in the catalog."
         "fr": "Propriétés des variables telles que définies dans le catalogue."
     - "name": "Mlstr_additional"
       "title":
-        "en": "Additional information"
-        "fr": "Informations additionnelles"
+        "en": "Source & target"
+        "fr": "Source & cible"
       "description":
         "en": "Additional information about the collected variable"
         "fr": "Informations additionnelles au sujet des variables collectées"
   - "name": "Scales"
     "title":
-      "en": "Scales"
-      "fr": "Échelles"
+      "en": "Scales/Measures"
+      "fr": "Échelles/Mesures"
     "description":
       "en": "Information about constructs."
       "fr": "Information au sujet de mesures composées (échelles)."
@@ -102,7 +102,7 @@
   "terms":
   - "name": "Mica_study"
     "title":
-      "en": "Study"
+      "en": "Studies"
       "fr": "Études"
     "description":
       "en": "Study properties as defined in the catalog."
