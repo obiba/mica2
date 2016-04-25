@@ -1592,8 +1592,7 @@
     "title":
       "en": "Other"
       "fr": "Autre"
-    "description":
-      "en": "
+    "description": {}
 - "name": "populations-dataCollectionEvents-dataSources"
   "title":
     "en": "Data sources"
