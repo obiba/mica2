@@ -1216,10 +1216,10 @@
   "to": "to",
   "graphics": {
     "nbr-studies": "Studies",
-    "number-participants": "Nbr of Participants",
+    "number-participants": "Participants",
     "country": "Country",
     "geo-charts": "Geographical Distribution",
-    "study-design": "Study Design",
+    "study-design": "Study design",
     "bio-samples": "Collected biological samples",
     "geo-chart-title": "Distribution of studies by country of residence",
     "study-design-chart-title": "Distribution of studies by study design",
