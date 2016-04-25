@@ -868,12 +868,12 @@
     "study": {
       "label": "Study",
       "noResults": "No study found",
-      "dataSources": "Data Sources Available",
+      "dataSources": "Data sources available",
       "quest": "Quest",
       "pm": "PM",
       "bio": "Bio",
       "others": "Others",
-      "design": "Design",
+      "design": "Study design",
       "participants": "Participants"
     },
     "dataset": {
@@ -1215,11 +1215,11 @@
   "nor": "NOR",
   "to": "to",
   "graphics": {
-    "nbr-studies": "Nbr of Studies",
-    "number-participants": "Nbr of Participants",
+    "nbr-studies": "Studies",
+    "number-participants": "Participants",
     "country": "Country",
     "geo-charts": "Geographical Distribution",
-    "study-design": "Study Designs",
+    "study-design": "Study design",
     "bio-samples": "Collected biological samples",
     "geo-chart-title": "Distribution of studies by country of residence",
     "study-design-chart-title": "Distribution of studies by study design",
