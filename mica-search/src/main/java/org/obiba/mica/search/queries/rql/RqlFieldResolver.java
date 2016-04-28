@@ -19,15 +19,18 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
-import com.google.common.collect.Lists;
 import org.elasticsearch.common.Strings;
 import org.obiba.mica.dataset.search.DatasetIndexer;
 import org.obiba.mica.dataset.search.VariableIndexer;
 import org.obiba.mica.network.search.NetworkIndexer;
+import org.obiba.mica.search.mapping.IndexFieldMapping;
 import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.TaxonomyEntity;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
+
+import com.google.common.collect.Lists;
+
 import sun.util.locale.LanguageTag;
 
 public class RqlFieldResolver {
@@ -46,6 +49,8 @@ public class RqlFieldResolver {
 
   private final String locale;
 
+  private final IndexFieldMapping indexFieldMapping;
+
   private final RQLNode node;
 
   private final Map<RQLNode, List<String>> nodeLocalizedFields = new HashMap<RQLNode, List<String>>() {
@@ -57,15 +62,16 @@ public class RqlFieldResolver {
     }
   };
 
-  public RqlFieldResolver(RQLNode node, List<Taxonomy> taxonomies, String locale) {
+  public RqlFieldResolver(RQLNode node, List<Taxonomy> taxonomies, String locale, IndexFieldMapping indexFieldMapping) {
     this.node = node;
     this.taxonomies = taxonomies;
     this.locale = locale;
+    this.indexFieldMapping = indexFieldMapping;
     defaultTaxonomyName = taxonomies.stream().filter(t -> t.getName().startsWith(DEFAULT_TAXO_PREFIX))
       .map(TaxonomyEntity::getName).findFirst().orElse("");
   }
 
-  public FieldData resolveField(String rqlField, boolean analyzed) {
+  public FieldData resolveField(String rqlField) {
     String field = rqlField;
     if (isRegExp(field)) {
       // do not alter the regexp
@@ -80,13 +86,13 @@ public class RqlFieldResolver {
     int idx = field.indexOf(TAXO_SEPARATOR);
     if(idx < 1) return FieldData.newBuilder().field(rqlField).build();
 
-    FieldData data = resolveField(field.substring(0, idx), field.substring(idx + 1, field.length()), analyzed);
+    FieldData data = resolveField(field.substring(0, idx), field.substring(idx + 1, field.length()));
 
     return data == null ? FieldData.newBuilder().field(rqlField).build() : data;
   }
 
   @Nullable
-  public FieldData resolveField(String taxonomyName, String vocabularyName, boolean analyzed) {
+  public FieldData resolveField(String taxonomyName, String vocabularyName) {
     String field = null;
     FieldData.Builder builder = FieldData.newBuilder();
     Optional<Taxonomy> taxonomy = taxonomies.stream().filter(t -> t.getName().equals(taxonomyName)).findFirst();
@@ -97,10 +103,10 @@ public class RqlFieldResolver {
       if(vocabulary.isPresent()) {
         builder.vocabulary(vocabulary.get());
         String f = vocabulary.get().getAttributeValue("field");
-        if(!Strings.isNullOrEmpty(f)) field = localize(vocabulary.get(), f, locale, analyzed);
-        else field = localize(vocabulary.get(), vocabulary.get().getName(), locale, analyzed);
+        if(!Strings.isNullOrEmpty(f)) field = localize(vocabulary.get(), f, locale);
+        else field = localize(vocabulary.get(), vocabulary.get().getName(), locale);
       } else {
-        field = localize(null, vocabularyName, locale, analyzed);
+        field = localize(null, vocabularyName, locale);
       }
     }
     return field == null ? null : builder.field(field).build();
@@ -110,20 +116,16 @@ public class RqlFieldResolver {
     return taxonomies;
   }
 
-  private String localize(Vocabulary vocabulary, String field, String locale, boolean analyzed) {
+  private String localize(Vocabulary vocabulary, String field, String locale) {
     boolean process = vocabulary == null || (!vocabulary.hasTerms() && new VocabularyWrapper(vocabulary).isString());
 
     if (process) {
       Pattern pattern = Pattern.compile("\\." + LanguageTag.UNDETERMINED + "$");
       Matcher matcher = pattern.matcher(field);
 
-      if (matcher.find()) {
-        field = field.replace(LanguageTag.UNDETERMINED, locale);
-      } else {
-        field = getSafeLocalizedField(field);
-      }
+      field = matcher.find() ? field.replace(LanguageTag.UNDETERMINED, locale) : getSafeLocalizedField(field);
 
-      return analyzed ? field + ".analyzed" : field;
+      return indexFieldMapping.isAnalyzed(field) ? field + ".analyzed" : field;
     }
 
     return field;

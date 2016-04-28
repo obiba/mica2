@@ -21,11 +21,6 @@ import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
-import com.codahale.metrics.annotation.Timed;
-import com.google.common.base.Function;
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.search.queries.AbstractDocumentQuery;
@@ -48,6 +43,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Function;
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.DETAIL;
 import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.DIGEST;
@@ -230,18 +231,17 @@ public class JoinQueryExecutor {
     if(queryResultDto != null) {
       MicaSearch.QueryResultDto.Builder builder = MicaSearch.QueryResultDto.newBuilder().mergeFrom(queryResultDto);
       List<AggregationResultDto.Builder> builders = ImmutableList.copyOf(builder.getAggsBuilderList());
-      List<MicaSearch.AggregationResultDto> aggregationResultDtos = Lists.newArrayList();
       builder.clearAggs();
 
-      taxonomies.forEach(taxonomy -> taxonomy.getVocabularies().forEach(voc -> {
-        for(MicaSearch.AggregationResultDto.Builder b : builders) {
+      List<AggregationResultDto> aggregationResultDtos = builders.stream().map(b -> {
+        taxonomies.forEach(taxonomy -> taxonomy.getVocabularies().forEach(voc -> {
           if(b.getAggregation().equals(getVocabularyAggregationName(voc))) {
             b.addAllTitle(dtos.asDto(LocalizedString.from(voc.getTitle())));
-            aggregationResultDtos.add(b.build());
-            break;
           }
-        }
-      }));
+        }));
+
+        return b.build();
+      }).collect(Collectors.toList());
 
       builder.addAllAggs(postProcessor == null ? aggregationResultDtos : postProcessor.apply(aggregationResultDtos));
 

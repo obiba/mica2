@@ -21,6 +21,7 @@ import net.jazdw.rql.parser.RQLParser;
 
 import org.elasticsearch.common.Strings;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
+import org.obiba.mica.search.mapping.IndexFieldMappingService;
 import org.obiba.mica.search.queries.JoinQueryWrapper;
 import org.obiba.mica.search.queries.QueryWrapper;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
@@ -31,11 +32,8 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class JoinRQLQueryWrapper implements JoinQueryWrapper {
 
-  //@Inject
-  //private MicaConfigService micaConfigService;
-
-//  @Inject
-//  private OpalService opalService;
+  @Inject
+  private IndexFieldMappingService indexFieldMappingService;
 
   @Inject
   private TaxonomyService taxonomyService;
@@ -85,16 +83,20 @@ public class JoinRQLQueryWrapper implements JoinQueryWrapper {
     RQLNode rqlNode = RQLNode.valueOf(node.getName().toUpperCase());
     switch(rqlNode) {
       case VARIABLE:
-        variableQueryWrapper = new RQLQueryWrapper(node, new RqlFieldResolver(rqlNode, getVariableTaxonomies(), locale));
+        variableQueryWrapper = new RQLQueryWrapper(node, new RqlFieldResolver(rqlNode, getVariableTaxonomies(), locale,
+            indexFieldMappingService.getVariableIndexMapping()));
         break;
       case DATASET:
-        datasetQueryWrapper = new RQLQueryWrapper(node, new RqlFieldResolver(rqlNode, getDatasetTaxonomies(), locale));
+        datasetQueryWrapper = new RQLQueryWrapper(node, new RqlFieldResolver(rqlNode, getDatasetTaxonomies(), locale,
+            indexFieldMappingService.getDatasetIndexMapping()));
         break;
       case STUDY:
-        studyQueryWrapper = new RQLQueryWrapper(node, new RqlFieldResolver(rqlNode, getStudyTaxonomies(), locale));
+        studyQueryWrapper = new RQLQueryWrapper(node, new RqlFieldResolver(rqlNode, getStudyTaxonomies(), locale,
+            indexFieldMappingService.getStudyIndexMapping()));
         break;
       case NETWORK:
-        networkQueryWrapper = new RQLQueryWrapper(node, new RqlFieldResolver(rqlNode, getNetworkTaxonomies(), locale));
+        networkQueryWrapper = new RQLQueryWrapper(node, new RqlFieldResolver(rqlNode, getNetworkTaxonomies(), locale,
+            indexFieldMappingService.getNetworkIndexMapping()));
         break;
       case LOCALE:
         if(node.getArgumentsSize() > 0) locale = node.getArgument(0).toString();
