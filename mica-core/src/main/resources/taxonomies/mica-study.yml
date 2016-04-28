@@ -1749,11 +1749,6 @@
       "en": "Hair"
       "fr": "Cheveux"
     "description": {}
-  - "name": "others"
-    "title":
-      "en": "Others"
-      "fr": "Autres"
-    "description": {}
   - "name": "cord_blood"
     "title":
       "en": "Cord Blood"
@@ -1773,6 +1768,11 @@
     "title":
       "en": "Buccal Cells"
       "fr": "Cellules buccales"
+    "description": {}
+  - "name": "others"
+    "title":
+      "en": "Others"
+      "fr": "Autres"
     "description": {}
 - "name": "populations-dataCollectionEvents-administrativeDatabases"
   "title":
