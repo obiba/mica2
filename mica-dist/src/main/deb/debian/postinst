@@ -34,7 +34,7 @@ case "$1" in
         if [ ! -f "$tfile" ]; then
           return 1
         fi
-        cat /etc/mica2/shiro.ini | sed -e "s/^administrator\s*=.*,/administrator=$adminpw,/" > $tfile && \
+        cat /etc/mica2/shiro.ini | sed -e "s,^administrator\s*=.*\,,administrator=$adminpw\,," > $tfile && \
           mv $tfile /etc/mica2/shiro.ini
         # clear password in db_get so it won't be re-encoded during next upgrade
         db_set mica-server/admin_password ""
