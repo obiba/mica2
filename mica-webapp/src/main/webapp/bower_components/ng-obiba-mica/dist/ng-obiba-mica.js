@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-04-25
+ * Date: 2016-04-26
  */
 'use strict';
 
@@ -6228,11 +6228,31 @@ angular.module('obiba.mica.graphics')
     return factory;
 
   })
-  .service('GraphicChartsUtils', ['LocalizedValues',
-    function (LocalizedValues) {
+  .service('GraphicChartsUtils', ['LocalizedValues','TaxonomyResource',
+    function (LocalizedValues, TaxonomyResource) {
+      var taxonomyTerm = [];
+
+      TaxonomyResource.get({
+        target: 'study',
+        taxonomy: 'Mica_study'
+      }).$promise.then(function (taxonomy) {
+        taxonomyTerm.taxonomy = angular.copy(taxonomy.vocabularies);
+      });
+
+      taxonomyTerm.vocabulariesWrapper = function (aggregationName) {
+        var returnedVocabulary = null;
+        if (taxonomyTerm.taxonomy){
+          angular.forEach(taxonomyTerm.taxonomy, function (vocabulary) {
+            if (vocabulary.name === aggregationName) {
+              returnedVocabulary = vocabulary.terms;
+            }
+          });
+      }
+        return returnedVocabulary;
+       };
       this.getArrayByAggregation = function (aggregationName, entityDto) {
         var arrayData = [];
-
+        var aggregations = taxonomyTerm.vocabulariesWrapper(aggregationName);
         if (!entityDto) {
           return arrayData;
         }
@@ -6241,36 +6261,53 @@ angular.module('obiba.mica.graphics')
           if (aggregation.aggregation === aggregationName) {
             if (aggregation['obiba.mica.RangeAggregationResultDto.ranges']) {
               i = 0;
-              angular.forEach(aggregation['obiba.mica.RangeAggregationResultDto.ranges'], function (term) {
-                if (term.count) {
-                  arrayData[i] = {title: term.title, value: term.count, key: term.key};
-                  i++;
-                }
+              angular.forEach(aggregations, function (sortTerm) {
+                angular.forEach(aggregation['obiba.mica.RangeAggregationResultDto.ranges'], function (term) {
+                  if (sortTerm.name === term.key) {
+                    if (term.count) {
+                      arrayData[i] = {title: term.title, value: term.count, key: term.key};
+                      i++;
+                    }
+                  }
+                });
               });
             }
             else {
               if (aggregation.aggregation === 'methods-designs') {
                 var numberOfParticipant = 0;
                 i = 0;
-                angular.forEach(aggregation['obiba.mica.TermsAggregationResultDto.terms'], function (term) {
-                  angular.forEach(term.aggs, function (aggBucket) {
-                    if (aggBucket.aggregation === 'numberOfParticipants-participant-number') {
-                      numberOfParticipant = LocalizedValues.formatNumber(aggBucket['obiba.mica.StatsAggregationResultDto.stats'].data.sum);
+                angular.forEach(aggregations, function (sortTerm) {
+                  angular.forEach(aggregation['obiba.mica.TermsAggregationResultDto.terms'], function (term) {
+                    angular.forEach(term.aggs, function (aggBucket) {
+                      if (aggBucket.aggregation === 'numberOfParticipants-participant-number') {
+                        numberOfParticipant = LocalizedValues.formatNumber(aggBucket['obiba.mica.StatsAggregationResultDto.stats'].data.sum);
+                      }
+                    });
+                    if (sortTerm.name === term.key) {
+                      if (term.count) {
+                        arrayData[i] = {
+                          title: term.title,
+                          value: term.count,
+                          participantsNbr: numberOfParticipant,
+                          key: term.key
+                        };
+                        i++;
+                      }
                     }
                   });
-                  if (term.count) {
-                    arrayData[i] = {title: term.title, value: term.count, participantsNbr: numberOfParticipant, key: term.key};
-                    i++;
-                  }
                 });
               }
               else {
                 i = 0;
-                angular.forEach(aggregation['obiba.mica.TermsAggregationResultDto.terms'], function (term) {
-                  if (term.count) {
-                    arrayData[i] = {title: term.title, value: term.count, key: term.key};
-                    i++;
-                  }
+                angular.forEach(aggregations, function (sortTerm) {
+                  angular.forEach(aggregation['obiba.mica.TermsAggregationResultDto.terms'], function (term) {
+                    if (sortTerm.name === term.key) {
+                      if (term.count) {
+                        arrayData[i] = {title: term.title, value: term.count, key: term.key};
+                        i++;
+                      }
+                    }
+                  });
                 });
               }
             }
@@ -7842,6 +7879,10 @@ angular.module("search/views/classifications.html", []).run(["$templateCache", f
     "<div>\n" +
     "  <div ng-if=\"classificationsHeaderTemplateUrl\" ng-include=\"classificationsHeaderTemplateUrl\"></div>\n" +
     "\n" +
+    "  <div ng-if=\"options.ClassificationHelpText\">\n" +
+    "    <span ng-bind-html=\"options.ClassificationHelpText\"></span>\n" +
+    "  </div>\n" +
+    "\n" +
     "  <div class=\"container alert-fixed-position\">\n" +
     "    <obiba-alert id=\"SearchController\"></obiba-alert>\n" +
     "  </div>\n" +
@@ -8299,13 +8340,16 @@ angular.module("search/views/coverage/coverage-search-result-table-template.html
     "      <a ng-if=\"hasSelected()\" href class=\"btn btn-default\" ng-click=\"updateFilterCriteria()\">\n" +
     "        <i class=\"fa fa-filter\"></i> {{'search.filter' | translate}}\n" +
     "      </a>\n" +
-    "      <a href class=\"btn btn-info btn-responsive\" ng-click=\"selectFullAndFilter()\">\n" +
-    "        {{'search.coverage-select.full' | translate}}\n" +
-    "      </a>\n" +
-    "      <a ng-if=\"table.taxonomyHeaders.length > 0\" target=\"_self\" class=\"btn btn-info btn-responsive\"\n" +
-    "        ng-href=\"{{downloadUrl()}}\">\n" +
-    "        <i class=\"fa fa-download\"></i> {{'download' | translate}}\n" +
-    "      </a>\n" +
+    "\n" +
+    "      <span ng-if=\"table.taxonomyHeaders.length > 0\" >\n" +
+    "        <a href class=\"btn btn-info btn-responsive\" ng-click=\"selectFullAndFilter()\">\n" +
+    "          {{'search.coverage-select.full' | translate}}\n" +
+    "        </a>\n" +
+    "        <a target=\"_self\" class=\"btn btn-info btn-responsive\"\n" +
+    "           ng-href=\"{{downloadUrl()}}\">\n" +
+    "          <i class=\"fa fa-download\"></i> {{'download' | translate}}\n" +
+    "        </a>\n" +
+    "      </span>\n" +
     "    </div>\n" +
     "\n" +
     "    <div class=\"clearfix\"></div>\n" +
@@ -9147,6 +9191,11 @@ angular.module("search/views/search-result-panel-template.html", []).run(["$temp
 angular.module("search/views/search.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("search/views/search.html",
     "<div ng-show=\"inSearchMode()\">\n" +
+    "\n" +
+    "    <div ng-if=\"options.SearchHelpText\">\n" +
+    "      <span  ng-bind-html=\"options.SearchHelpText\"></span>\n" +
+    "    </div>\n" +
+    "\n" +
     "  <div class=\"container alert-fixed-position\">\n" +
     "    <obiba-alert id=\"SearchController\"></obiba-alert>\n" +
     "  </div>\n" +

@@ -1,4 +1,9 @@
 <div ng-show="inSearchMode()">
+
+    <div ng-if="options.SearchHelpText">
+      <span  ng-bind-html="options.SearchHelpText"></span>
+    </div>
+
   <div class="container alert-fixed-position">
     <obiba-alert id="SearchController"></obiba-alert>
   </div>

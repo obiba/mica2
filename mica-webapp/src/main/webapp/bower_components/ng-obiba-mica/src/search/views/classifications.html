@@ -1,6 +1,10 @@
 <div>
   <div ng-if="classificationsHeaderTemplateUrl" ng-include="classificationsHeaderTemplateUrl"></div>
 
+  <div ng-if="options.ClassificationHelpText">
+    <span ng-bind-html="options.ClassificationHelpText"></span>
+  </div>
+
   <div class="container alert-fixed-position">
     <obiba-alert id="SearchController"></obiba-alert>
   </div>

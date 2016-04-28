@@ -119,11 +119,31 @@ angular.module('obiba.mica.graphics')
     return factory;
 
   })
-  .service('GraphicChartsUtils', ['LocalizedValues',
-    function (LocalizedValues) {
+  .service('GraphicChartsUtils', ['LocalizedValues','TaxonomyResource',
+    function (LocalizedValues, TaxonomyResource) {
+      var taxonomyTerm = [];
+
+      TaxonomyResource.get({
+        target: 'study',
+        taxonomy: 'Mica_study'
+      }).$promise.then(function (taxonomy) {
+        taxonomyTerm.taxonomy = angular.copy(taxonomy.vocabularies);
+      });
+
+      taxonomyTerm.vocabulariesWrapper = function (aggregationName) {
+        var returnedVocabulary = null;
+        if (taxonomyTerm.taxonomy){
+          angular.forEach(taxonomyTerm.taxonomy, function (vocabulary) {
+            if (vocabulary.name === aggregationName) {
+              returnedVocabulary = vocabulary.terms;
+            }
+          });
+      }
+        return returnedVocabulary;
+       };
       this.getArrayByAggregation = function (aggregationName, entityDto) {
         var arrayData = [];
-
+        var aggregations = taxonomyTerm.vocabulariesWrapper(aggregationName);
         if (!entityDto) {
           return arrayData;
         }
@@ -132,36 +152,53 @@ angular.module('obiba.mica.graphics')
           if (aggregation.aggregation === aggregationName) {
             if (aggregation['obiba.mica.RangeAggregationResultDto.ranges']) {
               i = 0;
-              angular.forEach(aggregation['obiba.mica.RangeAggregationResultDto.ranges'], function (term) {
-                if (term.count) {
-                  arrayData[i] = {title: term.title, value: term.count, key: term.key};
-                  i++;
-                }
+              angular.forEach(aggregations, function (sortTerm) {
+                angular.forEach(aggregation['obiba.mica.RangeAggregationResultDto.ranges'], function (term) {
+                  if (sortTerm.name === term.key) {
+                    if (term.count) {
+                      arrayData[i] = {title: term.title, value: term.count, key: term.key};
+                      i++;
+                    }
+                  }
+                });
               });
             }
             else {
               if (aggregation.aggregation === 'methods-designs') {
                 var numberOfParticipant = 0;
                 i = 0;
-                angular.forEach(aggregation['obiba.mica.TermsAggregationResultDto.terms'], function (term) {
-                  angular.forEach(term.aggs, function (aggBucket) {
-                    if (aggBucket.aggregation === 'numberOfParticipants-participant-number') {
-                      numberOfParticipant = LocalizedValues.formatNumber(aggBucket['obiba.mica.StatsAggregationResultDto.stats'].data.sum);
+                angular.forEach(aggregations, function (sortTerm) {
+                  angular.forEach(aggregation['obiba.mica.TermsAggregationResultDto.terms'], function (term) {
+                    angular.forEach(term.aggs, function (aggBucket) {
+                      if (aggBucket.aggregation === 'numberOfParticipants-participant-number') {
+                        numberOfParticipant = LocalizedValues.formatNumber(aggBucket['obiba.mica.StatsAggregationResultDto.stats'].data.sum);
+                      }
+                    });
+                    if (sortTerm.name === term.key) {
+                      if (term.count) {
+                        arrayData[i] = {
+                          title: term.title,
+                          value: term.count,
+                          participantsNbr: numberOfParticipant,
+                          key: term.key
+                        };
+                        i++;
+                      }
                     }
                   });
-                  if (term.count) {
-                    arrayData[i] = {title: term.title, value: term.count, participantsNbr: numberOfParticipant, key: term.key};
-                    i++;
-                  }
                 });
               }
               else {
                 i = 0;
-                angular.forEach(aggregation['obiba.mica.TermsAggregationResultDto.terms'], function (term) {
-                  if (term.count) {
-                    arrayData[i] = {title: term.title, value: term.count, key: term.key};
-                    i++;
-                  }
+                angular.forEach(aggregations, function (sortTerm) {
+                  angular.forEach(aggregation['obiba.mica.TermsAggregationResultDto.terms'], function (term) {
+                    if (sortTerm.name === term.key) {
+                      if (term.count) {
+                        arrayData[i] = {title: term.title, value: term.count, key: term.key};
+                        i++;
+                      }
+                    }
+                  });
                 });
               }
             }
