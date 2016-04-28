@@ -66,7 +66,8 @@ public class RQLQueryWrapper implements QueryWrapper {
 
   @VisibleForTesting
   RQLQueryWrapper(String rql) {
-    this(new RQLParser(new RQLConverter()).parse(rql), new RqlFieldResolver(null, Collections.emptyList(), "en"));
+    this(new RQLParser(new RQLConverter()).parse(rql), new RqlFieldResolver(null, Collections.emptyList(), "en",
+        null ));
   }
 
   public RQLQueryWrapper(ASTNode node, RqlFieldResolver rqlFieldResolver) {
