@@ -25,6 +25,7 @@ angular.module('obiba.mica.graphics')
         chartOptions: '=',
         chartHeader: '=',
         chartTitle: '=',
+        chartTitleGraph: '=',
         chartSelectGraphic: '='
       },
       templateUrl: 'graphics/views/charts-directive.html',
@@ -44,6 +45,7 @@ angular.module('obiba.mica.graphics')
       chartOptions: '=',
       chartHeader: '=',
       chartTitle: '=',
+      chartTitleGraph: '=',
       chartSelectGraphic: '=',
       chartOrdered: '=',
       chartNotOrdered: '='
