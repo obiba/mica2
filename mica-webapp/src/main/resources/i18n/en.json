@@ -874,6 +874,7 @@
       "full": "Full coverage"
     },
     "study": {
+      "facet-label": "Study",
       "label": "Study",
       "noResults": "No study found",
       "dataSources": "Data sources available",
@@ -885,10 +886,12 @@
       "participants": "Participants"
     },
     "dataset": {
+      "facet-label": "Dataset",
       "label": "Dataset",
       "noResults": "No dataset found"
     },
     "variable": {
+      "facet-label": "Variable",
       "label": "Label",
       "studyNetwork": "Study/Network",
       "noResults": "No variable found",
@@ -896,6 +899,7 @@
       "dataschema": "DataSchema"
     },
     "network": {
+      "facet-label": "Network",
       "noResults": "No network found"
     },
     "harmonization": "Harmonization",
@@ -915,7 +919,8 @@
     "taxonomy-nav-help": "",
     "vocabulary-nav-help": "",
     "classifications-link": "",
-    "classifications-title": ""
+    "classifications-title": "",
+    "faceted-navigation-help": "Select an entry from the menu on the left to start browsing in the repository."
   },
   "variables": "Variables",
   "classifications": "Classifications",
