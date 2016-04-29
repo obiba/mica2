@@ -133,6 +133,10 @@ function CriteriaItem(model) {
   });
 }
 
+CriteriaItem.prototype.isRepeatable = function() {
+  return false;
+};
+
 CriteriaItem.prototype.getTarget = function() {
   return this.target || null;
 };
@@ -144,6 +148,10 @@ function RepeatableCriteriaItem() {
 }
 
 RepeatableCriteriaItem.prototype = Object.create(CriteriaItem.prototype);
+
+RepeatableCriteriaItem.prototype.isRepeatable = function() {
+  return true;
+};
 
 RepeatableCriteriaItem.prototype.addItem = function(item) {
   this.list.push(item);
@@ -395,7 +403,7 @@ CriteriaBuilder.prototype.visitLeaf = function (node, parentItem) {
   var current = this.leafItemMap[item.id];
 
   if (current) {
-    if (current instanceof RepeatableCriteriaItem) {
+    if (current.isRepeatable()) {
       current.addItem(item);
     } else {
       console.error('Non-repeatable criteria items must be unique,', current.id, 'will be overwritten.');
@@ -1125,7 +1133,8 @@ angular.module('obiba.mica.search')
        */
       this.updateCriteriaItem = function (existingItem, newItem, replace) {
         var newTerms;
-        var isMatchNode = existingItem.rqlQuery.name === RQL_NODE.MATCH;
+        var isRepeatable = existingItem.isRepeatable();
+        var isMatchNode = !isRepeatable && existingItem.rqlQuery.name === RQL_NODE.MATCH;
 
         if(replace && newItem.rqlQuery) {
           existingItem.rqlQuery.name = newItem.rqlQuery.name;
@@ -1136,13 +1145,13 @@ angular.module('obiba.mica.search')
         } else if (newItem.term) {
           newTerms = [newItem.term.name];
         } else {
-          existingItem = existingItem instanceof RepeatableCriteriaItem ? existingItem.first() : existingItem;
+          existingItem = isRepeatable ? existingItem.first() : existingItem;
           existingItem.rqlQuery.name = RQL_NODE.EXISTS;
           existingItem.rqlQuery.args.splice(1, 1);
         }
 
         if (newTerms) {
-          if (existingItem instanceof RepeatableCriteriaItem) {
+          if (isRepeatable) {
             RqlQueryUtils.updateRepeatableQueryArgValues(existingItem, newTerms);
           } else {
             RqlQueryUtils.updateQueryArgValues(existingItem.rqlQuery, newTerms, replace);

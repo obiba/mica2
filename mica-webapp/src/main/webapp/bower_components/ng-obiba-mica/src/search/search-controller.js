@@ -19,7 +19,6 @@
 /* global CriteriaIdGenerator */
 /* global targetToType */
 /* global SORT_FIELDS */
-/* global RepeatableCriteriaItem */
 
 /**
  * State shared between Criterion DropDown and its content directives
@@ -856,7 +855,7 @@ angular.module('obiba.mica.search')
           Object.keys($scope.search.criteriaItemMap).forEach(function (k) {
             var item = $scope.search.criteriaItemMap[k];
             if (item.getTarget() === item.target) {
-              if (item instanceof RepeatableCriteriaItem) {
+              if (item.isRepeatable()) {
                 item.items().forEach(function(item) {
                   RqlQueryService.removeCriteriaItem(item);
                 });

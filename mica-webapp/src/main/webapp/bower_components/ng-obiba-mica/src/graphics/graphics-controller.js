@@ -85,7 +85,8 @@ angular.module('obiba.mica.graphics')
                   $scope.chartObject.data = data;
                   $scope.chartObject.options = {backgroundColor: {fill: 'transparent'}};
                   angular.extend($scope.chartObject.options, $scope.chartOptions);
-                  $scope.chartObject.options.title = $filter('translate')($scope.chartTitle) + ' (N=' + StudiesData.studyResultDto.totalHits + ')';
+                  $scope.chartObject.options.title = $filter('translate')($scope.chartTitleGraph) + ' (N=' + StudiesData.studyResultDto.totalHits + ')';
+                  $scope.$parent.directive = {title: $scope.chartObject.options.title};
                 }
               }
             }

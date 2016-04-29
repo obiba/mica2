@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-04-26
+ * Date: 2016-04-29
  */
 'use strict';
 
@@ -1670,6 +1670,10 @@ function CriteriaItem(model) {
   });
 }
 
+CriteriaItem.prototype.isRepeatable = function() {
+  return false;
+};
+
 CriteriaItem.prototype.getTarget = function() {
   return this.target || null;
 };
@@ -1681,6 +1685,10 @@ function RepeatableCriteriaItem() {
 }
 
 RepeatableCriteriaItem.prototype = Object.create(CriteriaItem.prototype);
+
+RepeatableCriteriaItem.prototype.isRepeatable = function() {
+  return true;
+};
 
 RepeatableCriteriaItem.prototype.addItem = function(item) {
   this.list.push(item);
@@ -1932,7 +1940,7 @@ CriteriaBuilder.prototype.visitLeaf = function (node, parentItem) {
   var current = this.leafItemMap[item.id];
 
   if (current) {
-    if (current instanceof RepeatableCriteriaItem) {
+    if (current.isRepeatable()) {
       current.addItem(item);
     } else {
       console.error('Non-repeatable criteria items must be unique,', current.id, 'will be overwritten.');
@@ -2662,7 +2670,8 @@ angular.module('obiba.mica.search')
        */
       this.updateCriteriaItem = function (existingItem, newItem, replace) {
         var newTerms;
-        var isMatchNode = existingItem.rqlQuery.name === RQL_NODE.MATCH;
+        var isRepeatable = existingItem.isRepeatable();
+        var isMatchNode = !isRepeatable && existingItem.rqlQuery.name === RQL_NODE.MATCH;
 
         if(replace && newItem.rqlQuery) {
           existingItem.rqlQuery.name = newItem.rqlQuery.name;
@@ -2673,13 +2682,13 @@ angular.module('obiba.mica.search')
         } else if (newItem.term) {
           newTerms = [newItem.term.name];
         } else {
-          existingItem = existingItem instanceof RepeatableCriteriaItem ? existingItem.first() : existingItem;
+          existingItem = isRepeatable ? existingItem.first() : existingItem;
           existingItem.rqlQuery.name = RQL_NODE.EXISTS;
           existingItem.rqlQuery.args.splice(1, 1);
         }
 
         if (newTerms) {
-          if (existingItem instanceof RepeatableCriteriaItem) {
+          if (isRepeatable) {
             RqlQueryUtils.updateRepeatableQueryArgValues(existingItem, newTerms);
           } else {
             RqlQueryUtils.updateQueryArgValues(existingItem.rqlQuery, newTerms, replace);
@@ -3313,7 +3322,6 @@ angular.module('obiba.mica.search')
 /* global CriteriaIdGenerator */
 /* global targetToType */
 /* global SORT_FIELDS */
-/* global RepeatableCriteriaItem */
 
 /**
  * State shared between Criterion DropDown and its content directives
@@ -4150,7 +4158,7 @@ angular.module('obiba.mica.search')
           Object.keys($scope.search.criteriaItemMap).forEach(function (k) {
             var item = $scope.search.criteriaItemMap[k];
             if (item.getTarget() === item.target) {
-              if (item instanceof RepeatableCriteriaItem) {
+              if (item.isRepeatable()) {
                 item.items().forEach(function(item) {
                   RqlQueryService.removeCriteriaItem(item);
                 });
@@ -5985,6 +5993,7 @@ angular.module('obiba.mica.graphics')
         chartOptions: '=',
         chartHeader: '=',
         chartTitle: '=',
+        chartTitleGraph: '=',
         chartSelectGraphic: '='
       },
       templateUrl: 'graphics/views/charts-directive.html',
@@ -6004,6 +6013,7 @@ angular.module('obiba.mica.graphics')
       chartOptions: '=',
       chartHeader: '=',
       chartTitle: '=',
+      chartTitleGraph: '=',
       chartSelectGraphic: '=',
       chartOrdered: '=',
       chartNotOrdered: '='
@@ -6098,7 +6108,8 @@ angular.module('obiba.mica.graphics')
                   $scope.chartObject.data = data;
                   $scope.chartObject.options = {backgroundColor: {fill: 'transparent'}};
                   angular.extend($scope.chartObject.options, $scope.chartOptions);
-                  $scope.chartObject.options.title = $filter('translate')($scope.chartTitle) + ' (N=' + StudiesData.studyResultDto.totalHits + ')';
+                  $scope.chartObject.options.title = $filter('translate')($scope.chartTitleGraph) + ' (N=' + StudiesData.studyResultDto.totalHits + ')';
+                  $scope.$parent.directive = {title: $scope.chartObject.options.title};
                 }
               }
             }
