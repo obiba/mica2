@@ -66,7 +66,8 @@ public class RQLQueryWrapper implements QueryWrapper {
 
   @VisibleForTesting
   RQLQueryWrapper(String rql) {
-    this(new RQLParser(new RQLConverter()).parse(rql), new RqlFieldResolver(null, Collections.emptyList(), "en"));
+    this(new RQLParser(new RQLConverter()).parse(rql), new RqlFieldResolver(null, Collections.emptyList(), "en",
+        null ));
   }
 
   public RQLQueryWrapper(ASTNode node, RqlFieldResolver rqlFieldResolver) {
@@ -187,11 +188,7 @@ public class RQLQueryWrapper implements QueryWrapper {
     }
 
     protected FieldData resolveField(String rqlField) {
-      return rqlFieldResolver.resolveField(rqlField, true);
-    }
-
-    protected FieldData resolveField(String rqlField, boolean analyzed) {
-      return rqlFieldResolver.resolveField(rqlField, analyzed);
+      return rqlFieldResolver.resolveField(rqlField);
     }
 
     protected Vocabulary getVocabulary(String taxonomyName, String vocabularyName) {
@@ -497,10 +494,10 @@ public class RQLQueryWrapper implements QueryWrapper {
           case SORT:
             String arg = node.getArgument(0).toString();
             if(arg.startsWith("-"))
-              return SortBuilders.fieldSort(resolveField(arg.substring(1), false).getField()).order(SortOrder.DESC);
+              return SortBuilders.fieldSort(resolveField(arg.substring(1)).getField()).order(SortOrder.DESC);
             else if(arg.startsWith("+"))
-              return SortBuilders.fieldSort(resolveField(arg.substring(1), false).getField()).order(SortOrder.ASC);
-            else return SortBuilders.fieldSort(resolveField(arg, false).getField()).order(SortOrder.ASC);
+              return SortBuilders.fieldSort(resolveField(arg.substring(1)).getField()).order(SortOrder.ASC);
+            else return SortBuilders.fieldSort(resolveField(arg).getField()).order(SortOrder.ASC);
         }
       } catch(IllegalArgumentException e) {
         // ignore
