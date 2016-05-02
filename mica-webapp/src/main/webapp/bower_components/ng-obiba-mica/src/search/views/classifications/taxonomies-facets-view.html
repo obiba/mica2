@@ -1,0 +1,69 @@
+<ul class="nav nav-tabs" role="tablist" ng-if="targets.length > 1">
+  <li ng-repeat="tab in targets" role="presentation" ng-class="{ active: tab === target }">
+    <a href role="tab" ng-click="setTarget(tab)">{{'search.' + tab + '.facet-label' | translate}}</a></li>
+</ul>
+
+<uib-accordion close-others="false">
+    <uib-accordion-group ng-repeat="taxonomy in taxonomies[target]" is-open="taxonomy.isOpen" is-disabled="false">
+      <uib-accordion-heading>
+        <span ng-repeat="label in taxonomy.title" ng-if="label.locale === lang">{{label.text}}</span>
+        <i class="pull-right glyphicon" ng-class="glyphicon-chevron-down"></i>
+      </uib-accordion-heading>
+      <uib-accordion close-others="false">
+        <uib-accordion-group ng-repeat="vocabulary in taxonomy.vocabularies" is-open="vocabulary.isOpen" is-disabled="false">
+          <uib-accordion-heading>
+            <a href ng-click="loadVocabulary(taxonomy, vocabulary)">
+              <span ng-repeat="label in vocabulary.title" ng-if="label.locale === lang">
+                {{label.text}}
+              </span>
+              <span ng-if="!vocabulary.title">
+                {{vocabulary.name}}
+              </span>
+            </a>
+          </uib-accordion-heading>
+          <div>
+            <div ng-if="vocabulary.isMatch" ng-controller="MatchVocabularyFacetController">
+              <form novalidate class="form-inline" ng-keypress="onKeypress($event)">
+                <div class="form-group">
+                  <input type="text" class="form-control" ng-model="text" placeholder="{{'search.match.placeholder' | translate}}">
+                </div>
+              </form>
+            </div>
+            <div ng-if="vocabulary.isNumeric" ng-controller="NumericVocabularyFacetController">
+              <form novalidate class="form-inline"  ng-keypress="onKeypress($event)">
+                <div class="form-group">
+                  <label for="nav-{{vocabulary.name}}-from" translate>from</label>
+                  <input type="number" class="form-control" id="nav-{{vocabulary.name}}-from" ng-model="from" placeholder="{{min}}" style="width:75px;">
+                  <label for="nav-{{vocabulary.name}}-to" translate>to</label>
+                  <input type="number" class="form-control" id="nav-{{vocabulary.name}}-to" ng-model="to" placeholder="{{max}}" style="width:75px;">
+                </div>
+              </form>
+            </div>
+            <div ng-controller="TermsVocabularyFacetController">
+              <ul class="nav nav-pills nav-stacked" ng-if="vocabulary.terms">
+                <li ng-repeat="term in vocabulary.terms | orderBy:['-selected', '-count', '+name']  | limitTo:vocabulary.limit:begin"
+                    class="checkbox" ng-class="{active: term.name === term.name}">
+                  <label style="max-width: 80%;">
+                    <input type="checkbox" ng-model="term.selected" ng-change="selectTerm(target, taxonomy, vocabulary, {term: term})">
+                    <span ng-repeat="label in term.title" ng-if="label.locale === lang">
+                      {{label.text}}
+                    </span>
+                    <span ng-if="!term.title">
+                      {{term.name}}
+                    </span>
+                  </label>
+                  <span class="pull-right" ng-class="{'text-muted': !term.selected}">
+                    {{term.count}}
+                  </span>
+                </li>
+              </ul>
+              <div ng-if="!vocabulary.isNumeric && !vocabulary.isMatch && vocabulary.terms.length > 10" class="voffset1 pull-right">
+                <button class="btn btn-primary" ng-if="vocabulary.limit" ng-click="vocabulary.limit = undefined">more</button>
+                <button class="btn btn-default" ng-if="!vocabulary.limit" ng-click="vocabulary.limit = 10">less</button>
+              </div>
+            </div>
+          </div>
+        </uib-accordion-group>
+      </uib-accordion>
+    </uib-accordion-group>
+</uib-accordion>
