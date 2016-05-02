@@ -19,15 +19,18 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
-import com.google.common.collect.Lists;
 import org.elasticsearch.common.Strings;
 import org.obiba.mica.dataset.search.DatasetIndexer;
 import org.obiba.mica.dataset.search.VariableIndexer;
 import org.obiba.mica.network.search.NetworkIndexer;
+import org.obiba.mica.search.mapping.IndexFieldMapping;
 import org.obiba.mica.study.search.StudyIndexer;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.TaxonomyEntity;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
+
+import com.google.common.collect.Lists;
+
 import sun.util.locale.LanguageTag;
 
 public class RqlFieldResolver {
@@ -46,6 +49,8 @@ public class RqlFieldResolver {
 
   private final String locale;
 
+  private final IndexFieldMapping indexFieldMapping;
+
   private final RQLNode node;
 
   private final Map<RQLNode, List<String>> nodeLocalizedFields = new HashMap<RQLNode, List<String>>() {
@@ -57,10 +62,11 @@ public class RqlFieldResolver {
     }
   };
 
-  public RqlFieldResolver(RQLNode node, List<Taxonomy> taxonomies, String locale) {
+  public RqlFieldResolver(RQLNode node, List<Taxonomy> taxonomies, String locale, IndexFieldMapping indexFieldMapping) {
     this.node = node;
     this.taxonomies = taxonomies;
     this.locale = locale;
+    this.indexFieldMapping = indexFieldMapping;
     defaultTaxonomyName = taxonomies.stream().filter(t -> t.getName().startsWith(DEFAULT_TAXO_PREFIX))
       .map(TaxonomyEntity::getName).findFirst().orElse("");
   }
@@ -117,13 +123,9 @@ public class RqlFieldResolver {
       Pattern pattern = Pattern.compile("\\." + LanguageTag.UNDETERMINED + "$");
       Matcher matcher = pattern.matcher(field);
 
-      if (matcher.find()) {
-        field = field.replace(LanguageTag.UNDETERMINED, locale);
-      } else {
-        field = getSafeLocalizedField(field);
-      }
+      field = matcher.find() ? field.replace(LanguageTag.UNDETERMINED, locale) : getSafeLocalizedField(field);
 
-      return analyzed ? field + ".analyzed" : field;
+      return indexFieldMapping.isAnalyzed(field) ? field + ".analyzed" : field;
     }
 
     return field;
