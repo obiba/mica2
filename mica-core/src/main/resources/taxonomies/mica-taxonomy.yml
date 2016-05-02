@@ -87,7 +87,7 @@
   "terms":
   - "name": "Mica_dataset"
     "title":
-      "en": "Dataset"
+      "en": "Datasets"
       "fr": "Jeux de données"
     "description":
       "en": "Datasets properties as defined in the catalog."
@@ -117,7 +117,7 @@
   "terms":
   - "name": "Mica_network"
     "title":
-      "en": "Network"
+      "en": "Networks"
       "fr": "Réseaux"
     "description":
       "en": "Network properties as defined in the catalog."
