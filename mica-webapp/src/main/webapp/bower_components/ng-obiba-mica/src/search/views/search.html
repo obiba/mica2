@@ -120,56 +120,70 @@
       on-close="clearTaxonomy" lang="lang" taxonomies-shown="taxonomiesShown"></taxonomies-panel>
   </div>
 
-  <!-- Search criteria region -->
-  <div id="search-criteria-region" class="panel panel-default voffset2" ng-if="search.criteria.children && search.criteria.children.length>0">
-    <div class="panel-body">
-      <table style="border:none">
-        <tbody>
-        <tr>
-          <td>
-            <a href class="btn btn-sm btn-default" ng-click="clearSearchQuery()" translate>clear</a>
-          </td>
-          <td style="padding-left: 10px">
-            <div criteria-root item="search.criteria" query="search.query" advanced="search.advanced" on-remove="removeCriteriaItem"
-              on-refresh="refreshQuery" class="inline"></div>
-
-            <small class="hoffset2" ng-if="showAdvanced()">
-              <a href ng-click="toggleSearchQuery()"
-                title="{{search.advanced ? 'search.basic-help' : 'search.advanced-help' | translate}}" translate>
-                {{search.advanced ? 'search.basic' : 'search.advanced' | translate}}
-              </a>
-            </small>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
   <!-- Results region -->
-  <div id="search-result-region" class="voffset3 can-full-screen" ng-if="search.query" fullscreen="isFullscreen">
-    <a href class="btn btn-sm btn-default pull-right" ng-click="toggleFullscreen()">
-      <i class="glyphicon" ng-class="{'glyphicon-resize-full': !isFullscreen, 'glyphicon-resize-small': isFullscreen}"></i>
-    </a>
-    <ul class="nav nav-tabs voffset2" ng-if="searchTabsOrder.length > 1">
-      <li role="presentation" ng-repeat="tab in searchTabsOrder" ng-class="{active: search.display === tab}"><a href
-        ng-click="selectDisplay(tab)">{{ 'search.' + tab | translate}}</a></li>
-    </ul>
-    <div class="tab-panel">
-      <div translate>{{'search.' + search.display + '-help'}}</div>
-      <result-panel display="search.display"
-        type="search.type"
-        bucket="search.bucket"
-        query="search.executedQuery"
-        result="search.result"
-        loading="search.loading"
-        on-update-criteria="onUpdateCriteria"
-        on-type-changed="onTypeChanged"
-        on-bucket-changed="onBucketChanged"
-        on-paginate="onPaginate"
-        search-tabs-order="searchTabsOrder"
-        result-tabs-order="resultTabsOrder"
-        lang="lang"></result-panel>
+  <div class="row">
+    <div class="col-md-3" ng-if="hasFacetedTaxonomies" >
+      <taxonomies-facets-panel faceted-taxonomies="facetedTaxonomies" criteria="search.criteria" on-select-term="onSelectTerm"
+                    on-refresh="refreshQuery" lang="lang"></taxonomies-facets-panel>
+    </div>
+    <div class="{{hasFacetedTaxonomies ? 'col-md-9' : 'col-md-12'}}">
+      <div ng-if="hasFacetedTaxonomies && hasFacetedNavigationHelp && !(search.criteria.children && search.criteria.children.length > 0)">
+        <p class="help-block" translate>search.faceted-navigation-help</p>
+      </div>
+
+      <!-- Search criteria region -->
+      <div id="search-criteria-region" class="panel panel-default voffset2" ng-if="search.criteria.children && search.criteria.children.length>0">
+        <div class="panel-body">
+          <table style="border:none">
+            <tbody>
+            <tr>
+              <td>
+                <a href class="btn btn-sm btn-default" ng-click="clearSearchQuery()" translate>clear</a>
+              </td>
+              <td style="padding-left: 10px">
+                <div criteria-root item="search.criteria" query="search.query" advanced="search.advanced" on-remove="removeCriteriaItem"
+                     on-refresh="refreshQuery" class="inline"></div>
+
+                <small class="hoffset2" ng-if="showAdvanced()">
+                  <a href ng-click="toggleSearchQuery()"
+                     title="{{search.advanced ? 'search.basic-help' : 'search.advanced-help' | translate}}" translate>
+                    {{search.advanced ? 'search.basic' : 'search.advanced' | translate}}
+                  </a>
+                </small>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="search-result-region" class="voffset3 can-full-screen" ng-if="search.query" fullscreen="isFullscreen">
+        <a href class="btn btn-sm btn-default pull-right" ng-click="toggleFullscreen()">
+          <i class="glyphicon" ng-class="{'glyphicon-resize-full': !isFullscreen, 'glyphicon-resize-small': isFullscreen}"></i>
+        </a>
+        <ul class="nav nav-tabs voffset2" ng-if="searchTabsOrder.length > 1">
+          <li role="presentation" ng-repeat="tab in searchTabsOrder" ng-class="{active: search.display === tab}"><a href
+                                                                                                                    ng-click="selectDisplay(tab)">{{ 'search.' + tab | translate}}</a></li>
+        </ul>
+        <div class="tab-panel">
+          <div translate>{{'search.' + search.display + '-help'}}</div>
+          <result-panel display="search.display"
+                        type="search.type"
+                        bucket="search.bucket"
+                        query="search.executedQuery"
+                        result="search.result"
+                        loading="search.loading"
+                        on-update-criteria="onUpdateCriteria"
+                        on-type-changed="onTypeChanged"
+                        on-bucket-changed="onBucketChanged"
+                        on-paginate="onPaginate"
+                        search-tabs-order="searchTabsOrder"
+                        result-tabs-order="resultTabsOrder"
+                        lang="lang"></result-panel>
+        </div>
+      </div>
+
     </div>
   </div>
+
 </div>

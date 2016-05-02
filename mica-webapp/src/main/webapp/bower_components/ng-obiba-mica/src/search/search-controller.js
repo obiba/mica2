@@ -66,6 +66,7 @@ function CriterionState() {
  */
 function BaseTaxonomiesController($scope, $location, TaxonomyResource, TaxonomiesResource, ngObibaMicaSearch, RqlQueryUtils) {
   $scope.options = ngObibaMicaSearch.getOptions();
+  $scope.RqlQueryUtils = RqlQueryUtils;
   $scope.metaTaxonomy = TaxonomyResource.get({
     target: 'taxonomy',
     taxonomy: 'Mica_taxonomy'
@@ -191,8 +192,8 @@ function TaxonomiesPanelController($scope, $location, TaxonomyResource, Taxonomi
  * @param ngObibaMicaSearch
  * @constructor
  */
-function ClassificationPanelController($scope, $location, TaxonomyResource, TaxonomiesResource, ngObibaMicaSearch) {
-  BaseTaxonomiesController.call(this, $scope, $location, TaxonomyResource, TaxonomiesResource, ngObibaMicaSearch);
+function ClassificationPanelController($scope, $location, TaxonomyResource, TaxonomiesResource, ngObibaMicaSearch, RqlQueryUtils) {
+  BaseTaxonomiesController.call(this, $scope, $location, TaxonomyResource, TaxonomiesResource, ngObibaMicaSearch, RqlQueryUtils);
   var groupTaxonomies = function (taxonomies, target) {
     var res = taxonomies.reduce(function (res, t) {
       res[t.name] = t;
@@ -324,10 +325,11 @@ angular.module('obiba.mica.search')
         dataset: 'datasets'
       };
 
-      $translate(['search.classifications-title', 'search.classifications-link'])
+      $translate(['search.classifications-title', 'search.classifications-link', 'search.faceted-navigation-help'])
         .then(function (translation) {
           $scope.hasClassificationsTitle = translation['search.classifications-title'];
           $scope.hasClassificationsLinkLabel = translation['search.classifications-link'];
+          $scope.hasFacetedNavigationHelp = translation['search.faceted-navigation-help'];
         });
       
       var taxonomyTypeInverseMap = Object.keys($scope.taxonomyTypeMap).reduce(function (prev, k) {
@@ -343,6 +345,37 @@ angular.module('obiba.mica.search')
         $scope.targets = t.vocabularies.map(function (v) {
           return v.name;
         });
+        
+        function flattenTaxonomies(terms){
+          function inner(acc, terms) {
+            angular.forEach(terms, function(t) {
+              if(!t.terms) {
+                acc.push(t);
+                return;
+              }
+
+              inner(acc, t.terms);
+            });
+
+            return acc;
+          }
+
+          return inner([], terms);
+        }
+
+        $scope.hasFacetedTaxonomies = false;
+
+        $scope.facetedTaxonomies = t.vocabularies.reduce(function(res, v) {
+          res[v.name] = flattenTaxonomies(v.terms).filter(function(t) {
+            return t.attributes && t.attributes.some(function(att) {
+                return att.key === 'showFacetedNavigation' &&  att.value.toString() === 'true';
+              });
+          });
+          
+          $scope.hasFacetedTaxonomies = $scope.hasFacetedTaxonomies || res[v.name].length;
+          
+          return res;
+        }, {});
       });
 
       var searchTaxonomyDisplay = {
@@ -600,6 +633,7 @@ angular.module('obiba.mica.search')
               onError);
             break;
         }
+
       }
 
       function executeSearchQuery() {
@@ -608,13 +642,18 @@ angular.module('obiba.mica.search')
           RqlQueryService.createCriteria($scope.search.rqlQuery, $scope.lang).then(function (result) {
             // criteria UI is updated here
             $scope.search.criteria = result.root;
+
             if ($scope.search.criteria && $scope.search.criteria.children) {
               sortCriteriaItems($scope.search.criteria.children);
             }
+
             $scope.search.criteriaItemMap = result.map;
+
             if ($scope.search.query) {
               loadResults();
             }
+
+            $scope.$broadcast('ngObibaMicaQueryUpdated', $scope.search.criteria);
           });
         }
       }
@@ -1029,12 +1068,238 @@ angular.module('obiba.mica.search')
     }, true);
   }])
   
+  .controller('NumericVocabularyFacetController', ['$scope','JoinQuerySearchResource', 'RqlQueryService',
+    'RqlQueryUtils', function($scope, JoinQuerySearchResource, RqlQueryService, RqlQueryUtils) {
+    function updateLimits (criteria, vocabulary) {
+      function createExistsQuery(criteria, criterion) {
+        var rootQuery = angular.copy(criteria.rqlQuery);
+        criterion.rqlQuery = RqlQueryUtils.buildRqlQuery(criterion);
+        RqlQueryService.addCriteriaItem(rootQuery, criterion);
+        return rootQuery;
+      }
+
+      var criterion = RqlQueryService.findCriterion(criteria, CriteriaIdGenerator.generate($scope.$parent.taxonomy, vocabulary));
+
+      if(!criterion) {
+        criterion = RqlQueryService.createCriteriaItem($scope.target, $scope.$parent.taxonomy, $scope.vocabulary);
+      }
+
+      if(criterion.rqlQuery && criterion.rqlQuery.args[1]) {
+        if(angular.isArray(criterion.rqlQuery.args[1])) {
+          $scope.from = criterion.rqlQuery.args[1][0];
+          $scope.to = criterion.rqlQuery.args[1][1];
+        } else {
+          if(criterion.rqlQuery.name === RQL_NODE.GE) {
+            $scope.from = criterion.rqlQuery.args[1];
+          } else {
+            $scope.to = criterion.rqlQuery.args[1];
+          }
+        }
+      } else {
+        $scope.from = null;
+        $scope.to = null;
+        $scope.min = null;
+        $scope.max = null;
+      }
+
+      var query = RqlQueryUtils.hasTargetQuery(criteria.rqlQuery, criterion.target) ? angular.copy(criteria.rqlQuery) : createExistsQuery(criteria, criterion);
+      var joinQuery = RqlQueryService.prepareCriteriaTermsQuery(query, criterion);
+      JoinQuerySearchResource[targetToType($scope.target)]({query: joinQuery}).$promise.then(function (joinQueryResponse) {
+        var stats = RqlQueryService.getTargetAggregations(joinQueryResponse, criterion, $scope.lang);
+
+        if (stats && stats.default) {
+          $scope.min = stats.default.min;
+          $scope.max = stats.default.max;
+        }
+      });
+    }
+
+    function updateCriteria() {
+      $scope.$parent.selectTerm($scope.$parent.target, $scope.$parent.taxonomy, $scope.vocabulary, {from: $scope.from, to: $scope.to});
+    }
+
+    $scope.onKeypress = function(ev) {
+      if(ev.keyCode === 13) { updateCriteria(); }
+    };
+
+    $scope.$on('ngObibaMicaQueryUpdated', function(ev, criteria) {
+      if ($scope.vocabulary.isNumeric && $scope.vocabulary.isOpen) {
+        updateLimits(criteria, $scope.vocabulary);
+      }
+    });
+
+    $scope.$on('ngObibaMicaLoadVocabulary', function(ev, taxonomy, vocabulary) {
+      if ($scope.vocabulary.isNumeric &&
+        vocabulary.name === $scope.vocabulary.name && !vocabulary.isOpen) {
+        updateLimits($scope.criteria, vocabulary);
+      }
+    });
+  }])
+
+  .controller('MatchVocabularyFacetController', ['$scope', 'RqlQueryService', function($scope, RqlQueryService) {
+    function updateMatch (criteria, vocabulary) {
+      var criterion = RqlQueryService.findCriterion(criteria, CriteriaIdGenerator.generate($scope.$parent.taxonomy, vocabulary));
+      if(criterion && criterion.rqlQuery && criterion.rqlQuery.args[1]) {
+        $scope.text = criterion.rqlQuery.args[0];
+      } else {
+        $scope.text = null;
+      }
+    }
+    
+    function updateCriteria() {
+      $scope.$parent.selectTerm($scope.$parent.target, $scope.$parent.taxonomy, $scope.vocabulary, {text: $scope.text || '*'});
+    }
+    
+    $scope.onKeypress = function(ev) {
+      if(ev.keyCode === 13) {
+        updateCriteria();
+      }
+    };
+
+    $scope.$on('ngObibaMicaQueryUpdated', function(ev, criteria) {
+      if ($scope.vocabulary.isMatch && $scope.vocabulary.isOpen) {
+        updateMatch(criteria, $scope.vocabulary);
+      }
+    });
+
+    $scope.$on('ngObibaMicaLoadVocabulary', function(ev, taxonomy, vocabulary) {
+      if (vocabulary.name === $scope.vocabulary.name && !vocabulary.isOpen) {
+        updateMatch($scope.criteria, vocabulary);
+      }
+    });
+  }])
+
+  .controller('TermsVocabularyFacetController', ['$scope', '$filter', 'JoinQuerySearchResource', 'RqlQueryService',
+    'RqlQueryUtils',
+    function($scope, $filter, JoinQuerySearchResource, RqlQueryService, RqlQueryUtils) {
+      function isSelectedTerm (criterion, term) {
+        return criterion.selectedTerms && criterion.selectedTerms.indexOf(term.key) !== -1;
+      }
+
+      $scope.selectTerm = function (target, taxonomy, vocabulary, args) {
+        var selected = vocabulary.terms.filter(function(t) {return t.selected;}).map(function(t) { return t.name; }),
+          criterion = RqlQueryService.findCriterion($scope.criteria, CriteriaIdGenerator.generate(taxonomy, vocabulary));
+        if(criterion) {
+          if (selected.length === 0 && $scope.selectedFilter !== RQL_NODE.MISSING) {
+            criterion.rqlQuery.name = RQL_NODE.EXISTS;
+          }
+
+          RqlQueryUtils.updateQuery(criterion.rqlQuery, selected);
+          $scope.onRefresh();
+        } else {
+          $scope.onSelectTerm(target, taxonomy, vocabulary, args);
+        }
+      };
+
+      function updateCounts(criteria, vocabulary) {
+        function createExistsQuery(criteria, criterion) {
+          var rootQuery = angular.copy(criteria.rqlQuery);
+          criterion.rqlQuery = RqlQueryUtils.buildRqlQuery(criterion);
+          RqlQueryService.addCriteriaItem(rootQuery, criterion);
+          return rootQuery;
+        }
+
+        var criterion = RqlQueryService.findCriterion(criteria,
+          CriteriaIdGenerator.generate($scope.$parent.taxonomy, vocabulary));
+
+        if(!criterion) {
+          criterion = RqlQueryService.createCriteriaItem($scope.target, $scope.$parent.taxonomy, $scope.vocabulary);
+        }
+
+        var query = RqlQueryUtils.hasTargetQuery(criteria.rqlQuery, criterion.target) ? angular.copy(criteria.rqlQuery) : createExistsQuery(criteria, criterion);
+        var joinQuery = RqlQueryService.prepareCriteriaTermsQuery(query, criterion, criterion.lang);
+        JoinQuerySearchResource[targetToType($scope.target)]({query: joinQuery}).$promise.then(function (joinQueryResponse) {
+          RqlQueryService.getTargetAggregations(joinQueryResponse, criterion, criterion.lang).forEach(function (term) {
+            $scope.vocabulary.terms.some(function(t) {
+              if (t.name === term.key) {
+                t.selected = isSelectedTerm(criterion, term);
+                t.count = term.count;
+                return true;
+              }
+            });
+          });
+        });
+      }
+      
+      $scope.$on('ngObibaMicaQueryUpdated', function(ev, criteria) {
+        if(!$scope.vocabulary.isNumeric && !$scope.vocabulary.isMatch && $scope.vocabulary.isOpen) {
+          updateCounts(criteria, $scope.vocabulary);
+        }
+      });
+      
+      $scope.$on('ngObibaMicaLoadVocabulary', function(ev, taxonomy, vocabulary) {
+        if(vocabulary.name === $scope.vocabulary.name && !$scope.vocabulary.isNumeric && !$scope.vocabulary.isMatch &&
+          !vocabulary.isOpen) {
+          updateCounts($scope.criteria, vocabulary);
+        }
+      });
+  }])
+
   .controller('TaxonomiesPanelController', ['$scope', '$location', 'TaxonomyResource',
     'TaxonomiesResource', 'ngObibaMicaSearch', 'RqlQueryUtils', TaxonomiesPanelController])
 
   .controller('ClassificationPanelController', ['$scope', '$location', 'TaxonomyResource',
-    'TaxonomiesResource', 'ngObibaMicaSearch', ClassificationPanelController])
+    'TaxonomiesResource', 'ngObibaMicaSearch', 'RqlQueryUtils', ClassificationPanelController])
 
+  .controller('TaxonomiesFacetsController', ['$scope', 'TaxonomyResource', 'TaxonomiesResource', 'ngObibaMicaSearch',
+    'RqlQueryUtils', function ($scope, TaxonomyResource, TaxonomiesResource, ngObibaMicaSearch, RqlQueryUtils) {
+      $scope.options = ngObibaMicaSearch.getOptions();
+      $scope.taxonomies = {};
+      $scope.targets = [];
+      $scope.RqlQueryUtils = RqlQueryUtils;
+      
+      $scope.$watch('facetedTaxonomies', function(facetedTaxonomies) {
+        if(facetedTaxonomies) {
+          $scope.targets = $scope.options.taxonomyTabsOrder.filter(function (t) {
+            return facetedTaxonomies[t].length;
+          });
+          
+          $scope.target = $scope.targets[0];
+          init($scope.target);
+        }
+      });
+
+      $scope.selectTerm = function(target, taxonomy, vocabulary, args) {
+        $scope.onSelectTerm(target, taxonomy, vocabulary, args);
+      };
+      
+      $scope.setTarget = function(target) {
+        $scope.target=target;
+        init(target);
+      };
+      
+      $scope.loadVocabulary = function(taxonomy, vocabulary) {
+        $scope.$broadcast('ngObibaMicaLoadVocabulary', taxonomy, vocabulary);
+      };
+      
+      function init(target) {
+        if($scope.taxonomies[target]) { return; }
+        
+        TaxonomiesResource.get({
+          target: target 
+        }, function onSuccess(taxonomies) {
+          $scope.taxonomies[target] = taxonomies.map(function(t) {
+            if($scope.targets.length === 1) {
+              t.isOpen = true;
+            }
+            
+            t.vocabularies.map(function(v) {
+              v.limit = 10;
+              v.isMatch = RqlQueryUtils.isMatchVocabulary(v);
+              v.isNumeric = RqlQueryUtils.isNumericVocabulary(v);
+            });
+            
+            return t;
+          }).filter(function(t) {
+            return $scope.facetedTaxonomies[target].some(function(f) {
+              return f.name === t.name;
+            });
+          });
+        });
+      }
+    }
+  ])
+  
   .controller('SearchResultController', [
     '$scope',
     'ngObibaMicaSearch',
@@ -1579,10 +1844,10 @@ angular.module('obiba.mica.search')
                   ym[1] = 1;
                 }
               }
-              var ymStr = ym[0] + '-'  + ym[1] + '-01';
+              var ymStr = ym[0] + '/'  + ym[1] + '/01';
               res = Date.parse(ymStr);
             } else {
-              res = start ? Date.parse(yearMonth + '-01-01') : Date.parse(yearMonth + '-12-31');
+              res = start ? Date.parse(yearMonth + '/01/01') : Date.parse(yearMonth + '/12/31');
             }
           }
           return res;
@@ -1851,6 +2116,8 @@ angular.module('obiba.mica.search')
             angular.extend($scope.chartObjects,
               {
                 geoChartOptions: {
+                  directiveTitle: geoStudies.options.title,
+                  headerTitle: $filter('translate')('graphics.geo-charts'),
                   chartObject: {
                     geoTitle: geoStudies.options.title,
                     options: geoStudies.options,
@@ -1865,6 +2132,8 @@ angular.module('obiba.mica.search')
           if (methodDesignStudies) {
             angular.extend($scope.chartObjects, {
               studiesDesigns: {
+                directiveTitle: methodDesignStudies.options.title ,
+                headerTitle: $filter('translate')('graphics.study-design'),
                 chartObject: {
                   options: methodDesignStudies.options,
                   type: 'google.charts.Bar',
@@ -1878,6 +2147,7 @@ angular.module('obiba.mica.search')
           if (numberParticipant) {
             angular.extend($scope.chartObjects, {
               numberParticipants: {
+                headerTitle: $filter('translate')('graphics.number-participants'),
                 chartObject: {
                   options: numberParticipant.options,
                   type: 'PieChart',
@@ -1891,6 +2161,7 @@ angular.module('obiba.mica.search')
           if (bioSamplesStudies) {
             angular.extend($scope.chartObjects, {
               biologicalSamples: {
+                headerTitle: $filter('translate')('graphics.bio-samples'),
                 chartObject: {
                   options: bioSamplesStudies.options,
                   type: 'BarChart',

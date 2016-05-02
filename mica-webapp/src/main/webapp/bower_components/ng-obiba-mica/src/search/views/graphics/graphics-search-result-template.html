@@ -5,11 +5,14 @@
 
   <div ng-repeat="chart in chartObjects" class="panel panel-default">
     <div class="panel-heading">
-      {{chart.chartObject.options.title}}
+      {{chart.headerTitle}}
     </div>
     <div class="panel-body">
       <div class="row">
         <div class="col-md-6">
+          <div ng-if="chart.directiveTitle" class="chart-title">
+            {{chart.directiveTitle}}
+          </div>
           <div google-chart chart="chart.chartObject" style="min-height:350px; width:100%;"></div>
         </div>
         <div class="col-md-6">

@@ -810,9 +810,13 @@ angular.module('obiba.mica.search')
 
     this.updateQueryArgValues = function (query, terms, replace) {
       switch (query.name) {
+        case RQL_NODE.EXISTS:
+        case RQL_NODE.MISSING:
+          query.name = RQL_NODE.IN;
+          this.mergeInQueryArgValues(query, terms, replace);
+          break;
         case RQL_NODE.CONTAINS:
         case RQL_NODE.IN:
-        case RQL_NODE.EXISTS:
           this.mergeInQueryArgValues(query, terms, replace);
           break;
         case RQL_NODE.BETWEEN:
@@ -1512,4 +1516,17 @@ angular.module('obiba.mica.search')
         return addMissingTerms([], criterion.vocabulary);
       };
 
+      this.findCriterion = function(criteria, id) {
+        function inner(criteria, id) {
+          var result;
+          if(criteria.id === id) { return criteria; }
+          for(var i = criteria.children.length; i--;){
+            result = inner(criteria.children[i], id);
+
+            if (result) {return result;}
+          }
+        }
+        
+        return inner(criteria, id);
+      };
     }]);
