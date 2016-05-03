@@ -41,7 +41,9 @@ angular.module('obiba.mica.search')
         vocabulary: '=',
         lang: '=',
         onNavigate: '=',
-        onSelect: '='
+        onSelect: '=',
+        onHideSearchNavigate: '=',
+        isInHideNavigate: '='
       },
       templateUrl: 'search/views/classifications/vocabulary-panel-template.html'
     };

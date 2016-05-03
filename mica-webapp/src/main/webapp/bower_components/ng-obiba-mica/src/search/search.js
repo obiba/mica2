@@ -42,6 +42,8 @@ angular.module('obiba.mica.search', [
         taxonomyTabsOrder: [QUERY_TARGETS.VARIABLE, QUERY_TARGETS.DATASET, QUERY_TARGETS.STUDY, QUERY_TARGETS.NETWORK],
         searchTabsOrder: [DISPLAY_TYPES.LIST, DISPLAY_TYPES.COVERAGE, DISPLAY_TYPES.GRAPHICS],
         resultTabsOrder: [QUERY_TARGETS.VARIABLE, QUERY_TARGETS.DATASET, QUERY_TARGETS.STUDY, QUERY_TARGETS.NETWORK],
+        hideNavigate: [],
+        hideSearch: ['studyIds', 'dceIds', 'datasetId', 'networkId', 'studyId'],
         variables: {
           showSearchTab: true,
           variablesColumn: {
@@ -113,6 +115,8 @@ angular.module('obiba.mica.search', [
         options.taxonomyTabsOrder = value.taxonomyTabsOrder || options.taxonomyTabsOrder;
         options.searchTabsOrder = value.searchTabsOrder || options.searchTabsOrder;
         options.resultTabsOrder = value.resultTabsOrder || options.resultTabsOrder;
+        options.hideNavigate = value.hideNavigate || options.hideNavigate;
+        options.hideSearch = value.hideSearch || options.hideSearch;
       };
 
       this.$get = ['$q', '$injector', function ngObibaMicaSearchFactory($q, $injector) {
@@ -137,6 +141,14 @@ angular.module('obiba.mica.search', [
           },
           getOptions: function() {
             return options;
+          },
+          toggleHideSearchNavigate: function (vocabulary) {
+            var index = options.hideNavigate.indexOf(vocabulary.name);
+            if (index > -1) {
+              options.hideNavigate.splice(index, 1);
+            } else {
+              options.hideNavigate.push(vocabulary.name);
+            }
           }
         };
       }];

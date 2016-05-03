@@ -52,7 +52,7 @@
                   {{label.text}}
                 </p>
                 <ul class="nav nav-pills nav-stacked" ng-if="taxonomies.taxonomy.vocabularies">
-                  <li ng-repeat="vocabulary in taxonomies.taxonomy.vocabularies"
+                  <li ng-repeat="vocabulary in taxonomies.taxonomy.vocabularies | filter:canNavigate"
                       class="{{taxonomies.vocabulary.name === vocabulary.name ? 'active' : ''}}">
                     <a class="clearfix" id="search-navigate-taxonomy" href ng-click="navigateTaxonomy(taxonomies.taxonomy, vocabulary)">
                 <span ng-repeat="label in vocabulary.title" ng-if="label.locale === lang">
@@ -118,13 +118,14 @@
                   <ul class="nav nav-pills nav-stacked" ng-if="taxonomies.vocabulary.terms">
                     <li ng-repeat="term in taxonomies.vocabulary.terms"
                         class="{{taxonomies.term.name === term.name ? 'active' : ''}}">
-                      <a id="search-navigate-vocabulary" href ng-click="navigateTaxonomy(taxonomies.taxonomy, taxonomies.vocabulary, term)">
+                      <a class="clearfix" id="search-navigate-vocabulary" href ng-click="navigateTaxonomy(taxonomies.taxonomy, taxonomies.vocabulary, term)">
                         <span ng-repeat="label in term.title" ng-if="label.locale === lang">
                           {{label.text}}
                         </span>
                         <span ng-if="!term.title">
                           {{term.name}}
                         </span>
+                        <i class="pull-right {{taxonomies.term.name !== term.name ? 'hidden' : ''}} hidden-sm hidden-xs fa fa-chevron-circle-right"></i>
                       </a>
                     </li>
                   </ul>
