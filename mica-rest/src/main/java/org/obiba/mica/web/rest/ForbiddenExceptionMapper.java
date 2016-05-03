@@ -15,11 +15,17 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.shiro.SecurityUtils;
+
 @Provider
 public class ForbiddenExceptionMapper implements ExceptionMapper<ForbiddenException> {
 
   @Override
   public Response toResponse(ForbiddenException exception) {
-    return Response.status(Response.Status.FORBIDDEN).build();
+    Response.Status status = SecurityUtils.getSubject().isAuthenticated() //
+        ? Response.Status.FORBIDDEN //
+        : Response.Status.UNAUTHORIZED;
+
+    return Response.status(status).build();
   }
 }

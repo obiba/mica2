@@ -87,15 +87,16 @@ mica.service('AuthenticationSharedService', ['$rootScope', '$q', '$http', '$cook
         isInitializingSession = true;
         CurrentSession.get().$promise.then(function (data) {
           Session.create(data.username, data.roles);
+          deferred.resolve(Session);
           authService.loginConfirmed(data);
           return data;
         }).catch(function() {
           deferred.reject();
+          return $q.reject();
         }).then(function(data) {
           return UserProfile.get({id: data.username}).$promise;
         }).then(function(data) {
           Session.setProfile(data);
-          deferred.resolve(Session);
         }).finally(function() {
           isInitializingSession = false;
           isInitializedDeferred.resolve(true);

@@ -61,8 +61,6 @@
           // optional method
           'responseError': function(response) {
             if (response.status === 401 && !response.config.ignoreAuthModule) {
-              var deferred = $q.defer();
-              httpBuffer.append(response.config, deferred);
               // WORKAROUND the progressbar has its own interceptor to control the animation based on HTTP calls. Since
               // the request is not rejected and the promise is returned, the progressbar never completes and animation
               // never stops.
@@ -71,7 +69,6 @@
               }, 500);
 
               $rootScope.$broadcast('event:auth-loginRequired', response);
-              return deferred.promise;
             } else {
               if (angular.isObject(response.data) && !response.data.messageTemplate) {
                 response.data.messageTemplate = 'server.error.' + response.status;
