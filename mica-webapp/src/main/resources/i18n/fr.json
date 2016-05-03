@@ -917,7 +917,7 @@
   "dataset-classifications": "Dataset classifications",
   "study-classifications": "Study classifications",
   "network-classifications": "Network classifications",
-  "add-query": "Add to search query",
+  "add-query": "Add to query",
   "permissions": "Permissions",
   "permission": {
     "help": "Grant permission to Read, Edit or Review the current draft.",
