@@ -10,21 +10,8 @@ mica.controller('MainController', [
   'PublicMicaConfigResource',
   'screenSize',
   'AuthenticationSharedService',
-  function ($rootScope, $scope, $window, MicaConfigResource, PublicMicaConfigResource, screenSize, AuthenticationSharedService) {
-    var applyTitle = function(config) {
-      $window.document.title = config.name;
-    };
-    if (AuthenticationSharedService.isAuthenticated()) {
-      $scope.micaConfig = MicaConfigResource.get(applyTitle);
-    } else {
-      $scope.micaConfig = PublicMicaConfigResource.get(applyTitle);
-    }
-
-    $rootScope.screen = $scope.screen = {size: null, device: null};
-    $rootScope.$on('event:auth-loginConfirmed', function () {
-      $scope.micaConfig = MicaConfigResource.get();
-    });
-
+  function ($rootScope, $scope, $window, MicaConfigResource, PublicMicaConfigResource, screenSize,
+            AuthenticationSharedService) {
     function getScreenSize() {
       var size = ['lg', 'md', 'sm', 'xs'].filter(function (size) {
         return screenSize.is(size);
@@ -34,6 +21,22 @@ mica.controller('MainController', [
       $scope.screen.device = screenSize.is('md, lg') ? 'desktop' : 'mobile';
       $scope.screen.is = screenSize.is;
     }
+    
+    function applyTitle(config) {
+      $window.document.title = config.name;
+    }
+
+    if (AuthenticationSharedService.isAuthenticated()) {
+      $scope.micaConfig = MicaConfigResource.get(applyTitle);
+    } else {
+      $scope.micaConfig = PublicMicaConfigResource.get(applyTitle);
+    }
+
+    $rootScope.screen = $scope.screen = {size: null, device: null};
+
+    $rootScope.$on('event:auth-loginConfirmed', function () {
+      $scope.micaConfig = MicaConfigResource.get();
+    });
 
     getScreenSize();
 

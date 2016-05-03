@@ -186,6 +186,7 @@ mica
 
   .run(['$rootScope',
     '$location',
+    '$route',
     '$http',
     'AuthenticationSharedService',
     'Session',
@@ -196,6 +197,7 @@ mica
 
     function ($rootScope,
               $location,
+              $route,
               $http,
               AuthenticationSharedService,
               Session,
@@ -203,39 +205,7 @@ mica
               ServerErrorUtils,
               UserProfileService,
               editableOptions) {
-      $rootScope.$on('$routeChangeStart', function (event, next) {
-        editableOptions.theme = 'bs3';
-
-        $rootScope.authenticated = AuthenticationSharedService.isAuthenticated();
-        $rootScope.hasRole = AuthenticationSharedService.isAuthorized;
-        $rootScope.userRoles = USER_ROLES;
-        $rootScope.subject = Session;
-        $rootScope.userProfileService = UserProfileService;
-
-        if (!$rootScope.authenticated) {
-          if ('/login' !== $location.path()) {
-            delete $rootScope.routeToLogin;
-          }
-          $rootScope.$broadcast('event:auth-loginRequired');
-        } else if (!AuthenticationSharedService.isAuthorized(next.access ? next.access.authorizedRoles : '*')) {
-          $rootScope.$broadcast('event:auth-notAuthorized');
-        }
-      });
-
-      // Call when the the client is confirmed
-      $rootScope.$on('event:auth-loginConfirmed', function () {
-        delete $rootScope.routeToLogin;
-
-        if ($location.path() === '/login') {
-          var path = '/';
-          var search = $location.search();
-          if (search.hasOwnProperty('redirect')) {
-            path = search.redirect;
-            delete search.redirect;
-          }
-          $location.path(path).search(search).replace();
-        }
-      });
+      var isSessionInitialized = false;
 
       function updateRedirect() {
         var path = $location.path();
@@ -255,6 +225,47 @@ mica
         }
         $location.path('/login').replace();
       }
+
+      $rootScope.$on('$routeChangeStart', function (event, next) {
+        if(!isSessionInitialized) {
+          event.preventDefault();
+          AuthenticationSharedService.isSessionInitialized().then(function() {
+            $route.reload();
+          });
+        } else {
+          editableOptions.theme = 'bs3';
+          $rootScope.authenticated = AuthenticationSharedService.isAuthenticated();
+          $rootScope.hasRole = AuthenticationSharedService.isAuthorized;
+          $rootScope.userRoles = USER_ROLES;
+          $rootScope.subject = Session;
+          $rootScope.userProfileService = UserProfileService;
+
+          if (!$rootScope.authenticated) {
+            if ('/login' !== $location.path()) {
+              delete $rootScope.routeToLogin;
+            }
+
+            $rootScope.$broadcast('event:auth-loginRequired');
+          } else if (!AuthenticationSharedService.isAuthorized(next.access ? next.access.authorizedRoles : '*')) {
+            $rootScope.$broadcast('event:auth-notAuthorized');
+          }
+        }
+      });
+
+      // Call when the the client is confirmed
+      $rootScope.$on('event:auth-loginConfirmed', function () {
+        delete $rootScope.routeToLogin;
+
+        if ($location.path() === '/login') {
+          var path = '/';
+          var search = $location.search();
+          if (search.hasOwnProperty('redirect')) {
+            path = search.redirect;
+            delete search.redirect;
+          }
+          $location.path(path).search(search).replace();
+        }
+      });
 
       $rootScope.$on('event:auth-loginRequired', function () {
         Session.destroy();
@@ -280,5 +291,9 @@ mica
       $rootScope.$on('event:auth-loginCancelled', function () {
         $rootScope.authenticated = undefined;
         login();
+      });
+
+      AuthenticationSharedService.initSession().finally(function() {
+        isSessionInitialized = true;
       });
     }]);

@@ -1,5 +1,3 @@
-/* global document */
-
 'use strict';
 
 /* Services */
@@ -56,15 +54,16 @@ mica.factory('Session', ['SessionProxy','$cookieStore',
       this.roles = roles;
       SessionProxy.update(this);
     };
+
     this.setProfile = function(profile) {
       this.profile = profile;
       SessionProxy.update(this);
     };
-    this.destroy = function () {
+
+    this.destroy = function() {
       this.login = null;
       this.roles = null;
       this.profile = null;
-      $cookieStore.remove('mica_subject');
       $cookieStore.remove('micasid');
       $cookieStore.remove('obibaid');
       SessionProxy.update(this);
@@ -73,10 +72,40 @@ mica.factory('Session', ['SessionProxy','$cookieStore',
     return this;
   }]);
 
-mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStore', '$cookies', 'authService', 'Session', 'CurrentSession', 'UserProfile',
-  function ($rootScope, $http, $cookieStore, $cookies, authService, Session, CurrentSession, UserProfile) {
-    return {
-      login: function (param) {
+mica.service('AuthenticationSharedService', ['$rootScope', '$q', '$http', '$cookieStore', '$cookies', 'authService', 'Session', 'CurrentSession', 'UserProfile',
+  function ($rootScope, $q, $http, $cookieStore, $cookies, authService, Session, CurrentSession, UserProfile) {
+    var isInitializingSession = false, isInitializedDeferred = $q.defer(), self = this;
+
+    this.isSessionInitialized = function() {
+      return isInitializedDeferred.promise;
+    };
+
+    this.initSession = function() {
+      var deferred = $q.defer();
+
+      if(!isInitializingSession) {
+        isInitializingSession = true;
+        CurrentSession.get().$promise.then(function (data) {
+          Session.create(data.username, data.roles);
+          authService.loginConfirmed(data);
+          return data;
+        }).catch(function() {
+          deferred.reject();
+        }).then(function(data) {
+          return UserProfile.get({id: data.username}).$promise;
+        }).then(function(data) {
+          Session.setProfile(data);
+          deferred.resolve(Session);
+        }).finally(function() {
+          isInitializingSession = false;
+          isInitializedDeferred.resolve(true);
+        });
+      }
+
+      return deferred.promise;
+    };
+
+    this.login = function (param) {
         $rootScope.authenticationError = false;
         var data = 'username=' + param.username + '&password=' + param.password;
         $http.post('ws/auth/sessions', data, {
@@ -85,67 +114,18 @@ mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStor
           },
           ignoreAuthModule: 'ignoreAuthModule'
         }).success(function () {
-          CurrentSession.get(function (data) {
-            Session.create(data.username, data.roles);
-            $cookieStore.put('mica_subject', JSON.stringify(Session));
-            authService.loginConfirmed(data);
-
-            UserProfile.get({id: data.username}, function(data){
-              Session.setProfile(data);
-            });
-          });
-        }).error(function () {
+          self.initSession();
+        }).error(function() {
           $rootScope.authenticationError = true;
           Session.destroy();
         });
-      },
-      isAuthenticated: function () {
-        // WORKAROUND: until next angular update, cookieStore is currently buggy
-        function getSidCookie(app) {
-          var regexp = new RegExp(app + '=([^;]+)', 'g');
-          var result = regexp.exec(document.cookie);
-          return (result === null) ? null : result[1];
-        }
+      };
 
-        var obibaCookie = getSidCookie('obibaid');
+    this.isAuthenticated = function () {
+      return Session.login !== null && Session.login !== undefined;
+    };
 
-        if (!obibaCookie && !getSidCookie('micasid')) {
-          // session has terminated, cleanup
-          Session.destroy();
-          return false;
-        }
-
-        // check for Session object state
-        if (!Session.login) {
-          // check if there is a cookie for the subject
-          var subjectCookie = $cookieStore.get('mica_subject');
-          if (subjectCookie !== null && subjectCookie) {
-            var account = JSON.parse(subjectCookie);
-            Session.create(account.login, account.roles);
-            UserProfile.get({id: account.login}, function(data){
-              Session.setProfile(data);
-            });
-            $rootScope.account = Session;
-            return true;
-          }
-          // check if there is a Obiba session
-          if (obibaCookie) {
-            CurrentSession.get(function (data) {
-              Session.create(data.username, data.roles);
-              UserProfile.get({id: data.username}, function(data){
-                Session.setProfile(data);
-              });
-              $cookieStore.put('mica_subject', JSON.stringify(Session));
-              authService.loginConfirmed(data);
-            }, function () {
-              Session.destroy();
-            });
-            return true;
-          }
-        }
-        return !!Session.login;
-      },
-      isAuthorized: function (authorizedRoles) {
+    this.isAuthorized = function (authorizedRoles) {
         if (!angular.isArray(authorizedRoles)) {
           if (authorizedRoles === '*') {
             return true;
@@ -166,8 +146,9 @@ mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStor
         });
 
         return isAuthorized;
-      },
-      logout: function () {
+      };
+
+    this.logout = function () {
         $rootScope.authenticationError = false;
         $http({method: 'DELETE', url: 'ws/auth/session/_current', errorHandler: true})
           .success(function () {
@@ -178,8 +159,7 @@ mica.factory('AuthenticationSharedService', ['$rootScope', '$http', '$cookieStor
             authService.loginCancelled(null, 'logout failure');
           }
         );
-      }
-    };
+      };
   }]);
 
 mica.factory('MetricsService', ['$resource',
