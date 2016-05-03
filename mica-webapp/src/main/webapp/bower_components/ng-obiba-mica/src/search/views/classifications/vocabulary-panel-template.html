@@ -1,7 +1,7 @@
 <div>
   <div class="panel panel-default" ng-if="vocabulary">
     <div class="panel-heading">
-      <div ng-repeat="label in vocabulary.title" ng-if="label.locale === lang">
+      <div ng-repeat="label in vocabulary.title" ng-if="label.locale === lang" class="clearfix">
         <a href ng-click="onNavigate(taxonomy, vocabulary)" ng-if="vocabulary.terms">{{label.text}}</a>
         <span ng-if="!vocabulary.terms">{{label.text}}</span>
         <a href ng-click="onSelect(target, taxonomy, vocabulary)">

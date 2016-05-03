@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-04-29
+ * Date: 2016-05-02
  */
 'use strict';
 
@@ -1362,6 +1362,8 @@ angular.module('obiba.mica.search', [
         taxonomyTabsOrder: [QUERY_TARGETS.VARIABLE, QUERY_TARGETS.DATASET, QUERY_TARGETS.STUDY, QUERY_TARGETS.NETWORK],
         searchTabsOrder: [DISPLAY_TYPES.LIST, DISPLAY_TYPES.COVERAGE, DISPLAY_TYPES.GRAPHICS],
         resultTabsOrder: [QUERY_TARGETS.VARIABLE, QUERY_TARGETS.DATASET, QUERY_TARGETS.STUDY, QUERY_TARGETS.NETWORK],
+        hideNavigate: [],
+        hideSearch: ['studyIds', 'dceIds', 'datasetId', 'networkId', 'studyId'],
         variables: {
           showSearchTab: true,
           variablesColumn: {
@@ -1433,6 +1435,8 @@ angular.module('obiba.mica.search', [
         options.taxonomyTabsOrder = value.taxonomyTabsOrder || options.taxonomyTabsOrder;
         options.searchTabsOrder = value.searchTabsOrder || options.searchTabsOrder;
         options.resultTabsOrder = value.resultTabsOrder || options.resultTabsOrder;
+        options.hideNavigate = value.hideNavigate || options.hideNavigate;
+        options.hideSearch = value.hideSearch || options.hideSearch;
       };
 
       this.$get = ['$q', '$injector', function ngObibaMicaSearchFactory($q, $injector) {
@@ -1457,6 +1461,14 @@ angular.module('obiba.mica.search', [
           },
           getOptions: function() {
             return options;
+          },
+          toggleHideSearchNavigate: function (vocabulary) {
+            var index = options.hideNavigate.indexOf(vocabulary.name);
+            if (index > -1) {
+              options.hideNavigate.splice(index, 1);
+            } else {
+              options.hideNavigate.push(vocabulary.name);
+            }
           }
         };
       }];
@@ -3403,6 +3415,15 @@ function BaseTaxonomiesController($scope, $location, TaxonomyResource, Taxonomie
     vocabulary: null
   };
 
+  // vocabulary (or term) will appear in navigation iff it doesn't have the 'showNavigate' attribute
+  $scope.canNavigate = function(vocabulary) {
+    if ($scope.options.hideNavigate.indexOf(vocabulary.name) > -1) {
+      return false;
+    }
+
+    return (vocabulary.attributes || []).filter(function (attr) { return attr.key === 'showNavigate'; }).length === 0;
+  };
+
   this.navigateTaxonomy = function (taxonomy, vocabulary, term) {
     $scope.taxonomies.term = term;
 
@@ -4046,6 +4067,15 @@ angular.module('obiba.mica.search')
           return result;
         }
 
+        // vocabulary (or term) can be used in search iff it doesn't have the 'showSearch' attribute
+        function canSearch(vocabulary, hideSearchList) {
+          if ((hideSearchList || []).indexOf(vocabulary.name) > -1) {
+            return false;
+          }
+
+          return (vocabulary.attributes || []).filter(function (attr) { return attr.key === 'showSearch'; }).length === 0;
+        }
+
         return TaxonomiesSearchResource.get({
           query: quoteQuery(query), locale: $scope.lang, target: $scope.documents.search.target
         }).$promise.then(function (response) {
@@ -4058,13 +4088,12 @@ angular.module('obiba.mica.search')
               var taxonomy = bundle.taxonomy;
               if (taxonomy.vocabularies) {
                 taxonomy.vocabularies.filter(function (vocabulary) {
-                  // exclude results which are ids used for relations
-                  return !(['dceIds', 'studyId', 'studyIds', 'networkId', 'datasetId'].filter(function (val) {
-                    return vocabulary.name === val;
-                  }).pop());
+                  return canSearch(vocabulary, $scope.options.hideSearch);
                 }).forEach(function (vocabulary) {
                   if (vocabulary.terms) {
-                    vocabulary.terms.forEach(function (term) {
+                    vocabulary.terms.filter(function (term) {
+                      return canSearch(term, $scope.options.hideSearch);
+                    }).forEach(function (term) {
                       var item = RqlQueryService.createCriteriaItem(target, taxonomy, vocabulary, term, $scope.lang);
                       results.push({
                         score: score(item),
@@ -5589,7 +5618,9 @@ angular.module('obiba.mica.search')
         vocabulary: '=',
         lang: '=',
         onNavigate: '=',
-        onSelect: '='
+        onSelect: '=',
+        onHideSearchNavigate: '=',
+        isInHideNavigate: '='
       },
       templateUrl: 'search/views/classifications/vocabulary-panel-template.html'
     };
@@ -8516,7 +8547,7 @@ angular.module("search/views/classifications/taxonomies-view.html", []).run(["$t
     "                  {{label.text}}\n" +
     "                </p>\n" +
     "                <ul class=\"nav nav-pills nav-stacked\" ng-if=\"taxonomies.taxonomy.vocabularies\">\n" +
-    "                  <li ng-repeat=\"vocabulary in taxonomies.taxonomy.vocabularies\"\n" +
+    "                  <li ng-repeat=\"vocabulary in taxonomies.taxonomy.vocabularies | filter:canNavigate\"\n" +
     "                      class=\"{{taxonomies.vocabulary.name === vocabulary.name ? 'active' : ''}}\">\n" +
     "                    <a class=\"clearfix\" id=\"search-navigate-taxonomy\" href ng-click=\"navigateTaxonomy(taxonomies.taxonomy, vocabulary)\">\n" +
     "                <span ng-repeat=\"label in vocabulary.title\" ng-if=\"label.locale === lang\">\n" +
@@ -8582,13 +8613,14 @@ angular.module("search/views/classifications/taxonomies-view.html", []).run(["$t
     "                  <ul class=\"nav nav-pills nav-stacked\" ng-if=\"taxonomies.vocabulary.terms\">\n" +
     "                    <li ng-repeat=\"term in taxonomies.vocabulary.terms\"\n" +
     "                        class=\"{{taxonomies.term.name === term.name ? 'active' : ''}}\">\n" +
-    "                      <a id=\"search-navigate-vocabulary\" href ng-click=\"navigateTaxonomy(taxonomies.taxonomy, taxonomies.vocabulary, term)\">\n" +
+    "                      <a class=\"clearfix\" id=\"search-navigate-vocabulary\" href ng-click=\"navigateTaxonomy(taxonomies.taxonomy, taxonomies.vocabulary, term)\">\n" +
     "                        <span ng-repeat=\"label in term.title\" ng-if=\"label.locale === lang\">\n" +
     "                          {{label.text}}\n" +
     "                        </span>\n" +
     "                        <span ng-if=\"!term.title\">\n" +
     "                          {{term.name}}\n" +
     "                        </span>\n" +
+    "                        <i class=\"pull-right {{taxonomies.term.name !== term.name ? 'hidden' : ''}} hidden-sm hidden-xs fa fa-chevron-circle-right\"></i>\n" +
     "                      </a>\n" +
     "                    </li>\n" +
     "                  </ul>\n" +
@@ -8686,7 +8718,7 @@ angular.module("search/views/classifications/vocabulary-panel-template.html", []
     "<div>\n" +
     "  <div class=\"panel panel-default\" ng-if=\"vocabulary\">\n" +
     "    <div class=\"panel-heading\">\n" +
-    "      <div ng-repeat=\"label in vocabulary.title\" ng-if=\"label.locale === lang\">\n" +
+    "      <div ng-repeat=\"label in vocabulary.title\" ng-if=\"label.locale === lang\" class=\"clearfix\">\n" +
     "        <a href ng-click=\"onNavigate(taxonomy, vocabulary)\" ng-if=\"vocabulary.terms\">{{label.text}}</a>\n" +
     "        <span ng-if=\"!vocabulary.terms\">{{label.text}}</span>\n" +
     "        <a href ng-click=\"onSelect(target, taxonomy, vocabulary)\">\n" +
