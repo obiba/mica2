@@ -1295,23 +1295,23 @@ angular.module('obiba.mica.search')
         TaxonomiesResource.get({
           target: target 
         }, function onSuccess(taxonomies) {
-          $scope.taxonomies[target] = taxonomies.map(function(t) {
-            if($scope.targets.length === 1) {
-              t.isOpen = true;
-            }
-            
-            t.vocabularies.map(function(v) {
+          $scope.taxonomies[target] = $scope.facetedTaxonomies[target].map(function(f) {
+            return taxonomies.filter(function(t) {
+              return f.name === t.name;
+            })[0];
+          }).filter(function(t) { return t; }).map(function(t) {
+            t.vocabularies.map(function (v) {
               v.limit = 10;
               v.isMatch = RqlQueryUtils.isMatchVocabulary(v);
               v.isNumeric = RqlQueryUtils.isNumericVocabulary(v);
             });
             
             return t;
-          }).filter(function(t) {
-            return $scope.facetedTaxonomies[target].some(function(f) {
-              return f.name === t.name;
-            });
           });
+          
+          if($scope.taxonomies[target].length === 1) {
+            $scope.taxonomies[target][0].isOpen = 1;
+          }
         });
       }
     }
