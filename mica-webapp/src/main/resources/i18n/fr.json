@@ -248,7 +248,6 @@
     "aggregations-metadata-help": "Acronyms and names of published studies, networks etc. that are used to decorate search results. Cache is automatically cleared each time a new publication is made.",
     "dataset-variables": "Dataset variables statistics",
     "dataset-variables-help": "For each dataset, variable summaries are extracted from remote Opal servers. Cache is automatically cleared after a dataset is published.",
-    "agate-subjects": "Agate users",
     "agate-subjects-help": "Users details are cached once retrieved from Agate server. To be cleared to synchronize with updated user details.",
     "authorization": "Authorizations",
     "authorization-help": "Anything accessed in Mica requires authorization. Cache is automatically cleared after a permission is updated."

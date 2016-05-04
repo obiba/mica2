@@ -6,11 +6,12 @@ import java.util.List;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import org.obiba.mica.core.service.AgateRestService;
 import org.obiba.shiro.realm.ObibaRealm.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -21,9 +22,6 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-
 @Service
 public class UserProfileService extends AgateRestService {
   private static final Logger log = LoggerFactory.getLogger(UserProfileService.class);
@@ -33,7 +31,6 @@ public class UserProfileService extends AgateRestService {
     initInternal();
   }
 
-  @Cacheable(value="agate-subjects")
   public synchronized Subject getProfile(@NotNull String username) {
     Assert.notNull(username, "Username cannot be null");
     Subject subject = getProfileInternal(getProfileServiceUrl(username));

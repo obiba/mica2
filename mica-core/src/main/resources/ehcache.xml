@@ -71,10 +71,5 @@
     diskPersistent="true">
   </cache>
 
-  <cache name="agate-subjects"
-    timeToLiveSeconds="3600"
-    timeToIdleSeconds="0">
-  </cache>
-
 </ehcache>
 

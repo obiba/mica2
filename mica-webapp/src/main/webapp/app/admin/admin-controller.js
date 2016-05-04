@@ -168,12 +168,6 @@ mica.admin
         });
       };
 
-      $scope.clearAgateSubjects = function () {
-        withConfirm(function () {
-          CacheService.cache.clear({id: 'agateSubjects'});
-        });
-      };
-
       $scope.clearAuthorization = function () {
         withConfirm(function () {
           CacheService.cache.clear({id: 'authorization'});
