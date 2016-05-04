@@ -342,10 +342,14 @@ public class JoinQueryExecutor {
         joinedIds = execute(datasetQuery, variableQuery, studyQuery, networkQuery);
         break;
       case STUDY:
-        joinedIds = execute(studyQuery, variableQuery, datasetQuery, networkQuery);
+        joinedIds = datasetQuery.hasPrimaryKeyCriteria()
+          ? execute(studyQuery, datasetQuery, variableQuery, networkQuery)
+          : execute(studyQuery, variableQuery, datasetQuery, networkQuery);
         break;
       case NETWORK:
-        joinedIds = execute(networkQuery, variableQuery, datasetQuery, studyQuery);
+        joinedIds = datasetQuery.hasPrimaryKeyCriteria()
+            ? execute(networkQuery, datasetQuery, variableQuery, studyQuery)
+            : execute(networkQuery, variableQuery, datasetQuery, studyQuery);
         break;
     }
 
