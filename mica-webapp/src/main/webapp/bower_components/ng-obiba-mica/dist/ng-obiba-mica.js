@@ -1148,8 +1148,8 @@ angular.module('obiba.mica.access')
 
   })
 
-  .service('DataAccessRequestService', ['$translate', 'SessionProxy',
-    function ($translate, SessionProxy) {
+  .service('DataAccessRequestService', ['$translate', 'SessionProxy', 'USER_ROLES',
+    function ($translate, SessionProxy, USER_ROLES) {
       var statusList = {
         OPENED: 'OPENED',
         SUBMITTED: 'SUBMITTED',
@@ -1179,7 +1179,7 @@ angular.module('obiba.mica.access')
           var found = false;
           var currentUserRoles = SessionProxy.roles();
           angular.forEach(currentUserRoles, function (value) {
-            if (value === role) {
+            if (value === role || value === USER_ROLES.admin) {
               found = true;
             }
           });
@@ -6592,9 +6592,9 @@ angular.module('obiba.mica.graphics')
               returnedVocabulary = vocabulary.terms;
             }
           });
-      }
+        }
         return returnedVocabulary;
-       };
+      };
       this.getArrayByAggregation = function (aggregationName, entityDto) {
         var arrayData = [];
         var aggregations = taxonomyTerm.vocabulariesWrapper(aggregationName);

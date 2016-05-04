@@ -138,9 +138,9 @@ angular.module('obiba.mica.graphics')
               returnedVocabulary = vocabulary.terms;
             }
           });
-      }
+        }
         return returnedVocabulary;
-       };
+      };
       this.getArrayByAggregation = function (aggregationName, entityDto) {
         var arrayData = [];
         var aggregations = taxonomyTerm.vocabulariesWrapper(aggregationName);
