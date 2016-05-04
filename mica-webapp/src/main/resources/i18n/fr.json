@@ -902,6 +902,15 @@
     "criterion": {
       "created": "Criteria <strong>{{arg0}}</strong> was added.",
       "updated": "Criteria <strong>{{arg0}}</strong> was updated."
+    },
+    "taxonomy-nav-help": "",
+    "vocabulary-nav-help": "",
+    "classifications-link": "",
+    "classifications-title": "",
+    "faceted-navigation-help": "Select an entry from the menu on the left to start browsing in the repository.",
+    "facet": {
+      "more": "More",
+      "less": "Less"
     }
   },
   "variables": "Variables",
