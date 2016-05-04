@@ -36,11 +36,6 @@ public class CacheService {
   @Inject
   private TaxonomyService taxonomyService;
 
-  @CacheEvict(value = "agate-subjects", allEntries = true)
-  public void clearAgateSubjectsCache() {
-    log.info("Clearing agate subjects cache");
-  }
-
   @CacheEvict(value = "opal-taxonomies", allEntries = true)
   public void clearOpalTaxonomiesCache() {
     log.info("Clearing opal taxonomies cache");
@@ -72,8 +67,7 @@ public class CacheService {
 
   @Caching(evict = { @CacheEvict(value = "micaConfig", allEntries = true),
     @CacheEvict(value = "aggregations-metadata", allEntries = true),
-    @CacheEvict(value = "opal-taxonomies", allEntries = true),
-    @CacheEvict(value = "agate-subjects", allEntries = true) })
+    @CacheEvict(value = "opal-taxonomies", allEntries = true) })
   public void clearAllCaches() {
     log.info("Clearing all caches");
     clearDatasetVariablesCache();
