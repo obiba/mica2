@@ -36,7 +36,7 @@
     "lastUpdate": "Last Update"
   },
   "main": {
-    "title": "Bienvenue chez Micado!",
+    "title": "Bienvenue chez Mica!",
     "subtitle": "Ceci est votre page d'accueil",
     "logged": {
       "message": "Vous êtes connecté en tant que \"{{username}}\".",
@@ -320,9 +320,9 @@
     "content-access": "Access",
     "dataSource": "Data Source",
     "name": "Name",
-    "name-help": "Name of your organization",
+    "name-help": "Name of your organization that will be used when sending notification emails.",
     "publicUrl": "Public URL",
-    "publicUrl-help": "Public base URL of the server (not the web-interface one) that will be used when sending notification emails on report generation",
+    "publicUrl-help": "Public base URL of the server that will be used when sending notification emails.",
     "defaultCharSet": "Default Character Set",
     "languages": "Languages",
     "languages-help": "Supported languages for studies, networks and datasets descriptions.",
@@ -345,15 +345,15 @@
     "opalUrl": "Opal URL",
     "actions": "Actions",
     "type": "Type",
-    "create" : "Create",
-    "import" : "Import",
-    "username" : "Username",
+    "create": "Create Key Pair",
+    "import": "Import Key Pair",
+    "username": "User Name",
     "password": "Password",
     "confirm": "Confirm Password",
     "keys": {
       "titleCreate": "Create Certificate",
       "titleImport": "Import Certificate",
-      "name": "Name",
+      "name": "Common Name",
       "organization": "Organization",
       "organizationalUnit": "Organizational Unit",
       "locality": "Locality",
@@ -378,7 +378,7 @@
     "harmonization-dataset-enabled": "Harmonization datasets section enabled",
     "harmonization-dataset-enabled-help": "Harmonization datasets section is accessible.",
     "roles": "Roles",
-    "roles-help": "List of available roles for studies and networks.",
+    "roles-help": "A person can be member of a study or of a network with one of the listed roles.",
     "add-role": "Add Role",
     "delete-role-title": "Delete Role",
     "delete-role-confirm": "This operation will remove members with this role from all documents, i.e. studies, networks. Are you sure you want to delete role \"{{role}}\"?",
@@ -433,6 +433,12 @@
     "style": {
       "title": "Style",
       "info": "Override the default style with your own stylesheet. The CSS classes are the ones of <a target='_blank' href='http://getbootstrap.com/'>Bootstrap</a> (<a target='_blank' href='http://bootswatch.com/flatly/'>Bootswatch Flatly</a> theme)."
+    },
+    "translations": {
+      "title": "Translations",
+      "path": "Name",
+      "value": "Value",
+      "info": "Override the default translations."
     }
   },
   "publish": {
@@ -482,7 +488,6 @@
     "objectives": "Objectives",
     "description": "Description",
     "objectives-help": "What are the principal objectives of the study?",
-    "website": "Website",
     "add-data-collection-event": "Add Data Collection Event",
     "add-member": "Add {{type}}",
     "member-list": "List of {{type}}",
@@ -536,7 +541,7 @@
       "add-study": "Add study",
       "other": "Other sources",
       "other-specific-population": "Other specific population",
-      "info": "Information"
+      "info": "Supplementary information"
     },
     "data-collection-event": "Data Collection Event",
     "data-collection-events": "Data Collection Events",
@@ -645,7 +650,7 @@
     "table-name": "Name",
     "table-description": "Description",
     "data-schema": {
-     "title": "Data Schema",
+      "title": "Data Schema",
       "info": "The variables of the Data Schema are the reference variables of the Harmonization dataset. This is a simple data dictionary: no data summaries will be extracted from the Opal table."
     },
     "index": "Index",
@@ -670,7 +675,7 @@
   },
   "population": {
     "label-edit": "Edit Population",
-    "id": "Id",
+    "id": "ID",
     "name": "Name",
     "info": "Supplementary information",
     "description": "Description",
@@ -686,7 +691,7 @@
   },
   "data-collection-event": {
     "label-edit": "Edit Data Collection Event",
-    "id": "Id",
+    "id": "ID",
     "name": "Name",
     "description": "Description",
     "start-year": "Start Year",
@@ -702,18 +707,18 @@
     "delete-dialog-title": "Delete Data Collection Event",
     "delete-dialog-message": "Are you sure you want to delete the collection event?"
   },
-  "study-datasets" : "Study Datasets",
-  "study-dataset" : "Study Dataset",
-  "harmonization-datasets" : "Harmonization Datasets",
-  "harmonization-dataset" : "Harmonization Dataset",
-  "network" : {
-    "name" : "Nom",
+  "study-datasets": "Study Datasets",
+  "study-dataset": "Study Dataset",
+  "harmonization-datasets": "Harmonization Datasets",
+  "harmonization-dataset": "Harmonization Dataset",
+  "network": {
+    "name": "Name",
     "logo": "Logo",
-    "acronym": "Acronyme",
-    "add" : "Ajouter un réseau",
-    "label-edit" : "Modifier le réseau",
-    "general-info": "Informations Générales",
-    "description" : "Description",
+    "acronym": "Acronym",
+    "add": "Add Network",
+    "label-edit": "Edit Network",
+    "general-info": "General Information",
+    "description": "Description",
     "index": "Index",
     "label": "Network",
     "add-study": "Add Study",
@@ -778,7 +783,7 @@
   "notification": "Notification",
   "required": "Required",
   "pattern": "Expected pattern is",
-  "suppl-info": "Supplementary information about study design",
+  "suppl-info": "Supplementary Information",
   "fix-error": "Please fix errors below",
   "dnd-reorder": "Drag and drop to reorder",
   "loading": "Loading...",
@@ -828,8 +833,11 @@
     },
     "classifications-show": "Show detailed classifications",
     "list": "List",
+    "list-help": "",
     "coverage": "Coverage",
+    "coverage-help": "",
     "graphics": "Graphics",
+    "graphics-help": "",
     "any": "any",
     "any-help": "Any value",
     "none": "none",
@@ -865,6 +873,7 @@
       "full": "Full coverage"
     },
     "study": {
+      "facet-label": "Study",
       "label": "Study",
       "noResults": "No study found",
       "dataSources": "Data sources available",
@@ -876,17 +885,20 @@
       "participants": "Participants"
     },
     "dataset": {
+      "facet-label": "Dataset",
       "label": "Dataset",
       "noResults": "No dataset found"
     },
     "variable": {
+      "facet-label": "Variable",
       "label": "Label",
       "studyNetwork": "Study/Network",
       "noResults": "No variable found",
       "study": "Study",
-      "dataschema": "Dataschema"
+      "dataschema": "DataSchema"
     },
     "network": {
+      "facet-label": "Network",
       "noResults": "No network found"
     },
     "harmonization": "Harmonization",
@@ -1023,7 +1035,9 @@
       "indexing": "Manage server indices.",
       "data-access-config": "Configure Data Access Request form.",
       "file-system": "Manage file system.",
-      "search": "Search in the published repository."
+      "search": "Search in the published repository.",
+      "classifications": "Browse taxonomies.",
+      "translations": "Manage labels translations."
     }
   },
   "server": {
