@@ -133,7 +133,8 @@ module.exports = function (grunt) {
     watch: {
         files: [
           'src/**/*.html',
-          'src/**/*.js'
+          'src/**/*.js',
+          'less/**/*.less'
         ],
         tasks: ['default']
     }
@@ -152,5 +153,5 @@ module.exports = function (grunt) {
   // TODO uncomment below and remove last line once unit tests are implemented
   // grunt.registerTask('default', ['clean:build', 'less', 'jshint', 'html2js', 'concat', 'clean:tmp', 'karma', 'uglify', 'copy']);
   grunt.registerTask('default', ['clean:build', 'less', 'jshint', 'html2js', 'concat', 'clean:tmp', 'uglify', 'copy']);
-  grunt.registerTask('watchChanges', ['watch']);
+  grunt.registerTask('watchChanges', ['default', 'watch']);
 };

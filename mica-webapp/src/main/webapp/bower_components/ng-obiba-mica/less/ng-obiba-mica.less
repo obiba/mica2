@@ -315,3 +315,37 @@
     color: #aaa;
   }
 }
+
+.panel i[class*="fa"] {
+  display: inline-block;
+  width: 1.5em;
+  text-align: center;
+  font-weight: lighter;
+}
+
+.panel-title small {
+  color: inherit !important;
+}
+
+.no-border-radius {
+  border-radius: 0 !important;
+}
+
+.panel-heading {
+  background: @gray-lighter;
+}
+
+.panel {
+  .panel {
+    border: 0;
+    .panel-heading {
+      background: #fafafa;
+    }
+  }
+}
+
+.panel-group {
+  .panel-group {
+    margin-bottom: 0;
+  }
+}

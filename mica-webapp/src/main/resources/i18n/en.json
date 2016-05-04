@@ -919,7 +919,11 @@
     "vocabulary-nav-help": "",
     "classifications-link": "",
     "classifications-title": "",
-    "faceted-navigation-help": "Select an entry from the menu on the left to start browsing in the repository."
+    "faceted-navigation-help": "Select an entry from the menu on the left to start browsing in the repository.",
+    "facet": {
+      "more": "More",
+      "less": "Less"
+    }
   },
   "variables": "Variables",
   "classifications": "Classifications",

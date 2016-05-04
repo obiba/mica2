@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-05-03
+ * Date: 2016-05-04
  */
 'use strict';
 
@@ -7363,7 +7363,7 @@ angular.module('obiba.mica.fileBrowser')
       }
     };
   }]);
-;angular.module('templates-ngObibaMica', ['access/views/data-access-request-form.html', 'access/views/data-access-request-histroy-view.html', 'access/views/data-access-request-list.html', 'access/views/data-access-request-profile-user-modal.html', 'access/views/data-access-request-submitted-modal.html', 'access/views/data-access-request-validation-modal.html', 'access/views/data-access-request-view.html', 'attachment/attachment-input-template.html', 'attachment/attachment-list-template.html', 'file-browser/views/document-detail-template.html', 'file-browser/views/documents-table-template.html', 'file-browser/views/file-browser-template.html', 'file-browser/views/toolbar-template.html', 'graphics/views/charts-directive.html', 'graphics/views/tables-directive.html', 'localized/localized-input-group-template.html', 'localized/localized-input-template.html', 'localized/localized-template.html', 'localized/localized-textarea-template.html', 'search/views/classifications.html', 'search/views/classifications/classifications-view.html', 'search/views/classifications/taxonomies-facets-view.html', 'search/views/classifications/taxonomies-view.html', 'search/views/classifications/taxonomy-panel-template.html', 'search/views/classifications/taxonomy-template.html', 'search/views/classifications/term-panel-template.html', 'search/views/classifications/vocabulary-panel-template.html', 'search/views/coverage/coverage-search-result-table-template.html', 'search/views/criteria/criteria-node-template.html', 'search/views/criteria/criteria-root-template.html', 'search/views/criteria/criteria-target-template.html', 'search/views/criteria/criterion-dropdown-template.html', 'search/views/criteria/criterion-header-template.html', 'search/views/criteria/criterion-match-template.html', 'search/views/criteria/criterion-numeric-template.html', 'search/views/criteria/criterion-string-terms-template.html', 'search/views/criteria/target-template.html', 'search/views/graphics/graphics-search-result-template.html', 'search/views/list/datasets-search-result-table-template.html', 'search/views/list/networks-search-result-table-template.html', 'search/views/list/pagination-template.html', 'search/views/list/search-result-pagination-template.html', 'search/views/list/studies-search-result-table-template.html', 'search/views/list/variables-search-result-table-template.html', 'search/views/search-result-coverage-template.html', 'search/views/search-result-graphics-template.html', 'search/views/search-result-list-dataset-template.html', 'search/views/search-result-list-network-template.html', 'search/views/search-result-list-study-template.html', 'search/views/search-result-list-template.html', 'search/views/search-result-list-variable-template.html', 'search/views/search-result-panel-template.html', 'search/views/search.html', 'views/pagination-template.html']);
+;angular.module('templates-ngObibaMica', ['access/views/data-access-request-form.html', 'access/views/data-access-request-histroy-view.html', 'access/views/data-access-request-list.html', 'access/views/data-access-request-profile-user-modal.html', 'access/views/data-access-request-submitted-modal.html', 'access/views/data-access-request-validation-modal.html', 'access/views/data-access-request-view.html', 'attachment/attachment-input-template.html', 'attachment/attachment-list-template.html', 'file-browser/views/document-detail-template.html', 'file-browser/views/documents-table-template.html', 'file-browser/views/file-browser-template.html', 'file-browser/views/toolbar-template.html', 'graphics/views/charts-directive.html', 'graphics/views/tables-directive.html', 'localized/localized-input-group-template.html', 'localized/localized-input-template.html', 'localized/localized-template.html', 'localized/localized-textarea-template.html', 'search/views/classifications.html', 'search/views/classifications/classifications-view.html', 'search/views/classifications/taxonomies-facets-view.html', 'search/views/classifications/taxonomies-view.html', 'search/views/classifications/taxonomy-accordion-group.html', 'search/views/classifications/taxonomy-panel-template.html', 'search/views/classifications/taxonomy-template.html', 'search/views/classifications/term-panel-template.html', 'search/views/classifications/vocabulary-accordion-group.html', 'search/views/classifications/vocabulary-panel-template.html', 'search/views/coverage/coverage-search-result-table-template.html', 'search/views/criteria/criteria-node-template.html', 'search/views/criteria/criteria-root-template.html', 'search/views/criteria/criteria-target-template.html', 'search/views/criteria/criterion-dropdown-template.html', 'search/views/criteria/criterion-header-template.html', 'search/views/criteria/criterion-match-template.html', 'search/views/criteria/criterion-numeric-template.html', 'search/views/criteria/criterion-string-terms-template.html', 'search/views/criteria/target-template.html', 'search/views/graphics/graphics-search-result-template.html', 'search/views/list/datasets-search-result-table-template.html', 'search/views/list/networks-search-result-table-template.html', 'search/views/list/pagination-template.html', 'search/views/list/search-result-pagination-template.html', 'search/views/list/studies-search-result-table-template.html', 'search/views/list/variables-search-result-table-template.html', 'search/views/search-result-coverage-template.html', 'search/views/search-result-graphics-template.html', 'search/views/search-result-list-dataset-template.html', 'search/views/search-result-list-network-template.html', 'search/views/search-result-list-study-template.html', 'search/views/search-result-list-template.html', 'search/views/search-result-list-variable-template.html', 'search/views/search-result-panel-template.html', 'search/views/search.html', 'views/pagination-template.html']);
 
 angular.module("access/views/data-access-request-form.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("access/views/data-access-request-form.html",
@@ -8425,34 +8425,35 @@ angular.module("search/views/classifications/taxonomies-facets-view.html", []).r
     "</ul>\n" +
     "\n" +
     "<uib-accordion close-others=\"false\">\n" +
-    "    <uib-accordion-group ng-repeat=\"taxonomy in taxonomies[target]\" is-open=\"taxonomy.isOpen\" is-disabled=\"false\">\n" +
+    "    <uib-accordion-group ng-repeat=\"taxonomy in taxonomies[target]\" is-open=\"taxonomy.isOpen\" is-disabled=\"false\" template-url=\"search/views/classifications/taxonomy-accordion-group.html\">\n" +
     "      <uib-accordion-heading>\n" +
-    "        <span ng-repeat=\"label in taxonomy.title\" ng-if=\"label.locale === lang\">{{label.text}}</span>\n" +
-    "        <i class=\"pull-right glyphicon\" ng-class=\"glyphicon-chevron-down\"></i>\n" +
+    "          <i class=\"fa\" ng-class=\"{'fa-chevron-down': taxonomy.isOpen, 'fa-chevron-right': !taxonomy.isOpen}\"></i>\n" +
+    "          <span ng-repeat=\"label in taxonomy.title\" ng-if=\"label.locale === lang\">{{label.text}}</span>\n" +
     "      </uib-accordion-heading>\n" +
     "      <uib-accordion close-others=\"false\">\n" +
-    "        <uib-accordion-group ng-repeat=\"vocabulary in taxonomy.vocabularies\" is-open=\"vocabulary.isOpen\" is-disabled=\"false\">\n" +
+    "        <uib-accordion-group ng-repeat=\"vocabulary in taxonomy.vocabularies\" is-open=\"vocabulary.isOpen\" is-disabled=\"false\" template-url=\"search/views/classifications/vocabulary-accordion-group.html\">\n" +
     "          <uib-accordion-heading>\n" +
-    "            <a href ng-click=\"loadVocabulary(taxonomy, vocabulary)\">\n" +
+    "            <span ng-click=\"loadVocabulary(taxonomy, vocabulary)\">\n" +
+    "              <i class=\"fa\" ng-class=\"{'fa-caret-down': vocabulary.isOpen, 'fa-caret-right': !vocabulary.isOpen}\"></i>\n" +
     "              <span ng-repeat=\"label in vocabulary.title\" ng-if=\"label.locale === lang\">\n" +
     "                {{label.text}}\n" +
     "              </span>\n" +
     "              <span ng-if=\"!vocabulary.title\">\n" +
     "                {{vocabulary.name}}\n" +
     "              </span>\n" +
-    "            </a>\n" +
+    "            </span>\n" +
     "          </uib-accordion-heading>\n" +
     "          <div>\n" +
-    "            <div ng-if=\"vocabulary.isMatch\" ng-controller=\"MatchVocabularyFacetController\">\n" +
+    "            <div ng-if=\"vocabulary.isMatch\" ng-controller=\"MatchVocabularyFacetController\" class=\"voffset2 form-group\">\n" +
     "              <form novalidate class=\"form-inline\" ng-keypress=\"onKeypress($event)\">\n" +
-    "                <div class=\"form-group\">\n" +
+    "                <div class=\"form-group form-group-sm\">\n" +
     "                  <input type=\"text\" class=\"form-control\" ng-model=\"text\" placeholder=\"{{'search.match.placeholder' | translate}}\">\n" +
     "                </div>\n" +
     "              </form>\n" +
     "            </div>\n" +
-    "            <div ng-if=\"vocabulary.isNumeric\" ng-controller=\"NumericVocabularyFacetController\">\n" +
+    "            <div ng-if=\"vocabulary.isNumeric\" ng-controller=\"NumericVocabularyFacetController\" class=\"voffset2 form-group\">\n" +
     "              <form novalidate class=\"form-inline\"  ng-keypress=\"onKeypress($event)\">\n" +
-    "                <div class=\"form-group\">\n" +
+    "                <div class=\"form-group form-group-sm\">\n" +
     "                  <label for=\"nav-{{vocabulary.name}}-from\" translate>from</label>\n" +
     "                  <input type=\"number\" class=\"form-control\" id=\"nav-{{vocabulary.name}}-from\" ng-model=\"from\" placeholder=\"{{min}}\" style=\"width:75px;\">\n" +
     "                  <label for=\"nav-{{vocabulary.name}}-to\" translate>to</label>\n" +
@@ -8466,21 +8467,21 @@ angular.module("search/views/classifications/taxonomies-facets-view.html", []).r
     "                    class=\"checkbox\" ng-class=\"{active: term.name === term.name}\">\n" +
     "                  <label style=\"max-width: 80%;\">\n" +
     "                    <input type=\"checkbox\" ng-model=\"term.selected\" ng-change=\"selectTerm(target, taxonomy, vocabulary, {term: term})\">\n" +
-    "                    <span ng-repeat=\"label in term.title\" ng-if=\"label.locale === lang\">\n" +
-    "                      {{label.text}}\n" +
-    "                    </span>\n" +
-    "                    <span ng-if=\"!term.title\">\n" +
-    "                      {{term.name}}\n" +
-    "                    </span>\n" +
+    "                      <span ng-repeat=\"label in term.title\" ng-if=\"label.locale === lang\">\n" +
+    "                        {{label.text}}\n" +
+    "                      </span>\n" +
+    "                      <span ng-if=\"!term.title\">\n" +
+    "                        {{term.name}}\n" +
+    "                      </span>\n" +
     "                  </label>\n" +
-    "                  <span class=\"pull-right\" ng-class=\"{'text-muted': !term.selected}\">\n" +
-    "                    {{term.count}}\n" +
-    "                  </span>\n" +
+    "                    <span class=\"pull-right\" ng-class=\"{'text-muted': !term.selected}\">\n" +
+    "                      {{term.count}}\n" +
+    "                    </span>\n" +
     "                </li>\n" +
     "              </ul>\n" +
-    "              <div ng-if=\"!vocabulary.isNumeric && !vocabulary.isMatch && vocabulary.terms.length > 10\" class=\"voffset1 pull-right\">\n" +
-    "                <button class=\"btn btn-primary\" ng-if=\"vocabulary.limit\" ng-click=\"vocabulary.limit = undefined\">more</button>\n" +
-    "                <button class=\"btn btn-default\" ng-if=\"!vocabulary.limit\" ng-click=\"vocabulary.limit = 10\">less</button>\n" +
+    "              <div ng-if=\"!vocabulary.isNumeric && !vocabulary.isMatch && vocabulary.terms.length > 10\" class=\"voffset1 pull-right form-group\">\n" +
+    "                <button class=\"btn btn-xs btn-primary\" ng-if=\"vocabulary.limit\" ng-click=\"vocabulary.limit = undefined\" translate>search.facet.more</button>\n" +
+    "                <button class=\"btn btn-xs btn-default\" ng-if=\"!vocabulary.limit\" ng-click=\"vocabulary.limit = 10\" translate>search.facet.less</button>\n" +
     "              </div>\n" +
     "            </div>\n" +
     "          </div>\n" +
@@ -8671,6 +8672,20 @@ angular.module("search/views/classifications/taxonomies-view.html", []).run(["$t
     "</div>");
 }]);
 
+angular.module("search/views/classifications/taxonomy-accordion-group.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("search/views/classifications/taxonomy-accordion-group.html",
+    "<div class=\"panel no-margin no-border-radius\" ng-class=\"panelClass || 'panel-default'\">\n" +
+    "  <div role=\"tab\" id=\"{{::headingId}}\" aria-selected=\"{{isOpen}}\" class=\"panel-heading\" ng-keypress=\"toggleOpen($event)\">\n" +
+    "    <h4 class=\"panel-title\">\n" +
+    "      <a role=\"button\" data-toggle=\"collapse\" href aria-expanded=\"{{isOpen}}\" aria-controls=\"{{::panelId}}\" tabindex=\"0\" class=\"accordion-toggle\" ng-click=\"toggleOpen()\" uib-accordion-transclude=\"heading\"><small><span uib-accordion-header ng-class=\"{'text-muted': isDisabled}\">{{heading}}</span></small></a>\n" +
+    "    </h4>\n" +
+    "  </div>\n" +
+    "  <div id=\"{{::panelId}}\" aria-labelledby=\"{{::headingId}}\" aria-hidden=\"{{!isOpen}}\" role=\"tabpanel\" class=\"panel-collapse collapse\" uib-collapse=\"!isOpen\">\n" +
+    "    <div class=\"panel-body no-padding small\" ng-transclude></div>\n" +
+    "  </div>\n" +
+    "</div>");
+}]);
+
 angular.module("search/views/classifications/taxonomy-panel-template.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("search/views/classifications/taxonomy-panel-template.html",
     "<div>\n" +
@@ -8725,6 +8740,20 @@ angular.module("search/views/classifications/term-panel-template.html", []).run(
     "      </div>\n" +
     "      <div ng-if=\"!term.description\" class=\"help-block\" translate>search.no-description</div>\n" +
     "    </div>\n" +
+    "  </div>\n" +
+    "</div>");
+}]);
+
+angular.module("search/views/classifications/vocabulary-accordion-group.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("search/views/classifications/vocabulary-accordion-group.html",
+    "<div class=\"panel no-margin no-padding no-border-radius\" ng-class=\"panelClass || 'panel-default'\">\n" +
+    "  <div role=\"tab\" id=\"{{::headingId}}\" aria-selected=\"{{isOpen}}\" class=\"panel-heading\" ng-keypress=\"toggleOpen($event)\">\n" +
+    "    <h4 class=\"panel-title\">\n" +
+    "      <a role=\"button\" data-toggle=\"collapse\" href aria-expanded=\"{{isOpen}}\" aria-controls=\"{{::panelId}}\" tabindex=\"0\" class=\"accordion-toggle\" ng-click=\"toggleOpen()\" uib-accordion-transclude=\"heading\"><small><span uib-accordion-header ng-class=\"{'text-muted': isDisabled}\">{{heading}}</span></small></a>\n" +
+    "    </h4>\n" +
+    "  </div>\n" +
+    "  <div id=\"{{::panelId}}\" aria-labelledby=\"{{::headingId}}\" aria-hidden=\"{{!isOpen}}\" role=\"tabpanel\" class=\"panel-collapse collapse\" uib-collapse=\"!isOpen\">\n" +
+    "    <div class=\"panel-body no-padding-top no-padding-bottom\" ng-transclude></div>\n" +
     "  </div>\n" +
     "</div>");
 }]);
