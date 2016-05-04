@@ -56,7 +56,11 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.ReadContext;
 
+import static com.jayway.jsonpath.JsonPath.using;
 import static org.obiba.mica.search.queries.AbstractDocumentQuery.Mode.COVERAGE;
 import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.DETAIL;
 import static org.obiba.mica.search.queries.AbstractDocumentQuery.Scope.DIGEST;
@@ -159,6 +163,22 @@ public abstract class AbstractDocumentQuery {
   public abstract QueryBuilder getAccessFilter();
 
   public abstract Stream<String> getLocalizedQueryStringFields();
+
+  /**
+   * Verifies if the query has any criteria on the primary key (ID).
+   *
+   * @return true/false
+   */
+  public boolean hasPrimaryKeyCriteria() {
+    if (hasQueryBuilder()) {
+      Object jsonContent = Configuration.defaultConfiguration().jsonProvider().parse(getQueryBuilder().toString());
+      ReadContext context = using(Configuration.defaultConfiguration().addOptions(Option.ALWAYS_RETURN_LIST)).parse(jsonContent);
+      List<String> ids = context.read("$..id");
+      return ids.size() > 0;
+    }
+
+    return false;
+  }
 
   public Stream<String> getQueryStringFields() {
     return null;
