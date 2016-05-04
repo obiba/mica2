@@ -9680,48 +9680,58 @@ angular.module("search/views/search.html", []).run(["$templateCache", function($
     "      ng-click=\"setLocale(tab)\">{{'language.' + tab | translate}}</a></li>\n" +
     "  </ul>\n" +
     "\n" +
-    "  <!-- Search box region -->\n" +
-    "  <div id=\"search-region\" class=\"{{tabs && tabs.length>1 ? 'tab-content voffset4' : ''}}\">\n" +
-    "    <div class=\"row\">\n" +
-    "      <div class=\"col-md-3\"></div>\n" +
-    "      <div class=\"col-md-6\">\n" +
-    "        <script type=\"text/ng-template\" id=\"customTemplate.html\">\n" +
-    "          <a ng-if=\"match.model.id\">\n" +
-    "            <table style=\"border:none;\">\n" +
-    "              <tbody>\n" +
-    "              <tr>\n" +
-    "                <td style=\"min-width: 30px;\">\n" +
+    "\n" +
+    "\n" +
+    "  <div class=\"row voffset2\">\n" +
+    "    <div class=\"col-md-3\" ng-if=\"hasFacetedTaxonomies\" >\n" +
+    "      <!-- Search Facets region -->\n" +
+    "      <taxonomies-facets-panel id=\"search-facets-region\" faceted-taxonomies=\"facetedTaxonomies\" criteria=\"search.criteria\" on-select-term=\"onSelectTerm\"\n" +
+    "                    on-refresh=\"refreshQuery\" lang=\"lang\"></taxonomies-facets-panel>\n" +
+    "    </div>\n" +
+    "    <div class=\"{{hasFacetedTaxonomies ? 'col-md-9' : 'col-md-12'}}\">\n" +
+    "\n" +
+    "      <!-- Search box region -->\n" +
+    "      <div id=\"search-region\" class=\"{{tabs && tabs.length>1 ? 'tab-content voffset4' : ''}}\">\n" +
+    "        <div class=\"{{hasFacetedTaxonomies ? '' : 'row'}}\">\n" +
+    "          <div class=\"{{hasFacetedTaxonomies ? '' : 'col-md-3'}}\"></div>\n" +
+    "          <div class=\"{{hasFacetedTaxonomies ? '' : 'col-md-6'}}\">\n" +
+    "            <script type=\"text/ng-template\" id=\"customTemplate.html\">\n" +
+    "              <a ng-if=\"match.model.id\">\n" +
+    "                <table style=\"border:none;\">\n" +
+    "                  <tbody>\n" +
+    "                  <tr>\n" +
+    "                    <td style=\"min-width: 30px;\">\n" +
     "                  <span title=\"{{match.model.target + '-classifications' | translate}}\">\n" +
     "                    <i class=\"{{'i-obiba-large i-obiba-' + match.model.target}}\"></i>\n" +
     "                  </span>\n" +
-    "                </td>\n" +
-    "                <td>\n" +
+    "                    </td>\n" +
+    "                    <td>\n" +
     "                  <span\n" +
-    "                    uib-popover-html=\"match.model.itemDescription | uibTypeaheadHighlight:query\"\n" +
-    "                    popover-title=\"{{match.model.itemTitle}}\"\n" +
-    "                    popover-placement=\"bottom\"\n" +
-    "                    popover-trigger=\"mouseenter\"\n" +
-    "                    ng-bind-html=\"match.model.itemTitle | uibTypeaheadHighlight:query\">\n" +
+    "                          uib-popover-html=\"match.model.itemDescription | uibTypeaheadHighlight:query\"\n" +
+    "                          popover-title=\"{{match.model.itemTitle}}\"\n" +
+    "                          popover-placement=\"bottom\"\n" +
+    "                          popover-trigger=\"mouseenter\"\n" +
+    "                          ng-bind-html=\"match.model.itemTitle | uibTypeaheadHighlight:query\">\n" +
     "                  </span>\n" +
-    "                  <small class=\"help-block no-margin\" title=\"{{match.model.itemParentDescription}}\">\n" +
-    "                    {{match.model.itemParentTitle}}\n" +
-    "                  </small>\n" +
-    "                </td>\n" +
-    "              </tr>\n" +
-    "              </tbody>\n" +
-    "            </table>\n" +
-    "          </a>\n" +
-    "          <a ng-if=\"!match.model.id\" class=\"{{match.model.status}}\">\n" +
-    "            <small class=\"help-block no-margin\">\n" +
-    "              {{match.model.message}}\n" +
-    "            </small>\n" +
-    "          </a>\n" +
-    "        </script>\n" +
+    "                      <small class=\"help-block no-margin\" title=\"{{match.model.itemParentDescription}}\">\n" +
+    "                        {{match.model.itemParentTitle}}\n" +
+    "                      </small>\n" +
+    "                    </td>\n" +
+    "                  </tr>\n" +
+    "                  </tbody>\n" +
+    "                </table>\n" +
+    "              </a>\n" +
+    "              <a ng-if=\"!match.model.id\" class=\"{{match.model.status}}\">\n" +
+    "                <small class=\"help-block no-margin\">\n" +
+    "                  {{match.model.message}}\n" +
+    "                </small>\n" +
+    "              </a>\n" +
+    "            </script>\n" +
     "          <span class=\"input-group input-group-sm\">\n" +
     "            <span class=\"input-group-btn\" uib-dropdown>\n" +
     "              <button type=\"button\" class=\"btn btn-primary\" uib-dropdown-toggle>\n" +
     "                {{'taxonomy.target.' + (documents.search.target ? documents.search.target : 'all')| translate}} <span\n" +
-    "                class=\"caret\"></span>\n" +
+    "                      class=\"caret\"></span>\n" +
     "              </button>\n" +
     "              <ul uib-dropdown-menu role=\"menu\">\n" +
     "                <li>\n" +
@@ -9732,27 +9742,27 @@ angular.module("search/views/search.html", []).run(["$templateCache", function($
     "              </ul>\n" +
     "            </span>\n" +
     "            <input type=\"text\" ng-model=\"selectedCriteria\"\n" +
-    "              placeholder=\"{{'search.placeholder.' + (documents.search.target ? documents.search.target : 'all') | translate}}\"\n" +
-    "              uib-typeahead=\"criteria for criteria in searchCriteria($viewValue)\"\n" +
-    "              typeahead-min-length=\"2\"\n" +
-    "              typeahead-loading=\"documents.search.active\"\n" +
-    "              typeahead-template-url=\"customTemplate.html\"\n" +
-    "              typeahead-on-select=\"selectCriteria($item)\"\n" +
-    "              class=\"form-control\">\n" +
+    "                   placeholder=\"{{'search.placeholder.' + (documents.search.target ? documents.search.target : 'all') | translate}}\"\n" +
+    "                   uib-typeahead=\"criteria for criteria in searchCriteria($viewValue)\"\n" +
+    "                   typeahead-min-length=\"2\"\n" +
+    "                   typeahead-loading=\"documents.search.active\"\n" +
+    "                   typeahead-template-url=\"customTemplate.html\"\n" +
+    "                   typeahead-on-select=\"selectCriteria($item)\"\n" +
+    "                   class=\"form-control\">\n" +
     "            <span class=\"input-group-addon\"><i class=\"glyphicon glyphicon-search\"></i></span>\n" +
     "          </span>\n" +
-    "      </div>\n" +
-    "    </div>\n" +
-    "    <div class=\"row\">\n" +
-    "      <div class=\"col-md-3\"></div>\n" +
-    "      <div class=\"col-md-6\">\n" +
-    "        <small>\n" +
-    "          <ul class=\"nav nav-pills\">\n" +
-    "            <li ng-if=\"hasClassificationsTitle\">\n" +
-    "              <label class=\"nav-label\" translate>search.classifications-title</label>\n" +
-    "            </li>\n" +
-    "            <li ng-repeat=\"t in taxonomyNav track by $index\" title=\"{{t.locale.description.text}}\">\n" +
-    "              <a href ng-click=\"showTaxonomy(t.target, t.name)\" ng-if=\"!t.terms\">{{t.locale.title.text}}</a>\n" +
+    "          </div>\n" +
+    "        </div>\n" +
+    "        <div class=\"{{hasFacetedTaxonomies ? '' : 'row'}}\">\n" +
+    "          <div class=\"{{hasFacetedTaxonomies ? '' : 'col-md-3'}}\"></div>\n" +
+    "          <div class=\"{{hasFacetedTaxonomies ? '' : 'col-md-6'}}\">\n" +
+    "            <small>\n" +
+    "              <ul class=\"nav nav-pills\">\n" +
+    "                <li ng-if=\"hasClassificationsTitle\">\n" +
+    "                  <label class=\"nav-label\" translate>search.classifications-title</label>\n" +
+    "                </li>\n" +
+    "                <li ng-repeat=\"t in taxonomyNav track by $index\" title=\"{{t.locale.description.text}}\">\n" +
+    "                  <a href ng-click=\"showTaxonomy(t.target, t.name)\" ng-if=\"!t.terms\">{{t.locale.title.text}}</a>\n" +
     "            <span uib-dropdown ng-if=\"t.terms\">\n" +
     "              <ul class=\"nav nav-pills\">\n" +
     "                <li>\n" +
@@ -9765,34 +9775,27 @@ angular.module("search/views/search.html", []).run(["$templateCache", function($
     "                </li>\n" +
     "              </ul>\n" +
     "            </span>\n" +
-    "            </li>\n" +
-    "            <li>\n" +
-    "              <a href ng-click=\"goToClassifications()\" title=\"{{'search.classifications-show' | translate}}\">\n" +
-    "                <span ng-if=\"hasClassificationsLinkLabel\" translate>search.classifications-link</span>\n" +
-    "                <i class=\"glyphicon glyphicon-option-horizontal\" ng-if=\"!hasClassificationsLinkLabel\"></i>\n" +
-    "              </a>\n" +
-    "            </li>\n" +
-    "          </ul>\n" +
-    "        </small>\n" +
+    "                </li>\n" +
+    "                <li>\n" +
+    "                  <a href ng-click=\"goToClassifications()\" title=\"{{'search.classifications-show' | translate}}\">\n" +
+    "                    <span ng-if=\"hasClassificationsLinkLabel\" translate>search.classifications-link</span>\n" +
+    "                    <i class=\"glyphicon glyphicon-option-horizontal\" ng-if=\"!hasClassificationsLinkLabel\"></i>\n" +
+    "                  </a>\n" +
+    "                </li>\n" +
+    "              </ul>\n" +
+    "            </small>\n" +
+    "          </div>\n" +
+    "        </div>\n" +
+    "        <taxonomies-panel taxonomy-name=\"taxonomyName\" target=\"target\" on-select-term=\"onSelectTerm\"\n" +
+    "                          on-close=\"clearTaxonomy\" lang=\"lang\" taxonomies-shown=\"taxonomiesShown\"></taxonomies-panel>\n" +
     "      </div>\n" +
-    "    </div>\n" +
-    "    <taxonomies-panel taxonomy-name=\"taxonomyName\" target=\"target\" on-select-term=\"onSelectTerm\"\n" +
-    "      on-close=\"clearTaxonomy\" lang=\"lang\" taxonomies-shown=\"taxonomiesShown\"></taxonomies-panel>\n" +
-    "  </div>\n" +
     "\n" +
-    "  <div class=\"row voffset2\">\n" +
-    "    <div class=\"col-md-3\" ng-if=\"hasFacetedTaxonomies\" >\n" +
-    "      <!-- Search Facets region -->\n" +
-    "      <taxonomies-facets-panel id=\"search-facets-region\" faceted-taxonomies=\"facetedTaxonomies\" criteria=\"search.criteria\" on-select-term=\"onSelectTerm\"\n" +
-    "                    on-refresh=\"refreshQuery\" lang=\"lang\"></taxonomies-facets-panel>\n" +
-    "    </div>\n" +
-    "    <div class=\"{{hasFacetedTaxonomies ? 'col-md-9' : 'col-md-12'}}\">\n" +
     "      <div ng-if=\"hasFacetedTaxonomies && hasFacetedNavigationHelp && !(search.criteria.children && search.criteria.children.length > 0)\">\n" +
     "        <p class=\"help-block\" translate>search.faceted-navigation-help</p>\n" +
     "      </div>\n" +
     "\n" +
     "      <!-- Search criteria region -->\n" +
-    "      <div id=\"search-criteria-region\" class=\"panel panel-default\" ng-if=\"search.criteria.children && search.criteria.children.length>0\">\n" +
+    "      <div id=\"search-criteria-region\" class=\"panel panel-default voffset2\" ng-if=\"search.criteria.children && search.criteria.children.length>0\">\n" +
     "        <div class=\"panel-body\">\n" +
     "          <table style=\"border:none\">\n" +
     "            <tbody>\n" +
