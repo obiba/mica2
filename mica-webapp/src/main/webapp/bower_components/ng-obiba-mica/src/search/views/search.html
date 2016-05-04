@@ -120,10 +120,10 @@
       on-close="clearTaxonomy" lang="lang" taxonomies-shown="taxonomiesShown"></taxonomies-panel>
   </div>
 
-  <!-- Results region -->
-  <div class="row">
+  <div class="row voffset2">
     <div class="col-md-3" ng-if="hasFacetedTaxonomies" >
-      <taxonomies-facets-panel faceted-taxonomies="facetedTaxonomies" criteria="search.criteria" on-select-term="onSelectTerm"
+      <!-- Search Facets region -->
+      <taxonomies-facets-panel id="search-facets-region" faceted-taxonomies="facetedTaxonomies" criteria="search.criteria" on-select-term="onSelectTerm"
                     on-refresh="refreshQuery" lang="lang"></taxonomies-facets-panel>
     </div>
     <div class="{{hasFacetedTaxonomies ? 'col-md-9' : 'col-md-12'}}">
@@ -132,7 +132,7 @@
       </div>
 
       <!-- Search criteria region -->
-      <div id="search-criteria-region" class="panel panel-default voffset2" ng-if="search.criteria.children && search.criteria.children.length>0">
+      <div id="search-criteria-region" class="panel panel-default" ng-if="search.criteria.children && search.criteria.children.length>0">
         <div class="panel-body">
           <table style="border:none">
             <tbody>
@@ -157,6 +157,7 @@
         </div>
       </div>
 
+      <!-- Search Results region -->
       <div id="search-result-region" class="voffset3 can-full-screen" ng-if="search.query" fullscreen="isFullscreen">
         <a href class="btn btn-sm btn-default pull-right" ng-click="toggleFullscreen()">
           <i class="glyphicon" ng-class="{'glyphicon-resize-full': !isFullscreen, 'glyphicon-resize-small': isFullscreen}"></i>

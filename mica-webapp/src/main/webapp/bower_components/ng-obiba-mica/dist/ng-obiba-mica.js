@@ -9780,10 +9780,10 @@ angular.module("search/views/search.html", []).run(["$templateCache", function($
     "      on-close=\"clearTaxonomy\" lang=\"lang\" taxonomies-shown=\"taxonomiesShown\"></taxonomies-panel>\n" +
     "  </div>\n" +
     "\n" +
-    "  <!-- Results region -->\n" +
-    "  <div class=\"row\">\n" +
+    "  <div class=\"row voffset2\">\n" +
     "    <div class=\"col-md-3\" ng-if=\"hasFacetedTaxonomies\" >\n" +
-    "      <taxonomies-facets-panel faceted-taxonomies=\"facetedTaxonomies\" criteria=\"search.criteria\" on-select-term=\"onSelectTerm\"\n" +
+    "      <!-- Search Facets region -->\n" +
+    "      <taxonomies-facets-panel id=\"search-facets-region\" faceted-taxonomies=\"facetedTaxonomies\" criteria=\"search.criteria\" on-select-term=\"onSelectTerm\"\n" +
     "                    on-refresh=\"refreshQuery\" lang=\"lang\"></taxonomies-facets-panel>\n" +
     "    </div>\n" +
     "    <div class=\"{{hasFacetedTaxonomies ? 'col-md-9' : 'col-md-12'}}\">\n" +
@@ -9792,7 +9792,7 @@ angular.module("search/views/search.html", []).run(["$templateCache", function($
     "      </div>\n" +
     "\n" +
     "      <!-- Search criteria region -->\n" +
-    "      <div id=\"search-criteria-region\" class=\"panel panel-default voffset2\" ng-if=\"search.criteria.children && search.criteria.children.length>0\">\n" +
+    "      <div id=\"search-criteria-region\" class=\"panel panel-default\" ng-if=\"search.criteria.children && search.criteria.children.length>0\">\n" +
     "        <div class=\"panel-body\">\n" +
     "          <table style=\"border:none\">\n" +
     "            <tbody>\n" +
@@ -9817,6 +9817,7 @@ angular.module("search/views/search.html", []).run(["$templateCache", function($
     "        </div>\n" +
     "      </div>\n" +
     "\n" +
+    "      <!-- Search Results region -->\n" +
     "      <div id=\"search-result-region\" class=\"voffset3 can-full-screen\" ng-if=\"search.query\" fullscreen=\"isFullscreen\">\n" +
     "        <a href class=\"btn btn-sm btn-default pull-right\" ng-click=\"toggleFullscreen()\">\n" +
     "          <i class=\"glyphicon\" ng-class=\"{'glyphicon-resize-full': !isFullscreen, 'glyphicon-resize-small': isFullscreen}\"></i>\n" +
