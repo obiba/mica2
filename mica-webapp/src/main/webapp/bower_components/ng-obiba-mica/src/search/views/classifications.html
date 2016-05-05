@@ -52,8 +52,8 @@
 
   <!-- Classifications region -->
   <div class="{{tabs && tabs.length>1 ? 'tab-content voffset4' : ''}}">
-    <ul class="nav nav-pills voffset2" role="tablist" ng-if="taxonomyTabsOrder.length > 1">
-      <li ng-repeat="target in taxonomyTabsOrder" role="presentation" ng-class="{ active: target === $parent.target }"><a href role="tab"
+    <ul class="nav nav-pills voffset2" role="tablist" ng-if="targetTabsOrder.length > 1">
+      <li ng-repeat="target in targetTabsOrder" role="presentation" ng-class="{ active: target === $parent.target }"><a href role="tab"
           ng-click="navigateToTarget(target)">{{'taxonomy.target.' + target | translate}}</a></li>
     </ul>
 

@@ -39,9 +39,14 @@ angular.module('obiba.mica.search', [
       var localeResolver = ['LocalizedValues', function (LocalizedValues) {
         return LocalizedValues.getLocal();
       }], options = {
-        taxonomyTabsOrder: [QUERY_TARGETS.VARIABLE, QUERY_TARGETS.DATASET, QUERY_TARGETS.STUDY, QUERY_TARGETS.NETWORK],
+        targetTabsOrder: [QUERY_TARGETS.VARIABLE, QUERY_TARGETS.DATASET, QUERY_TARGETS.STUDY, QUERY_TARGETS.NETWORK],
         searchTabsOrder: [DISPLAY_TYPES.LIST, DISPLAY_TYPES.COVERAGE, DISPLAY_TYPES.GRAPHICS],
         resultTabsOrder: [QUERY_TARGETS.VARIABLE, QUERY_TARGETS.DATASET, QUERY_TARGETS.STUDY, QUERY_TARGETS.NETWORK],
+        showAllFacetedTaxonomies: true,
+        variableTaxonomiesOrder: [],
+        studyTaxonomiesOrder: [],
+        datasetTaxonomiesOrder: [],
+        networkTaxonomiesOrder: [],
         hideNavigate: [],
         hideSearch: ['studyIds', 'dceIds', 'datasetId', 'networkId', 'studyId'],
         variables: {
@@ -112,9 +117,13 @@ angular.module('obiba.mica.search', [
       this.setOptions = function (value) {
         options = angular.merge(options, value);
         //NOTICE: angular.merge merges arrays by position. Overriding manually.
-        options.taxonomyTabsOrder = value.taxonomyTabsOrder || options.taxonomyTabsOrder;
+        options.targetTabsOrder = value.targetTabsOrder || options.targetTabsOrder;
         options.searchTabsOrder = value.searchTabsOrder || options.searchTabsOrder;
         options.resultTabsOrder = value.resultTabsOrder || options.resultTabsOrder;
+        options.variableTaxonomiesOrder = value.variableTaxonomiesOrder || options.variableTaxonomiesOrder;
+        options.studyTaxonomiesOrder = value.studyTaxonomiesOrder || options.studyTaxonomiesOrder;
+        options.datasetTaxonomiesOrder = value.datasetTaxonomiesOrder || options.datasetTaxonomiesOrder;
+        options.networkTaxonomiesOrder = value.networkTaxonomiesOrder || options.networkTaxonomiesOrder;
         options.hideNavigate = value.hideNavigate || options.hideNavigate;
         options.hideSearch = value.hideSearch || options.hideSearch;
       };

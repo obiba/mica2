@@ -1,5 +1,5 @@
 <div class="tab-pane" ng-show="options.variables.showSearchTab" ng-class="{'active': activeTarget.variables.active}">
-  <span ng-if="resultTabsOrder.length === 1">{{'variables' | translate}} ({{result.list.variableResultDto.totalHits}})</span>
+  <div class="voffset2" ng-if="resultTabsOrder.length === 1">{{'variables' | translate}} ({{result.list.variableResultDto.totalHits}})</div>
   <variables-result-table loading="loading"
       summaries="result.list.variableResultDto['obiba.mica.DatasetVariableResultDto.result'].summaries"></variables-result-table>
 </div>

@@ -22,7 +22,7 @@
       <tr ng-show="!data.isRoot && data.document.path !== data.rootPath && !data.search.active">
         <td colspan="5">
           <i class="fa fa-folder"></i>
-          <span><a href class="no-text-decoration" ng-click="navigateBack()"> ..</a></span>
+          <span><a href style="text-decoration: none" class="no-text-decoration" ng-click="navigateBack()"> ..</a></span>
         </td>
       </tr>
       <tr ng-class="{'selected-row': $index === pagination.selected}"

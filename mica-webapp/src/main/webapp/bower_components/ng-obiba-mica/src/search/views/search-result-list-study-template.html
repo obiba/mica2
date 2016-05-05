@@ -1,5 +1,5 @@
 <div class="tab-pane" ng-show="options.studies.showSearchTab" ng-class="{'active': activeTarget.studies.active}">
-  <span ng-if="resultTabsOrder.length === 1">{{'studies' | translate}} ({{result.list.studyResultDto.totalHits}})</span>
+  <div class="voffset2" ng-if="resultTabsOrder.length === 1">{{'studies' | translate}} ({{result.list.studyResultDto.totalHits}})</div>
   <studies-result-table lang="lang" loading="loading" on-update-criteria="onUpdateCriteria"
       summaries="result.list.studyResultDto['obiba.mica.StudyResultDto.result'].summaries"></studies-result-table>
 </div>

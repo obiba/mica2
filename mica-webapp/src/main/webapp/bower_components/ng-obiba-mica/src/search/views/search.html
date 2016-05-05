@@ -20,8 +20,6 @@
       ng-click="setLocale(tab)">{{'language.' + tab | translate}}</a></li>
   </ul>
 
-
-
   <div class="row voffset2">
     <div class="col-md-3" ng-if="hasFacetedTaxonomies" >
       <!-- Search Facets region -->
@@ -32,7 +30,7 @@
 
       <!-- Search box region -->
       <div id="search-region" class="{{tabs && tabs.length>1 ? 'tab-content voffset4' : ''}}">
-        <div class="{{hasFacetedTaxonomies ? '' : 'row'}}">
+        <div id="search-box-region" class="{{hasFacetedTaxonomies ? '' : 'row'}}">
           <div class="{{hasFacetedTaxonomies ? '' : 'col-md-3'}}"></div>
           <div class="{{hasFacetedTaxonomies ? '' : 'col-md-6'}}">
             <script type="text/ng-template" id="customTemplate.html">
@@ -93,7 +91,7 @@
           </span>
           </div>
         </div>
-        <div class="{{hasFacetedTaxonomies ? '' : 'row'}}">
+        <div id="search-selector-region" class="{{hasFacetedTaxonomies ? '' : 'row'}}">
           <div class="{{hasFacetedTaxonomies ? '' : 'col-md-3'}}"></div>
           <div class="{{hasFacetedTaxonomies ? '' : 'col-md-6'}}">
             <small>
@@ -162,29 +160,31 @@
 
       <!-- Search Results region -->
       <div id="search-result-region" class="voffset3 can-full-screen" ng-if="search.query" fullscreen="isFullscreen">
-        <a href class="btn btn-sm btn-default pull-right" ng-click="toggleFullscreen()">
-          <i class="glyphicon" ng-class="{'glyphicon-resize-full': !isFullscreen, 'glyphicon-resize-small': isFullscreen}"></i>
-        </a>
-        <ul class="nav nav-tabs voffset2" ng-if="searchTabsOrder.length > 1">
-          <li role="presentation" ng-repeat="tab in searchTabsOrder" ng-class="{active: search.display === tab}"><a href
-                                                                                                                    ng-click="selectDisplay(tab)">{{ 'search.' + tab | translate}}</a></li>
-        </ul>
-        <div class="tab-panel">
-          <div translate>{{'search.' + search.display + '-help'}}</div>
-          <result-panel display="search.display"
-                        type="search.type"
-                        bucket="search.bucket"
-                        query="search.executedQuery"
-                        result="search.result"
-                        loading="search.loading"
-                        on-update-criteria="onUpdateCriteria"
-                        on-type-changed="onTypeChanged"
-                        on-bucket-changed="onBucketChanged"
-                        on-paginate="onPaginate"
-                        search-tabs-order="searchTabsOrder"
-                        result-tabs-order="resultTabsOrder"
-                        lang="lang"></result-panel>
+        <div ng-if="searchTabsOrder.length > 1">
+          <a href class="btn btn-sm btn-default pull-right" ng-click="toggleFullscreen()">
+            <i class="glyphicon" ng-class="{'glyphicon-resize-full': !isFullscreen, 'glyphicon-resize-small': isFullscreen}"></i>
+          </a>
+          <ul class="nav nav-tabs voffset2">
+            <li role="presentation" ng-repeat="tab in searchTabsOrder" ng-class="{active: search.display === tab}">
+              <a href ng-click="selectDisplay(tab)">{{ 'search.' + tab | translate}}</a>
+            </li>
+          </ul>
         </div>
+
+        <div translate>{{'search.' + search.display + '-help'}}</div>
+        <result-panel display="search.display"
+                      type="search.type"
+                      bucket="search.bucket"
+                      query="search.executedQuery"
+                      result="search.result"
+                      loading="search.loading"
+                      on-update-criteria="onUpdateCriteria"
+                      on-type-changed="onTypeChanged"
+                      on-bucket-changed="onBucketChanged"
+                      on-paginate="onPaginate"
+                      search-tabs-order="searchTabsOrder"
+                      result-tabs-order="resultTabsOrder"
+                      lang="lang"></result-panel>
       </div>
 
     </div>
