@@ -1,10 +1,23 @@
 package org.obiba.mica.file.service;
 
-import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
-import com.google.common.collect.Maps;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import javax.annotation.Nullable;
+import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.math3.util.Pair;
 import org.apache.shiro.SecurityUtils;
@@ -22,7 +35,11 @@ import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
-import org.obiba.mica.file.*;
+import org.obiba.mica.file.Attachment;
+import org.obiba.mica.file.AttachmentState;
+import org.obiba.mica.file.FileStoreService;
+import org.obiba.mica.file.FileUtils;
+import org.obiba.mica.file.InvalidFileNameException;
 import org.obiba.mica.file.event.FileDeletedEvent;
 import org.obiba.mica.file.event.FilePublishedEvent;
 import org.obiba.mica.file.event.FileUnPublishedEvent;
@@ -42,22 +59,11 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Nullable;
-import javax.inject.Inject;
-import javax.validation.constraints.NotNull;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Paths;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Maps;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 
 import static java.util.stream.Collectors.toList;
 
@@ -891,6 +897,10 @@ public class FileSystemService {
   private List<AttachmentState> listDirectoryAttachmentStates(String path, boolean publishedFS) {
     List<AttachmentState> states = findAttachmentStates(String.format("^%s$", path), publishedFS);
     states.addAll(findAttachmentStates(String.format("^%s/", path), publishedFS));
+
+    if (publishedFS && !subjectAclService.isOpenAccess()) {
+      return states.stream().filter(s -> subjectAclService.isAccessible("/file", s.getFullPath())).collect(toList());
+    }
 
     return states;
   }
