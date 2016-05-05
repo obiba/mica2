@@ -449,6 +449,7 @@
     "published-out-of-date": "Published, out of date",
     "published": "Published",
     "publication": "Publication",
+    "publication-access": "Publication Access",
     "published-ago-by": "Published {{publicationDate | amTimeAgo}} [{{publishedBy}}]",
     "revisions-ahead": "Revisions ahead",
     "status": {
