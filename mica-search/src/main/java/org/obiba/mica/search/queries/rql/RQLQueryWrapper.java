@@ -494,15 +494,24 @@ public class RQLQueryWrapper implements QueryWrapper {
           case SORT:
             String arg = node.getArgument(0).toString();
             if(arg.startsWith("-"))
-              return SortBuilders.fieldSort(resolveField(arg.substring(1)).getField()).order(SortOrder.DESC);
+              return SortBuilders.fieldSort(resolveFieldValue(arg.substring(1))).order(SortOrder.DESC);
             else if(arg.startsWith("+"))
-              return SortBuilders.fieldSort(resolveField(arg.substring(1)).getField()).order(SortOrder.ASC);
-            else return SortBuilders.fieldSort(resolveField(arg).getField()).order(SortOrder.ASC);
+              return SortBuilders.fieldSort(resolveFieldValue(arg.substring(1))).order(SortOrder.ASC);
+            else return SortBuilders.fieldSort(resolveFieldValue(arg)).order(SortOrder.ASC);
         }
       } catch(IllegalArgumentException e) {
         // ignore
       }
       return null;
+    }
+
+    protected String resolveFieldValue(String rqlField) {
+      String field = resolveField(rqlField).getField();
+      // no analyzed field for sorting
+      if(field.endsWith(".analyzed")) {
+        field = field.substring(0, field.length() - 9);
+      }
+      return field;
     }
 
   }
