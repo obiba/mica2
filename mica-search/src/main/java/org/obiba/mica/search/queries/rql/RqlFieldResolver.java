@@ -17,8 +17,6 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.annotation.Nullable;
-
 import org.elasticsearch.common.Strings;
 import org.obiba.mica.dataset.search.DatasetIndexer;
 import org.obiba.mica.dataset.search.VariableIndexer;
@@ -42,6 +40,8 @@ public class RqlFieldResolver {
   private static final String TAXO_SEPARATOR = ".";
 
   private static final String DEFAULT_TAXO_PREFIX = "Mica_";
+
+  private static final String POSFIX_ANALYZED = ".analyzed";
 
   private final List<Taxonomy> taxonomies;
 
@@ -72,10 +72,18 @@ public class RqlFieldResolver {
   }
 
   public FieldData resolveField(String rqlField) {
+    return resolveFieldAsBuilder(rqlField).build();
+  }
+
+  public FieldData resolveFieldUnanalyzed(String rqlField) {
+    return resolveFieldAsBuilder(rqlField).unanalyze().build();
+  }
+
+  private FieldData.Builder resolveFieldAsBuilder(String rqlField) {
     String field = rqlField;
     if (isRegExp(field)) {
       // do not alter the regexp
-      return FieldData.newBuilder().field(field).build();
+      return FieldData.newBuilder().field(field);
     }
 
     // normalize field name
@@ -84,15 +92,14 @@ public class RqlFieldResolver {
     }
 
     int idx = field.indexOf(TAXO_SEPARATOR);
-    if(idx < 1) return FieldData.newBuilder().field(rqlField).build();
+    if(idx < 1) return FieldData.newBuilder().field(rqlField);
 
-    FieldData data = resolveField(field.substring(0, idx), field.substring(idx + 1, field.length()));
+    FieldData.Builder builder = resolveFieldInternal(field.substring(0, idx), field.substring(idx + 1, field.length()));
 
-    return data == null ? FieldData.newBuilder().field(rqlField).build() : data;
+    return builder == null ? FieldData.newBuilder().field(rqlField) : builder;
   }
 
-  @Nullable
-  public FieldData resolveField(String taxonomyName, String vocabularyName) {
+  private FieldData.Builder resolveFieldInternal(String taxonomyName, String vocabularyName) {
     String field = null;
     FieldData.Builder builder = FieldData.newBuilder();
     Optional<Taxonomy> taxonomy = taxonomies.stream().filter(t -> t.getName().equals(taxonomyName)).findFirst();
@@ -109,7 +116,7 @@ public class RqlFieldResolver {
         field = localize(null, vocabularyName, locale);
       }
     }
-    return field == null ? null : builder.field(field).build();
+    return field == null ? null : builder.field(field);
   }
 
   public List<Taxonomy> getTaxonomies() {
@@ -125,7 +132,7 @@ public class RqlFieldResolver {
 
       field = matcher.find() ? field.replace(LanguageTag.UNDETERMINED, locale) : getSafeLocalizedField(field);
 
-      return indexFieldMapping.isAnalyzed(field) ? field + ".analyzed" : field;
+      return indexFieldMapping.isAnalyzed(field) ? field + POSFIX_ANALYZED : field;
     }
 
     return field;
@@ -219,6 +226,11 @@ public class RqlFieldResolver {
 
       Builder field(String value) {
         data.field = value;
+        return this;
+      }
+
+      Builder unanalyze() {
+        data.field = Strings.isNullOrEmpty(data.field) ? data.field : data.field.replaceFirst("\\" + POSFIX_ANALYZED,"");
         return this;
       }
 

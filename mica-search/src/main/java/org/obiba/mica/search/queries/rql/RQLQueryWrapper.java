@@ -191,6 +191,10 @@ public class RQLQueryWrapper implements QueryWrapper {
       return rqlFieldResolver.resolveField(rqlField);
     }
 
+    protected FieldData resolveFieldUnanalyzed(String rqlField) {
+      return rqlFieldResolver.resolveFieldUnanalyzed(rqlField);
+    }
+
     protected Vocabulary getVocabulary(String taxonomyName, String vocabularyName) {
       Optional<Taxonomy> taxonomy = rqlFieldResolver.getTaxonomies().stream()
         .filter(t -> t.getName().equals(taxonomyName)).findFirst();
@@ -494,10 +498,10 @@ public class RQLQueryWrapper implements QueryWrapper {
           case SORT:
             String arg = node.getArgument(0).toString();
             if(arg.startsWith("-"))
-              return SortBuilders.fieldSort(resolveField(arg.substring(1)).getField()).order(SortOrder.DESC);
+              return SortBuilders.fieldSort(resolveFieldUnanalyzed(arg.substring(1)).getField()).order(SortOrder.DESC);
             else if(arg.startsWith("+"))
-              return SortBuilders.fieldSort(resolveField(arg.substring(1)).getField()).order(SortOrder.ASC);
-            else return SortBuilders.fieldSort(resolveField(arg).getField()).order(SortOrder.ASC);
+              return SortBuilders.fieldSort(resolveFieldUnanalyzed(arg.substring(1)).getField()).order(SortOrder.ASC);
+            else return SortBuilders.fieldSort(resolveFieldUnanalyzed(arg).getField()).order(SortOrder.ASC);
         }
       } catch(IllegalArgumentException e) {
         // ignore
