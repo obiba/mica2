@@ -37,6 +37,7 @@ mica.dataset
     'FormServerValidation',
     'StudyStatesResource',
     'StudyStateProjectsResource',
+    'FormDirtyStateObserver',
 
     function ($rootScope,
               $scope,
@@ -50,7 +51,8 @@ mica.dataset
               MicaConfigResource,
               FormServerValidation,
               StudyStatesResource,
-              StudyStateProjectsResource) {
+              StudyStateProjectsResource,
+              FormDirtyStateObserver) {
       $scope.studies = [];
       $scope.projects = [];
       $scope.selected = {};
@@ -184,6 +186,8 @@ mica.dataset
         FormServerValidation.error(response, $scope.form, $scope.languages);
       };
 
+      FormDirtyStateObserver.observe($scope, $location);
+
     }])
 
   .controller('HarmonizationDatasetEditController', ['$rootScope',
@@ -199,6 +203,7 @@ mica.dataset
     'MicaConfigResource',
     'FormServerValidation',
     'DraftNetworksResource',
+    'FormDirtyStateObserver',
 
     function ($rootScope,
               $scope,
@@ -212,7 +217,8 @@ mica.dataset
               HarmonizationDatasetPublicationResource,
               MicaConfigResource,
               FormServerValidation,
-              DraftNetworksResource) {
+              DraftNetworksResource,
+              FormDirtyStateObserver) {
 
       var getTypeFromUrl = function() {
         var matched = /\/(\w+-dataset)\//.exec($location.path());
@@ -335,6 +341,7 @@ mica.dataset
         FormServerValidation.error(response, $scope.form, $scope.languages);
       };
 
+      FormDirtyStateObserver.observe($scope, $location);
     }])
 
   .controller('DatasetViewController', ['$rootScope',

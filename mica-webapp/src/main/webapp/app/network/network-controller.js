@@ -74,6 +74,7 @@ mica.network
     'DraftNetworkPublicationResource',
     'MicaConfigResource',
     'FormServerValidation',
+    'FormDirtyStateObserver',
     function ($rootScope,
               $scope,
               $routeParams,
@@ -84,7 +85,8 @@ mica.network
               DraftNetworksResource,
               DraftNetworkPublicationResource,
               MicaConfigResource,
-              FormServerValidation) {
+              FormServerValidation,
+              FormDirtyStateObserver) {
 
       $scope.activeTab = 0;
       $scope.files = [];
@@ -144,6 +146,8 @@ mica.network
       var saveErrorHandler = function (response) {
         FormServerValidation.error(response, $scope.form, $scope.languages);
       };
+
+      FormDirtyStateObserver.observe($scope, $location);
     }])
 
   .controller('NetworkLinksModalController', ['$scope', '$uibModalInstance', 'entityStatesResource', 'currentLinks', 'type', 'lang',
