@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-05-05
+ * Date: 2016-05-06
  */
 'use strict';
 
@@ -8158,25 +8158,22 @@ angular.module("graphics/views/charts-directive.html", []).run(["$templateCache"
 angular.module("graphics/views/tables-directive.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("graphics/views/tables-directive.html",
     "<div>\n" +
-    "    <div style=\"margin:25px;\">\n" +
-    "        <table class=\"table table-striped table-bordered\">\n" +
-    "            <thead>\n" +
-    "            <th ng-repeat=\"header in chartObject.header\">{{header}}</th>\n" +
-    "            </thead>\n" +
-    "            <tr ng-show=\"chartObject.ordered\" ng-repeat=\"row in chartObject.entries\">\n" +
-    "                <td>{{row.title}}</td>\n" +
-    "                <td><a href ng-click=\"updateCriteria(row.key, chartObject.vocabulary)\">{{row.value}}</a></td>\n" +
-    "                <td ng-if=\"row.participantsNbr\">{{row.participantsNbr}}</td>\n" +
-    "            </tr>\n" +
-    "            <tr ng-show=\"chartObject.notOrdered\" ng-repeat=\"row in chartObject.entries\">\n" +
-    "                <td>{{row.title}}</td>\n" +
-    "                <td><a href ng-click=\"updateCriteria(row.key, chartObject.vocabulary)\">{{row.value}}</a></td>\n" +
-    "                <td ng-if=\"row.participantsNbr\">{{row.participantsNbr}}</td>\n" +
-    "            </tr>\n" +
-    "            </tbody>\n" +
-    "\n" +
-    "        </table>\n" +
-    "    </div>\n" +
+    "    <table style=\"max-height: 400px;\" class=\"table table-bordered table-striped\" fixed-header=\"chartObject.data\">\n" +
+    "        <thead>\n" +
+    "        <th ng-repeat=\"header in chartObject.header\">{{header}}</th>\n" +
+    "        </thead>\n" +
+    "        <tr ng-show=\"chartObject.ordered\" ng-repeat=\"row in chartObject.entries\">\n" +
+    "            <td>{{row.title}}</td>\n" +
+    "            <td><a href ng-click=\"updateCriteria(row.key, chartObject.vocabulary)\">{{row.value}}</a></td>\n" +
+    "            <td ng-if=\"row.participantsNbr\">{{row.participantsNbr}}</td>\n" +
+    "        </tr>\n" +
+    "        <tr ng-show=\"chartObject.notOrdered\" ng-repeat=\"row in chartObject.entries\">\n" +
+    "            <td>{{row.title}}</td>\n" +
+    "            <td><a href ng-click=\"updateCriteria(row.key, chartObject.vocabulary)\">{{row.value}}</a></td>\n" +
+    "            <td ng-if=\"row.participantsNbr\">{{row.participantsNbr}}</td>\n" +
+    "        </tr>\n" +
+    "        </tbody>\n" +
+    "    </table>\n" +
     "</div>\n" +
     "");
 }]);
