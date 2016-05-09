@@ -89,12 +89,17 @@ class NetworkDtos {
       .addAllAcronym(localizedStringDtos.asDto(network.getAcronym())) //
       .addAllInfo(localizedStringDtos.asDto(network.getInfos()));
 
+    Mica.PermissionsDto permissionsDto = permissionsDtos.asDto(network);
+
     if(asDraft) {
       builder.setTimestamps(TimestampsDtos.asDto(network)) //
         .setPublished(networkState.isPublished()) //
         .setExtension(Mica.EntityStateDto.state,
-          entityStateDtos.asDto(networkState).setPermissions(permissionsDtos.asDto(network)).build());
+          entityStateDtos.asDto(networkState).setPermissions(permissionsDto).build());
+
     }
+
+    builder.setPermissions(permissionsDto);
 
     List<String> roles = micaConfigService.getConfig().getRoles();
 
@@ -123,7 +128,9 @@ class NetworkDtos {
     Set<String> publishedStudyIds = publishedStudies.stream().map(AbstractGitPersistable::getId)
       .collect(Collectors.toSet());
     Sets.SetView<String> unpublishedStudyIds = Sets.difference(ImmutableSet.copyOf(
-      network.getStudyIds().stream().filter(sId -> asDraft || subjectAclService.isAccessible("/study", sId))
+      network.getStudyIds().stream()
+        .filter(sId -> asDraft && subjectAclService.isPermitted("/draft/study", "VIEW", sId)
+            || subjectAclService.isAccessible("/study", sId))
         .collect(toList())), publishedStudyIds);
 
     if(!publishedStudies.isEmpty()) {
@@ -159,7 +166,9 @@ class NetworkDtos {
         .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
     }
 
-    network.getNetworkIds().stream().filter(nId -> asDraft || subjectAclService.isAccessible("/network", nId))
+    network.getNetworkIds().stream()
+      .filter(nId -> asDraft && subjectAclService.isPermitted("/draft/network", "VIEW", nId)
+          || subjectAclService.isAccessible("/network", nId))
       .forEach(nId -> {
         try {
           builder.addNetworkSummaries(networkSummaryDtos.asDtoBuilder(nId, asDraft));
