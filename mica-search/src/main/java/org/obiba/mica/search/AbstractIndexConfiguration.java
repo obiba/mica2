@@ -86,4 +86,21 @@ public class AbstractIndexConfiguration {
 
   }
 
+  protected void appendMembershipProperties(XContentBuilder mapping) throws IOException {
+    XContentBuilder membershipsMapping = mapping.startObject("memberships").startObject("properties");
+    for(String role : micaConfigService.getConfig().getRoles()) {
+      XContentBuilder personMapping = membershipsMapping.startObject(role).startObject("properties") //
+        .startObject("person").startObject("properties");
+      createMappingWithAndWithoutAnalyzer(personMapping, "lastName");
+
+      XContentBuilder institutionMapping = personMapping.startObject("institution").startObject("properties");
+      createLocalizedMappingWithAnalyzers(institutionMapping, "name");
+      institutionMapping.endObject().endObject();
+
+      personMapping.endObject().endObject() // person
+        .endObject().endObject(); // role
+    }
+    membershipsMapping.endObject().endObject(); // memberships
+  }
+
 }

@@ -73,6 +73,22 @@
       "fr": "Autre"
     "description":
       "en": "Other study design."
+- "name": "investigator"
+  "title":
+    "en": "Investigator Name"
+  "description":
+    "en": "Investigator last name."
+  "attributes":
+    "field": "memberships.investigator.person.lastName.analyzed"
+    "alias": "memberships-investigator-person-lastName"
+- "name": "contact"
+  "title":
+    "en": "Contact Name"
+  "description":
+    "en": "Contact last name."
+  "attributes":
+    "field": "memberships.contact.person.lastName.analyzed"
+    "alias": "memberships-contact-person-lastName"
 - "name": "populations-selectionCriteria-countriesIso"
   "title":
     "en": "Selection criteria - Country of residence"
