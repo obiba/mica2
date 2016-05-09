@@ -23,3 +23,19 @@
   "description":
     "en": "Studies that are members of a network."
     "fr": "Études qui sont membres d'un réseau."
+- "name": "investigator"
+  "title":
+    "en": "Investigator Name"
+  "description":
+    "en": "Investigator last name."
+  "attributes":
+    "field": "memberships.investigator.person.lastName.analyzed"
+    "alias": "memberships-investigator-person-lastName"
+- "name": "contact"
+  "title":
+    "en": "Contact Name"
+  "description":
+    "en": "Contact last name."
+  "attributes":
+    "field": "memberships.contact.person.lastName.analyzed"
+    "alias": "memberships-contact-person-lastName"
