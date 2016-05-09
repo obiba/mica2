@@ -182,9 +182,9 @@ mica.factory('FormDirtyStateObserver', ['$uibModal',
                 $location.path($location.url(newUrl).hash());
               }
             });
-          }
 
-          event.preventDefault();
+            event.preventDefault();
+          }
         });
       }
     };
