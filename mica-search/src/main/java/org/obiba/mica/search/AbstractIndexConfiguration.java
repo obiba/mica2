@@ -93,9 +93,9 @@ public class AbstractIndexConfiguration {
         .startObject("person").startObject("properties");
       createMappingWithAndWithoutAnalyzer(personMapping, "lastName");
 
-//      XContentBuilder institutionMapping = personMapping.startObject("institution").startObject("properties");
-//      createMappingWithAndWithoutAnalyzer(institutionMapping, "name");
-//      institutionMapping.endObject().endObject();
+      XContentBuilder institutionMapping = personMapping.startObject("institution").startObject("properties");
+      createLocalizedMappingWithAnalyzers(institutionMapping, "name");
+      institutionMapping.endObject().endObject();
 
       personMapping.endObject().endObject() // person
         .endObject().endObject(); // role
