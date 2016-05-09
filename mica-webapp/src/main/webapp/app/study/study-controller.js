@@ -998,6 +998,7 @@ mica.study
     'StringUtils',
     'FormServerValidation',
     'RadioGroupOptionBuilder',
+    'FormDirtyStateObserver',
     function ($rootScope,
               $scope,
               $routeParams,
@@ -1010,7 +1011,8 @@ mica.study
               StudyTaxonomyService,
               StringUtils,
               FormServerValidation,
-              RadioGroupOptionBuilder) {
+              RadioGroupOptionBuilder,
+              FormDirtyStateObserver) {
 
 
       MicaConfigResource.get(function (micaConfig) {
@@ -1140,4 +1142,6 @@ mica.study
       $scope.cancel = function () {
         $location.path('/study' + ($scope.study.id ? '/' + $scope.study.id : '')).replace();
       };
+
+      FormDirtyStateObserver.observe($scope, $location);
     }]);
