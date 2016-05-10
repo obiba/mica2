@@ -79,7 +79,7 @@
                   + target | translate}}</a></li>
               </ul>
             </span>
-            <input type="text" ng-model="selectedCriteria"
+            <input type="text" ng-model="$parent.selectedCriteria"
                    placeholder="{{'search.placeholder.' + (documents.search.target ? documents.search.target : 'all') | translate}}"
                    uib-typeahead="criteria for criteria in searchCriteria($viewValue)"
                    typeahead-min-length="2"
