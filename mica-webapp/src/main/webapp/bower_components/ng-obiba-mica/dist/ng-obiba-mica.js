@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-05-06
+ * Date: 2016-05-10
  */
 'use strict';
 
@@ -1363,6 +1363,8 @@ angular.module('obiba.mica.search', [
         searchTabsOrder: [DISPLAY_TYPES.LIST, DISPLAY_TYPES.COVERAGE, DISPLAY_TYPES.GRAPHICS],
         resultTabsOrder: [QUERY_TARGETS.VARIABLE, QUERY_TARGETS.DATASET, QUERY_TARGETS.STUDY, QUERY_TARGETS.NETWORK],
         showAllFacetedTaxonomies: true,
+        showSearchBox: true,
+        showSearchBrowser: true,
         variableTaxonomiesOrder: [],
         studyTaxonomiesOrder: [],
         datasetTaxonomiesOrder: [],
@@ -2295,7 +2297,8 @@ angular.module('obiba.mica.search')
           // added with a AND operator otherwise it is a OR
           if (!logicalOp && query.args && query.args.length > 0) {
             var targetTaxo = 'Mica_' + parentQuery.name;
-            logicalOp = query.args[0].startsWith(targetTaxo + '.') ? RQL_NODE.AND : RQL_NODE.OR;
+            var criteriaVocabulary = query.name === 'match' ? query.args[1] : query.args[0];
+            logicalOp = criteriaVocabulary.startsWith(targetTaxo + '.') ? RQL_NODE.AND : RQL_NODE.OR;
           }
           var orQuery = new RqlQuery(logicalOp || RQL_NODE.AND);
           orQuery.args.push(oldArg, query);
@@ -4566,6 +4569,8 @@ angular.module('obiba.mica.search')
       };
 
       function updateCounts(criteria, vocabulary) {
+        var query = null, isCriterionPresent = false;
+
         function createExistsQuery(criteria, criterion) {
           var rootQuery = angular.copy(criteria.rqlQuery);
           criterion.rqlQuery = RqlQueryUtils.buildRqlQuery(criterion);
@@ -4576,11 +4581,22 @@ angular.module('obiba.mica.search')
         var criterion = RqlQueryService.findCriterion(criteria,
           CriteriaIdGenerator.generate($scope.$parent.taxonomy, vocabulary));
 
-        if(!criterion) {
+        if(criterion) {
+          isCriterionPresent = true;
+        } else {
           criterion = RqlQueryService.createCriteriaItem($scope.target, $scope.$parent.taxonomy, $scope.vocabulary);
         }
-
-        var query = RqlQueryUtils.hasTargetQuery(criteria.rqlQuery, criterion.target) ? angular.copy(criteria.rqlQuery) : createExistsQuery(criteria, criterion);
+        
+        if(RqlQueryUtils.hasTargetQuery(criteria.rqlQuery, criterion.target)) {
+          query = angular.copy(criteria.rqlQuery);
+          
+          if(!isCriterionPresent) {
+            RqlQueryService.addCriteriaItem(query, criterion, RQL_NODE.OR);
+          }
+        } else {
+          query = createExistsQuery(criteria, criterion); 
+        }
+        
         var joinQuery = RqlQueryService.prepareCriteriaTermsQuery(query, criterion, criterion.lang);
         JoinQuerySearchResource[targetToType($scope.target)]({query: joinQuery}).$promise.then(function (joinQueryResponse) {
           RqlQueryService.getTargetAggregations(joinQueryResponse, criterion, criterion.lang).forEach(function (term) {
@@ -4615,8 +4631,8 @@ angular.module('obiba.mica.search')
   .controller('ClassificationPanelController', ['$scope', '$location', 'TaxonomyResource',
     'TaxonomiesResource', 'ngObibaMicaSearch', 'RqlQueryUtils', ClassificationPanelController])
 
-  .controller('TaxonomiesFacetsController', ['$scope', 'TaxonomyResource', 'TaxonomiesResource', 'ngObibaMicaSearch',
-    'RqlQueryUtils', function ($scope, TaxonomyResource, TaxonomiesResource, ngObibaMicaSearch, RqlQueryUtils) {
+  .controller('TaxonomiesFacetsController', ['$scope', 'TaxonomyResource', 'TaxonomiesResource', 'LocalizedValues', 'ngObibaMicaSearch',
+    'RqlQueryUtils', function ($scope, TaxonomyResource, TaxonomiesResource, LocalizedValues, ngObibaMicaSearch, RqlQueryUtils) {
       $scope.options = ngObibaMicaSearch.getOptions();
       $scope.taxonomies = {};
       $scope.targets = [];
@@ -4644,6 +4660,10 @@ angular.module('obiba.mica.search')
       
       $scope.loadVocabulary = function(taxonomy, vocabulary) {
         $scope.$broadcast('ngObibaMicaLoadVocabulary', taxonomy, vocabulary);
+      };
+
+      $scope.localize = function (values) {
+        return LocalizedValues.forLocale(values, $scope.lang);
       };
       
       function init(target) {
@@ -5384,6 +5404,24 @@ angular.module('obiba.mica.search')
             $scope.onUpdateCriteria(criteria.item, type);
           }
         });
+      };
+      
+      $scope.isFullCoverage = function() {
+        var selected = [];
+        if ($scope.table && $scope.table.rows) {
+          $scope.table.rows.forEach(function(r){
+            if (r.hits) {
+              if (r.hits.filter(function(h){
+                    return h === 0;
+                  }).length === 0) {
+                selected.push(r);
+              }
+            }
+          });
+        }
+
+        var rows = $scope.table ? ($scope.table.rows || []) : [];
+        return selected.length === rows.length;
       };
 
 
@@ -8450,15 +8488,26 @@ angular.module("search/views/classifications/taxonomies-facets-view.html", []).r
     "    <uib-accordion-group ng-repeat=\"taxonomy in taxonomies[target]\" is-open=\"taxonomy.isOpen\" is-disabled=\"false\" template-url=\"search/views/classifications/taxonomy-accordion-group.html\">\n" +
     "      <uib-accordion-heading>\n" +
     "          <i class=\"fa\" ng-class=\"{'fa-chevron-down': taxonomy.isOpen, 'fa-chevron-right': !taxonomy.isOpen}\"></i>\n" +
-    "          <span ng-repeat=\"label in taxonomy.title\" ng-if=\"label.locale === lang\">{{label.text}}</span>\n" +
+    "          <span uib-popover=\"{{localize(taxonomy.description ? taxonomy.description : taxonomy.title)}}\"\n" +
+    "                popover-title=\"{{taxonomy.description ? localize(taxonomy.title) : null}}\"\n" +
+    "                popover-placement=\"bottom\"\n" +
+    "                popover-trigger=\"mouseenter\"\n" +
+    "                popover-popup-delay=\"1000\">\n" +
+    "            {{localize(taxonomy.title)}}\n" +
+    "          </span>\n" +
     "      </uib-accordion-heading>\n" +
     "      <uib-accordion close-others=\"false\">\n" +
     "        <uib-accordion-group ng-repeat=\"vocabulary in taxonomy.vocabularies\" is-open=\"vocabulary.isOpen\" is-disabled=\"false\" template-url=\"search/views/classifications/vocabulary-accordion-group.html\">\n" +
     "          <uib-accordion-heading>\n" +
-    "            <span ng-click=\"loadVocabulary(taxonomy, vocabulary)\">\n" +
+    "            <span uib-popover=\"{{localize(vocabulary.description ? vocabulary.description : vocabulary.title)}}\"\n" +
+    "                  popover-title=\"{{vocabulary.description ? localize(vocabulary.title) : null}}\"\n" +
+    "                  popover-placement=\"bottom\"\n" +
+    "                  popover-trigger=\"mouseenter\"\n" +
+    "                  popover-popup-delay=\"1000\"\n" +
+    "                  ng-click=\"loadVocabulary(taxonomy, vocabulary)\">\n" +
     "              <i class=\"fa\" ng-class=\"{'fa-caret-down': vocabulary.isOpen, 'fa-caret-right': !vocabulary.isOpen}\"></i>\n" +
-    "              <span ng-repeat=\"label in vocabulary.title\" ng-if=\"label.locale === lang\">\n" +
-    "                {{label.text}}\n" +
+    "              <span>\n" +
+    "                {{localize(vocabulary.title)}}\n" +
     "              </span>\n" +
     "              <span ng-if=\"!vocabulary.title\">\n" +
     "                {{vocabulary.name}}\n" +
@@ -8489,12 +8538,18 @@ angular.module("search/views/classifications/taxonomies-facets-view.html", []).r
     "                    class=\"checkbox\" ng-class=\"{active: term.name === term.name}\">\n" +
     "                  <label style=\"max-width: 80%;\">\n" +
     "                    <input type=\"checkbox\" ng-model=\"term.selected\" ng-change=\"selectTerm(target, taxonomy, vocabulary, {term: term})\">\n" +
-    "                      <span ng-repeat=\"label in term.title\" ng-if=\"label.locale === lang\">\n" +
-    "                        {{label.text}}\n" +
+    "                    <span uib-popover=\"{{localize(term.description ? term.description : term.title)}}\"\n" +
+    "                          popover-title=\"{{term.description ? localize(term.title) : null}}\"\n" +
+    "                          popover-placement=\"bottom\"\n" +
+    "                          popover-trigger=\"mouseenter\"\n" +
+    "                          popover-popup-delay=\"1000\">\n" +
+    "                      <span>\n" +
+    "                        {{localize(term.title)}}\n" +
     "                      </span>\n" +
     "                      <span ng-if=\"!term.title\">\n" +
     "                        {{term.name}}\n" +
     "                      </span>\n" +
+    "                    </span>\n" +
     "                  </label>\n" +
     "                    <span class=\"pull-right\" ng-class=\"{'text-muted': !term.selected}\">\n" +
     "                      {{term.count}}\n" +
@@ -8829,7 +8884,7 @@ angular.module("search/views/coverage/coverage-search-result-table-template.html
     "      </a>\n" +
     "\n" +
     "      <span ng-if=\"table.taxonomyHeaders.length > 0\" >\n" +
-    "        <a href class=\"btn btn-info btn-responsive\" ng-click=\"selectFullAndFilter()\">\n" +
+    "        <a href class=\"btn btn-info btn-responsive\" ng-click=\"selectFullAndFilter()\" ng-hide=\"isFullCoverage()\">\n" +
     "          {{'search.coverage-select.full' | translate}}\n" +
     "        </a>\n" +
     "        <a target=\"_self\" class=\"btn btn-info btn-responsive\"\n" +
@@ -9712,7 +9767,7 @@ angular.module("search/views/search.html", []).run(["$templateCache", function($
     "\n" +
     "      <!-- Search box region -->\n" +
     "      <div id=\"search-region\" class=\"{{tabs && tabs.length>1 ? 'tab-content voffset4' : ''}}\">\n" +
-    "        <div id=\"search-box-region\" class=\"{{hasFacetedTaxonomies ? '' : 'row'}}\">\n" +
+    "        <div ng-if=\"options.showSearchBox\" id=\"search-box-region\" class=\"{{hasFacetedTaxonomies ? '' : 'row'}}\">\n" +
     "          <div class=\"{{hasFacetedTaxonomies ? '' : 'col-md-3'}}\"></div>\n" +
     "          <div class=\"{{hasFacetedTaxonomies ? '' : 'col-md-6'}}\">\n" +
     "            <script type=\"text/ng-template\" id=\"customTemplate.html\">\n" +
@@ -9773,7 +9828,7 @@ angular.module("search/views/search.html", []).run(["$templateCache", function($
     "          </span>\n" +
     "          </div>\n" +
     "        </div>\n" +
-    "        <div id=\"search-selector-region\" class=\"{{hasFacetedTaxonomies ? '' : 'row'}}\">\n" +
+    "        <div ng-if=\"options.showSearchBrowser\" id=\"search-selector-region\" class=\"{{hasFacetedTaxonomies ? '' : 'row'}}\">\n" +
     "          <div class=\"{{hasFacetedTaxonomies ? '' : 'col-md-3'}}\"></div>\n" +
     "          <div class=\"{{hasFacetedTaxonomies ? '' : 'col-md-6'}}\">\n" +
     "            <small>\n" +
@@ -9806,7 +9861,7 @@ angular.module("search/views/search.html", []).run(["$templateCache", function($
     "            </small>\n" +
     "          </div>\n" +
     "        </div>\n" +
-    "        <taxonomies-panel taxonomy-name=\"taxonomyName\" target=\"target\" on-select-term=\"onSelectTerm\"\n" +
+    "        <taxonomies-panel ng-if=\"options.showSearchBrowser\" taxonomy-name=\"taxonomyName\" target=\"target\" on-select-term=\"onSelectTerm\"\n" +
     "                          on-close=\"clearTaxonomy\" lang=\"lang\" taxonomies-shown=\"taxonomiesShown\"></taxonomies-panel>\n" +
     "      </div>\n" +
     "\n" +
@@ -9815,7 +9870,7 @@ angular.module("search/views/search.html", []).run(["$templateCache", function($
     "      </div>\n" +
     "\n" +
     "      <!-- Search criteria region -->\n" +
-    "      <div id=\"search-criteria-region\" class=\"panel panel-default voffset2\" ng-if=\"search.criteria.children && search.criteria.children.length>0\">\n" +
+    "      <div id=\"search-criteria-region\" ng-class=\"options.showSearchBox || options.showSearchBrowser ? 'voffset2' : ''\" class=\"panel panel-default\" ng-if=\"search.criteria.children && search.criteria.children.length>0\">\n" +
     "        <div class=\"panel-body\">\n" +
     "          <table style=\"border:none\">\n" +
     "            <tbody>\n" +

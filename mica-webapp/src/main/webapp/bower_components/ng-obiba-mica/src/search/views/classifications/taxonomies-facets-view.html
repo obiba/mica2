@@ -7,15 +7,26 @@
     <uib-accordion-group ng-repeat="taxonomy in taxonomies[target]" is-open="taxonomy.isOpen" is-disabled="false" template-url="search/views/classifications/taxonomy-accordion-group.html">
       <uib-accordion-heading>
           <i class="fa" ng-class="{'fa-chevron-down': taxonomy.isOpen, 'fa-chevron-right': !taxonomy.isOpen}"></i>
-          <span ng-repeat="label in taxonomy.title" ng-if="label.locale === lang">{{label.text}}</span>
+          <span uib-popover="{{localize(taxonomy.description ? taxonomy.description : taxonomy.title)}}"
+                popover-title="{{taxonomy.description ? localize(taxonomy.title) : null}}"
+                popover-placement="bottom"
+                popover-trigger="mouseenter"
+                popover-popup-delay="1000">
+            {{localize(taxonomy.title)}}
+          </span>
       </uib-accordion-heading>
       <uib-accordion close-others="false">
         <uib-accordion-group ng-repeat="vocabulary in taxonomy.vocabularies" is-open="vocabulary.isOpen" is-disabled="false" template-url="search/views/classifications/vocabulary-accordion-group.html">
           <uib-accordion-heading>
-            <span ng-click="loadVocabulary(taxonomy, vocabulary)">
+            <span uib-popover="{{localize(vocabulary.description ? vocabulary.description : vocabulary.title)}}"
+                  popover-title="{{vocabulary.description ? localize(vocabulary.title) : null}}"
+                  popover-placement="bottom"
+                  popover-trigger="mouseenter"
+                  popover-popup-delay="1000"
+                  ng-click="loadVocabulary(taxonomy, vocabulary)">
               <i class="fa" ng-class="{'fa-caret-down': vocabulary.isOpen, 'fa-caret-right': !vocabulary.isOpen}"></i>
-              <span ng-repeat="label in vocabulary.title" ng-if="label.locale === lang">
-                {{label.text}}
+              <span>
+                {{localize(vocabulary.title)}}
               </span>
               <span ng-if="!vocabulary.title">
                 {{vocabulary.name}}
@@ -46,12 +57,18 @@
                     class="checkbox" ng-class="{active: term.name === term.name}">
                   <label style="max-width: 80%;">
                     <input type="checkbox" ng-model="term.selected" ng-change="selectTerm(target, taxonomy, vocabulary, {term: term})">
-                      <span ng-repeat="label in term.title" ng-if="label.locale === lang">
-                        {{label.text}}
+                    <span uib-popover="{{localize(term.description ? term.description : term.title)}}"
+                          popover-title="{{term.description ? localize(term.title) : null}}"
+                          popover-placement="bottom"
+                          popover-trigger="mouseenter"
+                          popover-popup-delay="1000">
+                      <span>
+                        {{localize(term.title)}}
                       </span>
                       <span ng-if="!term.title">
                         {{term.name}}
                       </span>
+                    </span>
                   </label>
                     <span class="pull-right" ng-class="{'text-muted': !term.selected}">
                       {{term.count}}

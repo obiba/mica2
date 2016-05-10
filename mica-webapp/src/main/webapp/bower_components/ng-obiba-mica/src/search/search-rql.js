@@ -737,7 +737,8 @@ angular.module('obiba.mica.search')
           // added with a AND operator otherwise it is a OR
           if (!logicalOp && query.args && query.args.length > 0) {
             var targetTaxo = 'Mica_' + parentQuery.name;
-            logicalOp = query.args[0].startsWith(targetTaxo + '.') ? RQL_NODE.AND : RQL_NODE.OR;
+            var criteriaVocabulary = query.name === 'match' ? query.args[1] : query.args[0];
+            logicalOp = criteriaVocabulary.startsWith(targetTaxo + '.') ? RQL_NODE.AND : RQL_NODE.OR;
           }
           var orQuery = new RqlQuery(logicalOp || RQL_NODE.AND);
           orQuery.args.push(oldArg, query);
