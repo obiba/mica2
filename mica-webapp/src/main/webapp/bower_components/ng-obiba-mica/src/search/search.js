@@ -43,6 +43,8 @@ angular.module('obiba.mica.search', [
         searchTabsOrder: [DISPLAY_TYPES.LIST, DISPLAY_TYPES.COVERAGE, DISPLAY_TYPES.GRAPHICS],
         resultTabsOrder: [QUERY_TARGETS.VARIABLE, QUERY_TARGETS.DATASET, QUERY_TARGETS.STUDY, QUERY_TARGETS.NETWORK],
         showAllFacetedTaxonomies: true,
+        showSearchBox: true,
+        showSearchBrowser: true,
         variableTaxonomiesOrder: [],
         studyTaxonomiesOrder: [],
         datasetTaxonomiesOrder: [],
