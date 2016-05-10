@@ -300,17 +300,8 @@ mica.network
         }
 
         $scope.permissions = DocumentPermissionsService.state(network['obiba.mica.EntityStateDto.state']);
-
-        $scope.studySummaries = [];
-
-        if (network.studyIds && network.studyIds.length > 0) {
-          DraftStudiesSummariesResource.summaries({id: network.studyIds},function (summaries){
-            $scope.studySummaries = summaries;
-          });
-        } else  {
-          network.studyIds = [];
-        }
-
+        $scope.studySummaries = network.studySummaries || [];
+        network.studyIds = network.studyIds || [];
         $scope.network.networkIds = $scope.network.networkIds || [];
         network.memberships = network.memberships || [];
 

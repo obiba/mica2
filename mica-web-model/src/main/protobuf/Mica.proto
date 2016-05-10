@@ -269,6 +269,7 @@ message NetworkDto {
   repeated MembershipsDto memberships = 17;
   repeated string networkIds = 18;
   repeated NetworkSummaryDto networkSummaries = 19;
+  optional PermissionsDto permissions = 21;
   extensions 1000 to max;
 }
 
@@ -466,6 +467,7 @@ message DatasetDto {
   repeated AttributeDto attributes = 7;
   optional TimestampsDto timestamps = 8;
   optional string variableType = 9;
+  optional PermissionsDto permissions = 10;
 
   extensions 1000 to max;
 

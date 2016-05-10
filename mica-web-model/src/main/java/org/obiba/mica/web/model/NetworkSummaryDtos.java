@@ -42,7 +42,9 @@ class NetworkSummaryDtos {
       builder.setTimestamps(TimestampsDtos.asDto(network));
     }
 
-    network.getStudyIds().stream().filter(sId -> asDraft && subjectAclService.isPermitted("/draft/study", "VIEW", sId) || subjectAclService.isAccessible("/study", sId))
+    network.getStudyIds().stream()
+      .filter(sId -> asDraft && subjectAclService.isPermitted("/draft/study", "VIEW", sId)
+          || subjectAclService.isAccessible("/study", sId))
       .forEach(sId -> {
         try {
           builder.addStudyIds(sId);
@@ -52,7 +54,9 @@ class NetworkSummaryDtos {
         }
       });
 
-    network.getNetworkIds().stream().filter(nId -> asDraft || subjectAclService.isAccessible("/network", nId))
+    network.getNetworkIds().stream()
+      .filter(nId -> asDraft && subjectAclService.isPermitted("/draft/network", "VIEW", nId)
+          || subjectAclService.isAccessible("/network", nId))
       .forEach(nId -> {
         try {
           builder.addNetworkIds(nId);

@@ -32,6 +32,8 @@ import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.network.service.PublishedNetworkService;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.core.domain.taxonomy.Term;
 import org.obiba.opal.core.domain.taxonomy.Vocabulary;
@@ -72,6 +74,12 @@ class DatasetDtos {
   @Inject
   private HarmonizationDatasetStateRepository harmonizationDatasetStateRepository;
 
+  @Inject
+  private PublishedNetworkService publishedNetworkService;
+
+  @Inject
+  private SubjectAclService subjectAclService;
+
   @NotNull
   Mica.DatasetDto.Builder asDtoBuilder(@NotNull StudyDataset dataset, boolean asDraft) {
     Mica.DatasetDto.Builder builder = asBuilder(dataset);
@@ -84,15 +92,17 @@ class DatasetDtos {
       builder.setExtension(Mica.StudyDatasetDto.type, sbuilder.build());
     }
 
+    Mica.PermissionsDto permissionsDto = permissionsDtos.asDto(dataset);
     if(asDraft) {
       StudyDatasetState state = studyDatasetStateRepository.findOne(dataset.getId());
       if(state != null) {
         builder.setPublished(state.isPublished());
         builder.setExtension(Mica.EntityStateDto.datasetState,
-          entityStateDtos.asDto(state).setPermissions(permissionsDtos.asDto(dataset)).build());
+          entityStateDtos.asDto(state).setPermissions(permissionsDto).build());
       }
     }
 
+    builder.setPermissions(permissionsDto);
     return builder;
   }
 
@@ -115,7 +125,17 @@ class DatasetDtos {
     hbuilder.setProject(dataset.getProject());
     hbuilder.setTable(dataset.getTable());
 
-    if(!Strings.isNullOrEmpty(dataset.getNetworkId())) hbuilder.setNetworkId(dataset.getNetworkId());
+    String networkId = dataset.getNetworkId();
+    if(!Strings.isNullOrEmpty(networkId)) {
+
+      if (asDraft) {
+        if (subjectAclService.isPermitted("/draft/network", "VIEW", networkId)) {
+          hbuilder.setNetworkId(networkId);
+        }
+      } else if (publishedNetworkService.findById(networkId) != null) {
+        hbuilder.setNetworkId(networkId);
+      }
+    }
 
     if(!dataset.getStudyTables().isEmpty()) {
       dataset.getStudyTables().forEach(studyTable -> hbuilder
@@ -124,14 +144,17 @@ class DatasetDtos {
 
     builder.setExtension(Mica.HarmonizationDatasetDto.type, hbuilder.build());
 
+    Mica.PermissionsDto permissionsDto = permissionsDtos.asDto(dataset);
     if(asDraft) {
       HarmonizationDatasetState state = harmonizationDatasetStateRepository.findOne(dataset.getId());
       if(state != null) {
         builder.setPublished(state.isPublished());
         builder.setExtension(Mica.EntityStateDto.datasetState,
-          entityStateDtos.asDto(state).setPermissions(permissionsDtos.asDto(dataset)).build());
+          entityStateDtos.asDto(state).setPermissions(permissionsDto).build());
       }
     }
+
+    builder.setPermissions(permissionsDto);
 
     return builder;
   }

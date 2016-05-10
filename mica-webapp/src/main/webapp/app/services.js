@@ -177,7 +177,7 @@ mica.factory('FormDirtyStateObserver', ['$uibModal',
               },
               templateUrl: 'app/views/unsaved-modal.html'
             }).result.then(function (answer) {
-              if (answer == true) {
+              if (answer === true) {
                 onLocationChangeOff();
                 $location.path($location.url(newUrl).hash());
               }
