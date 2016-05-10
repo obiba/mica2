@@ -9,11 +9,11 @@
 "vocabularies":
 - "name": "id"
   "title":
-    "en": "Name"
-    "fr": "Nom"
+    "en": "Acronym"
+    "fr": "Acronyme"
   "description":
-    "en": "Network name."
-    "fr": "Nom du réseau."
+    "en": "Network acronym."
+    "fr": "Acronyme du réseau."
   "attributes":
     "alias": "networkId"
 - "name": "studyIds"

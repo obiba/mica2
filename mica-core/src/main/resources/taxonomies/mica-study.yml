@@ -10,11 +10,11 @@
 "vocabularies":
 - "name": "id"
   "title":
-    "en": "Name"
-    "fr": "Nom"
+    "en": "Acronym"
+    "fr": "Acronyme"
   "description":
-    "en": "Study name."
-    "fr": "Nom de l'étude."
+    "en": "Study acronym."
+    "fr": "Acronyme de l'étude."
   "terms": []
 - "name": "objectives"
   "title":
@@ -1385,7 +1385,7 @@
     "alias": "populations-selectionCriteria-ageMax"
 - "name": "populations-selectionCriteria-gender"
   "title":
-    "en": "Selection criteria - Gender"
+    "en": "Selection criteria - Sex"
     "fr": "Critères de sélection - Genre"
   "description":
     "en": "Participant’s gender"
@@ -1407,8 +1407,8 @@
       "en": "Study recruits women only."
 - "name": "populations-selectionCriteria-criteria"
   "title":
-    "en": "Selection criteria - gravidity/newborns"
-    "fr": "Critères de sélection - Femmes enceintes/Nouveaux-nés"
+    "en": "Selection criteria - pregnancy/birth"
+    "fr": "Critères de sélection - grossesse/naissance"
   "description":
     "en": "The characteristics of an invidual that must be fulfilled when recruiting participants to the study."
   "attributes":
@@ -1417,19 +1417,19 @@
   "terms":
   - "name": "gravidity"
     "title":
-      "en": "Gravidity"
+      "en": "Pregnant women"
       "fr": "Femmes enceintes"
     "description":
       "en": "Study recruits pregnant women."
   - "name": "newborn"
     "title":
-      "en": "Newborn"
+      "en": "Newborns"
       "fr": "Nouveaux-nés"
     "description":
       "en": "Study recruits recently born children."
   - "name": "twin"
     "title":
-      "en": "Twin"
+      "en": "Twins"
       "fr": "Jumeaux"
     "description":
       "en": "Study recruits individuals born at the same birth to the same mother."
