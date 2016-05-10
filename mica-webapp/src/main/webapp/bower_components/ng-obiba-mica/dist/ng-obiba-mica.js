@@ -9816,7 +9816,7 @@ angular.module("search/views/search.html", []).run(["$templateCache", function($
     "                  + target | translate}}</a></li>\n" +
     "              </ul>\n" +
     "            </span>\n" +
-    "            <input type=\"text\" ng-model=\"selectedCriteria\"\n" +
+    "            <input type=\"text\" ng-model=\"$parent.selectedCriteria\"\n" +
     "                   placeholder=\"{{'search.placeholder.' + (documents.search.target ? documents.search.target : 'all') | translate}}\"\n" +
     "                   uib-typeahead=\"criteria for criteria in searchCriteria($viewValue)\"\n" +
     "                   typeahead-min-length=\"2\"\n" +
