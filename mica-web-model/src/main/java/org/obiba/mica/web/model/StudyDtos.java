@@ -58,8 +58,9 @@ class StudyDtos {
 
     if(asDraft) {
       builder.setTimestamps(TimestampsDtos.asDto(study));
-      builder.setPermissions(permissionsDtos.asDto(study));
     }
+
+    builder.setPermissions(permissionsDtos.asDto(study));
 
     if(study.getLogo() != null) builder.setLogo(attachmentDtos.asDto(study.getLogo()));
 
