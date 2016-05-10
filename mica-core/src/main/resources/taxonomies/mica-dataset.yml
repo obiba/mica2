@@ -9,11 +9,11 @@
 "vocabularies":
 - "name": "id"
   "title":
-    "en": "Name"
-    "fr": "Nom"
+    "en": "Acronym"
+    "fr": "Acronyme"
   "description":
-    "en": "Dataset name."
-    "fr": "Nom du jeux de données"
+    "en": "Dataset acronym."
+    "fr": "Acronyme du jeux de données"
 - "name": "className"
   "title":
     "en": "Dataset type"
