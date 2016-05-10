@@ -27,15 +27,31 @@
   "title":
     "en": "Investigator Name"
   "description":
-    "en": "Investigator last name."
+    "en": "Investigator full name."
   "attributes":
-    "field": "memberships.investigator.person.lastName.analyzed"
-    "alias": "memberships-investigator-person-lastName"
+    "field": "memberships.investigator.person.fullName.analyzed"
+    "alias": "memberships-investigator-person-fullName"
+- "name": "investigator-institution"
+  "title":
+    "en": "Investigator Institution"
+  "description":
+    "en": "Investigator institution name."
+  "attributes":
+    "field": "memberships.investigator.person.institution.name.und"
+    "alias": "memberships-investigator-person-institution-name"
 - "name": "contact"
   "title":
     "en": "Contact Name"
   "description":
-    "en": "Contact last name."
+    "en": "Contact full name."
   "attributes":
-    "field": "memberships.contact.person.lastName.analyzed"
-    "alias": "memberships-contact-person-lastName"
+    "field": "memberships.contact.person.fullName.analyzed"
+    "alias": "memberships-contact-person-fullName"
+- "name": "contact-institution"
+  "title":
+    "en": "Contact Institution"
+  "description":
+    "en": "Contact institution name."
+  "attributes":
+    "field": "memberships.contact.person.institution.name.und"
+    "alias": "memberships-contact-person-institution-name"

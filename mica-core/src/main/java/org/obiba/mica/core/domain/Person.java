@@ -6,7 +6,6 @@ import java.util.Objects;
 
 import javax.validation.constraints.NotNull;
 
-import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.study.domain.Study;
@@ -15,7 +14,6 @@ import org.springframework.data.domain.Persistable;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.base.MoreObjects;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
@@ -68,6 +66,20 @@ public class Person implements Persistable<String> {
 
   public void setFirstName(String firstName) {
     this.firstName = firstName;
+  }
+
+  public String getFullName() {
+    if (Strings.isNullOrEmpty(firstName)) return lastName;
+    if (Strings.isNullOrEmpty(lastName)) return "";
+    return firstName + " " + lastName;
+  }
+
+  /**
+   * For JSON serialization only.
+   * @param fullName
+   */
+  public void setFullName(String fullName) {
+    // ignore
   }
 
   public String getLastName() {
