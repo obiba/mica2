@@ -56,6 +56,7 @@ public class PersonIndexConfiguration extends AbstractIndexConfiguration impleme
 
     createMappingWithAndWithoutAnalyzer(mapping, "firstName");
     createMappingWithAndWithoutAnalyzer(mapping, "lastName");
+    createMappingWithAndWithoutAnalyzer(mapping, "fullName");
     createMappingWithAndWithoutAnalyzer(mapping, "email");
     mapping.endObject(); // properties
     mapping.endObject().endObject();
