@@ -39,8 +39,8 @@
         "en": "Source & target"
         "fr": "Source & cible"
       "description":
-        "en": "Additional information about the collected variable"
-        "fr": "Informations additionnelles au sujet des variables collectées"
+        "en": "Information about data collection methods and individuals targeted."
+        "fr": "Information sur les méthodes de collecte de données et les individus ciblés."
   - "name": "Scales"
     "title":
       "en": "Scales/Measures"
@@ -105,7 +105,7 @@
       "en": "Studies"
       "fr": "Études"
     "description":
-      "en": "Study properties as defined in the catalog."
+      "en": "Catalogue."
       "fr": "Propriétés des études telles que définies dans le catalogue."
 - "name": "network"
   "title":

@@ -13,7 +13,7 @@
     "en": "Acronym"
     "fr": "Acronyme"
   "description":
-    "en": "Study acronym."
+    "en": "Acronym of the study."
     "fr": "Acronyme de l'étude."
   "terms": []
 - "name": "objectives"
@@ -32,7 +32,8 @@
     "en": "Study design"
     "fr": "Définitions d'étude"
   "description":
-    "en": "The study type (e.g. observational, experimental) and sub-type (e.g.  cohort study, case control, randomized control trial)."
+    "en": "The design of an observational or exprimental study (e.g. cohort, case control)."
+    "fr": "Le type d'une étude observationnelle ou expérimentale (e.g. cohorte, cas-témoins)."
   "attributes":
     "field": "methods.designs"
     "alias": "methods-designs"
@@ -42,31 +43,36 @@
       "en": "Cohort"
       "fr": "Étude de cohorte"
     "description":
-      "en": "An observational study design where one or more defined population samples are followed prospectively to determine the incidence of a disease or health outcome in individuals who are exposed to certain risk factors as compared to those who are not exposed."
+      "en": "Observational study where one or more defined population are followed prospectively to determine the incidence of diseases or health outcomes in relation to certain risk factors."
+      "fr": "Étude observationnelle où une ou plusieurs populations définies sont suivies de façon prospective afin de déterminer l'incidence des maladies ou des résultats de santé par rapport à certains facteurs de risque."
   - "name": "case_control"
     "title":
       "en": "Case-control"
       "fr": "Cas-témoins"
     "description":
-      "en": "An observational study design that compares participants who have a disease or outcome of interest (cases) with participants who do not have the disease or outcome (controls) to retrospectively assess whether there were any differences in their past exposure to certain risk factors."
+      "en": "Observational study that compares participants who have an outcome interest (cases) with participants who do not have the outcome (controls) to assess the impact of their past exposure to certain risk factors."
+      "fr": "Étude observationnelle qui compare le participants qui ont un résultat d'intérêt (cas) avec les participants qui ne possèdent pas ce résultat (contrôles) por évaluer l'impact de leur exposition passée à certains facteurs de risque."
   - "name": "case_only"
     "title":
       "en": "Case only"
       "fr": "Cas"
     "description":
-      "en": "An observational study design that describes and interprets an individual case."
+      "en": "Observational study that describes and investigates a population pesenting a specific disease or outcome (cases)."
+      "fr": "Étude observationnelle qui décrit et étudie une population présentant une maladie ou un résultat spécifique (cas)."
   - "name": "cross_sectional"
     "title":
       "en": "Cross-sectional"
       "fr": "Analyse transversale"
     "description":
-      "en": "An observational study design that involves the analysis of data collected from a population at one specific point in time."
+      "en": "Observational study that involves the analysis of data collected from a population at one specific point in time."
+      "fr": "Étude observationnelle qui implique l'analyse des données recueillies sur une population à un moment précis dans le temps."
   - "name": "clinical_trial"
     "title":
       "en": "Clinical trial"
       "fr": "Essai clinique"
     "description":
-      "en": "An experimental study design in which participants are randomly assigned into an experimental group or a control group to evaluate the effect of a certain intervention on the outcome being studied."
+      "en": "Experimental study in which participants are randomly assigned into an experimental group or a control group to evaluate the effect of a certain intervention on the outcome being studied."
+      "fr": "Étude expérimentale dans laquelle les participants sont assignés aléatoirement à un groupe expérimentale ou à un groupe de contrôle afin d'évaluer l'effet d'une certaine intervention sur les résultats en cours d'étude."
   - "name": "other"
     "title":
       "en": "Other"
@@ -1388,7 +1394,7 @@
     "en": "Selection criteria - Sex"
     "fr": "Critères de sélection - Genre"
   "description":
-    "en": "Participant’s gender"
+    "en": "Participant’s sex"
   "attributes":
     "field": "populations.selectionCriteria.gender"
     "alias": "populations-selectionCriteria-gender"
@@ -1410,7 +1416,8 @@
     "en": "Selection criteria - pregnancy/birth"
     "fr": "Critères de sélection - grossesse/naissance"
   "description":
-    "en": "The characteristics of an invidual that must be fulfilled when recruiting participants to the study."
+    "en": "Participants recruited are pregnant women, newborns or twins."
+    "fr": "Les participants recrutés sont des femmes enceintes, des nouveaux-nés ou des jumeaux."
   "attributes":
     "field": "populations.selectionCriteria.criteria"
     "alias": "populations-selectionCriteria-criteria"
@@ -1438,8 +1445,8 @@
     "en": "Target number of participants"
     "fr": "Nombre de participants ciblé"
   "description":
-    "en": "The target number of participants can be lower than the actual number."
-    "fr": "Le nombre de participants ciblé peut être inférieur au nombre effectivement atteint."
+    "en": "Number of participants recruited or to be recruited by the study."
+    "fr": "Nombre de participants recrutés ou à recruter par l'étude."
   "attributes":
     "type": "integer"
     "field": "numberOfParticipants.participant.number"
@@ -1504,8 +1511,8 @@
     "en": "Target number of participants with samples"
     "fr": "Nombre de participants avec échantillon ciblé"
   "description":
-    "en": "The target number of participants with samples can be lower than the actual number."
-    "fr": "Le nombre de participants avec échantillon ciblé peut être inférieur au nombre effectivement atteint."
+    "en": "Number of participants that provided or will provide biosamples."
+    "fr": "Nombre de participants qui ont fourni ou qui fourniront des échantillons biologiques."
   "attributes":
     "type": "integer"
     "field": "numberOfParticipants.sample.number"
@@ -1570,7 +1577,8 @@
     "en": "Recruitment target"
     "fr": "Cible de recrutement"
   "description":
-    "en": "Whether individuals or families are targeted for recruitment by the study."
+    "en": "Type of participants (e.g. individuals, families) targeted for recruitment by the study."
+    "fr": "Type de participants (e.g. individus, familles) ciblés pour le recrutement par l'étude."
   "repeatable": "true"
   "attributes":
     "field": "methods.recruitments"
@@ -1580,23 +1588,30 @@
     "title":
       "en": "Individuals"
       "fr": "Individus"
-    "description": {}
+    "description":
+      "en": "Study has recruited individuals as their target participants."
+      "fr": "L'étude a recruté des individus comme paarticipants cibles."
   - "name": "families"
     "title":
       "en": "Families"
       "fr": "Familles"
-    "description": {}
+    "description":
+      "en": "Study has recruited families (e.g. couples, parent/child) as their target participants."
+      "fr": "L'étude a recruté des familles (e.g. couples, parent/enfant) comme participants cibles."
   - "name": "other"
     "title":
       "en": "Other"
       "fr": "Autre"
-    "description": {}
+    "description":
+      "en": "Study has recruited other type of participants."
+      "fr": "L'étude a recruté un autre type de participants."
 - "name": "populations-recruitment-dataSources"
   "title":
     "en": "Sources of recruitment"
     "fr": "Sources de recrutement"
   "description":
-    "en": "The group from which individuals are recruited to participate in the study."
+    "en": "The population(s) from which individuals are recruited to participate in the study."
+    "fr": "La ou les population(s) à partir de(s) laquelle(s) les individus sont recrutés pour participer à l'étude."
   "attributes":
     "field": "populations.recruitment.dataSources"
     "alias": "populations-recruitment-dataSources"
@@ -1607,30 +1622,36 @@
       "en": "General population"
       "fr": "Population générale"
     "description":
-      "en": "Individuals are recruited to participate in the study from the general population."
+      "en": "Participants are recruited from the general population."
+      "fr": "Les participants sont recrutés à partir de la population générale."
   - "name": "specific_population"
     "title":
       "en": "Specific population"
       "fr": "Population spécifique"
     "description":
-      "en": "Individuals are recruited to participate in the study from a particular institution or organization."
+      "en": "Participants are recruited rom a specific sub-population."
+      "fr": "Les participants sont recrutés à partir d'une sous-population spécifique."
   - "name": "exist_studies"
     "title":
       "en": "Participants from existing studies"
       "fr": "Participants provenant d'études existantes"
     "description":
-      "en": "Individuals are recruited from an existing study."
+      "en": "Participants are recruited from an existing study."
+      "fr": "Les participants sont recrutés à partir d'une étude existante."
   - "name": "other"
     "title":
       "en": "Other"
       "fr": "Autre"
-    "description": {}
+    "description":
+      "en": "Participants are recruited from an another source."
+      "fr": "Les participants sont recrutés à partir d'une autre source."
 - "name": "populations-dataCollectionEvents-dataSources"
   "title":
     "en": "Data sources"
     "fr": "Source des données"
   "description":
-    "en": "Methods and instruments used to collect information about the participant"
+    "en": "Source from which information is generated/extracted"
+    "fr": "Source à partir de laquelle l'information est générée/extraite."
   "attributes":
     "field": "populations.dataCollectionEvents.dataSources"
     "alias": "populations-dataCollectionEvents-dataSources"
@@ -1641,31 +1662,36 @@
       "en": "Questionnaires"
       "fr": "Questionnaires"
     "description":
-      "en": "Set of questions used to collect data about the participant - clinical data, social status, occupational group, exposure measures, etc."
+      "en": "Questionnaires are used to collect information."
+      "fr": "les questionnaires sont utilisés pour recueillir des informations."
   - "name": "physical_measures"
     "title":
       "en": "Physical Measures"
       "fr": "Mesures physiques"
     "description":
-      "en": "Direct measurements of the size, weight, proportions, and functions of the participant’s body."
+      "en": "Information on physical measures is collected."
+      "fr": "Les informations sur les mesures physique sont collectés."
   - "name": "biological_samples"
     "title":
       "en": "Biosamples"
       "fr": "Échantillons biologiques"
     "description":
-      "en": "Biospecimens or biological material."
+      "en": "Biological samples are collected."
+      "fr": "Les échantillons biologiques sont collectés."
   - "name": "administratives_databases"
     "title":
       "en": "Administrative Databases"
       "fr": "Bases de données administratives"
     "description":
-      "en": "Databases containing information collected by governments for administrative purposes that are linked to the study."
+      "en": "Information is extracted from governmental, hospital or other registries."
+      "fr": "L'information est extraite à partir de registres gouvernementaux, hôspitalier ou autres."
   - "name": "others"
     "title":
       "en": "Others"
       "fr": "Autres"
     "description":
-      "en": "Other sources of data."
+      "en": "Information from other sources is collected."
+      "fr": "Informations provenatn d'autres sources sont collectés."
 - "name": "populations-recruitment-generalPopulationSources"
   "title":
     "en": "Recruitment source - General population"
@@ -1730,6 +1756,7 @@
     "fr": "Accès"
   "description":
     "en": "Whether access to study data, biological samples or other study material by external researchers or third parties is provided."
+    "fr": "Spécifie si l'accès aux donnés, aux échantillons biologiques ou à tout autre matériel d'étude sont fournis par les chercheurs externes ou des tiers."
   "repeatable": "true"
   "terms":
   - "name": "data"
@@ -1737,19 +1764,22 @@
       "en": "Data"
       "fr": "Données"
     "description":
-      "en": "Access to general items of information about study participants is provided."
+      "en": "Access to participant data items could be allowed."
+      "fr": "L'accès aux éléments de données des participants pourrait être autorisé."
   - "name": "bio_samples"
     "title":
       "en": "Biosamples"
       "fr": "Échantillons biologiques"
     "description":
-      "en": "Access to biological specimens from which substances, structures, or processes can be measured is provided."
+      "en": "Access to particpant biological samples could be allowed."
+      "fr": "L'accès à des échantillons biologiques des participants pourrait être autorisé."
   - "name": "other"
     "title":
       "en": "Other"
       "fr": "Autre"
     "description":
-      "en": "Access to other study material is provided."
+      "en": "Access to other participant-related information could be allowed (e.g. images)."
+      "fr": "L'accès à d'autres informations relatives aux participants pourrait être autorisé (e.g. images)."
 - "name": "populations-dataCollectionEvents-bioSamples"
   "title":
     "en": "Data sources - Biosamples"
