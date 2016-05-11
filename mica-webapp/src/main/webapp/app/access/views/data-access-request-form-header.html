@@ -11,14 +11,9 @@
 <h2>
   <ol class="breadcrumb mica-breadcrumb">
     <li><a href="#/data-access-requests" translate>data-access-requests</a></li>
-    <li ng-if="!newRequest"><a href="#/data-access-request/{{requestId}}">{{requestId}}</a></li>
     <li class="active">
-      <span ng-if="newRequest" translate>add-sm</span>
-      <span ng-if="!newRequest" translate>edit-sm</span>
-      <small><span translate>or</span>
-        <a ng-click="cancel()">
-          <span translate>cancel-sm</span>
-        </a></small>
+      <span ng-if="newRequest" translate>new-data-access-request</span>
+      <span ng-if="!newRequest">{{requestId}}</span>
     </li>
   </ol>
 </h2>
