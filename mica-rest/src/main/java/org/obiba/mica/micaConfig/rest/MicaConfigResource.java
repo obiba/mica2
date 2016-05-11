@@ -29,6 +29,7 @@ import org.obiba.mica.contact.event.IndexContactsEvent;
 import org.obiba.mica.dataset.event.IndexDatasetsEvent;
 import org.obiba.mica.file.event.IndexFilesEvent;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
+import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
 import org.obiba.mica.micaConfig.service.CacheService;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.network.event.IndexNetworksEvent;
@@ -221,6 +222,7 @@ public class MicaConfigResource {
     eventBus.post(new IndexContactsEvent());
     eventBus.post(new IndexNetworksEvent());
     eventBus.post(new IndexDatasetsEvent());
+    eventBus.post(new TaxonomiesUpdatedEvent());
     return Response.noContent().build();
   }
 

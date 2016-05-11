@@ -166,13 +166,13 @@ mica.service('AuthenticationSharedService', ['$rootScope', '$q', '$http', '$cook
 mica.factory('FormDirtyStateObserver', ['$uibModal', '$location',
   function ($uibModal, $location) {
     var onLocationChangeOff;
-    
+
     return {
       observe: function(scope) {
         if (onLocationChangeOff) {
           onLocationChangeOff();
         }
-        
+
         onLocationChangeOff = scope.$on('$locationChangeStart', function (event, newUrl) {
           if (scope.form.$dirty) {
             $uibModal.open({
@@ -196,7 +196,7 @@ mica.factory('FormDirtyStateObserver', ['$uibModal', '$location',
             event.preventDefault();
             return;
           }
-          
+
           onLocationChangeOff();
         });
       },
@@ -266,6 +266,9 @@ mica.factory('IndexService', ['$resource',
         'build': {method: 'PUT'}
       }),
       harmonizationDatasets: $resource('ws/draft/harmonization-datasets/_index', {}, {
+        'build': {method: 'PUT'}
+      }),
+      taxonomies: $resource('ws/taxonomies/_index', {}, {
         'build': {method: 'PUT'}
       })
     };

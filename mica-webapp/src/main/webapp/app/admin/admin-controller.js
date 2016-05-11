@@ -232,4 +232,10 @@ mica.admin
         });
       };
 
+      $scope.indexTaxonomies = function () {
+        withConfirm(function () {
+          IndexService.taxonomies.build();
+        });
+      };
+
     }]);

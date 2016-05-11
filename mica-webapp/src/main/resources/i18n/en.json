@@ -160,7 +160,9 @@
     "study-datasets": "Study datasets",
     "study-datasets-help": "Index that allows to search for study datasets and associated variables.",
     "harmonization-datasets": "Harmonization datasets",
-    "harmonization-datasets-help": "Index that allows to search for harmonization datasets and associated variables."
+    "harmonization-datasets-help": "Index that allows to search for harmonization datasets and associated variables.",
+    "taxonomies": "Taxonomies",
+    "taxonomies-help": "Index that allows to search for taxonomy terms (i.e. the search criteria)."
   },
   "logs": {
     "title": "Logs",
