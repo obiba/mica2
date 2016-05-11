@@ -33,7 +33,7 @@
     "fr": "Définitions d'étude"
   "description":
     "en": "The design of an observational or exprimental study (e.g. cohort, case control)."
-    "fr": "Le type d'une étude observationnelle ou expérimentale (e.g. cohorte, cas-témoins)."
+    "fr": "La conception d'une étude observationnelle ou interventionnelle (e.g. cohorte, cas-témoins)."
   "attributes":
     "field": "methods.designs"
     "alias": "methods-designs"
@@ -44,7 +44,7 @@
       "fr": "Étude de cohorte"
     "description":
       "en": "Observational study where one or more defined population are followed prospectively to determine the incidence of diseases or health outcomes in relation to certain risk factors."
-      "fr": "Étude observationnelle où une ou plusieurs populations définies sont suivies de façon prospective afin de déterminer l'incidence des maladies ou des résultats de santé par rapport à certains facteurs de risque."
+      "fr": "Étude observationnelle où une ou plusieurs populations définies sont suivies de façon prospective afin de déterminer l'incidence des maladies ou des résultats de santé en relation avec certains facteurs de risque."
   - "name": "case_control"
     "title":
       "en": "Case-control"
@@ -72,7 +72,7 @@
       "fr": "Essai clinique"
     "description":
       "en": "Experimental study in which participants are randomly assigned into an experimental group or a control group to evaluate the effect of a certain intervention on the outcome being studied."
-      "fr": "Étude expérimentale dans laquelle les participants sont assignés aléatoirement à un groupe expérimentale ou à un groupe de contrôle afin d'évaluer l'effet d'une certaine intervention sur les résultats en cours d'étude."
+      "fr": "Étude expérimentale dans laquelle les participants sont assignés aléatoirement à un groupe expérimentale ou à un groupe contrôle afin d'évaluer l'effet d'une certaine intervention sur les résultats en cours d'étude."
   - "name": "other"
     "title":
       "en": "Other"
@@ -1578,7 +1578,7 @@
     "fr": "Cible de recrutement"
   "description":
     "en": "Type of participants (e.g. individuals, families) targeted for recruitment by the study."
-    "fr": "Type de participants (e.g. individus, familles) ciblés pour le recrutement par l'étude."
+    "fr": "Type de participants (e.g. individus, familles) ciblé pour le recrutement par l'étude."
   "repeatable": "true"
   "attributes":
     "field": "methods.recruitments"
@@ -1611,7 +1611,7 @@
     "fr": "Sources de recrutement"
   "description":
     "en": "The population(s) from which individuals are recruited to participate in the study."
-    "fr": "La ou les population(s) à partir de(s) laquelle(s) les individus sont recrutés pour participer à l'étude."
+    "fr": "La ou les population(s) à partir de(s) quelle(s) les individus sont recrutés pour participer à l'étude."
   "attributes":
     "field": "populations.recruitment.dataSources"
     "alias": "populations-recruitment-dataSources"
@@ -1663,35 +1663,35 @@
       "fr": "Questionnaires"
     "description":
       "en": "Questionnaires are used to collect information."
-      "fr": "les questionnaires sont utilisés pour recueillir des informations."
+      "fr": "Des questionnaires sont utilisés dans la collecte d'information."
   - "name": "physical_measures"
     "title":
       "en": "Physical Measures"
       "fr": "Mesures physiques"
     "description":
       "en": "Information on physical measures is collected."
-      "fr": "Les informations sur les mesures physique sont collectés."
+      "fr": "De l'information sur les mesures physique est collectée."
   - "name": "biological_samples"
     "title":
       "en": "Biosamples"
       "fr": "Échantillons biologiques"
     "description":
       "en": "Biological samples are collected."
-      "fr": "Les échantillons biologiques sont collectés."
+      "fr": "Des échantillons biologiques sont collectés."
   - "name": "administratives_databases"
     "title":
       "en": "Administrative Databases"
       "fr": "Bases de données administratives"
     "description":
-      "en": "Information is extracted from governmental, hospital or other registries."
-      "fr": "L'information est extraite à partir de registres gouvernementaux, hôspitalier ou autres."
+      "en": "Information collected is extracted from governmental, hospital or other registries."
+      "fr": "L'information coolectée est extraite à partir de registres gouvernementaux, hospitalier ou autres."
   - "name": "others"
     "title":
       "en": "Others"
       "fr": "Autres"
     "description":
       "en": "Information from other sources is collected."
-      "fr": "Informations provenatn d'autres sources sont collectés."
+      "fr": "De l'information provenant d'autres sources est collecté."
 - "name": "populations-recruitment-generalPopulationSources"
   "title":
     "en": "Recruitment source - General population"
@@ -1756,7 +1756,7 @@
     "fr": "Accès"
   "description":
     "en": "Whether access to study data, biological samples or other study material by external researchers or third parties is provided."
-    "fr": "Spécifie si l'accès aux donnés, aux échantillons biologiques ou à tout autre matériel d'étude sont fournis par les chercheurs externes ou des tiers."
+    "fr": "Indique si l'accès aux donnés, aux échantillons biologiques ou à tout autre matériel d'étude est permis à des chercheurs externes ou des tiers."
   "repeatable": "true"
   "terms":
   - "name": "data"
@@ -1772,7 +1772,7 @@
       "fr": "Échantillons biologiques"
     "description":
       "en": "Access to particpant biological samples could be allowed."
-      "fr": "L'accès à des échantillons biologiques des participants pourrait être autorisé."
+      "fr": "L'accès aux échantillons biologiques des participants pourrait être autorisé."
   - "name": "other"
     "title":
       "en": "Other"
