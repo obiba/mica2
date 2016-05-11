@@ -83,50 +83,11 @@ mica
             authorizedRoles: [USER_ROLES.all]
           }
         })
-        .when('/settings', {
-          templateUrl: 'app/views/settings.html',
-          controller: 'SettingsController',
-          access: {
-            authorizedRoles: [USER_ROLES.all]
-          }
-        })
-        .when('/password', {
-          templateUrl: 'app/views/password.html',
-          controller: 'PasswordController',
-          access: {
-            authorizedRoles: [USER_ROLES.all]
-          }
-        })
-        .when('/sessions', {
-          templateUrl: 'app/views/sessions.html',
-          controller: 'SessionsController',
-          resolve: {
-            resolvedSessions: ['Sessions', function (Sessions) {
-              return Sessions.get();
-            }]
-          },
-          access: {
-            authorizedRoles: [USER_ROLES.all]
-          }
-        })
-        .when('/audits', {
-          templateUrl: 'app/views/audits.html',
-          controller: 'AuditsController',
-          access: {
-            authorizedRoles: [USER_ROLES.admin]
-          }
-        })
         .when('/logout', {
           templateUrl: 'app/views/main.html',
           controller: 'LogoutController',
           access: {
             authorizedRoles: [USER_ROLES.all]
-          }
-        })
-        .when('/docs', {
-          templateUrl: 'app/views/docs.html',
-          access: {
-            authorizedRoles: [USER_ROLES.admin]
           }
         })
         .otherwise({

@@ -5,33 +5,11 @@
     "fr": "Français"
   },
   "global": {
-    "title": "JHipster",
-    "browsehappy": "Vous utilisez un <strong>ancien</strong> navigateur. Veuillez <a href=\"http://browsehappy.com/\">mettre à jour votre navigateur</a> pour une meilleure expérience.",
     "menu": {
       "home": "Accueil",
       "myProfile": "My Profile",
       "logout": "Sign Out",
-      "account": {
-        "main": "Compte",
-        "settings": "Profil",
-        "password": "Mot de passe",
-        "sessions": "Sessions",
-        "tracker": "Suivi des utilisateurs",
-        "metrics": "Métriques",
-        "caching": "Caching",
-        "indexing": "Indexing",
-        "logs": "Logs",
-        "audits": "Audits",
-        "login": "S'authentifier",
-        "logout": "Déconnexion"
-      },
-      "admin": "Administration",
-      "language": "Langue"
-    },
-    "language": {
-      "en": "Anglais",
-      "fr": "Français",
-      "de": "Allemand"
+      "admin": "Administration"
     },
     "lastUpdate": "Last Update"
   },
