@@ -168,6 +168,7 @@ mica.dataset
       var updateDataset = function () {
         $scope.dataset.$save(
           function (dataset) {
+            FormDirtyStateObserver.unobserve(); 
             $location.path('/study-dataset/' + dataset.id).replace();
           },
           saveErrorHandler);
@@ -177,6 +178,7 @@ mica.dataset
         DraftStudyDatasetsResource.save($scope.dataset,
           function (resource, getResponseHeaders) {
             var parts = getResponseHeaders().location.split('/');
+            FormDirtyStateObserver.unobserve();
             $location.path('/study-dataset/' + parts[parts.length - 1]).replace();
           },
           saveErrorHandler);
@@ -186,8 +188,7 @@ mica.dataset
         FormServerValidation.error(response, $scope.form, $scope.languages);
       };
 
-      FormDirtyStateObserver.observe($scope, $location);
-
+      FormDirtyStateObserver.observe($scope);
     }])
 
   .controller('HarmonizationDatasetEditController', ['$rootScope',
@@ -322,6 +323,7 @@ mica.dataset
 
         $scope.dataset.$save(
           function (dataset) {
+            FormDirtyStateObserver.unobserve(); 
             $location.path('/harmonization-dataset/' + dataset.id).replace();
           },
           saveErrorHandler);
@@ -341,7 +343,7 @@ mica.dataset
         FormServerValidation.error(response, $scope.form, $scope.languages);
       };
 
-      FormDirtyStateObserver.observe($scope, $location);
+      FormDirtyStateObserver.observe($scope);
     }])
 
   .controller('DatasetViewController', ['$rootScope',

@@ -544,7 +544,7 @@ mica.study
         if (!terms) {
           return [];
         }
-        
+
         var result = terms.map(function(term){
           return StudyTaxonomyService.getLabel(vocabularyName, term, $scope.lang);
         });
@@ -1120,6 +1120,7 @@ mica.study
         $log.debug('Create new study', $scope.study);
         DraftStudiesResource.save($scope.study,
           function (resource, getResponseHeaders) {
+            FormDirtyStateObserver.unobserve();
             var parts = getResponseHeaders().location.split('/');
             $location.path('/study/' + parts[parts.length - 1]).replace();
           },
@@ -1130,6 +1131,7 @@ mica.study
         $log.debug('Update study', $scope.study);
         $scope.study.$save({comment: $scope.revision.comment},
           function (study) {
+            FormDirtyStateObserver.unobserve();
             $location.path('/study/' + study.id).replace();
           },
           saveErrorHandler);
@@ -1143,5 +1145,5 @@ mica.study
         $location.path('/study' + ($scope.study.id ? '/' + $scope.study.id : '')).replace();
       };
 
-      FormDirtyStateObserver.observe($scope, $location);
+      FormDirtyStateObserver.observe($scope);
     }]);

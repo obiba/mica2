@@ -129,6 +129,7 @@ mica.network
       var updateNetwork = function () {
         $scope.network.$save(
           function (network) {
+            FormDirtyStateObserver.unobserve();
             $location.path('/network/' + network.id).replace();
           },
           saveErrorHandler);
@@ -138,6 +139,7 @@ mica.network
         DraftNetworksResource.save($scope.network,
           function (resource, getResponseHeaders) {
             var parts = getResponseHeaders().location.split('/');
+            FormDirtyStateObserver.unobserve();
             $location.path('/network/' + parts[parts.length - 1]).replace();
           },
           saveErrorHandler);
@@ -147,7 +149,7 @@ mica.network
         FormServerValidation.error(response, $scope.form, $scope.languages);
       };
 
-      FormDirtyStateObserver.observe($scope, $location);
+      FormDirtyStateObserver.observe($scope);
     }])
 
   .controller('NetworkLinksModalController', ['$scope', '$uibModalInstance', 'entityStatesResource', 'currentLinks', 'type', 'lang',
