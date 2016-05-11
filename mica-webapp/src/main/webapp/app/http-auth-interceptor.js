@@ -37,8 +37,8 @@
       };
     }])
 
-    .factory('MicaHttpInterceptor', ['$rootScope', '$q', 'httpBuffer', '$timeout', 'cfpLoadingBar',
-      function($rootScope, $q, httpBuffer, $timeout, cfpLoadingBar) {
+    .factory('MicaHttpInterceptor', ['$rootScope', '$q', '$injector', 'httpBuffer', '$timeout', 'cfpLoadingBar', 
+      function($rootScope, $q, $injector, httpBuffer, $timeout, cfpLoadingBar) {
         return {
           // optional method
           'request': function(config) {
@@ -60,6 +60,9 @@
 
           // optional method
           'responseError': function(response) {
+            var FormDirtyStateObserver = $injector.get('FormDirtyStateObserver'); //NOTICE: using $injector to avoid circular dependency error.
+            FormDirtyStateObserver.unobserve();
+            
             if (response.status === 401 && !response.config.ignoreAuthModule) {
               // WORKAROUND the progressbar has its own interceptor to control the animation based on HTTP calls. Since
               // the request is not rejected and the promise is returned, the progressbar never completes and animation

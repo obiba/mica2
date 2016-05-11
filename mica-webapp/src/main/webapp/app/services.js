@@ -163,18 +163,28 @@ mica.service('AuthenticationSharedService', ['$rootScope', '$q', '$http', '$cook
       };
   }]);
 
-mica.factory('FormDirtyStateObserver', ['$uibModal',
-  function ($uibModal) {
+mica.factory('FormDirtyStateObserver', ['$uibModal', '$location',
+  function ($uibModal, $location) {
+    var onLocationChangeOff;
+    
     return {
-      observe: function(scope, $location) {
-        var onLocationChangeOff = scope.$on('$locationChangeStart', function (event, newUrl) {
+      observe: function(scope) {
+        if (onLocationChangeOff) {
+          onLocationChangeOff();
+        }
+        
+        onLocationChangeOff = scope.$on('$locationChangeStart', function (event, newUrl) {
           if (scope.form.$dirty) {
             $uibModal.open({
               backdrop: 'static',
-              controller: function ($scope, $uibModalInstance) {
-                $scope.ok = function () { $uibModalInstance.close(true); };
-                $scope.cancel = function () { $uibModalInstance.dismiss('cancel'); };
-              },
+              controller: ['$scope', '$uibModalInstance', function ($scope, $uibModalInstance) {
+                $scope.ok = function () {
+                  $uibModalInstance.close(true);
+                };
+                $scope.cancel = function () {
+                  $uibModalInstance.dismiss('cancel');
+                };
+              }],
               templateUrl: 'app/views/unsaved-modal.html'
             }).result.then(function (answer) {
               if (answer === true) {
@@ -184,11 +194,18 @@ mica.factory('FormDirtyStateObserver', ['$uibModal',
             });
 
             event.preventDefault();
+            return;
           }
+          
+          onLocationChangeOff();
         });
+      },
+      unobserve: function() {
+        if(onLocationChangeOff) {
+          onLocationChangeOff();
+        }
       }
     };
-
   }]);
 
 mica.factory('MetricsService', ['$resource',
