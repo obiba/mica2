@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-05-10
+ * Date: 2016-05-11
  */
 'use strict';
 
@@ -7589,13 +7589,14 @@ angular.module("access/views/data-access-request-list.html", []).run(["$template
     "            <span ng-if=\"!actions.canView(request)\">{{request.id}}</span>\n" +
     "          </td>\n" +
     "          <td ng-if=\"showApplicant\">\n" +
-    "            <span ng-if=\"actions.canViewProfile('mica-user')\">\n" +
-    "         {{getFullName(request.profile) || request.applicant}}\n" +
+    "            <span ng-if=\"!request.profile.attributes\">\n" +
+    "              {{request.applicant}}\n" +
     "            </span>\n" +
-    "            <a href ng-click=\"userProfile(request.profile)\"\n" +
-    "                ng-if=\"actions.canViewProfile('mica-data-access-officer')\">\n" +
-    "              {{getFullName(request.profile) ||\n" +
-    "              request.applicant}}\n" +
+    "            <span ng-if=\"request.profile.attributes && actions.canViewProfile('mica-user') && !actions.canViewProfile('mica-data-access-officer')\">\n" +
+    "              {{getFullName(request.profile) || request.applicant}}\n" +
+    "            </span>\n" +
+    "            <a href ng-click=\"userProfile(request.profile)\" ng-if=\"request.profile.attributes && actions.canViewProfile('mica-data-access-officer')\">\n" +
+    "              {{getFullName(request.profile) || request.applicant}}\n" +
     "            </a>\n" +
     "          </td>\n" +
     "          <td>\n" +
@@ -7647,32 +7648,25 @@ angular.module("access/views/data-access-request-profile-user-modal.html", []).r
     "    </h4>\n" +
     "  </div>\n" +
     "  <div class=\"modal-body\">\n" +
-    "    <div>\n" +
-    "      <label class=\"control-label\">\n" +
-    "        {{'data-access-request.profile.name' | translate}}\n" +
-    "      </label> :\n" +
-    "      <span>\n" +
-    "        {{getFullName(applicant)}}\n" +
-    "      </span>\n" +
-    "    </div>\n" +
     "\n" +
-    "    <div>\n" +
-    "      <label class=\"control-label\">\n" +
-    "        {{'data-access-request.profile.email' | translate}}\n" +
-    "      </label> :\n" +
-    "      <span>\n" +
-    "        {{getProfileEmail(applicant)}}\n" +
-    "      </span>\n" +
-    "    </div>\n" +
+    "    <table class=\"table table-bordered table-striped\">\n" +
+    "      <tbody>\n" +
+    "      <tr>\n" +
+    "        <th>{{'data-access-request.profile.name' | translate}}</th>\n" +
+    "        <td>{{getFullName(applicant)}}</td>\n" +
+    "      </tr>\n" +
+    "      <tr>\n" +
+    "        <th>{{'data-access-request.profile.email' | translate}}</th>\n" +
+    "        <td>{{getProfileEmail(applicant)}}</td>\n" +
+    "      </tr>\n" +
+    "      <tr ng-repeat=\"attribute in applicant.attributes | filterProfileAttributes\">\n" +
+    "        <th>{{attribute.key}}</th>\n" +
+    "        <td>{{attribute.value}}</td>\n" +
+    "      </tr>\n" +
+    "      </tbody>\n" +
+    "    </table>\n" +
     "\n" +
-    "    <div\n" +
-    "      ng-repeat=\"attribute in applicant.attributes | filterProfileAttributes\">\n" +
-    "      <label  class=\"control-label\">\n" +
-    "        {{attribute.key}}\n" +
-    "      </label> :\n" +
-    "      <span >{{attribute.value}}</span>\n" +
-    "    </div>\n" +
-    "    <a  class=\"btn btn-default\" href=\"mailto:{{getProfileEmail(applicant)}}\" target=\"_blank\">\n" +
+    "    <a class=\"btn btn-default\" ng-if=\"getProfileEmail(applicant)\" href=\"mailto:{{getProfileEmail(applicant)}}\" target=\"_blank\">\n" +
     "      {{'data-access-request.profile.send-email' | translate}}</a>\n" +
     "  </div>\n" +
     "  <div class=\"modal-footer\">\n" +

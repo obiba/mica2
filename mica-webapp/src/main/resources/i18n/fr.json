@@ -1120,7 +1120,7 @@
       "message-review": "Are you sure you want to put this access request under review?"
     },
     "profile" :{
-      "title" : "Profile Utilisateur",
+      "title" : "Profile utilisateur",
       "name" : "Nom",
       "send-email" : "Envoyer un courriel",
       "email" : "Courriel"
