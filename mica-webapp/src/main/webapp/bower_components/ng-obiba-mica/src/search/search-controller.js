@@ -945,6 +945,12 @@ angular.module('obiba.mica.search')
       };
 
       var onSelectTerm = function (target, taxonomy, vocabulary, args) {
+        args = args || {};
+        
+        if(angular.isString(args)) {
+          args = {term: args};
+        }
+        
         if (vocabulary) {
           var item;
           if (RqlQueryUtils.isNumericVocabulary(vocabulary)) {

@@ -7,32 +7,25 @@
     </h4>
   </div>
   <div class="modal-body">
-    <div>
-      <label class="control-label">
-        {{'data-access-request.profile.name' | translate}}
-      </label> :
-      <span>
-        {{getFullName(applicant)}}
-      </span>
-    </div>
 
-    <div>
-      <label class="control-label">
-        {{'data-access-request.profile.email' | translate}}
-      </label> :
-      <span>
-        {{getProfileEmail(applicant)}}
-      </span>
-    </div>
+    <table class="table table-bordered table-striped">
+      <tbody>
+      <tr>
+        <th>{{'data-access-request.profile.name' | translate}}</th>
+        <td>{{getFullName(applicant)}}</td>
+      </tr>
+      <tr>
+        <th>{{'data-access-request.profile.email' | translate}}</th>
+        <td>{{getProfileEmail(applicant)}}</td>
+      </tr>
+      <tr ng-repeat="attribute in applicant.attributes | filterProfileAttributes">
+        <th>{{attribute.key}}</th>
+        <td>{{attribute.value}}</td>
+      </tr>
+      </tbody>
+    </table>
 
-    <div
-      ng-repeat="attribute in applicant.attributes | filterProfileAttributes">
-      <label  class="control-label">
-        {{attribute.key}}
-      </label> :
-      <span >{{attribute.value}}</span>
-    </div>
-    <a  class="btn btn-default" href="mailto:{{getProfileEmail(applicant)}}" target="_blank">
+    <a class="btn btn-default" ng-if="getProfileEmail(applicant)" href="mailto:{{getProfileEmail(applicant)}}" target="_blank">
       {{'data-access-request.profile.send-email' | translate}}</a>
   </div>
   <div class="modal-footer">

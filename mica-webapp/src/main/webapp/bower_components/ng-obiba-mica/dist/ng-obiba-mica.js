@@ -4289,6 +4289,12 @@ angular.module('obiba.mica.search')
       };
 
       var onSelectTerm = function (target, taxonomy, vocabulary, args) {
+        args = args || {};
+        
+        if(angular.isString(args)) {
+          args = {term: args};
+        }
+        
         if (vocabulary) {
           var item;
           if (RqlQueryUtils.isNumericVocabulary(vocabulary)) {
@@ -8798,7 +8804,7 @@ angular.module("search/views/classifications/term-panel-template.html", []).run(
     "      <div ng-repeat=\"label in term.title\" ng-if=\"label.locale === lang\">\n" +
     "        {{label.text}}\n" +
     "        <small>\n" +
-    "          <a href ng-click=\"onSelect(target, taxonomy, vocabulary, term)\">\n" +
+    "          <a href ng-click=\"onSelect(target, taxonomy, vocabulary, {term: term})\">\n" +
     "            <i class=\"fa fa-plus-circle\" title=\"{{'add-query' | translate}}\"></i>\n" +
     "          </a>\n" +
     "        </small>\n" +

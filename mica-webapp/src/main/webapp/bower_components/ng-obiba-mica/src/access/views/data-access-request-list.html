@@ -73,13 +73,14 @@
             <span ng-if="!actions.canView(request)">{{request.id}}</span>
           </td>
           <td ng-if="showApplicant">
-            <span ng-if="actions.canViewProfile('mica-user')">
-         {{getFullName(request.profile) || request.applicant}}
+            <span ng-if="!request.profile.attributes">
+              {{request.applicant}}
             </span>
-            <a href ng-click="userProfile(request.profile)"
-                ng-if="actions.canViewProfile('mica-data-access-officer')">
-              {{getFullName(request.profile) ||
-              request.applicant}}
+            <span ng-if="request.profile.attributes && actions.canViewProfile('mica-user') && !actions.canViewProfile('mica-data-access-officer')">
+              {{getFullName(request.profile) || request.applicant}}
+            </span>
+            <a href ng-click="userProfile(request.profile)" ng-if="request.profile.attributes && actions.canViewProfile('mica-data-access-officer')">
+              {{getFullName(request.profile) || request.applicant}}
             </a>
           </td>
           <td>
