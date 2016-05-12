@@ -2165,7 +2165,7 @@ angular.module('obiba.mica.search')
           });
         
         $q.all(remainingCriteriaItems).then(function(criteriaItems) {
-          $scope.onUpdateCriteria(mergeCriteriaItems(criteriaItems), null, true, true, false);
+          $scope.onUpdateCriteria(mergeCriteriaItems(criteriaItems), null, true, false, false);
         });
       };
 

@@ -119,79 +119,59 @@ angular.module('obiba.mica.graphics')
     return factory;
 
   })
-  .service('GraphicChartsUtils', ['LocalizedValues','TaxonomyResource',
-    function (LocalizedValues, TaxonomyResource) {
-      var taxonomyTerm = [];
+  .service('GraphicChartsUtils', ['LocalizedValues','TaxonomyResource', '$q',
+    function (LocalizedValues, TaxonomyResource, $q) {
+      var studyTaxonomy = {};
 
-      TaxonomyResource.get({
-        target: 'study',
-        taxonomy: 'Mica_study'
-      }).$promise.then(function (taxonomy) {
-        taxonomyTerm.taxonomy = angular.copy(taxonomy.vocabularies);
-      });
+      studyTaxonomy.getTerms = function (aggregationName) {
+        var deferred = $q.defer();
 
-      taxonomyTerm.vocabulariesWrapper = function (aggregationName) {
-        var returnedVocabulary = null;
-        if (taxonomyTerm.taxonomy){
-          angular.forEach(taxonomyTerm.taxonomy, function (vocabulary) {
-            if (vocabulary.name === aggregationName) {
-              returnedVocabulary = vocabulary.terms;
-            }
-          });
-        }
-        return returnedVocabulary;
-      };
-      this.getArrayByAggregation = function (aggregationName, entityDto) {
-        var arrayData = [];
-        var aggregations = taxonomyTerm.vocabulariesWrapper(aggregationName);
-        if (!entityDto) {
-          return arrayData;
-        }
-        var i = 0;
-        angular.forEach(entityDto.aggs, function (aggregation) {
-          if (aggregation.aggregation === aggregationName) {
-            if (aggregation['obiba.mica.RangeAggregationResultDto.ranges']) {
-              i = 0;
-              angular.forEach(aggregations, function (sortTerm) {
-                angular.forEach(aggregation['obiba.mica.RangeAggregationResultDto.ranges'], function (term) {
-                  if (sortTerm.name === term.key) {
-                    if (term.count) {
-                      arrayData[i] = {title: term.title, value: term.count, key: term.key};
-                      i++;
-                    }
-                  }
-                });
-              });
-            }
-            else {
-              if (aggregation.aggregation === 'methods-designs') {
-                var numberOfParticipant = 0;
-                i = 0;
-                angular.forEach(aggregations, function (sortTerm) {
-                  angular.forEach(aggregation['obiba.mica.TermsAggregationResultDto.terms'], function (term) {
-                    angular.forEach(term.aggs, function (aggBucket) {
-                      if (aggBucket.aggregation === 'numberOfParticipants-participant-number') {
-                        numberOfParticipant = LocalizedValues.formatNumber(aggBucket['obiba.mica.StatsAggregationResultDto.stats'].data.sum);
-                      }
-                    });
-                    if (sortTerm.name === term.key) {
-                      if (term.count) {
-                        arrayData[i] = {
-                          title: term.title,
-                          value: term.count,
-                          participantsNbr: numberOfParticipant,
-                          key: term.key
-                        };
-                        i++;
-                      }
-                    }
-                  });
-                });
+        function getTerms() {
+          var terms = null;
+          if (studyTaxonomy.vocabularies){
+            angular.forEach(studyTaxonomy.vocabularies, function (vocabulary) {
+              if (vocabulary.name === aggregationName) {
+                terms = vocabulary.terms;
               }
-              else {
+            });
+          }
+
+          deferred.resolve(terms);
+        }
+
+        if (!studyTaxonomy.vocabularies) {
+          TaxonomyResource.get({
+            target: 'study',
+            taxonomy: 'Mica_study'
+          }).$promise.then(function(taxonomy){
+            studyTaxonomy.vocabularies = angular.copy(taxonomy.vocabularies);
+            getTerms();
+          });
+
+        } else {
+          getTerms();
+        }
+
+        return deferred.promise;
+      };
+
+      this.getArrayByAggregation = function (aggregationName, entityDto) {
+        var deferred = $q.defer();
+
+        if (!aggregationName || !entityDto) {
+          deferred.resolve([]);
+        }
+
+        var arrayData = [];
+        studyTaxonomy.getTerms(aggregationName).then(function(terms) {
+          var aggregations = terms;
+          var i = 0;
+          angular.forEach(entityDto.aggs, function (aggregation) {
+            if (aggregation.aggregation === aggregationName) {
+              if (aggregation['obiba.mica.RangeAggregationResultDto.ranges']) {
                 i = 0;
                 angular.forEach(aggregations, function (sortTerm) {
-                  angular.forEach(aggregation['obiba.mica.TermsAggregationResultDto.terms'], function (term) {
+                  angular.forEach(aggregation['obiba.mica.RangeAggregationResultDto.ranges'], function (term) {
                     if (sortTerm.name === term.key) {
                       if (term.count) {
                         arrayData[i] = {title: term.title, value: term.count, key: term.key};
@@ -201,12 +181,54 @@ angular.module('obiba.mica.graphics')
                   });
                 });
               }
+              else {
+                if (aggregation.aggregation === 'methods-designs') {
+                  var numberOfParticipant = 0;
+                  i = 0;
+                  angular.forEach(aggregations, function (sortTerm) {
+                    angular.forEach(aggregation['obiba.mica.TermsAggregationResultDto.terms'], function (term) {
+                      angular.forEach(term.aggs, function (aggBucket) {
+                        if (aggBucket.aggregation === 'numberOfParticipants-participant-number') {
+                          numberOfParticipant = LocalizedValues.formatNumber(aggBucket['obiba.mica.StatsAggregationResultDto.stats'].data.sum);
+                        }
+                      });
+                      if (sortTerm.name === term.key) {
+                        if (term.count) {
+                          arrayData[i] = {
+                            title: term.title,
+                            value: term.count,
+                            participantsNbr: numberOfParticipant,
+                            key: term.key
+                          };
+                          i++;
+                        }
+                      }
+                    });
+                  });
+                }
+                else {
+                  i = 0;
+                  angular.forEach(aggregations, function (sortTerm) {
+                    angular.forEach(aggregation['obiba.mica.TermsAggregationResultDto.terms'], function (term) {
+                      if (sortTerm.name === term.key) {
+                        if (term.count) {
+                          arrayData[i] = {title: term.title, value: term.count, key: term.key};
+                          i++;
+                        }
+                      }
+                    });
+                  });
+                }
+              }
             }
-          }
+          });
+          
+          deferred.resolve(arrayData);
         });
-        return arrayData;
+        return deferred.promise;
       };
     }])
+
   .service('GraphicChartsQuery', ['RqlQueryService', 'RqlQueryUtils','LocalizedValues', function (RqlQueryService, RqlQueryUtils,LocalizedValues) {
     this.queryDtoBuilder = function (entityIds, entityType) {
       var query;
