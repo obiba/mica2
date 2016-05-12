@@ -271,7 +271,8 @@ angular.module('obiba.mica.search')
         loading: '=',
         bucket: '=',
         query: '=',
-        onUpdateCriteria: '='
+        onUpdateCriteria: '=',
+        onRemoveCriteria: '='
       },
       controller: 'CoverageResultTableController',
       templateUrl: 'search/views/coverage/coverage-search-result-table-template.html'
@@ -332,7 +333,8 @@ angular.module('obiba.mica.search')
         onTypeChanged: '=',
         onBucketChanged: '=',
         onPaginate: '=',
-        onUpdateCriteria: '='
+        onUpdateCriteria: '=',
+        onRemoveCriteria: '='
       },
       controller: 'SearchResultController',
       templateUrl: 'search/views/search-result-panel-template.html'

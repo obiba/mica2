@@ -934,7 +934,6 @@ angular.module('obiba.mica.search')
     };
   }])
 
-
   .service('RqlQueryService', [
     '$q',
     'TaxonomiesResource',
