@@ -2190,29 +2190,31 @@ angular.module('obiba.mica.search')
               $scope) {
 
       var setChartObject = function (vocabulary, dtoObject, header, title, options) {
-        var entries = GraphicChartsUtils.getArrayByAggregation(vocabulary, dtoObject),
-          data = entries.map(function (e) {
-            if (e.participantsNbr) {
-              return [e.title, e.value, e.participantsNbr];
-            }
-            else {
-              return [e.title, e.value];
+
+        return GraphicChartsUtils.getArrayByAggregation(vocabulary, dtoObject)
+          .then(function (entries){
+            var data = entries.map(function (e) {
+              if (e.participantsNbr) {
+                return [e.title, e.value, e.participantsNbr];
+              }
+              else {
+                return [e.title, e.value];
+              }
+            });
+
+            if (data.length > 0) {
+              data.unshift(header);
+              angular.extend(options, {title: title});
+
+              return {
+                data: data,
+                entries: entries,
+                options: options,
+                vocabulary: vocabulary
+              };
             }
           });
 
-        if (data.length > 0) {
-          data.unshift(header);
-          angular.extend(options, {title: title});
-
-          return {
-            data: data,
-            entries: entries,
-            options: options,
-            vocabulary: vocabulary
-          };
-        }
-
-        return false;
       };
 
       var charOptions = GraphicChartsConfig.getOptions().ChartsOptions;
@@ -2229,90 +2231,93 @@ angular.module('obiba.mica.search')
 
         if (result && result.studyResultDto.totalHits) {
           $scope.noResults = false;
-          var geoStudies = setChartObject('populations-selectionCriteria-countriesIso',
+          setChartObject('populations-selectionCriteria-countriesIso',
             result.studyResultDto,
             [$filter('translate')(charOptions.geoChartOptions.header[0]), $filter('translate')(charOptions.geoChartOptions.header[1])],
             $filter('translate')(charOptions.geoChartOptions.title) + ' (N = ' + result.studyResultDto.totalHits + ')',
-            charOptions.geoChartOptions.options);
+            charOptions.geoChartOptions.options).then(function(geoStudies) {
+              if (geoStudies) {
+                angular.extend($scope.chartObjects,
+                  {
+                    geoChartOptions: {
+                      directiveTitle: geoStudies.options.title,
+                      headerTitle: $filter('translate')('graphics.geo-charts'),
+                      chartObject: {
+                        geoTitle: geoStudies.options.title,
+                        options: geoStudies.options,
+                        type: 'GeoChart',
+                        vocabulary: geoStudies.vocabulary,
+                        data: geoStudies.data,
+                        entries: geoStudies.entries
+                      }
+                    }
+                  });
+              }
+            });
 
-          var methodDesignStudies = setChartObject('methods-designs',
+          setChartObject('methods-designs',
             result.studyResultDto,
             [$filter('translate')(charOptions.studiesDesigns.header[0]), $filter('translate')(charOptions.studiesDesigns.header[1]), $filter('translate')(charOptions.studiesDesigns.header[2])],
             $filter('translate')(charOptions.studiesDesigns.title) + ' (N = ' + result.studyResultDto.totalHits + ')',
-            charOptions.studiesDesigns.options);
+            charOptions.studiesDesigns.options).then(function(methodDesignStudies) {
+              if (methodDesignStudies) {
+                angular.extend($scope.chartObjects, {
+                  studiesDesigns: {
+                    directiveTitle: methodDesignStudies.options.title ,
+                    headerTitle: $filter('translate')('graphics.study-design'),
+                    chartObject: {
+                      options: methodDesignStudies.options,
+                      type: 'google.charts.Bar',
+                      data: methodDesignStudies.data,
+                      vocabulary: methodDesignStudies.vocabulary,
+                      entries: methodDesignStudies.entries
+                    }
+                  }
+                });
+              }
+            });
 
-          var numberParticipant = setChartObject('numberOfParticipants-participant-range',
+          setChartObject('numberOfParticipants-participant-range',
             result.studyResultDto,
             [$filter('translate')(charOptions.numberParticipants.header[0]), $filter('translate')(charOptions.numberParticipants.header[1])],
             $filter('translate')(charOptions.numberParticipants.title) + ' (N = ' + result.studyResultDto.totalHits + ')',
-            charOptions.numberParticipants.options);
+            charOptions.numberParticipants.options).then(function(numberParticipant) {
+              if (numberParticipant) {
+                angular.extend($scope.chartObjects, {
+                  numberParticipants: {
+                    headerTitle: $filter('translate')('graphics.number-participants'),
+                    chartObject: {
+                      options: numberParticipant.options,
+                      type: 'PieChart',
+                      data: numberParticipant.data,
+                      vocabulary: numberParticipant.vocabulary,
+                      entries: numberParticipant.entries
+                    }
+                  }
+                });
+              }
+            });
 
-          var bioSamplesStudies = setChartObject('populations-dataCollectionEvents-bioSamples',
+          setChartObject('populations-dataCollectionEvents-bioSamples',
             result.studyResultDto,
             [$filter('translate')(charOptions.biologicalSamples.header[0]), $filter('translate')(charOptions.biologicalSamples.header[1])],
             $filter('translate')(charOptions.biologicalSamples.title) + ' (N = ' + result.studyResultDto.totalHits + ')',
-            charOptions.biologicalSamples.options);
-
-          if (geoStudies) {
-            angular.extend($scope.chartObjects,
-              {
-                geoChartOptions: {
-                  directiveTitle: geoStudies.options.title,
-                  headerTitle: $filter('translate')('graphics.geo-charts'),
-                  chartObject: {
-                    geoTitle: geoStudies.options.title,
-                    options: geoStudies.options,
-                    type: 'GeoChart',
-                    vocabulary: geoStudies.vocabulary,
-                    data: geoStudies.data,
-                    entries: geoStudies.entries
+            charOptions.biologicalSamples.options).then(function(bioSamplesStudies) {
+              if (bioSamplesStudies) {
+                angular.extend($scope.chartObjects, {
+                  biologicalSamples: {
+                    headerTitle: $filter('translate')('graphics.bio-samples'),
+                    chartObject: {
+                      options: bioSamplesStudies.options,
+                      type: 'BarChart',
+                      data: bioSamplesStudies.data,
+                      vocabulary: bioSamplesStudies.vocabulary,
+                      entries: bioSamplesStudies.entries
+                    }
                   }
-                }
-              });
-          }
-          if (methodDesignStudies) {
-            angular.extend($scope.chartObjects, {
-              studiesDesigns: {
-                directiveTitle: methodDesignStudies.options.title ,
-                headerTitle: $filter('translate')('graphics.study-design'),
-                chartObject: {
-                  options: methodDesignStudies.options,
-                  type: 'google.charts.Bar',
-                  data: methodDesignStudies.data,
-                  vocabulary: methodDesignStudies.vocabulary,
-                  entries: methodDesignStudies.entries
-                }
+                });
               }
             });
-          }
-          if (numberParticipant) {
-            angular.extend($scope.chartObjects, {
-              numberParticipants: {
-                headerTitle: $filter('translate')('graphics.number-participants'),
-                chartObject: {
-                  options: numberParticipant.options,
-                  type: 'PieChart',
-                  data: numberParticipant.data,
-                  vocabulary: numberParticipant.vocabulary,
-                  entries: numberParticipant.entries
-                }
-              }
-            });
-          }
-          if (bioSamplesStudies) {
-            angular.extend($scope.chartObjects, {
-              biologicalSamples: {
-                headerTitle: $filter('translate')('graphics.bio-samples'),
-                chartObject: {
-                  options: bioSamplesStudies.options,
-                  type: 'BarChart',
-                  data: bioSamplesStudies.data,
-                  vocabulary: bioSamplesStudies.vocabulary,
-                  entries: bioSamplesStudies.entries
-                }
-              }
-            });
-          }
         }
       });
     }])
