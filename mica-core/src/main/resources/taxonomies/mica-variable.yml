@@ -80,12 +80,12 @@
     "en": "What entity is measured by the variable."
     "fr": "Quel type d'entité est mesurée par cette variable."
   "terms":
-  - "name": "participant"
+  - "name": "Participant"
     "title":
       "en": "Participant"
       "fr": "Participant"
     "description": {}
-  - "name": "sample"
+  - "name": "Sample"
     "title":
       "en": "Sample"
       "fr": "Échantillon"
