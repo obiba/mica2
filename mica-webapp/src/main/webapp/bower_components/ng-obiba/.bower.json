@@ -4,6 +4,7 @@
     "dist/ng-obiba.js",
     "dist/css/ng-obiba.css"
   ],
+  "version": "1.4.0",
   "description": "OBiBa AngularJS commons",
   "license": "GNU Public License version 3",
   "ignore": [
@@ -27,13 +28,13 @@
     "angular-scenario": "1.5.5"
   },
   "homepage": "https://github.com/obiba/ng-obiba",
-  "_release": "30afaddde8",
+  "_release": "1.4.0",
   "_resolution": {
-    "type": "branch",
-    "branch": "master",
-    "commit": "30afaddde8796aa52f4253f1e2dd007b5dfa4151"
+    "type": "version",
+    "tag": "1.4.0",
+    "commit": "5d016280be36ba41ff7a696ebc5215042f994193"
   },
   "_source": "https://github.com/obiba/ng-obiba.git",
-  "_target": "*",
+  "_target": "1.4.0",
   "_originalSource": "https://github.com/obiba/ng-obiba.git"
 }

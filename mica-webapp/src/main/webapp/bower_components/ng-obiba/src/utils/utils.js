@@ -602,11 +602,11 @@ angular.module('obiba.utils', [])
         }
 
         if (!message && data.code && data.message) {
-          message = 'Server Error (' + data.code + '): ' + data.message;
+          message = data.message + ' (' + response.status + ')';
         }
       }
 
-      return message ? message : 'Server Error (' + response.status + '): ' + response.statusText;
+      return message ? message : response.statusText + ' (' + response.status + ')';
     };
   }])
 

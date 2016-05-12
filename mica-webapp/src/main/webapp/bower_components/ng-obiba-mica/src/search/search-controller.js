@@ -1359,8 +1359,10 @@ angular.module('obiba.mica.search')
   .controller('SearchResultController', [
     '$scope',
     'ngObibaMicaSearch',
+    'LocalizedValues',
     function ($scope,
-              ngObibaMicaSearch) {
+              ngObibaMicaSearch,
+              LocalizedValues) {
 
       function updateTarget(type) {
         Object.keys($scope.activeTarget).forEach(function (key) {
@@ -1386,10 +1388,10 @@ angular.module('obiba.mica.search')
 
       $scope.$watchCollection('result', function () {
         if ($scope.result.list) {
-          $scope.activeTarget[QUERY_TYPES.VARIABLES].totalHits = $scope.result.list.variableResultDto.totalHits;
-          $scope.activeTarget[QUERY_TYPES.DATASETS].totalHits = $scope.result.list.datasetResultDto.totalHits;
-          $scope.activeTarget[QUERY_TYPES.STUDIES].totalHits = $scope.result.list.studyResultDto.totalHits;
-          $scope.activeTarget[QUERY_TYPES.NETWORKS].totalHits = $scope.result.list.networkResultDto.totalHits;
+          $scope.activeTarget[QUERY_TYPES.VARIABLES].totalHits = LocalizedValues.formatNumber($scope.result.list.variableResultDto.totalHits);
+          $scope.activeTarget[QUERY_TYPES.DATASETS].totalHits = LocalizedValues.formatNumber($scope.result.list.datasetResultDto.totalHits);
+          $scope.activeTarget[QUERY_TYPES.STUDIES].totalHits = LocalizedValues.formatNumber($scope.result.list.studyResultDto.totalHits);
+          $scope.activeTarget[QUERY_TYPES.NETWORKS].totalHits = LocalizedValues.formatNumber($scope.result.list.networkResultDto.totalHits);
         }
       });
 

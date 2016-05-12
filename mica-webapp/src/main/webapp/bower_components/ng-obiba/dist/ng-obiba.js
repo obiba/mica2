@@ -1,9 +1,9 @@
 /*!
- * ng-obiba - v0.1.0
+ * ng-obiba - v1.4.0
  * https://github.com/obiba/ng-obiba
 
  * License: GNU Public License version 3
- * Date: 2016-04-19
+ * Date: 2016-05-12
  */
 'use strict';
 
@@ -609,11 +609,11 @@ angular.module('obiba.utils', [])
         }
 
         if (!message && data.code && data.message) {
-          message = 'Server Error (' + data.code + '): ' + data.message;
+          message = data.message + ' (' + response.status + ')';
         }
       }
 
-      return message ? message : 'Server Error (' + response.status + '): ' + response.statusText;
+      return message ? message : response.statusText + ' (' + response.status + ')';
     };
   }])
 

@@ -28,7 +28,7 @@
               <tbody>
               <tr ng-repeat="row in chart.chartObject.entries">
                 <td>{{row.title}}</td>
-                <td><a href ng-click="updateCriteria(row.key, chart.chartObject.vocabulary)">{{row.value}}</a></td>
+                <td><a href ng-click="updateCriteria(row.key, chart.chartObject.vocabulary)"><localized-number value="row.value"></localized-number></a></td>
                 <td ng-if="row.participantsNbr">{{row.participantsNbr}}</td>
               </tr>
               </tbody>
