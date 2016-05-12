@@ -89,10 +89,15 @@ public class MicaConfigResource {
   @Path("/_public")
   public Mica.PublicMicaConfigDto getPublic() {
     MicaConfig config = micaConfigService.getConfig();
-    return Mica.PublicMicaConfigDto.newBuilder() //
+    Mica.PublicMicaConfigDto.Builder builder = Mica.PublicMicaConfigDto.newBuilder() //
         .setName(config.getName()) //
-        .setOpenAccess(config.isOpenAccess()) //
-        .build();
+        .setOpenAccess(config.isOpenAccess());
+
+    if (config.hasPublicUrl()) {
+      builder.setPublicUrl(config.getPublicUrl());
+    }
+
+    return builder.build();
   }
 
   @PUT
