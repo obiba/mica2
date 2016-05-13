@@ -2116,22 +2116,27 @@ angular.module('obiba.mica.search')
         });
       };
       
-      $scope.isFullCoverage = function() {
-        var selected = [];
-        if ($scope.table && $scope.table.rows) {
-          $scope.table.rows.forEach(function(r){
-            if (r.hits) {
-              if (r.hits.filter(function(h){
-                    return h === 0;
-                  }).length === 0) {
-                selected.push(r);
-              }
-            }
-          });
+      $scope.isFullCoverageImpossibleOrCoverageAlreadyFull = function () {
+        var rows = $scope.table ? ($scope.table.rows || []) : [];
+        var rowsWithZeroHitColumn = 0;
+
+        if (rows.length === 0) {
+          return true;
         }
 
-        var rows = $scope.table ? ($scope.table.rows || []) : [];
-        return selected.length === rows.length;
+        rows.forEach(function (row) {
+          if (row.hits) {
+            if (row.hits.filter(function (hit) { return hit === 0; }).length > 0) {
+              rowsWithZeroHitColumn++;
+            }
+          }
+        });
+        
+        if (rowsWithZeroHitColumn === 0) {
+          return true;
+        }
+
+        return rows.length === rowsWithZeroHitColumn;
       };
 
       $scope.selectFullAndFilter = function() {

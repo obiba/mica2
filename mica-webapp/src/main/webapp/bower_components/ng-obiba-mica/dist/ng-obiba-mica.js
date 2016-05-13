@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-05-12
+ * Date: 2016-05-13
  */
 'use strict';
 
@@ -5460,22 +5460,27 @@ angular.module('obiba.mica.search')
         });
       };
       
-      $scope.isFullCoverage = function() {
-        var selected = [];
-        if ($scope.table && $scope.table.rows) {
-          $scope.table.rows.forEach(function(r){
-            if (r.hits) {
-              if (r.hits.filter(function(h){
-                    return h === 0;
-                  }).length === 0) {
-                selected.push(r);
-              }
-            }
-          });
+      $scope.isFullCoverageImpossibleOrCoverageAlreadyFull = function () {
+        var rows = $scope.table ? ($scope.table.rows || []) : [];
+        var rowsWithZeroHitColumn = 0;
+
+        if (rows.length === 0) {
+          return true;
         }
 
-        var rows = $scope.table ? ($scope.table.rows || []) : [];
-        return selected.length === rows.length;
+        rows.forEach(function (row) {
+          if (row.hits) {
+            if (row.hits.filter(function (hit) { return hit === 0; }).length > 0) {
+              rowsWithZeroHitColumn++;
+            }
+          }
+        });
+        
+        if (rowsWithZeroHitColumn === 0) {
+          return true;
+        }
+
+        return rows.length === rowsWithZeroHitColumn;
       };
 
       $scope.selectFullAndFilter = function() {
@@ -6565,7 +6570,7 @@ angular.module('obiba.mica.graphics')
                 };
 
                 if (data) {
-                  if ($scope.chartType === 'Table') {
+                  if (/^Table-/.exec($scope.chartType) !== null) {
                     $scope.chartObject.ordered = $scope.chartOrdered;
                     $scope.chartObject.notOrdered = $scope.chartNotOrdered;
                     if($scope.chartHeader.length<3){
@@ -8331,7 +8336,7 @@ angular.module("graphics/views/charts-directive.html", []).run(["$templateCache"
 angular.module("graphics/views/tables-directive.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("graphics/views/tables-directive.html",
     "<div>\n" +
-    "    <table style=\"max-height: 400px;\" class=\"table table-bordered table-striped\" fixed-header=\"chartObject.data\">\n" +
+    "    <table style=\"max-height: 400px;\" class=\"table table-bordered table-striped\" >\n" +
     "        <thead>\n" +
     "        <th ng-repeat=\"header in chartObject.header\">{{header}}</th>\n" +
     "        </thead>\n" +
@@ -9019,7 +9024,7 @@ angular.module("search/views/coverage/coverage-search-result-table-template.html
     "      </a>\n" +
     "\n" +
     "      <span ng-if=\"table.taxonomyHeaders.length > 0\" >\n" +
-    "        <a href class=\"btn btn-info btn-responsive\" ng-click=\"selectFullAndFilter()\" ng-hide=\"isFullCoverage()\">\n" +
+    "        <a href class=\"btn btn-info btn-responsive\" ng-click=\"selectFullAndFilter()\" ng-hide=\"isFullCoverageImpossibleOrCoverageAlreadyFull()\">\n" +
     "          {{'search.coverage-select.full' | translate}}\n" +
     "        </a>\n" +
     "        <a target=\"_self\" class=\"btn btn-info btn-responsive\"\n" +
