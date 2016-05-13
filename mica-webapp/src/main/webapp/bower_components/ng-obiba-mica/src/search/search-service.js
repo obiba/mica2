@@ -128,7 +128,7 @@ angular.module('obiba.mica.search')
       return result;
     };
 
-    this.VariablePage = function(id) {
+    this.variablePage = function(id) {
       return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('VariablePage'), {':variable': id}) : '';
     };
 

@@ -3221,7 +3221,7 @@ angular.module('obiba.mica.search')
       return result;
     };
 
-    this.VariablePage = function(id) {
+    this.variablePage = function(id) {
       return id ? StringUtils.replaceAll(ngObibaMicaUrl.getUrl('VariablePage'), {':variable': id}) : '';
     };
 
@@ -4715,10 +4715,8 @@ angular.module('obiba.mica.search')
   .controller('SearchResultController', [
     '$scope',
     'ngObibaMicaSearch',
-    'LocalizedValues',
     function ($scope,
-              ngObibaMicaSearch,
-              LocalizedValues) {
+              ngObibaMicaSearch) {
 
       function updateTarget(type) {
         Object.keys($scope.activeTarget).forEach(function (key) {
@@ -4744,10 +4742,10 @@ angular.module('obiba.mica.search')
 
       $scope.$watchCollection('result', function () {
         if ($scope.result.list) {
-          $scope.activeTarget[QUERY_TYPES.VARIABLES].totalHits = LocalizedValues.formatNumber($scope.result.list.variableResultDto.totalHits);
-          $scope.activeTarget[QUERY_TYPES.DATASETS].totalHits = LocalizedValues.formatNumber($scope.result.list.datasetResultDto.totalHits);
-          $scope.activeTarget[QUERY_TYPES.STUDIES].totalHits = LocalizedValues.formatNumber($scope.result.list.studyResultDto.totalHits);
-          $scope.activeTarget[QUERY_TYPES.NETWORKS].totalHits = LocalizedValues.formatNumber($scope.result.list.networkResultDto.totalHits);
+          $scope.activeTarget[QUERY_TYPES.VARIABLES].totalHits = $scope.result.list.variableResultDto.totalHits;
+          $scope.activeTarget[QUERY_TYPES.DATASETS].totalHits = $scope.result.list.datasetResultDto.totalHits;
+          $scope.activeTarget[QUERY_TYPES.STUDIES].totalHits = $scope.result.list.studyResultDto.totalHits;
+          $scope.activeTarget[QUERY_TYPES.NETWORKS].totalHits = $scope.result.list.networkResultDto.totalHits;
         }
       });
 
@@ -6902,16 +6900,16 @@ angular.module('obiba.mica.localized')
     };
   }])
 
-    .directive('localizedNumber', ['LocalizedValues', function (LocalizedValues) {
-      return {
-        restrict: 'E',
-        scope: {number: '=value'},
-        template: '{{LocalizedValues.formatNumber(number)}}',
-        link: function($scope) {
-          $scope.LocalizedValues = LocalizedValues;
-        }
-      };
-    }])
+  .directive('localizedNumber', ['LocalizedValues', function (LocalizedValues) {
+    return {
+      restrict: 'E',
+      scope: {number: '=value'},
+      template: '{{LocalizedValues.formatNumber(number)}}',
+      link: function($scope) {
+        $scope.LocalizedValues = LocalizedValues;
+      }
+    };
+  }])
 
   .directive('localizedInput', [function () {
     return {
@@ -7097,6 +7095,25 @@ angular.module('obiba.mica.localized')
       };
 
     });
+;/*
+ * Copyright (c) 2016 OBiBa. All rights reserved.
+ *
+ * This program and the accompanying materials
+ * are made available under the terms of the GNU Public License v3.0.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+'use strict';
+
+angular.module('obiba.mica.localized')
+
+  .filter('localizedNumber', ['LocalizedValues', function(LocalizedValues) {
+    return function(value){
+      return value ? LocalizedValues.formatNumber(value) : '';
+    };
+  }]);
 ;'use strict';
 
 function NgObibaMicaFileBrowserOptionsProvider() {
@@ -9760,7 +9777,7 @@ angular.module("search/views/list/variables-search-result-table-template.html", 
     "        <tr ng-repeat=\"summary in summaries\">\n" +
     "          <td>\n" +
     "            <a\n" +
-    "              href=\"{{PageUrlService.VariablePage(summary.id) ? PageUrlService.VariablePage(summary.id) : PageUrlService.datasetPage(summary.datasetId, summary.variableType)}}\">\n" +
+    "              href=\"{{PageUrlService.variablePage(summary.id) ? PageUrlService.variablePage(summary.id) : PageUrlService.datasetPage(summary.datasetId, summary.variableType)}}\">\n" +
     "              {{summary.name}}\n" +
     "            </a>\n" +
     "          </td>\n" +
@@ -9844,7 +9861,7 @@ angular.module("search/views/search-result-list-template.html", []).run(["$templ
     "        ng-class=\"{active: activeTarget[targetTypeMap[res]].active}\"\n" +
     "        ng-if=\"options[targetTypeMap[res]].showSearchTab\"><a href\n" +
     "        ng-click=\"selectTarget(targetTypeMap[res])\">{{targetTypeMap[res] | translate}} ({{result.list[res +\n" +
-    "      'ResultDto'].totalHits}})</a></li>\n" +
+    "      'ResultDto'].totalHits | localizedNumber}})</a></li>\n" +
     "    <li ng-repeat=\"res in resultTabsOrder\" ng-show=\"activeTarget[targetTypeMap[res]].active\" class=\"pull-right\">\n" +
     "      <span search-result-pagination\n" +
     "            target=\"activeTarget[targetTypeMap[res]].name\"\n" +

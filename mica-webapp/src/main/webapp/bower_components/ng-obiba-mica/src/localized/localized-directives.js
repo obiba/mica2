@@ -16,16 +16,16 @@ angular.module('obiba.mica.localized')
     };
   }])
 
-    .directive('localizedNumber', ['LocalizedValues', function (LocalizedValues) {
-      return {
-        restrict: 'E',
-        scope: {number: '=value'},
-        template: '{{LocalizedValues.formatNumber(number)}}',
-        link: function($scope) {
-          $scope.LocalizedValues = LocalizedValues;
-        }
-      };
-    }])
+  .directive('localizedNumber', ['LocalizedValues', function (LocalizedValues) {
+    return {
+      restrict: 'E',
+      scope: {number: '=value'},
+      template: '{{LocalizedValues.formatNumber(number)}}',
+      link: function($scope) {
+        $scope.LocalizedValues = LocalizedValues;
+      }
+    };
+  }])
 
   .directive('localizedInput', [function () {
     return {
