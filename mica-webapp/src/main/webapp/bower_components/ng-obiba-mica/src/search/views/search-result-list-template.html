@@ -4,7 +4,7 @@
         ng-class="{active: activeTarget[targetTypeMap[res]].active}"
         ng-if="options[targetTypeMap[res]].showSearchTab"><a href
         ng-click="selectTarget(targetTypeMap[res])">{{targetTypeMap[res] | translate}} ({{result.list[res +
-      'ResultDto'].totalHits}})</a></li>
+      'ResultDto'].totalHits | localizedNumber}})</a></li>
     <li ng-repeat="res in resultTabsOrder" ng-show="activeTarget[targetTypeMap[res]].active" class="pull-right">
       <span search-result-pagination
             target="activeTarget[targetTypeMap[res]].name"
