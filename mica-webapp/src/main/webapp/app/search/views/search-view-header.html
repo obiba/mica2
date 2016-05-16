@@ -15,5 +15,10 @@
       <li class="active" translate>search.title</li>
     </ol>
   </h2>
-  <p class="help-block" translate>search.help</p>
+  <div ng-if="options.SearchHelpText">
+    <button ng-click="closeHelpBox()" type="button" class="help-text close" title="{{search.closeAlert | translate}}">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    <div class="well"><i class="glyphicon glyphicon-info-sign"></i> <span  ng-bind-html="options.SearchHelpText"></span></div>
+</div>
 </div>

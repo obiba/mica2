@@ -15,4 +15,10 @@
       <li class="active" translate>classifications</li>
     </ol>
   </h2>
+  <div ng-if="options.ClassificationHelpText">
+    <button ng-click="closeClassificationHelpBox()" type="button" class="help-text close" title="{{search.closeAlert | translate}}">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    <div class="well"><i class="glyphicon glyphicon-info-sign"></i> <span ng-bind-html="options.ClassificationHelpText"></span></div>
+  </div>
 </div>
