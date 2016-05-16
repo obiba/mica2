@@ -2487,7 +2487,7 @@ angular.module('obiba.mica.search')
     };
 
     this.isNumericVocabulary = function (vocabulary) {
-      return !vocabulary.terms && (self.vocabularyType(vocabulary) === VOCABULARY_TYPES.INTEGER || self.vocabularyType(vocabulary) === VOCABULARY_TYPES.DECIMAL);
+      return !self.isTermsVocabulary(vocabulary) && (self.vocabularyType(vocabulary) === VOCABULARY_TYPES.INTEGER || self.vocabularyType(vocabulary) === VOCABULARY_TYPES.DECIMAL);
     };
 
     this.isRangeVocabulary = function (vocabulary) {
@@ -4095,50 +4095,60 @@ angular.module('obiba.mica.search')
           return result;
         }
 
-        // vocabulary (or term) can be used in search iff it doesn't have the 'showSearch' attribute
-        function canSearch(vocabulary, hideSearchList) {
-          if ((hideSearchList || []).indexOf(vocabulary.name) > -1) {
+        // vocabulary (or term) can be used in search if it doesn't have the 'showSearch' attribute
+        function canSearch(taxonomyEntity, hideSearchList) {
+          if ((hideSearchList || []).indexOf(taxonomyEntity.name) > -1) {
             return false;
           }
 
-          return (vocabulary.attributes || []).filter(function (attr) { return attr.key === 'showSearch'; }).length === 0;
+          return (taxonomyEntity.attributes || []).filter(function (attr) { return attr.key === 'showSearch'; }).length === 0;
         }
 
-        return TaxonomiesSearchResource.get({
+        function processBundle(bundle) {
+          var results = [];
+          var total = 0;
+          var target = bundle.target;
+          var taxonomy = bundle.taxonomy;
+          if (taxonomy.vocabularies) {
+            taxonomy.vocabularies.filter(function (vocabulary) {
+              return canSearch(vocabulary, $scope.options.hideSearch);
+            }).forEach(function (vocabulary) {
+              if (vocabulary.terms) {
+                vocabulary.terms.filter(function (term) {
+                  return canSearch(term, $scope.options.hideSearch);
+                }).forEach(function (term) {
+                  var item = RqlQueryService.createCriteriaItem(target, taxonomy, vocabulary, term, $scope.lang);
+                  results.push({
+                    score: score(item),
+                    item: item
+                  });
+                  total++;
+                });
+              } else {
+                var item = RqlQueryService.createCriteriaItem(target, taxonomy, vocabulary, null, $scope.lang);
+                results.push({
+                  score: score(item),
+                  item: item
+                });
+                total++;
+              }
+            });
+          }
+          return {results: results, total: total};
+        }
+
+        var criteria = TaxonomiesSearchResource.get({
           query: quoteQuery(query), locale: $scope.lang, target: $scope.documents.search.target
         }).$promise.then(function (response) {
           if (response) {
             var results = [];
             var total = 0;
             var size = 10;
+
             response.forEach(function (bundle) {
-              var target = bundle.target;
-              var taxonomy = bundle.taxonomy;
-              if (taxonomy.vocabularies) {
-                taxonomy.vocabularies.filter(function (vocabulary) {
-                  return canSearch(vocabulary, $scope.options.hideSearch);
-                }).forEach(function (vocabulary) {
-                  if (vocabulary.terms) {
-                    vocabulary.terms.filter(function (term) {
-                      return canSearch(term, $scope.options.hideSearch);
-                    }).forEach(function (term) {
-                      var item = RqlQueryService.createCriteriaItem(target, taxonomy, vocabulary, term, $scope.lang);
-                      results.push({
-                        score: score(item),
-                        item: item
-                      });
-                      total++;
-                    });
-                  } else {
-                    var item = RqlQueryService.createCriteriaItem(target, taxonomy, vocabulary, null, $scope.lang);
-                    results.push({
-                      score: score(item),
-                      item: item
-                    });
-                    total++;
-                  }
-                });
-              }
+              var rval = processBundle(bundle);
+              results.push.apply(results, rval.results);
+              total = total + rval.total;
             });
 
             results.sort(function (a, b) {
@@ -4147,25 +4157,56 @@ angular.module('obiba.mica.search')
 
             results = results.splice(0, size);
 
-            if (total > results.length) {
-              var note = {
-                query: query,
-                total: total,
-                size: size,
-                message: 'Showing ' + size + ' / ' + total,
-                status: 'has-warning'
-              };
-              results.push({score: -1, item: note});
+            if (results.length === 0) {
+              // no match, so look for vocabularies without terms and with text type
+              return TaxonomiesSearchResource.get({
+                query: 'termsCount:0 AND (_missing_:attributes.type OR attributes.type:text)', locale: $scope.lang, target: $scope.documents.search.target
+              }).$promise;
+            } else {
+              if (total > results.length) {
+                var note = {
+                  query: query,
+                  total: total,
+                  size: size,
+                  message: 'Showing ' + size + ' / ' + total,
+                  status: 'has-warning'
+                };
+                results.push({score: -1, item: note});
+              }
+
+              return results.map(function (result) {
+                return result.item;
+              });
             }
+          } else {
+            return [];
+          }
+        }).then(function(response) {
+          if (response) {
+            if (response.$promise) {
+              var results = [];
 
+              response.forEach(function (bundle) {
+                var rval = processBundle(bundle);
+                results.push.apply(results, rval.results);
+              });
 
-            return results.map(function (result) {
-              return result.item;
-            });
+              return results.map(function (result) {
+                var item = result.item;
+                // prepare RQL for match query
+                item.rqlQuery = RqlQueryUtils.buildRqlQuery(item);
+                RqlQueryUtils.updateMatchQuery(item.rqlQuery, query);
+                return item;
+              });
+            } else {
+              return response;
+            }
           } else {
             return [];
           }
         });
+
+        return criteria;
       };
 
       /**
@@ -9859,9 +9900,13 @@ angular.module("search/views/search-result-list-template.html", []).run(["$templ
     "  <ul class=\"nav nav-pills voffset2\" ng-if=\"resultTabsOrder.length > 1\">\n" +
     "    <li role=\"presentation\" ng-repeat=\"res in resultTabsOrder\"\n" +
     "        ng-class=\"{active: activeTarget[targetTypeMap[res]].active}\"\n" +
-    "        ng-if=\"options[targetTypeMap[res]].showSearchTab\"><a href\n" +
-    "        ng-click=\"selectTarget(targetTypeMap[res])\">{{targetTypeMap[res] | translate}} ({{result.list[res +\n" +
-    "      'ResultDto'].totalHits | localizedNumber}})</a></li>\n" +
+    "        ng-if=\"options[targetTypeMap[res]].showSearchTab\">\n" +
+    "      <a href\n" +
+    "        ng-click=\"selectTarget(targetTypeMap[res])\">\n" +
+    "      {{targetTypeMap[res] | translate}}\n" +
+    "      ({{result.list[res + 'ResultDto'].totalHits === 0 ? 0 : (result.list[res + 'ResultDto'].totalHits | localizedNumber)}})\n" +
+    "    </a>\n" +
+    "    </li>\n" +
     "    <li ng-repeat=\"res in resultTabsOrder\" ng-show=\"activeTarget[targetTypeMap[res]].active\" class=\"pull-right\">\n" +
     "      <span search-result-pagination\n" +
     "            target=\"activeTarget[targetTypeMap[res]].name\"\n" +
