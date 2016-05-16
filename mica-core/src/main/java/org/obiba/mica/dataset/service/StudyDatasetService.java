@@ -17,7 +17,6 @@ import java.util.stream.StreamSupport;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import com.google.common.collect.Sets;
 import org.joda.time.DateTime;
 import org.obiba.magma.NoSuchValueTableException;
 import org.obiba.magma.NoSuchVariableException;
@@ -35,6 +34,7 @@ import org.obiba.mica.dataset.event.DatasetDeletedEvent;
 import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
+import org.obiba.mica.dataset.event.StudyDatasetIndexedEvent;
 import org.obiba.mica.dataset.service.support.QueryTermsUtil;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
@@ -56,6 +56,7 @@ import org.springframework.validation.annotation.Validated;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 
 import static java.util.stream.Collectors.toList;
@@ -211,6 +212,8 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
           log.error("Error indexing dataset {}", dataset, e);
         }
       });
+
+    eventBus.post(new StudyDatasetIndexedEvent());
   }
 
   @Override
