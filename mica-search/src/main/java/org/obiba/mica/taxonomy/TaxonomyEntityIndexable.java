@@ -10,6 +10,8 @@
 
 package org.obiba.mica.taxonomy;
 
+import java.util.Map;
+
 import org.obiba.mica.core.domain.Indexable;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.opal.core.domain.taxonomy.TaxonomyEntity;
@@ -45,6 +47,10 @@ public abstract class TaxonomyEntityIndexable<T extends TaxonomyEntity> implemen
 
   public LocalizedString getKeywords() {
     return LocalizedString.from(getTaxonomyEntity().getKeywords());
+  }
+
+  public Map<String, String> getAttributes() {
+    return getTaxonomyEntity().getAttributes();
   }
 
   @Override

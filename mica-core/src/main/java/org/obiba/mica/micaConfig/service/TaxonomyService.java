@@ -78,6 +78,13 @@ public class TaxonomyService {
     return taxonomyTaxonomy;
   }
 
+  public boolean metaTaxonomyContains(String taxonomy) {
+    for(Vocabulary target : getTaxonomyTaxonomy().getVocabularies()) {
+      if(hasTerm(target, taxonomy)) return true;
+    }
+    return false;
+  }
+
   @NotNull
   public Taxonomy getNetworkTaxonomy() {
     initialize();
@@ -211,6 +218,38 @@ public class TaxonomyService {
     }
 
     return target;
+  }
+
+  /**
+   * Check if vocabulary has a term with the given name.
+   *
+   * @param vocabulary
+   * @param name
+   * @return
+   */
+  private boolean hasTerm(Vocabulary vocabulary, String name) {
+    if(!vocabulary.hasTerms()) return false;
+    if(vocabulary.hasTerm(name)) return true;
+    for(Term t : vocabulary.getTerms()) {
+      if(hasTerm(t, name)) return true;
+    }
+    return false;
+  }
+
+  /**
+   * Check if term has a term with the givane name.
+   *
+   * @param term
+   * @param name
+   * @return
+   */
+  private boolean hasTerm(Term term, String name) {
+    if(!term.hasTerms()) return false;
+    if(term.hasTerm(name)) return true;
+    for(Term t : term.getTerms()) {
+      if(hasTerm(t, name)) return true;
+    }
+    return false;
   }
 
   //
