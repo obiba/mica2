@@ -88,7 +88,12 @@
                    typeahead-on-select="selectCriteria($item)"
                    class="form-control">
             <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+            <span ng-if="options.SearchHelpLinkUrl" class="input-group-btn">
+              <a type="button" target="_blank" class="btn btn-default" href="{{options.SearchHelpLinkUrl}}">
+                <span class="glyphicon glyphicon-question-sign"></span> {{options.SearchHelpLinkLabel}}</a>
+            </span>
           </span>
+
           </div>
         </div>
         <div ng-if="options.showSearchBrowser" id="search-selector-region" class="{{hasFacetedTaxonomies ? '' : 'row'}}">
