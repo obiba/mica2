@@ -11,6 +11,7 @@
 package org.obiba.mica.taxonomy;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -54,7 +55,9 @@ public class TaxonomyIndexer {
     log.info("Taxonomies were updated");
     if(elasticSearchIndexer.hasIndex(TAXONOMY_INDEX)) elasticSearchIndexer.dropIndex(TAXONOMY_INDEX);
     index(TaxonomyTarget.VARIABLE,
-      ImmutableList.<Taxonomy>builder().addAll(taxonomyService.getOpalTaxonomies()).add(taxonomyService.getVariableTaxonomy())
+      ImmutableList.<Taxonomy>builder().addAll(taxonomyService.getOpalTaxonomies().stream() //
+        .filter(t -> taxonomyService.metaTaxonomyContains(t.getName())).collect(Collectors.toList())) //
+        .add(taxonomyService.getVariableTaxonomy()) //
         .build());
     index(TaxonomyTarget.STUDY, Lists.newArrayList(taxonomyService.getStudyTaxonomy()));
     index(TaxonomyTarget.DATASET, Lists.newArrayList(taxonomyService.getDatasetTaxonomy()));
