@@ -22,7 +22,6 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import com.google.common.collect.Sets;
 import org.joda.time.DateTime;
 import org.obiba.magma.MagmaRuntimeException;
 import org.obiba.magma.NoSuchValueTableException;
@@ -43,6 +42,7 @@ import org.obiba.mica.dataset.event.DatasetDeletedEvent;
 import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUpdatedEvent;
+import org.obiba.mica.dataset.event.HarmonizationDatasetIndexedEvent;
 import org.obiba.mica.dataset.service.support.QueryTermsUtil;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
@@ -69,6 +69,7 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 
 import static java.util.stream.Collectors.toList;
@@ -187,6 +188,8 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
         log.error("Error indexing dataset {}", dataset, e);
       }
     });
+
+    eventBus.post(new HarmonizationDatasetIndexedEvent());
   }
 
   @Caching(evict = { @CacheEvict(value = "aggregations-metadata", key = "'dataset'") })

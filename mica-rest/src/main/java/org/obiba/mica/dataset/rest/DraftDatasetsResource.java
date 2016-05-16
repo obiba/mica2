@@ -6,11 +6,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.obiba.mica.dataset.service.HarmonizationDatasetService;
-import org.obiba.mica.dataset.service.StudyDatasetService;
+import org.obiba.mica.dataset.event.IndexDatasetsEvent;
 import org.springframework.context.annotation.Scope;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+
+import com.google.common.eventbus.EventBus;
 
 @Component
 @Scope("request")
@@ -18,29 +18,13 @@ import org.springframework.stereotype.Component;
 public class DraftDatasetsResource {
 
   @Inject
-  Helper helper;
+  private EventBus eventBus;
 
   @PUT
   @Path("/_index")
   @RequiresPermissions({ "/draft/study-dataset:EDIT", "/draft/harmonization-dataset:EDIT" })
   public Response indexAll() {
-    helper.indexAll();
+    eventBus.post(new IndexDatasetsEvent());
     return Response.noContent().build();
-  }
-
-  @Component
-  public static class Helper {
-
-    @Inject
-    private StudyDatasetService studyDatasetService;
-
-    @Inject
-    private HarmonizationDatasetService harmonizationDatasetService;
-
-    @Async
-    public void indexAll() {
-      studyDatasetService.indexAll();
-      harmonizationDatasetService.indexAll();
-    }
   }
 }

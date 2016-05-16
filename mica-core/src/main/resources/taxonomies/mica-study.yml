@@ -85,7 +85,7 @@
   "description":
     "en": "Investigator full name."
   "attributes":
-    "field": "memberships.investigator.person.fullName.analyzed"
+    "field": "memberships.investigator.person.fullName"
     "alias": "memberships-investigator-person-fullName"
 - "name": "investigator-institution"
   "title":
@@ -101,7 +101,7 @@
   "description":
     "en": "Contact full name."
   "attributes":
-    "field": "memberships.contact.person.fullName.analyzed"
+    "field": "memberships.contact.person.fullName"
     "alias": "memberships-contact-person-fullName"
 - "name": "contact-institution"
   "title":
