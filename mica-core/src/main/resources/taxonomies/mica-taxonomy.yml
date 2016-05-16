@@ -105,7 +105,7 @@
       "en": "Studies"
       "fr": "Études"
     "description":
-      "en": "Catalogue."
+      "en": "Studies properties as defined in the catalog."
       "fr": "Propriétés des études telles que définies dans le catalogue."
 - "name": "network"
   "title":
