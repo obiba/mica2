@@ -270,7 +270,7 @@
     "study-dataset-enabled-help": "Study datasets section is accessible.",
     "harmonization-dataset-enabled": "Harmonization datasets section enabled",
     "harmonization-dataset-enabled-help": "Harmonization datasets section is accessible.",
-    "roles": "Roles",
+    "roles": "Membership Roles",
     "roles-help": "A person can be member of a study or of a network with one of the listed roles.",
     "add-role": "Add Role",
     "delete-role-title": "Delete Role",
