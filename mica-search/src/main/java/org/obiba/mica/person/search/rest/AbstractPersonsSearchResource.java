@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
@@ -82,6 +83,18 @@ public abstract class AbstractPersonsSearchResource {
 
     return Response.ok(values.toByteArray(), "text/csv")
       .header("Content-Disposition", "attachment; filename=\"people.csv\"").build();
+  }
+
+  @GET
+  @Path("/_download")
+  @Timed
+  @Produces("text/csv")
+  public Response downloadQueryCSV(@QueryParam("from") @DefaultValue("0") int from,
+      @QueryParam("limit") @DefaultValue("10") int limit, @QueryParam("sort") @DefaultValue(DEFAULT_SORT) String sort,
+      @QueryParam("order") @DefaultValue("asc") String order, @QueryParam("query") String query,
+      @QueryParam("exclude") List<String> excludes) throws IOException {
+
+    return queryCSV(from, limit, sort, order, query, excludes);
   }
 
 }
