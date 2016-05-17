@@ -60,7 +60,7 @@
   </div>
 
   <div class="modal-footer">
-    <a ng-if="persons.length > 0" target="_self" download class="btn btn-info" ng-href="ws/draft/persons/_search?{{getDownloadAllContactsParams()}}">
+    <a ng-if="persons.length > 0" target="_self" download class="btn btn-info" ng-href="ws/draft/persons/_search/_download?{{getDownloadAllContactsParams()}}">
       <i class="fa fa-download"></i> {{'download' | translate}}
     </a>
 
