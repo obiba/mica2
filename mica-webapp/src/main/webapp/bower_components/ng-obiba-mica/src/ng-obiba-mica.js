@@ -102,6 +102,7 @@ function NgObibaMicaTemplateUrlFactory() {
 
 angular.module('ngObibaMica', [
     'schemaForm',
+    'ngCookies',
     'obiba.mica.utils',
     'obiba.mica.file',
     'obiba.mica.attachment',

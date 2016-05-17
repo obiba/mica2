@@ -1,10 +1,6 @@
 <div>
   <div ng-if="classificationsHeaderTemplateUrl" ng-include="classificationsHeaderTemplateUrl"></div>
 
-  <div ng-if="options.ClassificationHelpText">
-    <span ng-bind-html="options.ClassificationHelpText"></span>
-  </div>
-
   <div class="container alert-fixed-position">
     <obiba-alert id="SearchController"></obiba-alert>
   </div>
@@ -19,7 +15,7 @@
   </a>
 
   <!-- Lang tabs -->
-  <ul class="nav nav-tabs" role="tablist" ng-if="tabs && tabs.length>1">
+  <ul class="nav nav-tabs voffset2" role="tablist" ng-if="tabs && tabs.length>1">
     <li ng-repeat="tab in tabs" role="presentation" ng-class="{ active: tab === lang }"><a href role="tab"
       ng-click="setLocale(tab)">{{'language.' + tab | translate}}</a></li>
   </ul>

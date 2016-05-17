@@ -20,6 +20,7 @@
     "angular-bootstrap": "1.3.2",
     "angular-translate": "2.11.0",
     "angular-sanitize": "1.5.5",
+    "angular-cookies": "1.5.5",
     "ng-obiba": "https://github.com/obiba/ng-obiba.git#1.4.0",
     "filesize": "3.2.1",
     "angular-google-chart": "0.1.0",
@@ -30,11 +31,11 @@
     "angular-scenario": "1.5.5"
   },
   "homepage": "https://github.com/obiba/ng-obiba-mica",
-  "_release": "c9373daf61",
+  "_release": "eb8400be95",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "c9373daf614fa99acd5990eca001b0f4713ac209"
+    "commit": "eb8400be95ce6cbc76929718c8b4d7a7794c228d"
   },
   "_source": "https://github.com/obiba/ng-obiba-mica.git",
   "_target": "*",
