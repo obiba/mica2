@@ -818,7 +818,10 @@
     }
   },
   "variables": "Variables",
-  "classifications": "Classifications",
+  "classifications": {
+    "title": "Classifications",
+    "help": "Navigate the classification system and select the search criteria."
+  },
   "all-null-classifications": "",
   "all-variable-classifications": "All variable classifications",
   "all-dataset-classifications": "All dataset classifications",

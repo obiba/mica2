@@ -338,7 +338,7 @@ angular.module('obiba.mica.search')
             $scope.options.SearchHelpText = translation['search.help'];
           }
           if(!$scope.options.ClassificationHelpText && !$cookies.get(cookiesClassificationHelp)){
-            $scope.options.ClassificationHelpText = translation['help.classifications'];
+            $scope.options.ClassificationHelpText = translation['classifications.help'];
           }
         });
       // Close the Help search box and set the local cookies

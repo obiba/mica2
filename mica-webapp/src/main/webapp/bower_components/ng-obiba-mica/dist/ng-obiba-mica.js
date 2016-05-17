@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-05-16
+ * Date: 2016-05-17
  */
 'use strict';
 
@@ -3683,7 +3683,7 @@ angular.module('obiba.mica.search')
             $scope.options.SearchHelpText = translation['search.help'];
           }
           if(!$scope.options.ClassificationHelpText && !$cookies.get(cookiesClassificationHelp)){
-            $scope.options.ClassificationHelpText = translation['help.classifications'];
+            $scope.options.ClassificationHelpText = translation['classifications.help'];
           }
         });
       // Close the Help search box and set the local cookies
