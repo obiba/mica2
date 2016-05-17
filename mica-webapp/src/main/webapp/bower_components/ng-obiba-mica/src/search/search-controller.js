@@ -848,50 +848,20 @@ angular.module('obiba.mica.search')
 
             results = results.splice(0, size);
 
-            if (results.length === 0) {
-              // no match, so look for vocabularies without terms and with text type
-              return TaxonomiesSearchResource.get({
-                query: 'termsCount:0 AND (_missing_:attributes.type OR attributes.type:text)', locale: $scope.lang, target: $scope.documents.search.target
-              }).$promise;
-            } else {
-              if (total > results.length) {
-                var note = {
-                  query: query,
-                  total: total,
-                  size: size,
-                  message: 'Showing ' + size + ' / ' + total,
-                  status: 'has-warning'
-                };
-                results.push({score: -1, item: note});
-              }
-
-              return results.map(function (result) {
-                return result.item;
-              });
+            if (total > results.length) {
+              var note = {
+                query: query,
+                total: total,
+                size: size,
+                message: 'Showing ' + size + ' / ' + total,
+                status: 'has-warning'
+              };
+              results.push({score: -1, item: note});
             }
-          } else {
-            return [];
-          }
-        }).then(function(response) {
-          if (response) {
-            if (response.$promise) {
-              var results = [];
 
-              response.forEach(function (bundle) {
-                var rval = processBundle(bundle);
-                results.push.apply(results, rval.results);
-              });
-
-              return results.map(function (result) {
-                var item = result.item;
-                // prepare RQL for match query
-                item.rqlQuery = RqlQueryUtils.buildRqlQuery(item);
-                RqlQueryUtils.updateMatchQuery(item.rqlQuery, query);
-                return item;
-              });
-            } else {
-              return response;
-            }
+            return results.map(function (result) {
+              return result.item;
+            });
           } else {
             return [];
           }
