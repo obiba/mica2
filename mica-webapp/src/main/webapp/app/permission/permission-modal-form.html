@@ -4,8 +4,8 @@
       <button type="button" class="close" aria-hidden="true" ng-click="cancel()">&times;</button>
       <h4 class="modal-title" id="myStudyLabel">
         <span ng-if="!editMode" translate>permission.add</span>
-        <span ng-if="editMode && permission.type === 'USER'" translate>permission.edit-user</span>
-        <span ng-if="editMode && permission.type === 'GROUP'" translate>permission.edit-group</span>
+        <span ng-if="editMode && acl.type === 'USER'" translate>permission.edit-user</span>
+        <span ng-if="editMode && acl.type === 'GROUP'" translate>permission.edit-group</span>
       </h4>
     </div>
 
@@ -20,7 +20,7 @@
         </select>
       </div>
 
-      <div disable="editMode" form-input name="principal" model="acl.principal" label="permission.principal" help="permission.principal-help" required="!editMode"></div>
+      <div disabled="editMode" form-input name="principal" model="acl.principal" label="permission.principal" help="permission.principal-help" required="!editMode"></div>
 
       <div class="form-group" ng-class="{'has-error': (form['role'].$dirty || form.saveAttempted) && form['role'].$invalid}">
         <label class="control-label"><span translate>role</span> <span>*</span></label>
