@@ -518,6 +518,10 @@
       "title": "Data Source",
       "info": "Reference to the Opal table from which variables and data summaries will be extracted from."
     },
+    "delete-dialog": {
+      "title": "Delete Dataset",
+      "message": "Are you sure you want to delete the dataset '{{arg0}}'?"
+    },
     "options": "Options",
     "network": {
       "title": "Network",

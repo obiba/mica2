@@ -43,9 +43,33 @@
 
               <p class="help-block" translate>dataset.data-schema.info</p>
 
-              <div form-input name="dataset.project" model="dataset['obiba.mica.HarmonizationDatasetDto.type'].project" label="dataset.project" help="dataset.project-dataschema-help" required="true"></div>
+              <div class="form-group">
+                <label class="control-label">
+                  <span translate>dataset.project</span>
+                  <span>*</span>
+                </label>
+                <ui-select theme="bootstrap" ng-model="selected.project" reset-search-input="true" required="true">
+                  <ui-select-match>{{$select.selected.name}}</ui-select-match>
+                  <ui-select-choices repeat="project in projects | filter: {name: $select.search}">
+                    <span ng-bind-html="project.name | highlight: $select.search"></span>
+                  </ui-select-choices>
+                </ui-select>
+                <p class="help-block" translate>dataset.project-dataschema-help</p>
+              </div>
 
-              <div form-input name="dataset.table" model="dataset['obiba.mica.HarmonizationDatasetDto.type'].table" label="dataset.table" help="dataset.table-dataschema-help" required="true"></div>
+              <div class="form-group">
+                <label class="control-label">
+                  <span translate>dataset.table</span>
+                  <span>*</span>
+                </label>
+                <ui-select theme="bootstrap" ng-model="selected.project.table" reset-search-input="true" required="true">
+                  <ui-select-match>{{$select.selected}}</ui-select-match>
+                  <ui-select-choices repeat="table in selected.project.datasource.table | filter: $select.search">
+                    <span ng-bind-html="table | highlight: $select.search"></span>
+                  </ui-select-choices>
+                </ui-select>
+                <p class="help-block" translate>dataset.table-dataschema-help</p>
+              </div>
 
               <div ng-if="micaConfig.isNetworkEnabled">
                 <h3 translate>dataset.network.title</h3>

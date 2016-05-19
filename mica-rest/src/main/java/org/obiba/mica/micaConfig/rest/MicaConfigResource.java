@@ -1,6 +1,7 @@
 package org.obiba.mica.micaConfig.rest;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.security.KeyStoreException;
 import java.util.Arrays;
 import java.util.List;
@@ -42,6 +43,7 @@ import org.obiba.mica.study.event.IndexStudiesEvent;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.obiba.opal.web.model.Opal;
+import org.obiba.opal.web.model.Projects;
 import org.springframework.stereotype.Component;
 
 import com.codahale.metrics.annotation.Timed;
@@ -158,6 +160,14 @@ public class MicaConfigResource {
     }
 
     return Response.status(Response.Status.NOT_FOUND).build();
+  }
+
+  @GET
+  @Path("/opal-projects")
+  @Timed
+  @RequiresAuthentication
+  public List<Projects.ProjectDto> getOpalProjects() throws URISyntaxException {
+    return opalService.getProjectDtos(null);
   }
 
   @GET
