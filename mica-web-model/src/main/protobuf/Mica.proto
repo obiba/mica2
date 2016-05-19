@@ -65,6 +65,10 @@ message EntityStateDto {
   extend DatasetDto {
     optional EntityStateDto datasetState = 1002;
   }
+
+  extend ProjectDto {
+    optional EntityStateDto projectState = 1000;
+  }
 }
 
 message StudyStateDto {
@@ -643,11 +647,23 @@ message CommentDto {
   optional UserProfileDto modifiedByProfile = 11;
 }
 
+message ProjectsDto {
+  required int32 total = 1;
+  required int32 from = 2;
+  required int32 limit = 3;
+  repeated ProjectDto projects = 4;
+}
+
 message ProjectDto {
   optional string id = 1;
   optional TimestampsDto timestamps = 2;
-  repeated LocalizedStringDto title = 3;
-  optional string content = 4;
+  repeated LocalizedStringDto name = 3;
+  repeated LocalizedStringDto description = 4;
+  repeated LocalizedStringDto acronym = 5;
+  optional string content = 6;
+  optional PermissionsDto permissions = 7;
+  optional bool published = 8;
+  extensions 1000 to max;
 }
 
 message DataAccessRequestDto {
