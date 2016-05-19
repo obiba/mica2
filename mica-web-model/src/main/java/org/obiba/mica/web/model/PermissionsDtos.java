@@ -8,6 +8,7 @@ import org.obiba.mica.dataset.domain.HarmonizationDataset;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.network.domain.Network;
+import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
@@ -45,6 +46,10 @@ class PermissionsDtos {
 
   public Mica.PermissionsDto asDto(@NotNull AttachmentState state) {
     return asDto("/draft/file", state.getFullPath());
+  }
+
+  public Mica.PermissionsDto asDto(@NotNull Project project) {
+    return asDto("/draft/network", project.getId());
   }
 
   public Mica.PermissionsDto asDto(@NotNull String resource, @Nullable String instance) {

@@ -1,0 +1,27 @@
+<!--
+  ~ Copyright (c) 2016 OBiBa. All rights reserved.
+  ~  
+  ~ This program and the accompanying materials
+  ~ are made available under the terms of the GNU Public License v3.0.
+  ~  
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<uib-tabset active="activeTab">
+
+  <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" disable="tab.disabled">
+
+    <div class="voffset4">
+      <h2>
+        <localized value="project.name" lang="tab.lang"></localized>
+      </h2>
+
+      <localized value="project.description" lang="tab.lang"></localized>
+
+      <localized value="project.acronym" lang="tab.lang"></localized>
+    </div>
+  </uib-tab>
+</uib-tabset>
+</div>
+    

@@ -334,6 +334,11 @@ public class Dtos {
   }
 
   @NotNull
+  public Project fromDto(@NotNull Mica.ProjectDto dto) {
+    return projectDtos.fromDto(dto);
+  }
+
+  @NotNull
   public Mica.DataAccessFormDto asDto(@NotNull DataAccessForm dataAccessForm) {
     return micaConfigDtos.asDto(dataAccessForm);
   }

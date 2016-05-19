@@ -37,6 +37,9 @@ import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.repository.DataAccessFormRepository;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.project.ProjectRepository;
+import org.obiba.mica.project.ProjectStateRepository;
+import org.obiba.mica.project.service.ProjectService;
 import org.obiba.mica.security.repository.SubjectAclRepository;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.StudyRepository;
@@ -239,6 +242,21 @@ public class DatasetDtosTest {
     @Bean
     public AttachmentStateRepository attachmentStateRepository() {
       return mock(AttachmentStateRepository.class);
+    }
+
+    @Bean
+    public ProjectService projectService() {
+      return mock(ProjectService.class);
+    }
+
+    @Bean
+    public ProjectRepository projectRepository() {
+      return mock(ProjectRepository.class);
+    }
+
+    @Bean
+    public ProjectStateRepository projectStateRepository() {
+      return mock(ProjectStateRepository.class);
     }
   }
 }

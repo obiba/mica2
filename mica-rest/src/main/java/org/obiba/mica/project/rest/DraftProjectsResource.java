@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.network.rest;
+package org.obiba.mica.project.rest;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,9 +25,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.obiba.mica.network.domain.Network;
-import org.obiba.mica.network.event.IndexNetworksEvent;
-import org.obiba.mica.network.service.NetworkService;
+import org.obiba.mica.project.domain.Project;
+import org.obiba.mica.project.event.IndexProjectsEvent;
+import org.obiba.mica.project.service.ProjectService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
@@ -41,10 +41,10 @@ import com.google.common.eventbus.EventBus;
 @Component
 @Scope("request")
 @Path("/draft")
-public class DraftNetworksResource {
+public class DraftProjectsResource {
 
   @Inject
-  private NetworkService networkService;
+  private ProjectService projectService;
 
   @Inject
   private SubjectAclService subjectAclService;
@@ -59,37 +59,37 @@ public class DraftNetworksResource {
   private EventBus eventBus;
 
   @GET
-  @Path("/networks")
+  @Path("/projects")
   @Timed
-  public List<Mica.NetworkDto> list(@QueryParam("study") String studyId) {
-    return networkService.findAllNetworks(studyId).stream()
-      .filter(n -> subjectAclService.isPermitted("/draft/network", "VIEW", n.getId()))
-      .sorted((o1, o2) -> o1.getId().compareTo(o2.getId())).map(n -> dtos.asDto(n, true)).collect(Collectors.toList());
+  public List<Mica.ProjectDto> list(@QueryParam("study") String studyId) {
+    return projectService.findAllProjects().stream()
+        .filter(n -> subjectAclService.isPermitted("/draft/project", "VIEW", n.getId()))
+        .sorted((o1, o2) -> o1.getId().compareTo(o2.getId())).map(n -> dtos.asDto(n, true)).collect(Collectors.toList());
   }
 
   @POST
-  @Path("/networks")
+  @Path("/projects")
   @Timed
-  @RequiresPermissions("/draft/network:ADD")
-  public Response create(Mica.NetworkDto networkDto, @Context UriInfo uriInfo) {
-    Network network = dtos.fromDto(networkDto);
+  @RequiresPermissions("/draft/project:ADD")
+  public Response create(Mica.ProjectDto projectDto, @Context UriInfo uriInfo) {
+    Project project = dtos.fromDto(projectDto);
 
-    networkService.save(network);
-    return Response.created(uriInfo.getBaseUriBuilder().segment("draft", "network", network.getId()).build()).build();
+    projectService.save(project);
+    return Response.created(uriInfo.getBaseUriBuilder().segment("draft", "project", project.getId()).build()).build();
   }
 
   @PUT
-  @Path("/networks/_index")
+  @Path("/projects/_index")
   @Timed
-  @RequiresPermissions("/draft/network:PUBLISH")
+  @RequiresPermissions("/draft/project:PUBLISH")
   public Response reIndex() {
-    eventBus.post(new IndexNetworksEvent());
+    eventBus.post(new IndexProjectsEvent());
     return Response.noContent().build();
   }
 
-  @Path("/network/{id}")
-  public DraftNetworkResource network(@PathParam("id") String id) {
-    DraftNetworkResource resource = applicationContext.getBean(DraftNetworkResource.class);
+  @Path("/project/{id}")
+  public DraftProjectResource project(@PathParam("id") String id) {
+    DraftProjectResource resource = applicationContext.getBean(DraftProjectResource.class);
     resource.setId(id);
 
     return resource;
