@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-05-17
+ * Date: 2016-05-19
  */
 'use strict';
 
@@ -197,7 +197,7 @@ angular.module('obiba.mica.utils', [])
         }
 
         // wait for content to load into table and to have at least one row, tdElems could be empty at the time of execution if td are created asynchronously (eg ng-repeat with promise)
-        $scope.$watchGroup(['trigger', isTableReady],
+        $scope.$watchGroup(['trigger', 'isFullscreen', isTableReady],
           function (newValue) {
             if (newValue[1] === true) {
               // reset display styles so column widths are correct when measured below
@@ -6879,7 +6879,8 @@ angular.module('obiba.mica.graphics')
                     angular.forEach(aggregation['obiba.mica.TermsAggregationResultDto.terms'], function (term) {
                       angular.forEach(term.aggs, function (aggBucket) {
                         if (aggBucket.aggregation === 'numberOfParticipants-participant-number') {
-                          numberOfParticipant = LocalizedValues.formatNumber(aggBucket['obiba.mica.StatsAggregationResultDto.stats'].data.sum);
+                          var aggregateBucket = aggBucket['obiba.mica.StatsAggregationResultDto.stats'];
+                          numberOfParticipant = LocalizedValues.formatNumber(aggregateBucket ? aggregateBucket.data.sum : 0);
                         }
                       });
                       if (sortTerm.name === term.key) {

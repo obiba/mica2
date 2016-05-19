@@ -643,6 +643,13 @@ message CommentDto {
   optional UserProfileDto modifiedByProfile = 11;
 }
 
+message ProjectDto {
+  optional string id = 1;
+  optional TimestampsDto timestamps = 2;
+  repeated LocalizedStringDto title = 3;
+  optional string content = 4;
+}
+
 message DataAccessRequestDto {
 
   message StatusChangeDto {

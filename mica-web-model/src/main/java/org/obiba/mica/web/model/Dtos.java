@@ -25,6 +25,7 @@ import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.domain.OpalCredential;
 import org.obiba.mica.network.domain.Network;
+import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
@@ -71,6 +72,9 @@ public class Dtos {
 
   @Inject
   private DatasetDtos datasetDtos;
+
+  @Inject
+  private ProjectDtos projectDtos;
 
   @Inject
   private DataAccessRequestDtos dataAccessRequestDtos;
@@ -316,6 +320,17 @@ public class Dtos {
   @NotNull
   public Iterable<Mica.LocalizedStringDto> asDto(LocalizedString string) {
     return localizedStringDtos.asDto(string);
+  }
+
+
+  @NotNull
+  public Mica.ProjectDto asDto(@NotNull Project project) {
+    return asDto(project, false);
+  }
+
+  @NotNull
+  public Mica.ProjectDto asDto(@NotNull Project project, boolean asDraft) {
+    return projectDtos.asDto(project, asDraft);
   }
 
   @NotNull
