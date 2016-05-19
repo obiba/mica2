@@ -62,7 +62,7 @@ angular.module('obiba.mica.utils', [])
         }
 
         // wait for content to load into table and to have at least one row, tdElems could be empty at the time of execution if td are created asynchronously (eg ng-repeat with promise)
-        $scope.$watchGroup(['trigger', isTableReady],
+        $scope.$watchGroup(['trigger', 'isFullscreen', isTableReady],
           function (newValue) {
             if (newValue[1] === true) {
               // reset display styles so column widths are correct when measured below
