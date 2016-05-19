@@ -177,8 +177,8 @@ mica.dataset
       var createDataset = function () {
         DraftStudyDatasetsResource.save($scope.dataset,
           function (resource, getResponseHeaders) {
-            var parts = getResponseHeaders().location.split('/');
             FormDirtyStateObserver.unobserve();
+            var parts = getResponseHeaders().location.split('/');
             $location.path('/study-dataset/' + parts[parts.length - 1]).replace();
           },
           saveErrorHandler);
@@ -333,6 +333,7 @@ mica.dataset
         $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].networkId = $scope.selected.network ? $scope.selected.network.id : null;
         DraftHarmonizationDatasetsResource.save($scope.dataset,
           function (resource, getResponseHeaders) {
+            FormDirtyStateObserver.unobserve();
             var parts = getResponseHeaders().location.split('/');
             $location.path('/harmonization-dataset/' + parts[parts.length - 1]).replace();
           },
