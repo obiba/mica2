@@ -10,6 +10,12 @@ mica.config
         'get': {method: 'GET'}
       });
     }])
+  .factory('MicaConfigOpalProjectsResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/config/opal-projects', {}, {
+        'get': {method: 'GET', isArray: true}
+      });
+    }])
   .factory('PublicMicaConfigResource', ['$resource',
     function ($resource) {
       return $resource('ws/config/_public', {}, {

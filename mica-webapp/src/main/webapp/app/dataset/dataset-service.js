@@ -141,10 +141,24 @@ mica.dataset
       });
     }])
 
-  .factory('DatasetService', ['$rootScope', 'HarmonizationDatasetResource', 'NOTIFICATION_EVENTS',
-    function ($rootScope, HarmonizationDatasetResource, NOTIFICATION_EVENTS) {
+  .factory('DatasetService', ['$rootScope',
+    'HarmonizationDatasetResource',
+    'NOTIFICATION_EVENTS',
+    'LocalizedValues',
+    function ($rootScope, HarmonizationDatasetResource, NOTIFICATION_EVENTS, LocalizedValues) {
+
+      function getNames(name) {
+        return name.map(function(entry) {
+          return entry.value;
+        }).join('-');
+      }
+
+      function getName(name, lang) {
+        return LocalizedValues.forLang(name, lang);
+      }
+
       return {
-        deleteDataset: function (dataset, onSuccess) {
+        deleteDataset: function (dataset, onSuccess, lang) {
           var datasetToDelete = dataset;
 
           var removeSubscriber = $rootScope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, id) {
@@ -155,7 +169,12 @@ mica.dataset
           });
 
           $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
-            {title: 'Delete dataset', message: 'Are you sure to delete the dataset?'}, dataset.id);
+            {
+              titleKey: 'dataset.delete-dialog.title',
+              messageKey: 'dataset.delete-dialog.message',
+              messageArgs: [lang ? getName(dataset.name, lang) : getNames(dataset.name)]
+            }, dataset.id
+          );
         }
       };
     }]);

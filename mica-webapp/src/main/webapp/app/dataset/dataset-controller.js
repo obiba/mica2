@@ -204,6 +204,7 @@ mica.dataset
     'MicaConfigResource',
     'FormServerValidation',
     'DraftNetworksResource',
+    'MicaConfigOpalProjectsResource',
     'FormDirtyStateObserver',
 
     function ($rootScope,
@@ -219,6 +220,7 @@ mica.dataset
               MicaConfigResource,
               FormServerValidation,
               DraftNetworksResource,
+              MicaConfigOpalProjectsResource,
               FormDirtyStateObserver) {
 
       var getTypeFromUrl = function() {
@@ -231,14 +233,36 @@ mica.dataset
       $scope.type = getTypeFromUrl();
       $scope.activeTab = 0;
       $scope.newDataset = !$routeParams.id;
+
+      function getOpalProjects() {
+        return MicaConfigOpalProjectsResource.get().$promise.then(function(projects){
+          $scope.projects = projects;
+        });
+      }
+
       if ($routeParams.id) {
         $scope.dataset = HarmonizationDatasetResource.get({id: $routeParams.id});
         $scope.dataset.$promise.then(function (dataset) {
+
           $scope.networks.$promise.then(function (networks) {
             $scope.selected.network = networks.filter(function (n) {return n.id === dataset['obiba.mica.HarmonizationDatasetDto.type'].networkId; })[0];
           });
+
+          getOpalProjects().then(function() {
+            $scope.selected.project = $scope.projects.filter(function (p) {
+              return p.name === dataset['obiba.mica.HarmonizationDatasetDto.type'].project;
+            }).pop();
+
+            if ($scope.selected.project) {
+              $scope.selected.project.table = $scope.selected.project.datasource.table.filter(function (t) {
+                return t === dataset['obiba.mica.HarmonizationDatasetDto.type'].table;
+              }).pop();
+            }
+          });
+
         });
       } else {
+        getOpalProjects();
         $scope.dataset = {
           published: false,
           'obiba.mica.HarmonizationDatasetDto.type': {}
@@ -250,6 +274,10 @@ mica.dataset
         micaConfig.languages.forEach(function (lang) {
           $scope.tabs.push({lang: lang});
         });
+
+        MicaConfigOpalProjectsResource.get().$promise.then(function(projects){
+          $scope.projects = projects;
+        });
       });
 
       $scope.save = function () {
@@ -257,6 +285,11 @@ mica.dataset
           $scope.form.saveAttempted = true;
           return;
         }
+
+        $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].project = $scope.selected.project.name;
+        $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].table = $scope.selected.project.table;
+        $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].networkId = $scope.selected.network ? $scope.selected.network.id : null;
+
         if ($scope.dataset.id) {
           updateDataset();
         } else {
@@ -319,8 +352,6 @@ mica.dataset
       };
 
       var updateDataset = function () {
-        $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].networkId = $scope.selected.network ? $scope.selected.network.id : null;
-
         $scope.dataset.$save(
           function (dataset) {
             FormDirtyStateObserver.unobserve(); 
@@ -330,7 +361,6 @@ mica.dataset
       };
 
       var createDataset = function () {
-        $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].networkId = $scope.selected.network ? $scope.selected.network.id : null;
         DraftHarmonizationDatasetsResource.save($scope.dataset,
           function (resource, getResponseHeaders) {
             FormDirtyStateObserver.unobserve();
@@ -450,7 +480,7 @@ mica.dataset
         $scope.dataset.type = $scope.type;
         DatasetService.deleteDataset($scope.dataset, function () {
           $location.path('/' + $scope.type);
-        });
+        }, $scope.tabs[$scope.activeTab].lang);
       };
 
       var getViewMode = function() {
