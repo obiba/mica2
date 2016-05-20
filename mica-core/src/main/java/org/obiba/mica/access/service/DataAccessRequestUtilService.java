@@ -77,6 +77,9 @@ public class DataAccessRequestUtilService {
       case REVIEWED:
         checkReviewedStatusTransition(to);
         break;
+      case CONDITIONALLY_APPROVED:
+        checkConditionallyApprovedStatusTransition(to);
+        break;
       case APPROVED:
         checkApprovedStatusTransition(to);
         break;
@@ -105,6 +108,9 @@ public class DataAccessRequestUtilService {
       case REVIEWED:
         addNextReviewedStatus(to);
         break;
+      case CONDITIONALLY_APPROVED:
+        addNextConditionallyApprovedStatus(to);
+        break;
       case APPROVED:
         addNextApprovedStatus(to);
         break;
@@ -131,13 +137,22 @@ public class DataAccessRequestUtilService {
     } else {
       to.add(DataAccessRequest.Status.APPROVED);
       to.add(DataAccessRequest.Status.REJECTED);
+      if (dataAccessForm.isWithConditionalApproval()) to.add(DataAccessRequest.Status.CONDITIONALLY_APPROVED);
     }
   }
 
   private void addNextReviewedStatus(List<DataAccessRequest.Status> to) {
-    to.add(DataAccessRequest.Status.OPENED);
     to.add(DataAccessRequest.Status.APPROVED);
     to.add(DataAccessRequest.Status.REJECTED);
+    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    if (dataAccessForm.isWithConditionalApproval()) to.add(DataAccessRequest.Status.CONDITIONALLY_APPROVED);
+     else to.add(DataAccessRequest.Status.OPENED);
+  }
+
+  private void addNextConditionallyApprovedStatus(List<DataAccessRequest.Status> to) {
+    to.add(DataAccessRequest.Status.SUBMITTED);
+    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    if (dataAccessForm.isWithReview()) to.add(DataAccessRequest.Status.REVIEWED);
   }
 
   private void addNextApprovedStatus(List<DataAccessRequest.Status> to) {
@@ -166,6 +181,10 @@ public class DataAccessRequestUtilService {
     if(dataAccessForm.isWithReview()) {
       if(to != DataAccessRequest.Status.OPENED && to != DataAccessRequest.Status.REVIEWED)
         throw new IllegalArgumentException("Submitted data access request can only be reopened or put under review");
+    } else if (!dataAccessForm.isWithReview() && dataAccessForm.isWithConditionalApproval()) {
+      if (to != DataAccessRequest.Status.CONDITIONALLY_APPROVED && to != DataAccessRequest.Status.OPENED &&
+        to != DataAccessRequest.Status.APPROVED && to != DataAccessRequest.Status.REJECTED)
+        throw new IllegalArgumentException("Submitted data access request can only be conditionally approved, reopened, or be approved/rejected");
     } else {
       if(to != DataAccessRequest.Status.OPENED && to != DataAccessRequest.Status.APPROVED &&
         to != DataAccessRequest.Status.REJECTED) throw new IllegalArgumentException(
@@ -174,9 +193,27 @@ public class DataAccessRequestUtilService {
   }
 
   private void checkReviewedStatusTransition(DataAccessRequest.Status to) {
-    if(to != DataAccessRequest.Status.OPENED && to != DataAccessRequest.Status.APPROVED &&
-      to != DataAccessRequest.Status.REJECTED)
-      throw new IllegalArgumentException("Reviewed data access request can only be reopened or be approved/rejected");
+    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    if (dataAccessForm.isWithConditionalApproval()) {
+      if (to != DataAccessRequest.Status.CONDITIONALLY_APPROVED && to != DataAccessRequest.Status.APPROVED &&
+        to != DataAccessRequest.Status.REJECTED)
+        throw new IllegalArgumentException("Reviewed data access request can only be conditionally approved or be approved/rejected");
+    } else {
+      if(to != DataAccessRequest.Status.OPENED && to != DataAccessRequest.Status.APPROVED &&
+        to != DataAccessRequest.Status.REJECTED)
+        throw new IllegalArgumentException("Reviewed data access request can only be reopened or be approved/rejected");
+    }
+  }
+
+  private void checkConditionallyApprovedStatusTransition(DataAccessRequest.Status to) {
+    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    if (dataAccessForm.isWithReview()) {
+      if (to != DataAccessRequest.Status.SUBMITTED && to != DataAccessRequest.Status.REVIEWED)
+        throw new IllegalArgumentException("Conditionally approved data access request can only be resubmitted or be under review");
+    } else {
+      if (to != DataAccessRequest.Status.SUBMITTED)
+        throw new IllegalArgumentException("Conditionally approved data access request can only be resubmitted");
+    }
   }
 
   private void checkApprovedStatusTransition(DataAccessRequest.Status to) {

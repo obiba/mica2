@@ -200,6 +200,8 @@ public class DataAccessRequestResource {
         return open(id);
       case REVIEWED:
         return review(id);
+      case CONDITIONALLY_APPROVED:
+        return conditionallyApprove(id);
       case APPROVED:
         return approve(id);
       case REJECTED:
@@ -250,6 +252,16 @@ public class DataAccessRequestResource {
 
   private Response reject(@PathParam("id") String id) {
     return updateStatus(id, DataAccessRequest.Status.REJECTED);
+  }
+
+  private Response conditionallyApprove(@PathParam("id") String id) {
+    DataAccessRequest request = dataAccessRequestService.updateStatus(id, DataAccessRequest.Status.CONDITIONALLY_APPROVED);
+    // restore applicant permissions
+    subjectAclService.addUserPermission(request.getApplicant(), "/data-access-request", "VIEW,EDIT,DELETE", id);
+    subjectAclService.addUserPermission(request.getApplicant(), "/data-access-request/" + id, "EDIT", "_status");
+    // data access officers cannot change the status of this request anymore
+    subjectAclService.removeGroupPermission(Roles.MICA_DAO, "/data-access-request/" + id, "EDIT", "_status");
+    return updateStatus(id, DataAccessRequest.Status.CONDITIONALLY_APPROVED);
   }
 
   private Response updateStatus(String id, DataAccessRequest.Status status) {

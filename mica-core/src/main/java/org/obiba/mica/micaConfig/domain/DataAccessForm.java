@@ -39,6 +39,8 @@ public class DataAccessForm extends AbstractGitPersistable {
 
   private boolean notifyReviewed = true;
 
+  private boolean notifyConditionallyApproved = true;
+
   private boolean notifyApproved = true;
 
   private boolean notifyRejected = true;
@@ -51,6 +53,8 @@ public class DataAccessForm extends AbstractGitPersistable {
 
   private String reviewedSubject;
 
+  private String conditionallyApprovedSubject;
+
   private String approvedSubject;
 
   private String rejectedSubject;
@@ -60,6 +64,8 @@ public class DataAccessForm extends AbstractGitPersistable {
   private String commentedSubject;
 
   private boolean withReview = true;
+
+  private boolean withConditionalApproval = true;
 
   private boolean approvedFinal = false;
 
@@ -206,6 +212,14 @@ public class DataAccessForm extends AbstractGitPersistable {
     return notifyReviewed;
   }
 
+  public boolean isNotifyConditionallyApproved() {
+    return notifyConditionallyApproved;
+  }
+
+  public void setNotifyConditionallyApproved(boolean notifyConditionallyApproved) {
+    this.notifyConditionallyApproved = notifyConditionallyApproved;
+  }
+
   public void setNotifyApproved(boolean notifyApproved) {
     this.notifyApproved = notifyApproved;
   }
@@ -246,6 +260,14 @@ public class DataAccessForm extends AbstractGitPersistable {
     return withReview;
   }
 
+  public boolean isWithConditionalApproval() {
+    return withConditionalApproval;
+  }
+
+  public void setWithConditionalApproval(boolean withConditionalApproval) {
+    this.withConditionalApproval = withConditionalApproval;
+  }
+
   public void setApprovedFinal(boolean approvedFinal) {
     this.approvedFinal = approvedFinal;
   }
@@ -276,6 +298,14 @@ public class DataAccessForm extends AbstractGitPersistable {
 
   public void setReviewedSubject(String reviewedSubject) {
     this.reviewedSubject = reviewedSubject;
+  }
+
+  public String getConditionallyApprovedSubject() {
+    return conditionallyApprovedSubject;
+  }
+
+  public void setConditionallyApprovedSubject(String conditionallyApprovedSubject) {
+    this.conditionallyApprovedSubject = conditionallyApprovedSubject;
   }
 
   public String getApprovedSubject() {
