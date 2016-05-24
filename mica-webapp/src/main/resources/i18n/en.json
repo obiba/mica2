@@ -1153,9 +1153,10 @@
     "bio-samples-chart-title": "Distribution of studies by biological samples",
     "number-participants-chart-title": "Distribution of studies by number of participants"
   },
-  "projects": "Projects",
-  "project": {
-    "add": "Add project",
-    "none": "No projects"
+  "research-projects": "Research Projects",
+  "research-project": {
+    "add": "Add Project",
+    "none": "No projects",
+    "data-access-request": "Data Access Request"
   }
 }

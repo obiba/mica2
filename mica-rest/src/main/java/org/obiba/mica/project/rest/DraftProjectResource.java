@@ -17,7 +17,7 @@ import org.obiba.mica.core.service.AbstractGitPersistableService;
 import org.obiba.mica.file.rest.FileResource;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.project.domain.ProjectState;
-import org.obiba.mica.project.service.NoSuchMicaProjectException;
+import org.obiba.mica.project.service.NoSuchProjectException;
 import org.obiba.mica.project.service.ProjectService;
 import org.obiba.mica.security.rest.SubjectAclResource;
 import org.obiba.mica.web.model.Dtos;
@@ -96,7 +96,7 @@ public class DraftProjectResource extends AbstractGitPersistableResource<Project
     subjectAclService.checkPermission("/draft/project", "DELETE", id);
     try {
       projectService.delete(id);
-    } catch (NoSuchMicaProjectException e) {
+    } catch (NoSuchProjectException e) {
       // ignore
     }
     return Response.noContent().build();

@@ -1,9 +1,9 @@
 <!--
   ~ Copyright (c) 2016 OBiBa. All rights reserved.
-  ~  
+  ~
   ~ This program and the accompanying materials
   ~ are made available under the terms of the GNU Public License v3.0.
-  ~  
+  ~
   ~ You should have received a copy of the GNU General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
@@ -11,15 +11,15 @@
 <div>
 
   <h2>
-    <span translate>projects</span>
+    <span translate>research-projects</span>
   </h2>
 
   <a ng-href="#/project/new" class="btn btn-info" ng-if="hasRole(['mica-administrator','mica-reviewer','mica-editor'])">
-    <i class="fa fa-plus"></i> <span translate>project.add</span>
+    <i class="fa fa-plus"></i> <span translate>research-project.add</span>
   </a>
 
   <p class="help-block" ng-if="projects.length == 0 && !loading">
-    <span translate>project.none</span>
+    <span translate>research-project.none</span>
   </p>
 
   <p ng-if="loading" class="voffset2 loading">
@@ -43,8 +43,8 @@
         <thead>
         <tr>
           <th>ID</th>
-          <th translate>acronym</th>
           <th translate>name</th>
+          <th translate>research-project.data-access-request</th>
           <th translate>published</th>
           <th translate>status</th>
           <th translate>actions</th>
@@ -58,23 +58,19 @@
           </td>
           <td>
             <ul class="list-unstyled">
-              <li ng-repeat="acronym in project.acronym">
-                <span class="badge">{{acronym.lang}}</span> {{acronym.value}}
-              </li>
-            </ul>
-          </td>
-          <td>
-            <ul class="list-unstyled">
               <li ng-repeat="name in project.name">
                 <span class="badge">{{name.lang}}</span> {{name.value}}
               </li>
             </ul>
           </td>
           <td>
+            <a ng-href="#/data-access-request/{{project.id}}">{{project.id}}</a>
+          </td>
+          <td>
             <div publish-status state="project['obiba.mica.EntityStateDto.projectState']"></div>
           </td>
           <td>
-            {{'publish.status.' + project['obiba.mica.EntityStateDto.state'].revisionStatus | translate}}
+            {{'publish.status.' + project['obiba.mica.EntityStateDto.projectState'].revisionStatus | translate}}
           </td>
           <td>
             <ul class="list-inline">

@@ -15,8 +15,6 @@ import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
-import org.obiba.mica.network.NoSuchNetworkException;
-import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.project.ProjectRepository;
 import org.obiba.mica.project.ProjectStateRepository;
 import org.obiba.mica.project.domain.Project;
@@ -73,17 +71,17 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
   }
 
   /**
-   * Find a {@link Network} by its ID.
+   * Find a {@link Project} by its ID.
    *
    * @param id
    * @return
-   * @throws NoSuchNetworkException
+   * @throws NoSuchProjectException
    */
   @NotNull
-  public Project findById(@NotNull String id) throws NoSuchNetworkException {
-    Project project= projectRepository.findOne(id);
+  public Project findById(@NotNull String id) throws NoSuchProjectException {
+    Project project = projectRepository.findOne(id);
 
-    if(project == null) throw NoSuchMicaProjectException.withId(id);
+    if(project == null) throw NoSuchProjectException.withId(id);
 
     return project;
   }
@@ -106,7 +104,7 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
 
       if(saved != null) {
         BeanUtils.copyProperties(project, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
-            "lastModifiedDate");
+          "lastModifiedDate");
       } else {
         saved = project;
       }
@@ -132,12 +130,12 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
   }
 
   /**
-   * Delete a {@link Network}.
+   * Delete a {@link Project}.
    *
    * @param id
-   * @throws NoSuchMicaProjectException
+   * @throws NoSuchProjectException
    */
-  public void delete(@NotNull String id) throws NoSuchMicaProjectException {
+  public void delete(@NotNull String id) throws NoSuchProjectException {
     Project project = findById(id);
     fileSystemService.delete(FileUtils.getEntityPath(project));
     projectStateRepository.delete(id);
@@ -152,16 +150,17 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
   }
 
   /**
-   * Set the publication flag on a {@link Network}.
+   * Set the publication flag on a {@link Project}.
    *
    * @param id
-   * @throws NoSuchNetworkException
+   * @throws NoSuchProjectException
    */
   @Caching(evict = { @CacheEvict(value = "aggregations-metadata", key = "'project'") })
-  public void publish(@NotNull String id, boolean publish, PublishCascadingScope cascadingScope) throws NoSuchEntityException {
+  public void publish(@NotNull String id, boolean publish, PublishCascadingScope cascadingScope)
+    throws NoSuchEntityException {
     Project project = projectRepository.findOne(id);
-    if (project == null) return;
-    if (publish) {
+    if(project == null) return;
+    if(publish) {
       publishState(id);
       eventBus.post(new ProjectPublishedEvent(project, getCurrentUsername(), cascadingScope));
     } else {
@@ -177,15 +176,15 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
    */
   public List<Project> findAllPublishedProjects() {
     return findPublishedStates().stream() //
-        .filter(projectState -> { //
-          return gitService.hasGitRepository(projectState) && !Strings.isNullOrEmpty(projectState.getPublishedTag()); //
-        }) //
-        .map(projectState -> gitService.readFromTag(projectState, projectState.getPublishedTag(), Project.class)) //
-        .collect(toList());
+      .filter(projectState -> { //
+        return gitService.hasGitRepository(projectState) && !Strings.isNullOrEmpty(projectState.getPublishedTag()); //
+      }) //
+      .map(projectState -> gitService.readFromTag(projectState, projectState.getPublishedTag(), Project.class)) //
+      .collect(toList());
   }
 
   /**
-   * Get all {@link Network}s.
+   * Get all {@link Project}s.
    *
    * @return
    */
@@ -194,20 +193,19 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
   }
 
   /**
-   * Index all {@link Network}s.
+   * Index all {@link Project}s.
    */
   public void indexAll() {
     eventBus.post(new IndexProjectsEvent());
   }
 
-
   /**
-   * Index a specific {@link Network} without updating it.
+   * Index a specific {@link Project} without updating it.
    *
    * @param id
-   * @throws NoSuchNetworkException
+   * @throws NoSuchProjectException
    */
-  public void index(@NotNull String id) throws NoSuchNetworkException {
+  public void index(@NotNull String id) throws NoSuchProjectException {
     ProjectState projectState = getEntityState(id);
     Project project = findById(id);
 
@@ -227,29 +225,25 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
   }
 
   private String getNextId(LocalizedString suggested) {
-    if (suggested == null) return null;
+    if(suggested == null) return null;
     String prefix = suggested.asUrlSafeString().toLowerCase();
-    if (Strings.isNullOrEmpty(prefix)) return null;
+    if(Strings.isNullOrEmpty(prefix)) return null;
     String next = prefix;
-    try {
-      findById(next);
-      for (int i = 1; i<=1000; i++) {
-        next = prefix + "-" + i;
-        findById(next);
-      }
-      return null;
-    } catch (NoSuchMicaProjectException e) {
-      return next;
+
+    if(!projectRepository.exists(next)) return next;
+    for(int i = 1; i <= 1000; i++) {
+      next = prefix + "-" + i;
+      if(!projectRepository.exists(next)) return next;
     }
+    return null;
   }
 
-
-
   private void ensureAcronym(@NotNull Project project) {
-    if (project.getAcronym() == null || project.getAcronym().isEmpty()) {
+    if(project.getAcronym() == null || project.getAcronym().isEmpty()) {
       project.setAcronym(project.getName().asAcronym());
     }
   }
+
   //
   // Event handling
   //
@@ -257,7 +251,7 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
   @Async
   @Subscribe
   public void dataAccessRequestUpdated(DataAccessRequestUpdatedEvent event) {
-    if (!projectRepository.exists(event.getPersistable().getId())) {
+    if(!projectRepository.exists(event.getPersistable().getId())) {
       Project project = new Project();
       project.setId(event.getPersistable().getId());
       save(project, "Created from Data Access Request");
@@ -267,6 +261,6 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
   @Async
   @Subscribe
   public void dataAccessRequestDeleted(DataAccessRequestDeletedEvent event) {
-    projectRepository.delete(event.getPersistable().getId());
+    delete(event.getPersistable().getId());
   }
 }

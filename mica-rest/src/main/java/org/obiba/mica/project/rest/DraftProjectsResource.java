@@ -19,7 +19,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -61,7 +60,7 @@ public class DraftProjectsResource {
   @GET
   @Path("/projects")
   @Timed
-  public List<Mica.ProjectDto> list(@QueryParam("study") String studyId) {
+  public List<Mica.ProjectDto> list() {
     return projectService.findAllProjects().stream()
         .filter(n -> subjectAclService.isPermitted("/draft/project", "VIEW", n.getId()))
         .sorted((o1, o2) -> o1.getId().compareTo(o2.getId())).map(n -> dtos.asDto(n, true)).collect(Collectors.toList());

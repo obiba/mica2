@@ -15,7 +15,7 @@ import javax.ws.rs.GET;
 
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.project.domain.Project;
-import org.obiba.mica.project.service.NoSuchMicaProjectException;
+import org.obiba.mica.project.service.NoSuchProjectException;
 import org.obiba.mica.project.service.PublishedProjectService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
@@ -65,7 +65,7 @@ public class PublishedProjectResource {
 
   private Project getProject() {
     Project project = publishedProjectService.findById(id);
-    if (project == null) throw NoSuchMicaProjectException.withId(id);
+    if (project == null) throw NoSuchProjectException.withId(id);
     return project;
   }
 }
