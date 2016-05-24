@@ -149,6 +149,8 @@
           <div form-input name="reviewedSubject" model="dataAccessForm.reviewedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.reviewedSubject" required="false" disable="!dataAccessForm.notifyReviewed"></div>
           <div form-checkbox name="notifyReopened" model="dataAccessForm.notifyReopened" label="data-access-config.notifications.reopened" help="data-access-config.notifications.reopened-help"></div>
           <div form-input name="reopenedSubject" model="dataAccessForm.reopenedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.reopenedSubject" required="false" disable="!dataAccessForm.notifyReopened"></div>
+          <div form-checkbox name="notifyConditionallyApproved" model="dataAccessForm.notifyConditionallyApproved" label="data-access-config.notifications.conditionallyApproved" help="data-access-config.notifications.conditionallyApproved-help"></div>
+          <div form-input name="conditionallyApprovedSubject" model="conditionallyApprovedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.conditionallyApprovedSubject"></div>
         </div>
         <div class="col-md-6">
           <div form-checkbox name="notifyRejected" model="dataAccessForm.notifyRejected" label="data-access-config.notifications.rejected" help="data-access-config.notifications.rejected-help"></div>
