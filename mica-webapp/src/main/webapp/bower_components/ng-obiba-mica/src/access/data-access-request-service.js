@@ -109,6 +109,7 @@ angular.module('obiba.mica.access')
         OPENED: 'OPENED',
         SUBMITTED: 'SUBMITTED',
         REVIEWED: 'REVIEWED',
+        CONDITIONALLY_APPROVED: 'CONDITIONALLY_APPROVED',
         APPROVED: 'APPROVED',
         REJECTED: 'REJECTED'
       };
@@ -174,6 +175,10 @@ angular.module('obiba.mica.access')
           return canChangeStatus(request, 'REVIEWED');
         },
 
+        canConditionallyApprove: function (request) {
+          return canChangeStatus(request, 'CONDITIONALLY_APPROVED');
+        },
+
         canApprove: function (request) {
           return canChangeStatus(request, 'APPROVED');
         },
@@ -194,6 +199,7 @@ angular.module('obiba.mica.access')
           'data-access-request.histories.reopened': 'reopened',
           'data-access-request.histories.submitted': 'submitted',
           'data-access-request.histories.reviewed': 'reviewed',
+          'data-access-request.histories.conditionallyApproved': 'conditionallyApproved',
           'data-access-request.histories.approved': 'approved',
           'data-access-request.histories.rejected': 'rejected'
         };
@@ -214,6 +220,10 @@ angular.module('obiba.mica.access')
           reviewed: {
             id: 'reviewed',
             icon: 'glyphicon glyphicon-check',
+          },
+          conditionallyApproved: {
+            id: 'conditionallyApproved',
+            icon: 'glyphicon glyphicon-unchecked',
           },
           approved: {
             id: 'approved',
@@ -250,6 +260,9 @@ angular.module('obiba.mica.access')
               break;
             case 'REVIEWED':
               id = 'reviewed';
+              break;
+            case 'CONDITIONALLY_APPROVED':
+              id = 'conditionallyApproved';
               break;
             case 'APPROVED':
               id = 'approved';

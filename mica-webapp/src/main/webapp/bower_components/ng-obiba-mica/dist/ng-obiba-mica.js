@@ -1,9 +1,9 @@
 /*!
- * ng-obiba-mica - v1.1.0
+ * ng-obiba-mica - v1.1.1
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-05-19
+ * Date: 2016-05-24
  */
 'use strict';
 
@@ -811,6 +811,9 @@ angular.module('obiba.mica.access')
       $scope.reject = function () {
         confirmStatusChange(DataAccessRequestService.status.REJECTED, null, 'reject');
       };
+      $scope.conditionallyApprove = function () {
+        confirmStatusChange(DataAccessRequestService.status.CONDITIONALLY_APPROVED, null, 'conditionallyApprove');
+      };
 
       $scope.userProfile = function (profile) {
         $scope.applicant = profile;
@@ -857,6 +860,12 @@ angular.module('obiba.mica.access')
         NOTIFICATION_EVENTS.confirmDialogAccepted,
         function(event, status) {
           statusChangedConfirmed(DataAccessRequestService.status.REVIEWED, status);
+        }
+      );
+      $scope.$on(
+        NOTIFICATION_EVENTS.confirmDialogAccepted,
+        function(event, status) {
+          statusChangedConfirmed(DataAccessRequestService.status.CONDITIONALLY_APPROVED, status);
         }
       );
       $scope.$on(
@@ -1156,6 +1165,7 @@ angular.module('obiba.mica.access')
         OPENED: 'OPENED',
         SUBMITTED: 'SUBMITTED',
         REVIEWED: 'REVIEWED',
+        CONDITIONALLY_APPROVED: 'CONDITIONALLY_APPROVED',
         APPROVED: 'APPROVED',
         REJECTED: 'REJECTED'
       };
@@ -1221,6 +1231,10 @@ angular.module('obiba.mica.access')
           return canChangeStatus(request, 'REVIEWED');
         },
 
+        canConditionallyApprove: function (request) {
+          return canChangeStatus(request, 'CONDITIONALLY_APPROVED');
+        },
+
         canApprove: function (request) {
           return canChangeStatus(request, 'APPROVED');
         },
@@ -1241,6 +1255,7 @@ angular.module('obiba.mica.access')
           'data-access-request.histories.reopened': 'reopened',
           'data-access-request.histories.submitted': 'submitted',
           'data-access-request.histories.reviewed': 'reviewed',
+          'data-access-request.histories.conditionallyApproved': 'conditionallyApproved',
           'data-access-request.histories.approved': 'approved',
           'data-access-request.histories.rejected': 'rejected'
         };
@@ -1261,6 +1276,10 @@ angular.module('obiba.mica.access')
           reviewed: {
             id: 'reviewed',
             icon: 'glyphicon glyphicon-check',
+          },
+          conditionallyApproved: {
+            id: 'conditionallyApproved',
+            icon: 'glyphicon glyphicon-unchecked',
           },
           approved: {
             id: 'approved',
@@ -1297,6 +1316,9 @@ angular.module('obiba.mica.access')
               break;
             case 'REVIEWED':
               id = 'reviewed';
+              break;
+            case 'CONDITIONALLY_APPROVED':
+              id = 'conditionallyApproved';
               break;
             case 'APPROVED':
               id = 'approved';
@@ -8016,6 +8038,10 @@ angular.module("access/views/data-access-request-view.html", []).run(["$template
     "      <a ng-click=\"review()\"\n" +
     "        ng-if=\"actions.canEditStatus(dataAccessRequest) && nextStatus.canReview(dataAccessRequest)\"\n" +
     "        class=\"btn btn-info\" translate>review\n" +
+    "      </a>\n" +
+    "      <a ng-click=\"conditionallyApprove()\"\n" +
+    "         ng-if=\"actions.canEditStatus(dataAccessRequest) && nextStatus.canConditionallyApprove(dataAccessRequest)\"\n" +
+    "         class=\"btn btn-info\" translate>conditionallyApprove\n" +
     "      </a>\n" +
     "      <a ng-click=\"approve()\"\n" +
     "        ng-if=\"actions.canEditStatus(dataAccessRequest) && nextStatus.canApprove(dataAccessRequest)\"\n" +
