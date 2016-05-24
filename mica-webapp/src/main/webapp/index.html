@@ -72,9 +72,14 @@
             <li ng-if="micaConfig.isHarmonizationDatasetEnabled"><a href="#/harmonization-dataset"><span translate>harmonization-datasets</span></a></li>
           </ul>
         </li>
-        <li ng-if="hasRole(['mica-administrator', 'mica-user', 'mica-data-access-officer']) && micaConfig.isHarmonizationDatasetEnabled">
+        <li ng-if="hasRole(['mica-administrator', 'mica-data-access-officer']) && micaConfig.isHarmonizationDatasetEnabled">
           <a href="#/projects">
             <span translate>research-projects</span>
+          </a>
+        </li>
+        <li ng-if="hasRole(['mica-user']) && micaConfig.isHarmonizationDatasetEnabled">
+          <a href="#/data-access-requests">
+            <span translate>data-access-requests</span>
           </a>
         </li>
       </ul>
