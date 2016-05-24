@@ -230,6 +230,9 @@ public class DataAccessRequestService {
       case OPENED:
         sendOpenedNotificationEmail(request);
         break;
+      case CONDITIONALLY_APPROVED:
+        sendConditionallyApprovedEmail(request);
+        break;
       case APPROVED:
         sendApprovedNotificationEmail(request);
         break;
@@ -283,6 +286,20 @@ public class DataAccessRequestService {
         request.getApplicant());
       mailService.sendEmailToGroups(mailService.getSubject(dataAccessForm.getSubmittedSubject(), ctx,
         DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestSubmittedDAOEmail", ctx,
+        Roles.MICA_DAO);
+    }
+  }
+
+  private void sendConditionallyApprovedEmail(DataAccessRequest request) {
+    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    if (dataAccessForm.isNotifyConditionallyApproved()) {
+      Map<String, String> ctx = getNotificationEmailContext(request);
+
+      mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getConditionallyApprovedSubject(), ctx,
+        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "", ctx,
+        request.getApplicant());
+      mailService.sendEmailToGroups(mailService.getSubject(dataAccessForm.getConditionallyApprovedSubject(), ctx,
+        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "", ctx,
         Roles.MICA_DAO);
     }
   }

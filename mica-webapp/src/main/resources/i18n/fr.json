@@ -662,6 +662,7 @@
   "submit": "Submit",
   "review": "Review",
   "reopen": "Reopen",
+  "conditionallyApprove": "Conditionally Approve",
   "approve": "Approve",
   "reject": "Reject",
   "close": "Close",
@@ -705,6 +706,7 @@
   "OPENED": "Opened",
   "SUBMITTED": "Submitted",
   "REVIEWED": "Under Review",
+  "CONDITIONALLY_APPROVED": "Conditionally approved",
   "APPROVED": "Approved",
   "REJECTED": "Rejected",
   "date": "Date",
@@ -987,7 +989,8 @@
       "reopened":  "Re-opened",
       "reviewed":  "Reviewed",
       "approved":  "Approved",
-      "rejected":  "Rejected"
+      "rejected":  "Rejected",
+      "conditionallyApproved": "Conditionally approved"
     },
     "delete-dialog": {
       "title": "Delete Data Access Request",
@@ -1097,7 +1100,9 @@
       "approved-final": "'Approved' state is final",
       "approved-final-help": "If not final, an approved data access request can be reinstated to its previous state.",
       "rejected-final": "'Rejected' state is final",
-      "rejected-final-help": "If not final, a rejected data access request can be reinstated to its previous state."
+      "rejected-final-help": "If not final, a rejected data access request can be reinstated to its previous state.",
+      "with-conditional-approval": "With 'Conditionally Approved' intermediate state",
+      "with-conditional-approval-help": "Between the submission and the approval/rejection of the data access request, an intermediate state can be used to allow the applicant to edit its request."
     },
     "syntax-error": {
       "definition": "Form definition is not a valid document, please revise and correct the errors.",

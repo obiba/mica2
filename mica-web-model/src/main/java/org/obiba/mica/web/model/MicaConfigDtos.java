@@ -161,7 +161,9 @@ class MicaConfigDtos {
       .setNotifyCommented(dataAccessForm.isNotifyCommented()) //
       .setWithReview(dataAccessForm.isWithReview()) //
       .setApprovedFinal(dataAccessForm.isApprovedFinal()) //
-      .setRejectedFinal(dataAccessForm.isRejectedFinal());
+      .setRejectedFinal(dataAccessForm.isRejectedFinal())
+      .setWithConditionalApproval(dataAccessForm.isWithConditionalApproval())
+      .setNotifyConditionallyApproved(dataAccessForm.isNotifyConditionallyApproved());
 
     if(dataAccessForm.getSubmittedSubject() != null) builder.setSubmittedSubject(dataAccessForm.getSubmittedSubject());
 
@@ -174,6 +176,8 @@ class MicaConfigDtos {
     if(dataAccessForm.getReopenedSubject() != null) builder.setReopenedSubject(dataAccessForm.getReopenedSubject());
 
     if(dataAccessForm.getCommentedSubject() != null) builder.setCommentedSubject(dataAccessForm.getCommentedSubject());
+
+    if (dataAccessForm.getConditionallyApprovedSubject() != null) builder.setConditionallyApprovedSubject(dataAccessForm.getConditionallyApprovedSubject());
 
     return builder.build();
   }
@@ -220,6 +224,10 @@ class MicaConfigDtos {
     dataAccessForm.setWithReview(dto.getWithReview());
     dataAccessForm.setApprovedFinal(dto.getApprovedFinal());
     dataAccessForm.setRejectedFinal(dto.getRejectedFinal());
+
+    dataAccessForm.setWithConditionalApproval(dto.getWithConditionalApproval());
+    dataAccessForm.setNotifyConditionallyApproved(dto.getNotifyConditionallyApproved());
+    dataAccessForm.setConditionallyApprovedSubject(dto.getConditionallyApprovedSubject());
 
     return dataAccessForm;
   }

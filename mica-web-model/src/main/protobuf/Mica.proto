@@ -694,6 +694,9 @@ message DataAccessFormDto {
   optional string rejectedSubject = 20;
   optional string reopenedSubject = 21;
   optional string commentedSubject = 22;
+  required bool notifyConditionallyApproved = 23;
+  required bool withConditionalApproval = 24;
+  optional string conditionallyApprovedSubject = 25;
 }
 
 message UserProfileDto {
