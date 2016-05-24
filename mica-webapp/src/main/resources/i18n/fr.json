@@ -1090,7 +1090,10 @@
       "reopened-help": "Email is sent to applicant when its data access request is reopened.",
       "commented": "On comment",
       "commentedSubject": "On comment email subject",
-      "commented-help": "Email is sent to applicant and data access officers when the data access request is commented."
+      "commented-help": "Email is sent to applicant and data access officers when the data access request is commented.",
+      "conditionallyApproved": "On conditional approval",
+      "conditionallyApprovedSubject": "On conditional approval email subject",
+      "conditionallyApproved-help": "Email is sent to applicant when its data access request is in the 'Conditionally Approved' state."
     },
     "workflow": {
       "title": "Workflow",

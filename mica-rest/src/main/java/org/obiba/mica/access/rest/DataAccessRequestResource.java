@@ -217,12 +217,13 @@ public class DataAccessRequestResource {
   private Response submit(String id) {
     DataAccessRequest request = dataAccessRequestService.findById(id);
     boolean fromOpened = request.getStatus() == DataAccessRequest.Status.OPENED;
+    boolean fromConditionallyApproved = request.getStatus() == DataAccessRequest.Status.CONDITIONALLY_APPROVED;
     if(fromOpened && !subjectAclService.isCurrentUser(request.getApplicant())) {
       // only applicant can submit an opened request
       throw new ForbiddenException();
     }
     dataAccessRequestService.updateStatus(id, DataAccessRequest.Status.SUBMITTED);
-    if (fromOpened) {
+    if (fromOpened || fromConditionallyApproved) {
       // applicant cannot edit, nor delete request anymore + status cannot be changed
       subjectAclService.removePermission("/data-access-request", "EDIT,DELETE", id);
       subjectAclService.removePermission("/data-access-request/" + id, "EDIT", "_status");
@@ -243,6 +244,15 @@ public class DataAccessRequestResource {
   }
 
   private Response review(@PathParam("id") String id) {
+    DataAccessRequest request = dataAccessRequestService.findById(id);
+    boolean fromConditionallyApproved = request.getStatus() == DataAccessRequest.Status.CONDITIONALLY_APPROVED;
+    if (fromConditionallyApproved) {
+      // remove applicant permissions
+      subjectAclService.removePermission("/data-access-request", "EDIT,DELETE", id);
+      subjectAclService.removePermission("/data-access-request/" + id, "EDIT", "_status");
+      // data access officers can change the status of the request
+      subjectAclService.addGroupPermission(Roles.MICA_DAO, "/data-access-request/" + id, "EDIT", "_status");
+    }
     return updateStatus(id, DataAccessRequest.Status.REVIEWED);
   }
 

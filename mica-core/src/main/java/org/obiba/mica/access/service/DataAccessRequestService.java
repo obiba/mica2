@@ -304,11 +304,8 @@ public class DataAccessRequestService {
       Map<String, String> ctx = getNotificationEmailContext(request);
 
       mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getConditionallyApprovedSubject(), ctx,
-        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "", ctx,
+        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestConditionallyApprovedApplicantEmail", ctx,
         request.getApplicant());
-      mailService.sendEmailToGroups(mailService.getSubject(dataAccessForm.getConditionallyApprovedSubject(), ctx,
-        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "", ctx,
-        Roles.MICA_DAO);
     }
   }
 
