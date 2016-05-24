@@ -54,6 +54,9 @@ import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.network.NetworkStateRepository;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.network.service.PublishedNetworkService;
+import org.obiba.mica.project.ProjectRepository;
+import org.obiba.mica.project.ProjectStateRepository;
+import org.obiba.mica.project.service.ProjectService;
 import org.obiba.mica.security.repository.SubjectAclRepository;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.StudyStateRepository;
@@ -541,6 +544,21 @@ public class StudyDtosTest {
     @Bean
     public EntityPublicationFlowMailNotification entityPublicationFlowNotification() {
       return mock(EntityPublicationFlowMailNotification.class);
+    }
+
+    @Bean
+    public ProjectService projectService() {
+      return mock(ProjectService.class);
+    }
+
+    @Bean
+    public ProjectRepository projectRepository() {
+      return mock(ProjectRepository.class);
+    }
+
+    @Bean
+    public ProjectStateRepository projectStateRepository() {
+      return mock(ProjectStateRepository.class);
     }
 
     @Bean

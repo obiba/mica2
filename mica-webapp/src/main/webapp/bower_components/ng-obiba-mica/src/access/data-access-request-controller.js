@@ -381,6 +381,9 @@ angular.module('obiba.mica.access')
       $scope.reject = function () {
         confirmStatusChange(DataAccessRequestService.status.REJECTED, null, 'reject');
       };
+      $scope.conditionallyApprove = function () {
+        confirmStatusChange(DataAccessRequestService.status.CONDITIONALLY_APPROVED, null, 'conditionallyApprove');
+      };
 
       $scope.userProfile = function (profile) {
         $scope.applicant = profile;
@@ -427,6 +430,12 @@ angular.module('obiba.mica.access')
         NOTIFICATION_EVENTS.confirmDialogAccepted,
         function(event, status) {
           statusChangedConfirmed(DataAccessRequestService.status.REVIEWED, status);
+        }
+      );
+      $scope.$on(
+        NOTIFICATION_EVENTS.confirmDialogAccepted,
+        function(event, status) {
+          statusChangedConfirmed(DataAccessRequestService.status.CONDITIONALLY_APPROVED, status);
         }
       );
       $scope.$on(

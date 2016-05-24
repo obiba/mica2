@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-05-20
+ * Date: 2016-05-24
  */
 'use strict';
 
@@ -1279,7 +1279,7 @@ angular.module('obiba.mica.access')
           },
           conditionallyApproved: {
             id: 'conditionallyApproved',
-            icon: 'glyphicon glyphicon-export',
+            icon: 'glyphicon glyphicon-unchecked',
           },
           approved: {
             id: 'approved',

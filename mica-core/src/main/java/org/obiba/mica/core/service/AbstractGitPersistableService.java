@@ -173,7 +173,7 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
     RevisionStatus current = entityState.getRevisionStatus();
     entityState.setRevisionStatus(status);
     getEntityStateRepository().save(entityState);
-    entityPublicationFlowNotification.send(id, getTypeName(), current, status);
+//    entityPublicationFlowNotification.send(id, getTypeName(), current, status);
 
     return entityState;
   }

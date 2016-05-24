@@ -39,6 +39,10 @@
         ng-if="actions.canEditStatus(dataAccessRequest) && nextStatus.canReview(dataAccessRequest)"
         class="btn btn-info" translate>review
       </a>
+      <a ng-click="conditionallyApprove()"
+         ng-if="actions.canEditStatus(dataAccessRequest) && nextStatus.canConditionallyApprove(dataAccessRequest)"
+         class="btn btn-info" translate>conditionallyApprove
+      </a>
       <a ng-click="approve()"
         ng-if="actions.canEditStatus(dataAccessRequest) && nextStatus.canApprove(dataAccessRequest)"
         class="btn btn-info" translate>approve

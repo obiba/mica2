@@ -19,6 +19,8 @@ import org.obiba.mica.access.DataAccessRequestRepository;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.domain.StatusChange;
+import org.obiba.mica.access.event.DataAccessRequestDeletedEvent;
+import org.obiba.mica.access.event.DataAccessRequestUpdatedEvent;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.core.support.IdentifierGenerator;
@@ -40,6 +42,7 @@ import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
 import com.google.common.io.ByteStreams;
 import com.itextpdf.text.DocumentException;
 import com.jayway.jsonpath.Configuration;
@@ -67,6 +70,9 @@ public class DataAccessRequestService {
 
   @Inject
   private FileStoreService fileStoreService;
+
+  @Inject
+  private EventBus eventBus;
 
   @Inject
   private MailService mailService;
@@ -120,12 +126,13 @@ public class DataAccessRequestService {
 
     if(toDelete != null) toDelete.forEach(a -> fileStoreService.delete(a.getId()));
 
+    eventBus.post(new DataAccessRequestUpdatedEvent(saved));
     sendNotificationEmails(saved, from);
     return saved;
   }
 
   /**
-   * Delete the {@link org.obiba.mica.access.domain.DataAccessRequest} matching the identifier.
+   * Delete the {@link DataAccessRequest} matching the identifier.
    *
    * @param id
    * @throws NoSuchDataAccessRequestException
@@ -137,10 +144,11 @@ public class DataAccessRequestService {
     dataAccessRequestRepository.deleteWithReferences(dataAccessRequest);
 
     attachments.forEach(a -> fileStoreService.delete(a.getId()));
+    eventBus.post(new DataAccessRequestDeletedEvent(dataAccessRequest));
   }
 
   /**
-   * Update the status of the {@link org.obiba.mica.access.domain.DataAccessRequest} matching the identifier.
+   * Update the status of the {@link DataAccessRequest} matching the identifier.
    *
    * @param id
    * @param status
@@ -155,7 +163,7 @@ public class DataAccessRequestService {
   }
 
   /**
-   * Update the content of the {@link org.obiba.mica.access.domain.DataAccessRequest} matching the identifier.
+   * Update the content of the {@link DataAccessRequest} matching the identifier.
    *
    * @param id
    * @param content
@@ -173,7 +181,7 @@ public class DataAccessRequestService {
   //
 
   /**
-   * Get the {@link org.obiba.mica.access.domain.DataAccessRequest} matching the identifier.
+   * Get the {@link DataAccessRequest} matching the identifier.
    *
    * @param id
    * @return
@@ -187,7 +195,7 @@ public class DataAccessRequestService {
   }
 
   /**
-   * Get all {@link org.obiba.mica.access.domain.DataAccessRequest}s, optionally filtered by applicant.
+   * Get all {@link DataAccessRequest}s, optionally filtered by applicant.
    *
    * @param applicant
    * @return
