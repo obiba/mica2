@@ -30,7 +30,8 @@ class ProjectDtos {
       .addAllName(localizedStringDtos.asDto(project.getName())) //
       .addAllDescription(localizedStringDtos.asDto(project.getDescription()));
 
-    if(project.hasContent()) builder.setContent(JSONUtils.toJSON(project.getContent())); //
+    if(project.hasContent()) builder.setContent(JSONUtils.toJSON(project.getContent()));
+    if(project.hasDataAccessRequestId()) builder.setDarId(project.getDataAccessRequestId());
     if(!project.isNew()) builder.setId(project.getId());
 
     Mica.PermissionsDto permissionsDto = permissionsDtos.asDto(project);

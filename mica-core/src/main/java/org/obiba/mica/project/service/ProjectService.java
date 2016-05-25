@@ -104,7 +104,7 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
 
       if(saved != null) {
         BeanUtils.copyProperties(project, saved, "id", "version", "createdBy", "createdDate", "lastModifiedBy",
-          "lastModifiedDate");
+          "lastModifiedDate", "dataAccessRequestId");
       } else {
         saved = project;
       }
@@ -248,6 +248,7 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
     if(!projectRepository.exists(event.getPersistable().getId())) {
       Project project = new Project();
       project.setId(event.getPersistable().getId());
+      project.setDataAccessRequestId(event.getPersistable().getId());
       save(project, "Created from Data Access Request");
     }
   }

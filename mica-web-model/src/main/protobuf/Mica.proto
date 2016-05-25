@@ -660,8 +660,9 @@ message ProjectDto {
   repeated LocalizedStringDto name = 3;
   repeated LocalizedStringDto description = 4;
   optional string content = 5;
-  optional PermissionsDto permissions = 6;
-  optional bool published = 7;
+  optional string darId = 6;
+  optional PermissionsDto permissions = 7;
+  optional bool published = 8;
   extensions 1000 to max;
 }
 
