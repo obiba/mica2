@@ -28,8 +28,7 @@ class ProjectDtos {
   public Mica.ProjectDto asDto(@NotNull Project project, boolean asDraft) {
     Mica.ProjectDto.Builder builder = Mica.ProjectDto.newBuilder()
       .addAllName(localizedStringDtos.asDto(project.getName())) //
-      .addAllDescription(localizedStringDtos.asDto(project.getDescription())) //
-      .addAllAcronym(localizedStringDtos.asDto(project.getAcronym())); //
+      .addAllDescription(localizedStringDtos.asDto(project.getDescription()));
 
     if(project.hasContent()) builder.setContent(JSONUtils.toJSON(project.getContent())); //
     if(!project.isNew()) builder.setId(project.getId());
@@ -55,7 +54,6 @@ class ProjectDtos {
     builder.content(dto.hasContent() ? dto.getContent() : null);
     builder.name(localizedStringDtos.fromDto(dto.getNameList()));
     builder.description(localizedStringDtos.fromDto(dto.getDescriptionList()));
-    builder.acronym(localizedStringDtos.fromDto(dto.getAcronymList()));
 
     Project project = builder.build();
     if(dto.hasId()) project.setId(dto.getId());
