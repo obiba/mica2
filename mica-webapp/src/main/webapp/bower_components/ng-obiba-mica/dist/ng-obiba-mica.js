@@ -1,9 +1,9 @@
 /*!
- * ng-obiba-mica - v1.1.1
+ * ng-obiba-mica - v1.2.0
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-05-24
+ * Date: 2016-05-25
  */
 'use strict';
 
@@ -8024,7 +8024,7 @@ angular.module("access/views/data-access-request-view.html", []).run(["$template
     "        {{getFullName(dataAccessRequest.profile) || dataAccessRequest.applicant}}\n" +
     "      </a>,\n" +
     "      <span>{{dataAccessRequest.timestamps.created | amCalendar}}</span>\n" +
-    "      <span class=\"label label-success\">{{dataAccessRequest.status}}</span></p>\n" +
+    "      <span class=\"label label-success\">{{dataAccessRequest.status | translate}}</span></p>\n" +
     "\n" +
     "    <div class=\"pull-right\">\n" +
     "      <a ng-click=\"submit()\"\n" +
