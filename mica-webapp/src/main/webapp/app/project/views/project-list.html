@@ -64,7 +64,7 @@
             </ul>
           </td>
           <td>
-            <a ng-href="#/data-access-request/{{project.id}}">{{project.id}}</a>
+            <a ng-if="project.darId" ng-href="#/data-access-request/{{project.id}}">{{project.darId}}</a>
           </td>
           <td>
             <div publish-status state="project['obiba.mica.EntityStateDto.projectState']"></div>

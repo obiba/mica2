@@ -18,6 +18,8 @@ public class Project extends AbstractGitPersistable {
 
   private Map<String,Object> content;
 
+  private String dataAccessRequestId;
+
   public Project() {}
 
   //
@@ -46,6 +48,18 @@ public class Project extends AbstractGitPersistable {
 
   public Map<String, Object> getContent() {
     return content;
+  }
+
+  public boolean hasDataAccessRequestId() {
+    return !Strings.isNullOrEmpty(dataAccessRequestId);
+  }
+
+  public void setDataAccessRequestId(String dataAccessRequestId) {
+    this.dataAccessRequestId = dataAccessRequestId;
+  }
+
+  public String getDataAccessRequestId() {
+    return dataAccessRequestId;
   }
 
   @Override
