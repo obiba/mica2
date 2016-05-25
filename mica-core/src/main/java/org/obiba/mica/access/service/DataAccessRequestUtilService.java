@@ -10,10 +10,9 @@
 
 package org.obiba.mica.access.service;
 
-import java.util.List;
-
-import javax.inject.Inject;
-
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.jayway.jsonpath.*;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
@@ -21,13 +20,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.InvalidPathException;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.Option;
-import com.jayway.jsonpath.PathNotFoundException;
+import javax.inject.Inject;
+import java.util.List;
 
 @Component
 public class DataAccessRequestUtilService {
@@ -151,8 +145,6 @@ public class DataAccessRequestUtilService {
 
   private void addNextConditionallyApprovedStatus(List<DataAccessRequest.Status> to) {
     to.add(DataAccessRequest.Status.SUBMITTED);
-    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
-    if (dataAccessForm.isWithReview()) to.add(DataAccessRequest.Status.REVIEWED);
   }
 
   private void addNextApprovedStatus(List<DataAccessRequest.Status> to) {
