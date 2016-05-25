@@ -16,8 +16,6 @@ public class Project extends AbstractGitPersistable {
 
   private LocalizedString description;
 
-  private LocalizedString acronym;
-
   private Map<String,Object> content;
 
   public Project() {}
@@ -25,6 +23,10 @@ public class Project extends AbstractGitPersistable {
   //
   // Accessors
   //
+
+  public boolean hasName() {
+    return name != null;
+  }
 
   public LocalizedString getName() {
     return name;
@@ -66,14 +68,6 @@ public class Project extends AbstractGitPersistable {
     return new Builder();
   }
 
-  public LocalizedString getAcronym() {
-    return acronym;
-  }
-
-  public void setAcronym(LocalizedString acronym) {
-    this.acronym = acronym;
-  }
-
   public LocalizedString getDescription() {
     return description;
   }
@@ -100,11 +94,6 @@ public class Project extends AbstractGitPersistable {
 
     public Builder name(LocalizedString value) {
       project.setName(value);
-      return this;
-    }
-
-    public Builder acronym(LocalizedString value) {
-      project.setAcronym(value);
       return this;
     }
 

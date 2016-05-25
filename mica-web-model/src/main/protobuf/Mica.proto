@@ -659,10 +659,9 @@ message ProjectDto {
   optional TimestampsDto timestamps = 2;
   repeated LocalizedStringDto name = 3;
   repeated LocalizedStringDto description = 4;
-  repeated LocalizedStringDto acronym = 5;
-  optional string content = 6;
-  optional PermissionsDto permissions = 7;
-  optional bool published = 8;
+  optional string content = 5;
+  optional PermissionsDto permissions = 6;
+  optional bool published = 7;
   extensions 1000 to max;
 }
 

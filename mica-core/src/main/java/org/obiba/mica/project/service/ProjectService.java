@@ -217,10 +217,9 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
 
   @Override
   protected String generateId(@NotNull Project project) {
-    ensureAcronym(project);
-    String nextId = getNextId(project.getAcronym());
+    if (!project.hasName()) return null;
+    String nextId = getNextId(project.getName().asAcronym());
     project.setId(nextId);
-
     return nextId;
   }
 
@@ -238,11 +237,6 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
     return null;
   }
 
-  private void ensureAcronym(@NotNull Project project) {
-    if(project.getAcronym() == null || project.getAcronym().isEmpty()) {
-      project.setAcronym(project.getName().asAcronym());
-    }
-  }
 
   //
   // Event handling
