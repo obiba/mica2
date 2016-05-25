@@ -1014,11 +1014,6 @@
       "title": "Form Submitted",
       "message": "Your access form was successfully submitted."
     },
-    "status-change-confirmation": {
-      "title": "Status Change Confirmation",
-      "message": "Are you sure you want to {{arg0}} this access request?",
-      "message-review": "Are you sure you want to put this access request under review?"
-    },
     "profile" :{
       "title" : "User Profile",
       "name" : "Name",
@@ -1158,8 +1153,13 @@
   },
   "research-projects": "Research Projects",
   "research-project": {
+    "label": "Reasearch Project",
     "add": "Add Project",
     "none": "No projects.",
-    "data-access-request": "Data Access Request"
+    "data-access-request": "Data Access Request",
+    "restore-dialog": {
+      "title": "Restoring Project from Revision",
+      "message": "Are you sure you want to restore this revision from '{{arg0}}'?"
+    }
   }
 }

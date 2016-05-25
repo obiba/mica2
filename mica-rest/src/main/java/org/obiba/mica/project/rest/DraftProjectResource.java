@@ -1,6 +1,9 @@
 package org.obiba.mica.project.rest;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
+import javax.validation.constraints.NotNull;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -117,6 +120,13 @@ public class DraftProjectResource extends AbstractGitPersistableResource<Project
     projectService.updateStatus(id, RevisionStatus.valueOf(status.toUpperCase()));
 
     return Response.noContent().build();
+  }
+
+  @GET
+  @Path("/commit/{commitId}/view")
+  public Mica.ProjectDto getFromCommit(@NotNull @PathParam("commitId") String commitId) throws IOException {
+    subjectAclService.checkPermission("/draft/network", "VIEW", id);
+    return dtos.asDto(projectService.getFromCommit(projectService.findDraft(id), commitId), true);
   }
 
   @Path("/permissions")

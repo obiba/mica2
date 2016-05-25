@@ -1,9 +1,9 @@
 /*
  * Copyright (c) 2016 OBiBa. All rights reserved.
- *  
+ *
  * This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0.
- *  
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -42,7 +42,7 @@ mica.project
       $scope.loading = true;
       DraftProjectsResource.query({}, onSuccess, onError);
 
-      $scope.deleteNetwork = function(project) {
+      $scope.deleteProject = function(project) {
         DraftProjectResource.delete(project, function() {
           $scope.loading = true;
           DraftProjectsResource.query({}, onSuccess, onError);
@@ -67,6 +67,9 @@ mica.project
     'DraftProjectPermissionsResource',
     'DraftProjectPublicationResource',
     'DraftProjectStatusResource',
+    'DraftProjectViewRevisionResource',
+    'DraftProjectRevisionsResource',
+    'DraftProjectRestoreRevisionResource',
     '$uibModal',
     'LocalizedValues',
     '$filter',
@@ -88,11 +91,14 @@ mica.project
       DraftProjectPermissionsResource,
       DraftProjectPublicationResource,
       DraftProjectStatusResource,
+      DraftProjectViewRevisionResource,
+      DraftProjectRevisionsResource,
+      DraftProjectRestoreRevisionResource,
       $uibModal,
       LocalizedValues,
       $filter,
       DocumentPermissionsService) {
-      
+
       var initializeProject = function(project){
         $scope.activeTab = 0;
         $scope.permissions = DocumentPermissionsService.state(project['obiba.mica.EntityStateDto.projectState']);
@@ -153,7 +159,7 @@ mica.project
 
       var viewRevision = function (projectId, commitInfo) {
         $scope.commitInfo = commitInfo;
-        $scope.project = DraftNetworkViewRevisionResource.view({
+        $scope.project = DraftProjectViewRevisionResource.view({
           id: projectId,
           commitId: commitInfo.commitId
         }, initializeProject);
@@ -164,7 +170,7 @@ mica.project
       };
 
       var fetchRevisions = function (projectId, onSuccess) {
-        DraftNetworkRevisionsResource.query({id: projectId}, function (response) {
+        DraftProjectRevisionsResource.query({id: projectId}, function (response) {
           if (onSuccess) {
             onSuccess(response);
           }
@@ -177,8 +183,8 @@ mica.project
 
           $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
             {
-              titleKey: 'project.restore-dialog.title',
-              messageKey: 'project.restore-dialog.message',
+              titleKey: 'research-project.restore-dialog.title',
+              messageKey: 'research-project.restore-dialog.message',
               messageArgs: [$filter('amDateFormat')(commitInfo.date, 'lll')]
             }, args
           );
@@ -208,7 +214,7 @@ mica.project
 
       var onRestore = function (event, args) {
         if (args.commitId) {
-          DraftNetworkRestoreRevisionResource.restore({id: $scope.projectId, commitId: args.commitId},
+          DraftProjectRestoreRevisionResource.restore({id: $scope.projectId, commitId: args.commitId},
             function () {
               fetchProject($routeParams.id);
               $scope.projectId = $routeParams.id;
@@ -248,4 +254,122 @@ mica.project
       });
 
       $scope.viewMode = getViewMode();
+    }])
+
+  .controller('ProjectEditController', [
+    '$rootScope',
+    '$scope',
+    '$routeParams',
+    '$log',
+    '$locale',
+    '$location',
+    'DraftProjectResource',
+    'DraftProjectsResource',
+    'DraftProjectPublicationResource',
+    'MicaConfigResource',
+    'FormServerValidation',
+    'FormDirtyStateObserver',
+    function ($rootScope,
+              $scope,
+              $routeParams,
+              $log,
+              $locale,
+              $location,
+              DraftProjectResource,
+              DraftProjectsResource,
+              DraftProjectPublicationResource,
+              MicaConfigResource,
+              FormServerValidation,
+              FormDirtyStateObserver) {
+
+      $scope.activeTab = 0;
+      $scope.files = [];
+      $scope.newProject= !$routeParams.id;
+      $scope.project = $routeParams.id ?
+        DraftProjectResource.get({id: $routeParams.id}, function(response) {
+          $scope.files = response.logo ? [response.logo] : [];
+          return response;
+        }) : {published: false};
+
+      MicaConfigResource.get(function (micaConfig) {
+        $scope.tabs = [];
+        micaConfig.languages.forEach(function (lang) {
+          $scope.tabs.push({lang: lang});
+        });
+      });
+
+      $scope.save = function () {
+
+        if (!$scope.form.$valid) {
+          $scope.form.saveAttempted = true;
+          return;
+        }
+        if ($scope.project.id) {
+          updateProject();
+        } else {
+          createProject();
+        }
+      };
+
+      $scope.cancel = function () {
+        $location.path('/project' + ($scope.project.id ? '/' + $scope.project.id : '')).replace();
+      };
+
+      var updateProject = function () {
+        $scope.project.$save(
+          function (project) {
+            FormDirtyStateObserver.unobserve();
+            $location.path('/project/' + project.id).replace();
+          },
+          saveErrorHandler);
+      };
+
+      var createProject = function () {
+        DraftProjectsResource.save($scope.project,
+          function (resource, getResponseHeaders) {
+            var parts = getResponseHeaders().location.split('/');
+            FormDirtyStateObserver.unobserve();
+            $location.path('/project/' + parts[parts.length - 1]).replace();
+          },
+          saveErrorHandler);
+      };
+
+      var saveErrorHandler = function (response) {
+        FormServerValidation.error(response, $scope.form, $scope.languages);
+      };
+
+      FormDirtyStateObserver.observe($scope);
+    }])
+
+
+  .controller('ProjectPermissionsController', ['$scope','$routeParams', 'DraftProjectPermissionsResource', 'DraftProjectAccessesResource',
+    function ($scope, $routeParams, DraftProjectPermissionsResource, DraftProjectAccessesResource) {
+      $scope.permissions = [];
+      $scope.accesses = [];
+
+      $scope.loadPermissions = function () {
+        $scope.permissions = DraftProjectPermissionsResource.query({id: $routeParams.id});
+        return $scope.permissions;
+      };
+
+      $scope.deletePermission = function (permission) {
+        return DraftProjectPermissionsResource.delete({id: $routeParams.id}, permission);
+      };
+
+      $scope.addPermission = function (permission) {
+        return DraftProjectPermissionsResource.save({id: $routeParams.id}, permission);
+      };
+
+      $scope.loadAccesses = function () {
+        $scope.accesses = DraftProjectAccessesResource.query({id: $routeParams.id});
+        return $scope.accesses;
+      };
+
+      $scope.deleteAccess = function (access) {
+        return DraftProjectAccessesResource.delete({id: $routeParams.id}, access);
+      };
+
+      $scope.addAccess = function (access) {
+        return DraftProjectAccessesResource.save({id: $routeParams.id}, access);
+      };
     }]);

@@ -1,0 +1,13 @@
+<div>
+  <h2>
+    <ol class="breadcrumb mica-breadcrumb">
+      <li><a href="/#/project" translate>research-projects</a></li>
+      <li class="active">
+        <span ng-if="project.id">{{project.id}}</span>
+        <span ng-if="!project.id" translate>new-project</span>
+      </li>
+    </ol>
+  </h2>
+
+  <div ng-if="project.id" ng-include="'app/project/views/project-tabs.html'"></div>
+</div>
