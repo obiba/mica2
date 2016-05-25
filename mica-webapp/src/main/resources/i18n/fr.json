@@ -1155,8 +1155,10 @@
   "research-project": {
     "label": "Reasearch Project",
     "add": "Add Project",
-    "none": "No projects",
+    "none": "No projects.",
     "data-access-request": "Data Access Request",
+    "name": "Name",
+    "description": "Description",
     "restore-dialog": {
       "title": "Restoring Project from Revision",
       "message": "Are you sure you want to restore this revision from '{{arg0}}'?"
