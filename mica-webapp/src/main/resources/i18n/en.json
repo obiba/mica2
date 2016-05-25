@@ -706,7 +706,7 @@
   "OPENED": "Opened",
   "SUBMITTED": "Submitted",
   "REVIEWED": "Under Review",
-  "CONDITIONALLY_APPROVED": "Conditionally approved",
+  "CONDITIONALLY_APPROVED": "Conditionally Approved",
   "APPROVED": "Approved",
   "REJECTED": "Rejected",
   "date": "Date",
@@ -1159,7 +1159,7 @@
   "research-projects": "Research Projects",
   "research-project": {
     "add": "Add Project",
-    "none": "No projects",
+    "none": "No projects.",
     "data-access-request": "Data Access Request"
   }
 }
