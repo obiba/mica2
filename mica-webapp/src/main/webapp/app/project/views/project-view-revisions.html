@@ -1,0 +1,17 @@
+<div>
+  <div ng-include="'app/project/views/project-view-header.html'" ng-init="tabName='revisions'"></div>
+
+  <revisions id="{{projectId}}" title="{{'revisions' | translate}}" state="project['obiba.mica.EntityStateDto.projectState']" on-fetch-revisions="fetchRevisions" on-restore-revision="restoreRevision" on-view-revision="viewRevision"></revisions>
+
+  <h3 class="voffset5" translate>research-project.label</h3>
+
+  <small class="help-block">
+    {{'revision-date' | translate}}: {{commitInfo.date | amDateFormat : 'lll'}} ({{commitInfo.author}})
+  </small>
+  <div class="panel panel-default">
+    <div class="panel-body">
+      <div ng-include="'app/project/views/project-view-details.html'"></div>
+    </div>
+  </div>
+
+</div>

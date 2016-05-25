@@ -48,6 +48,9 @@ import org.obiba.mica.file.notification.FilePublicationFlowMailNotification;
 import org.obiba.mica.network.event.NetworkPublishedEvent;
 import org.obiba.mica.network.event.NetworkUnpublishedEvent;
 import org.obiba.mica.network.event.NetworkUpdatedEvent;
+import org.obiba.mica.project.event.ProjectPublishedEvent;
+import org.obiba.mica.project.event.ProjectUnpublishedEvent;
+import org.obiba.mica.project.event.ProjectUpdatedEvent;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.event.DraftStudyUpdatedEvent;
@@ -757,6 +760,39 @@ public class FileSystemService {
     log.debug("{} {} was unpublished", event.getPersistable().getClass().getSimpleName(), event.getPersistable());
     publish(String.format("/%s/%s", getDatasetTypeFolder(event.getPersistable()), event.getPersistable().getId()),
         false);
+  }
+
+  @Async
+  @Subscribe
+  public void projectUpdated(ProjectUpdatedEvent event) {
+    log.debug("Project {} was updated", event.getPersistable());
+    fsLock.lock();
+    try {
+      mkdirs(String.format("/project/%s", event.getPersistable().getId()));
+    } finally {
+      fsLock.unlock();
+    }
+  }
+
+  @Async
+  @Subscribe
+  public void projectPublished(ProjectPublishedEvent event) {
+    log.debug("Project {} was published", event.getPersistable());
+    PublishCascadingScope cascadingScope = event.getCascadingScope();
+    if(cascadingScope != PublishCascadingScope.NONE) {
+      publishWithCascading( //
+        String.format("/project/%s", event.getPersistable().getId()), //
+        true, //
+        event.getPublisher(), //
+        cascadingScope); //
+    }
+  }
+
+  @Async
+  @Subscribe
+  public void projectUnpublished(ProjectUnpublishedEvent event) {
+    log.debug("Project {} was unpublished", event.getPersistable());
+    publish(String.format("/project/%s", event.getPersistable().getId()), false);
   }
 
   private String getDatasetTypeFolder(Dataset dataset) {
