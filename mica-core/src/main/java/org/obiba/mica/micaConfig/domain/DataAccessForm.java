@@ -65,7 +65,7 @@ public class DataAccessForm extends AbstractGitPersistable {
 
   private boolean withReview = true;
 
-  private boolean withConditionalApproval = true;
+  private boolean withConditionalApproval = false;
 
   private boolean approvedFinal = false;
 
