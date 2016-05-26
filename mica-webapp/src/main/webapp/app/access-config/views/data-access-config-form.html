@@ -30,6 +30,9 @@
       <li ng-class="{'active': tab.name === 'settings'}">
         <a href ng-click="tab.name = 'settings'" title="{{'other-settings' | translate}}"><i class="fa fa-cog"></i></a>
       </li>
+      <li ng-class="{'active': tab.name === 'permissions'}">
+        <a href ng-click="tab.name = 'permissions'; loadPermissions();" title="{{'permissions' | translate}}"><i class="fa fa-lock"></i></a>
+      </li>
     </ul>
   </div>
 
@@ -169,6 +172,16 @@
     </form>
   </div>
 
+  <div ng-show="tab.name === 'permissions'">
+    <h3 translate>data-access-config.permissions.title</h3>
+
+    <p class="help-block" translate>data-access-config.permissions.info</p>
+
+    <div class="col-md-12">
+      <permission-config-table permissions="acls" on-load="loadPermissions" on-add="addPermission" on-delete="deletePermission" name="'data-access-requests'"></permission-config-table>
+    </div>
+  </div>
+
   <div class="voffset4">
       <a href="#/admin" class="btn btn-default">
       <span translate>cancel</span>
@@ -178,6 +191,5 @@
       <span translate>save</span>
     </button>
   </div>
-
 
 </div>

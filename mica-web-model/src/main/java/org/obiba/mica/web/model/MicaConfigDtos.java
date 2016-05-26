@@ -3,6 +3,7 @@ package org.obiba.mica.web.model;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
@@ -183,7 +184,9 @@ class MicaConfigDtos {
 
     if(dataAccessForm.getCommentedSubject() != null) builder.setCommentedSubject(dataAccessForm.getCommentedSubject());
 
-    if (dataAccessForm.getConditionallyApprovedSubject() != null) builder.setConditionallyApprovedSubject(dataAccessForm.getConditionallyApprovedSubject());
+    if(dataAccessForm.getConditionallyApprovedSubject() != null) builder.setConditionallyApprovedSubject(dataAccessForm.getConditionallyApprovedSubject());
+
+    if(dataAccessForm.getDataAccessPermissions() != null) builder.addAllDataAccessPermissions(asStringsMapEntryDtoList(dataAccessForm.getDataAccessPermissions()));
 
     return builder.build();
   }
@@ -196,6 +199,8 @@ class MicaConfigDtos {
 
     dataAccessForm.setProperties(dto.getPropertiesList().stream()
       .collect(toMap(e -> e.getName(), e -> localizedStringDtos.fromDto(e.getValueList()))));
+
+    dataAccessForm.setDataAccessPermissions(dto.getDataAccessPermissionsList().stream().collect(toMap(e -> e.getKey(), e -> e.getValue())));
 
     dataAccessForm.setPdfTemplates(
       dto.getPdfTemplatesList().stream().map(t -> attachmentDtos.fromDto(t)).collect(toMap(a -> a.getLang(), x -> x)));
@@ -248,7 +253,8 @@ class MicaConfigDtos {
     Mica.ProjectFormDto.Builder builder = Mica.ProjectFormDto.newBuilder() //
       .setDefinition(projectForm.getDefinition()) //
       .setSchema(projectForm.getSchema()) //
-      .addAllProperties(asDtoList(projectForm.getProperties()));
+      .addAllProperties(asDtoList(projectForm.getProperties()))
+      .addAllProjectPermissions(asStringsMapEntryDtoList(projectForm.getProjectPermissions()));
 
     return builder.build();
   }
@@ -262,6 +268,9 @@ class MicaConfigDtos {
     projectForm.setProperties(dto.getPropertiesList().stream()
       .collect(toMap(e -> e.getName(), e -> localizedStringDtos.fromDto(e.getValueList()))));
 
+    projectForm.setProjectPermissions(dto.getProjectPermissionsList().stream()
+      .collect(toMap(e -> e.getKey(), e -> e.getValue())));
+
     return projectForm;
   }
 
@@ -270,5 +279,12 @@ class MicaConfigDtos {
     return properties.entrySet().stream().map(
       e -> Mica.LocalizedPropertyDto.newBuilder().setName(e.getKey())
         .addAllValue(localizedStringDtos.asDto(e.getValue())).build()).collect(toList());
+  }
+
+  @NotNull
+  List<Mica.StringsMapEntryDto> asStringsMapEntryDtoList(@NotNull Map<String, String> stringsMapEntryDto) {
+    return stringsMapEntryDto.entrySet().stream().map(
+      e -> Mica.StringsMapEntryDto.newBuilder()
+        .setKey(e.getKey()).setValue(e.getValue()).build()).collect(Collectors.toList());
   }
 }

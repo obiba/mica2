@@ -21,6 +21,110 @@ mica.permission
   };
 }])
 
+.directive('permissionConfigTable', [function () {
+  return {
+    restrict: 'E',
+    scope: {
+      permissions: '=',
+      onAdd: '=',
+      onDelete: '=',
+      onLoad: '=',
+      name: '='
+    },
+    templateUrl: 'app/permission/permission-config-table-template.html',
+    controller: 'PermissionsConfigController'
+  }
+}])
+
+.controller('PermissionsConfigController', ['$rootScope', '$scope', '$uibModal',
+  function ($rootScope, $scope, $uibModal) {
+    $scope.pagination = {searchText: ''};
+
+    function editPermission(acl) {
+      $uibModal.open({
+        templateUrl: 'app/permission/permission-config-modal-form.html',
+        controller: 'PermissionsConfigModalController',
+        resolve: {
+          acl: function() {
+            return angular.copy(acl);
+          },
+          onAdd: function() {
+            return $scope.onAdd;
+          }, name: function() {
+            return $scope.name;
+          }
+        }
+      }).result.then(function(result) {
+        if (result) {
+          $scope.onLoad();
+        }
+      });
+    }
+
+    $scope.addPermission = function() {
+      editPermission({role: 'READER', type: 'GROUP'})
+    };
+
+    $scope.editPermission = function (acl) {
+      editPermission(acl);
+    };
+
+    $scope.deletePermission = function(acl) {
+      $scope.onDelete(acl);
+      $scope.onLoad();
+    };
+
+    $scope.onLoad();
+  }])
+
+.controller('PermissionsConfigModalController', ['$scope', '$uibModalInstance', '$filter', 'acl', 'onAdd', 'name',
+  function ($scope, $uibModalInstance, $filter, acl, onAdd, name) {
+    $scope.ROLES = ['READER'];
+    $scope.TYPES = [
+      {name: 'GROUP', label: $filter('translate')('permission.group')},
+      {name: 'USER', label: $filter('translate')('permission.user')}
+    ];
+
+    var BLOCKED_NAMES = [
+      'mica-user',
+      'mica-reviewer',
+      'mica-editor',
+      'mica-data-access-officer',
+      'mica-administrator'
+    ];
+
+    $scope.name = {arg0: $filter('translate')(name).toLowerCase()};
+
+    var selectedIndex = acl ?
+      $scope.TYPES.findIndex(function(type) {
+        return type.name === acl.type;
+      }) : -1;
+
+    $scope.selectedType = selectedIndex > -1 ? $scope.TYPES[selectedIndex] : $scope.TYPES[0];
+    $scope.editMode = acl && acl.principal;
+    $scope.acl= acl;
+
+    $scope.save = function (form) {
+      form.principal.$setValidity('required', true);
+
+      if (BLOCKED_NAMES.indexOf(acl.principal) > -1) {
+        form.principal.$setValidity('required', false);
+      }
+
+      if (form.$valid) {
+        $scope.acl.type = $scope.selectedType.name;
+        onAdd($scope.acl);
+        $uibModalInstance.close(true);
+      }
+
+      form.saveAttempted = true;
+    };
+
+    $scope.cancel = function () {
+      $uibModalInstance.close();
+    };
+  }])
+
 .controller('PermissionsController', ['$rootScope', '$scope', '$uibModal','NOTIFICATION_EVENTS',
   function ($rootScope, $scope, $uibModal, NOTIFICATION_EVENTS) {
     $scope.pagination = {searchText: ''};
