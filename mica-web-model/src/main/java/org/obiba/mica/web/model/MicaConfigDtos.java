@@ -7,13 +7,15 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
-import com.google.common.base.Strings;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.micaConfig.AuthType;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.domain.OpalCredential;
+import org.obiba.mica.micaConfig.domain.ProjectForm;
 import org.springframework.stereotype.Component;
+
+import com.google.common.base.Strings;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -232,10 +234,33 @@ class MicaConfigDtos {
     return dataAccessForm;
   }
 
+
   @NotNull
-  List<Mica.DataAccessFormDto.LocalizedPropertyDto> asDtoList(@NotNull Map<String, LocalizedString> properties) {
+  Mica.ProjectFormDto asDto(@NotNull ProjectForm projectForm) {
+    Mica.ProjectFormDto.Builder builder = Mica.ProjectFormDto.newBuilder() //
+      .setDefinition(projectForm.getDefinition()) //
+      .setSchema(projectForm.getSchema()) //
+      .addAllProperties(asDtoList(projectForm.getProperties()));
+
+    return builder.build();
+  }
+
+  @NotNull
+  ProjectForm fromDto(@NotNull Mica.ProjectFormDto dto) {
+    ProjectForm projectForm = new ProjectForm();
+    projectForm.setSchema(dto.getSchema());
+    projectForm.setDefinition(dto.getDefinition());
+
+    projectForm.setProperties(dto.getPropertiesList().stream()
+      .collect(toMap(e -> e.getName(), e -> localizedStringDtos.fromDto(e.getValueList()))));
+
+    return projectForm;
+  }
+
+  @NotNull
+  List<Mica.LocalizedPropertyDto> asDtoList(@NotNull Map<String, LocalizedString> properties) {
     return properties.entrySet().stream().map(
-      e -> Mica.DataAccessFormDto.LocalizedPropertyDto.newBuilder().setName(e.getKey())
+      e -> Mica.LocalizedPropertyDto.newBuilder().setName(e.getKey())
         .addAllValue(localizedStringDtos.asDto(e.getValue())).build()).collect(toList());
   }
 }

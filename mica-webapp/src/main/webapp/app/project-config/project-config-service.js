@@ -11,17 +11,17 @@
 /* global document */
 'use strict';
 
-mica.dataAccessConfig
+mica.projectConfig
 
-  .factory('DataAccessFormResource', ['$resource',
+  .factory('ProjectFormResource', ['$resource',
     function ($resource) {
-      return $resource('ws/config/data-access-form', {}, {
+      return $resource('ws/config/project-form', {}, {
         'get': {method: 'GET', errorHandler: true},
         'save': {method: 'PUT', errorHandler: true}
       });
     }])
 
-  .factory('DataAccessFormService', ['BrowserDetector',
+  .factory('ProjectFormService', ['BrowserDetector',
     function (BrowserDetector) {
       return {
 
@@ -99,9 +99,9 @@ mica.dataAccessConfig
           return true;
         },
 
-        isFormValid: function(dataAccessForm) {
-          var result = this.isJsonValid(dataAccessForm.definition) ?
-            (this.isJsonValid(dataAccessForm.schema) ? this.ParseResult.VALID : this.ParseResult.SCHEMA) :
+        isFormValid: function(projectForm) {
+          var result = this.isJsonValid(projectForm.definition) ?
+            (this.isJsonValid(projectForm.schema) ? this.ParseResult.VALID : this.ParseResult.SCHEMA) :
             this.ParseResult.DEFINITION;
 
           return result;

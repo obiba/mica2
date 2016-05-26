@@ -10,53 +10,52 @@
 
 'use strict';
 
-mica.dataAccessConfig
+mica.projectConfig
 
-  .controller('DataAccessConfigController', ['$rootScope', '$location', '$scope', '$log',
-    'DataAccessFormResource',
-    'DataAccessFormService',
+  .controller('ProjectConfigController', ['$rootScope', '$location', '$scope', '$log',
+    'ProjectFormResource',
+    'ProjectFormService',
     'AlertService',
     'ServerErrorUtils',
     function ($rootScope, $location, $scope, $log,
-              DataAccessFormResource,
-              DataAccessFormService,
+              ProjectFormResource,
+              ProjectFormService,
               AlertService,
               ServerErrorUtils) {
 
-      DataAccessFormService.configureAcePaths();
+      ProjectFormService.configureAcePaths();
 
       var saveForm = function() {
 
-        switch (DataAccessFormService.isFormValid($scope.form)) {
-          case DataAccessFormService.ParseResult.VALID:
-            $scope.dataAccessForm.definition = $scope.form.definition;
-            $scope.dataAccessForm.schema = $scope.form.schema;
-            $scope.dataAccessForm.pdfTemplates = $scope.dataAccessForm.pdfTemplates || [];
+        switch (ProjectFormService.isFormValid($scope.form)) {
+          case ProjectFormService.ParseResult.VALID:
+            $scope.projectForm.definition = $scope.form.definition;
+            $scope.projectForm.schema = $scope.form.schema;
 
-            DataAccessFormResource.save($scope.dataAccessForm,
+            ProjectFormResource.save($scope.projectForm,
               function () {
                 $location.path('/admin').replace();
               },
               function (response) {
                 AlertService.alert({
-                  id: 'DataAccessConfigController',
+                  id: 'ProjectConfigController',
                   type: 'danger',
                   msg: ServerErrorUtils.buildMessage(response)
                 });
               });
             break;
-          case DataAccessFormService.ParseResult.SCHEMA:
+          case ProjectFormService.ParseResult.SCHEMA:
           AlertService.alert({
-            id: 'DataAccessConfigController',
+            id: 'ProjectConfigController',
             type: 'danger',
-            msgKey: 'data-access-config.syntax-error.schema'
+            msgKey: 'project-config.syntax-error.schema'
           });
           break;
-        case DataAccessFormService.ParseResult.DEFINITION:
+        case ProjectFormService.ParseResult.DEFINITION:
           AlertService.alert({
-            id: 'DataAccessConfigController',
+            id: 'ProjectConfigController',
             type: 'danger',
-            msgKey: 'data-access-config.syntax-error.definition'
+            msgKey: 'project-config.syntax-error.definition'
           });
           break;
         }
@@ -80,7 +79,7 @@ mica.dataAccessConfig
             refreshPreview();
             break;
           case 'form-model':
-            $scope.modelPreview = DataAccessFormService.prettifyJson($scope.form.model);
+            $scope.modelPreview = ProjectFormService.prettifyJson($scope.form.model);
             break;
         }
       };
@@ -108,46 +107,44 @@ mica.dataAccessConfig
         // Then we check if the form is valid
         if (form.$valid) {
           AlertService.alert({
-            id: 'DataAccessConfigController',
+            id: 'ProjectConfigController',
             type: 'success',
-            msgKey: 'data-access-config.preview.tested',
+            msgKey: 'project-config.preview.tested',
             delay: 5000
           });
         }
       };
 
-      $scope.dataAccessForm = {schema: '', definition: '', pdfTemplates: []};
-      $scope.fileTypes = '.pdf';
-
-      DataAccessFormResource.get(
-        function(dataAccessForm){
+      $scope.projectForm = {schema: '', definition: ''};
+      
+      ProjectFormResource.get(
+        function(projectForm){
           $scope.dirty = true;
-          $scope.form.definitionJson = DataAccessFormService.parseJsonSafely(dataAccessForm.definition, []);
-          $scope.form.definition = DataAccessFormService.prettifyJson($scope.form.definitionJson);
-          $scope.form.schemaJson = DataAccessFormService.parseJsonSafely(dataAccessForm.schema, {});
-          $scope.form.schema = DataAccessFormService.prettifyJson($scope.form.schemaJson);
-          $scope.dataAccessForm = dataAccessForm;
-          $scope.dataAccessForm.pdfTemplates = $scope.dataAccessForm.pdfTemplates || [];
+          $scope.form.definitionJson = ProjectFormService.parseJsonSafely(projectForm.definition, []);
+          $scope.form.definition = ProjectFormService.prettifyJson($scope.form.definitionJson);
+          $scope.form.schemaJson = ProjectFormService.parseJsonSafely(projectForm.schema, {});
+          $scope.form.schema = ProjectFormService.prettifyJson($scope.form.schemaJson);
+          $scope.projectForm = projectForm;
           selectTab('form-schema');
 
           if ($scope.form.definitionJson.length === 0) {
             AlertService.alert({
-              id: 'DataAccessConfigController',
+              id: 'ProjectConfigController',
               type: 'danger',
-              msgKey: 'data-access-config.parse-error.definition'
+              msgKey: 'project-config.parse-error.definition'
             });
           }
           if (Object.getOwnPropertyNames($scope.form.schemaJson).length === 0) {
             AlertService.alert({
-              id: 'DataAccessConfigController',
+              id: 'ProjectConfigController',
               type: 'danger',
-              msgKey: 'data-access-config.parse-error.schema'
+              msgKey: 'project-config.parse-error.schema'
             });
           }
         },
         function(response) {
           AlertService.alert({
-            id: 'DataAccessConfigController',
+            id: 'ProjectConfigController',
             type: 'danger',
             msg: ServerErrorUtils.buildMessage(response)
           });
@@ -164,11 +161,11 @@ mica.dataAccessConfig
       $scope.tab = {name: 'form'};
       $scope.dirty = false;
       $scope.selectedTab = 'form-definition';
-      $scope.ace = DataAccessFormService.getEditorOptions(aceEditorOnLoadCallback);
+      $scope.ace = ProjectFormService.getEditorOptions(aceEditorOnLoadCallback);
       $scope.selectTab = selectTab;
       $scope.testPreview = testPreview;
       $scope.saveForm = saveForm;
-      $scope.fullscreen = DataAccessFormService.gotoFullScreen;
+      $scope.fullscreen = ProjectFormService.gotoFullScreen;
       $scope.$watch('form.definition', watchFormDefinitionChanges);
       $scope.$watch('form.schema', watchFormSchemaChanges);
     }]);

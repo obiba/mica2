@@ -24,6 +24,7 @@ import org.obiba.mica.file.TempFile;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.domain.OpalCredential;
+import org.obiba.mica.micaConfig.domain.ProjectForm;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.study.domain.Study;
@@ -349,6 +350,16 @@ public class Dtos {
   }
 
   @NotNull
+  public Mica.ProjectFormDto asDto(@NotNull ProjectForm projectForm) {
+    return micaConfigDtos.asDto(projectForm);
+  }
+
+  @NotNull
+  public ProjectForm fromDto(@NotNull Mica.ProjectFormDto dto) {
+    return micaConfigDtos.fromDto(dto);
+  }
+
+  @NotNull
   public Mica.CommentDto asDto(@NotNull Comment comment) {
     return commentDtos.asDto(comment);
   }
@@ -369,7 +380,7 @@ public class Dtos {
   }
 
   @NotNull
-  public List<Mica.DataAccessFormDto.LocalizedPropertyDto> asDtoList(@NotNull Map<String, LocalizedString> properties) {
+  public List<Mica.LocalizedPropertyDto> asDtoList(@NotNull Map<String, LocalizedString> properties) {
     return micaConfigDtos.asDtoList(properties);
   }
 

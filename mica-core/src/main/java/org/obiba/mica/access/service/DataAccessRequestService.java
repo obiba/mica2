@@ -285,7 +285,7 @@ public class DataAccessRequestService {
   }
 
   private void sendSubmittedNotificationEmail(DataAccessRequest request) {
-    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
     if(dataAccessForm.isNotifySubmitted()) {
       Map<String, String> ctx = getNotificationEmailContext(request);
 
@@ -299,7 +299,7 @@ public class DataAccessRequestService {
   }
 
   private void sendConditionallyApprovedEmail(DataAccessRequest request) {
-    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
     if (dataAccessForm.isNotifyConditionallyApproved()) {
       Map<String, String> ctx = getNotificationEmailContext(request);
 
@@ -310,7 +310,7 @@ public class DataAccessRequestService {
   }
 
   private void sendReviewedNotificationEmail(DataAccessRequest request) {
-    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
     if(dataAccessForm.isNotifyReviewed() && dataAccessForm.isWithReview()) {
       Map<String, String> ctx = getNotificationEmailContext(request);
 
@@ -321,7 +321,7 @@ public class DataAccessRequestService {
   }
 
   private void sendOpenedNotificationEmail(DataAccessRequest request) {
-    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
     if(dataAccessForm.isNotifyReopened()) {
       Map<String, String> ctx = getNotificationEmailContext(request);
 
@@ -332,7 +332,7 @@ public class DataAccessRequestService {
   }
 
   private void sendApprovedNotificationEmail(DataAccessRequest request) {
-    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
     if(dataAccessForm.isNotifyApproved()) {
       Map<String, String> ctx = getNotificationEmailContext(request);
 
@@ -343,7 +343,7 @@ public class DataAccessRequestService {
   }
 
   private void sendRejectedNotificationEmail(DataAccessRequest request) {
-    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
     if(dataAccessForm.isNotifyRejected()) {
       Map<String, String> ctx = getNotificationEmailContext(request);
 
@@ -354,7 +354,7 @@ public class DataAccessRequestService {
   }
 
   private byte[] getTemplate(Locale locale) throws IOException {
-    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
     Attachment pdfTemplate = dataAccessForm.getPdfTemplates().get(locale);
     byte[] template;
 
@@ -413,7 +413,7 @@ public class DataAccessRequestService {
   }
 
   private String generateId() {
-    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
     IdentifierGenerator idGenerator = IdentifierGenerator.newBuilder().prefix(dataAccessForm.getIdPrefix())
       .size(dataAccessForm.getIdLength()).zeros().build();
     while(true) {

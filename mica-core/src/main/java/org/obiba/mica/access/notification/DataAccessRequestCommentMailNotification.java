@@ -49,7 +49,7 @@ public class DataAccessRequestCommentMailNotification implements MailNotificatio
   @Override
   public void send(Comment comment) {
     if(comment == null) return;
-    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
     if (!dataAccessForm.isNotifyCommented()) return;
 
     DataAccessRequest request = dataAccessRequestService.findById(comment.getInstanceId());

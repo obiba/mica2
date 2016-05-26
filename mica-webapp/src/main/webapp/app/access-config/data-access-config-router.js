@@ -10,7 +10,7 @@
 
 'use strict';
 
-mica.dataAccesConfig
+mica.dataAccessConfig
   .config(['$routeProvider',
     function ($routeProvider) {
       $routeProvider

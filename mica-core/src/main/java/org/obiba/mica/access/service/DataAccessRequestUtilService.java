@@ -35,7 +35,7 @@ public class DataAccessRequestUtilService {
   private DataAccessFormService dataAccessFormService;
 
   public String getRequestTitle(DataAccessRequest request) {
-    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
     String titleFieldPath = dataAccessForm.getTitleFieldPath();
     String rawContent = request.getContent();
     if(!Strings.isNullOrEmpty(titleFieldPath) && !Strings.isNullOrEmpty(rawContent)) {
@@ -125,7 +125,7 @@ public class DataAccessRequestUtilService {
 
   private void addNextSubmittedStatus(List<DataAccessRequest.Status> to) {
     to.add(DataAccessRequest.Status.OPENED);
-    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
     if(dataAccessForm.isWithReview()) {
       to.add(DataAccessRequest.Status.REVIEWED);
     } else {
@@ -138,7 +138,7 @@ public class DataAccessRequestUtilService {
   private void addNextReviewedStatus(List<DataAccessRequest.Status> to) {
     to.add(DataAccessRequest.Status.APPROVED);
     to.add(DataAccessRequest.Status.REJECTED);
-    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
     if (dataAccessForm.isWithConditionalApproval()) to.add(DataAccessRequest.Status.CONDITIONALLY_APPROVED);
      else to.add(DataAccessRequest.Status.OPENED);
   }
@@ -148,7 +148,7 @@ public class DataAccessRequestUtilService {
   }
 
   private void addNextApprovedStatus(List<DataAccessRequest.Status> to) {
-    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
     if(!dataAccessForm.isApprovedFinal()) {
       if(dataAccessForm.isWithReview()) to.add(DataAccessRequest.Status.REVIEWED);
       else to.add(DataAccessRequest.Status.SUBMITTED);
@@ -156,7 +156,7 @@ public class DataAccessRequestUtilService {
   }
 
   private void addNextRejectedStatus(List<DataAccessRequest.Status> to) {
-    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
     if(!dataAccessForm.isRejectedFinal()) {
       if(dataAccessForm.isWithReview()) to.add(DataAccessRequest.Status.REVIEWED);
       else to.add(DataAccessRequest.Status.SUBMITTED);
@@ -169,7 +169,7 @@ public class DataAccessRequestUtilService {
   }
 
   private void checkSubmittedStatusTransition(DataAccessRequest.Status to) {
-    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
     if(dataAccessForm.isWithReview()) {
       if(to != DataAccessRequest.Status.OPENED && to != DataAccessRequest.Status.REVIEWED)
         throw new IllegalArgumentException("Submitted data access request can only be reopened or put under review");
@@ -185,7 +185,7 @@ public class DataAccessRequestUtilService {
   }
 
   private void checkReviewedStatusTransition(DataAccessRequest.Status to) {
-    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
     if (dataAccessForm.isWithConditionalApproval()) {
       if (to != DataAccessRequest.Status.CONDITIONALLY_APPROVED && to != DataAccessRequest.Status.APPROVED &&
         to != DataAccessRequest.Status.REJECTED)
@@ -198,7 +198,7 @@ public class DataAccessRequestUtilService {
   }
 
   private void checkConditionallyApprovedStatusTransition(DataAccessRequest.Status to) {
-    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
     if (dataAccessForm.isWithReview()) {
       if (to != DataAccessRequest.Status.SUBMITTED && to != DataAccessRequest.Status.REVIEWED)
         throw new IllegalArgumentException("Conditionally approved data access request can only be resubmitted or be under review");
@@ -209,7 +209,7 @@ public class DataAccessRequestUtilService {
   }
 
   private void checkApprovedStatusTransition(DataAccessRequest.Status to) {
-    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
     if(dataAccessForm.isApprovedFinal())
       throw new IllegalArgumentException("Approved data access request cannot be modified");
 
@@ -223,7 +223,7 @@ public class DataAccessRequestUtilService {
   }
 
   private void checkRejectedStatusTransition(DataAccessRequest.Status to) {
-    DataAccessForm dataAccessForm = dataAccessFormService.findDataAccessForm().get();
+    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
     if(dataAccessForm.isApprovedFinal())
       throw new IllegalArgumentException("Rejected data access request cannot be modified");
 
