@@ -13,17 +13,19 @@ import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Maps;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
-
 import static java.util.stream.Collectors.toList;
 
 @Component
 @SuppressWarnings("OverlyLongMethod")
 class StudyDtos {
+  private static final Logger log = LoggerFactory.getLogger(StudyDtos.class);
 
   @Inject
   private PersonDtos personDtos;
@@ -76,6 +78,7 @@ class StudyDtos {
     if(study.getPubmedId() != null) builder.setPubmedId(study.getPubmedId());
 
     if(study.getAcronym() != null) builder.addAllAcronym(localizedStringDtos.asDto(study.getAcronym()));
+    log.debug("Study acronym as DTO {}", builder.getAcronymList());
 
     List<String> roles = micaConfigService.getConfig().getRoles();
 
