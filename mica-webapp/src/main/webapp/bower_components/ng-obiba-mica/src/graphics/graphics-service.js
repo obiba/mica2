@@ -164,13 +164,13 @@ angular.module('obiba.mica.graphics')
 
         var arrayData = [];
         studyTaxonomy.getTerms(aggregationName).then(function(terms) {
-          var aggregations = terms;
+          var sortedTerms = terms;
           var i = 0;
           angular.forEach(entityDto.aggs, function (aggregation) {
             if (aggregation.aggregation === aggregationName) {
               if (aggregation['obiba.mica.RangeAggregationResultDto.ranges']) {
                 i = 0;
-                angular.forEach(aggregations, function (sortTerm) {
+                angular.forEach(sortedTerms, function (sortTerm) {
                   angular.forEach(aggregation['obiba.mica.RangeAggregationResultDto.ranges'], function (term) {
                     if (sortTerm.name === term.key) {
                       if (term.count) {
@@ -182,44 +182,36 @@ angular.module('obiba.mica.graphics')
                 });
               }
               else {
-                if (aggregation.aggregation === 'methods-designs') {
-                  var numberOfParticipant = 0;
-                  i = 0;
-                  angular.forEach(aggregations, function (sortTerm) {
-                    angular.forEach(aggregation['obiba.mica.TermsAggregationResultDto.terms'], function (term) {
-                      //angular.forEach(term.aggs, function (aggBucket) {
-                      //  if (aggBucket.aggregation === 'numberOfParticipants-participant-number') {
-                      //    var aggregateBucket = aggBucket['obiba.mica.StatsAggregationResultDto.stats'];
-                      //    numberOfParticipant = LocalizedValues.formatNumber(aggregateBucket ? aggregateBucket.data.sum : 0);
-                      //  }
-                      //});
-                      if (sortTerm.name === term.key) {
-                        if (term.count) {
+                // MK-924 sort countries by title in the display language
+                if (aggregation.aggregation === 'populations-selectionCriteria-countriesIso') {
+                  var locale = LocalizedValues.getLocal();
+                  sortedTerms.sort(function(a, b) {
+                    var textA = LocalizedValues.forLocale(a.title, locale);
+                    var textB = LocalizedValues.forLocale(b.title, locale);
+                    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+                  });
+                }
+                var numberOfParticipant = 0;
+                i = 0;
+                angular.forEach(sortedTerms, function (sortTerm) {
+                  angular.forEach(aggregation['obiba.mica.TermsAggregationResultDto.terms'], function (term) {
+                    if (sortTerm.name === term.key) {
+                      if (term.count) {
+                        if (aggregation.aggregation === 'methods-designs') {
                           arrayData[i] = {
                             title: term.title,
                             value: term.count,
                             participantsNbr: numberOfParticipant,
                             key: term.key
                           };
-                          i++;
-                        }
-                      }
-                    });
-                  });
-                }
-                else {
-                  i = 0;
-                  angular.forEach(aggregations, function (sortTerm) {
-                    angular.forEach(aggregation['obiba.mica.TermsAggregationResultDto.terms'], function (term) {
-                      if (sortTerm.name === term.key) {
-                        if (term.count) {
+                        } else {
                           arrayData[i] = {title: term.title, value: term.count, key: term.key};
-                          i++;
                         }
+                        i++;
                       }
-                    });
+                    }
                   });
-                }
+                });
               }
             }
           });
