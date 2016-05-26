@@ -24,7 +24,7 @@
         {{getFullName(dataAccessRequest.profile) || dataAccessRequest.applicant}}
       </a>,
       <span>{{dataAccessRequest.timestamps.created | amCalendar}}</span>
-      <span class="label label-success">{{dataAccessRequest.status}}</span></p>
+      <span class="label label-success">{{dataAccessRequest.status | translate}}</span></p>
 
     <div class="pull-right">
       <a ng-click="submit()"

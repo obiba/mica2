@@ -5,7 +5,6 @@
     "dist/css/ng-obiba-mica.css",
     "dist/css/ng-obiba-mica.css.map"
   ],
-  "version": "1.1.0",
   "description": "OBiBa AngularJS Mica Components",
   "license": "GNU Public License version 3",
   "ignore": [
@@ -32,13 +31,13 @@
     "angular-scenario": "1.5.5"
   },
   "homepage": "https://github.com/obiba/ng-obiba-mica",
-  "_release": "1.1.0",
+  "_release": "50a2bb4e27",
   "_resolution": {
-    "type": "version",
-    "tag": "1.1.0",
-    "commit": "223414995a2f1d5bf604d2e5491fd8ab13f0787f"
+    "type": "branch",
+    "branch": "branch-1.1.x",
+    "commit": "50a2bb4e27d0d4def3a8cb9862b2e6bbb5bfe267"
   },
   "_source": "https://github.com/obiba/ng-obiba-mica.git",
-  "_target": "1.1.0",
+  "_target": "branch-1.1.x",
   "_originalSource": "https://github.com/obiba/ng-obiba-mica.git"
 }

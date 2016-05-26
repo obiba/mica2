@@ -1,9 +1,9 @@
 /*!
- * ng-obiba-mica - v1.1.0
+ * ng-obiba-mica - v1.1.1
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-05-19
+ * Date: 2016-05-26
  */
 'use strict';
 
@@ -2488,7 +2488,7 @@ angular.module('obiba.mica.search')
     };
 
     this.isNumericVocabulary = function (vocabulary) {
-      return !self.isTermsVocabulary(vocabulary) && (self.vocabularyType(vocabulary) === VOCABULARY_TYPES.INTEGER || self.vocabularyType(vocabulary) === VOCABULARY_TYPES.DECIMAL);
+      return !vocabulary.terms && (self.vocabularyType(vocabulary) === VOCABULARY_TYPES.INTEGER || self.vocabularyType(vocabulary) === VOCABULARY_TYPES.DECIMAL);
     };
 
     this.isRangeVocabulary = function (vocabulary) {
@@ -5666,17 +5666,20 @@ angular.module('obiba.mica.search')
 
           setChartObject('methods-designs',
             result.studyResultDto,
-            [$filter('translate')(charOptions.studiesDesigns.header[0]), $filter('translate')(charOptions.studiesDesigns.header[1]), $filter('translate')(charOptions.studiesDesigns.header[2])],
+            [$filter('translate')(charOptions.studiesDesigns.header[0]),
+              $filter('translate')(charOptions.studiesDesigns.header[1]),
+              //$filter('translate')(charOptions.studiesDesigns.header[2])
+              ],
             $filter('translate')(charOptions.studiesDesigns.title) + ' (N = ' + result.studyResultDto.totalHits + ')',
             charOptions.studiesDesigns.options).then(function(methodDesignStudies) {
               if (methodDesignStudies) {
                 angular.extend($scope.chartObjects, {
                   studiesDesigns: {
-                    directiveTitle: methodDesignStudies.options.title ,
+                    //directiveTitle: methodDesignStudies.options.title ,
                     headerTitle: $filter('translate')('graphics.study-design'),
                     chartObject: {
                       options: methodDesignStudies.options,
-                      type: 'google.charts.Bar',
+                      type: 'BarChart',
                       data: methodDesignStudies.data,
                       vocabulary: methodDesignStudies.vocabulary,
                       entries: methodDesignStudies.entries
@@ -6643,7 +6646,7 @@ angular.module('obiba.mica.graphics')
                       $scope.chartObject.header = [
                         $filter('translate')($scope.chartHeader[0]),
                         $filter('translate')($scope.chartHeader[1]),
-                        $filter('translate')($scope.chartHeader[2])
+                   //     $filter('translate')($scope.chartHeader[2])
                       ];
                     }
                     $scope.chartObject.type = $scope.chartType;
@@ -6659,7 +6662,7 @@ angular.module('obiba.mica.graphics')
                       data.unshift([
                         $filter('translate')($scope.chartHeader[0]),
                         $filter('translate')($scope.chartHeader[1]),
-                        $filter('translate')($scope.chartHeader[2])
+                   //     $filter('translate')($scope.chartHeader[2])
                       ]);
                     }
                     $scope.chartObject.term = true;
@@ -6877,12 +6880,12 @@ angular.module('obiba.mica.graphics')
                   i = 0;
                   angular.forEach(aggregations, function (sortTerm) {
                     angular.forEach(aggregation['obiba.mica.TermsAggregationResultDto.terms'], function (term) {
-                      angular.forEach(term.aggs, function (aggBucket) {
-                        if (aggBucket.aggregation === 'numberOfParticipants-participant-number') {
-                          var aggregateBucket = aggBucket['obiba.mica.StatsAggregationResultDto.stats'];
-                          numberOfParticipant = LocalizedValues.formatNumber(aggregateBucket ? aggregateBucket.data.sum : 0);
-                        }
-                      });
+                      //angular.forEach(term.aggs, function (aggBucket) {
+                      //  if (aggBucket.aggregation === 'numberOfParticipants-participant-number') {
+                      //    var aggregateBucket = aggBucket['obiba.mica.StatsAggregationResultDto.stats'];
+                      //    numberOfParticipant = LocalizedValues.formatNumber(aggregateBucket ? aggregateBucket.data.sum : 0);
+                      //  }
+                      //});
                       if (sortTerm.name === term.key) {
                         if (term.count) {
                           arrayData[i] = {
@@ -8002,7 +8005,7 @@ angular.module("access/views/data-access-request-view.html", []).run(["$template
     "        {{getFullName(dataAccessRequest.profile) || dataAccessRequest.applicant}}\n" +
     "      </a>,\n" +
     "      <span>{{dataAccessRequest.timestamps.created | amCalendar}}</span>\n" +
-    "      <span class=\"label label-success\">{{dataAccessRequest.status}}</span></p>\n" +
+    "      <span class=\"label label-success\">{{dataAccessRequest.status | translate}}</span></p>\n" +
     "\n" +
     "    <div class=\"pull-right\">\n" +
     "      <a ng-click=\"submit()\"\n" +

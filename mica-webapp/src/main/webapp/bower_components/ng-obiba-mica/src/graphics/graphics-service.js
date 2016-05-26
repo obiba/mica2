@@ -187,12 +187,12 @@ angular.module('obiba.mica.graphics')
                   i = 0;
                   angular.forEach(aggregations, function (sortTerm) {
                     angular.forEach(aggregation['obiba.mica.TermsAggregationResultDto.terms'], function (term) {
-                      angular.forEach(term.aggs, function (aggBucket) {
-                        if (aggBucket.aggregation === 'numberOfParticipants-participant-number') {
-                          var aggregateBucket = aggBucket['obiba.mica.StatsAggregationResultDto.stats'];
-                          numberOfParticipant = LocalizedValues.formatNumber(aggregateBucket ? aggregateBucket.data.sum : 0);
-                        }
-                      });
+                      //angular.forEach(term.aggs, function (aggBucket) {
+                      //  if (aggBucket.aggregation === 'numberOfParticipants-participant-number') {
+                      //    var aggregateBucket = aggBucket['obiba.mica.StatsAggregationResultDto.stats'];
+                      //    numberOfParticipant = LocalizedValues.formatNumber(aggregateBucket ? aggregateBucket.data.sum : 0);
+                      //  }
+                      //});
                       if (sortTerm.name === term.key) {
                         if (term.count) {
                           arrayData[i] = {
