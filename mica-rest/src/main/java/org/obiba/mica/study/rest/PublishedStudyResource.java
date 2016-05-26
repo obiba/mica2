@@ -19,6 +19,8 @@ import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -32,6 +34,8 @@ import com.codahale.metrics.annotation.Timed;
 @Scope("request")
 @RequiresAuthentication
 public class PublishedStudyResource {
+
+  private static final Logger log = LoggerFactory.getLogger(PublishedStudyResource.class);
 
   @Inject
   private FileSystemService fileSystemService;
@@ -85,6 +89,8 @@ public class PublishedStudyResource {
 
   private Study getStudy() {
     Study study = publishedStudyService.findById(id);
+    log.debug("Study acronym {}", study.getAcronym());
+
     if(study == null) throw NoSuchStudyException.withId(id);
     return study;
   }
