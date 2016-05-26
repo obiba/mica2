@@ -10,7 +10,7 @@
 
 'use strict';
 
-mica.dataAccessConfig = angular.module('mica.dataAccessConfig', [
+mica.projectConfig = angular.module('mica.projectConfig', [
   'schemaForm',
   'schemaForm-datepicker',
   'ui.ace',

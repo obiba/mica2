@@ -30,7 +30,7 @@ public class DataAccessFormService {
   @Inject
   DataAccessFormRepository dataAccessFormRepository;
 
-  public void createOrUpdateDataAccessForm(DataAccessForm dataAccessForm) {
+  public void createOrUpdate(DataAccessForm dataAccessForm) {
     validateForm(dataAccessForm);
     dataAccessForm.incrementRevisionsAhead();
     gitService.save(dataAccessForm);
@@ -45,17 +45,17 @@ public class DataAccessFormService {
     dataAccessFormRepository.save(dataAccessForm);
   }
 
-  public Optional<DataAccessForm> findDataAccessForm() {
+  public Optional<DataAccessForm> find() {
     DataAccessForm form = dataAccessFormRepository.findOne(DataAccessForm.DEFAULT_ID);
     if(form == null) {
-      createOrUpdateDataAccessForm(createDefaultDataAccessForm());
+      createOrUpdate(createDefaultDataAccessForm());
     }
 
     return Optional.ofNullable(form == null ? dataAccessFormRepository.findOne(DataAccessForm.DEFAULT_ID) : form);
   }
 
   public void publish() {
-    Optional<DataAccessForm> dataAccessForm = findDataAccessForm();
+    Optional<DataAccessForm> dataAccessForm = find();
     dataAccessForm.ifPresent(d -> {
       d.setPublishedTag(gitService.tag(d).getFirst());
       d.setRevisionsAhead(0);

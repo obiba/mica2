@@ -10,16 +10,13 @@
 
 'use strict';
 
-mica.dataAccessConfig = angular.module('mica.dataAccessConfig', [
-  'schemaForm',
-  'schemaForm-datepicker',
-  'ui.ace',
-  'obiba.mica.localized',
-  'obiba.notification',
-  'obiba.utils',
-  'ngResource',
-  'ngRoute',
-  'ui.bootstrap',
-  'ui',
-  'pascalprecht.translate'
-]);
+mica.projectConfig
+  .config(['$routeProvider',
+    function ($routeProvider) {
+      $routeProvider
+        .when('/admin/project-config', {
+          templateUrl: 'app/project-config/views/project-config-form.html',
+          controller: 'ProjectConfigController'
+        });
+    }]);
+

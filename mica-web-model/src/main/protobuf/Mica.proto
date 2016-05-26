@@ -689,12 +689,12 @@ message DataAccessRequestDto {
   optional UserProfileDto profile = 11;
 }
 
-message DataAccessFormDto {
-  message LocalizedPropertyDto {
-    required string name = 1;
-    repeated LocalizedStringDto value = 2;
-  }
+message LocalizedPropertyDto {
+  required string name = 1;
+  repeated LocalizedStringDto value = 2;
+}
 
+message DataAccessFormDto {
   required string schema = 1;
   required string definition = 2;
   repeated AttachmentDto pdfTemplates = 3;
@@ -720,6 +720,12 @@ message DataAccessFormDto {
   required bool notifyConditionallyApproved = 23;
   required bool withConditionalApproval = 24;
   optional string conditionallyApprovedSubject = 25;
+}
+
+message ProjectFormDto {
+  required string schema = 1;
+  required string definition = 2;
+  repeated LocalizedPropertyDto properties = 3;
 }
 
 message UserProfileDto {
