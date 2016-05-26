@@ -22,7 +22,6 @@ public class DefaultAggregationMetaDataProvider implements AggregationMetaDataPr
 
   @Override
   public MetaData getMetadata(String aggregation, String termKey, String locale) {
-    log.debug("Could not find in taxonomies any vocabulary with name '{}' and term '{}'", aggregation, termKey);
     return MetaData.newBuilder().title(termKey).description("").build();
   }
 
