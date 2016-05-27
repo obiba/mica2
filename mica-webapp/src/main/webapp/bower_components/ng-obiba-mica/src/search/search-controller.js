@@ -2167,8 +2167,13 @@ angular.module('obiba.mica.search')
         var vocabulary = $scope.bucket === BUCKET_TYPES.DCE ? 'dceIds' : 'id';
         var criteria = {varItem: RqlQueryService.createCriteriaItem(QUERY_TARGETS.VARIABLE, term.taxonomyName, term.vocabularyName, term.entity.name)};
 
+        // if id is null, it is a click on the total count for the term
         if (id) {
           criteria.item = RqlQueryService.createCriteriaItem(targetMap[$scope.bucket], 'Mica_' + targetMap[$scope.bucket], vocabulary, id);
+        } else if ($scope.bucket === BUCKET_TYPES.STUDY || $scope.bucket === BUCKET_TYPES.DATASET) {
+          criteria.item = RqlQueryService.createCriteriaItem(QUERY_TARGETS.DATASET, 'Mica_' + QUERY_TARGETS.DATASET, 'className', 'StudyDataset');
+        } else if ($scope.bucket === BUCKET_TYPES.NETWORK || $scope.bucket === BUCKET_TYPES.DATASCHEMA) {
+          criteria.item = RqlQueryService.createCriteriaItem(QUERY_TARGETS.DATASET, 'Mica_' + QUERY_TARGETS.DATASET, 'className', 'HarmonizationDataset');
         }
 
         $q.all(criteria).then(function (criteria) {
