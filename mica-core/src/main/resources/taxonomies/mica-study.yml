@@ -81,7 +81,7 @@
       "en": "Other study design."
 - "name": "investigator"
   "title":
-    "en": "Investigator Name"
+    "en": "Investigator name"
   "description":
     "en": "Investigator full name."
   "attributes":
@@ -89,7 +89,7 @@
     "alias": "memberships-investigator-person-fullName"
 - "name": "investigator-institution"
   "title":
-    "en": "Investigator Institution"
+    "en": "Investigator institution"
   "description":
     "en": "Investigator institution name."
   "attributes":
@@ -97,7 +97,7 @@
     "alias": "memberships-investigator-person-institution-name"
 - "name": "contact"
   "title":
-    "en": "Contact Name"
+    "en": "Contact name"
   "description":
     "en": "Contact full name."
   "attributes":
@@ -105,7 +105,7 @@
     "alias": "memberships-contact-person-fullName"
 - "name": "contact-institution"
   "title":
-    "en": "Contact Institution"
+    "en": "Contact institution"
   "description":
     "en": "Contact institution name."
   "attributes":
@@ -1413,8 +1413,8 @@
       "en": "Study recruits women only."
 - "name": "populations-selectionCriteria-criteria"
   "title":
-    "en": "Selection criteria - pregnancy/birth"
-    "fr": "Critères de sélection - grossesse/naissance"
+    "en": "Selection criteria - Pregnancy/birth"
+    "fr": "Critères de sélection - Grossesse/naissance"
   "description":
     "en": "Participants recruited are pregnant women, newborns or twins."
     "fr": "Les participants recrutés sont des femmes enceintes, des nouveaux-nés ou des jumeaux."
@@ -1666,7 +1666,7 @@
       "fr": "Des questionnaires sont utilisés dans la collecte d'information."
   - "name": "physical_measures"
     "title":
-      "en": "Physical Measures"
+      "en": "Physical measures"
       "fr": "Mesures physiques"
     "description":
       "en": "Information on physical measures is collected."
@@ -1680,7 +1680,7 @@
       "fr": "Des échantillons biologiques sont collectés."
   - "name": "administratives_databases"
     "title":
-      "en": "Administrative Databases"
+      "en": "Administrative databases"
       "fr": "Bases de données administratives"
     "description":
       "en": "Information collected is extracted from governmental, hospital or other registries."
@@ -1813,7 +1813,7 @@
     "description": {}
   - "name": "cord_blood"
     "title":
-      "en": "Cord Blood"
+      "en": "Cord blood"
       "fr": "Sang de cordon"
     "description": {}
   - "name": "tissues"
@@ -1855,25 +1855,25 @@
       "en": "Administrative database containing information concerning health and use of healthcare services generated through routine administration of health care programs (e.g. hospitalization, physician billing, drug utilization)."
   - "name": "vital_statistics_databases"
     "title":
-      "en": "Vital Statistics Databases"
+      "en": "Vital statistics databases"
       "fr": "Bases de données de l'état civil"
     "description":
       "en": "Administrative database containing information concerning the important events in human life, such as births, deaths, marriages and migrations (e.g. death registries)."
   - "name": "socioeconomic_databases"
     "title":
-      "en": "Socioeconomic Databases"
+      "en": "Socioeconomic databases"
       "fr": "Bases de données socio-économiques"
     "description":
       "en": "Administrative database containing socioeconomic information (e.g. census)."
   - "name": "environmental_databases"
     "title":
-      "en": "Environmental Databases"
+      "en": "Environmental databases"
       "fr": "Bases de données environnementales"
     "description":
       "en": "Administrative database containing information concerning natural or man-made environmental characteristics (e.g. air pollutants, weather, built environment)."
 - "name": "start"
   "title":
-    "en": "Start Year"
+    "en": "Start year"
     "fr": "Année de début"
   "description":
     "en": "Year in which the study has started."
@@ -1882,7 +1882,7 @@
     "type": "integer"
 - "name": "end"
   "title":
-    "en": "End Year"
+    "en": "End year"
     "fr": "Année de fin"
   "description":
     "en": "Year in which the study has ended or will end."
