@@ -810,8 +810,8 @@
     "filter": "Filter",
     "close-and-search": "Close and search",
     "criterion": {
-      "created": "Criteria <strong>{{arg0}}</strong> was added.",
-      "updated": "Criteria <strong>{{arg0}}</strong> was updated."
+      "created": "Criteria <strong>{{arg0}} ({{arg1}})</strong> was added.",
+      "updated": "Criteria <strong>{{arg0}} ({{arg1}})</strong> was updated."
     },
     "taxonomy-nav-help": "",
     "vocabulary-nav-help": "",
