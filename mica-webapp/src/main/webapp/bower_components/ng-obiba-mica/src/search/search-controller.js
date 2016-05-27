@@ -289,6 +289,7 @@ angular.module('obiba.mica.search')
     '$routeParams',
     '$location',
     '$translate',
+    '$filter',
     '$cookies',
     'TaxonomiesSearchResource',
     'TaxonomiesResource',
@@ -311,6 +312,7 @@ angular.module('obiba.mica.search')
               $routeParams,
               $location,
               $translate,
+              $filter,
               $cookies,
               TaxonomiesSearchResource,
               TaxonomiesResource,
@@ -910,7 +912,7 @@ angular.module('obiba.mica.search')
               id: 'SearchControllerGrowl',
               type: 'info',
               msgKey: growlMsgKey,
-              msgArgs: [LocalizedValues.forLocale(item.vocabulary.title, $scope.lang)],
+              msgArgs: [LocalizedValues.forLocale(item.vocabulary.title, $scope.lang), $filter('translate')('taxonomy.target.' + item.target)],
               delay: 3000
             });
           }
