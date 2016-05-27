@@ -61,55 +61,83 @@ angular.module('obiba.mica.utils', [])
           return isVisible(elem.querySelector('tbody')) && elem.querySelector('tbody tr:first-child') !== null;
         }
 
+        $scope.redraw = false;
+
         // wait for content to load into table and to have at least one row, tdElems could be empty at the time of execution if td are created asynchronously (eg ng-repeat with promise)
-        $scope.$watchGroup(['trigger', 'isFullscreen', isTableReady],
+        function redrawTable() {
+          if ($scope.redraw) {
+            return;
+          }
+          // reset display styles so column widths are correct when measured below
+          angular.element(elem.querySelectorAll('thead, tbody, tfoot')).css('display', '');
+
+          // wrap in $timeout to give table a chance to finish rendering
+          $timeout(function () {
+            $scope.redraw = true;
+            console.log('do redrawTable');
+            // set widths of columns
+            var totalColumnWidth = 0;
+            angular.forEach(elem.querySelectorAll('tr:first-child th'), function (thElem, i) {
+
+              var tdElems = elem.querySelector('tbody tr:first-child td:nth-child(' + (i + 1) + ')');
+              var tfElems = elem.querySelector('tfoot tr:first-child td:nth-child(' + (i + 1) + ')');
+              var columnWidth = tdElems ? tdElems.offsetWidth : thElem.offsetWidth;
+
+              if(tdElems) {
+                tdElems.style.width = columnWidth + 'px';
+              }
+              if(thElem) {
+                thElem.style.width = columnWidth + 'px';
+              }
+              if (tfElems) {
+                tfElems.style.width = columnWidth + 'px';
+              }
+              totalColumnWidth = totalColumnWidth + columnWidth;
+            });
+
+            // set css styles on thead and tbody
+            angular.element(elem.querySelectorAll('thead, tfoot')).css('display', 'block');
+
+            angular.element(elem.querySelectorAll('tbody')).css({
+              'display': 'block',
+              'max-height': $scope.tableMaxHeight || 'inherit',
+              'overflow': 'auto'
+            });
+
+            // add missing width to fill the table
+            if (totalColumnWidth < elem.offsetWidth) {
+              var last = elem.querySelector('tbody tr:first-child td:last-child');
+              last.style.width = (last.offsetWidth + elem.offsetWidth - totalColumnWidth) + 'px';
+              last = elem.querySelector('thead tr:first-child th:last-child');
+              last.style.width = (last.offsetWidth + elem.offsetWidth - totalColumnWidth) + 'px';
+            }
+
+            // reduce width of last column by width of scrollbar
+            var tbody = elem.querySelector('tbody');
+            var scrollBarWidth = tbody.offsetWidth - tbody.clientWidth;
+            if (scrollBarWidth > 0) {
+              var lastColumn = elem.querySelector('tbody tr:first-child td:last-child');
+              lastColumn.style.width = (parseInt(lastColumn.style.width.replace('px','')) - scrollBarWidth) + 'px';
+            }
+            $scope.redraw = false;
+          });
+        }
+
+        // watch table content change
+        $scope.$watchGroup(['trigger', isTableReady],
           function (newValue) {
             if (newValue[1] === true) {
-              // reset display styles so column widths are correct when measured below
-              angular.element(elem.querySelectorAll('thead, tbody, tfoot')).css('display', '');
-
-              // wrap in $timeout to give table a chance to finish rendering
-              $timeout(function () {
-                // set widths of columns
-                angular.forEach(elem.querySelectorAll('tr:first-child th'), function (thElem, i) {
-
-                  var tdElems = elem.querySelector('tbody tr:first-child td:nth-child(' + (i + 1) + ')');
-                  var tfElems = elem.querySelector('tfoot tr:first-child td:nth-child(' + (i + 1) + ')');
-                  var columnWidth = tdElems ? tdElems.offsetWidth : thElem.offsetWidth;
-
-                  if(tdElems) {
-                    tdElems.style.width = columnWidth + 'px';
-                  }
-                  if(thElem) {
-                    thElem.style.width = columnWidth + 'px';
-                  }
-                  if (tfElems) {
-                    tfElems.style.width = columnWidth + 'px';
-                  }
-                });
-
-                // set css styles on thead and tbody
-                angular.element(elem.querySelectorAll('thead, tfoot')).css('display', 'block');
-
-                angular.element(elem.querySelectorAll('tbody')).css({
-                  'display': 'block',
-                  'max-height': $scope.tableMaxHeight || 'inherit',
-                  'overflow': 'auto'
-                });
-
-
-                // reduce width of last column by width of scrollbar
-                var tbody = elem.querySelector('tbody');
-                var scrollBarWidth = tbody.offsetWidth - tbody.clientWidth;
-                if (scrollBarWidth > 0) {
-                  // for some reason trimming the width by 2px lines everything up better
-                  scrollBarWidth -= 2;
-                  var lastColumn = elem.querySelector('tbody tr:first-child td:last-child');
-                  lastColumn.style.width = (lastColumn.offsetWidth - scrollBarWidth) + 'px';
-                }
-              });
+               redrawTable();
             }
-          });
+          }
+        );
+
+        // watch table resize
+        $scope.$watch(function() {
+          return elem.offsetWidth;
+        }, function() {
+          redrawTable();
+        });
       }
     };
   }]);

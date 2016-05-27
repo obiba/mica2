@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-05-25
+ * Date: 2016-05-27
  */
 'use strict';
 
@@ -196,55 +196,83 @@ angular.module('obiba.mica.utils', [])
           return isVisible(elem.querySelector('tbody')) && elem.querySelector('tbody tr:first-child') !== null;
         }
 
+        $scope.redraw = false;
+
         // wait for content to load into table and to have at least one row, tdElems could be empty at the time of execution if td are created asynchronously (eg ng-repeat with promise)
-        $scope.$watchGroup(['trigger', 'isFullscreen', isTableReady],
+        function redrawTable() {
+          if ($scope.redraw) {
+            return;
+          }
+          // reset display styles so column widths are correct when measured below
+          angular.element(elem.querySelectorAll('thead, tbody, tfoot')).css('display', '');
+
+          // wrap in $timeout to give table a chance to finish rendering
+          $timeout(function () {
+            $scope.redraw = true;
+            console.log('do redrawTable');
+            // set widths of columns
+            var totalColumnWidth = 0;
+            angular.forEach(elem.querySelectorAll('tr:first-child th'), function (thElem, i) {
+
+              var tdElems = elem.querySelector('tbody tr:first-child td:nth-child(' + (i + 1) + ')');
+              var tfElems = elem.querySelector('tfoot tr:first-child td:nth-child(' + (i + 1) + ')');
+              var columnWidth = tdElems ? tdElems.offsetWidth : thElem.offsetWidth;
+
+              if(tdElems) {
+                tdElems.style.width = columnWidth + 'px';
+              }
+              if(thElem) {
+                thElem.style.width = columnWidth + 'px';
+              }
+              if (tfElems) {
+                tfElems.style.width = columnWidth + 'px';
+              }
+              totalColumnWidth = totalColumnWidth + columnWidth;
+            });
+
+            // set css styles on thead and tbody
+            angular.element(elem.querySelectorAll('thead, tfoot')).css('display', 'block');
+
+            angular.element(elem.querySelectorAll('tbody')).css({
+              'display': 'block',
+              'max-height': $scope.tableMaxHeight || 'inherit',
+              'overflow': 'auto'
+            });
+
+            // add missing width to fill the table
+            if (totalColumnWidth < elem.offsetWidth) {
+              var last = elem.querySelector('tbody tr:first-child td:last-child');
+              last.style.width = (last.offsetWidth + elem.offsetWidth - totalColumnWidth) + 'px';
+              last = elem.querySelector('thead tr:first-child th:last-child');
+              last.style.width = (last.offsetWidth + elem.offsetWidth - totalColumnWidth) + 'px';
+            }
+
+            // reduce width of last column by width of scrollbar
+            var tbody = elem.querySelector('tbody');
+            var scrollBarWidth = tbody.offsetWidth - tbody.clientWidth;
+            if (scrollBarWidth > 0) {
+              var lastColumn = elem.querySelector('tbody tr:first-child td:last-child');
+              lastColumn.style.width = (parseInt(lastColumn.style.width.replace('px','')) - scrollBarWidth) + 'px';
+            }
+            $scope.redraw = false;
+          });
+        }
+
+        // watch table content change
+        $scope.$watchGroup(['trigger', isTableReady],
           function (newValue) {
             if (newValue[1] === true) {
-              // reset display styles so column widths are correct when measured below
-              angular.element(elem.querySelectorAll('thead, tbody, tfoot')).css('display', '');
-
-              // wrap in $timeout to give table a chance to finish rendering
-              $timeout(function () {
-                // set widths of columns
-                angular.forEach(elem.querySelectorAll('tr:first-child th'), function (thElem, i) {
-
-                  var tdElems = elem.querySelector('tbody tr:first-child td:nth-child(' + (i + 1) + ')');
-                  var tfElems = elem.querySelector('tfoot tr:first-child td:nth-child(' + (i + 1) + ')');
-                  var columnWidth = tdElems ? tdElems.offsetWidth : thElem.offsetWidth;
-
-                  if(tdElems) {
-                    tdElems.style.width = columnWidth + 'px';
-                  }
-                  if(thElem) {
-                    thElem.style.width = columnWidth + 'px';
-                  }
-                  if (tfElems) {
-                    tfElems.style.width = columnWidth + 'px';
-                  }
-                });
-
-                // set css styles on thead and tbody
-                angular.element(elem.querySelectorAll('thead, tfoot')).css('display', 'block');
-
-                angular.element(elem.querySelectorAll('tbody')).css({
-                  'display': 'block',
-                  'max-height': $scope.tableMaxHeight || 'inherit',
-                  'overflow': 'auto'
-                });
-
-
-                // reduce width of last column by width of scrollbar
-                var tbody = elem.querySelector('tbody');
-                var scrollBarWidth = tbody.offsetWidth - tbody.clientWidth;
-                if (scrollBarWidth > 0) {
-                  // for some reason trimming the width by 2px lines everything up better
-                  scrollBarWidth -= 2;
-                  var lastColumn = elem.querySelector('tbody tr:first-child td:last-child');
-                  lastColumn.style.width = (lastColumn.offsetWidth - scrollBarWidth) + 'px';
-                }
-              });
+               redrawTable();
             }
-          });
+          }
+        );
+
+        // watch table resize
+        $scope.$watch(function() {
+          return elem.offsetWidth;
+        }, function() {
+          redrawTable();
+        });
       }
     };
   }]);
@@ -2510,7 +2538,7 @@ angular.module('obiba.mica.search')
     };
 
     this.isNumericVocabulary = function (vocabulary) {
-      return !self.isTermsVocabulary(vocabulary) && (self.vocabularyType(vocabulary) === VOCABULARY_TYPES.INTEGER || self.vocabularyType(vocabulary) === VOCABULARY_TYPES.DECIMAL);
+      return !vocabulary.terms && (self.vocabularyType(vocabulary) === VOCABULARY_TYPES.INTEGER || self.vocabularyType(vocabulary) === VOCABULARY_TYPES.DECIMAL);
     };
 
     this.isRangeVocabulary = function (vocabulary) {
@@ -3656,6 +3684,7 @@ angular.module('obiba.mica.search')
     '$routeParams',
     '$location',
     '$translate',
+    '$filter',
     '$cookies',
     'TaxonomiesSearchResource',
     'TaxonomiesResource',
@@ -3678,6 +3707,7 @@ angular.module('obiba.mica.search')
               $routeParams,
               $location,
               $translate,
+              $filter,
               $cookies,
               TaxonomiesSearchResource,
               TaxonomiesResource,
@@ -4277,7 +4307,7 @@ angular.module('obiba.mica.search')
               id: 'SearchControllerGrowl',
               type: 'info',
               msgKey: growlMsgKey,
-              msgArgs: [LocalizedValues.forLocale(item.vocabulary.title, $scope.lang)],
+              msgArgs: [LocalizedValues.forLocale(item.vocabulary.title, $scope.lang), $filter('translate')('taxonomy.target.' + item.target)],
               delay: 3000
             });
           }
@@ -5129,7 +5159,6 @@ angular.module('obiba.mica.search')
     'CoverageGroupByService',
     function ($scope, $location, $q, PageUrlService, RqlQueryUtils, RqlQueryService, CoverageGroupByService) {
       var targetMap = {}, vocabulariesTermsMap = {};
-      
       targetMap[BUCKET_TYPES.NETWORK] = QUERY_TARGETS.NETWORK;
       targetMap[BUCKET_TYPES.STUDY] = QUERY_TARGETS.STUDY;
       targetMap[BUCKET_TYPES.DCE] = QUERY_TARGETS.VARIABLE;
@@ -5146,21 +5175,34 @@ angular.module('obiba.mica.search')
         datasetBucketSelected: $scope.bucket !== BUCKET_TYPES.DATASCHEMA
       };
 
-      function decorateTermHeaders(vocabularyHeaders, termHeaders) {
+      function decorateVocabularyHeaders(headers, vocabularyHeaders) {
+        var count = 0, i = 0;
+        for (var j=0 ; j < vocabularyHeaders.length; j ++) {
+          if (count >= headers[i].termsCount) {
+            i++;
+            count = 0;
+          }
+          
+          count += vocabularyHeaders[j].termsCount;
+          vocabularyHeaders[j].taxonomyName = headers[i].entity.name;
+        }
+      }
+      
+      function decorateTermHeaders(headers, termHeaders, attr) {
         var idx = 0;
-        return vocabularyHeaders.reduce(function(vocabularies, v) {
-          vocabularies[v.entity.name] = termHeaders.slice(idx, idx + v.termsCount).map(function(t) {
-            if(v.termsCount > 1) {
+        return headers.reduce(function(result, h) {
+          result[h.entity.name] = termHeaders.slice(idx, idx + h.termsCount).map(function(t) {
+            if(h.termsCount > 1 && attr === 'vocabularyName') {
               t.canRemove = true;
             }
             
-            t.vocabularyName = v.entity.name;
+            t[attr] = h.entity.name;
 
             return t;
           });
 
-          idx += v.termsCount;
-          return vocabularies;
+          idx += h.termsCount;
+          return result;
         }, {});
       }
 
@@ -5510,24 +5552,15 @@ angular.module('obiba.mica.search')
           tableTmp.cols = splitIds();
           $scope.table = tableTmp;
 
-          vocabulariesTermsMap = decorateTermHeaders($scope.table.vocabularyHeaders, $scope.table.termHeaders);
+          vocabulariesTermsMap = decorateTermHeaders($scope.table.vocabularyHeaders, $scope.table.termHeaders, 'vocabularyName');
+          decorateTermHeaders($scope.table.taxonomyHeaders, $scope.table.termHeaders, 'taxonomyName');
+          decorateVocabularyHeaders($scope.table.taxonomyHeaders, $scope.table.vocabularyHeaders);
         }
       });
 
       $scope.updateCriteria = function (id, term, idx, type) { //
-        var vocabulary = $scope.bucket === BUCKET_TYPES.DCE ? 'dceIds' : 'id',
-          taxonomyHeader = $scope.table.taxonomyHeaders[0].entity,
-          vocabularyHeader, countTerms = 0;
-
-        for (var i = 0; i < $scope.table.vocabularyHeaders.length; i++) {
-          countTerms += $scope.table.vocabularyHeaders[i].termsCount;
-          if (idx < countTerms) {
-            vocabularyHeader = $scope.table.vocabularyHeaders[i].entity;
-            break;
-          }
-        }
-
-        var criteria = {varItem: RqlQueryService.createCriteriaItem(QUERY_TARGETS.VARIABLE, taxonomyHeader.name, vocabularyHeader.name, term.entity.name)};
+        var vocabulary = $scope.bucket === BUCKET_TYPES.DCE ? 'dceIds' : 'id';
+        var criteria = {varItem: RqlQueryService.createCriteriaItem(QUERY_TARGETS.VARIABLE, term.taxonomyName, term.vocabularyName, term.entity.name)};
 
         if (id) {
           criteria.item = RqlQueryService.createCriteriaItem(targetMap[$scope.bucket], 'Mica_' + targetMap[$scope.bucket], vocabulary, id);
@@ -5588,11 +5621,10 @@ angular.module('obiba.mica.search')
       };
 
       $scope.removeTerm = function(term) {
-        var taxonomyHeader = $scope.table.taxonomyHeaders[0],
-          remainingCriteriaItems = vocabulariesTermsMap[term.vocabularyName].filter(function(t) {
+        var remainingCriteriaItems = vocabulariesTermsMap[term.vocabularyName].filter(function(t) {
             return t.entity.name !== term.entity.name;
           }).map(function(t) {
-            return RqlQueryService.createCriteriaItem(QUERY_TARGETS.VARIABLE, taxonomyHeader.entity.name, t.vocabularyName, t.entity.name);
+            return RqlQueryService.createCriteriaItem(QUERY_TARGETS.VARIABLE, t.taxonomyName, t.vocabularyName, t.entity.name);
           });
         
         $q.all(remainingCriteriaItems).then(function(criteriaItems) {
@@ -5601,8 +5633,7 @@ angular.module('obiba.mica.search')
       };
 
       $scope.removeVocabulary = function(vocabulary) {
-        var taxonomyHeader = $scope.table.taxonomyHeaders[0];
-        RqlQueryService.createCriteriaItem(QUERY_TARGETS.VARIABLE, taxonomyHeader.entity.name, vocabulary.entity.name).then(function(item){
+        RqlQueryService.createCriteriaItem(QUERY_TARGETS.VARIABLE, vocabulary.taxonomyName, vocabulary.entity.name).then(function(item){
           $scope.onRemoveCriteria(item);
         });
       };
@@ -5688,17 +5719,20 @@ angular.module('obiba.mica.search')
 
           setChartObject('methods-designs',
             result.studyResultDto,
-            [$filter('translate')(charOptions.studiesDesigns.header[0]), $filter('translate')(charOptions.studiesDesigns.header[1]), $filter('translate')(charOptions.studiesDesigns.header[2])],
+            [$filter('translate')(charOptions.studiesDesigns.header[0]),
+              $filter('translate')(charOptions.studiesDesigns.header[1]),
+              //$filter('translate')(charOptions.studiesDesigns.header[2])
+              ],
             $filter('translate')(charOptions.studiesDesigns.title) + ' (N = ' + result.studyResultDto.totalHits + ')',
             charOptions.studiesDesigns.options).then(function(methodDesignStudies) {
               if (methodDesignStudies) {
                 angular.extend($scope.chartObjects, {
                   studiesDesigns: {
-                    directiveTitle: methodDesignStudies.options.title ,
+                    //directiveTitle: methodDesignStudies.options.title ,
                     headerTitle: $filter('translate')('graphics.study-design'),
                     chartObject: {
                       options: methodDesignStudies.options,
-                      type: 'google.charts.Bar',
+                      type: 'BarChart',
                       data: methodDesignStudies.data,
                       vocabulary: methodDesignStudies.vocabulary,
                       entries: methodDesignStudies.entries
@@ -6665,7 +6699,7 @@ angular.module('obiba.mica.graphics')
                       $scope.chartObject.header = [
                         $filter('translate')($scope.chartHeader[0]),
                         $filter('translate')($scope.chartHeader[1]),
-                        $filter('translate')($scope.chartHeader[2])
+                   //     $filter('translate')($scope.chartHeader[2])
                       ];
                     }
                     $scope.chartObject.type = $scope.chartType;
@@ -6681,7 +6715,7 @@ angular.module('obiba.mica.graphics')
                       data.unshift([
                         $filter('translate')($scope.chartHeader[0]),
                         $filter('translate')($scope.chartHeader[1]),
-                        $filter('translate')($scope.chartHeader[2])
+                   //     $filter('translate')($scope.chartHeader[2])
                       ]);
                     }
                     $scope.chartObject.term = true;
@@ -6876,13 +6910,13 @@ angular.module('obiba.mica.graphics')
 
         var arrayData = [];
         studyTaxonomy.getTerms(aggregationName).then(function(terms) {
-          var aggregations = terms;
+          var sortedTerms = terms;
           var i = 0;
           angular.forEach(entityDto.aggs, function (aggregation) {
             if (aggregation.aggregation === aggregationName) {
               if (aggregation['obiba.mica.RangeAggregationResultDto.ranges']) {
                 i = 0;
-                angular.forEach(aggregations, function (sortTerm) {
+                angular.forEach(sortedTerms, function (sortTerm) {
                   angular.forEach(aggregation['obiba.mica.RangeAggregationResultDto.ranges'], function (term) {
                     if (sortTerm.name === term.key) {
                       if (term.count) {
@@ -6894,44 +6928,36 @@ angular.module('obiba.mica.graphics')
                 });
               }
               else {
-                if (aggregation.aggregation === 'methods-designs') {
-                  var numberOfParticipant = 0;
-                  i = 0;
-                  angular.forEach(aggregations, function (sortTerm) {
-                    angular.forEach(aggregation['obiba.mica.TermsAggregationResultDto.terms'], function (term) {
-                      angular.forEach(term.aggs, function (aggBucket) {
-                        if (aggBucket.aggregation === 'numberOfParticipants-participant-number') {
-                          var aggregateBucket = aggBucket['obiba.mica.StatsAggregationResultDto.stats'];
-                          numberOfParticipant = LocalizedValues.formatNumber(aggregateBucket ? aggregateBucket.data.sum : 0);
-                        }
-                      });
-                      if (sortTerm.name === term.key) {
-                        if (term.count) {
+                // MK-924 sort countries by title in the display language
+                if (aggregation.aggregation === 'populations-selectionCriteria-countriesIso') {
+                  var locale = LocalizedValues.getLocal();
+                  sortedTerms.sort(function(a, b) {
+                    var textA = LocalizedValues.forLocale(a.title, locale);
+                    var textB = LocalizedValues.forLocale(b.title, locale);
+                    return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+                  });
+                }
+                var numberOfParticipant = 0;
+                i = 0;
+                angular.forEach(sortedTerms, function (sortTerm) {
+                  angular.forEach(aggregation['obiba.mica.TermsAggregationResultDto.terms'], function (term) {
+                    if (sortTerm.name === term.key) {
+                      if (term.count) {
+                        if (aggregation.aggregation === 'methods-designs') {
                           arrayData[i] = {
                             title: term.title,
                             value: term.count,
                             participantsNbr: numberOfParticipant,
                             key: term.key
                           };
-                          i++;
-                        }
-                      }
-                    });
-                  });
-                }
-                else {
-                  i = 0;
-                  angular.forEach(aggregations, function (sortTerm) {
-                    angular.forEach(aggregation['obiba.mica.TermsAggregationResultDto.terms'], function (term) {
-                      if (sortTerm.name === term.key) {
-                        if (term.count) {
+                        } else {
                           arrayData[i] = {title: term.title, value: term.count, key: term.key};
-                          i++;
                         }
+                        i++;
                       }
-                    });
+                    }
                   });
-                }
+                });
               }
             }
           });

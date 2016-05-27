@@ -926,7 +926,7 @@ angular.module('obiba.mica.search')
     };
 
     this.isNumericVocabulary = function (vocabulary) {
-      return !self.isTermsVocabulary(vocabulary) && (self.vocabularyType(vocabulary) === VOCABULARY_TYPES.INTEGER || self.vocabularyType(vocabulary) === VOCABULARY_TYPES.DECIMAL);
+      return !vocabulary.terms && (self.vocabularyType(vocabulary) === VOCABULARY_TYPES.INTEGER || self.vocabularyType(vocabulary) === VOCABULARY_TYPES.DECIMAL);
     };
 
     this.isRangeVocabulary = function (vocabulary) {
