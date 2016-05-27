@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-05-26
+ * Date: 2016-05-27
  */
 'use strict';
 
@@ -5135,7 +5135,6 @@ angular.module('obiba.mica.search')
     'CoverageGroupByService',
     function ($scope, $location, $q, PageUrlService, RqlQueryUtils, RqlQueryService, CoverageGroupByService) {
       var targetMap = {}, vocabulariesTermsMap = {};
-      
       targetMap[BUCKET_TYPES.NETWORK] = QUERY_TARGETS.NETWORK;
       targetMap[BUCKET_TYPES.STUDY] = QUERY_TARGETS.STUDY;
       targetMap[BUCKET_TYPES.DCE] = QUERY_TARGETS.VARIABLE;
@@ -5152,21 +5151,34 @@ angular.module('obiba.mica.search')
         datasetBucketSelected: $scope.bucket !== BUCKET_TYPES.DATASCHEMA
       };
 
-      function decorateTermHeaders(vocabularyHeaders, termHeaders) {
+      function decorateVocabularyHeaders(headers, vocabularyHeaders) {
+        var count = 0, i = 0;
+        for (var j=0 ; j < vocabularyHeaders.length; j ++) {
+          if (count >= headers[i].termsCount) {
+            i++;
+            count = 0;
+          }
+          
+          count += vocabularyHeaders[j].termsCount;
+          vocabularyHeaders[j].taxonomyName = headers[i].entity.name;
+        }
+      }
+      
+      function decorateTermHeaders(headers, termHeaders, attr) {
         var idx = 0;
-        return vocabularyHeaders.reduce(function(vocabularies, v) {
-          vocabularies[v.entity.name] = termHeaders.slice(idx, idx + v.termsCount).map(function(t) {
-            if(v.termsCount > 1) {
+        return headers.reduce(function(result, h) {
+          result[h.entity.name] = termHeaders.slice(idx, idx + h.termsCount).map(function(t) {
+            if(h.termsCount > 1 && attr === 'vocabularyName') {
               t.canRemove = true;
             }
             
-            t.vocabularyName = v.entity.name;
+            t[attr] = h.entity.name;
 
             return t;
           });
 
-          idx += v.termsCount;
-          return vocabularies;
+          idx += h.termsCount;
+          return result;
         }, {});
       }
 
@@ -5516,24 +5528,15 @@ angular.module('obiba.mica.search')
           tableTmp.cols = splitIds();
           $scope.table = tableTmp;
 
-          vocabulariesTermsMap = decorateTermHeaders($scope.table.vocabularyHeaders, $scope.table.termHeaders);
+          vocabulariesTermsMap = decorateTermHeaders($scope.table.vocabularyHeaders, $scope.table.termHeaders, 'vocabularyName');
+          decorateTermHeaders($scope.table.taxonomyHeaders, $scope.table.termHeaders, 'taxonomyName');
+          decorateVocabularyHeaders($scope.table.taxonomyHeaders, $scope.table.vocabularyHeaders);
         }
       });
 
       $scope.updateCriteria = function (id, term, idx, type) { //
-        var vocabulary = $scope.bucket === BUCKET_TYPES.DCE ? 'dceIds' : 'id',
-          taxonomyHeader = $scope.table.taxonomyHeaders[0].entity,
-          vocabularyHeader, countTerms = 0;
-
-        for (var i = 0; i < $scope.table.vocabularyHeaders.length; i++) {
-          countTerms += $scope.table.vocabularyHeaders[i].termsCount;
-          if (idx < countTerms) {
-            vocabularyHeader = $scope.table.vocabularyHeaders[i].entity;
-            break;
-          }
-        }
-
-        var criteria = {varItem: RqlQueryService.createCriteriaItem(QUERY_TARGETS.VARIABLE, taxonomyHeader.name, vocabularyHeader.name, term.entity.name)};
+        var vocabulary = $scope.bucket === BUCKET_TYPES.DCE ? 'dceIds' : 'id';
+        var criteria = {varItem: RqlQueryService.createCriteriaItem(QUERY_TARGETS.VARIABLE, term.taxonomyName, term.vocabularyName, term.entity.name)};
 
         if (id) {
           criteria.item = RqlQueryService.createCriteriaItem(targetMap[$scope.bucket], 'Mica_' + targetMap[$scope.bucket], vocabulary, id);
@@ -5594,11 +5597,10 @@ angular.module('obiba.mica.search')
       };
 
       $scope.removeTerm = function(term) {
-        var taxonomyHeader = $scope.table.taxonomyHeaders[0],
-          remainingCriteriaItems = vocabulariesTermsMap[term.vocabularyName].filter(function(t) {
+        var remainingCriteriaItems = vocabulariesTermsMap[term.vocabularyName].filter(function(t) {
             return t.entity.name !== term.entity.name;
           }).map(function(t) {
-            return RqlQueryService.createCriteriaItem(QUERY_TARGETS.VARIABLE, taxonomyHeader.entity.name, t.vocabularyName, t.entity.name);
+            return RqlQueryService.createCriteriaItem(QUERY_TARGETS.VARIABLE, t.taxonomyName, t.vocabularyName, t.entity.name);
           });
         
         $q.all(remainingCriteriaItems).then(function(criteriaItems) {
@@ -5607,8 +5609,7 @@ angular.module('obiba.mica.search')
       };
 
       $scope.removeVocabulary = function(vocabulary) {
-        var taxonomyHeader = $scope.table.taxonomyHeaders[0];
-        RqlQueryService.createCriteriaItem(QUERY_TARGETS.VARIABLE, taxonomyHeader.entity.name, vocabulary.entity.name).then(function(item){
+        RqlQueryService.createCriteriaItem(QUERY_TARGETS.VARIABLE, vocabulary.taxonomyName, vocabulary.entity.name).then(function(item){
           $scope.onRemoveCriteria(item);
         });
       };
