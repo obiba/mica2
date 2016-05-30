@@ -8,17 +8,21 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<uib-tabset active="activeTab">
+<div>
+  <uib-tabset active="activeTab">
 
-  <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" disable="tab.disabled">
+    <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" disable="tab.disabled">
 
-    <div class="voffset4">
-      <h2>
-        <localized value="project.name" lang="tab.lang"></localized>
-      </h2>
+      <div class="voffset4">
+        <h2>
+          <localized value="project.name" lang="tab.lang"></localized>
+        </h2>
 
-      <localized value="project.description" lang="tab.lang"></localized>
-    </div>
-  </uib-tab>
-</uib-tabset>
+        <localized value="project.description" lang="tab.lang"></localized>
+      </div>
+    </uib-tab>
+  </uib-tabset>
+
+  <div sf-model="form.model" sf-form="form.definition" sf-schema="form.schema"></div>
+
 </div>

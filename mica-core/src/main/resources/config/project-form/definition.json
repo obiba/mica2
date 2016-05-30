@@ -4,24 +4,12 @@
     "items": [
       {
         "type": "help",
-        "helpvalue": "<h3>A. Name, institution, and contact details of the Applicant (Principal Applicant)</h3><p>Please ensure that a full postal address and a valid institutional e-mail address are included. In case of more than one affiliation, applicants are asked to only provide their contact information pertaining to the institution they are affiliated with for the purpose of this research project.</p>"
+        "helpvalue": "<h3>Contact Details</h3><p class='help-block'>Please ensure that a full postal address and a valid institutional e-mail address are included. In case of more than one affiliation, applicants are asked to only provide their contact information pertaining to the institution they are affiliated with for the purpose of this research project.</p>"
       },
       "name",
       "title",
-      "position",
-      "institution"
-    ]
-  },
-  {
-    "type": "fieldset",
-    "items": [
       {
-        "type": "help",
-        "helpvalue": "<h3>B. Lay summary of the project</h3><p>Please provide a short, accessible description of the project for the general public in <strong>no more than 200 words</strong>. Scientific jargon should be avoided to a reasonable extent. This description will be made available on the consortium public access registry and may be used in a variety of communications materials produced by the consortium (e.g. brochures, reports to stakeholders, press releases, blogs etc.).</p>"
-      },
-      {
-        "key": "summary",
-        "notitle": true,
+        "key": "institution",
         "type": "textarea"
       }
     ]

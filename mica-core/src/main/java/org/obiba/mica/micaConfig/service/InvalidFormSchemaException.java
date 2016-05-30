@@ -15,7 +15,7 @@ public class InvalidFormSchemaException extends RuntimeException {
   private static final long serialVersionUID = -8675643670421788807L;
 
   public InvalidFormSchemaException() {
-    super("Invalid data access form schema exception.");
+    super("Invalid schema form exception.");
   }
 
 }

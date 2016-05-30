@@ -10,6 +10,9 @@
 
 'use strict';
 
+/* global PROJECT_SCHEMA */
+/* global PROJECT_DEFINITION */
+
 mica.project
 
   .constant('PROJECT_EVENTS', {
@@ -61,6 +64,8 @@ mica.project
     'DraftProjectResource',
     'DraftProjectsResource',
     'MicaConfigResource',
+    'ProjectFormResource',
+    'JsonUtils',
     'PROJECT_EVENTS',
     'NOTIFICATION_EVENTS',
     'DraftFileSystemSearchResource',
@@ -85,6 +90,8 @@ mica.project
       DraftProjectResource,
       DraftProjectsResource,
       MicaConfigResource,
+      ProjectFormResource,
+      JsonUtils,
       PROJECT_EVENTS,
       NOTIFICATION_EVENTS,
       DraftFileSystemSearchResource,
@@ -102,11 +109,18 @@ mica.project
       var initializeProject = function(project){
         $scope.activeTab = 0;
         $scope.permissions = DocumentPermissionsService.state(project['obiba.mica.EntityStateDto.projectState']);
+        $scope.form.model = JsonUtils.parseJsonSafely(project.content, {});
+        // $scope.form.model._mica = {
+        //   name: project.name,
+        //   description: project.description
+        // };
       };
 
       $scope.Mode = {View: 0, Revision: 1, File: 2, Permission: 3, Comment: 4};
 
       $scope.activeTab = 0;
+
+      $scope.form = {};
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
@@ -117,6 +131,15 @@ mica.project
         $scope.roles = micaConfig.roles;
         $scope.openAccess = micaConfig.openAccess;
       });
+
+      ProjectFormResource.get(
+        function onSuccess(projectForm) {
+          $scope.form.definition = JsonUtils.parseJsonSafely(projectForm.definition, []);
+          // $scope.form.definition.unshift(PROJECT_DEFINITION);
+          $scope.form.schema = JsonUtils.parseJsonSafely(projectForm.schema, {});
+          // $scope.form.schema.properties._mica = PROJECT_SCHEMA;
+          $scope.form.schema.readonly = true;
+        });
 
       $scope.projectId = $routeParams.id;
       $scope.project = DraftProjectResource.get({id: $routeParams.id}, initializeProject);
@@ -267,6 +290,8 @@ mica.project
     'DraftProjectsResource',
     'DraftProjectPublicationResource',
     'MicaConfigResource',
+    'ProjectFormResource',
+    'JsonUtils',
     'FormServerValidation',
     'FormDirtyStateObserver',
     function ($rootScope,
@@ -279,6 +304,8 @@ mica.project
               DraftProjectsResource,
               DraftProjectPublicationResource,
               MicaConfigResource,
+              ProjectFormResource,
+              JsonUtils,
               FormServerValidation,
               FormDirtyStateObserver) {
 
@@ -288,6 +315,7 @@ mica.project
       $scope.project = $routeParams.id ?
         DraftProjectResource.get({id: $routeParams.id}, function(response) {
           $scope.files = response.logo ? [response.logo] : [];
+          $scope.form.model = JsonUtils.parseJsonSafely(response.content, {});
           return response;
         }) : {published: false};
 
@@ -298,16 +326,23 @@ mica.project
         });
       });
 
-      $scope.save = function () {
+      ProjectFormResource.get(
+        function onSuccess(projectForm) {
+          $scope.form.definition = JsonUtils.parseJsonSafely(projectForm.definition, []);
+          $scope.form.schema = JsonUtils.parseJsonSafely(projectForm.schema, {});
+        });
 
-        if (!$scope.form.$valid) {
-          $scope.form.saveAttempted = true;
-          return;
-        }
-        if ($scope.project.id) {
-          updateProject();
+      $scope.save = function () {
+        $scope.$broadcast('schemaFormValidate');
+        if ($scope.form.$valid) {
+          $scope.project.content = JSON.stringify($scope.form.model);
+          if ($scope.project.id) {
+            updateProject();
+          } else {
+            createProject();
+          }
         } else {
-          createProject();
+          $scope.form.saveAttempted = true;
         }
       };
 
