@@ -19,6 +19,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.obiba.mica.access.DataAccessRequestRepository;
+import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.access.service.DataAccessRequestUtilService;
 import org.obiba.mica.config.JsonConfiguration;
 import org.obiba.mica.config.taxonomies.StudyTaxonomy;
@@ -242,6 +244,16 @@ public class DatasetDtosTest {
     @Bean
     public AttachmentStateRepository attachmentStateRepository() {
       return mock(AttachmentStateRepository.class);
+    }
+
+    @Bean
+    public DataAccessRequestService dataAccessRequestService() {
+      return mock(DataAccessRequestService.class);
+    }
+
+    @Bean
+    public DataAccessRequestRepository dataAccessRequestRepository() {
+      return mock(DataAccessRequestRepository.class);
     }
 
     @Bean

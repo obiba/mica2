@@ -654,18 +654,6 @@ message ProjectsDto {
   repeated ProjectDto projects = 4;
 }
 
-message ProjectDto {
-  optional string id = 1;
-  optional TimestampsDto timestamps = 2;
-  repeated LocalizedStringDto name = 3;
-  repeated LocalizedStringDto description = 4;
-  optional string content = 5;
-  optional string darId = 6;
-  optional PermissionsDto permissions = 7;
-  optional bool published = 8;
-  extensions 1000 to max;
-}
-
 message DataAccessRequestDto {
 
   message StatusChangeDto {
@@ -687,6 +675,24 @@ message DataAccessRequestDto {
   repeated string nextStatus = 9;
   repeated StatusChangeDto statusChangeHistory = 10;
   optional UserProfileDto profile = 11;
+}
+
+message DataAccessRequestSummaryDto {
+  required string id = 1;
+  required string status = 2;
+}
+
+message ProjectDto {
+  optional string id = 1;
+  optional TimestampsDto timestamps = 2;
+  repeated LocalizedStringDto name = 3;
+  repeated LocalizedStringDto description = 4;
+  optional string content = 5;
+  optional DataAccessRequestSummaryDto request = 6;
+
+  optional PermissionsDto permissions = 7;
+  optional bool published = 8;
+  extensions 1000 to max;
 }
 
 message LocalizedPropertyDto {

@@ -1,9 +1,13 @@
 package org.obiba.mica.web.model;
 
+import java.util.NoSuchElementException;
+
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.JSONUtils;
+import org.obiba.mica.access.domain.DataAccessRequest;
+import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.project.domain.ProjectState;
 import org.obiba.mica.project.service.ProjectService;
@@ -19,6 +23,9 @@ class ProjectDtos {
   private ProjectService projectService;
 
   @Inject
+  private DataAccessRequestService dataAccessRequestService;
+
+  @Inject
   private PermissionsDtos permissionsDtos;
 
   @Inject
@@ -31,7 +38,17 @@ class ProjectDtos {
       .addAllDescription(localizedStringDtos.asDto(project.getDescription()));
 
     if(project.hasContent()) builder.setContent(JSONUtils.toJSON(project.getContent()));
-    if(project.hasDataAccessRequestId()) builder.setDarId(project.getDataAccessRequestId());
+    if(project.hasDataAccessRequestId()) {
+      try {
+        DataAccessRequest request = dataAccessRequestService.findById(project.getDataAccessRequestId());
+        Mica.DataAccessRequestSummaryDto.Builder darBuilder = Mica.DataAccessRequestSummaryDto.newBuilder();
+        darBuilder.setId(project.getDataAccessRequestId());
+        darBuilder.setStatus(request.getStatus().name());
+        builder.setRequest(darBuilder);
+      } catch(NoSuchElementException e) {
+        // ignore
+      }
+    }
     if(!project.isNew()) builder.setId(project.getId());
 
     Mica.PermissionsDto permissionsDto = permissionsDtos.asDto(project);
