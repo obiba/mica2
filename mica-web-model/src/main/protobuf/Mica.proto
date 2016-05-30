@@ -727,6 +727,7 @@ message DataAccessFormDto {
   required bool notifyConditionallyApproved = 23;
   required bool withConditionalApproval = 24;
   optional string conditionallyApprovedSubject = 25;
+  optional string summaryFieldPath = 26;
 }
 
 message ProjectFormDto {
