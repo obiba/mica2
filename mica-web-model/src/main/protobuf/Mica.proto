@@ -680,6 +680,7 @@ message DataAccessRequestDto {
 message DataAccessRequestSummaryDto {
   required string id = 1;
   required string status = 2;
+  required bool viewable = 3;
 }
 
 message ProjectDto {

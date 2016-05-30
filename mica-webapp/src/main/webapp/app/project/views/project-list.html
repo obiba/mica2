@@ -65,7 +65,9 @@
           </td>
           <td>
             <span ng-if="project.request.id">
-              <a ng-href="#/data-access-request/{{project.request.id}}">{{project.request.id}}</a> ({{project.request.status | translate}})
+              <a ng-if="project.request.viewable" href ng-href="#/data-access-request/{{project.request.id}}">{{project.request.id}}</a>
+              <span ng-if="!project.request.viewable">{{project.request.id}}</span>
+              ({{project.request.status | translate}})
             </span>
           </td>
           <td>

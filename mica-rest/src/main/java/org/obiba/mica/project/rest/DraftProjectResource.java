@@ -125,7 +125,7 @@ public class DraftProjectResource extends AbstractGitPersistableResource<Project
   @GET
   @Path("/commit/{commitId}/view")
   public Mica.ProjectDto getFromCommit(@NotNull @PathParam("commitId") String commitId) throws IOException {
-    subjectAclService.checkPermission("/draft/network", "VIEW", id);
+    subjectAclService.checkPermission("/draft/project", "VIEW", id);
     return dtos.asDto(projectService.getFromCommit(projectService.findDraft(id), commitId), true);
   }
 
