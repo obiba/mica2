@@ -14,29 +14,36 @@
   <div ng-class="{'voffset3': !screen.is('lg')}" class="clearfix">
     <h3 class="pull-left no-margin-top" translate>view</h3>
     <div class="pull-right">
+
       <a ng-href="#/project/{{project.id}}/edit" class="btn btn-primary btn-responsive" ng-if="permissions.canEdit()">
         <i class="fa fa-pencil-square-o"></i> <span translate>edit</span>
       </a>
-
       <status-buttons class="inline"
-          state="project['obiba.mica.EntityStateDto.projectState']"
-          on-publish="publish(true)"
-          on-un-publish="publish(false)"
-          on-delete="delete()"
-          to-draft="toStatus('DRAFT')"
-          to-under-review="toStatus('UNDER_REVIEW')"
-          to-deleted="toStatus('DELETED')">
+        state="project['obiba.mica.EntityStateDto.projectState']"
+        on-publish="publish(true)"
+        on-un-publish="publish(false)"
+        on-delete="delete()"
+        to-draft="toStatus('DRAFT')"
+        to-under-review="toStatus('UNDER_REVIEW')"
+        to-deleted="toStatus('DELETED')">
       </status-buttons>
-
     </div>
   </div>
 
-  <p>
-    <small class="help-block inline">{{'global.lastUpdate' | translate}}: {{project.timestamps.lastUpdate |
-      amDateFormat : 'lll'}}
-    </small>
-    <publish-status class="inline" state="project['obiba.mica.EntityStateDto.projectState']"></publish-status>
-  </p>
+  <div class="clearfix voffset2">
+    <p class="pull-left">
+      <small class="help-block inline">{{'global.lastUpdate' | translate}}: {{project.timestamps.lastUpdate |
+        amDateFormat : 'lll'}}
+      </small>
+      <publish-status class="inline" state="project['obiba.mica.EntityStateDto.projectState']"></publish-status>
+    </p>
+    <div ng-if="project.request" class="pull-right">
+      <small class="help-block inline">{{'research-project.data-access-request' | translate}}:
+        <a href ng-href="#/data-access-request/{{project.request.id}}">{{project.request.id}}</a>
+      </small>
+      <span class="label label-success">{{project.request.status | translate}}</span>
+    </div>
+  </div>
 
   <div ng-include="'app/project/views/project-view-details.html'"></div>
 </div>
