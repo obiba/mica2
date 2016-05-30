@@ -90,7 +90,7 @@ public class DataAccessFormService {
     form.setDefinition(getDefaultDataAccessFormResourceAsString("definition.json"));
     form.setSchema(getDefaultDataAccessFormResourceAsString("schema.json"));
     form.setTitleFieldPath("projectTitle");
-    form.setTitleFieldPath("summary");
+    form.setSummaryFieldPath("summary");
     return form;
   }
 
