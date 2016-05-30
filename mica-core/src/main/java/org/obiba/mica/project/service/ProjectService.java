@@ -263,6 +263,10 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
       if(!Strings.isNullOrEmpty(title)) {
         project.setName(LocalizedString.from(micaConfigService.getConfig().getLocales(), title));
       }
+      String summary = dataAccessRequestUtilService.getRequestSummary(request);
+      if(!Strings.isNullOrEmpty(summary)) {
+        project.setDescription(LocalizedString.from(micaConfigService.getConfig().getLocales(), summary));
+      }
       save(project, "Created from Data Access Request");
     }
   }

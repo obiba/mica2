@@ -31,6 +31,8 @@ public class DataAccessForm extends AbstractGitPersistable {
 
   private String titleFieldPath;
 
+  private String summaryFieldPath;
+
   private String idPrefix;
 
   private int idLength = 6;
@@ -174,6 +176,18 @@ public class DataAccessForm extends AbstractGitPersistable {
 
   public void setTitleFieldPath(String titleFieldPath) {
     this.titleFieldPath = titleFieldPath;
+  }
+
+  public boolean hasSummaryFieldPath() {
+    return !Strings.isNullOrEmpty(summaryFieldPath);
+  }
+
+  public String getSummaryFieldPath() {
+    return summaryFieldPath;
+  }
+
+  public void setSummaryFieldPath(String summaryFieldPath) {
+    this.summaryFieldPath = summaryFieldPath;
   }
 
   public boolean hasIdPrefix() {

@@ -78,12 +78,17 @@
       </uib-tabset>
     </div>
 
-    <h3 translate>properties</h3>
+    <h3 translate>data-access-config.properties.title</h3>
+
+    <p class="help-block" translate>data-access-config.properties.info</p>
 
     <form>
       <div class="row">
         <div class="col-md-6">
           <div form-input name="titleFieldPath" model="dataAccessForm.titleFieldPath" label="data-access-config.title-field" required="false" help="data-access-config.title-field-help"></div>
+        </div>
+        <div class="col-md-6">
+          <div form-input name="summaryFieldPath" model="dataAccessForm.summaryFieldPath" label="data-access-config.summary-field" required="false" help="data-access-config.summary-field-help"></div>
         </div>
       </div>
     </form>

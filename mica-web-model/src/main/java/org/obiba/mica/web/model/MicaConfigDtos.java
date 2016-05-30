@@ -151,6 +151,10 @@ class MicaConfigDtos {
       builder.setTitleFieldPath(dataAccessForm.getTitleFieldPath());
     }
 
+    if(dataAccessForm.hasSummaryFieldPath()) {
+      builder.setSummaryFieldPath(dataAccessForm.getSummaryFieldPath());
+    }
+
     if(dataAccessForm.hasIdPrefix()) {
       builder.setIdPrefix(dataAccessForm.getIdPrefix());
     }
@@ -198,6 +202,10 @@ class MicaConfigDtos {
 
     if(dto.hasTitleFieldPath()) {
       dataAccessForm.setTitleFieldPath(dto.getTitleFieldPath());
+    }
+
+    if(dto.hasSummaryFieldPath()) {
+      dataAccessForm.setSummaryFieldPath(dto.getSummaryFieldPath());
     }
 
     if(dto.hasIdPrefix()) {

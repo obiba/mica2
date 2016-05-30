@@ -1027,8 +1027,14 @@
     "menu": "Data Access",
     "title": "Data Access Configuration",
     "title-edit": "Edit Data Access Configuration",
+    "properties": {
+      "title": "Properties",
+      "info": "Some properties of the request will be extracted from the application form model according to their specified JSON field path."
+    },
     "title-field": "Title Field",
-    "title-field-help": "The title of the request will be extracted from the application form model according to the specified JSON field path.",
+    "title-field-help": "The title of the request.",
+    "summary-field": "Summary Field",
+    "summary-field-help": "The lay summary of the request.",
     "general-config": "General Configuration",
     "saved": "Data Access Form is successfully updated.",
     "pdf-template": {

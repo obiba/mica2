@@ -10,9 +10,10 @@
 
 package org.obiba.mica.access.service;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.jayway.jsonpath.*;
+import java.util.List;
+
+import javax.inject.Inject;
+
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
@@ -20,8 +21,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
-import java.util.List;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.InvalidPathException;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.PathNotFoundException;
 
 @Component
 public class DataAccessRequestUtilService {
@@ -36,25 +42,12 @@ public class DataAccessRequestUtilService {
 
   public String getRequestTitle(DataAccessRequest request) {
     DataAccessForm dataAccessForm = dataAccessFormService.find().get();
-    String titleFieldPath = dataAccessForm.getTitleFieldPath();
-    String rawContent = request.getContent();
-    if(!Strings.isNullOrEmpty(titleFieldPath) && !Strings.isNullOrEmpty(rawContent)) {
-      Object content = Configuration.defaultConfiguration().jsonProvider().parse(rawContent);
-      List<Object> values = null;
-      try {
-        values = JsonPath.using(conf).parse(content).read(titleFieldPath);
-      } catch(PathNotFoundException ex) {
-        //ignore
-      } catch(InvalidPathException e) {
-        log.warn("Invalid jsonpath {}", titleFieldPath);
-      }
+    return getRequestField(request, dataAccessForm.getTitleFieldPath());
+  }
 
-      if(values != null) {
-        return values.get(0).toString();
-      }
-    }
-
-    return null;
+  public String getRequestSummary(DataAccessRequest request) {
+    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
+    return getRequestField(request, dataAccessForm.getSummaryFieldPath());
   }
 
   public void checkStatusTransition(DataAccessRequest request, DataAccessRequest.Status to)
@@ -118,6 +111,26 @@ public class DataAccessRequestUtilService {
   //
   // Private methods
   //
+
+  private String getRequestField(DataAccessRequest request, String fieldPath) {
+    String rawContent = request.getContent();
+    if(!Strings.isNullOrEmpty(fieldPath) && !Strings.isNullOrEmpty(rawContent)) {
+      Object content = Configuration.defaultConfiguration().jsonProvider().parse(rawContent);
+      List<Object> values = null;
+      try {
+        values = JsonPath.using(conf).parse(content).read(fieldPath);
+      } catch(PathNotFoundException ex) {
+        //ignore
+      } catch(InvalidPathException e) {
+        log.warn("Invalid jsonpath {}", fieldPath);
+      }
+
+      if(values != null) {
+        return values.get(0).toString();
+      }
+    }
+    return null;
+  }
 
   private void addNextOpenedStatus(List<DataAccessRequest.Status> to) {
     to.add(DataAccessRequest.Status.SUBMITTED);
