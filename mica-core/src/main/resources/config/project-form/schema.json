@@ -16,13 +16,9 @@
     "institution": {
       "title": "Institution",
       "type": "string"
-    },
-    "summary": {
-      "type": "string"
     }
   },
   "required": [
-    "name",
-    "summary"
+    "name"
   ]
 }
