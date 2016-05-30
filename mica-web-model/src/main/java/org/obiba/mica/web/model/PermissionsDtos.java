@@ -49,7 +49,7 @@ class PermissionsDtos {
   }
 
   public Mica.PermissionsDto asDto(@NotNull Project project) {
-    return asDto("/draft/network", project.getId());
+    return asDto("/draft/project", project.getId());
   }
 
   public Mica.PermissionsDto asDto(@NotNull String resource, @Nullable String instance) {

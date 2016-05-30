@@ -11,6 +11,7 @@ import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.project.domain.ProjectState;
 import org.obiba.mica.project.service.ProjectService;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -24,6 +25,9 @@ class ProjectDtos {
 
   @Inject
   private DataAccessRequestService dataAccessRequestService;
+
+  @Inject
+  private SubjectAclService subjectAclService;
 
   @Inject
   private PermissionsDtos permissionsDtos;
@@ -44,6 +48,7 @@ class ProjectDtos {
         Mica.DataAccessRequestSummaryDto.Builder darBuilder = Mica.DataAccessRequestSummaryDto.newBuilder();
         darBuilder.setId(project.getDataAccessRequestId());
         darBuilder.setStatus(request.getStatus().name());
+        darBuilder.setViewable(subjectAclService.isPermitted("/data-access-request", "VIEW", request.getId()));
         builder.setRequest(darBuilder);
       } catch(NoSuchElementException e) {
         // ignore
