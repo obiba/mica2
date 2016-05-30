@@ -7,14 +7,17 @@ import javax.validation.constraints.NotNull;
 
 import org.joda.time.DateTime;
 import org.obiba.mica.NoSuchEntityException;
+import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.event.DataAccessRequestDeletedEvent;
 import org.obiba.mica.access.event.DataAccessRequestUpdatedEvent;
+import org.obiba.mica.access.service.DataAccessRequestUtilService;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.PublishCascadingScope;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.obiba.mica.core.service.AbstractGitPersistableService;
 import org.obiba.mica.file.FileUtils;
 import org.obiba.mica.file.service.FileSystemService;
+import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.project.ProjectRepository;
 import org.obiba.mica.project.ProjectStateRepository;
 import org.obiba.mica.project.domain.Project;
@@ -49,7 +52,13 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
   private EventBus eventBus;
 
   @Inject
+  private DataAccessRequestUtilService dataAccessRequestUtilService;
+
+  @Inject
   private FileSystemService fileSystemService;
+
+  @Inject
+  private MicaConfigService micaConfigService;
 
   public void save(@NotNull Project project) {
     save(project, null);
@@ -245,10 +254,15 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
   @Async
   @Subscribe
   public void dataAccessRequestUpdated(DataAccessRequestUpdatedEvent event) {
-    if(!projectRepository.exists(event.getPersistable().getId())) {
+    DataAccessRequest request = event.getPersistable();
+    if(!projectRepository.exists(request.getId()) && request.getStatus() != DataAccessRequest.Status.OPENED) {
       Project project = new Project();
       project.setId(event.getPersistable().getId());
       project.setDataAccessRequestId(event.getPersistable().getId());
+      String title = dataAccessRequestUtilService.getRequestTitle(request);
+      if(!Strings.isNullOrEmpty(title)) {
+        project.setName(LocalizedString.from(micaConfigService.getConfig().getLocales(), title));
+      }
       save(project, "Created from Data Access Request");
     }
   }

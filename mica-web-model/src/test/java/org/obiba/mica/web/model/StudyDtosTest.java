@@ -14,6 +14,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.obiba.git.command.GitCommandHandler;
+import org.obiba.mica.access.DataAccessRequestRepository;
+import org.obiba.mica.access.service.DataAccessRequestService;
 import org.obiba.mica.config.JsonConfiguration;
 import org.obiba.mica.config.taxonomies.DatasetTaxonomy;
 import org.obiba.mica.config.taxonomies.NetworkTaxonomy;
@@ -544,6 +546,16 @@ public class StudyDtosTest {
     @Bean
     public EntityPublicationFlowMailNotification entityPublicationFlowNotification() {
       return mock(EntityPublicationFlowMailNotification.class);
+    }
+
+    @Bean
+    public DataAccessRequestService dataAccessRequestService() {
+      return mock(DataAccessRequestService.class);
+    }
+
+    @Bean
+    public DataAccessRequestRepository dataAccessRequestRepository() {
+      return mock(DataAccessRequestRepository.class);
     }
 
     @Bean
