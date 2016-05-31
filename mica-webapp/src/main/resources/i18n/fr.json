@@ -1154,7 +1154,7 @@
     },
     "permissions": {
       "title": "Research Project Permissions",
-      "info": "Edit a group's access permissions on projects."
+      "info": "Grant permission to Read any Research Projects."
     }
   },
   "comments": "Comments",
