@@ -32,6 +32,7 @@ mica.dataAccessConfig
             $scope.dataAccessForm.definition = $scope.form.definition;
             $scope.dataAccessForm.schema = $scope.form.schema;
             $scope.dataAccessForm.pdfTemplates = $scope.dataAccessForm.pdfTemplates || [];
+            $scope.dataAccessForm.dataAccessPermissions = $scope.dataAccessForm.dataAccessPermissions || [];
 
             DataAccessFormResource.save($scope.dataAccessForm,
               function () {
@@ -128,6 +129,7 @@ mica.dataAccessConfig
           $scope.form.schema = DataAccessFormService.prettifyJson($scope.form.schemaJson);
           $scope.dataAccessForm = dataAccessForm;
           $scope.dataAccessForm.pdfTemplates = $scope.dataAccessForm.pdfTemplates || [];
+          $scope.dataAccessForm.dataAccessPermissions = $scope.dataAccessForm.dataAccessPermissions || [];
           selectTab('form-schema');
 
           if ($scope.form.definitionJson.length === 0) {
@@ -160,6 +162,37 @@ mica.dataAccessConfig
         schema: null,
         model: {}
       };
+
+      function dataAccessPermissionsToAcl (permissions) {
+        permissions = permissions || [];
+        return permissions.map(function (e) {
+          var nameAndType = e.key.split(':');
+          return {principal: nameAndType[0], role: e.value, type: nameAndType[1]};
+        });
+      }
+
+      $scope.loadPermissions = function() {
+        $scope.acls = dataAccessPermissionsToAcl($scope.dataAccessForm.dataAccessPermissions);
+      };
+
+      $scope.addPermission = function (acl) {
+        $scope.deletePermission(acl);
+        $scope.dataAccessForm.dataAccessPermissions.push({key: acl.principal + ':' + acl.type, value: acl.role});
+      };
+
+      $scope.deletePermission = function (acl) {
+        var foundIndices = [];
+        $scope.dataAccessForm.dataAccessPermissions.forEach(function (e, i) {
+          if (e.key === acl.principal + ':' + acl.type) {
+            foundIndices.push(i);
+          }
+        });
+        foundIndices.forEach(function (i) {
+          $scope.dataAccessForm.dataAccessPermissions.splice(i, 1);
+        });
+      };
+
+      $scope.loadPermissions();
 
       $scope.tab = {name: 'form'};
       $scope.dirty = false;

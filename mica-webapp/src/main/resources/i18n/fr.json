@@ -855,6 +855,7 @@
     "group": "Group",
     "reader": "Reader",
     "reader-help": "Read-only access to the document in draft mode with its revisions and its associated files.",
+    "reader-config-help": "Read-only access to the {{arg0}} with their revisions and their associated files.",
     "editor": "Editor",
     "editor-help": "Edit access to the document in draft mode with its revisions and its associated files. Publication or permanent deletion are not permitted.",
     "reviewer": "Reviewer",
@@ -1109,6 +1110,10 @@
       "with-conditional-approval": "With 'Conditionally Approved' intermediate state",
       "with-conditional-approval-help": "Between the submission and the approval/rejection of the data access request, an intermediate state can be used to allow the applicant to edit its request."
     },
+    "permissions": {
+      "title": "Data Access Permissions",
+      "info": "Edit a group's access permissions on data access requests."
+    },
     "syntax-error": {
       "definition": "Form definition is not a valid document, please revise and correct the errors.",
       "schema": "Form schema is not a valid document, please revise and correct the errors."
@@ -1146,6 +1151,10 @@
     "model": {
       "tab": "Model",
       "info": "The form model stores the valid input data, invalid values are excluded."
+    },
+    "permissions": {
+      "title": "Research Project Permissions",
+      "info": "Edit a group's access permissions on projects."
     }
   },
   "comments": "Comments",

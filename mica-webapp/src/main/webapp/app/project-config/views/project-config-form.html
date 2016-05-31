@@ -19,48 +19,71 @@
 
   <obiba-alert id="ProjectConfigController"></obiba-alert>
 
-  <h3 translate>project-config.schema-form.title</h3>
+  <div class="tabs-menu" ng-class="{'tabs-left': screen.is('lg')}">
+    <ul class="nav nav-tabs">
+      <li ng-class="{'active': tab.name === 'form'}">
+        <a href ng-click="tab.name = 'form'" title="{{'form' | translate}}"><i class="fa fa-list"></i></a>
+      </li>
+      <li ng-class="{'active': tab.name === 'permissions'}">
+        <a href ng-click="tab.name = 'permissions'; loadPermissions()" title="{{'permissions' | translate}}"><i class="fa fa-lock"></i></a>
+      </li>
+    </ul>
+  </div>
 
-  <p class="help-block" translate>project-config.schema-form.info</p>
+  <div ng-show="tab.name === 'form'">
+    <h3 translate>project-config.schema-form.title</h3>
 
-  <div class="form-group">
-    <uib-tabset class="voffset4">
-      <div class="pull-right">
-        <button ng-if="selectedTab === 'form-preview'" ng-click="testPreview(formPreview)" class="btn btn-default btn-sm">
-          <span translate>project-config.preview.test</span>
-        </button>
+    <p class="help-block" translate>project-config.schema-form.info</p>
 
-        <button ng-click="fullscreen(selectedTab)" class="btn btn-default btn-sm" title="{{'fullscreen' | translate}}">
-          <i class="glyphicon glyphicon-fullscreen"></i>
-        </button>
-      </div>
-      <uib-tab ng-click="selectTab('form-schema')" heading="{{'project-config.schema.tab' | translate}}">
-        <div id="form-schema" ui-ace="ace.options" ng-model="form.schema" class="form-control form-schema">
+    <div class="form-group">
+      <uib-tabset class="voffset4">
+        <div class="pull-right">
+          <button ng-if="selectedTab === 'form-preview'" ng-click="testPreview(formPreview)" class="btn btn-default btn-sm">
+            <span translate>project-config.preview.test</span>
+          </button>
+
+          <button ng-click="fullscreen(selectedTab)" class="btn btn-default btn-sm" title="{{'fullscreen' | translate}}">
+            <i class="glyphicon glyphicon-fullscreen"></i>
+          </button>
         </div>
-        <div class="help-block" translate>project-config.schema.info</div>
-      </uib-tab>
-      <uib-tab ng-click="selectTab('form-definition')" heading="{{'project-config.definition.tab' | translate}}">
-        <div id="form-definition" class="form-control form-definition" ui-ace="ace.options" ng-model="form.definition">
-        </div>
-        <div class="help-block" translate>project-config.definition.info</div>
-      </uib-tab>
-
-      <uib-tab ng-click="selectTab('form-preview')" heading="{{'project-config.preview.tab' | translate}}">
-        <div id="form-preview" class="panel panel-default full-screenable">
-          <div class="panel-body">
-            <form name="formPreview">
-              <div sf-model="form.model" sf-form="form.definitionJson" sf-schema="form.schemaJson">
-              </div>
-            </form>
+        <uib-tab ng-click="selectTab('form-schema')" heading="{{'project-config.schema.tab' | translate}}">
+          <div id="form-schema" ui-ace="ace.options" ng-model="form.schema" class="form-control form-schema">
           </div>
-        </div>
-      </uib-tab>
-      <uib-tab ng-click="selectTab('form-model')" heading="{{'project-config.model.tab' | translate}}">
-        <div id="form-model" class="form-control form-definition" ui-ace="ace.options" ng-model="modelPreview">
-        </div>
-        <div class="help-block" translate>project-config.model.info</div>
-      </uib-tab>
-    </uib-tabset>
+          <div class="help-block" translate>project-config.schema.info</div>
+        </uib-tab>
+        <uib-tab ng-click="selectTab('form-definition')" heading="{{'project-config.definition.tab' | translate}}">
+          <div id="form-definition" class="form-control form-definition" ui-ace="ace.options" ng-model="form.definition">
+          </div>
+          <div class="help-block" translate>project-config.definition.info</div>
+        </uib-tab>
+
+        <uib-tab ng-click="selectTab('form-preview')" heading="{{'project-config.preview.tab' | translate}}">
+          <div id="form-preview" class="panel panel-default full-screenable">
+            <div class="panel-body">
+              <form name="formPreview">
+                <div sf-model="form.model" sf-form="form.definitionJson" sf-schema="form.schemaJson">
+                </div>
+              </form>
+            </div>
+          </div>
+        </uib-tab>
+        <uib-tab ng-click="selectTab('form-model')" heading="{{'project-config.model.tab' | translate}}">
+          <div id="form-model" class="form-control form-definition" ui-ace="ace.options" ng-model="modelPreview">
+          </div>
+          <div class="help-block" translate>project-config.model.info</div>
+        </uib-tab>
+      </uib-tabset>
+    </div>
+  </div>
+
+  <div ng-show="tab.name === 'permissions'">
+    <h3 translate>project-config.permissions.title</h3>
+
+    <p class="help-block" translate>project-config.permissions.info</p>
+
+    <div class="col-md-12">
+      <permission-config-table permissions="acls" on-load="loadPermissions" on-add="addPermission" on-delete="deletePermission" name="'research-projects'"></permission-config-table>
+    </div>
   </div>
 
   <div class="voffset4">

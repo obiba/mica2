@@ -31,6 +31,7 @@ mica.projectConfig
           case ProjectFormService.ParseResult.VALID:
             $scope.projectForm.definition = $scope.form.definition;
             $scope.projectForm.schema = $scope.form.schema;
+            $scope.projectForm.projectPermissions = $scope.projectForm.projectPermissions || [];
 
             ProjectFormResource.save($scope.projectForm,
               function () {
@@ -116,7 +117,7 @@ mica.projectConfig
       };
 
       $scope.projectForm = {schema: '', definition: ''};
-      
+
       ProjectFormResource.get(
         function(projectForm){
           $scope.dirty = true;
@@ -125,6 +126,7 @@ mica.projectConfig
           $scope.form.schemaJson = ProjectFormService.parseJsonSafely(projectForm.schema, {});
           $scope.form.schema = ProjectFormService.prettifyJson($scope.form.schemaJson);
           $scope.projectForm = projectForm;
+          $scope.projectForm.projectPermissions = $scope.projectForm.projectPermissions || [];
           selectTab('form-schema');
 
           if ($scope.form.definitionJson.length === 0) {
@@ -157,6 +159,37 @@ mica.projectConfig
         schema: null,
         model: {}
       };
+
+      function projectPermissionsToAcl (permissions) {
+        permissions = permissions || [];
+        return permissions.map(function (e) {
+          var nameAndType = e.key.split(':');
+          return {principal: nameAndType[0], role: e.value, type: nameAndType[1]};
+        });
+      }
+
+      $scope.loadPermissions = function() {
+        $scope.acls = projectPermissionsToAcl($scope.projectForm.projectPermissions);
+      };
+
+      $scope.addPermission = function (acl) {
+        $scope.deletePermission(acl);
+        $scope.projectForm.projectPermissions.push({key: acl.principal + ':' + acl.type, value: acl.role});
+      };
+
+      $scope.deletePermission = function (acl) {
+        var foundIndices = [];
+        $scope.projectForm.projectPermissions.forEach(function (e, i) {
+          if (e.key === acl.principal + ':' + acl.type) {
+            foundIndices.push(i);
+          }
+        });
+        foundIndices.forEach(function (i) {
+          $scope.projectForm.projectPermissions.splice(i, 1);
+        });
+      };
+
+      $scope.loadPermissions();
 
       $scope.tab = {name: 'form'};
       $scope.dirty = false;

@@ -21,6 +21,14 @@ mica.dataAccessConfig
       });
     }])
 
+  .constant('ACTION_LOCATIONS', {
+    DATA_ACCESS_REQUEST: '/data-access-request',
+    PROJECT: '/project',
+    DRAFT_PROJECT: '/draft/project'
+  })
+
+  .constant('UNTOUCHABLE_GROUPS', ['mica-administrator', 'mica-reviewer', 'mica-editor', 'mica-data-access-officer', 'mica-user'])
+
   .factory('DataAccessFormService', ['BrowserDetector',
     function (BrowserDetector) {
       return {

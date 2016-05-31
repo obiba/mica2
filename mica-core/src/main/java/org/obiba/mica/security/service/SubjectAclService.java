@@ -363,7 +363,7 @@ public class SubjectAclService {
       .findByResourceAndInstanceRegex("/draft/file", "^" + resource + "/" + encode(instance) + "/"));
   }
 
-  private void removeSubjectPermission(@NotNull SubjectAcl.Type type, @NotNull String principal,
+  public void removeSubjectPermission(@NotNull SubjectAcl.Type type, @NotNull String principal,
     @NotNull String resource, @NotNull String action, @NotNull String instance) {
     subjectAclRepository.findByPrincipalAndTypeAndResourceAndInstance(principal, type, resource, encode(instance))
       .forEach(acl -> {

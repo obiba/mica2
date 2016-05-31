@@ -28,6 +28,9 @@ public class ProjectFormResource {
   @Inject
   Dtos dtos;
 
+  @Inject
+  DataAccessPermissionsConfigurationService dataAccessPermissionsConfigurationService;
+
   @GET
   @RequiresPermissions("/project-request:ADD")
   public Mica.ProjectFormDto get() {
@@ -41,6 +44,9 @@ public class ProjectFormResource {
   @PUT
   @RequiresRoles(Roles.MICA_ADMIN)
   public Response update(Mica.ProjectFormDto dto) {
+    dataAccessPermissionsConfigurationService.onSaveProjectForm(
+      dtos.fromDto(get()).getProjectPermissions(),
+      dtos.fromDto(dto).getProjectPermissions());
     projectFormService.createOrUpdate(dtos.fromDto(dto));
     return Response.ok().build();
   }
