@@ -1112,7 +1112,7 @@
     },
     "permissions": {
       "title": "Data Access Permissions",
-      "info": "Edit a group's access permissions on data access requests."
+      "info": "Grant permissions to Read any data access requests."
     },
     "syntax-error": {
       "definition": "Form definition is not a valid document, please revise and correct the errors.",
