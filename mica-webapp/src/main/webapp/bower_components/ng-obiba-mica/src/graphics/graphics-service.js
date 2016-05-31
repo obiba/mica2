@@ -198,6 +198,13 @@ angular.module('obiba.mica.graphics')
                     if (sortTerm.name === term.key) {
                       if (term.count) {
                         if (aggregation.aggregation === 'methods-designs') {
+
+                          angular.forEach(term.aggs, function (aggBucket) {
+                            if (aggBucket.aggregation === 'numberOfParticipants-participant-number') {
+                              var aggregateBucket = aggBucket['obiba.mica.StatsAggregationResultDto.stats'];
+                              numberOfParticipant = LocalizedValues.formatNumber(aggregateBucket ? aggregateBucket.data.sum : 0);
+                            }
+                          });
                           arrayData[i] = {
                             title: term.title,
                             value: term.count,
