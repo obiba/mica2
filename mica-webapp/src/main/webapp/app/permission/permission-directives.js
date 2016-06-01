@@ -62,7 +62,7 @@ mica.permission
     }
 
     $scope.addPermission = function() {
-      editPermission({role: 'READER', type: 'GROUP'})
+      editPermission({role: 'READER', type: 'USER'});
     };
 
     $scope.editPermission = function (acl) {
@@ -81,8 +81,8 @@ mica.permission
   function ($scope, $uibModalInstance, $filter, acl, onAdd, name) {
     $scope.ROLES = ['READER'];
     $scope.TYPES = [
-      {name: 'GROUP', label: $filter('translate')('permission.group')},
-      {name: 'USER', label: $filter('translate')('permission.user')}
+      {name: 'USER', label: $filter('translate')('permission.user')},
+      {name: 'GROUP', label: $filter('translate')('permission.group')}
     ];
 
     var BLOCKED_NAMES = [

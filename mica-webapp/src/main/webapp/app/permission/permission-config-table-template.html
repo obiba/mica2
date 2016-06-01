@@ -29,14 +29,22 @@
             <thead>
             <tr>
               <th translate>permission.principal</th>
+              <th translate>type</th>
               <th translate>role</th>
               <th translate>actions</th>
             </tr>
             </thead>
             <tbody>
             <tr dir-paginate="permission in permissions | filter: pagination.searchText | itemsPerPage: 20" pagination-id="permissionsTable">
-              <td><span>{{permission.principal}}</span></td>
-              <td>{{'permission.' + permission.role.toLowerCase() | translate}}</td>
+              <td>
+                {{permission.principal}}
+              </td>
+              <td>
+                {{'permission.' + permission.type.toLowerCase() | translate}}
+              </td>
+              <td>
+                {{'permission.' + permission.role.toLowerCase() | translate}}
+              </td>
               <td>
                 <ul class="list-inline">
                   <li>
