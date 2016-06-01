@@ -84,7 +84,7 @@
     <permission-config-table permissions="acls" on-load="loadPermissions" on-add="addPermission" on-delete="deletePermission" name="'research-projects'"></permission-config-table>
   </div>
 
-  <div class="voffset4">
+  <div ng-show="tab.name !== 'permissions'" class="voffset4">
       <a href="#/admin" class="btn btn-default">
       <span translate>cancel</span>
     </a>
