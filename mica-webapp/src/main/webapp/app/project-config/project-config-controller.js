@@ -17,11 +17,13 @@ mica.projectConfig
     'ProjectFormService',
     'AlertService',
     'ServerErrorUtils',
+    'ProjectFormPermissionsResource',
     function ($rootScope, $location, $scope, $log,
               ProjectFormResource,
               ProjectFormService,
               AlertService,
-              ServerErrorUtils) {
+              ServerErrorUtils,
+              ProjectFormPermissionsResource) {
 
       ProjectFormService.configureAcePaths();
 
@@ -160,33 +162,27 @@ mica.projectConfig
         model: {}
       };
 
-      function projectPermissionsToAcl (permissions) {
-        permissions = permissions || [];
-        return permissions.map(function (e) {
-          var nameAndType = e.key.split(':');
-          return {principal: nameAndType[0], role: e.value, type: nameAndType[1]};
-        });
-      }
+      var addDraftPermission = function (acl) {
+        return ProjectFormPermissionsResource.save({draft: true}, acl);
+      };
+
+      var deleteDraftPermission = function (acl) {
+        return ProjectFormPermissionsResource.delete({draft: true}, acl);
+      };
 
       $scope.loadPermissions = function() {
-        $scope.acls = projectPermissionsToAcl($scope.projectForm.projectPermissions);
+        $scope.acls = ProjectFormPermissionsResource.get();
+        return $scope.acls;
       };
 
       $scope.addPermission = function (acl) {
-        $scope.deletePermission(acl);
-        $scope.projectForm.projectPermissions.push({key: acl.principal + ':' + acl.type, value: acl.role});
+        addDraftPermission(acl);
+        return ProjectFormPermissionsResource.save(acl);
       };
 
       $scope.deletePermission = function (acl) {
-        var foundIndices = [];
-        $scope.projectForm.projectPermissions.forEach(function (e, i) {
-          if (e.key === acl.principal + ':' + acl.type) {
-            foundIndices.push(i);
-          }
-        });
-        foundIndices.forEach(function (i) {
-          $scope.projectForm.projectPermissions.splice(i, 1);
-        });
+        deleteDraftPermission(acl);
+        return ProjectFormPermissionsResource.delete(acl);
       };
 
       $scope.loadPermissions();

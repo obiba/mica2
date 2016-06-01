@@ -22,8 +22,6 @@ public class ProjectForm extends AbstractGitPersistable {
 
   private Map<String, LocalizedString> properties;
 
-  private Map<String, String> projectPermissions = Maps.newHashMap();
-
   @Indexed
   private RevisionStatus revisionStatus = RevisionStatus.DRAFT;
 
@@ -58,14 +56,6 @@ public class ProjectForm extends AbstractGitPersistable {
 
   public void setProperties(Map<String, LocalizedString> properties) {
     this.properties = properties;
-  }
-
-  public Map<String, String> getProjectPermissions() {
-    return projectPermissions;
-  }
-
-  public void setProjectPermissions(Map<String, String> projectPermissions) {
-    this.projectPermissions = projectPermissions;
   }
 
   @JsonIgnore

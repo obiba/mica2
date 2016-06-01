@@ -36,8 +36,8 @@ mica.permission
   }
 }])
 
-.controller('PermissionsConfigController', ['$rootScope', '$scope', '$uibModal',
-  function ($rootScope, $scope, $uibModal) {
+.controller('PermissionsConfigController', ['$rootScope', '$scope', '$uibModal', 'NOTIFICATION_EVENTS',
+  function ($rootScope, $scope, $uibModal, NOTIFICATION_EVENTS) {
     $scope.pagination = {searchText: ''};
 
     function editPermission(acl) {
@@ -45,12 +45,16 @@ mica.permission
         templateUrl: 'app/permission/permission-config-modal-form.html',
         controller: 'PermissionsConfigModalController',
         resolve: {
-          acl: function() {
+          acl: function () {
             return angular.copy(acl);
           },
-          onAdd: function() {
+          onAdd: function () {
             return $scope.onAdd;
-          }, name: function() {
+          },
+          onLoad: function () {
+            return $scope.onLoad;
+          },
+          name: function () {
             return $scope.name;
           }
         }
@@ -69,16 +73,29 @@ mica.permission
       editPermission(acl);
     };
 
-    $scope.deletePermission = function(acl) {
-      $scope.onDelete(acl);
-      $scope.onLoad();
+    $scope.deletePermission = function (acl) {
+      $scope.principalPermissionToDelete = acl.principal;
+      $rootScope.$broadcast(NOTIFICATION_EVENTS.showConfirmDialog,
+        {
+          titleKey: 'permission.delete-dialog.title',
+          messageKey: 'permission.delete-dialog.message',
+          messageArgs: [acl.type === 'USER' ? 'user' : 'group', acl.principal]
+        }, acl
+      );
     };
+
+    $scope.$on(NOTIFICATION_EVENTS.confirmDialogAccepted, function (event, acl) {
+      if ($scope.principalPermissionToDelete === acl.principal) {
+        delete $scope.principalPermissionToDelete;
+        $scope.onDelete(acl).$promise.then($scope.onLoad);
+      }
+    });
 
     $scope.onLoad();
   }])
 
-.controller('PermissionsConfigModalController', ['$scope', '$uibModalInstance', '$filter', 'acl', 'onAdd', 'name',
-  function ($scope, $uibModalInstance, $filter, acl, onAdd, name) {
+.controller('PermissionsConfigModalController', ['$scope', '$uibModalInstance', 'AlertService', 'ServerErrorUtils', '$filter', 'acl', 'onAdd', 'name',
+  function ($scope, $uibModalInstance, AlertService, ServerErrorUtils, $filter, acl, onAdd, name) {
     $scope.ROLES = ['READER'];
     $scope.TYPES = [
       {name: 'USER', label: $filter('translate')('permission.user')},
@@ -106,15 +123,21 @@ mica.permission
 
     $scope.save = function (form) {
       form.principal.$setValidity('required', true);
-
       if (BLOCKED_NAMES.indexOf(acl.principal) > -1) {
         form.principal.$setValidity('required', false);
       }
 
-      if (form.$valid) {
+      if(form.$valid) {
         $scope.acl.type = $scope.selectedType.name;
-        onAdd($scope.acl);
-        $uibModalInstance.close(true);
+        onAdd($scope.acl).$promise.then(function () {
+          $uibModalInstance.close(true);
+        }, function (response) {
+          AlertService.alert({
+            id: 'formAlert',
+            type: 'danger',
+            msg: ServerErrorUtils.buildMessage(response)
+          });
+        });
       }
 
       form.saveAttempted = true;
