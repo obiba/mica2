@@ -1112,7 +1112,7 @@
     },
     "permissions": {
       "title": "Data Access Permissions",
-      "info": "Edit a group's access permissions on data access requests."
+      "info": "Grant permissions to Read any data access requests."
     },
     "syntax-error": {
       "definition": "Form definition is not a valid document, please revise and correct the errors.",
@@ -1154,7 +1154,7 @@
     },
     "permissions": {
       "title": "Research Project Permissions",
-      "info": "Edit a group's access permissions on projects."
+      "info": "Grant permission to Read any Research Projects."
     }
   },
   "comments": "Comments",

@@ -12,12 +12,12 @@
     <div class="modal-body">
       <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate>fix-error</p>
 
-      <div disabled="editMode" form-input name="principal" model="acl.principal" label="permission.principal" help="permission.principal-help"></div>
-
       <div class="form-group" ng-hide="editMode">
         <label class="control-label"><span translate>type</span> <span>*</span></label>
         <select id="type" name="type" class="form-control" ng-model="selectedType" ng-options="type.label for type in TYPES"></select>
       </div>
+
+      <div disabled="editMode" form-input name="principal" model="acl.principal" label="permission.principal" help="permission.principal-help" required="!editMode"></div>
 
       <div class="form-group">
         <label class="control-label"><span translate>role</span> <span>*</span></label>
