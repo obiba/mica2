@@ -701,11 +701,6 @@ message LocalizedPropertyDto {
   repeated LocalizedStringDto value = 2;
 }
 
-message StringsMapEntryDto {
-  optional string key = 1;
-  optional string value = 2;
-}
-
 message DataAccessFormDto {
   required string schema = 1;
   required string definition = 2;
@@ -733,14 +728,12 @@ message DataAccessFormDto {
   required bool withConditionalApproval = 24;
   optional string conditionallyApprovedSubject = 25;
   optional string summaryFieldPath = 26;
-  repeated StringsMapEntryDto dataAccessPermissions = 27;
 }
 
 message ProjectFormDto {
   required string schema = 1;
   required string definition = 2;
   repeated LocalizedPropertyDto properties = 3;
-  repeated StringsMapEntryDto projectPermissions = 4;
 }
 
 message UserProfileDto {

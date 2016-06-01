@@ -63,8 +63,6 @@ public class DataAccessResource {
 
     builder.addAllProperties(dtos.asDtoList(properties));
 
-    builder.addAllDataAccessPermissions(dtos.asStringsMapEntryDtoList(dataAccessForm.getDataAccessPermissions()));
-
     return builder.build();
   }
 

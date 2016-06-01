@@ -3,9 +3,7 @@ package org.obiba.mica.micaConfig.rest;
 import java.util.Optional;
 
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -14,8 +12,10 @@ import org.obiba.mica.micaConfig.NoSuchProjectFormException;
 import org.obiba.mica.micaConfig.domain.ProjectForm;
 import org.obiba.mica.micaConfig.service.ProjectFormService;
 import org.obiba.mica.security.Roles;
+import org.obiba.mica.security.rest.SubjectAclResource;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -26,10 +26,10 @@ public class ProjectFormResource {
   ProjectFormService projectFormService;
 
   @Inject
-  Dtos dtos;
+  ApplicationContext applicationContext;
 
   @Inject
-  DataAccessPermissionsConfigurationService dataAccessPermissionsConfigurationService;
+  Dtos dtos;
 
   @GET
   @RequiresPermissions("/project-request:ADD")
@@ -44,9 +44,6 @@ public class ProjectFormResource {
   @PUT
   @RequiresRoles(Roles.MICA_ADMIN)
   public Response update(Mica.ProjectFormDto dto) {
-    dataAccessPermissionsConfigurationService.onSaveProjectForm(
-      dtos.fromDto(get()).getProjectPermissions(),
-      dtos.fromDto(dto).getProjectPermissions());
     projectFormService.createOrUpdate(dtos.fromDto(dto));
     return Response.ok().build();
   }
@@ -57,5 +54,19 @@ public class ProjectFormResource {
   public Response publish() {
     projectFormService.publish();
     return Response.ok().build();
+  }
+
+  @Path("/permissions")
+  @RequiresRoles(Roles.MICA_ADMIN)
+  public SubjectAclResource permissions(@QueryParam("draft") @DefaultValue("false") boolean draft) {
+    SubjectAclResource subjectAclResource = applicationContext.getBean(SubjectAclResource.class);
+    if (draft) {
+      subjectAclResource.setResourceInstance("/draft/project", "*");
+      subjectAclResource.setFileResourceInstance("/file", "/draft/project");
+    } else {
+      subjectAclResource.setResourceInstance("/project", "*");
+      subjectAclResource.setFileResourceInstance("/file", "/project");
+    }
+    return subjectAclResource;
   }
 }

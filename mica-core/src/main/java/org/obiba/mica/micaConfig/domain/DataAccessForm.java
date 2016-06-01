@@ -73,8 +73,6 @@ public class DataAccessForm extends AbstractGitPersistable {
 
   private boolean rejectedFinal = false;
 
-  private Map<String, String> dataAccessPermissions = Maps.newHashMap();
-
   @Indexed
   private RevisionStatus revisionStatus = RevisionStatus.DRAFT;
 
@@ -354,13 +352,5 @@ public class DataAccessForm extends AbstractGitPersistable {
 
   public void setCommentedSubject(String commentedSubject) {
     this.commentedSubject = commentedSubject;
-  }
-
-  public Map<String, String> getDataAccessPermissions() {
-    return dataAccessPermissions;
-  }
-
-  public void setDataAccessPermissions(Map<String, String> dataAccessPermissions) {
-    this.dataAccessPermissions = dataAccessPermissions;
   }
 }

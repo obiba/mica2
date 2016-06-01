@@ -20,6 +20,19 @@ mica.projectConfig
         'save': {method: 'PUT', errorHandler: true}
       });
     }])
+  
+  .factory('ProjectFormPermissionsResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/config/project-form/permissions', {}, {
+        'save': {
+          method: 'PUT',
+          params: {draft: '@draft', type: '@type', principal: '@principal', role: '@role'},
+          errorHandler: true
+        },
+        'delete': {method: 'DELETE', params: {draft: '@draft', type: '@type', principal: '@principal'}, errorHandler: true},
+        'get': {method: 'GET', params: {draft: '@draft'}, isArray: true}
+      });
+    }])
 
   .factory('ProjectFormService', ['BrowserDetector',
     function (BrowserDetector) {

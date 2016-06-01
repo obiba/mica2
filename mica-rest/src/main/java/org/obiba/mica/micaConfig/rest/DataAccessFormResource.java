@@ -1,13 +1,14 @@
 package org.obiba.mica.micaConfig.rest;
 
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.micaConfig.NoSuchDataAccessFormException;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.security.Roles;
+import org.obiba.mica.security.rest.SubjectAclResource;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -25,7 +26,7 @@ public class DataAccessFormResource {
   DataAccessFormService dataAccessFormService;
 
   @Inject
-  DataAccessPermissionsConfigurationService dataAccessPermissionsConfigurationService;
+  private ApplicationContext applicationContext;
 
   @Inject
   Dtos dtos;
@@ -42,9 +43,6 @@ public class DataAccessFormResource {
   @PUT
   @RequiresRoles(Roles.MICA_ADMIN)
   public Response update(Mica.DataAccessFormDto dto) {
-    dataAccessPermissionsConfigurationService.onSaveDataAccessForm(
-      dtos.fromDto(get()).getDataAccessPermissions(),
-      dtos.fromDto(dto).getDataAccessPermissions());
 
     dataAccessFormService.createOrUpdate(dtos.fromDto(dto));
 
@@ -58,5 +56,14 @@ public class DataAccessFormResource {
     dataAccessFormService.publish();
 
     return Response.ok().build();
+  }
+
+  @Path("/permissions")
+  @RequiresRoles(Roles.MICA_ADMIN)
+  public SubjectAclResource permissions() {
+    SubjectAclResource subjectAclResource = applicationContext.getBean(SubjectAclResource.class);
+    subjectAclResource.setResourceInstance("/data-access-request", "*");
+    subjectAclResource.setFileResourceInstance("/file", "/data-access-request");
+    return subjectAclResource;
   }
 }

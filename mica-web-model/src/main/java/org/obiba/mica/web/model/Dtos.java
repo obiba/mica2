@@ -385,11 +385,6 @@ public class Dtos {
   }
 
   @NotNull
-  public List<Mica.StringsMapEntryDto> asStringsMapEntryDtoList(@NotNull Map<String, String> stringsMapEntryDto) {
-    return micaConfigDtos.asStringsMapEntryDtoList(stringsMapEntryDto);
-  }
-
-  @NotNull
   public Mica.UserProfileDto asDto(Subject subject) {
     return userProfileDtos.asDto(subject);
   }

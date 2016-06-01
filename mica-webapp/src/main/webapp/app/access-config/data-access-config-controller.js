@@ -15,11 +15,13 @@ mica.dataAccessConfig
   .controller('DataAccessConfigController', ['$rootScope', '$location', '$scope', '$log',
     'DataAccessFormResource',
     'DataAccessFormService',
+    'DataAccessFormPermissionsResource',
     'AlertService',
     'ServerErrorUtils',
     function ($rootScope, $location, $scope, $log,
               DataAccessFormResource,
               DataAccessFormService,
+              DataAccessFormPermissionsResource,
               AlertService,
               ServerErrorUtils) {
 
@@ -163,33 +165,17 @@ mica.dataAccessConfig
         model: {}
       };
 
-      function dataAccessPermissionsToAcl (permissions) {
-        permissions = permissions || [];
-        return permissions.map(function (e) {
-          var nameAndType = e.key.split(':');
-          return {principal: nameAndType[0], role: e.value, type: nameAndType[1]};
-        });
-      }
-
       $scope.loadPermissions = function() {
-        $scope.acls = dataAccessPermissionsToAcl($scope.dataAccessForm.dataAccessPermissions);
+        $scope.acls = DataAccessFormPermissionsResource.get();
+        return $scope.acls;
       };
 
       $scope.addPermission = function (acl) {
-        $scope.deletePermission(acl);
-        $scope.dataAccessForm.dataAccessPermissions.push({key: acl.principal + ':' + acl.type, value: acl.role});
+        return DataAccessFormPermissionsResource.save(acl);
       };
 
       $scope.deletePermission = function (acl) {
-        var foundIndices = [];
-        $scope.dataAccessForm.dataAccessPermissions.forEach(function (e, i) {
-          if (e.key === acl.principal + ':' + acl.type) {
-            foundIndices.push(i);
-          }
-        });
-        foundIndices.forEach(function (i) {
-          $scope.dataAccessForm.dataAccessPermissions.splice(i, 1);
-        });
+        return DataAccessFormPermissionsResource.delete(acl);
       };
 
       $scope.loadPermissions();
