@@ -330,6 +330,9 @@ mica.project
         function onSuccess(projectForm) {
           $scope.form.definition = JsonUtils.parseJsonSafely(projectForm.definition, []);
           $scope.form.schema = JsonUtils.parseJsonSafely(projectForm.schema, {});
+          if (!$routeParams.id) {
+            $scope.form.model = {};
+          }
         });
 
       $scope.save = function () {
