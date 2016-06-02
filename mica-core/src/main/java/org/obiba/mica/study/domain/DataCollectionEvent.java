@@ -84,6 +84,10 @@ public class DataCollectionEvent extends AbstractAttributeAware
     this.description = description;
   }
 
+  public boolean hasStart() {
+    return start != null;
+  }
+
   public PersistableYearMonth getStart() {
     return start;
   }
@@ -95,6 +99,10 @@ public class DataCollectionEvent extends AbstractAttributeAware
 
   public void setStart(int year, @Nullable Integer month) {
     start = PersistableYearMonth.of(year, month == null ? Month.JANUARY.getValue() : month);
+  }
+
+  public boolean hasEnd() {
+    return end != null;
   }
 
   public PersistableYearMonth getEnd() {
