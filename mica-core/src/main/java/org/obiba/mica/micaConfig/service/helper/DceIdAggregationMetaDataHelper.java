@@ -56,8 +56,8 @@ public class DceIdAggregationMetaDataHelper extends AbstractIdAggregationMetaDat
           LocalizedString description = new LocalizedString();
           study.getAcronym().entrySet().forEach(e -> description.put(e.getKey(), md.getDescription(e.getKey())));
 
-          String start = dce.getStart().getYearMonth();
-          String end = dce.getEnd().getYearMonth();
+          String start = dce.hasStart() ? dce.getStart().getYearMonth() : null;
+          String end = dce.hasEnd() ? dce.getEnd().getYearMonth() : null;
 
           res.put(StudyTable.getDataCollectionEventUId(study.getId(), population.getId(), dce.getId()),
             new AggregationMetaDataProvider.LocalizedMetaData(title, description, start, end));
