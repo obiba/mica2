@@ -841,7 +841,7 @@
   "add-query": "Add to query",
   "permissions": "Permissions",
   "permission": {
-    "help": "Grant permission to Read, Edit or Review the current draft.",
+    "help": "Grant permission to <code>Read</code>, <code>Edit</code> or <code>Review</code> the current draft.",
     "none": "No permissions.",
     "label": "permission",
     "principal": "Name",
@@ -1112,7 +1112,7 @@
     },
     "permissions": {
       "title": "Data Access Permissions",
-      "info": "Grant permissions to Read any data access requests."
+      "info": "Grant permissions to <code>Read</code> any data access requests."
     },
     "syntax-error": {
       "definition": "Form definition is not a valid document, please revise and correct the errors.",
@@ -1154,7 +1154,7 @@
     },
     "permissions": {
       "title": "Research Project Permissions",
-      "info": "Grant permission to Read any Research Projects."
+      "info": "Grant permission to <code>Read</code> any Research Projects."
     }
   },
   "comments": "Comments",
@@ -1199,7 +1199,7 @@
   },
   "research-projects": "Research Projects",
   "research-project": {
-    "label": "Reasearch Project",
+    "label": "Research Project",
     "add": "Add Project",
     "none": "No projects.",
     "data-access-request": "Data Access Request",
