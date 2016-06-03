@@ -197,7 +197,11 @@
       {
         "key": "abstract",
         "notitle": true,
-        "type": "textarea"
+        "type": "textarea",
+        "wordLimit": 500,
+        "validationMessage": {
+          "wordLimitError": "The 500 words limit has been exceeded."
+        }
       }
     ]
   },
@@ -211,7 +215,11 @@
       {
         "key": "summary",
         "notitle": true,
-        "type": "textarea"
+        "type": "textarea",
+        "wordLimit": 200,
+        "validationMessage": {
+          "wordLimitError": "The 200 words limit has been exceeded."
+        }
       }
     ]
   },
