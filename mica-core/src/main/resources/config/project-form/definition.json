@@ -6,7 +6,10 @@
         "type": "help",
         "helpvalue": "<h3>Contact Details</h3><p class='help-block'>Please ensure that a full postal address and a valid institutional e-mail address are included. In case of more than one affiliation, applicants are asked to only provide their contact information pertaining to the institution they are affiliated with for the purpose of this research project.</p>"
       },
-      "name",
+      {
+        "type":"localizedstring",
+        "key":"name"
+      },
       "title",
       {
         "key": "institution",

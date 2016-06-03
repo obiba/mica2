@@ -28,7 +28,9 @@
       </uib-tab>
     </uib-tabset>
 
-    <div sf-model="form.model" sf-form="form.definition" sf-schema="form.schema" required="true"></div>
+    <!--<pre>{{form.model | json}}</pre>-->
+
+    <div sf-model="form.model" sf-form="form.definition" sf-schema="form.schema" sf-options="sfOptions" required="true"></div>
 
     <button type="button" class="btn btn-default" ng-click="cancel()">
       <span translate>cancel</span>

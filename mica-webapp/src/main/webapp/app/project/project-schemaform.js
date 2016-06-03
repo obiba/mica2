@@ -4,7 +4,8 @@ var PROJECT_SCHEMA = {
   properties: {
     name: {
       title: 'Name',
-      type: 'string'
+      type: 'object',
+      format: 'localizedString'
     },
     description: {
       title: 'Description',
@@ -20,7 +21,10 @@ var PROJECT_DEFINITION = {
       type: 'help',
       helpvalue: '<h3>General</h3>'
     },
-    '_mica.name',
+    {
+      key: '_mica.name',
+      type: 'localizedstring'
+    },
     {
       key: '_mica.description',
       type: 'textarea'
