@@ -36,7 +36,14 @@
           "myOwnFormOption":"Hello world!"
         }];
 
-        $scope.model = {};
+        $scope.model = {
+          "name": {
+            "en": "eeeee",
+            "fr": "fffff"
+          }
+        };
+
+        $scope.sfOptions = {formDefaults: { locales: ['en','fr']}};
 
         $scope.debug = {schema: angular.copy($scope.schema), form: angular.copy($scope.form)};
 
@@ -50,7 +57,7 @@
     <div class="container-fluid" ng-controller="FormController">
 
         <div class="col-sm-6 form">
-          <form sf-schema="schema" sf-form="form" sf-model="model" sf-options="{formDefaults: { locales: ['en','fr']}}"></form>
+          <form sf-schema="schema" sf-form="form" sf-model="model" sf-options="sfOptions"></form>
         </div>
 
         <div class="col-sm-6 debug">
