@@ -110,9 +110,16 @@ mica.project
         $scope.activeTab = 0;
         $scope.permissions = DocumentPermissionsService.state(project['obiba.mica.EntityStateDto.projectState']);
         $scope.form.model = JsonUtils.parseJsonSafely(project.content, {});
+        // project name is an array of map entries
+        var name = {};
+        if (project.name) {
+          project.name.forEach(function(entry) {
+            name[entry.lang] = entry.value;
+          });
+        }
         // $scope.form.model._mica = {
-        //   name: project.name,
-        //   description: project.description
+        //    name: name,
+        //    description: project.description
         // };
       };
 
@@ -127,7 +134,7 @@ mica.project
         micaConfig.languages.forEach(function (lang) {
           $scope.tabs.push({lang: lang});
         });
-
+        $scope.sfOptions = {formDefaults: { locales: micaConfig.languages}};
         $scope.roles = micaConfig.roles;
         $scope.openAccess = micaConfig.openAccess;
       });
@@ -135,9 +142,9 @@ mica.project
       ProjectFormResource.get(
         function onSuccess(projectForm) {
           $scope.form.definition = JsonUtils.parseJsonSafely(projectForm.definition, []);
-          // $scope.form.definition.unshift(PROJECT_DEFINITION);
+          //$scope.form.definition.unshift(angular.copy(PROJECT_DEFINITION));
           $scope.form.schema = JsonUtils.parseJsonSafely(projectForm.schema, {});
-          // $scope.form.schema.properties._mica = PROJECT_SCHEMA;
+          //$scope.form.schema.properties._mica = angular.copy(PROJECT_SCHEMA);
           $scope.form.schema.readonly = true;
         });
 
@@ -216,18 +223,11 @@ mica.project
 
       var publish = function (publish) {
         if (publish) {
-          // DraftFileSystemSearchResource.searchUnderReview({path: '/project/' + $scope.project.id},
-          //   function onSuccess(response) {
           DraftProjectPublicationResource.publish(
-                {id: $scope.project.id, cascading: 'NONE'},
-                function () {
-                  $scope.project = DraftProjectResource.get({id: $routeParams.id}, initializeProject);
-                });
-          //   },
-          //   function onError() {
-          //     $log.error('Failed to search for Under Review files.');
-          //   }
-          // );
+            {id: $scope.project.id, cascading: 'NONE'},
+            function () {
+              $scope.project = DraftProjectResource.get({id: $routeParams.id}, initializeProject);
+            });
         } else {
           DraftProjectPublicationResource.unPublish({id: $scope.project.id}, function () {
             $scope.project = DraftProjectResource.get({id: $routeParams.id}, initializeProject);
@@ -316,6 +316,17 @@ mica.project
         DraftProjectResource.get({id: $routeParams.id}, function(response) {
           $scope.files = response.logo ? [response.logo] : [];
           $scope.form.model = JsonUtils.parseJsonSafely(response.content, {});
+          // project name is an array of map entries
+          var name = {};
+          if (response.name) {
+            response.name.forEach(function(entry) {
+              name[entry.lang] = entry.value;
+            });
+          }
+          // $scope.form.model._mica = {
+          //   name: name,
+          //   description: response.description
+          // };
           return response;
         }) : {published: false};
 
@@ -324,12 +335,18 @@ mica.project
         micaConfig.languages.forEach(function (lang) {
           $scope.tabs.push({lang: lang});
         });
+        $scope.sfOptions = {formDefaults: { locales: micaConfig.languages}};
       });
 
       ProjectFormResource.get(
         function onSuccess(projectForm) {
           $scope.form.definition = JsonUtils.parseJsonSafely(projectForm.definition, []);
+          //$scope.form.definition.unshift(angular.copy(PROJECT_DEFINITION));
           $scope.form.schema = JsonUtils.parseJsonSafely(projectForm.schema, {});
+          //$scope.form.schema.properties._mica = angular.copy(PROJECT_SCHEMA);
+          if (!$routeParams.id) {
+            $scope.form.model = {};
+          }
         });
 
       $scope.save = function () {
