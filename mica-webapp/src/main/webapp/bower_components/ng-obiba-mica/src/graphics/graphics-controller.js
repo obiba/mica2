@@ -78,7 +78,7 @@ angular.module('obiba.mica.graphics')
                       $scope.chartObject.header = [
                         $filter('translate')($scope.chartHeader[0]),
                         $filter('translate')($scope.chartHeader[1]),
-                   //     $filter('translate')($scope.chartHeader[2])
+                        $filter('translate')($scope.chartHeader[2])
                       ];
                     }
                     $scope.chartObject.type = $scope.chartType;
@@ -91,10 +91,13 @@ angular.module('obiba.mica.graphics')
                       data.unshift([$filter('translate')($scope.chartHeader[0]), $filter('translate')($scope.chartHeader[1])]);
                     }
                     else{
+                      data.map(function(item){
+                        item.pop();
+                        return item;
+                      });
                       data.unshift([
                         $filter('translate')($scope.chartHeader[0]),
-                        $filter('translate')($scope.chartHeader[1]),
-                   //     $filter('translate')($scope.chartHeader[2])
+                        $filter('translate')($scope.chartHeader[1])
                       ]);
                     }
                     $scope.chartObject.term = true;

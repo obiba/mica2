@@ -16,19 +16,19 @@
           <div google-chart chart="chart.chartObject" style="min-height:350px; width:100%;"></div>
         </div>
         <div class="col-md-6">
-          <div class="table-responsive" ng-if="chart.chartObject.data && chart.chartObject.data.length>1">
-            <table style="max-height: 400px;" class="table table-bordered table-striped" fixed-header="chart.chartObject.data">
+          <div class="table-responsive" ng-if="chart.getTable().data  &&  chart.getTable().data.length>1">
+            <table style="max-height: 400px;" class="table table-bordered table-striped" fixed-header="chart.getTable().data">
               <thead>
               <tr>
-                <th>{{chart.chartObject.data[0][0]}}</th>
-                <th>{{chart.chartObject.data[0][1]}}</th>
-                <th ng-if="chart.chartObject.data[0][2]">{{chart.chartObject.data[0][2]}}</th>
+                <th>{{chart.getTable().data[0][0]}}</th>
+                <th>{{chart.getTable().data[0][1]}}</th>
+                <th ng-if="chart.getTable().data[0][2]">{{chart.getTable().data[0][2]}}</th>
               </tr>
               </thead>
               <tbody>
-              <tr ng-repeat="row in chart.chartObject.entries">
+              <tr ng-repeat="row in chart.getTable().entries">
                 <td>{{row.title}}</td>
-                <td><a href ng-click="updateCriteria(row.key, chart.chartObject.vocabulary)"><localized-number value="row.value"></localized-number></a></td>
+                <td><a href ng-click="updateCriteria(row.key, chart.getTable().vocabulary)"><localized-number value="row.value"></localized-number></a></td>
                 <td ng-if="row.participantsNbr">{{row.participantsNbr}}</td>
               </tr>
               </tbody>
