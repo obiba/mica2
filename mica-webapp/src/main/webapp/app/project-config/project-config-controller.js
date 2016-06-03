@@ -33,7 +33,6 @@ mica.projectConfig
           case ProjectFormService.ParseResult.VALID:
             $scope.projectForm.definition = $scope.form.definition;
             $scope.projectForm.schema = $scope.form.schema;
-            $scope.projectForm.projectPermissions = $scope.projectForm.projectPermissions || [];
 
             ProjectFormResource.save($scope.projectForm,
               function () {
@@ -128,7 +127,6 @@ mica.projectConfig
           $scope.form.schemaJson = ProjectFormService.parseJsonSafely(projectForm.schema, {});
           $scope.form.schema = ProjectFormService.prettifyJson($scope.form.schemaJson);
           $scope.projectForm = projectForm;
-          $scope.projectForm.projectPermissions = $scope.projectForm.projectPermissions || [];
           selectTab('form-schema');
 
           if ($scope.form.definitionJson.length === 0) {

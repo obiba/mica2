@@ -34,7 +34,6 @@ mica.dataAccessConfig
             $scope.dataAccessForm.definition = $scope.form.definition;
             $scope.dataAccessForm.schema = $scope.form.schema;
             $scope.dataAccessForm.pdfTemplates = $scope.dataAccessForm.pdfTemplates || [];
-            $scope.dataAccessForm.dataAccessPermissions = $scope.dataAccessForm.dataAccessPermissions || [];
 
             DataAccessFormResource.save($scope.dataAccessForm,
               function () {
@@ -131,7 +130,6 @@ mica.dataAccessConfig
           $scope.form.schema = DataAccessFormService.prettifyJson($scope.form.schemaJson);
           $scope.dataAccessForm = dataAccessForm;
           $scope.dataAccessForm.pdfTemplates = $scope.dataAccessForm.pdfTemplates || [];
-          $scope.dataAccessForm.dataAccessPermissions = $scope.dataAccessForm.dataAccessPermissions || [];
           selectTab('form-schema');
 
           if ($scope.form.definitionJson.length === 0) {
