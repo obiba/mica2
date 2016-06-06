@@ -27,15 +27,28 @@
               "maxLength": 10,
               "minLength": 2,
               "required": true
+            },
+            "description": {
+              "type": "object",
+              "format": "localizedTextArea",
+              "title": "Description",
+              "description": "Full description",
+              "required": true
             }
           }
         };
 
-        $scope.form = [{
-          "type":"localizedstring",
-          "key":"name",
-          "myOwnFormOption":"Hello world!"
-        }];
+        $scope.form = [
+          {
+            "type":"localizedstring",
+            "key":"name"
+          },
+          {
+            "type":"localizedstring",
+            "key":"description",
+            "rows": 10
+          }
+        ];
 
         $scope.model = {
           "name": {

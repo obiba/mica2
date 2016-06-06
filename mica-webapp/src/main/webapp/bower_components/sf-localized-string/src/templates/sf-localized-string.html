@@ -1,9 +1,14 @@
 <div class="form-group">
+  <!--<pre>{{form|json}}</pre>-->
   <label>{{form.title}}</label>
   <div schema-validate="form" sf-field-model>
-    <div class="input-group" ng-repeat="locale in form.locales" ng-class="{'form-group' : !$last}">
+    <div ng-if="form.schema.format === 'localizedString'" class="input-group" ng-repeat="locale in form.locales" ng-class="{'form-group' : !$last}">
       <span class="input-group-addon">{{locale}}</span>
       <input type="text" class="form-control" sf-field-model="replaceAll" ng-model="$$value$$[locale]"></input>
+    </div>
+    <div ng-if="form.schema.format === 'localizedTextArea'" class="input-group" ng-repeat="locale in form.locales" ng-class="{'form-group' : !$last}">
+      <span class="input-group-addon">{{locale}}</span>
+      <textarea class="form-control" sf-field-model="replaceAll" ng-model="$$value$$[locale]" rows="{{form.rows ? form.rows : 5}}"></textarea>
     </div>
   </div>
   <span class="help-block" sf-message="form.description"></span>
