@@ -110,22 +110,10 @@ mica.project
         $scope.activeTab = 0;
         $scope.permissions = DocumentPermissionsService.state(project['obiba.mica.EntityStateDto.projectState']);
         $scope.form.model = JsonUtils.parseJsonSafely(project.content, {});
-        // project name is an array of map entries
-        var name = {};
-        if (project.name) {
-          project.name.forEach(function(entry) {
-            name[entry.lang] = entry.value;
-          });
-        }
-        var description = {};
-        if (project.description) {
-          project.description.forEach(function(entry) {
-            description[entry.lang] = entry.value;
-          });
-        }
+        // project name/description is an array of map entries
         $scope.form.model._mica = {
-           name: name,
-           description: description
+           name: LocalizedValues.arrayToObject(project.name),
+           description: LocalizedValues.arrayToObject(project.description)
         };
       };
 
@@ -140,6 +128,7 @@ mica.project
         micaConfig.languages.forEach(function (lang) {
           $scope.tabs.push({lang: lang});
         });
+        $scope.languages = micaConfig.languages;
         $scope.sfOptions = {formDefaults: { locales: micaConfig.languages}};
         $scope.roles = micaConfig.roles;
         $scope.openAccess = micaConfig.openAccess;
@@ -297,6 +286,7 @@ mica.project
     'DraftProjectPublicationResource',
     'MicaConfigResource',
     'ProjectFormResource',
+    'LocalizedValues',
     'JsonUtils',
     'FormServerValidation',
     'FormDirtyStateObserver',
@@ -311,6 +301,7 @@ mica.project
               DraftProjectPublicationResource,
               MicaConfigResource,
               ProjectFormResource,
+              LocalizedValues,
               JsonUtils,
               FormServerValidation,
               FormDirtyStateObserver) {
@@ -322,22 +313,10 @@ mica.project
         DraftProjectResource.get({id: $routeParams.id}, function(response) {
           $scope.files = response.logo ? [response.logo] : [];
           $scope.form.model = JsonUtils.parseJsonSafely(response.content, {});
-          // project name is an array of map entries
-          var name = {};
-          if (response.name) {
-            response.name.forEach(function(entry) {
-              name[entry.lang] = entry.value;
-            });
-          }
-          var description = {};
-          if (response.description) {
-            response.description.forEach(function(entry) {
-              description[entry.lang] = entry.value;
-            });
-          }
+          // project name/description is an array of map entries
           $scope.form.model._mica = {
-            name: name,
-            description: description
+            name: LocalizedValues.arrayToObject(response.name),
+            description: LocalizedValues.arrayToObject(response.description)
           };
           return response;
         }) : {published: false};
@@ -347,6 +326,7 @@ mica.project
         micaConfig.languages.forEach(function (lang) {
           $scope.tabs.push({lang: lang});
         });
+        $scope.languages = micaConfig.languages;
         $scope.sfOptions = {formDefaults: { locales: micaConfig.languages}};
       });
 
@@ -364,18 +344,8 @@ mica.project
       $scope.save = function () {
         $scope.$broadcast('schemaFormValidate');
         if ($scope.form.$valid) {
-          $scope.project.name = [];
-          $scope.project.description = [];
-          $scope.tabs.forEach(function(tab) {
-            $scope.project.name.push({
-              lang: tab.lang,
-              value: $scope.form.model._mica.name[tab.lang]
-            });
-            $scope.project.description.push({
-              lang: tab.lang,
-              value: $scope.form.model._mica.description[tab.lang]
-            });
-          });
+          $scope.project.name = LocalizedValues.objectToArray($scope.languages, $scope.form.model._mica.name);
+          $scope.project.description = LocalizedValues.objectToArray($scope.languages, $scope.form.model._mica.description);
           delete $scope.form.model._mica;
           $scope.project.content = JSON.stringify($scope.form.model);
           if ($scope.project.id) {
