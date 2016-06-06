@@ -51,4 +51,26 @@ angular.module('obiba.mica.localized')
         return number.toLocaleString(this.getLocal());
       };
 
+      this.arrayToObject = function (values) {
+        var rval = {};
+        if (values) {
+          values.forEach(function(entry) {
+            rval[entry.lang] = entry.value;
+          });
+        }
+        return rval;
+      };
+
+      this.objectToArray = function (languages, values) {
+        var rval = [];
+        if (values && languages) {
+          languages.forEach(function (lang) {
+            rval.push({
+              lang: lang,
+              value: values[lang]
+            });
+          });
+        }
+        return rval;
+      };
     });

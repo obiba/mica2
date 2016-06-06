@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-06-03
+ * Date: 2016-06-06
  */
 'use strict';
 
@@ -7278,6 +7278,28 @@ angular.module('obiba.mica.localized')
         return number.toLocaleString(this.getLocal());
       };
 
+      this.arrayToObject = function (values) {
+        var rval = {};
+        if (values) {
+          values.forEach(function(entry) {
+            rval[entry.lang] = entry.value;
+          });
+        }
+        return rval;
+      };
+
+      this.objectToArray = function (languages, values) {
+        var rval = [];
+        if (values && languages) {
+          languages.forEach(function (lang) {
+            rval.push({
+              lang: lang,
+              value: values[lang]
+            });
+          });
+        }
+        return rval;
+      };
     });
 ;/*
  * Copyright (c) 2016 OBiBa. All rights reserved.
