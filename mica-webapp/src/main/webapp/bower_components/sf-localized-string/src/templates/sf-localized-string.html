@@ -1,5 +1,10 @@
 <div class="form-group">
   <label>{{form.title}}</label>
-  <update-on-blur sf-field-model schema-validate="form" locales="form.locales"></update-on-blur>
+  <div schema-validate="form" sf-field-model>
+    <div class="input-group" ng-repeat="locale in form.locales" ng-class="{'form-group' : !$last}">
+      <span class="input-group-addon">{{locale}}</span>
+      <input type="text" class="form-control" sf-field-model="replaceAll" ng-model="$$value$$[locale]"></input>
+    </div>
+  </div>
   <span class="help-block" sf-message="form.description"></span>
 </div>
