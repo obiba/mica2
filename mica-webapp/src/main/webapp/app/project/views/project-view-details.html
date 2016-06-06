@@ -9,22 +9,5 @@
   -->
 
 <div>
-  <uib-tabset active="activeTab">
-
-    <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" disable="tab.disabled">
-
-      <div class="voffset4">
-        <h2>
-          <localized value="project.name" lang="tab.lang"></localized>
-        </h2>
-
-        <localized value="project.description" lang="tab.lang"></localized>
-      </div>
-    </uib-tab>
-  </uib-tabset>
-
-  <!--<pre>{{form.model | json}}</pre>-->
-
   <div sf-model="form.model" sf-form="form.definition" sf-schema="form.schema" sf-options="sfOptions"></div>
-
 </div>

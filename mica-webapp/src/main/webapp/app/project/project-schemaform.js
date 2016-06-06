@@ -9,7 +9,8 @@ var PROJECT_SCHEMA = {
     },
     description: {
       title: 'Description',
-      type: 'string'
+      type: 'object',
+      format: 'localizedString'
     }
   }
 };
@@ -27,7 +28,7 @@ var PROJECT_DEFINITION = {
     },
     {
       key: '_mica.description',
-      type: 'textarea'
+      type: 'localizedstring'
     }
   ]
 };

@@ -1,11 +1,9 @@
-angular.module("templates", []).run(["$templateCache", function($templateCache) {$templateCache.put("src/templates/sf-localized-string-update-on-blur-template.html","<div class=\"input-group\" ng-repeat=\"locale in locales\" ng-class=\"{\'form-group\' : !$last}\">\n  <span class=\"input-group-addon\">{{locale}}</span>\n  <input type=\"text\" class=\"form-control\" ng-model=\"modelValue[locale]\" ng-blur=\"updateModel(locale, modelValue)\"></input>\n</div>\n");
-$templateCache.put("src/templates/sf-localized-string.html","<div class=\"form-group\">\n  <label>{{form.title}}</label>\n  <update-on-blur sf-field-model schema-validate=\"form\" locales=\"form.locales\"></update-on-blur>\n  <span class=\"help-block\" sf-message=\"form.description\"></span>\n</div>\n");}]);
+angular.module("templates", []).run(["$templateCache", function($templateCache) {$templateCache.put("src/templates/sf-localized-string.html","<div class=\"form-group\">\n  <label>{{form.title}}</label>\n  <div schema-validate=\"form\" sf-field-model>\n    <div class=\"input-group\" ng-repeat=\"locale in form.locales\" ng-class=\"{\'form-group\' : !$last}\">\n      <span class=\"input-group-addon\">{{locale}}</span>\n      <input type=\"text\" class=\"form-control\" sf-field-model=\"replaceAll\" ng-model=\"$$value$$[locale]\"></input>\n    </div>\n  </div>\n  <span class=\"help-block\" sf-message=\"form.description\"></span>\n</div>\n");}]);
 angular.module('sfLocalizedString', [
   'schemaForm',
   'templates'
 ]).config(function(schemaFormProvider,  schemaFormDecoratorsProvider, sfBuilderProvider, sfPathProvider) {
-
-
+  
   var locStr = function(name, schema, options) {
     if (schema.type === 'object' && schema.format == 'localizedString') {
       var f = schemaFormProvider.stdFormObj(name, schema, options);
@@ -28,21 +26,4 @@ angular.module('sfLocalizedString', [
     sfBuilderProvider.stdBuilders   // List of builder functions to apply.
   );
 
-});
-
-angular.module('sfLocalizedString').directive('updateOnBlur', function () {
-  return {
-    restrict: 'E',
-    require: 'ngModel',
-    scope: {
-      locales: '='
-    },
-    templateUrl: 'src/templates/sf-localized-string-update-on-blur-template.html',
-    link: function (scope, element, attrs, ngModel) {
-      scope.modelValue = ngModel.$viewValue || {};
-      scope.updateModel = function (locale, modelValue) {
-        ngModel.$setViewValue(modelValue);
-      };
-    },
-  };
 });

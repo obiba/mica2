@@ -2,8 +2,7 @@ angular.module('sfLocalizedString', [
   'schemaForm',
   'templates'
 ]).config(function(schemaFormProvider,  schemaFormDecoratorsProvider, sfBuilderProvider, sfPathProvider) {
-
-
+  
   var locStr = function(name, schema, options) {
     if (schema.type === 'object' && schema.format == 'localizedString') {
       var f = schemaFormProvider.stdFormObj(name, schema, options);

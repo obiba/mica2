@@ -117,10 +117,16 @@ mica.project
             name[entry.lang] = entry.value;
           });
         }
-        // $scope.form.model._mica = {
-        //    name: name,
-        //    description: project.description
-        // };
+        var description = {};
+        if (project.description) {
+          project.description.forEach(function(entry) {
+            description[entry.lang] = entry.value;
+          });
+        }
+        $scope.form.model._mica = {
+           name: name,
+           description: description
+        };
       };
 
       $scope.Mode = {View: 0, Revision: 1, File: 2, Permission: 3, Comment: 4};
@@ -142,9 +148,9 @@ mica.project
       ProjectFormResource.get(
         function onSuccess(projectForm) {
           $scope.form.definition = JsonUtils.parseJsonSafely(projectForm.definition, []);
-          //$scope.form.definition.unshift(angular.copy(PROJECT_DEFINITION));
+          $scope.form.definition.unshift(angular.copy(PROJECT_DEFINITION));
           $scope.form.schema = JsonUtils.parseJsonSafely(projectForm.schema, {});
-          //$scope.form.schema.properties._mica = angular.copy(PROJECT_SCHEMA);
+          $scope.form.schema.properties._mica = angular.copy(PROJECT_SCHEMA);
           $scope.form.schema.readonly = true;
         });
 
@@ -323,10 +329,16 @@ mica.project
               name[entry.lang] = entry.value;
             });
           }
-          // $scope.form.model._mica = {
-          //   name: name,
-          //   description: response.description
-          // };
+          var description = {};
+          if (response.description) {
+            response.description.forEach(function(entry) {
+              description[entry.lang] = entry.value;
+            });
+          }
+          $scope.form.model._mica = {
+            name: name,
+            description: description
+          };
           return response;
         }) : {published: false};
 
@@ -341,9 +353,9 @@ mica.project
       ProjectFormResource.get(
         function onSuccess(projectForm) {
           $scope.form.definition = JsonUtils.parseJsonSafely(projectForm.definition, []);
-          //$scope.form.definition.unshift(angular.copy(PROJECT_DEFINITION));
+          $scope.form.definition.unshift(angular.copy(PROJECT_DEFINITION));
           $scope.form.schema = JsonUtils.parseJsonSafely(projectForm.schema, {});
-          //$scope.form.schema.properties._mica = angular.copy(PROJECT_SCHEMA);
+          $scope.form.schema.properties._mica = angular.copy(PROJECT_SCHEMA);
           if (!$routeParams.id) {
             $scope.form.model = {};
           }
@@ -352,6 +364,19 @@ mica.project
       $scope.save = function () {
         $scope.$broadcast('schemaFormValidate');
         if ($scope.form.$valid) {
+          $scope.project.name = [];
+          $scope.project.description = [];
+          $scope.tabs.forEach(function(tab) {
+            $scope.project.name.push({
+              lang: tab.lang,
+              value: $scope.form.model._mica.name[tab.lang]
+            });
+            $scope.project.description.push({
+              lang: tab.lang,
+              value: $scope.form.model._mica.description[tab.lang]
+            });
+          });
+          delete $scope.form.model._mica;
           $scope.project.content = JSON.stringify($scope.form.model);
           if ($scope.project.id) {
             updateProject();
