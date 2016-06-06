@@ -20,16 +20,6 @@
 
     <p class="alert alert-danger" ng-show="form.saveAttempted && form.$invalid" translate="">fix-error</p>
 
-    <uib-tabset active="activeTab">
-      <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" disable="tab.disabled">
-
-        <div ng-include="'app/project/views/project-general-info-form.html'"></div>
-
-      </uib-tab>
-    </uib-tabset>
-
-    <!--<pre>{{form.model | json}}</pre>-->
-
     <div sf-model="form.model" sf-form="form.definition" sf-schema="form.schema" sf-options="sfOptions" required="true"></div>
 
     <button type="button" class="btn btn-default" ng-click="cancel()">
