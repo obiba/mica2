@@ -33,7 +33,7 @@ mica.permission
     },
     templateUrl: 'app/permission/permission-config-table-template.html',
     controller: 'PermissionsConfigController'
-  }
+  };
 }])
 
 .controller('PermissionsConfigController', ['$rootScope', '$scope', '$uibModal', 'NOTIFICATION_EVENTS',
