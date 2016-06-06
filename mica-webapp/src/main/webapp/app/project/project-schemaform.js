@@ -10,7 +10,7 @@ var PROJECT_SCHEMA = {
     description: {
       title: 'Description',
       type: 'object',
-      format: 'localizedString'
+      format: 'localizedTextArea'
     }
   }
 };

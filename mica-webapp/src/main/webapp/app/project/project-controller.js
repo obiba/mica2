@@ -140,6 +140,10 @@ mica.project
           $scope.form.definition.unshift(angular.copy(PROJECT_DEFINITION));
           $scope.form.schema = JsonUtils.parseJsonSafely(projectForm.schema, {});
           $scope.form.schema.properties._mica = angular.copy(PROJECT_SCHEMA);
+          if (!$scope.form.schema.required) {
+            $scope.form.schema.required = [];
+          }
+          $scope.form.schema.required.unshift('_mica.name');
           $scope.form.schema.readonly = true;
         });
 
@@ -336,6 +340,10 @@ mica.project
           $scope.form.definition.unshift(angular.copy(PROJECT_DEFINITION));
           $scope.form.schema = JsonUtils.parseJsonSafely(projectForm.schema, {});
           $scope.form.schema.properties._mica = angular.copy(PROJECT_SCHEMA);
+          if (!$scope.form.schema.required) {
+            $scope.form.schema.required = [];
+          }
+          $scope.form.schema.required.unshift('_mica.name');
           if (!$routeParams.id) {
             $scope.form.model = {};
           }
