@@ -1,4 +1,5 @@
 
+/* exported PROJECT_SCHEMA*/
 var PROJECT_SCHEMA = {
   type: 'object',
   properties: {
@@ -15,6 +16,7 @@ var PROJECT_SCHEMA = {
   }
 };
 
+/* exported PROJECT_DEFINITION */
 var PROJECT_DEFINITION = {
   type: 'fieldset',
   items: [
