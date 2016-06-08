@@ -1,24 +1,22 @@
-<div class="form-group">
+<div class="form-group" ng-class="{'has-error': hasError()}" schema-validate="form" sf-field-model >
   <!--<pre>{{form|json}}</pre>-->
-  <label>{{form.title}}</label>
-  <div schema-validate="form" sf-field-model>
-    <div ng-if="form.schema.format === 'localizedString'"
-         ng-class="{'form-group' : !$last, 'input-group' : form.locales.length > 1}"
-         ng-repeat="locale in form.locales">
-      <span class="input-group-addon"
-            ng-if="form.locales.length > 1">{{locale}}</span>
-      <input type="text" class="form-control"
-             sf-field-model="replaceAll" ng-model="$$value$$[locale]"></input>
-    </div>
-    <div ng-if="form.schema.format === 'localizedTextArea'"
-         ng-class="{'form-group' : !$last, 'input-group' : form.locales.length > 1}"
-         ng-repeat="locale in form.locales">
-      <span class="input-group-addon"
-            ng-if="form.locales.length > 1">{{locale}}</span>
-      <textarea class="form-control"
-                sf-field-model="replaceAll" ng-model="$$value$$[locale]"
-                rows="{{form.rows ? form.rows : 5}}"></textarea>
-    </div>
+  <label class="control-label" ng-show="showTitle()">{{form.title}}</label>
+  <div ng-if="form.schema.format === 'localizedString'"
+       ng-class="{'form-group' : !$last, 'input-group' : form.showLocales || form.locales.length > 1}"
+       ng-repeat="locale in form.locales">
+    <span class="input-group-addon"
+          ng-if="form.showLocales || form.locales.length > 1">{{locale}}</span>
+    <input type="text" class="form-control"
+           sf-field-model="replaceAll" ng-model="$$value$$[locale]"></input>
+  </div>
+  <div ng-if="form.schema.format === 'localizedTextArea'"
+       ng-class="{'form-group' : !$last, 'input-group' : form.showLocales || form.locales.length > 1}"
+       ng-repeat="locale in form.locales">
+    <span class="input-group-addon"
+          ng-if="form.showLocales || form.locales.length > 1">{{locale}}</span>
+    <textarea class="form-control"
+              sf-field-model="replaceAll" ng-model="$$value$$[locale]"
+              rows="{{form.rows ? form.rows : 5}}"></textarea>
   </div>
   <span class="help-block" sf-message="form.description"></span>
 </div>

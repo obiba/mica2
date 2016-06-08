@@ -26,11 +26,11 @@
     "bootstrap": "^3.3.6"
   },
   "homepage": "https://github.com/obiba/sf-localized-string",
-  "_release": "b51b6ab31f",
+  "_release": "9aac62185a",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "b51b6ab31f37b70d4a9b9c02d7ddff986c4a3001"
+    "commit": "9aac62185a950866a09f43102545884de82c1ee9"
   },
   "_source": "https://github.com/obiba/sf-localized-string.git",
   "_target": "master",

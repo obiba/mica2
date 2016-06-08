@@ -1,8 +1,9 @@
 angular.module('sfLocalizedString', [
   'schemaForm',
   'templates'
-]).config(function(schemaFormProvider,  schemaFormDecoratorsProvider, sfBuilderProvider, sfPathProvider) {
-  
+]).config(['schemaFormProvider', 'schemaFormDecoratorsProvider', 'sfBuilderProvider', 'sfPathProvider',
+  function(schemaFormProvider,  schemaFormDecoratorsProvider, sfBuilderProvider, sfPathProvider) {
+
   var locStr = function(name, schema, options) {
     if (schema.type === 'object' && (schema.format == 'localizedString' || schema.format == 'localizedTextArea')) {
       var f = schemaFormProvider.stdFormObj(name, schema, options);
@@ -11,6 +12,23 @@ angular.module('sfLocalizedString', [
       if(!f.locales) {
         f.locales = ['en'];
       }
+      // f.validationMessage = {
+      //   completed: 'All localized fields must be completed'
+      // };
+      // f.$validators = {
+      //   completed: function(value) {
+      //     if (value && Object.keys(value).length !== 0) {
+      //       var count = f.locales.map(function(locale) {
+      //         return value.hasOwnProperty(locale) ? 1 : 0;
+      //       }).reduce(function (previous, current) {
+      //         return previous + current;
+      //       });
+      //       console.log(f.locales.length === count);
+      //       return f.locales.length === count;
+      //     }
+      //     return true;
+      //   }
+      // };
       options.lookup[sfPathProvider.stringify(options.path)] = f;
       return f;
     }
@@ -25,4 +43,4 @@ angular.module('sfLocalizedString', [
     sfBuilderProvider.stdBuilders   // List of builder functions to apply.
   );
 
-});
+}]);
