@@ -397,9 +397,9 @@ mica.config
       };
 
     }])
-  .controller('MicaConfigTranslationsEditController', ['$scope', '$q', '$resource', '$window', '$location', '$log',
+  .controller('MicaConfigTranslationsEditController', ['$scope', '$q', '$resource', '$window', '$location', '$log', '$uibModal',
     'MicaConfigResource', 'FormServerValidation', 'TranslationsResource',
-    function ($scope, $q, $resource, $window, $location, $log, MicaConfigResource, FormServerValidation, TranslationsResource) {
+    function ($scope, $q, $resource, $window, $location, $log, $uibModal, MicaConfigResource, FormServerValidation, TranslationsResource) {
       var updates = {}, oldTranslations = {};
       $scope.micaConfig = MicaConfigResource.get();
       $scope.micaConfig.$promise.then(function() {
@@ -431,7 +431,7 @@ mica.config
           });
         });
       });
-      
+
       function notNull (x) {
         return x;
       }
@@ -474,26 +474,75 @@ mica.config
       function extractObjFromResouce(res) {
         return angular.fromJson(angular.toJson(res));
       }
-      
+
+      $scope.checkPresence = function (entry) {
+        if (!isInDefault(entry)) {
+          entry.isCustom = true;
+        }
+      };
+
+       function isInDefault(entry) {
+        var presence = [];
+        $scope.micaConfig.languages.forEach(function (lang) {
+          var found = oldTranslations[lang].filter(function (translation) {
+            return translation.path === entry.path;
+          }).pop();
+          presence.push(found);
+        });
+        return presence.reduce(function (prev, curr) {
+          return prev && curr;
+        });
+      }
+
+      $scope.trash = function (entry) {
+        var indices = [];
+        $scope.micaConfig.languages.forEach(function (lang) {
+          $scope.translations[lang].filter(function (translation, index) {
+            var found = translation.path === entry.path;
+            if (found) {
+              indices.push({lang: lang, index: index});
+            }
+            return found;
+          })
+        });
+
+        indices.forEach(function (i) {
+          $scope.translations[i.lang].splice(i.index, 1);
+        });
+      };
+
+      $scope.add = function () {
+        var modal = $uibModal.open({
+          templateUrl: 'app/config/views/config-translation-modal-form-template.html',
+          controller: 'NewEntryModalController'
+        });
+
+        modal.result.then(function (entry) {
+          $scope.micaConfig.languages.forEach(function (lang) {
+            $scope.translations[lang].push({path: entry.path, value: entry.value});
+          });
+        });
+      };
+
       $scope.setDirty = function(entry) {
         if(!entry.overwritten) { entry.overwritten = true; }
       };
-      
+
       $scope.resetEntry = function(entry, lang) {
         entry.overwritten = false;
-        
+
         var original = oldTranslations[lang].filter(function(e) {
           return e.path === entry.path;
         })[0];
-        
-        entry.value = original.value;
+
+        entry.value = original ? original.value : '';
       };
 
       $scope.save = function () {
         $scope.micaConfig.translations = $scope.micaConfig.languages.map(function(lang){
           var changes = $scope.translations[lang].filter(function (e) {
             var result = null;
-            
+
             if (!oldTranslations[lang].some(function(o) {
                 if (o.path === e.path) {
                   if (o.value !== e.value) {
@@ -508,7 +557,7 @@ mica.config
 
             return result;
           }).filter(notNull);
-          
+
           return {lang: lang, value: JSON.stringify(pathsToJson(changes))};
         });
 
@@ -520,5 +569,18 @@ mica.config
           function (response) {
             FormServerValidation.error(response, $scope.form);
           });
+      };
+    }])
+
+  .controller('NewEntryModalController', ['$scope', '$uibModalInstance',
+    function ($scope, $uibModalInstance) {
+      $scope.entry = {};
+
+      $scope.accept = function () {
+        $uibModalInstance.close($scope.entry);
+      };
+
+      $scope.cancel = function () {
+        $uibModalInstance.dismiss();
       };
     }]);
