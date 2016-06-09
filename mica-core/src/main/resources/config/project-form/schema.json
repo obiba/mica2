@@ -3,8 +3,7 @@
   "properties": {
     "name": {
       "title": "Name",
-      "type": "object",
-      "format": "localizedString"
+      "type": "string"
     },
     "title": {
       "title": "Title",

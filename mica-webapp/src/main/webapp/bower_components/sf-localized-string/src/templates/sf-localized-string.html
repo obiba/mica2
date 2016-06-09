@@ -1,7 +1,10 @@
-<div class="form-group" ng-class="{'has-error': hasError()}" schema-validate="form" sf-field-model >
+<div class="form-group"
+     ng-controller="LocalizedStringController"
+     ng-class="{'has-error': form.disableErrorState !== true && hasError(), 'has-success': form.disableSuccessState !== true && hasSuccess(), 'has-feedback': form.feedback !== false }"
+     schema-validate="form" sf-field-model >
   <!--<pre>{{form|json}}</pre>-->
   <label class="control-label" ng-show="showTitle()">{{form.title}}</label>
-  <div ng-if="form.schema.format === 'localizedString'"
+  <div ng-if="!form.rows || form.rows <= 1"
        ng-class="{'form-group' : !$last, 'input-group' : form.showLocales || form.locales.length > 1}"
        ng-repeat="locale in form.locales">
     <span class="input-group-addon"
@@ -9,7 +12,7 @@
     <input type="text" class="form-control"
            sf-field-model="replaceAll" ng-model="$$value$$[locale]"></input>
   </div>
-  <div ng-if="form.schema.format === 'localizedTextArea'"
+  <div ng-if="form.rows && form.rows > 1"
        ng-class="{'form-group' : !$last, 'input-group' : form.showLocales || form.locales.length > 1}"
        ng-repeat="locale in form.locales">
     <span class="input-group-addon"

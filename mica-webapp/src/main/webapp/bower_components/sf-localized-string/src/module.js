@@ -5,30 +5,29 @@ angular.module('sfLocalizedString', [
   function(schemaFormProvider,  schemaFormDecoratorsProvider, sfBuilderProvider, sfPathProvider) {
 
   var locStr = function(name, schema, options) {
-    if (schema.type === 'object' && (schema.format == 'localizedString' || schema.format == 'localizedTextArea')) {
+    if (schema.type === 'object' && schema.format == 'localizedString') {
       var f = schemaFormProvider.stdFormObj(name, schema, options);
       f.key  = options.path;
       f.type = 'localizedstring';
       if(!f.locales) {
         f.locales = ['en'];
       }
-      // f.validationMessage = {
-      //   completed: 'All localized fields must be completed'
-      // };
-      // f.$validators = {
-      //   completed: function(value) {
-      //     if (value && Object.keys(value).length !== 0) {
-      //       var count = f.locales.map(function(locale) {
-      //         return value.hasOwnProperty(locale) ? 1 : 0;
-      //       }).reduce(function (previous, current) {
-      //         return previous + current;
-      //       });
-      //       console.log(f.locales.length === count);
-      //       return f.locales.length === count;
-      //     }
-      //     return true;
-      //   }
-      // };
+      f.validationMessage = {
+        completed: 'All localized fields must be completed'
+      };
+      f.$validators = {
+        completed: function(value) {
+          if (value && Object.keys(value).length !== 0) {
+            var count = f.locales.map(function(locale) {
+              return value.hasOwnProperty(locale) ? 1 : 0;
+            }).reduce(function (previous, current) {
+              return previous + current;
+            });
+            return f.locales.length === count;
+          }
+          return true;
+        }
+      };
       options.lookup[sfPathProvider.stringify(options.path)] = f;
       return f;
     }
@@ -43,4 +42,20 @@ angular.module('sfLocalizedString', [
     sfBuilderProvider.stdBuilders   // List of builder functions to apply.
   );
 
-}]);
+}])
+    .controller('LocalizedStringController', ['$scope', function($scope){
+      $scope.$watch('ngModel.$modelValue', function() {
+        if ($scope.ngModel.$validate) {
+          $scope.ngModel.$validate();
+          if ($scope.ngModel.$invalid) { // The field must be made dirty so the error message is displayed
+            $scope.ngModel.$dirty = true;
+            $scope.ngModel.$pristine = false;
+          }
+        }
+        else {
+          $scope.ngModel.$setViewValue(ngModel.$viewValue);
+        };
+      }, true);
+
+
+    }]);
