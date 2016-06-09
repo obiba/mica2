@@ -331,7 +331,11 @@
       "title": "Translations",
       "path": "Name",
       "value": "Value",
-      "info": "Override the default translations."
+      "info": "Override the default translations.",
+      "add": "Add Translation",
+      "new": {
+        "title": "New Translation Entry"
+      }
     }
   },
   "publish": {
