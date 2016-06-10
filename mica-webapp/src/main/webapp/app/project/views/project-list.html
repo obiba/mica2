@@ -43,7 +43,7 @@
         <thead>
         <tr>
           <th>ID</th>
-          <th translate>name</th>
+          <th translate>research-project.title</th>
           <th translate>research-project.data-access-request</th>
           <th translate>published</th>
           <th translate>status</th>
@@ -58,8 +58,8 @@
           </td>
           <td>
             <ul class="list-unstyled">
-              <li ng-repeat="name in project.name">
-                <span class="badge">{{name.lang}}</span> {{name.value}}
+              <li ng-repeat="title in project.title">
+                <span class="badge">{{title.lang}}</span> {{title.value}}
               </li>
             </ul>
           </td>

@@ -12,9 +12,9 @@ import com.google.common.base.Strings;
 
 public class Project extends AbstractGitPersistable {
 
-  private LocalizedString name;
+  private LocalizedString title;
 
-  private LocalizedString description;
+  private LocalizedString summary;
 
   private Map<String,Object> content;
 
@@ -26,16 +26,16 @@ public class Project extends AbstractGitPersistable {
   // Accessors
   //
 
-  public boolean hasName() {
-    return name != null;
+  public boolean hasTitle() {
+    return title != null;
   }
 
-  public LocalizedString getName() {
-    return name;
+  public LocalizedString getTitle() {
+    return title;
   }
 
-  public void setName(LocalizedString name) {
-    this.name = name;
+  public void setTitle(LocalizedString title) {
+    this.title = title;
   }
 
   public boolean hasContent() {
@@ -82,12 +82,12 @@ public class Project extends AbstractGitPersistable {
     return new Builder();
   }
 
-  public LocalizedString getDescription() {
-    return description;
+  public LocalizedString getSummary() {
+    return summary;
   }
 
-  public void setDescription(LocalizedString description) {
-    this.description = description;
+  public void setSummary(LocalizedString summary) {
+    this.summary = summary;
   }
 
   public static class Builder {
@@ -106,13 +106,13 @@ public class Project extends AbstractGitPersistable {
       return this;
     }
 
-    public Builder name(LocalizedString value) {
-      project.setName(value);
+    public Builder title(LocalizedString value) {
+      project.setTitle(value);
       return this;
     }
 
-    public Builder description(LocalizedString value) {
-      project.setDescription(value);
+    public Builder summary(LocalizedString value) {
+      project.setSummary(value);
       return this;
     }
 

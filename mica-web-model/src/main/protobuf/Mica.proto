@@ -686,8 +686,8 @@ message DataAccessRequestSummaryDto {
 message ProjectDto {
   optional string id = 1;
   optional TimestampsDto timestamps = 2;
-  repeated LocalizedStringDto name = 3;
-  repeated LocalizedStringDto description = 4;
+  repeated LocalizedStringDto title = 3;
+  repeated LocalizedStringDto summary = 4;
   optional string content = 5;
   optional DataAccessRequestSummaryDto request = 6;
 
