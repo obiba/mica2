@@ -107,9 +107,11 @@ angular.module('obiba.mica.utils', ['schemaForm'])
             // add missing width to fill the table
             if (totalColumnWidth < elem.offsetWidth) {
               var last = elem.querySelector('tbody tr:first-child td:last-child');
-              last.style.width = (last.offsetWidth + elem.offsetWidth - totalColumnWidth) + 'px';
-              last = elem.querySelector('thead tr:first-child th:last-child');
-              last.style.width = (last.offsetWidth + elem.offsetWidth - totalColumnWidth) + 'px';
+              if (last) {
+                last.style.width = (last.offsetWidth + elem.offsetWidth - totalColumnWidth) + 'px';
+                last = elem.querySelector('thead tr:first-child th:last-child');
+                last.style.width = (last.offsetWidth + elem.offsetWidth - totalColumnWidth) + 'px';
+              }
             }
 
             // reduce width of last column by width of scrollbar

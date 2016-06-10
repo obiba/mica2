@@ -150,6 +150,7 @@ angular.module('obiba.mica.access')
       'ServerErrorUtils',
       'NOTIFICATION_EVENTS',
       'DataAccessRequestConfig',
+      'LocalizedSchemaFormService',
 
     function ($rootScope,
               $scope,
@@ -169,7 +170,8 @@ angular.module('obiba.mica.access')
               AlertService,
               ServerErrorUtils,
               NOTIFICATION_EVENTS,
-              DataAccessRequestConfig) {
+              DataAccessRequestConfig,
+              LocalizedSchemaFormService) {
 
       var onError = function (response) {
         AlertService.alert({
@@ -267,8 +269,8 @@ angular.module('obiba.mica.access')
           // Retrieve form data
           DataAccessFormConfigResource.get(
             function onSuccess(dataAccessForm) {
-              $scope.form.definition = JsonUtils.parseJsonSafely(dataAccessForm.definition, []);
-              $scope.form.schema = JsonUtils.parseJsonSafely(dataAccessForm.schema, {});
+              $scope.form.definition = JsonUtils.parseJsonSafely(LocalizedSchemaFormService.schemaFormReplaceAndTranslate(dataAccessForm.definition), []);
+              $scope.form.schema = JsonUtils.parseJsonSafely(LocalizedSchemaFormService.schemaFormReplaceAndTranslate(dataAccessForm.schema), {});
 
               if ($scope.form.definition.length === 0) {
                 $scope.validForm = false;
@@ -458,7 +460,7 @@ angular.module('obiba.mica.access')
     '$scope',
     '$routeParams',
     '$location',
-    '$uibModal',
+    '$uibModal', 'LocalizedSchemaFormService',
     'DataAccessRequestsResource',
     'DataAccessRequestResource',
     'DataAccessFormConfigResource',
@@ -470,7 +472,7 @@ angular.module('obiba.mica.access')
     'ngObibaMicaAccessTemplateUrl',
     'DataAccessRequestConfig',
 
-    function ($log, $scope, $routeParams, $location, $uibModal,
+    function ($log, $scope, $routeParams, $location, $uibModal, LocalizedSchemaFormService,
               DataAccessRequestsResource,
               DataAccessRequestResource,
               DataAccessFormConfigResource,
@@ -523,8 +525,8 @@ angular.module('obiba.mica.access')
       // Retrieve form data
       DataAccessFormConfigResource.get(
         function onSuccess(dataAccessForm) {
-          $scope.form.definition = JsonUtils.parseJsonSafely(dataAccessForm.definition, []);
-          $scope.form.schema = JsonUtils.parseJsonSafely(dataAccessForm.schema, {});
+          $scope.form.definition = JsonUtils.parseJsonSafely(LocalizedSchemaFormService.schemaFormReplaceAndTranslate(dataAccessForm.definition), []);
+          $scope.form.schema = JsonUtils.parseJsonSafely(LocalizedSchemaFormService.schemaFormReplaceAndTranslate(dataAccessForm.schema), {});
           if ($scope.form.definition.length === 0) {
             $scope.form.definition = [];
             $scope.validForm = false;

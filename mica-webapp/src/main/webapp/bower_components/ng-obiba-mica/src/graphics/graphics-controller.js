@@ -85,6 +85,9 @@ angular.module('obiba.mica.graphics')
                     $scope.chartObject.data = data;
                     $scope.chartObject.vocabulary = $scope.chartAggregationName;
                     $scope.chartObject.entries = entries;
+                    $scope.chartObject.getTable= function(){
+                      return $scope.chartObject;
+                    };
                   }
                   else {
                     if($scope.chartHeader.length<3){

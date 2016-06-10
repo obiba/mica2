@@ -1,14 +1,12 @@
 <div>
-    <table style="max-height: 400px;" class="table table-bordered table-striped" >
+    <table style="max-height: 400px;" class="table table-bordered table-striped" fixed-header="chartObject.getTable().data">
         <thead>
+        <tr>
         <th ng-repeat="header in chartObject.header">{{header}}</th>
-        </thead>
-        <tr ng-show="chartObject.ordered" ng-repeat="row in chartObject.entries">
-            <td>{{row.title}}</td>
-            <td><a href ng-click="updateCriteria(row.key, chartObject.vocabulary)">{{row.value}}</a></td>
-            <td ng-if="row.participantsNbr">{{row.participantsNbr}}</td>
         </tr>
-        <tr ng-show="chartObject.notOrdered" ng-repeat="row in chartObject.entries">
+        </thead>
+        <tbody>
+        <tr ng-repeat="row in chartObject.entries">
             <td>{{row.title}}</td>
             <td><a href ng-click="updateCriteria(row.key, chartObject.vocabulary)">{{row.value}}</a></td>
             <td ng-if="row.participantsNbr">{{row.participantsNbr}}</td>
