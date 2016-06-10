@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-06-09
+ * Date: 2016-06-10
  */
 'use strict';
 
@@ -7310,12 +7310,15 @@ angular.module('obiba.mica.localized')
       };
     })
 
-  .service('LocalizedSchemaFormService', ['$filter', function ($filter) {
-    this.schemaFormReplaceAndTranslate = function (string) {
-      return string.replace(/"t\((.+)\)"/g, function (match, p1) {
+  .service('LocalizedSchemaFormService', ['$filter','JsonUtils', function ($filter, JsonUtils) {
+    this.schemaFormReplaceAndTranslate = function (stringOrObject) {
+      var string = typeof stringOrObject === 'string' ? stringOrObject : JSON.stringify(stringOrObject);
+      var translated = string.replace(/"t\(([^\)]+)\)"/g, function (match, p1) {
         return '"' + $filter('translate')(p1) + '"';
       });
+      return typeof stringOrObject === 'string' ? translated : JsonUtils.parseJsonSafely(translated);
     };
+
   }]);
 ;/*
  * Copyright (c) 2016 OBiBa. All rights reserved.
