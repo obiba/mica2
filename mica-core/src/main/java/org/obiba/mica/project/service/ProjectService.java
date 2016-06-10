@@ -121,7 +121,7 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
 
     ProjectState projectState = findEntityState(project, () -> {
       ProjectState defaultState = new ProjectState();
-      defaultState.setName(project.getName());
+      defaultState.setTitle(project.getTitle());
 
       return defaultState;
     });
@@ -226,8 +226,8 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
 
   @Override
   protected String generateId(@NotNull Project project) {
-    if (!project.hasName()) return null;
-    String nextId = getNextId(project.getName().asAcronym());
+    if (!project.hasTitle()) return null;
+    String nextId = getNextId(project.getTitle().asAcronym());
     project.setId(nextId);
     return nextId;
   }
@@ -261,11 +261,11 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
       project.setDataAccessRequestId(event.getPersistable().getId());
       String title = dataAccessRequestUtilService.getRequestTitle(request);
       if(!Strings.isNullOrEmpty(title)) {
-        project.setName(LocalizedString.from(micaConfigService.getConfig().getLocales(), title));
+        project.setTitle(LocalizedString.from(micaConfigService.getConfig().getLocales(), title));
       }
       String summary = dataAccessRequestUtilService.getRequestSummary(request);
       if(!Strings.isNullOrEmpty(summary)) {
-        project.setDescription(LocalizedString.from(micaConfigService.getConfig().getLocales(), summary));
+        project.setSummary(LocalizedString.from(micaConfigService.getConfig().getLocales(), summary));
       }
       save(project, "Created from Data Access Request");
     }

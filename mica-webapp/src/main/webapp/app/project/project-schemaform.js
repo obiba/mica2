@@ -3,18 +3,18 @@
 var PROJECT_SCHEMA = {
   type: 'object',
   properties: {
-    name: {
-      title: 'Name',
+    title: {
+      title: 'Title',
       type: 'object',
       format: 'localizedString'
     },
-    description: {
-      title: 'Description',
+    summary: {
+      title: 'Summary',
       type: 'object',
       format: 'localizedString'
     }
   },
-  required: ['name']
+  required: ['title']
 };
 
 /* exported PROJECT_DEFINITION */
@@ -26,11 +26,11 @@ var PROJECT_DEFINITION = {
       helpvalue: '<h3>General</h3>'
     },
     {
-      key: '_mica.name',
+      key: '_mica.title',
       type: 'localizedstring'
     },
     {
-      key: '_mica.description',
+      key: '_mica.summary',
       type: 'localizedstring',
       rows: 5
     }

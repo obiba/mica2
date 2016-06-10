@@ -1203,8 +1203,8 @@
     "add": "Add Project",
     "none": "No projects.",
     "data-access-request": "Data Access Request",
-    "name": "Name",
-    "description": "Description",
+    "title": "Title",
+    "summary": "Summary",
     "restore-dialog": {
       "title": "Restoring Project from Revision",
       "message": "Are you sure you want to restore this revision from '{{arg0}}'?"
