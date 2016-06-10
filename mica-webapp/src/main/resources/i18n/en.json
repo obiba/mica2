@@ -1205,6 +1205,7 @@
     "data-access-request": "Data Access Request",
     "title": "Title",
     "summary": "Summary",
+    "main-section": "<h3>General</h3>",
     "restore-dialog": {
       "title": "Restoring Project from Revision",
       "message": "Are you sure you want to restore this revision from '{{arg0}}'?"

@@ -4,12 +4,12 @@ var PROJECT_SCHEMA = {
   type: 'object',
   properties: {
     title: {
-      title: 'Title',
+      title: 't(research-project.title)',
       type: 'object',
       format: 'localizedString'
     },
     summary: {
-      title: 'Summary',
+      title: 't(research-project.summary)',
       type: 'object',
       format: 'localizedString'
     }
@@ -23,7 +23,7 @@ var PROJECT_DEFINITION = {
   items: [
     {
       type: 'help',
-      helpvalue: '<h3>General</h3>'
+      helpvalue: 't(research-project.main-section)'
     },
     {
       key: '_mica.title',
