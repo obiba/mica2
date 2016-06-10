@@ -10,13 +10,13 @@ public class ProjectState extends EntityState {
     return "projects";
   }
 
-  private LocalizedString name;
+  private LocalizedString title;
 
-  public LocalizedString getName() {
-    return name;
+  public LocalizedString getTitle() {
+    return title;
   }
 
-  public void setName(LocalizedString name) {
-    this.name = name;
+  public void setTitle(LocalizedString title) {
+    this.title = title;
   }
 }

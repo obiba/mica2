@@ -112,8 +112,8 @@ mica.project
         $scope.form.model = JsonUtils.parseJsonSafely(project.content, {});
         // project name/description is an array of map entries
         $scope.form.model._mica = {
-           name: LocalizedValues.arrayToObject(project.name),
-           description: LocalizedValues.arrayToObject(project.description)
+          title: LocalizedValues.arrayToObject(project.title),
+          summary: LocalizedValues.arrayToObject(project.summary)
         };
       };
 
@@ -315,8 +315,8 @@ mica.project
           $scope.form.model = JsonUtils.parseJsonSafely(response.content, {});
           // project name/description is an array of map entries
           $scope.form.model._mica = {
-            name: LocalizedValues.arrayToObject(response.name),
-            description: LocalizedValues.arrayToObject(response.description)
+            title: LocalizedValues.arrayToObject(response.title),
+            summary: LocalizedValues.arrayToObject(response.summary)
           };
           return response;
         }) : {published: false};
@@ -344,8 +344,8 @@ mica.project
       $scope.save = function () {
         $scope.$broadcast('schemaFormValidate');
         if ($scope.form.$valid) {
-          $scope.project.name = LocalizedValues.objectToArray($scope.languages, $scope.form.model._mica.name);
-          $scope.project.description = LocalizedValues.objectToArray($scope.languages, $scope.form.model._mica.description);
+          $scope.project.title = LocalizedValues.objectToArray($scope.languages, $scope.form.model._mica.title);
+          $scope.project.summary = LocalizedValues.objectToArray($scope.languages, $scope.form.model._mica.summary);
           delete $scope.form.model._mica;
           $scope.project.content = JSON.stringify($scope.form.model);
           if ($scope.project.id) {
