@@ -15,13 +15,13 @@ mica.dataAccessConfig
   .controller('DataAccessConfigController', ['$rootScope', '$location', '$scope', '$log',
     'DataAccessFormResource',
     'DataAccessFormService',
-    'DataAccessFormPermissionsResource',
+    'DataAccessFormPermissionsResource', 'LocalizedSchemaFormService',
     'AlertService',
     'ServerErrorUtils',
     function ($rootScope, $location, $scope, $log,
               DataAccessFormResource,
               DataAccessFormService,
-              DataAccessFormPermissionsResource,
+              DataAccessFormPermissionsResource, LocalizedSchemaFormService,
               AlertService,
               ServerErrorUtils) {
 
@@ -67,8 +67,8 @@ mica.dataAccessConfig
       var refreshPreview = function() {
         try {
           if ($scope.dirty) {
-            $scope.form.schemaJson = JSON.parse($scope.form.schema);
-            $scope.form.definitionJson = JSON.parse($scope.form.definition);
+            $scope.form.schemaJson = JSON.parse(LocalizedSchemaFormService.schemaFormReplaceAndTranslate($scope.form.schema));
+            $scope.form.definitionJson = JSON.parse(LocalizedSchemaFormService.schemaFormReplaceAndTranslate($scope.form.definition));
             $scope.dirty = false;
           }
         } catch (e){
