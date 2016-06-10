@@ -77,6 +77,7 @@ mica.project
     'DraftProjectRestoreRevisionResource',
     '$uibModal',
     'LocalizedValues',
+    'LocalizedSchemaFormService',
     '$filter',
     'DocumentPermissionsService',
 
@@ -103,6 +104,7 @@ mica.project
       DraftProjectRestoreRevisionResource,
       $uibModal,
       LocalizedValues,
+      LocalizedSchemaFormService,
       $filter,
       DocumentPermissionsService) {
 
@@ -136,11 +138,13 @@ mica.project
 
       ProjectFormResource.get(
         function onSuccess(projectForm) {
-          $scope.form.definition = JsonUtils.parseJsonSafely(projectForm.definition, []);
-          $scope.form.definition.unshift(angular.copy(PROJECT_DEFINITION));
-          $scope.form.schema = JsonUtils.parseJsonSafely(projectForm.schema, {});
-          $scope.form.schema.properties._mica = angular.copy(PROJECT_SCHEMA);
-          $scope.form.schema.readonly = true;
+          var definition = JsonUtils.parseJsonSafely(projectForm.definition, []);
+          definition.unshift(angular.copy(PROJECT_DEFINITION));
+          $scope.form.definition = LocalizedSchemaFormService.schemaFormReplaceAndTranslate(definition);
+          var schema = JsonUtils.parseJsonSafely(projectForm.schema, {});
+          schema.properties._mica = angular.copy(PROJECT_SCHEMA);
+          schema.readonly = true;
+          $scope.form.schema = LocalizedSchemaFormService.schemaFormReplaceAndTranslate(schema);
         });
 
       $scope.projectId = $routeParams.id;
@@ -287,6 +291,7 @@ mica.project
     'MicaConfigResource',
     'ProjectFormResource',
     'LocalizedValues',
+    'LocalizedSchemaFormService',
     'JsonUtils',
     'FormServerValidation',
     'FormDirtyStateObserver',
@@ -302,6 +307,7 @@ mica.project
               MicaConfigResource,
               ProjectFormResource,
               LocalizedValues,
+              LocalizedSchemaFormService,
               JsonUtils,
               FormServerValidation,
               FormDirtyStateObserver) {
@@ -332,10 +338,12 @@ mica.project
 
       ProjectFormResource.get(
         function onSuccess(projectForm) {
-          $scope.form.definition = JsonUtils.parseJsonSafely(projectForm.definition, []);
-          $scope.form.definition.unshift(angular.copy(PROJECT_DEFINITION));
-          $scope.form.schema = JsonUtils.parseJsonSafely(projectForm.schema, {});
-          $scope.form.schema.properties._mica = angular.copy(PROJECT_SCHEMA);
+          var definition = JsonUtils.parseJsonSafely(projectForm.definition, []);
+          definition.unshift(angular.copy(PROJECT_DEFINITION));
+          $scope.form.definition = LocalizedSchemaFormService.schemaFormReplaceAndTranslate(definition);
+          var schema = JsonUtils.parseJsonSafely(projectForm.schema, {});
+          schema.properties._mica = angular.copy(PROJECT_SCHEMA);
+          $scope.form.schema = LocalizedSchemaFormService.schemaFormReplaceAndTranslate(schema);
           if (!$routeParams.id) {
             $scope.form.model = {};
           }
