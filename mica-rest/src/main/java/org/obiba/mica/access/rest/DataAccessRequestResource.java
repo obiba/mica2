@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.DELETE;
@@ -110,6 +109,18 @@ public class DataAccessRequestResource {
 
     return Response.ok(fileStoreService.getFile(r.get().getFileReference())).header("Content-Disposition",
       "attachment; filename=\"" + r.get().getName() + "\"")
+      .build();
+  }
+
+  @GET
+  @Timed
+  @Path("/form/attachments/{attachmentName}/{attachmentId}/_download")
+  public Response getFormAttachment(@PathParam("id") String id, @PathParam("attachmentName") String attachmentName,
+      @PathParam("attachmentId") String attachmentId) throws IOException {
+    subjectAclService.checkPermission("/data-access-request", "VIEW", id);
+    DataAccessRequest request = dataAccessRequestService.findById(id);
+    return Response.ok(fileStoreService.getFile(attachmentId)).header("Content-Disposition",
+      "attachment; filename=\"" + attachmentName + "\"")
       .build();
   }
 

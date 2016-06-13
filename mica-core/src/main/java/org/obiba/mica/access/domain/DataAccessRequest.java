@@ -6,6 +6,7 @@ import javax.validation.constraints.NotNull;
 
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
 import org.obiba.mica.core.domain.AttachmentAware;
+import org.obiba.mica.core.domain.SchemaFormContentAware;
 import org.obiba.mica.file.Attachment;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -19,7 +20,7 @@ import com.google.common.collect.Sets;
  *
  */
 @Document
-public class DataAccessRequest extends AbstractAuditableDocument implements AttachmentAware {
+public class DataAccessRequest extends AbstractAuditableDocument implements AttachmentAware, SchemaFormContentAware {
 
   private static final long serialVersionUID = -6728220507676973832L;
 
@@ -67,10 +68,12 @@ public class DataAccessRequest extends AbstractAuditableDocument implements Atta
     return !Strings.isNullOrEmpty(content);
   }
 
+  @Override
   public String getContent() {
     return content;
   }
 
+  @Override
   public void setContent(String content) {
     this.content = content;
   }

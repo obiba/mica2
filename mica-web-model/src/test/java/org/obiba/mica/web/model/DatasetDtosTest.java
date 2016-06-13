@@ -28,6 +28,7 @@ import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.repository.AttachmentStateRepository;
+import org.obiba.mica.core.service.SchemaFormContentFileService;
 import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
 import org.obiba.mica.dataset.StudyDatasetStateRepository;
 import org.obiba.mica.dataset.domain.HarmonizationDataset;
@@ -219,6 +220,11 @@ public class DatasetDtosTest {
     @Bean
     public DataAccessRequestUtilService dataAccessRequestUtilService() {
       return Mockito.mock(DataAccessRequestUtilService.class);
+    }
+
+    @Bean
+    public SchemaFormContentFileService schemaFormContentFileService() {
+      return Mockito.mock(SchemaFormContentFileService.class);
     }
 
     @Bean

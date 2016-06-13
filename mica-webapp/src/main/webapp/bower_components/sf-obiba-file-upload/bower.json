@@ -1,0 +1,32 @@
+{
+  "name": "sf-obiba-file-upload",
+  "version": "1.0.0",
+  "license": "MIT",
+  "author": "obiba",
+  "main": [
+    "dist/sf-obiba-file-upload.min.js"
+  ],
+  "keywords": [
+    "angular-schema-form",
+    "schema-form",
+    "form",
+    "json",
+    "json-schema",
+    "schema"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "angular-schema-form": "^0.8.13",
+    "angular-schema-form-bootstrap": "^0.2.0",
+    "bootstrap": "^3.3.6",
+    "angular-cookies": "1.5.5",
+    "angular-resource": "1.5.5",
+    "ng-obiba-mica": "https://github.com/obiba/ng-obiba-mica.git#master"
+  }
+}

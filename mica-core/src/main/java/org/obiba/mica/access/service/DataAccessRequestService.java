@@ -23,6 +23,7 @@ import org.obiba.mica.access.event.DataAccessRequestDeletedEvent;
 import org.obiba.mica.access.event.DataAccessRequestUpdatedEvent;
 import org.obiba.mica.core.repository.AttachmentRepository;
 import org.obiba.mica.core.service.MailService;
+import org.obiba.mica.core.service.SchemaFormContentFileService;
 import org.obiba.mica.core.support.IdentifierGenerator;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.FileStoreService;
@@ -51,13 +52,15 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.PathNotFoundException;
 
+import static com.jayway.jsonpath.Configuration.defaultConfiguration;
+
 @Service
 @Validated
 public class DataAccessRequestService {
 
   private static final Logger log = LoggerFactory.getLogger(DataAccessRequestService.class);
 
-  private static final Configuration conf = Configuration.defaultConfiguration().addOptions(Option.ALWAYS_RETURN_LIST);
+  private static final Configuration conf = defaultConfiguration().addOptions(Option.ALWAYS_RETURN_LIST);
 
   @Inject
   private DataAccessRequestRepository dataAccessRequestRepository;
@@ -70,6 +73,9 @@ public class DataAccessRequestService {
 
   @Inject
   private FileStoreService fileStoreService;
+
+  @Inject
+  private SchemaFormContentFileService schemaFormContentFileService;
 
   @Inject
   private EventBus eventBus;
@@ -115,6 +121,9 @@ public class DataAccessRequestService {
         setAndLogStatus(saved, DataAccessRequest.Status.OPENED);
       }
     }
+
+    schemaFormContentFileService.save(saved, dataAccessRequestRepository.findOne(request.getId()),
+        String.format("/data-access-request/%s", saved.getId()));
 
     if(toSave != null) toSave.forEach(a -> {
       fileStoreService.save(a.getId());
@@ -253,7 +262,7 @@ public class DataAccessRequestService {
   public byte[] getRequestPdf(String id, String lang) {
     DataAccessRequest dataAccessRequest = findById(id);
     ByteArrayOutputStream ba = new ByteArrayOutputStream();
-    Object content = Configuration.defaultConfiguration().jsonProvider().parse(dataAccessRequest.getContent());
+    Object content = defaultConfiguration().jsonProvider().parse(dataAccessRequest.getContent());
     try {
       fillPdfTemplateFromRequest(getTemplate(Locale.forLanguageTag(lang)), ba, content);
     } catch(IOException | DocumentException e) {
