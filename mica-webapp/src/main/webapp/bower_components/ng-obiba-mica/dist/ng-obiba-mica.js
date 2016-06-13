@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-06-10
+ * Date: 2016-06-13
  */
 'use strict';
 
@@ -13,6 +13,7 @@ function NgObibaMicaUrlProvider() {
     'DataAccessRequestsResource': 'ws/data-access-requests',
     'DataAccessRequestResource': 'ws/data-access-request/:id',
     'DataAccessRequestAttachmentDownloadResource': '/ws/data-access-request/:id/attachments/:attachmentId/_download',
+    'SchemaFormAttachmentDownloadResource': '/ws/:path/form/attachments/:attachmentName/:attachmentId/_download',
     'DataAccessRequestDownloadPdfResource': '/ws/data-access-request/:id/_pdf',
     'DataAccessRequestCommentsResource': 'ws/data-access-request/:id/comments',
     'DataAccessRequestCommentResource': 'ws/data-access-request/:id/comment/:commentId',
@@ -339,7 +340,7 @@ angular.module('obiba.mica.attachment')
     return {
       restrict: 'E',
       scope: {
-        hrefBuilder: '&',
+        hrefBuilder: '=',
         files: '='
       },
       templateUrl: 'attachment/attachment-list-template.html',
@@ -351,7 +352,7 @@ angular.module('obiba.mica.attachment')
           if (val) {
             scope.attachments = val.map(function (a) {
               var temp = angular.copy(a);
-              temp.href = scope.hrefBuilder({id: a.id});
+              temp.href = scope.hrefBuilder(a);
               return temp;
             });
           }
@@ -366,7 +367,8 @@ angular.module('obiba.mica.attachment')
       scope: {
         multiple: '=',
         accept: '@',
-        files: '='
+        files: '=',
+        disabled: '='
       },
       templateUrl: 'attachment/attachment-input-template.html',
       controller: 'AttachmentCtrl'
@@ -375,7 +377,7 @@ angular.module('obiba.mica.attachment')
   .controller('AttachmentCtrl', ['$scope', '$timeout', '$log', 'Upload', 'TempFileResource', 'ngObibaMicaUrl',
     function ($scope, $timeout, $log, Upload, TempFileResource, ngObibaMicaUrl) {
       var uploadFile = function (file) {
-        $log.debug('file', file);
+        $scope.files = $scope.files || [];
 
         var attachment = {
           showProgressBar: true,
@@ -710,9 +712,9 @@ angular.module('obiba.mica.access')
         }
       });
 
-      $scope.getDownloadHref = function(attachments, id) {
+      $scope.getDownloadHref = function(attachment) {
         return ngObibaMicaUrl.getUrl('DataAccessRequestAttachmentDownloadResource')
-          .replace(':id', $scope.dataAccessRequest.id).replace(':attachmentId', id);
+          .replace(':id', $scope.dataAccessRequest.id).replace(':attachmentId', attachment.id);
       };
 
       $scope.config = DataAccessRequestConfig.getOptions();
@@ -750,8 +752,8 @@ angular.module('obiba.mica.access')
           // Retrieve form data
           DataAccessFormConfigResource.get(
             function onSuccess(dataAccessForm) {
-              $scope.form.definition = JsonUtils.parseJsonSafely(LocalizedSchemaFormService.schemaFormReplaceAndTranslate(dataAccessForm.definition), []);
-              $scope.form.schema = JsonUtils.parseJsonSafely(LocalizedSchemaFormService.schemaFormReplaceAndTranslate(dataAccessForm.schema), {});
+              $scope.form.definition = LocalizedSchemaFormService.translate(JsonUtils.parseJsonSafely(dataAccessForm.definition, []));
+              $scope.form.schema = LocalizedSchemaFormService.translate(JsonUtils.parseJsonSafely(dataAccessForm.schema, {}));
 
               if ($scope.form.definition.length === 0) {
                 $scope.validForm = false;
@@ -1006,8 +1008,8 @@ angular.module('obiba.mica.access')
       // Retrieve form data
       DataAccessFormConfigResource.get(
         function onSuccess(dataAccessForm) {
-          $scope.form.definition = JsonUtils.parseJsonSafely(LocalizedSchemaFormService.schemaFormReplaceAndTranslate(dataAccessForm.definition), []);
-          $scope.form.schema = JsonUtils.parseJsonSafely(LocalizedSchemaFormService.schemaFormReplaceAndTranslate(dataAccessForm.schema), {});
+          $scope.form.definition = LocalizedSchemaFormService.translate(JsonUtils.parseJsonSafely(dataAccessForm.definition, []));
+          $scope.form.schema = LocalizedSchemaFormService.translate(JsonUtils.parseJsonSafely(dataAccessForm.schema, {}));
           if ($scope.form.definition.length === 0) {
             $scope.form.definition = [];
             $scope.validForm = false;
@@ -7310,13 +7312,62 @@ angular.module('obiba.mica.localized')
       };
     })
 
-  .service('LocalizedSchemaFormService', ['$filter','JsonUtils', function ($filter, JsonUtils) {
-    this.schemaFormReplaceAndTranslate = function (stringOrObject) {
-      var string = typeof stringOrObject === 'string' ? stringOrObject : JSON.stringify(stringOrObject);
-      var translated = string.replace(/"t\(([^\)]+)\)"/g, function (match, p1) {
-        return '"' + $filter('translate')(p1) + '"';
+  .service('LocalizedSchemaFormService', ['$filter', function ($filter) {
+
+    this.translate = function(value) {
+      if (!value) {
+        return value;
+      }
+      if (typeof value === 'string') {
+        return this.translateString(value);
+      } else if (typeof value === 'object') {
+        if (Array.isArray(value)) {
+          return this.translateArray(value);
+        } else {
+          return this.translateObject(value);
+        }
+      }
+      return value;
+    };
+
+    this.translateObject = function(object) {
+      if (!object) {
+        return object;
+      }
+      for (var prop in object) {
+        if (object.hasOwnProperty(prop)) {
+          if (typeof object[prop] === 'string') {
+            object[prop] = this.translateString(object[prop]);
+          } else if (typeof object[prop] === 'object') {
+            if (Array.isArray(object[prop])) {
+              object[prop] = this.translateArray(object[prop]);
+            } else {
+              object[prop] = this.translateObject(object[prop]);
+            }
+          } // else ignore
+        }
+      }
+      return object;
+    };
+
+    this.translateArray = function(array) {
+      if (!array) {
+        return array;
+      }
+      var that = this;
+      array.map(function (item) {
+         return that.translate(item);
       });
-      return typeof stringOrObject === 'string' ? translated : JsonUtils.parseJsonSafely(translated);
+      return array;
+    };
+
+    this.translateString = function(string) {
+      if (!string) {
+        return string;
+      }
+      return string.replace(/t\(([^\)]+)\)/g, function (match, p1) {
+        return $filter('translate')(p1);
+      });
     };
 
   }]);
@@ -8220,7 +8271,7 @@ angular.module("access/views/data-access-request-view.html", []).run(["$template
     "        </p>\n" +
     "\n" +
     "        <attachment-list files=\"dataAccessRequest.attachments\"\n" +
-    "            href-builder=\"getDownloadHref(attachments, id)\"></attachment-list>\n" +
+    "            href-builder=\"getDownloadHref\"></attachment-list>\n" +
     "      </uib-tab>\n" +
     "      <uib-tab ng-if=\"config.commentsEnabled\" ng-click=\"selectTab('comments')\" heading=\"{{'data-access-request.comments' | translate}}\">\n" +
     "        <obiba-comments comments=\"form.comments\" on-update=\"updateComment\" on-delete=\"deleteComment\" name-resolver=\"userProfileService.getFullName\" edit-action=\"EDIT\" delete-action=\"DELETE\"></obiba-comments>\n" +
@@ -8238,7 +8289,7 @@ angular.module("access/views/data-access-request-view.html", []).run(["$template
 
 angular.module("attachment/attachment-input-template.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("attachment/attachment-input-template.html",
-    "<button type=\"button\" class=\"btn btn-primary btn-xs\" aria-hidden=\"true\" ngf-multiple=\"{{multiple}}\" ngf-select\n" +
+    "<button ng-hide=\"{{disabled}}\" type=\"button\" class=\"btn btn-primary btn-xs\" aria-hidden=\"true\" ngf-multiple=\"{{multiple}}\" ngf-select\n" +
     "        ngf-change=\"onFileSelect($files)\" translate>file.upload.button\n" +
     "</button>\n" +
     "\n" +

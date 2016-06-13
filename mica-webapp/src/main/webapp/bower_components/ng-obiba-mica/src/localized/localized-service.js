@@ -75,13 +75,62 @@ angular.module('obiba.mica.localized')
       };
     })
 
-  .service('LocalizedSchemaFormService', ['$filter','JsonUtils', function ($filter, JsonUtils) {
-    this.schemaFormReplaceAndTranslate = function (stringOrObject) {
-      var string = typeof stringOrObject === 'string' ? stringOrObject : JSON.stringify(stringOrObject);
-      var translated = string.replace(/"t\(([^\)]+)\)"/g, function (match, p1) {
-        return '"' + $filter('translate')(p1) + '"';
+  .service('LocalizedSchemaFormService', ['$filter', function ($filter) {
+
+    this.translate = function(value) {
+      if (!value) {
+        return value;
+      }
+      if (typeof value === 'string') {
+        return this.translateString(value);
+      } else if (typeof value === 'object') {
+        if (Array.isArray(value)) {
+          return this.translateArray(value);
+        } else {
+          return this.translateObject(value);
+        }
+      }
+      return value;
+    };
+
+    this.translateObject = function(object) {
+      if (!object) {
+        return object;
+      }
+      for (var prop in object) {
+        if (object.hasOwnProperty(prop)) {
+          if (typeof object[prop] === 'string') {
+            object[prop] = this.translateString(object[prop]);
+          } else if (typeof object[prop] === 'object') {
+            if (Array.isArray(object[prop])) {
+              object[prop] = this.translateArray(object[prop]);
+            } else {
+              object[prop] = this.translateObject(object[prop]);
+            }
+          } // else ignore
+        }
+      }
+      return object;
+    };
+
+    this.translateArray = function(array) {
+      if (!array) {
+        return array;
+      }
+      var that = this;
+      array.map(function (item) {
+         return that.translate(item);
       });
-      return typeof stringOrObject === 'string' ? translated : JsonUtils.parseJsonSafely(translated);
+      return array;
+    };
+
+    this.translateString = function(string) {
+      if (!string) {
+        return string;
+      }
+      return string.replace(/t\(([^\)]+)\)/g, function (match, p1) {
+        return $filter('translate')(p1);
+      });
     };
 
   }]);

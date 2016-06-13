@@ -4,11 +4,11 @@
     "items": [
       {
         "type": "help",
-        "helpvalue": "<h3>Contact Details</h3><p class='help-block'>Please ensure that a full postal address and a valid institutional e-mail address are included. In case of more than one affiliation, applicants are asked to only provide their contact information pertaining to the institution they are affiliated with for the purpose of this research project.</p>"
+        "helpvalue": "<h3>t(research-project.default.contact.title)</h3><p class='help-block'>t(research-project.default.contact.help)</p>"
       },
       {
-        "type":"string",
-        "key":"name"
+        "type": "string",
+        "key": "name"
       },
       "title",
       {

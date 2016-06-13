@@ -5,7 +5,7 @@ angular.module('obiba.mica.attachment')
     return {
       restrict: 'E',
       scope: {
-        hrefBuilder: '&',
+        hrefBuilder: '=',
         files: '='
       },
       templateUrl: 'attachment/attachment-list-template.html',
@@ -17,7 +17,7 @@ angular.module('obiba.mica.attachment')
           if (val) {
             scope.attachments = val.map(function (a) {
               var temp = angular.copy(a);
-              temp.href = scope.hrefBuilder({id: a.id});
+              temp.href = scope.hrefBuilder(a);
               return temp;
             });
           }
@@ -32,7 +32,8 @@ angular.module('obiba.mica.attachment')
       scope: {
         multiple: '=',
         accept: '@',
-        files: '='
+        files: '=',
+        disabled: '='
       },
       templateUrl: 'attachment/attachment-input-template.html',
       controller: 'AttachmentCtrl'
@@ -41,7 +42,7 @@ angular.module('obiba.mica.attachment')
   .controller('AttachmentCtrl', ['$scope', '$timeout', '$log', 'Upload', 'TempFileResource', 'ngObibaMicaUrl',
     function ($scope, $timeout, $log, Upload, TempFileResource, ngObibaMicaUrl) {
       var uploadFile = function (file) {
-        $log.debug('file', file);
+        $scope.files = $scope.files || [];
 
         var attachment = {
           showProgressBar: true,

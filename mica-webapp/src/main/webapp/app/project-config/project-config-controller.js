@@ -15,12 +15,14 @@ mica.projectConfig
   .controller('ProjectConfigController', ['$rootScope', '$location', '$scope', '$log',
     'ProjectFormResource',
     'ProjectFormService',
+    'LocalizedSchemaFormService',
     'AlertService',
     'ServerErrorUtils',
     'ProjectFormPermissionsResource',
     function ($rootScope, $location, $scope, $log,
               ProjectFormResource,
               ProjectFormService,
+              LocalizedSchemaFormService,
               AlertService,
               ServerErrorUtils,
               ProjectFormPermissionsResource) {
@@ -66,8 +68,8 @@ mica.projectConfig
       var refreshPreview = function() {
         try {
           if ($scope.dirty) {
-            $scope.form.schemaJson = JSON.parse($scope.form.schema);
-            $scope.form.definitionJson = JSON.parse($scope.form.definition);
+            $scope.form.schemaJson = LocalizedSchemaFormService.translate(JSON.parse($scope.form.schema));
+            $scope.form.definitionJson = LocalizedSchemaFormService.translate(JSON.parse($scope.form.definition));
             $scope.dirty = false;
           }
         } catch (e){
