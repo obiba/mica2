@@ -1,0 +1,21 @@
+<div ng-controller="sfObibaFileUploadController" sf-field-model>
+  <div class="form-group">
+    <label translate>description</label>
+    <input sf-field-model="replaceAll"
+           ng-disabled="form.readonly"
+           type="text"
+           class="form-control"
+           ng-model="$$value$$.description"
+           placeholder="{{form.description}}">
+
+    <attachment-input ng-if="!form.readonly"
+                        sf-field-model="replaceAll"
+                        files="$$value$$.obibaFiles"
+                        multiple="form.schema.multiple"></attachment-input>
+
+    <attachment-list ng-if="form.readonly"
+                     href-builder="getDownloadUrl"
+                     files="$$value$$.obibaFiles"
+                     sf-field-model="replaceAll"></attachment-list>
+  </div>
+</div>
