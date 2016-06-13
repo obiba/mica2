@@ -2,77 +2,77 @@
   "type": "object",
   "properties": {
     "name": {
-      "title": "Name",
+      "title": "t(data-access-request.default.name)",
       "type": "string"
     },
     "title": {
-      "title": "Title",
+      "title": "t(data-access-request.default.title)",
       "type": "string"
     },
     "position": {
-      "title": "Position",
+      "title": "t(data-access-request.default.position)",
       "type": "string"
     },
     "institution": {
-      "title": "Institution",
+      "title": "t(data-access-request.default.institution)",
       "type": "string"
     },
     "email": {
-      "title": "Institutional Email",
+      "title": "t(data-access-request.default.institution-email)",
       "type": "string",
       "pattern": "^\\S+@\\S+$"
     },
     "emailAlt": {
-      "title": "Alternate Email",
+      "title": "t(data-access-request.default.email-alt)",
       "type": "string",
       "pattern": "^\\S+@\\S+$"
     },
     "mailingAddress": {
-      "title": "Mailing address",
+      "title": "t(data-access-request.default.address)",
       "type": "string"
     },
     "phone": {
-      "title": "Telephone Number",
+      "title": "t(data-access-request.default.phone)",
       "type": "string"
     },
     "repName": {
-      "title": "Name",
+      "title": "t(data-access-request.default.name)",
       "type": "string"
     },
     "repTitle": {
-      "title": "Title",
+      "title": "t(data-access-request.default.title)",
       "type": "string"
     },
     "repPosition": {
-      "title": "Position",
+      "title": "t(data-access-request.default.position)",
       "type": "string"
     },
     "repInstitution": {
-      "title": "Institution",
+      "title": "t(data-access-request.default.institution)",
       "type": "string"
     },
     "repEmail": {
-      "title": "Institutional Email",
+      "title": "t(data-access-request.default.institution-email)",
       "type": "string",
       "pattern": "^\\S+@\\S+$"
     },
     "repMailingAddress": {
-      "title": "Mailing address",
+      "title": "t(data-access-request.default.address)",
       "type": "string"
     },
     "repPhone": {
-      "title": "Telephone Number",
+      "title": "t(data-access-request.default.phone)",
       "type": "string"
     },
     "projectTitle": {
       "type": "string"
     },
     "projectWebsite": {
-      "title": "Project website",
+      "title": "t(data-access-request.default.I.C.website)",
       "type": "string"
     },
     "hasNoStaff": {
-      "title": "No personnel will require access to the research data.",
+      "title": "t(data-access-request.default.I.D.check)",
       "type": "boolean"
     },
     "staff": {
@@ -82,19 +82,19 @@
         "type": "object",
         "properties": {
           "name": {
-            "title": "Name",
+            "title": "t(data-access-request.default.name)",
             "type": "string"
           },
           "title": {
-            "title": "Title",
+            "title": "t(data-access-request.default.title)",
             "type": "string"
           },
           "position": {
-            "title": "Position",
+            "title": "t(data-access-request.default.position)",
             "type": "string"
           },
           "email": {
-            "title": "Email",
+            "title": "t(data-access-request.default.email)",
             "type": "string",
             "pattern": "^\\S+@\\S+$"
           }
@@ -106,7 +106,7 @@
       }
     },
     "hasNoStudents": {
-      "title": "No students will require access to the research data.",
+      "title": "t(data-access-request.default.I.E.check)",
       "type": "boolean"
     },
     "students": {
@@ -116,19 +116,19 @@
         "type": "object",
         "properties": {
           "name": {
-            "title": "Name",
+            "title": "t(data-access-request.default.name)",
             "type": "string"
           },
           "title": {
-            "title": "Title",
+            "title": "t(data-access-request.default.title)",
             "type": "string"
           },
           "position": {
-            "title": "Position",
+            "title": "t(data-access-request.default.position)",
             "type": "string"
           },
           "email": {
-            "title": "Email",
+            "title": "t(data-access-request.default.email)",
             "type": "string",
             "pattern": "^\\S+@\\S+$"
           }
@@ -146,7 +146,7 @@
       "type": "string"
     },
     "isFormCompleted": {
-      "title": "I have completed all mandatory fields, included all necessary documents, and hereby submit this application.",
+      "title": "t(data-access-request.default.signature.check)",
       "type": "boolean"
     }
   },

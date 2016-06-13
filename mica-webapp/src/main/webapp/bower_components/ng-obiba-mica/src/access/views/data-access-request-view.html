@@ -80,7 +80,7 @@
         </p>
 
         <attachment-list files="dataAccessRequest.attachments"
-            href-builder="getDownloadHref(attachments, id)"></attachment-list>
+            href-builder="getDownloadHref"></attachment-list>
       </uib-tab>
       <uib-tab ng-if="config.commentsEnabled" ng-click="selectTab('comments')" heading="{{'data-access-request.comments' | translate}}">
         <obiba-comments comments="form.comments" on-update="updateComment" on-delete="deleteComment" name-resolver="userProfileService.getFullName" edit-action="EDIT" delete-action="DELETE"></obiba-comments>

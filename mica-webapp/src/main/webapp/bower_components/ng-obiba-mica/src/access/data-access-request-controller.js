@@ -229,9 +229,9 @@ angular.module('obiba.mica.access')
         }
       });
 
-      $scope.getDownloadHref = function(attachments, id) {
+      $scope.getDownloadHref = function(attachment) {
         return ngObibaMicaUrl.getUrl('DataAccessRequestAttachmentDownloadResource')
-          .replace(':id', $scope.dataAccessRequest.id).replace(':attachmentId', id);
+          .replace(':id', $scope.dataAccessRequest.id).replace(':attachmentId', attachment.id);
       };
 
       $scope.config = DataAccessRequestConfig.getOptions();
@@ -269,8 +269,8 @@ angular.module('obiba.mica.access')
           // Retrieve form data
           DataAccessFormConfigResource.get(
             function onSuccess(dataAccessForm) {
-              $scope.form.definition = JsonUtils.parseJsonSafely(LocalizedSchemaFormService.schemaFormReplaceAndTranslate(dataAccessForm.definition), []);
-              $scope.form.schema = JsonUtils.parseJsonSafely(LocalizedSchemaFormService.schemaFormReplaceAndTranslate(dataAccessForm.schema), {});
+              $scope.form.definition = LocalizedSchemaFormService.translate(JsonUtils.parseJsonSafely(dataAccessForm.definition, []));
+              $scope.form.schema = LocalizedSchemaFormService.translate(JsonUtils.parseJsonSafely(dataAccessForm.schema, {}));
 
               if ($scope.form.definition.length === 0) {
                 $scope.validForm = false;
@@ -525,8 +525,8 @@ angular.module('obiba.mica.access')
       // Retrieve form data
       DataAccessFormConfigResource.get(
         function onSuccess(dataAccessForm) {
-          $scope.form.definition = JsonUtils.parseJsonSafely(LocalizedSchemaFormService.schemaFormReplaceAndTranslate(dataAccessForm.definition), []);
-          $scope.form.schema = JsonUtils.parseJsonSafely(LocalizedSchemaFormService.schemaFormReplaceAndTranslate(dataAccessForm.schema), {});
+          $scope.form.definition = LocalizedSchemaFormService.translate(JsonUtils.parseJsonSafely(dataAccessForm.definition, []));
+          $scope.form.schema = LocalizedSchemaFormService.translate(JsonUtils.parseJsonSafely(dataAccessForm.schema, {}));
           if ($scope.form.definition.length === 0) {
             $scope.form.definition = [];
             $scope.validForm = false;

@@ -140,11 +140,11 @@ mica.project
         function onSuccess(projectForm) {
           var definition = JsonUtils.parseJsonSafely(projectForm.definition, []);
           definition.unshift(angular.copy(PROJECT_DEFINITION));
-          $scope.form.definition = LocalizedSchemaFormService.schemaFormReplaceAndTranslate(definition);
+          $scope.form.definition = LocalizedSchemaFormService.translate(definition);
           var schema = JsonUtils.parseJsonSafely(projectForm.schema, {});
           schema.properties._mica = angular.copy(PROJECT_SCHEMA);
           schema.readonly = true;
-          $scope.form.schema = LocalizedSchemaFormService.schemaFormReplaceAndTranslate(schema);
+          $scope.form.schema = LocalizedSchemaFormService.translate(schema);
         });
 
       $scope.projectId = $routeParams.id;
@@ -340,10 +340,10 @@ mica.project
         function onSuccess(projectForm) {
           var definition = JsonUtils.parseJsonSafely(projectForm.definition, []);
           definition.unshift(angular.copy(PROJECT_DEFINITION));
-          $scope.form.definition = LocalizedSchemaFormService.schemaFormReplaceAndTranslate(definition);
+          $scope.form.definition = LocalizedSchemaFormService.translate(definition);
           var schema = JsonUtils.parseJsonSafely(projectForm.schema, {});
           schema.properties._mica = angular.copy(PROJECT_SCHEMA);
-          $scope.form.schema = LocalizedSchemaFormService.schemaFormReplaceAndTranslate(schema);
+          $scope.form.schema = LocalizedSchemaFormService.translate(schema);
           if (!$routeParams.id) {
             $scope.form.model = {};
           }

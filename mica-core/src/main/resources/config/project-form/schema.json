@@ -2,19 +2,11 @@
   "type": "object",
   "properties": {
     "name": {
-      "title": "Name",
-      "type": "string"
-    },
-    "title": {
-      "title": "Title",
-      "type": "string"
-    },
-    "position": {
-      "title": "Position",
+      "title": "t(research-project.default.contact.name)",
       "type": "string"
     },
     "institution": {
-      "title": "Institution",
+      "title": "t(research-project.default.contact.institution)",
       "type": "string"
     }
   },
