@@ -1,13 +1,13 @@
 angular.module('sfObibaFileUpload', [
   'schemaForm',
-  'templates',
+  'sfObibaFileUploadTemplates',
   'ngObibaMica'
 ]).config(['schemaFormProvider', 'schemaFormDecoratorsProvider', 'sfPathProvider', 'sfBuilderProvider',
   function (schemaFormProvider, schemaFormDecoratorsProvider, sfPathProvider, sfBuilderProvider) {
 
     var obibaFileUpload = function (name, schema, options) {
 
-      if (schema.type === 'object' && (schema.format === 'obibaFile' || schema.format === 'obibaFiles')) {
+      if (schema.type === 'object' && schema.format === 'obibaFiles') {
         var f = schemaFormProvider.stdFormObj(name, schema, options);
         f.key = options.path;
         f.type = 'obibaFileUpload';
@@ -28,7 +28,6 @@ angular.module('sfObibaFileUpload', [
   }])
   .controller('sfObibaFileUploadController', ['$scope', 'ngObibaMicaUrl', 
     function ($scope, ngObibaMicaUrl) {
-      console.log('>>>> Model', $scope.model);
       $scope.getDownloadUrl = function(attachment) {
         return ngObibaMicaUrl.getUrl('SchemaFormAttachmentDownloadResource')
           .replace(':path', attachment.path)
@@ -36,8 +35,4 @@ angular.module('sfObibaFileUpload', [
           .replace(':attachmentId', attachment.id)
           .replace('//', '/');
       };
-
-      $scope.$watch('form', function() {
-        console.log('####', $scope.form);
-      }, true);
     }]);

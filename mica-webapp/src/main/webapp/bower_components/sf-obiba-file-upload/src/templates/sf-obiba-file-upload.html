@@ -1,17 +1,14 @@
-<div ng-controller="sfObibaFileUploadController" sf-field-model>
+<div ng-controller="sfObibaFileUploadController"
+     sf-field-model
+     ng-class="{'has-error': form.disableErrorState !== true && hasError(), 'has-success': form.disableSuccessState !== true && hasSuccess(), 'has-feedback': form.feedback !== false }"
+     schema-validate="form">
   <div class="form-group">
-    <label translate>description</label>
-    <input sf-field-model="replaceAll"
-           ng-disabled="form.readonly"
-           type="text"
-           class="form-control"
-           ng-model="$$value$$.description"
-           placeholder="{{form.description}}">
+    <label class="control-label">{{form.title}}</label>
 
     <attachment-input ng-if="!form.readonly"
-                        sf-field-model="replaceAll"
-                        files="$$value$$.obibaFiles"
-                        multiple="form.schema.multiple"></attachment-input>
+                      sf-field-model="replaceAll"
+                      files="$$value$$.obibaFiles"
+                      multiple="form.schema.multiple"></attachment-input>
 
     <attachment-list ng-if="form.readonly"
                      href-builder="getDownloadUrl"
