@@ -17,15 +17,25 @@
   </h2>
   <p class="help-block" translate>config.translations.info</p>
 
+  <div class="row voffset2">
+    <div class="col-xs-4">
+      <a href class="btn btn-info" ng-click="add()">
+        <i class="fa fa-plus"></i> {{'config.translations.add' | translate}}
+      </a>
+    </div>
+  </div>
+
+  <p>&nbsp;</p>
+
   <uib-tabset active="activeTab">
     <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" disable="tab.disabled">
 
       <div class="row voffset2">
         <div class="col-xs-4">
-      <span class="input-group input-group-sm no-padding-top">
-        <span class="input-group-addon" id="study-search"><i class="glyphicon glyphicon-search"></i></span>
-        <input ng-model="filter" type="text" class="form-control" aria-describedby="study-search">
-      </span>
+          <span class="input-group input-group-sm no-padding-top">
+            <span class="input-group-addon" id="study-search"><i class="glyphicon glyphicon-search"></i></span>
+            <input ng-model="filter" type="text" class="form-control" aria-describedby="study-search">
+          </span>
         </div>
       </div>
 
@@ -41,10 +51,14 @@
               <span ng-if="!entry.overwritten">{{entry.path}}</span>
             </td>
             <td class="col-md-8">
-              <div ng-class="{'input-group': entry.overwritten}">
-                <input type="text" class="form-control" ng-model="entry.value" ng-keypress="setDirty(entry)">
-                <span ng-if="entry.overwritten" class="input-group-btn">
+              <div ng-class="{'input-group': entry.overwritten || entry.isCustom}">
+                <input type="text" class="form-control" ng-model="entry.value" ng-focus="checkPresence(entry)" ng-keypress="setDirty(entry)">
+                <span ng-if="entry.overwritten && !entry.isCustom" class="input-group-btn">
                   <button class="btn btn-default" type="button" ng-click="resetEntry(entry, tab.lang)"><i class="fa fa-times"></i></button>
+                </span>
+
+                <span ng-if="entry.isCustom" class="input-group-btn">
+                  <button class="btn btn-default" type="button" ng-click="trash(entry)"><i class="fa fa-trash"></i></button>
                 </span>
               </div>
             </td>
