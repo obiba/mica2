@@ -1,0 +1,9 @@
+.debug .wrapper {
+  border: 1px solid #d6d6d6;
+  border-radius: 5px;
+  margin: 10px 0;
+}
+
+.debug .wrapper > div > div {
+  padding: 0 25px;
+}
