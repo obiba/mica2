@@ -354,8 +354,10 @@ mica.project
         if ($scope.form.$valid) {
           $scope.project.title = LocalizedValues.objectToArray($scope.languages, $scope.form.model._mica.title);
           $scope.project.summary = LocalizedValues.objectToArray($scope.languages, $scope.form.model._mica.summary);
-          delete $scope.form.model._mica;
-          $scope.project.content = JSON.stringify($scope.form.model);
+          // make a copy of the model to avoid validation errors after _mica object was removed.
+          var model = angular.copy($scope.form.model);
+          delete model._mica;
+          $scope.project.content = JSON.stringify(model);
           if ($scope.project.id) {
             updateProject();
           } else {

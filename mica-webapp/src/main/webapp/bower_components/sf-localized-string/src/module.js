@@ -57,5 +57,19 @@ angular.module('sfLocalizedString', [
         };
       }, true);
 
+      $scope.$watch('form', function() {
+        $scope.selectedLocale = $scope.form ? $scope.form.locales[0] : '';
+      });
+
+      $scope.selectLocale = function (locale) {
+        $scope.selectedLocale = locale;
+        $scope.open = false;
+      };
+
+      $scope.toggleDropdown = function() {
+        $scope.open = !$scope.open;
+      };
+
+      $scope.open = false;
 
     }]);
