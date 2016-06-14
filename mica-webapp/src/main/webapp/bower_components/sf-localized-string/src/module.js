@@ -1,6 +1,6 @@
 angular.module('sfLocalizedString', [
   'schemaForm',
-  'templates'
+  'sfLocalizedStringTemplates'
 ]).config(['schemaFormProvider', 'schemaFormDecoratorsProvider', 'sfBuilderProvider', 'sfPathProvider',
   function(schemaFormProvider,  schemaFormDecoratorsProvider, sfBuilderProvider, sfPathProvider) {
 
