@@ -31,6 +31,7 @@ gulp.task('minify', function () {
     gulp.src(['src/templates/**/*.html']).pipe(templateCache({
       standalone: true,
       root: 'src/templates/',
+      module: 'sfObibaFileUploadTemplates'
     })),
     gulp.src(files)
   )

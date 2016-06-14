@@ -28,6 +28,7 @@ import com.google.common.collect.Sets;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.PathNotFoundException;
 import com.jayway.jsonpath.internal.JsonReader;
 
 import static com.jayway.jsonpath.Configuration.defaultConfiguration;
@@ -44,12 +45,19 @@ public class SchemaFormContentFileService {
     Object json = defaultConfiguration().jsonProvider().parse(newEntity.getContent());
     DocumentContext newContext = JsonPath.using(defaultConfiguration().addOptions(Option.AS_PATH_LIST)).parse(json);
     Map<String, JSONArray> newPaths = getPathFilesMap(newContext, json);
+    if (newPaths == null) return; // content does not have any file field
 
     if (oldEntity != null) {
       Object oldJson = defaultConfiguration().jsonProvider().parse(oldEntity.getContent());
       DocumentContext oldContext = JsonPath.using(defaultConfiguration().addOptions(Option.AS_PATH_LIST)).parse(oldJson);
       Map<String, JSONArray> oldPaths = getPathFilesMap(oldContext, oldJson);
-      saveAndDelete(oldPaths, newPaths, entityPath);
+      if (oldPaths != null) {
+        saveAndDelete(oldPaths, newPaths, entityPath);
+      } else {
+        // schema and definition now have files
+        newPaths.values().stream().forEach(v -> saveFiles(v, entityPath));
+      }
+
     } else {
       newPaths.values().stream().forEach(v -> saveFiles(v, entityPath));
     }
@@ -70,7 +78,13 @@ public class SchemaFormContentFileService {
   private Map<String, JSONArray> getPathFilesMap(DocumentContext context, Object json) {
     DocumentContext reader =
         new JsonReader(defaultConfiguration().addOptions(Option.REQUIRE_PROPERTIES)).parse(json);
-    JSONArray paths = context.read("$..obibaFiles");
+
+    JSONArray paths = null;
+    try {
+      paths = context.read("$..obibaFiles");
+    } catch(PathNotFoundException e) {
+      return null;
+    }
 
     return paths.stream().collect(Collectors.toMap(Object::toString, p -> (JSONArray) reader.read(p.toString())));
   }
