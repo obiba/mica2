@@ -1,4 +1,4 @@
-angular.module("sfLocalizedStringTemplates", []).run(["$templateCache", function($templateCache) {$templateCache.put("src/templates/sf-localized-string.html","<div class=\"form-group\"\n     ng-controller=\"LocalizedStringController\"\n     ng-class=\"{\'has-error\': form.disableErrorState !== true && hasError(), \'has-success\': form.disableSuccessState !== true && hasSuccess(), \'has-feedback\': form.feedback !== false }\"\n     schema-validate=\"form\" sf-field-model >\n  <!--<pre>{{form|json}}</pre>-->\n  <label class=\"control-label\" ng-show=\"showTitle()\">{{form.title}}</label>\n  <div ng-if=\"!form.rows || form.rows <= 1\"\n       ng-class=\"{\'form-group\' : !$last, \'input-group\' : form.showLocales || form.locales.length > 1}\"\n       ng-repeat=\"locale in form.locales\">\n    <span class=\"input-group-addon\"\n          ng-if=\"form.showLocales || form.locales.length > 1\">{{locale}}</span>\n    <input type=\"text\" class=\"form-control\"\n           sf-field-model=\"replaceAll\" ng-model=\"$$value$$[locale]\"></input>\n  </div>\n  <div ng-if=\"form.rows && form.rows > 1\"\n       ng-class=\"{\'form-group\' : !$last, \'input-group\' : form.showLocales || form.locales.length > 1}\"\n       ng-repeat=\"locale in form.locales\">\n    <span class=\"input-group-addon\"\n          ng-if=\"form.showLocales || form.locales.length > 1\">{{locale}}</span>\n    <textarea class=\"form-control\"\n              sf-field-model=\"replaceAll\" ng-model=\"$$value$$[locale]\"\n              rows=\"{{form.rows ? form.rows : 5}}\"></textarea>\n  </div>\n  <span class=\"help-block\" sf-message=\"form.description\"></span>\n</div>\n");}]);
+angular.module("sfLocalizedStringTemplates", []).run(["$templateCache", function($templateCache) {$templateCache.put("src/templates/sf-localized-string.html","<div class=\"form-group\"\n     ng-controller=\"LocalizedStringController\"\n     ng-class=\"{\'has-error\': form.disableErrorState !== true && hasError(), \'has-success\': form.disableSuccessState !== true && hasSuccess(), \'has-feedback\': form.feedback !== false }\"\n     schema-validate=\"form\" sf-field-model >\n  <!--<pre>{{form|json}}</pre>-->\n  <label class=\"control-label\" ng-show=\"showTitle()\">{{form.title}}</label>\n  <div class=\"pull-right dropdown\" ng-class=\"{\'open\': open}\" ng-if=\"form.locales && form.locales.length > 1\">\n    <a href class=\"dropdown-toggle\" ng-click=\"toggleDropdown()\">{{selectedLocale}} <span class=\"caret\"></span></a>\n    <ul class=\"dropdown-menu\">\n      <li ng-repeat=\"loc in form.locales\"><a href ng-click=\"selectLocale(loc)\">{{loc}}</a></li>\n    </ul>\n  </div>\n  <div ng-if=\"!form.rows || form.rows <= 1\"\n       ng-class=\"{\'form-group\' : !$last}\">\n    <input type=\"text\" class=\"form-control\"\n           sf-field-model=\"replaceAll\" ng-model=\"$$value$$[locale]\"\n           ng-repeat=\"locale in form.locales\"\n           ng-show=\"locale === selectedLocale\"/>\n  </div>\n  <div ng-if=\"form.rows && form.rows > 1\"\n       ng-class=\"{\'form-group\' : !$last\">\n    <textarea class=\"form-control\"\n              sf-field-model=\"replaceAll\" ng-model=\"$$value$$[locale]\"\n              rows=\"{{form.rows ? form.rows : 5}}\"\n              ng-repeat=\"locale in form.locales\"\n              ng-show=\"locale === selectedLocale\"></textarea>\n  </div>\n  <span class=\"help-block\" sf-message=\"form.description\"></span>\n</div>\n");}]);
 angular.module('sfLocalizedString', [
   'schemaForm',
   'sfLocalizedStringTemplates'
@@ -58,5 +58,19 @@ angular.module('sfLocalizedString', [
         };
       }, true);
 
+      $scope.$watch('form', function() {
+        $scope.selectedLocale = $scope.form ? $scope.form.locales[0] : '';
+      });
+
+      $scope.selectLocale = function (locale) {
+        $scope.selectedLocale = locale;
+        $scope.open = false;
+      };
+
+      $scope.toggleDropdown = function() {
+        $scope.open = !$scope.open;
+      };
+
+      $scope.open = false;
 
     }]);
