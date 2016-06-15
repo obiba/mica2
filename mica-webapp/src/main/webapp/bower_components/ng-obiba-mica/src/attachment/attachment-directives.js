@@ -6,15 +6,18 @@ angular.module('obiba.mica.attachment')
       restrict: 'E',
       scope: {
         hrefBuilder: '=',
-        files: '='
+        files: '=',
+        emptyMessage: '='
       },
       templateUrl: 'attachment/attachment-list-template.html',
       link: function(scope) {
         scope.attachments = [];
         scope.hrefBuilder = scope.hrefBuilder || function(a) { return a.id; };
+        scope.hasAttachments = false;
 
         scope.$watch('files', function(val) {
           if (val) {
+            scope.hasAttachments = val.length > 0;
             scope.attachments = val.map(function (a) {
               var temp = angular.copy(a);
               temp.href = scope.hrefBuilder(a);

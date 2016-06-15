@@ -63,12 +63,15 @@ mica
     '$translateProvider',
     'tmhDynamicLocaleProvider',
     'USER_ROLES',
+    'sfObibaFileUploadOptionsProvider',
     function ($routeProvider,
               $httpProvider,
               $translateProvider,
               tmhDynamicLocaleProvider,
-              USER_ROLES) {
+              USER_ROLES,
+              sfObibaFileUploadOptionsProvider) {
 
+      sfObibaFileUploadOptionsProvider.setValidationMessageKey('missingFiles', 'missing-files');
 
       $routeProvider
         .when('/login', {

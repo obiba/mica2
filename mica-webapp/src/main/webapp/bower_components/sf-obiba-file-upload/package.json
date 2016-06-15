@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "sf obiba file upload add-on for Angular Schema Form.",
   "author": "obiba",
-  "license": "MIT",
+  "license": "GNU Public License version 3",
   "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-angular-templatecache": "^1.8.0",

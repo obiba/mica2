@@ -1,7 +1,7 @@
 {
   "name": "sf-obiba-file-upload",
   "version": "1.0.0",
-  "license": "MIT",
+  "license": "GNU Public License version 3",
   "author": "obiba",
   "main": [
     "dist/sf-obiba-file-upload.min.js"

@@ -1,14 +1,18 @@
-<table class="table table-bordered table-striped" ng-show="attachments.length">
-  <tbody>
-  <tr ng-repeat="attachment in attachments">
-    <th>
-      <a target="_self" ng-href="{{attachment.href}}"
-        download="{{attachment.fileName}}">{{attachment.fileName}}
-      </a>
-    </th>
-    <td>
-      {{attachment.size | bytes}}
-    </td>
-  </tr>
-  </tbody>
-</table>
+<div>
+  <span ng-if="!hasAttachments && emptyMessage"><em>{{emptyMessage}}</em></span>
+  <table ng-if="hasAttachments" class="table table-bordered table-striped" >
+    <tbody>
+    <tr ng-repeat="attachment in attachments">
+      <th>
+        <a target="_self" ng-href="{{attachment.href}}"
+           download="{{attachment.fileName}}">{{attachment.fileName}}
+        </a>
+      </th>
+      <td>
+        {{attachment.size | bytes}}
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+</div>
