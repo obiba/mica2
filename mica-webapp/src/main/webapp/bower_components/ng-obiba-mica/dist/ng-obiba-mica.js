@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-06-13
+ * Date: 2016-06-15
  */
 'use strict';
 
@@ -341,15 +341,18 @@ angular.module('obiba.mica.attachment')
       restrict: 'E',
       scope: {
         hrefBuilder: '=',
-        files: '='
+        files: '=',
+        emptyMessage: '='
       },
       templateUrl: 'attachment/attachment-list-template.html',
       link: function(scope) {
         scope.attachments = [];
         scope.hrefBuilder = scope.hrefBuilder || function(a) { return a.id; };
+        scope.hasAttachments = false;
 
         scope.$watch('files', function(val) {
           if (val) {
+            scope.hasAttachments = val.length > 0;
             scope.attachments = val.map(function (a) {
               var temp = angular.copy(a);
               temp.href = scope.hrefBuilder(a);
@@ -6607,7 +6610,8 @@ function GraphicChartsDataProvider() {
     };
   }
 
-  this.$get = function ($log, JoinQuerySearchResource, ServerErrorUtils, AlertService, GraphicChartsConfig, GraphicChartsQuery) {
+  this.$get = ['$log', 'JoinQuerySearchResource', 'ServerErrorUtils', 'AlertService', 'GraphicChartsConfig', 'GraphicChartsQuery',
+    function ($log, JoinQuerySearchResource, ServerErrorUtils, AlertService, GraphicChartsConfig, GraphicChartsQuery) {
     var queryDto = GraphicChartsQuery.queryDtoBuilder(GraphicChartsConfig.getOptions().entityIds, GraphicChartsConfig.getOptions().entityType);
 
     return new DataProvider(JoinQuerySearchResource.studies({
@@ -6619,7 +6623,7 @@ function GraphicChartsDataProvider() {
       function (response) {
         $log.error('Server error', response);
       }));
-  };
+  }];
 }
 
 angular.module('obiba.mica.graphics', [
@@ -8321,20 +8325,24 @@ angular.module("attachment/attachment-input-template.html", []).run(["$templateC
 
 angular.module("attachment/attachment-list-template.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("attachment/attachment-list-template.html",
-    "<table class=\"table table-bordered table-striped\" ng-show=\"attachments.length\">\n" +
-    "  <tbody>\n" +
-    "  <tr ng-repeat=\"attachment in attachments\">\n" +
-    "    <th>\n" +
-    "      <a target=\"_self\" ng-href=\"{{attachment.href}}\"\n" +
-    "        download=\"{{attachment.fileName}}\">{{attachment.fileName}}\n" +
-    "      </a>\n" +
-    "    </th>\n" +
-    "    <td>\n" +
-    "      {{attachment.size | bytes}}\n" +
-    "    </td>\n" +
-    "  </tr>\n" +
-    "  </tbody>\n" +
-    "</table>\n" +
+    "<div>\n" +
+    "  <span ng-if=\"!hasAttachments && emptyMessage\"><em>{{emptyMessage}}</em></span>\n" +
+    "  <table ng-if=\"hasAttachments\" class=\"table table-bordered table-striped\" >\n" +
+    "    <tbody>\n" +
+    "    <tr ng-repeat=\"attachment in attachments\">\n" +
+    "      <th>\n" +
+    "        <a target=\"_self\" ng-href=\"{{attachment.href}}\"\n" +
+    "           download=\"{{attachment.fileName}}\">{{attachment.fileName}}\n" +
+    "        </a>\n" +
+    "      </th>\n" +
+    "      <td>\n" +
+    "        {{attachment.size | bytes}}\n" +
+    "      </td>\n" +
+    "    </tr>\n" +
+    "    </tbody>\n" +
+    "  </table>\n" +
+    "\n" +
+    "</div>\n" +
     "");
 }]);
 
