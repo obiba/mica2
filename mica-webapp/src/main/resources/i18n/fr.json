@@ -696,6 +696,8 @@
   "logo": "Logo",
   "attachments": "Attachments",
   "no-attachments": "No attachments.",
+  "missing-files": "Files missing.",
+  "min-items": "Minimum required items is '{{arg0}}'.",
   "allowed-file-types": "Allowed file types:",
   "file-system": "File System",
   "places": "Places",

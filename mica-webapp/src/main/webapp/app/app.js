@@ -72,6 +72,7 @@ mica
               sfObibaFileUploadOptionsProvider) {
 
       sfObibaFileUploadOptionsProvider.setValidationMessageKey('missingFiles', 'missing-files');
+      sfObibaFileUploadOptionsProvider.setValidationMessageKey('minItems', 'min-items');
 
       $routeProvider
         .when('/login', {
