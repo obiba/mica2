@@ -255,7 +255,7 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
   @Subscribe
   public void dataAccessRequestUpdated(DataAccessRequestUpdatedEvent event) {
     DataAccessRequest request = event.getPersistable();
-    if(!projectRepository.exists(request.getId()) && request.getStatus() != DataAccessRequest.Status.OPENED) {
+    if(!projectRepository.exists(request.getId()) && request.getStatus() == DataAccessRequest.Status.APPROVED) {
       Project project = new Project();
       project.setId(event.getPersistable().getId());
       project.setDataAccessRequestId(event.getPersistable().getId());
