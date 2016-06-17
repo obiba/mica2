@@ -58,6 +58,7 @@
   <cache name="opal-taxonomies"
     overflowToDisk="true"
     eternal="true">
+    <sizeOfPolicy maxDepth="100000"/>
   </cache>
 
   <cache name="aggregations-metadata"
