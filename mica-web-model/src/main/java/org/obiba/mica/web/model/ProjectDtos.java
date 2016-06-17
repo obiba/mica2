@@ -68,6 +68,8 @@ class ProjectDtos {
 
     builder.setPermissions(permissionsDto);
 
+    builder.setTimestamps(TimestampsDtos.asDto(project));
+
     return builder.build();
   }
 
