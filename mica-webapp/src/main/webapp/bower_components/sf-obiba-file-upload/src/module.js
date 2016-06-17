@@ -84,19 +84,20 @@ angular.module('sfObibaFileUpload', [
         f.key = options.path;
         f.type = 'obibaFileUpload';
         f.$validators = {
-          missingFiles: function(value) {
+          missingFiles: function (value) {
             if (value && options.required) {
               return value.obibaFiles && value.obibaFiles.length > 0;
             }
             return true;
           },
-          minItems: function(model, value) {
+          minItems: function (value) {
             if (value && schema.minItems) {
               return value.obibaFiles && value.obibaFiles.length >= schema.minItems;
             }
             return true;
           }
         };
+
         options.lookup[sfPathProvider.stringify(options.path)] = f;
         return f;
       }
@@ -137,13 +138,17 @@ angular.module('sfObibaFileUpload', [
        * application's translation files.
        */
       $scope.$watch('form', function() {
-        $scope.form.ngModelOptions = $scope.form.ngModelOptions || {};
-        $scope.form.ngModelOptions = {allowInvalid: true}; // preserves model when validation fails
+        var schema = $scope.form.schema;
 
-        if ($scope.form.schema.minItems) {
-          $scope.form.schema.multiple = true;
+        if (schema.minItems) {
+          schema.multiple = true;
         }
-        
+
+        var readOnly = angular.isDefined($scope.form.readonly) && $scope.form.readonly === true;
+        $scope.form.disableErrorState = readOnly;
+        $scope.form.disableSuccessState = readOnly;
+
+        // setup validation messages
         if (!$scope.form.validationMessage) {
           $scope.form.validationMessage = {};
         }
@@ -157,7 +162,7 @@ angular.module('sfObibaFileUpload', [
           $scope.form.validationMessage.minItems =
             sfObibaFileUploadOptions.tr(
               sfObibaFileUploadOptions.validationMessages.minItems,
-              [$scope.form.schema.minItems]
+              [schema.minItems]
             );
         }
       });
@@ -167,6 +172,10 @@ angular.module('sfObibaFileUpload', [
        */
       $scope.$watch('ngModel.$modelValue', function() {
         if ($scope.ngModel.$validate) {
+          // Make sure that allowInvalid is always true so that the model is preserved when validation fails
+          $scope.ngModel.$options = $scope.ngModel.$options || {};
+          $scope.ngModel.$options = {allowInvalid: true};
+
           $scope.ngModel.$validate();
           if ($scope.ngModel.$invalid) { // The field must be made dirty so the error message is displayed
             $scope.ngModel.$dirty = true;

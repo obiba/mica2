@@ -503,7 +503,7 @@ mica.config
               indices.push({lang: lang, index: index});
             }
             return found;
-          })
+          });
         });
 
         indices.forEach(function (i) {
