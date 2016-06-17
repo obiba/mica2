@@ -38,7 +38,7 @@ public class ProjectIndexer {
 
   public static final String PROJECT_TYPE = "Project";
 
-  public static final String[] LOCALIZED_ANALYZED_FIELDS = {"acronym", "name"};
+  public static final String[] LOCALIZED_ANALYZED_FIELDS = {"title", "summary"};
 
   @Inject
   private ProjectService projectService;
