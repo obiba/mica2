@@ -18,7 +18,7 @@
            ng-show="locale === selectedLocale"/>
   </div>
   <div ng-if="form.rows && form.rows > 1"
-       ng-class="{'form-group' : !$last">
+       ng-class="{'form-group' : !$last}">
     <textarea class="form-control"
               sf-field-model="replaceAll" ng-model="$$value$$[locale]"
               rows="{{form.rows ? form.rows : 5}}"
