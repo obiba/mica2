@@ -32,7 +32,6 @@ public class ProjectFormResource {
   Dtos dtos;
 
   @GET
-  @RequiresPermissions("/project-request:ADD")
   public Mica.ProjectFormDto get() {
     Optional<ProjectForm> d = projectFormService.find();
 
