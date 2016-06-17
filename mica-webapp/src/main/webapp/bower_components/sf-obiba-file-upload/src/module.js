@@ -17,11 +17,15 @@ angular.module('sfObibaFileUpload', [
    * Provider to be used by client applications to set form defaults
    */
   .provider('sfObibaFileUploadOptions', function() {
+    var self = this;
     var options = {
-      validationMessages: { missingFiles: null}
+      validationMessages: {
+        missingFiles: null,
+        minItems: null
+      }
     };
 
-    this.getOptions = function () {
+    self.getOptions = function () {
       return angular.copy(options);
     };
 
@@ -31,30 +35,35 @@ angular.module('sfObibaFileUpload', [
      * @param key
      * @param messageKey
      */
-    this.setValidationMessageKey = function (key, messageKey) {
+    self.setValidationMessageKey = function (key, messageKey) {
       if (options.validationMessages.hasOwnProperty(key)) {
         options.validationMessages[key] = messageKey;
       }
     };
 
     /**
+     * Options Service returned by the provider
+     *
+     * @param options
+     * @param LocaleStringUtils
+     * @constructor
+     */
+    function OptionsService(options, LocaleStringUtils) {
+      var self = this;
+      self.options = options;
+      self.validationMessages = self.options.validationMessages;
+      self.tr = function(key, args) {
+        return LocaleStringUtils.translate(key, args);
+      };
+    }
+
+    /**
      * Returns the provider instance
      *
      * @param $filter
      */
-    this.$get = ['$filter', function($filter) {
-      var self = this;
-      return new function() {
-        var translated = self.getOptions();
-
-        // translate before returning
-        Object.keys(translated.validationMessages).forEach(function(msg){
-          translated.validationMessages[msg] =
-              $filter('translate')(translated.validationMessages[msg]);
-        });
-
-        this.options = translated;
-      };
+    self.$get = ['LocaleStringUtils', function(LocaleStringUtils) {
+      return new OptionsService(self.getOptions(), LocaleStringUtils);
     }];
   })
 
@@ -76,8 +85,14 @@ angular.module('sfObibaFileUpload', [
         f.type = 'obibaFileUpload';
         f.$validators = {
           missingFiles: function(value) {
-            if (value) {
+            if (value && options.required) {
               return value.obibaFiles && value.obibaFiles.length > 0;
+            }
+            return true;
+          },
+          minItems: function(model, value) {
+            if (value && schema.minItems) {
+              return value.obibaFiles && value.obibaFiles.length >= schema.minItems;
             }
             return true;
           }
@@ -97,7 +112,10 @@ angular.module('sfObibaFileUpload', [
     );
 
   }])
-  .controller('sfObibaFileUploadController', ['$scope', 'ngObibaMicaUrl','sfObibaFileUploadOptions',
+  .controller('sfObibaFileUploadController', [
+    '$scope',
+    'ngObibaMicaUrl',
+    'sfObibaFileUploadOptions',
     function ($scope, ngObibaMicaUrl, sfObibaFileUploadOptions) {
 
       /**
@@ -119,10 +137,29 @@ angular.module('sfObibaFileUpload', [
        * application's translation files.
        */
       $scope.$watch('form', function() {
-        $scope.form.validationMessage =
-          $scope.form.validationMessage ?
-            $scope.form.validationMessage :
-            sfObibaFileUploadOptions.options.validationMessages;
+        $scope.form.ngModelOptions = $scope.form.ngModelOptions || {};
+        $scope.form.ngModelOptions = {allowInvalid: true}; // preserves model when validation fails
+
+        if ($scope.form.schema.minItems) {
+          $scope.form.schema.multiple = true;
+        }
+        
+        if (!$scope.form.validationMessage) {
+          $scope.form.validationMessage = {};
+        }
+
+        if (!$scope.form.validationMessage.missingFiles) {
+          $scope.form.validationMessage.missingFiles =
+            sfObibaFileUploadOptions.tr(sfObibaFileUploadOptions.validationMessages.missingFiles, null);
+        }
+
+        if (!$scope.form.validationMessage.minItems) {
+          $scope.form.validationMessage.minItems =
+            sfObibaFileUploadOptions.tr(
+              sfObibaFileUploadOptions.validationMessages.minItems,
+              [$scope.form.schema.minItems]
+            );
+        }
       });
 
       /**
