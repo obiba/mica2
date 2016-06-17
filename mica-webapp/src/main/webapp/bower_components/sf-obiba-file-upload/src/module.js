@@ -144,9 +144,7 @@ angular.module('sfObibaFileUpload', [
           schema.multiple = true;
         }
 
-        var readOnly = angular.isDefined($scope.form.readonly) && $scope.form.readonly === true;
-        $scope.form.disableErrorState = readOnly;
-        $scope.form.disableSuccessState = readOnly;
+        $scope.form.disableErrorState = $scope.form.hasOwnProperty('readonly') && $scope.form.readonly;
 
         // setup validation messages
         if (!$scope.form.validationMessage) {
