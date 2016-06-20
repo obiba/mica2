@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-06-15
+ * Date: 2016-06-20
  */
 'use strict';
 
@@ -8632,7 +8632,7 @@ angular.module("file-browser/views/toolbar-template.html", []).run(["$templateCa
 angular.module("graphics/views/charts-directive.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("graphics/views/charts-directive.html",
     "<div>\n" +
-    "  <div google-chart chart=\"chartObject\" style=\"min-height:350px; width:100%;\">\n" +
+    "  <div google-chart chart=\"chartObject\" style=\"min-height:{{chartObject.type=='GeoChart'?250:350}}px; width:100%;\">\n" +
     "  </div>\n" +
     "</div>\n" +
     "");
