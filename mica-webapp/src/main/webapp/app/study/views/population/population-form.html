@@ -34,7 +34,7 @@
               <label for="gender" class="control-label"><span translate>population.gender</span></label>
               <select id="gender" name="gender" class="form-control" ng-model="population.selectionCriteria.gender">
                 <option value="">N/A</option>
-                <option ng-repeat="g in selectionCriteriaGenders" value="{{g.id}}">{{g.label}}</option>
+                <option ng-repeat="g in selectionCriteriaGenders[tab.lang]" value="{{g.id}}">{{g.label}}</option>
               </select>
               <div form-input type="number" model="population.selectionCriteria.ageMin" lang="tab.lang" label="population.ageMin" min="0" step="0.01"></div>
               <div form-input type="number" model="population.selectionCriteria.ageMax" lang="tab.lang" label="population.ageMax" min="0" step="0.01"></div>
@@ -75,7 +75,7 @@
 
               <h4 translate>Criteria</h4>
 
-              <div form-checkbox-group options="availableSelectionCriteria" model="population.selectionCriteria.criteria"></div>
+              <div form-checkbox-group options="availableSelectionCriteria[tab.lang]" model="population.selectionCriteria.criteria"></div>
 
             </div>
           </div>
@@ -89,17 +89,17 @@
               <h3 class="voffset5" translate>Recruitment</h3>
               <div localized-input name="population.recruitment.info" model="population.recruitment.info" lang="tab.lang" label="study.recruitment-sources.info"></div>
 
-              <div form-checkbox-group options="recruitmentSourcesTypes" model="population.recruitment.dataSources"></div>
+              <div form-checkbox-group options="recruitmentSourcesTypes[tab.lang]" model="population.recruitment.dataSources"></div>
 
               <uib-tabset>
                 <uib-tab heading="{{'study.recruitment-sources.general-population' | translate}}" disable="population.recruitment.dataSources.indexOf('general_population') < 0" active="recruitmentTabs.general_population">
                   <div ng-show="population.recruitment.dataSources.indexOf('general_population') > -1">
-                    <div form-checkbox-group options="generalPopulationTypes" model="population.recruitment.generalPopulationSources"></div>
+                    <div form-checkbox-group options="generalPopulationTypes[tab.lang]" model="population.recruitment.generalPopulationSources"></div>
                   </div>
                 </uib-tab>
                 <uib-tab heading="{{'study.recruitment-sources.specific-population' | translate}}" disable="population.recruitment.dataSources.indexOf('specific_population') < 0" active="recruitmentTabs.specific_population">
                   <div ng-show="population.recruitment.dataSources.indexOf('specific_population') > -1">
-                    <div form-checkbox-group options="specificPopulationTypes" model="population.recruitment.specificPopulationSources"></div>
+                    <div form-checkbox-group options="specificPopulationTypes[tab.lang]" model="population.recruitment.specificPopulationSources"></div>
 
                     <div localized-input ng-show="population.recruitment.specificPopulationSources.indexOf('other') > -1" name="population.recruitment.otherSpecificPopulationSource" model="population.recruitment.otherSpecificPopulationSource" lang="tab.lang"></div>
                   </div>
