@@ -141,7 +141,7 @@ angular.module('sfObibaFileUpload', [
       $scope.$watch('form', function() {
         var schema = $scope.form.schema;
 
-        if (schema.minItems) {
+        if (schema.minItems && schema.minItems > 1) {
           schema.multiple = true;
         }
 
