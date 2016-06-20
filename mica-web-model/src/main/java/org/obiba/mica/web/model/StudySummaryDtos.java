@@ -93,6 +93,8 @@ class StudySummaryDtos {
       populations.forEach(population -> builder.addPopulationSummaries(asDto(population)));
     }
 
+    builder.setPermissions(permissionsDtos.asDto(study));
+
     builder.addAllCountries(countries);
 
     return builder;

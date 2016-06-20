@@ -28,6 +28,7 @@ message StudySummaryDto {
   repeated PopulationSummaryDto populationSummaries = 11;
   required bool published = 12;
   optional int64 variables = 13;
+  optional PermissionsDto permissions = 14;
   extensions 1000 to max;
 }
 
@@ -292,6 +293,7 @@ message NetworkSummaryDto {
   required bool published = 5;
   repeated string studyIds = 6;
   repeated string networkIds = 7;
+  optional PermissionsDto permissions = 8;
 }
 
 message TimestampsDto {

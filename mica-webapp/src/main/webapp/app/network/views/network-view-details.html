@@ -87,9 +87,12 @@
             <tbody>
             <tr dir-paginate="studySummary in studySummaries | itemsPerPage: 10">
               <td>
-                <a ng-href="#/study/{{studySummary.id}}">
+                <a ng-href="#/study/{{studySummary.id}}" ng-if="studySummary.permissions.view">
                   <localized value="studySummary.acronym" lang="tab.lang"></localized>
                 </a>
+                <span ng-if="!studySummary.permissions.view">
+                  <localized value="studySummary.acronym" lang="tab.lang"></localized>
+                </span>
               </td>
               <td>
                 <localized value="studySummary.name" lang="tab.lang"></localized>
@@ -126,9 +129,12 @@
             <tbody>
             <tr dir-paginate="networkSummary in network.networkSummaries | itemsPerPage: 10">
               <td>
-                <a ng-href="#/network/{{networkSummary.id}}">
+                <a ng-href="#/network/{{networkSummary.id}}" ng-if="networkSummary.permissions.view">
                   <localized value="networkSummary.acronym" lang="tab.lang"></localized>
                 </a>
+                <span ng-if="!networkSummary.permissions.view">
+                  <localized value="networkSummary.acronym" lang="tab.lang"></localized>
+                </span>
               </td>
               <td>
                 <localized value="networkSummary.name" lang="tab.lang"></localized>

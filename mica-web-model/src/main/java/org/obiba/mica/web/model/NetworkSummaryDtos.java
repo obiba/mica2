@@ -28,6 +28,9 @@ class NetworkSummaryDtos {
   @Inject
   private SubjectAclService subjectAclService;
 
+  @Inject
+  private PermissionsDtos permissionsDtos;
+
   @NotNull
   public Mica.NetworkSummaryDto.Builder asDtoBuilder(@NotNull String id, boolean asDraft) {
     NetworkState networkState = networkService.getEntityState(id);
@@ -41,6 +44,8 @@ class NetworkSummaryDtos {
     if(asDraft) {
       builder.setTimestamps(TimestampsDtos.asDto(network));
     }
+
+    builder.setPermissions(permissionsDtos.asDto(network));
 
     network.getStudyIds().stream()
       .filter(sId -> asDraft && subjectAclService.isPermitted("/draft/study", "VIEW", sId)
