@@ -56,20 +56,22 @@ The Definition:
 }
 ```
 
-If you wish to override the validation messages, use the `sfObibaFileUploadOptions` provider. Through the provider you can either set the message or a message key that can be found in your translation files:
+To set default message values in case they are not defined in the form definition, use the `sfObibaFileUploadOptions` provider. Through the provider you can either set the message or a message key that can be found in your translation files:
  
 ```
 var myModule = angular.module('myModule', [
  ...
  'sfObibaFileUpload',
 ]).config([..., 'sfObibaFileUploadOptionsProvider', function(...,sfObibaFileUploadOptionsProvider){
-  sfObibaFileUploadOptionsProvider.setValidationMessageKey('missingFiles', 'missing-files');
-  sfObibaFileUploadOptionsProvider.setValidationMessageKey('minItems', 'min-items');
+  sfObibaFileUploadOptionsProvider.setValidationMessage('missingFiles', 'missing-files');
+  sfObibaFileUploadOptionsProvider.setValidationMessage('minItems', 'min-items');
+  sfObibaFileUploadOptionsProvider.setGeneralMessage('emptyMessage', 'min-items'); // when the list of files is empty
   
   // --or--
   
-  sfObibaFileUploadOptionsProvider.setValidationMessageKey('missingFiles', 'Missing files.');
-  sfObibaFileUploadOptionsProvider.setValidationMessageKey('minItems', 'Must have 3 files.');
+  sfObibaFileUploadOptionsProvider.setValidationMessage('missingFiles', 'Missing files.');
+  sfObibaFileUploadOptionsProvider.setValidationMessage('minItems', 'Must have 3 files.');
+  sfObibaFileUploadOptionsProvider.setGeneralMessage('emptyMessage', 'No documents.'); // when the list of files is empty
   
 }]);
 ```
@@ -80,5 +82,5 @@ Todo
 ----
 
 - Implement `maxItems`.
-- When listing image files, provide thumbnail.
-- open PDF and document files in the browser rather downloading them.  
+- When listing image files, provide a thumbnail viewer.
+- Open PDF and document files in the browser rather downloading them.  

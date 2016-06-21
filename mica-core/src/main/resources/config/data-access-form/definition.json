@@ -224,6 +224,35 @@
     ]
   },
   {
+    "type": "help",
+    "helpvalue": "<h2>II - t(data-access-request.required-documents.title)</h2>"
+  },
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "key": "rdRebResearchProtocol",
+        "type": "obibaFileUpload"
+      },
+      {
+        "key": "rdRebDecisionLetter",
+        "type": "obibaFileUpload"
+      },
+      {
+        "key": "rdCV",
+        "type": "obibaFileUpload"
+      },
+      {
+        "key": "rdPeerReview",
+        "type": "obibaFileUpload"
+      },
+      {
+        "key": "rdOtherDocs",
+        "type": "obibaFileUpload"
+      }
+    ]
+  },
+  {
     "type": "fieldset",
     "items": [
       {

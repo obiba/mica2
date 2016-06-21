@@ -1075,6 +1075,14 @@
           "info": "Please provide a short, accessible description of the project for the general public in <strong>no more than 200 words</strong>. Scientific jargon should be avoided to a reasonable extent. This description will be made available on the consortium public access registry and may be used in a variety of communications materials produced by the consortium (e.g. brochures, reports to stakeholders, press releases, blogs etc.)."
         }
       },
+      "required-documents": {
+        "title": "Required Documents",
+        "reb-research-protocol": "Research Ethics Board (REB) approved research protocol",
+        "reb-decision-letter": "Decision letter from a Research Ethics Board (REB)",
+        "cv": "2-Page CV of the Principal Applicant",
+        "peer-review": "Proof of scientific peer-review, if available",
+        "other": "Other documents"
+      },
       "signature": {
         "title": "Signature",
         "check": "I have completed all mandatory fields, included all necessary documents, and hereby submit this application."
