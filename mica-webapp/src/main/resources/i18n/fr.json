@@ -1077,8 +1077,8 @@
       },
       "documents": {
         "title": "Documents",
-        "reb-research-protocol": "Research Ethics Board (REB) approved research protocol",
-        "reb-decision-letter": "Decision letter from a Research Ethics Board (REB)",
+        "reb-research-protocol": "Research Ethics Board approved research protocol",
+        "reb-decision-letter": "Decision letter from a Research Ethics Board",
         "cv": "2-Page CV of the Principal Applicant",
         "peer-review": "Proof of scientific peer-review, if available",
         "other": "Other documents"
