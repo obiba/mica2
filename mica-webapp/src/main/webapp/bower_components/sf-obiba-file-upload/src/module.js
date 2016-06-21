@@ -19,11 +19,20 @@ angular.module('sfObibaFileUpload', [
   .provider('sfObibaFileUploadOptions', function() {
     var self = this;
     var options = {
+      general: {
+        emptyMessage: null
+      },
       validationMessages: {
         missingFiles: null,
         minItems: null
       }
     };
+
+    function setMessage(type, key, message) {
+      if (options[type].hasOwnProperty(key)) {
+        options[type][key] = message;
+      }
+    }
 
     self.getOptions = function () {
       return angular.copy(options);
@@ -33,12 +42,20 @@ angular.module('sfObibaFileUpload', [
      * Sets the value of an existing option
      *
      * @param key
-     * @param messageKey
+     * @param message - can be a key as well
      */
-    self.setValidationMessageKey = function (key, messageKey) {
-      if (options.validationMessages.hasOwnProperty(key)) {
-        options.validationMessages[key] = messageKey;
-      }
+    self.setGeneralMessage = function (key, message) {
+      setMessage('general', key, message);
+    };
+
+    /**
+     * Sets the value of an existing option
+     *
+     * @param key
+     * @param message - can be a key as well
+     */
+    self.setValidationMessage = function (key, message) {
+      setMessage('validationMessages', key, message);
     };
 
     /**
@@ -51,7 +68,6 @@ angular.module('sfObibaFileUpload', [
     function OptionsService(options, LocaleStringUtils) {
       var self = this;
       self.options = options;
-      self.validationMessages = self.options.validationMessages;
       self.tr = function(key, args) {
         return LocaleStringUtils.translate(key, args);
       };
@@ -144,22 +160,31 @@ angular.module('sfObibaFileUpload', [
           schema.multiple = true;
         }
 
+        var options = sfObibaFileUploadOptions.options;
         $scope.form.disableErrorState = $scope.form.hasOwnProperty('readonly') && $scope.form.readonly;
 
-        // setup validation messages
+        // setup messages
+        if (!$scope.form.general) {
+          $scope.form.general = {};
+        }
+
+        if (!$scope.form.emptyMessage) {
+          $scope.form.emptyMessage = sfObibaFileUploadOptions.tr(options.general.emptyMessage);
+        }
+
         if (!$scope.form.validationMessage) {
           $scope.form.validationMessage = {};
         }
 
         if (!$scope.form.validationMessage.missingFiles) {
           $scope.form.validationMessage.missingFiles =
-            sfObibaFileUploadOptions.tr(sfObibaFileUploadOptions.validationMessages.missingFiles, null);
+            sfObibaFileUploadOptions.tr(options.validationMessages.missingFiles, null);
         }
 
         if (!$scope.form.validationMessage.minItems) {
           $scope.form.validationMessage.minItems =
             sfObibaFileUploadOptions.tr(
-              sfObibaFileUploadOptions.validationMessages.minItems,
+              options.validationMessages.minItems,
               [schema.minItems]
             );
         }
