@@ -577,11 +577,11 @@ mica.study
 
 
       $scope.getAvailableCountries = function (locale) { return ObibaCountriesIsoCodes[locale]; };
-      $scope.selectionCriteriaGenders = [];
-      $scope.availableSelectionCriteria = [];
-      $scope.recruitmentSourcesTypes = [];
-      $scope.generalPopulationTypes = [];
-      $scope.specificPopulationTypes = [];
+      $scope.selectionCriteriaGenders = {};
+      $scope.availableSelectionCriteria = {};
+      $scope.recruitmentSourcesTypes = {};
+      $scope.generalPopulationTypes = {};
+      $scope.specificPopulationTypes = {};
       $scope.tabs = [];
       $scope.recruitmentTabs = {};
       $scope.population = {selectionCriteria: {healthStatus: [], ethnicOrigin: []}, recruitment: {dataSources: []}};
@@ -664,14 +664,15 @@ mica.study
       });
 
       StudyTaxonomyService.get(function() {
-        var lang = $scope.tabs[$scope.activeTab].lang;
-        $scope.selectionCriteriaGenders = StudyTaxonomyService.getTerms('populations-selectionCriteria-gender', lang).map(function (obj) {
-          return {id: obj.name, label: obj.label};
+        $scope.tabs.forEach(function (tab) {
+          $scope.selectionCriteriaGenders[tab.lang] = StudyTaxonomyService.getTerms('populations-selectionCriteria-gender', tab.lang).map(function (obj) {
+            return {id: obj.name, label: obj.label};
+          });
+          $scope.availableSelectionCriteria[tab.lang] = StudyTaxonomyService.getTerms('populations-selectionCriteria-criteria', tab.lang);
+          $scope.recruitmentSourcesTypes[tab.lang] = StudyTaxonomyService.getTerms('populations-recruitment-dataSources', tab.lang);
+          $scope.generalPopulationTypes[tab.lang] = StudyTaxonomyService.getTerms('populations-recruitment-generalPopulationSources', tab.lang);
+          $scope.specificPopulationTypes[tab.lang] = StudyTaxonomyService.getTerms('populations-recruitment-specificPopulationSources', tab.lang);
         });
-        $scope.availableSelectionCriteria = StudyTaxonomyService.getTerms('populations-selectionCriteria-criteria', lang);
-        $scope.recruitmentSourcesTypes = StudyTaxonomyService.getTerms('populations-recruitment-dataSources', lang);
-        $scope.generalPopulationTypes = StudyTaxonomyService.getTerms('populations-recruitment-generalPopulationSources', lang);
-        $scope.specificPopulationTypes = StudyTaxonomyService.getTerms('populations-recruitment-specificPopulationSources', lang);
       });
 
       $scope.save = function (form) {
