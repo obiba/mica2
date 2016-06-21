@@ -225,7 +225,7 @@
   },
   {
     "type": "help",
-    "helpvalue": "<h2>II - t(data-access-request.required-documents.title)</h2>"
+    "helpvalue": "<h2>II - t(data-access-request.default.documents.title)</h2>"
   },
   {
     "type": "fieldset",

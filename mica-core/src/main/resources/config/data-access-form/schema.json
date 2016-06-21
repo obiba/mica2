@@ -148,27 +148,27 @@
     "rdRebResearchProtocol": {
       "type": "object",
       "format": "obibaFiles",
-      "title": "t(data-access-request.default.required-documents.reb-research-protocol)"
+      "title": "t(data-access-request.default.documents.reb-research-protocol)"
     },
     "rdRebDecisionLetter": {
       "type": "object",
       "format": "obibaFiles",
-      "title": "t(data-access-request.default.required-documents.reb-decision-letter)"
+      "title": "t(data-access-request.default.documents.reb-decision-letter)"
     },
     "rdCV": {
       "type": "object",
       "format": "obibaFiles",
-      "title": "t(data-access-request.default.required-documents.cv)"
+      "title": "t(data-access-request.default.documents.cv)"
     },
     "rdPeerReview": {
       "type": "object",
       "format": "obibaFiles",
-      "title": "t(data-access-request.default.required-documents.peer-review)"
+      "title": "t(data-access-request.default.documents.peer-review)"
     },
     "rdOtherDocs": {
       "type": "object",
       "format": "obibaFiles",
-      "title": "t(data-access-request.default.required-documents.other)"
+      "title": "t(data-access-request.default.documents.other)"
     },
     "isFormCompleted": {
       "title": "t(data-access-request.default.signature.check)",
