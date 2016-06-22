@@ -48,6 +48,7 @@ class ProjectDtos {
         Mica.DataAccessRequestSummaryDto.Builder darBuilder = Mica.DataAccessRequestSummaryDto.newBuilder();
         darBuilder.setId(project.getDataAccessRequestId());
         darBuilder.setStatus(request.getStatus().name());
+        darBuilder.setApplicant(request.getApplicant());
         darBuilder.setViewable(subjectAclService.isPermitted("/data-access-request", "VIEW", request.getId()));
         builder.setRequest(darBuilder);
       } catch(NoSuchElementException e) {
