@@ -95,18 +95,18 @@ public class DataAccessRequestService {
   public DataAccessRequest save(@NotNull DataAccessRequest request) {
     DataAccessRequest saved = request;
     DataAccessRequest.Status from = null;
-    Iterable<Attachment> toDelete = null;
-    Iterable<Attachment> toSave = null;
+    Iterable<Attachment> attachmentsToDelete = null;
+    Iterable<Attachment> attachmentsToSave = null;
 
     if(request.isNew()) {
       setAndLogStatus(saved, DataAccessRequest.Status.OPENED);
       saved.setId(generateId());
-      toSave = saved.getAttachments();
+      attachmentsToSave = saved.getAttachments();
     } else {
       saved = dataAccessRequestRepository.findOne(request.getId());
       if(saved != null) {
-        toDelete = Sets.difference(Sets.newHashSet(saved.getAttachments()), Sets.newHashSet(request.getAttachments()));
-        toSave = Sets.difference(Sets.newHashSet(request.getAttachments()), Sets.newHashSet(saved.getAttachments()));
+        attachmentsToDelete = Sets.difference(Sets.newHashSet(saved.getAttachments()), Sets.newHashSet(request.getAttachments()));
+        attachmentsToSave = Sets.difference(Sets.newHashSet(request.getAttachments()), Sets.newHashSet(saved.getAttachments()));
 
         from = saved.getStatus();
         // validate the status
@@ -125,7 +125,7 @@ public class DataAccessRequestService {
     schemaFormContentFileService.save(saved, dataAccessRequestRepository.findOne(request.getId()),
         String.format("/data-access-request/%s", saved.getId()));
 
-    if(toSave != null) toSave.forEach(a -> {
+    if(attachmentsToSave != null) attachmentsToSave.forEach(a -> {
       fileStoreService.save(a.getId());
       a.setJustUploaded(false);
       attachmentRepository.save(a);
@@ -133,10 +133,17 @@ public class DataAccessRequestService {
 
     dataAccessRequestRepository.saveWithReferences(saved);
 
-    if(toDelete != null) toDelete.forEach(a -> fileStoreService.delete(a.getId()));
+    if(attachmentsToDelete != null) attachmentsToDelete.forEach(a -> fileStoreService.delete(a.getId()));
 
     eventBus.post(new DataAccessRequestUpdatedEvent(saved));
     sendNotificationEmails(saved, from);
+    return saved;
+  }
+
+  public DataAccessRequest saveAttachments(@NotNull DataAccessRequest request) {
+    DataAccessRequest saved = findById(request.getId());
+    saved.setAttachments(request.getAttachments());
+    save(saved);
     return saved;
   }
 
