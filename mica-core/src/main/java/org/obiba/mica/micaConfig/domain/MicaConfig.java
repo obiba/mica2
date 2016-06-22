@@ -5,12 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import com.google.common.base.Charsets;
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Strings;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.obiba.mica.core.domain.AbstractAuditableDocument;
@@ -18,6 +12,13 @@ import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.core.domain.Membership;
 import org.obiba.runtime.Version;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.google.common.base.Charsets;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Strings;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 @Document
 public class MicaConfig extends AbstractAuditableDocument {
@@ -79,6 +80,10 @@ public class MicaConfig extends AbstractAuditableDocument {
   private boolean isCommentNotificationsEnabled = false;
 
   private String commentNotiticationsSubject;
+
+  private boolean isProjectNotificationsEnabled = false;
+
+  private String projectNotificationsSubject;
 
   private boolean isSingleStudyEnabled = false;
 
@@ -200,12 +205,12 @@ public class MicaConfig extends AbstractAuditableDocument {
     this.isStudyNotificationsEnabled = isStudyNotificationsEnabled;
   }
 
-  public String getStudyNotificationSubject() {
+  public String getStudyNotificationsSubject() {
     return studyNotificationsSubject;
   }
 
-  public void setStudyNotificationSubject(String studyNotificationSubject) {
-    this.studyNotificationsSubject = studyNotificationSubject;
+  public void setStudyNotificationsSubject(String studyNotificationsSubject) {
+    this.studyNotificationsSubject = studyNotificationsSubject;
   }
 
   public boolean isNetworkNotificationsEnabled() {
@@ -216,12 +221,12 @@ public class MicaConfig extends AbstractAuditableDocument {
     this.isNetworkNotificationsEnabled = isNetworkNotificationsEnabled;
   }
 
-  public String getNetworkNotificationSubject() {
+  public String getNetworkNotificationsSubject() {
     return networkNotificationsSubject;
   }
 
-  public void setNetworkNotificationSubject(String networkNotificationSubject) {
-    this.networkNotificationsSubject = networkNotificationSubject;
+  public void setNetworkNotificationsSubject(String networkNotificationsSubject) {
+    this.networkNotificationsSubject = networkNotificationsSubject;
   }
 
   public boolean isStudyDatasetNotificationsEnabled() {
@@ -232,12 +237,12 @@ public class MicaConfig extends AbstractAuditableDocument {
     this.isStudyDatasetNotificationsEnabled = isStudyDatasetNotificationsEnabled;
   }
 
-  public String getStudyDatasetNotificationSubject() {
+  public String getStudyDatasetNotificationsSubject() {
     return studyDatasetNotificationsSubject;
   }
 
-  public void setStudyDatasetNotificationSubject(String studyDatasetNotificationSubject) {
-    this.studyDatasetNotificationsSubject = studyDatasetNotificationSubject;
+  public void setStudyDatasetNotificationsSubject(String studyDatasetNotificationsSubject) {
+    this.studyDatasetNotificationsSubject = studyDatasetNotificationsSubject;
   }
 
   public boolean isHarmonizationDatasetNotificationsEnabled() {
@@ -248,12 +253,12 @@ public class MicaConfig extends AbstractAuditableDocument {
     this.isHarmonizationDatasetNotificationsEnabled = isHarmonizationDatasetNotificationsEnabled;
   }
 
-  public String getHarmonizationDatasetNotificationSubject() {
+  public String getHarmonizationDatasetNotificationsSubject() {
     return harmonizationDatasetNotificationsSubject;
   }
 
-  public void setHarmonizationDatasetNotificationSubject(String harmonizationDatasetNotificationSubject) {
-    this.harmonizationDatasetNotificationsSubject = harmonizationDatasetNotificationSubject;
+  public void setHarmonizationDatasetNotificationsSubject(String harmonizationDatasetNotificationsSubject) {
+    this.harmonizationDatasetNotificationsSubject = harmonizationDatasetNotificationsSubject;
   }
 
   public boolean isFsNotificationsEnabled() {
@@ -264,12 +269,12 @@ public class MicaConfig extends AbstractAuditableDocument {
     this.isFsNotificationsEnabled = isFsNotificationsEnabled;
   }
 
-  public String getFsNotificationSubject() {
+  public String getFsNotificationsSubject() {
     return fsNotificationsSubject;
   }
 
-  public void setFsNotificationSubject(String fsNotificationSubject) {
-    this.fsNotificationsSubject = fsNotificationSubject;
+  public void setFsNotificationsSubject(String fsNotificationsSubject) {
+    this.fsNotificationsSubject = fsNotificationsSubject;
   }
 
   public boolean isCommentNotificationsEnabled() {
@@ -280,12 +285,28 @@ public class MicaConfig extends AbstractAuditableDocument {
     this.isCommentNotificationsEnabled = isCommentNotificationsEnabled;
   }
 
-  public String getCommentNotiticationsSubject() {
+  public String getCommentNotificationsSubject() {
     return commentNotiticationsSubject;
   }
 
-  public void setCommentNotiticationsSubject(String commentNotiticationsSubject) {
-    this.commentNotiticationsSubject = commentNotiticationsSubject;
+  public void setCommentNotificationsSubject(String commentNotificationsSubject) {
+    commentNotiticationsSubject = commentNotificationsSubject;
+  }
+
+  public boolean isProjectNotificationsEnabled() {
+    return isProjectNotificationsEnabled;
+  }
+
+  public void setProjectNotificationsEnabled(boolean projectNotificationsEnabled) {
+    isProjectNotificationsEnabled = projectNotificationsEnabled;
+  }
+
+  public String getProjectNotificationsSubject() {
+    return projectNotificationsSubject;
+  }
+
+  public void setProjectNotificationsSubject(String projectNotificationsSubject) {
+    this.projectNotificationsSubject = projectNotificationsSubject;
   }
 
   public boolean isSingleStudyEnabled() {

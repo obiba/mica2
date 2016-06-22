@@ -3,7 +3,6 @@ package org.obiba.mica.web.model;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
@@ -51,28 +50,25 @@ class MicaConfigDtos {
     builder.addAllRoles(config.getRoles());
 
     builder.setIsFsNotificationsEnabled(config.isFsNotificationsEnabled());
-
-    if(config.getFsNotificationSubject() != null) builder.setFsNotificationsSubject(config.getFsNotificationSubject());
+    if(config.getFsNotificationsSubject() != null) builder.setFsNotificationsSubject(config.getFsNotificationsSubject());
 
     builder.setIsCommentNotificationsEnabled(config.isCommentNotificationsEnabled());
-
-    if(config.getCommentNotiticationsSubject() != null) builder.setCommentNotificationsSubject(config.getCommentNotiticationsSubject());
+    if(config.getCommentNotificationsSubject() != null) builder.setCommentNotificationsSubject(config.getCommentNotificationsSubject());
 
     builder.setIsNetworkNotificationsEnabled(config.isNetworkNotificationsEnabled());
-
-    if(config.getNetworkNotificationSubject() != null) builder.setNetworkNotificationsSubject(config.getNetworkNotificationSubject());
+    if(config.getNetworkNotificationsSubject() != null) builder.setNetworkNotificationsSubject(config.getNetworkNotificationsSubject());
 
     builder.setIsStudyNotificationsEnabled(config.isStudyNotificationsEnabled());
-
-    if(config.getStudyNotificationSubject() != null) builder.setStudyNotificationsSubject(config.getStudyNotificationSubject());
+    if(config.getStudyNotificationsSubject() != null) builder.setStudyNotificationsSubject(config.getStudyNotificationsSubject());
 
     builder.setIsStudyDatasetNotificationsEnabled(config.isStudyDatasetNotificationsEnabled());
-
-    if(config.getStudyDatasetNotificationSubject() != null) builder.setStudyDatasetNotificationsSubject(config.getStudyDatasetNotificationSubject());
+    if(config.getStudyDatasetNotificationsSubject() != null) builder.setStudyDatasetNotificationsSubject(config.getStudyDatasetNotificationsSubject());
 
     builder.setIsHarmonizationDatasetNotificationsEnabled(config.isHarmonizationDatasetNotificationsEnabled());
+    if(config.getHarmonizationDatasetNotificationsSubject() != null) builder.setHarmonizationDatasetNotificationsSubject(config.getHarmonizationDatasetNotificationsSubject());
 
-    if(config.getHarmonizationDatasetNotificationSubject() != null) builder.setHarmonizationDatasetNotificationsSubject(config.getHarmonizationDatasetNotificationSubject());
+    builder.setIsProjectNotificationsEnabled(config.isProjectNotificationsEnabled());
+    if(config.getProjectNotificationsSubject() != null) builder.setProjectNotificationsSubject(config.getProjectNotificationsSubject());
 
     builder.setIsSingleNetworkEnabled(config.isSingleNetworkEnabled());
     builder.setIsSingleStudyEnabled(config.isSingleStudyEnabled());
@@ -102,17 +98,19 @@ class MicaConfigDtos {
 
     config.setRoles(dto.getRolesList());
     config.setFsNotificationsEnabled(dto.getIsFsNotificationsEnabled());
-    if(dto.hasFsNotificationsSubject()) config.setFsNotificationSubject(dto.getFsNotificationsSubject());
+    if(dto.hasFsNotificationsSubject()) config.setFsNotificationsSubject(dto.getFsNotificationsSubject());
     config.setCommentNotificationsEnabled(dto.getIsCommentNotificationsEnabled());
-    if(dto.hasCommentNotificationsSubject()) config.setCommentNotiticationsSubject(dto.getCommentNotificationsSubject());
+    if(dto.hasCommentNotificationsSubject()) config.setCommentNotificationsSubject(dto.getCommentNotificationsSubject());
     config.setStudyNotificationsEnabled(dto.getIsStudyNotificationsEnabled());
-    if(dto.hasStudyNotificationsSubject()) config.setStudyNotificationSubject(dto.getStudyNotificationsSubject());
+    if(dto.hasStudyNotificationsSubject()) config.setStudyNotificationsSubject(dto.getStudyNotificationsSubject());
     config.setNetworkNotificationsEnabled(dto.getIsNetworkNotificationsEnabled());
-    if(dto.hasNetworkNotificationsSubject()) config.setNetworkNotificationSubject(dto.getNetworkNotificationsSubject());
+    if(dto.hasNetworkNotificationsSubject()) config.setNetworkNotificationsSubject(dto.getNetworkNotificationsSubject());
     config.setStudyDatasetNotificationsEnabled(dto.getIsStudyDatasetNotificationsEnabled());
-    if(dto.hasStudyDatasetNotificationsSubject()) config.setStudyDatasetNotificationSubject(dto.getStudyDatasetNotificationsSubject());
+    if(dto.hasStudyDatasetNotificationsSubject()) config.setStudyDatasetNotificationsSubject(dto.getStudyDatasetNotificationsSubject());
     config.setHarmonizationDatasetNotificationsEnabled(dto.getIsHarmonizationDatasetNotificationsEnabled());
-    if(dto.hasHarmonizationDatasetNotificationsSubject()) config.setHarmonizationDatasetNotificationSubject(dto.getHarmonizationDatasetNotificationsSubject());
+    if(dto.hasHarmonizationDatasetNotificationsSubject()) config.setHarmonizationDatasetNotificationsSubject(dto.getHarmonizationDatasetNotificationsSubject());
+    config.setProjectNotificationsEnabled(dto.getIsProjectNotificationsEnabled());
+    if(dto.hasProjectNotificationsSubject()) config.setProjectNotificationsSubject(dto.getProjectNotificationsSubject());
 
     config.setSingleNetworkEnabled(dto.getIsSingleNetworkEnabled());
     config.setSingleStudyEnabled(dto.getIsSingleStudyEnabled());

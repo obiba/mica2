@@ -321,7 +321,14 @@
       "comment-subject": "Subject of comment notification",
       "comment-help": "Send email notifications when a comment is added or updated.",
       "comment-subject-help": "Email subject for comment notifications.",
-      "comment-subject-help-long": "Email subject can contain the following placeholders: ${organization}, ${documentType}, ${documentId} and ${status} where document refers to the study (or network etc.) that was commented."
+      "comment-subject-help-long": "Email subject can contain the following placeholders: ${organization}, ${documentType}, ${documentId} and ${status} where document refers to the study (or network etc.) that was commented.",
+      "project-title": "Research Project Updates",
+      "project-info": "Recipients of research project updates notifications have at least Editor permission (when status is Draft) or Reviewer permission (when status is Deleted or Under Review).",
+      "project": "On research project status changed notification",
+      "project-subject": "Subject of research project status notification",
+      "project-help": "Send email notifications when research project status changes to Deleted, to Under review or to Draft.",
+      "project-subject-help": "Email subject for research project status change notifications.",
+      "project-subject-help-long": "Email subject can contain the following placeholders: ${organization}, ${documentType}, ${documentId}, ${status}."
     },
     "style": {
       "title": "Style",

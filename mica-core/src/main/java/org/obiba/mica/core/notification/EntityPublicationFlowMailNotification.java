@@ -20,19 +20,22 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class EntityPublicationFlowMailNotification extends PublicationFlowMailNotification {
+
   public static final String ENTITY_NOTIFICATION_TEMPLATE_FORMAT = "%sStatusChanged";
-  public static final String DEFAULT_ENTITY_NOTIFICATION_SUBJECT_FORMAT = "[${organization}] ${documentId}: %s status has changed";
+
+  public static final String DEFAULT_ENTITY_NOTIFICATION_SUBJECT_FORMAT
+    = "[${organization}] ${documentId}: %s status has changed";
 
   public void send(String id, String typeName, RevisionStatus current, RevisionStatus status) {
-    if (isEntityNotificationEnabled(current, status, typeName)) {
+    if(isEntityNotificationEnabled(current, status, typeName)) {
       Map<String, String> ctx = createContext();
       ctx.put("status", status.toString());
       ctx.put("documentType", typeName);
       ctx.put("documentId", id);
 
       List<SubjectAcl> acls = getResourceAcls(String.format("/draft/%s", typeName), id);
-      String subject = mailService.getSubject(micaConfigService.getConfig().getStudyNotificationSubject(), ctx,
-        getMailEntityTitle(typeName));
+      String subject = mailService
+        .getSubject(micaConfigService.getConfig().getStudyNotificationsSubject(), ctx, getMailEntityTitle(typeName));
 
       sendNotification(status, ctx, subject, String.format(ENTITY_NOTIFICATION_TEMPLATE_FORMAT, typeName), acls);
     }
@@ -43,11 +46,11 @@ public class EntityPublicationFlowMailNotification extends PublicationFlowMailNo
   }
 
   private boolean isEntityNotificationEnabled(RevisionStatus current, RevisionStatus status, String typeName) {
-    if (current.equals(status)) {
+    if(current.equals(status)) {
       return false;
     }
 
-    switch (typeName){
+    switch(typeName) {
       case "study":
         return micaConfigService.getConfig().isStudyNotificationsEnabled();
       case "network":
@@ -56,6 +59,8 @@ public class EntityPublicationFlowMailNotification extends PublicationFlowMailNo
         return micaConfigService.getConfig().isStudyDatasetNotificationsEnabled();
       case "harmonization-dataset":
         return micaConfigService.getConfig().isHarmonizationDatasetNotificationsEnabled();
+      case "project":
+        return micaConfigService.getConfig().isProjectNotificationsEnabled();
     }
 
     throw new IllegalArgumentException("Invalid state " + typeName);
