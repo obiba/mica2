@@ -424,6 +424,8 @@ message MicaConfigDto {
   optional bool isHarmonizationDatasetEnabled = 26;
   optional string style = 27;
   repeated LocalizedStringDto translations = 28;
+  optional bool isProjectNotificationsEnabled = 29;
+  optional string projectNotificationsSubject = 30;
 }
 
 message PublicMicaConfigDto {

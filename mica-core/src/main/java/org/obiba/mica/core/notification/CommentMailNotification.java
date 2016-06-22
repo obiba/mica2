@@ -73,7 +73,7 @@ public class CommentMailNotification implements MailNotification<Comment> {
     ctx.put("message", comment.getMessage());
     ctx.put("status", comment.isNew() ? "CREATED" : "UPDATED");
 
-    String commentNotificationSubject = micaConfigService.getConfig().getCommentNotiticationsSubject();
+    String commentNotificationSubject = micaConfigService.getConfig().getCommentNotificationsSubject();
 
     mailService
       .sendEmailToGroupsAndUsers(mailService.getSubject(commentNotificationSubject, ctx, DEFAULT_NOTIFICATION_SUBJECT),

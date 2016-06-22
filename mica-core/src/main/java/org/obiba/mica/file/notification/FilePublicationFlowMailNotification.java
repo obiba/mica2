@@ -39,7 +39,7 @@ public class FilePublicationFlowMailNotification extends PublicationFlowMailNoti
 
       List<SubjectAcl> acls = subjectAclService.findByResourceInstance("/draft/file", documentInstance);
       String subject = mailService
-        .getSubject(micaConfigService.getConfig().getFsNotificationSubject(), ctx, DEFAULT_FILE_NOTIFICATION_SUBJECT);
+        .getSubject(micaConfigService.getConfig().getFsNotificationsSubject(), ctx, DEFAULT_FILE_NOTIFICATION_SUBJECT);
 
       sendNotification(status, ctx, subject, FILE_NOTIFICATION_TEMPLATE, acls);
     }
