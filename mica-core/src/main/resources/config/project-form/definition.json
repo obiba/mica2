@@ -4,6 +4,49 @@
     "items": [
       {
         "type": "help",
+        "helpvalue": "<h3>t(research-project.default.status.title)</h3><p class='help-block'>t(research-project.default.status.help)</p>"
+      },
+      {
+        "type": "section",
+        "htmlClass": "row",
+        "items": [
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              {
+                "key": "startDate",
+                "dateOptions": {
+                  "dateFormat": "dd-MM-yyyy"
+                },
+                "description": "t(research-project.default.status.start-help)",
+                "validationMessage": "t(research-project.default.status.date-error)"
+              }
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              {
+                "key": "endDate",
+                "dateOptions": {
+                  "dateFormat": "dd-MM-yyyy"
+                },
+                "description": "t(research-project.default.status.end-help)",
+                "validationMessage": "t(research-project.default.status.date-error)"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "help",
         "helpvalue": "<h3>t(research-project.default.contact.title)</h3><p class='help-block'>t(research-project.default.contact.help)</p>"
       },
       {

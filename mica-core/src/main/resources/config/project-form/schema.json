@@ -8,9 +8,21 @@
     "institution": {
       "title": "t(research-project.default.contact.institution)",
       "type": "string"
+    },
+    "startDate": {
+      "title": "t(research-project.default.status.start)",
+      "type": "string",
+      "format": "datepicker"
+    },
+    "endDate": {
+      "title": "t(research-project.default.status.end)",
+      "type": "string",
+      "format": "datepicker"
     }
   },
   "required": [
-    "name"
+    "name",
+    "startDate",
+    "endDate"
   ]
 }
