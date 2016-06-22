@@ -63,17 +63,11 @@ mica
     '$translateProvider',
     'tmhDynamicLocaleProvider',
     'USER_ROLES',
-    'sfObibaFileUploadOptionsProvider',
     function ($routeProvider,
               $httpProvider,
               $translateProvider,
               tmhDynamicLocaleProvider,
-              USER_ROLES,
-              sfObibaFileUploadOptionsProvider) {
-
-      sfObibaFileUploadOptionsProvider.setValidationMessage('missingFiles', 'missing-files');
-      sfObibaFileUploadOptionsProvider.setValidationMessage('minItems', 'min-items');
-      sfObibaFileUploadOptionsProvider.setGeneralMessage('emptyMessage', 'data-access-request.no-documents');
+              USER_ROLES) {
 
       $routeProvider
         .when('/login', {

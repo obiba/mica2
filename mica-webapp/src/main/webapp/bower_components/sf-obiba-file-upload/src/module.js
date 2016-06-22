@@ -162,6 +162,9 @@ angular.module('sfObibaFileUpload', [
 
         var options = sfObibaFileUploadOptions.options;
         $scope.form.disableErrorState = $scope.form.hasOwnProperty('readonly') && $scope.form.readonly;
+        $scope.$on('schemaFormValidate', function() {
+          $scope.form.disableErrorState = undefined; // remove flag so the invalid fields get highlighted
+        });
 
         // setup messages
         if (!$scope.form.general) {

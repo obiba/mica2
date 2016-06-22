@@ -62,7 +62,22 @@ public class SchemaFormContentFileService {
       newPaths.values().stream().forEach(v -> saveFiles(v, entityPath));
     }
 
+    cleanup(newPaths, newContext);
     newEntity.setContent(newContext.jsonString());
+  }
+
+  /**
+   * Removes the fields with empty obibaFiles from content.
+   *
+   * @param newPaths
+   * @param newContext
+   */
+  private void cleanup(Map<String, JSONArray> newPaths, DocumentContext newContext) {
+    newPaths.keySet().stream().forEach(p -> {
+      if (newPaths.get(p).isEmpty()) {
+        newContext.delete(p.replace("['obibaFiles']", ""));
+      }
+    });
   }
 
   private void saveAndDelete(Map<String, JSONArray> oldPaths, Map<String, JSONArray> newPaths, String entityPath) {

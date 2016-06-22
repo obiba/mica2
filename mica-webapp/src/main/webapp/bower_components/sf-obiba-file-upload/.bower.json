@@ -29,11 +29,11 @@
     "ng-obiba-mica": "https://github.com/obiba/ng-obiba-mica.git#master"
   },
   "homepage": "https://github.com/obiba/sf-obiba-file-upload",
-  "_release": "c65ecb61d2",
+  "_release": "d07223452a",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "c65ecb61d25bf603ebaf7cc6abc966ce84269bae"
+    "commit": "d07223452a077c4f749a691437758451a4079be9"
   },
   "_source": "https://github.com/obiba/sf-obiba-file-upload.git",
   "_target": "master",
