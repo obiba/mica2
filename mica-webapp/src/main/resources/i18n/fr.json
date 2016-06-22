@@ -1283,6 +1283,15 @@
       "message": "Are you sure you want to restore this revision from '{{arg0}}'?"
     },
     "default": {
+      "status": {
+        "title": "Status",
+        "help": "Specify the timeline of the project.",
+        "start": "Start Date",
+        "start-help": "Start date of the project. Date format: dd-mm-yyyy.",
+        "end": "End Date",
+        "end-help": "Expected or effective end date of the project. Date format: dd-mm-yyyy.",
+        "date-error": "Not a valid date."
+      },
       "contact": {
         "title": "Contact Details",
         "help": "Specify the Principal Investigator's contact information.",
