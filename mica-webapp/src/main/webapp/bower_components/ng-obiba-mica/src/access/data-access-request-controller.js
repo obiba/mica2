@@ -219,6 +219,9 @@ angular.module('obiba.mica.access')
       };
 
       var toggleAttachmentsForm = function(show) {
+        if (show) {
+          $scope.attachments = angular.copy($scope.dataAccessRequest.attachments) || [];
+        }
         $scope.showAttachmentsForm = show;
       };
 

@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-06-22
+ * Date: 2016-06-23
  */
 'use strict';
 
@@ -706,6 +706,9 @@ angular.module('obiba.mica.access')
       };
 
       var toggleAttachmentsForm = function(show) {
+        if (show) {
+          $scope.attachments = angular.copy($scope.dataAccessRequest.attachments) || [];
+        }
         $scope.showAttachmentsForm = show;
       };
 
