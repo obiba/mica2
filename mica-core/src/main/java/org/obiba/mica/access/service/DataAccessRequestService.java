@@ -220,6 +220,9 @@ public class DataAccessRequestService {
     // check is new request
     if(from == null) return;
 
+    // check no transition
+    if (request.getStatus() == from) return;
+
     switch(request.getStatus()) {
       case SUBMITTED:
         sendSubmittedNotificationEmail(request);
