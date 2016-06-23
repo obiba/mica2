@@ -96,6 +96,17 @@ public class DataAccessRequestResource {
       .header("Content-Disposition", "attachment; filename=\"" + "data-access-request-" + id + ".pdf" + "\"").build();
   }
 
+  @PUT
+  @Timed
+  @Path("/_attachments")
+  public Response updateAttachments(@PathParam("id") String id, Mica.DataAccessRequestDto dto) {
+    subjectAclService.checkPermission("/data-access-request", "VIEW", id);
+    if(!id.equals(dto.getId())) throw new BadRequestException();
+    DataAccessRequest request = dtos.fromDto(dto);
+    dataAccessRequestService.saveAttachments(request);
+    return Response.noContent().build();
+  }
+
   @GET
   @Timed
   @Path("/attachments/{attachmentId}/_download")
