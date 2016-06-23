@@ -14,6 +14,7 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import org.apache.shiro.SecurityUtils;
+import org.joda.time.DateTime;
 import org.obiba.mica.PdfUtils;
 import org.obiba.mica.access.DataAccessRequestRepository;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
@@ -131,6 +132,7 @@ public class DataAccessRequestService {
       attachmentRepository.save(a);
     });
 
+    saved.setLastModifiedDate(DateTime.now());
     dataAccessRequestRepository.saveWithReferences(saved);
 
     if(attachmentsToDelete != null) attachmentsToDelete.forEach(a -> fileStoreService.delete(a.getId()));
