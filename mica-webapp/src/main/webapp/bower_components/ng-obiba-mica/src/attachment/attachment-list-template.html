@@ -8,8 +8,10 @@
            download="{{attachment.fileName}}">{{attachment.fileName}}
         </a>
       </th>
-      <td>
-        {{attachment.size | bytes}}
+      <td style="width:1%;">
+        <span class="pull-right" style="white-space: nowrap;">
+          {{attachment.size | bytes}}
+        </span>
       </td>
     </tr>
     </tbody>

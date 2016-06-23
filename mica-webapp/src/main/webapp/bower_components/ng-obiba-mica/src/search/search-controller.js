@@ -1368,8 +1368,8 @@ angular.module('obiba.mica.search')
   .controller('ClassificationPanelController', ['$scope', '$location', 'TaxonomyResource',
     'TaxonomiesResource', 'ngObibaMicaSearch', 'RqlQueryUtils', ClassificationPanelController])
 
-  .controller('TaxonomiesFacetsController', ['$scope', 'TaxonomyResource', 'TaxonomiesResource', 'LocalizedValues', 'ngObibaMicaSearch',
-    'RqlQueryUtils', function ($scope, TaxonomyResource, TaxonomiesResource, LocalizedValues, ngObibaMicaSearch, RqlQueryUtils) {
+  .controller('TaxonomiesFacetsController', ['$scope', '$timeout', 'TaxonomyResource', 'TaxonomiesResource', 'LocalizedValues', 'ngObibaMicaSearch',
+    'RqlQueryUtils', function ($scope, $timeout, TaxonomyResource, TaxonomiesResource, LocalizedValues, ngObibaMicaSearch, RqlQueryUtils) {
       $scope.options = ngObibaMicaSearch.getOptions();
       $scope.taxonomies = {};
       $scope.targets = [];
@@ -1393,8 +1393,13 @@ angular.module('obiba.mica.search')
       $scope.setTarget = function(target) {
         $scope.target=target;
         init(target);
+        if ($scope.criteria) {
+          $timeout(function(){
+            $scope.$broadcast('ngObibaMicaQueryUpdated', $scope.criteria);
+          });
+        }
       };
-      
+
       $scope.loadVocabulary = function(taxonomy, vocabulary) {
         $scope.$broadcast('ngObibaMicaLoadVocabulary', taxonomy, vocabulary);
       };
@@ -1402,12 +1407,12 @@ angular.module('obiba.mica.search')
       $scope.localize = function (values) {
         return LocalizedValues.forLocale(values, $scope.lang);
       };
-      
+
       function init(target) {
         if($scope.taxonomies[target]) { return; }
-        
+
         TaxonomiesResource.get({
-          target: target 
+          target: target
         }, function onSuccess(taxonomies) {
           $scope.taxonomies[target] = $scope.facetedTaxonomies[target].map(function(f) {
             return taxonomies.filter(function(t) {
@@ -1419,15 +1424,19 @@ angular.module('obiba.mica.search')
               v.isMatch = RqlQueryUtils.isMatchVocabulary(v);
               v.isNumeric = RqlQueryUtils.isNumericVocabulary(v);
             });
-            
+
             return t;
           });
-          
+
           if($scope.taxonomies[target].length === 1) {
             $scope.taxonomies[target][0].isOpen = 1;
           }
         });
       }
+
+      $scope.$on('ngObibaMicaQueryUpdated', function(ev, criteria) {
+        $scope.criteria = criteria;
+      });
     }
   ])
   

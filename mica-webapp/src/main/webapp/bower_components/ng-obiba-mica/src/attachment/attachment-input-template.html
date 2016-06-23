@@ -2,7 +2,7 @@
         ngf-change="onFileSelect($files)" translate>file.upload.button
 </button>
 
-<table ng-show="files.length" class="table table-striped">
+<table ng-show="files.length" class="table table-bordered table-striped">
   <tbody>
   <tr ng-repeat="file in files">
     <td>
@@ -11,10 +11,12 @@
         {{file.progress}}%
       </uib-progressbar>
     </td>
-    <td>
-      {{file.size | bytes}}
+    <td style="width:1%;">
+        <span class="pull-right" style="white-space: nowrap;">
+          {{file.size | bytes}}
+        </span>
     </td>
-    <td>
+    <td style="width:20px;">
       <a ng-show="file.id" ng-click="deleteFile(file.id)" class="action">
         <i class="fa fa-trash-o"></i>
       </a>
