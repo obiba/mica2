@@ -36,7 +36,14 @@ angular.module('obiba.mica.access')
       });
     }])
 
-  .factory('DataAccessRequestCommentsResource', ['$resource', 'ngObibaMicaUrl',
+  .factory('DataAccessRequestAttachmentsUpdateResource', ['$resource', 'ngObibaMicaUrl',
+    function ($resource, ngObibaMicaUrl) {
+      return $resource(ngObibaMicaUrl.getUrl('DataAccessRequestAttachmentsUpdateResource'), {}, {
+        'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true}
+      });
+    }])
+
+    .factory('DataAccessRequestCommentsResource', ['$resource', 'ngObibaMicaUrl',
     function ($resource, ngObibaMicaUrl) {
       return $resource(ngObibaMicaUrl.getUrl('DataAccessRequestCommentsResource'), {}, {
         'save': {

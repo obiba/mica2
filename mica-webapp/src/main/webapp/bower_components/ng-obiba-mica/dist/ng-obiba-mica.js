@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-06-20
+ * Date: 2016-06-22
  */
 'use strict';
 
@@ -12,6 +12,7 @@ function NgObibaMicaUrlProvider() {
     'DataAccessFormConfigResource': 'ws/config/data-access-form',
     'DataAccessRequestsResource': 'ws/data-access-requests',
     'DataAccessRequestResource': 'ws/data-access-request/:id',
+    'DataAccessRequestAttachmentsUpdateResource': '/ws/data-access-request/:id/_attachments',
     'DataAccessRequestAttachmentDownloadResource': '/ws/data-access-request/:id/attachments/:attachmentId/_download',
     'SchemaFormAttachmentDownloadResource': '/ws/:path/form/attachments/:attachmentName/:attachmentId/_download',
     'DataAccessRequestDownloadPdfResource': '/ws/data-access-request/:id/_pdf',
@@ -628,6 +629,7 @@ angular.module('obiba.mica.access')
       'DataAccessRequestStatusResource',
       'DataAccessFormConfigResource',
       'JsonUtils',
+      'DataAccessRequestAttachmentsUpdateResource',
       'DataAccessRequestCommentsResource',
       'DataAccessRequestCommentResource',
       'ngObibaMicaUrl',
@@ -649,6 +651,7 @@ angular.module('obiba.mica.access')
               DataAccessRequestStatusResource,
               DataAccessFormConfigResource,
               JsonUtils,
+              DataAccessRequestAttachmentsUpdateResource,
               DataAccessRequestCommentsResource,
               DataAccessRequestCommentResource,
               ngObibaMicaUrl,
@@ -702,6 +705,19 @@ angular.module('obiba.mica.access')
         );
       };
 
+      var toggleAttachmentsForm = function(show) {
+        $scope.showAttachmentsForm = show;
+      };
+
+      var updateAttachments = function() {
+        var request = angular.copy($scope.dataAccessRequest);
+        request.attachments = $scope.attachments;
+        DataAccessRequestAttachmentsUpdateResource.save(request, function() {
+          toggleAttachmentsForm(false);
+          $scope.dataAccessRequest = getRequest();
+        });
+      };
+
       $scope.form = {
         schema: null,
         definition: null,
@@ -727,6 +743,14 @@ angular.module('obiba.mica.access')
       $scope.submitComment = submitComment;
       $scope.updateComment = updateComment;
       $scope.deleteComment = deleteComment;
+      $scope.showAttachmentsForm = false;
+      $scope.updateAttachments = updateAttachments;
+      $scope.cancelAttachments = function() {
+        toggleAttachmentsForm(false);
+      };
+      $scope.editAttachments = function() {
+        toggleAttachmentsForm(true);
+      };
       $scope.headerTemplateUrl = ngObibaMicaAccessTemplateUrl.getHeaderUrl('view');
       $scope.footerTemplateUrl = ngObibaMicaAccessTemplateUrl.getFooterUrl('view');
       $scope.getStatusHistoryInfoId = DataAccessRequestService.getStatusHistoryInfoId;
@@ -742,6 +766,7 @@ angular.module('obiba.mica.access')
             $scope.form.model = request.content ? JSON.parse(request.content) : {};
             $scope.requestDownloadUrl =
               ngObibaMicaUrl.getUrl('DataAccessRequestDownloadPdfResource').replace(':id', $scope.dataAccessRequest.id);
+            $scope.attachments = angular.copy(request.attachments) || [];
           } catch (e) {
             $scope.validForm = false;
             $scope.form.model = {};
@@ -1150,7 +1175,14 @@ angular.module('obiba.mica.access')
       });
     }])
 
-  .factory('DataAccessRequestCommentsResource', ['$resource', 'ngObibaMicaUrl',
+  .factory('DataAccessRequestAttachmentsUpdateResource', ['$resource', 'ngObibaMicaUrl',
+    function ($resource, ngObibaMicaUrl) {
+      return $resource(ngObibaMicaUrl.getUrl('DataAccessRequestAttachmentsUpdateResource'), {}, {
+        'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true}
+      });
+    }])
+
+    .factory('DataAccessRequestCommentsResource', ['$resource', 'ngObibaMicaUrl',
     function ($resource, ngObibaMicaUrl) {
       return $resource(ngObibaMicaUrl.getUrl('DataAccessRequestCommentsResource'), {}, {
         'save': {
@@ -7869,7 +7901,55 @@ angular.module('obiba.mica.fileBrowser')
       }
     };
   }]);
-;angular.module('templates-ngObibaMica', ['access/views/data-access-request-form.html', 'access/views/data-access-request-histroy-view.html', 'access/views/data-access-request-list.html', 'access/views/data-access-request-profile-user-modal.html', 'access/views/data-access-request-submitted-modal.html', 'access/views/data-access-request-validation-modal.html', 'access/views/data-access-request-view.html', 'attachment/attachment-input-template.html', 'attachment/attachment-list-template.html', 'file-browser/views/document-detail-template.html', 'file-browser/views/documents-table-template.html', 'file-browser/views/file-browser-template.html', 'file-browser/views/toolbar-template.html', 'graphics/views/charts-directive.html', 'graphics/views/tables-directive.html', 'localized/localized-input-group-template.html', 'localized/localized-input-template.html', 'localized/localized-template.html', 'localized/localized-textarea-template.html', 'search/views/classifications.html', 'search/views/classifications/classifications-view.html', 'search/views/classifications/taxonomies-facets-view.html', 'search/views/classifications/taxonomies-view.html', 'search/views/classifications/taxonomy-accordion-group.html', 'search/views/classifications/taxonomy-panel-template.html', 'search/views/classifications/taxonomy-template.html', 'search/views/classifications/term-panel-template.html', 'search/views/classifications/vocabulary-accordion-group.html', 'search/views/classifications/vocabulary-panel-template.html', 'search/views/coverage/coverage-search-result-table-template.html', 'search/views/criteria/criteria-node-template.html', 'search/views/criteria/criteria-root-template.html', 'search/views/criteria/criteria-target-template.html', 'search/views/criteria/criterion-dropdown-template.html', 'search/views/criteria/criterion-header-template.html', 'search/views/criteria/criterion-match-template.html', 'search/views/criteria/criterion-numeric-template.html', 'search/views/criteria/criterion-string-terms-template.html', 'search/views/criteria/target-template.html', 'search/views/graphics/graphics-search-result-template.html', 'search/views/list/datasets-search-result-table-template.html', 'search/views/list/networks-search-result-table-template.html', 'search/views/list/pagination-template.html', 'search/views/list/search-result-pagination-template.html', 'search/views/list/studies-search-result-table-template.html', 'search/views/list/variables-search-result-table-template.html', 'search/views/search-result-coverage-template.html', 'search/views/search-result-graphics-template.html', 'search/views/search-result-list-dataset-template.html', 'search/views/search-result-list-network-template.html', 'search/views/search-result-list-study-template.html', 'search/views/search-result-list-template.html', 'search/views/search-result-list-variable-template.html', 'search/views/search-result-panel-template.html', 'search/views/search.html', 'views/pagination-template.html']);
+;angular.module('templates-ngObibaMica', ['access/views/data-access-request-documents-view.html', 'access/views/data-access-request-form.html', 'access/views/data-access-request-history-view.html', 'access/views/data-access-request-list.html', 'access/views/data-access-request-profile-user-modal.html', 'access/views/data-access-request-submitted-modal.html', 'access/views/data-access-request-validation-modal.html', 'access/views/data-access-request-view.html', 'attachment/attachment-input-template.html', 'attachment/attachment-list-template.html', 'file-browser/views/document-detail-template.html', 'file-browser/views/documents-table-template.html', 'file-browser/views/file-browser-template.html', 'file-browser/views/toolbar-template.html', 'graphics/views/charts-directive.html', 'graphics/views/tables-directive.html', 'localized/localized-input-group-template.html', 'localized/localized-input-template.html', 'localized/localized-template.html', 'localized/localized-textarea-template.html', 'search/views/classifications.html', 'search/views/classifications/classifications-view.html', 'search/views/classifications/taxonomies-facets-view.html', 'search/views/classifications/taxonomies-view.html', 'search/views/classifications/taxonomy-accordion-group.html', 'search/views/classifications/taxonomy-panel-template.html', 'search/views/classifications/taxonomy-template.html', 'search/views/classifications/term-panel-template.html', 'search/views/classifications/vocabulary-accordion-group.html', 'search/views/classifications/vocabulary-panel-template.html', 'search/views/coverage/coverage-search-result-table-template.html', 'search/views/criteria/criteria-node-template.html', 'search/views/criteria/criteria-root-template.html', 'search/views/criteria/criteria-target-template.html', 'search/views/criteria/criterion-dropdown-template.html', 'search/views/criteria/criterion-header-template.html', 'search/views/criteria/criterion-match-template.html', 'search/views/criteria/criterion-numeric-template.html', 'search/views/criteria/criterion-string-terms-template.html', 'search/views/criteria/target-template.html', 'search/views/graphics/graphics-search-result-template.html', 'search/views/list/datasets-search-result-table-template.html', 'search/views/list/networks-search-result-table-template.html', 'search/views/list/pagination-template.html', 'search/views/list/search-result-pagination-template.html', 'search/views/list/studies-search-result-table-template.html', 'search/views/list/variables-search-result-table-template.html', 'search/views/search-result-coverage-template.html', 'search/views/search-result-graphics-template.html', 'search/views/search-result-list-dataset-template.html', 'search/views/search-result-list-network-template.html', 'search/views/search-result-list-study-template.html', 'search/views/search-result-list-template.html', 'search/views/search-result-list-variable-template.html', 'search/views/search-result-panel-template.html', 'search/views/search.html', 'views/pagination-template.html']);
+
+angular.module("access/views/data-access-request-documents-view.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("access/views/data-access-request-documents-view.html",
+    "<!--\n" +
+    "  ~ Copyright (c) 2016 OBiBa. All rights reserved.\n" +
+    "  ~\n" +
+    "  ~ This program and the accompanying materials\n" +
+    "  ~ are made available under the terms of the GNU Public License v3.0.\n" +
+    "  ~\n" +
+    "  ~ You should have received a copy of the GNU General Public License\n" +
+    "  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.\n" +
+    "  -->\n" +
+    "\n" +
+    "<div>\n" +
+    "  <p class=\"help-block\">{{config.documentsSectionHelpText || 'data-access-request.documents-help' | translate}}</p>\n" +
+    "\n" +
+    "  <div class=\"form-group\">\n" +
+    "\n" +
+    "    <div class=\"panel panel-default\" ng-show=\"showAttachmentsForm\">\n" +
+    "      <div class=\"panel-body\">\n" +
+    "        <attachment-input files=\"attachments\" multiple=\"true\"></attachment-input>\n" +
+    "\n" +
+    "        <div class=\"voffset2\">\n" +
+    "          <a ng-click=\"cancelAttachments()\" type=\"button\" class=\"btn btn-default\">\n" +
+    "            <span translate>cancel</span>\n" +
+    "          </a>\n" +
+    "\n" +
+    "          <a ng-click=\"updateAttachments()\" type=\"button\" class=\"btn btn-primary\">\n" +
+    "            <span translate>save</span>\n" +
+    "          </a>\n" +
+    "        </div>\n" +
+    "      </div>\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div ng-hide=\"showAttachmentsForm\">\n" +
+    "      <p ng-if=\"dataAccessRequest.attachments.length == 0\" class=\"voffset2\" translate>\n" +
+    "        data-access-request.no-documents\n" +
+    "      </p>\n" +
+    "      <attachment-list files=\"dataAccessRequest.attachments\"\n" +
+    "                       href-builder=\"getDownloadHref\"></attachment-list>\n" +
+    "      <a ng-click=\"editAttachments()\" type=\"button\" class=\"btn btn-info\">\n" +
+    "        <span translate>edit</span>\n" +
+    "      </a>\n" +
+    "    </div>\n" +
+    "\n" +
+    "  </div>\n" +
+    "</div>");
+}]);
 
 angular.module("access/views/data-access-request-form.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("access/views/data-access-request-form.html",
@@ -7909,11 +7989,6 @@ angular.module("access/views/data-access-request-form.html", []).run(["$template
     "\n" +
     "    <form name=\"form.requestForm\" ng-submit=\"submit(form.requestForm)\">\n" +
     "      <div sf-model=\"form.model\" sf-form=\"form.definition\" sf-schema=\"form.schema\" required=\"true\"></div>\n" +
-    "      <h2>{{config.documentsSectionTitle || 'data-access-request.documents' | translate}}</h2>\n" +
-    "      <p>{{config.documentsSectionHelpText || 'data-access-request.documents-help' | translate}}</p>\n" +
-    "      <div class=\"form-group\">\n" +
-    "        <attachment-input files=\"dataAccessRequest.attachments\" multiple=\"true\"></attachment-input>\n" +
-    "      </div>\n" +
     "    </form>\n" +
     "  </div>\n" +
     "\n" +
@@ -7921,8 +7996,8 @@ angular.module("access/views/data-access-request-form.html", []).run(["$template
     "");
 }]);
 
-angular.module("access/views/data-access-request-histroy-view.html", []).run(["$templateCache", function($templateCache) {
-  $templateCache.put("access/views/data-access-request-histroy-view.html",
+angular.module("access/views/data-access-request-history-view.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("access/views/data-access-request-history-view.html",
     "<!--\n" +
     "  ~ Copyright (c) 2015 OBiBa. All rights reserved.\n" +
     "  ~\n" +
@@ -8268,21 +8343,19 @@ angular.module("access/views/data-access-request-view.html", []).run(["$template
     "        <form id=\"request-form\" name=\"forms.requestForm\">\n" +
     "          <div sf-model=\"form.model\" sf-form=\"form.definition\" sf-schema=\"form.schema\"></div>\n" +
     "        </form>\n" +
-    "        <h2>{{config.documentsSectionTitle || 'data-access-request.documents' | translate}}</h2>\n" +
-    "\n" +
-    "        <p ng-if=\"dataAccessRequest.attachments.length == 0\" translate>\n" +
-    "          data-access-request.no-documents\n" +
-    "        </p>\n" +
-    "\n" +
-    "        <attachment-list files=\"dataAccessRequest.attachments\"\n" +
-    "            href-builder=\"getDownloadHref\"></attachment-list>\n" +
+    "      </uib-tab>\n" +
+    "      <uib-tab ng-click=\"selectTab('documents')\" heading=\"{{config.documentsSectionTitle || 'data-access-request.documents' | translate}}\">\n" +
+    "        <div ng-include=\"'access/views/data-access-request-documents-view.html'\"></div>\n" +
     "      </uib-tab>\n" +
     "      <uib-tab ng-if=\"config.commentsEnabled\" ng-click=\"selectTab('comments')\" heading=\"{{'data-access-request.comments' | translate}}\">\n" +
-    "        <obiba-comments comments=\"form.comments\" on-update=\"updateComment\" on-delete=\"deleteComment\" name-resolver=\"userProfileService.getFullName\" edit-action=\"EDIT\" delete-action=\"DELETE\"></obiba-comments>\n" +
+    "        <obiba-comments class=\"voffset2\" comments=\"form.comments\"\n" +
+    "                        on-update=\"updateComment\" on-delete=\"deleteComment\"\n" +
+    "                        name-resolver=\"userProfileService.getFullName\"\n" +
+    "                        edit-action=\"EDIT\" delete-action=\"DELETE\"></obiba-comments>\n" +
     "        <obiba-comment-editor on-submit=\"submitComment\"></obiba-comment-editor>\n" +
     "      </uib-tab>\n" +
     "      <uib-tab ng-click=\"selectTab('history')\" heading=\"{{'data-access-request.history' | translate}}\">\n" +
-    "        <div ng-include=\"'access/views/data-access-request-histroy-view.html'\"></div>\n" +
+    "        <div ng-include=\"'access/views/data-access-request-history-view.html'\"></div>\n" +
     "      </uib-tab>\n" +
     "    </uib-tabset>\n" +
     "  </div>\n" +

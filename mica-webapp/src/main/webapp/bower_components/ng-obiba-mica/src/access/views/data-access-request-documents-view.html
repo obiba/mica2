@@ -1,0 +1,44 @@
+<!--
+  ~ Copyright (c) 2016 OBiBa. All rights reserved.
+  ~
+  ~ This program and the accompanying materials
+  ~ are made available under the terms of the GNU Public License v3.0.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<div>
+  <p class="help-block">{{config.documentsSectionHelpText || 'data-access-request.documents-help' | translate}}</p>
+
+  <div class="form-group">
+
+    <div class="panel panel-default" ng-show="showAttachmentsForm">
+      <div class="panel-body">
+        <attachment-input files="attachments" multiple="true"></attachment-input>
+
+        <div class="voffset2">
+          <a ng-click="cancelAttachments()" type="button" class="btn btn-default">
+            <span translate>cancel</span>
+          </a>
+
+          <a ng-click="updateAttachments()" type="button" class="btn btn-primary">
+            <span translate>save</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div ng-hide="showAttachmentsForm">
+      <p ng-if="dataAccessRequest.attachments.length == 0" class="voffset2" translate>
+        data-access-request.no-documents
+      </p>
+      <attachment-list files="dataAccessRequest.attachments"
+                       href-builder="getDownloadHref"></attachment-list>
+      <a ng-click="editAttachments()" type="button" class="btn btn-info">
+        <span translate>edit</span>
+      </a>
+    </div>
+
+  </div>
+</div>

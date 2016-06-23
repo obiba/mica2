@@ -142,6 +142,7 @@ angular.module('obiba.mica.access')
       'DataAccessRequestStatusResource',
       'DataAccessFormConfigResource',
       'JsonUtils',
+      'DataAccessRequestAttachmentsUpdateResource',
       'DataAccessRequestCommentsResource',
       'DataAccessRequestCommentResource',
       'ngObibaMicaUrl',
@@ -163,6 +164,7 @@ angular.module('obiba.mica.access')
               DataAccessRequestStatusResource,
               DataAccessFormConfigResource,
               JsonUtils,
+              DataAccessRequestAttachmentsUpdateResource,
               DataAccessRequestCommentsResource,
               DataAccessRequestCommentResource,
               ngObibaMicaUrl,
@@ -216,6 +218,19 @@ angular.module('obiba.mica.access')
         );
       };
 
+      var toggleAttachmentsForm = function(show) {
+        $scope.showAttachmentsForm = show;
+      };
+
+      var updateAttachments = function() {
+        var request = angular.copy($scope.dataAccessRequest);
+        request.attachments = $scope.attachments;
+        DataAccessRequestAttachmentsUpdateResource.save(request, function() {
+          toggleAttachmentsForm(false);
+          $scope.dataAccessRequest = getRequest();
+        });
+      };
+
       $scope.form = {
         schema: null,
         definition: null,
@@ -241,6 +256,14 @@ angular.module('obiba.mica.access')
       $scope.submitComment = submitComment;
       $scope.updateComment = updateComment;
       $scope.deleteComment = deleteComment;
+      $scope.showAttachmentsForm = false;
+      $scope.updateAttachments = updateAttachments;
+      $scope.cancelAttachments = function() {
+        toggleAttachmentsForm(false);
+      };
+      $scope.editAttachments = function() {
+        toggleAttachmentsForm(true);
+      };
       $scope.headerTemplateUrl = ngObibaMicaAccessTemplateUrl.getHeaderUrl('view');
       $scope.footerTemplateUrl = ngObibaMicaAccessTemplateUrl.getFooterUrl('view');
       $scope.getStatusHistoryInfoId = DataAccessRequestService.getStatusHistoryInfoId;
@@ -256,6 +279,7 @@ angular.module('obiba.mica.access')
             $scope.form.model = request.content ? JSON.parse(request.content) : {};
             $scope.requestDownloadUrl =
               ngObibaMicaUrl.getUrl('DataAccessRequestDownloadPdfResource').replace(':id', $scope.dataAccessRequest.id);
+            $scope.attachments = angular.copy(request.attachments) || [];
           } catch (e) {
             $scope.validForm = false;
             $scope.form.model = {};
