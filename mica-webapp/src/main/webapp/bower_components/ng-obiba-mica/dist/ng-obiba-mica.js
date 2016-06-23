@@ -4828,8 +4828,8 @@ angular.module('obiba.mica.search')
   .controller('ClassificationPanelController', ['$scope', '$location', 'TaxonomyResource',
     'TaxonomiesResource', 'ngObibaMicaSearch', 'RqlQueryUtils', ClassificationPanelController])
 
-  .controller('TaxonomiesFacetsController', ['$scope', 'TaxonomyResource', 'TaxonomiesResource', 'LocalizedValues', 'ngObibaMicaSearch',
-    'RqlQueryUtils', function ($scope, TaxonomyResource, TaxonomiesResource, LocalizedValues, ngObibaMicaSearch, RqlQueryUtils) {
+  .controller('TaxonomiesFacetsController', ['$scope', '$timeout', 'TaxonomyResource', 'TaxonomiesResource', 'LocalizedValues', 'ngObibaMicaSearch',
+    'RqlQueryUtils', function ($scope, $timeout, TaxonomyResource, TaxonomiesResource, LocalizedValues, ngObibaMicaSearch, RqlQueryUtils) {
       $scope.options = ngObibaMicaSearch.getOptions();
       $scope.taxonomies = {};
       $scope.targets = [];
@@ -4853,8 +4853,13 @@ angular.module('obiba.mica.search')
       $scope.setTarget = function(target) {
         $scope.target=target;
         init(target);
+        if ($scope.criteria) {
+          $timeout(function(){
+            $scope.$broadcast('ngObibaMicaQueryUpdated', $scope.criteria);
+          });
+        }
       };
-      
+
       $scope.loadVocabulary = function(taxonomy, vocabulary) {
         $scope.$broadcast('ngObibaMicaLoadVocabulary', taxonomy, vocabulary);
       };
@@ -4862,12 +4867,12 @@ angular.module('obiba.mica.search')
       $scope.localize = function (values) {
         return LocalizedValues.forLocale(values, $scope.lang);
       };
-      
+
       function init(target) {
         if($scope.taxonomies[target]) { return; }
-        
+
         TaxonomiesResource.get({
-          target: target 
+          target: target
         }, function onSuccess(taxonomies) {
           $scope.taxonomies[target] = $scope.facetedTaxonomies[target].map(function(f) {
             return taxonomies.filter(function(t) {
@@ -4879,15 +4884,19 @@ angular.module('obiba.mica.search')
               v.isMatch = RqlQueryUtils.isMatchVocabulary(v);
               v.isNumeric = RqlQueryUtils.isNumericVocabulary(v);
             });
-            
+
             return t;
           });
-          
+
           if($scope.taxonomies[target].length === 1) {
             $scope.taxonomies[target][0].isOpen = 1;
           }
         });
       }
+
+      $scope.$on('ngObibaMicaQueryUpdated', function(ev, criteria) {
+        $scope.criteria = criteria;
+      });
     }
   ])
   
@@ -8373,7 +8382,7 @@ angular.module("attachment/attachment-input-template.html", []).run(["$templateC
     "        ngf-change=\"onFileSelect($files)\" translate>file.upload.button\n" +
     "</button>\n" +
     "\n" +
-    "<table ng-show=\"files.length\" class=\"table table-striped\">\n" +
+    "<table ng-show=\"files.length\" class=\"table table-bordered table-striped\">\n" +
     "  <tbody>\n" +
     "  <tr ng-repeat=\"file in files\">\n" +
     "    <td>\n" +
@@ -8382,10 +8391,12 @@ angular.module("attachment/attachment-input-template.html", []).run(["$templateC
     "        {{file.progress}}%\n" +
     "      </uib-progressbar>\n" +
     "    </td>\n" +
-    "    <td>\n" +
-    "      {{file.size | bytes}}\n" +
+    "    <td style=\"width:1%;\">\n" +
+    "        <span class=\"pull-right\" style=\"white-space: nowrap;\">\n" +
+    "          {{file.size | bytes}}\n" +
+    "        </span>\n" +
     "    </td>\n" +
-    "    <td>\n" +
+    "    <td style=\"width:20px;\">\n" +
     "      <a ng-show=\"file.id\" ng-click=\"deleteFile(file.id)\" class=\"action\">\n" +
     "        <i class=\"fa fa-trash-o\"></i>\n" +
     "      </a>\n" +
@@ -8411,8 +8422,10 @@ angular.module("attachment/attachment-list-template.html", []).run(["$templateCa
     "           download=\"{{attachment.fileName}}\">{{attachment.fileName}}\n" +
     "        </a>\n" +
     "      </th>\n" +
-    "      <td>\n" +
-    "        {{attachment.size | bytes}}\n" +
+    "      <td style=\"width:1%;\">\n" +
+    "        <span class=\"pull-right\" style=\"white-space: nowrap;\">\n" +
+    "          {{attachment.size | bytes}}\n" +
+    "        </span>\n" +
     "      </td>\n" +
     "    </tr>\n" +
     "    </tbody>\n" +

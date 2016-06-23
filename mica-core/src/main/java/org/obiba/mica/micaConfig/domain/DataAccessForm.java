@@ -51,6 +51,8 @@ public class DataAccessForm extends AbstractGitPersistable {
 
   private boolean notifyCommented = true;
 
+  private boolean notifyAttachment = true;
+
   private String submittedSubject;
 
   private String reviewedSubject;
@@ -64,6 +66,8 @@ public class DataAccessForm extends AbstractGitPersistable {
   private String reopenedSubject;
 
   private String commentedSubject;
+
+  private String attachmentSubject;
 
   private boolean withReview = true;
 
@@ -266,6 +270,14 @@ public class DataAccessForm extends AbstractGitPersistable {
     return notifyCommented;
   }
 
+  public void setNotifyAttachment(boolean notifyAttachment) {
+    this.notifyAttachment = notifyAttachment;
+  }
+
+  public boolean isNotifyAttachment() {
+    return notifyAttachment;
+  }
+
   public void setWithReview(boolean withReview) {
     this.withReview = withReview;
   }
@@ -352,5 +364,13 @@ public class DataAccessForm extends AbstractGitPersistable {
 
   public void setCommentedSubject(String commentedSubject) {
     this.commentedSubject = commentedSubject;
+  }
+
+  public String getAttachmentSubject() {
+    return attachmentSubject;
+  }
+
+  public void setAttachmentSubject(String attachmentSubject) {
+    this.attachmentSubject = attachmentSubject;
   }
 }
