@@ -1166,6 +1166,9 @@
       "commented": "On comment",
       "commentedSubject": "On comment email subject",
       "commented-help": "Email is sent to applicant and data access officers when the data access request is commented.",
+      "attachment": "On documents update",
+      "attachmentSubject": "On documents update email subject",
+      "attachment-help": "Email is sent to applicant and data access officers when the document list of the data access request is updated.",
       "conditionallyApproved": "On conditional approval",
       "conditionallyApprovedSubject": "On conditional approval email subject",
       "conditionallyApproved-help": "Email is sent to applicant when its data access request is in the 'Conditionally Approved' state."

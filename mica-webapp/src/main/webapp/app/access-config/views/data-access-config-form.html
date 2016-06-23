@@ -158,7 +158,7 @@
           <div form-checkbox name="notifyReopened" model="dataAccessForm.notifyReopened" label="data-access-config.notifications.reopened" help="data-access-config.notifications.reopened-help"></div>
           <div form-input name="reopenedSubject" model="dataAccessForm.reopenedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.reopenedSubject" required="false" disable="!dataAccessForm.notifyReopened"></div>
           <div form-checkbox name="notifyConditionallyApproved" model="dataAccessForm.notifyConditionallyApproved" label="data-access-config.notifications.conditionallyApproved" help="data-access-config.notifications.conditionallyApproved-help"></div>
-          <div form-input name="conditionallyApprovedSubject" model="conditionallyApprovedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.conditionallyApprovedSubject"></div>
+          <div form-input name="conditionallyApprovedSubject" model="dataAccessForm.conditionallyApprovedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.conditionallyApprovedSubject"></div>
         </div>
         <div class="col-md-6">
           <div form-checkbox name="notifyRejected" model="dataAccessForm.notifyRejected" label="data-access-config.notifications.rejected" help="data-access-config.notifications.rejected-help"></div>
@@ -167,6 +167,8 @@
           <div form-input name="approvedSubject" model="dataAccessForm.approvedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.approvedSubject" required="false" disable="!dataAccessForm.notifyApproved"></div>
           <div form-checkbox name="notifyCommented" model="dataAccessForm.notifyCommented" label="data-access-config.notifications.commented" help="data-access-config.notifications.commented-help"></div>
           <div form-input name="commentedSubject" model="dataAccessForm.commentedSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.commentedSubject" required="false" disable="!dataAccessForm.notifyCommented"></div>
+          <div form-checkbox name="notifyAttachment" model="dataAccessForm.notifyAttachment" label="data-access-config.notifications.attachment" help="data-access-config.notifications.attachment-help"></div>
+          <div form-input name="attachmentSubject" model="dataAccessForm.attachmentSubject" placeholder="[${organization}] ${title}" label="data-access-config.notifications.attachmentSubject" required="false" disable="!dataAccessForm.notifyAttachment"></div>
         </div>
       </div>
     </form>

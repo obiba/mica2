@@ -146,6 +146,7 @@ public class DataAccessRequestService {
     DataAccessRequest saved = findById(request.getId());
     saved.setAttachments(request.getAttachments());
     save(saved);
+    sendAttachmentsUpdatedNotificationEmail(request);
     return saved;
   }
 
@@ -367,6 +368,17 @@ public class DataAccessRequestService {
 
       mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getRejectedSubject(), ctx,
         DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestRejectedApplicantEmail", ctx,
+        request.getApplicant());
+    }
+  }
+
+  private void sendAttachmentsUpdatedNotificationEmail(DataAccessRequest request) {
+    DataAccessForm dataAccessForm = dataAccessFormService.find().get();
+    if(dataAccessForm.isNotifyAttachment()) {
+      Map<String, String> ctx = getNotificationEmailContext(request);
+
+      mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getAttachmentSubject(), ctx,
+        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestAttachmentsUpdated", ctx,
         request.getApplicant());
     }
   }
