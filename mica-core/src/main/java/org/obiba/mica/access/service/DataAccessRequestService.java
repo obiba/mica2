@@ -161,6 +161,7 @@ public class DataAccessRequestService {
     List<Attachment> attachments = dataAccessRequest.getAttachments();
 
     dataAccessRequestRepository.deleteWithReferences(dataAccessRequest);
+    schemaFormContentFileService.deleteFiles(dataAccessRequest);
 
     attachments.forEach(a -> fileStoreService.delete(a.getId()));
     eventBus.post(new DataAccessRequestDeletedEvent(dataAccessRequest));

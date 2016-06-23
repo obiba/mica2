@@ -10,6 +10,7 @@
 
 package org.obiba.mica.core.service;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -66,6 +67,21 @@ public class SchemaFormContentFileService {
     newEntity.setContent(newContext.jsonString());
   }
 
+  public void deleteFiles(SchemaFormContentAware entity) {
+    Object json = defaultConfiguration().jsonProvider().parse(entity.getContent());
+    DocumentContext context = JsonPath.using(defaultConfiguration().addOptions(Option.AS_PATH_LIST)).parse(json);
+    DocumentContext reader =
+        new JsonReader(defaultConfiguration().addOptions(Option.REQUIRE_PROPERTIES)).parse(json);
+
+    try {
+      ((JSONArray)context.read("$..obibaFiles")).stream()
+          .map(p -> (JSONArray) reader.read(p.toString()))
+          .flatMap(Collection::stream)
+          .forEach(file -> fileStoreService.delete(((LinkedHashMap)file).get("id").toString()));
+    } catch(PathNotFoundException e) {
+    }
+  }
+
   /**
    * Removes the fields with empty obibaFiles from content.
    *
@@ -85,7 +101,7 @@ public class SchemaFormContentFileService {
       if (oldPaths.containsKey(p)) {
         saveAndDeleteFiles(oldPaths.get(p), newPaths.get(p), entityPath);
       } else {
-        newPaths.values().stream().forEach(v -> saveFiles(v, entityPath));
+        saveFiles(newPaths.get(p), entityPath);
       }
     });
   }
