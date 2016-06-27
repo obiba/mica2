@@ -27,6 +27,8 @@ import org.obiba.mica.dataset.service.StudyDatasetService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.network.domain.NetworkState;
 import org.obiba.mica.network.service.NetworkService;
+import org.obiba.mica.project.domain.ProjectState;
+import org.obiba.mica.project.service.ProjectService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.study.domain.StudyState;
 import org.obiba.mica.study.service.StudyService;
@@ -60,6 +62,9 @@ public class FileFilterHelper {
   @Inject
   private HarmonizationDatasetService harmonizationDatasetService;
 
+  @Inject
+  private ProjectService projectService;
+
   /**
    * Check if the given path is part of the file search filter.
    *
@@ -68,7 +73,7 @@ public class FileFilterHelper {
   public static boolean appliesToFile(String path) {
     return path != null &&
       (path.startsWith("/network/") || path.startsWith("/study/") || path.startsWith("/study-dataset/") ||
-        path.startsWith("/harmonization-dataset/"));
+        path.startsWith("/harmonization-dataset/") || path.startsWith("/project/"));
   }
 
   public QueryBuilder makeDraftFilesFilter(@NotNull String basePath) {
@@ -76,8 +81,9 @@ public class FileFilterHelper {
     List<String> studyIds = getStudyIds(basePath, true);
     List<String> studyDatasetIds = getStudyDatasetIds(basePath, true);
     List<String> harmonizationDatasetIds = getHarmonizationDatasetIds(basePath, true);
+    List<String> projectIds = getProjectIds(basePath, true);
 
-    return makeFilterBuilder(networkIds, studyIds, studyDatasetIds, harmonizationDatasetIds);
+    return makeFilterBuilder(networkIds, studyIds, studyDatasetIds, harmonizationDatasetIds, projectIds);
   }
 
   public QueryBuilder makePublishedFilesFilter(String basePath) {
@@ -86,8 +92,9 @@ public class FileFilterHelper {
     List<String> studyIds = getStudyIds(basePath, false);
     List<String> studyDatasetIds = getStudyDatasetIds(basePath, false);
     List<String> harmonizationDatasetIds = getHarmonizationDatasetIds(basePath, false);
+    List<String> projectIds = getProjectIds(basePath, false);
 
-    return makeFilterBuilder(networkIds, studyIds, studyDatasetIds, harmonizationDatasetIds);
+    return makeFilterBuilder(networkIds, studyIds, studyDatasetIds, harmonizationDatasetIds, projectIds);
   }
 
   //
@@ -163,6 +170,23 @@ public class FileFilterHelper {
     return Lists.newArrayList();
   }
 
+  private List<String> getProjectIds(String basePath, boolean draft) {
+    if("/".equals(basePath) || "/project".equals(basePath)) {
+      return draft
+        ? projectService.findAllStates().stream().map(ProjectState::getId)
+        .filter(s -> subjectAclService.isPermitted("/draft/project", "VIEW", s)).collect(Collectors.toList())
+        : projectService.findPublishedStates().stream().map(ProjectState::getId)
+          .filter(s -> subjectAclService.isAccessible("/project", s)).collect(Collectors.toList());
+    }
+    if(basePath.startsWith("/project/")) {
+      String id = extractId(basePath,"/project/");
+      if(draft
+        ? subjectAclService.isPermitted("/draft/project", "VIEW", id)
+        : subjectAclService.isAccessible("/project", id)) return Lists.newArrayList(id);
+    }
+    return Lists.newArrayList();
+  }
+
   /**
    * Extract the entity identifier from base path.
    * @param basePath
@@ -176,7 +200,7 @@ public class FileFilterHelper {
   }
 
   private QueryBuilder makeFilterBuilder(List<String> networkIds, List<String> studyIds, List<String> studyDatasetIds,
-    List<String> harmonizationDatasetIds) {
+    List<String> harmonizationDatasetIds, List<String> projectIds) {
     List<QueryBuilder> excludes = Lists.newArrayList();
     List<QueryBuilder> includes = Lists
       .newArrayList(QueryBuilders.termQuery("path", "/user"), QueryBuilders.prefixQuery("path", "/user/"));
@@ -184,6 +208,7 @@ public class FileFilterHelper {
     addFilter(excludes, includes, "/study", studyIds);
     addFilter(excludes, includes, "/study-dataset", studyDatasetIds);
     addFilter(excludes, includes, "/harmonization-dataset", harmonizationDatasetIds);
+    addFilter(excludes, includes, "/project", projectIds);
 
     BoolQueryBuilder includedFilter = QueryBuilders.boolQuery();
     includes.forEach(includedFilter::should);
