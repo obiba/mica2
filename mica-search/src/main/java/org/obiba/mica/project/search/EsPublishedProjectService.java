@@ -13,11 +13,17 @@ package org.obiba.mica.project.search;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.obiba.mica.project.domain.Project;
+import org.obiba.mica.project.domain.ProjectState;
 import org.obiba.mica.project.service.ProjectService;
 import org.obiba.mica.project.service.PublishedProjectService;
 import org.obiba.mica.search.AbstractPublishedDocumentService;
@@ -54,5 +60,17 @@ public class EsPublishedProjectService extends AbstractPublishedDocumentService<
   @Override
   public ProjectService getProjectService() {
     return projectService;
+  }
+
+  @Nullable
+  @Override
+  protected QueryBuilder filterByAccess() {
+    if(micaConfigService.getConfig().isOpenAccess()) return null;
+    List<String> ids = projectService.findPublishedStates().stream().map(ProjectState::getId)
+      .filter(s -> subjectAclService.isAccessible("/project", s))
+      .collect(Collectors.toList());
+    return ids.isEmpty()
+      ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
+      : QueryBuilders.idsQuery().ids(ids);
   }
 }

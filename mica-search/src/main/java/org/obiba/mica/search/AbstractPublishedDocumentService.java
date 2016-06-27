@@ -97,10 +97,12 @@ public abstract class AbstractPublishedDocumentService<T> implements PublishedDo
 
     QueryBuilder postFilter = getPostFilter(studyId);
 
+    QueryBuilder execQuery = postFilter == null ? query : query == null ? postFilter : QueryBuilders.boolQuery().must(query).filter(postFilter);
+
     SearchRequestBuilder search = client.prepareSearch() //
       .setIndices(getIndexName()) //
       .setTypes(getType()) //
-      .setQuery(postFilter == null ? query : QueryBuilders.boolQuery().must(query).filter(postFilter)) //
+      .setQuery(execQuery) //
       .setFrom(from) //
       .setSize(limit);
 
