@@ -265,15 +265,6 @@
           "minItems": "t(min-items)"
         },
         "emptyMessage": "t(data-access-request.no-documents)"
-      },
-      {
-        "key": "rdOtherDocs",
-        "type": "obibaFileUpload",
-        "validationMessage": {
-          "missingFiles": "t(missing-files)",
-          "minItems": "t(min-items)"
-        },
-        "emptyMessage": "t(data-access-request.no-documents)"
       }
     ]
   },

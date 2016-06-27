@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-06-23
+ * Date: 2016-06-27
  */
 'use strict';
 
@@ -7955,7 +7955,7 @@ angular.module("access/views/data-access-request-documents-view.html", []).run([
     "      <attachment-list files=\"dataAccessRequest.attachments\"\n" +
     "                       href-builder=\"getDownloadHref\"></attachment-list>\n" +
     "      <a ng-click=\"editAttachments()\" type=\"button\" class=\"btn btn-info\">\n" +
-    "        <span translate>edit</span>\n" +
+    "        <span translate>data-access-request.edit-documents</span>\n" +
     "      </a>\n" +
     "    </div>\n" +
     "\n" +
