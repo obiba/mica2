@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-06-27
+ * Date: 2016-06-28
  */
 'use strict';
 
@@ -8303,8 +8303,7 @@ angular.module("access/views/data-access-request-view.html", []).run(["$template
     "      </span>\n" +
     "      <a href ng-click=\"userProfile(dataAccessRequest.profile)\"\n" +
     "          ng-if=\"actions.canViewProfile('mica-data-access-officer')\">\n" +
-    "        {{getFullName(dataAccessRequest.profile) || dataAccessRequest.applicant}}\n" +
-    "      </a>,\n" +
+    "        {{getFullName(dataAccessRequest.profile) || dataAccessRequest.applicant}}</a>,\n" +
     "      <span>{{dataAccessRequest.timestamps.created | amCalendar}}</span>\n" +
     "      <span class=\"label label-success\">{{dataAccessRequest.status | translate}}</span></p>\n" +
     "\n" +
@@ -8356,7 +8355,11 @@ angular.module("access/views/data-access-request-view.html", []).run(["$template
     "          <div sf-model=\"form.model\" sf-form=\"form.definition\" sf-schema=\"form.schema\"></div>\n" +
     "        </form>\n" +
     "      </uib-tab>\n" +
-    "      <uib-tab ng-click=\"selectTab('documents')\" heading=\"{{config.documentsSectionTitle || 'data-access-request.documents' | translate}}\">\n" +
+    "      <uib-tab ng-click=\"selectTab('documents')\">\n" +
+    "        <uib-tab-heading>\n" +
+    "          {{config.documentsSectionTitle || 'data-access-request.documents' | translate}}\n" +
+    "          <span class=\"badge hoffset1\" ng-show=\"dataAccessRequest.attachments\"><small>{{dataAccessRequest.attachments.length}}</small></span>\n" +
+    "        </uib-tab-heading>\n" +
     "        <div ng-include=\"'access/views/data-access-request-documents-view.html'\"></div>\n" +
     "      </uib-tab>\n" +
     "      <uib-tab ng-if=\"config.commentsEnabled\" ng-click=\"selectTab('comments')\" heading=\"{{'data-access-request.comments' | translate}}\">\n" +
@@ -10234,7 +10237,7 @@ angular.module("search/views/search-result-list-template.html", []).run(["$templ
     "      <a href\n" +
     "        ng-click=\"selectTarget(targetTypeMap[res])\">\n" +
     "      {{targetTypeMap[res] | translate}}\n" +
-    "      ({{result.list[res + 'ResultDto'].totalHits === 0 ? 0 : (result.list[res + 'ResultDto'].totalHits | localizedNumber)}})\n" +
+    "      <span class=\"badge hoffset1\"><small>{{result.list[res + 'ResultDto'].totalHits === 0 ? 0 : (result.list[res + 'ResultDto'].totalHits | localizedNumber)}}</small></span>\n" +
     "    </a>\n" +
     "    </li>\n" +
     "    <li ng-repeat=\"res in resultTabsOrder\" ng-show=\"activeTarget[targetTypeMap[res]].active\" class=\"pull-right\">\n" +

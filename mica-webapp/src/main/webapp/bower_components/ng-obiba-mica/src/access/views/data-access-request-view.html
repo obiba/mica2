@@ -21,8 +21,7 @@
       </span>
       <a href ng-click="userProfile(dataAccessRequest.profile)"
           ng-if="actions.canViewProfile('mica-data-access-officer')">
-        {{getFullName(dataAccessRequest.profile) || dataAccessRequest.applicant}}
-      </a>,
+        {{getFullName(dataAccessRequest.profile) || dataAccessRequest.applicant}}</a>,
       <span>{{dataAccessRequest.timestamps.created | amCalendar}}</span>
       <span class="label label-success">{{dataAccessRequest.status | translate}}</span></p>
 
@@ -74,7 +73,11 @@
           <div sf-model="form.model" sf-form="form.definition" sf-schema="form.schema"></div>
         </form>
       </uib-tab>
-      <uib-tab ng-click="selectTab('documents')" heading="{{config.documentsSectionTitle || 'data-access-request.documents' | translate}}">
+      <uib-tab ng-click="selectTab('documents')">
+        <uib-tab-heading>
+          {{config.documentsSectionTitle || 'data-access-request.documents' | translate}}
+          <span class="badge hoffset1" ng-show="dataAccessRequest.attachments"><small>{{dataAccessRequest.attachments.length}}</small></span>
+        </uib-tab-heading>
         <div ng-include="'access/views/data-access-request-documents-view.html'"></div>
       </uib-tab>
       <uib-tab ng-if="config.commentsEnabled" ng-click="selectTab('comments')" heading="{{'data-access-request.comments' | translate}}">

@@ -6,7 +6,7 @@
       <a href
         ng-click="selectTarget(targetTypeMap[res])">
       {{targetTypeMap[res] | translate}}
-      ({{result.list[res + 'ResultDto'].totalHits === 0 ? 0 : (result.list[res + 'ResultDto'].totalHits | localizedNumber)}})
+      <span class="badge hoffset1"><small>{{result.list[res + 'ResultDto'].totalHits === 0 ? 0 : (result.list[res + 'ResultDto'].totalHits | localizedNumber)}}</small></span>
     </a>
     </li>
     <li ng-repeat="res in resultTabsOrder" ng-show="activeTarget[targetTypeMap[res]].active" class="pull-right">
