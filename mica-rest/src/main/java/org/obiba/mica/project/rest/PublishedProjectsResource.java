@@ -10,6 +10,7 @@
 
 package org.obiba.mica.project.rest;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -23,6 +24,7 @@ import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.obiba.mica.core.service.PublishedDocumentService;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.project.service.PublishedProjectService;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.ApplicationContext;
@@ -42,6 +44,9 @@ public class PublishedProjectsResource {
   @Inject
   private ApplicationContext applicationContext;
 
+  @Inject
+  private SubjectAclService subjectAclService;
+
   @GET
   @Path("/projects")
   @Timed
@@ -56,6 +61,22 @@ public class PublishedProjectsResource {
 
     builder.setFrom(projects.getFrom()).setLimit(projects.getLimit()).setTotal(projects.getTotal());
     builder.addAllProjects(projects.getList().stream().map(dtos::asDto).collect(Collectors.toList()));
+
+    return builder.build();
+  }
+
+  @GET
+  @Path("/projects/dar_accessible")
+  @Timed
+  public Mica.ProjectsDto listByDataAccessRequest() {
+    List<Mica.ProjectDto> projectDtoList = publishedProjectService.findAll().stream()
+      .map(dtos::asDto)
+      .filter(p -> p.getRequest().isInitialized() && subjectAclService.isPermitted("/data-access-request", "VIEW", p.getRequest().getId()))
+      .collect(Collectors.toList());
+
+    Mica.ProjectsDto.Builder builder = Mica.ProjectsDto.newBuilder();
+    builder.setFrom(0).setLimit(projectDtoList.size()).setTotal(projectDtoList.size());
+    builder.addAllProjects(projectDtoList);
 
     return builder.build();
   }
