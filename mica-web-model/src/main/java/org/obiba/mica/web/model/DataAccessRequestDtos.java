@@ -9,6 +9,9 @@ import javax.validation.constraints.NotNull;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.service.DataAccessRequestUtilService;
 import org.obiba.mica.file.Attachment;
+import org.obiba.mica.project.domain.Project;
+import org.obiba.mica.project.service.NoSuchProjectException;
+import org.obiba.mica.project.service.ProjectService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.user.UserProfileService;
 import org.obiba.shiro.realm.ObibaRealm;
@@ -35,7 +38,13 @@ class DataAccessRequestDtos {
   private UserProfileDtos userProfileDtos;
 
   @Inject
+  private PermissionsDtos permissionsDtos;
+
+  @Inject
   private DataAccessRequestUtilService dataAccessRequestUtilService;
+
+  @Inject
+  private ProjectService projectService;
 
   @NotNull
   public Mica.DataAccessRequestDto asDto(@NotNull DataAccessRequest request) {
@@ -69,6 +78,18 @@ class DataAccessRequestDtos {
     if(subjectAclService
       .isPermitted(Paths.get("/data-access-request", request.getId()).toString(), "EDIT", "_status")) {
       builder.addActions("EDIT_STATUS");
+    }
+
+    try {
+      Project project = projectService.findById(request.getId());
+      Mica.PermissionsDto permissionsDto = permissionsDtos.asDto(project);
+
+      Mica.ProjectSummaryDto.Builder projectSummaryDtoBuilder = Mica.ProjectSummaryDto.newBuilder();
+      projectSummaryDtoBuilder.setId(project.getId());
+      projectSummaryDtoBuilder.setPermissions(permissionsDto);
+      builder.setProject(projectSummaryDtoBuilder.build());
+    } catch (NoSuchProjectException e) {
+      // do nothing
     }
 
     ObibaRealm.Subject profile = userProfileService.getProfile(request.getApplicant());

@@ -679,6 +679,7 @@ message DataAccessRequestDto {
   repeated string nextStatus = 9;
   repeated StatusChangeDto statusChangeHistory = 10;
   optional UserProfileDto profile = 11;
+  optional ProjectSummaryDto project = 12;
 }
 
 message DataAccessRequestSummaryDto {
@@ -686,6 +687,11 @@ message DataAccessRequestSummaryDto {
   required string status = 2;
   required bool viewable = 3;
   optional string applicant = 4;
+}
+
+message ProjectSummaryDto {
+  required string id = 1;
+  optional PermissionsDto permissions = 2;
 }
 
 message ProjectDto {
