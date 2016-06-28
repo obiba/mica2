@@ -229,6 +229,10 @@ angular.module('obiba.mica.fileBrowser')
         return FileBrowserService.getLocalizedValue(values, ngObibaMicaFileBrowserOptions.locale);
       };
 
+      var hasLocalizedValue = function(values) {
+        return FileBrowserService.hasLocalizedValue(values, ngObibaMicaFileBrowserOptions.locale);
+      };
+
       $scope.downloadTarget = ngObibaMicaFileBrowserOptions.downloadInline ? '_blank' : '_self';
       $scope.getDownloadUrl = FileBrowserDownloadService.getUrl;
       $scope.screen = $rootScope.screen;
@@ -245,6 +249,7 @@ angular.module('obiba.mica.fileBrowser')
       $scope.isFile = FileBrowserService.isFile;
       $scope.isRoot = FileBrowserService.isRoot;
       $scope.getLocalizedValue = getLocalizedValue;
+      $scope.hasLocalizedValue = hasLocalizedValue;
       $scope.hideDetails = hideDetails;
       $scope.showDetails = showDetails;
       $scope.getTypeParts = getTypeParts;

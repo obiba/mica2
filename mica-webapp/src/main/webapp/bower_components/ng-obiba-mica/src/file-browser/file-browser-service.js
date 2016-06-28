@@ -62,6 +62,11 @@ angular.module('obiba.mica.fileBrowser')
         return result && result.length > 0 ? result[0].value : null;
       };
 
+      this.hasLocalizedValue = function (values, lang) {
+        var value = this.getLocalizedValue(values, lang);
+        return value !== null && value.trim().length > 0;
+      };
+
       this.getDocumentIcon = function (document) {
         if (!document) {
           return '';

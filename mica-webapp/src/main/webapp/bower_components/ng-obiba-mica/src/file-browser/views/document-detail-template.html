@@ -58,14 +58,13 @@
         </div>
       </div>
 
-      <div ng-init="desc = getLocalizedValue(data.details.document.attachment.description)"
-           ng-show="desc"
+      <div ng-show="hasLocalizedValue(data.details.document.attachment.description)"
            class="voffset2">
         <label class="text-muted no-margin">
           <small>{{'description' | translate}}</small>
         </label>
         <div>
-          <span>{{desc}}</span>
+          <span>{{getLocalizedValue(data.details.document.attachment.description)}}</span>
         </div>
       </div>
     </div>

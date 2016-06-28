@@ -1287,18 +1287,21 @@ angular.module('obiba.mica.search')
     'RqlQueryUtils',
     function($scope, $filter, JoinQuerySearchResource, RqlQueryService, RqlQueryUtils) {
       function isSelectedTerm (criterion, term) {
-        return criterion.selectedTerms && criterion.selectedTerms.indexOf(term.key) !== -1;
+        return criterion.selectedTerms && (criterion.rqlQuery.name === RQL_NODE.EXISTS || criterion.selectedTerms.indexOf(term.key) !== -1);
       }
 
       $scope.selectTerm = function (target, taxonomy, vocabulary, args) {
         var selected = vocabulary.terms.filter(function(t) {return t.selected;}).map(function(t) { return t.name; }),
           criterion = RqlQueryService.findCriterion($scope.criteria, CriteriaIdGenerator.generate(taxonomy, vocabulary));
-        if(criterion) {
-          if (selected.length === 0 && $scope.selectedFilter !== RQL_NODE.MISSING) {
-            criterion.rqlQuery.name = RQL_NODE.EXISTS;
-          }
 
-          RqlQueryUtils.updateQuery(criterion.rqlQuery, selected);
+        if(criterion) {
+          if (selected.length === 0) {
+            RqlQueryService.removeCriteriaItem(criterion);
+          } else {
+            criterion.rqlQuery.name = RQL_NODE.IN;
+            RqlQueryUtils.updateQuery(criterion.rqlQuery, selected);
+          }
+          
           $scope.onRefresh();
         } else {
           $scope.onSelectTerm(target, taxonomy, vocabulary, args);

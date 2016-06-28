@@ -4747,18 +4747,21 @@ angular.module('obiba.mica.search')
     'RqlQueryUtils',
     function($scope, $filter, JoinQuerySearchResource, RqlQueryService, RqlQueryUtils) {
       function isSelectedTerm (criterion, term) {
-        return criterion.selectedTerms && criterion.selectedTerms.indexOf(term.key) !== -1;
+        return criterion.selectedTerms && (criterion.rqlQuery.name === RQL_NODE.EXISTS || criterion.selectedTerms.indexOf(term.key) !== -1);
       }
 
       $scope.selectTerm = function (target, taxonomy, vocabulary, args) {
         var selected = vocabulary.terms.filter(function(t) {return t.selected;}).map(function(t) { return t.name; }),
           criterion = RqlQueryService.findCriterion($scope.criteria, CriteriaIdGenerator.generate(taxonomy, vocabulary));
-        if(criterion) {
-          if (selected.length === 0 && $scope.selectedFilter !== RQL_NODE.MISSING) {
-            criterion.rqlQuery.name = RQL_NODE.EXISTS;
-          }
 
-          RqlQueryUtils.updateQuery(criterion.rqlQuery, selected);
+        if(criterion) {
+          if (selected.length === 0) {
+            RqlQueryService.removeCriteriaItem(criterion);
+          } else {
+            criterion.rqlQuery.name = RQL_NODE.IN;
+            RqlQueryUtils.updateQuery(criterion.rqlQuery, selected);
+          }
+          
           $scope.onRefresh();
         } else {
           $scope.onSelectTerm(target, taxonomy, vocabulary, args);
@@ -7719,6 +7722,10 @@ angular.module('obiba.mica.fileBrowser')
         return FileBrowserService.getLocalizedValue(values, ngObibaMicaFileBrowserOptions.locale);
       };
 
+      var hasLocalizedValue = function(values) {
+        return FileBrowserService.hasLocalizedValue(values, ngObibaMicaFileBrowserOptions.locale);
+      };
+
       $scope.downloadTarget = ngObibaMicaFileBrowserOptions.downloadInline ? '_blank' : '_self';
       $scope.getDownloadUrl = FileBrowserDownloadService.getUrl;
       $scope.screen = $rootScope.screen;
@@ -7735,6 +7742,7 @@ angular.module('obiba.mica.fileBrowser')
       $scope.isFile = FileBrowserService.isFile;
       $scope.isRoot = FileBrowserService.isRoot;
       $scope.getLocalizedValue = getLocalizedValue;
+      $scope.hasLocalizedValue = hasLocalizedValue;
       $scope.hideDetails = hideDetails;
       $scope.showDetails = showDetails;
       $scope.getTypeParts = getTypeParts;
@@ -7837,6 +7845,11 @@ angular.module('obiba.mica.fileBrowser')
         });
 
         return result && result.length > 0 ? result[0].value : null;
+      };
+
+      this.hasLocalizedValue = function (values, lang) {
+        var value = this.getLocalizedValue(values, lang);
+        return value !== null && value.trim().length > 0;
       };
 
       this.getDocumentIcon = function (document) {
@@ -8500,14 +8513,13 @@ angular.module("file-browser/views/document-detail-template.html", []).run(["$te
     "        </div>\n" +
     "      </div>\n" +
     "\n" +
-    "      <div ng-init=\"desc = getLocalizedValue(data.details.document.attachment.description)\"\n" +
-    "           ng-show=\"desc\"\n" +
+    "      <div ng-show=\"hasLocalizedValue(data.details.document.attachment.description)\"\n" +
     "           class=\"voffset2\">\n" +
     "        <label class=\"text-muted no-margin\">\n" +
     "          <small>{{'description' | translate}}</small>\n" +
     "        </label>\n" +
     "        <div>\n" +
-    "          <span>{{desc}}</span>\n" +
+    "          <span>{{getLocalizedValue(data.details.document.attachment.description)}}</span>\n" +
     "        </div>\n" +
     "      </div>\n" +
     "    </div>\n" +
