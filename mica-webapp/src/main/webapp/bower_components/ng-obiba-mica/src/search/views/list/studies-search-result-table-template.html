@@ -74,7 +74,12 @@
               ng-if="!hasDatasource(summary.dataSources, 'others')">-</span>
           </td>
           <td>
-            <localized-number value="summary.targetNumber.number"></localized-number>
+            <span ng-if="summary.targetNumber.number">
+              <localized-number value="summary.targetNumber.number"></localized-number>
+            </span>
+            <span translate ng-if="summary.targetNumber.noLimit">
+              numberOfParticipants.no-limit
+            </span>
           </td>
           <td ng-if="optionsCols.showStudiesNetworksColumn">
             <a href ng-click="updateCriteria(summary.id, 'networks')"
