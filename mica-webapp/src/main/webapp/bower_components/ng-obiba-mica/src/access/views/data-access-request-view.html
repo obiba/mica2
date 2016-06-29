@@ -67,6 +67,14 @@
 
     <div class="clearfix"></div>
 
+    <div class="voffset2" ng-if="dataAccessRequest.project.permissions && dataAccessRequest.project.permissions.view">
+      <div ng-if="dataAccessRequest.project" class="pull-right">
+        <small class="help-block inline"> {{'research-project.label' | translate}} :
+          <a route-checker route-checker-hides-parent="true" href ng-href="#/project/{{dataAccessRequest.project.id}}">{{dataAccessRequest.project.id}}</a>
+        </small>
+      </div>
+    </div>
+
     <uib-tabset class="voffset5">
       <uib-tab ng-click="selectTab('form')" heading="{{'data-access-request.form' | translate}}">
         <form id="request-form" name="forms.requestForm">

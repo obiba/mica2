@@ -144,6 +144,31 @@ angular.module('obiba.mica.utils', ['schemaForm'])
     };
   }])
 
+  .directive('routeChecker', ['$route', function ($route) {
+    return {
+      restrict: 'A',
+      scope: {
+        routeCheckerHidesParent: '='
+      },
+      link: function (scope, elem, attrs) {
+        // remove the '#' character
+        var routeToCheck = attrs.ngHref.substr(1, attrs.ngHref.length - 1);
+        var found = Object.keys($route.routes).filter(function (route) {
+          var regexp = $route.routes[route].regexp;
+          return regexp ? regexp.test(routeToCheck) : false;
+        }).pop();
+
+        if (!found) {
+          if (scope.routeCheckerHidesParent) {
+            elem.parent().hide();
+          } else {
+            elem.hide();
+          }
+        }
+      }
+    };
+  }])
+
   .config(['schemaFormProvider',
     function (schemaFormProvider) {
       schemaFormProvider.postProcess(function (form) {

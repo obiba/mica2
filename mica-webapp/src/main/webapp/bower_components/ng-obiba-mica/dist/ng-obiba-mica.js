@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-06-28
+ * Date: 2016-06-29
  */
 'use strict';
 
@@ -277,6 +277,31 @@ angular.module('obiba.mica.utils', ['schemaForm'])
         }, function() {
           redrawTable();
         });
+      }
+    };
+  }])
+
+  .directive('routeChecker', ['$route', function ($route) {
+    return {
+      restrict: 'A',
+      scope: {
+        routeCheckerHidesParent: '='
+      },
+      link: function (scope, elem, attrs) {
+        // remove the '#' character
+        var routeToCheck = attrs.ngHref.substr(1, attrs.ngHref.length - 1);
+        var found = Object.keys($route.routes).filter(function (route) {
+          var regexp = $route.routes[route].regexp;
+          return regexp ? regexp.test(routeToCheck) : false;
+        }).pop();
+
+        if (!found) {
+          if (scope.routeCheckerHidesParent) {
+            elem.parent().hide();
+          } else {
+            elem.hide();
+          }
+        }
       }
     };
   }])
@@ -8362,6 +8387,14 @@ angular.module("access/views/data-access-request-view.html", []).run(["$template
     "\n" +
     "    <div class=\"clearfix\"></div>\n" +
     "\n" +
+    "    <div class=\"voffset2\" ng-if=\"dataAccessRequest.project.permissions && dataAccessRequest.project.permissions.view\">\n" +
+    "      <div ng-if=\"dataAccessRequest.project\" class=\"pull-right\">\n" +
+    "        <small class=\"help-block inline\"> {{'research-project.label' | translate}} :\n" +
+    "          <a route-checker route-checker-hides-parent=\"true\" href ng-href=\"#/project/{{dataAccessRequest.project.id}}\">{{dataAccessRequest.project.id}}</a>\n" +
+    "        </small>\n" +
+    "      </div>\n" +
+    "    </div>\n" +
+    "\n" +
     "    <uib-tabset class=\"voffset5\">\n" +
     "      <uib-tab ng-click=\"selectTab('form')\" heading=\"{{'data-access-request.form' | translate}}\">\n" +
     "        <form id=\"request-form\" name=\"forms.requestForm\">\n" +
@@ -10106,7 +10139,12 @@ angular.module("search/views/list/studies-search-result-table-template.html", []
     "              ng-if=\"!hasDatasource(summary.dataSources, 'others')\">-</span>\n" +
     "          </td>\n" +
     "          <td>\n" +
-    "            <localized-number value=\"summary.targetNumber.number\"></localized-number>\n" +
+    "            <span ng-if=\"summary.targetNumber.number\">\n" +
+    "              <localized-number value=\"summary.targetNumber.number\"></localized-number>\n" +
+    "            </span>\n" +
+    "            <span translate ng-if=\"summary.targetNumber.noLimit\">\n" +
+    "              numberOfParticipants.no-limit\n" +
+    "            </span>\n" +
     "          </td>\n" +
     "          <td ng-if=\"optionsCols.showStudiesNetworksColumn\">\n" +
     "            <a href ng-click=\"updateCriteria(summary.id, 'networks')\"\n" +
