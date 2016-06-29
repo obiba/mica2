@@ -5,9 +5,9 @@
   <!--<pre>{{form|json}}</pre>-->
   <label class="control-label" ng-show="showTitle()">{{form.title}}</label>
   <div class="pull-right dropdown" ng-class="{'open': open}" ng-if="form.locales && form.locales.length > 1">
-    <a href class="dropdown-toggle" ng-click="toggleDropdown()">{{selectedLocale}} <span class="caret"></span></a>
+    <a href class="dropdown-toggle badge" ng-click="toggleDropdown()">{{form.languages[selectedLocale]}} <span class="caret"></span></a>
     <ul class="dropdown-menu">
-      <li ng-repeat="loc in form.locales"><a href ng-click="selectLocale(loc)">{{loc}}</a></li>
+      <li ng-repeat="loc in form.locales"><a href ng-click="selectLocale(loc)">{{form.languages[loc]}}</a></li>
     </ul>
   </div>
   <div ng-if="!form.rows || form.rows <= 1"

@@ -131,7 +131,11 @@ mica.project
           $scope.tabs.push({lang: lang});
         });
         $scope.languages = micaConfig.languages;
-        $scope.sfOptions = {formDefaults: { locales: micaConfig.languages}};
+        var formLanguages = {};
+        micaConfig.languages.forEach(function(loc) {
+          formLanguages[loc] = $filter('translate')('language.' + loc);
+        });
+        $scope.sfOptions = {formDefaults: { languages: formLanguages}};
         $scope.roles = micaConfig.roles;
         $scope.openAccess = micaConfig.openAccess;
       });
@@ -285,6 +289,7 @@ mica.project
     '$log',
     '$locale',
     '$location',
+    '$filter',
     'DraftProjectResource',
     'DraftProjectsResource',
     'DraftProjectPublicationResource',
@@ -301,6 +306,7 @@ mica.project
               $log,
               $locale,
               $location,
+              $filter,
               DraftProjectResource,
               DraftProjectsResource,
               DraftProjectPublicationResource,
@@ -333,7 +339,11 @@ mica.project
           $scope.tabs.push({lang: lang});
         });
         $scope.languages = micaConfig.languages;
-        $scope.sfOptions = {formDefaults: { locales: micaConfig.languages}};
+        var formLanguages = {};
+        micaConfig.languages.forEach(function(loc) {
+          formLanguages[loc] = $filter('translate')('language.' + loc);
+        });
+        $scope.sfOptions = {formDefaults: { languages: formLanguages}};
       });
 
       ProjectFormResource.get(

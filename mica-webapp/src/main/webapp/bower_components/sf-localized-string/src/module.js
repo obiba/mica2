@@ -9,9 +9,10 @@ angular.module('sfLocalizedString', [
         var f = schemaFormProvider.stdFormObj(name, schema, options);
         f.key  = options.path;
         f.type = 'localizedstring';
-        if(!f.locales) {
-          f.locales = ['en'];
+        if(!f.languages) {
+          f.languages = {en: 'English'};
         }
+        f.locales = Object.keys(f.languages);
         f.validationMessage = {
           completed: 'All localized fields must be completed'
         };
