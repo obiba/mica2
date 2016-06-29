@@ -41,7 +41,7 @@
     "angular-schema-form-datetimepicker": "https://github.com/obiba/angular-schema-form-datetimepicker.git#~0.1.2",
     "angular-xeditable": "0.1.12",
     "angular-media-queries": "0.6.0",
-    "sf-localized-string": "https://github.com/obiba/sf-localized-string.git#master",
+    "sf-localized-string": "https://github.com/obiba/sf-localized-string.git#1.0.0",
     "sf-obiba-file-upload": "https://github.com/obiba/sf-obiba-file-upload.git#master"
   },
   "devDependencies": {

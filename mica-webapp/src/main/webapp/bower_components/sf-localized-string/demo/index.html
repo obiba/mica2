@@ -59,7 +59,7 @@
         };
         //$scope.model = {};
 
-        $scope.sfOptions = {formDefaults: { locales: ['en','fr']}};
+        $scope.sfOptions = {formDefaults: { languages: {en: 'English', fr: 'French'}}};
 
         $scope.debug = {schema: angular.copy($scope.schema), form: angular.copy($scope.form)};
 
@@ -71,33 +71,36 @@
 
   <body ng-app="test">
     <div class="container-fluid" ng-controller="FormController">
+      <div class="col-sm-12">
+        <h2>sf-localized-string</h2>
+      </div>
 
-        <div class="col-sm-6 form">
-          <form sf-schema="schema" sf-form="form" sf-model="model" sf-options="sfOptions"></form>
-        </div>
+      <div class="col-sm-6 form">
+        <form sf-schema="schema" sf-form="form" sf-model="model" sf-options="sfOptions"></form>
+      </div>
 
-        <div class="col-sm-6 debug">
-          <div class="wrapper">
-            <div class="row">
-              <div class="col-md-12">
-                <h4>Model</h4>
-                <pre>{{model | json}}</pre>
-              </div>
+      <div class="col-sm-6 debug">
+        <div class="wrapper">
+          <div class="row">
+            <div class="col-md-12">
+              <h4>Model</h4>
+              <pre>{{model | json}}</pre>
             </div>
-            <div class="row">
-              <div class="col-md-12">
-                <h4>Form</h4>
-                <pre>{{debug.form | json}}</pre>
-              </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <h4>Form</h4>
+              <pre>{{debug.form | json}}</pre>
             </div>
-            <div class="row">
-              <div class="col-md-12">
-                <h4>Schema</h4>
-                <pre>{{debug.schema | json}}</pre>
-              </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <h4>Schema</h4>
+              <pre>{{debug.schema | json}}</pre>
             </div>
           </div>
         </div>
+      </div>
     </div>
   </body>
 
