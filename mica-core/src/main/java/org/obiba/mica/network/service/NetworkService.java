@@ -18,6 +18,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.LocalizedString;
@@ -199,6 +200,15 @@ public class NetworkService extends AbstractGitPersistableService<NetworkState, 
    */
   public List<Network> findAllNetworks() {
     return networkRepository.findAll();
+  }
+
+  /**
+   * Get {@link Network}s by id.
+   *
+   * @return
+   */
+  public List<Network> findAllNetworks(Iterable<String> ids) {
+    return Lists.newArrayList(networkRepository.findAll(ids));
   }
 
   /**

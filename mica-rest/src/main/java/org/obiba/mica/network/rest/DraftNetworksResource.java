@@ -11,9 +11,11 @@
 package org.obiba.mica.network.rest;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -24,9 +26,14 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Strings;
+import com.google.common.eventbus.EventBus;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.obiba.mica.core.service.DocumentService;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.event.IndexNetworksEvent;
+import org.obiba.mica.network.service.DraftNetworkService;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
@@ -35,13 +42,15 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.codahale.metrics.annotation.Timed;
-import com.google.common.eventbus.EventBus;
+import static java.util.stream.Collectors.toList;
+
 
 @Component
 @Scope("request")
 @Path("/draft")
 public class DraftNetworksResource {
+
+  private static final int MAX_LIMIT = 10000; //default ElasticSearch limit
 
   @Inject
   private NetworkService networkService;
@@ -58,13 +67,37 @@ public class DraftNetworksResource {
   @Inject
   private EventBus eventBus;
 
+  @Inject
+  private DraftNetworkService draftNetworkService;
+
   @GET
   @Path("/networks")
   @Timed
-  public List<Mica.NetworkDto> list(@QueryParam("study") String studyId) {
-    return networkService.findAllNetworks(studyId).stream()
-      .filter(n -> subjectAclService.isPermitted("/draft/network", "VIEW", n.getId()))
-      .sorted((o1, o2) -> o1.getId().compareTo(o2.getId())).map(n -> dtos.asDto(n, true)).collect(Collectors.toList());
+  public List<Mica.NetworkSummaryDto> list(@QueryParam("study") String studyId, @QueryParam("query") String query,
+                                               @QueryParam("from") @DefaultValue("0") Integer from,
+                                               @QueryParam("limit") Integer limit, @Context HttpServletResponse response) {
+    Stream<Network> result;
+    long totalCount;
+
+    if(limit == null) limit = MAX_LIMIT;
+
+    if(limit < 0) throw new IllegalArgumentException("limit cannot be negative");
+
+    if(Strings.isNullOrEmpty(query)) {
+      List<Network> networks = networkService.findAllNetworks(studyId).stream()
+        .filter(n -> subjectAclService.isPermitted("/draft/network", "VIEW", n.getId())).collect(toList());
+      totalCount = networks.size();
+      result = networks.stream().sorted((o1, o2) -> o1.getId().compareTo(o2.getId()))//
+        .skip(from).limit(limit);
+    } else {
+      DocumentService.Documents<Network> networkDocuments = draftNetworkService.find(from, limit, null, null, studyId, query);
+      totalCount = networkDocuments.getTotal();
+      result = networkService.findAllNetworks(networkDocuments.getList().stream().map(d -> d.getId()).collect(toList())).stream();
+    }
+
+    response.addHeader("X-Total-Count", Long.toString(totalCount));
+
+    return result.map(n -> dtos.asSummaryDto(n, true)).collect(toList());
   }
 
   @POST

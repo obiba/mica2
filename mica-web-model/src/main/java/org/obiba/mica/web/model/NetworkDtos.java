@@ -81,7 +81,6 @@ class NetworkDtos {
   @NotNull
   Mica.NetworkDto.Builder asDtoBuilder(@NotNull Network network, boolean asDraft) {
     Mica.NetworkDto.Builder builder = Mica.NetworkDto.newBuilder();
-    NetworkState networkState = networkService.getEntityState(network.getId());
 
     builder.setId(network.getId()) //
       .addAllName(localizedStringDtos.asDto(network.getName())) //
@@ -92,11 +91,11 @@ class NetworkDtos {
     Mica.PermissionsDto permissionsDto = permissionsDtos.asDto(network);
 
     if(asDraft) {
+      NetworkState networkState = networkService.getEntityState(network.getId());
       builder.setTimestamps(TimestampsDtos.asDto(network)) //
         .setPublished(networkState.isPublished()) //
         .setExtension(Mica.EntityStateDto.state,
           entityStateDtos.asDto(networkState).setPermissions(permissionsDto).build());
-
     }
 
     builder.setPermissions(permissionsDto);

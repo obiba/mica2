@@ -1,23 +1,35 @@
 package org.obiba.mica.study.rest;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 
+import com.codahale.metrics.annotation.Timed;
+import org.elasticsearch.common.Strings;
+import org.obiba.mica.core.service.DocumentService;
 import org.obiba.mica.security.service.SubjectAclService;
+import org.obiba.mica.study.domain.Study;
+import org.obiba.mica.study.domain.StudyState;
+import org.obiba.mica.study.service.DraftStudyService;
 import org.obiba.mica.study.service.StudyService;
 import org.obiba.mica.web.model.Dtos;
 import org.obiba.mica.web.model.Mica;
 import org.springframework.context.ApplicationContext;
 
-import com.codahale.metrics.annotation.Timed;
+import static java.util.stream.Collectors.toList;
 
 @Path("/draft")
 public class StudyStatesResource {
+
+  private static final int MAX_LIMIT = 10000; //default ElasticSearch limit
 
   @Inject
   private StudyService studyService;
@@ -31,13 +43,35 @@ public class StudyStatesResource {
   @Inject
   private ApplicationContext applicationContext;
 
+  @Inject
+  private DraftStudyService draftStudyService;
+
   @GET
   @Path("/study-states")
   @Timed
-  public List<Mica.StudySummaryDto> list() {
-    return studyService.findAllStates().stream()
-      .filter(s -> subjectAclService.isPermitted("/draft/study", "VIEW", s.getId()))
-      .sorted((o1, o2) -> o1.getId().compareTo(o2.getId())).map(dtos::asDto).collect(Collectors.toList());
+  public List<Mica.StudySummaryDto> list(@QueryParam("query") String query, @QueryParam("from") @DefaultValue("0") Integer from,
+                                         @QueryParam("limit") Integer limit, @Context HttpServletResponse response) {
+    Stream<StudyState> result;
+    long totalCount;
+
+    if(limit == null) limit = MAX_LIMIT;
+
+    if(limit < 0) throw new IllegalArgumentException("limit cannot be negative");
+
+    if(Strings.isNullOrEmpty(query)) {
+      List<StudyState> studyStates = studyService.findAllStates().stream()
+        .filter(s -> subjectAclService.isPermitted("/draft/study", "VIEW", s.getId())).collect(toList());
+      totalCount = studyStates.size();
+      result = studyStates.stream().sorted((o1, o2) -> o1.getId().compareTo(o2.getId())).skip(from).limit(limit);
+    } else {
+      DocumentService.Documents<Study> studyDocuments = draftStudyService.find(from, limit, null, null, null, query);
+      totalCount = studyDocuments.getTotal();
+      result = studyService.findAllStates(studyDocuments.getList().stream().map(Study::getId).collect(toList())).stream();
+    }
+
+    response.addHeader("X-Total-Count", Long.toString(totalCount));
+
+    return result.map(dtos::asDto).collect(toList());
   }
 
   @Path("/study-state/{id}")

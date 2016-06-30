@@ -93,6 +93,7 @@ class DatasetDtos {
     }
 
     Mica.PermissionsDto permissionsDto = permissionsDtos.asDto(dataset);
+
     if(asDraft) {
       StudyDatasetState state = studyDatasetStateRepository.findOne(dataset.getId());
       if(state != null) {

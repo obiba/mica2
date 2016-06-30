@@ -16,22 +16,22 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.obiba.mica.search.AbstractDocumentService;
 import org.obiba.mica.study.domain.Study;
 import org.obiba.mica.study.domain.StudyState;
-import org.obiba.mica.study.service.PublishedStudyService;
+import org.obiba.mica.study.service.DraftStudyService;
 import org.obiba.mica.study.service.StudyService;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @Service
-public class EsPublishedStudyService extends AbstractDocumentService<Study> implements PublishedStudyService {
+public class EsDraftStudyService extends AbstractDocumentService<Study> implements DraftStudyService {
 
   @Inject
   private ObjectMapper objectMapper;
@@ -52,7 +52,7 @@ public class EsPublishedStudyService extends AbstractDocumentService<Study> impl
 
   @Override
   protected String getIndexName() {
-    return StudyIndexer.PUBLISHED_STUDY_INDEX;
+    return StudyIndexer.DRAFT_STUDY_INDEX;
   }
 
   @Override
@@ -60,15 +60,19 @@ public class EsPublishedStudyService extends AbstractDocumentService<Study> impl
     return StudyIndexer.STUDY_TYPE;
   }
 
+  @Nullable
+  private QueryBuilder getPostFilter(@Nullable String studyId) {
+    return null;
+  }
+
   @Override
   protected QueryBuilder filterByAccess() {
-    if(micaConfigService.getConfig().isOpenAccess()) return null;
-    List<String> ids = studyService.findPublishedStates().stream().map(StudyState::getId)
-      .filter(s -> subjectAclService.isAccessible("/study", s))
+    List<String> ids = studyService.findAllStates().stream().map(StudyState::getId)
+      .filter(s -> subjectAclService.isPermitted("/draft/study", "VIEW", s))
       .collect(Collectors.toList());
+
     return ids.isEmpty()
       ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
       : QueryBuilders.idsQuery().ids(ids);
   }
-
 }

@@ -18,28 +18,23 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
-import org.obiba.mica.dataset.domain.Dataset;
-import org.obiba.mica.dataset.domain.HarmonizationDataset;
-import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.domain.StudyDataset;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
-import org.obiba.mica.dataset.service.HarmonizationDatasetService;
-import org.obiba.mica.dataset.service.PublishedDatasetService;
+import org.obiba.mica.dataset.service.DraftStudyDatasetService;
 import org.obiba.mica.dataset.service.StudyDatasetService;
 import org.obiba.mica.search.AbstractDocumentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 @Service
-class EsPublishedDatasetService extends AbstractDocumentService<Dataset> implements PublishedDatasetService {
+class EsDraftStudyDatasetService extends AbstractDocumentService<StudyDataset> implements DraftStudyDatasetService {
 
-  private static final Logger log = LoggerFactory.getLogger(EsPublishedDatasetService.class);
+  private static final Logger log = LoggerFactory.getLogger(EsDraftStudyDatasetService.class);
 
   @Inject
   private ObjectMapper objectMapper;
@@ -47,27 +42,20 @@ class EsPublishedDatasetService extends AbstractDocumentService<Dataset> impleme
   @Inject
   private StudyDatasetService studyDatasetService;
 
-  @Inject
-  private HarmonizationDatasetService harmonizationDatasetService;
-
   @Override
-  protected Dataset processHit(SearchHit hit) throws IOException {
+  protected StudyDataset processHit(SearchHit hit) throws IOException {
     InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
-    return (Dataset) objectMapper.readValue(inputStream, getClass((String) hit.getSource().get("className")));
+    return objectMapper.readValue(inputStream, StudyDataset.class);
   }
 
   @Override
   protected String getIndexName() {
-    return DatasetIndexer.PUBLISHED_DATASET_INDEX;
+    return DatasetIndexer.DRAFT_DATASET_INDEX;
   }
 
   @Override
   protected String getType() {
     return DatasetIndexer.DATASET_TYPE;
-  }
-
-  private Class getClass(String className) {
-    return StudyDataset.class.getSimpleName().equals(className) ? StudyDataset.class : HarmonizationDataset.class;
   }
 
   @Override
@@ -79,11 +67,9 @@ class EsPublishedDatasetService extends AbstractDocumentService<Dataset> impleme
 
   @Override
   protected QueryBuilder filterByAccess() {
-    if(micaConfigService.getConfig().isOpenAccess()) return null;
-    List<String> ids = studyDatasetService.findPublishedStates().stream().map(StudyDatasetState::getId)
-      .filter(s -> subjectAclService.isAccessible("/study-dataset", s)).collect(Collectors.toList());
-    ids.addAll(harmonizationDatasetService.findPublishedStates().stream().map(HarmonizationDatasetState::getId)
-      .filter(s -> subjectAclService.isAccessible("/harmonization-dataset", s)).collect(Collectors.toList()));
+    List<String> ids = studyDatasetService.findAllStates().stream().map(StudyDatasetState::getId)
+      .filter(s -> subjectAclService.isPermitted("/draft/study-dataset", "VIEW", s)).collect(Collectors.toList());
+
     return ids.isEmpty()
       ? QueryBuilders.boolQuery().mustNot(QueryBuilders.existsQuery("id"))
       : QueryBuilders.idsQuery().ids(ids);

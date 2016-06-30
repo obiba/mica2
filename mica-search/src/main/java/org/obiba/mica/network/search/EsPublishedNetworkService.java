@@ -25,13 +25,13 @@ import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.network.domain.NetworkState;
 import org.obiba.mica.network.service.NetworkService;
 import org.obiba.mica.network.service.PublishedNetworkService;
-import org.obiba.mica.search.AbstractPublishedDocumentService;
+import org.obiba.mica.search.AbstractDocumentService;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
-public class EsPublishedNetworkService extends AbstractPublishedDocumentService<Network>
+public class EsPublishedNetworkService extends AbstractDocumentService<Network>
     implements PublishedNetworkService {
 
   @Inject

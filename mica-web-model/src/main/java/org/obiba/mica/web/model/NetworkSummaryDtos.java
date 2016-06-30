@@ -31,25 +31,32 @@ class NetworkSummaryDtos {
   @Inject
   private PermissionsDtos permissionsDtos;
 
-  @NotNull
-  public Mica.NetworkSummaryDto.Builder asDtoBuilder(@NotNull String id, boolean asDraft) {
-    NetworkState networkState = networkService.getEntityState(id);
-    Network network = networkService.findById(id);
-    Mica.NetworkSummaryDto.Builder builder = Mica.NetworkSummaryDto.newBuilder();
+  @Inject
+  private EntityStateDtos entityStateDtos;
 
-    builder.setId(id).addAllAcronym(localizedStringDtos.asDto(network.getAcronym())) //
+  @NotNull
+  public Mica.NetworkSummaryDto asDto(@NotNull Network network, boolean asDraft) {
+    Mica.NetworkSummaryDto.Builder builder = Mica.NetworkSummaryDto.newBuilder();
+    NetworkState networkState = networkService.getEntityState(network.getId());
+
+    builder.setId(network.getId()).addAllAcronym(localizedStringDtos.asDto(network.getAcronym())) //
       .addAllName(localizedStringDtos.asDto(network.getName())) //
       .setPublished(networkState.isPublished());
 
+    Mica.PermissionsDto permissionsDto = permissionsDtos.asDto(network);
+
     if(asDraft) {
-      builder.setTimestamps(TimestampsDtos.asDto(network));
+      builder.setTimestamps(TimestampsDtos.asDto(network)) //
+        .setPublished(networkState.isPublished()) //
+        .setExtension(Mica.EntityStateDto.networkSummaryState,
+          entityStateDtos.asDto(networkState).setPermissions(permissionsDto).build());
     }
 
-    builder.setPermissions(permissionsDtos.asDto(network));
+    builder.setPermissions(permissionsDto);
 
     network.getStudyIds().stream()
       .filter(sId -> asDraft && subjectAclService.isPermitted("/draft/study", "VIEW", sId)
-          || subjectAclService.isAccessible("/study", sId))
+        || subjectAclService.isAccessible("/study", sId))
       .forEach(sId -> {
         try {
           builder.addStudyIds(sId);
@@ -61,7 +68,7 @@ class NetworkSummaryDtos {
 
     network.getNetworkIds().stream()
       .filter(nId -> asDraft && subjectAclService.isPermitted("/draft/network", "VIEW", nId)
-          || subjectAclService.isAccessible("/network", nId))
+        || subjectAclService.isAccessible("/network", nId))
       .forEach(nId -> {
         try {
           builder.addNetworkIds(nId);
@@ -71,6 +78,13 @@ class NetworkSummaryDtos {
         }
       });
 
-    return builder;
+    return builder.build();
+  }
+
+  @NotNull
+  public Mica.NetworkSummaryDto.Builder asDtoBuilder(@NotNull String id, boolean asDraft) {
+    Network network = networkService.findById(id);
+
+    return asDto(network, asDraft).toBuilder();
   }
 }

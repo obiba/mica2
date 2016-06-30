@@ -10,5 +10,5 @@
 
 package org.obiba.mica.core.service;
 
-public interface PublishedDocumentService<T> extends DocumentService<T> {
+public interface DraftDocumentService<T> extends DocumentService<T>{
 }

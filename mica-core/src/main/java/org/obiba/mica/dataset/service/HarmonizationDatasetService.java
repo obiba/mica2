@@ -136,11 +136,20 @@ public class HarmonizationDatasetService extends DatasetService<HarmonizationDat
   }
 
   /**
-   * Get all {@link HarmonizationDataset}s having a reference to the given study.
+   * Get all {@link HarmonizationDataset}s.
    *
-   * @param studyId
    * @return
    */
+  public List<HarmonizationDataset> findAllDatasets(Iterable<String> ids) {
+    return Lists.newArrayList(harmonizationDatasetRepository.findAll(ids));
+  }
+
+    /**
+     * Get all {@link HarmonizationDataset}s having a reference to the given study.
+     *
+     * @param studyId
+     * @return
+     */
   public List<HarmonizationDataset> findAllDatasets(@Nullable String studyId) {
     if(Strings.isNullOrEmpty(studyId)) return findAllDatasets();
     return harmonizationDatasetRepository.findByStudyTablesStudyId(studyId);

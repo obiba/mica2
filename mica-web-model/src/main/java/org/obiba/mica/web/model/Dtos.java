@@ -63,6 +63,9 @@ public class Dtos {
   private StudySummaryDtos studySummaryDtos;
 
   @Inject
+  private NetworkSummaryDtos networkSummaryDtos;
+
+  @Inject
   private DocumentDigestDtos documentDigestDtos;
 
   @Inject
@@ -149,6 +152,11 @@ public class Dtos {
   }
 
   @NotNull
+  public StudySummaryDto asSummaryDto(@NotNull Study study, @NotNull StudyState studyState) {
+    return studySummaryDtos.asDto(study, studyState);
+  }
+
+  @NotNull
   public StudySummaryDto asDto(@NotNull StudyState studyState) {
     return studySummaryDtos.asDto(studyState);
   }
@@ -171,6 +179,11 @@ public class Dtos {
   @NotNull
   public NetworkDto asDto(@NotNull Network network, boolean asDraft) {
     return networkDtos.asDto(network, asDraft);
+  }
+
+  @NotNull
+  public Mica.NetworkSummaryDto asSummaryDto(@NotNull Network network, boolean asDraft) {
+    return networkSummaryDtos.asDto(network, asDraft);
   }
 
   @NotNull

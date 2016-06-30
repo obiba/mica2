@@ -63,6 +63,10 @@ message EntityStateDto {
     optional EntityStateDto state = 1000;
   }
 
+  extend NetworkSummaryDto {
+    optional EntityStateDto networkSummaryState = 1000;
+  }
+
   extend DatasetDto {
     optional EntityStateDto datasetState = 1002;
   }
@@ -294,6 +298,7 @@ message NetworkSummaryDto {
   repeated string studyIds = 6;
   repeated string networkIds = 7;
   optional PermissionsDto permissions = 8;
+  extensions 1000 to max;
 }
 
 message TimestampsDto {

@@ -2,26 +2,74 @@
 
 mica.dataset
 
-  .controller('StudyDatasetListController', ['$rootScope', '$scope', 'StudyDatasetsResource',
+  .controller('StudyDatasetListController', ['$rootScope', '$scope', '$timeout', 'StudyDatasetsResource',
     'DatasetService',
-    function ($rootScope, $scope, StudyDatasetsResource, DatasetService) {
-      var onSuccess = function(response) {
+    function ($rootScope, $scope, $timeout, StudyDatasetsResource, DatasetService) {
+      var onSuccess = function(response, responseHeaders) {
+        $scope.totalCount = parseInt(responseHeaders('X-Total-Count'), 10);
         $scope.studyDatasets = response;
         $scope.loading = false;
+
+        if (!$scope.hasDatasets) {
+          $scope.hasDatasets = $scope.totalCount && !$scope.pagination.searchText;
+        }
       };
 
       var onError = function() {
         $scope.loading = false;
       };
 
+      $scope.pageChanged = function(page) {
+        loadPage(page, $scope.pagination.searchText);
+      };
+      
+      function refreshPage() {
+        if($scope.pagination.current !== 1) {
+          $scope.pagination.current = 1; //pageChanged event triggers reload
+        } else {
+          loadPage(1);
+        }
+      }
+
+      function loadPage(page) {
+        var data = {from:(page - 1) * $scope.limit, limit: $scope.limit};
+
+        if($scope.pagination.searchText) {
+          data.query = $scope.pagination.searchText + '*';
+        }
+
+        StudyDatasetsResource.query(data, onSuccess, onError);
+      }
+
       $scope.loading = true;
-      StudyDatasetsResource.query({}, onSuccess, onError);
+      $scope.hasStudies = false;
+      $scope.pagination = {current: 1, searchText: ''};
+      $scope.totalCount = 0;
+      $scope.limit = 20;
+
       $scope.deleteStudyDataset = function (dataset) {
         DatasetService.deleteDataset(dataset, function () {
-          $scope.loading = true;
-          StudyDatasetsResource.query({}, onSuccess, onError);
+          refreshPage();
         });
       };
+
+      var currentSearch = null;
+
+      $scope.$watch('pagination.searchText', function(newVal, oldVal) {
+        if (!newVal && !oldVal) {
+          return;
+        }
+        
+        if(currentSearch) {
+          $timeout.cancel(currentSearch);
+        }
+
+        currentSearch = $timeout(function() {
+          refreshPage();
+        }, 500);
+      });
+
+      loadPage($scope.pagination.current);
     }])
 
   .controller('StudyDatasetEditController', ['$rootScope',
@@ -168,7 +216,7 @@ mica.dataset
       var updateDataset = function () {
         $scope.dataset.$save(
           function (dataset) {
-            FormDirtyStateObserver.unobserve(); 
+            FormDirtyStateObserver.unobserve();
             $location.path('/study-dataset/' + dataset.id).replace();
           },
           saveErrorHandler);
@@ -354,7 +402,7 @@ mica.dataset
       var updateDataset = function () {
         $scope.dataset.$save(
           function (dataset) {
-            FormDirtyStateObserver.unobserve(); 
+            FormDirtyStateObserver.unobserve();
             $location.path('/harmonization-dataset/' + dataset.id).replace();
           },
           saveErrorHandler);
@@ -592,26 +640,74 @@ mica.dataset
     };
   }])
 
-  .controller('HarmonizationDatasetListController', ['$rootScope', '$scope', 'HarmonizationDatasetsResource', 'DatasetService',
-    function ($rootScope, $scope, HarmonizationDatasetsResource, DatasetService) {
-      var onSuccess = function(response) {
+  .controller('HarmonizationDatasetListController', ['$rootScope', '$scope', '$timeout', 'HarmonizationDatasetsResource', 'DatasetService',
+    function ($rootScope, $scope, $timeout, HarmonizationDatasetsResource, DatasetService) {
+      var onSuccess = function(response, responseHeaders) {
         $scope.harmonizedDatasets = response;
         $scope.loading = false;
+        $scope.totalCount = parseInt(responseHeaders('X-Total-Count'), 10);
+        $scope.loading = false;
+
+        if (!$scope.hasDatasets) {
+          $scope.hasDatasets = $scope.totalCount && !$scope.pagination.searchText;
+        }
       };
 
       var onError = function() {
         $scope.loading = false;
       };
 
-      $scope.loading = true;
-      HarmonizationDatasetsResource.query({}, onSuccess, onError);
-
       $scope.deleteHarmonizationDataset = function (dataset) {
         DatasetService.deleteDataset(dataset, function () {
-          $scope.loading = true;
-          HarmonizationDatasetsResource.query({}, onSuccess, onError);
+          refreshPage();
         });
       };
+
+      $scope.pageChanged = function(page) {
+        loadPage(page, $scope.pagination.searchText);
+      };
+
+      function refreshPage() {
+        if($scope.pagination.current !== 1) {
+          $scope.pagination.current = 1; //pageChanged event triggers reload
+        } else {
+          loadPage(1);
+        }
+      }
+
+      function loadPage(page) {
+        var data = {from:(page - 1) * $scope.limit, limit: $scope.limit};
+
+        if($scope.pagination.searchText) {
+          data.query = $scope.pagination.searchText + '*';
+        }
+
+        HarmonizationDatasetsResource.query(data, onSuccess, onError);
+      }
+
+      $scope.loading = true;
+      $scope.hasStudies = false;
+      $scope.pagination = {current: 1, searchText: ''};
+      $scope.totalCount = 0;
+      $scope.limit = 20;
+
+      var currentSearch = null;
+
+      $scope.$watch('pagination.searchText', function(newVal, oldVal) {
+        if (!newVal && !oldVal) {
+          return;
+        }
+
+        if(currentSearch) {
+          $timeout.cancel(currentSearch);
+        }
+
+        currentSearch = $timeout(function() {
+          refreshPage();
+        }, 500);
+      });
+
+      loadPage($scope.pagination.current);
     }])
 
   .controller('HarmonizationDatasetViewController', ['$rootScope',

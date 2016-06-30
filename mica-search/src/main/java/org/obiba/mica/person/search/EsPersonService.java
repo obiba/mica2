@@ -18,13 +18,13 @@ import javax.inject.Inject;
 
 import org.elasticsearch.search.SearchHit;
 import org.obiba.mica.core.domain.Person;
-import org.obiba.mica.search.AbstractPublishedDocumentService;
+import org.obiba.mica.search.AbstractDocumentService;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
-public class EsPersonService extends AbstractPublishedDocumentService<Person> {
+public class EsPersonService extends AbstractDocumentService<Person> {
 
   @Inject
   private ObjectMapper objectMapper;

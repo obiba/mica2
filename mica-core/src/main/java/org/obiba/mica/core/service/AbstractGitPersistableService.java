@@ -11,6 +11,9 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Lists;
 import org.apache.commons.math3.util.Pair;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -25,9 +28,6 @@ import org.obiba.mica.core.notification.EntityPublicationFlowMailNotification;
 import org.obiba.mica.core.repository.EntityStateRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Throwables;
 
 import static org.obiba.mica.core.domain.RevisionStatus.DELETED;
 import static org.obiba.mica.core.domain.RevisionStatus.DRAFT;
@@ -137,6 +137,10 @@ public abstract class AbstractGitPersistableService<T extends EntityState, T1 ex
 
   public List<T> findAllStates() {
     return getEntityStateRepository().findAll();
+  }
+
+  public List<T> findAllStates(Iterable<String> ids) {
+    return Lists.newArrayList(getEntityStateRepository().findAll(ids));
   }
 
   public T publishState(@NotNull String id) throws NoSuchEntityException {
