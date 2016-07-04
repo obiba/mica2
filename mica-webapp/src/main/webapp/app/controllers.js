@@ -21,7 +21,7 @@ mica.controller('MainController', [
       $scope.screen.device = screenSize.is('md, lg') ? 'desktop' : 'mobile';
       $scope.screen.is = screenSize.is;
     }
-    
+
     function applyTitle(config) {
       $window.document.title = config.name;
     }
@@ -52,6 +52,7 @@ mica.controller('LanguageController', ['$scope', '$translate',
     $scope.changeLanguage = function (languageKey) {
       $translate.use(languageKey);
     };
+    $scope.getCurrentLanguage = $translate.use;
   }]);
 
 mica.controller('MenuController', [function () {}]);

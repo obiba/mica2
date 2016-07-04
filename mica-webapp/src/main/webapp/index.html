@@ -107,9 +107,13 @@
             <i class="fa fa-user"></i>
             {{userProfileService.getFullName(subject.profile) || subject.login}}
             <i class="fa fa-caret-down"></i></a>
-          <ul class="dropdown-menu pull-right">
+          <ul class="dropdown-menu pull-right" ng-controller="LanguageController">
             <!--<li><a href="#/profile"><i class="fa fa-cog"></i> <span translate>global.menu.myProfile</span></a></li>-->
-            <!--<li class="divider"></li>-->
+            <li ng-repeat="lang in ['en','fr']">
+              <a href="#" ng-click="changeLanguage(lang)">
+                <span>{{'language.' + lang | translate}}</span> <i class="fa fa-check" aria-hidden="true" ng-show="getCurrentLanguage() === lang"></i></a>
+            </li>
+            <li class="divider"></li>
             <li><a href="#/logout"><i class="fa fa-sign-out"></i> <span translate>global.menu.logout</span></a></li>
           </ul>
         </li>
