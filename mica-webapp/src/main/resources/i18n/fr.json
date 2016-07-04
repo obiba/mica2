@@ -461,75 +461,75 @@
       "update-comment": "Ajouter un commentaire pour décrire les changements."
     },
     "delete-dialog":{
-      "title": "Delete Study",
-      "message": "Are you sure to delete the study '{{arg0}}'?"
+      "title": "Supprimer l'étude",
+      "message": "Etes-vous sûr de supprimer l'étude '{{arg0}}'?"
     },
     "restore-dialog": {
-      "title": "Restoring Study from Revision",
-      "message": "Are you sure you want to restore this revision from '{{arg0}}'?"
+      "title": "Restaurer une version",
+      "message": "Etes-vous sûr de vouloir restaurer cette révision de '{{arg0}}'?"
     },
-    "none": "No studies."
+    "none": "Aucune étude."
   },
   "contact": {
     "label": "Contact",
     "delete": {
       "member": {
-        "title": "Delete {{type}}",
-        "confirm": "Are you sure you want to delete {{type}} {{name}}?"
+        "title": "Supprimer {{type}}",
+        "confirm": "Etes-vous sûr de vouloir supprimer {{type}} {{name}}?"
       }
     },
     "edit": {
-      "member": "Edit {{type}}"
+      "member": "Éditer {{type}}"
     },
     "search": {
-      "member": "Find an existing {{type}}",
-      "placeholder": "Search by first name, last name or institution..."
+      "member": "Trouver un {{type}} existant",
+      "placeholder": "Rechercher par prénom, nom ou institution..."
     },
-    "title": "Title",
-    "firstName": "First Name",
-    "lastName": "Last Name",
-    "name": "Name",
-    "academicLevel": "Academic Level",
-    "email": "Email",
-    "phone": "Phone",
-    "dataAccessCommitteeMember": "Data Access Committee Member",
+    "title": "Titre",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "name": "Nom",
+    "academicLevel": "Niveau académique",
+    "email": "Courriel",
+    "phone": "Téléphone",
+    "dataAccessCommitteeMember": "Membre du comité d'accès aux données",
     "institution": "Institution",
-    "department": "Department"
+    "department": "Département"
   },
   "address": {
-    "label": "Address",
-    "city": "City",
-    "zip": "Postal Code",
-    "state": "State",
-    "country": "Country"
+    "label": "Adresse",
+    "city": "Ville",
+    "zip": "Code postal",
+    "state": "État",
+    "country": "Pays"
   },
   "networks": "Réseaux",
-  "datasets": "Datasets",
+  "datasets": "Ensembles de données",
   "dataset": {
-    "name": "Name",
-    "acronym": "Acronym",
-    "add": "Add Dataset",
-    "details": "Dataset",
-    "label-edit": "Edit Dataset",
-    "general-info": "General Information",
+    "name": "Nom",
+    "acronym": "Acronyme",
+    "add": "Ajouter un ensemble de données",
+    "details": "Ensemble de données",
+    "label-edit": "Éditer l'ensemble de données",
+    "general-info": "Informations générales",
     "description": "Description",
-    "entity-type": "Entity Type",
+    "entity-type": "Type d'entité",
     "study-dce": {
-      "title": "Study Data Collection Event",
+      "title": "Événement de collecte de données de l'étude",
       "info": ""
     },
     "datasource": {
-      "title": "Data Source",
-      "info": "Reference to the Opal table from which variables and data summaries will be extracted from."
+      "title": "Source de données",
+      "info": "Référence vers la table Opal de laquelle les variables et les données sommaires seront extraites."
     },
     "delete-dialog": {
-      "title": "Delete Dataset",
-      "message": "Are you sure you want to delete the dataset '{{arg0}}'?"
+      "title": "Supprimer l'ensemble de données",
+      "message": "Etes-vous sûr de vouloir supprimer l'ensemble de données '{{arg0}}'?"
     },
     "options": "Options",
     "network": {
-      "title": "Network",
-      "info": "A network linked to this dataset."
+      "title": "Réseau",
+      "info": "Un réseau lié a cet ensembke de données."
     },
     "study-table": {
       "title": "Study Table",
