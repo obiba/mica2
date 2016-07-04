@@ -26,4 +26,8 @@ public class DatasetIdProvider {
     return datasetIds;
   }
 
+  public void resetDatasetIds() {
+    datasetIds.clear();
+  }
+
 }

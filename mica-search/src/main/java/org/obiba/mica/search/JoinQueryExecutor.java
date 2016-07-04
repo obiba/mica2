@@ -157,12 +157,15 @@ public class JoinQueryExecutor {
       CountStatsData countStats = countBuilder != null ? getCountStatsData(type) : null;
 
       if(joinedIds != null && joinedIds.size() > 0) {
+        if (type == QueryType.DATASET) {
+          // clear previously set datasetIds by resetting shared datasetIdProvider's datasetIds list
+          datasetIdProvider.resetDatasetIds();
+          queryAggregations(joinedIds, datasetQuery, variableQuery);
+        }
         getDocumentQuery(type).query(joinedIds, countStats, scope);
         // need to update dataset and variable and redo agg query
         if(type == QueryType.VARIABLE) {
           datasetQuery.query(joinedIds, null, DIGEST);
-        } else if(type == QueryType.DATASET) {
-          variableQuery.query(joinedIds, null, DIGEST);
         }
       }
     } else {
