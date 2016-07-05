@@ -6,13 +6,24 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
+import com.google.common.io.ByteStreams;
+import com.itextpdf.text.DocumentException;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.InvalidPathException;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.PathNotFoundException;
 import org.apache.shiro.SecurityUtils;
 import org.joda.time.DateTime;
 import org.obiba.mica.PdfUtils;
@@ -39,19 +50,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-
-import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.google.common.eventbus.EventBus;
-import com.google.common.io.ByteStreams;
-import com.itextpdf.text.DocumentException;
-import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.InvalidPathException;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.Option;
-import com.jayway.jsonpath.PathNotFoundException;
 
 import static com.jayway.jsonpath.Configuration.defaultConfiguration;
 
@@ -390,23 +388,17 @@ public class DataAccessRequestService {
   private byte[] getTemplate(Locale locale) throws IOException {
     DataAccessForm dataAccessForm = dataAccessFormService.find().get();
     Attachment pdfTemplate = dataAccessForm.getPdfTemplates().get(locale);
-    byte[] template;
 
     if(pdfTemplate == null) {
-      if(locale.equals(Locale.ROOT)) {
-        Map<Locale, Attachment> pdfTemplates = dataAccessForm.getPdfTemplates();
+      Map<Locale, Attachment> pdfTemplates = dataAccessForm.getPdfTemplates();
+      if(!pdfTemplates.isEmpty()) {
+        pdfTemplate = dataAccessForm.getPdfTemplates().get(Locale.ENGLISH);
+        if(pdfTemplate == null) pdfTemplate = dataAccessForm.getPdfTemplates().values().stream().findFirst().get();
+      }
+    }
 
-        if(!pdfTemplates.isEmpty()) {
-          pdfTemplate = dataAccessForm.getPdfTemplates().get(Locale.ENGLISH);
-
-          if(pdfTemplate == null) pdfTemplate = dataAccessForm.getPdfTemplates().values().stream().findFirst().get();
-
-          template = ByteStreams.toByteArray(fileStoreService.getFile(pdfTemplate.getFileReference()));
-        } else template = ByteStreams.toByteArray(defaultTemplateResource.getInputStream());
-      } else throw new NoSuchElementException();
-    } else template = ByteStreams.toByteArray(fileStoreService.getFile(pdfTemplate.getFileReference()));
-
-    return template;
+    return pdfTemplate != null ? ByteStreams.toByteArray(fileStoreService.getFile(pdfTemplate.getFileReference())) :
+      ByteStreams.toByteArray(defaultTemplateResource.getInputStream());
   }
 
   private void fillPdfTemplateFromRequest(byte[] template, OutputStream output, Object content)
