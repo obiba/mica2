@@ -13,11 +13,11 @@ package org.obiba.mica.taxonomy;
 import java.io.IOException;
 
 import org.elasticsearch.search.SearchHit;
-import org.obiba.mica.search.AbstractPublishedDocumentService;
+import org.obiba.mica.search.AbstractDocumentService;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EsTaxonomyTermService extends AbstractPublishedDocumentService<String> {
+public class EsTaxonomyTermService extends AbstractDocumentService<String> {
 
   @Override
   protected String processHit(SearchHit hit) throws IOException {

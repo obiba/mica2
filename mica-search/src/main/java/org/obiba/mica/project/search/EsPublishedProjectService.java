@@ -26,13 +26,13 @@ import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.project.domain.ProjectState;
 import org.obiba.mica.project.service.ProjectService;
 import org.obiba.mica.project.service.PublishedProjectService;
-import org.obiba.mica.search.AbstractPublishedDocumentService;
+import org.obiba.mica.search.AbstractDocumentService;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
-public class EsPublishedProjectService extends AbstractPublishedDocumentService<Project> implements
+public class EsPublishedProjectService extends AbstractDocumentService<Project> implements
     PublishedProjectService {
 
   @Inject

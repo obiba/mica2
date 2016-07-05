@@ -8,24 +8,23 @@
     <i class="fa fa-plus"></i> <span translate>study.add</span>
   </a>
 
-  <p class="help-block" ng-if="studies.length == 0 && !loading">
+  <p class="help-block" ng-if="!hasStudies && !loading">
     <span translate>study.none</span>
   </p>
 
   <p ng-if="loading" class="voffset2 loading">
   </p>
 
-  <div ng-if="studies.length > 0">
-
+  <div ng-show="hasStudies">
     <div class="row voffset2">
       <div class="col-xs-4">
       <span class="input-group input-group-sm no-padding-top">
         <span class="input-group-addon" id="study-search"><i class="glyphicon glyphicon-search"></i></span>
-        <input ng-model="searchText" type="text" class="form-control" aria-describedby="study-search">
+        <input ng-model="pagination.searchText" type="text" class="form-control" aria-describedby="study-search">
       </span>
       </div>
       <div class="col-xs-8">
-        <dir-pagination-controls class="pull-right"></dir-pagination-controls>
+        <dir-pagination-controls class="pull-right" on-page-change="pageChanged(newPageNumber)"></dir-pagination-controls>
       </div>
     </div>
 
@@ -43,7 +42,7 @@
         </thead>
         <tbody>
 
-        <tr dir-paginate="study in studies| filter:searchText | itemsPerPage: 20">
+        <tr dir-paginate="study in studies | itemsPerPage: limit" total-items="totalCount" current-page="pagination.current">
           <td>
             <a ng-href="#/study/{{study.id}}" translate>{{study.id}}</a>
           </td>

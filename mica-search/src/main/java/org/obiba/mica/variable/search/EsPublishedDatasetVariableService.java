@@ -36,7 +36,7 @@ import org.obiba.mica.dataset.domain.HarmonizationDatasetState;
 import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
 import org.obiba.mica.dataset.service.StudyDatasetService;
-import org.obiba.mica.search.AbstractPublishedDocumentService;
+import org.obiba.mica.search.AbstractDocumentService;
 import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +45,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
-public class EsPublishedDatasetVariableService extends AbstractPublishedDocumentService<DatasetVariable>
+public class EsPublishedDatasetVariableService extends AbstractDocumentService<DatasetVariable>
   implements PublishedDatasetVariableService {
 
   private static final Logger log = LoggerFactory.getLogger(EsPublishedDatasetVariableService.class);

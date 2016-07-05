@@ -8,7 +8,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.core.service;
+package org.obiba.mica.network.service;
 
-public interface PublishedDocumentService<T> extends DocumentService<T> {
+import org.obiba.mica.core.service.DraftDocumentService;
+import org.obiba.mica.network.domain.Network;
+
+public interface DraftNetworkService extends DraftDocumentService<Network> {
+
+  NetworkService getNetworkService();
+
 }

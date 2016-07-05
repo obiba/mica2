@@ -31,6 +31,7 @@ mica.network
   .controller('NetworkListController', ['$rootScope',
     '$scope',
     '$filter',
+    '$timeout',
     '$translate',
     'NetworksResource',
     'NetworkService',
@@ -38,28 +39,76 @@ mica.network
     function ($rootScope,
               $scope,
               $filter,
+              $timeout,
               $translate,
               NetworksResource,
               NetworkService
     ) {
-      var onSuccess = function(response) {
+      var onSuccess = function(response, responseHeaders) {
+        $scope.totalCount = parseInt(responseHeaders('X-Total-Count'), 10);
         $scope.networks = response;
         $scope.loading = false;
+        
+        if (!$scope.hasNetworks) {
+          $scope.hasNetworks = $scope.totalCount && !$scope.pagination.searchText;
+        }
       };
 
       var onError = function() {
         $scope.loading = false;
       };
 
-      $scope.loading = true;
-      NetworksResource.query({}, onSuccess, onError);
-
       $scope.deleteNetwork = function(network) {
         NetworkService.deleteNetwork(network, function() {
-          $scope.loading = true;
-          NetworksResource.query({}, onSuccess, onError);
+          refreshPage();
         });
       };
+
+      $scope.pageChanged = function(page) {
+        loadPage(page, $scope.pagination.searchText);
+      };
+
+      function loadPage(page) {
+        var data = {from:(page - 1) * $scope.limit, limit: $scope.limit};
+
+        if($scope.pagination.searchText) {
+          data.query = $scope.pagination.searchText + '*';
+        }
+
+        NetworksResource.query(data, onSuccess, onError);
+      }
+
+      $scope.loading = true;
+      $scope.hasStudies = false;
+      $scope.pagination = {current: 1, searchText: ''};
+      $scope.totalCount = 0;
+      $scope.limit = 20;
+
+      var currentSearch = null;
+
+      function refreshPage() {
+        if($scope.pagination.current !== 1) {
+          $scope.pagination.current = 1; //pageChanged event triggers reload
+        } else {
+          loadPage(1);
+        }
+      }
+      
+      $scope.$watch('pagination.searchText', function(newVal, oldVal) {
+        if (!newVal && !oldVal) {
+          return;
+        }
+
+        if(currentSearch) {
+          $timeout.cancel(currentSearch);
+        }
+
+        currentSearch = $timeout(function() {
+          refreshPage();
+        }, 500);
+      });
+
+      loadPage($scope.pagination.current);
     }])
 
   .controller('NetworkEditController', [

@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 
+import com.google.common.collect.Lists;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
@@ -35,19 +36,16 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
-import org.obiba.mica.core.service.PublishedDocumentService;
+import org.obiba.mica.core.service.DocumentService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Lists;
-
 import sun.util.locale.LanguageTag;
 
-public abstract class AbstractPublishedDocumentService<T> implements PublishedDocumentService<T> {
+public abstract class AbstractDocumentService<T> implements DocumentService<T> {
 
-  private static final Logger log = LoggerFactory.getLogger(AbstractPublishedDocumentService.class);
+  private static final Logger log = LoggerFactory.getLogger(AbstractDocumentService.class);
 
   private static final int MAX_SIZE = 10000;
 

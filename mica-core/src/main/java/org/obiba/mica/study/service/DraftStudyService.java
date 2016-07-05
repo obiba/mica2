@@ -8,7 +8,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.core.service;
+package org.obiba.mica.study.service;
 
-public interface PublishedDocumentService<T> extends DocumentService<T> {
+import org.obiba.mica.core.service.DraftDocumentService;
+import org.obiba.mica.study.domain.Study;
+
+public interface DraftStudyService extends DraftDocumentService<Study> {
+
+  StudyService getStudyService();
+
 }

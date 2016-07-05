@@ -126,7 +126,7 @@ class StudySummaryDtos {
   }
 
   @NotNull
-  Mica.StudySummaryDto asDto(@NotNull StudyState studyState) {
+  Mica.StudySummaryDto asDto(@NotNull Study study, @NotNull StudyState studyState) {
     Mica.StudyStateDto.Builder stateBuilder = Mica.StudyStateDto.newBuilder()
       .setRevisionsAhead(studyState.getRevisionsAhead()) //
       .setRevisionStatus(studyState.getRevisionStatus().name());
@@ -144,21 +144,26 @@ class StudySummaryDtos {
 
     stateBuilder.setPermissions(permissionsDtos.asDto(studyState));
 
-    Study study = studyService.findStudy(studyState.getId());
-
     Mica.StudySummaryDto.Builder builder;
+
     if(study == null) {
       builder = Mica.StudySummaryDto.newBuilder();
       builder.setId(studyState.getId()) //
         .setTimestamps(TimestampsDtos.asDto(studyState)) //
         .addAllName(localizedStringDtos.asDto(studyState.getName()));
     } else {
-      builder = asDtoBuilder(study);
+      builder = asDtoBuilder(study, studyState.isPublished(), 0);
     }
 
     builder.setPublished(studyState.isPublished());
 
     return builder.setExtension(Mica.StudyStateDto.state, stateBuilder.build()).build();
+  }
+
+  @NotNull
+  Mica.StudySummaryDto asDto(@NotNull StudyState studyState) {
+    Study study = studyService.findStudy(studyState.getId());
+    return asDto(study, studyState);
   }
 
   Mica.StudySummaryDto asDto(String studyId) {
@@ -171,5 +176,4 @@ class StudySummaryDtos {
 
     return asDto(studyState);
   }
-
 }

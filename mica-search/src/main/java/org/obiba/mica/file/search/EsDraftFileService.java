@@ -21,7 +21,7 @@ import javax.inject.Inject;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.obiba.mica.file.AttachmentState;
-import org.obiba.mica.search.AbstractPublishedDocumentService;
+import org.obiba.mica.search.AbstractDocumentService;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -30,7 +30,7 @@ import com.google.common.collect.Lists;
 
 @Component
 @Scope("request")
-public class EsDraftFileService extends AbstractPublishedDocumentService<AttachmentState> {
+public class EsDraftFileService extends AbstractDocumentService<AttachmentState> {
 
   @Inject
   private ObjectMapper objectMapper;

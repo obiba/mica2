@@ -147,6 +147,10 @@ public class StudyDatasetService extends DatasetService<StudyDataset, StudyDatas
     return studyDatasetRepository.findByStudyTableStudyId(studyId);
   }
 
+  public List<StudyDataset> findAllDatasets(Iterable<String> ids) {
+    return Lists.newArrayList(studyDatasetRepository.findAll(ids));
+  }
+
   @Caching(evict = { @CacheEvict(value = "aggregations-metadata", key = "'dataset'") })
   public void publish(@NotNull String id, boolean published) {
     publish(id, published, PublishCascadingScope.NONE);

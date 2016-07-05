@@ -23,6 +23,7 @@ mica.study
     '$scope',
     '$translate',
     '$interpolate',
+    '$timeout',
     'StudyStatesResource',
     'DraftStudyResource',
     'NOTIFICATION_EVENTS',
@@ -31,29 +32,77 @@ mica.study
               $scope,
               $translate,
               $interpolate,
+              $timeout,
               StudyStatesResource,
               DraftStudyResource,
               NOTIFICATION_EVENTS,
               DraftStudyDeleteService) {
 
-      var onSuccess = function(response) {
+      var onSuccess = function(response, responseHeaders) {
+        $scope.totalCount = parseInt(responseHeaders('X-Total-Count'), 10);
         $scope.studies = response;
         $scope.loading = false;
+
+        if (!$scope.hasStudies) {
+          $scope.hasStudies = $scope.totalCount && !$scope.pagination.searchText;
+        }
       };
 
       var onError = function() {
-        $scope.loading = false;
+        $scope.loading = true;
+      };
+      
+      function refreshPage() {
+        if($scope.pagination.current !== 1) {
+          $scope.pagination.current = 1; //pageChanged event triggers reload
+        } else {
+          loadPage(1);
+        }
+      }
+
+      $scope.pageChanged = function(page) {
+        loadPage(page);
       };
 
+      function loadPage(page) {
+        var data = {from:(page - 1) * $scope.limit, limit: $scope.limit};
+
+        if($scope.pagination.searchText) {
+          data.query = $scope.pagination.searchText + '*';
+        }
+
+        StudyStatesResource.query(data, onSuccess, onError);
+      }
+
       $scope.loading = true;
-      StudyStatesResource.query({}, onSuccess, onError);
+      $scope.hasStudies = false;
+      $scope.pagination = {current: 1, searchText: ''};
+      $scope.totalCount = 0;
+      $scope.limit = 20;
 
       $scope.deleteStudy = function (study) {
         DraftStudyDeleteService.delete(study, function() {
-          $scope.loading = true;
-          StudyStatesResource.query({}, onSuccess, onError);
+          refreshPage();
         });
       };
+
+      var currentSearch = null;
+
+      $scope.$watch('pagination.searchText', function(newVal, oldVal) {
+        if (!newVal && !oldVal) {
+          return;
+        }
+
+        if(currentSearch) {
+          $timeout.cancel(currentSearch);
+        }
+
+        currentSearch = $timeout(function() {
+          refreshPage();
+        }, 500);
+      });
+
+      loadPage($scope.pagination.current);
     }])
 
   .controller('StudyViewController', [
