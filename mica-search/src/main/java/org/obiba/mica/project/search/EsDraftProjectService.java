@@ -8,7 +8,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.obiba.mica.study.search;
+package org.obiba.mica.project.search;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -22,47 +22,47 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
+import org.obiba.mica.project.domain.Project;
+import org.obiba.mica.project.domain.ProjectState;
+import org.obiba.mica.project.service.DraftProjectService;
+import org.obiba.mica.project.service.ProjectService;
 import org.obiba.mica.search.AbstractDocumentService;
-import org.obiba.mica.study.domain.Study;
-import org.obiba.mica.study.domain.StudyState;
-import org.obiba.mica.study.service.DraftStudyService;
-import org.obiba.mica.study.service.StudyService;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EsDraftStudyService extends AbstractDocumentService<Study> implements DraftStudyService {
+public class EsDraftProjectService extends AbstractDocumentService<Project> implements DraftProjectService {
 
   @Inject
   private ObjectMapper objectMapper;
 
   @Inject
-  private StudyService studyService;
+  private ProjectService projectService;
 
   @Override
-  public StudyService getStudyService() {
-    return studyService;
+  public ProjectService getProjectService() {
+    return projectService;
   }
 
   @Override
-  protected Study processHit(SearchHit hit) throws IOException {
+  protected Project processHit(SearchHit hit) throws IOException {
     InputStream inputStream = new ByteArrayInputStream(hit.getSourceAsString().getBytes());
-    return objectMapper.readValue(inputStream, Study.class);
+    return objectMapper.readValue(inputStream, Project.class);
   }
 
   @Override
   protected String getIndexName() {
-    return StudyIndexer.DRAFT_STUDY_INDEX;
+    return ProjectIndexer.DRAFT_PROJECT_INDEX;
   }
 
   @Override
   protected String getType() {
-    return StudyIndexer.STUDY_TYPE;
+    return ProjectIndexer.PROJECT_TYPE;
   }
 
   @Override
   protected QueryBuilder filterByAccess() {
-    List<String> ids = studyService.findAllStates().stream().map(StudyState::getId)
-      .filter(s -> subjectAclService.isPermitted("/draft/study", "VIEW", s))
+    List<String> ids = projectService.findAllStates().stream().map(ProjectState::getId)
+      .filter(s -> subjectAclService.isPermitted("/draft/project", "VIEW", s))
       .collect(Collectors.toList());
 
     return ids.isEmpty()

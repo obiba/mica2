@@ -79,7 +79,6 @@ mica.network
       }
 
       $scope.loading = true;
-      $scope.hasStudies = false;
       $scope.pagination = {current: 1, searchText: ''};
       $scope.totalCount = 0;
       $scope.limit = 20;

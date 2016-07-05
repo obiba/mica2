@@ -16,7 +16,6 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,11 +57,6 @@ public class EsDraftNetworkService extends AbstractDocumentService<Network> impl
   @Override
   protected String getType() {
     return NetworkIndexer.NETWORK_TYPE;
-  }
-
-  @Nullable
-  private QueryBuilder getPostFilter(@Nullable String studyId) {
-    return null;
   }
 
   @Override

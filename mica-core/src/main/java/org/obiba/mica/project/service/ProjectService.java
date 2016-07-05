@@ -5,6 +5,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import com.google.common.collect.Lists;
 import org.joda.time.DateTime;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.access.domain.DataAccessRequest;
@@ -199,6 +200,15 @@ public class ProjectService extends AbstractGitPersistableService<ProjectState, 
    */
   public List<Project> findAllProjects() {
     return projectRepository.findAll();
+  }
+
+  /**
+   * Get all {@link Project}s by ids.
+   *
+   * @return
+   */
+  public List<Project> findAllProjects(Iterable<String> ids) {
+    return Lists.newArrayList(projectRepository.findAll(ids));
   }
 
   /**

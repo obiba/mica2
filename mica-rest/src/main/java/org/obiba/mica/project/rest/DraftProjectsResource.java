@@ -11,21 +11,29 @@
 package org.obiba.mica.project.rest;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Strings;
+import com.google.common.eventbus.EventBus;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.obiba.mica.core.service.DocumentService;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.project.event.IndexProjectsEvent;
+import org.obiba.mica.project.service.DraftProjectService;
 import org.obiba.mica.project.service.ProjectService;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.web.model.Dtos;
@@ -34,13 +42,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.codahale.metrics.annotation.Timed;
-import com.google.common.eventbus.EventBus;
+import static java.util.stream.Collectors.toList;
 
 @Component
 @Scope("request")
 @Path("/draft")
 public class DraftProjectsResource {
+  private static final int MAX_LIMIT = 10000; //default ElasticSearch limit
 
   @Inject
   private ProjectService projectService;
@@ -57,13 +65,36 @@ public class DraftProjectsResource {
   @Inject
   private EventBus eventBus;
 
+  @Inject
+  private DraftProjectService draftProjectService;
+
   @GET
   @Path("/projects")
   @Timed
-  public List<Mica.ProjectDto> list() {
-    return projectService.findAllProjects().stream()
-        .filter(n -> subjectAclService.isPermitted("/draft/project", "VIEW", n.getId()))
-        .sorted((o1, o2) -> o1.getId().compareTo(o2.getId())).map(n -> dtos.asDto(n, true)).collect(Collectors.toList());
+  public List<Mica.ProjectDto> list(@QueryParam("query") String query,
+                                    @QueryParam("from") @DefaultValue("0") Integer from,
+                                    @QueryParam("limit") Integer limit, @Context HttpServletResponse response) {
+    Stream<Project> result;
+    long totalCount;
+
+    if(limit == null) limit = MAX_LIMIT;
+
+    if(limit < 0) throw new IllegalArgumentException("limit cannot be negative");
+
+    if(Strings.isNullOrEmpty(query)) {
+      List<Project> projects = projectService.findAllProjects().stream()
+        .filter(n -> subjectAclService.isPermitted("/draft/project", "VIEW", n.getId())).collect(toList());
+      totalCount = projects.size();
+      result = projects.stream().sorted((o1, o2) -> o1.getId().compareTo(o2.getId())).skip(from).limit(limit);
+    } else {
+      DocumentService.Documents<Project> projectDocuments = draftProjectService.find(from, limit, null, null, null, query);
+      totalCount = projectDocuments.getTotal();
+      result = projectService.findAllProjects(projectDocuments.getList().stream().map(d -> d.getId()).collect(toList())).stream();
+    }
+
+    response.addHeader("X-Total-Count", Long.toString(totalCount));
+
+    return result.map(n -> dtos.asDto(n, true)).collect(toList());
   }
 
   @POST

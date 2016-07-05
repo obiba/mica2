@@ -18,23 +18,23 @@
     <i class="fa fa-plus"></i> <span translate>research-project.add</span>
   </a>
 
-  <p class="help-block" ng-if="projects.length == 0 && !loading">
+  <p class="help-block" ng-if="!hasProjects && !loading">
     <span translate>research-project.none</span>
   </p>
 
   <p ng-if="loading" class="voffset2 loading">
   </p>
 
-  <div ng-if="projects.length > 0">
+  <div ng-if="hasProjects">
     <div class="row voffset2">
       <div class="col-xs-4">
       <span class="input-group input-group-sm no-padding-top">
         <span class="input-group-addon" id="project-search"><i class="glyphicon glyphicon-search"></i></span>
-        <input ng-model="searchText" type="text" class="form-control" aria-describedby="project-search">
+        <input ng-model="pagination.searchText" type="text" class="form-control" aria-describedby="project-search">
       </span>
       </div>
       <div class="col-xs-8">
-        <dir-pagination-controls class="pull-right"></dir-pagination-controls>
+        <dir-pagination-controls class="pull-right" on-page-change="pageChanged(newPageNumber)"></dir-pagination-controls>
       </div>
     </div>
 
@@ -52,7 +52,7 @@
         </thead>
         <tbody>
 
-        <tr dir-paginate="project in projects | filter:searchText | itemsPerPage: 20">
+        <tr dir-paginate="project in projects | itemsPerPage: limit" total-items="totalCount" current-page="pagination.current">
           <td>
             <a ng-href="#/project/{{project.id}}">{{project.id}}</a>
           </td>
@@ -82,7 +82,7 @@
                 <a ng-href="#/project/{{project.id}}/edit" title="{{'edit' | translate}}"><i class="fa fa-pencil"></i></a>
               </li>
               <li ng-if="project['obiba.mica.EntityStateDto.projectState'].permissions.delete && project['obiba.mica.EntityStateDto.projectState'].revisionStatus === 'DELETED'">
-                <a href ng-click="deleteNetwork(project)" title="{{'delete' | translate}}"><i class="fa fa-trash-o"></i></a>
+                <a href ng-click="deleteProject(project)" title="{{'delete' | translate}}"><i class="fa fa-trash-o"></i></a>
               </li>
               <li ng-if="project['obiba.mica.EntityStateDto.projectState'].revisionStatus === 'UNDER_REVIEW'">
                 <a ng-href="#/project/{{project.id}}" title="{{'view' | translate}}"><i class="fa fa-eye"></i></a>
