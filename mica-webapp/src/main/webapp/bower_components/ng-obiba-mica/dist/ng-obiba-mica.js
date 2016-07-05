@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-06-29
+ * Date: 2016-07-05
  */
 'use strict';
 
@@ -649,6 +649,7 @@ angular.module('obiba.mica.access')
       '$uibModal',
       '$routeParams',
       '$filter',
+      '$translate',
       'DataAccessRequestResource',
       'DataAccessRequestService',
       'DataAccessRequestStatusResource',
@@ -671,6 +672,7 @@ angular.module('obiba.mica.access')
               $uibModal,
               $routeParams,
               $filter,
+              $translate,
               DataAccessRequestResource,
               DataAccessRequestService,
               DataAccessRequestStatusResource,
@@ -793,7 +795,8 @@ angular.module('obiba.mica.access')
           try {
             $scope.form.model = request.content ? JSON.parse(request.content) : {};
             $scope.requestDownloadUrl =
-              ngObibaMicaUrl.getUrl('DataAccessRequestDownloadPdfResource').replace(':id', $scope.dataAccessRequest.id);
+              ngObibaMicaUrl.getUrl('DataAccessRequestDownloadPdfResource').replace(':id', $scope.dataAccessRequest.id) + '?lang=' + $translate.use();
+
             $scope.attachments = angular.copy(request.attachments) || [];
           } catch (e) {
             $scope.validForm = false;
