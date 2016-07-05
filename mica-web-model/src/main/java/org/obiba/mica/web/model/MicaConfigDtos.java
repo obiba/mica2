@@ -29,6 +29,20 @@ class MicaConfigDtos {
   private AttachmentDtos attachmentDtos;
 
   @NotNull
+  Mica.PublicMicaConfigDto asPublicDto(@NotNull MicaConfig config) {
+    Mica.PublicMicaConfigDto.Builder builder = Mica.PublicMicaConfigDto.newBuilder() //
+      .setName(config.getName()) //
+      .setOpenAccess(config.isOpenAccess());
+    config.getLocales().forEach(locale -> builder.addLanguages(locale.getLanguage()));
+
+    if (config.hasPublicUrl()) {
+      builder.setPublicUrl(config.getPublicUrl());
+    }
+
+    return builder.build();
+  }
+
+  @NotNull
   Mica.MicaConfigDto asDto(@NotNull MicaConfig config) {
     Mica.MicaConfigDto.Builder builder = Mica.MicaConfigDto.newBuilder() //
       .setName(config.getName()) //

@@ -197,6 +197,11 @@ public class Dtos {
   }
 
   @NotNull
+  public Mica.PublicMicaConfigDto asPublicDto(@NotNull MicaConfig micaConfig) {
+    return micaConfigDtos.asPublicDto(micaConfig);
+  }
+
+  @NotNull
   public MicaConfig fromDto(@NotNull MicaConfigDtoOrBuilder dto) {
     return micaConfigDtos.fromDto(dto);
   }
