@@ -100,11 +100,17 @@
 
     <p class="help-block" translate>data-access-config.pdf-template.info</p>
 
-    <attachment-input files="dataAccessForm.pdfTemplates" accept="application/pdf" multiple="false"></attachment-input>
+    <uib-tabset>
+      <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" disable="tab.disabled">
+        <div class="voffset2"></div>
+        <attachment-input files="pdfTemplates[tab.lang]" accept="*.pdf" multiple="false"></attachment-input>
+      </uib-tab>
+    </uib-tabset>
 
     <div class="help-block">
       <span>{{'allowed-file-types' | translate}}<span><strong>{{fileTypes}}</strong></span></span>
     </div>
+
   </div>
 
   <div ng-show="tab.name === 'settings'">

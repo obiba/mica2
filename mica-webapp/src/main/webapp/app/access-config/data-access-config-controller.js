@@ -13,6 +13,7 @@
 mica.dataAccessConfig
 
   .controller('DataAccessConfigController', ['$rootScope', '$location', '$scope', '$log',
+    'MicaConfigResource',
     'DataAccessFormResource',
     'DataAccessFormService',
     'DataAccessFormPermissionsResource',
@@ -20,6 +21,7 @@ mica.dataAccessConfig
     'AlertService',
     'ServerErrorUtils',
     function ($rootScope, $location, $scope, $log,
+              MicaConfigResource,
               DataAccessFormResource,
               DataAccessFormService,
               DataAccessFormPermissionsResource,
@@ -29,13 +31,30 @@ mica.dataAccessConfig
 
       DataAccessFormService.configureAcePaths();
 
+      MicaConfigResource.get(function (micaConfig) {
+        $scope.tabs = [];
+        micaConfig.languages.forEach(function (lang) {
+          $scope.tabs.push({lang: lang});
+        });
+      });
+
+      $scope.pdfTemplates = {};
+
       var saveForm = function() {
 
         switch (DataAccessFormService.isFormValid($scope.form)) {
           case DataAccessFormService.ParseResult.VALID:
             $scope.dataAccessForm.definition = $scope.form.definition;
             $scope.dataAccessForm.schema = $scope.form.schema;
-            $scope.dataAccessForm.pdfTemplates = $scope.dataAccessForm.pdfTemplates || [];
+            $scope.dataAccessForm.pdfTemplates = [];
+
+            for (var lang in $scope.pdfTemplates) {
+              for (var i = $scope.pdfTemplates[lang].length; i--;) {
+                $scope.pdfTemplates[lang][i].lang = lang;
+              }
+
+              $scope.dataAccessForm.pdfTemplates = $scope.dataAccessForm.pdfTemplates.concat($scope.pdfTemplates[lang]);
+            }
 
             DataAccessFormResource.save($scope.dataAccessForm,
               function () {
@@ -132,6 +151,12 @@ mica.dataAccessConfig
           $scope.form.schema = DataAccessFormService.prettifyJson($scope.form.schemaJson);
           $scope.dataAccessForm = dataAccessForm;
           $scope.dataAccessForm.pdfTemplates = $scope.dataAccessForm.pdfTemplates || [];
+
+          $scope.pdfTemplates = $scope.dataAccessForm.pdfTemplates.reduce(function(s, file) {
+            s[file.lang] = [file];
+            return s;
+          }, {});
+
           selectTab('form-schema');
 
           if ($scope.form.definitionJson.length === 0) {
