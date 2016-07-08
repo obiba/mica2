@@ -180,24 +180,24 @@ mica.project
         });
         $scope.languages = micaConfig.languages;
         var formLanguages = {};
-        micaConfig.languages.forEach(function(loc) {
+        micaConfig.languages.forEach(function (loc) {
           formLanguages[loc] = $filter('translate')('language.' + loc);
         });
-        $scope.sfOptions = {formDefaults: { languages: formLanguages}};
+        $scope.sfOptions = {formDefaults: {languages: formLanguages}};
         $scope.roles = micaConfig.roles;
         $scope.openAccess = micaConfig.openAccess;
-      });
 
-      ProjectFormResource.get(
-        function onSuccess(projectForm) {
-          var definition = JsonUtils.parseJsonSafely(projectForm.definition, []);
-          definition.unshift(angular.copy(PROJECT_DEFINITION));
-          $scope.form.definition = LocalizedSchemaFormService.translate(definition);
-          var schema = JsonUtils.parseJsonSafely(projectForm.schema, {});
-          schema.properties._mica = angular.copy(PROJECT_SCHEMA);
-          schema.readonly = true;
-          $scope.form.schema = LocalizedSchemaFormService.translate(schema);
-        });
+        ProjectFormResource.get(
+          function onSuccess(projectForm) {
+            var definition = JsonUtils.parseJsonSafely(projectForm.definition, []);
+            definition.unshift(angular.copy(PROJECT_DEFINITION));
+            $scope.form.definition = LocalizedSchemaFormService.translate(definition);
+            var schema = JsonUtils.parseJsonSafely(projectForm.schema, {});
+            schema.properties._mica = angular.copy(PROJECT_SCHEMA);
+            schema.readonly = true;
+            $scope.form.schema = LocalizedSchemaFormService.translate(schema);
+          });
+      });
 
       $scope.projectId = $routeParams.id;
       $scope.project = DraftProjectResource.get({id: $routeParams.id}, initializeProject);
@@ -392,20 +392,19 @@ mica.project
           formLanguages[loc] = $filter('translate')('language.' + loc);
         });
         $scope.sfOptions = {formDefaults: { languages: formLanguages}};
+        ProjectFormResource.get(
+          function onSuccess(projectForm) {
+            var definition = JsonUtils.parseJsonSafely(projectForm.definition, []);
+            definition.unshift(angular.copy(PROJECT_DEFINITION));
+            $scope.form.definition = LocalizedSchemaFormService.translate(definition);
+            var schema = JsonUtils.parseJsonSafely(projectForm.schema, {});
+            schema.properties._mica = angular.copy(PROJECT_SCHEMA);
+            $scope.form.schema = LocalizedSchemaFormService.translate(schema);
+            if (!$routeParams.id) {
+              $scope.form.model = {};
+            }
+          });
       });
-
-      ProjectFormResource.get(
-        function onSuccess(projectForm) {
-          var definition = JsonUtils.parseJsonSafely(projectForm.definition, []);
-          definition.unshift(angular.copy(PROJECT_DEFINITION));
-          $scope.form.definition = LocalizedSchemaFormService.translate(definition);
-          var schema = JsonUtils.parseJsonSafely(projectForm.schema, {});
-          schema.properties._mica = angular.copy(PROJECT_SCHEMA);
-          $scope.form.schema = LocalizedSchemaFormService.translate(schema);
-          if (!$routeParams.id) {
-            $scope.form.model = {};
-          }
-        });
 
       $scope.save = function () {
         $scope.$broadcast('schemaFormValidate');
