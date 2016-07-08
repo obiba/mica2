@@ -483,7 +483,7 @@
     },
     "search": {
       "member": "Trouver un {{type}} existant",
-      "placeholder": "Rechercher par prénom, nom ou institution..."
+      "placeholder": "Chercher par prénom, nom ou institution..."
     },
     "title": "Titre",
     "firstName": "Prénom",
@@ -529,771 +529,772 @@
     "options": "Options",
     "network": {
       "title": "Réseau",
-      "info": "Un réseau lié a cet ensembke de données."
+      "info": "Un réseau lié a cet ensemble de données."
     },
     "study-table": {
-      "title": "Study Table",
-      "info": "A study table defines which study data collection event it applies to and which Opal table the variables and data summaries are to be extracted from."
+      "title": "Table d'étude",
+      "info": "La table d'étude définie à quel événement de collecte elle s'applique et à partir de quelle table Opal il faut extraire les variables et les données sommaires"
     },
     "study-tables": {
-      "title": "Study Tables",
-      "info": "The study tables define implementations of the Data Schema variables. The data summaries will be extracted from the corresponding Opal tables."
+      "title": "Tables d'étude",
+      "info": "Les tables d'étude définissent les implémentations des variables du schéma de données. Les sommaires de données seront extraites des tables Opal correspondantes."
     },
     "restore-dialog": {
-      "title": "Restoring Dataset from Revision",
-      "message": "Are you sure you want to restore this revision from '{{arg0}}'?"
+      "title": "Restaurer un ensemble de données à partir d'une révision",
+      "message": "Etes-vous sûr vouloir restaurer cette révision de '{{arg0}}'?"
     },
-    "project": "Project",
-    "project-help": "Project name from the study's Opal server (if this one is defined, otherwise the project is expected to be found in Opal primary server).",
-    "project-dataschema-help": "Project name from the Opal primary server.",
+    "project": "Projet",
+    "project-help": "Nom du projet à partir du serveur Opal de l'étude (si celle-ci est définie, sinon le projet devrait être trouvé dans le serveur Opal primaire).",
+    "project-dataschema-help": "Nom du projet à partir du serveur Opal primaire.",
     "table": "Table",
-    "table-help": "Opal table name from which variables and data summaries will be extracted.",
-    "table-dataschema-help": "Project's table name from which variables will be extracted.",
-    "table-name": "Name",
+    "table-help": "Nom de la table Opal à partir de laquelle les variables et les données sommaires seront extraits.",
+    "table-dataschema-help": "Le nom de la table de projet à partir de laquelle les variables seront extraits.",
+    "table-name": "Nom",
     "table-description": "Description",
     "data-schema": {
-      "title": "Data Schema",
-      "info": "The variables of the Data Schema are the reference variables of the Harmonization dataset. This is a simple data dictionary: no data summaries will be extracted from the Opal table."
+      "title": "Schéma de données",
+	  "Info": "Les variables du schéma de données sont les variables de référence de l'ensemble de données harmonisé. Ceci est un dictionnaire de données simple: aucune donnée sommaire ne sera extraite de la table Opal."
     },
     "index": "Index",
-    "add-study-table": "Add Study Table",
-    "none": "No datasets.",
+    "add-study-table": "Ajouter une table d'étude",
+    "none": "Aucun ensemble de données.",
     "crosstab": {
-      "title": "Contingency Table",
-      "categorical": "Select a categorical variable...",
-      "another": "Select another variable...",
-      "query-help": "Displays the multivariate frequency distribution of selected variables.",
-      "privacy-check-failed": "To prevent disclosure risk, results in the table above are not shown because at least one cell has between 1 to {{arg0}} observations.",
-      "total-privacy-check-failed": "To prevent disclosure risk, results in the table above are not shown because at least one category has between 1 to {{arg0}} observations.",
+      "title": "Table de contingence",
+      "categorical": "Sélectionner une variable catégorielle...",
+      "another": "Sélectionner une autre variable...",
+      "query-help": "Affiche la distribution de fréquence multivariée des variables sélectionnées.",
+      "privacy-check-failed": "Afin d'éviter tout risque de divulgation, les résultats dans la table ci-dessus ne sont pas représentés car au moins une cellule a entre 1 à {{arg0}} observations.",
+      "total-privacy-check-failed": "Afin d'éviter tout risque de divulgation, les résultats dans la table ci-dessus ne sont pas représentés car au moins une catégorie a entre 1 à {{arg0}} observations.",
       "chi-squared": {
         "test": "Chi-Squared Test"
       }
     }
   },
-  "attributes": "Attributes",
+  "attributes": "Attributs",
   "attribute": {
-    "add-attribute": "Add Attribute",
-    "edit-attribute": "Edit Attribute"
+    "add-attribute": "Ajouter un attribut",
+    "edit-attribute": "Éditer un attribut"
   },
   "population": {
-    "label-edit": "Edit Population",
+    "label-edit": "Éditer une population",
     "id": "ID",
-    "name": "Name",
-    "info": "Supplementary information",
+    "name": "Nom",
+    "info": "Information supplementaire",
     "description": "Description",
-    "gender": "Gender",
-    "ageMin": "Minimum age",
-    "ageMax": "Maximum age",
-    "otherCriteria": "Other criteria",
-    "add-health-status-help": "Add health status",
-    "add-ethnic-origin-help": "Add ethnic origin",
-    "add-data-collection-event": "Add Data Collection Event",
-    "countries": "Countries ISO",
-    "numberOfParticipants-noLimit": "No limit"
+    "gender": "Genre",
+    "ageMin": "Age minimum",
+    "ageMax": "Age maximum",
+    "otherCriteria": "Autres critères",
+    "add-health-status-help": "Ajouter un état de santé",
+    "add-ethnic-origin-help": "Ajouter une origine ethnique",
+    "add-data-collection-event": "Ajouter un événement de collecte de données",
+    "countries": "Pays ISO",
+    "numberOfParticipants-noLimit": "Aucune limite"
   },
   "data-collection-event": {
-    "label-edit": "Edit Data Collection Event",
+    "label-edit": "Éditer un événement de collecte de données",
     "id": "ID",
-    "name": "Name",
+    "name": "Nom",
     "description": "Description",
-    "start-year": "Start Year",
-    "start-month": "Start Month",
-    "end-year": "End Year",
-    "end-month": "End Month",
-    "data-sources": "Data sources",
-    "other-data-sources": "Other data sources",
-    "bio-samples": "Biological samples",
-    "other-bio-samples": "Other biological samples",
-    "admin-databases": "Administrative databases",
-    "tissue-types": "Tissue types",
-    "delete-dialog-title": "Delete Data Collection Event",
-    "delete-dialog-message": "Are you sure you want to delete the collection event?"
+    "start-year": "Année de début",
+    "start-month": "Mois de début",
+    "end-year": "Année de fin",
+    "end-month": "Mois de fin",
+    "data-sources": "Sources de données",
+    "other-data-sources": "Autres sources de données",
+    "bio-samples": "Échantillons biologiques",
+    "other-bio-samples": "Autres échantillons biologiques",
+    "admin-databases": "Bases de données dministratives",
+    "tissue-types": "Types de tissus",
+    "delete-dialog-title": "Supprimer un événement de collecte de données",
+    "delete-dialog-message": "Êtes-vous sûr de vouloir supprimer l'événement de collecte?"
   },
-  "study-datasets": "Study Datasets",
-  "study-dataset": "Study Dataset",
-  "harmonization-datasets": "Harmonization Datasets",
-  "harmonization-dataset": "Harmonization Dataset",
+  "study-datasets": "Ensembles de données d'étude",
+  "study-dataset": "Ensemble de données d'étude",
+  "harmonization-datasets": "Ensembles de données harmonisé",
+  "harmonization-dataset": "Ensemble de données harmonisé",
   "network": {
-    "name": "Name",
+    "name": "Nom",
     "logo": "Logo",
-    "acronym": "Acronym",
-    "add": "Add Network",
-    "label-edit": "Edit Network",
-    "general-info": "General Information",
+    "acronym": "Acronyme",
+    "add": "Ajouter un réseau",
+    "label-edit": "Éditer un réseau",
+    "general-info": "Information générale",
     "description": "Description",
     "index": "Index",
-    "label": "Network",
-    "add-study": "Add Study",
+    "label": "Réseau",
+    "add-study": "Ajouter une étude",
     "contacts": "Contacts",
-    "associated-people": "Affiliated Members",
-    "add-member": "Add {{type}}",
-    "member-list": "List of {{type}}",
+    "associated-people": "Membres affiliés",
+    "add-member": "Ajouter {{type}}",
+    "member-list": "Liste de {{type}}",
     "delete-dialog": {
-      "title": "Delete Network",
-      "message": "Are you sure you want to delete the network '{{arg0}}'?"
+      "title": "Supprimer un réseau",
+      "message": "Etes-vous sûr de vouloir supprimer le réseau '{{arg0}}'?"
     },
     "study-delete-dialog": {
-      "title": "Delete Study",
-      "message": "Are you sure you want to delete the study '{{arg0}}'?"
+      "title": "Supprimer une étude",
+      "message": "Etes-vous sûr de vouloir supprimer l'étude '{{arg0}}'?"
     },
     "network-delete-dialog": {
-      "title": "Delete Network",
-      "message": "Are you sure you want to delete the network '{{arg0}}'?"
+      "title": "Supprimer le réseau",
+      "message": "Etes-vous sûr de vouloir supprimer le réseau '{{arg0}}'?"
     },
     "restore-dialog": {
-      "title": "Restoring Network from Revision",
-      "message": "Are you sure you want to restore this revision from '{{arg0}}'?"
+      "title": "Restaurer un réseau à partir d'une révision",
+      "message": "Etes-vous sûr de vouloir restaurer cette révision de '{{arg0}}'?"
     },
-    "none": "No networks."
+    "none": "Aucun réseau."
   },
-  "all": "All",
-  "name": "Name",
-  "acronym": "Acronym",
+  "all": "Tous",
+  "name": "Nom",
+  "acronym": "Acronyme",
   "id": "ID",
-  "size": "Size",
-  "value": "Value",
-  "values": "Values",
-  "details": "Details",
-  "namespace": "Namespace",
+  "size": "Taille",
+  "value": "Valeur",
+  "values": "Valeurs",
+  "details": "Détails",
+  "namespace": "Nom d'espace",
   "documents": "Documents",
-  "edit": "Edit",
-  "clone": "Clone",
-  "view": "View",
-  "delete": "Delete",
-  "cancel": "Cancel",
+  "edit": "Éditer",
+  "clone": "Cloner",
+  "view": "Vue",
+  "delete": "Supprimer",
+  "cancel": "Annuler",
   "ok": "OK",
   "confirmation": "Confirmation",
-  "submit": "Submit",
-  "review": "Review",
-  "reopen": "Reopen",
-  "conditionallyApprove": "Conditionally Approve",
-  "approve": "Approve",
-  "reject": "Reject",
-  "close": "Close",
-  "clear": "Clear",
-  "today": "Today",
-  "save": "Save",
-  "validate": "Validate",
-  "download": "Download",
-  "upload": "Upload",
-  "apply": "Apply",
-  "on": "On",
-  "by": "By",
-  "created-by": "Created by",
-  "created-on": "Created on",
-  "last-modified": "Last Modified",
-  "other": "Other",
+  "submit": "Soumettre",
+  "review": "Relecture",
+  "reopen": "Rouvrir",
+  "conditionallyApprove": "Approuver sous conditions",
+  "approve": "Approuver",
+  "reject": "Rejeter",
+  "close": "Fermer",
+  "clear": "Effacer",
+  "today": "Aujourd'hui",
+  "save": "Sauvegarder",
+  "validate": "Valider",
+  "download": "Télécharger",
+  "upload": "Téléverser",
+  "apply": "Appliquer",
+  "on": "Sur",
+  "by": "Par",
+  "created-by": "Créer par",
+  "created-on": "Créer sur",
+  "last-modified": "Dernière mise à jour",
+  "other": "Autre",
   "notification": "Notification",
-  "required": "Required",
-  "pattern": "Expected pattern is",
-  "suppl-info": "Supplementary Information",
-  "fix-error": "Please fix errors below",
-  "dnd-reorder": "Drag and drop to reorder",
-  "loading": "Loading...",
-  "error": "Error",
+  "required": "Requis",
+  "pattern": "Le modèle attendu est",
+  "suppl-info": "Information supplementaire",
+  "fix-error": "Veuillez corriger les erreurs ci-dessous",
+  "dnd-reorder": "Glisser-déposer pour réorganiser",
+  "loading": "Chargement...",
+  "error": "Erreur",
   "actions": "Actions",
-  "authorizer": "Authorizer",
+  "authorizer": "Autorisateur ",
   "logo": "Logo",
-  "attachments": "Attachments",
-  "no-attachments": "No attachments.",
-  "missing-files": "Files missing.",
-  "min-items": "Minimum required items is '{{arg0}}'.",
-  "allowed-file-types": "Allowed file types:",
-  "file-system": "File System",
+  "attachments": "Pièces jointes",
+  "no-attachments": "Aucune pièce jointe.",
+  "missing-files": "Fichiers manquants.",
+  "min-items": "Nombre minimum d'items requis est '{{arg0}}'.",
+  "allowed-file-types": "Types de fichiers autorisés :",
+  "file-system": "Fichier système",
   "places": "Places",
-  "homes": "Homes",
-  "home": "Home",
+  "homes": "Répertoires",
+  "home": "Répertoire",
   "total": "Total",
   "type": "Type",
-  "fullscreen": "Switch to fullscreen mode",
-  "status": "Status",
-  "changed-by": "Changed By",
-  "changed-on": "Changed On",
-  "OPENED": "Opened",
-  "SUBMITTED": "Submitted",
-  "REVIEWED": "Under Review",
-  "CONDITIONALLY_APPROVED": "Conditionally Approved",
-  "APPROVED": "Approved",
-  "REJECTED": "Rejected",
+  "fullscreen": "Passer en mode plein écran",
+  "status": "Statut",
+  "changed-by": "Changé par",
+  "changed-on": "Changé sur",
+  "OPENED": "Ouvert",
+  "SUBMITTED": "Soumis",
+  "REVIEWED": "En relecture",
+  "CONDITIONALLY_APPROVED": "Approuvé sous conditions",
+  "APPROVED": "Approuvé",
+  "REJECTED": "Rejecté",
   "date": "Date",
-  "author": "Author",
-  "user": "User",
-  "users": "Users",
-  "website": "Website",
-  "unsaved-title": "Unsaved Changes",
-  "unsaved-prompt": "Are you sure you want to leave this page? Unsaved changes will be lost.",
+  "author": "Auteur",
+  "user": "Utilisateur",
+  "users": "Utilisateurs",
+  "website": "Site Web",
+  "unsaved-title": "Modifications non sauvegardées",
+  "unsaved-prompt": "Êtes-vous sûr de vouloir quitter cette page? toute modification non sauvegardée sera perdue.",
   "search": {
-    "title": "Search",
-    "help": "Search in the published repository.",
-    "back": "Back to Search",
-    "no-results": "No result found.",
-    "no-description": "No description.",
+    "title": "Chercher",
+    "help": "Chercher dans le catalogue publié.",
+    "back": "Retour à la recherche",
+    "no-results": "Aucun résultat trouvé.",
+    "no-description": "Aucune description.",
     "placeholder": {
-      "all": "e.g. alcohol, cancer, gender, cohort, twin",
-      "variable": "e.g. alcohol, pregnancy, cancer",
-      "dataset": "Search by dataset name or type",
-      "study": "e.g. cohort, gender, twin",
-      "network": "Search by network name"
+      "all": "ex. alcool, cancer, sexe, cohorte, jumeau",
+      "variable": "ex. alcool, grossesse, cancer",
+      "dataset": "Cherche par nom ou type d'ensemble de données",
+      "study": "ex. cohorte, sexe, jumeau",
+      "network": "Cherche par nom de réseau"
     },
-    "classifications-show": "Show detailed classifications",
-    "list": "List",
+    "classifications-show": "Afficher les classifications détaillées",
+    "list": "Liste",
     "list-help": "",
-    "coverage": "Coverage",
+    "coverage": "Couverture",
     "coverage-help": "",
-    "graphics": "Graphics",
+    "graphics": "Graphiques",
     "graphics-help": "",
-    "any": "any",
-    "any-help": "Any value",
-    "none": "none",
-    "none-help": "Missing value",
-    "in": "in",
-    "in-help": "Value is in at least one of the selected terms",
-    "contains": "contains",
-    "contains-help": "Value contains all the selected terms",
-    "advanced": "Advanced",
-    "advanced-help": "Show logical operators",
-    "basic": "Basic",
-    "basic-help": "Hide logical operators",
-    "no-coverage": "Select some variable search criteria to see their corresponding coverage.",
+    "any": "Tout",
+    "any-help": "Toute valeur",
+    "none": "Aucun",
+    "none-help": "Valeur manquante",
+    "in": "Dans",
+    "in-help": "La valeur est dans au moins un des termes sélectionnés",
+    "contains": "contient",
+    "contains-help": "La Valeur contient tous les termes sélectionnés",
+    "advanced": "Avancée",
+    "advanced-help": "Afficher les opérateurs logiques",
+    "basic": "Basique",
+    "basic-help": "Cacher les opérateurs logiques",
+    "no-coverage": "Sélectionnez des critères de recherche de variables pour voir leur couverture correspondante.",
     "coverage-dce-cols": {
-      "study": "Study",
+      "study": "Étude",
       "population": "Population",
-      "dce": "DCE"
+      "dce": "ECD"
     },
-    "coverage-hide-missing": "Hide missing",
-    "coverage-show-missing": "Show missing",
-    "coverage-group-by": "Group by",
+    "coverage-hide-missing": "Cacher manquant",
+    "coverage-show-missing": "Afficher manquant",
+    "coverage-group-by": "Grouper par",
     "coverage-buckets": {
-      "datasetNav": "Dataset",
-      "study" : "Study",
-      "dce" : "Data Collection Event (DCE)",
-      "network" : "Network",
-      "dataschema": "Harmonization Dataset",
-      "dataset": "Study Dataset"
+      "datasetNav": "Ensemble de données",
+      "study" : "Étude",
+      "dce" : "Événement de collecte de données (ECD)",
+      "network" : "Réseau",
+      "dataschema": "Ensemble de données Harmonisé",
+      "dataset": "Ensemble de données d'étude"
     },
     "coverage-select": {
-      "all": "All",
-      "none": "None",
-      "full": "Full coverage"
+      "all": "Tous",
+      "none": "Aucun",
+      "full": "Couverture complète"
     },
     "study": {
-      "facet-label": "Study",
-      "label": "Study",
-      "noResults": "No study found",
-      "dataSources": "Data sources available",
+      "facet-label": "Étude",
+      "label": "Étude",
+      "noResults": "Aucune étude trouvée",
+      "dataSources": "Sources de données disponibles",
       "quest": "Quest",
-      "pm": "PM",
+      "pm": "MP",
       "bio": "Bio",
-      "others": "Others",
-      "design": "Study design",
+      "others": "Autres",
+      "design": "Conception de l'étude",
       "participants": "Participants"
     },
     "dataset": {
-      "facet-label": "Dataset",
-      "label": "Dataset",
-      "noResults": "No dataset found"
+      "facet-label": "Ensemble de données",
+      "label": "Ensemble de données",
+      "noResults": "Aucun ensemble de données trouvé"
     },
     "variable": {
       "facet-label": "Variable",
-      "label": "Label",
-      "studyNetwork": "Study/Network",
-      "noResults": "No variable found",
-      "study": "Study",
-      "dataschema": "DataSchema"
+      "label": "Étiquette",
+      "studyNetwork": "Étude/Réseau",
+      "noResults": "Aucune variable trouvée",
+      "study": "Étude",
+      "dataschema": "Schéma de données"
     },
     "network": {
-      "facet-label": "Network",
-      "noResults": "No network found"
+      "facet-label": "Réseau",
+      "noResults": "Aucun réseau trouvé"
     },
-    "harmonization": "Harmonization",
-    "network-where": "Networks where...",
-    "study-where": "Studies where...",
-    "dataset-where": "Datasets where...",
-    "variable-where": "Variables where...",
+    "harmonization": "Harmonisation",
+    "network-where": "Réseaux où...",
+    "study-where": "Studies où...",
+    "dataset-where": "Datasets où...",
+    "variable-where": "Variables où...",
     "match":{
-      "placeholder": "Enter text to search..."
+      "placeholder": "Entrez le texte à rechercher..."
     },
-    "filter": "Filter",
-    "close-and-search": "Close and search",
+    "filter": "Filtre",
+    "close-and-search": "Fermer et chercher",
     "criterion": {
-      "created": "Criteria <strong>{{arg0}} ({{arg1}})</strong> was added.",
-      "updated": "Criteria <strong>{{arg0}} ({{arg1}})</strong> was updated."
+      "created": "Le critère <strong>{{arg0}} ({{arg1}})</strong> a été ajouté.",
+      "updated": "Le critère <strong>{{arg0}} ({{arg1}})</strong> a été mis à jour."
     },
     "taxonomy-nav-help": "",
     "vocabulary-nav-help": "",
     "classifications-link": "",
     "classifications-title": "",
-    "faceted-navigation-help": "Select an entry from the menu on the left to start browsing in the repository.",
+    "faceted-navigation-help": "Sélectionnez une entrée dans le menu de gauche pour naviguer dans le catalogue.",
     "facet": {
-      "more": "More",
-      "less": "Less"
+      "more": "Plus",
+      "less": "Mois"
     }
   },
   "variables": "Variables",
   "classifications": {
     "title": "Classifications",
-    "help": "Navigate the classification system and select the search criteria."
+    "help": "Naviguer dans le système de classification et sélectionner les critères de recherche."
   },
   "all-null-classifications": "",
-  "all-variable-classifications": "All variable classifications",
-  "all-dataset-classifications": "All dataset classifications",
-  "all-study-classifications": "All study classifications",
-  "all-network-classifications": "All network classifications",
-  "no-classifications": "No classifications found",
-  "variable-classifications": "Variable classifications",
-  "dataset-classifications": "Dataset classifications",
-  "study-classifications": "Study classifications",
-  "network-classifications": "Network classifications",
-  "add-query": "Add to query",
-  "permissions": "Permissions",
+  "all-variable-classifications": "Toutes les classifications de variables",
+  "all-dataset-classifications": "Toutes les classifications d'ensemble de données",
+  "all-study-classifications": "Toutes les classifications d'étude",
+  "all-network-classifications": "Toutes les classifications de réseau",
+  "no-classifications": "Aucune classification trouvée",
+  "variable-classifications": "Classifications de variables",
+  "dataset-classifications": "Classifications d'ensemble de données",
+  "study-classifications": "Classifications d'étude",
+  "network-classifications": "Classifications de réseau",
+  "add-query": "Ajouter à la requête",
+  "permissions": "Autorisations",
   "permission": {
-    "help": "Grant permission to <code>Read</code>, <code>Edit</code> or <code>Review</code> the current draft.",
-    "none": "No permissions.",
-    "label": "permission",
-    "principal": "Name",
-    "principal-help": "User or group unique name.",
-    "anyone": "Anyone",
-    "any-group": "Any group",
-    "add": "Add Permission",
-    "edit-user": "Edit User Permission",
-    "edit-group": "Edit Group Permission",
-    "user": "User",
-    "group": "Group",
-    "reader": "Reader",
-    "reader-help": "Read-only access to the document in draft mode with its revisions and its associated files.",
-    "reader-config-help": "Read-only access to the {{arg0}} with their revisions and their associated files.",
-    "editor": "Editor",
-    "editor-help": "Edit access to the document in draft mode with its revisions and its associated files. Publication or permanent deletion are not permitted.",
-    "reviewer": "Reviewer",
-    "reviewer-help": "Full access to the document, including its publication, permanent deletion and permissions.",
-    "file-access": "Apply Read access to all associated files",
+    "help": "Accorder l'autorisation pour <code>Lire</code>, <code>Éditer</code> ou <code>Relire</code> le brouillon actuel.",
+    "none": "Aucune autorisation.",
+    "label": "Autorisation",
+    "principal": "Nom",
+    "principal-help": "Nom unique d'un utilisateur ou d'un groupe.",
+    "anyone": "Tout utilisateur",
+    "any-group": "Tout groupe",
+    "add": "Ajouter une autorisation",
+    "edit-user": "Éditer l'autorisation de l'utilisateur",
+    "edit-group": "Éditer l'autorisation du groupe",
+    "user": "Utilisateur",
+    "group": "Groupe",
+    "reader": "Lecteur",
+    "reader-help": "Accès en lecture seule au document en mode brouillon avec ses révisions et ses fichiers associés.",
+    "reader-config-help": "Accès en lecture seule aux {{arg0}} avec leurs révisions et leurs fichiers associés.",
+    "editor": "Éditeur",
+    "editor-help": "Modifier l'accès au document en mode brouillon avec ses révisions et ses fichiers associés. La publication ou la suppression permanente ne sont pas autorisés.",
+    "reviewer": "Relecteur",
+    "reviewer-help": "Accès total au document, sa publication, la suppression permanente et les autorisations.",
+    "file-access": "Appliquer un accès en lecture à tous les fichiers associés",
     "delete-dialog": {
-      "title": "Delete Permission",
-      "message": "Are you sure you want to delete the permission of {{arg0}} {{arg1}}"
+      "title": "Supprimer l'autorisation",
+      "message": "Etes-vous sûr de vouloir supprimer l'autorisation de {{arg0}} {{arg1}}"
     }
   },
   "access": {
-    "help": "Grant Read access to the publication.",
-    "none": "No accesses.",
-    "add": "Add Access",
-    "principal-help": "User or group unique name. Use wildcard * for specifying anyone or any group.",
+    "help": "Accorder l'accès en lecture à la publication.",
+    "none": "Aucun accès.",
+    "add": "Ajouter un accès",
+    "principal-help": "Nom unique d'utilisateur ou de groupe. Utiliser un astérisque * pour spécifier tout utilisateur ou groupe.",
     "delete-dialog": {
-      "title": "Delete Access",
-      "message": "Are you sure you want to delete the access of {{arg0}} {{arg1}}"
+      "title": "Supprimer l'accès",
+      "message": "Etes-vous sûr de vouloir supprimer l'accès de {{arg0}} {{arg1}}"
     }
   },
-  "draft": "Draft",
-  "published": "Published",
-  "role": "Role",
-  "files": "Files",
+  "draft": "Brouillon",
+  "published": "Publié",
+  "role": "Rôle",
+  "files": "Fichiers",
   "items": "items",
   "item": "item",
-  "select-all": "Select all",
-  "clear-selection": "Clear",
-  "items-selected": "items selected",
-  "item-selected": "item selected",
-  "files-selected": "files selected",
-  "file-selected": "file selected",
-  "form": "Form",
-  "settings": "Settings",
-  "other-settings": "Other Settings",
-  "revisions": "Revisions",
-  "revision": "Revision",
-  "revision-date": "Revision Date",
-  "comment-label": "Comment",
-  "restore": "Restore",
-  "history": "History",
-  "new-folder": "New Folder",
-  "new-network": "New Network",
-  "new-study": "New Study",
-  "new-study-dataset": "New Study Dataset",
-  "new-harmonization-dataset": "New Harmonization Dataset",
-  "new-data-access-request": "New Data Access Request",
-  "new-project": "New Research Project",
+  "select-all": "Sélectionner tout",
+  "clear-selection": "Effacer",
+  "items-selected": "items sélectionnés",
+  "item-selected": "item sélectionné",
+  "files-selected": "fichiers sélectionnés",
+  "file-selected": "fichier sélectionné",
+  "form": "De",
+  "settings": "Paramètres",
+  "other-settings": "Autres paramètres",
+  "revisions": "Révisions",
+  "revision": "Révision",
+  "revision-date": "Date de révision",
+  "comment-label": "Commentaire",
+  "restore": "Restaurer",
+  "history": "Historique",
+  "new-folder": "Nouveau dossier",
+  "new-network": "Nouveau réseau",
+  "new-study": "Nouvelle étude",
+  "new-study-dataset": "Nouvel ensemble de données d'étude",
+  "new-harmonization-dataset": "Nouvel ensemble de données harmonisé",
+  "new-data-access-request": "Nouvelle demande d'accès aux données",
+  "new-project": "Nouveau projet de recherche",
   "description": "Description",
-  "help": "Help",
-  "general": "General",
+  "help": "Aide",
+  "general": "Général",
   "configuration": "Configuration",
-  "security": "Security",
-  "data-management": "Data Management",
-  "data-access": "Data Access",
-  "research": "Research",
-  "properties": "Properties",
-  "searching": "Searching",
-  "search-results": "Search results",
-  "most-recent": "Most Recent",
-  "not-published": "Not Published",
-  "path": "Path",
-  "view-files": "View files",
-  "empty-folder": "Empty folder",
+  "security": "Sécurité",
+  "data-management": "Gestion de données",
+  "data-access": "Accès aux données",
+  "research": "Recherche",
+  "properties": "Propriétés",
+  "searching": "Chercher",
+  "search-results": "Résultats de recherche",
+  "most-recent": "Le plus récent",
+  "not-published": "Non publié",
+  "path": "Chemin",
+  "view-files": "Afficher les fichiers",
+  "empty-folder": "Dossier vide",
   "search-tooltip": {
-    "recursively": "Search recursively",
-    "clear": "Clear search",
-    "under-review": "Search files under review",
-    "deleted": "Search deleted files",
-    "most-recent": "Search 10 most recently modified files",
-    "not-published": "Search not published files"
+    "recursively": "Recherche récursive",
+    "clear": "Effacer la recherche",
+    "under-review": "Chercher les fichiers en relecture",
+    "deleted": "Cherche les fichiers supprimés",
+    "most-recent": "Chercher les 10 derniers fichiers modifiés",
+    "not-published": "Chercher les fichiers non publiés"
   },
   "admin-page": {
     "help": {
-      "general": "Configure Opal server, locale and server properties.",
-      "notifications": "Notification emails can be sent to relevant users and groups.",
-      "style": "Override the default style with your own stylesheet.",
-      "security": "Configure encryption and Opal server credentials.",
-      "metrics": "View JVM and HTTP metrics.",
-      "logs": "Configure server logs.",
-      "caching": "Manage server caches.",
-      "indexing": "Manage server indices.",
-      "data-access-config": "Configure Data Access Request form.",
-      "project-config": "Configure Research Project form.",
-      "file-system": "Manage file system.",
-      "search": "Search in the published repository.",
-      "classifications": "Browse taxonomies.",
-      "translations": "Manage labels translations."
+      "general": "Configurer les propriétés locales et serveur du server Opal.",
+      "notifications": "e-mails de notification peuvent être envoyés aux utilisateurs et aux groupes concernés.",
+      "style": "Remplacer le style par défaut avec votre propre style.",
+      "security": "Configurer le chiffrement et les certificats du server Opal.",
+      "metrics": "Voir la JVM et les paramètres HTTP.",
+      "logs": "Configurer les logs du server.",
+      "caching": "Gérer les caches du serveur.",
+      "indexing": "Gérer les index du serveur.",
+      "data-access-config": "Configurer le formulaire de demande d'accès aux données.",
+      "project-config": "Configurer le formulaire de projet de recherche.",
+      "file-system": "Gérer le système de fichiers.",
+      "search": "Chercher dans le catalogue publié.",
+      "classifications": "Parcourir les taxonomies.",
+      "translations": "Gérer les traductions de d'étiquettes."
     }
   },
   "server": {
     "error": {
-      "403": "Server rejected your request, please make sure you are logged in and try again.",
+      "403": "Le serveur a rejeté votre demande, veuillez vous assurer que vous êtes connecté et essayez de nouveau.",
       "409": {
         "network": {
-          "delete-conflict": "Conflict deleting network",
-          "delete-conflict-message": "Found conflicts when trying to delete network. Remove all references from the following networks: {{arg0}}"
+          "delete-conflict": "Conflit lors de la suppression du réseau",
+          "delete-conflict-message": "Conflits lors de suppression de réseau. Supprimez toutes les références vers les réseaux suivants: {{arg0}}"
         }
       }
     }
   },
   "file": {
     "upload": {
-      "button": "Choose file",
-      "message": "No file chosen"
+      "button": "Choisir un fichier",
+      "message": "Aucun fichier choisi"
     },
-    "invalid-paste": "You can not paste in the same path.",
+    "invalid-paste": "Vous ne pouvez pas coller dans le même chemin d'accès.",
     "search-results": {
-      "current": "Search results in current folder",
-      "current-sub": "Search results in current folder and sub-folders"
+      "current": "Résultats de recherche dans le dossier courant",
+      "current-sub": "Résultats de recherche dans le dossier courant et ses sous-dossiers"
     }
   },
-  "data-access-requests": "Data Access Requests",
+  "data-access-requests": "Demandes d'accès aux données",
   "data-access-request": {
-    "applicant": "Applicant",
-    "title": "Title",
-    "title-help": "Short summary to help identifying the request.",
-    "status": "Status",
-    "lastUpdate": "Last Update",
-    "submissionDate": "Submission Date",
-    "none": "No data access requested.",
-    "add": "Add Data Access Request",
-    "edit": "Edit Data Access Request",
-    "form": "Application Form",
-    "documents": "Additional Documents",
-    "documents-help": "Select one or more documents to be attached to the data access request.",
-    "no-documents": "No documents.",
-    "edit-documents": "Add/Remove Files",
-    "select-status": "Select a Status",
-    "comments": "Comments",
-    "history": "History",
-    "status-placeholder": "Filter by status",
+    "applicant": "Demandeur",
+    "title": "Titre",
+    "title-help": "Bref résumé pour aider à identifier la demande.",
+    "status": "Statut",
+    "lastUpdate": "Dernière mise à jour",
+    "submissionDate": "Date de soumission",
+    "none": "Aucun accès de données demandé.",
+    "add": "Ajouter une demande d'accès aux données",
+    "edit": "Éditer une demande d'accès aux données",
+    "form": "Formulaire de demande",
+    "documents": "Documents additionnels",
+    "documents-help": "Sélectionner un ou plusieurs documents à joindre à la demande d'accès aux données.",
+    "no-documents": "Aucun document.",
+    "edit-documents": "Ajout/Suppression de fichiers",
+    "select-status": "Sélectionnez un statut",
+    "comments": "Commentaires",
+    "history": "Historique",
+    "status-placeholder": "Filtrer par statut",
     "histories": {
-      "opened":   "Opened",
-      "submitted": "Submitted",
-      "reopened":  "Re-opened",
-      "reviewed":  "Reviewed",
-      "approved":  "Approved",
-      "rejected":  "Rejected",
-      "conditionallyApproved": "Conditionally approved"
+      "opened":   "Ouverte",
+      "submitted": "Soumise",
+      "reopened":  "Rouverte",
+      "reviewed":  "Révisée",
+      "approved":  "Approvée",
+      "rejected":  "Rejetée",
+      "conditionallyApproved": "Approuvé sous conditions"
     },
     "delete-dialog": {
-      "title": "Delete Data Access Request",
-      "message": "Are you sure you want to delete Data Access '{{arg0}}' request by '{{arg1}}'?"
+      "title": "Supprimer la demande d'accès aux données",
+      "message": "Etes-vous sûr de vouloir supprimer l'accès aux données '{{arg0}}' demandé par '{{arg1}}'?"
     },
     "submit": {
-      "invalid": "The request cannot be submitted because of an incomplete application form."
+      "invalid": "La demande ne peut être soumise en raison d'un formulaire de demande incomplet."
     },
     "validation": {
-      "title-success": "Valid Form",
-      "title-error": "Invalid Form",
-      "success": "Your request form is complete and ready to be submitted.",
-      "error": "Your request form is incomplete, please correct the errors."
+      "title-success": "Formulaire valide",
+      "title-error": "Formulaire invalide",
+      "success": "Votre formulaire de demande est complet et est prêt à être soumis.",
+      "error": "Votre formulaire de demande est incomplet, veuillez corriger les erreurs."
     },
     "status-change-confirmation": {
-      "title": "Status Change Confirmation",
-      "message": "Are you sure you want to {{arg0}} this access request?",
-      "message-review": "Are you sure you want to put this access request under review?"
+      "title": "Confirmation de changement d'état",
+      "message": "Êtes-vous sûr de vouloir {{arg0}} cette demande d'accès?",
+      "message-review": "Êtes-vous sûr de vouloir mettre cette demande d'accès en révision?"
     },
     "submit-confirmation": {
-      "title": "Form Submitted",
-      "message": "Your access form was successfully submitted."
+      "title": "Formulaire Soumis",
+      "message": "Votre formulaire d'accès a été soumis avec succès."
     },
     "profile" :{
-      "title" : "Profile utilisateur",
+      "title" : "Profil utilisateur",
       "name" : "Nom",
       "send-email" : "Envoyer un courriel",
       "email" : "Courriel"
     },
-    "parse-error": "Form content is not a valid document, please contact your administrator for more help.",
+    "parse-error": "Le contenu du formulaire n'est pas un document valide, veuillez contacter votre administrateur pour plus d'aide.",
     "default": {
-      "name": "Name",
-      "title": "Title",
-      "position": "Position",
-      "email": "Email",
+      "name": "Nom",
+      "title": "Titre",
+      "position": "Poste",
+      "email": "E-mail",
       "institution": "Institution",
-      "institution-email": "Institutional Email",
-      "email-alt": "Alternate Email",
-      "phone": "Telephone Number",
-      "address": "Mailing Address",
+      "institution-email": "E-mail institutionnel",
+      "email-alt": "E-mail alternatif",
+      "phone": "Numéro de téléphone",
+      "address": "Adresse postale",
       "I": {
-        "title": "Contact and Research Project Information",
+        "title": "Contact et information sur le projet de recherche",
         "A": {
-          "title": "Name, institution, and contact details of the Applicant (Principal Applicant)",
-          "info": "Please ensure that a full postal address and a valid institutional e-mail address are included. In case of more than one affiliation, applicants are asked to only provide their contact information pertaining to the institution they are affiliated with for the purpose of this research project."
-        },
+          "title": "Nom, institution, et coordonnées du demandeur (demandeur principal)",
+          "info": "Veuillez vous assurer qu'une adresse postale complète et une adresse e-mail institutionnelle valide sont incluses. Dans le cas de plus d'une affiliation, les candidats doivent fournir leurs coordonnées se rapportant uniquement à l'institution à laquelle ils sont affiliés dans le cadre de ce projet de recherche ".
+
+		  },
         "B": {
-          "title": "Name, institution, and contact details of the authorized institutional representative",
-          "info": "Please include a full postal address and a valid institutional e-mail address."
+          "title": "Nom, institution et coordonnées du représentant institutionnel autorisé",
+          "info": "Veuillez inclure une adresse postale complète et une adresse e-mail institutionnelle valide ."
         },
         "C": {
-          "title": "Title of the Research Project",
+          "title": "Titre du projet de recherche",
           "info": "",
-          "website": "Project website",
-          "website-help": "If available, please provide the address of the research project website as well."
+          "website": "Site web du projet",
+          "website-help": "Veuillez fournir l'adresse du site Web du projet de recherche, s'il y a lieu."
         },
         "D": {
-          "title": "Names of authorized personnel (within your institution)",
-          "info": "Please provide the names of all investigators, collaborators, data managers and research staff that will have access to the research data in order to work on the research project. A valid institutional e-mail address for each name along with their job title and function is also required.",
-          "check": "No personnel will require access to the research data."
+          "title": "Les noms des personnes autorisées (au sein de votre institution)",
+          "info": "Veuillez fournir les noms de tous les chercheurs, collaborateurs, gestionnaires de données et le personnel de recherche qui auront accès aux données recherche afin de travailler sur le projet. Une adresse e-mail institutionnelle valide pour chaque nom avec leur titre d'emploi et fonction sont également requis."
+          "check": "Aucun membre du personnel ne nécessite un accès aux données de recherche."
         },
         "E": {
-          "title": "Names of authorized students (within your institution)",
-          "info": "Please provide the names of all students who will have access to the research data in order to work on the project. A valid e-mail address for each name is required. Students at other institutions should not be included in this list.",
-          "check": "No students will require access to the research data."
+          "title": "Les noms des étudiants autorisés (au sein de votre institution)",
+          "info": "Veuillez fournir les noms de tous les étudiants qui auront accès aux données de recherche afin de travailler sur le projet. Une adresse e-mail valide pour chaque nom est requis. Les étudiants d'autres institutions ne devraient pas être inclus dans cette liste.",
+          "check": "Aucun étudiant ne nécessite un accès aux données de recherche."
         },
         "F": {
-          "title": "Research Project (scientific abstract)",
-          "info": "Please provide a clear scientific description of the research project, its specific aims, methodology and deliverables and how it meets our objectives, in <strong>no more than 500 words</strong>. Also, please ensure to clearly explain how our research data will be used in the research project."
+          "title": "Projet de recherche (résumé scientifique)",
+          "info": "Veuillez fournir une description scientifique claire du projet de recherche, de ses objectifs spécifiques, de sa méthodologie et ses livrables et de la façon dont il répond à nos objectifs, dans <strong> pas plus de 500 mots </strong>. Aussi, veuillez expliquer clairement comment nos données de recherche seront utilisées dans le projet de recherche."
         },
         "G": {
-          "title": "Lay summary of the project",
-          "info": "Please provide a short, accessible description of the project for the general public in <strong>no more than 200 words</strong>. Scientific jargon should be avoided to a reasonable extent. This description will be made available on the consortium public access registry and may be used in a variety of communications materials produced by the consortium (e.g. brochures, reports to stakeholders, press releases, blogs etc.)."
+          "title": "Résumé simplifié du projet",
+          "info": "Veuillez fournir une brève description du projet accessible au grand public dans <strong> pas plus de 200 mots </strong>. Le jargon scientifique doit être évité dans la mesure du possible. Cette description sera rendue disponible sur le registre d'accès public du consortium et peut être utilisée dans une variété d'outils de communication produits par le consortium (ex. brochures, rapports aux partenaires, communiqués de presse, blogs, etc.)."
         }
       },
       "documents": {
         "title": "Documents",
-        "reb-research-protocol": "Research Ethics Board approved research protocol",
-        "reb-decision-letter": "Decision letter from a Research Ethics Board",
-        "cv": "2-Page CV of the Principal Applicant",
-        "peer-review": "Proof of scientific peer-review, if available",
-        "other": "Other documents"
+        "reb-research-protocol": "Le comité d'éthique de la recherche a approuvé le protocole de recherche",
+        "reb-decision-letter": "Lettre de décision d'un comité d'éthique de la recherche",
+        "cv": "CV de 2 pages du candidat principal",
+        "peer-review": "Preuve de la révision scientifique d'un pair, s'il y a lieu",
+        "other": "Autres documents"
       },
       "signature": {
         "title": "Signature",
-        "check": "I have completed all mandatory fields, included all necessary documents, and hereby submit this application."
+        "check": "J'ai rempli tous les champs obligatoires, inclus tous les documents nécessaires, et par la présente, soumets cette demande."
       }
     }
   },
   "data-access-config": {
-    "menu": "Data Access",
-    "title": "Data Access Configuration",
-    "title-edit": "Edit Data Access Configuration",
+    "menu": "Accès aux données",
+    "title": "Configuration de l'accès aux données",
+    "title-edit": "Modifier la configuration d'accès aux données",
     "properties": {
-      "title": "Properties",
-      "info": "Some properties of the request will be extracted from the application form model according to their specified JSON field path."
+      "title": "Propriétés",
+      "info": "Certaines propriétés de la demande seront extraites du modèle de formulaire d'accès en fonction de leur chemin d'accès du champs JSON spécifié."
     },
-    "title-field": "Title Field",
-    "title-field-help": "The title of the request.",
-    "summary-field": "Summary Field",
-    "summary-field-help": "The lay summary of the request.",
-    "general-config": "General Configuration",
-    "saved": "Data Access Form is successfully updated.",
+    "title-field": "Champ Titre",
+    "title-field-help": "Le titre de la demande.",
+    "summary-field": "Champ Résumé",
+    "summary-field-help": "Le résumé simplifié du projet.",
+    "general-config": "Configuration générale",
+    "saved": "Formulaire d'accès aux données a été mis à jour avec succès.",
     "pdf-template": {
-      "title": "PDF Template",
-      "info": "The data collected in the web application form can be rendered in a PDF file. A PDF template is to be provided with field names matching the application form schema."
+      "title": "Modèle PDF",
+      "info": "Les données collectées dans le formulaire d'application Web peuvent être représentées dans un fichier PDF. Un modèle PDF doit être fourni avec les noms de champs correspondant au schéma du formulaire d'application."
     },
     "schema-form": {
-      "title": "Application Form",
-      "info": "The web application form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+      "title": "Formulaire de demande",
+      "info": "Le formulaire d'application web peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du Schema Form</a> pour plus de détails."
     },
     "schema" : {
-      "tab": "Schema",
-      "info": "The form schema specifies the data structure."
+      "tab": "Schéma",
+      "info": "Le Schema Form spécifie la structure de données."
     },
     "definition" : {
-      "tab": "Definition",
-      "info": "The form definition specifies how to display the schema and how to validate the data inputs."
+      "tab": "Définition",
+      "info": "La définition du formulaire spécifie comment afficher le schéma et comment valider les données entrées."
     },
     "preview": {
-      "model-modal": "Model Preview",
-      "tab": "Preview",
-      "show-model": "Model",
-      "test": "Test Form Validation",
-      "tested": "Form is validated successfully."
+      "model-modal": "Aperçu du modèle",
+      "tab": "Aperçu",
+      "show-model": "Modèle",
+      "test": "Test de validation du formulaire",
+      "tested": "Le formulaire est validé avec succès."
     },
     "model": {
-      "tab": "Model",
-      "info": "The form model stores the valid input data, invalid values are excluded."
+      "tab": "Modèle",
+      "info": "Le modèle de formulaire stocke les données d'entrée valides, les valeurs non valides sont exclus."
     },
     "id-generation": {
-      "title": "ID Generation",
-      "info": "The ID of the data access requests can be generated following a pattern.",
-      "prefix": "Prefix",
-      "prefix-help": "Generated IDs will start with the specified text.",
+      "title": "Generation d'ID",
+      "info": "L'ID des demandes d'accès aux données peut être généré suivant un modèle.",
+      "prefix": "Préfixe",
+      "prefix-help": "Les ID générés vont commencer avec le texte spécifié.",
       "length": "Length",
-      "length-help": "Length of the generated part of the ID (i.e. not including the prefix)."
+      "length-help": "Longueur de la partie générée de l'ID (préfixe non compris)."
     },
     "notifications": {
       "title": "Notifications",
-      "info": "Emails can be sent to applicant and data access officers when an event happens on the data access request. Events can be: status change or comment. Notification email subjects can contain the following placeholders: ${organization}, ${title} and ${id} for the request id.",
-      "submitted": "On submission",
-      "submittedSubject": "On submission email subject",
-      "submitted-help": "Email is sent to data access officers and to applicant on data access request submission.",
-      "reviewed": "On review",
-      "reviewedSubject": "On review email subject",
-      "reviewed-help": "Email is sent to applicant when its data access request is being reviewed.",
-      "approved": "On approval",
-      "approvedSubject": "On approval email subject",
-      "approved-help": "Email is sent to applicant when its data access request is approved.",
-      "rejected": "On rejection",
-      "rejectedSubject": "On rejection email subject",
-      "rejected-help": "Email is sent to applicant when its data access request is rejected.",
-      "reopened": "On reopening",
-      "reopenedSubject": "On reopening email subject",
-      "reopened-help": "Email is sent to applicant when its data access request is reopened.",
-      "commented": "On comment",
-      "commentedSubject": "On comment email subject",
-      "commented-help": "Email is sent to applicant and data access officers when the data access request is commented.",
-      "attachment": "On documents update",
-      "attachmentSubject": "On documents update email subject",
-      "attachment-help": "Email is sent to applicant and data access officers when the document list of the data access request is updated.",
-      "conditionallyApproved": "On conditional approval",
-      "conditionallyApprovedSubject": "On conditional approval email subject",
-      "conditionallyApproved-help": "Email is sent to applicant when its data access request is in the 'Conditionally Approved' state."
+      "info": "Les e-mails peuvent être envoyés au demandeur et aux agents d'accès aux données lorsqu'un événement se produit sur la demande d'accès aux données. Les événements peuvent être: changement de statut ou un commentaire. Les objets de notifications par e-mail peuvent contenir les information suivantes : ${organisation}, ${title} et ${id} pour l'ID de la demande.",
+      "submitted": "Sur soumission",
+      "submittedSubject": "Objet de l'e-mail Sur soumission",
+      "submitted-help": "L'e-mail est envoyé aux agents d'accès aux données et au demandeur sur la soumission de la demande d'accès aux données.",
+      "reviewed": "Sur révision",
+      "reviewedSubject": "Objet de l'e-mail Sur révision",
+      "reviewed-help": "L'e-mail est envoyé au demandeur lorsque sa demande d'accès aux données est en révision.",
+      "approved": "Sur approbation",
+      "approvedSubject": "Objet de l'e-mail Sur approbation",
+      "approved-help": "L'e-mail est envoyé au demandeur lorsque sa demande d'accès aux données est approuvée.",
+      "rejected": "Sur rejet",
+      "rejectedSubject": "Objet de l'e-mail Sur rejet",
+      "rejected-help": "L'e-mail est envoyé au demandeur lorsque sa demande d'accès aux données est rejetée.",
+      "reopened": "Sur rouverture",
+      "reopenedSubject": "Objet de l'e-mail Sur rouverture",
+      "reopened-help": "L'e-mail est envoyé au demandeur lorsque sa demande d'accès aux données est rouvert.",
+      "commented": "Sur commentaire",
+      "commentedSubject": "Objet de l'e-mail Sur commentaire",
+      "commented-help": "L'e-mail est envoyé au demandeur lorsque sa demande d'accès aux données est commentée.",
+      "attachment": "Sur mise à jour des documents",
+      "attachmentSubject": "Objet de l'e-mail Sur mise à jour des documents",
+      "attachment-help": "L'e-mail est envoyé au demandeur et les agents d'accès aux données lorsque la liste des documents de la demande d'accès est mise à jour.",
+      "conditionallyApproved": "Sur approbation conditionnelle",
+      "conditionallyApprovedSubject": "Objet de l'e-mail Sur approbation conditionnelle",
+      "conditionallyApproved-help": "L'e-mail est envoyé au demandeur lorsque sa demande d'accès aux données est approuvée conditionnellement."
     },
     "workflow": {
-      "title": "Workflow",
-      "info": "The data access request goes through several steps. Some minimum settings can be applied to control this workflow.",
-      "with-review": "With 'Under Review' intermediate state",
-      "with-review-help": "Between the submission and the approval/rejection of the data access request, an intermediate state can be used to inform applicant that its request is being processed.",
-      "approved-final": "'Approved' state is final",
-      "approved-final-help": "If not final, an approved data access request can be reinstated to its previous state.",
-      "rejected-final": "'Rejected' state is final",
-      "rejected-final-help": "If not final, a rejected data access request can be reinstated to its previous state.",
-      "with-conditional-approval": "With 'Conditionally Approved' intermediate state",
-      "with-conditional-approval-help": "Between the submission and the approval/rejection of the data access request, an intermediate state can be used to allow the applicant to edit its request."
+      "title": "Flux de travail",
+      "info": "La demande d'accès aux données passe par plusieurs étapes. Certains paramètres minimaux peuvent être appliqués pour contrôler ce flux de travail.",
+      "with-review": "Avec l'état intermédiaire 'En révision'",
+      "with-review-help": "Entre la soumission et l'approbation/rejet de la demande d'accès aux données, un état intermédiaire peut être utilisé pour informer le requérant que sa demande est en cours de traitement.",
+      "approved-final": "Etat 'Approuvée' est final",
+      "approved-final-help": "Si non final, une demande d'accès approuvée peut être rétablie à son état précédent.",
+      "rejected-final": "Etat 'Rejetée' est final",
+      "rejected-final-help": "Si non final, une demande d'accès rejetée peut être rétablie à son état précédent.",
+      "with-conditional-approval": "Avec l'état intermédiaire 'Approuvé sous conditions'",
+      "with-conditional-approval-help": "Entre la soumission et l'approbation/rejet de la demande d'accès aux données, un état intermédiaire peut être utilisé pour permettre au requérant d'éditer sa demande."
     },
     "permissions": {
-      "title": "Data Access Permissions",
-      "info": "Grant permissions to <code>Read</code> any data access requests."
+      "title": "Autorisations d'accès des données",
+      "info": "Accorder l'autorisation de <code> Lire </code> toutes les demandes d'accès aux données."
     },
     "syntax-error": {
-      "definition": "Form definition is not a valid document, please revise and correct the errors.",
-      "schema": "Form schema is not a valid document, please revise and correct the errors."
+      "definition": "La définition du formulaire n'est pas un document valide, veuillez réviser et corriger les erreurs.",
+      "schema": "Le Schema Form n'est pas un document valide, veuillez réviser et corriger les erreurs."
     },
     "parse-error": {
-      "definition": "Form definition is not a valid document, please contact your administrator to configure the form definition.",
-      "schema": "Form schema is not a valid document, please contact your administrator to configure the form schema."
+      "definition": "La définition du formulaire est pas un document valide, veuillez contacter votre administrateur pour configurer la définition du formulaire.",
+      "schema": "Le Schema Form n'est pas un document valide, veuillez contacter votre administrateur pour configurer le formulaire schéma."
     }
   },
   "project-config": {
-    "menu": "Research Project",
-    "title": "Research Project Configuration",
-    "title-edit": "Edit Research Project Configuration",
-    "general-config": "General Configuration",
-    "saved": "Research Project Form is successfully updated.",
+    "menu": "Projet de recherche",
+    "title": "Configuration du projet de recherche",
+    "title-edit": "Éditer la configuration du projet de recherche",
+    "general-config": "Configuration générale",
+    "saved": "Le formulaire de projet de recherche a été mis à jour avec succès.",
     "schema-form": {
-      "title": "Research Project Form",
-      "info": "The research project form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+      "title": "Formulaire de projet de recherche",
+	  "info": "Le formulaire de projet de recherche peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du schema form</a> pour plus de détails."
     },
     "schema": {
-      "tab": "Schema",
-      "info": "The form schema specifies the data structure."
+      "tab": "Schéma",
+      "info": "Le Schema Form spécifie la structure de données."
     },
     "definition": {
-      "tab": "Definition",
-      "info": "The form definition specifies how to display the schema and how to validate the data inputs."
+      "tab": "Définition",
+      "info": "La définition du formulaire spécifie comment afficher le schéma et la façon de valider les entrées de données."
     },
     "preview": {
-      "model-modal": "Model Preview",
-      "tab": "Preview",
-      "show-model": "Model",
-      "test": "Test Form Validation",
-      "tested": "Form is validated successfully."
+      "model-modal": "Aperçu du modèle",
+      "tab": "Aperçu",
+      "show-model": "Modèle",
+      "test": "Test de validation de formulaire",
+      "tested": "Le formulaire est validé avec succès."
     },
     "model": {
-      "tab": "Model",
-      "info": "The form model stores the valid input data, invalid values are excluded."
+      "tab": "Modèle",
+      "info": "Le modèle du formulaire stocke les données d'entrée valides, les valeurs non valides sont exclus."
     },
     "permissions": {
-      "title": "Research Project Permissions",
-      "info": "Grant permission to <code>Read</code> any Research Projects."
+      "title": "Les autorisations de projets de recherche",
+      "info": "Accorder l'autorisation de <code> Lire </code> tout les projets de recherche."
     }
   },
-  "comments": "Comments",
+  "comments": "Commentaires",
   "comment": {
-    "write": "Write",
-    "preview": "Preview",
-    "placeholder": "Leave a comment",
-    "send": "Comment",
-    "markdown-doc-link": "Markdown documentation",
-    "created-by": "Created by",
-    "modified-by": "Last modified by",
+    "write": "Écrire",
+    "preview": "Aperçu",
+    "placeholder": "Laissez un commentaire",
+    "send": "Commentaire",
+    "markdown-doc-link": "Documentation Markdown",
+    "created-by": "Créé par",
+    "modified-by": "Dernière modification par",
     "delete-dialog": {
-      "title": "Delete Comment",
-      "message": "Are you sure you want to delete this comment by '{{arg0}}'?"
+      "title": "Supprimer le commentaire",
+      "message": "Etes-vous sûr de vouloir supprimer ce commentaire par '{{arg0}}'?"
     }
   },
   "taxonomy": {
     "target": {
-      "all": "All",
+      "all": "Tout",
       "variable": "Variable",
-      "dataset": "Dataset",
-      "study": "Study",
-      "network": "Network"
+      "dataset": "Ensemble de données",
+      "study": "Étude",
+      "network": "Réseau"
     }
   },
   "and": "AND",
   "nand": "NAND",
   "or": "OR",
   "nor": "NOR",
-  "to": "to",
+  "to": "À",
   "graphics": {
-    "nbr-studies": "Studies",
+    "nbr-studies": "Études",
     "number-participants": "Participants",
-    "country": "Country",
-    "geo-charts": "Geographical Distribution",
-    "study-design": "Study Design",
-    "bio-samples": "Collected Biological Samples",
-    "geo-chart-title": "Distribution of studies by country of residence",
-    "study-design-chart-title": "Distribution of studies by study design",
-    "bio-samples-chart-title": "Distribution of studies by biological samples",
-    "number-participants-chart-title": "Distribution of studies by number of participants"
+    "country": "Pays",
+    "geo-charts": "Distribution géographique",
+    "study-design": "Conception de l'étude",
+    "bio-samples": "Échantillons biologiques recueillis",
+    "geo-chart-title": "Répartition des études par pays de résidence",
+    "study-design-chart-title": "Répartition des études par conception d'étude",
+    "bio-samples-chart-title": "Répartition des études par échantillons biologiques",
+    "number-participants-chart-title": "Répartition des études par nombre de participants"
   },
-  "research-projects": "Research Projects",
+  "research-projects": "Projets de recherche",
   "research-project": {
-    "label": "Research Project",
-    "add": "Add Project",
-    "none": "No projects.",
-    "data-access-request": "Data Access Request",
-    "title": "Title",
-    "summary": "Summary",
-    "main-section": "<h3>General</h3>",
+    "label": "Projet de recherche",
+    "add": "Ajouter un projet",
+    "none": "Aucun projet.",
+    "data-access-request": "Demande d'accès aux données",
+    "title": "Titre",
+    "summary": "Résumé",
+    "main-section": "<h3>Général</h3>",
     "restore-dialog": {
-      "title": "Restoring Project from Revision",
-      "message": "Are you sure you want to restore this revision from '{{arg0}}'?"
+      "title": "Restauration du projet à partir d'une révision",
+      "message": "Etes-vous sûr de vouloir restaurer cette révision de '{{arg0}}'?"
     },
     "default": {
       "status": {
         "title": "Statut",
-        "help": "Specify the timeline of the project.",
-        "start": "Start Date",
-        "start-help": "Start date of the project. Date format: dd-mm-yyyy.",
-        "end": "End Date",
-        "end-help": "Expected or effective end date of the project. Date format: dd-mm-yyyy.",
-        "date-error": "Not a valid date."
+        "help": "Spécifiez le calendrier du projet.",
+        "start": "Date de début",
+        "start-help": "Date de début du projet. Format de date : dd-mm-yyyy.",
+        "end": "Date de fin",
+        "end-help": "Date de fin attendue ou effective du projet. Format de date : dd-mm-yyyy.",
+        "date-error": "Date non valide."
       },
       "contact": {
-        "title": "Contact Details",
-        "help": "Specify the Principal Investigator's contact information.",
-        "name": "Name",
+        "title": "Détails du contact",
+        "help": "Spécifiez les coordonnées du chercheur principal .",
+        "name": "Nom",
         "institution": "Institution"
       }
     }
