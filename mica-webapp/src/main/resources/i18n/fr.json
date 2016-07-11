@@ -44,7 +44,7 @@
     "health": {
       "title": "Diagnostics",
       "database": "Base de données: ",
-      "email": "Email: ",
+      "email": "Courriel: ",
       "stacktrace": "Stacktrace"
     },
     "jvm": {
@@ -937,7 +937,7 @@
   "admin-page": {
     "help": {
       "general": "Configurer les propriétés locales et serveur du server Opal.",
-      "notifications": "e-mails de notification peuvent être envoyés aux utilisateurs et aux groupes concernés.",
+      "notifications": "Courriels de notification peuvent être envoyés aux utilisateurs et aux groupes concernés.",
       "style": "Remplacer le style par défaut avec votre propre style.",
       "security": "Configurer le chiffrement et les certificats du server Opal.",
       "metrics": "Voir la JVM et les paramètres HTTP.",
@@ -1036,22 +1036,22 @@
       "name": "Nom",
       "title": "Titre",
       "position": "Poste",
-      "email": "E-mail",
+      "email": "Courriel",
       "institution": "Institution",
-      "institution-email": "E-mail institutionnel",
-      "email-alt": "E-mail alternatif",
+      "institution-email": "Courriel institutionnel",
+      "email-alt": "Courriel alternatif",
       "phone": "Numéro de téléphone",
       "address": "Adresse postale",
       "I": {
         "title": "Contact et information sur le projet de recherche",
         "A": {
           "title": "Nom, institution, et coordonnées du demandeur (demandeur principal)",
-          "info": "Veuillez vous assurer qu'une adresse postale complète et une adresse e-mail institutionnelle valide sont incluses. Dans le cas de plus d'une affiliation, les candidats doivent fournir leurs coordonnées se rapportant uniquement à l'institution à laquelle ils sont affiliés dans le cadre de ce projet de recherche."
+          "info": "Veuillez vous assurer qu'une adresse postale complète et une adresse courriel institutionnelle valide sont incluses. Dans le cas de plus d'une affiliation, les candidats doivent fournir leurs coordonnées se rapportant uniquement à l'institution à laquelle ils sont affiliés dans le cadre de ce projet de recherche."
 
 		  },
         "B": {
           "title": "Nom, institution et coordonnées du représentant institutionnel autorisé",
-          "info": "Veuillez inclure une adresse postale complète et une adresse e-mail institutionnelle valide ."
+          "info": "Veuillez inclure une adresse postale complète et une adresse courriel institutionnelle valide ."
         },
         "C": {
           "title": "Titre du projet de recherche",
@@ -1061,12 +1061,12 @@
         },
         "D": {
           "title": "Les noms des personnes autorisées (au sein de votre institution)",
-          "info": "Veuillez fournir les noms de tous les chercheurs, collaborateurs, gestionnaires de données et le personnel de recherche qui auront accès aux données recherche afin de travailler sur le projet. Une adresse e-mail institutionnelle valide pour chaque nom avec leur titre d'emploi et fonction sont également requis.",
+          "info": "Veuillez fournir les noms de tous les chercheurs, collaborateurs, gestionnaires de données et le personnel de recherche qui auront accès aux données recherche afin de travailler sur le projet. Une adresse courriel institutionnelle valide pour chaque nom avec leur titre d'emploi et fonction sont également requis.",
           "check": "Aucun membre du personnel ne nécessite un accès aux données de recherche."
         },
         "E": {
           "title": "Les noms des étudiants autorisés (au sein de votre institution)",
-          "info": "Veuillez fournir les noms de tous les étudiants qui auront accès aux données de recherche afin de travailler sur le projet. Une adresse e-mail valide pour chaque nom est requis. Les étudiants d'autres institutions ne devraient pas être inclus dans cette liste.",
+          "info": "Veuillez fournir les noms de tous les étudiants qui auront accès aux données de recherche afin de travailler sur le projet. Une adresse courriel valide pour chaque nom est requis. Les étudiants d'autres institutions ne devraient pas être inclus dans cette liste.",
           "check": "Aucun étudiant ne nécessite un accès aux données de recherche."
         },
         "F": {
@@ -1143,31 +1143,31 @@
     },
     "notifications": {
       "title": "Notifications",
-      "info": "Les e-mails peuvent être envoyés au demandeur et aux agents d'accès aux données lorsqu'un événement se produit sur la demande d'accès aux données. Les événements peuvent être: changement de statut ou un commentaire. Les objets de notifications par e-mail peuvent contenir les information suivantes : ${organisation}, ${title} et ${id} pour l'ID de la demande.",
+      "info": "Les courriels peuvent être envoyés au demandeur et aux agents d'accès aux données lorsqu'un événement se produit sur la demande d'accès aux données. Les événements peuvent être: changement de statut ou un commentaire. Les objets de notifications par courriel peuvent contenir les information suivantes : ${organisation}, ${title} et ${id} pour l'ID de la demande.",
       "submitted": "Sur soumission",
-      "submittedSubject": "Objet de l'e-mail Sur soumission",
-      "submitted-help": "L'e-mail est envoyé aux agents d'accès aux données et au demandeur sur la soumission de la demande d'accès aux données.",
+      "submittedSubject": "Objet du courriel Sur soumission",
+      "submitted-help": "Le courriel est envoyé aux agents d'accès aux données et au demandeur sur la soumission de la demande d'accès aux données.",
       "reviewed": "Sur révision",
-      "reviewedSubject": "Objet de l'e-mail Sur révision",
-      "reviewed-help": "L'e-mail est envoyé au demandeur lorsque sa demande d'accès aux données est en révision.",
+      "reviewedSubject": "Objet du courriel Sur révision",
+      "reviewed-help": "Le courriel est envoyé au demandeur lorsque sa demande d'accès aux données est en révision.",
       "approved": "Sur approbation",
-      "approvedSubject": "Objet de l'e-mail Sur approbation",
-      "approved-help": "L'e-mail est envoyé au demandeur lorsque sa demande d'accès aux données est approuvée.",
+      "approvedSubject": "Objet du courriel Sur approbation",
+      "approved-help": "Le courriel est envoyé au demandeur lorsque sa demande d'accès aux données est approuvée.",
       "rejected": "Sur rejet",
-      "rejectedSubject": "Objet de l'e-mail Sur rejet",
-      "rejected-help": "L'e-mail est envoyé au demandeur lorsque sa demande d'accès aux données est rejetée.",
+      "rejectedSubject": "Objet du courriel Sur rejet",
+      "rejected-help": "Le courriel est envoyé au demandeur lorsque sa demande d'accès aux données est rejetée.",
       "reopened": "Sur rouverture",
-      "reopenedSubject": "Objet de l'e-mail Sur rouverture",
-      "reopened-help": "L'e-mail est envoyé au demandeur lorsque sa demande d'accès aux données est rouvert.",
+      "reopenedSubject": "Objet du courriel Sur rouverture",
+      "reopened-help": "Le courriel est envoyé au demandeur lorsque sa demande d'accès aux données est rouvert.",
       "commented": "Sur commentaire",
-      "commentedSubject": "Objet de l'e-mail Sur commentaire",
-      "commented-help": "L'e-mail est envoyé au demandeur lorsque sa demande d'accès aux données est commentée.",
+      "commentedSubject": "Objet du courriel Sur commentaire",
+      "commented-help": "Le courriel est envoyé au demandeur lorsque sa demande d'accès aux données est commentée.",
       "attachment": "Sur mise à jour des documents",
-      "attachmentSubject": "Objet de l'e-mail Sur mise à jour des documents",
-      "attachment-help": "L'e-mail est envoyé au demandeur et les agents d'accès aux données lorsque la liste des documents de la demande d'accès est mise à jour.",
+      "attachmentSubject": "Objet du courriel Sur mise à jour des documents",
+      "attachment-help": "Le courriel est envoyé au demandeur et les agents d'accès aux données lorsque la liste des documents de la demande d'accès est mise à jour.",
       "conditionallyApproved": "Sur approbation conditionnelle",
-      "conditionallyApprovedSubject": "Objet de l'e-mail Sur approbation conditionnelle",
-      "conditionallyApproved-help": "L'e-mail est envoyé au demandeur lorsque sa demande d'accès aux données est approuvée conditionnellement."
+      "conditionallyApprovedSubject": "Objet du courriel Sur approbation conditionnelle",
+      "conditionallyApproved-help": "Le courriel est envoyé au demandeur lorsque sa demande d'accès aux données est approuvée conditionnellement."
     },
     "workflow": {
       "title": "Flux de travail",
