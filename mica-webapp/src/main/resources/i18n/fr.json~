@@ -104,7 +104,7 @@
       "table": {
         "name": "Nom du server",
         "count": "Total",
-        "mean": "Médian",
+        "mean": "Médiane",
         "min": "Min",
         "max": "Max",
         "p50": "p50",
@@ -342,7 +342,7 @@
     "label": "Publier",
     "un-publish": "Dépublier",
     "re-publish": "Republier",
-    "not-published": "Non publié",
+    "not-published": "Non publiés",
     "published-out-of-date": "Publié, non à jour",
     "published": "Publié",
     "publication": "Publication",
@@ -352,7 +352,7 @@
     "status": {
       "DRAFT": "Brouillon",
       "UNDER_REVIEW": "En relecture",
-      "DELETED": "Supprimé",
+      "DELETED": "Supprimés",
       "draft": "Passer en brouillon",
       "under-review": "Passer en relecture",
       "deleted": "Supprimer"
@@ -362,7 +362,7 @@
   "numberOfParticipants": {
     "label": "Nombre de participants",
     "participants": "Nombre cible de participants",
-    "sample": "Nombre cible de participants avec échantillon biologique",
+    "sample": "Nombre cible de participants avec échantillons biologiques",
     "no-limit": "Pas de limite",
     "suppl-info": "Informations supplémentaires sur le nombre cible de participants"
   },
@@ -533,7 +533,7 @@
     },
     "study-table": {
       "title": "Table d'étude",
-      "info": "La table d'étude définie à quel événement de collecte elle s'applique et à partir de quelle table Opal il faut extraire les variables et les données sommaires"
+      "info": "La table d'étude définie à quel événement de collecte elle s'applique et à partir de quelle table Opal il faut extraire les variables et les données sommaires."
     },
     "study-tables": {
       "title": "Tables d'étude",
@@ -579,7 +579,7 @@
     "label-edit": "Éditer une population",
     "id": "ID",
     "name": "Nom",
-    "info": "Information supplementaire",
+    "info": "Informations supplementaires",
     "description": "Description",
     "gender": "Genre",
     "ageMin": "Age minimum",
@@ -604,7 +604,7 @@
     "other-data-sources": "Autres sources de données",
     "bio-samples": "Échantillons biologiques",
     "other-bio-samples": "Autres échantillons biologiques",
-    "admin-databases": "Bases de données dministratives",
+    "admin-databases": "Bases de données administratives",
     "tissue-types": "Types de tissus",
     "delete-dialog-title": "Supprimer un événement de collecte de données",
     "delete-dialog-message": "Êtes-vous sûr de vouloir supprimer l'événement de collecte?"
@@ -679,14 +679,14 @@
   "apply": "Appliquer",
   "on": "Sur",
   "by": "Par",
-  "created-by": "Créer par",
-  "created-on": "Créer sur",
+  "created-by": "Créée par",
+  "created-on": "Créée le",
   "last-modified": "Dernière mise à jour",
   "other": "Autre",
   "notification": "Notification",
   "required": "Requis",
   "pattern": "Le modèle attendu est",
-  "suppl-info": "Information supplementaire",
+  "suppl-info": "Informations supplementaires",
   "fix-error": "Veuillez corriger les erreurs ci-dessous",
   "dnd-reorder": "Glisser-déposer pour réorganiser",
   "loading": "Chargement...",
@@ -707,19 +707,19 @@
   "type": "Type",
   "fullscreen": "Passer en mode plein écran",
   "status": "Statut",
-  "changed-by": "Changé par",
-  "changed-on": "Changé sur",
-  "OPENED": "Ouvert",
-  "SUBMITTED": "Soumis",
+  "changed-by": "Changée par",
+  "changed-on": "Changée sur",
+  "OPENED": "Ouverte",
+  "SUBMITTED": "Soumise",
   "REVIEWED": "En relecture",
-  "CONDITIONALLY_APPROVED": "Approuvé sous conditions",
-  "APPROVED": "Approuvé",
-  "REJECTED": "Rejecté",
+  "CONDITIONALLY_APPROVED": "Approuvée sous conditions",
+  "APPROVED": "Approuvée",
+  "REJECTED": "Rejectée",
   "date": "Date",
   "author": "Auteur",
   "user": "Utilisateur",
   "users": "Utilisateurs",
-  "website": "Site Web",
+  "website": "Site web",
   "unsaved-title": "Modifications non sauvegardées",
   "unsaved-prompt": "Êtes-vous sûr de vouloir quitter cette page? toute modification non sauvegardée sera perdue.",
   "search": {
@@ -823,7 +823,7 @@
     "vocabulary-nav-help": "",
     "classifications-link": "",
     "classifications-title": "",
-    "faceted-navigation-help": "Sélectionnez une entrée dans le menu de gauche pour naviguer dans le catalogue.",
+    "faceted-navigation-help": "Sélectionner une entrée dans le menu de gauche pour naviguer dans le catalogue.",
     "facet": {
       "more": "Plus",
       "less": "Mois"
@@ -921,8 +921,8 @@
   "properties": "Propriétés",
   "searching": "Chercher",
   "search-results": "Résultats de recherche",
-  "most-recent": "Le plus récent",
-  "not-published": "Non publié",
+  "most-recent": "Les plus récents",
+  "not-published": "Non publiés",
   "path": "Chemin",
   "view-files": "Afficher les fichiers",
   "empty-folder": "Dossier vide",
@@ -990,7 +990,7 @@
     "documents-help": "Sélectionner un ou plusieurs documents à joindre à la demande d'accès aux données.",
     "no-documents": "Aucun document.",
     "edit-documents": "Ajout/Suppression de fichiers",
-    "select-status": "Sélectionnez un statut",
+    "select-status": "Sélectionner un statut",
     "comments": "Commentaires",
     "history": "Historique",
     "status-placeholder": "Filtrer par statut",
@@ -1051,22 +1051,22 @@
 		  },
         "B": {
           "title": "Nom, institution et coordonnées du représentant institutionnel autorisé",
-          "info": "Veuillez inclure une adresse postale complète et une adresse courriel institutionnelle valide ."
+          "info": "Veuillez inclure une adresse postale complète et une adresse courriel institutionnelle valide."
         },
         "C": {
           "title": "Titre du projet de recherche",
           "info": "",
           "website": "Site web du projet",
-          "website-help": "Veuillez fournir l'adresse du site Web du projet de recherche, s'il y a lieu."
+          "website-help": "Veuillez fournir l'adresse du site web du projet de recherche, s'il y a lieu."
         },
         "D": {
           "title": "Les noms des personnes autorisées (au sein de votre institution)",
-          "info": "Veuillez fournir les noms de tous les chercheurs, collaborateurs, gestionnaires de données et le personnel de recherche qui auront accès aux données recherche afin de travailler sur le projet. Une adresse courriel institutionnelle valide pour chaque nom avec leur titre d'emploi et fonction sont également requis.",
+          "info": "Veuillez fournir les noms de tous les chercheurs, collaborateurs, gestionnaires de données et le personnel de recherche qui auront accès aux données de recherche afin de travailler sur le projet. Une adresse courriel institutionnelle valide pour chaque nom avec leur titre d'emploi et fonction sont également requis.",
           "check": "Aucun membre du personnel ne nécessite un accès aux données de recherche."
         },
         "E": {
           "title": "Les noms des étudiants autorisés (au sein de votre institution)",
-          "info": "Veuillez fournir les noms de tous les étudiants qui auront accès aux données de recherche afin de travailler sur le projet. Une adresse courriel valide pour chaque nom est requis. Les étudiants d'autres institutions ne devraient pas être inclus dans cette liste.",
+          "info": "Veuillez fournir les noms de tous les étudiants qui auront accès aux données de recherche afin de travailler sur le projet. Une adresse courriel valide pour chaque nom est requise. Les étudiants d'autres institutions ne doivent pas être inclus dans cette liste.",
           "check": "Aucun étudiant ne nécessite un accès aux données de recherche."
         },
         "F": {
@@ -1103,12 +1103,12 @@
     "title-field": "Champ Titre",
     "title-field-help": "Le titre de la demande.",
     "summary-field": "Champ Résumé",
-    "summary-field-help": "Le résumé simplifié du projet.",
+    "summary-field-help": "Le résumé simplifié de la demande.",
     "general-config": "Configuration générale",
     "saved": "Formulaire d'accès aux données a été mis à jour avec succès.",
     "pdf-template": {
       "title": "Modèle PDF",
-      "info": "Les données collectées dans le formulaire d'application Web peuvent être représentées dans un fichier PDF. Un modèle PDF doit être fourni avec les noms de champs correspondant au schéma du formulaire d'application."
+      "info": "Les données collectées dans le formulaire d'application web peuvent être représentées dans un fichier PDF. Un modèle PDF doit être fourni avec les noms de champs correspondants au schéma du formulaire d'application."
     },
     "schema-form": {
       "title": "Formulaire de demande",
@@ -1116,7 +1116,7 @@
     },
     "schema" : {
       "tab": "Schéma",
-      "info": "Le Schema Form spécifie la structure de données."
+      "info": "Le schéma du formulaire spécifie la structure de données."
     },
     "definition" : {
       "tab": "Définition",
@@ -1131,7 +1131,7 @@
     },
     "model": {
       "tab": "Modèle",
-      "info": "Le modèle de formulaire stocke les données d'entrée valides, les valeurs non valides sont exclus."
+      "info": "Le modèle du formulaire stocke les données entrées valides, les valeurs non valides sont exclues."
     },
     "id-generation": {
       "title": "Generation d'ID",
@@ -1206,11 +1206,11 @@
     },
     "schema": {
       "tab": "Schéma",
-      "info": "Le Schema Form spécifie la structure de données."
+      "info": "Le schéma du formulaire spécifie la structure de données."
     },
     "definition": {
       "tab": "Définition",
-      "info": "La définition du formulaire spécifie comment afficher le schéma et la façon de valider les entrées de données."
+      "info": "La définition du formulaire spécifie comment afficher le schéma et la façon de valider les données entrées."
     },
     "preview": {
       "model-modal": "Aperçu du modèle",
@@ -1221,7 +1221,7 @@
     },
     "model": {
       "tab": "Modèle",
-      "info": "Le modèle du formulaire stocke les données d'entrée valides, les valeurs non valides sont exclus."
+      "info": "Le modèle du formulaire stocke les données entrées valides, les valeurs non valides sont exclus."
     },
     "permissions": {
       "title": "Les autorisations de projets de recherche",
@@ -1232,7 +1232,7 @@
   "comment": {
     "write": "Écrire",
     "preview": "Aperçu",
-    "placeholder": "Laissez un commentaire",
+    "placeholder": "Laisser un commentaire",
     "send": "Commentaire",
     "markdown-doc-link": "Documentation Markdown",
     "created-by": "Créé par",
@@ -1284,7 +1284,7 @@
     "default": {
       "status": {
         "title": "Statut",
-        "help": "Spécifiez le calendrier du projet.",
+        "help": "Spécifier le calendrier du projet.",
         "start": "Date de début",
         "start-help": "Date de début du projet. Format de date : dd-mm-yyyy.",
         "end": "Date de fin",
@@ -1293,7 +1293,7 @@
       },
       "contact": {
         "title": "Détails du contact",
-        "help": "Spécifiez les coordonnées du chercheur principal .",
+        "help": "Spécifier les coordonnées du chercheur principal .",
         "name": "Nom",
         "institution": "Institution"
       }
