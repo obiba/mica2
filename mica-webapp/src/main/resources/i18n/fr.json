@@ -83,13 +83,13 @@
         "scavengetime": "Temps \"Scavenge\""
       },
       "http": {
-        "title": "Requêtes HTTP requests (évènements par seconde)",
+        "title": "Requêtes HTTP (évènements par seconde)",
         "active": "Requêtes actives :",
         "total": "Requêtes totales :",
         "table": {
           "code": "Code",
           "count": "Total",
-          "mean": "Médian",
+          "mean": "Médiane",
           "average": "Moyenne"
         },
         "code": {
@@ -104,7 +104,7 @@
       "table": {
         "name": "Nom du server",
         "count": "Total",
-        "mean": "Médian",
+        "mean": "Médiane",
         "min": "Min",
         "max": "Max",
         "p50": "p50",
@@ -226,7 +226,7 @@
     "opal-credentials": "Identifiants Opal",
     "opal-credentials-help": "Quand Mica a besoin de se connecter à un serveur Opal distant, certaines informations doivent être fournies à des fins d'authentification. Ces informations d'identification peuvent être basées sur une paire de clés de cryptage (HTTPS uniquement) ou un nom d'utilisateur et mot de passe. Voir aussi <a href='http://wiki.obiba.org/display/OPALDOC/Users+and+Groups+Administration' target='_blank'>la documentation sur l'administration de l'accès aux données dans Opal</a>.",
     "encryption-keys": "Clés de chiffrement",
-    "encryption-keys-help": "la connexion HTTPS nécessite d'avoir une clé privée et une clé publique (certificat). Une paire de clés auto-signée est disponible par défaut. Vous pouvez également fournir la propre.",
+    "encryption-keys-help": "la connexion HTTPS nécessite d'avoir une clé privée et une clé publique (certificat). Une paire de clés auto-signée est disponible par défaut. Vous pouvez également fournir votre propre clé.",
     "addKeyPair": "Ajouter des clés",
     "download-certificate": "Télécharger le certificat",
     "opal-credential-add": "Ajouter des identifiants Opal",
@@ -240,7 +240,7 @@
     "type": "Type",
     "create": "Créer une paire de clés",
     "import": "Importer une paire de clés",
-    "username": "Nom d'utlisateur",
+    "username": "Nom d'utilisateur",
     "password": "Mot de passe",
     "confirm": "Confirmer le mot de passe",
     "keys": {
@@ -314,7 +314,7 @@
       "comment": "Notification sur commentaire",
       "comment-info": "Les destinataires des notifications pour les mises à jour de commentaire doivent au moins avoir la permission de <code>Lecteur</code>.",
       "comment-subject": "Sujet de la notification",
-      "comment-help": "Envoyer un courriel de notification quand un commentaire est ajouté ou mise à jour.",
+      "comment-help": "Envoyer un courriel de notification quand un commentaire est ajouté ou mis à jour.",
       "comment-subject-help-long": "Le sujet du courriel peut contenir les termes réservés suivants: ${organization}, ${documentType}, ${documentId} and ${status} where document refers to the study (or network etc.) that was commented.",
       "project-title": "Mise à jour de projet de recherche",
       "project-info": "Les destinataires des notifications pour les mises à jour de projet de recherche ont au moins la permission <code>Editeur</code> (quand le statut est <i>Brouillon</i>) ou la permission <code>Relecteur</code> (quand le statut est <i>Supprimé</i> ou <i>En relecture</i>).",
