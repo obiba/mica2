@@ -1046,7 +1046,7 @@
         "title": "Contact et information sur le projet de recherche",
         "A": {
           "title": "Nom, institution, et coordonnées du demandeur (demandeur principal)",
-          "info": "Veuillez vous assurer qu'une adresse postale complète et une adresse e-mail institutionnelle valide sont incluses. Dans le cas de plus d'une affiliation, les candidats doivent fournir leurs coordonnées se rapportant uniquement à l'institution à laquelle ils sont affiliés dans le cadre de ce projet de recherche ".
+          "info": "Veuillez vous assurer qu'une adresse postale complète et une adresse e-mail institutionnelle valide sont incluses. Dans le cas de plus d'une affiliation, les candidats doivent fournir leurs coordonnées se rapportant uniquement à l'institution à laquelle ils sont affiliés dans le cadre de ce projet de recherche."
 
 		  },
         "B": {
@@ -1061,7 +1061,7 @@
         },
         "D": {
           "title": "Les noms des personnes autorisées (au sein de votre institution)",
-          "info": "Veuillez fournir les noms de tous les chercheurs, collaborateurs, gestionnaires de données et le personnel de recherche qui auront accès aux données recherche afin de travailler sur le projet. Une adresse e-mail institutionnelle valide pour chaque nom avec leur titre d'emploi et fonction sont également requis."
+          "info": "Veuillez fournir les noms de tous les chercheurs, collaborateurs, gestionnaires de données et le personnel de recherche qui auront accès aux données recherche afin de travailler sur le projet. Une adresse e-mail institutionnelle valide pour chaque nom avec leur titre d'emploi et fonction sont également requis.",
           "check": "Aucun membre du personnel ne nécessite un accès aux données de recherche."
         },
         "E": {
