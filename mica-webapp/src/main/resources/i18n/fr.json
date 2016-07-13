@@ -352,8 +352,7 @@
     "status": {
       "DRAFT": "Brouillon",
       "UNDER_REVIEW": "En relecture",
-      "UNDER_REVIEW": "En relecture",
-      "DELETED": "Supprimés",
+      "DELETED": "Supprimé",
       "draft": "Passer en brouillon",
       "under-review": "Passer en relecture",
       "deleted": "Supprimer"
