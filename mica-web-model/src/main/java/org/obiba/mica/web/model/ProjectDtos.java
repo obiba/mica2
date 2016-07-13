@@ -41,7 +41,7 @@ class ProjectDtos {
       .addAllTitle(localizedStringDtos.asDto(project.getTitle())) //
       .addAllSummary(localizedStringDtos.asDto(project.getSummary()));
 
-    if(project.hasContent()) builder.setContent(JSONUtils.toJSON(project.getContent()));
+    if(project.hasModel()) builder.setContent(JSONUtils.toJSON(project.getModel()));
     if(project.hasDataAccessRequestId()) {
       try {
         DataAccessRequest request = dataAccessRequestService.findById(project.getDataAccessRequestId());

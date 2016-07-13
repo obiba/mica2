@@ -78,7 +78,6 @@ public class DataAccessRequestResource {
   public Response get(@PathParam("id") String id, Mica.DataAccessRequestDto dto) {
     subjectAclService.checkPermission("/data-access-request", "EDIT", id);
     if(!id.equals(dto.getId())) throw new BadRequestException();
-    //dataAccessRequestService.updateContent(id, dto.getContent());
     DataAccessRequest request = dtos.fromDto(dto);
     dataAccessRequestService.save(request);
     return Response.noContent().build();

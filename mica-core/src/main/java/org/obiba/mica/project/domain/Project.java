@@ -16,7 +16,7 @@ public class Project extends AbstractGitPersistable {
 
   private LocalizedString summary;
 
-  private Map<String,Object> content;
+  private Map<String,Object> model;
 
   private String dataAccessRequestId;
 
@@ -38,16 +38,16 @@ public class Project extends AbstractGitPersistable {
     this.title = title;
   }
 
-  public boolean hasContent() {
-    return content != null;
+  public boolean hasModel() {
+    return model != null;
   }
 
-  public void setContent(Map<String, Object> content) {
-    this.content = content;
+  public void setModel(Map<String, Object> model) {
+    this.model = model;
   }
 
-  public Map<String, Object> getContent() {
-    return content;
+  public Map<String, Object> getModel() {
+    return model;
   }
 
   public boolean hasDataAccessRequestId() {
@@ -99,9 +99,9 @@ public class Project extends AbstractGitPersistable {
 
     public Builder content(String content) {
       if (Strings.isNullOrEmpty(content)) {
-        project.content = null;
+        project.model = null;
       } else {
-        project.content = JSONUtils.toMap(content);
+        project.model = JSONUtils.toMap(content);
       }
       return this;
     }
