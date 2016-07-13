@@ -873,7 +873,7 @@
     }
   },
   "access": {
-    "help": "Grant Read access to the publication.",
+    "help": "Grant <code>Read</code> access to the publication.",
     "none": "No accesses.",
     "add": "Add Access",
     "principal-help": "User or group unique name. Use wildcard * for specifying anyone or any group.",

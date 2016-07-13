@@ -874,7 +874,7 @@
     }
   },
   "access": {
-    "help": "Accorder l'accès en lecture à la publication.",
+    "help": "Accorder l'autorisation de <code>Lire</code> la publication.",
     "none": "Aucun accès.",
     "add": "Ajouter un accès",
     "principal-help": "Nom unique d'utilisateur ou de groupe. Utiliser un astérisque * pour spécifier tout utilisateur ou groupe.",
