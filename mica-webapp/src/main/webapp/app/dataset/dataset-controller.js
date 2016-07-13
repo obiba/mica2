@@ -389,7 +389,7 @@ mica.dataset
       };
 
       $scope.deleteStudyTable = function (index) {
-        $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables.splice(index);
+        $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables.splice(index, 1);
         if ($scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables.length === 0) {
           $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables = undefined;
         }
