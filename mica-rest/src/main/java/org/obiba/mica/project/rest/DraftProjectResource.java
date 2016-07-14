@@ -1,6 +1,7 @@
 package org.obiba.mica.project.rest;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
@@ -10,6 +11,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
@@ -57,6 +59,14 @@ public class DraftProjectResource extends AbstractGitPersistableResource<Project
   public Mica.ProjectDto get() {
     subjectAclService.checkPermission("/draft/project", "VIEW", id);
     return dtos.asDto(projectService.findById(id), true);
+  }
+
+  @GET
+  @Path("/model")
+  @Produces("application/json")
+  public Map<String, Object> getModel() {
+    subjectAclService.checkPermission("/draft/project", "VIEW", id);
+    return projectService.findById(id).getModel();
   }
 
   @PUT

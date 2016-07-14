@@ -2,6 +2,7 @@ package org.obiba.mica.access.rest;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -14,10 +15,12 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import org.apache.shiro.SecurityUtils;
+import org.obiba.mica.JSONUtils;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.access.NoSuchDataAccessRequestException;
 import org.obiba.mica.access.domain.DataAccessRequest;
@@ -71,6 +74,14 @@ public class DataAccessRequestResource {
     subjectAclService.checkPermission("/data-access-request", "VIEW", id);
     DataAccessRequest request = dataAccessRequestService.findById(id);
     return dtos.asDto(request);
+  }
+
+  @GET
+  @Path("/model")
+  @Produces("application/json")
+  public Map<String, Object> getModel(@PathParam("id") String id) {
+    subjectAclService.checkPermission("/data-access-request", "VIEW", id);
+    return JSONUtils.toMap(dataAccessRequestService.findById(id).getContent());
   }
 
   @PUT
