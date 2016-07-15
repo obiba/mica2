@@ -1,13 +1,18 @@
 <div ng-show="display === 'list'">
-  <ul class="nav nav-pills voffset2" ng-if="resultTabsOrder.length > 1">
+  <ul class="nav nav-pills voffset2">
     <li role="presentation" ng-repeat="res in resultTabsOrder"
-        ng-class="{active: activeTarget[targetTypeMap[res]].active}"
+        ng-class="{active: activeTarget[targetTypeMap[res]].active && resultTabsOrder.length > 1, disabled: resultTabsOrder.length === 1}"
         ng-if="options[targetTypeMap[res]].showSearchTab">
       <a href
-        ng-click="selectTarget(targetTypeMap[res])">
-      {{targetTypeMap[res] | translate}}
-      <span class="badge hoffset1"><small>{{result.list[res + 'ResultDto'].totalHits === 0 ? 0 : (result.list[res + 'ResultDto'].totalHits | localizedNumber)}}</small></span>
-    </a>
+        ng-click="selectTarget(targetTypeMap[res])" ng-if="resultTabsOrder.length > 1">
+       {{targetTypeMap[res] | translate}}
+      <span class="badge hoffset1"><small>{{getTotalHits(res) | localizedNumber}}</small></span>
+      </a>
+      <a href style="cursor: default;" ng-if="resultTabsOrder.length === 1">
+      <span class="text-primary">
+        {{targetTypeMap[res] | translate}} (<small>{{getTotalHits(res) | localizedNumber)}}</small>)
+      </span>
+      </a>
     </li>
     <li ng-repeat="res in resultTabsOrder" ng-show="activeTarget[targetTypeMap[res]].active" class="pull-right">
       <span search-result-pagination

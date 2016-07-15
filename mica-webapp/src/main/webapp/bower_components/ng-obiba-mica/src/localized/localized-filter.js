@@ -14,6 +14,6 @@ angular.module('obiba.mica.localized')
 
   .filter('localizedNumber', ['LocalizedValues', function(LocalizedValues) {
     return function(value){
-      return value ? LocalizedValues.formatNumber(value) : '';
+      return value === 0 ? 0 : value ? LocalizedValues.formatNumber(value) : '';
     };
   }]);

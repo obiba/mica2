@@ -1471,6 +1471,13 @@ angular.module('obiba.mica.search')
         $scope.$parent.onTypeChanged(type);
       };
 
+      $scope.getTotalHits = function(type) {
+        if (!$scope.result.list || !$scope.result.list[type + 'ResultDto']) {
+          return '...';
+        }
+        return $scope.result.list[type + 'ResultDto'].totalHits;
+      };
+
       $scope.$watchCollection('result', function () {
         if ($scope.result.list) {
           $scope.activeTarget[QUERY_TYPES.VARIABLES].totalHits = $scope.result.list.variableResultDto.totalHits;
