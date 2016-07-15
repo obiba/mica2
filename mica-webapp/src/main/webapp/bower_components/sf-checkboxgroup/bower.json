@@ -1,12 +1,12 @@
 {
-	"name": "sf-checkboxgroup",
-	"version": "1.0.0",
-	"license": "MIT",
-	"author": "obiba",
-	"main": [
-  	"dist/sf-checkboxgroup.min.js" 
-	],
-	"keywords": [
+  "name": "sf-checkboxgroup",
+  "version": "1.0.0",
+  "license": "MIT",
+  "author": "obiba",
+  "main": [
+    "dist/sf-checkboxgroup.min.js" 
+  ],
+  "keywords": [
     "angular-schema-form",
     "schema-form",
     "form",

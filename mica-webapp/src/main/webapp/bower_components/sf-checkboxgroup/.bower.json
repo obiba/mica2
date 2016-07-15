@@ -26,11 +26,11 @@
     "bootstrap": "^3.3.6"
   },
   "homepage": "https://github.com/obiba/sf-checkboxgroup",
-  "_release": "2d86cea97e",
+  "_release": "372b04c9fb",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "2d86cea97e4e4ad786306280a2085d42ab8ab671"
+    "commit": "372b04c9fbb885f37e358e32a3908e3eee722fb2"
   },
   "_source": "https://github.com/obiba/sf-checkboxgroup.git",
   "_target": "master",

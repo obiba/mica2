@@ -13,7 +13,7 @@ angular.module('sfCheckboxgroup', ['schemaForm', 'sfCheckboxgroupTemplates'])
 		var keys = $scope.form.items.map(function (val) { return val.key[0]; });
     var min = $scope.form.minChecked ? parseInt($scope.form.minChecked) : 0;
     $scope.showMessage = false;
-    $scope.message = 'Minimum ' + min + '.';
+    $scope.message = 'At least ' + min + ' selection(s) expected.';
 
     var models = [];
 
