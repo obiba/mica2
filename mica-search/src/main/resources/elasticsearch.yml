@@ -10,10 +10,12 @@ index:
         analyzer:
             mica_index_analyzer:
                type: custom
+               char_filter: [html_strip]
                tokenizer: standard
                filter: [standard,lowercase,mica_nGram_filter]
             mica_search_analyzer:
                type: custom
+               char_filter: [html_strip]
                tokenizer: standard
                filter: [standard,lowercase]
         filter:
