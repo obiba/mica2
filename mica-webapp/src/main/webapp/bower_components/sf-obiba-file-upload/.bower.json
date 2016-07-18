@@ -1,5 +1,6 @@
 {
   "name": "sf-obiba-file-upload",
+  "version": "1.0.0",
   "license": "GNU Public License version 3",
   "author": "obiba",
   "main": [
@@ -29,13 +30,13 @@
     "ng-obiba-mica": "https://github.com/obiba/ng-obiba-mica.git#master"
   },
   "homepage": "https://github.com/obiba/sf-obiba-file-upload",
-  "_release": "d07223452a",
+  "_release": "1.0.0",
   "_resolution": {
-    "type": "branch",
-    "branch": "master",
+    "type": "version",
+    "tag": "1.0.0",
     "commit": "d07223452a077c4f749a691437758451a4079be9"
   },
   "_source": "https://github.com/obiba/sf-obiba-file-upload.git",
-  "_target": "master",
+  "_target": "1.0.0",
   "_originalSource": "https://github.com/obiba/sf-obiba-file-upload.git"
 }

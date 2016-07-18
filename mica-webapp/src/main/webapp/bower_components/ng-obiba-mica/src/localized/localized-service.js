@@ -47,8 +47,8 @@ angular.module('obiba.mica.localized')
         return 'en';
       };
 
-      this.formatNumber = function (number){
-        return number.toLocaleString(this.getLocal());
+      this.formatNumber = function (val) {
+        return (typeof val === 'undefined' && val === null && typeof val !== 'number') ? val : val.toLocaleString(this.getLocal());
       };
 
       this.arrayToObject = function (values) {

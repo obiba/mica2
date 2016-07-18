@@ -38,7 +38,8 @@ angular.module('obiba.mica.localized')
         required: '@',
         disabled: '=',
         lang: '=',
-        help: '@'
+        help: '@',
+        customValidator: '='
       },
       templateUrl: 'localized/localized-input-template.html',
       link: function ($scope, elem, attr, ctrl) {
@@ -82,7 +83,8 @@ angular.module('obiba.mica.localized')
         disabled: '=',
         lang: '=',
         help: '@',
-        remove: '='
+        remove: '=',
+        customValidator: '='
       },
       templateUrl: 'localized/localized-input-group-template.html',
       link: function ($scope, elem, attr, ctrl) {
@@ -126,7 +128,8 @@ angular.module('obiba.mica.localized')
         disabled: '=',
         lang: '=',
         help: '@',
-        rows: '@'
+        rows: '@',
+        customValidator: '='
       },
       templateUrl: 'localized/localized-textarea-template.html',
       link: function ($scope, elem, attr, ctrl) {

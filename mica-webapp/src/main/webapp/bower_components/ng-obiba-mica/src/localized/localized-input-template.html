@@ -3,10 +3,10 @@
     {{label | translate}}
     <span ng-show="required">*</span>
   </label>
-  <input ng-repeat="localized in model | filter:{lang:lang}" ng-model="localized.value" type="text" class="form-control" id="{{fieldName}}" name="{{fieldName}}" ng-disabled="disabled" form-server-error ng-required="required">
+  <input ng-repeat="localized in model | filter:{lang:lang}" ng-model="localized.value" ng-change="customValidator(form[fieldName])" type="text" class="form-control" id="{{fieldName}}" name="{{fieldName}}" ng-disabled="disabled" form-server-error ng-required="required">
   <ul class="input-error list-unstyled" ng-show="form[fieldName].$dirty && form[fieldName].$invalid">
     <li ng-show="form[fieldName].$error.required" translate>required</li>
-    <li ng-repeat="error in form[fieldName].errors">{{error}}</li>
+    <li ng-repeat="(error, errorValue) in form[fieldName].$error" translate>{{error}}</li>
   </ul>
   <p ng-show="help" class="help-block">{{help | translate}}</p>
 </div>

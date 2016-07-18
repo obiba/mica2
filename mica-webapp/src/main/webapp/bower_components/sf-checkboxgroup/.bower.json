@@ -1,5 +1,6 @@
 {
   "name": "sf-checkboxgroup",
+  "version": "1.0.0",
   "license": "MIT",
   "author": "obiba",
   "main": [
@@ -26,13 +27,13 @@
     "bootstrap": "^3.3.6"
   },
   "homepage": "https://github.com/obiba/sf-checkboxgroup",
-  "_release": "372b04c9fb",
+  "_release": "1.0.0",
   "_resolution": {
-    "type": "branch",
-    "branch": "master",
+    "type": "version",
+    "tag": "1.0.0",
     "commit": "372b04c9fbb885f37e358e32a3908e3eee722fb2"
   },
   "_source": "https://github.com/obiba/sf-checkboxgroup.git",
-  "_target": "master",
+  "_target": "1.0.0",
   "_originalSource": "https://github.com/obiba/sf-checkboxgroup.git"
 }

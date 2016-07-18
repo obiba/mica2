@@ -5,11 +5,11 @@
     <span ng-show="required">*</span>
   </label>
 
-  <textarea ng-repeat="localized in model | filter:{lang:lang}" ng-model="localized.value" rows="{{rows ? rows : 5}}" class="form-control" id="{{fieldName}}" name="{{fieldName}}" form-server-error ng-disabled="disabled" ng-required="required"></textarea>
+  <textarea ng-repeat="localized in model | filter:{lang:lang}" ng-model="localized.value" ng-change="customValidator(form[fieldName])" rows="{{rows ? rows : 5}}" class="form-control" id="{{fieldName}}" name="{{fieldName}}" form-server-error ng-disabled="disabled" ng-required="required"></textarea>
 
   <ul class="input-error list-unstyled" ng-show="form[fieldName].$dirty && form[fieldName].$invalid">
     <li ng-show="form[fieldName].$error.required" translate>required</li>
-    <li ng-repeat="error in form[fieldName].errors">{{error}}</li>
+    <li ng-repeat="(error, errorValue) in form[fieldName].$error" translate>{{error}}</li>
   </ul>
 
   <p ng-show="help" class="help-block">{{help | translate}}</p>

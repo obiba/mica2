@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-07-15
+ * Date: 2016-07-18
  */
 'use strict';
 
@@ -7202,7 +7202,8 @@ angular.module('obiba.mica.localized')
         required: '@',
         disabled: '=',
         lang: '=',
-        help: '@'
+        help: '@',
+        customValidator: '='
       },
       templateUrl: 'localized/localized-input-template.html',
       link: function ($scope, elem, attr, ctrl) {
@@ -7246,7 +7247,8 @@ angular.module('obiba.mica.localized')
         disabled: '=',
         lang: '=',
         help: '@',
-        remove: '='
+        remove: '=',
+        customValidator: '='
       },
       templateUrl: 'localized/localized-input-group-template.html',
       link: function ($scope, elem, attr, ctrl) {
@@ -7290,7 +7292,8 @@ angular.module('obiba.mica.localized')
         disabled: '=',
         lang: '=',
         help: '@',
-        rows: '@'
+        rows: '@',
+        customValidator: '='
       },
       templateUrl: 'localized/localized-textarea-template.html',
       link: function ($scope, elem, attr, ctrl) {
@@ -7370,8 +7373,8 @@ angular.module('obiba.mica.localized')
         return 'en';
       };
 
-      this.formatNumber = function (number){
-        return number.toLocaleString(this.getLocal());
+      this.formatNumber = function (val) {
+        return (typeof val === 'undefined' && val === null && typeof val !== 'number') ? val : val.toLocaleString(this.getLocal());
       };
 
       this.arrayToObject = function (values) {
@@ -8814,14 +8817,14 @@ angular.module("localized/localized-input-group-template.html", []).run(["$templ
     "    <span ng-show=\"required\">*</span>\n" +
     "  </label>\n" +
     "  <div class=\"input-group\">\n" +
-    "    <input ng-repeat=\"localized in model | filter:{lang:lang}\" ng-model=\"localized.value\" type=\"text\" class=\"form-control\" id=\"{{fieldName}}\" name=\"{{fieldName}}\" ng-disabled=\"disabled\" form-server-error ng-required=\"required\">\n" +
+    "    <input ng-repeat=\"localized in model | filter:{lang:lang}\" ng-model=\"localized.value\" ng-change=\"customValidator(form[fieldName])\" type=\"text\" class=\"form-control\" id=\"{{fieldName}}\" name=\"{{fieldName}}\" ng-disabled=\"disabled\" form-server-error ng-required=\"required\">\n" +
     "  <span class=\"input-group-btn\" ng-show=\"remove\">\n" +
     "    <button class=\"btn btn-default\" type=\"button\" ng-click=\"remove(model)\"><span class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"></span></button>\n" +
     "  </span>\n" +
     "  </div>\n" +
     "  <ul class=\"input-error list-unstyled\" ng-show=\"form[fieldName].$dirty && form[fieldName].$invalid\">\n" +
     "    <li ng-show=\"form[fieldName].$error.required\" translate>required</li>\n" +
-    "    <li ng-repeat=\"error in form[fieldName].errors\">{{error}}</li>\n" +
+    "    <li ng-repeat=\"(error, errorValue) in form[fieldName].$error\" translate>{{error}}</li>\n" +
     "  </ul>\n" +
     "  <p ng-show=\"help\" class=\"help-block\">{{help | translate}}</p>\n" +
     "</div>");
@@ -8834,10 +8837,10 @@ angular.module("localized/localized-input-template.html", []).run(["$templateCac
     "    {{label | translate}}\n" +
     "    <span ng-show=\"required\">*</span>\n" +
     "  </label>\n" +
-    "  <input ng-repeat=\"localized in model | filter:{lang:lang}\" ng-model=\"localized.value\" type=\"text\" class=\"form-control\" id=\"{{fieldName}}\" name=\"{{fieldName}}\" ng-disabled=\"disabled\" form-server-error ng-required=\"required\">\n" +
+    "  <input ng-repeat=\"localized in model | filter:{lang:lang}\" ng-model=\"localized.value\" ng-change=\"customValidator(form[fieldName])\" type=\"text\" class=\"form-control\" id=\"{{fieldName}}\" name=\"{{fieldName}}\" ng-disabled=\"disabled\" form-server-error ng-required=\"required\">\n" +
     "  <ul class=\"input-error list-unstyled\" ng-show=\"form[fieldName].$dirty && form[fieldName].$invalid\">\n" +
     "    <li ng-show=\"form[fieldName].$error.required\" translate>required</li>\n" +
-    "    <li ng-repeat=\"error in form[fieldName].errors\">{{error}}</li>\n" +
+    "    <li ng-repeat=\"(error, errorValue) in form[fieldName].$error\" translate>{{error}}</li>\n" +
     "  </ul>\n" +
     "  <p ng-show=\"help\" class=\"help-block\">{{help | translate}}</p>\n" +
     "</div>");
@@ -8857,11 +8860,11 @@ angular.module("localized/localized-textarea-template.html", []).run(["$template
     "    <span ng-show=\"required\">*</span>\n" +
     "  </label>\n" +
     "\n" +
-    "  <textarea ng-repeat=\"localized in model | filter:{lang:lang}\" ng-model=\"localized.value\" rows=\"{{rows ? rows : 5}}\" class=\"form-control\" id=\"{{fieldName}}\" name=\"{{fieldName}}\" form-server-error ng-disabled=\"disabled\" ng-required=\"required\"></textarea>\n" +
+    "  <textarea ng-repeat=\"localized in model | filter:{lang:lang}\" ng-model=\"localized.value\" ng-change=\"customValidator(form[fieldName])\" rows=\"{{rows ? rows : 5}}\" class=\"form-control\" id=\"{{fieldName}}\" name=\"{{fieldName}}\" form-server-error ng-disabled=\"disabled\" ng-required=\"required\"></textarea>\n" +
     "\n" +
     "  <ul class=\"input-error list-unstyled\" ng-show=\"form[fieldName].$dirty && form[fieldName].$invalid\">\n" +
     "    <li ng-show=\"form[fieldName].$error.required\" translate>required</li>\n" +
-    "    <li ng-repeat=\"error in form[fieldName].errors\">{{error}}</li>\n" +
+    "    <li ng-repeat=\"(error, errorValue) in form[fieldName].$error\" translate>{{error}}</li>\n" +
     "  </ul>\n" +
     "\n" +
     "  <p ng-show=\"help\" class=\"help-block\">{{help | translate}}</p>\n" +
