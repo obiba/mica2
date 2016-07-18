@@ -201,7 +201,8 @@
   },
   "errors": {
     "title": "Error page!",
-    "403": "You are not authorized to access the page."
+    "403": "You are not authorized to access the page.",
+    "wordCount": "Word count limit exceeded."
   },
   "config": {
     "short-title": "Configuration",

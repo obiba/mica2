@@ -201,7 +201,8 @@
   },
   "errors": {
     "title": "Page d'erreur!",
-    "403": "Vous n'avez pas les droits pour accéder à cette page."
+    "403": "Vous n'avez pas les droits pour accéder à cette page.",
+    "wordCount": "La limite de mots est dépassée."
   },
   "config": {
     "short-title": "Configuration",
