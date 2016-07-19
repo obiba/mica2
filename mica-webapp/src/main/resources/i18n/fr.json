@@ -916,6 +916,8 @@
   "general": "Général",
   "configuration": "Configuration",
   "security": "Sécurité",
+  "system": "Système",
+  "content": "Contenu",
   "data-management": "Gestion de données",
   "data-access": "Accès aux données",
   "research": "Recherche",
@@ -1197,7 +1199,7 @@
   },
   "project-config": {
     "menu": "Projet de recherche",
-    "title": "Configuration du projet de recherche",
+    "title": "Configuration des projets de recherche",
     "title-edit": "Éditer la configuration du projet de recherche",
     "general-config": "Configuration générale",
     "saved": "Le formulaire de projet de recherche a été mis à jour avec succès.",

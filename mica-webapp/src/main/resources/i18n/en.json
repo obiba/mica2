@@ -916,6 +916,8 @@
   "general": "General",
   "configuration": "Configuration",
   "security": "Security",
+  "system": "System",
+  "content": "Content",
   "data-management": "Data Management",
   "data-access": "Data Access",
   "research": "Research",
