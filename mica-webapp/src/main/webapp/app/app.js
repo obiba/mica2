@@ -109,6 +109,14 @@ mica
         .preferredLanguage('en')
         .fallbackLanguage('en')
         .useCookieStorage()
+        .registerAvailableLanguageKeys(['en', 'fr'], {
+          'en_CA': 'en',
+          'en_US': 'en',
+          'en_UK': 'en',
+          'fr_CA': 'fr',
+          'fr_FR': 'fr'
+        })
+        .determinePreferredLanguage()
         .useSanitizeValueStrategy('escaped');
 
       tmhDynamicLocaleProvider.localeLocationPattern('bower_components/angular-i18n/angular-locale_{{locale}}.js');
