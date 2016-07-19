@@ -12,7 +12,7 @@ import org.obiba.mica.micaConfig.AuthType;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.domain.OpalCredential;
-import org.obiba.mica.micaConfig.domain.ProjectForm;
+import org.obiba.mica.micaConfig.domain.ProjectConfig;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
@@ -263,25 +263,25 @@ class MicaConfigDtos {
 
 
   @NotNull
-  Mica.ProjectFormDto asDto(@NotNull ProjectForm projectForm) {
+  Mica.ProjectFormDto asDto(@NotNull ProjectConfig projectConfig) {
     Mica.ProjectFormDto.Builder builder = Mica.ProjectFormDto.newBuilder() //
-      .setDefinition(projectForm.getDefinition()) //
-      .setSchema(projectForm.getSchema()) //
-      .addAllProperties(asDtoList(projectForm.getProperties()));
+      .setDefinition(projectConfig.getDefinition()) //
+      .setSchema(projectConfig.getSchema()) //
+      .addAllProperties(asDtoList(projectConfig.getProperties()));
 
     return builder.build();
   }
 
   @NotNull
-  ProjectForm fromDto(@NotNull Mica.ProjectFormDto dto) {
-    ProjectForm projectForm = new ProjectForm();
-    projectForm.setSchema(dto.getSchema());
-    projectForm.setDefinition(dto.getDefinition());
+  ProjectConfig fromDto(@NotNull Mica.ProjectFormDto dto) {
+    ProjectConfig projectConfig = new ProjectConfig();
+    projectConfig.setSchema(dto.getSchema());
+    projectConfig.setDefinition(dto.getDefinition());
 
-    projectForm.setProperties(dto.getPropertiesList().stream()
+    projectConfig.setProperties(dto.getPropertiesList().stream()
       .collect(toMap(e -> e.getName(), e -> localizedStringDtos.fromDto(e.getValueList()))));
 
-    return projectForm;
+    return projectConfig;
   }
 
   @NotNull

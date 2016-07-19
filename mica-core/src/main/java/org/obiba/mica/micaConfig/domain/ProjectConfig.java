@@ -12,7 +12,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Maps;
 
-public class ProjectForm extends AbstractGitPersistable {
+public class ProjectConfig extends AbstractGitPersistable {
 
   public final static String DEFAULT_ID = "default";
 
@@ -30,7 +30,7 @@ public class ProjectForm extends AbstractGitPersistable {
 
   private int revisionsAhead = 0;
 
-  public ProjectForm() {
+  public ProjectConfig() {
     setId(DEFAULT_ID);
   }
 
@@ -96,7 +96,7 @@ public class ProjectForm extends AbstractGitPersistable {
 
   @Override
   public Map<String, Serializable> parts() {
-    final ProjectForm self = this;
+    final ProjectConfig self = this;
 
     return new HashMap<String, Serializable>(){
       {

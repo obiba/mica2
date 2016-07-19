@@ -11,6 +11,6 @@ public class NoSuchProjectFormException extends NoSuchElementException {
   }
 
   public static NoSuchProjectFormException withDefaultMessage() {
-    return new NoSuchProjectFormException("ProjectForm does not exist");
+    return new NoSuchProjectFormException("ProjectConfig does not exist");
   }
 }
