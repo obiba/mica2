@@ -24,7 +24,7 @@ import org.obiba.mica.file.TempFile;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.domain.OpalCredential;
-import org.obiba.mica.micaConfig.domain.ProjectForm;
+import org.obiba.mica.micaConfig.domain.ProjectConfig;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.study.domain.Study;
@@ -368,12 +368,12 @@ public class Dtos {
   }
 
   @NotNull
-  public Mica.ProjectFormDto asDto(@NotNull ProjectForm projectForm) {
-    return micaConfigDtos.asDto(projectForm);
+  public Mica.ProjectFormDto asDto(@NotNull ProjectConfig projectConfig) {
+    return micaConfigDtos.asDto(projectConfig);
   }
 
   @NotNull
-  public ProjectForm fromDto(@NotNull Mica.ProjectFormDto dto) {
+  public ProjectConfig fromDto(@NotNull Mica.ProjectFormDto dto) {
     return micaConfigDtos.fromDto(dto);
   }
 

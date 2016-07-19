@@ -6,11 +6,10 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.micaConfig.NoSuchProjectFormException;
-import org.obiba.mica.micaConfig.domain.ProjectForm;
-import org.obiba.mica.micaConfig.service.ProjectFormService;
+import org.obiba.mica.micaConfig.domain.ProjectConfig;
+import org.obiba.mica.micaConfig.service.ProjectConfigService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.rest.SubjectAclResource;
 import org.obiba.mica.web.model.Dtos;
@@ -19,11 +18,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 @Component
-@Path("/config/project-form")
-public class ProjectFormResource {
+@Path("/config/project")
+public class ProjectConfigResource {
 
   @Inject
-  ProjectFormService projectFormService;
+  ProjectConfigService projectConfigService;
 
   @Inject
   ApplicationContext applicationContext;
@@ -32,26 +31,18 @@ public class ProjectFormResource {
   Dtos dtos;
 
   @GET
+  @Path("/form")
   public Mica.ProjectFormDto get() {
-    Optional<ProjectForm> d = projectFormService.find();
-
+    Optional<ProjectConfig> d = projectConfigService.find();
     if(!d.isPresent()) throw NoSuchProjectFormException.withDefaultMessage();
-
     return dtos.asDto(d.get());
   }
 
   @PUT
+  @Path("/form")
   @RequiresRoles(Roles.MICA_ADMIN)
   public Response update(Mica.ProjectFormDto dto) {
-    projectFormService.createOrUpdate(dtos.fromDto(dto));
-    return Response.ok().build();
-  }
-
-  @PUT
-  @Path("/_publish")
-  @RequiresRoles(Roles.MICA_ADMIN)
-  public Response publish() {
-    projectFormService.publish();
+    projectConfigService.createOrUpdate(dtos.fromDto(dto));
     return Response.ok().build();
   }
 

@@ -15,15 +15,15 @@ mica.projectConfig
 
   .factory('ProjectFormResource', ['$resource',
     function ($resource) {
-      return $resource('ws/config/project-form', {}, {
+      return $resource('ws/config/project/form', {}, {
         'get': {method: 'GET', errorHandler: true},
         'save': {method: 'PUT', errorHandler: true}
       });
     }])
-  
+
   .factory('ProjectFormPermissionsResource', ['$resource',
     function ($resource) {
-      return $resource('ws/config/project-form/permissions', {}, {
+      return $resource('ws/config/project/permissions', {}, {
         'save': {
           method: 'PUT',
           params: {draft: '@draft', type: '@type', principal: '@principal', role: '@role'},

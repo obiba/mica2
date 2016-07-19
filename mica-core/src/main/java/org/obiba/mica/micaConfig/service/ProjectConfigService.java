@@ -12,14 +12,14 @@ import org.json.JSONObject;
 import org.obiba.mica.core.domain.RevisionStatus;
 import org.obiba.mica.core.service.GitService;
 import org.obiba.mica.file.FileStoreService;
-import org.obiba.mica.micaConfig.domain.ProjectForm;
-import org.obiba.mica.micaConfig.repository.ProjectFormRepository;
+import org.obiba.mica.micaConfig.domain.ProjectConfig;
+import org.obiba.mica.micaConfig.repository.ProjectConfigRepository;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ProjectFormService {
+public class ProjectConfigService {
 
   @Inject
   GitService gitService;
@@ -28,37 +28,37 @@ public class ProjectFormService {
   FileStoreService fileStoreService;
 
   @Inject
-  ProjectFormRepository projectFormRepository;
+  ProjectConfigRepository projectConfigRepository;
 
-  public void createOrUpdate(ProjectForm projectForm) {
-    validateForm(projectForm);
-    projectForm.incrementRevisionsAhead();
-    gitService.save(projectForm);
-    projectFormRepository.save(projectForm);
+  public void createOrUpdate(ProjectConfig projectConfig) {
+    validateForm(projectConfig);
+    projectConfig.incrementRevisionsAhead();
+    gitService.save(projectConfig);
+    projectConfigRepository.save(projectConfig);
   }
 
-  public Optional<ProjectForm> find() {
-    ProjectForm form = projectFormRepository.findOne(ProjectForm.DEFAULT_ID);
+  public Optional<ProjectConfig> find() {
+    ProjectConfig form = projectConfigRepository.findOne(ProjectConfig.DEFAULT_ID);
     if(form == null) {
       createOrUpdate(createDefaultProjectForm());
     }
 
-    return Optional.ofNullable(form == null ? projectFormRepository.findOne(ProjectForm.DEFAULT_ID) : form);
+    return Optional.ofNullable(form == null ? projectConfigRepository.findOne(ProjectConfig.DEFAULT_ID) : form);
   }
 
   public void publish() {
-    Optional<ProjectForm> projectForm = find();
+    Optional<ProjectConfig> projectForm = find();
     projectForm.ifPresent(d -> {
       d.setPublishedTag(gitService.tag(d).getFirst());
       d.setRevisionsAhead(0);
       d.setRevisionStatus(RevisionStatus.DRAFT);
-      projectFormRepository.save(d);
+      projectConfigRepository.save(d);
     });
   }
 
-  private void validateForm(ProjectForm projectForm) {
-    validateSchema(projectForm.getSchema());
-    validateDefinition(projectForm.getDefinition());
+  private void validateForm(ProjectConfig projectConfig) {
+    validateSchema(projectConfig.getSchema());
+    validateDefinition(projectConfig.getDefinition());
   }
 
   private void validateSchema(String json) {
@@ -77,8 +77,8 @@ public class ProjectFormService {
     }
   }
 
-  private ProjectForm createDefaultProjectForm() {
-    ProjectForm form = new ProjectForm();
+  private ProjectConfig createDefaultProjectForm() {
+    ProjectConfig form = new ProjectConfig();
     form.setDefinition(getDefaultProjectFormResourceAsString("definition.json"));
     form.setSchema(getDefaultProjectFormResourceAsString("schema.json"));
     return form;
