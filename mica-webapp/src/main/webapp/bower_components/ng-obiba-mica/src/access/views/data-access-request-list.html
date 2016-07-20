@@ -87,11 +87,15 @@
             {{request.title}}
           </td>
           <td>
-            {{(request.timestamps.lastUpdate || request.timestamps.created) |
-            fromNow}}
+            <span title="{{(request.timestamps.lastUpdate || request.timestamps.created) | amDateFormat: 'lll'}}">
+              {{(request.timestamps.lastUpdate || request.timestamps.created) | amCalendar}}
+            </span>
+
           </td>
           <td>
-            <span ng-if="request.submissionDate">{{request.submissionDate | fromNow}}</span>
+            <span ng-if="request.submissionDate" title="{{ request.submissionDate | amDateFormat: 'lll' }}">
+              {{request.submissionDate | amCalendar}}
+            </span>
           </td>
           <td>
             {{request.status | translate}}

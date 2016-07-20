@@ -82,7 +82,9 @@
           {{document.size}} {{document.size === 1 ? 'item' : 'items' | translate}}
         </td>
         <td>
-          {{document.timestamps.lastUpdate | amTimeAgo}}
+          <span title="{{document.timestamps.lastUpdate | amDateFormat: 'lll'}}">
+            {{document.timestamps.lastUpdate | amTimeAgo}}
+          </span>
         </td>
         <td ng-if="data.search.active">
           <a href class="no-text-decoration" ng-click="navigateToParent($event, document)">

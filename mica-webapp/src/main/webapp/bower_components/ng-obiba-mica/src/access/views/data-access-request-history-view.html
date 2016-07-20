@@ -23,7 +23,11 @@
     <td><span><i class="{{info.icon}} hoffset"></i></span></td>
     <td>{{info.msg}}</span></span></td>
     <td>{{userProfileService.getFullName(status.profile) || status.author}}</td>
-    <td><span>{{status.changedOn | fromNow}}</span></td>
+    <td>
+      <span title="{{status.changedOn | amDateFormat: 'lll'}}">
+        {{status.changedOn | amCalendar}}
+      </span>
+    </td>
   </tr>
   </tbody>
 </table>
