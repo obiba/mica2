@@ -1,9 +1,9 @@
 /*!
- * ng-obiba-mica - v1.2.0
+ * ng-obiba-mica - v1.2.1
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-07-18
+ * Date: 2016-07-20
  */
 'use strict';
 
@@ -8086,7 +8086,11 @@ angular.module("access/views/data-access-request-history-view.html", []).run(["$
     "    <td><span><i class=\"{{info.icon}} hoffset\"></i></span></td>\n" +
     "    <td>{{info.msg}}</span></span></td>\n" +
     "    <td>{{userProfileService.getFullName(status.profile) || status.author}}</td>\n" +
-    "    <td><span>{{status.changedOn | fromNow}}</span></td>\n" +
+    "    <td>\n" +
+    "      <span title=\"{{status.changedOn | amDateFormat: 'lll'}}\">\n" +
+    "        {{status.changedOn | amCalendar}}\n" +
+    "      </span>\n" +
+    "    </td>\n" +
     "  </tr>\n" +
     "  </tbody>\n" +
     "</table>\n" +
@@ -8184,11 +8188,15 @@ angular.module("access/views/data-access-request-list.html", []).run(["$template
     "            {{request.title}}\n" +
     "          </td>\n" +
     "          <td>\n" +
-    "            {{(request.timestamps.lastUpdate || request.timestamps.created) |\n" +
-    "            fromNow}}\n" +
+    "            <span title=\"{{(request.timestamps.lastUpdate || request.timestamps.created) | amDateFormat: 'lll'}}\">\n" +
+    "              {{(request.timestamps.lastUpdate || request.timestamps.created) | amCalendar}}\n" +
+    "            </span>\n" +
+    "\n" +
     "          </td>\n" +
     "          <td>\n" +
-    "            <span ng-if=\"request.submissionDate\">{{request.submissionDate | fromNow}}</span>\n" +
+    "            <span ng-if=\"request.submissionDate\" title=\"{{ request.submissionDate | amDateFormat: 'lll' }}\">\n" +
+    "              {{request.submissionDate | amCalendar}}\n" +
+    "            </span>\n" +
     "          </td>\n" +
     "          <td>\n" +
     "            {{request.status | translate}}\n" +
@@ -8355,7 +8363,7 @@ angular.module("access/views/data-access-request-view.html", []).run(["$template
     "      <a href ng-click=\"userProfile(dataAccessRequest.profile)\"\n" +
     "          ng-if=\"actions.canViewProfile('mica-data-access-officer')\">\n" +
     "        {{getFullName(dataAccessRequest.profile) || dataAccessRequest.applicant}}</a>,\n" +
-    "      <span>{{dataAccessRequest.timestamps.created | amCalendar}}</span>\n" +
+    "      <span title=\"{{dataAccessRequest.timestamps.created | amDateFormat: 'lll'}}\">{{dataAccessRequest.timestamps.created | amCalendar}}</span>\n" +
     "      <span class=\"label label-success\">{{dataAccessRequest.status | translate}}</span></p>\n" +
     "\n" +
     "    <div class=\"pull-right\">\n" +
@@ -8660,7 +8668,9 @@ angular.module("file-browser/views/documents-table-template.html", []).run(["$te
     "          {{document.size}} {{document.size === 1 ? 'item' : 'items' | translate}}\n" +
     "        </td>\n" +
     "        <td>\n" +
-    "          {{document.timestamps.lastUpdate | amTimeAgo}}\n" +
+    "          <span title=\"{{document.timestamps.lastUpdate | amDateFormat: 'lll'}}\">\n" +
+    "            {{document.timestamps.lastUpdate | amTimeAgo}}\n" +
+    "          </span>\n" +
     "        </td>\n" +
     "        <td ng-if=\"data.search.active\">\n" +
     "          <a href class=\"no-text-decoration\" ng-click=\"navigateToParent($event, document)\">\n" +
