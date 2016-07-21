@@ -47,16 +47,26 @@ mica.factory('Password', ['$resource',
     });
   }]);
 
-mica.factory('Session', ['SessionProxy','$cookieStore',
-  function (SessionProxy, $cookieStore) {
+mica.factory('Session', ['SessionProxy','$cookieStore','$translate','UserProfileService',
+  function (SessionProxy, $cookieStore, $translate, UserProfileService) {
     this.create = function (login, roles) {
       this.login = login;
       this.roles = roles;
       SessionProxy.update(this);
     };
 
+    this.getPreferredLanguage = function() {
+      if (this.profile) {
+        if (this.profile.attributes) {
+          return UserProfileService.getAttribute(this.profile.attributes,'locale');
+        }
+      }
+      return null;
+    };
+
     this.setProfile = function(profile) {
       this.profile = profile;
+      $translate.use(this.getPreferredLanguage());
       SessionProxy.update(this);
     };
 
