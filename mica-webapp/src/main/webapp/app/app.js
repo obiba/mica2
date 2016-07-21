@@ -106,17 +106,14 @@ mica
           prefix: 'ws/config/i18n/',
           suffix: '.json'
         })
-        .preferredLanguage('en')
-        .fallbackLanguage('en')
-        .useCookieStorage()
         .registerAvailableLanguageKeys(['en', 'fr'], {
-          'en_CA': 'en',
-          'en_US': 'en',
-          'en_UK': 'en',
-          'fr_CA': 'fr',
-          'fr_FR': 'fr'
+          'en_*': 'en',
+          'fr_*': 'fr',
+          '*': 'en'
         })
         .determinePreferredLanguage()
+        .fallbackLanguage('en')
+        .useCookieStorage()
         .useSanitizeValueStrategy('escaped');
 
       tmhDynamicLocaleProvider.localeLocationPattern('bower_components/angular-i18n/angular-locale_{{locale}}.js');
@@ -209,7 +206,7 @@ mica
           $rootScope.hasRole = AuthenticationSharedService.isAuthorized;
           $rootScope.userRoles = USER_ROLES;
           $rootScope.subject = Session;
-          $rootScope.userProfileService = UserProfileService;
+          $rootScope.getFullName = UserProfileService.getFullName;
 
           if (!$rootScope.authenticated) {
             if ('/login' !== $location.path()) {
