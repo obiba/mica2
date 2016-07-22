@@ -172,9 +172,8 @@ public class DataAccessRequestResource {
   @POST
   @Path("/comments")
   public Response createComment(@PathParam("id") String id, String message) {
-    subjectAclService.checkPermission("/data-access-request/" + id + "/comments", "ADD");
+    subjectAclService.checkPermission("/data-access-request", "VIEW", id);
     dataAccessRequestService.findById(id);
-
     Comment comment = commentsService.save( //
       Comment.newBuilder() //
         .createdBy(SecurityUtils.getSubject().getPrincipal().toString()) //
