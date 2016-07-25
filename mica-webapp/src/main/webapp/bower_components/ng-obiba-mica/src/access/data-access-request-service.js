@@ -162,6 +162,10 @@ angular.module('obiba.mica.access')
 
         canDelete: function (request) {
           return canDoAction(request, 'DELETE');
+        },
+
+        canEditAttachments: function (request) {
+          return canDoAction(request, 'EDIT_ATTACHMENTS');
         }
       };
 
