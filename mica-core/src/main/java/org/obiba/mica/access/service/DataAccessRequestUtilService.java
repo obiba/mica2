@@ -17,6 +17,7 @@ import javax.inject.Inject;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
+import org.obiba.mica.security.service.SubjectAclService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -39,6 +40,9 @@ public class DataAccessRequestUtilService {
 
   @Inject
   private DataAccessFormService dataAccessFormService;
+
+  @Inject
+  private SubjectAclService subjectAclService;
 
   public String getRequestTitle(DataAccessRequest request) {
     DataAccessForm dataAccessForm = dataAccessFormService.find().get();
@@ -87,7 +91,7 @@ public class DataAccessRequestUtilService {
     List<DataAccessRequest.Status> to = Lists.newArrayList();
     switch(request.getStatus()) {
       case OPENED:
-        addNextOpenedStatus(to);
+        if (subjectAclService.isCurrentUser(request.getApplicant())) addNextOpenedStatus(to);
         break;
       case SUBMITTED:
         addNextSubmittedStatus(to);
@@ -96,7 +100,7 @@ public class DataAccessRequestUtilService {
         addNextReviewedStatus(to);
         break;
       case CONDITIONALLY_APPROVED:
-        addNextConditionallyApprovedStatus(to);
+        if (subjectAclService.isCurrentUser(request.getApplicant())) addNextConditionallyApprovedStatus(to);
         break;
       case APPROVED:
         addNextApprovedStatus(to);
