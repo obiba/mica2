@@ -35,7 +35,7 @@
       </p>
       <attachment-list files="dataAccessRequest.attachments"
                        href-builder="getDownloadHref"></attachment-list>
-      <a ng-click="editAttachments()" type="button" class="btn btn-info">
+      <a ng-if="actions.canEditAttachments(dataAccessRequest)" ng-click="editAttachments()" type="button" class="btn btn-info">
         <span translate>data-access-request.edit-documents</span>
       </a>
     </div>

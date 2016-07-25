@@ -253,7 +253,7 @@ angular.module('obiba.mica.access')
         return ngObibaMicaUrl.getUrl('DataAccessRequestAttachmentDownloadResource')
           .replace(':id', $scope.dataAccessRequest.id).replace(':attachmentId', attachment.id);
       };
-
+      
       $scope.config = DataAccessRequestConfig.getOptions();
       $scope.actions = DataAccessRequestService.actions;
       $scope.nextStatus = DataAccessRequestService.nextStatus;

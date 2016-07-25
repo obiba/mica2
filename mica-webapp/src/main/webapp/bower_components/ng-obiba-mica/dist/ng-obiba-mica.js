@@ -1,9 +1,9 @@
 /*!
- * ng-obiba-mica - v1.2.1
+ * ng-obiba-mica - v1.2.2
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-07-20
+ * Date: 2016-07-25
  */
 'use strict';
 
@@ -765,7 +765,7 @@ angular.module('obiba.mica.access')
         return ngObibaMicaUrl.getUrl('DataAccessRequestAttachmentDownloadResource')
           .replace(':id', $scope.dataAccessRequest.id).replace(':attachmentId', attachment.id);
       };
-
+      
       $scope.config = DataAccessRequestConfig.getOptions();
       $scope.actions = DataAccessRequestService.actions;
       $scope.nextStatus = DataAccessRequestService.nextStatus;
@@ -1332,6 +1332,10 @@ angular.module('obiba.mica.access')
 
         canDelete: function (request) {
           return canDoAction(request, 'DELETE');
+        },
+
+        canEditAttachments: function (request) {
+          return canDoAction(request, 'EDIT_ATTACHMENTS');
         }
       };
 
@@ -8005,7 +8009,7 @@ angular.module("access/views/data-access-request-documents-view.html", []).run([
     "      </p>\n" +
     "      <attachment-list files=\"dataAccessRequest.attachments\"\n" +
     "                       href-builder=\"getDownloadHref\"></attachment-list>\n" +
-    "      <a ng-click=\"editAttachments()\" type=\"button\" class=\"btn btn-info\">\n" +
+    "      <a ng-if=\"actions.canEditAttachments(dataAccessRequest)\" ng-click=\"editAttachments()\" type=\"button\" class=\"btn btn-info\">\n" +
     "        <span translate>data-access-request.edit-documents</span>\n" +
     "      </a>\n" +
     "    </div>\n" +
