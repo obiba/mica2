@@ -6,12 +6,14 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.apache.shiro.SecurityUtils;
 import org.obiba.mica.access.domain.DataAccessRequest;
 import org.obiba.mica.access.service.DataAccessRequestUtilService;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.project.service.NoSuchProjectException;
 import org.obiba.mica.project.service.ProjectService;
+import org.obiba.mica.security.Roles;
 import org.obiba.mica.security.service.SubjectAclService;
 import org.obiba.mica.user.UserProfileService;
 import org.obiba.shiro.realm.ObibaRealm;
@@ -78,6 +80,10 @@ class DataAccessRequestDtos {
     if(subjectAclService
       .isPermitted(Paths.get("/data-access-request", request.getId()).toString(), "EDIT", "_status")) {
       builder.addActions("EDIT_STATUS");
+    }
+    if (SecurityUtils.getSubject().hasRole(Roles.MICA_DAO) ||
+      subjectAclService.isPermitted(Paths.get("/data-access-request", request.getId(), "_attachments").toString(), "EDIT")) {
+      builder.addActions("EDIT_ATTACHMENTS");
     }
 
     try {
