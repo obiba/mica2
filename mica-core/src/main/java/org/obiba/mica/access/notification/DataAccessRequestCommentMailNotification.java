@@ -23,6 +23,7 @@ import org.obiba.mica.core.service.MailService;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.security.Roles;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Strings;
@@ -68,6 +69,9 @@ public class DataAccessRequestCommentMailNotification implements MailNotificatio
 
     mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getCommentedSubject(), ctx, DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT),
       "dataAccessRequestCommentAdded", ctx, request.getApplicant());
+
+    mailService.sendEmailToGroups(mailService.getSubject(dataAccessForm.getCommentedSubject(), ctx, DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT),
+      "dataAccessRequestCommentAdded", ctx, Roles.MICA_DAO);
   }
 
 }

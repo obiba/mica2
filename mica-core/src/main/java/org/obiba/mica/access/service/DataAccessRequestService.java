@@ -382,6 +382,10 @@ public class DataAccessRequestService {
       mailService.sendEmailToUsers(mailService.getSubject(dataAccessForm.getAttachmentSubject(), ctx,
         DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestAttachmentsUpdated", ctx,
         request.getApplicant());
+
+      mailService.sendEmailToGroups(mailService.getSubject(dataAccessForm.getAttachmentSubject(), ctx,
+        DataAccessRequestUtilService.DEFAULT_NOTIFICATION_SUBJECT), "dataAccessRequestAttachmentsUpdated", ctx,
+        Roles.MICA_DAO);
     }
   }
 
