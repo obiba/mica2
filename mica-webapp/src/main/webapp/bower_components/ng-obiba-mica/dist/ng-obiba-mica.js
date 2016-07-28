@@ -1,9 +1,9 @@
 /*!
- * ng-obiba-mica - v1.2.2
+ * ng-obiba-mica - v1.3.0
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-07-25
+ * Date: 2016-07-28
  */
 'use strict';
 
@@ -7983,7 +7983,7 @@ angular.module("access/views/data-access-request-documents-view.html", []).run([
     "  -->\n" +
     "\n" +
     "<div>\n" +
-    "  <p class=\"help-block\">{{config.documentsSectionHelpText || 'data-access-request.documents-help' | translate}}</p>\n" +
+    "  <div class=\"help-block\" ng-bind-html=\"config.documentsSectionHelpText || 'data-access-request.documents-help' | translate\"></div>\n" +
     "\n" +
     "  <div class=\"form-group\">\n" +
     "\n" +
