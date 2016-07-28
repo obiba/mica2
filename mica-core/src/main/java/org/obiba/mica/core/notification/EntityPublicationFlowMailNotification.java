@@ -33,7 +33,9 @@ public class EntityPublicationFlowMailNotification extends PublicationFlowMailNo
       ctx.put("documentType", typeName);
       ctx.put("documentId", id);
 
+      // Get subjects having permissions on the specific instance or all instances of the considered type
       List<SubjectAcl> acls = getResourceAcls(String.format("/draft/%s", typeName), id);
+      acls.addAll(getResourceAcls(String.format("/draft/%s", typeName), "*"));
       String subject = mailService
         .getSubject(micaConfigService.getConfig().getStudyNotificationsSubject(), ctx, getMailEntityTitle(typeName));
 
