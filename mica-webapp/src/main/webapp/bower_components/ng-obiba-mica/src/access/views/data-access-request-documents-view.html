@@ -9,7 +9,7 @@
   -->
 
 <div>
-  <p class="help-block">{{config.documentsSectionHelpText || 'data-access-request.documents-help' | translate}}</p>
+  <div class="help-block" ng-bind-html="config.documentsSectionHelpText || 'data-access-request.documents-help' | translate"></div>
 
   <div class="form-group">
 
