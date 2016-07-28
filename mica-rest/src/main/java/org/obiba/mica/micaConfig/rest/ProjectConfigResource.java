@@ -48,15 +48,20 @@ public class ProjectConfigResource {
 
   @Path("/permissions")
   @RequiresRoles(Roles.MICA_ADMIN)
-  public SubjectAclResource permissions(@QueryParam("draft") @DefaultValue("false") boolean draft) {
+  public SubjectAclResource permissions() {
     SubjectAclResource subjectAclResource = applicationContext.getBean(SubjectAclResource.class);
-    if (draft) {
-      subjectAclResource.setResourceInstance("/draft/project", "*");
-      subjectAclResource.setFileResourceInstance("/file", "/draft/project");
-    } else {
-      subjectAclResource.setResourceInstance("/project", "*");
-      subjectAclResource.setFileResourceInstance("/file", "/project");
-    }
+    subjectAclResource.setResourceInstance("/draft/project", "*");
+    subjectAclResource.setFileResourceInstance("/file", "/draft/project");
     return subjectAclResource;
   }
+
+  @Path("/accesses")
+  @RequiresRoles(Roles.MICA_ADMIN)
+  public SubjectAclResource accesses() {
+    SubjectAclResource subjectAclResource = applicationContext.getBean(SubjectAclResource.class);
+    subjectAclResource.setResourceInstance("/project", "*");
+    subjectAclResource.setFileResourceInstance("/file", "/project");
+    return subjectAclResource;
+  }
+
 }
