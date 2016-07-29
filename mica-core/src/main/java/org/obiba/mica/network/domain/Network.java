@@ -10,19 +10,6 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
-import org.hibernate.validator.constraints.URL;
-import org.obiba.mica.core.domain.AbstractGitPersistable;
-import org.obiba.mica.core.domain.Attribute;
-import org.obiba.mica.core.domain.AttributeAware;
-import org.obiba.mica.core.domain.Attributes;
-import org.obiba.mica.core.domain.Authorization;
-import org.obiba.mica.core.domain.PersonAware;
-import org.obiba.mica.core.domain.LocalizedString;
-import org.obiba.mica.core.domain.Membership;
-import org.obiba.mica.core.domain.Person;
-import org.obiba.mica.file.Attachment;
-import org.obiba.mica.study.domain.Study;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.MoreObjects;
@@ -30,13 +17,25 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import org.hibernate.validator.constraints.URL;
+import org.obiba.mica.core.domain.Attribute;
+import org.obiba.mica.core.domain.AttributeAware;
+import org.obiba.mica.core.domain.Attributes;
+import org.obiba.mica.core.domain.Authorization;
+import org.obiba.mica.core.domain.AbstractModelAware;
+import org.obiba.mica.core.domain.LocalizedString;
+import org.obiba.mica.core.domain.Membership;
+import org.obiba.mica.core.domain.Person;
+import org.obiba.mica.core.domain.PersonAware;
+import org.obiba.mica.file.Attachment;
+import org.obiba.mica.study.domain.Study;
 
 import static java.util.stream.Collectors.toList;
 
 /**
  * A Network.
  */
-public class Network extends AbstractGitPersistable implements AttributeAware, PersonAware {
+public class Network extends AbstractModelAware implements AttributeAware, PersonAware {
 
   private static final long serialVersionUID = -4271967393906681773L;
 

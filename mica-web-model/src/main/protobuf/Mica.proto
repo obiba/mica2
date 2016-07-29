@@ -279,6 +279,7 @@ message NetworkDto {
   repeated string networkIds = 18;
   repeated NetworkSummaryDto networkSummaries = 19;
   optional PermissionsDto permissions = 21;
+  optional string content = 22;
   extensions 1000 to max;
 }
 
@@ -753,6 +754,43 @@ message ProjectFormDto {
   required string schema = 1;
   required string definition = 2;
   repeated LocalizedPropertyDto properties = 3;
+}
+
+message EntityFormDto {
+  extensions 1000 to max;
+
+  enum Type {
+    Network = 1;
+    Study = 2;
+    Dataset = 3;
+  }
+
+  required Type type = 1;
+  required string schema = 2;
+  required string definition = 3;
+}
+
+message NetworkFormDto {
+  extend EntityFormDto {
+    required NetworkFormDto entity = 1000;
+  }
+}
+
+message DatasetFormDto {
+  extend EntityFormDto {
+    required DatasetFormDto entity = 1001;
+  }
+}
+
+message StudyFormDto {
+  extend EntityFormDto {
+    required StudyFormDto entity = 1002;
+  }
+
+  required string populationSchema = 1;
+  required string populationDefinition = 2;
+  required string dceSchema = 3;
+  required string dceDefinition = 4;
 }
 
 message UserProfileDto {

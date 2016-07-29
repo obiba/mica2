@@ -48,7 +48,7 @@ mica.network
         $scope.totalCount = parseInt(responseHeaders('X-Total-Count'), 10);
         $scope.networks = response;
         $scope.loading = false;
-        
+
         if (!$scope.hasNetworks) {
           $scope.hasNetworks = $scope.totalCount && !$scope.pagination.searchText;
         }
@@ -92,7 +92,7 @@ mica.network
           loadPage(1);
         }
       }
-      
+
       $scope.$watch('pagination.searchText', function(newVal, oldVal) {
         if (!newVal && !oldVal) {
           return;
@@ -115,47 +115,66 @@ mica.network
     '$scope',
     '$routeParams',
     '$log',
+    '$filter',
+    '$q',
     '$locale',
     '$location',
     'DraftNetworkResource',
     'DraftNetworksResource',
     'DraftNetworkPublicationResource',
+    'LocalizedSchemaFormService',
     'MicaConfigResource',
+    'EntityFormResource',
     'FormServerValidation',
     'FormDirtyStateObserver',
     function ($rootScope,
               $scope,
               $routeParams,
               $log,
+              $filter,
+              $q,
               $locale,
               $location,
               DraftNetworkResource,
               DraftNetworksResource,
               DraftNetworkPublicationResource,
+              LocalizedSchemaFormService,
               MicaConfigResource,
+              EntityFormResource,
               FormServerValidation,
               FormDirtyStateObserver) {
 
       $scope.activeTab = 0;
       $scope.files = [];
       $scope.newNetwork= !$routeParams.id;
-      $scope.network = $routeParams.id ?
-        DraftNetworkResource.get({id: $routeParams.id}, function(response) {
-          $scope.files = response.logo ? [response.logo] : [];
-          return response;
-        }) : {published: false};
+      $scope.network = $routeParams.id ? DraftNetworkResource.get({id: $routeParams.id}, function(network) {
+        $scope.files = network.logo ? [network.logo] : [];
+        network.dynamicModel = network.content ? angular.fromJson(network.content) : {};
+
+        return network;
+      }) : {published: false};
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
+
+        $scope.sfOptions = {formDefaults: {languages: {}}};
+
         micaConfig.languages.forEach(function (lang) {
           $scope.tabs.push({lang: lang});
+          $scope.sfOptions.formDefaults.languages[lang]= $filter('translate')('language.' + lang);
+        });
+        
+        $scope.sfForm = EntityFormResource.get({target: 'network'}, function(form) {
+          form.schema = LocalizedSchemaFormService.translate(angular.fromJson(form.schema));
+          form.definition = LocalizedSchemaFormService.translate(angular.fromJson(form.definition));
         });
       });
 
       $scope.save = function () {
         $scope.network.logo = $scope.files.length > 0 ? $scope.files[0] : null;
+        $scope.network.content = $scope.network.dynamicModel ? angular.toJson($scope.network.dynamicModel) : null;
 
-        if(!$scope.network.logo) { //protobuf doesnt like null values
+        if(!$scope.network.logo) {
           delete $scope.network.logo;
         }
 
@@ -291,6 +310,7 @@ mica.network
     '$scope',
     '$routeParams',
     '$log',
+    '$q',
     '$locale',
     '$location',
     '$translate',
@@ -302,7 +322,9 @@ mica.network
     'DraftNetworkViewRevisionResource',
     'DraftNetworkRevisionsResource',
     'DraftNetworkRestoreRevisionResource',
+    'LocalizedSchemaFormService',
     'MicaConfigResource',
+    'EntityFormResource',
     'CONTACT_EVENTS',
     'NETWORK_EVENTS',
     'NOTIFICATION_EVENTS',
@@ -319,6 +341,7 @@ mica.network
               $scope,
               $routeParams,
               $log,
+              $q,
               $locale,
               $location,
               $translate,
@@ -330,7 +353,9 @@ mica.network
               DraftNetworkViewRevisionResource,
               DraftNetworkRevisionsResource,
               DraftNetworkRestoreRevisionResource,
+              LocalizedSchemaFormService,
               MicaConfigResource,
+              EntityFormResource,
               CONTACT_EVENTS,
               NETWORK_EVENTS,
               NOTIFICATION_EVENTS,
@@ -354,6 +379,7 @@ mica.network
         network.studyIds = network.studyIds || [];
         $scope.network.networkIds = $scope.network.networkIds || [];
         network.memberships = network.memberships || [];
+        network.dynamicModel = network.content ? angular.fromJson(network.content) : {};
 
         $scope.memberships = network.memberships.map(function (m) {
           if (!m.members) {
@@ -389,17 +415,32 @@ mica.network
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
+        $scope.sfOptions = {};
+        
         micaConfig.languages.forEach(function (lang) {
           $scope.tabs.push({lang: lang});
+          $scope.sfOptions[lang] = {
+            formDefaults: {
+              readonly: true,
+               languages: {lang: $filter('translate')('language.' + lang)} 
+            }
+          };
         });
 
+        $scope.languages = micaConfig.languages;
         $scope.roles = micaConfig.roles;
         $scope.openAccess = micaConfig.openAccess;
+        
+        $scope.sfForm = EntityFormResource.get({target: 'network'}, function(form) {
+          form.schema = angular.fromJson(form.schema);
+          form.definition = angular.fromJson(form.definition);
+        });
       });
 
       $scope.networkId = $routeParams.id;
       $scope.studySummaries = [];
       $scope.network = DraftNetworkResource.get({id: $routeParams.id}, initializeNetwork);
+      
 
       $scope.publish = function (publish) {
         if (publish) {

@@ -947,6 +947,9 @@
       "logs": "Configurer les logs du server.",
       "caching": "Gérer les caches du serveur.",
       "indexing": "Gérer les index du serveur.",
+      "network-config": "Configure network form.",
+      "study-config": "Configure study form.",
+      "dataset-config": "Configure dataset form.",
       "data-access-config": "Configurer le formulaire de demande d'accès aux données.",
       "project-config": "Configurer le formulaire de projet de recherche.",
       "file-system": "Gérer le système de fichiers.",
@@ -1094,6 +1097,15 @@
         "check": "J'ai rempli tous les champs obligatoires, inclus tous les documents nécessaires, et par la présente, soumets cette demande."
       }
     }
+  },
+  "network-config" : {
+    "title" : "Network Configuration"
+  },
+  "study-config" : {
+    "title" : "Study Configuration"
+  },
+  "dataset-config" : {
+    "title" : "Dataset Configuration"
   },
   "data-access-config": {
     "menu": "Accès aux données",

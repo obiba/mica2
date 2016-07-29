@@ -28,12 +28,10 @@ mica.projectConfig
               ProjectFormPermissionsResource) {
 
       var saveForm = function() {
-
         switch (EntitySchemaFormService.isFormValid($scope.form)) {
           case EntitySchemaFormService.ParseResult.VALID:
             $scope.projectForm.definition = $scope.form.definition;
             $scope.projectForm.schema = $scope.form.schema;
-
             ProjectFormResource.save($scope.projectForm,
               function () {
                 $location.path('/admin').replace();
