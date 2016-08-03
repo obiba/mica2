@@ -1197,6 +1197,31 @@
       "schema": "Le Schema Form n'est pas un document valide, veuillez contacter votre administrateur pour configurer le formulaire schéma."
     }
   },
+  "entity-sf-config": {
+    "schema-form": {
+      "title": "Formulaire",
+	    "info": "Le formulaire de projet de recherche peut être spécifié à la fois en termes de structure de données (schéma) et d'affichage des données et validation (définition). Voir <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>documentation du schema form</a> pour plus de détails."
+    },
+    "schema": {
+      "tab": "Schéma",
+      "info": "Le schéma du formulaire spécifie la structure de données."
+    },
+    "definition": {
+      "tab": "Définition",
+      "info": "La définition du formulaire spécifie comment afficher le schéma et la façon de valider les données entrées."
+    },
+    "preview": {
+      "model-modal": "Aperçu du modèle",
+      "tab": "Aperçu",
+      "show-model": "Modèle",
+      "test": "Test de validation de formulaire",
+      "tested": "Le formulaire est validé avec succès."
+    },
+    "model": {
+      "tab": "Modèle",
+      "info": "Le modèle du formulaire stocke les données entrées valides, les valeurs non valides sont exclus."
+    }
+  },
   "project-config": {
     "menu": "Projet de recherche",
     "title": "Configuration des projets de recherche",

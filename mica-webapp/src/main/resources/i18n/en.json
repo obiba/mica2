@@ -1196,6 +1196,31 @@
       "schema": "Form schema is not a valid document, please contact your administrator to configure the form schema."
     }
   },
+  "entity-sf-config": {
+    "schema-form": {
+      "title": "Form",
+      "info": "The form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+    },
+    "schema": {
+      "tab": "Schema",
+      "info": "The form schema specifies the data structure."
+    },
+    "definition": {
+      "tab": "Definition",
+      "info": "The form definition specifies how to display the schema and how to validate the data inputs."
+    },
+    "preview": {
+      "model-modal": "Model Preview",
+      "tab": "Preview",
+      "show-model": "Model",
+      "test": "Test Form Validation",
+      "tested": "Form is validated successfully."
+    },
+    "model": {
+      "tab": "Model",
+      "info": "The form model stores the valid input data, invalid values are excluded."
+    }
+  },
   "project-config": {
     "menu": "Research Project",
     "title": "Research Project Configuration",

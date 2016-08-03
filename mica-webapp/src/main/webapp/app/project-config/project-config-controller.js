@@ -14,25 +14,23 @@ mica.projectConfig
 
   .controller('ProjectConfigController', ['$rootScope', '$location', '$scope', '$log',
     'ProjectFormResource',
-    'ProjectFormService',
+    'EntitySchemaFormService',
     'LocalizedSchemaFormService',
     'AlertService',
     'ServerErrorUtils',
     'ProjectFormPermissionsResource',
     function ($rootScope, $location, $scope, $log,
               ProjectFormResource,
-              ProjectFormService,
+              EntitySchemaFormService,
               LocalizedSchemaFormService,
               AlertService,
               ServerErrorUtils,
               ProjectFormPermissionsResource) {
 
-      ProjectFormService.configureAcePaths();
-
       var saveForm = function() {
 
-        switch (ProjectFormService.isFormValid($scope.form)) {
-          case ProjectFormService.ParseResult.VALID:
+        switch (EntitySchemaFormService.isFormValid($scope.form)) {
+          case EntitySchemaFormService.ParseResult.VALID:
             $scope.projectForm.definition = $scope.form.definition;
             $scope.projectForm.schema = $scope.form.schema;
 
@@ -48,14 +46,14 @@ mica.projectConfig
                 });
               });
             break;
-          case ProjectFormService.ParseResult.SCHEMA:
+          case EntitySchemaFormService.ParseResult.SCHEMA:
           AlertService.alert({
             id: 'ProjectConfigController',
             type: 'danger',
             msgKey: 'project-config.syntax-error.schema'
           });
           break;
-        case ProjectFormService.ParseResult.DEFINITION:
+        case EntitySchemaFormService.ParseResult.DEFINITION:
           AlertService.alert({
             id: 'ProjectConfigController',
             type: 'danger',
@@ -65,71 +63,15 @@ mica.projectConfig
         }
       };
 
-      var refreshPreview = function() {
-        try {
-          if ($scope.dirty) {
-            $scope.form.schemaJson = LocalizedSchemaFormService.translate(JSON.parse($scope.form.schema));
-            $scope.form.definitionJson = LocalizedSchemaFormService.translate(JSON.parse($scope.form.definition));
-            $scope.dirty = false;
-          }
-        } catch (e){
-        }
-      };
-
-      var selectTab = function(id) {
-        $scope.selectedTab = id;
-        switch (id) {
-          case 'form-preview':
-            refreshPreview();
-            break;
-          case 'form-model':
-            $scope.modelPreview = ProjectFormService.prettifyJson($scope.form.model);
-            break;
-        }
-      };
-
-      var watchFormSchemaChanges = function(val,old){
-        if (val && val !== old) {
-          $scope.dirty = true;
-        }
-      };
-
-      var watchFormDefinitionChanges = function(val,old){
-        if (val && val !== old) {
-          $scope.dirty = true;
-        }
-      };
-
-      var aceEditorOnLoadCallback = function(editor) {
-        if (editor.container.id === 'form-model') {
-          editor.setReadOnly(true);
-        }
-      };
-
-      var testPreview = function(form) {
-        $scope.$broadcast('schemaFormValidate');
-        // Then we check if the form is valid
-        if (form.$valid) {
-          AlertService.alert({
-            id: 'ProjectConfigController',
-            type: 'success',
-            msgKey: 'project-config.preview.tested',
-            delay: 5000
-          });
-        }
-      };
-
       $scope.projectForm = {schema: '', definition: ''};
 
       ProjectFormResource.get(
         function(projectForm){
-          $scope.dirty = true;
-          $scope.form.definitionJson = ProjectFormService.parseJsonSafely(projectForm.definition, []);
-          $scope.form.definition = ProjectFormService.prettifyJson($scope.form.definitionJson);
-          $scope.form.schemaJson = ProjectFormService.parseJsonSafely(projectForm.schema, {});
-          $scope.form.schema = ProjectFormService.prettifyJson($scope.form.schemaJson);
+          $scope.form.definitionJson = EntitySchemaFormService.parseJsonSafely(projectForm.definition, []);
+          $scope.form.definition = EntitySchemaFormService.prettifyJson($scope.form.definitionJson);
+          $scope.form.schemaJson = EntitySchemaFormService.parseJsonSafely(projectForm.schema, {});
+          $scope.form.schema = EntitySchemaFormService.prettifyJson($scope.form.schemaJson);
           $scope.projectForm = projectForm;
-          selectTab('form-schema');
 
           if ($scope.form.definitionJson.length === 0) {
             AlertService.alert({
@@ -186,15 +128,6 @@ mica.projectConfig
       };
 
       $scope.loadPermissions();
-
       $scope.tab = {name: 'form'};
-      $scope.dirty = false;
-      $scope.selectedTab = 'form-definition';
-      $scope.ace = ProjectFormService.getEditorOptions(aceEditorOnLoadCallback);
-      $scope.selectTab = selectTab;
-      $scope.testPreview = testPreview;
       $scope.saveForm = saveForm;
-      $scope.fullscreen = ProjectFormService.gotoFullScreen;
-      $scope.$watch('form.definition', watchFormDefinitionChanges);
-      $scope.$watch('form.schema', watchFormSchemaChanges);
     }]);
