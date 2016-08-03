@@ -11,9 +11,6 @@
 'use strict';
 
 mica.projectConfig = angular.module('mica.projectConfig', [
-  'schemaForm',
-  'schemaForm-datepicker',
-  'ui.ace',
   'obiba.mica.localized',
   'obiba.notification',
   'obiba.utils',
@@ -21,5 +18,6 @@ mica.projectConfig = angular.module('mica.projectConfig', [
   'ngRoute',
   'ui.bootstrap',
   'ui',
-  'pascalprecht.translate'
+  'pascalprecht.translate',
+  'mica.entitySfConfig'
 ]);
