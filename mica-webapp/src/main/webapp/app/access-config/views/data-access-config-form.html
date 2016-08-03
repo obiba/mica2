@@ -41,45 +41,7 @@
 
     <p class="help-block" translate>data-access-config.schema-form.info</p>
 
-    <div class="form-group">
-      <uib-tabset class="voffset4">
-        <div class="pull-right">
-          <button ng-if="selectedTab === 'form-preview'" ng-click="testPreview(formPreview)" class="btn btn-default btn-sm">
-            <span translate>data-access-config.preview.test</span>
-          </button>
-
-          <button ng-click="fullscreen(selectedTab)" class="btn btn-default btn-sm" title="{{'fullscreen' | translate}}">
-            <i class="glyphicon glyphicon-fullscreen"></i>
-          </button>
-        </div>
-        <uib-tab ng-click="selectTab('form-schema')" heading="{{'data-access-config.schema.tab' | translate}}">
-          <div id="form-schema" ui-ace="ace.options" ng-model="form.schema" class="form-control form-schema">
-          </div>
-          <div class="help-block" translate>data-access-config.schema.info</div>
-        </uib-tab>
-        <uib-tab ng-click="selectTab('form-definition')" heading="{{'data-access-config.definition.tab' | translate}}">
-          <div id="form-definition" class="form-control form-definition" ui-ace="ace.options" ng-model="form.definition">
-          </div>
-          <div class="help-block" translate>data-access-config.definition.info</div>
-        </uib-tab>
-
-        <uib-tab ng-click="selectTab('form-preview')" heading="{{'data-access-config.preview.tab' | translate}}">
-          <div id="form-preview" class="panel panel-default full-screenable">
-            <div class="panel-body">
-              <form name="formPreview">
-                <div sf-model="form.model" sf-form="form.definitionJson" sf-schema="form.schemaJson">
-                </div>
-              </form>
-            </div>
-          </div>
-        </uib-tab>
-        <uib-tab ng-click="selectTab('form-model')" heading="{{'data-access-config.model.tab' | translate}}">
-          <div id="form-model" class="form-control form-definition" ui-ace="ace.options" ng-model="modelPreview">
-          </div>
-          <div class="help-block" translate>data-access-config.model.info</div>
-        </uib-tab>
-      </uib-tabset>
-    </div>
+    <entity-sf-config form="form" alert-id="DataAccessConfigController"></entity-sf-config>
 
     <h3 translate>data-access-config.properties.title</h3>
 

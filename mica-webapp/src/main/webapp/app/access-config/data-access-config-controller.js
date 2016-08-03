@@ -15,7 +15,7 @@ mica.dataAccessConfig
   .controller('DataAccessConfigController', ['$rootScope', '$location', '$scope', '$log',
     'MicaConfigResource',
     'DataAccessFormResource',
-    'DataAccessFormService',
+    'EntitySchemaFormService',
     'DataAccessFormPermissionsResource',
     'LocalizedSchemaFormService',
     'AlertService',
@@ -23,13 +23,11 @@ mica.dataAccessConfig
     function ($rootScope, $location, $scope, $log,
               MicaConfigResource,
               DataAccessFormResource,
-              DataAccessFormService,
+              EntitySchemaFormService,
               DataAccessFormPermissionsResource,
               LocalizedSchemaFormService,
               AlertService,
               ServerErrorUtils) {
-
-      DataAccessFormService.configureAcePaths();
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
@@ -42,8 +40,8 @@ mica.dataAccessConfig
 
       var saveForm = function() {
 
-        switch (DataAccessFormService.isFormValid($scope.form)) {
-          case DataAccessFormService.ParseResult.VALID:
+        switch (EntitySchemaFormService.isFormValid($scope.form)) {
+          case EntitySchemaFormService.ParseResult.VALID:
             $scope.dataAccessForm.definition = $scope.form.definition;
             $scope.dataAccessForm.schema = $scope.form.schema;
             $scope.dataAccessForm.pdfTemplates = [];
@@ -68,14 +66,14 @@ mica.dataAccessConfig
                 });
               });
             break;
-          case DataAccessFormService.ParseResult.SCHEMA:
+          case EntitySchemaFormService.ParseResult.SCHEMA:
           AlertService.alert({
             id: 'DataAccessConfigController',
             type: 'danger',
             msgKey: 'data-access-config.syntax-error.schema'
           });
           break;
-        case DataAccessFormService.ParseResult.DEFINITION:
+        case EntitySchemaFormService.ParseResult.DEFINITION:
           AlertService.alert({
             id: 'DataAccessConfigController',
             type: 'danger',
@@ -85,70 +83,15 @@ mica.dataAccessConfig
         }
       };
 
-      var refreshPreview = function() {
-        try {
-          if ($scope.dirty) {
-            $scope.form.schemaJson = LocalizedSchemaFormService.translate(JSON.parse($scope.form.schema));
-            $scope.form.definitionJson = LocalizedSchemaFormService.translate(JSON.parse($scope.form.definition));
-            $scope.dirty = false;
-          }
-        } catch (e){
-        }
-      };
-
-      var selectTab = function(id) {
-        $scope.selectedTab = id;
-        switch (id) {
-          case 'form-preview':
-            refreshPreview();
-            break;
-          case 'form-model':
-            $scope.modelPreview = DataAccessFormService.prettifyJson($scope.form.model);
-            break;
-        }
-      };
-
-      var watchFormSchemaChanges = function(val,old){
-        if (val && val !== old) {
-          $scope.dirty = true;
-        }
-      };
-
-      var watchFormDefinitionChanges = function(val,old){
-        if (val && val !== old) {
-          $scope.dirty = true;
-        }
-      };
-
-      var aceEditorOnLoadCallback = function(editor) {
-        if (editor.container.id === 'form-model') {
-          editor.setReadOnly(true);
-        }
-      };
-
-      var testPreview = function(form) {
-        $scope.$broadcast('schemaFormValidate');
-        // Then we check if the form is valid
-        if (form.$valid) {
-          AlertService.alert({
-            id: 'DataAccessConfigController',
-            type: 'success',
-            msgKey: 'data-access-config.preview.tested',
-            delay: 5000
-          });
-        }
-      };
-
       $scope.dataAccessForm = {schema: '', definition: '', pdfTemplates: []};
       $scope.fileTypes = '.pdf';
 
       DataAccessFormResource.get(
         function(dataAccessForm){
-          $scope.dirty = true;
-          $scope.form.definitionJson = DataAccessFormService.parseJsonSafely(dataAccessForm.definition, []);
-          $scope.form.definition = DataAccessFormService.prettifyJson($scope.form.definitionJson);
-          $scope.form.schemaJson = DataAccessFormService.parseJsonSafely(dataAccessForm.schema, {});
-          $scope.form.schema = DataAccessFormService.prettifyJson($scope.form.schemaJson);
+          $scope.form.definitionJson = EntitySchemaFormService.parseJsonSafely(dataAccessForm.definition, []);
+          $scope.form.definition = EntitySchemaFormService.prettifyJson($scope.form.definitionJson);
+          $scope.form.schemaJson = EntitySchemaFormService.parseJsonSafely(dataAccessForm.schema, {});
+          $scope.form.schema = EntitySchemaFormService.prettifyJson($scope.form.schemaJson);
           $scope.dataAccessForm = dataAccessForm;
           $scope.dataAccessForm.pdfTemplates = $scope.dataAccessForm.pdfTemplates || [];
 
@@ -156,8 +99,6 @@ mica.dataAccessConfig
             s[file.lang] = [file];
             return s;
           }, {});
-
-          selectTab('form-schema');
 
           if ($scope.form.definitionJson.length === 0) {
             AlertService.alert({
@@ -204,15 +145,6 @@ mica.dataAccessConfig
       };
 
       $scope.loadPermissions();
-
       $scope.tab = {name: 'form'};
-      $scope.dirty = false;
-      $scope.selectedTab = 'form-definition';
-      $scope.ace = DataAccessFormService.getEditorOptions(aceEditorOnLoadCallback);
-      $scope.selectTab = selectTab;
-      $scope.testPreview = testPreview;
       $scope.saveForm = saveForm;
-      $scope.fullscreen = DataAccessFormService.gotoFullScreen;
-      $scope.$watch('form.definition', watchFormDefinitionChanges);
-      $scope.$watch('form.schema', watchFormSchemaChanges);
     }]);
