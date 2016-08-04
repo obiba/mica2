@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.micaConfig.AuthType;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
@@ -16,6 +17,7 @@ import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.domain.NetworkConfig;
 import org.obiba.mica.micaConfig.domain.OpalCredential;
 import org.obiba.mica.micaConfig.domain.ProjectConfig;
+import org.obiba.mica.micaConfig.domain.StudyConfig;
 import org.springframework.stereotype.Component;
 
 import static java.util.stream.Collectors.toList;
@@ -278,11 +280,21 @@ class MicaConfigDtos {
     switch(dto.getType()) {
       case Network:
         NetworkConfig networkConfig = new NetworkConfig();
-        networkConfig.setSchema(dto.getSchema());
-        networkConfig.setDefinition(dto.getDefinition());
+        networkConfig.setSchema(dto.getForms(0).getForm().getSchema());
+        networkConfig.setDefinition(dto.getForms(0).getForm().getDefinition());
         return (T)networkConfig;
       case Study:
-        break;
+        StudyConfig studyConfig = new StudyConfig();
+        Mica.FormDto studyForm = dto.getFormsList().stream().filter(e -> "study".equals(e.getName())).findFirst().get().getForm();
+        studyConfig.setSchema(studyForm.getSchema());
+        studyConfig.setDefinition(studyForm.getDefinition());
+        Mica.FormDto populationForm = dto.getFormsList().stream().filter(e -> "population".equals(e.getName())).findFirst().get().getForm();
+        studyConfig.setPopulationSchema(populationForm.getSchema());
+        studyConfig.setPopulationDefinition(populationForm.getDefinition());
+        Mica.FormDto dceForm = dto.getFormsList().stream().filter(e -> "dce".equals(e.getName())).findFirst().get().getForm();
+        studyConfig.setDceSchema(dceForm.getSchema());
+        studyConfig.setDceDefinition(dceForm.getDefinition());
+        return (T)studyConfig;
       case Dataset:
         break;
     }
@@ -291,12 +303,51 @@ class MicaConfigDtos {
   }
 
   @NotNull
-  Mica.EntityFormDto asDto(@NotNull NetworkConfig projectConfig) {
+  Mica.EntityFormDto asDto(@NotNull NetworkConfig networkConfig) {
+    Mica.FormDto.Builder fbuilder = Mica.FormDto.newBuilder()
+      .setSchema(networkConfig.getSchema())
+      .setDefinition(networkConfig.getDefinition());
+
+    Mica.FormEntryDto.Builder ebuilder = Mica.FormEntryDto.newBuilder()
+      .setName("network")
+      .setForm(fbuilder);
+
     Mica.EntityFormDto.Builder builder = Mica.EntityFormDto.newBuilder() //
-      .setSchema(projectConfig.getSchema()) //
-      .setDefinition(projectConfig.getDefinition()) //
       .setType(Mica.EntityFormDto.Type.Network)
-      .setExtension(Mica.NetworkFormDto.entity, Mica.NetworkFormDto.newBuilder().build());
+      .addForms(ebuilder);
+
+    return builder.build();
+  }
+
+  @NotNull
+  Mica.EntityFormDto asDto(@NotNull StudyConfig studyConfig) {
+    Mica.FormDto.Builder fbuilder = Mica.FormDto.newBuilder()
+      .setSchema(studyConfig.getSchema())
+      .setDefinition(studyConfig.getDefinition());
+
+    Mica.FormEntryDto.Builder ebuilder = Mica.FormEntryDto.newBuilder()
+      .setName("study")
+      .setForm(fbuilder);
+
+    Mica.FormDto.Builder fbuilderPopulation = Mica.FormDto.newBuilder()
+      .setSchema(studyConfig.getPopulationSchema())
+      .setDefinition(studyConfig.getPopulationDefinition());
+
+    Mica.FormEntryDto.Builder ebuilderPopulation = Mica.FormEntryDto.newBuilder()
+      .setName("population")
+      .setForm(fbuilderPopulation);
+
+    Mica.FormDto.Builder fbuilderDce = Mica.FormDto.newBuilder()
+      .setSchema(studyConfig.getDceSchema())
+      .setDefinition(studyConfig.getDefinition());
+
+    Mica.FormEntryDto.Builder ebuilderDce = Mica.FormEntryDto.newBuilder()
+      .setName("dce")
+      .setForm(fbuilderDce);
+
+    Mica.EntityFormDto.Builder builder = Mica.EntityFormDto.newBuilder() //
+      .setType(Mica.EntityFormDto.Type.Study)
+      .addAllForms(Lists.newArrayList(ebuilder.build(), ebuilderPopulation.build(), ebuilderDce.build()));
 
     return builder.build();
   }

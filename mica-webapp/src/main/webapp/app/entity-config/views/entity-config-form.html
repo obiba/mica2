@@ -38,7 +38,13 @@
 
     <p class="help-block">{{target + '-config.schema-form.info' | translate}}</p>
 
-    <entity-sf-config form="form" alert-id="EntityConfigController"></entity-sf-config>
+    <ul class="nav nav-tabs" ng-show="forms.length > 1">
+      <li role="presentation" ng-repeat="form in forms" ng-class="{active: form.active}"><a href ng-click="setActive(form)" translate>{{target + '-config.' + form.name + '-form-title' | translate}}</a></li>
+    </ul>
+
+    <div class="voffset4" ng-repeat="form in forms">
+      <entity-sf-config form="form.form" alert-id="EntityConfigController" ng-show="form.active"></entity-sf-config>
+    </div>
   </div>
 
   <div ng-show="tab.name !== 'permissions'" class="voffset4">

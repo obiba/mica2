@@ -1,0 +1,10 @@
+{
+  "type": "object",
+  "properties": {
+    "website": {
+      "title": "t('website')",
+      "type": "string"
+    }
+  },
+  "required": []
+}
