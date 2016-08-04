@@ -1124,7 +1124,14 @@
     }
   },
   "study-config" : {
-    "title" : "Study Configuration"
+    "title" : "Study Configuration",
+    "schema-form": {
+      "title": "Form",
+      "info": "The research project form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+    },
+    "study-form-title": "Study",
+    "population-form-title": "Population",
+    "dce-form-title": "Data Collection Event"
   },
   "dataset-config" : {
     "title" : "Dataset Configuration"

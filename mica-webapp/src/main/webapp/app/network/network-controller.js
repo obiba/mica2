@@ -164,9 +164,11 @@ mica.network
           $scope.sfOptions.formDefaults.languages[lang]= $filter('translate')('language.' + lang);
         });
         
-        $scope.sfForm = EntityFormResource.get({target: 'network'}, function(form) {
+        EntityFormResource.get({target: 'network'}, function(forms) {
+          var form = forms.forms[0].form;
           form.schema = LocalizedSchemaFormService.translate(angular.fromJson(form.schema));
           form.definition = LocalizedSchemaFormService.translate(angular.fromJson(form.definition));
+          $scope.sfForm = form;
         });
       });
 
@@ -430,10 +432,12 @@ mica.network
         $scope.languages = micaConfig.languages;
         $scope.roles = micaConfig.roles;
         $scope.openAccess = micaConfig.openAccess;
-        
-        $scope.sfForm = EntityFormResource.get({target: 'network'}, function(form) {
-          form.schema = angular.fromJson(form.schema);
-          form.definition = angular.fromJson(form.definition);
+
+        EntityFormResource.get({target: 'network'}, function(forms) {
+          var form = forms.forms[0].form;
+          form.schema = LocalizedSchemaFormService.translate(angular.fromJson(form.schema));
+          form.definition = LocalizedSchemaFormService.translate(angular.fromJson(form.definition));
+          $scope.sfForm = form;
         });
       });
 

@@ -14,33 +14,30 @@ mica.entityConfig
 
   .controller('EntityConfigController', ['$scope', '$location', '$routeParams', 'AlertService', 'ServerErrorUtils', 'EntitySchemaFormService', 'EntityFormResource',
     function ($scope, $location, $routeParams, AlertService, ServerErrorUtils, EntitySchemaFormService, EntityFormResource) {
+      var FORMS = {'network': ['network'],
+        'study': ['study', 'population', 'dce'],
+        'dataset': ['dataset']};
+
       $scope.target = $routeParams.type.match(/(\w+)\-config/)[1];
       $scope.tab = {name: 'form'};
-      $scope.entityForm = {schema: '', definition: ''};
+      $scope.forms = [];
 
       EntityFormResource.get({target: $scope.target},
         function(entityForm){
-          $scope.form.definitionJson = EntitySchemaFormService.parseJsonSafely(entityForm.definition, []);
-          $scope.form.definition = EntitySchemaFormService.prettifyJson($scope.form.definitionJson);
-          $scope.form.schemaJson = EntitySchemaFormService.parseJsonSafely(entityForm.schema, {});
-          $scope.form.schema = EntitySchemaFormService.prettifyJson($scope.form.schemaJson);
-          $scope.entityForm = entityForm;
-
-          if ($scope.form.definitionJson.length === 0) {
-            AlertService.alert({
-              id: 'EntityConfigController',
-              type: 'danger',
-              msgKey: $scope.target + '-config.parse-error.definition'
-            });
-          }
-
-          if (Object.getOwnPropertyNames($scope.form.schemaJson).length === 0) {
-            AlertService.alert({
-              id: 'EntityConfigController',
-              type: 'danger',
-              msgKey: $scope.target + '-config.parse-error.schema'
-            });
-          }
+          $scope.type = entityForm.type;
+          $scope.forms = FORMS[$scope.target].map(function(name) {
+            return entityForm.forms.filter(function(form) {
+              return  form.name === name;
+            })[0];
+          }).map(function(form) {
+            var definitionJson = EntitySchemaFormService.parseJsonSafely(form.form.definition, []);
+            form.form.definition = EntitySchemaFormService.prettifyJson(definitionJson);
+            var schemaJson = EntitySchemaFormService.parseJsonSafely(form.form.schema, {});
+            form.form.schema = EntitySchemaFormService.prettifyJson(schemaJson);
+            return form;
+          });
+          
+          $scope.forms[0].active = true;
         },
         function(response) {
           AlertService.alert({
@@ -49,46 +46,48 @@ mica.entityConfig
             msg: ServerErrorUtils.buildMessage(response)
           });
         });
-
-      $scope.form = {
-        definitionJson: null,
-        definition: null,
-        schemaJson: null,
-        schema: null,
-        model: {}
+      
+      $scope.setActive = function(form) {
+        $scope.forms.forEach(function(f) {
+          f.active = f.name === form.name;
+        });
       };
 
       $scope.saveForm = function() {
-        switch (EntitySchemaFormService.isFormValid($scope.form)) {
-          case EntitySchemaFormService.ParseResult.VALID:
-            $scope.entityForm.definition = $scope.form.definition;
-            $scope.entityForm.schema = $scope.form.schema;
-            EntityFormResource.save({target: $scope.target}, $scope.entityForm,
-              function () {
-                $location.path('/admin').replace();
-              },
-              function (response) {
-                AlertService.alert({
-                  id: 'EntityConfigController',
-                  type: 'danger',
-                  msg: ServerErrorUtils.buildMessage(response)
-                });
+        var isValid = true;
+        $scope.forms.forEach(function(form) {
+          switch (EntitySchemaFormService.isFormValid(form.form)) {
+            case EntitySchemaFormService.ParseResult.SCHEMA:
+              AlertService.alert({
+                id: 'EntityConfigController',
+                type: 'danger',
+                msgKey: 'entity-config.syntax-error.schema'
               });
-            break;
-          case EntitySchemaFormService.ParseResult.SCHEMA:
-            AlertService.alert({
-              id: 'EntityConfigController',
-              type: 'danger',
-              msgKey: 'entity-config.syntax-error.schema'
+              isValid = false;
+              break;
+            case EntitySchemaFormService.ParseResult.DEFINITION:
+              AlertService.alert({
+                id: 'EntityConfigController',
+                type: 'danger',
+                msgKey: 'entity-config.syntax-error.definition'
+              });
+              isValid = false;
+              break;
+          }
+        });
+
+        if(isValid) {
+          EntityFormResource.save({target: $scope.target}, {type: $scope.type, forms: $scope.forms },
+            function () {
+              $location.path('/admin').replace();
+            },
+            function (response) {
+              AlertService.alert({
+                id: 'EntityConfigController',
+                type: 'danger',
+                msg: ServerErrorUtils.buildMessage(response)
+              });
             });
-            break;
-          case EntitySchemaFormService.ParseResult.DEFINITION:
-            AlertService.alert({
-              id: 'EntityConfigController',
-              type: 'danger',
-              msgKey: 'entity-config.syntax-error.definition'
-            });
-            break;
         }
       };
     }]);

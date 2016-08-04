@@ -22,10 +22,12 @@ import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
+import org.obiba.mica.micaConfig.domain.EntityConfig;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.domain.NetworkConfig;
 import org.obiba.mica.micaConfig.domain.OpalCredential;
 import org.obiba.mica.micaConfig.domain.ProjectConfig;
+import org.obiba.mica.micaConfig.domain.StudyConfig;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.project.domain.Project;
 import org.obiba.mica.study.domain.Study;
@@ -384,8 +386,13 @@ public class Dtos {
   }
 
   @NotNull
-  public NetworkConfig fromDto(@NotNull Mica.EntityFormDto dto) {
-    return micaConfigDtos.<NetworkConfig>fromDto(dto);
+  public Mica.EntityFormDto asDto(@NotNull StudyConfig studyConfig) {
+    return micaConfigDtos.asDto(studyConfig);
+  }
+
+  @NotNull
+  public <T extends EntityConfig> T fromDto(@NotNull Mica.EntityFormDto dto) {
+    return micaConfigDtos.fromDto(dto);
   }
 
   @NotNull
