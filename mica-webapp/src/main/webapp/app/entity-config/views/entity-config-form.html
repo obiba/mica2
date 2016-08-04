@@ -1,0 +1,53 @@
+<!--
+  ~ Copyright (c) 2015 OBiBa. All rights reserved.
+  ~
+  ~ This program and the accompanying materials
+  ~ are made available under the terms of the GNU Public License v3.0.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<div>
+
+  <h2>
+    <ol class="breadcrumb mica-breadcrumb">
+      <li><a href="/#/admin" translate>global.menu.admin</a></li>
+      <li class="active">{{target + '-config.title' | translate}}</li>
+    </ol>
+  </h2>
+
+  <obiba-alert id="ProjectConfigController"></obiba-alert>
+
+  <div class="tabs-menu" ng-class="{'tabs-left': screen.is('lg')}">
+    <ul class="nav nav-tabs">
+      <li ng-class="{'active': tab.name === 'form'}">
+        <a href ng-click="tab.name = 'form'" title="{{'form' | translate}}"><i class="fa fa-list"></i></a>
+      </li>
+      <li ng-class="{'active': tab.name === 'search'}">
+        <a href ng-click="tab.name = 'search'" title="{{'search' | translate}}"><i class="fa fa-search"></i></a>
+      </li>
+      <li ng-class="{'active': tab.name === 'permissions'}">
+        <a href ng-click="tab.name = 'permissions'; loadPermissions()" title="{{'permissions' | translate}}"><i class="fa fa-lock"></i></a>
+      </li>
+    </ul>
+  </div>
+
+  <div ng-show="tab.name === 'form'">
+    <h3>{{target + '-config.schema-form.title' | translate}}</h3>
+
+    <p class="help-block">{{target + '-config.schema-form.info' | translate}}</p>
+
+    <entity-sf-config form="form" alert-id="EntityConfigController"></entity-sf-config>
+  </div>
+
+  <div ng-show="tab.name !== 'permissions'" class="voffset4">
+    <a href="#/admin" class="btn btn-default">
+      <span translate>cancel</span>
+    </a>
+
+    <button ng-click="saveForm()" class="btn btn-primary">
+      <span translate>save</span>
+    </button>
+  </div>
+</div>

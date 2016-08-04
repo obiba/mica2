@@ -1,0 +1,14 @@
+[
+  {
+    "type": "fieldset",
+    "items": [
+      {
+        "type": "section",
+        "htmlClass": "row",
+        "items": [
+          "website"
+        ]
+      }
+    ]
+  }
+]

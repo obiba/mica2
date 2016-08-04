@@ -7,15 +7,16 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import com.google.common.base.Strings;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.micaConfig.AuthType;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
+import org.obiba.mica.micaConfig.domain.EntityConfig;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
+import org.obiba.mica.micaConfig.domain.NetworkConfig;
 import org.obiba.mica.micaConfig.domain.OpalCredential;
 import org.obiba.mica.micaConfig.domain.ProjectConfig;
 import org.springframework.stereotype.Component;
-
-import com.google.common.base.Strings;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -261,7 +262,6 @@ class MicaConfigDtos {
     return dataAccessForm;
   }
 
-
   @NotNull
   Mica.ProjectFormDto asDto(@NotNull ProjectConfig projectConfig) {
     Mica.ProjectFormDto.Builder builder = Mica.ProjectFormDto.newBuilder() //
@@ -273,13 +273,39 @@ class MicaConfigDtos {
   }
 
   @NotNull
+  <T extends EntityConfig> T fromDto(@NotNull Mica.EntityFormDto dto) {
+
+    switch(dto.getType()) {
+      case Network:
+        NetworkConfig networkConfig = new NetworkConfig();
+        networkConfig.setSchema(dto.getSchema());
+        networkConfig.setDefinition(dto.getDefinition());
+        return (T)networkConfig;
+      case Study:
+        break;
+      case Dataset:
+        break;
+    }
+
+    return null;
+  }
+
+  @NotNull
+  Mica.EntityFormDto asDto(@NotNull NetworkConfig projectConfig) {
+    Mica.EntityFormDto.Builder builder = Mica.EntityFormDto.newBuilder() //
+      .setSchema(projectConfig.getSchema()) //
+      .setDefinition(projectConfig.getDefinition()) //
+      .setType(Mica.EntityFormDto.Type.Network)
+      .setExtension(Mica.NetworkFormDto.entity, Mica.NetworkFormDto.newBuilder().build());
+
+    return builder.build();
+  }
+
+  @NotNull
   ProjectConfig fromDto(@NotNull Mica.ProjectFormDto dto) {
     ProjectConfig projectConfig = new ProjectConfig();
     projectConfig.setSchema(dto.getSchema());
     projectConfig.setDefinition(dto.getDefinition());
-
-    projectConfig.setProperties(dto.getPropertiesList().stream()
-      .collect(toMap(e -> e.getName(), e -> localizedStringDtos.fromDto(e.getValueList()))));
 
     return projectConfig;
   }

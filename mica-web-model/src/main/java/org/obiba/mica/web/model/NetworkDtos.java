@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import com.google.common.base.Strings;
+import org.obiba.mica.JSONUtils;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
 import org.obiba.mica.core.domain.Membership;
@@ -81,6 +83,8 @@ class NetworkDtos {
   @NotNull
   Mica.NetworkDto.Builder asDtoBuilder(@NotNull Network network, boolean asDraft) {
     Mica.NetworkDto.Builder builder = Mica.NetworkDto.newBuilder();
+
+    if(network.hasModel()) builder.setContent(JSONUtils.toJSON(network.getModel()));
 
     builder.setId(network.getId()) //
       .addAllName(localizedStringDtos.asDto(network.getName())) //
@@ -242,6 +246,8 @@ class NetworkDtos {
     if(dto.getNetworkIdsCount() > 0) {
       network.setNetworkIds(Lists.newArrayList(Sets.newHashSet(dto.getNetworkIdsList())));
     }
+
+    if(dto.hasContent() && !Strings.isNullOrEmpty(dto.getContent())) network.setModel(JSONUtils.toMap(dto.getContent()));
 
     return network;
   }

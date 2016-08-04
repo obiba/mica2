@@ -947,6 +947,9 @@
       "logs": "Configure server logs.",
       "caching": "Manage server caches.",
       "indexing": "Manage server indices.",
+      "network-config": "Configure network form.",
+      "study-config": "Configure study form.",
+      "dataset-config": "Configure dataset form.",
       "data-access-config": "Configure Data Access Request form.",
       "project-config": "Configure Research Project form.",
       "file-system": "Manage file system.",
@@ -1093,6 +1096,38 @@
         "check": "I have completed all mandatory fields, included all necessary documents, and hereby submit this application."
       }
     }
+  },
+  "network-config" : {
+    "title" : "Network Configuration",
+    "schema-form": {
+      "title": "Form",
+      "info": "The research project form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+    },
+    "schema": {
+      "tab": "Schema",
+      "info": "The form schema specifies the data structure."
+    },
+    "definition": {
+      "tab": "Definition",
+      "info": "The form definition specifies how to display the schema and how to validate the data inputs."
+    },
+    "preview": {
+      "model-modal": "Model Preview",
+      "tab": "Preview",
+      "show-model": "Model",
+      "test": "Test Form Validation",
+      "tested": "Form is validated successfully."
+    },
+    "model": {
+      "tab": "Model",
+      "info": "The form model stores the valid input data, invalid values are excluded."
+    }
+  },
+  "study-config" : {
+    "title" : "Study Configuration"
+  },
+  "dataset-config" : {
+    "title" : "Dataset Configuration"
   },
   "data-access-config": {
     "menu": "Data Access",
