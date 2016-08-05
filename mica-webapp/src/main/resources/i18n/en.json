@@ -1131,7 +1131,7 @@
     },
     "study-form-title": "Study",
     "population-form-title": "Population",
-    "dce-form-title": "Data Collection Event"
+    "data-collection-event-form-title": "Data Collection Event"
   },
   "dataset-config" : {
     "title" : "Dataset Configuration"
