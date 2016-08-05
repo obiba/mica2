@@ -2,7 +2,7 @@
   "type": "object",
   "properties": {
     "name": {
-      "title": "t('website')",
+      "title": "t(website)",
       "type": "string"
     }
   },

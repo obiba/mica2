@@ -120,6 +120,7 @@ message StudyDto {
   optional string opalPassword = 27;
   optional PermissionsDto permissions = 28;
   repeated MembershipsDto memberships = 29;
+  optional string content = 30;
 
   message StudyMethodsDto {
     repeated string designs = 1;
@@ -146,6 +147,7 @@ message StudyDto {
     repeated LocalizedStringDto info = 7;
     repeated DataCollectionEventDto dataCollectionEvents = 8;
     repeated AttributeDto attributes = 9;
+    optional string content = 10;
 
     message RecruitmentDto {
       repeated string dataSources = 1;
@@ -190,6 +192,7 @@ message StudyDto {
       repeated LocalizedStringDto otherBioSamples = 13;
       repeated AttachmentDto attachments = 14;
       repeated AttributeDto attributes = 15;
+      optional string content = 16;
     }
   }
 }
