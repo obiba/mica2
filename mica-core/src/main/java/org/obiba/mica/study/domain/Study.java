@@ -21,7 +21,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import org.hibernate.validator.constraints.URL;
-import org.obiba.mica.core.domain.AbstractGitPersistable;
+import org.obiba.mica.core.domain.AbstractModelAware;
 import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.AttributeAware;
 import org.obiba.mica.core.domain.Attributes;
@@ -41,7 +41,7 @@ import static java.util.stream.Collectors.toList;
  * A Study.
  */
 @Document
-public class Study extends AbstractGitPersistable implements AttributeAware, PersonAware {
+public class Study extends AbstractModelAware implements AttributeAware, PersonAware {
 
   private static final long serialVersionUID = 6559914069652243954L;
 

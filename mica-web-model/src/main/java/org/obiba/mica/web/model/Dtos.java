@@ -26,6 +26,7 @@ import org.obiba.mica.micaConfig.domain.EntityConfig;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.domain.NetworkConfig;
 import org.obiba.mica.micaConfig.domain.OpalCredential;
+import org.obiba.mica.micaConfig.domain.PopulationConfig;
 import org.obiba.mica.micaConfig.domain.ProjectConfig;
 import org.obiba.mica.micaConfig.domain.StudyConfig;
 import org.obiba.mica.network.domain.Network;
@@ -388,6 +389,11 @@ public class Dtos {
   @NotNull
   public Mica.EntityFormDto asDto(@NotNull StudyConfig studyConfig) {
     return micaConfigDtos.asDto(studyConfig);
+  }
+
+  @NotNull
+  public Mica.EntityFormDto asDto(@NotNull PopulationConfig populationConfig) {
+    return micaConfigDtos.asDto(populationConfig);
   }
 
   @NotNull

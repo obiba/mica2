@@ -3,7 +3,7 @@ package org.obiba.mica.core.domain;
 import java.util.Map;
 
 
-public abstract class AbstractModelAware extends AbstractGitPersistable {
+public abstract class AbstractModelAware extends AbstractGitPersistable implements ModelAware{
 
   private Map<String, Object> model;
 

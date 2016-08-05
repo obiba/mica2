@@ -36,10 +36,6 @@ public class StudyConfigService extends EntityConfigService<StudyConfig> {
     StudyConfig form = new StudyConfig();
     form.setDefinition(getDefaultStudyFormResourceAsString("definition.json"));
     form.setSchema(getDefaultStudyFormResourceAsString("schema.json"));
-    form.setPopulationDefinition(getDefaultStudyFormResourceAsString("populationDefinition.json"));
-    form.setPopulationSchema(getDefaultStudyFormResourceAsString("populationSchema.json"));
-    form.setDceDefinition(getDefaultStudyFormResourceAsString("dceDefinition.json"));
-    form.setDceSchema(getDefaultStudyFormResourceAsString("dceSchema.json"));
     return form;
   }
 

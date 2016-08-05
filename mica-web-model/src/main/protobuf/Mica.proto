@@ -758,23 +758,16 @@ message ProjectFormDto {
 
 message EntityFormDto {
   enum Type {
-    Network = 1;
-    Study = 2;
-    Dataset = 3;
+    Dataset = 1;
+    Network = 2;
+    Study = 3;
+    Population=4;
+    DataCollectionEvent = 5;
   }
 
   required Type type = 1;
-  repeated FormEntryDto forms = 2;
-}
-
-message FormEntryDto {
-  required string name = 1;
-  required FormDto form = 2;
-}
-
-message FormDto {
-  required string schema = 1;
-  required string definition = 2;
+  required string schema = 2;
+  required string definition = 3;
 }
 
 message UserProfileDto {

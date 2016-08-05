@@ -9,7 +9,7 @@ import java.util.Objects;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.core.domain.AbstractAttributeAware;
+import org.obiba.mica.core.domain.AbstractAttributeModelAware;
 import org.obiba.mica.core.domain.LocalizedString;
 import org.obiba.mica.file.Attachment;
 import org.obiba.mica.study.date.PersistableYearMonth;
@@ -22,7 +22,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Lists;
 
-public class DataCollectionEvent extends AbstractAttributeAware
+public class DataCollectionEvent extends AbstractAttributeModelAware
     implements Serializable, Persistable<String>, Comparable<DataCollectionEvent> {
 
   private static final long serialVersionUID = 6559914069652243954L;

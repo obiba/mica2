@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.core.domain.AbstractAttributeAware;
+import org.obiba.mica.core.domain.AbstractAttributeModelAware;
 import org.obiba.mica.core.domain.AttributeAware;
 import org.obiba.mica.core.domain.LocalizedString;
 
@@ -21,7 +21,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-public class Population extends AbstractAttributeAware implements Serializable, Comparable<Population>, AttributeAware {
+public class Population extends AbstractAttributeModelAware implements Serializable, Comparable<Population>, AttributeAware {
 
   private static final long serialVersionUID = 6559914069652243954L;
 
