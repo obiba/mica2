@@ -22,6 +22,7 @@ import org.obiba.mica.file.Attachment;
 import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
+import org.obiba.mica.micaConfig.domain.DataCollectionEventConfig;
 import org.obiba.mica.micaConfig.domain.EntityConfig;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.domain.NetworkConfig;
@@ -394,6 +395,11 @@ public class Dtos {
   @NotNull
   public Mica.EntityFormDto asDto(@NotNull PopulationConfig populationConfig) {
     return micaConfigDtos.asDto(populationConfig);
+  }
+
+  @NotNull
+  public Mica.EntityFormDto asDto(@NotNull DataCollectionEventConfig dataCollectionEventConfig) {
+    return micaConfigDtos.asDto(dataCollectionEventConfig);
   }
 
   @NotNull
