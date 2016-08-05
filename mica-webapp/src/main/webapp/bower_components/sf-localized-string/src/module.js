@@ -73,6 +73,10 @@ angular.module('sfLocalizedString', [
       $scope.open = !$scope.open;
     };
 
+    $scope.$on('sfLocalizedStringLocaleChanged', function(event, locale){
+      $scope.selectLocale(locale);
+    });
+
     $scope.open = false;
 
   }]);

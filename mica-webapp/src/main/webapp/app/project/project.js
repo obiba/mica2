@@ -28,6 +28,5 @@ mica.project = angular.module('mica.project', [
   'pascalprecht.translate',
   'schemaForm',
   'schemaForm-datepicker',
-  'sfLocalizedString',
   'mica.revisions'
 ]);

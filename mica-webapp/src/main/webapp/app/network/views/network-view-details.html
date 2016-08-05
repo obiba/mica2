@@ -1,7 +1,7 @@
 <div class="voffset4">
   <uib-tabset active="activeTab">
 
-    <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" disable="tab.disabled">
+    <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" disable="tab.disabled" select="tabSelected(tab)">
 
       <div class="voffset4">
         <img class="img-responsive desaturate" ng-show="network.logo" ng-src="{{logoUrl}}">
@@ -148,7 +148,7 @@
         </div>
       </div>
 
-      <div sf-model="network.dynamicModel" sf-form="sfForm.definition" sf-schema="sfForm.schema" sf-options="sfOptions[tab.lang]"></div>
+      <div sf-model="network.dynamicModel" sf-form="sfForm.definition" sf-schema="sfForm.schema" sf-options="sfOptions"></div>
 
     </uib-tab>
   </uib-tabset>
