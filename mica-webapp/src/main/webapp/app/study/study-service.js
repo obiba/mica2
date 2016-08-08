@@ -24,7 +24,24 @@ mica.study
     function ($resource) {
       return $resource('ws/draft/study/:id', {}, {
         // override $resource.save method because it uses POST by default
-        'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true},
+        'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: function(data) {
+          var study = angular.copy(data);
+          delete study.model;
+          
+          if(study.populations) {
+            study.populations.forEach(function(population) {
+              delete population.model;
+              
+              if(population.dataCollectionEvents) {
+                population.dataCollectionEvents.forEach(function(dce) {
+                  delete dce.model;
+                });
+              }
+            });
+          }
+          
+          return angular.toJson(study);
+        }},
         'delete': {method: 'DELETE', params: {id: '@id'}, errorHandler: true},
         'get': {method: 'GET'}
       });
@@ -261,4 +278,40 @@ mica.study
 
       return factory;
 
-    }]);
+    }])
+
+  .service('StudyModelUtil', [function() {
+    this.updateContents = function(study) {
+      study.content = study.model ? angular.toJson(study.model) : null;
+
+      if(study.populations) {
+        study.populations.forEach(function(population) {
+          population.content = population.model ? angular.toJson(population.model) : null;
+
+          if(population.dataCollectionEvents) {
+            population.dataCollectionEvents.forEach(function(dce) {
+              dce.content =  dce.model ? angular.toJson(dce.model): null;
+            });
+          }
+        });
+      }
+    };
+
+    this.updateModel = function(study) {
+      study.model = study.content ? angular.fromJson(study.content) : {};
+
+      if(study.populations) {
+        study.populations.forEach(function(population) {
+          population.model = population.content ? angular.fromJson(population.content) : {};
+
+          if(population.dataCollectionEvents) {
+            population.dataCollectionEvents.forEach(function(dce) {
+              dce.model = dce.content ? angular.fromJson(dce.content) : {};
+            });
+          }
+        });
+      }
+    };
+
+    return this;
+  }]);

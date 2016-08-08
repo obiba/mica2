@@ -69,6 +69,7 @@
       </table>
       <a href ng-click="viewFiles()"><span><i class="fa fa-file"></i> {{'view-files' | translate}}</span></a>
     </div>
+    <div sf-model="dce.model" sf-form="dceSfForm.definition" sf-schema="dceSfForm.schema" sf-options="sfOptions[lang]"></div>
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-default" ng-click="cancel()">

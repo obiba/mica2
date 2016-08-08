@@ -8,6 +8,9 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
+import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
@@ -16,8 +19,6 @@ import org.obiba.mica.study.domain.Study;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import com.google.common.collect.Maps;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.util.stream.Collectors.toList;
@@ -57,6 +58,8 @@ class StudyDtos {
     builder.setId(study.getId()) //
       .addAllName(localizedStringDtos.asDto(study.getName())) //
       .addAllObjectives(localizedStringDtos.asDto(study.getObjectives()));
+
+    if(study.hasModel()) builder.setContent(JSONUtils.toJSON(study.getModel()));
 
     if(asDraft) {
       builder.setTimestamps(TimestampsDtos.asDto(study));
@@ -187,6 +190,8 @@ class StudyDtos {
     if(dto.getAttributesCount() > 0) {
       dto.getAttributesList().forEach(attributeDto -> study.addAttribute(attributeDtos.fromDto(attributeDto)));
     }
+
+    if(dto.hasContent() && !Strings.isNullOrEmpty(dto.getContent())) study.setModel(JSONUtils.toMap(dto.getContent()));
 
     return study;
   }

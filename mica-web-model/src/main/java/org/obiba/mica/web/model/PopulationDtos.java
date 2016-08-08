@@ -3,6 +3,8 @@ package org.obiba.mica.web.model;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import com.google.common.base.Strings;
+import org.obiba.mica.JSONUtils;
 import org.obiba.mica.study.date.PersistableYearMonth;
 import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.Population;
@@ -21,14 +23,14 @@ class PopulationDtos {
   private NumberOfParticipantsDtos numberOfParticipantsDtos;
 
   @Inject
-  private AttachmentDtos attachmentDtos;
-
-  @Inject
   private AttributeDtos attributeDtos;
 
   @NotNull
   PopulationDto asDto(Population population) {
     PopulationDto.Builder builder = PopulationDto.newBuilder();
+
+    if(population.hasModel()) builder.setContent(JSONUtils.toJSON(population.getModel()));
+
     builder.setId(population.getId());
     if(population.getName() != null) builder.addAllName(localizedStringDtos.asDto(population.getName()));
     if(population.getDescription() != null) {
@@ -47,6 +49,7 @@ class PopulationDtos {
     if(population.getAttributes() != null) {
       population.getAttributes().asAttributeList().forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
     }
+
     return builder.build();
   }
 
@@ -67,6 +70,9 @@ class PopulationDtos {
     if(dto.getAttributesCount() > 0) {
       dto.getAttributesList().forEach(attributeDto -> population.addAttribute(attributeDtos.fromDto(attributeDto)));
     }
+
+    if(dto.hasContent() && !Strings.isNullOrEmpty(dto.getContent())) population.setModel(JSONUtils.toMap(dto.getContent()));
+
     return population;
   }
 
@@ -182,6 +188,9 @@ class PopulationDtos {
   @NotNull
   PopulationDto.DataCollectionEventDto asDto(@NotNull DataCollectionEvent dce) {
     PopulationDto.DataCollectionEventDto.Builder builder = PopulationDto.DataCollectionEventDto.newBuilder();
+
+    if(dce.hasModel()) builder.setContent(JSONUtils.toJSON(dce.getModel()));
+
     builder.setId(dce.getId());
     if(dce.getName() != null) builder.addAllName(localizedStringDtos.asDto(dce.getName()));
     if(dce.getDescription() != null) builder.addAllDescription(localizedStringDtos.asDto(dce.getDescription()));
@@ -232,6 +241,9 @@ class PopulationDtos {
     if(dto.getAttributesCount() > 0) {
       dto.getAttributesList().forEach(attributeDto -> dce.addAttribute(attributeDtos.fromDto(attributeDto)));
     }
+
+    if(dto.hasContent() && !Strings.isNullOrEmpty(dto.getContent())) dce.setModel(JSONUtils.toMap(dto.getContent()));
+
     return dce;
   }
 }
