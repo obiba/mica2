@@ -154,6 +154,10 @@ mica.network
         return network;
       }) : {published: false};
 
+      $scope.tabSelected = function(tab){
+        $scope.$broadcast('sfLocalizedStringLocaleChanged', tab.lang);
+      };
+
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
 
@@ -413,21 +417,19 @@ mica.network
       $scope.Mode = {View: 0, Revision: 1, File: 2, Permission: 3, Comment: 4};
 
       $scope.activeTab = 0;
+      $scope.tabSelected = function(tab){
+        $scope.$broadcast('sfLocalizedStringLocaleChanged', tab.lang);
+      };
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
-        $scope.sfOptions = {};
-        
+        $scope.sfOptions = {formDefaults: {readonly: true, languages: {}}};
+
         micaConfig.languages.forEach(function (lang) {
           $scope.tabs.push({lang: lang});
-          $scope.sfOptions[lang] = {
-            formDefaults: {
-              readonly: true,
-               languages: {lang: $filter('translate')('language.' + lang)} 
-            }
-          };
+          $scope.sfOptions.formDefaults.languages[lang]= $filter('translate')('language.' + lang);
         });
-
+        
         $scope.languages = micaConfig.languages;
         $scope.roles = micaConfig.roles;
         $scope.openAccess = micaConfig.openAccess;

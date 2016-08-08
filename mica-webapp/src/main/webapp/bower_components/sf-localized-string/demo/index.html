@@ -6,6 +6,7 @@
     <script src="../bower_components/objectpath/lib/ObjectPath.js"></script>
     <script src="../bower_components/angular-schema-form/dist/schema-form.js"></script>
     <script src="../bower_components/angular-schema-form-bootstrap/bootstrap-decorator.js"></script>
+    <script src="../bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
     <script src="../dist/sf-localized-string.js"></script>
 
     <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css">
@@ -13,8 +14,13 @@
 
     <script>
 
-      angular.module('test', ["schemaForm","sfLocalizedString"]).controller('FormController', function($scope) {
+      angular.module('test', ["schemaForm","sfLocalizedString","ui.bootstrap"]).controller('FormController', function($scope) {
 
+        $scope.locale = 'en';
+
+        $scope.$watch('locale', function () {
+          $scope.$broadcast('sfLocalizedStringLocaleChanged', $scope.locale);
+        }, true);
 
         $scope.schema = {
           "type": "object",
@@ -57,7 +63,6 @@
             "fr": "fffff"
           }
         };
-        //$scope.model = {};
 
         $scope.sfOptions = {formDefaults: { languages: {en: 'English', fr: 'French'}}};
 
@@ -77,6 +82,14 @@
 
       <div class="col-sm-6 form">
         <form sf-schema="schema" sf-form="form" sf-model="model" sf-options="sfOptions"></form>
+        <div>
+          <p>Changing locale via <strong><em>sfLocalizedStringLocaleChanged</em></strong> event.</p>
+          <div class="btn-group">
+            <label class="btn btn-primary" ng-model="locale" uib-btn-radio="'en'">English</label>
+            <label class="btn btn-primary" ng-model="locale" uib-btn-radio="'fr'">French</label>
+          </div>
+        </div>
+
       </div>
 
       <div class="col-sm-6 debug">
@@ -101,6 +114,7 @@
           </div>
         </div>
       </div>
+
     </div>
   </body>
 

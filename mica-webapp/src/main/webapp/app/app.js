@@ -28,6 +28,7 @@ var mica = angular.module('mica', [
   'matchMedia',
   'ngObibaMica',
   'ui.bootstrap',
+  'sfLocalizedString',
   'sfObibaFileUpload',
   'sfCheckboxgroup'
 ]);

@@ -26,6 +26,11 @@ mica.entityConfig
       $scope.forms = FORMS[$scope.target].map(function(name) {
         return {name: name, form: EntityFormResource.get({target: name},
           function(entityForm){
+            entityForm.definitionJson = EntitySchemaFormService.parseJsonSafely(entityForm.definition, []);
+            entityForm.definition = EntitySchemaFormService.prettifyJson(entityForm.definitionJson);
+            entityForm.schemaJson = EntitySchemaFormService.parseJsonSafely(entityForm.schema, {});
+            entityForm.schema = EntitySchemaFormService.prettifyJson(entityForm.schemaJson);
+            entityForm.model = {};
             return entityForm;
           },
           function(response) {
@@ -35,12 +40,6 @@ mica.entityConfig
               msg: ServerErrorUtils.buildMessage(response)
             });
           })};
-      }).map(function(form) {
-        var definitionJson = EntitySchemaFormService.parseJsonSafely(form.form.definition, []);
-        form.form.definition = EntitySchemaFormService.prettifyJson(definitionJson);
-        var schemaJson = EntitySchemaFormService.parseJsonSafely(form.form.schema, {});
-        form.form.schema = EntitySchemaFormService.prettifyJson(schemaJson);
-        return form;
       });
 
       $scope.forms[0].active = true;
@@ -56,6 +55,9 @@ mica.entityConfig
           var defer = $q.defer();
           switch (EntitySchemaFormService.isFormValid(form.form)) {
             case EntitySchemaFormService.ParseResult.VALID:
+              delete form.form.definitionJson;
+              delete form.form.schemaJson;
+              delete form.form.model;
               EntityFormResource.save({target: form.name}, form.form, function() {
                 defer.resolve();
               }, function(response) {
