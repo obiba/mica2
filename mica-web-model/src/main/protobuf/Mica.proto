@@ -487,6 +487,7 @@ message DatasetDto {
   optional TimestampsDto timestamps = 8;
   optional string variableType = 9;
   optional PermissionsDto permissions = 10;
+  optional string content = 11;
 
   extensions 1000 to max;
 

@@ -18,7 +18,11 @@ mica.dataset
   .factory('StudyDatasetResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/study-dataset/:id', {}, {
-        'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true},
+        'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: function(data) {
+          var dataset = angular.copy(data);
+          delete dataset.model;
+          return angular.toJson(dataset);
+        }},
         'get': {method: 'GET'}
       });
     }])

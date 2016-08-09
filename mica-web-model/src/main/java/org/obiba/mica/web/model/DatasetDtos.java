@@ -19,6 +19,7 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.Attributes;
 import org.obiba.mica.core.domain.StudyTable;
 import org.obiba.mica.dataset.HarmonizationDatasetStateRepository;
@@ -573,6 +574,11 @@ class DatasetDtos {
       dataset.getAttributes().asAttributeList()
         .forEach(attribute -> builder.addAttributes(attributeDtos.asDto(attribute)));
     }
+
+    if (dataset.hasModel()) {
+      builder.setContent(JSONUtils.toJSON(dataset.getModel()));
+    }
+
     return builder;
   }
 
@@ -606,6 +612,9 @@ class DatasetDtos {
     dataset.setPublished(dto.getPublished());
     if(dto.getAttributesCount() > 0) {
       dto.getAttributesList().forEach(attributeDto -> dataset.addAttribute(attributeDtos.fromDto(attributeDto)));
+    }
+    if (dto.hasContent()) {
+      dataset.setModel(JSONUtils.toMap(dto.getContent()));
     }
     return dataset;
   }

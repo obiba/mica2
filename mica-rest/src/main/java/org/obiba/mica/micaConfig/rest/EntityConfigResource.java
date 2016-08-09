@@ -6,12 +6,13 @@ import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.micaConfig.domain.EntityConfig;
-import org.obiba.mica.micaConfig.domain.NetworkConfig;
 import org.obiba.mica.micaConfig.service.EntityConfigService;
 import org.obiba.mica.security.Roles;
 import org.obiba.mica.web.model.Dtos;
@@ -34,9 +35,9 @@ public abstract class EntityConfigResource<T extends EntityConfig> {
 
   @GET
   @Path("/form")
-  public Mica.EntityFormDto get() {
+  public Mica.EntityFormDto get(@Context UriInfo uriInfo) {
     Optional<T> d = getConfigService().find();
-    if(!d.isPresent()) throw NoSuchEntityException.withPath(NetworkConfig.class, "network");
+    if(!d.isPresent()) throw NoSuchEntityException.withPath(EntityConfig.class, uriInfo.getPath());
     return asDto(d.get());
   }
 

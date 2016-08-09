@@ -1134,7 +1134,30 @@
     "data-collection-event-form-title": "Data Collection Event"
   },
   "dataset-config" : {
-    "title" : "Dataset Configuration"
+    "title" : "Dataset Configuration",
+    "schema-form": {
+      "title": "Form",
+      "info": "The custom dataset form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+    },
+    "schema": {
+      "tab": "Schema",
+      "info": "The form schema specifies the data structure."
+    },
+    "definition": {
+      "tab": "Definition",
+      "info": "The form definition specifies how to display the schema and how to validate the data inputs."
+    },
+    "preview": {
+      "model-modal": "Model Preview",
+      "tab": "Preview",
+      "show-model": "Model",
+      "test": "Test Form Validation",
+      "tested": "Form is validated successfully."
+    },
+    "model": {
+      "tab": "Model",
+      "info": "The form model stores the valid input data, invalid values are excluded."
+    }
   },
   "data-access-config": {
     "menu": "Data Access",

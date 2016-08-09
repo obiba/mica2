@@ -13,7 +13,7 @@ package org.obiba.mica.dataset.domain;
 import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.core.domain.AbstractGitPersistable;
+import org.obiba.mica.core.domain.AbstractModelAware;
 import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.AttributeAware;
 import org.obiba.mica.core.domain.Attributes;
@@ -27,7 +27,7 @@ import com.google.common.base.MoreObjects;
 /**
  * Proxy to Opal tables.
  */
-public abstract class Dataset extends AbstractGitPersistable implements AttributeAware, Indexable {
+public abstract class Dataset extends AbstractModelAware implements AttributeAware, Indexable {
 
   private static final long serialVersionUID = -3328963766855899217L;
 
