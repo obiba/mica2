@@ -40,6 +40,7 @@ import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.file.service.TempFileService;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.micaConfig.service.TaxonomyConfigService;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.network.domain.Network;
 import org.obiba.mica.security.service.SubjectAclService;
@@ -448,6 +449,11 @@ public class StudyServiceTest {
     @Bean
     public EventBus eventBus() {
       return mock(EventBus.class);
+    }
+
+    @Bean
+    public TaxonomyConfigService taxonomyConfigService() {
+      return mock(TaxonomyConfigService.class);
     }
 
     @Override

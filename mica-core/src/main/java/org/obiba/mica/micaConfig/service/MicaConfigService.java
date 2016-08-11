@@ -10,28 +10,17 @@ import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.google.common.eventbus.EventBus;
 import org.apache.commons.io.FileUtils;
 import org.apache.shiro.codec.CodecSupport;
 import org.apache.shiro.codec.Hex;
 import org.apache.shiro.crypto.AesCipherService;
 import org.apache.shiro.util.ByteSource;
-import org.obiba.mica.config.taxonomies.DatasetTaxonomy;
-import org.obiba.mica.config.taxonomies.NetworkTaxonomy;
-import org.obiba.mica.config.taxonomies.StudyTaxonomy;
-import org.obiba.mica.config.taxonomies.TaxonomyTaxonomy;
-import org.obiba.mica.config.taxonomies.VariableTaxonomy;
+import org.obiba.mica.core.domain.TaxonomyTarget;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.event.MicaConfigUpdatedEvent;
 import org.obiba.mica.micaConfig.repository.MicaConfigRepository;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.springframework.beans.BeanUtils;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationContext;
@@ -40,28 +29,22 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.google.common.eventbus.EventBus;
+
 @Service
 @Validated
-@EnableConfigurationProperties({ NetworkTaxonomy.class, StudyTaxonomy.class, DatasetTaxonomy.class, VariableTaxonomy.class, TaxonomyTaxonomy.class })
 public class MicaConfigService {
 
   @Inject
   private ApplicationContext applicationContext;
 
   @Inject
-  private NetworkTaxonomy networkTaxonomy;
-
-  @Inject
-  private StudyTaxonomy studyTaxonomy;
-
-  @Inject
-  private DatasetTaxonomy datasetTaxonomy;
-
-  @Inject
-  private VariableTaxonomy variableTaxonomy;
-
-  @Inject
-  private TaxonomyTaxonomy taxonomyTaxonomy;
+  private TaxonomyConfigService taxonomyConfigService;
 
   @Inject
   private MicaConfigRepository micaConfigRepository;
@@ -79,27 +62,27 @@ public class MicaConfigService {
 
   @NotNull
   Taxonomy getNetworkTaxonomy() {
-    return networkTaxonomy;
+    return taxonomyConfigService.findByTarget(TaxonomyTarget.NETWORK);
   }
 
   @NotNull
   Taxonomy getStudyTaxonomy() {
-    return studyTaxonomy;
+    return taxonomyConfigService.findByTarget(TaxonomyTarget.STUDY);
   }
 
   @NotNull
   Taxonomy getDatasetTaxonomy() {
-    return datasetTaxonomy;
+    return taxonomyConfigService.findByTarget(TaxonomyTarget.DATASET);
   }
 
   @NotNull
   Taxonomy getVariableTaxonomy() {
-    return variableTaxonomy;
+    return taxonomyConfigService.findByTarget(TaxonomyTarget.VARIABLE);
   }
 
   @NotNull
   Taxonomy getTaxonomyTaxonomy() {
-    return taxonomyTaxonomy;
+    return taxonomyConfigService.findByTarget(TaxonomyTarget.TAXONOMY);
   }
 
   @Cacheable(value = "micaConfig", key = "#root.methodName")

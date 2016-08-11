@@ -38,8 +38,10 @@ import org.obiba.mica.dataset.domain.StudyDatasetState;
 import org.obiba.mica.file.service.FileSystemService;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.repository.DataAccessFormRepository;
+import org.obiba.mica.micaConfig.repository.TaxonomyConfigRepository;
 import org.obiba.mica.micaConfig.service.DataAccessFormService;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
+import org.obiba.mica.micaConfig.service.TaxonomyConfigService;
 import org.obiba.mica.project.ProjectRepository;
 import org.obiba.mica.project.ProjectStateRepository;
 import org.obiba.mica.project.service.ProjectService;
@@ -250,6 +252,16 @@ public class DatasetDtosTest {
     @Bean
     public AttachmentStateRepository attachmentStateRepository() {
       return mock(AttachmentStateRepository.class);
+    }
+
+    @Bean
+    public TaxonomyConfigService taxonomyConfigService() {
+      return mock(TaxonomyConfigService.class);
+    }
+
+    @Bean
+    public TaxonomyConfigRepository taxonomyConfigRepository() {
+      return mock(TaxonomyConfigRepository.class);
     }
 
     @Bean

@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.obiba.mica.core.domain.TaxonomyTarget;
 import org.obiba.mica.micaConfig.event.TaxonomiesUpdatedEvent;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.search.ElasticSearchIndexer;

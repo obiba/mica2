@@ -10,6 +10,7 @@
 
 package org.obiba.mica.taxonomy;
 
+import org.obiba.mica.core.domain.TaxonomyTarget;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 
 public class TaxonomyIndexable extends TaxonomyEntityIndexable<Taxonomy> {
