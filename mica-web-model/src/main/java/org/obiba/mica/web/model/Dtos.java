@@ -23,6 +23,7 @@ import org.obiba.mica.file.AttachmentState;
 import org.obiba.mica.file.TempFile;
 import org.obiba.mica.micaConfig.domain.DataAccessForm;
 import org.obiba.mica.micaConfig.domain.DataCollectionEventConfig;
+import org.obiba.mica.micaConfig.domain.DatasetConfig;
 import org.obiba.mica.micaConfig.domain.EntityConfig;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.domain.NetworkConfig;
@@ -380,6 +381,11 @@ public class Dtos {
   @NotNull
   public ProjectConfig fromDto(@NotNull Mica.ProjectFormDto dto) {
     return micaConfigDtos.fromDto(dto);
+  }
+
+  @NotNull
+  public Mica.EntityFormDto asDto(@NotNull DatasetConfig  datasetConfig) {
+    return micaConfigDtos.asDto(datasetConfig);
   }
 
   @NotNull
