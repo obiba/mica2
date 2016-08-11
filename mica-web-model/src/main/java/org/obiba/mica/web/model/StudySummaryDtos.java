@@ -70,9 +70,11 @@ class StudySummaryDtos {
     if(study.getMethods() != null && study.getMethods().getDesigns() != null) {
       builder.addAllDesigns(study.getMethods().getDesigns());
     }
+
     if(study.getNumberOfParticipants() != null && study.getNumberOfParticipants().getParticipant() != null) {
       builder.setTargetNumber(TargetNumberDtos.asDto(study.getNumberOfParticipants().getParticipant()));
     }
+
     Collection<String> countries = new HashSet<>();
     SortedSet<Population> populations = study.getPopulations();
 

@@ -290,10 +290,13 @@ mica.study
 
         micaConfig.languages.forEach(function (lang) {
           $scope.tabs.push({lang: lang});
+          var sfLanguages = {};
+          sfLanguages[lang] = $filter('translate')('language.' + lang);
+          
           $scope.sfOptions[lang] = {
             formDefaults: {
               readonly: true,
-              languages: {lang: $filter('translate')('language.' + lang)}
+              languages: sfLanguages
             }
           };
         });
@@ -622,7 +625,7 @@ mica.study
               path,
               StudyTaxonomyService) {
       $scope.months = $locale.DATETIME_FORMATS.MONTH;
-      $scope.lang = lang;
+      $scope.tab = {lang: lang};
       $scope.dce = dce;
       $scope.study = study;
       $scope.path = path;
@@ -644,7 +647,7 @@ mica.study
         }
 
         var result = terms.map(function(term){
-          return StudyTaxonomyService.getLabel(vocabularyName, term, $scope.lang);
+          return StudyTaxonomyService.getLabel(vocabularyName, term, $scope.tab.lang);
         });
         return result.join(', ');
       };
@@ -768,10 +771,12 @@ mica.study
         $scope.sfOptions = {};
 
         micaConfig.languages.forEach(function (lang) {
+          var sfLanguages = {};
+          sfLanguages[lang] = $filter('translate')('language.' + lang);
           $scope.tabs.push({lang: lang});
           $scope.sfOptions[lang] = {
             formDefaults: {
-              languages: {lang: $filter('translate')('language.' + lang)}
+              languages: sfLanguages
             }
           };
         });
@@ -801,88 +806,7 @@ mica.study
           return;
         }
 
-        var selectedDatasources = [];
-        var hasRecruitmentDatasources = null !== $scope.population.recruitment.dataSources; // null or undefined
-
-        if (hasRecruitmentDatasources && $scope.population.recruitment.dataSources.indexOf('general_population') < 0) {
-          delete $scope.population.recruitment.generalPopulationSources;
-        } else if ($scope.population.recruitment.generalPopulationSources &&
-          $scope.population.recruitment.generalPopulationSources.length) {
-          selectedDatasources.push('general_population');
-        }
-
-        if (hasRecruitmentDatasources && $scope.population.recruitment.dataSources.indexOf('specific_population') < 0) {
-          delete $scope.population.recruitment.specificPopulationSources;
-        } else if ($scope.population.recruitment.specificPopulationSources &&
-          $scope.population.recruitment.specificPopulationSources.length) {
-          selectedDatasources.push('specific_population');
-        }
-
-        if (!$scope.population.recruitment.specificPopulationSources ||
-          $scope.population.recruitment.specificPopulationSources.indexOf('other') < 0) {
-          $scope.population.recruitment.otherSpecificPopulationSource = [];
-        }
-
-        if (hasRecruitmentDatasources && $scope.population.recruitment.dataSources.indexOf('exist_studies') < 0) {
-          delete $scope.population.recruitment.studies;
-        } else if ($scope.population.recruitment.studies && $scope.population.recruitment.studies.length) {
-          selectedDatasources.push('exist_studies');
-        }
-
-        if (hasRecruitmentDatasources && $scope.population.recruitment.dataSources.indexOf('other') < 0) {
-          delete $scope.population.recruitment.otherSource;
-        } else if ($scope.population.recruitment.otherSource) {
-          selectedDatasources.push('other');
-        }
-
-        $scope.population.recruitment.dataSources = selectedDatasources;
-
-        if (!$scope.population.selectionCriteria.gender) {
-          delete $scope.population.selectionCriteria.gender;
-        }
-
         updateStudy();
-      };
-
-      function removeLocalizedString(target, item) {
-        var idx = -1;
-
-        for (var i = target.length; i--;) {
-          if (target[i].localizedStrings === item) {
-            idx = i;
-          }
-        }
-
-        if (idx > -1) {
-          target.splice(idx, 1);
-        }
-      }
-
-      $scope.removeHealthStatus = function (item) {
-        removeLocalizedString($scope.population.selectionCriteria.healthStatus, item);
-      };
-
-      $scope.removeEthnicOrigin = function (item) {
-        removeLocalizedString($scope.population.selectionCriteria.ethnicOrigin, item);
-      };
-
-      $scope.addHealthStatus = function () {
-        $scope.population.selectionCriteria.healthStatus = $scope.population.selectionCriteria.healthStatus || [];
-        $scope.population.selectionCriteria.healthStatus.push({localizedStrings: []});
-      };
-
-      $scope.addEthnicOrigin = function () {
-        $scope.population.selectionCriteria.ethnicOrigin = $scope.population.selectionCriteria.ethnicOrigin || [];
-        $scope.population.selectionCriteria.ethnicOrigin.push({localizedStrings: []});
-      };
-
-      $scope.removeRecruitmentStudy = function (item) {
-        removeLocalizedString($scope.population.recruitment.studies, item);
-      };
-
-      $scope.addRecruitmentStudy = function () {
-        $scope.population.recruitment.studies = $scope.population.recruitment.studies || [];
-        $scope.population.recruitment.studies.push({localizedStrings: []});
       };
 
       $scope.cancel = function () {
@@ -999,7 +923,6 @@ mica.study
           $scope.attachments =
             $scope.dce.attachments && $scope.dce.attachments.length > 0 ? $scope.dce.attachments : [];
 
-
           StudyTaxonomyService.get(function() {
             var lang = $scope.tabs[$scope.activeTab].lang;
             $scope.dataSources = StudyTaxonomyService.getTerms('populations-dataCollectionEvents-dataSources', lang);
@@ -1019,14 +942,16 @@ mica.study
 
         micaConfig.languages.forEach(function (lang) {
           $scope.tabs.push({lang: lang});
+          var sfLanguages = {};
+          sfLanguages[lang] = $filter('translate')('language.' + lang);
           $scope.sfOptions[lang] = {
             formDefaults: {
-              languages: {lang: $filter('translate')('language.' + lang)}
+              languages: sfLanguages 
             }
           };
         });
 
-        EntityFormResource.get({target: 'population'}, function(form) {
+        EntityFormResource.get({target: 'data-collection-event'}, function(form) {
           form.schema = LocalizedSchemaFormService.translate(angular.fromJson(form.schema));
           form.definition = LocalizedSchemaFormService.translate(angular.fromJson(form.definition));
           $scope.dceSfForm = form;
@@ -1077,51 +1002,6 @@ mica.study
       var redirectToStudy = function () {
         $location.search('sourceDceId', null);
         $location.path('/study/' + $scope.study.id).replace();
-      };
-
-      $scope.$watch('dce.dataSources', function (newVal, oldVal) {
-        if (oldVal === undefined || newVal === undefined) {
-          $scope.dce.dataSources = [];
-          return;
-        }
-
-        var dsFilter = function (d) {
-          return d !== 'questionnaires' && d !== 'physical_measures';
-        };
-
-        updateActiveDatasourceTab(angular.copy(newVal).filter(dsFilter), angular.copy(oldVal).filter(dsFilter));
-      }, true);
-
-      var updateActiveDatasourceTab = function (newVal, oldVal) {
-        function arrayDiff(source, target) {
-          for (var i = 0; i < source.length; i++) {
-            if (target.indexOf(source[i]) < 0) {
-              return source[i];
-            }
-          }
-        }
-
-        if (newVal.length < oldVal.length) {
-          var rem = arrayDiff(oldVal, newVal);
-
-          if (rem) {
-            if ($scope.dataSourcesTabs[rem]) {
-              $scope.dataSourcesTabs[newVal[0]] = true;
-            }
-
-            $scope.dataSourcesTabs[rem] = false;
-          }
-        } else {
-          var added = arrayDiff(newVal, oldVal);
-
-          if (added) {
-            for (var k in $scope.dataSourcesTabs) {
-              $scope.dataSourcesTabs[k] = false;
-            }
-
-            $scope.dataSourcesTabs[added] = true;
-          }
-        }
       };
 
     }])
@@ -1177,9 +1057,11 @@ mica.study
         micaConfig.languages.forEach(function (lang) {
           $scope.tabs.push({lang: lang});
           $scope.languages.push(lang);
+          var sfLanguages = {};
+          sfLanguages[lang] = $filter('translate')('language.' + lang);
           $scope.sfOptions[lang] = {
             formDefaults: {
-              languages: {lang: $filter('translate')('language.' + lang)}
+              languages: sfLanguages 
             }
           };
         });
@@ -1243,27 +1125,11 @@ mica.study
         $scope.files = study.logo ? [study.logo] : [];
         $scope.study.attachments =
           study.attachments && study.attachments.length > 0 ? study.attachments : [];
-
-        if (study.maelstromAuthorization.date) {
-          $scope.authorization.maelstrom.date =
-            new Date(study.maelstromAuthorization.date.split('-').map(function (x) { return parseInt(x, 10);}));
-        }
-        if (study.specificAuthorization.date) {
-          $scope.authorization.specific.date =
-            new Date(study.specificAuthorization.date.split('-').map(function (x) { return parseInt(x, 10);}));
-        }
-
-        // TODO remove the property below once the Study.methods.designs is replaced by Study.methods.design
-        $scope.methods = {design: angular.isArray($scope.study.methods.designs) ? $scope.study.methods.designs.pop() : $scope.study.methods.designs};
         initializeTaxonomies();
       }) : createNewStudy();
 
 
       $scope.save = function () {
-        if ($scope.methods && $scope.methods.design) {
-          $scope.study.methods.designs = [$scope.methods.design];
-        }
-
         $scope.study.logo = $scope.files.length > 0 ? $scope.files[0] : null;
 
         if (!$scope.study.logo) { //protobuf doesnt like null values

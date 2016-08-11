@@ -407,6 +407,8 @@
     "timeline": "Study Timeline",
     "population": "Population",
     "populations": "Populations",
+    "maelstromAuthorization": "Maelstrom authorization",
+    "specificAuthorization": "Specific authorization",
     "authorization": {
       "label": "Authorization",
       "authorized": {
@@ -590,7 +592,8 @@
     "add-ethnic-origin-help": "Add ethnic origin",
     "add-data-collection-event": "Add Data Collection Event",
     "countries": "Countries ISO",
-    "numberOfParticipants-noLimit": "No limit"
+    "numberOfParticipants-noLimit": "No limit",
+    "recruitment": "Recruitment"
   },
   "data-collection-event": {
     "label-edit": "Edit Data Collection Event",

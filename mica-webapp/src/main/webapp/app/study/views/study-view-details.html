@@ -85,65 +85,65 @@
           </div>
         </div>
         <div class="col-md-6">
-          <h3 translate ng-show="study.methods">study.general-design</h3>
-          <table class="table table-bordered table-striped" ng-show="study.methods">
+          <h3 translate ng-show="study.model.methods">study.general-design</h3>
+          <table class="table table-bordered table-striped" ng-show="study.model.methods">
             <tbody>
-            <tr ng-show="study.methods.designs.length || study.methods.otherDesign.length">
-              <th translate>study.design</th>
+            <tr ng-show="study.model.methods.design">
+              <th translate>study.model.design</th>
               <td>
                 <ul class="list-unstyled">
-                  <li ng-repeat="design in study.methods.designs">
-                    {{getLabel('methods-designs', design, tab.lang)}}
+                  <li>
+                    {{getLabel('methods-designs', study.model.methods.design, tab.lang)}}
                   </li>
-                  <li ng-show="study.methods.otherDesign.length">
-                    <localized value="study.methods.otherDesign" lang="tab.lang"></localized>
+                  <li ng-show="study.model.methods.otherDesign[tab.lang]">
+                    <localized value="study.model.methods.otherDesign" lang="tab.lang"></localized>
                   </li>
                 </ul>
               </td>
             </tr>
-            <tr ng-show="study.methods.followUpInfo.length">
+            <tr ng-show="study.model.methods.followUpInfo[tab.lang]">
               <th translate>study.follow-up</th>
               <td>
-                <localized value="study.methods.followUpInfo" lang="tab.lang"></localized>
+                <localized value="study.model.methods.followUpInfo" lang="tab.lang"></localized>
               </td>
             </tr>
-            <tr ng-show="study.methods.recruitments.length || study.methods.otherRecruitment.length">
+            <tr ng-show="study.model.methods.recruitments.length || study.model.methods.otherRecruitment[tab.lang]">
               <th translate>study.recruitment-target</th>
               <td>
                 <ul class="list-unstyled">
-                  <li ng-repeat="recruitment in study.methods.recruitments">
+                  <li ng-repeat="recruitment in study.model.methods.recruitments">
                     {{getLabel('methods-recruitments', recruitment, tab.lang)}}
                   </li>
-                  <li ng-show="study.methods.otherRecruitment.length">
-                    <localized value="study.methods.otherRecruitment" lang="tab.lang"></localized>
+                  <li ng-show="study.model.methods.otherRecruitment[tab.lang]">
+                    <localized value="study.model.methods.otherRecruitment" lang="tab.lang"></localized>
                   </li>
                 </ul>
               </td>
             </tr>
-            <tr ng-show="study.numberOfParticipants.participant">
+            <tr ng-show="study.model.numberOfParticipants.participant">
               <th translate>numberOfParticipants.participants</th>
               <td>
-                <span ng-hide="study.numberOfParticipants.participant.noLimit">{{study.numberOfParticipants.participant.number | number}}</span>
-                <span ng-show="study.numberOfParticipants.participant.noLimit" translate>numberOfParticipants.no-limit</span>
+                <span ng-hide="study.model.numberOfParticipants.participant.noLimit">{{study.model.numberOfParticipants.participant.number | number}}</span>
+                <span ng-show="study.model.numberOfParticipants.participant.noLimit" translate>numberOfParticipants.no-limit</span>
               </td>
             </tr>
-            <tr ng-show="study.numberOfParticipants.sample">
+            <tr ng-show="study.model.numberOfParticipants.sample">
               <th translate>numberOfParticipants.sample</th>
               <td>
-                <span ng-hide="study.numberOfParticipants.sample.noLimit">{{study.numberOfParticipants.sample.number | number}}</span>
-                  <span ng-show="study.numberOfParticipants.sample.noLimit" translate>numberOfParticipants.no-limit</span>
+                <span ng-hide="study.model.numberOfParticipants.sample.noLimit">{{study.model.numberOfParticipants.sample.number | number}}</span>
+                  <span ng-show="study.model.numberOfParticipants.sample.noLimit" translate>numberOfParticipants.no-limit</span>
               </td>
             </tr>
-            <tr ng-show="study.numberOfParticipants.info.length">
+            <tr ng-show="study.model.numberOfParticipants.info[tab.lang]">
               <th translate>numberOfParticipants.suppl-info</th>
               <td>
-                <localized value="study.numberOfParticipants.info" lang="tab.lang"></localized>
+                <localized value="study.model.numberOfParticipants.info" lang="tab.lang"></localized>
               </td>
             </tr>
-            <tr ng-show="study.methods.info.length">
+            <tr ng-show="study.model.methods.info[tab.lang]">
               <th translate>suppl-info</th>
               <td>
-                <localized value="study.methods.info" lang="tab.lang"></localized>
+                <localized value="study.model.methods.info" lang="tab.lang"></localized>
               </td>
             </tr>
             </tbody>
@@ -152,19 +152,19 @@
       </div>
 
       <div class="row">
-        <div id="study-access" class="col-md-6" ng-show="study.access.length || study.otherAccess.length">
-          <h3 translate>study.access.label</h3>
-          <table class="table table-bordered table-striped" ng-show="study.access.length || study.otherAccess.length">
+        <div id="study-access" class="col-md-6" ng-show="study.model.access.length || study.model.otherAccess[tab.lang]">
+          <h3 translate>study.model.access.label</h3>
+          <table class="table table-bordered table-striped" ng-show="study.model.access.length || study.model.otherAccess[tab.lang]">
             <tbody>
             <tr>
               <th translate>study.access.for</th>
               <td>
                 <ul class="list-unstyled">
-                  <li ng-repeat="access in study.access">
+                  <li ng-repeat="access in study.model.access">
                     {{getLabel('access', access, tab.lang)}}
                   </li>
-                  <li ng-show="study.otherAccess.length">
-                    <localized value="study.otherAccess" lang="tab.lang"></localized>
+                  <li ng-show="study.model.otherAccess[tab.lang]">
+                    <localized value="study.model.otherAccess" lang="tab.lang"></localized>
                   </li>
                 </ul>
               </td>
@@ -173,18 +173,18 @@
           </table>
         </div>
         <div id="study-paper" class="col-md-6">
-          <h3 translate ng-show="study.markerPaper || study.pubmedId">study.marker-paper</h3>
-          <table class="table table-bordered table-striped" ng-show="study.markerPaper || study.pubmedId">
+          <h3 translate ng-show="study.model.markerPaper || study.model.pubmedId">study.marker-paper</h3>
+          <table class="table table-bordered table-striped" ng-show="study.model.markerPaper || study.model.pubmedId">
             <tbody>
-            <tr ng-show="study.markerPaper">
+            <tr ng-show="study.model.markerPaper">
               <th translate>study.marker-paper</th>
               <td>{{study.markerPaper}}</td>
             </tr>
-            <tr ng-show="study.pubmedId">
+            <tr ng-show="study.model.pubmedId">
               <th translate>study.pubmed-id</th>
               <td>
-                <a ng-href="http://www.ncbi.nlm.nih.gov/pubmed/{{study.pubmedId}}" target="_blank">
-                  PUBMED {{study.pubmedId}}
+                <a ng-href="http://www.ncbi.nlm.nih.gov/pubmed/{{study.model.pubmedId}}" target="_blank">
+                  PUBMED {{study.model.pubmedId}}
                 </a>
               </td>
             </tr>
@@ -195,12 +195,12 @@
 
       <div class="row">
         <div class="col-md-6">
-          <h3 translate ng-show="study.info.length">suppl-info</h3>
-          <table class="table table-bordered table-striped" ng-show="study.info.length">
+          <h3 translate ng-show="study.model.info[tab.lang]">suppl-info</h3>
+          <table class="table table-bordered table-striped" ng-show="study.model.info[tab.lang]">
             <tbody>
             <tr>
               <td>
-                <localized value="study.info" lang="tab.lang"></localized>
+                <localized value="study.model.info" lang="tab.lang"></localized>
               </td>
             </tr>
             </tbody>
@@ -226,31 +226,31 @@
       </div>
 
       <div id="study-authorization">
-        <h3 translate ng-show="study.specificAuthorization || study.maelstromAuthorization">
+        <h3 translate ng-show="study.model.specificAuthorization || study.model.maelstromAuthorization">
           study.authorization.label</h3>
-        <table class="table table-bordered table-striped" ng-show="study.specificAuthorization || study.maelstromAuthorization">
+        <table class="table table-bordered table-striped" ng-show="study.model.specificAuthorization || study.model.maelstromAuthorization">
           <tbody>
-          <tr ng-show="study.maelstromAuthorization">
+          <tr ng-show="study.model.maelstromAuthorization">
             <td translate>study.authorization.maelstrom</td>
             <td>
-              {{'study.authorization.authorized.' + study.maelstromAuthorization.authorized | translate}}
-                <span ng-show="study.maelstromAuthorization.authorized && study.maelstromAuthorization.authorizer">
-                  <span translate>by</span> {{study.maelstromAuthorization.authorizer}}
+              {{'study.authorization.authorized.' + study.model.maelstromAuthorization.authorized | translate}}
+                <span ng-show="study.model.maelstromAuthorization.authorized && study.model.maelstromAuthorization.authorizer">
+                  <span translate>by</span> {{study.model.maelstromAuthorization.authorizer}}
                 </span>
-                <span ng-show="study.maelstromAuthorization.authorized && study.maelstromAuthorization.date">
-                  <span translate>on</span> {{study.maelstromAuthorization.date}}
+                <span ng-show="study.model.maelstromAuthorization.authorized && study.model.maelstromAuthorization.date">
+                  <span translate>on</span> {{study.model.maelstromAuthorization.date}}
                 </span>
             </td>
           </tr>
-          <tr ng-show="study.specificAuthorization">
+          <tr ng-show="study.model.specificAuthorization">
             <td translate>study.authorization.specific</td>
             <td>
-              {{'study.authorization.authorized.' + study.specificAuthorization.authorized | translate}}
-                <span ng-show="study.specificAuthorization.authorized && study.specificAuthorization.authorizer">
-                  <span translate>by</span> {{study.specificAuthorization.authorizer}}
+              {{'study.authorization.authorized.' + study.model.specificAuthorization.authorized | translate}}
+                <span ng-show="study.model.specificAuthorization.authorized && study.model.specificAuthorization.authorizer">
+                  <span translate>by</span> {{study.model.specificAuthorization.authorizer}}
                 </span>
-                <span ng-show="study.specificAuthorization.authorized && study.specificAuthorization.date">
-                  <span translate>on</span> {{study.specificAuthorization.date}}
+                <span ng-show="study.model.specificAuthorization.authorized && study.model.specificAuthorization.date">
+                  <span translate>on</span> {{study.model.specificAuthorization.date}}
                 </span>
             </td>
           </tr>
@@ -271,8 +271,6 @@
           </tbody>
         </table>
       </div>
-
-      <div sf-model="study.model" sf-form="sfForm.definition" sf-schema="sfForm.schema" sf-options="sfOptions[tab.lang]"></div>
     </uib-tab>
   </uib-tabset>
 </div>

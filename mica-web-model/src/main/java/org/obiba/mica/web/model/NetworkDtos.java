@@ -9,6 +9,10 @@ import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import jersey.repackaged.com.google.common.collect.Lists;
 import org.obiba.mica.JSONUtils;
 import org.obiba.mica.NoSuchEntityException;
 import org.obiba.mica.core.domain.AbstractGitPersistable;
@@ -25,12 +29,6 @@ import org.obiba.mica.study.service.PublishedStudyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-
-import jersey.repackaged.com.google.common.collect.Lists;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.util.stream.Collectors.toList;
@@ -208,7 +206,6 @@ class NetworkDtos {
     network.setName(localizedStringDtos.fromDto(dto.getNameList()));
     network.setDescription(localizedStringDtos.fromDto(dto.getDescriptionList()));
     network.setAcronym(localizedStringDtos.fromDto(dto.getAcronymList()));
-    network.setInfos(localizedStringDtos.fromDto(dto.getInfoList()));
 
     if(dto.getMembershipsCount() > 0) {
       Map<String, List<Membership>> memberships = Maps.newHashMap();
@@ -221,8 +218,6 @@ class NetworkDtos {
       network.setContacts(dto.getContactsList().stream().map(personDtos::fromDto).collect(Collectors.<Person>toList()));
     }
 
-    if(dto.hasWebsite()) network.setWebsite(dto.getWebsite());
-
     if(dto.getStudyIdsCount() > 0) {
       dto.getStudyIdsList().forEach(network::addStudyId);
     }
@@ -232,15 +227,8 @@ class NetworkDtos {
         .ifPresent(a -> network.setLogo(attachmentDtos.fromDto(a)));
     }
 
-    if(dto.hasMaelstromAuthorization())
-      network.setMaelstromAuthorization(AuthorizationDtos.fromDto(dto.getMaelstromAuthorization()));
-
     if(dto.hasLogo()) {
       network.setLogo(attachmentDtos.fromDto(dto.getLogo()));
-    }
-
-    if(dto.getAttributesCount() > 0) {
-      dto.getAttributesList().forEach(attributeDto -> network.addAttribute(attributeDtos.fromDto(attributeDto)));
     }
 
     if(dto.getNetworkIdsCount() > 0) {
@@ -248,6 +236,16 @@ class NetworkDtos {
     }
 
     if(dto.hasContent() && !Strings.isNullOrEmpty(dto.getContent())) network.setModel(JSONUtils.toMap(dto.getContent()));
+    else {
+      Map<String, Object> model = Maps.newHashMap();
+
+      if(dto.getInfoCount() > 0) model.put("infos", localizedStringDtos.fromDto(dto.getInfoList()));
+      if(dto.hasWebsite()) model.put("website", dto.getWebsite());
+      if(dto.hasMaelstromAuthorization())
+        model.put("maelstromAuthorization", AuthorizationDtos.fromDto(dto.getMaelstromAuthorization()));
+
+      network.setModel(model);
+    }
 
     return network;
   }

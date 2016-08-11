@@ -6,7 +6,164 @@
         "type": "section",
         "htmlClass": "row",
         "items": [
-          "website"
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "website",
+              "startYear",
+              "endYear"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "section",
+        "htmlClass": "row",
+        "items": [
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              {
+                "key": "methods",
+                "items": [
+                  {
+                    "key": "methods.design",
+                    "notitle": true,
+                    "type": "radios",
+                    "titleMap": [
+                      {
+                        "value": "cohort_study",
+                        "name": "t(cohort-study)"
+                      },
+                      {
+                        "value": "case_control",
+                        "name": "t(case-control)"
+                      },
+                      {
+                        "value": "case_only",
+                        "name": "t(case-only)"
+                      },
+                      {
+                        "value": "clinical_trial",
+                        "name": "t(clinical-trial)"
+                      },
+                      {
+                        "value": "other",
+                        "name": "t(other)"
+                      }
+                    ]
+                  },
+                  "methods.otherDesign",
+                  {
+                    "key": "methods.followUpInfo",
+                    "type": "localizedstring"
+                  },
+                  "methods.info",
+                  "methods.recruitments",
+                  "methods.otherRecruitment"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              {
+                "key": "numberOfParticipants",
+                "items": [
+                  {
+                    "key": "numberOfParticipants.participant",
+                    "notitle": true
+                  },
+                  {
+                    "key": "numberOfParticipants.sample",
+                    "notitle": true
+                  },
+                  {
+                    "key": "numberOfParticipants.info"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "section",
+        "htmlClass": "row",
+        "items": [
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "access",
+              {
+                "key": "otherAccess",
+                "type": "localizedstring",
+                "rows": 2
+              }
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              {
+                "key": "markerPaper",
+                "type": "textarea"
+              },
+              "pubmedId"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "section",
+        "htmlClass": "row",
+        "items": [
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              {
+                "key": "maelstromAuthorization",
+                "items": [
+                  "maelstromAuthorization.authorized",
+                  {
+                    "key": "maelstromAuthorization.authorizer",
+                    "condition": "model.maelstromAuthorization.authorized"
+                  },
+                  {
+                    "key": "maelstromAuthorization.date",
+                    "condition": "model.maelstromAuthorization.authorized",
+                    "dateOptions": {
+                      "dateFormat": "yyyy-MM-dd"
+                    }
+                  }
+                ]
+              },
+              {
+                "key": "specificAuthorization",
+                "items": [
+                  "specificAuthorization.authorized",
+                  {
+                    "key": "specificAuthorization.authorizer",
+                    "condition": "model.specificAuthorization.authorized"
+                  },
+                  {
+                    "key": "specificAuthorization.date",
+                    "condition": "model.specificAuthorization.authorized",
+                    "dateOptions": {
+                      "dateFormat": "yyyy-MM-dd"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
         ]
       }
     ]

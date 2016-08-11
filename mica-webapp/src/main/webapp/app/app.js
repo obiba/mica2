@@ -28,6 +28,8 @@ var mica = angular.module('mica', [
   'matchMedia',
   'ngObibaMica',
   'ui.bootstrap',
+  'schemaForm',
+  'schemaForm-datepicker',
   'sfLocalizedString',
   'sfObibaFileUpload',
   'sfCheckboxgroup'

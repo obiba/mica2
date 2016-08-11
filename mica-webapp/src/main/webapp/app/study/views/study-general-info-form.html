@@ -5,14 +5,8 @@
 <div localized-input name="study.acronym" model="study.acronym" label="study.acronym" lang="tab.lang" required="true" help="study.acronym-help"></div>
 
 <div localized-textarea name="study.objectives" model="study.objectives" label="study.objectives" lang="tab.lang" required="true" help="study.objectives-help"></div>
-<div form-input name="study.startYear" model="study.startYear" type="number" label="study.start-year" min="{{defaultMinYear}}" max="{{defaultMaxYear}}"></div>
-
-<div form-input name="study.endYear" model="study.endYear" type="number" label="study.end-year" min="{{defaultMinYear}}" max="{{defaultMaxYear}}"></div>
-
-<div form-input name="website" model="study.website" type="url" label="website"></div>
 
 <label class="control-label" translate>logo</label>
 
 <attachment-input files="files" accept="image/*"></attachment-input>
 
-<div sf-model="study.model" sf-form="sfForm.definition" sf-schema="sfForm.schema" sf-options="sfOptions[tab.lang]"></div>
