@@ -19,14 +19,24 @@ mica.network
   .factory('DraftNetworksResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/networks', {}, {
-        'save': {method: 'POST', errorHandler: true}
+        'save': {method: 'POST', errorHandler: true, transformRequest: function(data) {
+          var network = angular.copy(data);
+          network.content = angular.toJson(network.model);
+          delete network.model;
+          return angular.toJson(network);
+        }}
       });
     }])
 
   .factory('DraftNetworkResource', ['$resource',
     function ($resource) {
       return $resource('ws/draft/network/:id', {}, {
-        'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true},
+        'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: function(data) {
+          var network = angular.copy(data);
+          network.content = angular.toJson(network.model);
+          delete network.model;
+          return angular.toJson(network);
+        }},
         'delete': {method: 'DELETE', params: {id: '@id'}, errorHandler: true},
         'get': {method: 'GET', errorHandler: true}
       });

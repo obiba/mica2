@@ -149,10 +149,10 @@ mica.network
       $scope.newNetwork= !$routeParams.id;
       $scope.network = $routeParams.id ? DraftNetworkResource.get({id: $routeParams.id}, function(network) {
         $scope.files = network.logo ? [network.logo] : [];
-        network.dynamicModel = network.content ? angular.fromJson(network.content) : {};
+        network.model = network.content ? angular.fromJson(network.content) : {};
 
         return network;
-      }) : {published: false};
+      }) : {published: false, model:{}};
 
       $scope.tabSelected = function(tab){
         $scope.$broadcast('sfLocalizedStringLocaleChanged', tab.lang);
@@ -160,12 +160,13 @@ mica.network
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
-
-        $scope.sfOptions = {formDefaults: {languages: {}}};
+        $scope.sfOptions = {};
 
         micaConfig.languages.forEach(function (lang) {
           $scope.tabs.push({lang: lang});
-          $scope.sfOptions.formDefaults.languages[lang]= $filter('translate')('language.' + lang);
+          var sfLanguages = {};
+          sfLanguages[lang] = $filter('translate')('language.' + lang);
+          $scope.sfOptions[lang] = {formDefaults: {languages: sfLanguages}};
         });
         
         EntityFormResource.get({target: 'network'}, function(form) {
@@ -177,8 +178,7 @@ mica.network
 
       $scope.save = function () {
         $scope.network.logo = $scope.files.length > 0 ? $scope.files[0] : null;
-        $scope.network.content = $scope.network.dynamicModel ? angular.toJson($scope.network.dynamicModel) : null;
-
+        
         if(!$scope.network.logo) {
           delete $scope.network.logo;
         }
@@ -384,7 +384,7 @@ mica.network
         network.studyIds = network.studyIds || [];
         $scope.network.networkIds = $scope.network.networkIds || [];
         network.memberships = network.memberships || [];
-        network.dynamicModel = network.content ? angular.fromJson(network.content) : {};
+        network.model = network.content ? angular.fromJson(network.content) : {};
 
         $scope.memberships = network.memberships.map(function (m) {
           if (!m.members) {
@@ -423,11 +423,9 @@ mica.network
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
-        $scope.sfOptions = {formDefaults: {readonly: true, languages: {}}};
 
         micaConfig.languages.forEach(function (lang) {
           $scope.tabs.push({lang: lang});
-          $scope.sfOptions.formDefaults.languages[lang]= $filter('translate')('language.' + lang);
         });
         
         $scope.languages = micaConfig.languages;

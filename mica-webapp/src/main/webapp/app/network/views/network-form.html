@@ -25,8 +25,7 @@
 
         <div ng-include="'app/network/views/network-general-info-form.html'"></div>
 
-        <label translate>attributes</label>
-        <attributes-editable-list attributes="network.attributes"></attributes-editable-list>
+        <div sf-model="network.model" sf-form="sfForm.definition" sf-schema="sfForm.schema" sf-options="sfOptions[tab.lang]"></div>
 
       </uib-tab>
     </uib-tabset>
