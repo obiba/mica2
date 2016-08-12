@@ -30,41 +30,12 @@
             <div class="col-md-6">
               <div form-input name="dce_id" model="dce.id" required="true" label="data-collection-event.id"></div>
               <div localized-input name="data-collection-event.name" required="true" model="dce.name" lang="tab.lang" label="data-collection-event.name"></div>
-              <div localized-textarea name="data-collection-event.description" model="dce.description" lang="tab.lang" label="data-collection-event.description"></div>
             </div>
             <div class="col-md-6">
               <div form-input type="number" name="data-collection-event.start-year" min="{{defaultMinYear}}" max="{{defaultMaxYear}}" required="true" model="dce.startYear" lang="tab.lang" label="data-collection-event.start-year"></div>
               <div form-input type="number" name="data-collection-event.start-month" min="1" max="12" model="dce.startMonth" lang="tab.lang" label="data-collection-event.start-month"></div>
               <div form-input type="number" min="{{dce.startYear}}" name="data-collection-event.end-year" max="{{dce.startYear + 200}}" model="dce.endYear" lang="tab.lang" label="data-collection-event.end-year"></div>
               <div form-input type="number" name="data-collection-event.end-month" min="1" max="12" model="dce.endMonth" lang="tab.lang" label="data-collection-event.end-month"></div>
-            </div>
-          </div>
-
-          <h3 translate>data-collection-event.data-sources</h3>
-          <div class="row">
-            <div class="col-md-6">
-              <div form-checkbox-group options="dataSources" model="dce.dataSources"></div>
-            </div>
-            <div class="col-md-6">
-              <uib-tabset>
-                <uib-tab heading="{{'data-collection-event.admin-databases' | translate}}" disable="dce.dataSources.indexOf('administratives_databases') < 0" active="dataSourcesTabs.administratives_databases">
-                  <div ng-show="dce.dataSources.indexOf('administratives_databases') > -1">
-                    <div form-checkbox-group options="administrativeDatabases" model="dce.administrativeDatabases"></div>
-                  </div>
-                </uib-tab>
-                <uib-tab heading="{{'data-collection-event.bio-samples' | translate}}" disable="dce.dataSources.indexOf('biological_samples') < 0" active="dataSourcesTabs.biological_samples">
-                  <div ng-show="dce.dataSources.indexOf('biological_samples') > -1">
-                    <div form-checkbox-group options="bioSamples" model="dce.bioSamples"></div>
-                    <div ng-show="dce.bioSamples.indexOf('others') > -1" localized-input name="data-collection-event.other-bio-samples" model="dce.otherBioSamples" lang="tab.lang" label="data-collection-event.other-bio-samples"></div>
-                    <div ng-show="dce.bioSamples.indexOf('tissues') > -1" localized-input name="data-collection-event.tissue-types" model="dce.tissueTypes" lang="tab.lang" label="data-collection-event.tissue-types"></div>
-                  </div>
-                </uib-tab>
-                <uib-tab heading="{{'data-collection-event.other-data-sources' | translate }}" disable="dce.dataSources.indexOf('others') < 0" active="dataSourcesTabs.others">
-                  <div ng-show="dce.dataSources.indexOf('others') > -1">
-                    <div localized-input name="data-collection-event.other-data-sources" model="dce.otherDataSources" lang="tab.lang" label="data-collection-event.other-data-sources"></div>
-                  </div>
-                </uib-tab>
-              </uib-tabset>
             </div>
           </div>
 

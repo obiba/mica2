@@ -2,6 +2,72 @@
   {
     "type": "fieldset",
     "items": [
+      {
+        "type": "section",
+        "htmlClass": "row",
+        "items": [
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              {
+                "key": "description",
+                "type": "localizedstring",
+                "rows": 2
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "section",
+        "htmlClass": "row",
+        "items": [
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "dataSources"
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              {
+                "type": "tabs",
+                "tabs": [
+                  {
+                    "title": "t(data-collection-event.admin-databases)",
+                    "items": [
+                      {
+                        "key": "administrativeDatabases",
+                        "notitle": true
+                      }
+                    ]
+                  },
+                  {
+                    "title": "t(data-collection-event.bio-samples)",
+                    "items": [
+                      {
+                        "key": "bioSamples",
+                        "notitle": true
+                      },
+                      "otherBioSamples"
+                    ]
+                  },
+                  {
+                    "title": "t(data-collection-event.other-data-sources)",
+                    "items": [
+                      "otherDataSources"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
     ]
   }
 ]

@@ -12,34 +12,15 @@
     <uib-tabset active="activeTab">
       <uib-tab ng-repeat="tab in tabs" heading="{{'language.' + tab.lang | translate}}" disable="tab.disabled">
 
-
         <div class="row">
           <div class="col-md-6">
             <div ng-include="'app/study/views/study-general-info-form.html'"></div>
-            <div ng-include="'app/study/views/study-attributes-form.html'"></div>
           </div>
           <div class="col-md-6">
-            <div ng-include="'app/study/views/study-methods-form.html'"></div>
           </div>
         </div>
 
-        <div class="row">
-          <div id="study-access" class="col-md-6">
-            <div ng-include="'app/study/views/study-access-form.html'"></div>
-          </div>
-          <div id="study-paper" class="col-md-6">
-            <div ng-include="'app/study/views/study-marker-paper-form.html'"></div>
-          </div>
-        </div>
-
-        <div class="row">
-          <div id="study-authorization" class="col-md-6">
-            <div ng-include="'app/study/views/study-authorization-form.html'"></div>
-          </div>
-          <div id="study-opal" class="col-md-6">
-            <div ng-include="'app/study/views/study-datasets-form.html'"></div>
-          </div>
-        </div>
+        <div sf-model="study.model" sf-form="sfForm.definition" sf-schema="sfForm.schema" sf-options="sfOptions[tab.lang]"></div>
 
       </uib-tab>
     </uib-tabset>

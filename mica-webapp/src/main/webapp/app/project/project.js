@@ -26,7 +26,5 @@ mica.project = angular.module('mica.project', [
   'ui.bootstrap',
   'ui',
   'pascalprecht.translate',
-  'schemaForm',
-  'schemaForm-datepicker',
   'mica.revisions'
 ]);

@@ -24,9 +24,9 @@ mica.entitySfConfig
 
       EntitySchemaFormService.configureAcePaths();
 
-      var refreshPreview = function() {
+      var refreshPreview = function(force) {
         try {
-          if ($scope.dirty) {
+          if ($scope.dirty || force) {
             $scope.form.schemaJson = LocalizedSchemaFormService.translate(JSON.parse($scope.form.schema));
             $scope.form.definitionJson = LocalizedSchemaFormService.translate(JSON.parse($scope.form.definition));
             $scope.dirty = false;
@@ -87,4 +87,6 @@ mica.entitySfConfig
       $scope.fullscreen = EntitySchemaFormService.gotoFullScreen;
       $scope.$watch('form.definition', watchFormDefinitionChanges);
       $scope.$watch('form.schema', watchFormSchemaChanges);
+      
+      refreshPreview(true);
     }]);

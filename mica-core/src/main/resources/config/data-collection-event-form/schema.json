@@ -1,7 +1,68 @@
 {
   "type": "object",
   "properties": {
+    "description": {
+      "type": "object",
+      "format": "localizedString",
+      "title": "t(data-collection-event.description)"
+    },
+    "dataSources": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "questionnaires",
+          "physical_measures",
+          "biological_samples",
+          "administratives_databases",
+          "others"
+        ]
+      },
+      "title": "t(data-collection-event.data-sources)"
+    },
+    "administrativeDatabases": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "health_databases",
+          "vital_statistics_databases",
+          "socioeconomic_databases",
+          "environmental_databases"
+        ]
+      }
+    },
+    "otherDataSources": {
+      "type": "object",
+      "format": "localizedString",
+      "title": "t(data-collection-event.other-data-sources)"
+    },
+    "bioSamples": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "blood",
+          "urine",
+          "saliva",
+          "hair",
+          "cord_blood",
+          "tissues",
+          "nail",
+          "buccal_cells",
+          "others"
+        ]
+      }
+    },
+    "tissueTypes": {
+      "type": "object",
+      "format": "localizedString"
+    },
+    "otherBioSamples": {
+      "type": "object",
+      "format": "localizedString",
+      "title": "t(data-collection-event.other-bio-samples)"
+    }
   },
   "required": []
 }
-

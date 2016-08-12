@@ -21,14 +21,14 @@
           <tr>
             <th translate>study.selection-criteria.criteria</th>
             <td>
-          <span ng-repeat="c in population.selectionCriteria.criteria">
+          <span ng-repeat="c in population.model.selectionCriteria.criteria">
           {{getLabel('populations-selectionCriteria-criteria', c, tab.lang)}}{{$last ? '' : ', '}}
           </span>
             </td>
           </tr>
           <tr>
             <th translate>study.selection-criteria.gender.label</th>
-            <td ng-bind="getLabel('populations-selectionCriteria-gender', population.selectionCriteria.gender, tab.lang)">
+            <td ng-bind="getLabel('populations-selectionCriteria-gender', population.model.selectionCriteria.gender, tab.lang)">
             </td>
           </tr>
           <tr>
@@ -36,16 +36,16 @@
               study.selection-criteria.age
             </th>
             <td>
-              <span ng-show="population.selectionCriteria.ageMin">Minimum {{population.selectionCriteria.ageMin}}</span>
-              <span ng-show="population.selectionCriteria.ageMin && population.selectionCriteria.ageMax"> - </span>
-              <span ng-show="population.selectionCriteria.ageMax">Maximum {{population.selectionCriteria.ageMax}}</span>
+              <span ng-show="population.model.selectionCriteria.ageMin">Minimum {{population.model.selectionCriteria.ageMin}}</span>
+              <span ng-show="population.model.selectionCriteria.ageMin && population.model.selectionCriteria.ageMax"> - </span>
+              <span ng-show="population.model.selectionCriteria.ageMax">Maximum {{population.model.selectionCriteria.ageMax}}</span>
             </td>
           </tr>
           <tr>
             <th translate>study.selection-criteria.country</th>
             <td>
               <ul class="list-unstyled no-margin-bottom">
-                <li ng-repeat="country in population.selectionCriteria.countriesIso">
+                <li ng-repeat="country in population.model.selectionCriteria.countriesIso">
                   {{country}}
                 </li>
               </ul>
@@ -54,15 +54,15 @@
           <tr>
             <th translate>study.selection-criteria.territory</th>
             <td>
-              <localized value="population.selectionCriteria.territory" lang="tab.lang"></localized>
+              <localized value="population.model.selectionCriteria.territory" lang="tab.lang"></localized>
             </td>
           </tr>
           <tr>
             <th translate>study.selection-criteria.ethnic-origin</th>
             <td>
               <ul class="list-unstyled no-margin-bottom">
-                <li ng-repeat="ethnicOrigin in population.selectionCriteria.ethnicOrigin">
-                  <localized value="ethnicOrigin.localizedStrings" lang="tab.lang"></localized>
+                <li ng-repeat="ethnicOrigin in population.model.selectionCriteria.ethnicOrigin">
+                  <localized value="ethnicOrigin" lang="tab.lang"></localized>
                 </li>
               </ul>
             </td>
@@ -71,8 +71,8 @@
             <th translate>study.selection-criteria.health-status</th>
             <td>
               <ul class="list-unstyled no-margin-bottom">
-                <li ng-repeat="healthStatus in population.selectionCriteria.healthStatus">
-                  <localized value="healthStatus.localizedStrings" lang="tab.lang"></localized>
+                <li ng-repeat="healthStatus in population.model.selectionCriteria.healthStatus">
+                  <localized value="healthStatus" lang="tab.lang"></localized>
                 </li>
               </ul>
             </td>
@@ -80,13 +80,13 @@
           <tr>
             <th translate>other</th>
             <td>
-              <localized value="population.selectionCriteria.otherCriteria" lang="tab.lang"></localized>
+              <localized value="population.model.selectionCriteria.otherCriteria" lang="tab.lang"></localized>
             </td>
           </tr>
           <tr>
             <th translate>population.info</th>
             <td>
-              <localized value="population.selectionCriteria.info" lang="tab.lang"></localized>
+              <localized value="population.model.selectionCriteria.info" lang="tab.lang"></localized>
             </td>
           </tr>
           </tbody>
@@ -102,7 +102,7 @@
             </th>
             <td>
               <ul class="list-unstyled no-margin-bottom">
-                <li ng-repeat="source in population.recruitment.generalPopulationSources">
+                <li ng-repeat="source in population.model.recruitment.generalPopulationSources">
                   <span ng-bind="getLabel('populations-recruitment-generalPopulationSources', source, tab.lang)"></span>
                 </li>
               </ul>
@@ -114,11 +114,11 @@
             </th>
             <td>
               <ul class="list-unstyled no-margin-bottom">
-                <li ng-repeat="source in population.recruitment.specificPopulationSources">
+                <li ng-repeat="source in population.model.recruitment.specificPopulationSources">
                   <span ng-bind="getLabel('populations-recruitment-specificPopulationSources', source, tab.lang)"></span>
                 </li>
-                <li ng-show="population.recruitment.otherSpecificPopulationSource.length">
-                  <localized value="population.recruitment.otherSpecificPopulationSource" lang="tab.lang"></localized>
+                <li ng-show="population.model.recruitment.otherSpecificPopulationSource.length">
+                  <localized value="population.model.recruitment.otherSpecificPopulationSource" lang="tab.lang"></localized>
                 </li>
               </ul>
             </td>
@@ -127,7 +127,7 @@
             <th translate>study.recruitment-sources.studies</th>
             <td>
               <ul class="list-unstyled no-margin-bottom">
-                <li ng-repeat="localizedStudies in population.recruitment.studies">
+                <li ng-repeat="localizedStudies in population.model.recruitment.studies">
           <span ng-repeat="study in localizedStudies">
             <localized value="study" lang="tab.lang"></localized>
           </span>
@@ -138,38 +138,37 @@
           <tr>
             <th translate>other</th>
             <td>
-              <localized value="population.recruitment.otherSource" lang="tab.lang"></localized>
+              <localized value="population.model.recruitment.otherSource" lang="tab.lang"></localized>
             </td>
           </tr>
           <tr>
             <th translate>study.recruitment-sources.info</th>
             <td>
-              <localized value="population.recruitment.info" lang="tab.lang"></localized>
+              <localized value="population.model.recruitment.info" lang="tab.lang"></localized>
             </td>
           </tr>
           <tr>
             <th translate>numberOfParticipants.participants</th>
             <td>
-              <span ng-hide="population.numberOfParticipants.participant.noLimit">{{population.numberOfParticipants.participant.number}}</span>
-          <span ng-show="population.numberOfParticipants.participant.noLimit" translate>numberOfParticipants.no-limit</span>
+              <span ng-hide="population.model.numberOfParticipants.participant.noLimit">{{population.model.numberOfParticipants.participant.number}}</span>
+          <span ng-show="population.model.numberOfParticipants.participant.noLimit" translate>numberOfParticipants.no-limit</span>
             </td>
           </tr>
           <tr>
             <th translate>numberOfParticipants.sample</th>
             <td>
-              <span ng-hide="population.numberOfParticipants.sample.noLimit">{{population.numberOfParticipants.sample.number}}</span>
-              <span ng-show="population.numberOfParticipants.sample.noLimit" translate>numberOfParticipants.no-limit</span>
+              <span ng-hide="population.model.numberOfParticipants.sample.noLimit">{{population.model.numberOfParticipants.sample.number}}</span>
+              <span ng-show="population.model.numberOfParticipants.sample.noLimit" translate>numberOfParticipants.no-limit</span>
             </td>
           </tr>
           </tbody>
         </table>
       </div>
     </div>
-    <div sf-model="population.model" sf-form="populationSfForm.definition" sf-schema="populationSfForm.schema" sf-options="sfOptions[tab.lang]"></div>
   </uib-tab>
 
-  <uib-tab heading="{{'suppl-info' | translate}}" ng-show="population.info">
-    <localized value="population.info" lang="tab.lang"></localized>
+  <uib-tab heading="{{'suppl-info' | translate}}" ng-show="population.model.info">
+    <localized value="population.model.info" lang="tab.lang"></localized>
   </uib-tab>
 
   <uib-tab heading="{{'study.data-collection-events' | translate}}">
@@ -204,7 +203,7 @@
             <localized value="dce.name" lang="tab.lang"></localized>
           </td>
           <td>
-            <localized value="dce.description" lang="tab.lang"></localized>
+            <localized value="dce.model.description" lang="tab.lang"></localized>
           </td>
           <td>
             {{dce.startYear}} <span ng-show="dce.startMonth">({{months[dce.startMonth - 1]}})</span>

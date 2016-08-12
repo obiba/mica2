@@ -24,6 +24,16 @@ import java.util.zip.ZipInputStream;
 
 import javax.inject.Inject;
 
+import com.google.common.base.Charsets;
+import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.google.common.hash.Hashing;
+import com.google.common.io.ByteSource;
+import com.google.common.io.ByteStreams;
+import com.googlecode.protobuf.format.JsonFormat;
 import org.apache.commons.math3.util.Pair;
 import org.bson.types.ObjectId;
 import org.obiba.jersey.protobuf.AbstractProtobufProvider;
@@ -48,17 +58,6 @@ import org.obiba.mica.web.model.Mica;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import com.google.common.base.Charsets;
-import com.google.common.base.Strings;
-import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.google.common.hash.Hashing;
-import com.google.common.io.ByteSource;
-import com.google.common.io.ByteStreams;
-import com.googlecode.protobuf.format.JsonFormat;
 
 @Service
 public class StudyPackageImportServiceImpl extends AbstractProtobufProvider implements StudyPackageImportService {
@@ -303,7 +302,8 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
       Readable input = new InputStreamReader(inputStream, Charsets.UTF_8);
       JsonFormat.merge(input, builder);
       List<Attachment> atts = extractAttachments(builder);
-      return Pair.create(dtos.fromDto(builder), atts);
+      Study study = dtos.fromDto(builder);
+      return Pair.create(study, atts);
     }
 
     /**
@@ -338,7 +338,9 @@ public class StudyPackageImportServiceImpl extends AbstractProtobufProvider impl
       Mica.NetworkDto.Builder builder = Mica.NetworkDto.newBuilder();
       Readable input = new InputStreamReader(inputStream, Charsets.UTF_8);
       JsonFormat.merge(input, builder);
-      return dtos.fromDto(builder);
+      Network network = dtos.fromDto(builder);
+
+      return network;
     }
 
     private Dataset readDataset(InputStream inputStream) throws IOException {

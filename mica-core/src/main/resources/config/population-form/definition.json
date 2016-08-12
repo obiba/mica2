@@ -2,6 +2,127 @@
   {
     "type": "fieldset",
     "items": [
+      {
+        "type": "section",
+        "htmlClass": "row",
+        "items": [
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              {
+                "key": "selectionCriteria.gender",
+                "titleMap": {
+                  "men": "t(study.selection-criteria.gender.men)",
+                  "women": "t(study.selection-criteria.gender.women)"
+                }
+              },
+              {
+                "key": "selectionCriteria.ageMin"
+              },
+              {
+                "key": "selectionCriteria.ageMax"
+              },
+              {
+                "key": "selectionCriteria.otherCriteria"
+              },
+              {
+                "key": "selectionCriteria.info"
+              },
+              {
+                "key": "selectionCriteria.countryIso"
+              },
+              {
+                "key": "selectionCriteria.territory"
+              }
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              {
+                "key": "selectionCriteria.healthStatus"
+              },
+              {
+                "key": "selectionCriteria.ethnicOrigin"
+              },
+              {
+                "key": "selectionCriteria.criteria"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "section",
+        "htmlClass": "row",
+        "items": [
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              "numberOfParticipants"
+            ]
+          },
+          {
+            "type": "section",
+            "htmlClass": "col-xs-6",
+            "items": [
+              {
+                "key": "recruitment",
+                "items": [
+                  {
+                    "key": "recruitment.info"
+                  },
+                  {
+                    "key": "recruitment.dataSources",
+                    "notitle": true
+                  },
+                  {
+                    "type": "tabs",
+                    "tabs": [
+                      {
+                        "title": "t(study.recruitment-sources.general-population)",
+                        "items": [
+                          {
+                            "key": "recruitment.generalPopulationSources",
+                            "notitle": true
+                          }
+                        ]
+                      },
+                      {
+                        "title": "t(study.recruitment-sources.specific-population)",
+                        "items": [
+                          {
+                            "key": "recruitment.specificPopulationSources",
+                            "notitle": true
+                          }
+                        ]
+                      },
+                      {
+                        "title": "t(study.recruitment-sources.studies)",
+                        "items": [
+                          {
+                            "key": "recruitment.studies",
+                            "notitle": true
+                          }
+                        ]
+                      },
+                      {
+                        "title": "t(study.recruitment-sources.other)",
+                        "items": [
+                          "recruitment.otherSource"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
     ]
   }
 ]

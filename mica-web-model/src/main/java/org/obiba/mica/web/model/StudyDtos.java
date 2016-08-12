@@ -14,7 +14,6 @@ import org.obiba.mica.JSONUtils;
 import org.obiba.mica.core.domain.Membership;
 import org.obiba.mica.core.domain.Person;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
-import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,19 +68,7 @@ class StudyDtos {
 
     if(study.getLogo() != null) builder.setLogo(attachmentDtos.asDto(study.getLogo()));
 
-    if(study.getStart() != null) builder.setStartYear(study.getStart());
-    if(study.getEnd() != null) builder.setEndYear(study.getEnd());
-
-    if(study.getAccess() != null) {
-      study.getAccess().forEach(builder::addAccess);
-    }
-
-    if(study.getOtherAccess() != null) builder.addAllOtherAccess(localizedStringDtos.asDto(study.getOtherAccess()));
-    if(study.getMarkerPaper() != null) builder.setMarkerPaper(study.getMarkerPaper());
-    if(study.getPubmedId() != null) builder.setPubmedId(study.getPubmedId());
-
     if(study.getAcronym() != null) builder.addAllAcronym(localizedStringDtos.asDto(study.getAcronym()));
-    log.debug("Study acronym as DTO {}", builder.getAcronymList());
 
     List<String> roles = micaConfigService.getConfig().getRoles();
 
@@ -106,26 +93,7 @@ class StudyDtos {
       builder.addAllMemberships(memberships);
     }
 
-    if(!isNullOrEmpty(study.getWebsite())) builder.setWebsite(study.getWebsite());
     if(!isNullOrEmpty(study.getOpal())) builder.setOpal(study.getOpal());
-
-    if(study.getSpecificAuthorization() != null) {
-      builder.setSpecificAuthorization(AuthorizationDtos.asDto(study.getSpecificAuthorization()));
-    }
-
-    if(study.getMaelstromAuthorization() != null) {
-      builder.setMaelstromAuthorization(AuthorizationDtos.asDto(study.getMaelstromAuthorization()));
-    }
-
-    if(study.getMethods() != null) builder.setMethods(asDto(study.getMethods()));
-
-    if(study.getNumberOfParticipants() != null) {
-      builder.setNumberOfParticipants(numberOfParticipantsDtos.asDto(study.getNumberOfParticipants()));
-    }
-
-    if(study.getInfo() != null) {
-      builder.addAllInfo(localizedStringDtos.asDto(study.getInfo()));
-    }
 
     if(study.getPopulations() != null) {
       study.getPopulations().forEach(population -> builder.addPopulations(populationDtos.asDto(population)));
@@ -143,16 +111,12 @@ class StudyDtos {
   Study fromDto(@NotNull Mica.StudyDtoOrBuilder dto) {
     Study study = new Study();
     if(dto.hasId()) study.setId(dto.getId());
-    if(dto.hasTimestamps()) TimestampsDtos.fromDto(dto.getTimestamps(), study);
-    if(dto.hasStartYear()) study.setStart(dto.getStartYear());
-    if(dto.hasEndYear()) study.setEnd(dto.getEndYear());
-    if(dto.getAccessCount() > 0) study.setAccess(dto.getAccessList());
-    if(dto.getOtherAccessCount() > 0) study.setOtherAccess(localizedStringDtos.fromDto(dto.getOtherAccessList()));
-    if(dto.hasMarkerPaper()) study.setMarkerPaper(dto.getMarkerPaper());
-    if(dto.hasPubmedId()) study.setPubmedId(dto.getPubmedId());
     if(dto.getNameCount() > 0) study.setName(localizedStringDtos.fromDto(dto.getNameList()));
     if(dto.getAcronymCount() > 0) study.setAcronym(localizedStringDtos.fromDto(dto.getAcronymList()));
     if(dto.hasLogo()) study.setLogo(attachmentDtos.fromDto(dto.getLogo()));
+    if(dto.hasTimestamps()) TimestampsDtos.fromDto(dto.getTimestamps(), study);
+    if(dto.getObjectivesCount() > 0) study.setObjectives(localizedStringDtos.fromDto(dto.getObjectivesList()));
+    if(dto.hasOpal()) study.setOpal(dto.getOpal());
 
     if(dto.getMembershipsCount() > 0) {
       Map<String, List<Membership>> memberships = Maps.newHashMap();
@@ -169,29 +133,52 @@ class StudyDtos {
       }
     }
 
-    if(dto.getObjectivesCount() > 0) study.setObjectives(localizedStringDtos.fromDto(dto.getObjectivesList()));
-    if(dto.hasWebsite()) study.setWebsite(dto.getWebsite());
-    if(dto.hasOpal()) study.setOpal(dto.getOpal());
-    if(dto.hasSpecificAuthorization()) {
-      study.setSpecificAuthorization(AuthorizationDtos.fromDto(dto.getSpecificAuthorization()));
-    }
-    if(dto.hasMaelstromAuthorization()) {
-      study.setMaelstromAuthorization(AuthorizationDtos.fromDto(dto.getMaelstromAuthorization()));
-    }
-    if(dto.hasMethods()) study.setMethods(fromDto(dto.getMethods()));
-    if(dto.hasNumberOfParticipants()) {
-      study.setNumberOfParticipants(numberOfParticipantsDtos.fromDto(dto.getNumberOfParticipants()));
-    }
-    if(dto.getInfoCount() > 0) study.setInfo(localizedStringDtos.fromDto(dto.getInfoList()));
-    if(dto.getPopulationsCount() > 0) {
+    if (dto.getPopulationsCount() > 0) {
       study.setPopulations(dto.getPopulationsList().stream().map(populationDtos::fromDto)
-        .collect(Collectors.toCollection(TreeSet<Population>::new)));
-    }
-    if(dto.getAttributesCount() > 0) {
-      dto.getAttributesList().forEach(attributeDto -> study.addAttribute(attributeDtos.fromDto(attributeDto)));
+        .collect(Collectors.toCollection(TreeSet<org.obiba.mica.study.domain.Population>::new)));
     }
 
-    if(dto.hasContent() && !Strings.isNullOrEmpty(dto.getContent())) study.setModel(JSONUtils.toMap(dto.getContent()));
+
+    if(dto.hasContent() && !Strings.isNullOrEmpty(dto.getContent())) {
+      study.setModel(JSONUtils.toMap(dto.getContent()));
+    } else {
+      Map<String, Object> model = Maps.newHashMap();
+
+      if (dto.hasWebsite()) model.put("website", dto.getWebsite());
+      if (dto.hasStartYear()) model.put("startYear",  dto.getStartYear());
+      if (dto.hasEndYear())  model.put("endYear", dto.getEndYear());
+      if (dto.getAccessCount() > 0) model.put("access", dto.getAccessList());
+      if (dto.getOtherAccessCount() > 0) model.put("otherAccess", localizedStringDtos.fromDto(dto.getOtherAccessList()));
+      if (dto.hasMarkerPaper()) model.put("markerPaper", dto.getMarkerPaper());
+      if (dto.hasPubmedId()) model.put("pubmedId", dto.getPubmedId());
+
+      if (dto.hasSpecificAuthorization()) {
+        model.put("specificAuthorization", AuthorizationDtos.fromDto(dto.getSpecificAuthorization()));
+      }
+
+      if (dto.hasMaelstromAuthorization()) {
+        model.put("maelstromAuthorization", AuthorizationDtos.fromDto(dto.getMaelstromAuthorization()));
+      }
+
+      if (dto.hasMethods())  {
+        Study.StudyMethods methods = fromDto(dto.getMethods());
+
+        if(methods.getDesigns() != null && methods.getDesigns().size() > 0) {
+          methods.setDesign(methods.getDesigns().get(0));
+          methods.setDesigns(null);
+        }
+
+        model.put("methods", methods);
+      }
+
+      if (dto.hasNumberOfParticipants()) {
+        model.put("numberOfParticipants", numberOfParticipantsDtos.fromDto(dto.getNumberOfParticipants()));
+      }
+
+      if (dto.getInfoCount() > 0) model.put("info", localizedStringDtos.fromDto(dto.getInfoList()));
+
+      study.setModel(model);
+    }
 
     return study;
   }

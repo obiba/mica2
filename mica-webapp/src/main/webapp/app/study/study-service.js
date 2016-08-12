@@ -299,11 +299,11 @@ mica.study
 
     this.updateModel = function(study) {
       study.model = study.content ? angular.fromJson(study.content) : {};
-
+      
       if(study.populations) {
         study.populations.forEach(function(population) {
           population.model = population.content ? angular.fromJson(population.content) : {};
-
+          
           if(population.dataCollectionEvents) {
             population.dataCollectionEvents.forEach(function(dce) {
               dce.model = dce.content ? angular.fromJson(dce.content) : {};
