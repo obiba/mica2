@@ -1279,7 +1279,8 @@ angular.module('obiba.mica.access')
       documentsSectionHelpText: null,
       downloadButtonCaption: null,
       commentsEnabled: true,
-      userListPageTitle: null
+      userListPageTitle: null,
+      newRequestButtonHelpText: null
     };
 
     this.setOptions = function (newOptions) {
@@ -8143,6 +8144,8 @@ angular.module("access/views/data-access-request-list.html", []).run(["$template
     "  <a ng-href=\"#/data-access-request/new\" class=\"btn btn-info\">\n" +
     "    <i class=\"fa fa-plus\"></i> <span>{{config.newRequestButtonCaption || 'data-access-request.add' | translate}}</span>\n" +
     "  </a>\n" +
+    "\n" +
+    "  <span ng-bind-html=\"config.newRequestButtonHelpText\"></span>\n" +
     "\n" +
     "  <p class=\"help-block\" ng-if=\"requests.length == 0 && !loading\">\n" +
     "    <span translate>data-access-request.none</span>\n" +

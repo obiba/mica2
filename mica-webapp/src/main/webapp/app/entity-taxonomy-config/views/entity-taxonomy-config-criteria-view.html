@@ -1,0 +1,57 @@
+<div>
+  <h4 translate>global.criteria</h4>
+
+  <a ng-click="add()" class="btn btn-info">
+    <i class="fa fa-plus"></i> <span>{{'global.add-criterion'| translate}}</span>
+  </a>
+
+  <div class="row voffset2">
+    <div class="col-xs-4">
+      <span class="input-group input-group-sm no-padding-top">
+        <span class="input-group-addon" id="content-search"><i class="glyphicon glyphicon-search"></i></span>
+        <input ng-model="searchText" type="text" class="form-control" aria-describedby="content-search">
+      </span>
+    </div>
+    <div class="col-xs-8">
+      <dir-pagination-controls class="pull-right"></dir-pagination-controls>
+    </div>
+  </div>
+
+  <table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+      <th translate>name</th>
+      <th translate>global.title</th>
+      <th translate>global.field</th>
+      <th translate>global.terms</th>
+      <th translate>global.order</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr dir-paginate="child in model.children | filter: searchText |itemsPerPage: 10">
+      <td>
+        <a href ng-click="navigateToVocabulary(child)">{{child.name}}</a>
+      </td>
+      <td>
+        <property-view property="child.title"></property-view>
+      </td>
+      <td>
+        {{getField(child)}}
+      </td>
+      <td>
+        {{getTermsCount(child)}}
+      </td>
+      <td class="no-wrap">
+        <ul class="list-inline">
+          <li ng-show="!$last">
+            <a href ng-click="moveVocabularyDown(child)" title="{{'down' | translate}}"><i class="fa fa-arrow-down"></i></a>
+          </li>
+          <li ng-show="!$first">
+            <a href ng-click="moveVocabularyUp(child)" title="{{'up' | translate}}"><i class="fa fa-arrow-up"></i></a>
+          </li>
+        </ul>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>

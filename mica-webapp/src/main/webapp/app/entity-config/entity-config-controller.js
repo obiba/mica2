@@ -10,6 +10,35 @@
 
 'use strict';
 
+
+function EntityState($q) {
+  var listeners = [];
+
+  this.registerListener = function (listener) {
+    if (listeners.indexOf(listener) < 0) {
+      if (typeof listener.onSave === 'function') {
+        listeners.push(listener);
+      } else {
+        throw new Error("EntityState - listener must define onSave() method.");
+      }
+    }
+  };
+
+  this.onSave = function () {
+    return listeners.map(function (listener) {
+      var defer = $q.defer();
+      listener.onSave().$promise.then(
+        function() {
+          defer.resolve();
+        }, function(response) {
+          defer.reject(response);
+        });
+    });
+  };
+
+  return this;
+}
+
 mica.entityConfig
 
   .controller('EntityConfigController', [
@@ -31,6 +60,7 @@ mica.entityConfig
         'study': ['study', 'population', 'data-collection-event'],
         'dataset': ['dataset']};
 
+      $scope.state = new EntityState($q);
       $scope.target = $routeParams.type.match(/(\w+)\-config/)[1];
       $scope.tab = {name: 'form'};
       $scope.forms = [];
@@ -87,7 +117,7 @@ mica.entityConfig
       });
 
       $scope.forms[0].active = true;
-      
+
       $scope.setActive = function(form) {
         $scope.forms.forEach(function(f) {
           f.active = f.name === form.name;
@@ -95,32 +125,42 @@ mica.entityConfig
       };
 
       $scope.saveForm = function() {
-        var res = $scope.forms.map(function(form) {
-          var defer = $q.defer();
-          switch (EntitySchemaFormService.isFormValid(form.form)) {
-            case EntitySchemaFormService.ParseResult.VALID:
-              delete form.form.definitionJson;
-              delete form.form.schemaJson;
-              delete form.form.model;
-              EntityFormResource.save({target: form.name}, form.form, function() {
-                defer.resolve();
-              }, function(response) {
-                defer.reject(ServerErrorUtils.buildMessage(response));
-              });
-              break;
-            case EntitySchemaFormService.ParseResult.SCHEMA:
-              defer.reject('entity-config.syntax-error.schema'); 
-              break;
-            case EntitySchemaFormService.ParseResult.DEFINITION:
-              defer.reject('entity-config.syntax-error.definition'); 
-          }
-          
-          return defer.promise;
-        });
+        var res = $scope.state.onSave();
 
-        $q.all(res).then(function (res) {
-          $location.path('/admin').replace();
-          return res;
+        $q.all(res).then(function() {
+          res = $scope.forms.map(function(form) {
+            var defer = $q.defer();
+            switch (EntitySchemaFormService.isFormValid(form.form)) {
+              case EntitySchemaFormService.ParseResult.VALID:
+                delete form.form.definitionJson;
+                delete form.form.schemaJson;
+                delete form.form.model;
+                EntityFormResource.save({target: form.name}, form.form, function() {
+                  defer.resolve();
+                }, function(response) {
+                  defer.reject(ServerErrorUtils.buildMessage(response));
+                });
+                break;
+              case EntitySchemaFormService.ParseResult.SCHEMA:
+                defer.reject('entity-config.syntax-error.schema');
+                break;
+              case EntitySchemaFormService.ParseResult.DEFINITION:
+                defer.reject('entity-config.syntax-error.definition');
+            }
+
+            return defer.promise;
+          });
+
+          $q.all(res).then(function (res) {
+            $location.path('/admin').replace();
+            return res;
+          }).catch(function (res) {
+            AlertService.alert({
+              id: 'EntityConfigController',
+              type: 'danger',
+              msg: res
+            });
+          });
         }).catch(function (res) {
           AlertService.alert({
             id: 'EntityConfigController',
@@ -128,5 +168,6 @@ mica.entityConfig
             msg: res
           });
         });
+
       };
     }]);

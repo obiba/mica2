@@ -40,7 +40,7 @@
     "fr": "La conception d'une étude observationnelle ou interventionnelle (e.g. cohorte, cas-témoins)."
   "attributes":
     "field": "model.methods.design"
-    "alias": "methods-designs"
+    "alias": "model-methods-designs"
   "terms":
   - "name": "cohort_study"
     "title":
@@ -128,7 +128,7 @@
     "en": "Participant’s country of residence."
   "attributes":
     "field": "populations.model.selectionCriteria.countriesIso"
-    "alias": "populations-selectionCriteria-countriesIso"
+    "alias": "populations-model-selectionCriteria-countriesIso"
   "repeatable": "true"
   "terms":
   - "name": "AND"
@@ -1386,7 +1386,7 @@
   "attributes":
     "type": "integer"
     "field": "populations.model.selectionCriteria.ageMin"
-    "alias": "populations-selectionCriteria-ageMin"
+    "alias": "populations-model-selectionCriteria-ageMin"
 - "name": "populations-selectionCriteria-ageMax"
   "title":
     "en": "Selection criteria - Maximum age"
@@ -1397,7 +1397,7 @@
   "attributes":
     "type": "integer"
     "field": "populations.model.selectionCriteria.ageMax"
-    "alias": "populations-selectionCriteria-ageMax"
+    "alias": "populations-model-selectionCriteria-ageMax"
 - "name": "populations-selectionCriteria-gender"
   "title":
     "en": "Selection criteria - Sex"
@@ -1406,7 +1406,7 @@
     "en": "Participant’s sex"
   "attributes":
     "field": "populations.model.selectionCriteria.gender"
-    "alias": "populations-selectionCriteria-gender"
+    "alias": "populations-model-selectionCriteria-gender"
   "terms":
   - "name": "men"
     "title":
@@ -1429,7 +1429,7 @@
     "fr": "Les participants recrutés sont des femmes enceintes, des nouveaux-nés ou des jumeaux."
   "attributes":
     "field": "populations.model.selectionCriteria.criteria"
-    "alias": "populations-selectionCriteria-criteria"
+    "alias": "populations-model-selectionCriteria-criteria"
   "terms":
   - "name": "gravidity"
     "title":
@@ -1591,7 +1591,7 @@
   "repeatable": "true"
   "attributes":
     "field": "model.methods.recruitments"
-    "alias": "methods-recruitments"
+    "alias": "model-methods-recruitments"
   "terms":
   - "name": "individuals"
     "title":
@@ -1623,7 +1623,7 @@
     "fr": "La ou les population(s) à partir de(s) quelle(s) les individus sont recrutés pour participer à l'étude."
   "attributes":
     "field": "populations.model.recruitment.dataSources"
-    "alias": "populations-recruitment-dataSources"
+    "alias": "populations-model-recruitment-dataSources"
   "repeatable": "true"
   "terms":
   - "name": "general_population"
@@ -1663,7 +1663,7 @@
     "fr": "Source à partir de laquelle l'information est générée/extraite."
   "attributes":
     "field": "populations.dataCollectionEvents.model.dataSources"
-    "alias": "populations-dataCollectionEvents-dataSources"
+    "alias": "populations-dataCollectionEvents-model-dataSources"
   "repeatable": "true"
   "terms":
   - "name": "questionnaires"
@@ -1709,7 +1709,7 @@
     "en": "Individuals are recruited to participate in the study from the general population."
   "attributes":
     "field": "populations.model.recruitment.generalPopulationSources"
-    "alias": "populations-recruitment-generalPopulationSources"
+    "alias": "populations-model-recruitment-generalPopulationSources"
   "repeatable": "true"
   "terms":
   - "name": "volunteer"
@@ -1738,7 +1738,7 @@
     "en": "Individuals are recruited to participate in the study from a particular institution or organization."
   "attributes":
     "field": "populations.model.recruitment.specificPopulationSources"
-    "alias": "populations-recruitment-specificPopulationSources"
+    "alias": "populations-model-recruitment-specificPopulationSources"
   "repeatable": "true"
   "terms":
   - "name": "clinic_patients"
@@ -1797,7 +1797,7 @@
     "en": "Biospecimens or biological material."
   "attributes":
     "field": "populations.dataCollectionEvents.model.bioSamples"
-    "alias": "populations-dataCollectionEvents-bioSamples"
+    "alias": "populations-dataCollectionEvents-model-bioSamples"
   "repeatable": "true"
   "terms":
   - "name": "blood"
@@ -1853,7 +1853,7 @@
     "en": "Databases containing information collected by governments for administrative purposes that are linked to the study."
   "attributes":
     "field": "populations.dataCollectionEvents.model.administrativeDatabases"
-    "alias": "populations-dataCollectionEvents-administrativeDatabases"
+    "alias": "populations-dataCollectionEvents-model-administrativeDatabases"
   "repeatable": "true"
   "terms":
   - "name": "health_databases"

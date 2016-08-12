@@ -13,7 +13,22 @@
       "language": "Langue"
     },
     "lastUpdate": "Mise à jour",
-    "order": "Ordre"
+    "order": "Ordre",
+    "types": {
+      "string": "String",
+      "integer": "Entier",
+      "decimal": "Décimal"
+    },
+    "localized": "Traduit",
+    "repeatable": "Répétable",
+    "true": "Vrai",
+    "false": "Faux",
+    "title": "Titre",
+    "field": "Champ",
+    "criteria": "Critères",
+    "terms": "Terms",
+    "add-criterion": "Ajouter Critère",
+    "edit-criterion": "Modifier Critère"
   },
   "main": {
     "title": "Bienvenue chez Mica!",

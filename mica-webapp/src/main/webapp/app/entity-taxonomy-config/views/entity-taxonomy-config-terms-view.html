@@ -1,0 +1,40 @@
+<div>
+  <h4 translate>global.terms</h4>
+
+  <p class="help-block">{{'taxonomy-search.terms.info' | translate}}</p>
+
+  <div class="row">
+    <div class="col-xs-4">
+      <span class="input-group input-group-sm no-padding-top">
+        <span class="input-group-addon" id="content-search"><i class="glyphicon glyphicon-search"></i></span>
+        <input ng-model="searchText" type="text" class="form-control" aria-describedby="content-search">
+      </span>
+    </div>
+    <div class="col-xs-8">
+      <dir-pagination-controls class="pull-right"></dir-pagination-controls>
+    </div>
+  </div>
+
+  <table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+      <th translate>name</th>
+      <th translate>global.title</th>
+      <th translate>actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr dir-paginate="child in model.children | filter: searchText |itemsPerPage: 10">
+      <td>
+        {{child.name}}
+      </td>
+      <td>
+        <property-view property="child.title"></property-view>
+      </td>
+      <td>
+        TODO
+      </td>
+    </tr>
+    </tbody>
+  </table>
+</div>
