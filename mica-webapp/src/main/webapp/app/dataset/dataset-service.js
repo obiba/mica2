@@ -8,22 +8,24 @@ mica.dataset
       });
     }])
 
-  .factory('DraftStudyDatasetsResource', ['$resource',
-    function ($resource) {
+  .factory('DraftStudyDatasetsResource', ['$resource', 'DatasetModelService',
+    function ($resource, DatasetModelService) {
       return $resource('ws/draft/study-datasets', {}, {
-        'save': {method: 'POST', errorHandler: true}
+        'save': {method: 'POST', errorHandler: true, transformRequest: function(dataset) {
+          return DatasetModelService.serialize(dataset);
+        }}
       });
     }])
 
-  .factory('StudyDatasetResource', ['$resource',
-    function ($resource) {
+  .factory('StudyDatasetResource', ['$resource', 'DatasetModelService',
+    function ($resource, DatasetModelService) {
       return $resource('ws/draft/study-dataset/:id', {}, {
-        'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: function(data) {
-          var dataset = angular.copy(data);
-          delete dataset.model;
-          return angular.toJson(dataset);
+        'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: function(dataset) {
+          return DatasetModelService.serialize(dataset);
         }},
-        'get': {method: 'GET'}
+        'get': {method: 'GET', transformResponse: function(data) {
+          return DatasetModelService.deserialize(data);
+        }}
       });
     }])
 
@@ -49,18 +51,24 @@ mica.dataset
       });
     }])
 
-  .factory('DraftHarmonizationDatasetsResource', ['$resource',
-    function ($resource) {
+  .factory('DraftHarmonizationDatasetsResource', ['$resource', 'DatasetModelService',
+    function ($resource, DatasetModelService) {
       return $resource('ws/draft/harmonization-datasets', {}, {
-        'save': {method: 'POST', errorHandler: true}
+        'save': {method: 'POST', errorHandler: true, transformRequest: function(dataset) {
+          return DatasetModelService.serialize(dataset);
+        }}
       });
     }])
 
-  .factory('HarmonizationDatasetResource', ['$resource',
-    function ($resource) {
+  .factory('HarmonizationDatasetResource', ['$resource', 'DatasetModelService',
+    function ($resource, DatasetModelService) {
       return $resource('ws/draft/harmonization-dataset/:id', {}, {
-        'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true},
-        'get': {method: 'GET'}
+        'save': {method: 'PUT', params: {id: '@id'}, errorHandler: true, transformRequest: function(dataset) {
+          return DatasetModelService.serialize(dataset);
+        }},
+        'get': {method: 'GET', transformResponse: function(data) {
+          return DatasetModelService.deserialize(data);
+        }}
       });
     }])
 
@@ -72,12 +80,16 @@ mica.dataset
       });
     }])
 
-  .factory('DatasetResource', ['$resource',
-    function ($resource) {
+  .factory('DatasetResource', ['$resource', 'DatasetModelService',
+    function ($resource, DatasetModelService) {
       return $resource('ws/draft/:type/:id', {}, {
-        'save': {method: 'PUT', params: {id: '@id', type: '@type'}, errorHandler: true},
+        'save': {method: 'PUT', params: {id: '@id', type: '@type'}, errorHandler: true, transformRequest: function(dataset) {
+          return DatasetModelService.serialize(dataset);
+        }},
         'delete': {method: 'DELETE', params: {id: '@id', type: '@type'}, errorHandler: true},
-        'get': {method: 'GET', params: {id: '@id', type: '@type'}}
+        'get': {method: 'GET', params: {id: '@id', type: '@type'}, transformResponse: function(data) {
+          return DatasetModelService.deserialize(data);
+        }}
       });
     }])
 
@@ -181,4 +193,21 @@ mica.dataset
           );
         }
       };
-    }]);
+    }])
+
+  .service('DatasetModelService',[function() {
+    this.serialize = function(dataset) {
+      var datasetCopy = angular.copy(dataset);
+      datasetCopy.content = datasetCopy.model ? angular.toJson(datasetCopy.model) : null;
+      delete datasetCopy.model; // NOTICE: must be removed to avoid protobuf exception in dto.
+      return angular.toJson(datasetCopy);
+    };
+    
+    this.deserialize = function(data) {
+      var dataset = angular.fromJson(data);
+      dataset.model = dataset.content ? angular.fromJson(dataset.content) : {};
+      return dataset;
+    };
+    
+    return this;
+  }]);

@@ -159,7 +159,6 @@ mica.dataset
         $scope.dataset = StudyDatasetResource.get({id: $routeParams.id}, function (dataset) {
           $scope.studyTable = dataset['obiba.mica.StudyDatasetDto.type'].studyTable;
           populateStudyTable($scope.studyTable);
-          dataset.model = dataset.content ? angular.fromJson(dataset.content) : {};
         });
       } else {
         $scope.dataset = {
@@ -192,11 +191,12 @@ mica.dataset
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
-        $scope.sfOptions = {formDefaults: {languages: {}}};
+        $scope.sfOptions = {}; 
 
         micaConfig.languages.forEach(function (lang) {
           $scope.tabs.push({lang: lang});
-          $scope.sfOptions.formDefaults.languages[lang]= $filter('translate')('language.' + lang);
+          $scope.sfOptions[lang] = {formDefaults: {languages: {}}};
+          $scope.sfOptions[lang].formDefaults.languages[lang]= $filter('translate')('language.' + lang);
         });
 
         EntityFormResource.get({target: 'dataset'}, function(form) {
@@ -220,8 +220,6 @@ mica.dataset
           project: $scope.selected.project.name,
           table: $scope.selected.project.table
         });
-
-        $scope.dataset.content = $scope.dataset.model ? angular.toJson($scope.dataset.model) : null;
 
         if ($scope.dataset.id) {
           updateDataset();
@@ -334,8 +332,6 @@ mica.dataset
               }).pop();
             }
           });
-
-          dataset.model = dataset.content ? angular.fromJson(dataset.content) : {};
         });
       } else {
         getOpalProjects();
@@ -348,11 +344,12 @@ mica.dataset
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
-        $scope.sfOptions = {formDefaults: {languages: {}}};
+        $scope.sfOptions = {};
 
         micaConfig.languages.forEach(function (lang) {
           $scope.tabs.push({lang: lang});
-          $scope.sfOptions.formDefaults.languages[lang]= $filter('translate')('language.' + lang);
+          $scope.sfOptions[lang] = {formDefaults: {languages: {}}};
+          $scope.sfOptions[lang].formDefaults.languages[lang]= $filter('translate')('language.' + lang);
         });
 
         EntityFormResource.get({target: 'dataset'}, function(form) {
@@ -375,7 +372,6 @@ mica.dataset
         $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].project = $scope.selected.project.name;
         $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].table = $scope.selected.project.table;
         $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].networkId = $scope.selected.network ? $scope.selected.network.id : null;
-        $scope.dataset.content = $scope.dataset.model ? angular.toJson($scope.dataset.model) : null;
 
         if ($scope.dataset.id) {
           updateDataset();
@@ -510,11 +506,12 @@ mica.dataset
       MicaConfigResource.get(function (micaConfig) {
         $scope.opal = micaConfig.opal;
         $scope.tabs = [];
-        $scope.sfOptions = {formDefaults: {readonly: true, languages: {}}};
+        $scope.sfOptions = {};
 
         micaConfig.languages.forEach(function (lang) {
           $scope.tabs.push({lang: lang});
-          $scope.sfOptions.formDefaults.languages[lang]= $filter('translate')('language.' + lang);
+          $scope.sfOptions[lang] = {formDefaults: {languages: {}, readonly: true}};
+          $scope.sfOptions[lang].formDefaults.languages[lang]= $filter('translate')('language.' + lang);
         });
 
         $scope.openAccess = micaConfig.openAccess;
@@ -537,7 +534,6 @@ mica.dataset
           $scope.datasetProject = dataset['obiba.mica.HarmonizationDatasetDto.type'].project;
           $scope.datasetTable = dataset['obiba.mica.HarmonizationDatasetDto.type'].table;
         }
-        dataset.model = dataset.content ? angular.fromJson(dataset.content) : {};
       };
 
       var getTypeFromUrl = function() {
