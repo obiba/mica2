@@ -20,8 +20,8 @@ import org.obiba.mica.config.JsonConfiguration;
 import org.obiba.mica.config.taxonomies.DatasetTaxonomy;
 import org.obiba.mica.config.taxonomies.NetworkTaxonomy;
 import org.obiba.mica.config.taxonomies.StudyTaxonomy;
-import org.obiba.mica.config.taxonomies.VariableTaxonomy;
 import org.obiba.mica.config.taxonomies.TaxonomyTaxonomy;
+import org.obiba.mica.config.taxonomies.VariableTaxonomy;
 import org.obiba.mica.core.domain.Address;
 import org.obiba.mica.core.domain.Attribute;
 import org.obiba.mica.core.domain.Authorization;
@@ -48,9 +48,11 @@ import org.obiba.mica.file.service.TempFileService;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
 import org.obiba.mica.micaConfig.repository.MicaConfigRepository;
 import org.obiba.mica.micaConfig.repository.OpalCredentialRepository;
+import org.obiba.mica.micaConfig.repository.TaxonomyConfigRepository;
 import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.OpalCredentialService;
 import org.obiba.mica.micaConfig.service.OpalService;
+import org.obiba.mica.micaConfig.service.TaxonomyConfigService;
 import org.obiba.mica.micaConfig.service.helper.OpalServiceHelper;
 import org.obiba.mica.network.NetworkRepository;
 import org.obiba.mica.network.NetworkStateRepository;
@@ -571,6 +573,16 @@ public class StudyDtosTest {
     @Bean
     public ProjectStateRepository projectStateRepository() {
       return mock(ProjectStateRepository.class);
+    }
+
+    @Bean
+    public TaxonomyConfigService taxonomyConfigService() {
+      return mock(TaxonomyConfigService.class);
+    }
+
+    @Bean
+    public TaxonomyConfigRepository taxonomyConfigRepository() {
+      return mock(TaxonomyConfigRepository.class);
     }
 
     @Bean

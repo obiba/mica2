@@ -23,7 +23,7 @@ import org.obiba.mica.micaConfig.service.MicaConfigService;
 import org.obiba.mica.micaConfig.service.TaxonomyService;
 import org.obiba.mica.taxonomy.EsTaxonomyTermService;
 import org.obiba.mica.taxonomy.EsTaxonomyVocabularyService;
-import org.obiba.mica.taxonomy.TaxonomyTarget;
+import org.obiba.mica.core.domain.TaxonomyTarget;
 import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.obiba.opal.web.model.Opal;
 import org.obiba.opal.web.taxonomy.Dtos;
