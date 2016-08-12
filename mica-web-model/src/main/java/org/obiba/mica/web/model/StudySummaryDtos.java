@@ -3,12 +3,15 @@ package org.obiba.mica.web.model;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.SortedSet;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import com.google.common.collect.Lists;
 import org.obiba.mica.study.domain.DataCollectionEvent;
 import org.obiba.mica.study.domain.Population;
 import org.obiba.mica.study.domain.Study;
@@ -17,8 +20,6 @@ import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.StudyService;
 import org.springframework.stereotype.Component;
-
-import com.google.common.collect.Lists;
 
 @Component
 @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
@@ -69,10 +70,27 @@ class StudySummaryDtos {
 
     if(study.getMethods() != null && study.getMethods().getDesigns() != null) {
       builder.addAllDesigns(study.getMethods().getDesigns());
+    } else { // NOTICE: schemaform backwards compatibility
+      try {
+        Map<String, Object> methods = (Map<String, Object>) study.getModel().get("methods");
+
+        if (methods != null && methods.get("design") != null) {
+          builder.addAllDesigns(Lists.newArrayList((String) methods.get("design")));
+        }
+      } catch (NullPointerException | ClassCastException e) {
+      }
     }
 
     if(study.getNumberOfParticipants() != null && study.getNumberOfParticipants().getParticipant() != null) {
       builder.setTargetNumber(TargetNumberDtos.asDto(study.getNumberOfParticipants().getParticipant()));
+    } else { // NOTICE: schemaform backwards compatibility
+      try {
+        Optional.of((Map<String, Object>) study.getModel().get("numberOfParticipants")) //
+          .flatMap(n -> Optional.of((Map<String, Object>) n.get("participant"))) //
+          .map(p -> Mica.TargetNumberDto.newBuilder().setNoLimit((boolean) p.get("noLimit")).setNumber((int) p.get("number")).build()) //
+          .ifPresent(t -> builder.setTargetNumber(t));
+      } catch (NullPointerException | ClassCastException e) {
+      }
     }
 
     Collection<String> countries = new HashSet<>();

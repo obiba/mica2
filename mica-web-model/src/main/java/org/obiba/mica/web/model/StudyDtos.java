@@ -138,7 +138,6 @@ class StudyDtos {
         .collect(Collectors.toCollection(TreeSet<org.obiba.mica.study.domain.Population>::new)));
     }
 
-
     if(dto.hasContent() && !Strings.isNullOrEmpty(dto.getContent())) {
       study.setModel(JSONUtils.toMap(dto.getContent()));
     } else {
