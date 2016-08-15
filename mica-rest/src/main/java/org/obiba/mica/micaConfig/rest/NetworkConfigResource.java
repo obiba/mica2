@@ -10,8 +10,9 @@ import org.obiba.mica.web.model.Mica;
 import org.springframework.stereotype.Component;
 
 @Component
-@Path("/config/network")
-public class NetworkConfigResource extends EntityConfigResource<NetworkConfig> {
+@Path("/config/" + NetworkConfigResource.TARGET_NAME)
+public class NetworkConfigResource extends EntityConfigResource<NetworkConfig> implements PermissionAwareResource {
+  static final String TARGET_NAME = "network";
 
   @Inject
   NetworkConfigService networkConfigService;
@@ -32,5 +33,10 @@ public class NetworkConfigResource extends EntityConfigResource<NetworkConfig> {
   @Override
   protected NetworkConfigService getConfigService() {
     return networkConfigService;
+  }
+
+  @Override
+  public String getTarget() {
+    return TARGET_NAME;
   }
 }

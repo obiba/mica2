@@ -12,8 +12,21 @@
 
 mica.entityConfig
 
-  .controller('EntityConfigController', ['$scope', '$q', '$location', '$routeParams', 'AlertService', 'ServerErrorUtils', 'EntitySchemaFormService', 'EntityFormResource',
-    function ($scope, $q, $location, $routeParams, AlertService, ServerErrorUtils, EntitySchemaFormService, EntityFormResource) {
+  .controller('EntityConfigController', [
+    '$scope',
+    '$q',
+    '$location',
+    '$routeParams',
+    'AlertService',
+    'ServerErrorUtils',
+    'EntitySchemaFormService',
+    'EntityFormResource',
+    'EntityFormPermissionsResource',
+    'MicaConfigResource',
+    'EntityFormAccessesResource',
+    function ($scope, $q, $location, $routeParams, AlertService, ServerErrorUtils,
+              EntitySchemaFormService, EntityFormResource, EntityFormPermissionsResource, MicaConfigResource,
+              EntityFormAccessesResource) {
       var FORMS = {'network': ['network'],
         'study': ['study', 'population', 'data-collection-event'],
         'dataset': ['dataset']};
@@ -21,7 +34,38 @@ mica.entityConfig
       $scope.target = $routeParams.type.match(/(\w+)\-config/)[1];
       $scope.tab = {name: 'form'};
       $scope.forms = [];
+      $scope.permissions = [];
+      $scope.accesses = [];
+      MicaConfigResource.get(function (micaConfig) {
+        $scope.roles = micaConfig.roles;
+        $scope.openAccess = micaConfig.openAccess;
+      });
 
+      $scope.loadPermissions = function () {
+        $scope.permissions = EntityFormPermissionsResource.query({target: $scope.target});
+        return $scope.permissions;
+      };
+
+      $scope.deletePermission = function (permission) {
+        return EntityFormPermissionsResource.delete({target: $scope.target}, permission);
+      };
+
+      $scope.addPermission = function (permission) {
+        return EntityFormPermissionsResource.save({target: $scope.target}, permission);
+      };
+
+      $scope.loadAccesses = function () {
+        $scope.accesses = EntityFormAccessesResource.query({target: $scope.target});
+        return $scope.accesses;
+      };
+
+      $scope.deleteAccess = function (access) {
+        return EntityFormAccessesResource.delete({target: $scope.target}, access);
+      };
+
+      $scope.addAccess = function (access) {
+        return EntityFormAccessesResource.save({target: $scope.target}, access);
+      };
 
       $scope.forms = FORMS[$scope.target].map(function(name) {
         return {name: name, form: EntityFormResource.get({target: name},

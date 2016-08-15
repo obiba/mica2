@@ -20,8 +20,9 @@ import org.obiba.mica.web.model.Mica;
 import org.springframework.stereotype.Component;
 
 @Component
-@Path("/config/dataset")
-public class DatasetConfigResource extends EntityConfigResource<DatasetConfig> {
+@Path("/config/" + DatasetConfigResource.TARGET_NAME)
+public class DatasetConfigResource extends EntityConfigResource<DatasetConfig> implements PermissionAwareResource {
+  static final String TARGET_NAME = "dataset";
 
   @Inject
   DatasetConfigService datasetConfigService;
@@ -44,4 +45,8 @@ public class DatasetConfigResource extends EntityConfigResource<DatasetConfig> {
     return datasetConfigService;
   }
 
+  @Override
+  public String getTarget() {
+    return TARGET_NAME;
+  }
 }

@@ -1107,6 +1107,10 @@
       "title": "Form",
       "info": "The research project form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
     },
+    "permissions": {
+      "title": "Permissions",
+      "info": "Grant permission to <code>Read</code> any draft of Network."
+    },
     "schema": {
       "tab": "Schema",
       "info": "The form schema specifies the data structure."
@@ -1133,6 +1137,10 @@
       "title": "Form",
       "info": "The research project form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
     },
+    "permissions": {
+      "title": "Permissions",
+      "info": "Grant permission to <code>Read</code> any draft of Study."
+    },
     "study-form-title": "Study",
     "population-form-title": "Population",
     "data-collection-event-form-title": "Data Collection Event"
@@ -1142,6 +1150,10 @@
     "schema-form": {
       "title": "Form",
       "info": "The custom dataset form can be specified both in terms of data structure (schema) and data display and validation (definition). See <a href='https://github.com/Textalk/angular-schema-form/blob/master/docs/index.md' target='_blank'>form schema documentation</a> for more details."
+    },
+    "permissions": {
+      "title": "Permissions",
+      "info": "Grant permission to <code>Read</code> any draft of Dataset."
     },
     "schema": {
       "tab": "Schema",
