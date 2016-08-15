@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.SortedSet;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
@@ -20,6 +20,9 @@ import org.obiba.mica.study.service.PublishedDatasetVariableService;
 import org.obiba.mica.study.service.PublishedStudyService;
 import org.obiba.mica.study.service.StudyService;
 import org.springframework.stereotype.Component;
+
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 @Component
 @SuppressWarnings("StaticMethodOnlyUsedInOneClass")
@@ -85,8 +88,8 @@ class StudySummaryDtos {
       builder.setTargetNumber(TargetNumberDtos.asDto(study.getNumberOfParticipants().getParticipant()));
     } else { // NOTICE: schemaform backwards compatibility
       try {
-        Optional.of((Map<String, Object>) study.getModel().get("numberOfParticipants")) //
-          .flatMap(n -> Optional.of((Map<String, Object>) n.get("participant"))) //
+        Optional.ofNullable((Map<String, Object>) study.getModel().get("numberOfParticipants")) //
+          .flatMap(n -> Optional.ofNullable((Map<String, Object>) n.get("participant"))) //
           .map(p -> Mica.TargetNumberDto.newBuilder().setNoLimit((boolean) p.get("noLimit")).setNumber((int) p.get("number")).build()) //
           .ifPresent(t -> builder.setTargetNumber(t));
       } catch (NullPointerException | ClassCastException e) {
@@ -97,17 +100,42 @@ class StudySummaryDtos {
     SortedSet<Population> populations = study.getPopulations();
 
     if(populations != null) {
-      populations.stream() //
-        .filter(population -> population.getSelectionCriteria() != null &&
-          population.getSelectionCriteria().getCountriesIso() != null)
-        .forEach(population -> countries.addAll(population.getSelectionCriteria().getCountriesIso()));
+      if(!study.hasModel()) {
+        populations.stream() //
+          .filter(population -> population.getSelectionCriteria() != null &&
+            population.getSelectionCriteria().getCountriesIso() != null)
+          .forEach(population -> countries.addAll(population.getSelectionCriteria().getCountriesIso()));
 
-      List<String> dataSources = Lists.newArrayList();
-      populations.stream().filter(population -> population.getAllDataSources() != null)
-        .forEach(population -> dataSources.addAll(population.getAllDataSources()));
+        List<String> dataSources = Lists.newArrayList();
+        populations.stream().filter(population -> population.getAllDataSources() != null)
+          .forEach(population -> dataSources.addAll(population.getAllDataSources()));
 
-      if(dataSources.size() > 0) {
-        builder.addAllDataSources(dataSources.stream().distinct().collect(Collectors.toList()));
+        if (dataSources.size() > 0) {
+          builder.addAllDataSources(dataSources.stream().distinct().collect(toList()));
+        }
+
+      } else {
+        countries.addAll(populations.stream().filter(Population::hasModel) //
+          .flatMap(p -> {
+             if(p.getModel().get("selectionCriteria") instanceof Map) { //TODO: serialization should not include JsonTypeInfo to avoid this check.
+               return Optional.ofNullable((Map<String, Object>) p.getModel().get("selectionCriteria"))
+                 .flatMap(sc -> Optional.ofNullable(((List<String>) sc.get("countriesIso")).stream()))
+                 .orElseGet(() -> Stream.empty());
+             } else {
+               return Optional.ofNullable((Population.SelectionCriteria) p.getModel().get("selectionCriteria"))
+                 .flatMap(sc -> Optional.ofNullable(sc.getCountriesIso().stream()))
+                 .orElseGet(() -> Stream.empty());
+             }
+            }
+          ).collect(toSet()));
+
+        List<String> dataSources = Lists.newArrayList();
+        populations.stream().filter(population -> population.getAllDataSources() != null)
+          .forEach(population -> dataSources.addAll(population.getAllDataSources()));
+
+        if (dataSources.size() > 0) {
+          builder.addAllDataSources(dataSources.stream().distinct().collect(toList()));
+        }
       }
 
       populations.forEach(population -> builder.addPopulationSummaries(asDto(population)));

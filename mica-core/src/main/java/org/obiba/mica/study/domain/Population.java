@@ -11,15 +11,14 @@ import java.util.stream.Collectors;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
-import org.obiba.mica.core.domain.AbstractAttributeModelAware;
-import org.obiba.mica.core.domain.AttributeAware;
-import org.obiba.mica.core.domain.LocalizedString;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import org.obiba.mica.core.domain.AbstractAttributeModelAware;
+import org.obiba.mica.core.domain.AttributeAware;
+import org.obiba.mica.core.domain.LocalizedString;
 
 public class Population extends AbstractAttributeModelAware implements Serializable, Comparable<Population>, AttributeAware {
 
@@ -137,10 +136,9 @@ public class Population extends AbstractAttributeModelAware implements Serializa
 
   public List<String> getAllDataSources() {
     if(dataCollectionEvents != null) {
-      List<String> dataSources = Lists.newArrayList();
-      dataCollectionEvents.stream().filter(dce -> dce.getDataSources() != null)
-          .forEach(dce -> dataSources.addAll(dce.getDataSources()));
-      return dataSources.stream().distinct().collect(Collectors.toList());
+      return dataCollectionEvents.stream().filter(DataCollectionEvent::hasModel).flatMap(dce ->
+        ((List<String>) dce.getModel().getOrDefault("dataSources", Lists.newArrayList())).stream()
+      ).distinct().collect(Collectors.toList());
     }
 
     return null;
@@ -169,8 +167,6 @@ public class Population extends AbstractAttributeModelAware implements Serializa
 
     return result != 0 ? result : this.getId().compareTo(pop.getId());
   }
-
-
 
   public static class Recruitment implements Serializable {
 
