@@ -169,6 +169,16 @@ angular.module('obiba.mica.utils', ['schemaForm'])
     };
   }])
 
+  .service('SfOptionsService', ['$filter',
+    function ($filter) {
+      this.sfOptions = {
+        validationMessage: {
+          'default': $filter('translate')('errors.does-not-validate'),
+          302: $filter('translate')('required')
+        }
+      };
+    }])  
+
   .config(['schemaFormProvider',
     function (schemaFormProvider) {
       schemaFormProvider.postProcess(function (form) {

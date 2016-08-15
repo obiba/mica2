@@ -202,7 +202,8 @@
   "errors": {
     "title": "Page d'erreur!",
     "403": "Vous n'avez pas les droits pour accéder à cette page.",
-    "wordCount": "La limite de mots est dépassée."
+    "wordCount": "La limite de mots est dépassée.",
+    "does-not-validate": "Le champs n'est pas valide"
   },
   "config": {
     "short-title": "Configuration",

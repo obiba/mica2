@@ -3,7 +3,7 @@
  * https://github.com/obiba/ng-obiba-mica
 
  * License: GNU Public License version 3
- * Date: 2016-08-11
+ * Date: 2016-08-15
  */
 'use strict';
 
@@ -305,6 +305,16 @@ angular.module('obiba.mica.utils', ['schemaForm'])
       }
     };
   }])
+
+  .service('SfOptionsService', ['$filter',
+    function ($filter) {
+      this.sfOptions = {
+        validationMessage: {
+          'default': $filter('translate')('errors.does-not-validate'),
+          302: $filter('translate')('required')
+        }
+      };
+    }])  
 
   .config(['schemaFormProvider',
     function (schemaFormProvider) {
@@ -665,6 +675,7 @@ angular.module('obiba.mica.access')
       'NOTIFICATION_EVENTS',
       'DataAccessRequestConfig',
       'LocalizedSchemaFormService',
+      'SfOptionsService',
 
     function ($rootScope,
               $scope,
@@ -687,7 +698,8 @@ angular.module('obiba.mica.access')
               ServerErrorUtils,
               NOTIFICATION_EVENTS,
               DataAccessRequestConfig,
-              LocalizedSchemaFormService) {
+              LocalizedSchemaFormService,
+              SfOptionsService) {
 
       var onError = function (response) {
         AlertService.alert({
@@ -696,6 +708,8 @@ angular.module('obiba.mica.access')
           msg: ServerErrorUtils.buildMessage(response)
         });
       };
+
+      $scope.sfOptions = SfOptionsService.sfOptions;
 
       var retrieveComments = function() {
         $scope.form.comments = DataAccessRequestCommentsResource.query({id: $routeParams.id});
@@ -1013,6 +1027,7 @@ angular.module('obiba.mica.access')
     'DataAccessRequestService',
     'ngObibaMicaAccessTemplateUrl',
     'DataAccessRequestConfig',
+    'SfOptionsService',
 
     function ($log, $scope, $routeParams, $location, $uibModal, LocalizedSchemaFormService,
               DataAccessRequestsResource,
@@ -1024,7 +1039,8 @@ angular.module('obiba.mica.access')
               SessionProxy,
               DataAccessRequestService,
               ngObibaMicaAccessTemplateUrl,
-              DataAccessRequestConfig) {
+              DataAccessRequestConfig,
+              SfOptionsService) {
 
       var onSuccess = function(response, getResponseHeaders) {
         var parts = getResponseHeaders().location.split('/');
@@ -1038,6 +1054,8 @@ angular.module('obiba.mica.access')
           msg: ServerErrorUtils.buildMessage(response)
         });
       };
+
+      $scope.sfOptions = SfOptionsService.sfOptions;
 
       var validate = function() {
         $scope.$broadcast('schemaFormValidate');
@@ -8061,7 +8079,7 @@ angular.module("access/views/data-access-request-form.html", []).run(["$template
     "    <div class=\"clearfix\"></div>\n" +
     "\n" +
     "    <form name=\"form.requestForm\" ng-submit=\"submit(form.requestForm)\">\n" +
-    "      <div sf-model=\"form.model\" sf-form=\"form.definition\" sf-schema=\"form.schema\" required=\"true\"></div>\n" +
+    "      <div sf-model=\"form.model\" sf-form=\"form.definition\" sf-schema=\"form.schema\" required=\"true\" sf-options=\"sfOptions\"></div>\n" +
     "    </form>\n" +
     "  </div>\n" +
     "\n" +

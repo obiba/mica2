@@ -153,6 +153,7 @@ angular.module('obiba.mica.access')
       'NOTIFICATION_EVENTS',
       'DataAccessRequestConfig',
       'LocalizedSchemaFormService',
+      'SfOptionsService',
 
     function ($rootScope,
               $scope,
@@ -175,7 +176,8 @@ angular.module('obiba.mica.access')
               ServerErrorUtils,
               NOTIFICATION_EVENTS,
               DataAccessRequestConfig,
-              LocalizedSchemaFormService) {
+              LocalizedSchemaFormService,
+              SfOptionsService) {
 
       var onError = function (response) {
         AlertService.alert({
@@ -184,6 +186,8 @@ angular.module('obiba.mica.access')
           msg: ServerErrorUtils.buildMessage(response)
         });
       };
+
+      $scope.sfOptions = SfOptionsService.sfOptions;
 
       var retrieveComments = function() {
         $scope.form.comments = DataAccessRequestCommentsResource.query({id: $routeParams.id});
@@ -501,6 +505,7 @@ angular.module('obiba.mica.access')
     'DataAccessRequestService',
     'ngObibaMicaAccessTemplateUrl',
     'DataAccessRequestConfig',
+    'SfOptionsService',
 
     function ($log, $scope, $routeParams, $location, $uibModal, LocalizedSchemaFormService,
               DataAccessRequestsResource,
@@ -512,7 +517,8 @@ angular.module('obiba.mica.access')
               SessionProxy,
               DataAccessRequestService,
               ngObibaMicaAccessTemplateUrl,
-              DataAccessRequestConfig) {
+              DataAccessRequestConfig,
+              SfOptionsService) {
 
       var onSuccess = function(response, getResponseHeaders) {
         var parts = getResponseHeaders().location.split('/');
@@ -526,6 +532,8 @@ angular.module('obiba.mica.access')
           msg: ServerErrorUtils.buildMessage(response)
         });
       };
+
+      $scope.sfOptions = SfOptionsService.sfOptions;
 
       var validate = function() {
         $scope.$broadcast('schemaFormValidate');
