@@ -202,7 +202,8 @@
   "errors": {
     "title": "Error page!",
     "403": "You are not authorized to access the page.",
-    "wordCount": "Word count limit exceeded."
+    "wordCount": "Word count limit exceeded.",
+    "does-not-validate": "The field does not validate."
   },
   "config": {
     "short-title": "Configuration",
