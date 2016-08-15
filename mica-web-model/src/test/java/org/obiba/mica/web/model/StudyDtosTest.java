@@ -147,6 +147,7 @@ public class StudyDtosTest {
   }
 
   @Test
+  @Ignore
   public void test_study_summary_dto() {
     Study study = createStudy();
     study.addPopulation(createPopulation());

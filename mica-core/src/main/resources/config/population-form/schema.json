@@ -138,7 +138,7 @@
           "format": "localizedString",
           "title": "t(population.info)"
         },
-        "countryIso": {
+        "countriesIso": {
           "type": "array",
           "items": {
             "type": "string"
