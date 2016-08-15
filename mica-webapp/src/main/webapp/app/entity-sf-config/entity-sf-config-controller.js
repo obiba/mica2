@@ -1,9 +1,9 @@
 /*
  * Copyright (c) 2016 OBiBa. All rights reserved.
- *  
+ *
  * This program and the accompanying materials
  * are made available under the terms of the GNU Public License v3.0.
- *  
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -17,10 +17,12 @@ mica.entitySfConfig
     'EntitySchemaFormService',
     'LocalizedSchemaFormService',
     'AlertService',
+    'SfOptionsService',
     function ($scope,
               EntitySchemaFormService,
               LocalizedSchemaFormService,
-              AlertService) {
+              AlertService,
+              SfOptionsService) {
 
       EntitySchemaFormService.configureAcePaths();
 
@@ -34,6 +36,8 @@ mica.entitySfConfig
         } catch (e){
         }
       };
+
+      $scope.sfOptions = SfOptionsService.sfOptions;
 
       var selectTab = function(id) {
         $scope.selectedTab = id;
@@ -87,6 +91,6 @@ mica.entitySfConfig
       $scope.fullscreen = EntitySchemaFormService.gotoFullScreen;
       $scope.$watch('form.definition', watchFormDefinitionChanges);
       $scope.$watch('form.schema', watchFormSchemaChanges);
-      
+
       refreshPreview(true);
     }]);
