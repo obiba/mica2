@@ -50,4 +50,8 @@ public abstract class EntityConfigResource<T extends EntityConfig> {
   }
 
   protected abstract EntityConfigService<T> getConfigService();
+
+  public ApplicationContext getApplicationContext() {
+    return applicationContext;
+  }
 }

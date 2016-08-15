@@ -18,5 +18,30 @@ mica.entityConfig
         'get': {method: 'GET', errorHandler: true},
         'save': {method: 'PUT', errorHandler: true}
       });
-    }]);
+    }])
 
+  .factory('EntityFormPermissionsResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/config/:target/permissions', {}, {
+        'save': {
+          method: 'PUT',
+          params: {target: '@target', type: '@type', principal: '@principal', role: '@role'},
+          errorHandler: true
+        },
+        'delete': {method: 'DELETE', params: {target: '@target', type: '@type', principal: '@principal'}, errorHandler: true},
+        'get': {method: 'GET', params: {target: '@target'}, isArray: true}
+      });
+    }])
+  
+  .factory('EntityFormAccessesResource', ['$resource',
+    function ($resource) {
+      return $resource('ws/config/:target/accesses', {}, {
+        'save': {
+          method: 'PUT',
+          params: {target: '@target', type: '@type', principal: '@principal', role: '@role'},
+          errorHandler: true
+        },
+        'delete': {method: 'DELETE', params: {target: '@target', type: '@type', principal: '@principal'}, errorHandler: true},
+        'get': {method: 'GET', params: {target: '@target'}, isArray: true}
+      });
+    }]);

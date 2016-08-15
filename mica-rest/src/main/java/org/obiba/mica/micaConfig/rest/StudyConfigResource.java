@@ -10,8 +10,9 @@ import org.obiba.mica.web.model.Mica;
 import org.springframework.stereotype.Component;
 
 @Component
-@Path("/config/study")
-public class StudyConfigResource extends EntityConfigResource<StudyConfig> {
+@Path("/config/" + StudyConfigResource.TARGET_NAME)
+public class StudyConfigResource extends EntityConfigResource<StudyConfig> implements PermissionAwareResource  {
+  static final String TARGET_NAME = "study";
 
   @Inject
   StudyConfigService studyConfigService;
@@ -32,5 +33,10 @@ public class StudyConfigResource extends EntityConfigResource<StudyConfig> {
   @Override
   protected StudyConfigService getConfigService() {
     return studyConfigService;
+  }
+
+  @Override
+  public String getTarget() {
+    return TARGET_NAME;
   }
 }

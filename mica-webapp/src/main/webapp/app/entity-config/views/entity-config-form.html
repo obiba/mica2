@@ -47,6 +47,12 @@
     </div>
   </div>
 
+  <div ng-show="tab.name === 'permissions'">
+    <h3>{{target + '-config.permissions.title' | translate}}</h3>
+    <p class="help-block">{{target + '-config.permissions.info' | translate}}</p>
+    <permissions-table permissions="permissions" accesses="accesses" open-access="openAccess" on-add="addPermission" on-load="loadPermissions" on-delete="deletePermission" on-access-add="addAccess" on-access-load="loadAccesses" on-access-delete="deleteAccess"></permissions-table>
+  </div>
+
   <div ng-show="tab.name !== 'permissions'" class="voffset4">
     <a href="#/admin" class="btn btn-default">
       <span translate>cancel</span>
