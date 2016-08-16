@@ -2,6 +2,7 @@ package org.obiba.mica.dataset.search.rest.harmonized;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 import org.obiba.mica.web.model.Mica;
@@ -33,9 +34,10 @@ public class CombinedStatistics {
   }
 
   public float getSum() {
-    return Double
-      .valueOf(stats.stream().filter(Mica.StatisticsDto::hasSum).mapToDouble(Mica.StatisticsDto::getSum).sum())
-      .floatValue();
+    Optional<Float> result = stats.stream().filter(Mica.StatisticsDto::hasSum)
+      .map(Mica.StatisticsDto::getSum).reduce((prev, curr) -> prev + curr);
+
+    return result.isPresent() ? result.get() : 0f;
   }
 
   public boolean hasMean() {
@@ -54,8 +56,10 @@ public class CombinedStatistics {
   }
 
   public float getMin() {
-    return Double.valueOf(stats.stream().filter(s -> s.hasMin() && s.getMin() != Float.POSITIVE_INFINITY)
-      .mapToDouble(Mica.StatisticsDto::getMin).reduce(0, Math::min)).floatValue();
+    Optional<Float> result = stats.stream().filter(s -> s.hasMin() && s.getMin() != Float.POSITIVE_INFINITY)
+      .map(Mica.StatisticsDto::getMin).reduce(Math::min);
+
+    return result.isPresent() ? result.get() : 0f;
   }
 
   public boolean hasMax() {
@@ -66,8 +70,10 @@ public class CombinedStatistics {
   }
 
   public float getMax() {
-    return Double.valueOf(stats.stream().filter(s -> s.hasMax() && s.getMax() != Float.NEGATIVE_INFINITY)
-      .mapToDouble(Mica.StatisticsDto::getMax).reduce(0, Math::max)).floatValue();
+    Optional<Float> result = stats.stream().filter(s -> s.hasMax() && s.getMax() != Float.NEGATIVE_INFINITY)
+      .map(Mica.StatisticsDto::getMax).reduce(Math::max);
+
+    return result.isPresent() ? result.get() : 0f;
   }
 
   public boolean hasSumOfSquares() {
@@ -78,9 +84,10 @@ public class CombinedStatistics {
   }
 
   public float getSumOfSquares() {
-    return Double.valueOf(
-      stats.stream().filter(Mica.StatisticsDto::hasSumOfSquares).mapToDouble(Mica.StatisticsDto::getSumOfSquares).sum())
-      .floatValue();
+    Optional<Float> result = stats.stream().filter(Mica.StatisticsDto::hasSumOfSquares)
+      .map(Mica.StatisticsDto::getSumOfSquares).reduce((prev, curr) -> prev + curr);
+
+    return result.isPresent() ? result.get() : 0f;
   }
 
   public float getVariance() {
