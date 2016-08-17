@@ -87,12 +87,12 @@ public class ContingencyUtils {
     return res;
   }
 
-  public static List<List<Float>> getContinuousRows(Mica.DatasetVariableContingencyDto c, List<String> terms) {
-    List<Float> minList = Lists.newArrayList();
-    List<Float> maxList = Lists.newArrayList();
-    List<Float> meanList = Lists.newArrayList();
-    List<Float> stdList = Lists.newArrayList();
-    List<Float> nList = Lists.newArrayList();
+  public static List<List<Number>> getContinuousRows(Mica.DatasetVariableContingencyDto c, List<String> terms) {
+    List<Number> minList = Lists.newArrayList();
+    List<Number> maxList = Lists.newArrayList();
+    List<Number> meanList = Lists.newArrayList();
+    List<Number> stdList = Lists.newArrayList();
+    List<Number> nList = Lists.newArrayList();
 
     Map<String, Mica.DatasetVariableAggregationDto> map = c.getAggregationsList().stream()
       .collect(toMap(a -> a.getTerm(), a -> a));
@@ -110,8 +110,8 @@ public class ContingencyUtils {
     return Lists.newArrayList(minList, maxList, meanList, stdList, nList);
   }
 
-  private static void addStats(Mica.StatisticsDto stats, List<Float> minList, List<Float> maxList, List<Float> meanList,
-    List<Float> stdList) {
+  private static void addStats(Mica.StatisticsDto stats, List<Number> minList, List<Number> maxList, List<Number> meanList,
+    List<Number> stdList) {
     minList.add(stats.getMin());
     maxList.add(stats.getMax());
     meanList.add(stats.getMean());
