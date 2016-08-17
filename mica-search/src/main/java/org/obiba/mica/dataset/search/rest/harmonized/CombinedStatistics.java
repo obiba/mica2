@@ -33,47 +33,47 @@ public class CombinedStatistics {
     return counts.stream().mapToInt(c -> c).sum();
   }
 
-  public float getSum() {
-    Optional<Float> result = stats.stream().filter(Mica.StatisticsDto::hasSum)
+  public double getSum() {
+    Optional<Double> result = stats.stream().filter(Mica.StatisticsDto::hasSum)
       .map(Mica.StatisticsDto::getSum).reduce((prev, curr) -> prev + curr);
 
-    return result.isPresent() ? result.get() : 0f;
+    return result.isPresent() ? result.get() : 0D;
   }
 
   public boolean hasMean() {
     return getCount() > 0;
   }
 
-  public float getMean() {
+  public double getMean() {
     return hasMean() ? getSum() / getCount() : 0;
   }
 
   public boolean hasMin() {
     for(Mica.StatisticsDto stat : stats) {
-      if(stat.hasMin() && stat.getMin() != Float.POSITIVE_INFINITY) return true;
+      if(stat.hasMin() && stat.getMin() != Double.POSITIVE_INFINITY) return true;
     }
     return false;
   }
 
-  public float getMin() {
-    Optional<Float> result = stats.stream().filter(s -> s.hasMin() && s.getMin() != Float.POSITIVE_INFINITY)
+  public double getMin() {
+    Optional<Double> result = stats.stream().filter(s -> s.hasMin() && s.getMin() != Double.POSITIVE_INFINITY)
       .map(Mica.StatisticsDto::getMin).reduce(Math::min);
 
-    return result.isPresent() ? result.get() : 0f;
+    return result.isPresent() ? result.get() : 0D;
   }
 
   public boolean hasMax() {
     for(Mica.StatisticsDto stat : stats) {
-      if(stat.hasMax() && stat.getMax() != Float.NEGATIVE_INFINITY) return true;
+      if(stat.hasMax() && stat.getMax() != Double.NEGATIVE_INFINITY) return true;
     }
     return false;
   }
 
-  public float getMax() {
-    Optional<Float> result = stats.stream().filter(s -> s.hasMax() && s.getMax() != Float.NEGATIVE_INFINITY)
+  public double getMax() {
+    Optional<Double> result = stats.stream().filter(s -> s.hasMax() && s.getMax() != Double.NEGATIVE_INFINITY)
       .map(Mica.StatisticsDto::getMax).reduce(Math::max);
 
-    return result.isPresent() ? result.get() : 0f;
+    return result.isPresent() ? result.get() : 0D;
   }
 
   public boolean hasSumOfSquares() {
@@ -83,28 +83,28 @@ public class CombinedStatistics {
     return false;
   }
 
-  public float getSumOfSquares() {
-    Optional<Float> result = stats.stream().filter(Mica.StatisticsDto::hasSumOfSquares)
+  public double getSumOfSquares() {
+    Optional<Double> result = stats.stream().filter(Mica.StatisticsDto::hasSumOfSquares)
       .map(Mica.StatisticsDto::getSumOfSquares).reduce((prev, curr) -> prev + curr);
 
-    return result.isPresent() ? result.get() : 0f;
+    return result.isPresent() ? result.get() : 0D;
   }
 
-  public float getVariance() {
+  public double getVariance() {
     int count = getCount();
 
     // ESSG = error sum of squares within each group = variance * (n-1)
     // ESS = error sum of squares = sum(var(i) * (n(i)-1))
-    float ess = Double.valueOf(IntStream.range(0, stats.size()).filter(i -> stats.get(i).hasVariance())
-      .mapToDouble(i -> stats.get(i).getVariance() * (counts.get(i) - 1)).sum()).floatValue();
+    double ess = IntStream.range(0, stats.size()).filter(i -> stats.get(i).hasVariance())
+      .mapToDouble(i -> stats.get(i).getVariance() * (counts.get(i) - 1)).sum();
 
     // GM = grand mean = sum(mean(i) * n(i))
-    float gm = Double.valueOf(IntStream.range(0, stats.size()).filter(i -> stats.get(i).hasMean())
-      .mapToDouble(i -> stats.get(i).getMean() * counts.get(i)).sum() / count).floatValue();
+    double gm = IntStream.range(0, stats.size()).filter(i -> stats.get(i).hasMean())
+      .mapToDouble(i -> stats.get(i).getMean() * counts.get(i)).sum() / count;
 
     // GSS = group sum of squares = sum(mean(i) - gm)^2 * n(i)
-    float gss = Double.valueOf(IntStream.range(0, stats.size()).filter(i -> stats.get(i).hasMean())
-      .mapToDouble(i -> Math.pow(stats.get(i).getMean() - gm, 2) * counts.get(i)).sum()).floatValue();
+    double gss = IntStream.range(0, stats.size()).filter(i -> stats.get(i).hasMean())
+      .mapToDouble(i -> Math.pow(stats.get(i).getMean() - gm, 2) * counts.get(i)).sum();
 
     // GV = grand variance
     return count == 1 ? 0 : (ess - gss) / (count - 1);
@@ -168,9 +168,9 @@ public class CombinedStatistics {
     if(combined.hasMax()) builder.setMax(combined.getMax());
     if(combined.hasSumOfSquares()) builder.setSumOfSquares(combined.getSumOfSquares());
 
-    float gv = combined.getVariance();
+    double gv = combined.getVariance();
     builder.setVariance(gv);
-    double stdDeviation = Double.valueOf(Math.pow(gv, 0.5));
+    double stdDeviation = Math.pow(gv, 0.5);
 
     if (Double.isNaN(stdDeviation)) {
       // TODO: remove this once the cause of the erronuous stdDev is found
@@ -178,7 +178,7 @@ public class CombinedStatistics {
       stdDeviation = 0.0D;
     }
 
-    builder.setStdDeviation(Double.valueOf(stdDeviation).floatValue());
+    builder.setStdDeviation(stdDeviation);
     aggDto.setStatistics(builder);
   }
 }

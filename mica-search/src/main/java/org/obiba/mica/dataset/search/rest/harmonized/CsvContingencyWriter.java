@@ -103,7 +103,7 @@ public class CsvContingencyWriter {
   }
 
   private void writeContingencyContinuous(CSVWriter writer, Mica.DatasetVariableContingencyDto c, List<String> terms) {
-    List<List<Float>> table = ContingencyUtils.getContinuousRows(c, terms);
+    List<List<Number>> table = ContingencyUtils.getContinuousRows(c, terms);
     List<String> values = Lists.newArrayList("Min", "Max", "Mean", "Std", "N");
 
     IntStream.range(0, values.size()).forEach(i -> writer.writeNext(
