@@ -14,6 +14,8 @@
   "description":
     "en": "Dataset acronym."
     "fr": "Acronyme du jeux de données"
+  "attributes":
+    "static": "true"
 - "name": "className"
   "title":
     "en": "Dataset type"
@@ -34,6 +36,8 @@
       "fr": "Harmonisation"
     "description":
       "en": "A harmonization dataset holds metadata about core variables constructed from multiple study datasets."
+  "attributes":
+    "static": "true"
 - "name": "networkId"
   "title":
     "en": "Network"
@@ -41,3 +45,5 @@
   "description":
     "en": "Network associated to the harmonized dataset."
     "fr": "Réseau associé à ce jeux de données harmonisé."
+  "attributes":
+    "static": "true"
