@@ -191,7 +191,7 @@ mica.dataset
 
       MicaConfigResource.get(function (micaConfig) {
         $scope.tabs = [];
-        $scope.sfOptions = {}; 
+        $scope.sfOptions = {};
 
         micaConfig.languages.forEach(function (lang) {
           $scope.tabs.push({lang: lang});
@@ -401,6 +401,18 @@ mica.dataset
             $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables.push(studyTable);
           }, function () {
           });
+      };
+
+      $scope.moveStudyDown = function (index) {
+        var studyToMoveDown = $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables[index];
+        var studyToMoveUp = $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables[index + 1];
+
+        $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables[index] = studyToMoveUp;
+        $scope.dataset['obiba.mica.HarmonizationDatasetDto.type'].studyTables[index + 1] = studyToMoveDown;
+      };
+
+      $scope.moveStudyUp = function (index) {
+        $scope.moveStudyDown(index - 1);
       };
 
       $scope.editStudyTable = function (index, tab) {

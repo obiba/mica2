@@ -12,7 +12,8 @@
       "admin": "Administration",
       "language": "Langue"
     },
-    "lastUpdate": "Mise à jour"
+    "lastUpdate": "Mise à jour",
+    "order": "Ordre"
   },
   "main": {
     "title": "Bienvenue chez Mica!",
