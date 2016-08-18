@@ -12,7 +12,8 @@
       "admin": "Administration",
       "language": "Langue"
     },
-    "lastUpdate": "Mise à jour"
+    "lastUpdate": "Mise à jour",
+    "order": "Ordre"
   },
   "main": {
     "title": "Bienvenue chez Mica!",
@@ -694,7 +695,6 @@
   "loading": "Chargement...",
   "error": "Erreur",
   "actions": "Actions",
-  "order": "Ordre",
   "authorizer": "Autorisateur ",
   "logo": "Logo",
   "attachments": "Pièces jointes",
