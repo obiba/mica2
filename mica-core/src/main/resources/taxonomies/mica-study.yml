@@ -16,6 +16,8 @@
     "en": "Acronym of the study."
     "fr": "Acronyme de l'étude."
   "terms": []
+  "attributes":
+    "static": "true"
 - "name": "objectives"
   "title":
     "en": "Objectives"
@@ -27,6 +29,8 @@
   "attributes":
     "field": "objectives.und"
     "alias": "objectives"
+    "static": "true"
+    "localized": "true"
 - "name": "methods-designs"
   "title":
     "en": "Study design"
@@ -35,7 +39,7 @@
     "en": "The design of an observational or exprimental study (e.g. cohort, case control)."
     "fr": "La conception d'une étude observationnelle ou interventionnelle (e.g. cohorte, cas-témoins)."
   "attributes":
-    "field": "methods.designs"
+    "field": "model.methods.design"
     "alias": "methods-designs"
   "terms":
   - "name": "cohort_study"
@@ -87,6 +91,7 @@
   "attributes":
     "field": "memberships.investigator.person.fullName"
     "alias": "memberships-investigator-person-fullName"
+    "static": "true"
 - "name": "investigator-institution"
   "title":
     "en": "Investigator institution"
@@ -95,6 +100,8 @@
   "attributes":
     "field": "memberships.investigator.person.institution.name.und"
     "alias": "memberships-investigator-person-institution-name"
+    "static": "true"
+    "localized": "true"
 - "name": "contact"
   "title":
     "en": "Contact name"
@@ -103,6 +110,7 @@
   "attributes":
     "field": "memberships.contact.person.fullName"
     "alias": "memberships-contact-person-fullName"
+    "static": "true"
 - "name": "contact-institution"
   "title":
     "en": "Contact institution"
@@ -111,6 +119,7 @@
   "attributes":
     "field": "memberships.contact.person.institution.name.und"
     "alias": "memberships-contact-person-institution-name"
+    "localized": "true"
 - "name": "populations-selectionCriteria-countriesIso"
   "title":
     "en": "Selection criteria - Country of residence"
@@ -118,7 +127,7 @@
   "description":
     "en": "Participant’s country of residence."
   "attributes":
-    "field": "populations.selectionCriteria.countriesIso"
+    "field": "populations.model.selectionCriteria.countriesIso"
     "alias": "populations-selectionCriteria-countriesIso"
   "repeatable": "true"
   "terms":
@@ -1376,7 +1385,7 @@
     "fr": "Age minimum du participant."
   "attributes":
     "type": "integer"
-    "field": "populations.selectionCriteria.ageMin"
+    "field": "populations.model.selectionCriteria.ageMin"
     "alias": "populations-selectionCriteria-ageMin"
 - "name": "populations-selectionCriteria-ageMax"
   "title":
@@ -1387,7 +1396,7 @@
     "fr": "Age maximum du participant."
   "attributes":
     "type": "integer"
-    "field": "populations.selectionCriteria.ageMax"
+    "field": "populations.model.selectionCriteria.ageMax"
     "alias": "populations-selectionCriteria-ageMax"
 - "name": "populations-selectionCriteria-gender"
   "title":
@@ -1396,7 +1405,7 @@
   "description":
     "en": "Participant’s sex"
   "attributes":
-    "field": "populations.selectionCriteria.gender"
+    "field": "populations.model.selectionCriteria.gender"
     "alias": "populations-selectionCriteria-gender"
   "terms":
   - "name": "men"
@@ -1419,7 +1428,7 @@
     "en": "Participants recruited are pregnant women, newborns or twins."
     "fr": "Les participants recrutés sont des femmes enceintes, des nouveaux-nés ou des jumeaux."
   "attributes":
-    "field": "populations.selectionCriteria.criteria"
+    "field": "populations.model.selectionCriteria.criteria"
     "alias": "populations-selectionCriteria-criteria"
   "terms":
   - "name": "gravidity"
@@ -1581,7 +1590,7 @@
     "fr": "Type de participants (e.g. individus, familles) ciblé pour le recrutement par l'étude."
   "repeatable": "true"
   "attributes":
-    "field": "methods.recruitments"
+    "field": "model.methods.recruitments"
     "alias": "methods-recruitments"
   "terms":
   - "name": "individuals"
@@ -1613,7 +1622,7 @@
     "en": "The population(s) from which individuals are recruited to participate in the study."
     "fr": "La ou les population(s) à partir de(s) quelle(s) les individus sont recrutés pour participer à l'étude."
   "attributes":
-    "field": "populations.recruitment.dataSources"
+    "field": "populations.model.recruitment.dataSources"
     "alias": "populations-recruitment-dataSources"
   "repeatable": "true"
   "terms":
@@ -1653,7 +1662,7 @@
     "en": "Source from which information is generated/extracted"
     "fr": "Source à partir de laquelle l'information est générée/extraite."
   "attributes":
-    "field": "populations.dataCollectionEvents.dataSources"
+    "field": "populations.dataCollectionEvents.model.dataSources"
     "alias": "populations-dataCollectionEvents-dataSources"
   "repeatable": "true"
   "terms":
@@ -1699,7 +1708,7 @@
   "description":
     "en": "Individuals are recruited to participate in the study from the general population."
   "attributes":
-    "field": "populations.recruitment.generalPopulationSources"
+    "field": "populations.model.recruitment.generalPopulationSources"
     "alias": "populations-recruitment-generalPopulationSources"
   "repeatable": "true"
   "terms":
@@ -1728,7 +1737,7 @@
   "description":
     "en": "Individuals are recruited to participate in the study from a particular institution or organization."
   "attributes":
-    "field": "populations.recruitment.specificPopulationSources"
+    "field": "populations.model.recruitment.specificPopulationSources"
     "alias": "populations-recruitment-specificPopulationSources"
   "repeatable": "true"
   "terms":
@@ -1787,7 +1796,7 @@
   "description":
     "en": "Biospecimens or biological material."
   "attributes":
-    "field": "populations.dataCollectionEvents.bioSamples"
+    "field": "populations.dataCollectionEvents.model.bioSamples"
     "alias": "populations-dataCollectionEvents-bioSamples"
   "repeatable": "true"
   "terms":
@@ -1843,7 +1852,7 @@
   "description":
     "en": "Databases containing information collected by governments for administrative purposes that are linked to the study."
   "attributes":
-    "field": "populations.dataCollectionEvents.administrativeDatabases"
+    "field": "populations.dataCollectionEvents.model.administrativeDatabases"
     "alias": "populations-dataCollectionEvents-administrativeDatabases"
   "repeatable": "true"
   "terms":

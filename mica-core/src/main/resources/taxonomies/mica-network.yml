@@ -16,6 +16,7 @@
     "fr": "Acronyme du réseau."
   "attributes":
     "alias": "networkId"
+    "static": "true"
 - "name": "studyIds"
   "title":
     "en": "Study"
@@ -23,6 +24,8 @@
   "description":
     "en": "Studies that are members of a network."
     "fr": "Études qui sont membres d'un réseau."
+  "attributes":
+    "static": "true"
 - "name": "investigator"
   "title":
     "en": "Investigator name"
@@ -31,6 +34,7 @@
   "attributes":
     "field": "memberships.investigator.person.fullName"
     "alias": "memberships-investigator-person-fullName"
+    "static": "true"
 - "name": "investigator-institution"
   "title":
     "en": "Investigator institution"
@@ -39,6 +43,8 @@
   "attributes":
     "field": "memberships.investigator.person.institution.name.und"
     "alias": "memberships-investigator-person-institution-name"
+    "static": "true"
+    "localized": "true"
 - "name": "contact"
   "title":
     "en": "Contact name"
@@ -47,6 +53,7 @@
   "attributes":
     "field": "memberships.contact.person.fullName"
     "alias": "memberships-contact-person-fullName"
+    "static": "true"
 - "name": "contact-institution"
   "title":
     "en": "Contact institution"
@@ -55,3 +62,5 @@
   "attributes":
     "field": "memberships.contact.person.institution.name.und"
     "alias": "memberships-contact-person-institution-name"
+    "static": "true"
+    "localized": "true"

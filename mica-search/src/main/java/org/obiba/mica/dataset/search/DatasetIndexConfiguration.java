@@ -11,13 +11,15 @@
 package org.obiba.mica.dataset.search;
 
 import java.io.IOException;
-import java.util.stream.Stream;
 
+import com.google.common.collect.Lists;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
+import org.obiba.mica.core.domain.TaxonomyTarget;
 import org.obiba.mica.search.AbstractIndexConfiguration;
 import org.obiba.mica.search.ElasticSearchIndexer;
+import org.obiba.opal.core.domain.taxonomy.Taxonomy;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -40,36 +42,19 @@ public class DatasetIndexConfiguration extends AbstractIndexConfiguration
 
   private XContentBuilder createMappingProperties() throws IOException {
     XContentBuilder mapping = XContentFactory.jsonBuilder().startObject().startObject(DatasetIndexer.DATASET_TYPE);
-
-    // properties
     mapping.startObject("properties");
-    mapping.startObject("id").field("type", "string").field("index", "not_analyzed").endObject();
-    mapping.startObject("networkId").field("type", "string").field("index", "not_analyzed").endObject();
-    mapping.startObject("className").field("type", "string").field("index", "not_analyzed").endObject();
-    Stream.of(DatasetIndexer.LOCALIZED_ANALYZED_FIELDS)
-      .forEach(field -> createLocalizedMappingWithAnalyzers(mapping, field));
-
-    mapping.startObject("studyTables") //
-      .startObject("properties");
-    appendStudyIdProperty(mapping);
-    mapping.endObject() //
-      .endObject();
-
-    mapping.startObject("studyTable") //
-      .startObject("properties");
-    appendStudyIdProperty(mapping);
-    mapping.endObject() //
-      .endObject();
-
-    mapping.endObject();
-
+    Taxonomy taxonomy = getTaxonomy();
+    addStaticVocabularies(taxonomy, "studyTable.id", "studyTable.studyId", //
+      "studyTables.id", "studyTables.studyId");
+    addLocalizedVocabularies(taxonomy, "name", "acronym", "description");
+    addTaxonomyFields(mapping, taxonomy, Lists.newArrayList());
     mapping.endObject().endObject();
+
     return mapping;
   }
 
-  private void appendStudyIdProperty(XContentBuilder mapping) throws IOException {
-    mapping.startObject("id").field("type", "string").field("index", "not_analyzed").endObject();
-    mapping.startObject("studyId").field("type", "string").field("index", "not_analyzed").endObject();
+  @Override
+  protected TaxonomyTarget getTarget() {
+    return TaxonomyTarget.DATASET;
   }
-
 }
