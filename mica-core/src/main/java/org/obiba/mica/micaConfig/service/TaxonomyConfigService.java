@@ -62,6 +62,7 @@ public class TaxonomyConfigService {
 
   public void update(TaxonomyTarget target, Taxonomy taxonomy) {
     updateInternal(target, taxonomy);
+    getEvent(target).ifPresent(eventBus::post);
   }
 
   private Taxonomy findByTargetInternal(TaxonomyTarget target) {
@@ -81,7 +82,6 @@ public class TaxonomyConfigService {
     taxonomyEntityWrapper.setTarget(target.asId());
     taxonomyEntityWrapper.setTaxonomy(taxonomy);
     taxonomyConfigRepository.save(taxonomyEntityWrapper);
-    getEvent(target).ifPresent(eventBus::post);
   }
 
   private Optional<Object> getEvent(TaxonomyTarget target) {
