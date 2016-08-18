@@ -239,6 +239,7 @@
     "opalCredentialTitle": "Opal Credential",
     "opalUrl": "Opal URL",
     "actions": "Actions",
+    "order": "Order",
     "type": "Type",
     "create": "Create Key Pair",
     "import": "Import Key Pair",

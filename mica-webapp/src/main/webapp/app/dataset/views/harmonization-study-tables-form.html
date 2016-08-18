@@ -31,6 +31,7 @@
         <th translate>dataset.table-name</th>
         <th translate>dataset.table-description</th>
         <th translate>actions</th>
+        <th translate>order</th>
       </tr>
       </thead>
       <tbody>
@@ -61,6 +62,16 @@
         <td>
           <a href="" ng-click="editStudyTable($index, tab)" class="action"><i class="fa fa-pencil"></i></a>
           <a href="" ng-click="deleteStudyTable($index)" class="action"><i class="fa fa-trash-o"></i></a>
+        </td>
+        <td>
+          <ul class="list-inline">
+            <li ng-show="!$last">
+              <a href ng-click="moveStudyDown($index)" title="{{'down' | translate}}"><i class="fa fa-arrow-down"></i></a>
+            </li>
+            <li ng-show="!$first">
+              <a href ng-click="moveStudyUp($index)" title="{{'up' | translate}}"><i class="fa fa-arrow-up"></i></a>
+            </li>
+          </ul>
         </td>
       </tr>
       </tbody>
