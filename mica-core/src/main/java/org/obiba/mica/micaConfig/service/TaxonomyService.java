@@ -12,13 +12,13 @@ package org.obiba.mica.micaConfig.service;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
 import javax.validation.constraints.NotNull;
 
+import com.google.common.eventbus.Subscribe;
 import org.obiba.mica.dataset.event.DatasetPublishedEvent;
 import org.obiba.mica.dataset.event.DatasetUnpublishedEvent;
 import org.obiba.mica.micaConfig.domain.MicaConfig;
@@ -36,8 +36,6 @@ import org.obiba.opal.core.domain.taxonomy.Vocabulary;
 import org.springframework.beans.BeanUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-
-import com.google.common.eventbus.Subscribe;
 
 @Service
 public class TaxonomyService {
@@ -59,8 +57,6 @@ public class TaxonomyService {
 
   @Inject
   DceIdAggregationMetaDataHelper dceHelper;
-
-  private ReentrantLock txLock = new ReentrantLock();
 
   private Taxonomy taxonomyTaxonomy;
 
@@ -127,31 +123,24 @@ public class TaxonomyService {
     return taxonomies == null ? Collections.emptyList() : taxonomies;
   }
 
-  public void refresh() {
-    txLock.lock();
+  public synchronized void refresh() {
     taxonomyTaxonomy = null;
     networkTaxonomy = null;
     studyTaxonomy = null;
     datasetTaxonomy = null;
     variableTaxonomy = null;
-    txLock.unlock();
   }
 
   //
   // Private methods
   //
 
-  private void initialize() {
-    txLock.lock();
-    try {
-      initializeTaxonomyTaxonomy();
-      initializeNetworkTaxonomy();
-      initializeStudyTaxonomy();
-      initializeDatasetTaxonomy();
-      initializeVariableTaxonomy();
-    } finally {
-      txLock.unlock();
-    }
+  private synchronized void initialize() {
+    initializeTaxonomyTaxonomy();
+    initializeNetworkTaxonomy();
+    initializeStudyTaxonomy();
+    initializeDatasetTaxonomy();
+    initializeVariableTaxonomy();
   }
 
   private void initializeTaxonomyTaxonomy() {

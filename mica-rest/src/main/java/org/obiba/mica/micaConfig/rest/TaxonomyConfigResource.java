@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.obiba.mica.core.domain.TaxonomyTarget;
+import org.obiba.mica.micaConfig.service.CacheService;
 import org.obiba.mica.micaConfig.service.TaxonomyConfigService;
 import org.obiba.mica.security.Roles;
 import org.obiba.opal.web.model.Opal;
@@ -35,6 +36,10 @@ public class TaxonomyConfigResource {
 
   Dtos dtos;
 
+  @Inject
+  private CacheService cacheService;
+
+
   @GET
   public Response getTaxonomy(@NotNull @PathParam("target") String target) {
     try {
@@ -49,6 +54,7 @@ public class TaxonomyConfigResource {
   public Response update(@NotNull @PathParam("target") String target, @NotNull Opal.TaxonomyDto taxonomyDto) {
     try {
       taxonomyConfigService.update(TaxonomyTarget.fromId(target), Dtos.fromDto(taxonomyDto));
+      cacheService.clearMicaConfigCache();
       return Response.ok().build();
     } catch(IllegalArgumentException e) {
       return Response.status(Response.Status.NOT_FOUND).build();
