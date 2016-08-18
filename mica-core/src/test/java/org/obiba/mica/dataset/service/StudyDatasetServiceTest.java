@@ -3,9 +3,7 @@ package org.obiba.mica.dataset.service;
 import java.util.Locale;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -30,11 +28,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-
 public class StudyDatasetServiceTest {
-
-  @Rule
-  public ExpectedException exception = ExpectedException.none();
 
   @InjectMocks
   private StudyDatasetService studyDatasetService;
