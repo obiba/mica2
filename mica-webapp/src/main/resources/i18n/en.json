@@ -13,7 +13,22 @@
       "language": "Language"
     },
     "lastUpdate": "Last Update",
-    "order": "Order"
+    "order": "Order",
+    "types": {
+      "string": "String",
+      "integer": "Integer",
+      "decimal": "Decimal"
+    },
+    "localized": "Localized",
+    "repeatable": "Repeatable",
+    "true": "True",
+    "false": "False",
+    "title": "Title",
+    "field": "Field",
+    "criteria": "Criteria",
+    "terms": "Terms",
+    "add-criterion": "Add Criterion",
+    "edit-criterion": "Edit Criterion"
   },
   "main": {
     "title": "Welcome to Mica!",
@@ -1145,6 +1160,13 @@
     "study-form-title": "Study",
     "population-form-title": "Population",
     "data-collection-event-form-title": "Data Collection Event"
+  },
+  "taxonomy-search": {
+    "title": "Search",
+    "info": "The search criteria can be configured in accordance with the model.",
+    "terms": {
+      "info": "The terms describe the possible values of the criterion. In the case of a numerical type (integer or decimal), the terms represent some ranges of values."
+    }
   },
   "dataset-config" : {
     "title" : "Dataset Configuration",

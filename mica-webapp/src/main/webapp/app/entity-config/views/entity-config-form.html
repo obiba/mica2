@@ -9,7 +9,6 @@
   -->
 
 <div>
-
   <h2>
     <ol class="breadcrumb mica-breadcrumb">
       <li><a href="/#/admin" translate>global.menu.admin</a></li>
@@ -45,6 +44,13 @@
     <div class="voffset4" ng-repeat="form in forms">
       <entity-sf-config form="form.form" alert-id="EntityConfigController" ng-show="form.active"></entity-sf-config>
     </div>
+  </div>
+
+  <div ng-show="tab.name === 'search'">
+    <h3>{{'taxonomy-search.title' | translate}}</h3>
+    <p class="help-block" translate="{{'taxonomy-search.info'}}"></p>
+
+    <entity-taxonomy-config target="target" state="state"></entity-taxonomy-config>
   </div>
 
   <div ng-show="tab.name === 'permissions'">

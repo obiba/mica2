@@ -1,0 +1,92 @@
+<div>
+
+  <h3 ng-if="model.type==='taxonomy'">
+    <ol class="breadcrumb mica-breadcrumb">
+      <li class="active">{{model.content.name}}</li>
+    </ol>
+  </h3>
+  <div ng-if="model.type!=='taxonomy'" class="row">
+    <div class="col-md-9">
+      <h3>
+        <ol class="breadcrumb mica-breadcrumb">
+          <li><a href ng-click="navigateToTaxonomy()" translate>all-criteria</a></li>
+          <li class="active">{{model.content.name}}</li>
+        </ol>
+      </h3>
+    </div>
+    <div class="col-md-3">
+      <h3>
+        <a class="pull-right" href ng-click="deleteCriterion()"><i class="fa fa-trash"></i></a>
+      </h3>
+    </div>
+  </div>
+
+  <h4>
+    <span translate>properties</span>
+    <a ng-click="edit()"> <i class="fa fa-pencil-square-o hand"></i></a>
+  </h4>
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped">
+        <!-- Taxonomy Properties -->
+        <tbody ng-if="model.type==='taxonomy'">
+        <tr>
+          <th translate>global.title</th>
+          <td>
+            <property-view property="model.content.title"></property-view>
+          </td>
+        </tr>
+        <tr>
+          <th translate>description</th>
+          <td>
+            <property-view property="model.content.description"></property-view>
+          </td>
+        </tr>
+        </tbody>
+
+        <!-- Vocabulary Properties -->
+        <tbody ng-if="model.type!=='taxonomy'">
+        <tr>
+          <th translate>global.title</th>
+          <td>
+            <property-view property="model.content.title"></property-view>
+          </td>
+        </tr>
+        <tr>
+          <th translate>description</th>
+          <td>
+            <property-view property="model.content.description"></property-view>
+          </td>
+        </tr>
+        <tr>
+          <th translate>global.repeatable</th>
+          <td translate>
+            {{'global.'+model.content.repeatable | translate}}
+          </td>
+        </tr>
+        <tr>
+          <th translate>global.localized</th>
+          <td translate>
+            {{'global.'+getLocalized(model.content) | translate}}
+          </td>
+        </tr>
+        <tr>
+          <th translate>field</th>
+          <td>
+            {{getField(model.content)}}
+          </td>
+        </tr>
+        <tr>
+          <th translate>type</th>
+          <td>
+            {{'global.'+getTypeMap(model.content).title | translate}} </td>
+        </tr>
+        </tbody>
+      </table>
+
+      <!--<a ng-click="edit()" class="btn btn-info">-->
+        <!--<i class="fa fa-pencil"></i> <span translate>edit</span>-->
+      <!--</a>-->
+  </div>
+
+</div>

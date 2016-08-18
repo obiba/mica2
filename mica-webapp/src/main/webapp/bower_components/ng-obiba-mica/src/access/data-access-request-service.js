@@ -91,7 +91,8 @@ angular.module('obiba.mica.access')
       documentsSectionHelpText: null,
       downloadButtonCaption: null,
       commentsEnabled: true,
-      userListPageTitle: null
+      userListPageTitle: null,
+      newRequestButtonHelpText: null
     };
 
     this.setOptions = function (newOptions) {
