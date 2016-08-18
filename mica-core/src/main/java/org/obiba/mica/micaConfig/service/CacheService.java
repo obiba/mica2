@@ -2,6 +2,7 @@ package org.obiba.mica.micaConfig.service;
 
 import javax.inject.Inject;
 
+import com.google.common.eventbus.EventBus;
 import org.obiba.magma.NoSuchVariableException;
 import org.obiba.mica.dataset.domain.Dataset;
 import org.obiba.mica.dataset.service.HarmonizationDatasetService;
@@ -10,11 +11,8 @@ import org.obiba.mica.security.event.SubjectAclUpdatedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Caching;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-
-import com.google.common.eventbus.EventBus;
 
 @Component
 public class CacheService {
@@ -65,11 +63,11 @@ public class CacheService {
     helper.buildDatasetVariablesCache();
   }
 
-  @Caching(evict = { @CacheEvict(value = "micaConfig", allEntries = true),
-    @CacheEvict(value = "aggregations-metadata", allEntries = true),
-    @CacheEvict(value = "opal-taxonomies", allEntries = true) })
   public void clearAllCaches() {
     log.info("Clearing all caches");
+    clearOpalTaxonomiesCache();
+    clearMicaConfigCache();
+    clearAggregationsMetadataCache();
     clearDatasetVariablesCache();
     clearAuthorizationCache();
   }
